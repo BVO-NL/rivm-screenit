@@ -1,0 +1,59 @@
+{
+  "title": {
+    "afmelden": "Afmelden bevolkingsonderzoek %s"
+  },
+  "infoText": "Wilt u niet meedoen aan het bevolkingsonderzoek? Of kunt u niet meedoen? Dan kunt u zich afmelden:",
+  "hintText": "Wilt u op een later moment weer meedoen? Dan kunt u zich opnieuw aanmelden via Mijn Bevolkingsonderzoek of via de informatielijn.",
+  "afmeldType": {
+    "eenmalig": {
+      "text": "Eenmalig afmelden: deze keer niet meedoen",
+      "info": "U doet deze keer niet mee aan het bevolkingsonderzoek. U krijgt automatisch een nieuwe uitnodiging wanneer u weer aan de beurt bent."
+    },
+    "tijdelijk": {
+      "text": "Tijdelijk afmelden: de komende jaren niet meedoen",
+      "info": "U wilt de komende jaren geen nieuwe uitnodigingen ontvangen. U kunt zich tijdelijk afmelden voor maximaal vijf jaar na uw laatste uitnodiging."
+    },
+    "definitief": {
+      "text": "Definitief afmelden: nooit meer meedoen",
+      "info": "U wilt of u kunt nooit meer meedoen aan het bevolkingsonderzoek. U krijgt geen nieuwe uitnodigingen meer."
+    }
+  },
+  "errorIntakeAfspraak": "Let op: Er is een afspraak voor u gepland voor een gesprek over vervolgonderzoek. </br>Meldt u zich nu af? Dan gaat dit gesprek niet door.",
+  "form": {
+    "title": {
+      "afmeldType": {
+        "alleOptiesColon": "Wilt u zich eenmalig, tijdelijk of definitief afmelden?",
+        "tijdelijkEnDefinitief": "Wilt u zich tijdelijk of definitief afmelden?",
+        "definitief": "Wilt u zich definitief afmelden?",
+        "algemeen": "Wilt u zich eenmalig of definitief afmelden?"
+      },
+      "afmeldReden": "Waarom meldt u zich af?",
+      "tijdelijkAfmeldenJaartal": "Ik wil weer een uitnodiging ontvangen in:"
+    },
+    "radiobutton": {
+      "eenmalig": "Eenmalig afmelden",
+      "tijdelijk": "Tijdelijk afmelden",
+      "definitief": "Definitief afmelden"
+    },
+    "submit": "Afmelden",
+    "error": "Maak uw keuze",
+    "uitlegJaartal": "Geef hieronder aan wanneer u weer een uitnodiging voor het bevolkingsonderzoek wilt ontvangen.",
+    "aanHetLaden": "Een ogenblik geduld, de gegevens worden geladen"
+  },
+  "toast": {
+    "eenmalig_bk": "U doet deze keer niet mee aan het bevolkingsonderzoek. Wilt u toch weer meedoen? Dan kunt u zich opnieuw aanmelden via Mijn Bevolkingsonderzoek of via de informatielijn.",
+    "eenmalig_dk_bmhk": "U heeft zich voor deze keer afgemeld voor het bevolkingsonderzoek %s. U krijgt automatisch een nieuwe uitnodiging wanneer u weer aan de beurt bent.",
+    "tijdelijk": "U heeft zich tijdelijk afgemeld voor het bevolkingsonderzoek %s. U krijgt automatisch een nieuwe uitnodiging wanneer uw tijdelijke afmelding is verlopen. Wij sturen u hierover een brief.",
+    "definitief": "U heeft zich definitief afgemeld voor het bevolkingsonderzoek %s. U krijgt geen nieuwe uitnodigingen meer. Wij sturen u hierover een brief."
+  },
+  "MammaAfmeldingReden.MEDISCHE_REDEN": "Medische redenen",
+  "MammaAfmeldingReden.ANGST_VOOR_KANKER": "Angst voor kanker",
+  "MammaAfmeldingReden.ANGST_VOOR_STRALING": "Angst voor straling",
+  "MammaAfmeldingReden.NARE_ERVARING_MET_ONDERZOEK": "Nare ervaring met het onderzoek",
+  "MammaAfmeldingReden.ONDERZOEK_NIET_NUTTIG": "Onderzoek niet nuttig",
+  "MammaAfmeldingReden.PIJNLIJKHEID_VORIG_ONDERZOEK": "Pijnlijkheid vorig onderzoek",
+  "MammaAfmeldingReden.VERHINDERD": "Verhinderd",
+  "MammaAfmeldingReden.OVERIGE_REDENEN": "Overige redenen",
+  "CervixAfmeldingReden.UE": "Mijn baarmoeder is weggehaald, ook de baarmoederhals",
+  "CervixAfmeldingReden.ANDERS": "Om een andere reden"
+}

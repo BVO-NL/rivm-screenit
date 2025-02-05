@@ -1,0 +1,60 @@
+/*-
+ * ========================LICENSE_START=================================
+ * screenit-clientportaal
+ * %%
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+@import "src/scss/colors";
+
+.onderkant {
+	display: flex;
+
+	.terugknop {
+		text-align: left;
+		float: left;
+		width: 20%;
+	}
+
+	.terugknop:hover {
+		color: $blauw-400;
+		cursor: pointer;
+	}
+
+	.filler {
+		text-align: left;
+		float: left;
+		width: 20%;
+	}
+
+	.progressieBollen {
+		text-align: center;
+		width: 60%;
+
+		.bol {
+			height: 25px;
+			width: 25px;
+			border-radius: 50%;
+			display: inline-block;
+			margin-right: 5px;
+			border: 1px solid $blauw-base;
+		}
+
+		.bol.actief {
+			background-color: $blauw-300;
+		}
+	}
+}

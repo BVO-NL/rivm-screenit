@@ -1,0 +1,88 @@
+/*-
+ * ========================LICENSE_START=================================
+ * screenit-web
+ * %%
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+@charset "UTF-8";
+@import "globals/base";
+@import "../shared/globals/mixins";
+
+.canvas.topnav-home,
+.canvas.topnav {
+  background-color: $color5;
+}
+
+.canvas.innerborder {
+  height: 1px;
+}
+
+.canvas.content {
+  @include filter-gradient(#ffffff, #fafafa);
+
+  .row-fluid .widget-1 {
+    @include filter-gradient(#F7FBEF, #C4DF83);
+  }
+  .row-fluid .widget-2 {
+    h2 {
+      font-weight: normal;
+    }
+  }
+  .row-fluid .buttongroup-vragenlijst {
+    margin: 0 -5px 12px 0;
+    .button-vragenlijst {
+      @include filter-gradient(#CDD97F, #6A9220);
+      display: block;
+      span.description {
+        background: transparent url('../../images/arrow_vragenlijst.png') no-repeat right 5px !important;
+      }
+      &:hover {
+        @include filter-gradient(#6A9220, #6A9220);
+      }
+    }
+  }
+
+  #vragenlijst-navigatie h3, #vragenlijst-mantelzorger-navigatie h3 {
+    margin-top: 0px;
+  }
+
+  .vragenlijst-container {
+    @include filter-gradient(#FFFFFF, #EDEDED);
+    &.keuze-vragenlijst {
+      @include filter-gradient(#F7FBEF, #C4DF83);
+    }
+  }
+
+  .buttons {
+    padding-bottom: 20px;
+    overflow: hidden;
+  }
+}
+
+.canvas.footer {
+  background-color: $colorColonis1;
+}
+
+.close {
+  filter: none;
+}
+
+.select2-drop-mask {
+  @include opacity(0);
+
+  background-color: black;
+}

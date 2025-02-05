@@ -1,0 +1,95 @@
+/*-
+ * ========================LICENSE_START=================================
+ * screenit-web
+ * %%
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+.row-fluid .column-50 {
+  width: 50%;
+  margin-left: 0;
+}
+
+.koppelen {
+  overflow: hidden;
+  font-weight: bold;
+  font-size: 18px;
+
+  .titel {
+    display: inline-block;
+    padding: 16px 0;
+  }
+
+  .state {
+    margin: 5px 20px 5px 10px;
+    display: block;
+    float: left;
+    height: 44px;
+    width: 55px;
+  }
+}
+
+.barcode .state {
+  background: transparent url(../images/icons/barcode.png) no-repeat top left;
+}
+
+.brief-koppelen .state {
+  background: transparent url(../images/icons/brief.png) no-repeat top left;
+}
+
+.ifobt-koppelen .state {
+  background: transparent url(../images/icons/box.png) no-repeat top left;
+}
+
+.brief-status.gekoppeld,
+.ifobt-status.gekoppeld {
+  display: block;
+  width: 16px;
+  height: 16px;
+  background: transparent url(../images/icons/tick.png) no-repeat top left;
+}
+
+.koppelen.gekoppeld .state {
+  background-position: -60px 0;
+}
+
+th.barcode {
+  width: 120px;
+}
+
+.personalia,
+.koppelen.active {
+  background-color: $colorColonis4;
+}
+
+.koppel-status {
+  margin-bottom: 10px;
+}
+
+.personalia {
+  height: 177px;
+  h1 {
+    padding: 16px 10px 10px;
+    font-size: 18px;
+    line-height: 18px;
+    margin: 0;
+  }
+
+  .adres,
+  .geboortedatum {
+    padding: 0 10px 5px 10px;
+  }
+}

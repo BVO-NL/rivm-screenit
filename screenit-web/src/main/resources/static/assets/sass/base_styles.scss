@@ -1,0 +1,122 @@
+/*-
+ * ========================LICENSE_START=================================
+ * screenit-web
+ * %%
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+@charset "UTF-8";
+@import "bootstrap";
+
+@import "shared/plugins/reset";
+@import "shared/plugins/grid";
+@import "shared/globals/mixins";
+@import "beheer/globals/base";
+@import "beheer/globals/layout";
+@import "beheer/components/popover";
+@import "beheer/components/buttons";
+@import "beheer/components/icons";
+@import "beheer/components/alert";
+@import "beheer/components/forms";
+@import "beheer/components/dropdown_menu";
+@import "beheer/components/dialog";
+@import "beheer/components/tooltip";
+@import "beheer/components/badge";
+@import "beheer/components/tables";
+@import "shared/components/icons";
+@import "beheer/components/loader";
+@import "beheer/components/accordion";
+@import "shared/components/forms";
+@import "shared/components/formcomponent";
+@import "beheer/components/pagination";
+@import "beheer/plugins/calendar";
+@import "beheer/globals/responsive";
+@import "beheer/sections/inlog_medewerker";
+@import "beheer/sections/portaal";
+@import "beheer/sections/topbar";
+@import "beheer/sections/layout";
+@import "beheer/sections/logging";
+@import "beheer/sections/schedule";
+@import "beheer/sections/rooster";
+@import "beheer/sections/afspraken";
+@import "beheer/sections/capaciteitskalender";
+@import "beheer/sections/contacten";
+@import "beheer/sections/client";
+@import "beheer/sections/werklijst";
+@import "beheer/sections/parameterisatie";
+@import "beheer/sections/gebieden";
+@import "beheer/sections/uitnodigingen_versturen";
+@import "beheer/sections/locaties";
+@import "beheer/sections/page_expired";
+@import "beheer/sections/huisarts";
+@import "beheer/sections/dashboard";
+@import "beheer/sections/digitaalberichttemplatebeheer";
+@import "beheer/sections/retourzendingen";
+@import "beheer/sections/kwaliteitscontrole";
+@import "beheer/sections/documenttemplates";
+@import "beheer/sections/ontvangstmonster";
+@import "beheer/sections/labformulier";
+@import "shared/sections/tijdelijkadres";
+@import "shared/sections/bvofilter";
+@import "shared/sections/huisarts";
+@import "beheer/sections/organisatiemedewerkers";
+@import "beheer/sections/ce";
+@import "mamma/mamma_beoordeling";
+@import "mamma/mamma_planning";
+@import "mamma/mamma_ce";
+@import "mamma/mamma_palga";
+@import "mamma/mamma_afspraken";
+@import "mamma/mamma_dossier";
+@import "mamma/mamma_panel";
+@import "mamma/mamma_form";
+@import "mamma/mamma_followup";
+
+@import "gebruiker/gebruiker_dossier_documenten";
+@import "gebruiker/gebruiker_panels";
+@import "gebruiker/gebruiker_colon";
+@import "colon/colon_gebieden";
+@import "colon/colon_intake";
+@import "colon/colon_planning";
+@import "client/client_formulieren";
+@import "client/client_dossier";
+@import "shared/globals/color";
+@import "shared/globals/display";
+@import "shared/globals/overflowwrap";
+@import "shared/globals/font";
+@import "shared/globals/margin";
+@import "shared/globals/padding";
+@import "shared/globals/width-height";
+
+:root * {
+	@extend :root;
+}
+
+.container-fluid {
+	padding-right: 20px;
+	padding-left: 20px;
+	*zoom: 1;
+}
+
+.container-fluid:before,
+.container-fluid:after {
+	display: table;
+	content: "";
+	line-height: 0;
+}
+
+.container-fluid:after {
+	clear: both;
+}

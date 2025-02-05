@@ -1,0 +1,77 @@
+/*-
+ * ========================LICENSE_START=================================
+ * screenit-huisartsenportaal
+ * %%
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+@import "~bootstrap/scss/functions";
+@import "colors";
+@import "~bootstrap/scss/bootstrap";
+@import "src/styling/font/fonts";
+@import "media-mixins";
+@import "~bootstrap-icons/font/bootstrap-icons.css";
+
+body {
+	font-family: 'Roboto', Helvetica, Arial, 'sans-serif';
+	font-size: 0.95rem;
+	color: $zwart;
+	background: url('../media/background.jpg') no-repeat center center fixed;
+	background-size: cover;
+
+	form {
+		p.form-error {
+			color: $rood;
+			font-size: 0.8rem;
+			margin-top: 5px;
+			margin-bottom: 0;
+		}
+	}
+
+	table {
+		width: 100%;
+		box-shadow: 5px 20px 30px 3px rgba(0, 0, 0, 0.2);
+
+		thead {
+			tr {
+				cursor: pointer;
+			}
+
+			th:hover {
+				background-color: $wit-doorzichtig;
+			}
+		}
+
+		tbody {
+			background-color: $tabel-background;
+		}
+
+		th, td {
+			padding: 10px 10px;
+		}
+
+		tbody {
+			tr:hover {
+				background-color: $wit-doorzichtig;
+			}
+		}
+
+		tr {
+			border-bottom: 1px solid #ddd;
+		}
+
+	}
+}

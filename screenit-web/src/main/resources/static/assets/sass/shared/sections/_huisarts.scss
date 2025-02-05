@@ -1,0 +1,68 @@
+/*-
+ * ========================LICENSE_START=================================
+ * screenit-web
+ * %%
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+.huisarts-zoek-form {
+  margin-bottom: 10px;
+
+  div.control-group {
+    @include column(4, 12);
+  }
+
+}
+
+.huisarts-geen-zoekresultaten {
+  @extend .box-bordered !optional;
+}
+
+.huisarts-bevestigen,
+.huisarts-handmatig {
+  @extend %tijdelijk-adres-fields;
+
+  %field-size {
+    @include box-sizing('border-box');
+    height: 30px;
+  }
+
+  input.naam-huisarts,
+  input.naam-praktijk {
+    @extend %field-size;
+    width: 47%;
+  }
+
+  input.telefoonnummer {
+    @extend %field-size;
+    width: 100%;
+  }
+
+  .of-tekst {
+    @include box-sizing('border-box');
+    display: inline-block;
+    width: 6%;
+    text-align: center;
+  }
+}
+
+.paginering {
+  .pagination {
+    width: 60%;
+    float: right;
+    text-align: right;
+  }
+}

@@ -1,0 +1,75 @@
+/*-
+ * ========================LICENSE_START=================================
+ * screenit-web
+ * %%
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+.doNotSelect {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.uitstel-table-border {
+	border-left: 3px solid #dddddd;
+}
+
+.follow-up-niet-gedownload-werklijst .table-condensed td a.btn {
+	color: white;
+}
+
+.pointer-events-none {
+	pointer-events: none;
+}
+
+.white-space-pre-wrap {
+	white-space: pre-wrap;
+}
+
+.mamma-opmerking {
+	width: 100%;
+	resize: none;
+}
+
+.mamma-opmerking-lijst {
+	vertical-align: top;
+	color: #612d83;
+}
+
+.mamma-standplaats-beschrijving {
+	width: 95%;
+	resize: none;
+}
+
+.max-aantal-per-file {
+	font-size: 13px;
+	line-height: 20px;
+}
+
+.row-fluid .mamma-exchange-download-onderzoeken {
+	margin-left: 0;
+}
+
+.row-fluid .mamma-lezing-form {
+	padding-left: 0;
+}
+
+.row-fluid .mamma-huisarts-uitlijning {
+	margin-left: 0px;
+}
+

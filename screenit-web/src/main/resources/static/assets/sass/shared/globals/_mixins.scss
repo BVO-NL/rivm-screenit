@@ -1,0 +1,75 @@
+/*-
+ * ========================LICENSE_START=================================
+ * screenit-web
+ * %%
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+@import "shared";
+@import "css3/background-image";
+@import "css3/border-radius";
+@import "css3/box-shadow";
+@import "css3/box-sizing";
+@import "css3/opacity";
+@import "css3/text-shadow";
+@import "css3/transition";
+
+$break-tablet-landscape: 1024px;
+$break-tablet-portrait: 768px;
+$break-small: 1280px;
+$break-medium: 1440px;
+$break-large: 1824px;
+
+$breakpoint-property: max-width;
+
+@mixin respond-to($point) {
+  @if $point == tablet-landscape {
+    @media ($breakpoint-property: $break-tablet-landscape) {
+      @content;
+    }
+  } @else if $point == tablet-portrait {
+    @media ($breakpoint-property: $break-tablet-portrait) {
+      @content;
+    }
+  } @else if $point == small-screen {
+    @media ($breakpoint-property: $break-small) {
+      @content;
+    }
+  } @else if $point == medium-screen {
+    @media ($breakpoint-property: $break-medium) {
+      @content;
+    }
+  } @else if $point == large-screen {
+    @media ($breakpoint-property: $break-large) {
+      @content;
+    }
+  }
+}
+
+@mixin keyframes($name) {
+  @-webkit-keyframes #{$name} {
+    @content;
+  }
+  @-moz-keyframes #{$name} {
+    @content;
+  }
+  @-ms-keyframes #{$name} {
+    @content;
+  }
+  @keyframes #{$name} {
+    @content;
+  }
+}

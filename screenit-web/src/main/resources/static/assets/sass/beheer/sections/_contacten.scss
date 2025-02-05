@@ -1,0 +1,76 @@
+/*-
+ * ========================LICENSE_START=================================
+ * screenit-web
+ * %%
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+.historie-contacten {
+  ul.vervolgacties {
+    margin: 0;
+    padding-left: 0;
+    list-style: none;
+  }
+}
+
+.beheer .vervolgstap {
+  > h2 {
+    margin: 15px 0;
+    padding: 0 0 5px 0;
+    font-size: 18px;
+    line-height: 18px;
+    color: $colorColonis2;
+    border-bottom: 1px solid $colorColonis3;
+  }
+
+  .column-afspraak-zoeken {
+    clear: both;
+  }
+
+  .label-inline {
+    display: inline-block;
+    width: 75px;
+  }
+
+  .ifobt-gegevens .control-group.value .control-label,
+  .ifobt-gegevens .control-group.value .controls {
+    line-height: 22px;
+  }
+}
+
+.beheer .wijzigingen-lijst {
+  padding-left: 15px;
+  li {
+    line-height: $fontSize;
+  }
+}
+
+.number-alert {
+  position: relative;
+  left: 4px;
+  display: inline-block;
+  border-radius: 50%;
+  background-color: red;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  line-height: 20px;
+  color: white;
+}
+
+.number-alert:empty {
+  display: none;
+}

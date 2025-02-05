@@ -1,0 +1,67 @@
+/*-
+ * ========================LICENSE_START=================================
+ * screenit-clientportaal
+ * %%
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+@import "src/scss/colors";
+@import "src/scss/media-mixins";
+
+.navItem {
+  padding-top: 25px;
+  padding-bottom: 25px;
+  font-size: 18px;
+  line-height: 20px;
+  margin-left: 25px;
+  color: $zwart !important;
+  transition: all 0.2s;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  @include respond-below(md) {
+    padding: 0;
+    margin-bottom: 15px;
+    margin-top: 15px;
+
+    &:hover {
+      color: $grijs-900 !important;
+      transform: none;
+    }
+  }
+}
+
+.navItemBvo {
+  font-weight: 500;
+}
+
+.navItemActive {
+  padding-bottom: 22px;
+  border-bottom: 3px solid;
+
+  @include respond-below(md) {
+    padding-bottom: 0;
+    border-bottom: none;
+    margin-left: 10px;
+    padding-left: 10px !important;
+    border-left: 3px solid;
+    transform: none;
+  }
+
+}
+

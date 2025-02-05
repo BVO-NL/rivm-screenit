@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ========================LICENSE_START=================================
+  screenit-base
+  %%
+  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+
+
+<entity-mappings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd"
+                 version="2.0">
+
+    <mapped-superclass class="nl.topicuszorg.hibernate.object.model.AbstractHibernateObject" metadata-complete="false">
+        <attributes>
+            <id name="id" access="PROPERTY">
+                <generated-value strategy="AUTO"/>
+            </id>
+        </attributes>
+    </mapped-superclass>
+
+
+    <entity class="nl.topicuszorg.patientregistratie.persoonsgegevens.model.VerzekeringsMaatschappij"
+            metadata-complete="false">
+        <table schema="algemeen"/>
+    </entity>
+    <entity class="nl.topicuszorg.patientregistratie.persoonsgegevens.model.Polis" metadata-complete="false">
+        <table schema="algemeen"/>
+    </entity>
+
+    <entity class="nl.rivm.screenit.model.Instelling"
+            metadata-complete="false">
+        <attributes>
+            <basic name="agbcode"></basic>
+            <basic name="naam">
+                <column length="100" nullable="false"/>
+            </basic>
+            <basic name="telefoon">
+                <column length="25"/>
+            </basic>
+            <basic name="uziAbonneenummer"></basic>
+            <basic name="uziNummerServerCertificaat"></basic>
+            <many-to-many name="adressen" target-entity="nl.topicuszorg.organisatie.model.Adres" fetch="LAZY">
+                <order-by>id</order-by>
+                <join-table schema="algemeen" name="org_organisatie_adressen">
+                    <join-column name="org_organisatie"/>
+                    <inverse-join-column name="adressen"/>
+                </join-table>
+            </many-to-many>
+        </attributes>
+    </entity>
+    <entity class="nl.rivm.screenit.model.Gebruiker"
+            metadata-complete="false">
+        <attributes>
+            <basic name="uzinummer"></basic>
+            <basic name="agbcode"></basic>
+            <basic name="achternaam">
+                <column length="100" nullable="false"/>
+            </basic>
+            <basic name="pasnummer"></basic>
+            <basic name="uziPasSerial"></basic>
+            <many-to-many name="adressen" target-entity="nl.topicuszorg.organisatie.model.Adres" fetch="LAZY">
+                <order-by>id</order-by>
+                <join-table schema="algemeen" name="org_medewerker_adressen">
+                    <join-column name="org_medewerker"/>
+                    <inverse-join-column name="adressen"/>
+                </join-table>
+            </many-to-many>
+        </attributes>
+    </entity>
+    <entity class="nl.topicuszorg.organisatie.model.Auteur" metadata-complete="false">
+        <table schema="algemeen"/>
+    </entity>
+    <entity class="nl.topicuszorg.organisatie.model.Adres" metadata-complete="false">
+        <table schema="gedeeld"/>
+    </entity>
+
+    <entity class="nl.topicuszorg.formulieren2.persistence.instantie.VraagInstantieImpl"
+            metadata-complete="false">
+        <attributes>
+            <basic name="expressie">
+                <column length="4096"/>
+            </basic>
+        </attributes>
+    </entity>
+    <entity class="nl.topicuszorg.formulieren2.persistence.instantie.AbstractFormulierElementContainer"
+            metadata-complete="false">
+        <attributes>
+            <basic name="expressie">
+                <column length="4096"/>
+            </basic>
+        </attributes>
+    </entity>
+    <entity class="nl.topicuszorg.formulieren2.persistence.definitie.AbstractAntwoordDefinitie"
+            metadata-complete="false">
+        <table schema="algemeen"/>
+    </entity>
+    <entity class="nl.topicuszorg.formulieren2.persistence.instantie.FormulierInstantieImpl" metadata-complete="false">
+        <table schema="algemeen"/>
+    </entity>
+    <entity class="nl.topicuszorg.formulieren2.persistence.instantie.AbstractFormulierElement"
+            metadata-complete="false">
+        <table schema="algemeen"/>
+    </entity>
+    <entity class="nl.topicuszorg.formulieren2.persistence.instantie.VerplichtingImpl" metadata-complete="false">
+        <table schema="algemeen"/>
+    </entity>
+    <entity class="nl.topicuszorg.formulieren2.persistence.instantie.acties.AbstractFormulierActieInstantieImpl"
+            metadata-complete="false">
+        <table schema="algemeen"/>
+    </entity>
+    <entity class="nl.topicuszorg.formulieren2.persistence.resultaat.AbstractAntwoord" metadata-complete="false">
+        <table schema="algemeen"/>
+    </entity>
+    <entity class="nl.topicuszorg.formulieren2.persistence.resultaat.FormulierResultaatImpl" metadata-complete="false">
+        <table schema="algemeen"/>
+        <attributes>
+            <one-to-many name="antwoorden">
+                <join-table schema="algemeen" name="form_formulier_resultaat_antwoorden"/>
+            </one-to-many>
+        </attributes>
+    </entity>
+    <entity class="nl.topicuszorg.formulieren2.persistence.resultaat.MeervoudigStringAntwoord"
+            metadata-complete="false">
+        <attributes>
+            <element-collection name="values">
+                <collection-table schema="algemeen" name="form_meervoudig_antwoord_string_values">
+                    <join-column name="antwoord_id"/>
+                </collection-table>
+            </element-collection>
+        </attributes>
+    </entity>
+    <entity class="nl.topicuszorg.formulieren2.persistence.resultaat.SerializedXMLNode" metadata-complete="false">
+        <table schema="algemeen"/>
+    </entity>
+    <entity class="nl.topicuszorg.formulieren2.persistence.resultaat.StringAntwoord" metadata-complete="false">
+        <table schema="algemeen"/>
+        <attributes>
+            <basic name="value">
+                <column name="string_value" length="4096"/>
+            </basic>
+        </attributes>
+    </entity>
+    <entity class="nl.topicuszorg.formulieren2.persistence.resultaat.XformsFormulierResultaatImpl"
+            metadata-complete="false">
+        <attributes>
+            <one-to-many name="xmlNodes">
+                <join-table schema="algemeen" name="form_formulier_resultaat_xml_nodes">
+                    <join-column name="form_formulier_resultaat"/>
+                </join-table>
+            </one-to-many>
+        </attributes>
+    </entity>
+    <entity class="nl.topicuszorg.formulieren2.persistence.definitie.VraagDefinitieImpl" metadata-complete="false">
+        <table schema="algemeen"/>
+    </entity>
+    <entity class="nl.topicuszorg.formulieren2.persistence.definitie.AbstractAntwoordRestrictieImpl"
+            metadata-complete="false">
+        <table schema="algemeen"/>
+    </entity>
+    <entity class="nl.topicuszorg.formulieren2.persistence.resultaat.AbstractEnkelvoudigAntwoord"
+            metadata-complete="false"/>
+    <entity class="nl.topicuszorg.formulieren2.persistence.resultaat.AbstractMeervoudigAntwoord"
+            metadata-complete="false"/>
+    <entity class="nl.topicuszorg.formulieren2.persistence.instantie.SimpleLabelInstantieImpl"
+            metadata-complete="false"/>
+    <entity class="nl.topicuszorg.formulieren2.persistence.definitie.DefaultAntwoordKeuzeVraagDefinitieImpl"
+            metadata-complete="false"/>
+    <entity class="nl.topicuszorg.yubikey.model.YubiKey" metadata-complete="false">
+        <table schema="algemeen"/>
+    </entity>
+
+</entity-mappings>

@@ -1,0 +1,21 @@
+{
+  "title": "Papieren labformulieren aanvragen niet meer mogelijk",
+  "table": {
+    "header": {
+      "aangevraagdOp": "Aangevraagd op",
+      "aantal": "Aantal",
+      "status": "Status",
+      "statusDatum": "Statusdatum",
+      "aangevraagdDoor": "Aangevraagd door",
+      "locatie": "Locatie"
+    },
+    "totaal": "Aantal aanvragen:",
+    "title": "Historisch overzicht"
+  },
+  "algemeneMeldingen": {
+    "digitaalLabformulier": "Bevolkingsonderzoek Nederland is voor het bevolkingsonderzoek baarmoederhalskanker overgestapt op digitaal aanvragen. Wilt u weten hoe u kunt overstappen? Kijk voor meer informatie op onze website.",
+    "geenLabformulieren": "Het is niet meer mogelijk om via dit portaal papieren laboratoriumformulieren te bestellen. Wij verzoeken u om het labformulier digitaal in te vullen via ZorgDomein of VIPLive. Voor meer info kijk op ",
+    "onzeWebsite": "onze website.",
+    "telefonischContact": "Of neem telefonisch contact op met onze informatielijn: zij kunnen u verder helpen."
+  }
+}

@@ -1,0 +1,49 @@
+<!--
+  ========================LICENSE_START=================================
+  screenit-web
+  %%
+  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<html xmlns:wicket="http://wicket.apache.org">
+<wicket:panel>
+	<wicket:container wicket:id="templateInzienPanel"></wicket:container>
+	<wicket:container wicket:id="briefOpnieuwAanmakenPanel"></wicket:container>
+
+	<fieldset class="form-horizontal" wicket:id="tegenhoudenContainer">
+		<div class="row-fluid span12">
+			<h3>Tegenhouden</h3>
+			<div class="control-group value no-label" wicket:id="mogelijk">
+				<div class="controls">
+					Wilt u "
+					<wicket:container wicket:id="brief.briefType">uitslag intake</wicket:container>
+					<wicket:container wicket:id="brief.templateNaam">naam</wicket:container>
+					" (
+					<wicket:container wicket:id="brief.creatieDatum">12-10-2010</wicket:container>
+					) <span wicket:id="nietMeer">niet meer</span> tegenhouden?
+				</div>
+				<div class="buttons">
+					<button class="btn left btn-primary" wicket:id="tegenhouden">Tegenhouden</button>
+					<button class="btn left btn-primary" wicket:id="activeren">Herstel brief aanmaken</button>
+				</div>
+			</div>
+			<div class="control-group value no-label" wicket:id="nietMogelijk">
+				<div class="controls"><span>Het is niet mogelijk een brief tegen te houden die al klaargezet of afgedrukt is.</span></div>
+			</div>
+		</div>
+	</fieldset>
+</wicket:panel>
+</html>

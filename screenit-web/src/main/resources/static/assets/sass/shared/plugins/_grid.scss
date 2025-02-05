@@ -1,0 +1,72 @@
+/*-
+ * ========================LICENSE_START=================================
+ * screenit-web
+ * %%
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+
+$column-width: 30;
+$gutter-width: 0;
+$columns: 48;
+
+@function gridsystem-width($columns:$columns) {
+  @return ($column-width * $columns) + ($gutter-width * $columns);
+}
+
+$total-width: 100%;
+
+
+@mixin clearfix() {
+  *zoom: 1;
+
+  &:before,
+  &:after {
+    content: "";
+    display: table;
+  }
+  &:after {
+    clear: both;
+  }
+}
+
+
+body {
+  width: 100%;
+  @include clearfix();
+}
+
+@mixin row($columns:$columns) {
+  display: block;
+  width: $total-width*(($gutter-width + gridsystem-width($columns))/gridsystem-width($columns));
+  margin: 0 $total-width*((($gutter-width*.5)/gridsystem-width($columns))*-1);
+  @include clearfix();
+}
+
+@mixin column($x,$columns:$columns) {
+  display: block;
+  float: left;
+  width: $total-width*(((($gutter-width+$column-width)*$x)-$gutter-width) / gridsystem-width($columns));
+  margin: 0 $total-width*(($gutter-width*.5)/gridsystem-width($columns));
+}
+
+@mixin push($offset:1) {
+  margin-left: $total-width*((($gutter-width+$column-width)*$offset) / gridsystem-width($columns)) + $total-width*(($gutter-width*.5)/gridsystem-width($columns));
+}
+
+@mixin pull($offset:1) {
+  margin-right: $total-width*((($gutter-width+$column-width)*$offset) / gridsystem-width($columns)) + $total-width*(($gutter-width*.5)/gridsystem-width($columns));
+}

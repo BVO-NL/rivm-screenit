@@ -1,0 +1,46 @@
+{
+  "page": {
+    "title": "Onderzoek uitstellen",
+    "description": "U heeft een uitnodiging gekregen voor het bevolkingsonderzoek borstkanker. Wilt u wel meedoen, maar niet nu? Dan kunt u doorgeven dat u later mee wilt doen."
+  },
+  "searchresult": {
+    "title": {
+      "locatie": "Locatie",
+      "periode": "Periode"
+    },
+    "periode_text": {
+      "vanaf": "van %s",
+      "tot": "tot %s"
+    },
+    "hovertext": "Deelname uitstellen",
+    "no_results": "Helaas, we kunnen u voor %s geen nieuwe uitnodiging sturen. U kunt proberen nu al een afspraak te plannen voor deze datum. Klik hiervoor op ‘toch liever eerder meedoen’. <br><br>Lukt dat ook niet? Dan is de planning voor deze datum nog niet bekend en vragen we u om het op een later moment nog een keer te proberen."
+  },
+  "form": {
+    "title": "Kies een nieuwe datum",
+    "toelichting": "Vul hieronder in rond welke datum u een nieuwe uitnodiging wilt ontvangen.",
+    "placeholder": "Datum*",
+    "button": "Zoeken",
+    "error": {
+      "verplicht": "Dit veld is verplicht",
+      "ongeldig": "Ongeldige datum",
+      "minimum": "Ongeldig - Kies een datum vanaf %s",
+      "werkdag": "Ongeldig - Kies een werkdag"
+    }
+  },
+  "navigation": {
+    "afspraak": {
+      "header": "Toch liever eerder meedoen?",
+      "text": "Maak dan nu een afspraak."
+    },
+    "contact": {
+      "header": "Hulp nodig?",
+      "text": "U kunt ook bellen met onze informatielijn."
+    }
+  },
+  "beforesearching_text": "Geef aan rond welke datum u een nieuwe uitnodiging wilt ontvangen. Vervolgens krijgt u plaatsen te zien waar u terecht kunt voor het onderzoek. Selecteer de plaats waar u wilt meedoen. <br><br>Belangrijk om te weten: onze planning is nu nog niet definitief, het kan dus voorkomen dat we u toch uitnodigen op een andere locatie.",
+  "toast": {
+    "title": "U heeft een afspraak gemaakt op %s.",
+    "description": "U ontvangt hiervan een bevestiging.",
+    "error": "Wijzigingen zijn niet opgeslagen."
+  }
+}

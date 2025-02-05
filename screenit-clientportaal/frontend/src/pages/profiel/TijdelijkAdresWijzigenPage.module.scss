@@ -1,0 +1,73 @@
+/*-
+ * ========================LICENSE_START=================================
+ * screenit-clientportaal
+ * %%
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+@import "src/scss/colors";
+@import "src/scss/media-mixins";
+
+.form {
+  margin-top: 15px;
+
+  .huisnummer {
+    display: inline-block;
+    width: 24%;
+  }
+
+  .huisletter {
+    display: inline-block;
+    width: 15%;
+    margin-left: 2.5%;
+    margin-right: 2.5%;
+  }
+
+  .huisnummerToevoeging {
+    display: inline-block;
+    width: 25%;
+    margin-right: 2.5%;
+  }
+
+  .huisnummerAanduiding {
+    display: inline-block;
+    width: 28.5%;
+  }
+
+  .postcode {
+    display: inline-block;
+    width: 25%;
+  }
+
+  .plaats {
+    display: inline-block;
+    width: 72.5%;
+    margin-left: 2.5%;
+    margin-bottom: 46px;
+  }
+
+  .datumPicker {
+    margin-top: 20px;
+    display: inline-block;
+    width: 48%;
+
+    &:first-of-type {
+      margin-right: 3%;
+    }
+
+  }
+}
+

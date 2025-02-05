@@ -1,0 +1,112 @@
+/*-
+ * ========================LICENSE_START=================================
+ * screenit-clientportaal
+ * %%
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+﻿.umbraco-forms-container {
+  padding: 0;
+}
+
+label.umbraco-forms-label {
+  float: left;
+  width: 30%;
+  margin-bottom: 48px;
+
+  @include respond-below(lg) {
+    margin: 12px 0 16px 0 !important;
+  }
+}
+
+.umbraco-forms-form input.text, .umbraco-forms-form textarea {
+  max-width: 499px !important;
+  width: 100%;
+  border: none !important;
+  background: #f7f8f8;
+  margin: 0 !important;
+}
+
+.umbraco-forms-indicator {
+  color: $blue;
+}
+
+
+.cursus-opties {
+  float: right;
+  width: 100% !important;
+  margin-top: -40px;
+
+
+  @include respond-below(md) {
+    width: 100% !important;
+  }
+
+  margin-bottom: 24px;
+
+  td {
+    line-height: 2;
+  }
+}
+
+.contactformulier {
+  margin-top: 20px;
+
+  input.text, textarea {
+    width: 100%;
+  }
+
+  .control-label {
+    text-align: left;
+    margin-bottom: 0;
+    padding-top: 7px;
+  }
+
+  .form-control {
+    margin-top: 20px;
+    max-width: 499px !important;
+  }
+
+  .dataconsent {
+    border: none !important;
+    box-shadow: none;
+    margin-bottom: 20px;
+
+    p {
+      margin-top: 12px;
+    }
+  }
+}
+
+input[type="checkbox"], input[type="radio"] {
+  margin-right: 6px;
+}
+
+
+.voorwaarden {
+  @include respond-below(lg) {
+    margin-top: 20px;
+  }
+
+  .umbraco-forms-label {
+    float: none;
+    margin: 40px 0 20px 0;
+  }
+}
+
+.radiobuttonlist {
+  margin-bottom: 14px;
+}

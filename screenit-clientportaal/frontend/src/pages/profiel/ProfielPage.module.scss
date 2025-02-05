@@ -1,0 +1,96 @@
+/*-
+ * ========================LICENSE_START=================================
+ * screenit-clientportaal
+ * %%
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+@import "src/scss/colors";
+@import "src/scss/media-mixins";
+
+.content {
+	padding-bottom: 30px;
+
+	.paspoort {
+		min-width: 275px;
+		max-width: 320px;
+		min-height: 240px;
+		border-radius: 10px;
+		background-color: $grijs-600;
+		padding: 1rem;
+
+		@include respond-below(lg) {
+			margin-top: 30px;
+			margin-left: 0;
+		}
+
+		@include respond-below(xs) {
+			height: 220px;
+		}
+
+		h6 {
+			font-size: 0.8rem;
+			color: $blauw-700;
+			line-height: 22px;
+
+			&.adres {
+				margin-top: 25px;
+
+				@include respond-below(xs) {
+					margin-bottom: 2px;
+					margin-top: 15px;
+				}
+			}
+		}
+
+		span {
+			width: 100%;
+			display: block;
+			font-size: 0.9rem;
+
+			&.lichtGrijs {
+				color: $grijs-900;
+			}
+
+		}
+
+	}
+
+	.topTakenContainer {
+		margin-top: 50px;
+		margin-bottom: 50px;
+	}
+
+	.topTaakSelectie {
+		margin-top: 70px;
+		margin-bottom: 50px;
+
+		@include respond-below(xs) {
+			margin-top: 40px;
+			margin-bottom: 10px;
+		}
+	}
+
+	.bvoSelectie {
+		margin-top: 140px;
+		margin-bottom: 40px;
+
+		@include respond-below(xs) {
+			margin-top: 70px;
+			margin-bottom: 0;
+		}
+	}
+}
