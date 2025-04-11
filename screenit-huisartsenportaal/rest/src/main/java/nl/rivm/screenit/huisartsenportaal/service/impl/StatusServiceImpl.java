@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.service.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,9 +21,6 @@ package nl.rivm.screenit.huisartsenportaal.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-
 import nl.rivm.screenit.huisartsenportaal.dto.StatusDto;
 import nl.rivm.screenit.huisartsenportaal.repository.HuisartsRepository;
 import nl.rivm.screenit.huisartsenportaal.service.StatusService;
@@ -33,6 +30,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.jms.Connection;
+import jakarta.jms.ConnectionFactory;
 
 @Service
 @Transactional(propagation = Propagation.SUPPORTS)

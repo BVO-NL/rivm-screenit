@@ -29,6 +29,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,7 +41,7 @@ public class ZasUitnodigingenVersturenJobConfiguration extends AbstractJobConfig
 	@Bean
 	public Job zasUitnodigingenVerstuenNaarInpakcentrumJob(ZasUitnodigingenVersturenListener listener, Step zasUitnodigingenBrievenCleanupStep, Step uitnodigingenVersturenStep)
 	{
-		return jobBuilderFactory.get(JobType.CERVIX_ZAS_UITNODIGING_VERSTUREN_NAAR_INPAKCENTRUM.name())
+		return new JobBuilder(JobType.CERVIX_ZAS_UITNODIGING_VERSTUREN_NAAR_INPAKCENTRUM.name(), repository)
 			.listener(listener)
 			.start(zasUitnodigingenBrievenCleanupStep)
 			.next(uitnodigingenVersturenStep)
@@ -49,9 +51,8 @@ public class ZasUitnodigingenVersturenJobConfiguration extends AbstractJobConfig
 	@Bean
 	public Step zasUitnodigingenBrievenCleanupStep(ZasUitnodigingenBrievenCleanUpReader reader, ZasUitnodigingenBrievenCleanUpWriter writer)
 	{
-		return stepBuilderFactory.get("zasUitnodigingenBrievenCleanupStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("zasUitnodigingenBrievenCleanupStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -60,9 +61,8 @@ public class ZasUitnodigingenVersturenJobConfiguration extends AbstractJobConfig
 	@Bean
 	public Step uitnodigingenVersturenStep(ZasUitnodigingenVersturenTasklet tasklet)
 	{
-		return stepBuilderFactory.get("uitnodigingenVersturenStep")
-			.transactionManager(transactionManager)
-			.tasklet(tasklet)
+		return new StepBuilder("uitnodigingenVersturenStep", repository)
+			.tasklet(tasklet, transactionManager)
 			.build();
 	}
 }

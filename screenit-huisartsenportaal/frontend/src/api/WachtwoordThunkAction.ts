@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -22,11 +22,30 @@ import {AppThunkDispatch} from "../index"
 import {validatingRequest} from "../util/Backend"
 import {WachtwoordWijzigenDto} from "../state/datatypes/dto/WachtwoordWijzigenDto"
 import {WachtwoordVergetenDto} from "../state/datatypes/dto/WachtwoordVergetenDto"
+import {WachtwoordAanvragenDto} from "../state/datatypes/dto/WachtwoordAanvragenDto"
+import {TokenDto} from "../state/datatypes/dto/TokenDto"
+import {createActionSetAuthenticationLoading} from "../state/AuthenticationLoadingState"
+import {createActionSetAuth} from "../state/AuthState"
+import {fetchCurrentUser} from "./CurrentUserThunkAction"
+import {fetchHuisarts} from "./HuisartsThunkAction"
+import {fetchLocaties, fetchLocatieVerificatie} from "./LocatieThunkAction"
+import {LocatieStatus} from "../state/datatypes/dto/LocatieDto"
 
 export const wachtwoordWijzigen = (wachtwoord: WachtwoordWijzigenDto) => async (dispatch: AppThunkDispatch): Promise<void> => {
-	return await dispatch(validatingRequest<void>("/wachtwoord/wijzigen", "POST", wachtwoord))
+	return await dispatch(validatingRequest<void>("/huisarts/wachtwoord-wijzigen", "POST", wachtwoord))
 }
 
 export const wachtwoordVergeten = (vergetenDto: WachtwoordVergetenDto) => async (dispatch: AppThunkDispatch): Promise<void> => {
-	return await dispatch(validatingRequest<void>("/wachtwoord/vergeten", "POST", vergetenDto))
+	return await dispatch(validatingRequest<void>("/auth/wachtwoord-vergeten", "POST", vergetenDto))
+}
+
+export const wachtwoordAanvragen = (wachtwoordAanvragenDto: WachtwoordAanvragenDto) => async (dispatch: AppThunkDispatch) => {
+	const token: TokenDto = await dispatch(validatingRequest<TokenDto>("/auth/wachtwoord-aanvragen", "POST", wachtwoordAanvragenDto))
+	dispatch(createActionSetAuthenticationLoading(true))
+	dispatch(createActionSetAuth(token))
+	await dispatch(fetchCurrentUser())
+	dispatch(createActionSetAuthenticationLoading(false))
+	dispatch(fetchHuisarts())
+	dispatch(fetchLocatieVerificatie())
+	dispatch(fetchLocaties(LocatieStatus.ACTIEF))
 }

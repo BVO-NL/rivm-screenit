@@ -21,12 +21,14 @@ package nl.rivm.screenit.model.batch;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
 public class GetTriggersResponse implements Serializable
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private List<Trigger> triggers;

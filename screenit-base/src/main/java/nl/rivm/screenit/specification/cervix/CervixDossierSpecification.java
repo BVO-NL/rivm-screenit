@@ -23,7 +23,7 @@ package nl.rivm.screenit.specification.cervix;
 
 import java.time.LocalDate;
 
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.JoinType;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -25,10 +25,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.gebruiker.algemeen.batch.BatchStartPage;
-import nl.rivm.screenit.main.web.gebruiker.algemeen.bezwaar.BezwaarBRPIntrekkenPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.brieventemplates.BriefBeheerPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.DocumentTemplateTestenPage;
-import nl.rivm.screenit.main.web.gebruiker.algemeen.formulierdefinities.FormulierenBeheerPage;
+import nl.rivm.screenit.main.web.gebruiker.algemeen.extrabeveiligdeomgeving.ExtraBeveiligdeOmgevingClientZoekenPage;
+import nl.rivm.screenit.main.web.gebruiker.algemeen.extrabeveiligdeomgeving.ExtraBeveiligdeOmgevingKeuzeHerstellenPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.handleidingen.HandleidingenDownloadPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.intervalcarcinoom.UploadKoppelresultatenKankerregistratiePage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.LoggingInzienPage;
@@ -241,14 +241,14 @@ public enum GebruikerHoofdMenuItem
 				contextMenuItems
 					.add(new GebruikerMenuItem("menu.algemeen.parameterisatie", ColonParameterisatiePage.class, CervixParameterisatiePage.class, MammaParameterisatiePage.class));
 				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.technischbeheer", TechnischeParametersPage.class));
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.formulierendefinitie", FormulierenBeheerPage.class));
 				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.clienttooltipbeheer", ClientTooltipBeheerPage.class));
 				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.nieuwsbeheer", BeheerNieuwsPage.class));
 				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.nieuws", NieuwsPage.class));
 				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.projecten", ProjectOverzicht.class));
 				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.handleidingen", HandleidingenDownloadPage.class));
 				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.retourzendingen", RetourzendingenVerwerkenPage.class));
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.bezwaar.brpintrekken", BezwaarBRPIntrekkenPage.class));
+				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.extra.beveiligde.omgeving", ExtraBeveiligdeOmgevingKeuzeHerstellenPage.class,
+					ExtraBeveiligdeOmgevingClientZoekenPage.class));
 				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.upload.koppelresultaat.kankerregistratie", UploadKoppelresultatenKankerregistratiePage.class));
 				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.brieventemplates", BriefBeheerPage.class));
 				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.brieventemplates.testen", DocumentTemplateTestenPage.class));

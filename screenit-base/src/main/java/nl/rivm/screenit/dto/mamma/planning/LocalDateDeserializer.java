@@ -22,6 +22,7 @@ package nl.rivm.screenit.dto.mamma.planning;
  */
 
 import java.io.IOException;
+import java.io.Serial;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -32,6 +33,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 public class LocalDateDeserializer extends StdDeserializer<LocalDate>
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	protected LocalDateDeserializer()

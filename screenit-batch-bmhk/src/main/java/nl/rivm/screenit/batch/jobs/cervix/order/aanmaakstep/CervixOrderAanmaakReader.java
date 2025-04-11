@@ -50,7 +50,7 @@ public class CervixOrderAanmaakReader extends BaseSpecificationScrollableResultR
 			.and(heeftGeenCytologieOrder());
 
 		var jobParameters = getStepExecution().getJobExecution().getJobParameters();
-		if (jobParameters.toProperties().containsKey(JobStartParameter.CERVIX_ORDER_LABORATORIUM.name()))
+		if (jobParameters.getParameters().containsKey(JobStartParameter.CERVIX_ORDER_LABORATORIUM.name()))
 		{
 			specification = specification.and(heeftLaboratoriumMetId(jobParameters.getLong(JobStartParameter.CERVIX_ORDER_LABORATORIUM.name())));
 		}

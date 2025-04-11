@@ -30,6 +30,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,7 +42,7 @@ public class IfobtVerwerkingJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job ifobtVerwerkingJob(IfobtVerwerkingListener listener, Step ifobtVerwerkingStep)
 	{
-		return jobBuilderFactory.get(JobType.IFOBT_VERWERKING.name())
+		return new JobBuilder(JobType.IFOBT_VERWERKING.name(), repository)
 			.listener(listener)
 			.start(ifobtVerwerkingStep)
 			.build();
@@ -49,9 +51,8 @@ public class IfobtVerwerkingJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step ifobtVerwerkingStep(IFOBTVerwerkingReader reader, IFOBTVerwerkingProcessor processor, IFOBTVerwerkingWriter writer)
 	{
-		return stepBuilderFactory.get("ifobtVerwerkingStep")
-			.transactionManager(transactionManager)
-			.<Long, IFOBTUitslag> chunk(10)
+		return new StepBuilder("ifobtVerwerkingStep", repository)
+			.<Long, IFOBTUitslag> chunk(10, transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)

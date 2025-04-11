@@ -21,15 +21,16 @@ package nl.rivm.screenit.model.project;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.UploadDocument;
@@ -46,6 +47,7 @@ import org.hibernate.annotations.CascadeType;
 public class ProjectInactiveerDocument extends AbstractHibernateObject
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@OneToOne(fetch = FetchType.LAZY)
@@ -57,7 +59,7 @@ public class ProjectInactiveerDocument extends AbstractHibernateObject
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private Project project;
 
-	@OneToMany(mappedBy = "projectInactiveerDocument", fetch = FetchType.LAZY, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@OneToMany(mappedBy = "projectInactiveerDocument", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private List<ProjectClient> projectClienten;
 

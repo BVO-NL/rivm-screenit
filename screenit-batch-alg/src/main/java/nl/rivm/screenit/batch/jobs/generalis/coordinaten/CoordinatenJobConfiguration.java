@@ -37,6 +37,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +52,7 @@ public class CoordinatenJobConfiguration extends AbstractJobConfiguration
 	public Job coordinatenJob(CoordinatenListener listener, Step postcodeCoordinatenStep, Step gemeenteCoordinatenStep, Step postcodeCoordinatenClientKoppelStep,
 		Step postcodeCoordinatenIntakeLocatieKoppelStep, Step postcodeCoordinatenStandplaatsKoppelStep)
 	{
-		return jobBuilderFactory.get(JobType.COORDINATEN.name())
+		return new JobBuilder(JobType.COORDINATEN.name(), repository)
 			.listener(listener)
 			.start(postcodeCoordinatenStep)
 			.next(gemeenteCoordinatenStep)
@@ -63,10 +65,9 @@ public class CoordinatenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step postcodeCoordinatenStep(CoordinatenListener listener, @Qualifier("postcodeCoordinatenReader") PostcodeNlDataReader reader, PostcodeCoordinatenWriter writer)
 	{
-		return stepBuilderFactory.get("postcodeCoordinatenStep")
-			.transactionManager(transactionManager)
+		return new StepBuilder("postcodeCoordinatenStep", repository)
 			.listener(listener)
-			.<String, String> chunk(250)
+			.<String, String> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -75,10 +76,9 @@ public class CoordinatenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step gemeenteCoordinatenStep(CoordinatenListener listener, @Qualifier("gemeenteCoordinatenReader") PostcodeNlDataReader reader, GemeenteCoordinatenWriter writer)
 	{
-		return stepBuilderFactory.get("gemeenteCoordinatenStep")
-			.transactionManager(transactionManager)
+		return new StepBuilder("gemeenteCoordinatenStep", repository)
 			.listener(listener)
-			.<String, String> chunk(250)
+			.<String, String> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -87,10 +87,9 @@ public class CoordinatenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step postcodeCoordinatenClientKoppelStep(CoordinatenListener listener, PostcodeCoordinatenClientKoppelReader reader, PostcodeCoordinatenClientKoppelWriter writer)
 	{
-		return stepBuilderFactory.get("postcodeCoordinatenClientKoppelStep")
-			.transactionManager(transactionManager)
+		return new StepBuilder("postcodeCoordinatenClientKoppelStep", repository)
 			.listener(listener)
-			.<Long, Long> chunk(250)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -100,10 +99,9 @@ public class CoordinatenJobConfiguration extends AbstractJobConfiguration
 	public Step postcodeCoordinatenIntakeLocatieKoppelStep(CoordinatenListener listener, PostcodeCoordinatenIntakeLocatieKoppelReader reader,
 		PostcodeCoordinatenIntakeLocatieKoppelWriter writer)
 	{
-		return stepBuilderFactory.get("postcodeCoordinatenIntakeLocatieKoppelStep")
-			.transactionManager(transactionManager)
+		return new StepBuilder("postcodeCoordinatenIntakeLocatieKoppelStep", repository)
 			.listener(listener)
-			.<Long, Long> chunk(250)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -113,10 +111,9 @@ public class CoordinatenJobConfiguration extends AbstractJobConfiguration
 	public Step postcodeCoordinatenStandplaatsKoppelStep(CoordinatenListener listener, PostcodeCoordinatenStandplaatsKoppelReader reader,
 		PostcodeCoordinatenStandplaatsKoppelWriter writer)
 	{
-		return stepBuilderFactory.get("postcodeCoordinatenStandplaatsKoppelStep")
-			.transactionManager(transactionManager)
+		return new StepBuilder("postcodeCoordinatenStandplaatsKoppelStep", repository)
 			.listener(listener)
-			.<Long, Long> chunk(250)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

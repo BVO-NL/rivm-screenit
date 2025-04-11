@@ -23,9 +23,6 @@ package nl.rivm.screenit.batch.jobs.colon.gunstigeuitslag.gunstigestep;
 
 import java.util.List;
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
@@ -51,6 +48,9 @@ import nl.rivm.screenit.specification.colon.ColonUitnodigingSpecification;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 

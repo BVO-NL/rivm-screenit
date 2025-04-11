@@ -1,0 +1,74 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<div class="toolbar">
+  <form [formGroup]="filterForm">
+    <div class="clr-row">
+      <app-kamer-selector formControlName="kamerId" data-testid="cb_kamer_selector" class="clr-col-md-3"/>
+      <app-weekdagen-selector type="select" [metLabel]="true" formControlName="dagen" class="clr-col-6"/>
+    </div>
+
+    <div class="clr-row">
+      <clr-date-container class="clr-col-12 clr-col-md-3">
+        <label class="clr-required-mark" for="startDatum">Vanaf</label>
+        <input type="date" clrDate formControlName="startDatum" id="startDatum" [min]="minDatum"/>
+        <clr-control-error *clrIfError="'required'">De datum is verplicht</clr-control-error>
+        <clr-control-error *clrIfError="'datumInVerleden'">{{ startDatumCtrl.getError('datumInVerleden') }}</clr-control-error>
+        <clr-control-error *clrIfError="'valideDatum'">{{ startDatumCtrl.getError('valideDatum') }}</clr-control-error>
+      </clr-date-container>
+
+      <clr-date-container class="clr-col-12 clr-col-md-3">
+        <label class="clr-required-mark" for="eindDatum">Tot en met</label>
+        <input type="date" clrDate formControlName="eindDatum" id="eindDatum" [min]="minDatum"/>
+        <clr-control-error *clrIfError="'required'">De datum is verplicht</clr-control-error>
+        <clr-control-error *clrIfError="'datumInVerleden'">{{ eindDatumCtrl.getError('datumInVerleden') }}</clr-control-error>
+        <clr-control-error *clrIfError="'valideDatum'">{{ eindDatumCtrl.getError('valideDatum') }}</clr-control-error>
+      </clr-date-container>
+
+      <div class="clr-col-md-5 clr-flex-row clr-display-flex">
+        <clr-input-container class="clr-col-12 clr-col-md-3">
+          <label class="clr-required-mark" for="startTijd">Starttijd</label>
+          <input clrInput autocomplete="off" formControlName="startTijd" id="startTijd" type="time" data-testid="input_start_tijd"/>
+          <clr-control-error *clrIfError="'required'">De starttijd is verplicht</clr-control-error>
+        </clr-input-container>
+
+        <clr-input-container class="clr-col-12 clr-col-md-3">
+          <label class="clr-required-mark" for="eindTijd">Eindtijd</label>
+          <input clrInput autocomplete="off" formControlName="eindTijd" id="eindTijd" type="time" data-testid="input_eind_tijd"/>
+          <clr-control-error *clrIfError="'required'">De eindtijd is verplicht</clr-control-error>
+          <clr-control-error *clrIfError="'tijdStappen'">{{ eindTijdCtrl.getError('tijdStappen') }}</clr-control-error>
+        </clr-input-container>
+
+        <div class="pt-3 clr-col-12 clr-col-md-3">
+          <clr-checkbox-container clrInline>
+            <clr-checkbox-wrapper>
+              <input type="checkbox" clrCheckbox id="heleDag" formControlName="heleDag">
+              <label for="heleDag">Hele dag</label>
+            </clr-checkbox-wrapper>
+          </clr-checkbox-container>
+        </div>
+      </div>
+    </div>
+
+    <div class="clr-row clr-justify-content-end mt-3">
+      <button class="btn btn-primary" (click)="doFilter()" [disabled]="filterForm.invalid">Filteren</button>
+    </div>
+  </form>
+</div>

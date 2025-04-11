@@ -2,7 +2,7 @@ package nl.rivm.screenit.clientportaal.controllers;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -54,7 +54,7 @@ public class LoginController extends AbstractController
 	@PutMapping
 	public ResponseEntity<Void> logLoggingInAction(@RequestBody LoginBrowserInfoDto loginBrowserInfo, Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 		logService.logGebeurtenis(LogGebeurtenis.INLOGGEN, client, getParsedUserAgentInfo(loginBrowserInfo.getUserAgent()));
 		return ResponseEntity.ok().build();
 	}

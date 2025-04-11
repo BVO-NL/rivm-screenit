@@ -25,23 +25,23 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -99,12 +99,12 @@ public class Project extends AbstractHibernateObject implements INaam, IBevolkin
 	private Instelling organisatie;
 
 	@Cascade({ CascadeType.SAVE_UPDATE })
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	private InstellingGebruiker contactpersoon;
 
 	@NotAudited
 	@Cascade({ CascadeType.SAVE_UPDATE })
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@JoinTable(schema = "algemeen", name = "project_medewerkers")
 	private List<InstellingGebruiker> medewerkers;
 
@@ -114,7 +114,7 @@ public class Project extends AbstractHibernateObject implements INaam, IBevolkin
 	@JoinTable(schema = "algemeen", name = "project_screening_organisaties")
 	private List<Instelling> screeningOrganisaties = new ArrayList<Instelling>();
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = javax.persistence.CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = jakarta.persistence.CascadeType.ALL)
 	private List<ProjectClient> clienten = new ArrayList<>();
 
 	private Boolean excludeerBezwaar = Boolean.FALSE;
@@ -127,17 +127,17 @@ public class Project extends AbstractHibernateObject implements INaam, IBevolkin
 	@CollectionTable(schema = "algemeen", name = "project_excludeer_open_ronde")
 	private List<Bevolkingsonderzoek> excludeerOpenRonde = new ArrayList<>();
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = javax.persistence.CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = jakarta.persistence.CascadeType.ALL)
 	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<ProjectGroep> groepen = new ArrayList<>();
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = javax.persistence.CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = jakarta.persistence.CascadeType.ALL)
 	private List<ProjectBriefActie> projectBriefActies = new ArrayList<>();
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = javax.persistence.CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = jakarta.persistence.CascadeType.ALL)
 	private List<ProjectAttribuut> projectAttributen = new ArrayList<>();
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "project", orphanRemoval = true, cascade = javax.persistence.CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "project", orphanRemoval = true, cascade = jakarta.persistence.CascadeType.ALL)
 	private List<ProjectParameter> parameters = new ArrayList<>();
 
 	private Boolean anoniem;

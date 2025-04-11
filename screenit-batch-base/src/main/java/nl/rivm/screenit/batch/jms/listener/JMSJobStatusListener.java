@@ -21,9 +21,6 @@ package nl.rivm.screenit.batch.jms.listener;
  * =========================LICENSE_END==================================
  */
 
-import javax.jms.JMSException;
-import javax.jms.Session;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.model.batch.BatchServerStatus;
@@ -44,6 +41,9 @@ import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.stereotype.Component;
+
+import jakarta.jms.JMSException;
+import jakarta.jms.Session;
 
 @Slf4j
 @Component

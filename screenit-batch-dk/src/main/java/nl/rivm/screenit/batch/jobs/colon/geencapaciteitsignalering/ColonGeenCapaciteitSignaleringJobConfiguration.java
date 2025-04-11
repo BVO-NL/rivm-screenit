@@ -28,6 +28,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -37,7 +39,7 @@ public class ColonGeenCapaciteitSignaleringJobConfiguration extends AbstractJobC
 	@Bean
 	public Job geenCapaciteitJob(ColonGeenCapaciteitSignaleringListener listener, Step geenCapaciteitStep)
 	{
-		return jobBuilderFactory.get(JobType.COLON_ROOSTER_GEEN_CAPACITEIT_SIGNALERING.name())
+		return new JobBuilder(JobType.COLON_ROOSTER_GEEN_CAPACITEIT_SIGNALERING.name(), repository)
 			.listener(listener)
 			.start(geenCapaciteitStep)
 			.build();
@@ -46,9 +48,8 @@ public class ColonGeenCapaciteitSignaleringJobConfiguration extends AbstractJobC
 	@Bean
 	public Step geenCapaciteitStep(ColonGeenCapaciteitSignaleringReader reader, ColonGeenCapaciteitSignaleringWriter writer)
 	{
-		return stepBuilderFactory.get("geenCapaciteitStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(50)
+		return new StepBuilder("geenCapaciteitStep", repository)
+			.<Long, Long> chunk(50, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

@@ -186,17 +186,21 @@ public class CervixHpvBerichtGenerator
 	{
 		if (CervixHpvResultaatBerichtBron.ROCHE == berichtType)
 		{
-			return "SPM|1|{BARCODE}&ROCHE||PCYT^^99ROC|||||||P^^HL70369\n"
-				+ "SAC|||{BARCODE}\n"
-				+ "OBR||\"\"||{ANALYSETYPE}^{ANALYSETYPE}^99ROC||20151217122946\n"
-				+ "ORC|SC||||CM\n"
-				+ "OBX|1|DR|RunTimeRange^Run Execution Time Range^99ROC^S_OTHER^Other_Supplemental^IHELAW|1.0|{ANALYSEDATUM}^{AUTORISATIEDATUM}|||\"\"|||F|||||FSE||C4800^Roche~{INSTRUMENTID}^Roche|{AUTORISATIEDATUM}\n";
+			return """
+				SPM|1|{BARCODE}&ROCHE||PCYT^^99ROC|||||||P^^HL70369
+				SAC|||{BARCODE}
+				OBR||""||{ANALYSETYPE}^{ANALYSETYPE}^99ROC||20151217122946
+				ORC|SC||||CM
+				OBX|1|DR|RunTimeRange^Run Execution Time Range^99ROC^S_OTHER^Other_Supplemental^IHELAW|1.0|{ANALYSEDATUM}^{AUTORISATIEDATUM}|||""|||F|||||FSE||C4800^Roche~{INSTRUMENTID}^Roche|{AUTORISATIEDATUM}
+				""";
 		}
 		else
 		{
-			return "SPM|1|{BARCODE}||PCYT^Monster^SCT\n"
-				+ "OBR|1|{BARCODE}^ScreenIT|5348543^LabNOZW|02HPVGEN^HPV Genotypering^SCREENIT|||{ANALYSEDATUM}|||||||||||||||{AUTORISATIEDATUM}|||F\n"
-				+ "ORC|SC|{BARCODE}^ScreenIT|5348543^LabNOZW||CM||||{ANALYSEDATUM}|||87654321^Arts&H^H^^^^^^^^87654321\n";
+			return """
+				SPM|1|{BARCODE}||PCYT^Monster^SCT
+				OBR|1|{BARCODE}^ScreenIT|5348543^LabNOZW|02HPVGEN^HPV Genotypering^SCREENIT|||{ANALYSEDATUM}|||||||||||||||{AUTORISATIEDATUM}|||F
+				ORC|SC|{BARCODE}^ScreenIT|5348543^LabNOZW||CM||||{ANALYSEDATUM}|||87654321^Arts&H^H^^^^^^^^87654321
+				""";
 		}
 	}
 
@@ -204,12 +208,14 @@ public class CervixHpvBerichtGenerator
 	{
 		if (CervixHpvResultaatBerichtBron.ROCHE == berichtType)
 		{
-			return "OBX|{ANALYSE_ID}|ST|{RESULT_CODE}^{RESULT_CODE}^99ROC|1.1|{RESULT_VALUE}|||Full^^99ROC|||F|||||FSE||C4800^Roche~{INSTRUMENTID}^Roche|{AUTORISATIEDATUM}\n"
-				+ "INV|\"\"|OK^^HL70383|OT^^HL70384|MwpId^^99ROC|AD1005007^^99ROC|C01^^99ROC\n"
-				+ "INV|\"\"|OK^^HL70383|OT^^HL70384|DwpId^^99ROC|AA1005007^^99ROC\n"
-				+ "NTE|1||F;M7\n"
-				+ "NTE|2||\n"
-				+ "NTE|3||\n";
+			return """
+				OBX|{ANALYSE_ID}|ST|{RESULT_CODE}^{RESULT_CODE}^99ROC|1.1|{RESULT_VALUE}|||Full^^99ROC|||F|||||FSE||C4800^Roche~{INSTRUMENTID}^Roche|{AUTORISATIEDATUM}
+				INV|""|OK^^HL70383|OT^^HL70384|MwpId^^99ROC|AD1005007^^99ROC|C01^^99ROC
+				INV|""|OK^^HL70383|OT^^HL70384|DwpId^^99ROC|AA1005007^^99ROC
+				NTE|1||F;M7
+				NTE|2||
+				NTE|3||
+				""";
 		}
 		else
 		{

@@ -31,10 +31,9 @@ import java.util.Iterator;
 import nl.rivm.screenit.model.colon.IntakeMakenLogEventRegel;
 import nl.rivm.screenit.model.logging.IntakeMakenLogEvent;
 import nl.rivm.screenit.service.ScopeService;
-import nl.topicuszorg.util.date.DateUtil;
+import nl.rivm.screenit.util.DateUtil;
 
 import org.apache.commons.lang3.StringUtils;
-import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.PropertyListView;
@@ -43,6 +42,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 public class IntakeVerslagPanel extends GenericPanel<IntakeMakenLogEvent>
 {

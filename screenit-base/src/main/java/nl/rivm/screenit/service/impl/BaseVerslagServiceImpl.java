@@ -21,10 +21,16 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.model.DossierStatus;
@@ -59,7 +65,8 @@ import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -78,6 +85,7 @@ import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.hee
 import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftVerslagStatus;
 
 @Service
+@Slf4j
 public class BaseVerslagServiceImpl implements BaseVerslagService
 {
 
@@ -262,7 +270,7 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 			melding = "Elektronisch bericht: berichtId: " + ontvangenBericht.getBerichtId() + ", setId: " + ontvangenBericht.getSetId() + ", versie: "
 				+ ontvangenBericht.getVersie() + ",";
 		}
-		else if (verwerktVerslag instanceof MammaFollowUpVerslag && isElektronischPalgaVerslag((MammaFollowUpVerslag) verwerktVerslag))
+		else if (verwerktVerslag instanceof MammaFollowUpVerslag upVerslag && isElektronischPalgaVerslag(upVerslag))
 		{
 			melding = "Elektronische invoer: ";
 		}
@@ -350,5 +358,19 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 			.setParameter("status", BerichtStatus.VERWERKING)
 			.setParameterList("ids", ids)
 			.executeUpdate();
+	}
+
+	@Override
+	public void getBerichtXml(OntvangenCdaBericht ontvangenCdaBericht, OutputStream outputStream)
+	{
+		String xmlBericht = ontvangenCdaBericht.getXmlBericht();
+		try (InputStream writer = IOUtils.toInputStream(xmlBericht, StandardCharsets.UTF_8); outputStream)
+		{
+			IOUtils.copy(writer, outputStream);
+		}
+		catch (IOException e)
+		{
+			LOG.error("Fout bij laden cda bericht: {}", e.getMessage(), e);
+		}
 	}
 }

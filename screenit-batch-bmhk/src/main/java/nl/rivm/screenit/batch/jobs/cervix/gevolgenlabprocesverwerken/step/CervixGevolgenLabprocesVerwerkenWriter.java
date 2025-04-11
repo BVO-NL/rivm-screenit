@@ -21,8 +21,6 @@ package nl.rivm.screenit.batch.jobs.cervix.gevolgenlabprocesverwerken.step;
  * =========================LICENSE_END==================================
  */
 
-import javax.annotation.Nullable;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,6 +64,8 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+
+import jakarta.annotation.Nullable;
 
 @Component
 @Slf4j
@@ -123,11 +123,11 @@ public class CervixGevolgenLabprocesVerwerkenWriter extends BaseWriter<CervixMon
 			&& monster.getOntvangstScreeningRonde().getControleUitstrijkjeDatum() == null
 			&& monster.getOntvangstdatum() != null
 			&& vervolg.getIntervalControleUitstrijkje() != null
-			&& monster instanceof CervixUitstrijkje
-			&& ((CervixUitstrijkje) monster).getCytologieVerslag() != null)
+			&& monster instanceof CervixUitstrijkje uitstrijkje
+			&& uitstrijkje.getCytologieVerslag() != null)
 		{
 			monster.getOntvangstScreeningRonde()
-				.setControleUitstrijkjeDatum(DateUtil.toLocalDate(((CervixUitstrijkje) monster).getCytologieVerslag().getDatumVerwerkt())
+				.setControleUitstrijkjeDatum(DateUtil.toLocalDate(uitstrijkje.getCytologieVerslag().getDatumVerwerkt())
 					.plusMonths(vervolg.getIntervalControleUitstrijkje()));
 		}
 

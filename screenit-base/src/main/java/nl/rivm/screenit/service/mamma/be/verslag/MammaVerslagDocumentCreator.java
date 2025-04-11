@@ -21,8 +21,6 @@ package nl.rivm.screenit.service.mamma.be.verslag;
  * =========================LICENSE_END==================================
  */
 
-import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 
 import nl.rivm.screenit.comparator.MammaLaesieComparator;
@@ -32,19 +30,17 @@ import nl.rivm.screenit.model.mamma.MammaAsymmetrieLaesie;
 import nl.rivm.screenit.model.mamma.MammaCalcificatiesLaesie;
 import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.model.mamma.MammaMassaLaesie;
-import nl.rivm.screenit.model.mamma.enums.MammaLaesieType;
 import nl.rivm.screenit.service.mamma.MammaBaseAfbeeldingService;
 import nl.rivm.screenit.service.mamma.MammaBaseLaesieService;
 import nl.rivm.screenit.service.mamma.MammaBaseLezingService;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.aspose.words.Document;
-import com.aspose.words.MailMerge;
 import com.aspose.words.MailMergeCleanupOptions;
 import com.aspose.words.net.System.Data.DataSet;
 import com.aspose.words.net.System.Data.DataTable;
@@ -112,7 +108,7 @@ public class MammaVerslagDocumentCreator extends BaseDocumentCreator
 			.sorted(new MammaLaesieComparator())
 			.forEachOrdered(laesie ->
 			{
-				MammaLaesieType laesieType = laesie.getMammaLaesieType();
+				var laesieType = laesie.getMammaLaesieType();
 				switch (laesieType)
 				{
 				case MASSA:
@@ -134,8 +130,9 @@ public class MammaVerslagDocumentCreator extends BaseDocumentCreator
 
 	private void createAsymmetrieLaesieTabel(MammaAsymmetrieLaesie laesie)
 	{
-		Map<MammaLaesieTypeMergeField, String> laesieMap = laesieService.getAsymetrieLaesieMap(laesie);
+		var laesieMap = laesieService.getAsymetrieLaesieMap(laesie);
 		insertRow(createAsymmetrieTabel(),
+			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_VOLGORDE),
 			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR),
 			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_ZIJDE),
 			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_KWADRANT),
@@ -146,8 +143,9 @@ public class MammaVerslagDocumentCreator extends BaseDocumentCreator
 
 	private void createArchitectuurVerstoringLaesieTabel(MammaArchitectuurverstoringLaesie laesie)
 	{
-		Map<MammaLaesieTypeMergeField, String> laesieMap = laesieService.getArchitectuurVerstoringMap(laesie);
+		var laesieMap = laesieService.getArchitectuurVerstoringMap(laesie);
 		insertRow(createArchitectuurVerstoringTabel(),
+			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_VOLGORDE),
 			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR),
 			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_ZIJDE),
 			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_KWADRANT),
@@ -156,8 +154,10 @@ public class MammaVerslagDocumentCreator extends BaseDocumentCreator
 
 	private void createCalcificatieLaesieTabel(MammaCalcificatiesLaesie laesie)
 	{
-		Map<MammaLaesieTypeMergeField, String> laesieMap = laesieService.getCalificatiesMap(laesie);
-		insertRow(createCalcificatiesTabel(), laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR),
+		var laesieMap = laesieService.getCalcificatiesMap(laesie);
+		insertRow(createCalcificatiesTabel(),
+			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_VOLGORDE),
+			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR),
 			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_ZIJDE),
 			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_KWADRANT),
 			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_DIEPTE),
@@ -169,50 +169,56 @@ public class MammaVerslagDocumentCreator extends BaseDocumentCreator
 	private void createMassaLaesieTabel(MammaMassaLaesie laesie)
 	{
 		Map<MammaLaesieTypeMergeField, String> laesieMap;
+
 		laesieMap = laesieService.getMassaMap(laesie);
-		insertRow(createMassaTabel(), laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR), laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_ZIJDE),
-			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_KWADRANT),
-			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_DIEPTE), laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_GROOTTE),
+		insertRow(createMassaTabel(),
+			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_VOLGORDE),
+			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR),
+			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_ZIJDE),
+			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_KWADRANT), laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_DIEPTE),
+			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_GROOTTE),
 			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_MASSA_VORM), laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_MASSA_DENSITEIT),
 			laesieMap.get(MammaLaesieTypeMergeField._BK_LAESIE_MASSA_BEGRENZING));
 	}
 
 	private DataTable createMassaTabel()
 	{
-		getOrCreateDataTable(verslagDataset, MammaLaesieTypeMergeField.TABLE_MASSA.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR.getMergeField(),
-			MammaLaesieTypeMergeField._BK_LAESIE_ZIJDE.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_KWADRANT.getMergeField(),
-			MammaLaesieTypeMergeField._BK_LAESIE_DIEPTE.getMergeField(),
-			MammaLaesieTypeMergeField._BK_LAESIE_GROOTTE.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_MASSA_VORM.getMergeField(),
-			MammaLaesieTypeMergeField._BK_LAESIE_MASSA_DENSITEIT.getMergeField(),
-			MammaLaesieTypeMergeField._BK_LAESIE_MASSA_BEGRENZING.getMergeField());
+		getOrCreateDataTable(verslagDataset, MammaLaesieTypeMergeField.TABLE_MASSA.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_VOLGORDE.getMergeField(),
+			MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_ZIJDE.getMergeField(),
+			MammaLaesieTypeMergeField._BK_LAESIE_KWADRANT.getMergeField(),
+			MammaLaesieTypeMergeField._BK_LAESIE_DIEPTE.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_GROOTTE.getMergeField(),
+			MammaLaesieTypeMergeField._BK_LAESIE_MASSA_VORM.getMergeField(),
+			MammaLaesieTypeMergeField._BK_LAESIE_MASSA_DENSITEIT.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_MASSA_BEGRENZING.getMergeField());
 		return getDataTable(verslagDataset, MammaLaesieTypeMergeField.TABLE_MASSA.getMergeField());
 	}
 
 	private DataTable createCalcificatiesTabel()
 	{
 		getOrCreateDataTable(verslagDataset, MammaLaesieTypeMergeField.TABLE_CALCIFICATIES.getMergeField(),
-			MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR.getMergeField(),
+			MammaLaesieTypeMergeField._BK_LAESIE_VOLGORDE.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR.getMergeField(),
 			MammaLaesieTypeMergeField._BK_LAESIE_ZIJDE.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_KWADRANT.getMergeField(),
-			MammaLaesieTypeMergeField._BK_LAESIE_DIEPTE.getMergeField(),
-			MammaLaesieTypeMergeField._BK_LAESIE_GROOTTE.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_CALC_VERD_VORM.getMergeField(),
+			MammaLaesieTypeMergeField._BK_LAESIE_DIEPTE.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_GROOTTE.getMergeField(),
+			MammaLaesieTypeMergeField._BK_LAESIE_CALC_VERD_VORM.getMergeField(),
 			MammaLaesieTypeMergeField._BK_LAESIE_CALC_DISTRIBUTIE.getMergeField());
 		return getDataTable(verslagDataset, MammaLaesieTypeMergeField.TABLE_CALCIFICATIES.getMergeField());
 	}
 
 	private DataTable createArchitectuurVerstoringTabel()
 	{
-		getOrCreateDataTable(verslagDataset, MammaLaesieTypeMergeField.TABLE_ARCHITECTUUR_VERSTORING.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR.getMergeField(),
-			MammaLaesieTypeMergeField._BK_LAESIE_ZIJDE.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_KWADRANT.getMergeField(),
+		getOrCreateDataTable(verslagDataset, MammaLaesieTypeMergeField.TABLE_ARCHITECTUUR_VERSTORING.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_VOLGORDE.getMergeField(),
+			MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_ZIJDE.getMergeField(),
+			MammaLaesieTypeMergeField._BK_LAESIE_KWADRANT.getMergeField(),
 			MammaLaesieTypeMergeField._BK_LAESIE_DIEPTE.getMergeField());
 		return getDataTable(verslagDataset, MammaLaesieTypeMergeField.TABLE_ARCHITECTUUR_VERSTORING.getMergeField());
 	}
 
 	private DataTable createAsymmetrieTabel()
 	{
-		getOrCreateDataTable(verslagDataset, MammaLaesieTypeMergeField.TABLE_ASYMMETRIE.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR.getMergeField(),
-			MammaLaesieTypeMergeField._BK_LAESIE_ZIJDE.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_KWADRANT.getMergeField(),
-			MammaLaesieTypeMergeField._BK_LAESIE_DIEPTE.getMergeField(),
-			MammaLaesieTypeMergeField._BK_LAESIE_GROOTTE.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_ASSYMETRIE_SPEC.getMergeField());
+		getOrCreateDataTable(verslagDataset, MammaLaesieTypeMergeField.TABLE_ASYMMETRIE.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_VOLGORDE.getMergeField(),
+			MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_ZIJDE.getMergeField(),
+			MammaLaesieTypeMergeField._BK_LAESIE_KWADRANT.getMergeField(),
+			MammaLaesieTypeMergeField._BK_LAESIE_DIEPTE.getMergeField(), MammaLaesieTypeMergeField._BK_LAESIE_GROOTTE.getMergeField(),
+			MammaLaesieTypeMergeField._BK_LAESIE_ASSYMETRIE_SPEC.getMergeField());
 		return getDataTable(verslagDataset, MammaLaesieTypeMergeField.TABLE_ASYMMETRIE.getMergeField());
 	}
 
@@ -220,11 +226,11 @@ public class MammaVerslagDocumentCreator extends BaseDocumentCreator
 	public Document fillExecuteWithRegions(Document document) throws Exception
 	{
 		log(LOG, verslagDataset);
-		MailMerge mailMerge = document.getMailMerge();
+		var mailMerge = document.getMailMerge();
 		mailMerge.setCleanupOptions(MailMergeCleanupOptions.REMOVE_UNUSED_REGIONS);
 		mailMerge.executeWithRegions(verslagDataset);
 
-		String[] velden = new String[] {
+		var velden = new String[] {
 			MammaLaesieTypeMergeField._AFBEELDING_RECHTERBORST_VERTICALE_DOORSNEDE.getMergeField(),
 			MammaLaesieTypeMergeField._AFBEELDING_LINKERBORST_VERTICALE_DOORSNEDE.getMergeField(),
 			MammaLaesieTypeMergeField._AFBEELDING_RECHTERBORST_HORIZONTALE_DOORSNEDE.getMergeField(),
@@ -232,8 +238,8 @@ public class MammaVerslagDocumentCreator extends BaseDocumentCreator
 
 		if (verslagLezing != null)
 		{
-			List<InputStream> afbeeldingen = afbeeldingService.createLaesiesAfbeeldingen(verslagLezing, verslagLezing.getBeoordeling().getOnderzoek().getAmputatie());
-			Object[] inhoud = afbeeldingen.toArray();
+			var afbeeldingen = afbeeldingService.createLaesiesAfbeeldingen(verslagLezing, verslagLezing.getBeoordeling().getOnderzoek().getAmputatie());
+			var inhoud = afbeeldingen.toArray();
 
 			mailMerge.setFieldMergingCallback(new MailMergeImageCallback());
 			mailMerge.execute(velden, inhoud);

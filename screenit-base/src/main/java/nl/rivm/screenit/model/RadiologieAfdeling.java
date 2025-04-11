@@ -21,7 +21,9 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Entity;
+import java.io.Serial;
+
+import jakarta.persistence.Entity;
 
 import org.hibernate.envers.Audited;
 
@@ -29,5 +31,6 @@ import org.hibernate.envers.Audited;
 @Audited
 public class RadiologieAfdeling extends Instelling
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 }

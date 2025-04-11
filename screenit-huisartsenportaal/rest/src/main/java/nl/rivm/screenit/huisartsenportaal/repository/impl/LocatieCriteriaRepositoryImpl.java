@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.repository.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -26,16 +26,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import nl.rivm.screenit.huisartsenportaal.dto.TableResultOptionsDto;
-import nl.rivm.screenit.huisartsenportaal.dto.VerrichtingZoekObjectDto;
 import nl.rivm.screenit.huisartsenportaal.dto.locatie.LocatieSearchDto;
 import nl.rivm.screenit.huisartsenportaal.enums.CervixLocatieStatus;
 import nl.rivm.screenit.huisartsenportaal.model.Adres;
@@ -43,7 +34,6 @@ import nl.rivm.screenit.huisartsenportaal.model.Adres_;
 import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
 import nl.rivm.screenit.huisartsenportaal.model.Locatie;
 import nl.rivm.screenit.huisartsenportaal.model.Locatie_;
-import nl.rivm.screenit.huisartsenportaal.model.Verrichting;
 import nl.rivm.screenit.huisartsenportaal.model.Woonplaats;
 import nl.rivm.screenit.huisartsenportaal.repository.LocatieCriteriaRepository;
 
@@ -51,6 +41,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 @Transactional
 @Repository
@@ -116,7 +114,7 @@ public class LocatieCriteriaRepositoryImpl extends BaseCustomRepositoryImpl impl
 			if (CervixLocatieStatus.ACTIEF.equals(CervixLocatieStatus.valueOf(locatieSearchDto.getStatus())))
 			{
 				condities.add(getCriteriaBuilder().or(getCriteriaBuilder().equal(locatieRoot.get(Locatie_.status), CervixLocatieStatus.valueOf(locatieSearchDto.getStatus())),
-						getCriteriaBuilder().equal(locatieRoot.get(Locatie_.status), CervixLocatieStatus.KLANTNUMMER_NIET_GEVERIFIEERD)));
+					getCriteriaBuilder().equal(locatieRoot.get(Locatie_.status), CervixLocatieStatus.KLANTNUMMER_NIET_GEVERIFIEERD)));
 			}
 			else
 			{

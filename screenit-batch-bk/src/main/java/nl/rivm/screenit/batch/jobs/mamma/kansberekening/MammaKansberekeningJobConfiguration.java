@@ -40,8 +40,10 @@ import nl.rivm.screenit.model.enums.JobType;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.FlowBuilder;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.job.flow.support.SimpleFlow;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -54,7 +56,7 @@ public class MammaKansberekeningJobConfiguration extends AbstractJobConfiguratio
 	@Bean
 	public Job kansberekeningJob(MammaKansberekeningListener listener, Flow samplesFlow, Flow eventsFlow, Flow predictFlow)
 	{
-		return jobBuilderFactory.get(JobType.MAMMA_KANSBEREKENING.name())
+		return new JobBuilder(JobType.MAMMA_KANSBEREKENING.name(), repository)
 			.listener(listener)
 			.start(samplesFlow)
 			.next(eventsFlow)
@@ -94,9 +96,8 @@ public class MammaKansberekeningJobConfiguration extends AbstractJobConfiguratio
 	@Bean
 	public Step rondeSamplesStep(MammaScreeningRondeSampleReader reader, MammaScreeningRondeSampleWriter writer)
 	{
-		return stepBuilderFactory.get("rondeSamplesStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(500)
+		return new StepBuilder("rondeSamplesStep", repository)
+			.<Long, Long> chunk(500, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -105,9 +106,8 @@ public class MammaKansberekeningJobConfiguration extends AbstractJobConfiguratio
 	@Bean
 	public Step afspraakSamplesStep(MammaAfspraakSampleReader reader, MammaAfspraakSampleWriter writer)
 	{
-		return stepBuilderFactory.get("afspraakSamplesStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(500)
+		return new StepBuilder("afspraakSamplesStep", repository)
+			.<Long, Long> chunk(500, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -124,9 +124,8 @@ public class MammaKansberekeningJobConfiguration extends AbstractJobConfiguratio
 	@Bean
 	public Step rondeEventsStep(MammaScreeningRondeEventReader reader, MammaScreeningRondeEventWriter writer)
 	{
-		return stepBuilderFactory.get("rondeEventsStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(500)
+		return new StepBuilder("rondeEventsStep", repository)
+			.<Long, Long> chunk(500, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -143,9 +142,8 @@ public class MammaKansberekeningJobConfiguration extends AbstractJobConfiguratio
 	@Bean
 	public Step afspraakEventsStep(MammaAfspraakEventReader reader, MammaAfspraakEventWriter writer)
 	{
-		return stepBuilderFactory.get("afspraakEventsStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(500)
+		return new StepBuilder("afspraakEventsStep", repository)
+			.<Long, Long> chunk(500, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -162,45 +160,40 @@ public class MammaKansberekeningJobConfiguration extends AbstractJobConfiguratio
 	@Bean
 	public Step gemiddeldenStep(MammaGemiddeldenTasklet tasklet)
 	{
-		return stepBuilderFactory.get("gemiddeldenStep")
-			.transactionManager(transactionManager)
-			.tasklet(tasklet)
+		return new StepBuilder("gemiddeldenStep", repository)
+			.tasklet(tasklet, transactionManager)
 			.build();
 	}
 
 	@Bean
 	public Step dossierFitStep(MammaFitDossierClassifierTasklet tasklet)
 	{
-		return stepBuilderFactory.get("dossierFitStep")
-			.transactionManager(transactionManager)
-			.tasklet(tasklet)
+		return new StepBuilder("dossierFitStep", repository)
+			.tasklet(tasklet, transactionManager)
 			.build();
 	}
 
 	@Bean
 	public Step dossierPredictStep(MammaPredictDossiersTasklet tasklet)
 	{
-		return stepBuilderFactory.get("dossierPredictStep")
-			.transactionManager(transactionManager)
-			.tasklet(tasklet)
+		return new StepBuilder("dossierPredictStep", repository)
+			.tasklet(tasklet, transactionManager)
 			.build();
 	}
 
 	@Bean
 	public Step afspraakFitStep(MammaFitAfspraakClassifierTasklet tasklet)
 	{
-		return stepBuilderFactory.get("afspraakFitStep")
-			.transactionManager(transactionManager)
-			.tasklet(tasklet)
+		return new StepBuilder("afspraakFitStep", repository)
+			.tasklet(tasklet, transactionManager)
 			.build();
 	}
 
 	@Bean
 	public Step afspraakPredictStep(MammaPredictAfsprakenTasklet tasklet)
 	{
-		return stepBuilderFactory.get("afspraakPredictStep")
-			.transactionManager(transactionManager)
-			.tasklet(tasklet)
+		return new StepBuilder("afspraakPredictStep", repository)
+			.tasklet(tasklet, transactionManager)
 			.build();
 	}
 

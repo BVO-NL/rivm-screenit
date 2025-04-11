@@ -21,8 +21,7 @@ package nl.rivm.screenit.batch.jobs;
  * =========================LICENSE_END==================================
  */
 
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 
@@ -30,10 +29,7 @@ public abstract class AbstractJobConfiguration
 {
 
 	@Autowired
-	protected JobBuilderFactory jobBuilderFactory;
-
-	@Autowired
-	protected StepBuilderFactory stepBuilderFactory;
+	protected JobRepository repository;
 
 	@Autowired
 	protected HibernateTransactionManager transactionManager;

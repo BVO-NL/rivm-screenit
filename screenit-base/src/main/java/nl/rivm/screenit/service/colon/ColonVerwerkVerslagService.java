@@ -22,15 +22,12 @@ package nl.rivm.screenit.service.colon;
  */
 
 import java.util.Date;
-import java.util.Set;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.PaVerslag;
-import nl.topicuszorg.formulieren2.api.resultaat.Antwoord;
 
 public interface ColonVerwerkVerslagService
 {
@@ -45,9 +42,5 @@ public interface ColonVerwerkVerslagService
 	void ontkoppelOfVerwijderComplicaties(MdlVerslag mdlVerslag);
 
 	ColonScreeningRonde getValideScreeningsRonde(Client client, Verslag olderVerslag, Date onderzoeksdatum);
-
-	void valideerVerslagVoorAfronden(PaVerslag verslag, InstellingGebruiker instellingGebruiker);
-
-	void valideerVerslagVoorAfronden(MdlVerslag verslag, Set<Antwoord<?>> antwoorden, InstellingGebruiker instellingGebruiker);
 
 }

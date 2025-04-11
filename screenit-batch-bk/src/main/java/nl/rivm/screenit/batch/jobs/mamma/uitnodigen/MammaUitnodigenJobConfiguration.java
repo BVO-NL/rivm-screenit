@@ -36,6 +36,8 @@ import nl.rivm.screenit.model.enums.JobType;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -46,7 +48,7 @@ public class MammaUitnodigenJobConfiguration extends AbstractJobConfiguration
 	public Job uitnodigenJob(MammaUitnodigenListener listener, Step eersteOnderzoekBijwerkenStep, Step uitstelUitnodigenStep, Step intervalUitnodigenStep, Step uitnodigenStep,
 		Step verlopenRondesStep)
 	{
-		return jobBuilderFactory.get(JobType.MAMMA_UITNODIGEN.name())
+		return new JobBuilder(JobType.MAMMA_UITNODIGEN.name(), repository)
 			.listener(listener)
 			.start(eersteOnderzoekBijwerkenStep)
 			.on("*").to(uitstelUitnodigenStep)
@@ -64,9 +66,8 @@ public class MammaUitnodigenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step eersteOnderzoekBijwerkenStep(MammaEersteOnderzoekBijwerkenReader reader, MammaEersteOnderzoekBijwerkenWriter writer)
 	{
-		return stepBuilderFactory.get("eersteOnderzoekBijwerkenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("eersteOnderzoekBijwerkenStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -75,9 +76,8 @@ public class MammaUitnodigenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step intervalUitnodigenStep(MammaIntervalUitnodigenReader reader, MammaIntervalUitnodigenWriter writer)
 	{
-		return stepBuilderFactory.get("intervalUitnodigenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("intervalUitnodigenStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -86,9 +86,8 @@ public class MammaUitnodigenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step uitstelUitnodigenStep(MammaUitstelUitnodigenReader reader, MammaUitstelUitnodigenWriter writer)
 	{
-		return stepBuilderFactory.get("uitstelUitnodigenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("uitstelUitnodigenStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -97,18 +96,16 @@ public class MammaUitnodigenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step uitnodigenStep(MammaUitnodigenTasklet tasklet)
 	{
-		return stepBuilderFactory.get("uitnodigenStep")
-			.transactionManager(transactionManager)
-			.tasklet(tasklet)
+		return new StepBuilder("uitnodigenStep", repository)
+			.tasklet(tasklet, transactionManager)
 			.build();
 	}
 
 	@Bean
 	public Step verlopenRondesStep(MammaVerlopenRondesReader reader, MammaVerlopenRondesWriter writer)
 	{
-		return stepBuilderFactory.get("verlopenRondesStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("verlopenRondesStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

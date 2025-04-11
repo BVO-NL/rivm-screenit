@@ -24,8 +24,6 @@ package nl.rivm.screenit.security;
 import java.util.Arrays;
 import java.util.Collection;
 
-import javax.annotation.PostConstruct;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.model.Account;
@@ -49,8 +47,8 @@ import nl.topicuszorg.yubikey.shiro.YubikeyAuthenticationInfo;
 import nl.topicuszorg.yubikey.shiro.YubikeyToken;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
@@ -58,13 +56,15 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.lang.util.SimpleByteSource;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
-import org.apache.shiro.util.SimpleByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import jakarta.annotation.PostConstruct;
 
 import static nl.rivm.screenit.security.UserAgentUtil.getParsedUserAgentInfo;
 
@@ -178,9 +178,8 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken)
 	{
-		if (authcToken instanceof UsernamePasswordToken)
+		if (authcToken instanceof UsernamePasswordToken token)
 		{
-			UsernamePasswordToken token = (UsernamePasswordToken) authcToken;
 			Gebruiker gebruiker = gebruikersService.getGebruikerByGebruikersnaam(token.getUsername()).orElse(null);
 			if (gebruiker == null)
 			{
@@ -197,9 +196,8 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 					new SimpleByteSource(gebruiker.getId().toString()), this.getName());
 			}
 		}
-		else if (authcToken instanceof InstellingGebruikerToken)
+		else if (authcToken instanceof InstellingGebruikerToken igToken)
 		{
-			InstellingGebruikerToken igToken = (InstellingGebruikerToken) authcToken;
 			InstellingGebruiker instellingGebruiker = hibernateService.load(InstellingGebruiker.class, igToken.getId());
 			String melding = getParsedUserAgentInfo(igToken.getUserAgent()) + ", Organisatie: " + instellingGebruiker.getOrganisatie().getNaam();
 			if (StringUtils.isNotBlank(igToken.getUzipasInlogMethode()))
@@ -209,9 +207,8 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 			logService.logGebeurtenis(LogGebeurtenis.INLOGGEN, instellingGebruiker.getMedewerker(), melding);
 			return new SimpleAuthenticationInfo(new ScreenitPrincipal(InstellingGebruiker.class, igToken.getId()), null, this.getName());
 		}
-		else if (authcToken instanceof UziToken)
+		else if (authcToken instanceof UziToken uziToken)
 		{
-			UziToken uziToken = (UziToken) authcToken;
 			Gebruiker gebruiker = gebruikersService.getGebruikerByUzinummer((String) uziToken.getPrincipal()).orElse(null);
 			if (gebruiker == null || !Boolean.TRUE.equals(gebruiker.getActief()))
 			{
@@ -246,9 +243,8 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 			{
 				for (Permission perm : info.getObjectPermissions())
 				{
-					if (perm instanceof Permissie)
+					if (perm instanceof Permissie permissie)
 					{
-						Permissie permissie = (Permissie) perm;
 						LOG.trace("Recht uit authorizationInfo " + permissie.getRecht().name() + " " + perm.implies(permission));
 					}
 					else
@@ -265,10 +261,9 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 			LOG.trace("permissionResult1 " + permissionResult);
 		}
 
-		if (permissionResult && permission instanceof Constraint && ((Constraint) permission).isCheckScope())
+		if (permissionResult && permission instanceof Constraint constraint && constraint.isCheckScope())
 		{
 
-			Constraint constraint = (Constraint) permission;
 			ScreenitPrincipal principal = (ScreenitPrincipal) principals.getPrimaryPrincipal();
 
 			Account account = hibernateService.load(principal.getAccountClass(), principal.getAccountId());
@@ -280,14 +275,12 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 			LOG.trace("permissionResult2 " + permissionResult);
 		}
 
-		if (permissionResult && permission instanceof Constraint)
+		if (permissionResult && permission instanceof Constraint constraint)
 		{
-			Constraint constraint = (Constraint) permission;
 			ScreenitPrincipal principal = (ScreenitPrincipal) principals.getPrimaryPrincipal();
 			Account account = hibernateService.load(principal.getAccountClass(), principal.getAccountId());
-			if (account instanceof InstellingGebruiker)
+			if (account instanceof InstellingGebruiker instgeb)
 			{
-				InstellingGebruiker instgeb = (InstellingGebruiker) account;
 				permissionResult = false;
 				if (!CollectionUtils.isNotEmpty(constraint.getBevolkingsonderzoek()))
 				{

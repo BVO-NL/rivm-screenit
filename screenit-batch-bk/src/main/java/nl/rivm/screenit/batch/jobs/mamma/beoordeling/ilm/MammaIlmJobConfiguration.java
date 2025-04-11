@@ -47,7 +47,9 @@ import nl.rivm.screenit.model.enums.JobType;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.flow.JobExecutionDecider;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -63,7 +65,7 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 		JobExecutionDecider overigeBeeldenVerwijderenDecider, JobExecutionDecider palgaVerslagenVerwijderenDecider, JobExecutionDecider ilmApplicatieLoggingVerwijderenDecider,
 		JobExecutionDecider rondesVerwijderenDecider)
 	{
-		return jobBuilderFactory.get(JobType.MAMMA_ILM.name())
+		return new JobBuilder(JobType.MAMMA_ILM.name(), repository)
 			.listener(listener)
 			.start(dummyStep)
 
@@ -124,9 +126,8 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step beeldenSignalerenStep(MammaBeeldenStatusSignalerenReader reader, MammaBeeldenStatusSignalerenWriter writer)
 	{
-		return stepBuilderFactory.get("beeldenSignalerenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("beeldenSignalerenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -135,9 +136,8 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step uploadBeeldenSignalerenStep(MammaBeeldenStatusUploadSignalerenReader reader, MammaBeeldenStatusUploadSignalerenWriter writer)
 	{
-		return stepBuilderFactory.get("uploadBeeldenSignalerenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("uploadBeeldenSignalerenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -146,9 +146,8 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step bezwaarBeeldenSignalerenStep(MammaBeeldenStatusBezwaarSignalerenReader reader, MammaBeeldenStatusBezwaarSignalerenWriter writer)
 	{
-		return stepBuilderFactory.get("bezwaarBeeldenSignalerenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("bezwaarBeeldenSignalerenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -157,9 +156,8 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step gunstigeBeeldenVerwijderenStep(MammaBeeldenGunstigReader reader, MammaBeeldenGunstigWriter writer)
 	{
-		return stepBuilderFactory.get("gunstigeBeeldenVerwijderenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("gunstigeBeeldenVerwijderenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -168,9 +166,8 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step overigeBeeldenVerwijderenStep(MammaBeeldenStatusOverigReader reader, MammaBeeldenStatusOverigWriter writer)
 	{
-		return stepBuilderFactory.get("overigeBeeldenVerwijderenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("overigeBeeldenVerwijderenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -179,9 +176,8 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step palgaVerslagenVerwijderenStep(MammaPalgaImportVerslagenVerwijderenReader reader, MammaPalgaImportVerslagenVerwijderenWriter writer)
 	{
-		return stepBuilderFactory.get("palgaVerslagenVerwijderenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(1)
+		return new StepBuilder("palgaVerslagenVerwijderenStep", repository)
+			.<Long, Long> chunk(1, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.faultTolerant()
@@ -192,9 +188,8 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step ilmApplicatieLoggingVerwijderenStep(IlmApplicatieLoggingVerwijderenReader reader, IlmApplicatieLoggingVerwijderenWriter writer)
 	{
-		return stepBuilderFactory.get("ilmApplicatieLoggingVerwijderenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("ilmApplicatieLoggingVerwijderenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -203,9 +198,8 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step rondesVerwijderenStep(MammaScreeningRondesVerwijderenReader reader, MammaScreeningRondesVerwijderenWriter writer)
 	{
-		return stepBuilderFactory.get("rondesVerwijderenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(MammaIlmJobListener.MAX_AANTAL_RONDES_VERWERKEN_IN_STEP)
+		return new StepBuilder("rondesVerwijderenStep", repository)
+			.<Long, Long> chunk(MammaIlmJobListener.MAX_AANTAL_RONDES_VERWERKEN_IN_STEP, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -214,9 +208,8 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step beeldenVerwijderenOpnieuwProberenStep(MammaBeeldenVerwijderenRetryTasklet tasklet)
 	{
-		return stepBuilderFactory.get("beeldenVerwijderenOpnieuwProberenStep")
-			.transactionManager(transactionManager)
-			.tasklet(tasklet)
+		return new StepBuilder("beeldenVerwijderenOpnieuwProberenStep", repository)
+			.tasklet(tasklet, transactionManager)
 			.build();
 	}
 

@@ -37,7 +37,9 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
@@ -50,7 +52,7 @@ public class BezwaarBrievenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job bezwaarBrievenJob(BezwaarBrievenListener listener, Step bezwaarBrievenCleanupStep, Step bezwaarBrievenPartitionerStep, Step bezwaarBrievenControleStep)
 	{
-		return jobBuilderFactory.get(JobType.BEZWAAR_BRIEVEN.name())
+		return new JobBuilder(JobType.BEZWAAR_BRIEVEN.name(), repository)
 			.listener(listener)
 			.start(bezwaarBrievenCleanupStep)
 			.next(bezwaarBrievenPartitionerStep)
@@ -61,9 +63,8 @@ public class BezwaarBrievenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step bezwaarBrievenCleanupStep(BezwaarBrievenCleanUpReader reader, BezwaarBrievenCleanUpWriter writer)
 	{
-		return stepBuilderFactory.get("bezwaarBrievenCleanupStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("bezwaarBrievenCleanupStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -73,8 +74,7 @@ public class BezwaarBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step bezwaarBrievenPartitionerStep(BezwaarBrievenGenererenPartitioner partitioner, Step bezwaarBrievenGenererenStep,
 		TaskExecutorPartitionHandler bezwaarBrievenPartitionHandler)
 	{
-		return stepBuilderFactory.get("bezwaarBrievenPartitionerStep")
-			.transactionManager(transactionManager)
+		return new StepBuilder("bezwaarBrievenPartitionerStep", repository)
 			.partitioner("bezwaarBrievenGenererenStep", partitioner)
 			.partitionHandler(bezwaarBrievenPartitionHandler)
 			.step(bezwaarBrievenGenererenStep)
@@ -84,9 +84,8 @@ public class BezwaarBrievenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step bezwaarBrievenControleStep(BezwaarBrievenControleReader reader, BezwaarBrievenControleWriter writer)
 	{
-		return stepBuilderFactory.get("bezwaarBrievenControleStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("bezwaarBrievenControleStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -95,9 +94,8 @@ public class BezwaarBrievenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step bezwaarBrievenGenererenStep(BezwaarBrievenGenererenReader reader, BezwaarBrievenGenererenProcessor processor, BezwaarBrievenGenererenWriter writer)
 	{
-		return stepBuilderFactory.get("bezwaarBrievenGenererenStep")
-			.transactionManager(transactionManager)
-			.<Long, BezwaarBrief> chunk(250)
+		return new StepBuilder("bezwaarBrievenGenererenStep", repository)
+			.<Long, BezwaarBrief> chunk(250, transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)

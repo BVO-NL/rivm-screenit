@@ -31,7 +31,9 @@ import nl.rivm.screenit.model.enums.JobType;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
@@ -44,7 +46,7 @@ public class CervixVerlateDeelnameCovidJobConfiguration extends AbstractJobConfi
 	public Job verlateDeelnameCovidJob(CervixVerlateDeelnameCovidJobListener listener, Step dummyStep, CervixVerlateDeelnameCovidDecider verlateDeelnameDecider,
 		Step verlateDeelnameCovidPartitionerStep)
 	{
-		return jobBuilderFactory.get(JobType.CERVIX_VERLATE_DEELNAME_COVID19.name())
+		return new JobBuilder(JobType.CERVIX_VERLATE_DEELNAME_COVID19.name(), repository)
 			.listener(listener)
 			.start(dummyStep)
 			.next(verlateDeelnameDecider)
@@ -58,8 +60,7 @@ public class CervixVerlateDeelnameCovidJobConfiguration extends AbstractJobConfi
 	public Step verlateDeelnameCovidPartitionerStep(CervixLabPartitioner partitioner, Step verlateDeelnameCovidPerLabStep,
 		TaskExecutorPartitionHandler verlateDeelnameCovidPartitionHandler)
 	{
-		return stepBuilderFactory.get("verlateDeelnameCovidPartitionerStep")
-			.transactionManager(transactionManager)
+		return new StepBuilder("verlateDeelnameCovidPartitionerStep", repository)
 			.partitioner("verlateDeelnameCovidPerLabStep", partitioner)
 			.partitionHandler(verlateDeelnameCovidPartitionHandler)
 			.step(verlateDeelnameCovidPerLabStep)
@@ -79,9 +80,8 @@ public class CervixVerlateDeelnameCovidJobConfiguration extends AbstractJobConfi
 	@Bean
 	public Step verlateDeelnameCovidPerLabStep(CervixVerlateDeelnameCovidReader reader, CervixVerlateDeelnameCovidWriter writer)
 	{
-		return stepBuilderFactory.get("verlateDeelnameCovidPerLabStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(1)
+		return new StepBuilder("verlateDeelnameCovidPerLabStep", repository)
+			.<Long, Long> chunk(1, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

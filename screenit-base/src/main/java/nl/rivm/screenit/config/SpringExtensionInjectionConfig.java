@@ -31,7 +31,7 @@ public class SpringExtensionInjectionConfig
 {
 
 	@Bean(initMethod = "init")
-	public SpringBeanProvider springBeanProvider()
+	SpringBeanProvider springBeanProvider()
 	{
 		return new SpringBeanProvider(); 
 	}

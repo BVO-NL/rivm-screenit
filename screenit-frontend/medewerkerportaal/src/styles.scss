@@ -1,0 +1,181 @@
+/*-
+ * ========================LICENSE_START=================================
+ * medewerkerportaal
+ * %%
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+@import "styles/legacy";
+@import "styles/utils";
+@import "styles/clarity_overrides";
+@import "styles/fullcalendar";
+
+$clr-use-custom-properties: true;
+
+:root [cds-theme] {
+  --fc-page-bg-color: #fff;
+  --fc-neutral-bg-color: hsla(0, 0%, 82%, .3);
+  --fc-neutral-text-color: grey;
+  --fc-border-color: #e0e0e0;
+  --fc-button-text-color: #fff;
+  --fc-button-bg-color: #97a300;
+  --fc-button-border-color: #828D00;
+  --fc-button-hover-bg-color: #828D00;
+  --fc-button-hover-border-color: #828D00;
+  --fc-button-active-bg-color: #1a252f;
+  --fc-button-active-border-color: #151e27;
+  --fc-event-bg-color: #3788d8;
+  --fc-event-border-color: #3788d8;
+  --fc-event-text-color: #fff;
+  --fc-event-selected-overlay-color: rgba(0, 0, 0, .25);
+  --fc-more-link-bg-color: #d0d0d0;
+  --fc-more-link-text-color: inherit;
+  --fc-event-resizer-thickness: 8px;
+  --fc-event-resizer-dot-total-width: 8px;
+  --fc-event-resizer-dot-border-width: 1px;
+  --fc-non-business-color: hsla(0, 0%, 84%, .3);
+  --fc-bg-event-color: #8fdf82;
+  --fc-bg-event-opacity: 0.3;
+  --fc-highlight-color: rgba(188, 232, 241, .3);
+  --fc-small-font-size: 12px;
+  --fc-today-bg-color: var(--clr-color-neutral-0);
+  --fc-today-header-bg-color: var(--cds-global-color-construction-50);
+  --fc-today-header-text-color: var(--cds-global-color-construction-800);
+
+  --clr-font: Arial, Verdana, Tahoma, sans-serif;
+  --clr-font-size: 18px;
+  --clr-forms-label-font-size: 0.7rem;
+  --clr-color-neutral-saturation: 0%;
+  --clr-forms-text-disabled-color: hsl(0, 0%, 38%);
+  --clr-forms-label-color: var(--clr-color-neutral-800);
+  --clr-btn-default-outline-border-color: var(--cds-global-color-construction-600);
+  --clr-btn-default-outline-color: var(--cds-global-color-construction-600);
+  --clr-btn-default-outline-hover-bg-color: var(--cds-global-color-construction-50);
+  --clr-btn-default-outline-hover-color: var(--cds-global-color-construction-800);
+  --clr-btn-default-outline-box-shadow-color: var(--cds-global-color-construction-500);
+  --clr-btn-primary-bg-color: var(--cds-global-color-construction-600);
+  --clr-btn-primary-border-color: var(--cds-global-color-construction-600);
+  --clr-btn-primary-hover-bg-color: var(--cds-global-color-construction-800);
+  --clr-btn-default-color: var(--cds-global-color-construction-600);
+  --clr-forms-focused-color: var(--cds-global-color-construction-500);
+  --clr-calendar-btn-picker-trigger-color: var(--cds-global-color-construction-500);
+  --clr-toggle-bg-color-on: var(--cds-global-color-construction-400);
+  --clr-forms-radio-padding-left: var(--cds-global-space-9);
+  --clr-combobox-input-background-color: #fff;
+  --clr-spinner-fill-color: var(--clr-color-action-500);
+  --clr-spinner-default-size: 3.6rem;
+  --clr-datagrid-row-selected-background-color: #d8e3e9;
+  --clr-table-data-cell-font-size: var(--cds-alias-typography-secondary-font-size);
+  --clr-calendar-btn-color: var(--cds-global-color-construction-500);
+  --clr-btn-default-bg-color: var(--clr-color-neutral-0);
+  --clr-btn-default-active-bg-color: var(--clr-color-neutral-0);
+  --clr-toggle-bg-color-off: var(--clr-color-neutral-600);
+
+  --clr-alert-danger-bg-color: #f2dede;
+  --clr-alert-danger-border-color: #eed3d7;
+  --clr-alert-danger-font-color: #b94a48;
+  --clr-alert-warning-bg-color: #fcf8e3;
+  --clr-alert-warning-border-color: #fbeed5;
+  --clr-alert-warning-font-color: #c09853;
+  --clr-alert-info-bg-color: #d9edf7;
+  --clr-alert-info-border-color: #bce8f1;
+  --clr-alert-info-font-color: #3a87ad;
+
+  --cds-global-typography-font-family: Arial, Verdana, Tahoma, sans-serif;
+  --cds-global-color-construction-50: #eae1ee;
+  --cds-global-color-construction-100: #ccb3d4;
+  --cds-global-color-construction-200: #aa81b7;
+  --cds-global-color-construction-300: #874e9a;
+  --cds-global-color-construction-400: #6e2884;
+  --cds-global-color-construction-500: #54026e;
+  --cds-global-color-construction-600: #4d0266;
+  --cds-global-color-construction-700: #43015b;
+  --cds-global-color-construction-800: #3a0151;
+  --cds-global-color-construction-900: #29013f;
+  --cds-global-color-construction-1000: #1E012DFF;
+
+  --cds-alias-object-interaction-background-hover: #f2f2f2;
+  --cds-alias-object-interaction-background-active: #f2f2f2;
+  --cds-alias-object-interaction-background-selected: #f2f2f2;
+  --cds-alias-object-container-background-tint: #f2f2f2;
+  --cds-alias-status-disabled: var(--clr-color-neutral-200);
+  --cds-alias-typography-disabled-button: var(--clr-color-neutral-500);
+  --cds-alias-object-interaction-info-secondary-hover: var(--cds-global-color-construction-50);
+  --cds-alias-typography-info-hover: var(--cds-global-color-construction-700);
+  --cds-alias-object-interaction-background-highlight: var(--primary-color);
+
+  --event-status-border-color: var(--clr-color-neutral-300);
+  --event-status-free-background-color: #006600;
+  --event-status-free-text-color: var(--clr-color-neutral-50);
+  --event-status-capacity-background-color: #ffa800;
+  --event-status-capacity-text-color: var(--clr-color-neutral-50);
+  --event-status-intake-background-color: #e50000;
+  --event-status-intake-text-color: var(--clr-color-neutral-50);
+  --event-status-blocked-background-color: #e2b4ff;
+  --event-status-blocked-text-color: var(--clr-color-neutral-1000);
+  --event-status-beperking-background-color: var(--clr-color-neutral-400);
+  --event-status-feestdag-background-color: var(--clr-color-neutral-500);
+
+  --primary-color: var(--cds-global-color-construction-500);
+  --page-width-sm: 768px;
+  --page-width-md: 1024px;
+  --page-width-lg: 1280px;
+  --page-width-xlg: 1440px;
+  --page-width-full: 100%;
+}
+
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.tippy-box {
+  .tippy-content {
+    font-size: .65rem;
+  }
+}
+
+.loader-dialog {
+  .modal-dialog {
+    background: none;
+    border: none;
+    box-shadow: none;
+  }
+  .modal-backdrop {
+    background: none;
+  }
+  .modal-body-wrapper {
+    overflow: hidden;
+  }
+  .modal-dialog.modal-sm {
+    --clr-modal-sm-width: 10rem;
+  }
+  .modal-header--accessible {
+    display: none;
+  }
+}
+
+.pdf-inzien-dialog {
+  .modal-dialog {
+    height: 70vh;
+  }
+}

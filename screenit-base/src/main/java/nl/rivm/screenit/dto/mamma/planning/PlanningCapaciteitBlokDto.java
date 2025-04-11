@@ -21,12 +21,14 @@ package nl.rivm.screenit.dto.mamma.planning;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.util.Date;
 
 import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 
 public class PlanningCapaciteitBlokDto extends PlanningConceptEntiteitDto
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	public Long id;

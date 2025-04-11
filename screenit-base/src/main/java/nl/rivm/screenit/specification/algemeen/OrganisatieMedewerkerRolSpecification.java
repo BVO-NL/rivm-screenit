@@ -21,7 +21,8 @@ package nl.rivm.screenit.specification.algemeen;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.Collection;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -29,27 +30,28 @@ import lombok.NoArgsConstructor;
 import nl.rivm.screenit.model.InstellingGebruikerRol;
 import nl.rivm.screenit.model.InstellingGebruikerRol_;
 import nl.rivm.screenit.model.Rol;
+import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
 
-import org.springframework.data.util.Pair;
+import com.google.common.collect.Range;
 
-import com.google.common.collect.BoundType;
-
-import static nl.rivm.screenit.specification.RangeSpecification.bevat;
+import static nl.rivm.screenit.specification.DateSpecification.overlaptLocalDateToDate;
+import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrganisatieMedewerkerRolSpecification
 {
-	public static ExtendedSpecification<InstellingGebruikerRol> isActiefOpDatum(LocalDateTime peildatum)
+	public static ExtendedSpecification<InstellingGebruikerRol> isActiefOpDatum(LocalDate peildatum)
 	{
 		return (r, q, cb) ->
 		{
+			var vandaagRange = Range.closed(peildatum, peildatum);
 			var beginExpression = cb.coalesce(r.get(InstellingGebruikerRol_.beginDatum), DateUtil.BEGIN_OF_TIME);
 			var eindExpression = cb.coalesce(r.get(InstellingGebruikerRol_.eindDatum), DateUtil.END_OF_TIME);
-			return cb.and(cb.isTrue(r.get(InstellingGebruikerRol_.actief)),
-				bevat(ri -> beginExpression, ri -> eindExpression, Pair.of(
-					BoundType.CLOSED, BoundType.CLOSED), DateUtil.toUtilDate(peildatum)).toPredicate(r, q, cb));
+			return isActief(true)
+				.and(overlaptLocalDateToDate(vandaagRange, ri -> beginExpression, ri -> eindExpression))
+				.toPredicate(r, q, cb);
 		};
 	}
 
@@ -61,5 +63,15 @@ public class OrganisatieMedewerkerRolSpecification
 	public static ExtendedSpecification<InstellingGebruikerRol> heeftRol(Rol rol)
 	{
 		return (r, q, cb) -> cb.equal(r.get(InstellingGebruikerRol_.rol), rol);
+	}
+
+	public static ExtendedSpecification<InstellingGebruikerRol> heeftRolIn(Collection<Rol> rollen)
+	{
+		return (r, q, cb) -> r.get(InstellingGebruikerRol_.rol).in(rollen);
+	}
+
+	public static ExtendedSpecification<InstellingGebruikerRol> heeftBevolkingsonderzoekIn(Collection<Bevolkingsonderzoek> bevolkingsonderzoeken)
+	{
+		return (r, q, cb) -> join(r, InstellingGebruikerRol_.bevolkingsonderzoeken).in(bevolkingsonderzoeken);
 	}
 }

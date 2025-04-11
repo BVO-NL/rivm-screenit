@@ -35,7 +35,9 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
@@ -48,7 +50,7 @@ public class CervixSelectieJobConfiguration extends AbstractJobConfiguration
 	public Job selectieJob(CervixSelectieJobListener listener, Step preSelectieStep, Step vooraankondigingPartitionerStep, Step clientSelectiePartitionerStep,
 		Step laatsteRondeSluitenStep)
 	{
-		return jobBuilderFactory.get(JobType.CERVIX_SELECTIE.name())
+		return new JobBuilder(JobType.CERVIX_SELECTIE.name(), repository)
 			.listener(listener)
 			.start(preSelectieStep)
 			.next(vooraankondigingPartitionerStep)
@@ -60,9 +62,8 @@ public class CervixSelectieJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step preSelectieStep(ClientPreSelectieTasklet preSelectieTasklet)
 	{
-		return stepBuilderFactory.get("preSelectieStep")
-			.transactionManager(transactionManager)
-			.tasklet(preSelectieTasklet)
+		return new StepBuilder("preSelectieStep", repository)
+			.tasklet(preSelectieTasklet, transactionManager)
 			.build();
 	}
 
@@ -77,8 +78,7 @@ public class CervixSelectieJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step vooraankondigingPartitionerStep(CervixLabPartitioner partitioner, TaskExecutorPartitionHandler vooraankondigingPartitionHandler, Step vooraankondigingStep)
 	{
-		return stepBuilderFactory.get("vooraankondigingPartitionerStep")
-			.transactionManager(transactionManager)
+		return new StepBuilder("vooraankondigingPartitionerStep", repository)
 			.partitioner("vooraankondigingStep", partitioner)
 			.partitionHandler(vooraankondigingPartitionHandler)
 			.step(vooraankondigingStep)
@@ -98,9 +98,8 @@ public class CervixSelectieJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step vooraankondigingStep(CervixVooraankondigingSelectieReader reader, CervixVooraankondigingSelectieWriter writer)
 	{
-		return stepBuilderFactory.get("vooraankondigingStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("vooraankondigingStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -109,8 +108,7 @@ public class CervixSelectieJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step clientSelectiePartitionerStep(CervixLabPartitioner partitioner, TaskExecutorPartitionHandler selectiePartitionHandler, Step clientSelectieStep)
 	{
-		return stepBuilderFactory.get("clientSelectiePartitionerStep")
-			.transactionManager(transactionManager)
+		return new StepBuilder("clientSelectiePartitionerStep", repository)
 			.partitioner("clientSelectieStep", partitioner)
 			.partitionHandler(selectiePartitionHandler)
 			.step(clientSelectieStep)
@@ -130,9 +128,8 @@ public class CervixSelectieJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step clientSelectieStep(CervixSelectieReader reader, CervixSelectieWriter writer)
 	{
-		return stepBuilderFactory.get("clientSelectieStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("clientSelectieStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -141,9 +138,8 @@ public class CervixSelectieJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step laatsteRondeSluitenStep(CervixLaatsteRondeSluitenReader reader, CervixLaatsteRondeSluitenWriter writer)
 	{
-		return stepBuilderFactory.get("laatsteRondeSluitenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("laatsteRondeSluitenStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

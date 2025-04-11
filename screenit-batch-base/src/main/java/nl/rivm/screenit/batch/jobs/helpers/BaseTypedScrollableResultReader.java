@@ -24,6 +24,7 @@ package nl.rivm.screenit.batch.jobs.helpers;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +35,6 @@ import nl.rivm.screenit.model.enums.Level;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.StatelessSession;
-import org.hibernate.criterion.Projection;
-import org.hibernate.criterion.Projections;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
@@ -65,10 +63,8 @@ public abstract class BaseTypedScrollableResultReader<T> implements ItemReader<T
 
 	private boolean unbindSessionFromThread = false;
 
-	@Getter
+	@Getter(AccessLevel.PROTECTED)
 	private Session hibernateSession;
-
-	private StatelessSession criteriaSession;
 
 	@Getter
 	private StepExecution stepExecution;
@@ -82,14 +78,13 @@ public abstract class BaseTypedScrollableResultReader<T> implements ItemReader<T
 		{
 
 			hibernateSession = sessionFactory.openSession();
-			criteriaSession = sessionFactory.openStatelessSession();
 			if (!TransactionSynchronizationManager.hasResource(sessionFactory))
 			{
 				TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(hibernateSession));
 				unbindSessionFromThread = true;
 			}
 
-			resultSet.set(createScrollableResults(criteriaSession));
+			resultSet.set(createScrollableResults());
 			processedIds.clear();
 		}
 		catch (IllegalStateException e)
@@ -111,12 +106,7 @@ public abstract class BaseTypedScrollableResultReader<T> implements ItemReader<T
 		}
 	}
 
-	protected Projection getProjection()
-	{
-		return Projections.distinct(Projections.id());
-	}
-
-	protected abstract ScrollableResults createScrollableResults(StatelessSession session);
+	protected abstract ScrollableResults createScrollableResults();
 
 	@Override
 	public void close() throws ItemStreamException
@@ -130,10 +120,6 @@ public abstract class BaseTypedScrollableResultReader<T> implements ItemReader<T
 		{
 			SessionFactoryUtils.closeSession(hibernateSession);
 		}
-		if (criteriaSession != null)
-		{
-			criteriaSession.close();
-		}
 	}
 
 	@Override
@@ -142,9 +128,9 @@ public abstract class BaseTypedScrollableResultReader<T> implements ItemReader<T
 
 	}
 
-	protected void crashMelding(String melding, Exception e)
+	protected void crashMelding(String melding, Exception exception)
 	{
-		LOG.error(melding, e);
+		LOG.error(melding, exception);
 		if (!getExecutionContext().containsKey(BatchConstants.MELDING) || !Level.ERROR.equals(getExecutionContext().get(BatchConstants.LEVEL)))
 		{
 			getExecutionContext().put(BatchConstants.MELDING, melding);

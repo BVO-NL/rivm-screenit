@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.service;
 
 /*-
@@ -24,11 +23,10 @@ package nl.rivm.screenit.main.service;
 
 import java.util.concurrent.Future;
 
-import javax.jms.Destination;
-import javax.jms.Message;
+import jakarta.jms.Destination;
+import jakarta.jms.Message;
 
 public interface AsyncMessageReceiver
 {
-
 	Future<Message> receiveMessage(final Destination destination, final Long timeout);
 }

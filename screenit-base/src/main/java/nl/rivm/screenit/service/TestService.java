@@ -42,6 +42,8 @@ public interface TestService
 
 	Client getClientByBsn(String bsn);
 
+	List<Client> vindClienten(List<String> bsns, Bevolkingsonderzoek onderzoek);
+
 	GbaPersoon maakPersoon(LocalDate geboorteDatum);
 
 	Client maakClient(GbaPersoon persoon);

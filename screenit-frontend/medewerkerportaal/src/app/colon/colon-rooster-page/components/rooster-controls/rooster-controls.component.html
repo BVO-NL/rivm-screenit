@@ -1,0 +1,81 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<div class="clr-display-flex clr-justify-content-between align-items-center mb-3 w-100 clr-form-compact">
+  <div class="clr-display-flex clr-align-items-center gap-2">
+    <div class="btn-group">
+      <button (click)="zoomOut()" class="btn btn-icon btn-outline" data-testid="btn_zoom_out" [disabled]="isZoomOutDisabled">
+        <cds-icon shape="zoom-out" size="md"></cds-icon>
+      </button>
+      <button (click)="zoomIn()" class="btn btn-icon btn-outline" data-testid="btn_zoom_in" [disabled]="isZoomInDisabled">
+        <cds-icon shape="zoom-in" size="md"></cds-icon>
+      </button>
+    </div>
+    <app-select-button [options]="viewRanges" [(ngModel)]="viewRange" (ngModelChange)="setViewRange($event)" [closeOnItemClick]="true" data-testid="select_btn_view_range"/>
+    <clr-date-container>
+      <input type="date" autocomplete="off" clrDate id="selectedDate" placeholder="dd-mm-jjjj" name="selectedDate" [(clrDate)]="selectedDate!"
+             (clrDateChange)="selectedDateChange.emit($event)" (keydown.enter)="checkInput($event)" (blur)="checkInput($event)" data-testid="input_selected_date"/>
+    </clr-date-container>
+    <div class="btn-group">
+      <button (click)="gotoPrevious.emit()" class="btn btn-outline" data-testid="btn_goto_previous">
+          <span class="clr-display-flex clr-align-items-center">
+            <cds-icon shape="angle" direction="left"></cds-icon>
+            Vorige
+          </span>
+      </button>
+      <button (click)="gotoNext.emit()" class="btn btn-outline" data-testid="btn_goto_next">
+          <span class="clr-display-flex clr-align-items-center">
+            Volgende
+            <cds-icon shape="angle" direction="right"></cds-icon>
+          </span>
+      </button>
+    </div>
+    <app-rooster-legenda/>
+  </div>
+  <div class="btn-group">
+    <clr-dropdown *appAutorisatie="tijdslotVerwijderenConstraint" [clrCloseMenuOnItemClick]="true" data-testid="btn_open_afspraakslot_verwijderen_dialog">
+      <button class="btn btn-danger-outline" clrDropdownTrigger>
+        <cds-icon shape="trash"></cds-icon>
+        Verwijderen
+        <cds-icon direction="down" shape="angle"></cds-icon>
+      </button>
+      <clr-dropdown-menu>
+        <button
+          (click)="openBulkTijdslotVerwijderenDialog(option)"
+          *ngFor="let option of verwijderOpties; let i = index"
+          [attr.aria-label]="option.label"
+          clrDropdownItem
+        >
+          {{ option.label }}
+        </button>
+      </clr-dropdown-menu>
+    </clr-dropdown>
+    <button class="btn btn-outline" (click)="openBlokkadeDialog()" *appAutorisatie="tijdslotAanmakenConstraint" data-testid="btn_open_blokkade_dialog">
+      <cds-icon shape="plus"></cds-icon>
+      Blokkade
+    </button>
+    <button class="btn btn-primary" (click)="openAfspraakslotAanmakenDialog()" *appAutorisatie="tijdslotAanmakenConstraint" data-testid="btn_open_afspraakslot_aanmaken_dialog">
+      <cds-icon shape="plus"></cds-icon>
+      Afspraakslot
+    </button>
+
+  </div>
+
+</div>

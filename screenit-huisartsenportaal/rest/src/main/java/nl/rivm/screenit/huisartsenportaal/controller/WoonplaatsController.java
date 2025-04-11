@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.controller;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -28,22 +28,20 @@ import nl.rivm.screenit.huisartsenportaal.service.WoonplaatsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("woonplaatsen")
-@PreAuthorize("isAuthenticated()")
 public class WoonplaatsController
 {
 
 	@Autowired
 	private WoonplaatsService woonplaatsService;
 
-	@RequestMapping(value = "/{waarde}", method = RequestMethod.GET)
+	@GetMapping("/{waarde}")
 	public ResponseEntity<List<WoonplaatsDto>> getHuisarts(@PathVariable String waarde)
 	{
 		List<WoonplaatsDto> dtos = woonplaatsService.getWoonplaatsen(waarde);

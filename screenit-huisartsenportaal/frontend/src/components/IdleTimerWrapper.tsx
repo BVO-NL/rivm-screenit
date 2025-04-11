@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -30,11 +30,11 @@ import {useNavigate} from "react-router"
 const IdleTimerWrapper = (props: { children: JSX.Element }) => {
 	const dispatch = useAppThunkDispatch()
 	const navigate = useNavigate()
-	const auth = useAppSelector(state => state.oauth)
+	const auth = useAppSelector(state => state.auth)
 
 	const onIdle = () => {
 		if (auth) {
-			dispatch(loadingThunkAction(afmelden(auth))).then(() => {
+			dispatch(loadingThunkAction(afmelden())).then(() => {
 				dispatch(createActionPushToast({type: ToastType.SUCCESS, message: "U bent uitgelogd"}))
 				navigate("/login")
 			})

@@ -1,0 +1,48 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog (sluiten)="cancel()" class="tijdslots-verwijderen-modal" size="xl" titel="{{ typeTijdslot.label }} verwijderen">
+  <div body class="clr-display-flex clr-flex-column">
+    <app-tijdslots-verwijderen-filter (filter)="filter($event)"/>
+
+    <clr-datagrid #datagridEl [(clrDgSelected)]="selectedTijdslots">
+      <clr-dg-column>Kamer</clr-dg-column>
+      <clr-dg-column>Datum</clr-dg-column>
+      <clr-dg-column>Starttijd</clr-dg-column>
+      <clr-dg-column>Eindtijd</clr-dg-column>
+      <clr-dg-row *clrDgItems="let tijdslot of tijdslots" [clrDgItem]="tijdslot">
+        <clr-dg-cell>{{ tijdslot.kamer }}</clr-dg-cell>
+        <clr-dg-cell>{{ tijdslot.vanaf | date: NL_DATE_FORMAT }}</clr-dg-cell>
+        <clr-dg-cell>{{ tijdslot.vanaf | date: TIME_FORMAT }}</clr-dg-cell>
+        <clr-dg-cell>{{ tijdslot.tot | date: TIME_FORMAT }}</clr-dg-cell>
+      </clr-dg-row>
+      <clr-dg-footer>
+        <clr-dg-pagination #pagination [clrDgPageSize]="500" [(clrDgPage)]="huidigePagina" (clrDgPageChange)="clearSelection()">
+          <clr-dg-page-size [clrPageSizeOptions]="[10, 20, 50, 100, 500]">{{ typeTijdslot.label }} per pagina</clr-dg-page-size>
+          {{ pagination.firstItem + 1 }} - {{ pagination.lastItem + 1 }} van {{ pagination.totalItems }} {{ typeTijdslot.value }}
+        </clr-dg-pagination>
+      </clr-dg-footer>
+    </clr-datagrid>
+  </div>
+  <div buttons class="btn-group">
+    <button class="btn" (click)="cancel()">Annuleren</button>
+    <button (click)="verwijderen()" [disabled]="selectedTijdslots.length === 0" class="btn btn-danger">Verwijderen</button>
+  </div>
+</app-base-dialog>

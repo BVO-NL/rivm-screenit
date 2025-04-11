@@ -21,12 +21,11 @@ package nl.rivm.screenit.wsb.fhir.interceptor;
  * =========================LICENSE_END==================================
  */
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;
 import ca.uhn.fhir.interceptor.api.Pointcut;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Interceptor
 public class ProcessingCompletedInterceptor extends FQDNAwareInterceptor

@@ -21,13 +21,16 @@ package nl.rivm.screenit.model.mamma;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderzoekStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
@@ -36,15 +39,15 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
+@Setter
+@Getter
 @Entity
 @Audited
 @Table(schema = "mamma", name = "adhoc_meekijkverzoek")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 public class MammaAdhocMeekijkverzoek extends AbstractHibernateObject
 {
-	private static final long serialVersionUID = 1L;
-
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@OneToOne(fetch = FetchType.LAZY, optional = false)
 	private MammaOnderzoek onderzoek;
 
 	@Column(nullable = false)
@@ -56,45 +59,4 @@ public class MammaAdhocMeekijkverzoek extends AbstractHibernateObject
 
 	@Column(unique = true, nullable = false)
 	private Long volgnummer;
-
-	public MammaOnderzoek getOnderzoek()
-	{
-		return onderzoek;
-	}
-
-	public void setOnderzoek(MammaOnderzoek onderzoek)
-	{
-		this.onderzoek = onderzoek;
-	}
-
-	public String getReden()
-	{
-		return reden;
-	}
-
-	public void setReden(String reden)
-	{
-		this.reden = reden;
-	}
-
-	public Long getVolgnummer()
-	{
-		return volgnummer;
-	}
-
-	public void setVolgnummer(Long volgnummer)
-	{
-		this.volgnummer = volgnummer;
-	}
-
-	public MammaVisitatieOnderzoekStatus getStatus()
-	{
-		return status;
-	}
-
-	public void setStatus(MammaVisitatieOnderzoekStatus status)
-	{
-		this.status = status;
-	}
-
 }

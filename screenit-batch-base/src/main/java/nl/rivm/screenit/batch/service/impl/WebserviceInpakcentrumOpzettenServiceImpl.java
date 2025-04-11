@@ -22,9 +22,8 @@ package nl.rivm.screenit.batch.service.impl;
  */
 
 import java.util.List;
-import java.util.Map;
 
-import javax.xml.ws.BindingProvider;
+import jakarta.xml.ws.BindingProvider;
 
 import nl.rivm.screenit.batch.service.WebserviceInpakcentrumOpzettenService;
 import nl.rivm.screenit.util.logging.cxf.ScreenITLoggingInInterceptor;
@@ -32,11 +31,11 @@ import nl.rivm.screenit.util.logging.cxf.ScreenITLoggingOutInterceptor;
 import nl.rivm.screenit.util.logging.cxf.ScreenITLoggingSaver;
 
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
-import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.endpoint.ConduitSelector;
 import org.apache.cxf.endpoint.PreexistingConduitSelector;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.apache.cxf.ws.policy.PolicyConstants;
 import org.apache.neethi.Policy;
 import org.apache.neethi.PolicyComponent;
@@ -58,10 +57,10 @@ public class WebserviceInpakcentrumOpzettenServiceImpl implements WebserviceInpa
 	@Override
 	public IUpload initialiseerWebserviceInpakcentrum()
 	{
-		DaklapackWebService webserviceClient = new DaklapackWebService();
-		IUpload upload = webserviceClient.getDataUploadEndpoint();
-		BindingProvider bindingProvider = (BindingProvider) upload;
-		Map<String, Object> requestContext = bindingProvider.getRequestContext();
+		var webserviceClient = new DaklapackWebService();
+		var upload = webserviceClient.getDataUploadEndpoint();
+		var bindingProvider = (BindingProvider) upload;
+		var requestContext = bindingProvider.getRequestContext();
 		requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, inpakCentrumEndpointUrl);
 
 		if (Boolean.TRUE.equals(testModus) && inpakCentrumEndpointUrl.startsWith("http:"))
@@ -69,16 +68,20 @@ public class WebserviceInpakcentrumOpzettenServiceImpl implements WebserviceInpa
 			requestContext.put(PolicyConstants.POLICY_OVERRIDE, new HttpPolicy());
 		}
 
-		Client client = ClientProxy.getClient(upload);
+		var client = ClientProxy.getClient(upload);
 		client.getInInterceptors().add(new ScreenITLoggingInInterceptor(loggingSaver));
 		client.getOutInterceptors().add(new ScreenITLoggingOutInterceptor(loggingSaver));
 
-		HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
+		var httpConduit = (HTTPConduit) client.getConduit();
 
-		TLSClientParameters tlsClientParameters = new TLSClientParameters();
+		var tlsClientParameters = new TLSClientParameters();
 		tlsClientParameters.setDisableCNCheck(true);
 
 		httpConduit.setTlsClientParameters(tlsClientParameters);
+
+		var policy = new HTTPClientPolicy();
+		policy.setVersion("1.1");
+		httpConduit.setClient(policy);
 
 		ConduitSelector selector = new PreexistingConduitSelector(httpConduit, client.getEndpoint());
 		client.setConduitSelector(selector);
@@ -86,7 +89,7 @@ public class WebserviceInpakcentrumOpzettenServiceImpl implements WebserviceInpa
 		return upload;
 	}
 
-	private class HttpPolicy extends Policy
+	private static class HttpPolicy extends Policy
 	{
 		@Override
 		public void addPolicyComponent(PolicyComponent component)

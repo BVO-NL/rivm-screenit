@@ -21,6 +21,8 @@ package nl.rivm.screenit.batch.jobs.colon.uitnodigingenversturen;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serializable;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,7 +30,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UitnodigingenVersturenProjectGroepCounterHolder
+public class UitnodigingenVersturenProjectGroepCounterHolder implements Serializable
 {
 	private Long projectGroepId;
 

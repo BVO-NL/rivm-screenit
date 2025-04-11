@@ -22,6 +22,7 @@ package nl.rivm.screenit.dto.mamma.planning;
  */
 
 import java.io.IOException;
+import java.io.Serial;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -33,6 +34,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 public class LocalDateSerializer extends StdSerializer<LocalDate>
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	public LocalDateSerializer()

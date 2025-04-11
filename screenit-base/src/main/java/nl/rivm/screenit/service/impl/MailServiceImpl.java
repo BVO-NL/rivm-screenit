@@ -24,7 +24,7 @@ package nl.rivm.screenit.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.MailService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -92,7 +92,7 @@ public class MailServiceImpl implements MailService
 	{
 		if (StringUtils.isBlank(client.getPersoon().getEmailadres()))
 		{
-			throw new IllegalStateException(String.format("Client id: '%d' heeft geen emailadres", client.getId()));
+			throw new IllegalStateException("Client id: '%d' heeft geen emailadres".formatted(client.getId()));
 		}
 		queueMail(client.getPersoon().getEmailadres(), subject, content, MailPriority.NORMAL, MailServerKeuze.CLIENT, attachmentDtos);
 	}

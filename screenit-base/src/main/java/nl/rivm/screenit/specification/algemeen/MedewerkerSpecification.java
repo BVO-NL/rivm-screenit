@@ -23,19 +23,20 @@ package nl.rivm.screenit.specification.algemeen;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import nl.rivm.screenit.model.Functie;
 import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.Gebruiker_;
 import nl.rivm.screenit.model.InlogStatus;
 import nl.rivm.screenit.model.enums.InlogMethode;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
-import nl.rivm.screenit.util.criteriabuilder.ScreenitCriteriaBuilderImpl;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.domain.Specification;
@@ -43,9 +44,13 @@ import org.springframework.data.util.Pair;
 
 import com.google.common.collect.BoundType;
 
+import static nl.rivm.screenit.specification.DateSpecification.intervalInDagen;
 import static nl.rivm.screenit.specification.RangeSpecification.bevat;
 import static nl.rivm.screenit.specification.SpecificationUtil.containsCaseInsensitive;
+import static nl.rivm.screenit.specification.SpecificationUtil.exactCaseInsensitive;
+import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenEmpty;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenEmptyExtended;
+import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNull;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNullExtended;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -55,16 +60,14 @@ public class MedewerkerSpecification
 	{
 		return (r, q, cb) ->
 		{
-			var scb = new ScreenitCriteriaBuilderImpl(cb);
 			var peildatumLaatstGewijzigdDate = DateUtil.toUtilDate(vandaag.minusDays(dagenWachtwoordGeldig));
-			var rightInterval = "+ '" + dagenWachtwoordGeldig + " days' ";
 
 			var vanafExpression = cb.coalesce(r.get(Gebruiker_.actiefVanaf), DateUtil.BEGIN_OF_TIME);
 			var totEnMetExpression = cb.coalesce(r.get(Gebruiker_.actiefTotEnMet), DateUtil.END_OF_TIME);
 			var actiefTijdensVerlopenVanWachtwoord =
 				cb.and(
-					scb.lessThanOrEqualTo(vanafExpression, r.get(Gebruiker_.laatsteKeerWachtwoordGewijzigd), rightInterval),
-					scb.greaterThanOrEqualTo(totEnMetExpression, r.get(Gebruiker_.laatsteKeerWachtwoordGewijzigd), rightInterval));
+					cb.lessThanOrEqualTo(vanafExpression, intervalInDagen(cb, r.get(Gebruiker_.laatsteKeerWachtwoordGewijzigd), dagenWachtwoordGeldig)),
+					cb.greaterThanOrEqualTo(totEnMetExpression, intervalInDagen(cb, r.get(Gebruiker_.laatsteKeerWachtwoordGewijzigd), dagenWachtwoordGeldig)));
 			var nuActief = isActiefOpMoment(vandaag.atStartOfDay()).toPredicate(r, q, cb);
 
 			var wachtwoordVerlooptInDeToekomst = cb.greaterThan(r.get(Gebruiker_.laatsteKeerWachtwoordGewijzigd), peildatumLaatstGewijzigdDate);
@@ -85,6 +88,11 @@ public class MedewerkerSpecification
 	public static Specification<Gebruiker> heeftEmailAdres()
 	{
 		return (r, q, cb) -> cb.isNotNull(r.get(Gebruiker_.emailextra));
+	}
+
+	public static Specification<Gebruiker> filterEmailAdres(String emailAdres)
+	{
+		return skipWhenEmpty(emailAdres, (r, q, cb) -> exactCaseInsensitive(cb, r.get(Gebruiker_.emailextra), emailAdres));
 	}
 
 	public static Specification<Gebruiker> heeftWachtwoordInlogMethode()
@@ -119,6 +127,11 @@ public class MedewerkerSpecification
 	public static ExtendedSpecification<Gebruiker> filterUzinummerContaining(String uzinummer)
 	{
 		return skipWhenEmptyExtended(uzinummer, (r, q, cb) -> containsCaseInsensitive(cb, r.get(Gebruiker_.uzinummer), uzinummer));
+	}
+
+	public static Specification<Gebruiker> filterMedewerkercode(Integer medewerkercode)
+	{
+		return skipWhenNull(medewerkercode, (r, q, cb) -> cb.equal(r.get(Gebruiker_.medewerkercode), medewerkercode));
 	}
 
 	public static ExtendedSpecification<Gebruiker> isActiefEnActiefOpMoment(LocalDateTime peilmoment)
@@ -156,5 +169,15 @@ public class MedewerkerSpecification
 			var bevat = bevat(ri -> vanafExpression, ri -> totEnMetExpression, Pair.of(BoundType.CLOSED, BoundType.CLOSED), DateUtil.toUtilDate(peilmoment));
 			return bevat.toPredicate(r, q, cb);
 		};
+	}
+
+	public static Specification<Gebruiker> filterFunctieIn(Collection<Functie> functies)
+	{
+		return skipWhenEmpty(functies, (r, q, cb) -> r.get(Gebruiker_.functie).in(functies));
+	}
+
+	public static Specification<Gebruiker> filterFunctie(Functie functie)
+	{
+		return skipWhenNull(functie, (r, q, cb) -> cb.equal(r.get(Gebruiker_.functie), functie));
 	}
 }

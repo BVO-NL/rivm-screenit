@@ -28,10 +28,6 @@ import nl.rivm.screenit.model.cervix.CervixLabformulier;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
 
-import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.StatelessSession;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -44,20 +40,6 @@ import static nl.rivm.screenit.specification.cervix.CervixLabformulierSpecificat
 public class CervixOudeLabformulierenVerwijderenReader extends BaseSpecificationScrollableResultReader<CervixLabformulier>
 {
 	private final ICurrentDateSupplier dateSupplier;
-
-	public Criteria createCriteria(StatelessSession session) throws HibernateException
-	{
-		var minVerwijderenDatum = DateUtil.toUtilDate(dateSupplier.getLocalDate().minusYears(1));
-
-		var criteria = session.createCriteria(CervixLabformulier.class);
-
-		criteria.add(Restrictions.le("scanDatum", minVerwijderenDatum));
-		criteria.add(Restrictions.eq("digitaal", false));
-		criteria.add(Restrictions.isNull("datumGewist"));
-		criteria.setMaxResults(100000);
-
-		return criteria;
-	}
 
 	@Override
 	protected Specification<CervixLabformulier> createSpecification()

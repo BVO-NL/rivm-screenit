@@ -33,6 +33,8 @@ import nl.rivm.screenit.model.enums.JobType;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -43,7 +45,7 @@ public class MammaVervolgOnderzoekenJobConfiguration extends AbstractJobConfigur
 	@Bean
 	public Job vervolgOnderzoekenJob(MammaVervolgOnderzoekenListener listener, Step onderbrokenOnderzoekenStep, Step geenBeeldenStep, Step nietAfgeslotenStep)
 	{
-		return jobBuilderFactory.get(JobType.MAMMA_VERVOLG_ONDERZOEKEN.name())
+		return new JobBuilder(JobType.MAMMA_VERVOLG_ONDERZOEKEN.name(), repository)
 			.listener(listener)
 			.start(onderbrokenOnderzoekenStep)
 			.on("*").to(geenBeeldenStep)
@@ -58,9 +60,8 @@ public class MammaVervolgOnderzoekenJobConfiguration extends AbstractJobConfigur
 	@Bean
 	public Step onderbrokenOnderzoekenStep(MammaVervolgTeOudeOnderbrokenOnderzoekenReader reader, MammaVervolgTeOudeOnderbrokenOnderzoekenWriter writer)
 	{
-		return stepBuilderFactory.get("onderbrokenOnderzoekenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("onderbrokenOnderzoekenStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -69,9 +70,8 @@ public class MammaVervolgOnderzoekenJobConfiguration extends AbstractJobConfigur
 	@Bean
 	public Step geenBeeldenStep(MammaOnderzoekenZonderBeeldenReader reader, MammaOnderzoekenZonderBeeldenWriter writer)
 	{
-		return stepBuilderFactory.get("geenBeeldenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("geenBeeldenStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -80,9 +80,8 @@ public class MammaVervolgOnderzoekenJobConfiguration extends AbstractJobConfigur
 	@Bean
 	public Step nietAfgeslotenStep(MammaOnderzoekenNietAfgeslotenReader reader, MammaOnderzoekenNietAfgeslotenWriter writer)
 	{
-		return stepBuilderFactory.get("nietAfgeslotenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("nietAfgeslotenStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

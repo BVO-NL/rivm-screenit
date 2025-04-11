@@ -25,10 +25,6 @@ package nl.rivm.screenit.main.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -44,12 +40,10 @@ import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.overeenkomsten.AbstractAfgeslotenOvereenkomst;
-import nl.rivm.screenit.model.overeenkomsten.AbstractAfgeslotenOvereenkomst_;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenInstellingOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.Overeenkomst;
 import nl.rivm.screenit.model.overeenkomsten.OvereenkomstType;
-import nl.rivm.screenit.model.overeenkomsten.Overeenkomst_;
 import nl.rivm.screenit.repository.algemeen.AbstractAfgeslotenOvereenkomstRepository;
 import nl.rivm.screenit.repository.algemeen.AfgeslotenMedewerkerOvereenkomstRepository;
 import nl.rivm.screenit.repository.algemeen.AfgeslotenOrganisatieOvereenkomstRepository;
@@ -78,7 +72,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.OvereenkomstSpecification.filterActief;
 import static nl.rivm.screenit.specification.algemeen.OvereenkomstSpecification.filterOrganisatieType;
 import static nl.rivm.screenit.specification.algemeen.OvereenkomstSpecification.heeftOvereenkomstIn;
@@ -198,15 +191,7 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 	@Override
 	public List<Overeenkomst> getOvereenkomsten(Boolean actief, long first, long size, Sort sort)
 	{
-		return overeenkomstRepository.findWith(filterActief(actief), q -> q.sortBy(sort, (order, r, cb) ->
-		{
-			var sortProperty = order.getProperty();
-			if (sortProperty.startsWith(Overeenkomst_.DOCUMENT))
-			{
-				join(r, Overeenkomst_.document);
-			}
-			return null;
-		})).all(first, size);
+		return overeenkomstRepository.findWith(filterActief(actief), q -> q.sortBy(sort)).all(first, size);
 	}
 
 	@Override
@@ -243,7 +228,7 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 	{
 		return afgeslotenMedewerkerOvereenkomstRepository.findWith(
 				AbstractAfgeslotenOvereenkomstSpecification.<AfgeslotenMedewerkerOvereenkomst> filterActief(actief, currentDateSupplier.getDate())
-					.and(AfgeslotenMedewerkerOvereenkomstSpecification.heeftGebruiker(zoekObject)), q -> q.sortBy(sort, OvereenkomstServiceImpl::addJoinsForSortering))
+					.and(AfgeslotenMedewerkerOvereenkomstSpecification.heeftGebruiker(zoekObject)), q -> q.sortBy(sort))
 			.all(first, size);
 	}
 
@@ -260,7 +245,7 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 	{
 		return afgeslotenOrganisatieOvereenkomstRepository.findWith(
 				AbstractAfgeslotenOvereenkomstSpecification.<AfgeslotenInstellingOvereenkomst> filterActief(actief, currentDateSupplier.getDate())
-					.and(AfgeslotenOrganisatieOvereenkomstSpecification.heeftOrganisatie(zoekObject)), q -> q.sortBy(sort, OvereenkomstServiceImpl::addJoinsForSortering))
+					.and(AfgeslotenOrganisatieOvereenkomstSpecification.heeftOrganisatie(zoekObject)), q -> q.sortBy(sort))
 			.all(first, size);
 	}
 
@@ -270,20 +255,6 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 		return afgeslotenOrganisatieOvereenkomstRepository.count(
 			AbstractAfgeslotenOvereenkomstSpecification.<AfgeslotenInstellingOvereenkomst> filterActief(actief, currentDateSupplier.getDate())
 				.and(AfgeslotenOrganisatieOvereenkomstSpecification.heeftOrganisatie(zoekObject)));
-	}
-
-	private static Order addJoinsForSortering(Sort.Order order, Root<? extends AbstractAfgeslotenOvereenkomst> r, CriteriaBuilder cb)
-	{
-		var sortProperty = order.getProperty();
-		if (sortProperty.startsWith(AbstractAfgeslotenOvereenkomst_.SCREENING_ORGANISATIE))
-		{
-			join(r, AbstractAfgeslotenOvereenkomst_.screeningOrganisatie);
-		}
-		if (sortProperty.startsWith(AbstractAfgeslotenOvereenkomst_.OVEREENKOMST))
-		{
-			join(r, AbstractAfgeslotenOvereenkomst_.overeenkomst);
-		}
-		return null;
 	}
 
 	@Override

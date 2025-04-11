@@ -27,8 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.criteria.JoinType;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.colon.selectie.SelectieConstants;
@@ -45,6 +43,8 @@ import org.apache.commons.lang.NotImplementedException;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.springframework.batch.item.ExecutionContext;
+
+import jakarta.persistence.criteria.JoinType;
 
 import static nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification.laatsteScreeningRondeJoin;
 

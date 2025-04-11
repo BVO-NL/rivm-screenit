@@ -21,8 +21,6 @@ package nl.rivm.screenit.batch.jms.listener;
  * =========================LICENSE_END==================================
  */
 
-import javax.jms.Session;
-
 import nl.rivm.screenit.batch.service.MammaIMSBerichtInlezenService;
 
 import org.apache.activemq.command.ActiveMQObjectMessage;
@@ -33,6 +31,8 @@ import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.jms.Session;
 
 @Transactional(propagation = Propagation.SUPPORTS)
 @Component

@@ -1,0 +1,70 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<div class="content-container">
+  <h2>Cli&euml;nt zoeken</h2>
+  <div class="card mb-3">
+    <div class="card-block w-100">
+      <form clrForm clrLayout="compact" [formGroup]="formGroup" (ngSubmit)="clientZoeken()" class="clr-col-12 clr-col-md-6">
+        <clr-date-container>
+          <label class="clr-required-mark clr-col-md-4" for="geboortedatum">Geboortedatum</label>
+          <input type="date" clrDate class="clr-col-md-8" formControlName="geboortedatum" id="geboortedatum" [max]="maxGeboorteDatum"/>
+          <clr-control-error *clrIfError="'required'">De geboortedatum is verplicht</clr-control-error>
+          <clr-control-error *clrIfError="'valideDatum'">{{ geboortedatumCtrl.getError('valideDatum') }}</clr-control-error>
+          <clr-control-error *clrIfError="'max'">De geboortedatum mag niet in de toekomst liggen</clr-control-error>
+        </clr-date-container>
+        <clr-input-container>
+          <label class="clr-required-mark clr-col-md-4" for="bsn">Burgerservicenummer</label>
+          <input clrInput id="bsn" class="clr-col-md-8" type="text" formControlName="bsn" data-testid="input_bsn"/>
+          <clr-control-error *clrIfError="'required'">Het burgerservicenummer is verplicht</clr-control-error>
+          <clr-control-error *clrIfError="'bsn'">{{ bsnCtrl.getError('bsn') }}</clr-control-error>
+        </clr-input-container>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Zoeken</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  @if (clienten()) {
+    <clr-datagrid class="w-100">
+      <clr-dg-column>Burgerservicenummer</clr-dg-column>
+      <clr-dg-column>Geboortedatum</clr-dg-column>
+      <clr-dg-column [style.width.px]="50">Inzien</clr-dg-column>
+      @if (clienten()?.length) {
+        <clr-dg-row *clrDgItems="let client of clienten()!">
+          <clr-dg-cell>{{ client.bsn }}</clr-dg-cell>
+          <clr-dg-cell>{{ client.geboortedatum | date: 'dd-MM-yyyy' }}</clr-dg-cell>
+          <clr-dg-cell>
+            <button class="btn btn-icon-link" (click)="briefOpenen(client)">
+              <cds-icon shape="eye" size="24"></cds-icon>
+            </button>
+          </clr-dg-cell>
+        </clr-dg-row>
+      } @else {
+        <clr-dg-placeholder>Er zijn geen cli&euml;nten gevonden</clr-dg-placeholder>
+      }
+    </clr-datagrid>
+  }
+
+  @if (document) {
+    <app-pdf-viewer [url]="document"/>
+  }
+</div>

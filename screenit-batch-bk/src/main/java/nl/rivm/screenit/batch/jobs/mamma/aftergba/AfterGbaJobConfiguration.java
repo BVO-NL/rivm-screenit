@@ -43,6 +43,8 @@ import nl.rivm.screenit.model.enums.JobType;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -56,7 +58,7 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	public Job afterGbaJob(AfterGbaListener listener, Step deelnamemodusBijwerkenStep, Step ontkoppelenTehuisStep, Step nieuwePostcodesStep, Step zonderPostcodesStep,
 		Step imsWijzigingenStep, Step afsprakenAnnulerenStep, Step deelnamekansenHerzienStep, Step adresGewijzigdMarkerResetStep)
 	{
-		return jobBuilderFactory.get(JobType.MAMMA_NA_GBA.name())
+		return new JobBuilder(JobType.MAMMA_NA_GBA.name(), repository)
 			.listener(listener)
 			.start(deelnamemodusBijwerkenStep)
 			.on("*").to(ontkoppelenTehuisStep)
@@ -77,9 +79,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step deelnamemodusBijwerkenStep(MammaDeelnamemodusReader reader, MammaDeelnamemodusWriter writer)
 	{
-		return stepBuilderFactory.get("deelnamemodusBijwerkenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(50)
+		return new StepBuilder("deelnamemodusBijwerkenStep", repository)
+			.<Long, Long> chunk(50, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -88,9 +89,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step ontkoppelenTehuisStep(MammaOntkoppelenTehuisReader reader, MammaOntkoppelenTehuisWriter writer)
 	{
-		return stepBuilderFactory.get("ontkoppelenTehuisStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(50)
+		return new StepBuilder("ontkoppelenTehuisStep", repository)
+			.<Long, Long> chunk(50, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -99,9 +99,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step nieuwePostcodesStep(MammaNieuwePostcodesReader reader, MammaNieuwePostcodesWriter writer)
 	{
-		return stepBuilderFactory.get("nieuwePostcodesStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(50)
+		return new StepBuilder("nieuwePostcodesStep", repository)
+			.<Long, Long> chunk(50, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -110,9 +109,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step zonderPostcodesStep(MammaZonderPostcodeReader reader, MammaZonderPostcodeWriter writer)
 	{
-		return stepBuilderFactory.get("zonderPostcodesStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(50)
+		return new StepBuilder("zonderPostcodesStep", repository)
+			.<Long, Long> chunk(50, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -121,9 +119,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step imsWijzigingenStep(MammaImsWijzigingenDoorsturenReader reader, MammaImsWijzigingenDoorsturenWriter writer)
 	{
-		return stepBuilderFactory.get("imsWijzigingenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(50)
+		return new StepBuilder("imsWijzigingenStep", repository)
+			.<Long, Long> chunk(50, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -132,9 +129,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step afsprakenAnnulerenStep(MammaAfsprakenAnnulerenReader reader, MammaAfsprakenAnnulerenWriter writer)
 	{
-		return stepBuilderFactory.get("afsprakenAnnulerenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(50)
+		return new StepBuilder("afsprakenAnnulerenStep", repository)
+			.<Long, Long> chunk(50, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -143,9 +139,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step deelnamekansenHerzienStep(MammaDeelnamekansenHerzienReader reader, MammaDeelnamekansenHerzienWriter writer)
 	{
-		return stepBuilderFactory.get("deelnamekansenHerzienStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(50)
+		return new StepBuilder("deelnamekansenHerzienStep", repository)
+			.<Long, Long> chunk(50, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -154,9 +149,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step adresGewijzigdMarkerResetStep(MammaAdresGewijzigdMarkerResetReader reader, MammaAdresGewijzigdMarkerResetWriter writer)
 	{
-		return stepBuilderFactory.get("adresGewijzigdMarkerResetStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(50)
+		return new StepBuilder("adresGewijzigdMarkerResetStep", repository)
+			.<Long, Long> chunk(50, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

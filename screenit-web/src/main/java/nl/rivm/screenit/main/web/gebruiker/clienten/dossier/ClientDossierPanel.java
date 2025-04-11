@@ -464,7 +464,7 @@ public class ClientDossierPanel extends GenericPanel<Client>
 			protected void onEvent(AjaxRequestTarget target)
 			{
 				var verslag = item.getModelObject().getVerslag();
-				setResponsePage(new ClientVerslagPage(ModelUtil.dModel(verslag)));
+				setResponsePage(new ClientVerslagPage(ModelUtil.sModel(verslag)));
 			}
 		});
 	}

@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.service.BarcodeService;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.krysalis.barcode4j.impl.AbstractBarcodeBean;
 import org.krysalis.barcode4j.impl.code128.Code128Bean;

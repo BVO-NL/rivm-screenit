@@ -27,8 +27,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
 import nl.rivm.screenit.model.enums.SelectieType;
 import nl.rivm.screenit.model.verwerkingverslag.SelectieRapportage;
@@ -53,6 +51,8 @@ import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+
+import jakarta.annotation.Nullable;
 
 public class SelectieVerslagPanel extends GenericPanel<SelectieRapportage>
 {

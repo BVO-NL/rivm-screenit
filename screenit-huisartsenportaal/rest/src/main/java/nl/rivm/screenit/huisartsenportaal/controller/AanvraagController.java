@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.controller;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -30,19 +30,18 @@ import nl.rivm.screenit.huisartsenportaal.validator.LabformulierenAanvragenValid
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("aanvragen")
-@PreAuthorize("isAuthenticated()")
 public class AanvraagController extends BaseController
 {
 	@Autowired
@@ -60,15 +59,14 @@ public class AanvraagController extends BaseController
 		binder.addValidators(maximaleLabformulierenAanvragenValidator);
 	}
 
-	@RequestMapping(value = "/huisarts", method = RequestMethod.POST)
-	@PreAuthorize("hasRole('ROLE_AANVRAGEN')")
+	@PostMapping("/huisarts")
 	public ResponseEntity<AanvraagTotalenDto> getHuidigeAanvragen(@RequestBody AanvragenZoekObjectDto zoekObjectDto, BindingResult result)
 	{
 		AanvraagTotalenDto aanvragen = labformulierService.getAanvragenHuisarts(getIngelogdeHuisarts(), zoekObjectDto.getResultOptions());
 		return new ResponseEntity<>(aanvragen, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/locatie/{locatieId}/stats", method = RequestMethod.GET)
+	@GetMapping("/locatie/{locatieId}/stats")
 	public ResponseEntity getAanvraagStatistieken(@PathVariable Long locatieId)
 	{
 		if (!locatieService.isLocatieIdVanHuisarts(getIngelogdeHuisarts(), locatieId))

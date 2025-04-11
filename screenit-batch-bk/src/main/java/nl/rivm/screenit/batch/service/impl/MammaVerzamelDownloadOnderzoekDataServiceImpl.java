@@ -29,8 +29,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.zip.ZipOutputStream;
 
-import javax.annotation.PostConstruct;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.service.MammaVerzamelDownloadOnderzoekDataService;
@@ -55,6 +53,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.google.common.collect.ImmutableMap;
+
+import jakarta.annotation.PostConstruct;
 
 @Slf4j
 @Service

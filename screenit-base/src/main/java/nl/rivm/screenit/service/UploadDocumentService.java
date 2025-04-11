@@ -21,12 +21,15 @@ package nl.rivm.screenit.service;
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.model.UploadDocument;
+import nl.rivm.screenit.model.enums.FileStoreLocation;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
-import nl.rivm.screenit.model.UploadDocument;
-import nl.rivm.screenit.model.enums.FileStoreLocation;
+import java.util.Optional;
 
 public interface UploadDocumentService
 {
@@ -43,4 +46,8 @@ public interface UploadDocumentService
 	void update(UploadDocument uploadDocument) throws IOException;
 
 	void deleteDocumentFromList(UploadDocument document, List<UploadDocument> documents);
+
+	UploadDocument multipartToUploadDocument(MultipartFile fileUpload) throws IOException, IllegalStateException;
+
+	Optional<UploadDocument> getById(Long id);
 }

@@ -22,8 +22,10 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.rollenrechten;
  */
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import nl.rivm.screenit.main.service.algemeen.impl.RolDataProviderServiceImpl;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.form.FilterBvoFormPanel;
 import nl.rivm.screenit.main.web.component.table.ActiefPropertyColumn;
@@ -36,16 +38,18 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
-import nl.topicuszorg.wicket.search.HibernateDataProvider;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
+import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(
@@ -57,8 +61,8 @@ import org.wicketstuff.shiro.ShiroConstraint;
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class RollenOverzichtPanel extends GenericPanel<Rol>
 {
-
-	private static final long serialVersionUID = 1L;
+	@SpringBean
+	private RolDataProviderServiceImpl rolDataProviderService;
 
 	private WebMarkupContainer refreshContainer;
 
@@ -73,9 +77,6 @@ public class RollenOverzichtPanel extends GenericPanel<Rol>
 
 		add(new FilterBvoFormPanel<Rol>("bvoFilter", this.rolModel)
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void doFilter(IModel<Rol> filterModel, AjaxRequestTarget target)
 			{
@@ -93,8 +94,6 @@ public class RollenOverzichtPanel extends GenericPanel<Rol>
 
 		AjaxLink<Void> rolToevoegenKnop = new AjaxLink<>("rolToevoegen")
 		{
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
@@ -126,10 +125,8 @@ public class RollenOverzichtPanel extends GenericPanel<Rol>
 		columns.add(new ActiefPropertyColumn<>(Model.of(""), "actief", refreshContainer, zoekRol));
 
 		ScreenitDataTable<Rol, String> linkDataTable = new ScreenitDataTable<Rol, String>("rollen", columns,
-			new HibernateDataProvider<>(zoekRol, "naam"), Model.of("rollen"))
+			new RolDataProvider(), Model.of("rollen"))
 		{
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<Rol> model)
 			{
@@ -145,5 +142,32 @@ public class RollenOverzichtPanel extends GenericPanel<Rol>
 	{
 		super.onDetach();
 		ModelUtil.nullSafeDetach(this.rolModel);
+	}
+
+	class RolDataProvider extends SortableDataProvider<Rol, String>
+	{
+		public RolDataProvider()
+		{
+			super();
+			setSort("naam", SortOrder.ASCENDING);
+		}
+
+		@Override
+		public Iterator<Rol> iterator(long first, long count)
+		{
+			return rolDataProviderService.findPage(first, count, ModelUtil.nullSafeGet(rolModel), getSort()).iterator();
+		}
+
+		@Override
+		public long size()
+		{
+			return rolDataProviderService.size(ModelUtil.nullSafeGet(rolModel));
+		}
+
+		@Override
+		public IModel<Rol> model(Rol rol)
+		{
+			return ModelUtil.sModel(rol);
+		}
 	}
 }

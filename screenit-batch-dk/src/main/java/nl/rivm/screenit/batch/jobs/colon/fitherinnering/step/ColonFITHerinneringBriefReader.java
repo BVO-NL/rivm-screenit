@@ -23,9 +23,6 @@ package nl.rivm.screenit.batch.jobs.colon.fitherinnering.step;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -54,6 +51,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import com.google.common.primitives.Ints;
+
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 

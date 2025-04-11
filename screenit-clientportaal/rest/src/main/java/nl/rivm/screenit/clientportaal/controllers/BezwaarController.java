@@ -2,7 +2,7 @@ package nl.rivm.screenit.clientportaal.controllers;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -37,7 +37,6 @@ import nl.rivm.screenit.model.algemeen.BezwaarGroupViewWrapper;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.service.BezwaarService;
 import nl.rivm.screenit.service.ClientContactService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,8 +52,6 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class BezwaarController extends AbstractController
 {
-	private final HibernateService hibernateService;
-
 	private final ClientContactService clientContactService;
 
 	private final BezwaarService bezwaarService;
@@ -66,7 +63,7 @@ public class BezwaarController extends AbstractController
 	@GetMapping()
 	public ResponseEntity<List<BezwaarDto>> getBezwaren(Authentication authentication)
 	{
-		var client = getClient(authentication, hibernateService);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.BEZWAAR))
 		{
@@ -86,7 +83,7 @@ public class BezwaarController extends AbstractController
 	public ResponseEntity<List<BezwaarDto>> saveBezwaren(@RequestBody BezwaarDto[] bezwaarDtos,
 		Authentication authentication)
 	{
-		var client = getClient(authentication, hibernateService);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.BEZWAAR))
 		{

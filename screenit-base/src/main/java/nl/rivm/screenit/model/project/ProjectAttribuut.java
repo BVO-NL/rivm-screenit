@@ -22,12 +22,14 @@ package nl.rivm.screenit.model.project;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import java.io.Serial;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import nl.rivm.screenit.model.IActief;
 import nl.rivm.screenit.model.INaam;
@@ -46,6 +48,7 @@ import org.hibernate.envers.Audited;
 public class ProjectAttribuut extends AbstractHibernateObject implements INaam, IActief
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Column(nullable = false)
@@ -58,7 +61,7 @@ public class ProjectAttribuut extends AbstractHibernateObject implements INaam, 
 	private Boolean nietZichtbaarInClientDossier = false;
 
 	@Cascade({ CascadeType.SAVE_UPDATE })
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	private Project project;
 
 	@Column(nullable = false)

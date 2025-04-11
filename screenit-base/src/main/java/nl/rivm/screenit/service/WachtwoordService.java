@@ -24,7 +24,7 @@ package nl.rivm.screenit.service;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import lombok.NonNull;
 

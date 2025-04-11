@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.controller;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -24,37 +24,37 @@ package nl.rivm.screenit.huisartsenportaal.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.Valid;
-
 import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.huisartsenportaal.dto.HuisartsDto;
 import nl.rivm.screenit.huisartsenportaal.dto.MedewerkerDto;
+import nl.rivm.screenit.huisartsenportaal.dto.WachtwoordWijzigenDto;
+import nl.rivm.screenit.huisartsenportaal.exception.ValidatieException;
 import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
 import nl.rivm.screenit.huisartsenportaal.model.enums.Recht;
 import nl.rivm.screenit.huisartsenportaal.repository.OvereenkomstRepository;
+import nl.rivm.screenit.huisartsenportaal.service.AuthenticatieService;
 import nl.rivm.screenit.huisartsenportaal.service.HuisartsService;
 import nl.rivm.screenit.huisartsenportaal.service.SynchronisatieService;
 import nl.rivm.screenit.huisartsenportaal.validator.GebruikersnaamValidator;
 import nl.rivm.screenit.huisartsenportaal.validator.HuisartsValidator;
-import nl.rivm.screenit.huisartsenportaal.validator.WachtwoordRegistrerenValidator;
+import nl.rivm.screenit.huisartsenportaal.validator.WachtwoordWijzigenValidator;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("huisarts")
-@PreAuthorize("isAuthenticated()")
 @RequiredArgsConstructor
 public class HuisartsController extends BaseController
 {
@@ -62,8 +62,6 @@ public class HuisartsController extends BaseController
 	private final GebruikersnaamValidator gebruikersnaamValidator;
 
 	private final HuisartsValidator huisartsValidator;
-
-	private final WachtwoordRegistrerenValidator wachtwoordRegistrerenValidator;
 
 	private final HuisartsService huisartsService;
 
@@ -73,11 +71,9 @@ public class HuisartsController extends BaseController
 
 	private final ModelMapper modelMapper;
 
-	@InitBinder
-	public void dataBinding(WebDataBinder binder)
-	{
-		binder.addValidators(gebruikersnaamValidator, wachtwoordRegistrerenValidator, huisartsValidator);
-	}
+	private final WachtwoordWijzigenValidator wachtwoordWijzigenValidator;
+
+	private final AuthenticatieService authenticationService;
 
 	@GetMapping
 	public ResponseEntity<HuisartsDto> getHuisarts()
@@ -97,21 +93,27 @@ public class HuisartsController extends BaseController
 	}
 
 	@PutMapping(value = "/controle")
-	public ResponseEntity putControleHuisarts(@Valid @RequestBody HuisartsDto huisartsDto, BindingResult result)
+	public ResponseEntity controleHuisarts(@Valid @RequestBody HuisartsDto huisartsDto)
 	{
+		var result = new BeanPropertyBindingResult(huisartsDto, "huisartsDto");
+		gebruikersnaamValidator.validate(huisartsDto, result);
+		huisartsValidator.validate(huisartsDto, result);
 		if (result.hasErrors())
 		{
-			return ResponseEntity.badRequest().body(result.getAllErrors());
+			throw new ValidatieException(result.getAllErrors());
 		}
 		return ResponseEntity.ok().body(huisartsDto);
 	}
 
 	@PutMapping
-	public ResponseEntity putHuisarts(@Valid @RequestBody HuisartsDto huisartsDto, BindingResult result)
+	public ResponseEntity updateHuisarts(@Valid @RequestBody HuisartsDto huisartsDto)
 	{
+		var result = new BeanPropertyBindingResult(huisartsDto, "huisartsDto");
+		gebruikersnaamValidator.validate(huisartsDto, result);
+		huisartsValidator.validate(huisartsDto, result);
 		if (result.hasErrors())
 		{
-			return ResponseEntity.badRequest().body(result.getAllErrors());
+			throw new ValidatieException(result.getAllErrors());
 		}
 
 		var huisarts = getIngelogdeHuisarts();
@@ -133,6 +135,22 @@ public class HuisartsController extends BaseController
 			return new ResponseEntity<>(getMedewerkerDtoFrom(huisarts), HttpStatus.OK);
 		}
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
+
+	@PostMapping("/wachtwoord-wijzigen")
+	public ResponseEntity wachtwoordWijzigen(@RequestBody WachtwoordWijzigenDto wachtwoordDto)
+	{
+		var result = new BeanPropertyBindingResult(wachtwoordDto, "wachtwoordDto");
+		wachtwoordWijzigenValidator.validate(wachtwoordDto, result);
+		if (result.hasErrors())
+		{
+			throw new ValidatieException(result.getAllErrors());
+		}
+
+		Huisarts huisarts = getIngelogdeHuisarts();
+		authenticationService.updateWachtwoord(huisarts, wachtwoordDto.getNieuweWachtwoord());
+
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	private MedewerkerDto getMedewerkerDtoFrom(Huisarts huisarts)

@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -18,12 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {Component, ReactNode} from "react"
+import React, {Component, ErrorInfo, ReactNode} from "react"
 import {Grid, IconButton} from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
 import styles from "../../App.module.scss"
 import supportedBrowsers from "../../supportedBrowsers"
 import MijnBevolkingsOnderzoekLogo from "../../scss/media/MijnBevolkingsOnderzoekLogo"
+import {datadogRum} from "@datadog/browser-rum"
 
 interface Props {
 	children?: ReactNode;
@@ -47,6 +48,14 @@ class ErrorBoundary extends Component<Props, State> {
 
 	static getDerivedStateFromError(error: Error) {
 		return {hasError: true}
+	}
+
+	componentDidCatch(error: Error, info: ErrorInfo) {
+		const renderingError = new Error(error.message)
+		renderingError.name = `ReactRenderingError`
+		renderingError.stack = info.componentStack ?? undefined
+		renderingError.cause = error
+		datadogRum.addError(renderingError)
 	}
 
 	public render() {

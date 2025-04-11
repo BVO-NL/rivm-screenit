@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -30,7 +30,7 @@ import {useSelector} from "react-redux"
 import {State} from "../../../../datatypes/State"
 import BasePage from "../../../BasePage"
 import SearchResultAfspraken from "../../../../components/search_results/SearchResultAfspraken"
-import {formatDateWithDayName, formatTime, zoekIndex} from "../../../../utils/DateUtil"
+import {formatDateTime, formatDateWithDayName, formatTime, zoekIndex} from "../../../../utils/DateUtil"
 import {FormErrorComponent} from "../../../../components/form_error/FormErrorComponent"
 import Button from "../../../../components/input/Button"
 import {ArrowType} from "../../../../components/vectors/ArrowIconComponent"
@@ -46,6 +46,7 @@ import {placeNonBreakingSpaceInDate} from "../../../../utils/StringUtil"
 import {compareAsc} from "date-fns"
 import MammaAfspraakBevestigingsWizard from "./bevestigingswizard/MammaAfspraakBevestigingsWizard"
 import {ClientContactActieType} from "../../../../datatypes/ClientContactActieType"
+import {datadogRum} from "@datadog/browser-rum"
 
 export type AfspraakZoekFilter = {
 	vanaf?: Date,
@@ -62,7 +63,6 @@ const MammaAfspraakMakenPage = () => {
 	const gevondenAfsprakenDiv = useRef<HTMLDivElement | null>(null)
 	const [dagenBeschikbaar, setDagenBeschikbaar] = React.useState<boolean>(true)
 	const [gekozenAfspraak, setGekozenAfspraak] = React.useState<KandidaatAfspraak | undefined>(undefined)
-	const [afspraakMakenNietGelukt, setAfspraakMakenNietGelukt] = React.useState<boolean>(false)
 	const [zoekFilter, setZoekFilter] = React.useState<AfspraakZoekFilter>({
 		vanaf: undefined,
 		plaats: undefined,
@@ -71,6 +71,7 @@ const MammaAfspraakMakenPage = () => {
 	})
 	const [beschikbareDagen, setBeschikbareDagen] = React.useState<Date[]>([])
 	const beschikbareActies = useSelector((state: State) => state.client.beschikbareActies.beschikbareActies)
+	const client = useSelector((state: State) => state.client)
 
 	useEffect(() => {
 		ScreenitBackend.get(`/mamma/afspraak/standplaatsPlaatsen`)
@@ -153,6 +154,11 @@ const MammaAfspraakMakenPage = () => {
 
 							onHoverText={getString(properties.searchresult.hovertext)}
 							onClickAction={() => {
+								datadogRum.addAction("mammaAfspraakOptieGekozen", {
+									"client": client.persoon.id,
+									"datumTijd": formatDateTime(kandidaatAfspraak.datumTijd),
+									"standplaatsPeriode": kandidaatAfspraak.standplaatsPeriodeId,
+								})
 								kandidaatAfspraak.filter = zoekFilter
 								setGekozenAfspraak(kandidaatAfspraak)
 							}}
@@ -188,27 +194,25 @@ const MammaAfspraakMakenPage = () => {
 																	}}/>}
 
 					{resultatenGevonden && !zoekFilter.meerOpties &&
-					<div className={styles.showMoreResultsButtonArea}>
-						<Button
-							className={styles.meerResultaten}
-							label={getString(properties.navigation.more_results)}
-							displayArrow={ArrowType.ARROW_DOWN}
-							onClick={() => {
-								const nieuwZoekFilter = {
-									...zoekFilter,
-									meerOpties: true,
-								}
-								setZoekFilter(nieuwZoekFilter)
-								zoekAfspraken(nieuwZoekFilter)
-							}}/>
-					</div>}
+						<div className={styles.showMoreResultsButtonArea}>
+							<Button
+								className={styles.meerResultaten}
+								label={getString(properties.navigation.more_results)}
+								displayArrow={ArrowType.ARROW_DOWN}
+								onClick={() => {
+									const nieuwZoekFilter = {
+										...zoekFilter,
+										meerOpties: true,
+									}
+									setZoekFilter(nieuwZoekFilter)
+									zoekAfspraken(nieuwZoekFilter)
+								}}/>
+						</div>}
 				</Col>
 			</Row>
 
 			{gekozenAfspraak && <MammaAfspraakBevestigingsWizard setGekozenAfspraak={setGekozenAfspraak}
 																 gekozenAfspraak={gekozenAfspraak}
-																 setAfspraakMakenNietGelukt={setAfspraakMakenNietGelukt}
-																 afspraakMakenNietGelukt={afspraakMakenNietGelukt}
 																 zoekAfspraken={zoekAfspraken}
 																 zoekFilter={zoekFilter}/>}
 

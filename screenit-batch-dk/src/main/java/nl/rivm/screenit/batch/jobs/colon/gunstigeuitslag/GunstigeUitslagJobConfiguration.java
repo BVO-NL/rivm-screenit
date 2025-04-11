@@ -29,6 +29,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,7 +41,7 @@ public class GunstigeUitslagJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job gunstigeUitslagJob(GunstigeUitslagJobListener listener, Step gunstigeUitslagStep)
 	{
-		return jobBuilderFactory.get(JobType.GUNSTIGE_UITSLAG.name())
+		return new JobBuilder(JobType.GUNSTIGE_UITSLAG.name(), repository)
 			.listener(listener)
 			.start(gunstigeUitslagStep)
 			.build();
@@ -48,9 +50,8 @@ public class GunstigeUitslagJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step gunstigeUitslagStep(GunstigeUitslagBriefReader reader, GunstigeUitslagBriefWriter writer)
 	{
-		return stepBuilderFactory.get("gunstigeUitslagStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("gunstigeUitslagStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

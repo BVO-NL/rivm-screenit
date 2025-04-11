@@ -1,0 +1,126 @@
+/*-
+ * ========================LICENSE_START=================================
+ * medewerkerportaal
+ * %%
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+.clr-display-flex {
+  display: flex;
+}
+
+.clr-text-left {
+  text-align: left !important;
+}
+
+.clr-position-relative {
+  position: relative;
+}
+
+.btn-group {
+  margin-right: 0;
+}
+
+.datagrid {
+  box-sizing: border-box !important;
+
+  .datagrid-table > .datagrid-row .datagrid-select .clr-checkbox-wrapper input[type="checkbox"] + .clr-control-label::before, .datagrid-table > .datagrid-row .datagrid-select .clr-checkbox-wrapper input[type="checkbox"] + .clr-control-label::after {
+    top: 0.35rem;
+  }
+}
+
+.datagrid-table .datagrid-cell {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.main-container {
+  height: calc(100vh - 151px);
+}
+
+.content-area {
+  max-width: 768px;
+}
+
+.tijdslots-verwijderen-modal {
+  .modal-body-wrapper {
+    overflow-y: hidden;
+  }
+}
+
+.clr-combobox-options {
+  .clr-combobox-option {
+    --clr-dropdown-item-padding: 0.15rem 0.5rem;
+    width: auto;
+
+    &.clr-option-header {
+      font-weight: bold;
+      color: var(--clr-text);
+      border-bottom: 1px solid var(--clr-combobox-border-color);
+    }
+  }
+}
+
+.no-error-icon {
+  .clr-validate-icon {
+    display: none;
+  }
+}
+
+cds-icon {
+  stroke: var(--color);
+}
+
+.clr-control-inline-without-label .clr-control-inline {
+  flex-basis: 0;
+  flex-grow: 1;
+  max-width: 100%;
+}
+
+.clr-form.form-in-modal {
+  .clr-control-label {
+    flex: 0 0 100%;
+    max-width: 100%;
+
+    @media (min-width: 768px) {
+      flex: 0 0 26%;
+      max-width: 26%;
+    }
+  }
+  .clr-control-container:not(.clr-control-inline) {
+    flex: 0 0 100%;
+    max-width: 100%;
+
+    .clr-control-label {
+      max-width: 100%;
+      flex: 0 0 100%
+    }
+
+    @media (min-width: 768px) {
+      flex: 0 0 58.3333333333%;
+      max-width: 58.3333333333%;
+    }
+  }
+}
+
+.tooltip-content {
+  --clr-tooltip-border-radius: 4px;
+}
+
+.table.table-noborder td:first-child {
+  padding-left: 0;
+}

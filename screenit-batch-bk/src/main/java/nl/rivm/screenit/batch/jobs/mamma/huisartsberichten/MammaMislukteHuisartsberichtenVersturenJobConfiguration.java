@@ -28,6 +28,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,7 +40,7 @@ public class MammaMislukteHuisartsberichtenVersturenJobConfiguration extends Abs
 	@Bean
 	public Job huisartsberichtenOpnieuwSturenJob(MammaMislukteHuisartsberichtenVersturenListener listener, Step huisartsberichtenOpnieuwSturenStep)
 	{
-		return jobBuilderFactory.get(JobType.MAMMA_HUISARTS_BERICHTEN_OPNIEUW_VERSTUREN.name())
+		return new JobBuilder(JobType.MAMMA_HUISARTS_BERICHTEN_OPNIEUW_VERSTUREN.name(), repository)
 			.listener(listener)
 			.start(huisartsberichtenOpnieuwSturenStep)
 			.build();
@@ -47,9 +49,8 @@ public class MammaMislukteHuisartsberichtenVersturenJobConfiguration extends Abs
 	@Bean
 	public Step huisartsberichtenOpnieuwSturenStep(MammaMislukteHuisartsberichtenVersturenReader reader, MammaMislukteHuisartsberichtenVersturenWriter writer)
 	{
-		return stepBuilderFactory.get("huisartsberichtenOpnieuwSturenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(50)
+		return new StepBuilder("huisartsberichtenOpnieuwSturenStep", repository)
+			.<Long, Long> chunk(50, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

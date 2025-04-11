@@ -23,7 +23,7 @@ import {Form, FormGroup, Input, Label} from "reactstrap"
 
 export type CheckboxValueProps = {
 	label: string;
-	checked: boolean;
+	checked?: boolean;
 	disabled: boolean;
 	handleChange: (value: boolean) => void;
 };

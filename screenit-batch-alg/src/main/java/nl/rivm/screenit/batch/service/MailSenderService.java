@@ -21,11 +21,11 @@ package nl.rivm.screenit.batch.service;
  * =========================LICENSE_END==================================
  */
 
-import javax.mail.MessagingException;
-
 import nl.rivm.screenit.model.Mail;
 
 import org.springframework.mail.MailException;
+
+import jakarta.mail.MessagingException;
 
 public interface MailSenderService
 {

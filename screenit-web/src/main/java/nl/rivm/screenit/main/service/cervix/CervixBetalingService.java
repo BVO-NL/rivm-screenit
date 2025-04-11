@@ -25,8 +25,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import nl.rivm.screenit.dto.cervix.facturatie.CervixBetalingsZoekObject;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.BMHKLaboratorium;
@@ -38,6 +36,8 @@ import nl.rivm.screenit.model.cervix.facturatie.CervixBoekRegel;
 import nl.rivm.screenit.model.cervix.facturatie.CervixTarief;
 
 import org.springframework.data.domain.Sort;
+
+import jakarta.xml.bind.JAXBException;
 
 public interface CervixBetalingService
 {

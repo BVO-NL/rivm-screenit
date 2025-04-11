@@ -21,10 +21,10 @@ package nl.rivm.screenit.model.project;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;

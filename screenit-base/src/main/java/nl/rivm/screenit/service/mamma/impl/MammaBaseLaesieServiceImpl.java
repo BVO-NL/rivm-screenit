@@ -22,10 +22,11 @@ package nl.rivm.screenit.service.mamma.impl;
  */
 
 import java.math.BigDecimal;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
+import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.comparator.MammaLaesieComparator;
 import nl.rivm.screenit.model.mamma.MammaArchitectuurverstoringLaesie;
@@ -39,7 +40,6 @@ import nl.rivm.screenit.service.mamma.MammaBaseLaesieService;
 import nl.rivm.screenit.service.mamma.MammaLaesieLocatieService;
 import nl.rivm.screenit.service.mamma.be.verslag.MammaLaesieTypeMergeField;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,37 +48,32 @@ import com.google.common.base.Strings;
 
 @Service
 @Transactional(propagation = Propagation.SUPPORTS)
+@RequiredArgsConstructor
 public class MammaBaseLaesieServiceImpl implements MammaBaseLaesieService
 {
 
-	@Autowired
-	private MammaLaesieLocatieService laesieTypeService;
+	private final MammaLaesieLocatieService laesieLocatieService;
 
-	private List<Map<MammaLaesieTypeMergeField, String>> generateMapVoorLaesieType(MammaLezing verslaglezing, MammaLaesieType filter, Class<? extends MammaLaesie> clazz)
+	private List<Map<MammaLaesieTypeMergeField, String>> generateMapVoorLaesieType(MammaLezing verslaglezing, MammaLaesieType type, Class<? extends MammaLaesie> clazz)
 	{
 		return verslaglezing.getLaesies().stream()
-			.filter(laesie -> laesie.getMammaLaesieType() == filter)
+			.filter(laesie -> laesie.getMammaLaesieType() == type)
 			.map(clazz::cast)
 			.sorted(new MammaLaesieComparator())
 			.map(this::getMammaLaesieTypeMergeFieldStringMap)
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	private Map<MammaLaesieTypeMergeField, String> getMammaLaesieTypeMergeFieldStringMap(MammaLaesie laesie)
 	{
-		switch (laesie.getMammaLaesieType())
+		return switch (laesie.getMammaLaesieType())
 		{
-		case CALCIFICATIES:
-			return getCalificatiesMap((MammaCalcificatiesLaesie) laesie);
-		case ARCHITECTUURVERSTORING:
-			return getArchitectuurVerstoringMap((MammaArchitectuurverstoringLaesie) laesie);
-		case MASSA:
-			return getMassaMap((MammaMassaLaesie) laesie);
-		case ASYMMETRIE:
-			return getAsymetrieLaesieMap((MammaAsymmetrieLaesie) laesie);
-		default:
-			throw new IllegalStateException("Onbekende laesie type");
-		}
+			case CALCIFICATIES -> getCalcificatiesMap((MammaCalcificatiesLaesie) laesie);
+			case ARCHITECTUURVERSTORING -> getArchitectuurVerstoringMap((MammaArchitectuurverstoringLaesie) laesie);
+			case MASSA -> getMassaMap((MammaMassaLaesie) laesie);
+			case ASYMMETRIE -> getAsymetrieLaesieMap((MammaAsymmetrieLaesie) laesie);
+			default -> throw new IllegalStateException("Onbekende laesie type");
+		};
 	}
 
 	private void generateLaesieMassaTekst(final StringBuilder laesieTekstBuilder, MammaLezing verslaglezing)
@@ -90,10 +85,7 @@ public class MammaBaseLaesieServiceImpl implements MammaBaseLaesieService
 		}
 		for (Map<MammaLaesieTypeMergeField, String> map : mergeFieldPerLaesie)
 		{
-			laesieTekstBuilder.append("Laesie massa: ");
-			laesieTekstBuilder.append(map.get(MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR));
-			laesieTekstBuilder.append(":\n");
-			buildBaseString(map, laesieTekstBuilder);
+			buildBaseString("Laesie massa ", map, laesieTekstBuilder);
 
 			keyValueToString(laesieTekstBuilder, map, MammaLaesieTypeMergeField._BK_LAESIE_GROOTTE);
 			keyValueToString(laesieTekstBuilder, map, MammaLaesieTypeMergeField._BK_LAESIE_MASSA_VORM);
@@ -116,10 +108,7 @@ public class MammaBaseLaesieServiceImpl implements MammaBaseLaesieService
 		}
 		for (Map<MammaLaesieTypeMergeField, String> map : mergeFieldPerLaesie)
 		{
-			laesieTekstBuilder.append("Laesie calcificaties ");
-			laesieTekstBuilder.append(map.get(MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR));
-			laesieTekstBuilder.append(":\n");
-			buildBaseString(map, laesieTekstBuilder);
+			buildBaseString("Laesie calcificaties ", map, laesieTekstBuilder);
 			keyValueToString(laesieTekstBuilder, map, MammaLaesieTypeMergeField._BK_LAESIE_GROOTTE);
 			keyValueToString(laesieTekstBuilder, map, MammaLaesieTypeMergeField._BK_LAESIE_CALC_VERD_VORM);
 			keyValueToString(laesieTekstBuilder, map, MammaLaesieTypeMergeField._BK_LAESIE_CALC_DISTRIBUTIE);
@@ -139,10 +128,7 @@ public class MammaBaseLaesieServiceImpl implements MammaBaseLaesieService
 		}
 		for (Map<MammaLaesieTypeMergeField, String> map : mergeFieldPerLaesie)
 		{
-			laesieTekstBuilder.append("Laesie asymmetrie ");
-			laesieTekstBuilder.append(map.get(MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR));
-			laesieTekstBuilder.append(":\n");
-			buildBaseString(map, laesieTekstBuilder);
+			buildBaseString("Laesie asymmetrie ", map, laesieTekstBuilder);
 			keyValueToString(laesieTekstBuilder, map, MammaLaesieTypeMergeField._BK_LAESIE_GROOTTE);
 			keyValueToString(laesieTekstBuilder, map, MammaLaesieTypeMergeField._BK_LAESIE_ASSYMETRIE_SPEC);
 			laesieTekstBuilder.append("\r\n");
@@ -162,21 +148,22 @@ public class MammaBaseLaesieServiceImpl implements MammaBaseLaesieService
 		}
 		for (Map<MammaLaesieTypeMergeField, String> map : mergeFieldPerLaesie)
 		{
-			laesieTekstBuilder.append("Laesie architectuur verstoring ");
-			laesieTekstBuilder.append(map.get(MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR));
-			laesieTekstBuilder.append(":\n");
-			buildBaseString(map, laesieTekstBuilder);
+			buildBaseString("Laesie architectuur verstoring ", map, laesieTekstBuilder);
 			laesieTekstBuilder.append("\r\n");
 		}
 		laesieTekstBuilder.append("\n");
 
 	}
 
-	private void buildBaseString(Map<MammaLaesieTypeMergeField, String> laesiesMap, StringBuilder stringBuilder)
+	private void buildBaseString(String laesieTypeTekst, Map<MammaLaesieTypeMergeField, String> laesiesMap, StringBuilder laesieTekstBuilder)
 	{
-		keyValueToString(stringBuilder, laesiesMap, MammaLaesieTypeMergeField._BK_LAESIE_ZIJDE);
-		keyValueToString(stringBuilder, laesiesMap, MammaLaesieTypeMergeField._BK_LAESIE_KWADRANT);
-		keyValueToString(stringBuilder, laesiesMap, MammaLaesieTypeMergeField._BK_LAESIE_DIEPTE);
+		keyValueToString(laesieTekstBuilder, laesiesMap, MammaLaesieTypeMergeField._BK_LAESIE_VOLGORDE);
+		laesieTekstBuilder.append(laesieTypeTekst);
+		laesieTekstBuilder.append(laesiesMap.get(MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR));
+		laesieTekstBuilder.append(":\n");
+		keyValueToString(laesieTekstBuilder, laesiesMap, MammaLaesieTypeMergeField._BK_LAESIE_ZIJDE);
+		keyValueToString(laesieTekstBuilder, laesiesMap, MammaLaesieTypeMergeField._BK_LAESIE_KWADRANT);
+		keyValueToString(laesieTekstBuilder, laesiesMap, MammaLaesieTypeMergeField._BK_LAESIE_DIEPTE);
 	}
 
 	private void keyValueToString(StringBuilder stringBuilder, Map<MammaLaesieTypeMergeField, String> laesiesMap, MammaLaesieTypeMergeField field)
@@ -189,18 +176,6 @@ public class MammaBaseLaesieServiceImpl implements MammaBaseLaesieService
 			stringBuilder.append(value);
 			stringBuilder.append("\n");
 		}
-	}
-
-	@Override
-	public Map<MammaLaesieTypeMergeField, String> getBaseLaesieMap(MammaLaesie laesie)
-	{
-		Map<MammaLaesieTypeMergeField, String> laesieMap = new HashMap<>();
-		laesieMap.put(MammaLaesieTypeMergeField._BK_LAESIE_ZIJDE, laesie.getMammaZijde().getNaam());
-		laesieMap.put(MammaLaesieTypeMergeField._BK_LAESIE_KWADRANT, laesieTypeService.laesie2kwadrant(laesie));
-		laesieMap.put(MammaLaesieTypeMergeField._BK_LAESIE_DIEPTE, laesieTypeService.laesie2diepte(laesie) + " een derde");
-		laesieMap.put(MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR,
-			isVolgnummerNodig(laesie.getLezing().getLaesies(), laesie) ? String.valueOf(laesie.getNummer()) : "");
-		return laesieMap;
 	}
 
 	@Override
@@ -219,7 +194,7 @@ public class MammaBaseLaesieServiceImpl implements MammaBaseLaesieService
 	}
 
 	@Override
-	public Map<MammaLaesieTypeMergeField, String> getCalificatiesMap(MammaCalcificatiesLaesie laesie)
+	public Map<MammaLaesieTypeMergeField, String> getCalcificatiesMap(MammaCalcificatiesLaesie laesie)
 	{
 		Map<MammaLaesieTypeMergeField, String> laesieMap = getBaseLaesieMap(laesie);
 		getLaesieGrootte(laesieMap, laesie.getLaesieGrootteInCm());
@@ -239,16 +214,27 @@ public class MammaBaseLaesieServiceImpl implements MammaBaseLaesieService
 		return laesieMap;
 	}
 
+	private Map<MammaLaesieTypeMergeField, String> getBaseLaesieMap(MammaLaesie laesie)
+	{
+		var laesieMap = new EnumMap<MammaLaesieTypeMergeField, String>(MammaLaesieTypeMergeField.class);
+		laesieMap.put(MammaLaesieTypeMergeField._BK_LAESIE_VOLGORDE, laesie.getLaesieVolgorde());
+		laesieMap.put(MammaLaesieTypeMergeField._BK_LAESIE_ZIJDE, laesie.getMammaZijde().getNaam());
+		laesieMap.put(MammaLaesieTypeMergeField._BK_LAESIE_KWADRANT, laesieLocatieService.laesie2kwadrant(laesie));
+		laesieMap.put(MammaLaesieTypeMergeField._BK_LAESIE_DIEPTE, laesieLocatieService.laesie2diepte(laesie) + " een derde");
+		laesieMap.put(MammaLaesieTypeMergeField._BK_LAESIE_VOLG_NR,
+			isVolgnummerNodig(laesie.getLezing().getLaesies(), laesie) ? String.valueOf(laesie.getNummer()) : "");
+		return laesieMap;
+	}
+
 	private void getLaesieGrootte(Map<MammaLaesieTypeMergeField, String> laesieMap, BigDecimal laesieGrootte)
 	{
-		laesieMap.put(MammaLaesieTypeMergeField._BK_LAESIE_GROOTTE, laesieGrootte == null ? "" : String.format("%,.1f", laesieGrootte) + " cm");
+		laesieMap.put(MammaLaesieTypeMergeField._BK_LAESIE_GROOTTE, laesieGrootte == null ? "" : "%,.1f".formatted(laesieGrootte) + " cm");
 	}
 
 	@Override
 	public String getAllLaesieTekstVoorVerslagLezing(MammaLezing verslaglezing)
 	{
 		final StringBuilder laesieTekstBuilder = new StringBuilder();
-
 		generateLaesieMassaTekst(laesieTekstBuilder, verslaglezing);
 		generateLaesieCalcificatiesTekst(laesieTekstBuilder, verslaglezing);
 		generateLaesieArchitectuurVerstoringTekst(laesieTekstBuilder, verslaglezing);

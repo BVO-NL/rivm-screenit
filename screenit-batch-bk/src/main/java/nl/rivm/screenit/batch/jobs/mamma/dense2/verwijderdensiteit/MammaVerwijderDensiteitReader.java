@@ -21,10 +21,6 @@ package nl.rivm.screenit.batch.jobs.mamma.dense2.verwijderdensiteit;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Root;
-
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
@@ -36,6 +32,10 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Root;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 

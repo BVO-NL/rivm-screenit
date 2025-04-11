@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.service.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -31,7 +31,6 @@ import nl.rivm.screenit.huisartsenportaal.service.WoonplaatsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,7 +39,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 @Slf4j
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
 public class AdresServiceImpl implements AdresService
 {
 
@@ -53,7 +51,7 @@ public class AdresServiceImpl implements AdresService
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public Adres updateAndGetAdres(AdresDto adresDto)
 	{
 		Adres adres = null;

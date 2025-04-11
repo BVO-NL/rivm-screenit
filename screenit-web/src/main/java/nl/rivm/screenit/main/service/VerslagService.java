@@ -25,26 +25,14 @@ import java.util.List;
 
 import nl.rivm.screenit.model.BerichtZoekFilter;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
-import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
-import nl.rivm.screenit.model.verslag.VerslagContent;
-import nl.topicuszorg.formulieren2.api.resultaat.FormulierResultaat;
-import nl.topicuszorg.formulieren2.persistence.resultaat.FormulierResultaatImpl;
 
 public interface VerslagService
 {
-
-	void saveOrAfronden(VerslagContent<?> verslagContent, FormulierResultaat resultaat, boolean afronden, InstellingGebruiker instellingGebruiker);
-
-	boolean magAfronden(VerslagType verslagType, Client client);
-
-	void preFillAntwoorden(Verslag verslag, FormulierResultaatImpl formulierResultaat, Gebruiker gebruiker);
-
 	List<MdlVerslag> getAlleMdlVerslagenVanClient(Client client);
 
 	List<OntvangenCdaBericht> zoekBerichten(BerichtZoekFilter filter, long first, long count, String property, boolean ascending);

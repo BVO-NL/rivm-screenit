@@ -22,6 +22,7 @@ import {connect} from "react-redux"
 import MbbSignaleringView, {MbbSignaleringViewDispatchProps, MbbSignaleringViewStateProps} from "./MbbSignaleringView"
 import {getIfExists, getMandatory} from "../../../util/MapUtil"
 import {
+	createActionHuidscheuring,
 	createActionMaakAanvullendeInformatieOperatie,
 	createActionMaakExtraMedewerker,
 	createActionMaakMbbOpmerking,
@@ -57,6 +58,7 @@ const mapStateToProps = (state: RootState, ownProps: MbbSignalerenContainerProps
 		operatieRechts: onderzoek?.operatieRechts,
 		operatieLinks: onderzoek?.operatieLinks,
 		aanvullendeInformatieOperatie: onderzoek?.aanvullendeInformatieOperatie,
+		huidscheuring: onderzoek?.huidscheuring,
 		afspraakId: afspraak.id,
 		disabled: (afspraak.doorgevoerd || disabled),
 	}
@@ -85,8 +87,11 @@ const mapDispatchToProps = (dispatch: Dispatch): MbbSignaleringViewDispatchProps
 		verwerkOperatieLinksChanged: (afspraakId: number, operatieLinks: boolean): void => {
 			dispatchActions(dispatch, createActionOperatieLinks(afspraakId, operatieLinks))
 		},
-		verwerkaanvullendeInformatieOperatie: (afspraakId: number, aanvullendeInformatieOperatie: string): void => {
+		verwerkAanvullendeInformatieOperatie: (afspraakId: number, aanvullendeInformatieOperatie: string): void => {
 			dispatchActions(dispatch, createActionMaakAanvullendeInformatieOperatie(afspraakId, aanvullendeInformatieOperatie))
+		},
+		verwerkHuidscheuringChanged: (afspraakId: number, huidscheuring: boolean): void => {
+			dispatchActions(dispatch, createActionHuidscheuring(afspraakId, huidscheuring))
 		},
 	}
 }

@@ -21,9 +21,13 @@
 import logging
 
 import base
+import numpy as np
 import psycopg2
 from pandas import DataFrame
 from psycopg2 import extras
+from psycopg2.extensions import register_adapter, AsIs
+
+register_adapter(np.float64, AsIs)
 
 min_voorgaande_screening_rondes_eerste_ronde = 0
 max_voorgaande_screening_rondes_eerste_ronde = 0

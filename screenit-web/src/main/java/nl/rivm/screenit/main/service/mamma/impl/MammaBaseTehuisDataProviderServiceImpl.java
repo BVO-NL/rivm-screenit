@@ -25,18 +25,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-
 import nl.rivm.screenit.main.dto.mamma.MammaTehuisDto;
 import nl.rivm.screenit.main.service.RepositoryDataProviderService;
 import nl.rivm.screenit.main.service.mamma.IMammaTehuisDto;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.tehuis.MammaTehuisFilter;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
-import nl.rivm.screenit.model.mamma.MammaStandplaats_;
 import nl.rivm.screenit.model.mamma.MammaTehuis;
-import nl.rivm.screenit.model.mamma.MammaTehuis_;
 import nl.rivm.screenit.repository.mamma.MammaTehuisRepository;
 import nl.rivm.screenit.service.mamma.MammaBaseTehuisService;
 
@@ -47,7 +41,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.mamma.MammaTehuisSpecification.filterActief;
 import static nl.rivm.screenit.specification.mamma.MammaTehuisSpecification.filterNaam;
 import static nl.rivm.screenit.specification.mamma.MammaTehuisSpecification.filterStandplaats;
@@ -66,17 +59,6 @@ public class MammaBaseTehuisDataProviderServiceImpl extends RepositoryDataProvid
 			.and(filterStandplaats(filter.getTehuis().getStandplaats()))
 			.and(heeftStandplaatsInRegio(filter.getRegio()))
 			.and(filterActief(filter.getActief()));
-	}
-
-	@Override
-	protected Order addJoinsForSortingOrCreateDedicatedOrders(Sort.Order order, Root<MammaTehuis> r, CriteriaBuilder cb)
-	{
-		if (order.getProperty().startsWith(MammaStandplaats_.REGIO))
-		{
-			var standplaatsJoin = join(r, MammaTehuis_.standplaats);
-			join(standplaatsJoin, MammaStandplaats_.regio);
-		}
-		return super.addJoinsForSortingOrCreateDedicatedOrders(order, r, cb);
 	}
 
 	public List<IMammaTehuisDto> zoekTehuizen(MammaTehuisFilter filter, long first, long count, SortParam<String> sort)

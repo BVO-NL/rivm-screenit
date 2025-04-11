@@ -2,7 +2,7 @@ package nl.rivm.screenit.clientportaal.services.mamma;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%

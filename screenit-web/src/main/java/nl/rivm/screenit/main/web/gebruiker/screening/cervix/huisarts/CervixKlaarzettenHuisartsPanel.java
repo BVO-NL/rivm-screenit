@@ -31,13 +31,15 @@ import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.validator.AchternaamValidator;
+import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
 import nl.rivm.screenit.main.web.component.validator.TussenvoegselValidator;
 import nl.rivm.screenit.main.web.component.validator.VoorlettersValidator;
 import nl.rivm.screenit.model.Aanhef;
 import nl.rivm.screenit.model.Woonplaats;
+import nl.rivm.screenit.model.Woonplaats_;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixRegioBrief;
-import nl.rivm.screenit.service.GemeenteService;
+import nl.rivm.screenit.repository.algemeen.WoonplaatsRepository;
 import nl.rivm.screenit.service.MailService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
@@ -55,15 +57,13 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 
 public abstract class CervixKlaarzettenHuisartsPanel extends GenericPanel<CervixHuisarts>
 {
-
-	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(CervixKlaarzettenHuisartsPanel.class);
 
@@ -77,20 +77,20 @@ public abstract class CervixKlaarzettenHuisartsPanel extends GenericPanel<Cervix
 	private MailService mailService;
 
 	@SpringBean
-	private GemeenteService gemeenteService;
+	private WoonplaatsRepository woonplaatsRepository;
 
 	@SpringBean
 	private HibernateService hibernateService;
 
-	private Form<CervixHuisarts> form;
+	private final Form<CervixHuisarts> form;
 
-	private IModel<List<Woonplaats>> alleWoonplaatsen;
+	private final IModel<List<Woonplaats>> alleWoonplaatsen;
 
 	public CervixKlaarzettenHuisartsPanel(String id, CervixHuisarts arts)
 	{
 		super(id, ModelUtil.ccModel(arts));
 
-		alleWoonplaatsen = ModelUtil.listRModel(hibernateService.loadAll(Woonplaats.class, "naam", true));
+		alleWoonplaatsen = ModelUtil.listRModel(woonplaatsRepository.findAll(Sort.by(Woonplaats_.NAAM)));
 
 		form = new ScreenitForm<>("form", getModel());
 		add(form);
@@ -119,7 +119,7 @@ public abstract class CervixKlaarzettenHuisartsPanel extends GenericPanel<Cervix
 			public Object getDisplayValue(Woonplaats woonplaats)
 			{
 
-				return woonplaats.getNaam() + " (Gemeente: " + woonplaats.getGemeente().getNaam() + ")";
+				return woonplaats.getNaam() + " (Gemeente: " + woonplaats.getGemeente().getNaam() + ") - " + woonplaats.getId();
 			}
 
 			@Override

@@ -22,19 +22,30 @@ package nl.rivm.screenit.main.web.gebruiker.gedeeld.brievenafdrukken;
  */
 
 import nl.rivm.screenit.model.MergedBrieven;
+import nl.rivm.screenit.model.UploadDocument;
+import nl.topicuszorg.documentupload.wicket.UploadDocumentLink;
 import nl.topicuszorg.documentupload.wicket.UploadDocumentPdfObjectContainer;
-import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class MergedBrievenPrintPanel<MB extends MergedBrieven<?>> extends GenericPanel<MB>
 {
 
+	@SpringBean(name = "testModus")
+	private Boolean testModus;
+
 	public MergedBrievenPrintPanel(String id, IModel<MB> model)
 	{
 		super(id, model);
-		final MB mBrieven = model.getObject();
-		add(new UploadDocumentPdfObjectContainer("pdfObject", ModelUtil.cModel(mBrieven.getMergedBrieven())));
+
+		var mergedBrievenModel = new PropertyModel<UploadDocument>(model, "mergedBrieven");
+
+		var pdfObjectContainer = new UploadDocumentPdfObjectContainer("pdfObject", mergedBrievenModel);
+		add(pdfObjectContainer);
+		add(new UploadDocumentLink("downloadPdf", mergedBrievenModel, true)
+			.setVisible(testModus));
 	}
 }

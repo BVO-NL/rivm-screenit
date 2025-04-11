@@ -21,11 +21,13 @@ package nl.rivm.screenit.model.mamma;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import java.io.Serial;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import org.hibernate.envers.Audited;
 
@@ -34,6 +36,7 @@ import org.hibernate.envers.Audited;
 @Audited
 public class MammaKansberekeningScreeningRondeEvent extends MammaKansberekeningEvent
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@OneToOne(optional = true, fetch = FetchType.LAZY, mappedBy = "screeningRondeEvent")

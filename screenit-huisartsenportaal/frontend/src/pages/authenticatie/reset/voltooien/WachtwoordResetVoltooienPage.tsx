@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useAppSelector, useAppThunkDispatch} from "../../../../index"
+import {useAppThunkDispatch} from "../../../../index"
 import BaseAuthenticationPage from "../../BaseAuthenticationPage"
 import properties from "./WachtwoordResetVoltooienPage.json"
 import validatieProperties from "../../../../util/ValidatieUtil.json"
@@ -36,7 +36,6 @@ import React from "react"
 import {wachtwoordValidatie} from "../../../../util/ValidatieUtil"
 
 const WachtwoordResetVoltooienPage = () => {
-	const oauth = useAppSelector((state => state.oauth))
 	const dispatch = useAppThunkDispatch()
 	const navigate = useNavigate()
 
@@ -45,6 +44,7 @@ const WachtwoordResetVoltooienPage = () => {
 			title={getString(properties.title)}
 			submitText={getString(properties.form.buttons.submit)}
 			initialValues={{
+				oudeWachtwoord: "",
 				nieuweWachtwoord: "",
 				nieuweWachtwoordControle: "",
 			}}
@@ -57,7 +57,7 @@ const WachtwoordResetVoltooienPage = () => {
 			})}
 			onSubmit={(wijzigenDto => {
 				dispatch(loadingThunkAction(wachtwoordWijzigen(wijzigenDto))).then(() => {
-					dispatch(afmelden(oauth!)).then(() => {
+					dispatch(afmelden()).then(() => {
 						dispatch(createActionPushToast({type: ToastType.SUCCESS, message: getString(properties.toast.success)}))
 					})
 					navigate("/")

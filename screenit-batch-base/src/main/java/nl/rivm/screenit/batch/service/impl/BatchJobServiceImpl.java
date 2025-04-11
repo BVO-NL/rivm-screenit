@@ -36,7 +36,6 @@ import nl.rivm.screenit.model.batch.BatchQueue;
 import nl.rivm.screenit.model.enums.BatchApplicationType;
 import nl.rivm.screenit.model.enums.JobType;
 import nl.rivm.screenit.service.DistributedLockService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.slf4j.Logger;
@@ -45,25 +44,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
 public class BatchJobServiceImpl implements BatchJobService
 {
-
 	private static final Logger LOG = LoggerFactory.getLogger(BatchJobServiceImpl.class);
 
 	private static final String LOCKING_LOCK = "job_locking_lock";
 
 	private static final String JOB_LOCK_PREFIX = "job_";
 
-	private DistributedLockService distributedLockService;
+	private final DistributedLockService distributedLockService;
 
-	private HibernateService hibernateService;
+	@PersistenceContext
+	private EntityManager entityManager;
 
-	public BatchJobServiceImpl(DistributedLockService distributedLockService, HibernateService hibernateService)
+	public BatchJobServiceImpl(DistributedLockService distributedLockService)
 	{
 		this.distributedLockService = distributedLockService;
-		this.hibernateService = hibernateService;
 	}
 
 	private static String mapToString(Map<String, Serializable> map)
@@ -87,7 +88,7 @@ public class BatchJobServiceImpl implements BatchJobService
 			{
 				stringBuilder.append(value.getClass().getName());
 				stringBuilder.append("->");
-				stringBuilder.append(value.toString());
+				stringBuilder.append(value);
 			}
 
 		}
@@ -155,7 +156,7 @@ public class BatchJobServiceImpl implements BatchJobService
 		try
 		{
 			@SuppressWarnings("unchecked")
-			List<String> types = hibernateService.getHibernateSession().createSQLQuery(BatchQueue.SQL_GET_QUEUE).list();
+			List<String> types = entityManager.createNativeQuery(BatchQueue.SQL_GET_QUEUE).getResultList();
 
 			if (types != null && !types.isEmpty())
 			{
@@ -192,11 +193,7 @@ public class BatchJobServiceImpl implements BatchJobService
 		try
 		{
 
-			List<?> ids = hibernateService.getHibernateSession()
-				.createSQLQuery(BatchQueue.SQL_INNER_PEEK_BATCH) 
-				.setParameter(BatchQueue.TYPE_PARAM, jobType.name()) 
-				.list();
-
+			List<?> ids = entityManager.createNativeQuery(BatchQueue.SQL_INNER_PEEK_BATCH).setParameter(BatchQueue.TYPE_PARAM, jobType.name()).getResultList();
 			Long id = null;
 			if (ids != null && !ids.isEmpty() && ids.get(0) != null)
 			{
@@ -206,9 +203,7 @@ public class BatchJobServiceImpl implements BatchJobService
 			if (id != null)
 			{
 
-				Object queueEntry = hibernateService.getHibernateSession().createSQLQuery(BatchQueue.SQL_PEEK_BATCH1) 
-					.setParameter(BatchQueue.ID_PARAM, id) 
-					.uniqueResult();
+				Object queueEntry = entityManager.createNativeQuery(BatchQueue.SQL_PEEK_BATCH1).setParameter(BatchQueue.ID_PARAM, id).getSingleResult();
 
 				if (queueEntry != null)
 				{
@@ -218,9 +213,7 @@ public class BatchJobServiceImpl implements BatchJobService
 					jobArgs = stringToMap((String) queueRow[1]);
 				}
 
-				hibernateService.getHibernateSession().createSQLQuery(BatchQueue.SQL_POLL_BATCH) 
-					.setParameter(BatchQueue.ID_PARAM, id) 
-					.executeUpdate();
+				entityManager.createNativeQuery(BatchQueue.SQL_POLL_BATCH).setParameter(BatchQueue.ID_PARAM, id).executeUpdate();
 			}
 
 		}
@@ -236,12 +229,8 @@ public class BatchJobServiceImpl implements BatchJobService
 	{
 		try
 		{
-			hibernateService.getHibernateSession()
-				.createSQLQuery(BatchQueue.SQL_INSERT_JOB) 
-				.setParameter(BatchQueue.TYPE_PARAM, jobType.name()) 
-				.setParameter(BatchQueue.CONTEX_PARAM, mapToString(jobArgs)) 
-				.executeUpdate();
-
+			entityManager.createNativeQuery(BatchQueue.SQL_INSERT_JOB).setParameter(BatchQueue.TYPE_PARAM, jobType.name())
+				.setParameter(BatchQueue.CONTEX_PARAM, mapToString(jobArgs)).executeUpdate();
 		}
 		catch (Exception e)
 		{

@@ -36,7 +36,6 @@ public class WebHibernateConfig
 	public List<Resource> additionalHibernateConfigLocations()
 	{
 		return List.of(new ClassPathResource("hibernate-wicket-password.cfg.xml"),
-			new ClassPathResource("hibernate-mapping-formulieren.cfg.xml"),
 			new ClassPathResource("hibernate-mapping-web.cfg.xml"));
 	}
 

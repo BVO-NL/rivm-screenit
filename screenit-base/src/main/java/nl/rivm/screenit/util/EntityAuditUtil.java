@@ -33,8 +33,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import javax.persistence.Temporal;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,6 +57,8 @@ import org.hibernate.envers.query.criteria.AuditCriterion;
 import org.hibernate.proxy.HibernateProxyHelper;
 import org.reflections.ReflectionUtils;
 
+import jakarta.persistence.Temporal;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class EntityAuditUtil
@@ -66,7 +66,7 @@ public final class EntityAuditUtil
 	public static <H extends HibernateObject> AuditQuery createQuery(H entity, Session session)
 	{
 		AuditReader reader = AuditReaderFactory.get(session);
-		Class clazz;
+		Class<?> clazz;
 		Serializable id;
 		try
 		{

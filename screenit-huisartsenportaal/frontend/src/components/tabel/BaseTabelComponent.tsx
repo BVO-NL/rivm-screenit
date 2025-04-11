@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -61,7 +61,7 @@ function BaseTabelComponent<T>(props: TabelComponentProps<T>) {
 			url: props.exportUrl,
 			method: "POST",
 			responseType: "arraybuffer",
-			reponseEncoding: "binary",
+			responseEncoding: "binary",
 			data: {
 				resultOptions: {
 					first: 0,

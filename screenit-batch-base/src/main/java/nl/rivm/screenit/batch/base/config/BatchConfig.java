@@ -23,24 +23,11 @@ package nl.rivm.screenit.batch.base.config;
 
 import javax.sql.DataSource;
 
-import nl.rivm.screenit.batch.ImprovedSimpleEhCacheInterceptor;
-
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.JobRegistry;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
-import org.springframework.batch.core.configuration.support.MapJobRegistry;
-import org.springframework.batch.core.explore.JobExplorer;
-import org.springframework.batch.core.explore.support.JobExplorerFactoryBean;
-import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.launch.JobOperator;
-import org.springframework.batch.core.launch.support.SimpleJobLauncher;
-import org.springframework.batch.core.launch.support.SimpleJobOperator;
 import org.springframework.batch.core.repository.ExecutionContextSerializer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.dao.Jackson2ExecutionContextStringSerializer;
-import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,24 +46,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @Configuration
 public class BatchConfig
 {
-
-	@Bean
-	public ImprovedSimpleEhCacheInterceptor cacheInterceptor()
-	{
-		return new ImprovedSimpleEhCacheInterceptor();
-	}
-
-	@Bean
-	public JobBuilderFactory jobBuilderFactory(JobRepository jobRepository)
-	{
-		return new JobBuilderFactory(jobRepository);
-	}
-
-	@Bean
-	public StepBuilderFactory stepBuilderFactory(JobRepository jobRepository, HibernateTransactionManager transactionManager)
-	{
-		return new StepBuilderFactory(jobRepository, transactionManager);
-	}
 
 	@Bean
 	public TaskExecutor taskExecutor()
@@ -123,65 +92,10 @@ public class BatchConfig
 	}
 
 	@Bean
-	public SimpleJobLauncher jobLauncher(TaskExecutor taskExecutor, JobRepository jobRepository)
+	public Step dummyStep(JobRepository jobRepository, HibernateTransactionManager transactionManager)
 	{
-		var jobLauncher = new SimpleJobLauncher();
-		jobLauncher.setTaskExecutor(taskExecutor);
-		jobLauncher.setJobRepository(jobRepository);
-		return jobLauncher;
-	}
-
-	@Bean
-	public JobRegistry jobRegistry()
-	{
-		return new MapJobRegistry();
-	}
-
-	@Bean
-	public JobRepositoryFactoryBean jobRepository(DataSource dataSource, ExecutionContextSerializer executionContextSerializer, HibernateTransactionManager transactionManager,
-		LobHandler lobHandler)
-	{
-		var jobRepository = new JobRepositoryFactoryBean();
-		jobRepository.setDataSource(dataSource);
-		jobRepository.setTransactionManager(transactionManager);
-		jobRepository.setLobHandler(lobHandler);
-		jobRepository.setSerializer(executionContextSerializer);
-		return jobRepository;
-	}
-
-	@Bean
-	public JobExplorerFactoryBean jobExplorer(DataSource dataSource, ExecutionContextSerializer executionContextSerializer)
-	{
-		var jobExplorer = new JobExplorerFactoryBean();
-		jobExplorer.setDataSource(dataSource);
-		jobExplorer.setSerializer(executionContextSerializer);
-		return jobExplorer;
-	}
-
-	@Bean
-	public JobOperator jobOperator(JobLauncher jobLauncher, JobExplorer jobExplorer, JobRepository jobRepository, JobRegistry jobRegistry)
-	{
-		var jobOperator = new SimpleJobOperator();
-		jobOperator.setJobLauncher(jobLauncher);
-		jobOperator.setJobExplorer(jobExplorer);
-		jobOperator.setJobRepository(jobRepository);
-		jobOperator.setJobRegistry(jobRegistry);
-		return jobOperator;
-	}
-
-	@Bean
-	public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor(JobRegistry jobRegistry)
-	{
-		var jobRegistryBeanPostProcessor = new JobRegistryBeanPostProcessor();
-		jobRegistryBeanPostProcessor.setJobRegistry(jobRegistry);
-		return jobRegistryBeanPostProcessor;
-	}
-
-	@Bean
-	public Step dummyStep(StepBuilderFactory stepBuilderFactory)
-	{
-		return stepBuilderFactory.get("dummyStep")
-			.tasklet((contribution, chunkContext) -> RepeatStatus.FINISHED)
+		return new StepBuilder("dummyStep", jobRepository)
+			.tasklet((contribution, chunkContext) -> RepeatStatus.FINISHED, transactionManager)
 			.build();
 	}
 

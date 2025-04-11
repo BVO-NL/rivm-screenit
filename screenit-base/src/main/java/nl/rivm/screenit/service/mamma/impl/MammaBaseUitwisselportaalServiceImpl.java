@@ -52,7 +52,7 @@ import nl.rivm.screenit.util.ZipUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -243,7 +243,7 @@ public class MammaBaseUitwisselportaalServiceImpl implements MammaBaseUitwisselp
 		if (status != uploadBeeldenPoging.getIlmStatus())
 		{
 			setIlmStatus(uploadBeeldenPoging, MammaMammografieIlmStatus.VERWIJDERD);
-			var melding = String.format("AccessionNumber: %d, status: %s, isBezwaar: %b, isUpload: %b", accessionNumber, status.toString(), false, true);
+			var melding = "AccessionNumber: %d, status: %s, isBezwaar: %b, isUpload: %b".formatted(accessionNumber, status.toString(), false, true);
 			LOG.info(melding);
 			var client = uploadBeeldenPoging.getUploadBeeldenVerzoek().getScreeningRonde().getDossier().getClient();
 			logService.logGebeurtenis(LogGebeurtenis.MAMMA_ILM_STATUS_GEFORCEERD, account, client, melding, Bevolkingsonderzoek.MAMMA);

@@ -21,9 +21,11 @@ package nl.rivm.screenit.model.gba;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.io.Serial;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
@@ -38,6 +40,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class GbaVerwerkingEntry extends AbstractHibernateObject
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private Long screeningOrganisatie;

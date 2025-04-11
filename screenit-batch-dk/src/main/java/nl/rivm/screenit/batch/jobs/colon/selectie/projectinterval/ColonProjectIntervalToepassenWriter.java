@@ -30,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.model.ProjectParameterKey;
 import nl.rivm.screenit.model.project.ProjectClient;
-import nl.rivm.screenit.service.BaseProjectService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ProjectUtil;
@@ -47,8 +46,6 @@ public class ColonProjectIntervalToepassenWriter extends BaseWriter<ProjectClien
 
 	private final HibernateService hibernateService;
 
-	private final BaseProjectService projectService;
-
 	private final ICurrentDateSupplier currentDateSupplier;
 
 	@Override
@@ -56,18 +53,32 @@ public class ColonProjectIntervalToepassenWriter extends BaseWriter<ProjectClien
 	{
 		LOG.info("gevonden (project) client: Interval wordt voor PCID:'{}' CID:'{}' gecorrigeerd", projectClient.getId(), projectClient.getClient().getId());
 
-		String parameter = ProjectUtil.getParameter(projectClient.getProject(), ProjectParameterKey.COLON_AFWIJKING_UITNODIGINGSINTERVAL);
-		int afwijking = NumberUtils.toInt(parameter, Integer.MAX_VALUE);
+		var parameter = ProjectUtil.getParameter(projectClient.getProject(), ProjectParameterKey.COLON_AFWIJKING_UITNODIGINGSINTERVAL);
+		var afwijking = NumberUtils.toInt(parameter, Integer.MAX_VALUE);
+
 		LocalDate projectPeildatum = null;
 		var volgendeUitnodiging = projectClient.getClient().getColonDossier().getVolgendeUitnodiging();
 		var ouderProjectPeildatum = volgendeUitnodiging.getProjectPeildatum();
-		if (ProjectUtil.isClientActiefInProject(projectClient, currentDateSupplier.getDate()) && afwijking != Integer.MAX_VALUE)
+		var rondesToegepast = volgendeUitnodiging.getGebruikAfwijkingUitnodigingsinterval();
+		if (Boolean.TRUE.equals(ProjectUtil.isClientActiefInProject(projectClient, currentDateSupplier.getDate())) && afwijking != Integer.MAX_VALUE)
 		{
-			projectPeildatum = DateUtil.toLocalDate(volgendeUitnodiging.getPeildatum()).plusYears(afwijking);
+
+			if (rondesToegepast == null)
+			{
+				var gebruikParameter = ProjectUtil.getParameter(projectClient.getProject(), ProjectParameterKey.COLON_GEBRUIK_AFWIJKING_UITNODIGINGSINTERVAL);
+				rondesToegepast = gebruikParameter != null ? Long.parseLong(gebruikParameter) : null;
+			}
+
+			if (rondesToegepast == null || rondesToegepast > 0)
+			{
+				projectPeildatum = DateUtil.toLocalDate(volgendeUitnodiging.getPeildatum()).plusYears(afwijking);
+			}
+
 		}
 		if (!Objects.equals(projectPeildatum, ouderProjectPeildatum))
 		{
 			volgendeUitnodiging.setProjectPeildatum(projectPeildatum);
+			volgendeUitnodiging.setGebruikAfwijkingUitnodigingsinterval(rondesToegepast);
 			hibernateService.saveOrUpdate(volgendeUitnodiging);
 		}
 	}

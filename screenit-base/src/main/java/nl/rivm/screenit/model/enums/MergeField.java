@@ -124,7 +124,7 @@ import nl.topicuszorg.util.postcode.PostcodeFormatter;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.envers.query.AuditEntity;
 import org.krysalis.barcode4j.impl.AbstractBarcodeBean;
@@ -2472,7 +2472,7 @@ public enum MergeField
 					{
 						var bytes = IOUtils.toByteArray(barcodeInputStream);
 						var barcodeBase64String = Base64.getEncoder().encodeToString(bytes);
-						return String.format("<img src='data:image/png;base64, %s' alt='barcode %s'/>", barcodeBase64String, uitnodigingsNummer);
+						return "<img src='data:image/png;base64, %s' alt='barcode %s'/>".formatted(barcodeBase64String, uitnodigingsNummer);
 					}
 					catch (IOException e)
 					{
@@ -2592,9 +2592,8 @@ public enum MergeField
 			public Object getFieldValue(MailMergeContext context)
 			{
 				var overeenkomst = context.getOvereenkomst();
-				if (overeenkomst instanceof AfgeslotenMedewerkerOvereenkomst)
+				if (overeenkomst instanceof AfgeslotenMedewerkerOvereenkomst afgeslotenKwaliteitsOvereenkomst)
 				{
-					var afgeslotenKwaliteitsOvereenkomst = (AfgeslotenMedewerkerOvereenkomst) overeenkomst;
 					var adres = getAdres(afgeslotenKwaliteitsOvereenkomst.getGebruiker());
 					if (adres != null)
 					{
@@ -2897,9 +2896,8 @@ public enum MergeField
 			public Object getFieldValue(MailMergeContext context)
 			{
 				var deproxy = HibernateHelper.deproxy(context.getBrief());
-				if (deproxy instanceof CervixBrief)
+				if (deproxy instanceof CervixBrief brief)
 				{
-					var brief = (CervixBrief) deproxy;
 					if (CervixMonsterUtil.isUitstrijkje(brief.getMonster()))
 					{
 						var monster = CervixMonsterUtil.getUitstrijkje(brief.getMonster());
@@ -2919,9 +2917,8 @@ public enum MergeField
 			public Object getFieldValue(MailMergeContext context)
 			{
 				var deproxy = HibernateHelper.deproxy(context.getBrief());
-				if (deproxy instanceof CervixBrief)
+				if (deproxy instanceof CervixBrief brief)
 				{
-					var brief = (CervixBrief) deproxy;
 					return getBMHKLaboratoriumOndertekenaar(brief, false);
 				}
 				if (context.getBmhkLaboratorium() != null)
@@ -2939,9 +2936,8 @@ public enum MergeField
 			public Object getFieldValue(MailMergeContext context)
 			{
 				var deproxy = HibernateHelper.deproxy(context.getBrief());
-				if (deproxy instanceof CervixBrief)
+				if (deproxy instanceof CervixBrief brief)
 				{
-					var brief = (CervixBrief) deproxy;
 					return getBMHKLaboratoriumOndertekenaar(brief, true);
 				}
 				if (context.getBmhkLaboratorium() != null)
@@ -4225,9 +4221,8 @@ public enum MergeField
 			var afgeslotenOvereenkomst = (AfgeslotenInstellingOvereenkomst) context.getOvereenkomst();
 			return afgeslotenOvereenkomst.getInstelling();
 		}
-		else if (overeenkomst instanceof AfgeslotenMedewerkerOvereenkomst)
+		else if (overeenkomst instanceof AfgeslotenMedewerkerOvereenkomst afgeslotenOvereenkomst)
 		{
-			var afgeslotenOvereenkomst = (AfgeslotenMedewerkerOvereenkomst) overeenkomst;
 			return getZorginstellingBijKwaliteitsOvereenkomst(afgeslotenOvereenkomst);
 		}
 		return null;
@@ -4635,9 +4630,9 @@ public enum MergeField
 	private static MammaBrief getOrigineleMammaBrief(MailMergeContext context)
 	{
 		var brief = BriefUtil.getOrigineleBrief(context.getBrief());
-		if (brief instanceof MammaBrief)
+		if (brief instanceof MammaBrief mammaBrief)
 		{
-			return (MammaBrief) brief;
+			return mammaBrief;
 		}
 		return null;
 	}
@@ -4655,9 +4650,8 @@ public enum MergeField
 	private static CervixLeeftijdcategorie getCervixLeeftijdcategorie(MailMergeContext context)
 	{
 		var brief = BriefUtil.getOrigineleBrief(context.getBrief());
-		if (brief instanceof CervixBrief)
+		if (brief instanceof CervixBrief cervixBrief)
 		{
-			var cervixBrief = (CervixBrief) brief;
 			return cervixBrief.getScreeningRonde().getLeeftijdcategorie();
 		}
 		return null;

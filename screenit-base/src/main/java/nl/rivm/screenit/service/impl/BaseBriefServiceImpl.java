@@ -27,7 +27,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -319,7 +319,7 @@ public class BaseBriefServiceImpl implements BaseBriefService
 
 		try
 		{
-			var copy = Files.copy(file.toPath(), Paths.get(file.toPath() + "-copy")).toFile();
+			var copy = Files.copy(file.toPath(), Path.of(file.toPath() + "-copy")).toFile();
 			var javaScript = new PDActionJavaScript(JavaScriptPdfHelper.getPrintJavascript());
 			try (var document = Loader.loadPDF(copy); var outputStream = new FileOutputStream(file))
 			{
@@ -440,9 +440,9 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	{
 		brief.setGegenereerd(true);
 		brief.setTemplateNaam(documentDefinitie.getDocument().getNaam());
-		if (documentDefinitie instanceof BriefDefinitie)
+		if (documentDefinitie instanceof BriefDefinitie definitie)
 		{ 
-			brief.setBriefDefinitie((BriefDefinitie) documentDefinitie);
+			brief.setBriefDefinitie(definitie);
 		}
 		hibernateService.saveOrUpdate(brief);
 	}

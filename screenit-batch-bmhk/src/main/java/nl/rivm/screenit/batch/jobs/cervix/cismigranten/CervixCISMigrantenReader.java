@@ -23,9 +23,6 @@ package nl.rivm.screenit.batch.jobs.cervix.cismigranten;
 
 import java.util.function.Function;
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.JoinType;
-
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
@@ -43,6 +40,9 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.JoinType;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftActieveClient;

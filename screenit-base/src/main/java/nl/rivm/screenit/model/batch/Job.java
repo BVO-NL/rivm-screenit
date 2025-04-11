@@ -22,6 +22,7 @@ package nl.rivm.screenit.model.batch;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.List;
 public class Job implements Serializable
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private String jobName;

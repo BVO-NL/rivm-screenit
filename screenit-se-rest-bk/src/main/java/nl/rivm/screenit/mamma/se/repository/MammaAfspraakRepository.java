@@ -26,8 +26,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.persistence.Tuple;
-
 import nl.rivm.screenit.mamma.se.dto.DagStatistiekAfspraakStatussen;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
@@ -35,6 +33,8 @@ import nl.rivm.screenit.repository.BaseJpaRepository;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import jakarta.persistence.Tuple;
 
 public interface MammaAfspraakRepository extends BaseJpaRepository<MammaAfspraak>
 {

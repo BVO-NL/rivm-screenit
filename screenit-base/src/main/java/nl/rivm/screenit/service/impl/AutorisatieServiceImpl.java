@@ -54,7 +54,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class AutorisatieServiceImpl implements AutorisatieService
 {
 
@@ -137,43 +136,26 @@ public class AutorisatieServiceImpl implements AutorisatieService
 
 	private List<Permissie> getPermissies(InstellingGebruiker loggedInInstellingGebruiker, Actie minimumActie, Recht... rechten)
 	{
-		List<Permissie> permissies = new ArrayList<Permissie>();
-
 		List<InstellingGebruikerRol> rollen = loggedInInstellingGebruiker.getRollen();
-		if (rollen != null)
-		{
-			for (InstellingGebruikerRol organisatieMedewerkerRol : rollen)
-			{
-				if (organisatieMedewerkerRol.isRolActief())
-				{
-					for (Permissie permissie : organisatieMedewerkerRol.getRol().getPermissies())
-					{
-						if (magPermissieToevoegen(permissie, minimumActie, rechten))
-						{
-							permissies.add(permissie);
-						}
-
-					}
-				}
-			}
-		}
-		return permissies;
+		return rollen
+			.stream()
+			.filter(InstellingGebruikerRol::isRolActief)
+			.map(InstellingGebruikerRol::getRol)
+			.flatMap(rol -> rol.getPermissies().stream())
+			.filter(permissie -> magPermissieToevoegen(permissie, minimumActie, rechten)).toList();
 	}
 
 	private boolean magPermissieToevoegen(Permissie permissie, Actie minimumActie, Recht... rechten)
 	{
-		boolean add = false;
-		boolean permissieValid = false;
-		if (!Boolean.FALSE.equals(permissie.getActief()) && (minimumActie == null || minimumActie.getNiveau() <= permissie.getActie().getNiveau()))
-		{
-			permissieValid = true;
-		}
+		var add = false;
+		var permissieValid = !Boolean.FALSE.equals(permissie.getActief()) && (minimumActie == null || minimumActie.getNiveau() <= permissie.getActie().getNiveau());
 
 		for (Recht recht : rechten)
 		{
 			if ((Boolean.TRUE.equals(testModus) || !Recht.TESTEN.equals(recht)) && permissie.getRecht().equals(recht))
 			{
 				add = true;
+				break;
 			}
 		}
 		return add && permissieValid;

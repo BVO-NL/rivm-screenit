@@ -22,11 +22,14 @@ package nl.rivm.screenit.exceptions;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
+
 import nl.rivm.screenit.dto.mamma.planning.PlanningConceptMeldingenDto;
 
 public class DryRunException extends Exception
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private final PlanningConceptMeldingenDto meldingen;

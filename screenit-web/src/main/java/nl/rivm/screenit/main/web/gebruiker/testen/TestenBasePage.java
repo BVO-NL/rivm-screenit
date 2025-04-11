@@ -62,6 +62,7 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.TestBsnGenerator;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.SimpleHibernateModel;
+import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -100,7 +101,11 @@ public class TestenBasePage extends GebruikerBasePage
 
 	protected WebMarkupContainer gebeurtenissenContainer;
 
+	protected WebMarkupContainer formComponents;
+
 	protected TextField<String> bsnField;
+
+	protected IModel<List<Client>> clientModel;
 
 	protected TestenBasePage()
 	{
@@ -108,6 +113,11 @@ public class TestenBasePage extends GebruikerBasePage
 	}
 
 	protected WebMarkupContainer getGebeurtenissenContainer()
+	{
+		return null;
+	}
+
+	protected WebMarkupContainer getFormComponentsContainer()
 	{
 		return null;
 	}
@@ -181,6 +191,7 @@ public class TestenBasePage extends GebruikerBasePage
 		timelineModel.setANummer(clienten.stream().map(c ->
 			c.getPersoon().getAnummer() == null ? "onbekend" : c.getPersoon().getAnummer()).collect(Collectors.joining(",")));
 		timelineModel.setLeeftijd(DateUtil.getLeeftijd(DateUtil.toLocalDate(client.getPersoon().getGeboortedatum()), dateSupplier.getLocalDate()));
+		timelineModel.setPostcode(client.getPersoon().getGbaAdres().getPostcode());
 		return timelineModel;
 	}
 
@@ -292,6 +303,25 @@ public class TestenBasePage extends GebruikerBasePage
 				return hmacSha256;
 			}
 		};
+	}
+
+	protected void refreshForm(List<Client> clienten, AjaxRequestTarget target, TestTimelineModel model)
+	{
+
+		if (!clienten.isEmpty())
+		{
+			clientModel = ModelUtil.listModel(clienten);
+			refreshTimelineModel(model, clienten);
+			WebMarkupContainer fCcontainer = getFormComponentsContainer();
+			formComponents.replaceWith(fCcontainer);
+			formComponents = fCcontainer;
+			target.add(formComponents);
+		}
+
+		WebMarkupContainer geContainer = getGebeurtenissenContainer();
+		gebeurtenissenContainer.replaceWith(geContainer);
+		gebeurtenissenContainer = geContainer;
+		target.add(gebeurtenissenContainer);
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.service.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -23,8 +23,6 @@ package nl.rivm.screenit.huisartsenportaal.service.impl;
 
 import java.io.InputStream;
 
-import javax.annotation.PostConstruct;
-
 import nl.rivm.screenit.huisartsenportaal.dto.OvereenkomstDto;
 import nl.rivm.screenit.huisartsenportaal.model.Overeenkomst;
 import nl.rivm.screenit.huisartsenportaal.repository.OvereenkomstRepository;
@@ -34,16 +32,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.aspose.words.License;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.aspose.words.License;
+
+import jakarta.annotation.PostConstruct;
+
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
 public class OvereenkomstServiceImpl implements OvereenkomstService
 {
-
 	private static final Logger LOG = LoggerFactory.getLogger(OvereenkomstServiceImpl.class);
 
 	@Autowired
@@ -65,7 +63,7 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public Overeenkomst saveOrUpdateOvereenkomst(OvereenkomstDto overeenkomstDto)
 	{
 		Overeenkomst overeenkomst = overeenkomstRepository.findByScreenitId(overeenkomstDto.getHuisartsportaalId());

@@ -24,7 +24,7 @@ package nl.rivm.screenit.service.mamma.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.FlushModeType;
+import jakarta.persistence.FlushModeType;
 
 import lombok.extern.slf4j.Slf4j;
 

@@ -163,9 +163,8 @@ public class CervixMailServiceImpl implements CervixMailService
 	private String datumVerslagMergeField(CervixMonster monster)
 	{
 		String datumVerslag = "";
-		if (monster instanceof CervixUitstrijkje)
+		if (monster instanceof CervixUitstrijkje cervixUitstrijkje)
 		{
-			CervixUitstrijkje cervixUitstrijkje = (CervixUitstrijkje) monster;
 			datumVerslag = cervixUitstrijkje.getCytologieVerslag() != null && cervixUitstrijkje.getCytologieVerslag().getDatumVerwerkt() != null
 				? Constants.getDateFormat().format(cervixUitstrijkje.getCytologieVerslag().getDatumVerwerkt())
 				: "";
@@ -181,9 +180,8 @@ public class CervixMailServiceImpl implements CervixMailService
 	private String orderVerstuurdMergeField(CervixMonster monster)
 	{
 		String orderVerstuurd = "";
-		if (monster instanceof CervixUitstrijkje)
+		if (monster instanceof CervixUitstrijkje cervixUitstrijkje)
 		{
-			CervixUitstrijkje cervixUitstrijkje = (CervixUitstrijkje) monster;
 			orderVerstuurd = cervixUitstrijkje.getCytologieOrder() != null ? Constants.getDateFormat().format(cervixUitstrijkje.getCytologieOrder().getStatusDatum()) : "";
 		}
 		return orderVerstuurd;

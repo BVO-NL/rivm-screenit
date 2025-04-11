@@ -24,16 +24,16 @@ package nl.rivm.screenit.model.colon;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -70,7 +70,7 @@ public class ColonIntakeAfspraak extends ColonTijdslot
 		setType(ColonTijdslotType.INTAKEAFSPRAAK);
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE }, optional = false)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE }, optional = false)
 	@Cascade({ CascadeType.SAVE_UPDATE })
 	private ColonScreeningRonde colonScreeningRonde;
 
@@ -101,7 +101,7 @@ public class ColonIntakeAfspraak extends ColonTijdslot
 	@OneToOne(fetch = FetchType.LAZY)
 	private ColonIntakeAfspraak oudeAfspraak;
 
-	@ManyToOne(cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE }, optional = false)
+	@ManyToOne(cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE }, optional = false)
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private Client client;
 

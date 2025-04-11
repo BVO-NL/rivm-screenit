@@ -23,8 +23,6 @@ package nl.rivm.screenit.batch.jobs.cervix.brieven.regio.labformulierenstep;
 
 import java.util.function.Function;
 
-import javax.persistence.criteria.From;
-
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.huisartsenportaal.enums.CervixLocatieStatus;
 import nl.rivm.screenit.model.BagAdres_;
@@ -41,6 +39,8 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+
+import jakarta.persistence.criteria.From;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.cervix.CervixHuisartsSpecification.isActief;

@@ -24,9 +24,6 @@ package nl.rivm.screenit.wsb.fhir.interceptor;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.wsb.tools.CertTools;
 
@@ -38,6 +35,8 @@ import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;
 import ca.uhn.fhir.interceptor.api.Pointcut;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Interceptor
 public class FhirCertificaatInterceptor extends FQDNAwareInterceptor

@@ -21,45 +21,52 @@ package nl.rivm.screenit.config;
  * =========================LICENSE_END==================================
  */
 
+import javax.cache.CacheManager;
+
 import nl.rivm.screenit.security.ScreenitRealm;
 
-import org.apache.shiro.cache.ehcache.EhCacheManager;
+import org.apache.shiro.cache.jcache.JCacheManager;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
-import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
 public class BaseShiroConfig
 {
 
 	@Bean
-	public DefaultSecurityManager securityManager(ScreenitRealm realm, EhCacheManager cacheManager) {
+	@Profile("!test")
+	public DefaultSecurityManager securityManager(ScreenitRealm realm, JCacheManager jCacheManager)
+	{
 		var securityManager = new DefaultSecurityManager();
 		securityManager.setRealm(realm);
-		securityManager.setCacheManager(cacheManager);
+		securityManager.setCacheManager(jCacheManager);
+		return securityManager;
+	}
+
+	@Bean(name = "securityManager")
+	@Profile("test")
+	public DefaultSecurityManager securityManagerTest(ScreenitRealm realm)
+	{
+		var securityManager = new DefaultSecurityManager();
+		securityManager.setRealm(realm);
 		return securityManager;
 	}
 
 	@Bean
-	public EhCacheManager cacheManager(EhCacheManagerFactoryBean ehCacheManagerFactoryBean) {
-		var ehCacheManager = new EhCacheManager();
-		ehCacheManager.setCacheManager(ehCacheManagerFactoryBean.getObject());
-		return ehCacheManager;
+	@Profile("!test")
+	public JCacheManager jCacheManager(CacheManager cacheManager)
+	{
+		var shiroCacheManager = new JCacheManager();
+		shiroCacheManager.setCacheManager(cacheManager);
+		return shiroCacheManager;
 	}
 
 	@Bean
-	public EhCacheManagerFactoryBean ehCacheManagerFactoryBean() {
-		var ehCacheManagerFactoryBean = new EhCacheManagerFactoryBean();
-		ehCacheManagerFactoryBean.setConfigLocation(new ClassPathResource("ehcache.xml"));
-		ehCacheManagerFactoryBean.setShared(true);
-		return ehCacheManagerFactoryBean;
-	}
-
-	@Bean
-	public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
+	public LifecycleBeanPostProcessor lifecycleBeanPostProcessor()
+	{
 		return new LifecycleBeanPostProcessor();
 	}
 

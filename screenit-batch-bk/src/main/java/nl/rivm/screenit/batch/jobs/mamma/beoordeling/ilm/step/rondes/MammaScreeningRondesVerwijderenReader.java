@@ -21,10 +21,6 @@ package nl.rivm.screenit.batch.jobs.mamma.beoordeling.ilm.step.rondes;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -38,6 +34,10 @@ import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
 
 import static nl.rivm.screenit.specification.HibernateObjectSpecification.heeftIdGroterDan;
 

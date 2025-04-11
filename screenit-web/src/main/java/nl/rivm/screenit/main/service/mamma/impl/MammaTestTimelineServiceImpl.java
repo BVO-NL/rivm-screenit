@@ -54,10 +54,10 @@ import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.EnovationHuisarts;
-import nl.rivm.screenit.model.EnovationHuisarts_;
 import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gebruiker_;
 import nl.rivm.screenit.model.Gemeente;
+import nl.rivm.screenit.model.Huisarts_;
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.InstellingGebruiker_;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
@@ -518,7 +518,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		mammografie.setDensiteit(densiteit);
 		onderzoek.setMammografie(mammografie);
 		hibernateService.saveOrUpdateAll(mammografie.getVisueleInspectieAfbeelding(), mammografie, dossier);
-		var huisarts = enovationHuisartsService.zoekHuisartsen(new EnovationHuisarts(), PageRequest.of(0, 1, Sort.by(EnovationHuisarts_.ACHTERNAAM))).iterator().next();
+		var huisarts = enovationHuisartsService.zoekHuisartsen(new EnovationHuisarts(), PageRequest.of(0, 1, Sort.by(Huisarts_.ACHTERNAAM))).iterator().next();
 		ronde.setHuisarts(huisarts);
 		ronde.setDatumVastleggenHuisarts(currentDateSupplier.getDate());
 		verwerkOnvolledigOfOnderbrokenOnderzoek(onvolledigOnderzoekOption, onderbrokenOnderzoekOption, onderzoek);
@@ -898,7 +898,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 
 			if (beoordelingStatus.equals("ONGUNSTIG"))
 			{
-				var verslaglezing = baseBeoordelingService.maakVerslagLezing(mammaBeoordeling, tweedeLezing, instellingGebruiker, false);
+				var verslaglezing = baseBeoordelingService.maakVerslagLezing(tweedeLezing, instellingGebruiker, false);
 				verslaglezing.setBiradsLinks(MammaBIRADSWaarde.VIJF);
 				verslaglezing.setBiradsRechts(MammaBIRADSWaarde.VIER);
 				voegLezingToe(mammaBeoordeling, verslaglezing, instellingGebruiker);

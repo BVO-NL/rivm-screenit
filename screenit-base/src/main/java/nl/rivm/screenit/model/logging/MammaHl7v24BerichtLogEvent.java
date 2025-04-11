@@ -21,14 +21,14 @@ package nl.rivm.screenit.model.logging;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Entity;
-import javax.persistence.Lob;
-import javax.persistence.Table;
-
 import lombok.Getter;
 import lombok.Setter;
 
 import org.hibernate.annotations.Type;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(schema = "gedeeld")

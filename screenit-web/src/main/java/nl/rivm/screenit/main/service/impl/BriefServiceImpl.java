@@ -24,8 +24,6 @@ package nl.rivm.screenit.main.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.criteria.JoinType;
-
 import nl.rivm.screenit.factory.algemeen.BriefFactory;
 import nl.rivm.screenit.main.service.BriefService;
 import nl.rivm.screenit.model.Afmelding;
@@ -34,6 +32,7 @@ import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.MergedBrievenFilter;
 import nl.rivm.screenit.model.MergedBrieven_;
+import nl.rivm.screenit.model.OnderzoeksresultatenActie;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.UploadDocument_;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
@@ -49,7 +48,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefTypeIn;
 import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.heeftAfmelding;
 import static nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification.filterControle;
@@ -84,13 +82,7 @@ public class BriefServiceImpl implements BriefService
 		}
 
 		var finalSort = sort;
-		return repository.findWith(spec, filter.getMergedBrievenClass(), q -> q.sortBy(finalSort, (order, r, cb) ->
-		{
-			join(r, MergedBrieven_.mergedBrieven, JoinType.INNER);
-			join(r, MergedBrieven_.afgedruktDoor, JoinType.LEFT);
-			join(r, MergedBrieven_.screeningOrganisatie, JoinType.LEFT);
-			return null;
-		})).fetch(entityGraph ->
+		return repository.findWith(spec, filter.getMergedBrievenClass(), q -> q.sortBy(finalSort)).fetch(entityGraph ->
 		{
 			entityGraph.addSubgraph(MergedBrieven_.MERGED_BRIEVEN);
 			entityGraph.addSubgraph(MergedBrieven_.AFGEDRUKT_DOOR);
@@ -145,6 +137,13 @@ public class BriefServiceImpl implements BriefService
 	public List<BezwaarBrief> getOorspronkelijkeBevestigingsbrieven(BezwaarMoment bezwaarMoment)
 	{
 		return getBrievenVanBezwaar(bezwaarMoment).stream()
+			.filter(brief -> BriefType.CLIENT_BEZWAAR_BEVESTIGING_BRIEVEN.contains(brief.getBriefType()) && brief.getHerdruk() == null).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<BezwaarBrief> getOorspronkelijkeBevestigingsbrieven(OnderzoeksresultatenActie actie)
+	{
+		return actie.getBrieven().stream()
 			.filter(brief -> BriefType.CLIENT_BEZWAAR_BEVESTIGING_BRIEVEN.contains(brief.getBriefType()) && brief.getHerdruk() == null).collect(Collectors.toList());
 	}
 

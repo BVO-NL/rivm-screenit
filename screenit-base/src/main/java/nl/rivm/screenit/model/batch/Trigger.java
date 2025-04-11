@@ -22,6 +22,7 @@ package nl.rivm.screenit.model.batch;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -30,6 +31,7 @@ import nl.rivm.screenit.model.enums.JobType;
 public class Trigger implements Serializable
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private String cronExpressie;

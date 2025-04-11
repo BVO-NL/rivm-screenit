@@ -20,53 +20,48 @@
   -->
 <html xmlns:wicket="http://wicket.apache.org">
 <wicket:panel>
-    <div class="form-horizontal">
-        <div class="row-fluid">
-            <div class="span9">
-                <div class="btn-top dropdown right snelkeuze" wicket:id="toevoegen">
-                    <button class="btn" data-toggle="dropdown">Verslag toevoegen <b class="caret right"></b></button>
-                    <ul class="dropdown-menu pull-right">
-                        <li><a  wicket:id="mdl">MDL verslag</a></li>
-                        <li><a  wicket:id="pa">PA verslag (DK)</a></li>
-                        <li><a  wicket:id="follow-up">Follow-up PA verslag (BK)</a></li>
-                    </ul>
-                </div>
-                <h1 class="pageTitle">Verslagen</h1>
-            </div>
-        </div>
-        <div class="row-fluid">
-            <div class="span9">
-                <wicket:enclosure child="cervixVerslagen">
-                    <div class="row-fluid">
-                        <h2>Baarmoederhalskanker</h2>
-                    </div>
-                    <div class="row-fluid">
-                        <div wicket:id="cervixVerslagen"/>
-                    </div>
-                </wicket:enclosure>
-                <wicket:enclosure child="mammaVerslagen">
-                    <div class="row-fluid">
-                        <h2>Borstkanker</h2>
-                    </div>
-                    <div class="row-fluid">
-                        <div wicket:id="mammaVerslagen"/>
-                    </div>
-                </wicket:enclosure>
-                <wicket:enclosure child="colonVerslagen">
-                    <div class="row-fluid">
-                        <h2>Darmkanker</h2>
-                    </div>
-                    <div class="row-fluid">
-                        <div wicket:id="colonVerslagen"/>
-                    </div>
-                </wicket:enclosure>
-            </div>
-            <div class="span3">
-                <div class="passport">
-                    <wicket:container wicket:id="passpoort"></wicket:container>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="form-horizontal">
+		<div class="row-fluid">
+			<div class="span9">
+				<h1 class="pageTitle">Verslagen</h1>
+				<div class="alert alert-info alert-inline" wicket:id="aanmakenAlert">
+					Het is tijdelijk niet mogelijk om handmatig verslagen aan te maken. Neem contact op met Bevolkingsonderzoek Nederland bij vragen hierover.
+				</div>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span9">
+				<wicket:enclosure child="cervixVerslagen">
+					<div class="row-fluid">
+						<h2>Baarmoederhalskanker</h2>
+					</div>
+					<div class="row-fluid">
+						<div wicket:id="cervixVerslagen"/>
+					</div>
+				</wicket:enclosure>
+				<wicket:enclosure child="mammaVerslagen">
+					<div class="row-fluid">
+						<h2>Borstkanker</h2>
+					</div>
+					<div class="row-fluid">
+						<div wicket:id="mammaVerslagen"/>
+					</div>
+				</wicket:enclosure>
+				<wicket:enclosure child="colonVerslagen">
+					<div class="row-fluid">
+						<h2>Darmkanker</h2>
+					</div>
+					<div class="row-fluid">
+						<div wicket:id="colonVerslagen"/>
+					</div>
+				</wicket:enclosure>
+			</div>
+			<div class="span3">
+				<div class="passport">
+					<wicket:container wicket:id="passpoort"></wicket:container>
+				</div>
+			</div>
+		</div>
+	</div>
 </wicket:panel>
 </html>

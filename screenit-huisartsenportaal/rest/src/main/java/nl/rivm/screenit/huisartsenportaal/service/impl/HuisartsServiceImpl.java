@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.service.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,32 +21,25 @@ package nl.rivm.screenit.huisartsenportaal.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
 
 import nl.rivm.screenit.huisartsenportaal.dto.HuisartsDto;
 import nl.rivm.screenit.huisartsenportaal.dto.WachtwoordVergetenDto;
 import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
-import nl.rivm.screenit.huisartsenportaal.model.Medewerker;
 import nl.rivm.screenit.huisartsenportaal.model.enums.AanmeldStatus;
 import nl.rivm.screenit.huisartsenportaal.model.enums.InlogMethode;
 import nl.rivm.screenit.huisartsenportaal.model.enums.Recht;
 import nl.rivm.screenit.huisartsenportaal.repository.HuisartsRepository;
 import nl.rivm.screenit.huisartsenportaal.service.AdresService;
+import nl.rivm.screenit.huisartsenportaal.service.AuthenticatieService;
 import nl.rivm.screenit.huisartsenportaal.service.HuisartsService;
-import nl.rivm.screenit.huisartsenportaal.util.CodeGenerator;
-import nl.rivm.screenit.huisartsenportaal.util.DateUtil;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
 public class HuisartsServiceImpl implements HuisartsService
 {
 
@@ -57,13 +50,13 @@ public class HuisartsServiceImpl implements HuisartsService
 	private HuisartsRepository huisartsRepository;
 
 	@Autowired
-	private PasswordEncoder passwordEncoder;
-
-	@Autowired
 	private ModelMapper modelMapper;
 
+	@Autowired
+	private AuthenticatieService authenticatieService;
+
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public Huisarts updateAndGetHuisarts(HuisartsDto huisartsDto, Huisarts huisarts)
 	{
 		adresService.updateAndGetAdres(huisartsDto.getPostadres());
@@ -72,16 +65,14 @@ public class HuisartsServiceImpl implements HuisartsService
 		if (huisartsDto.getUsername() != null && huisartsDto.getWachtwoord() != null && !InlogMethode.USERNAME_PASSWORD.equals(huisarts.getInlogMethode()))
 		{
 			huisarts.setGebruikersnaam(huisartsDto.getUsername());
-
-			var wachtwoord = huisartsDto.getWachtwoord();
-			updateWachtwoord(huisarts, wachtwoord);
+			authenticatieService.updateWachtwoord(huisarts, huisartsDto.getWachtwoord());
 
 			var rollen = huisarts.getRollen();
 			rollen.remove(Recht.ROLE_REGISTEREN);
 			rollen.add(Recht.ROLE_AANVRAGEN);
 			huisarts.setActief(true);
 		}
-		if (huisartsDto.getOvereenkomst())
+		if (Boolean.TRUE.equals(huisartsDto.getOvereenkomst()))
 		{
 			huisarts.setOvereenkomstGeaccordeerdDatum(new Date());
 		}
@@ -91,23 +82,7 @@ public class HuisartsServiceImpl implements HuisartsService
 	}
 
 	@Override
-	public Huisarts updateWachtwoord(Huisarts huisarts, String wachtwoord)
-	{
-		var encodedWachtwoord = passwordEncoder.encode(wachtwoord);
-		huisarts.setPassword(encodedWachtwoord);
-		huisarts.setInlogMethode(InlogMethode.USERNAME_PASSWORD);
-		huisarts.setAanmeldStatus(AanmeldStatus.GEREGISTREERD);
-		huisarts.getRollen().remove(Recht.ROLE_REGISTEREN);
-		if (!huisarts.getRollen().contains(Recht.ROLE_AANVRAGEN))
-		{
-			huisarts.getRollen().add(Recht.ROLE_AANVRAGEN);
-		}
-		huisarts.setInlogCode(null);
-		return huisarts;
-	}
-
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public Huisarts updateAndGetHuisarts(HuisartsDto huisartsDto)
 	{
 		Huisarts huisarts = null;
@@ -154,42 +129,9 @@ public class HuisartsServiceImpl implements HuisartsService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
-	public Huisarts wachtwoordVergeten(Huisarts huisarts) throws IllegalStateException
-	{
-		if (huisarts != null && InlogMethode.USERNAME_PASSWORD.equals(huisarts.getInlogMethode()))
-		{
-			var codeB = CodeGenerator.genereerCode(3, 3);
-			huisarts.setInlogCode(codeB);
-			var rechten = new ArrayList<Recht>();
-			rechten.add(Recht.ROLE_REGISTEREN);
-			huisarts.setRollen(rechten);
-			huisarts.setAttempts(0);
-			huisartsRepository.save(huisarts);
-			return huisarts;
-		}
-		else if (huisarts != null && InlogMethode.INLOGCODE.equals(huisarts.getInlogMethode()))
-		{
-			throw new IllegalStateException("U zult zich eerst moeten registreren voordat u een wachtwoord kan aanvragen");
-		}
-		throw new IllegalStateException("Er is geen huisarts gevonden met deze gebruikersnaam en e-mail");
-	}
-
-	@Override
 	public Huisarts getHuisartsWith(WachtwoordVergetenDto dto)
 	{
 		return huisartsRepository.findByEmailAndGebruikersnaam(dto.getEmail(), dto.getGebruikersnaam());
-	}
-
-	@Override
-	public boolean controleerWachtwoord(String plainWachtwoord, String encodedWachtwoord)
-	{
-		return passwordEncoder.matches(plainWachtwoord, encodedWachtwoord);
-	}
-
-	public void setPasswordEncoder(PasswordEncoder passwordEncoder)
-	{
-		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Override
@@ -198,36 +140,4 @@ public class HuisartsServiceImpl implements HuisartsService
 		return huisartsRepository.findByScreenitId(screenitId);
 	}
 
-	@Override
-	public Integer incrementAttempts(Huisarts huisarts)
-	{
-		var attempts = huisarts.getAttempts();
-		if (attempts == Medewerker.MAX_ATTEMPS)
-		{
-			attempts = 0;
-		}
-		huisarts.setAttempts(++attempts);
-		huisarts.setLastAttemptDate(new Date());
-		huisartsRepository.save(huisarts);
-		return Medewerker.MAX_ATTEMPS - attempts + 1; 
-	}
-
-	@Override
-	public void resetAttempts(Huisarts huisarts)
-	{
-		huisarts.setAttempts(0);
-		huisarts.setLastAttemptDate(new Date());
-		huisartsRepository.save(huisarts);
-	}
-
-	@Override
-	public Long remainingMinutesLock(Huisarts huisarts)
-	{
-		var lastAttempt = huisarts.getLastAttemptDate();
-		var lockdownTime = DateUtil.toUtilDate(LocalDateTime.now().minusMinutes(Medewerker.MAX_LOCKED));
-		var diffMs = lastAttempt.getTime() - lockdownTime.getTime();
-		var diffsec = diffMs / 1000;
-		var minuten = diffsec / 60 + 1;
-		return minuten > 0 ? minuten : 0;
-	}
 }

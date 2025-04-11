@@ -79,7 +79,7 @@ public class BezwaarDocumentenTemplatesPage extends BaseDocumentTemplateTestenPa
 	{
 		var moment = new BezwaarMoment();
 		wrappers = bezwaarService.getEditBezwaarGroupViewWrappers(null, moment);
-		form.add(new BezwaarEditPanel("bezwaarAanpassenPanel", wrappers, true));
+		form.add(new BezwaarEditPanel("bezwaarAanpassenPanel", wrappers));
 
 		var zonderHandtekeningRadioChoice = new RadioChoice<>("zonderHandtekening", zonderHandtekeningModel,
 			new ListModel<>(Arrays.asList(Boolean.FALSE, Boolean.TRUE)),

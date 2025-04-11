@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -19,6 +19,6 @@
  * =========================LICENSE_END==================================
  */
 export interface BackendError {
-	error: string;
-	error_description?: string;
+	exception: string;
+	message?: string;
 }

@@ -25,10 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.colon.selectie.selectiestep.ColonClientSelectieContext;
@@ -45,6 +41,10 @@ import nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification;
 import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.ScrollableResults;
 import org.springframework.stereotype.Service;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
 
 import static nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification.getSpecificationU1;
 import static nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification.getSpecificationU2;

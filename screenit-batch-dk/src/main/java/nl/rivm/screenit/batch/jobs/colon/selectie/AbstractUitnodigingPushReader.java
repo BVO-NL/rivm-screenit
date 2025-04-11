@@ -27,11 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-
 import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -49,9 +44,13 @@ import nl.rivm.screenit.specification.algemeen.ClientSpecification;
 import nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification;
 
 import org.hibernate.ScrollableResults;
-import org.hibernate.StatelessSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
@@ -159,7 +158,7 @@ public abstract class AbstractUitnodigingPushReader<T> extends BaseTypedScrollab
 	}
 
 	@Override
-	protected ScrollableResults createScrollableResults(StatelessSession session)
+	protected ScrollableResults createScrollableResults()
 	{
 		var jpaQuery = new FluentJpaQueryImpl<>(createSpecification(), getHibernateSession(), getEntityClass(), ClientTePushenDto.class);
 		jpaQuery.projections((cb, r) -> createProjections(r, cb));

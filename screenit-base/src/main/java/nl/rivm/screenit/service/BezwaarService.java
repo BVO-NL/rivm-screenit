@@ -22,12 +22,14 @@ package nl.rivm.screenit.service;
  */
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.OnderzoeksresultatenActie;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.algemeen.BezwaarGroupViewWrapper;
@@ -35,12 +37,15 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BezwaarType;
 import nl.rivm.screenit.model.enums.BriefType;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public interface BezwaarService
 {
 
 	List<BezwaarGroupViewWrapper> getEditBezwaarGroupViewWrappers(Client client, BezwaarMoment laatstVoltooideMoment);
 
-	List<BezwaarGroupViewWrapper> getEditBezwaarGroupViewWrappers(Client client, BezwaarMoment laatstVoltooideMoment, boolean excludeDossierBezwaar);
+	List<BezwaarGroupViewWrapper> getEditBezwaarGroupViewWrappers(Client client, BezwaarMoment laatstVoltooideMoment, boolean excludeDossierBezwaar,
+		List<BezwaarType> bezwaarTypes);
 
 	List<BezwaarGroupViewWrapper> getBezwaarGroupViewWrappers(BezwaarMoment moment, boolean verzoekTotBezwaarTeZien);
 
@@ -50,15 +55,19 @@ public interface BezwaarService
 
 	void bezwaarAfronden(BezwaarMoment moment, Account account, List<BezwaarGroupViewWrapper> groupWrappers) throws IllegalStateException;
 
+	void onderzoeksresultatenVerwijderen(OnderzoeksresultatenActie actie, Account account, List<BezwaarGroupViewWrapper> groupWrappers) throws IllegalStateException;
+
 	boolean isBezwaarNieuwVergelekenMetVorigeBezwaarMoment(BezwaarMoment bezwaarMoment, BezwaarType bezwaarType);
 
 	BezwaarGroupViewWrapper getGroupWrapperForClientPortaal(BezwaarMoment laatstVoltooideMoment, Bevolkingsonderzoek bevolkingsonderzoek);
 
 	void bezwarenDoorvoeren(BezwaarMoment moment);
 
-	void bezwaarBRPIntrekken(Account account, Client client, UploadDocument document) throws IOException;
+	void bezwaarBRPIntrekken(Account account, Client client, MultipartFile document) throws IOException;
 
-	boolean bezwaarDocumentenVervangen(UploadDocument nieuwDocument, BezwaarMoment bezwaarMoment, UploadDocument huidigDocument, Account account);
+	boolean ondertekendeBezwaarBriefVervangen(UploadDocument nieuwDocument, BezwaarMoment bezwaarMoment, UploadDocument huidigDocument, Account account);
+
+	boolean ondertekendeOnderzoeksresultatenBriefVervangen(UploadDocument nieuwDocument, OnderzoeksresultatenActie actie, UploadDocument huidigDocument, Account account);
 
 	boolean bezwarenGewijzigd(BezwaarMoment laatsteVoltooideBezwaarMoment, List<BezwaarGroupViewWrapper> wrappers, Bevolkingsonderzoek bvo);
 
@@ -75,4 +84,6 @@ public interface BezwaarService
 	Optional<BezwaarBrief> getLaatsteBezwaarBriefVanTypeVoorClient(Client client, BriefType briefType);
 
 	List<BezwaarBrief> getBezwaarBrievenVanClient(Client client);
+
+	List<Client> getClientenMetBezwaarBrp(String bsn, LocalDate geboortedatum);
 }

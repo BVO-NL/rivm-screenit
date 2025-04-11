@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.service.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -44,11 +44,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
 public class LocatieServiceImpl implements LocatieService
 {
 	@Autowired
@@ -79,7 +77,8 @@ public class LocatieServiceImpl implements LocatieService
 		var locaties = locatieRepository.findByHuisarts(huisarts);
 		if (!CollectionUtils.isEmpty(locaties))
 		{
-			locaties.forEach(locatie -> {
+			locaties.forEach(locatie ->
+			{
 				locatieDtos.add(getLocatieDto(locatie));
 			});
 		}
@@ -107,7 +106,7 @@ public class LocatieServiceImpl implements LocatieService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public Locatie updateAndGetLocatie(Huisarts huisarts, LocatieDto locatieDto)
 	{
 		Locatie locatie = getLocatie(locatieDto);

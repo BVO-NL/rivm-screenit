@@ -29,17 +29,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityGraph;
-import javax.persistence.EntityManager;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-
 import nl.rivm.screenit.repository.FluentJpaQuery;
 import nl.rivm.screenit.util.functionalinterfaces.TriFunction;
 
@@ -55,6 +44,17 @@ import org.springframework.data.jpa.repository.query.QueryUtils;
 import org.springframework.util.Assert;
 
 import com.google.common.primitives.Ints;
+
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
 
 public class FluentJpaQueryImpl<T, P> implements FluentJpaQuery<T, P>
 {
@@ -331,7 +331,7 @@ public class FluentJpaQueryImpl<T, P> implements FluentJpaQuery<T, P>
 	{
 		if (entityGraph != null)
 		{
-			typedQuery.setHint("javax.persistence.fetchgraph", entityGraph);
+			typedQuery.setHint("jakarta.persistence.fetchgraph", entityGraph);
 		}
 	}
 

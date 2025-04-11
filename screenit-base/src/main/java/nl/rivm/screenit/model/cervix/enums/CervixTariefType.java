@@ -99,9 +99,9 @@ public enum CervixTariefType implements INaam
 	public static CervixLabTarief getLabTarief(CervixTarief tarief)
 	{
 		tarief = (CervixTarief) HibernateHelper.deproxy(tarief);
-		if (tarief instanceof CervixLabTarief)
+		if (tarief instanceof CervixLabTarief labTarief)
 		{
-			return (CervixLabTarief) tarief;
+			return labTarief;
 		}
 		throw new IllegalArgumentException("tarief is niet van het type CervixLabTarief: " + tarief.getClass());
 	}
@@ -109,9 +109,9 @@ public enum CervixTariefType implements INaam
 	public static CervixHuisartsTarief getHuisartsTarief(CervixTarief tarief)
 	{
 		tarief = (CervixTarief) HibernateHelper.deproxy(tarief);
-		if (tarief instanceof CervixHuisartsTarief)
+		if (tarief instanceof CervixHuisartsTarief huisartsTarief)
 		{
-			return (CervixHuisartsTarief) tarief;
+			return huisartsTarief;
 		}
 		throw new IllegalArgumentException("tarief is niet van het type CervixHuisartsTarief");
 	}
@@ -145,7 +145,7 @@ public enum CervixTariefType implements INaam
 			case HUISARTS_UITSTRIJKJE:
 				return getHuisartsTarief(tarief).getTarief();
 			default:
-				throw new IllegalStateException(String.format("Geen bedrag gevonden voor tarief %s", name()));
+				throw new IllegalStateException("Geen bedrag gevonden voor tarief %s".formatted(name()));
 			}
 		}
 		else

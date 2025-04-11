@@ -29,6 +29,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,7 +41,7 @@ public class ColonILMJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job ilmJob(ColonILMJobListener listener, Step ilmApplicatieLoggingVerwijderenStep)
 	{
-		return jobBuilderFactory.get(JobType.COLON_ILM.name())
+		return new JobBuilder(JobType.COLON_ILM.name(), repository)
 			.listener(listener)
 			.start(ilmApplicatieLoggingVerwijderenStep)
 			.build();
@@ -48,9 +50,8 @@ public class ColonILMJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step ilmApplicatieLoggingVerwijderenStep(IlmApplicatieLoggingVerwijderenReader reader, IlmApplicatieLoggingVerwijderenWriter writer)
 	{
-		return stepBuilderFactory.get("ilmApplicatieLoggingVerwijderenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("ilmApplicatieLoggingVerwijderenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

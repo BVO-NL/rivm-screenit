@@ -2,7 +2,7 @@ package nl.rivm.screenit.clientportaal.controllers.cervix;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -31,7 +31,6 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.service.ClientContactService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -50,8 +49,6 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class CervixZasController extends AbstractController
 {
-	private final HibernateService hibernateService;
-
 	private final ClientContactService clientContactService;
 
 	private final CervixZasService zasService;
@@ -59,7 +56,7 @@ public class CervixZasController extends AbstractController
 	@GetMapping("status")
 	public ResponseEntity<CervixZasStatusDto> getZasStatus(Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.CERVIX_ZAS_AANVRAGEN))
 		{
@@ -72,19 +69,19 @@ public class CervixZasController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> vraagZasAan(@PathVariable Boolean ontvangenNaUitstel, Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.CERVIX_ZAS_AANVRAGEN))
 		{
 			CervixScreeningRonde laatsteRonde = client.getCervixDossier().getLaatsteScreeningRonde();
 			if (!ontvangenNaUitstel)
 			{
-				zasService.vraagZasAan(getClient(authentication, hibernateService), false);
+				zasService.vraagZasAan(getClient(authentication), false);
 				return ResponseEntity.ok().build();
 			}
 			else if (laatsteRonde != null && zasService.rondeHeeftCervixUitstel(laatsteRonde))
 			{
-				zasService.vraagZasAan(getClient(authentication, hibernateService), true);
+				zasService.vraagZasAan(getClient(authentication), true);
 				return ResponseEntity.ok().build();
 			}
 			else

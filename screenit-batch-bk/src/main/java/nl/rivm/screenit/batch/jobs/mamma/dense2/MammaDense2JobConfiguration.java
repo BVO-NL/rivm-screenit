@@ -28,6 +28,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -37,7 +39,7 @@ public class MammaDense2JobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job dense2CsvExportJob(MammaDense2Listener listener, Step dense2EersteStudierondeExporterenStep, Step dense2TweedeStudierondeExporterenStep)
 	{
-		return jobBuilderFactory.get(JobType.MAMMA_DENSE2_CSV_EXPORT.name())
+		return new JobBuilder(JobType.MAMMA_DENSE2_CSV_EXPORT.name(), repository)
 			.listener(listener)
 			.start(dense2EersteStudierondeExporterenStep)
 			.next(dense2TweedeStudierondeExporterenStep)
@@ -47,18 +49,16 @@ public class MammaDense2JobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step dense2EersteStudierondeExporterenStep(MammaDense2ExportEersteStudierondeTasklet tasklet)
 	{
-		return stepBuilderFactory.get("dense2EersteStudierondeExporterenStep")
-			.transactionManager(transactionManager)
-			.tasklet(tasklet)
+		return new StepBuilder("dense2EersteStudierondeExporterenStep", repository)
+			.tasklet(tasklet, transactionManager)
 			.build();
 	}
 
 	@Bean
 	public Step dense2TweedeStudierondeExporterenStep(MammaDense2ExportTweedeStudierondeTasklet tasklet)
 	{
-		return stepBuilderFactory.get("dense2TweedeStudierondeExporterenStep")
-			.transactionManager(transactionManager)
-			.tasklet(tasklet)
+		return new StepBuilder("dense2TweedeStudierondeExporterenStep", repository)
+			.tasklet(tasklet, transactionManager)
 			.build();
 	}
 }

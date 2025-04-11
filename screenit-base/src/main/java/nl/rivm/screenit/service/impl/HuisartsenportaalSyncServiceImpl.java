@@ -24,7 +24,7 @@ package nl.rivm.screenit.service.impl;
 
 import java.io.Serializable;
 
-import javax.jms.Destination;
+import jakarta.jms.Destination;
 
 import nl.rivm.screenit.model.helper.ActiveMQHelper;
 import nl.rivm.screenit.service.HuisartsenportaalSyncService;

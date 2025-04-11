@@ -170,7 +170,7 @@ public class MammaVerslagVerfijnenPanel extends GenericPanel<MammaLezing>
 
 	private WebMarkupContainer createLaesieLijst()
 	{
-		return new ListView<LaesieDto>("laesieLijst", laesieDtos)
+		return new ListView<>("laesieLijst", laesieDtos)
 		{
 			@Override
 			protected void populateItem(ListItem<LaesieDto> item)

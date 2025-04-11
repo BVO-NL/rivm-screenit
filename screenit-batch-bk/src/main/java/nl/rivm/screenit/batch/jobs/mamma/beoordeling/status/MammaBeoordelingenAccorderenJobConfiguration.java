@@ -28,6 +28,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,7 +40,7 @@ public class MammaBeoordelingenAccorderenJobConfiguration extends AbstractJobCon
 	@Bean
 	public Job beoordelingenAccorderenJob(MammaBeoordelingenAccorderenListener listener, Step beoordelingenAccorderenStep)
 	{
-		return jobBuilderFactory.get(JobType.MAMMA_BEOORDELINGEN_ACCORDEREN.name())
+		return new JobBuilder(JobType.MAMMA_BEOORDELINGEN_ACCORDEREN.name(), repository)
 			.listener(listener)
 			.start(beoordelingenAccorderenStep)
 			.build();
@@ -47,9 +49,8 @@ public class MammaBeoordelingenAccorderenJobConfiguration extends AbstractJobCon
 	@Bean
 	public Step beoordelingenAccorderenStep(MammaBeoordelingenAccorderenReader reader, MammaBeoordelingenAccorderenWriter writer)
 	{
-		return stepBuilderFactory.get("beoordelingenAccorderenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(50)
+		return new StepBuilder("beoordelingenAccorderenStep", repository)
+			.<Long, Long> chunk(50, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

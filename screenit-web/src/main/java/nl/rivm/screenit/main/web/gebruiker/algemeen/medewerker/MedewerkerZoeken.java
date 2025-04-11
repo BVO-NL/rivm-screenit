@@ -37,11 +37,12 @@ import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.base.ZoekenContextMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Functie;
+import nl.rivm.screenit.model.Functie_;
 import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Gebruiker_;
 import nl.rivm.screenit.model.InlogStatus;
 import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruikerRol;
 import nl.rivm.screenit.model.Rol;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -72,6 +73,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
+
+import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
 @SecurityConstraint(
 	actie = Actie.INZIEN,
@@ -107,9 +110,9 @@ public class MedewerkerZoeken extends MedewerkerBeheer
 	{
 		setCurrentSelectedOrganisatie(null);
 		setCurrentSelectedMedewerker(null);
-		Gebruiker zoekObject = new Gebruiker();
+		var zoekObject = new Gebruiker();
 
-		InstellingGebruiker loggedInInstellingGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
+		var loggedInInstellingGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
 		zoekObject.setActief(true);
 		zoekObject.setOrganisatieMedewerkers(new ArrayList<>());
 		zoekObject.getOrganisatieMedewerkers().add(new InstellingGebruiker());
@@ -141,26 +144,26 @@ public class MedewerkerZoeken extends MedewerkerBeheer
 		{
 			selectedRollen = ModelUtil.listModel(new ArrayList<>());
 		}
-		MedewerkerDataProvider medewerkerDataProvider = new MedewerkerDataProvider("achternaam", criteriaModel, selectedFuncties, selectedRollen, false);
+		var medewerkerDataProvider = new MedewerkerDataProvider(Gebruiker_.ACHTERNAAM, criteriaModel, selectedFuncties, selectedRollen, false);
 
-		final WebMarkupContainer refreshContainer = new WebMarkupContainer("refreshContainer");
+		final var refreshContainer = new WebMarkupContainer("refreshContainer");
 		refreshContainer.setOutputMarkupId(Boolean.TRUE);
 		add(refreshContainer);
 
 		List<IColumn<Gebruiker, String>> columns = new ArrayList<>();
-		columns.add(new PropertyColumn<>(Model.of("Naam medewerker"), "achternaam", "naamVolledigMetVoornaam"));
+		columns.add(new PropertyColumn<>(Model.of("Naam medewerker"), Gebruiker_.ACHTERNAAM, "naamVolledigMetVoornaam"));
 		columns.add(new PropertyColumn<>(Model.of("Organisaties"), "instelling")
 		{
 			@Override
 			public void populateItem(Item<ICellPopulator<Gebruiker>> item, String componentId, IModel<Gebruiker> rowModel)
 			{
-				Gebruiker medewerker = rowModel.getObject();
-				String organisaties = "";
+				var medewerker = rowModel.getObject();
+				var organisaties = "";
 
 				if (medewerker.getOrganisatieMedewerkers() != null && !medewerker.getOrganisatieMedewerkers().isEmpty())
 				{
-					boolean first = true;
-					for (InstellingGebruiker organisatieMedewerker : medewerker.getOrganisatieMedewerkers())
+					var first = true;
+					for (var organisatieMedewerker : medewerker.getOrganisatieMedewerkers())
 					{
 						if (!Boolean.FALSE.equals(organisatieMedewerker.getActief()))
 						{
@@ -176,23 +179,22 @@ public class MedewerkerZoeken extends MedewerkerBeheer
 				item.add(new Label(componentId, organisaties));
 			}
 		});
-		columns.add(new PropertyColumn<>(Model.of("Functie"), "functie", "functie.naam"));
+		columns.add(new PropertyColumn<>(Model.of("Functie"), propertyChain(Gebruiker_.FUNCTIE, Functie_.FUNCTIE), "functie.naam"));
 		columns.add(new PropertyColumn<>(Model.of("Rollen"), "rol")
 		{
 			@Override
 			public void populateItem(Item<ICellPopulator<Gebruiker>> item, String componentId, IModel<Gebruiker> rowModel)
 			{
-				Gebruiker medewerker = rowModel.getObject();
-				String rollen = "";
+				var medewerker = rowModel.getObject();
 
 				Set<String> rolSet = new HashSet<>();
 				if (medewerker.getOrganisatieMedewerkers() != null && !medewerker.getOrganisatieMedewerkers().isEmpty())
 				{
-					for (InstellingGebruiker organisatieMedewerker : medewerker.getOrganisatieMedewerkers())
+					for (var organisatieMedewerker : medewerker.getOrganisatieMedewerkers())
 					{
 						if (!Boolean.FALSE.equals(organisatieMedewerker.getActief()))
 						{
-							for (InstellingGebruikerRol instellinGebruikersRol : organisatieMedewerker.getRollen())
+							for (var instellinGebruikersRol : organisatieMedewerker.getRollen())
 							{
 								if (instellinGebruikersRol.isRolActief())
 								{
@@ -204,14 +206,14 @@ public class MedewerkerZoeken extends MedewerkerBeheer
 				}
 				List<String> rolList = new ArrayList<>(rolSet);
 				Collections.sort(rolList);
-				rollen = StringUtils.join(rolList, ", ");
+				var rollen = StringUtils.join(rolList, ", ");
 				item.add(new Label(componentId, rollen));
 			}
 
 		});
-		columns.add(new PropertyColumn<>(Model.of("Actief tot en met"), "actiefTotEnMet", "actiefTotEnMet"));
+		columns.add(new PropertyColumn<>(Model.of("Actief tot en met"), Gebruiker_.ACTIEF_TOT_EN_MET, "actiefTotEnMet"));
 
-		List<Bevolkingsonderzoek> bevolkingsonderzoeken = loggedInInstellingGebruiker.getBevolkingsonderzoeken();
+		var bevolkingsonderzoeken = loggedInInstellingGebruiker.getBevolkingsonderzoeken();
 
 		columns.add(new ActiefPropertyColumn<>(Model.of(""), "actief", refreshContainer, criteriaModel));
 
@@ -220,9 +222,9 @@ public class MedewerkerZoeken extends MedewerkerBeheer
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<Gebruiker> model)
 			{
-				Gebruiker gebruiker = model.getObject();
+				var gebruiker = model.getObject();
 				setCurrentSelectedMedewerker(gebruiker);
-				setResponsePage(new MedewerkerBasisgegevens(ModelUtil.cModel(gebruiker)));
+				setResponsePage(new MedewerkerBasisgegevens(ModelUtil.ccModel(gebruiker)));
 			}
 
 		});
@@ -232,14 +234,14 @@ public class MedewerkerZoeken extends MedewerkerBeheer
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				Gebruiker medewerker = new Gebruiker();
+				var medewerker = new Gebruiker();
 				medewerker.setActief(true);
 				medewerker.setInlogstatus(InlogStatus.OK);
-				setResponsePage(new MedewerkerBasisgegevens(ModelUtil.cModel(medewerker)));
+				setResponsePage(new MedewerkerBasisgegevens(ModelUtil.ccModel(medewerker)));
 			}
 
 		};
-		Actie actie = autorisatieService.getActieVoorMedewerker(loggedInInstellingGebruiker, null, Recht.GEBRUIKER_MEDEWERKER_BEHEER);
+		var actie = autorisatieService.getActieVoorMedewerker(loggedInInstellingGebruiker, null, Recht.GEBRUIKER_MEDEWERKER_BEHEER);
 
 		toevoegen.setVisible(isMinimumActie(actie, Actie.TOEVOEGEN));
 		add(toevoegen);
@@ -256,12 +258,12 @@ public class MedewerkerZoeken extends MedewerkerBeheer
 		zoekForm.add(new TextField<>("uzinummer"));
 		zoekForm.add(new TextField<>("emailextra"));
 		zoekForm.add(new TextField<>("organisatieMedewerkers[0].organisatie.uziAbonneenummer"));
-		zoekForm.add(new ListMultipleChoice<>("functies", new PropertyModel<List<Functie>>(this, "selectedFuncties"),
+		zoekForm.add(new ListMultipleChoice<>("functies", new PropertyModel<>(this, "selectedFuncties"),
 			ModelUtil.listRModel(stamtabellenService.getFuncties(null), false), new NaamChoiceRenderer<>()));
-		zoekForm.add(new ListMultipleChoice<>("rollen", new PropertyModel<List<Rol>>(this, "selectedRollen"),
+		zoekForm.add(new ListMultipleChoice<>("rollen", new PropertyModel<>(this, "selectedRollen"),
 			ModelUtil.listRModel(rollen, false), new ChoiceRenderer<>("naam")));
 
-		AjaxSubmitLink submitLink = new AjaxSubmitLink("zoeken", zoekForm)
+		var submitLink = new AjaxSubmitLink("zoeken", zoekForm)
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)

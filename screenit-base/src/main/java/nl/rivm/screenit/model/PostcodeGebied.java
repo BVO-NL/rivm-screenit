@@ -22,10 +22,12 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import java.io.Serial;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
@@ -41,6 +43,7 @@ import org.hibernate.envers.Audited;
 public class PostcodeGebied extends AbstractHibernateObject
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Column(length = HibernateMagicNumber.L6)

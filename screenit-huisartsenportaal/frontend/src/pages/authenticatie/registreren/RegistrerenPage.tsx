@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -24,8 +24,6 @@ import properties from "./RegistrerenPage.json"
 import validatieProperties from "../../../util/ValidatieUtil.json"
 import {loadingThunkAction} from "../../../api/LoadingThunkAction"
 import {useAppThunkDispatch} from "../../../index"
-import {authenticate} from "../../../api/AanmeldenThunkAction"
-import {AuthenticationScope} from "../../../state/datatypes/enums/AuthenticationScope"
 import {RegistrationDto} from "../../../state/datatypes/dto/RegistrationDto"
 import {useNavigate} from "react-router"
 import {createActionPushToast} from "../../../state/ToastsState"
@@ -33,6 +31,7 @@ import {ToastType} from "../../../state/datatypes/Toast"
 import FormTextField from "../../../components/form/text/FormTextField"
 import * as Yup from "yup"
 import React from "react"
+import {registreren} from "../../../api/RegistrerenThunkAction"
 
 const RegistrerenPage = () => {
 	const dispatch = useAppThunkDispatch()
@@ -51,7 +50,7 @@ const RegistrerenPage = () => {
 				registratieCode: Yup.string().required(getString(validatieProperties.required)),
 			})}
 			onSubmit={(credentials => {
-				dispatch(loadingThunkAction(authenticate(credentials.agbCode, credentials.registratieCode, AuthenticationScope.REGISTREREN))).then(() => {
+				dispatch(loadingThunkAction(registreren(credentials))).then(() => {
 					dispatch(createActionPushToast({type: ToastType.SUCCESS, message: getString(properties.toast.success)}))
 					navigate("/registreren/voltooien")
 				})

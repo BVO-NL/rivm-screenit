@@ -21,8 +21,6 @@ package nl.rivm.screenit.batch.jobs.mamma.palga.csvimport.step;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.BatchConstants;
@@ -35,6 +33,7 @@ import nl.rivm.screenit.service.mamma.MammaPalgaService;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,11 +51,11 @@ public class MammaPalgaCsvImportWriter implements ItemWriter<MammaPalgaCsvImport
 	private MammaPalgaService palgaService;
 
 	@Override
-	public void write(List<? extends MammaPalgaCsvImportDto> items) throws Exception
+	public void write(Chunk<? extends MammaPalgaCsvImportDto> chunk) throws Exception
 	{
 		var grondslag = MammaPalgaGrondslag.valueOf(jobExecution.getJobParameters().getString(JobStartParameter.MAMMA_PALGA_IMPORT.name()));
 
-		for (MammaPalgaCsvImportDto dto : items)
+		for (MammaPalgaCsvImportDto dto : chunk.getItems())
 		{
 			if (dto.getRegelNummer() != HEADER_ROW && !dto.isFout())
 			{

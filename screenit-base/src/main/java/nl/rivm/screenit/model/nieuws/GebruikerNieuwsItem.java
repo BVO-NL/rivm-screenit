@@ -21,14 +21,15 @@ package nl.rivm.screenit.model.nieuws;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import nl.rivm.screenit.model.Gebruiker;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
@@ -46,13 +47,14 @@ import org.hibernate.envers.Audited;
 public class GebruikerNieuwsItem extends AbstractHibernateObject
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
-	@ManyToOne(cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@ManyToOne(cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private Gebruiker gebruiker;
 
-	@ManyToOne(cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@ManyToOne(cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private NieuwsItem nieuwsItem;
 

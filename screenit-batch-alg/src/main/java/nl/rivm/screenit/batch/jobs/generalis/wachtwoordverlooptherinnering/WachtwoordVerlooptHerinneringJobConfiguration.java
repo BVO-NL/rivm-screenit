@@ -26,6 +26,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,7 +38,7 @@ public class WachtwoordVerlooptHerinneringJobConfiguration extends AbstractJobCo
 	@Bean
 	public Job wachtwoordVerlooptHerinneringJob(WachtwoordVerlooptHerinneringListener listener, Step wachtwoordVerlooptHerinneringStep)
 	{
-		return jobBuilderFactory.get(JobType.WACHTWOORD_VERLOOPT_HERINNERING.name())
+		return new JobBuilder(JobType.WACHTWOORD_VERLOOPT_HERINNERING.name(), repository)
 			.listener(listener)
 			.start(wachtwoordVerlooptHerinneringStep)
 			.build();
@@ -45,9 +47,8 @@ public class WachtwoordVerlooptHerinneringJobConfiguration extends AbstractJobCo
 	@Bean
 	public Step wachtwoordVerlooptHerinneringStep(WachtwoordVerlooptHerinneringReader reader, WachtwoordVerlooptHerinneringWriter writer)
 	{
-		return stepBuilderFactory.get("wachtwoordVerlooptHerinneringStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("wachtwoordVerlooptHerinneringStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

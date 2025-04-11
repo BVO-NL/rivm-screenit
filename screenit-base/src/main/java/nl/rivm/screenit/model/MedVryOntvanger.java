@@ -28,7 +28,7 @@ import nl.rivm.screenit.model.colon.ColonHuisartsBericht;
 import nl.rivm.screenit.util.NaamUtil;
 import nl.topicuszorg.organisatie.model.Adres;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class MedVryOntvanger implements IMedVryOntvanger
 {

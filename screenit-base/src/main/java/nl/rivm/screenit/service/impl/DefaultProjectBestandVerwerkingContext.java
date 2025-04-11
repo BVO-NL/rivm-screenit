@@ -39,7 +39,7 @@ import nl.rivm.screenit.model.project.ProjectBestandVerwerkingEntry;
 import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.rivm.screenit.service.ClientService;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 public class DefaultProjectBestandVerwerkingContext extends BaseProjectBestandVerwerkingContext

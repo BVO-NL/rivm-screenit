@@ -21,13 +21,9 @@ package nl.rivm.screenit.main.web.component.bezwaar.edit;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.util.EnumStringUtil;
-import nl.rivm.screenit.main.web.gebruiker.clienten.ClientTooltipPanel;
-import nl.rivm.screenit.model.ClientTooltipType;
 import nl.rivm.screenit.model.algemeen.BezwaarViewWrapper;
 import nl.rivm.screenit.model.enums.BezwaarType;
 
-import org.apache.wicket.markup.html.basic.EnumLabel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.panel.GenericPanel;
@@ -36,9 +32,6 @@ import org.apache.wicket.model.IModel;
 
 public class BezwaarCheckBox extends GenericPanel<BezwaarViewWrapper>
 {
-
-	private static final long serialVersionUID = 1L;
-
 	public BezwaarCheckBox(String id, IModel<BezwaarViewWrapper> model)
 	{
 		super(id, new CompoundPropertyModel<>(model));
@@ -50,39 +43,6 @@ public class BezwaarCheckBox extends GenericPanel<BezwaarViewWrapper>
 		}
 
 		add(new CheckBox("actief"));
-		add(new EnumLabel<BezwaarType>("type"));
-		add(new Label("type.info", new IModel()
-		{
-
-			@Override
-			public String getObject()
-			{
-				return getString(EnumStringUtil.getPropertyString(wrapper.getType()) + ".info");
-			}
-		})
-
-			.setEscapeModelStrings(false));
-		add(new ClientTooltipPanel("tooltip", getClientToolTipTypeByBezwaar(wrapper.getType()), false));
-	}
-
-	private ClientTooltipType getClientToolTipTypeByBezwaar(BezwaarType type)
-	{
-		switch (type)
-		{
-		case GEEN_WETENSCHAPPELIJK_ONDERZOEK:
-			return ClientTooltipType.BEZWAAR_GEENWETENSCHAPPELIJKONDERZOEK;
-		case GEEN_GEBRUIK_LICHAAMSMATERIAAL_WETENSCHAPPELIJK_ONDERZOEK:
-			return ClientTooltipType.GEEN_GEBRUIK_LICHAAMSMATERIAAL_WETENSCHAPPELIJK_ONDERZOEK;
-		case GEEN_SIGNALERING_VERWIJSADVIES:
-			return ClientTooltipType.GEEN_SIGNALERING_VERWIJSADVIES;
-		case GEEN_UITWISSELING_MET_DE_HUISARTS:
-			return ClientTooltipType.BEZWAAR_GEENUITWISSELINGHUISARTS;
-		case GEEN_KWALITEITSWAARBORGING:
-			return ClientTooltipType.BEZWAAR_GEENKWALITEITSBORGING;
-		case GEEN_DIGITALE_UITWISSELING_MET_HET_ZIEKENHUIS:
-			return ClientTooltipType.BEZWAAR_GEEN_DIGITALE_UITWISSELING_MET_HET_ZIEKENHUIS;
-		default:
-			throw new IllegalStateException("Er is een nieuw bezwaar waar geen tooltip voor is aangemaakt");
-		}
+		add(new Label("type", getString(wrapper.getResourceKey())).setEscapeModelStrings(false));
 	}
 }

@@ -21,16 +21,17 @@ package nl.rivm.screenit.model.mamma;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.mamma.enums.MammaAfmeldingReden;
@@ -47,6 +48,7 @@ import org.hibernate.envers.Audited;
 public class MammaAfmelding extends Afmelding<MammaScreeningRonde, MammaDossier, MammaBrief>
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
@@ -55,19 +57,19 @@ public class MammaAfmelding extends Afmelding<MammaScreeningRonde, MammaDossier,
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	private MammaDossier dossier;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { javax.persistence.CascadeType.REMOVE })
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE })
 	@Cascade(CascadeType.DELETE)
 	private MammaBrief afmeldingAanvraag;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { javax.persistence.CascadeType.REMOVE })
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE })
 	@Cascade(CascadeType.DELETE)
 	private MammaBrief afmeldingBevestiging;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { javax.persistence.CascadeType.REMOVE })
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE })
 	@Cascade(CascadeType.DELETE)
 	private MammaBrief heraanmeldAanvraag;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { javax.persistence.CascadeType.REMOVE })
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE })
 	@Cascade(CascadeType.DELETE)
 	private MammaBrief heraanmeldBevestiging;
 

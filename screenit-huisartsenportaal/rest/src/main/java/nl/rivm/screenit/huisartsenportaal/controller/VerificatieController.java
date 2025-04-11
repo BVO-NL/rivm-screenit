@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.controller;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -23,46 +23,45 @@ package nl.rivm.screenit.huisartsenportaal.controller;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
 import nl.rivm.screenit.huisartsenportaal.dto.VerificatieLocatieDto;
 import nl.rivm.screenit.huisartsenportaal.dto.VerificatieStatusDto;
+import nl.rivm.screenit.huisartsenportaal.exception.ValidatieException;
 import nl.rivm.screenit.huisartsenportaal.service.LocatieService;
 import nl.rivm.screenit.huisartsenportaal.service.LocatieVerificatieService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("verificatie")
-@PreAuthorize("isAuthenticated()")
 public class VerificatieController extends BaseController
 {
-
 	@Autowired
 	private LocatieVerificatieService verificatieService;
 
 	@Autowired
 	private LocatieService locatieService;
 
-	@RequestMapping(method = RequestMethod.GET, value = "/locaties")
+	@GetMapping("/locaties")
 	public List<VerificatieLocatieDto> getLocaties()
 	{
 		return verificatieService.getTeVerifierenLocaties(getIngelogdeHuisarts());
 	}
 
-	@RequestMapping(method = RequestMethod.POST, value = "/verifieerLocatie")
+	@PostMapping("/verifieerLocatie")
 	public ResponseEntity verifieerHuisartsLocatieCode(@Valid @RequestBody VerificatieLocatieDto locatieDto, BindingResult result)
 	{
 		if (result.hasErrors())
 		{
-			return ResponseEntity.badRequest().body(result.getAllErrors());
+			throw new ValidatieException(result.getAllErrors());
 		}
 		VerificatieStatusDto verificatieStatus = verificatieService.verifieerLocatie(locatieDto);
 		if (verificatieStatus.getSucces())
@@ -75,12 +74,12 @@ public class VerificatieController extends BaseController
 		}
 	}
 
-	@RequestMapping(method = RequestMethod.POST, value = "/herzendVerificatieCode")
+	@PostMapping("/herzendVerificatieCode")
 	public ResponseEntity herzendVerificatieCode(@Valid @RequestBody VerificatieLocatieDto locatieDto, BindingResult result)
 	{
 		if (result.hasErrors())
 		{
-			return ResponseEntity.badRequest().body(result.getAllErrors());
+			throw new ValidatieException(result.getAllErrors());
 		}
 		locatieService.herzendVerificatieMail(getIngelogdeHuisarts(), locatieDto);
 		return ResponseEntity.ok().build();

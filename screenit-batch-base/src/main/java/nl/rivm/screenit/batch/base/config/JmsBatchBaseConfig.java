@@ -81,5 +81,4 @@ public class JmsBatchBaseConfig
 		listener.setSessionTransacted(true);
 		return listener;
 	}
-
 }

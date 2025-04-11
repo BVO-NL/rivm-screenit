@@ -48,7 +48,7 @@ import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
 import nl.rivm.screenit.model.colon.planning.ColonTijdslot;
 import nl.rivm.screenit.model.colon.planning.ColonTijdslot_;
 import nl.rivm.screenit.repository.colon.ColonAfspraakslotRepository;
-import nl.rivm.screenit.repository.colon.ColonTijdslotRepository;
+import nl.rivm.screenit.repository.colon.ColonTijdslotNativeQueryRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.colon.ColonTijdslotSpecification;
 import nl.rivm.screenit.util.DateUtil;
@@ -77,7 +77,7 @@ public class RoosterServiceImpl implements RoosterService
 	private ColonAfspraakslotRepository afspraakslotRepository;
 
 	@Autowired
-	private ColonTijdslotRepository tijdslotRepository;
+	private ColonTijdslotNativeQueryRepository tijdslotRepository;
 
 	@Override
 	@Transactional

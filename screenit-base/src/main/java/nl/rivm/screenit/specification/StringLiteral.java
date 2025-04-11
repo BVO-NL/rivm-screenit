@@ -21,7 +21,7 @@ package nl.rivm.screenit.specification;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaBuilder;
 
 import org.hibernate.query.criteria.internal.CriteriaBuilderImpl;
 import org.hibernate.query.criteria.internal.compile.RenderingContext;

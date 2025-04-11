@@ -43,7 +43,9 @@ public enum ProjectParameterKey
 
 	COLON_WACHTTIJD_UITSLAG_STUDIETEST(ProjectType.PROJECT, Integer.class, Bevolkingsonderzoek.COLON, 999, false),
 
-	COLON_AFWIJKING_UITNODIGINGSINTERVAL(ProjectType.PROJECT, Integer.class, Bevolkingsonderzoek.COLON, -20, 20, false);
+	COLON_AFWIJKING_UITNODIGINGSINTERVAL(ProjectType.PROJECT, Integer.class, Bevolkingsonderzoek.COLON, -20, 20, false),
+
+	COLON_GEBRUIK_AFWIJKING_UITNODIGINGSINTERVAL(ProjectType.PROJECT, Integer.class, Bevolkingsonderzoek.COLON, 1, 999, false);
 
 	private final ProjectType projectType;
 

@@ -22,20 +22,25 @@ package nl.rivm.screenit.batch.jobs.helpers;
  */
 
 import org.hibernate.HibernateException;
-import org.hibernate.SQLQuery;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
-import org.hibernate.StatelessSession;
+import org.hibernate.internal.EmptyScrollableResults;
+import org.hibernate.query.NativeQuery;
 
 public abstract class BaseSqlScrollableResultReader extends BaseIdScrollableResultReader
 {
 
-	protected abstract SQLQuery createCriteria(StatelessSession session) throws HibernateException;
+	protected abstract NativeQuery createNativeQuery() throws HibernateException;
 
 	@Override
-	protected ScrollableResults createScrollableResults(StatelessSession session)
+	protected ScrollableResults createScrollableResults()
 	{
-		return createCriteria(session).setFetchSize(fetchSize).scroll(ScrollMode.FORWARD_ONLY);
+		var query = createNativeQuery();
+		if (query == null)
+		{
+			return new EmptyScrollableResults();
+		}
+		return query.setFetchSize(fetchSize).scroll(ScrollMode.FORWARD_ONLY);
 	}
 
 }

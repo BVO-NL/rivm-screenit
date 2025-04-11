@@ -1,0 +1,69 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-rooster-controls
+  (viewRangeChange)="onToggleView($event)"
+  (gotoNext)="gotoNext()"
+  (gotoPrevious)="gotoPrevious()"
+  (gotoToday)="gotoToday()"
+  (selectedDateChange)="handleSelectedDateChange($event)"
+  (zoomLevelChanged)="setZoomLevel($event)"
+  (getCurrentDate)="getCurrentDate()"
+  [currentDate]="currentDate"
+  [selectedDate]="selectedDate"
+  [viewRange]="viewRange"
+/>
+
+<full-calendar
+  class="aantal-kamers-{{kamers.length}}"
+  #calendar
+  id="roosterCalendar"
+  [options]="calendarOptions"
+  [resources]="kamers"
+  [events]="tijdsloten$ | async"
+>
+  <ng-template #eventContent let-arg>
+    <div class="fc-event-main-frames" [attr.data-test-starttijd]="arg.event.extendedProps.vanaf | date: TIME_FORMAT"
+         [attr.data-test-eindtijd]="arg.event.extendedProps.tot | date: TIME_FORMAT">
+      @if (toonIconen) {
+        @switch (arg.event.extendedProps.status) {
+          @case (ColonTijdslotStatus.VRIJ_TE_VERPLAATSEN) {
+            <svg class="event-icon" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+              <path d="M23.43,16.83A1,1,0,0,0,22,18.24L25.72,22H7.83a1,1,0,0,0,0,2H25.72L22,27.7a1,1,0,1,0,1.42,1.41L29.53,23Z"></path>
+              <path d="M13.24,18.45a1,1,0,0,0,.71-1.71L10.24,13H28.12a1,1,0,0,0,0-2H10.24l3.71-3.73a1,1,0,0,0-1.42-1.41L6.42,12l6.11,6.14A1,1,0,0,0,13.24,18.45Z"></path>
+            </svg>
+          }
+          @case (ColonTijdslotStatus.GEBRUIKT_VOOR_CAPACITEIT) {
+            <svg class="event-icon rotate-45" stroke="#fff" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" width="14"
+                 height="14">
+              <path d="M27.66,15.61,18,6,8.34,15.61A1,1,0,1,0,9.75,17L17,9.81V28.94a1,1,0,1,0,2,0V9.81L26.25,17a1,1,0,0,0,1.41-1.42Z"></path>
+            </svg>
+          }
+          @case (ColonTijdslotStatus.INTAKE_GEPLAND) {
+            <svg class="event-icon" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+              <path
+                d="M19.41,18l8.29-8.29a1,1,0,0,0-1.41-1.41L18,16.59,9.71,8.29A1,1,0,0,0,8.29,9.71L16.59,18,8.29,26.29a1,1,0,1,0,1.41,1.41L18,19.41l8.29,8.29a1,1,0,0,0,1.41-1.41Z"></path>
+            </svg>
+          }
+        }
+      }
+    </div>
+  </ng-template>
+</full-calendar>

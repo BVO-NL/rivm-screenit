@@ -23,7 +23,7 @@ package nl.rivm.screenit.config;
 
 import lombok.Setter;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,37 +50,37 @@ public class S3BucketConfig
 	private String name;
 
 	@Bean
-	public Boolean s3bucketEnabled()
+	Boolean s3bucketEnabled()
 	{
 		return enabled != null && enabled;
 	}
 
 	@Bean
-	public String s3bucketEndpointOverride()
+	String s3bucketEndpointOverride()
 	{
 		return StringUtils.defaultIfBlank(endpointOverride, "");
 	}
 
 	@Bean
-	public String s3bucketAccessId()
+	String s3bucketAccessId()
 	{
 		return StringUtils.defaultIfBlank(accessId, "");
 	}
 
 	@Bean
-	public String s3bucketAccessSecret()
+	String s3bucketAccessSecret()
 	{
 		return StringUtils.defaultIfBlank(accessSecret, "");
 	}
 
 	@Bean
-	public String s3bucketRegion()
+	String s3bucketRegion()
 	{
 		return StringUtils.defaultIfBlank(region, "");
 	}
 
 	@Bean
-	public String s3bucketName()
+	String s3bucketName()
 	{
 		return StringUtils.defaultIfBlank(name, "");
 	}

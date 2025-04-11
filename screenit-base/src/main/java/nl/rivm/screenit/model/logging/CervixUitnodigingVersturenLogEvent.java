@@ -24,10 +24,10 @@ package nl.rivm.screenit.model.logging;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import nl.rivm.screenit.model.verwerkingverslag.cervix.CervixZasVersturenRapportage;
 import nl.rivm.screenit.model.verwerkingverslag.cervix.CervixZasVersturenRapportageProjectEntry;
@@ -41,13 +41,13 @@ import org.hibernate.annotations.CascadeType;
 @Table(schema = "gedeeld")
 public class CervixUitnodigingVersturenLogEvent extends LogEvent
 {
-	@OneToMany(cascade = javax.persistence.CascadeType.REMOVE)
+	@OneToMany(cascade = jakarta.persistence.CascadeType.REMOVE)
 	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@JoinTable(schema = "gedeeld")
 	@Cascade(CascadeType.DELETE)
 	private List<CervixZasVersturenRapportage> rapportage = new ArrayList<>();
 
-	@OneToMany(cascade = javax.persistence.CascadeType.REMOVE)
+	@OneToMany(cascade = jakarta.persistence.CascadeType.REMOVE)
 	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@JoinTable(schema = "gedeeld")
 	@Cascade(CascadeType.DELETE)

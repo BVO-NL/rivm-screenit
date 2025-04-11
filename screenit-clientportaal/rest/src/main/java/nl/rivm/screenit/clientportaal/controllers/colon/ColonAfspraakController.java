@@ -2,7 +2,7 @@ package nl.rivm.screenit.clientportaal.controllers.colon;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -43,7 +43,6 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.colon.PlanningService;
 import nl.rivm.screenit.util.ExceptionConverter;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,8 +66,6 @@ import static nl.rivm.screenit.model.enums.BriefType.COLON_INTAKE_GEWIJZIGD;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class ColonAfspraakController extends AbstractController
 {
-	private final HibernateService hibernateService;
-
 	private final ClientContactService clientContactService;
 
 	private final ColonAfspraakService afspraakService;
@@ -114,7 +111,7 @@ public class ColonAfspraakController extends AbstractController
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<List<ColonVrijSlotZonderKamerDto>> zoekKanditaatAfspraken(Authentication authentication, @RequestBody ColonAfspraakZoekFilterDto filter)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN)
 			|| clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN))
 		{
@@ -153,7 +150,7 @@ public class ColonAfspraakController extends AbstractController
 	@GetMapping("/huidig")
 	public ResponseEntity<ColonIntakeAfspraakDto> getHuidigeIntakeAfspraak(Authentication authentication)
 	{
-		var client = getClient(authentication, hibernateService);
+		var client = getClient(authentication);
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN)
 			|| clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN))
 		{
@@ -167,7 +164,7 @@ public class ColonAfspraakController extends AbstractController
 
 	public ResponseEntity<Void> zegIntakeAfspraakAf(Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN))
 		{
 			afspraakService.intakeAfspraakAfzeggen(client);
@@ -180,7 +177,7 @@ public class ColonAfspraakController extends AbstractController
 
 	public ResponseEntity<String> verplaatsIntakeAfspraak(Authentication authentication, @RequestBody ColonVrijSlotZonderKamerDto verplaatsAfspraak)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN))
 		{
@@ -193,7 +190,7 @@ public class ColonAfspraakController extends AbstractController
 
 	public ResponseEntity<String> maakIntakeAfspraak(Authentication authentication, @RequestBody ColonVrijSlotZonderKamerDto maakAfspraak)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN))
 		{

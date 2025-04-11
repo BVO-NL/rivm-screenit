@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.regex.Pattern;
 
-import javax.jms.Destination;
+import jakarta.jms.Destination;
 
 import lombok.extern.slf4j.Slf4j;
 

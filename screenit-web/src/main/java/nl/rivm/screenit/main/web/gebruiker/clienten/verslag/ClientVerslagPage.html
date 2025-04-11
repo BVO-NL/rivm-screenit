@@ -20,35 +20,32 @@
   -->
 <html xmlns:wicket="http://wicket.apache.org">
 <wicket:extend>
-    <div class="row-fluid">
-        <div class="span9">
-            <h1 class="pageTitle">
-                <a  wicket:id="terug" class="page">Verslagen</a>
-                <span class="divider">&gt;</span> <span class="subpage"><wicket:container wicket:id="isnieuw">Nieuw</wicket:container> <wicket:container wicket:id="type">MDL
+	<div class="row-fluid">
+		<div class="span9">
+			<h1 class="pageTitle">
+				<a wicket:id="terug" class="page">Verslagen</a>
+				<span class="divider">&gt;</span> <span class="subpage"><wicket:container wicket:id="isnieuw">Nieuw</wicket:container> <wicket:container wicket:id="type">MDL
             </wicket:container> verslag</span>
-            </h1>
-        </div>
-    </div>
-    <div class="row-fluid">
-        <div class="span9">
-            <fieldset>
-                <div wicket:id="formulier">
-                </div>
-                <div class="buttons">
-                    <button class="btn btn-danger left" wicket:id="verwijderen">Verwijderen</button>
-                    <button class="btn" wicket:id="annuleren">Annuleren</button>
-                    <button class="btn" wicket:id="opslaan">Opslaan</button>
-                    <button class="btn btn-primary" wicket:id="heropenen">Heropenen</button>
-                    <button class="btn btn-primary" wicket:id="afronden">Afronden</button>
-                </div>
-            </fieldset>
-        </div>
-        <div class="span3">
-            <div class="passport">
-                <wicket:container wicket:id="passpoort"></wicket:container>
-            </div>
-        </div>
-    </div>
-    <div wicket:id="dialog"></div>
+			</h1>
+		</div>
+	</div>
+	<div class="row-fluid">
+		<div class="span9">
+			<fieldset>
+				<div wicket:id="inzienPanel"></div>
+				<div class="buttons">
+					<button class="btn btn-danger left" wicket:id="verwijderen">Verwijderen</button>
+					<button class="btn" wicket:id="annuleren">Annuleren</button>
+					<button class="btn btn-primary" wicket:id="downloaden">Downloaden</button>
+				</div>
+			</fieldset>
+		</div>
+		<div class="span3">
+			<div class="passport">
+				<wicket:container wicket:id="passpoort"></wicket:container>
+			</div>
+		</div>
+	</div>
+	<div wicket:id="dialog"></div>
 </wicket:extend>
 </html>

@@ -60,6 +60,7 @@ import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.ItemStreamWriter;
@@ -150,9 +151,9 @@ public class LabformulierGenererenWriter implements ItemStreamWriter<Long>
 	}
 
 	@Override
-	public void write(List<? extends Long> items) throws Exception
+	public void write(Chunk<? extends Long> chunk) throws Exception
 	{
-		for (var id : items)
+		for (var id : chunk.getItems())
 		{
 			var aanvraag = hibernateService.load(CervixLabformulierAanvraag.class, id);
 

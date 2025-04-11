@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -23,7 +23,7 @@ import {KandidaatAfspraak} from "../../../../../../datatypes/mamma/KandidaatAfsp
 import BasePopup from "../../../../../../components/popup/BasePopup"
 import {Col, NavLink, Row} from "react-bootstrap"
 import classNames from "classnames"
-import {formatDateText, formatTime} from "../../../../../../utils/DateUtil"
+import {formatDateText, formatDateTime, formatTime} from "../../../../../../utils/DateUtil"
 import bvoStyles from "../../../../../../components/BvoStyle.module.scss"
 import styles from "./MammaAfspraakMakenWizardModuleStyles.module.scss"
 import {useSelectedBvo} from "../../../../../../utils/Hooks"
@@ -36,13 +36,16 @@ import properties from "./MammaAfspraakMakenWizardModuleProperties.json"
 import {ArrowType} from "../../../../../../components/vectors/ArrowIconComponent"
 import {maakAfspraak} from "../../../../../../api/MammaAfspraakMakenThunkAction"
 import {AfspraakBevestigingOpties} from "../../../../../../datatypes/mamma/AfspraakBevestigingOpties"
+import {datadogRum} from "@datadog/browser-rum"
+import {useSelector} from "react-redux"
+import {State} from "../../../../../../datatypes/State"
 
 export type MammaAfspraakMakenPopupProps = {
 	afspraak: KandidaatAfspraak,
 	isBevestigingsPopup: boolean,
 	onFailure?: () => void,
 	onNext?: () => void,
-	onAndereAfspraakKiezen?: () => void,
+	onAndereAfspraakKiezen: () => void,
 	children?: React.ReactNode,
 	setAfspraakBevestiging?: React.Dispatch<React.SetStateAction<AfspraakBevestigingOpties | undefined>>,
 }
@@ -51,11 +54,18 @@ const MammaAfspraakMakenPopup = (props: MammaAfspraakMakenPopupProps) => {
 	const bvo = useSelectedBvo()!
 	const dispatch = useThunkDispatch()
 	const kandidaatAfspraak = props.afspraak
+	const client = useSelector((state: State) => state.client)
 
-	const afspraakMaken = (afspraak: KandidaatAfspraak) => {
-		dispatch(maakAfspraak(bvo, afspraak)).then(
+	const afspraakMaken = () => {
+		datadogRum.addAction("mammaAfspraakOptieBevestigd", {
+			"client": client.persoon.id,
+			"datumTijd": formatDateTime(kandidaatAfspraak.datumTijd),
+			"standplaatsPeriode": kandidaatAfspraak.standplaatsPeriodeId,
+		})
+
+		dispatch(maakAfspraak(bvo, kandidaatAfspraak)).then(
 			(response) => {
-				props.setAfspraakBevestiging!(new AfspraakBevestigingOpties(response.data, afspraak))
+				props.setAfspraakBevestiging!(new AfspraakBevestigingOpties(response.data, kandidaatAfspraak))
 				props.onNext!()
 			},
 		).catch((error) => {
@@ -63,6 +73,16 @@ const MammaAfspraakMakenPopup = (props: MammaAfspraakMakenPopupProps) => {
 				props.onFailure && props.onFailure()
 			}
 		})
+	}
+
+	const andereAfspraakKiezen = () => {
+		datadogRum.addAction("mammaAfspraakAndereOptieZoeken", {
+			"client": client.persoon.id,
+			"datumTijd": formatDateTime(kandidaatAfspraak.datumTijd),
+			"standplaatsPeriode": kandidaatAfspraak.standplaatsPeriodeId,
+			"redenTijdNietMeerBeschikbaar": !props.isBevestigingsPopup,
+		})
+		props.onAndereAfspraakKiezen()
 	}
 
 	return (
@@ -90,15 +110,13 @@ const MammaAfspraakMakenPopup = (props: MammaAfspraakMakenPopupProps) => {
 								   <div>
 									   <Button label={getString(properties.afspraak_maken.button.bevestigen)}
 											   displayArrow={ArrowType.ARROW_RIGHT}
-											   onClick={() => {
-												   afspraakMaken(kandidaatAfspraak)
-											   }}/>
-									   <NavLink onClick={props.onAndereAfspraakKiezen} className={styles.andereOptie}>
+											   onClick={afspraakMaken}/>
+									   <NavLink onClick={andereAfspraakKiezen} className={styles.andereOptie}>
 										   {getString(properties.afspraak_maken.button.andere_afspraak)}</NavLink>
 								   </div>}
 							   {!props.isBevestigingsPopup &&
 								   <Button label={getString(properties.afspraak_maken.button.andere_afspraak)}
-										   onClick={props.onAndereAfspraakKiezen!}
+										   onClick={andereAfspraakKiezen}
 										   displayArrow={ArrowType.ARROW_RIGHT}/>}
 						   </div>
 						   {props.children}

@@ -23,49 +23,28 @@ package nl.rivm.screenit.main.model;
 
 import java.util.Date;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.BezwaarMoment;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.model.IDetachable;
 import org.apache.wicket.model.IModel;
 
+@Getter
+@Setter
 public class BezwaarDossierGebeurtenis extends DossierGebeurtenis implements IDetachable
 {
-
-	private static final long serialVersionUID = 1L;
 
 	private IModel<BezwaarMoment> bezwaarModel;
 
 	private String omschrijving;
 
-	public BezwaarDossierGebeurtenis()
-	{
-	}
-
 	public BezwaarDossierGebeurtenis(String omschrijving, Date statusDatum)
 	{
 		super(statusDatum);
 		this.omschrijving = omschrijving;
-	}
-
-	public String getOmschrijving()
-	{
-		return omschrijving;
-	}
-
-	public void setOmschrijving(String omschrijving)
-	{
-		this.omschrijving = omschrijving;
-	}
-
-	public IModel<BezwaarMoment> getBezwaarModel()
-	{
-		return bezwaarModel;
-	}
-
-	public void setBezwaarModel(IModel<BezwaarMoment> bezwaarModel)
-	{
-		this.bezwaarModel = bezwaarModel;
 	}
 
 	@Override

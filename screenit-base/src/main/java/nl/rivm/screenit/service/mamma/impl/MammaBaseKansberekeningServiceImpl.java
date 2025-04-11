@@ -24,12 +24,13 @@ package nl.rivm.screenit.service.mamma.impl;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.AanvraagBriefStatus;
@@ -82,7 +83,9 @@ public class MammaBaseKansberekeningServiceImpl implements MammaBaseKansberekeni
 
 	private static final BigDecimal MINIMUM_OPKOMSTKANS = BigDecimal.valueOf(0.01);
 
-	private static final int KANSBEREKENING_TIMEOUT_MS = 5000;
+	private static final Duration KANSBEREKENING_SHORT_READTIMEOUT = Duration.ofSeconds(5);
+
+	private static final Duration KANSBEREKENING_LONG_READTIMEOUT = Duration.ofMinutes(30);
 
 	@Autowired
 	private ICurrentDateSupplier dateSupplier;
@@ -261,28 +264,28 @@ public class MammaBaseKansberekeningServiceImpl implements MammaBaseKansberekeni
 	@Override
 	public void fitDossierClassifier()
 	{
-		var restTemplate = RestApiFactory.create();
+		var restTemplate = RestApiFactory.create(KANSBEREKENING_LONG_READTIMEOUT);
 		restTemplate.getForObject(kansberekeningServiceUrl + "fit_dossier_classifier", String.class);
 	}
 
 	@Override
 	public void fitAfsprakenClassifier()
 	{
-		var restTemplate = RestApiFactory.create();
+		var restTemplate = RestApiFactory.create(KANSBEREKENING_LONG_READTIMEOUT);
 		restTemplate.getForObject(kansberekeningServiceUrl + "fit_afspraak_classifier", String.class);
 	}
 
 	@Override
 	public void predictDossiers()
 	{
-		var restTemplate = RestApiFactory.create();
+		var restTemplate = RestApiFactory.create(KANSBEREKENING_LONG_READTIMEOUT);
 		restTemplate.getForObject(kansberekeningServiceUrl + "predict_dossiers", String.class);
 	}
 
 	@Override
 	public void predictAfspraken()
 	{
-		var restTemplate = RestApiFactory.create();
+		var restTemplate = RestApiFactory.create(KANSBEREKENING_LONG_READTIMEOUT);
 		restTemplate.getForObject(kansberekeningServiceUrl + "predict_afspraken", String.class);
 	}
 
@@ -291,7 +294,7 @@ public class MammaBaseKansberekeningServiceImpl implements MammaBaseKansberekeni
 	{
 		if (mayUseKansberekening())
 		{
-			var restTemplate = RestApiFactory.create(KANSBEREKENING_TIMEOUT_MS);
+			var restTemplate = RestApiFactory.create(KANSBEREKENING_SHORT_READTIMEOUT);
 
 			try
 			{

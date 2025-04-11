@@ -34,6 +34,7 @@ import nl.rivm.screenit.specification.ExtendedSpecification;
 import org.springframework.data.jpa.domain.Specification;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenEmpty;
+import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RolSpecification
@@ -41,6 +42,11 @@ public class RolSpecification
 	public static ExtendedSpecification<Rol> isActief(boolean actief)
 	{
 		return (r, q, cb) -> cb.equal(r.get(Rol_.actief), actief);
+	}
+
+	public static Specification<Rol> filterIsActief(Boolean actief)
+	{
+		return skipWhenNull(actief, isActief(actief));
 	}
 
 	public static Specification<Rol> filterBevolkingsonderzoek(Collection<Bevolkingsonderzoek> bevolkingsonderzoeken)

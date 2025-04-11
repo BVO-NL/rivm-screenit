@@ -21,8 +21,6 @@ package nl.rivm.screenit.batch.tasklet;
  * =========================LICENSE_END==================================
  */
 
-import javax.mail.MessagingException;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.service.MailSenderService;
@@ -39,6 +37,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.mail.MailException;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+
+import jakarta.mail.MessagingException;
 
 @Slf4j
 @Configuration

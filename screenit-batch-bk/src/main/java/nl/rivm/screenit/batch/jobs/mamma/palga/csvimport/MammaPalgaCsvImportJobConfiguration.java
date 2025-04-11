@@ -29,6 +29,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,7 +41,7 @@ public class MammaPalgaCsvImportJobConfiguration extends AbstractJobConfiguratio
 	@Bean
 	public Job palgaCsvImportJob(MammaPalgaCsvImportListener listener, Step importerenStep)
 	{
-		return jobBuilderFactory.get(JobType.MAMMA_PALGA_CSV_IMPORT.name())
+		return new JobBuilder(JobType.MAMMA_PALGA_CSV_IMPORT.name(), repository)
 			.listener(listener)
 			.start(importerenStep)
 			.build();
@@ -48,9 +50,8 @@ public class MammaPalgaCsvImportJobConfiguration extends AbstractJobConfiguratio
 	@Bean
 	public Step importerenStep(MammaPalgaCsvImportReader reader, MammaPalgaCsvImportWriter writer)
 	{
-		return stepBuilderFactory.get("importerenStep")
-			.transactionManager(transactionManager)
-			.<MammaPalgaCsvImportDto, MammaPalgaCsvImportDto> chunk(1)
+		return new StepBuilder("importerenStep", repository)
+			.<MammaPalgaCsvImportDto, MammaPalgaCsvImportDto> chunk(1, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.faultTolerant()

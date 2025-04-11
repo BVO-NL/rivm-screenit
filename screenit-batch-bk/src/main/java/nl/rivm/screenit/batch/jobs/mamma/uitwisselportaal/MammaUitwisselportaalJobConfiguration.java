@@ -28,6 +28,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,7 +40,7 @@ public class MammaUitwisselportaalJobConfiguration extends AbstractJobConfigurat
 	@Bean
 	public Job uitwisselPortaalJob(MammaUitwisselportaalListener listener, Step cleanupStep)
 	{
-		return jobBuilderFactory.get(JobType.MAMMA_UITWISSELPORTAAL.name())
+		return new JobBuilder(JobType.MAMMA_UITWISSELPORTAAL.name(), repository)
 			.listener(listener)
 			.start(cleanupStep)
 			.build();
@@ -47,9 +49,8 @@ public class MammaUitwisselportaalJobConfiguration extends AbstractJobConfigurat
 	@Bean
 	public Step cleanupStep(MammaDownloadedDataCleanUpReader reader, MammaDownloadedDataCleanUpWriter writer)
 	{
-		return stepBuilderFactory.get("cleanupStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("cleanupStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

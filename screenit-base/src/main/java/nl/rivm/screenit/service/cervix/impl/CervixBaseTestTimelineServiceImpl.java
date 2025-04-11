@@ -93,7 +93,7 @@ import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -551,9 +551,8 @@ public class CervixBaseTestTimelineServiceImpl implements CervixBaseTestTimeline
 			monster.setMonsterId(monsterId);
 			hibernateService.saveOrUpdate(monster);
 
-			if (monster instanceof CervixUitstrijkje)
+			if (monster instanceof CervixUitstrijkje uitstrijkje)
 			{
-				CervixUitstrijkje uitstrijkje = (CervixUitstrijkje) monster;
 				CervixLabformulier labformulier = uitstrijkje.getLabformulier();
 				if (labformulier != null)
 				{

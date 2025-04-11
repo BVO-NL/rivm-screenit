@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -69,6 +69,14 @@ export const formatTime = (datum?: Date): string => {
 	}
 
 	return format(datum, "HH:mm", {locale: nl})
+}
+
+export const formatDateTime = (datum?: Date): string => {
+	if (!datum) {
+		return ""
+	}
+
+	return formatDate(datum) + " " + formatTime(datum)
 }
 
 export const formatDateText = (datum?: Date | null): string => {

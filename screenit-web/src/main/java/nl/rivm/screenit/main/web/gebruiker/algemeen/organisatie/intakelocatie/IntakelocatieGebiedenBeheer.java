@@ -22,29 +22,28 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.intakelocatie;
  */
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import nl.rivm.screenit.main.service.colon.impl.ColoscopieCentrumColonCapaciteitVerdelingDataProviderServiceImpl;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieBeheer;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatiePaspoortPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.ColoscopieCentrumColonCapaciteitVerdeling;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
-import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.util.PercentageUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.wicket.hibernate.CglibHibernateModel;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
-import nl.topicuszorg.wicket.search.HibernateDataProvider;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
+import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -59,30 +58,21 @@ public class IntakelocatieGebiedenBeheer extends OrganisatieBeheer
 	private final WebMarkupContainer refreshContainer;
 
 	@SpringBean
-	private HibernateService hibernateService;
-
-	@SpringBean
-	private AutorisatieService autorisatieService;
+	private ColoscopieCentrumColonCapaciteitVerdelingDataProviderServiceImpl dataProviderService;
 
 	public IntakelocatieGebiedenBeheer()
 	{
-		Instelling organisatie = getCurrentSelectedOrganisatie();
+		var organisatie = (ColonIntakelocatie) getCurrentSelectedOrganisatie();
 
 		add(new OrganisatiePaspoortPanel("paspoort", ModelUtil.cRModel(organisatie)));
 		refreshContainer = new WebMarkupContainer("refreshContainer");
 		refreshContainer.setOutputMarkupId(Boolean.TRUE);
 		add(refreshContainer);
 
-		ColoscopieCentrumColonCapaciteitVerdeling zoekObject = new ColoscopieCentrumColonCapaciteitVerdeling();
-		zoekObject.setIntakelocatie((ColonIntakelocatie) organisatie);
-		IModel<ColoscopieCentrumColonCapaciteitVerdeling> criteriaModel = new CglibHibernateModel<>(zoekObject);
-
 		List<IColumn<ColoscopieCentrumColonCapaciteitVerdeling, String>> columns = new ArrayList<>();
 		columns.add(new PropertyColumn<ColoscopieCentrumColonCapaciteitVerdeling, String>(Model.of("Naam gebied"), "uitnodigingsGebied.naam", "uitnodigingsGebied.naam"));
 		columns.add(new PropertyColumn<ColoscopieCentrumColonCapaciteitVerdeling, String>(Model.of("Capaciteitspercentage"), "percentageCapaciteit")
 		{
-
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public IModel<Object> getDataModel(IModel<ColoscopieCentrumColonCapaciteitVerdeling> rowModel)
@@ -92,7 +82,7 @@ public class IntakelocatieGebiedenBeheer extends OrganisatieBeheer
 
 		});
 		ScreenitDataTable<ColoscopieCentrumColonCapaciteitVerdeling, String> gebieden = new ScreenitDataTable<ColoscopieCentrumColonCapaciteitVerdeling, String>("gebieden",
-			columns, new HibernateDataProvider<ColoscopieCentrumColonCapaciteitVerdeling>(criteriaModel, "uitnodigingsGebied.naam"), 10, new Model<>("gebieden"))
+			columns, new ColoscopieCentrumColonCapaciteitVerdelingDataProvider(), 10, new Model<>("gebieden"))
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -113,4 +103,31 @@ public class IntakelocatieGebiedenBeheer extends OrganisatieBeheer
 		refreshContainer.add(gebieden);
 	}
 
+	class ColoscopieCentrumColonCapaciteitVerdelingDataProvider extends SortableDataProvider<ColoscopieCentrumColonCapaciteitVerdeling, String>
+	{
+		public ColoscopieCentrumColonCapaciteitVerdelingDataProvider()
+		{
+			super();
+
+			setSort("uitnodigingsGebied.naam", SortOrder.ASCENDING);
+		}
+
+		@Override
+		public Iterator<ColoscopieCentrumColonCapaciteitVerdeling> iterator(long first, long count)
+		{
+			return dataProviderService.findPage(first, count, (ColonIntakelocatie) getCurrentSelectedOrganisatie(), getSort()).iterator();
+		}
+
+		@Override
+		public long size()
+		{
+			return dataProviderService.size((ColonIntakelocatie) getCurrentSelectedOrganisatie());
+		}
+
+		@Override
+		public IModel<ColoscopieCentrumColonCapaciteitVerdeling> model(ColoscopieCentrumColonCapaciteitVerdeling object)
+		{
+			return ModelUtil.sModel(object);
+		}
+	}
 }

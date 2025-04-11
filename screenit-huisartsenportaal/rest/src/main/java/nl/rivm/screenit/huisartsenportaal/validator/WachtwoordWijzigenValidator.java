@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.validator;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -26,12 +26,10 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManagerFactory;
-
 import nl.rivm.screenit.huisartsenportaal.dto.WachtwoordWijzigenDto;
 import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
 import nl.rivm.screenit.huisartsenportaal.model.enums.InlogMethode;
-import nl.rivm.screenit.huisartsenportaal.service.HuisartsService;
+import nl.rivm.screenit.huisartsenportaal.service.AuthenticatieService;
 
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
@@ -39,22 +37,20 @@ import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
+
+import jakarta.persistence.EntityManagerFactory;
 
 @Component
 public class WachtwoordWijzigenValidator extends BaseWachtwoordValidator<WachtwoordWijzigenDto>
 {
 
 	@Autowired
-	private HuisartsService huisartsService;
-
-	@Autowired
 	private EntityManagerFactory entityManagerFactory;
 
 	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private AuthenticatieService authenticatieService;
 
 	@Override
 	public void validateTarget(WachtwoordWijzigenDto target, Errors errors)
@@ -70,7 +66,7 @@ public class WachtwoordWijzigenValidator extends BaseWachtwoordValidator<Wachtwo
 			controleerOudeWachtwoordEnControleWachtwoord(huisarts, target, errors);
 			controleerGebruikersnaamInWachtwoord(huisarts.getGebruikersnaam(), target.getNieuweWachtwoord(), errors);
 			controleerTekenEisen(target.getNieuweWachtwoord(), errors);
-			if (getVorigeWachtwoordenAfgelopenJaren(huisarts, 2).stream().anyMatch(wachtwoord -> passwordEncoder.matches(target.getNieuweWachtwoord(), wachtwoord)))
+			if (getVorigeWachtwoordenAfgelopenJaren(huisarts, 2).stream().anyMatch(wachtwoord -> target.getNieuweWachtwoord().equals(wachtwoord)))
 			{
 				errors.reject("error.password.eerder.gebruikt", "Wachtwoord mag niet in de afgelopen twee jaar gebruikt zijn.");
 			}
@@ -82,7 +78,7 @@ public class WachtwoordWijzigenValidator extends BaseWachtwoordValidator<Wachtwo
 		String encodedPassword = huisarts.getPassword();
 		if (huisarts.getInlogCode() == null)
 		{
-			if (!huisartsService.controleerWachtwoord(target.getOudeWachtwoord(), encodedPassword))
+			if (!authenticatieService.controleerWachtwoord(target.getOudeWachtwoord(), encodedPassword))
 			{
 				errors.reject("error.oudepassword", "Het huidige wachtwoord is onjuist.");
 			}

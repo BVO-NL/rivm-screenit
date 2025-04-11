@@ -67,7 +67,7 @@ public interface MammaBaseBeoordelingService
 
 	void wijsBeoordelingAanRadioloogToe(MammaBeoordeling beoordeling, InstellingGebruiker gebruiker);
 
-	MammaLezing maakVerslagLezing(MammaBeoordeling beoordeling, MammaLezing uitgangsituatieLezing, InstellingGebruiker beoordelaar, boolean onervarenRadioloog);
+	MammaLezing maakVerslagLezing(MammaLezing uitgangsituatieLezing, InstellingGebruiker beoordelaar, boolean onervarenRadioloog);
 
 	Boolean isUitslagGunstig(MammaBeoordeling beoordeling);
 

@@ -32,10 +32,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dto.alg.client.contact.DeelnamewensDto;
@@ -54,11 +50,10 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContact;
 import nl.rivm.screenit.model.ClientContactActie;
 import nl.rivm.screenit.model.ClientContactActieType;
-import nl.rivm.screenit.model.ClientContact_;
 import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker_;
+import nl.rivm.screenit.model.OnderzoeksresultatenActie;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.TijdelijkAdres;
@@ -158,11 +153,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import static nl.rivm.screenit.model.ClientContactManier.AANVRAGEN_FORMULIEREN;
-import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.ClientContactSpecification.heeftClient;
 import static nl.rivm.screenit.specification.algemeen.ClientContactSpecification.heeftClientId;
 import static nl.rivm.screenit.specification.algemeen.ClientContactSpecification.heeftOpmerking;
-import static nl.rivm.screenit.util.StringUtil.propertyChain;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
@@ -972,23 +965,33 @@ public class ClientContactServiceImpl implements ClientContactService
 	private ClientContactActie bezwaarViaClientContact(List<ClientContactActie> actiesToDelete, ClientContactActie actie, Client client,
 		Map<ExtraOpslaanKey, Object> extraOpslaanParams, Account account)
 	{
-		if (extraOpslaanParams != null && !extraOpslaanParams.isEmpty() && extraOpslaanParams.get(ExtraOpslaanKey.BEZWAAR) != null)
+		if (extraOpslaanParams != null && !extraOpslaanParams.isEmpty())
 		{
-			var toegevoegdeBezwaar = (BezwaarMoment) extraOpslaanParams.get(ExtraOpslaanKey.BEZWAAR);
-			var vragenOmHandtekening = (boolean) extraOpslaanParams.get(ExtraOpslaanKey.BEZWAAR_VRAGEN_OM_HANDTEKENING);
-			if (AANVRAGEN_FORMULIEREN.contains(toegevoegdeBezwaar.getManier()))
+			if (extraOpslaanParams.get(ExtraOpslaanKey.BEZWAAR) != null)
 			{
-				bezwaarService.maakBezwaarAanvraag(client, vragenOmHandtekening, toegevoegdeBezwaar.getManier().getBriefType());
-			}
-			else
-			{
+				var toegevoegdeBezwaar = (BezwaarMoment) extraOpslaanParams.get(ExtraOpslaanKey.BEZWAAR);
+				var vragenOmHandtekening = (boolean) extraOpslaanParams.get(ExtraOpslaanKey.BEZWAAR_VRAGEN_OM_HANDTEKENING);
+				if (AANVRAGEN_FORMULIEREN.contains(toegevoegdeBezwaar.getManier()))
+				{
+					bezwaarService.maakBezwaarAanvraag(client, vragenOmHandtekening, toegevoegdeBezwaar.getManier().getBriefType());
+				}
+				else
+				{
 
-				hibernateService.saveOrUpdate(toegevoegdeBezwaar);
+					hibernateService.saveOrUpdate(toegevoegdeBezwaar);
+					@SuppressWarnings("unchecked")
+					var groupWrappers = (List<BezwaarGroupViewWrapper>) extraOpslaanParams.get(ExtraOpslaanKey.BEZWAAR_WRAPPERS);
+					bezwaarService.bezwaarAfronden(toegevoegdeBezwaar, account, groupWrappers);
+				}
+
+			}
+			else if (extraOpslaanParams.get(ExtraOpslaanKey.ONDERZOEKSRESULTATEN_ACTIE) != null)
+			{
+				var toegevoegdeActie = (OnderzoeksresultatenActie) extraOpslaanParams.get(ExtraOpslaanKey.ONDERZOEKSRESULTATEN_ACTIE);
 				@SuppressWarnings("unchecked")
 				var groupWrappers = (List<BezwaarGroupViewWrapper>) extraOpslaanParams.get(ExtraOpslaanKey.BEZWAAR_WRAPPERS);
-				bezwaarService.bezwaarAfronden(toegevoegdeBezwaar, account, groupWrappers);
+				bezwaarService.onderzoeksresultatenVerwijderen(toegevoegdeActie, account, groupWrappers);
 			}
-
 		}
 		else
 		{
@@ -1764,20 +1767,9 @@ public class ClientContactServiceImpl implements ClientContactService
 
 		if (sortProperty != null)
 		{
-			return clientContactRepository.findWith(spec, q ->
-				q.sortBy(Sort.by(ascending ? ASC : DESC, sortProperty), ClientContactServiceImpl::sorteerClientContacten)).all(first, count);
+			return clientContactRepository.findWith(spec, q -> q.sortBy(Sort.by(ascending ? ASC : DESC, sortProperty))).all(first, count);
 		}
 		return clientContactRepository.findAll(spec);
-	}
-
-	private static Order sorteerClientContacten(Sort.Order order, Root<ClientContact> r, CriteriaBuilder cb)
-	{
-		if (order.getProperty().startsWith(propertyChain(ClientContact_.INSTELLING_GEBRUIKER, InstellingGebruiker_.MEDEWERKER)))
-		{
-			var instellingGebruikerJoin = join(r, ClientContact_.instellingGebruiker);
-			join(instellingGebruikerJoin, InstellingGebruiker_.medewerker);
-		}
-		return null;
 	}
 
 }

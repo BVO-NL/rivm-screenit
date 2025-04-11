@@ -40,7 +40,7 @@ import nl.rivm.screenit.service.colon.ColonEdiService;
 import nl.rivm.screenit.service.impl.EdiServiceBaseImpl;
 import nl.rivm.screenit.util.NaamUtil;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

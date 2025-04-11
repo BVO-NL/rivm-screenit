@@ -23,14 +23,15 @@ import type {OnderzoekActions} from "../actions/OnderzoekActions"
 import {ONDERZOEK_AFRONDEN, ONDERZOEK_OPSLAAN, ONDERZOEK_STARTEN, VUL_ONDERZOEK_BY_AFSPRAAK_ID} from "../actions/OnderzoekActions"
 import {getMandatory} from "../util/MapUtil"
 import type {AfspraakDto} from "../datatypes/Afspraak"
-import type {MBBSignaleringActions} from "../actions/MBBSignaleringActions"
 import {
+	HUIDSCHEURING,
 	MAAK_AANVULLENDE_INFORMATIE_OPERATIE,
 	MAAK_EXTRA_MEDEWERKER,
 	MAAK_MBB_OPMERKING,
 	MAAK_RADIOLOOG_OPMERKING,
 	MAAK_REDEN_FOTOBESPREKING,
 	MAAK_SUBOPTIMALE_INSTELTECHNIEK,
+	MBBSignaleringActions,
 	OPERATIE_LINKS,
 	OPERATIE_RECHTS,
 } from "../actions/MBBSignaleringActions"
@@ -41,9 +42,9 @@ import {
 	MAAK_EERDER_MAMMOGRAM_ZORGINSTELLING,
 	MAAK_EXTRA_FOTOS_REDENEN,
 	MAAK_ONDERBROKEN_ONDERZOEK,
+	MAAK_ONDERZOEK_TYPE,
 	MAAK_ONVOLLEDIG_ONDERZOEK,
 	SET_AMPUTATIE,
-	MAAK_ONDERZOEK_TYPE,
 } from "../actions/AanvullendeInformatieActions"
 import type {ClearCacheActions} from "../actions/ClearCacheActions"
 import {CLEAR_CACHE} from "../actions/ClearCacheActions"
@@ -82,6 +83,7 @@ const OnderzoekReducer = (stateSlice: Map<number, Onderzoek> = new Map(), action
 				extraFotosRedenen: undefined,
 				adviesHuisarts: undefined,
 				onderzoekType: action.onderzoekType,
+				huidscheuring: false,
 			})
 			break
 		case ONDERZOEK_OPSLAAN:
@@ -157,6 +159,12 @@ const OnderzoekReducer = (stateSlice: Map<number, Onderzoek> = new Map(), action
 			result.set(action.afspraakId, {
 				...getMandatory(stateSlice, action.afspraakId),
 				aanvullendeInformatieOperatie: action.aanvullendeInformatieOperatie,
+			})
+			break
+		case HUIDSCHEURING:
+			result.set(action.afspraakId, {
+				...getMandatory(stateSlice, action.afspraakId),
+				huidscheuring: action.huidscheuring,
 			})
 			break
 		case MAAK_ONVOLLEDIG_ONDERZOEK:

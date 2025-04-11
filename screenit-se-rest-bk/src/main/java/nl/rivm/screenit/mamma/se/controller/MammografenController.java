@@ -23,8 +23,6 @@ package nl.rivm.screenit.mamma.se.controller;
 
 import java.util.Collection;
 
-import javax.servlet.http.HttpServletRequest;
-
 import nl.rivm.screenit.mamma.se.dto.MammograafDto;
 import nl.rivm.screenit.mamma.se.service.MammografenService;
 
@@ -35,6 +33,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/mammografen")

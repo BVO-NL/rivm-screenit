@@ -28,20 +28,19 @@ import java.nio.charset.Charset;
 import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.cervix.oudenietverstuurdezas.CervixOudeNietIngestuurdeZasConstants;
-import nl.rivm.screenit.batch.jobs.helpers.BaseIdScrollableResultReader;
+import nl.rivm.screenit.batch.jobs.helpers.BaseSqlScrollableResultReader;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 
 import org.apache.commons.io.IOUtils;
-import org.hibernate.ScrollMode;
+import org.hibernate.HibernateException;
 import org.hibernate.ScrollableResults;
-import org.hibernate.StatelessSession;
-import org.hibernate.internal.EmptyScrollableResults;
+import org.hibernate.query.NativeQuery;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CervixOudeNietIngestuurdeZasReader extends BaseIdScrollableResultReader
+public class CervixOudeNietIngestuurdeZasReader extends BaseSqlScrollableResultReader
 {
 	private final OrganisatieParameterService organisatieParameterService;
 
@@ -61,23 +60,20 @@ public class CervixOudeNietIngestuurdeZasReader extends BaseIdScrollableResultRe
 	}
 
 	@Override
-	protected ScrollableResults createScrollableResults(StatelessSession session)
+	protected NativeQuery createNativeQuery() throws HibernateException
 	{
 		try
 		{
-			Integer maxAantalClienten = getMaxAantalClienten();
-			if (maxAantalClienten == 0)
+			var maxAantalClienten = getMaxAantalClienten();
+			if (maxAantalClienten <= 0)
 			{
-				return new EmptyScrollableResults();
+				return null;
 			}
 			var sql = IOUtils.toString(getClass().getResourceAsStream("CervixOudeNietIngestuurdeZasReader.sql"), Charset.defaultCharset());
-			var query = getHibernateSession().createSQLQuery(sql);
+			var query = getHibernateSession().createNativeQuery(sql);
 			query.setParameter("projectId", getProjectId());
-			if (maxAantalClienten > 0)
-			{
-				query.setMaxResults(maxAantalClienten);
-			}
-			return query.setReadOnly(true).setFetchSize(fetchSize).scroll(ScrollMode.FORWARD_ONLY);
+			query.setMaxResults(maxAantalClienten);
+			return query;
 		}
 		catch (IOException e)
 		{

@@ -21,11 +21,13 @@ package nl.rivm.screenit.model.algemeen;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import java.io.Serial;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.ClientBrief;
@@ -41,9 +43,10 @@ import org.hibernate.envers.Audited;
 @Audited
 public class AlgemeneBrief extends ClientBrief<ScreeningRonde, Afmelding, AlgemeneBrief>
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.SAVE_UPDATE })
 	private AlgemeneMergedBrieven mergedBrieven;
 

@@ -21,7 +21,7 @@ package nl.rivm.screenit.mamma.se.controller;
  * =========================LICENSE_END==================================
  */
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import nl.rivm.screenit.mamma.se.dto.SeStatusDto;
 import nl.rivm.screenit.mamma.se.service.MammaScreeningsEenheidStatusService;

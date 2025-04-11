@@ -53,11 +53,11 @@
         <property name="org.hibernate.envers.store_data_at_delete">true</property>
 
         
-        <property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory</property>
-        <property name="net.sf.ehcache.configurationResourceName">/ehcache.xml</property>
+        <property name="hibernate.cache.region.factory_class">jcache</property>
+        <property name="hibernate.javax.cache.provider">org.ehcache.jsr107.EhcacheCachingProvider</property>
         <property name="hibernate.cache.use_minimal_puts">false</property>
-        <property name="hibernate.cache.use_query_cache">true</property>
-        <property name="hibernate.cache.use_second_level_cache">true</property>
+        <property name="hibernate.cache.use_query_cache">false</property>
+        <property name="hibernate.cache.use_second_level_cache">false</property>
         <property name="hibernate.cache.use_structured_entries">false</property>
         <property name="hibernate.jdbc.batch_size">20</property>
         <property name="hibernate.jdbc.lob.non_contextual_creation">true</property>

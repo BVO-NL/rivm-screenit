@@ -26,7 +26,7 @@ import java.net.URI;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +50,7 @@ public class SmsConfig
 
 	@Bean
 	@Scope("prototype")
-	public SqsClient sqsClient()
+	SqsClient sqsClient()
 	{
 		SqsClientBuilder sqsClientBuilder = SqsClient.builder()
 			.region(Region.EU_WEST_1)
@@ -74,13 +74,13 @@ public class SmsConfig
 	}
 
 	@Bean
-	public MessageBirdConfig messageBirdConfig()
+	MessageBirdConfig messageBirdConfig()
 	{
 		return messagebird;
 	}
 
 	@Bean
-	public String queueName()
+	String queueName()
 	{
 		return sqs == null ? null : sqs.getQueueName();
 	}

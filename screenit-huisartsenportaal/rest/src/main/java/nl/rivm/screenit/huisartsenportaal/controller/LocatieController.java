@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.controller;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,11 +21,8 @@ package nl.rivm.screenit.huisartsenportaal.controller;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
-import javax.validation.Valid;
-
 import nl.rivm.screenit.huisartsenportaal.dto.LocatieDto;
+import nl.rivm.screenit.huisartsenportaal.exception.ValidatieException;
 import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
 import nl.rivm.screenit.huisartsenportaal.model.Locatie;
 import nl.rivm.screenit.huisartsenportaal.service.LocatieService;
@@ -33,20 +30,21 @@ import nl.rivm.screenit.huisartsenportaal.service.SynchronisatieService;
 import nl.rivm.screenit.huisartsenportaal.validator.LocatieValidator;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("locatie")
-@PreAuthorize("isAuthenticated()")
 public class LocatieController extends BaseController
 {
 	@Autowired
@@ -65,45 +63,45 @@ public class LocatieController extends BaseController
 		binder.addValidators(locatieValidator);
 	}
 
-	@RequestMapping(method = RequestMethod.GET)
+	@GetMapping
 	public ResponseEntity getLocaties()
 	{
 		Huisarts arts = getIngelogdeHuisarts();
 		if (arts != null)
 		{
-			List<LocatieDto> locatieDtos = locatieService.getAllLocatiesFromHuisartsInDto(arts);
-			return new ResponseEntity<>(locatieDtos, HttpStatus.OK);
+			var locaties = locatieService.getAllLocatiesFromHuisartsInDto(arts);
+			return ResponseEntity.ok(locaties);
 		}
 		return ResponseEntity.badRequest().body("Er is iets misgegaan.");
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
+	@PostMapping
 	public ResponseEntity saveLocatie(@Valid @RequestBody LocatieDto locatieDto, BindingResult result)
 	{
 		if (result.hasErrors())
 		{
-			return ResponseEntity.badRequest().body(result.getAllErrors());
+			throw new ValidatieException(result.getAllErrors());
 		}
 		var arts = getIngelogdeHuisarts();
 		var allLocatiesFromHuisartsInDto = locatieService.getAllLocatiesFromHuisartsInDto(arts);
 		var locatie = locatieService.updateAndGetLocatie(arts, locatieDto);
 		locatieService.nietVerstuurdeLabformulierenVerwijderen(locatieDto);
 		syncService.syncLocatie(arts, locatie, locatieDto.getHerzendVerificatieMail());
-		return new ResponseEntity<>(allLocatiesFromHuisartsInDto, HttpStatus.OK);
+		return ResponseEntity.ok(allLocatiesFromHuisartsInDto);
 	}
 
-	@RequestMapping(method = RequestMethod.PUT)
+	@PutMapping
 	public ResponseEntity putLocatie(@Valid @RequestBody LocatieDto locatieDto, BindingResult result)
 	{
 		if (result.hasErrors())
 		{
-			return ResponseEntity.badRequest().body(result.getAllErrors());
+			throw new ValidatieException(result.getAllErrors());
 		}
 
 		Huisarts arts = getIngelogdeHuisarts();
 		Locatie locatie = locatieService.updateAndGetLocatie(arts, locatieDto);
 		locatieService.nietVerstuurdeLabformulierenVerwijderen(locatieDto);
 		syncService.syncLocatie(arts, locatie, locatieDto.getHerzendVerificatieMail());
-		return ResponseEntity.ok().body(locatieService.getLocatieDto(locatie));
+		return ResponseEntity.ok(locatieService.getLocatieDto(locatie));
 	}
 }

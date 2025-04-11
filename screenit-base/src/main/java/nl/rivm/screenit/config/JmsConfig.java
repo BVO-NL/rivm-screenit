@@ -23,8 +23,6 @@ package nl.rivm.screenit.config;
 
 import java.util.Arrays;
 
-import javax.jms.Destination;
-
 import lombok.AllArgsConstructor;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -36,10 +34,14 @@ import org.apache.activemq.pool.PooledConnectionFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jms.core.JmsTemplate;
+
+import jakarta.jms.Destination;
 
 @Configuration
 @AllArgsConstructor
+@Profile("!test")
 public class JmsConfig
 {
 	private final ApplicationConfig appConfig;
@@ -109,6 +111,12 @@ public class JmsConfig
 	}
 
 	@Bean
+	public Destination changeDateTimeOffsetDestination()
+	{
+		return new ActiveMQTopic("nl.rivm.screenit.algemeen.changedatetimeoffset." + appConfig.applicationEnvironment());
+	}
+
+	@Bean
 	public Destination colonJobsDestination()
 	{
 		return new ActiveMQQueue("nl.rivm.screenit.batch.colon.jobs." + appConfig.applicationEnvironment());
@@ -133,13 +141,13 @@ public class JmsConfig
 	}
 
 	@Bean
-	public Destination huisartsportaalDestination()
+	Destination huisartsportaalDestination()
 	{
 		return new ActiveMQQueue("nl.rivm.screenit.huisartsportaal." + appConfig.applicationEnvironment());
 	}
 
 	@Bean
-	public Destination huisartsportaalListenerDestination()
+	Destination huisartsportaalListenerDestination()
 	{
 		return new ActiveMQQueue("nl.rivm.screenit.huisartsportaal.listener." + appConfig.applicationEnvironment());
 	}
@@ -157,7 +165,7 @@ public class JmsConfig
 	}
 
 	@Bean
-	public ActiveMQPrefetchPolicy prefetchPolicy()
+	ActiveMQPrefetchPolicy prefetchPolicy()
 	{
 		final ActiveMQPrefetchPolicy prefetchPolicy = new ActiveMQPrefetchPolicy();
 		prefetchPolicy.setQueuePrefetch(1);
@@ -165,7 +173,7 @@ public class JmsConfig
 	}
 
 	@Bean
-	public RedeliveryPolicy redeliveryPolicy()
+	RedeliveryPolicy redeliveryPolicy()
 	{
 		final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
 		redeliveryPolicy.setMaximumRedeliveries(3);
@@ -175,7 +183,7 @@ public class JmsConfig
 
 	@ConfigurationProperties(prefix = "spring.activemq")
 	@Bean
-	public ActiveMQConnectionFactory activeMQConnectionFactory()
+	ActiveMQConnectionFactory activeMQConnectionFactory()
 	{
 		final ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
 		connectionFactory.setUseAsyncSend(true);
@@ -203,6 +211,7 @@ public class JmsConfig
 	}
 
 	@Bean
+	@Profile("!filler")
 	public JmsTemplate jmsTemplate()
 	{
 		final JmsTemplate jmsTemplate = new JmsTemplate();

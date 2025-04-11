@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -25,34 +25,28 @@ import {LocatieDto, LocatieStatus} from "../state/datatypes/dto/LocatieDto"
 import {LocatieVerificatieDto} from "../state/datatypes/dto/LocatieVerificatieDto"
 import {createActionSetLocatieVerificatie} from "../state/LocatieVerificatieState"
 import {LocatieVerificatieResponseDto} from "../state/datatypes/dto/LocatieVerificatieResponseDto"
-import {createActionSetLocaties, LocatiesResponse} from "../state/LocatiesState"
+import {createActionSetLocaties} from "../state/LocatiesState"
 import {fetchHuisarts} from "./HuisartsThunkAction"
 
-export const fetchLocatieVerificatie = () => (dispatch: AppThunkDispatch) => {
-	return ScreenitBackend.get("/verificatie/locaties")
-		.then((response: AxiosResponse<LocatieVerificatieDto[]>) => {
-			const locatieDtos = response.data
-			dispatch(createActionSetLocatieVerificatie(locatieDtos))
-		})
+export const fetchLocatieVerificatie = () => async (dispatch: AppThunkDispatch) => {
+	const response: AxiosResponse<LocatieVerificatieDto[]> = await ScreenitBackend.get("/verificatie/locaties")
+	const locatieDtos = response.data
+	dispatch(createActionSetLocatieVerificatie(locatieDtos))
 }
 
-export const fetchLocaties = (status: LocatieStatus) => (dispatch: AppThunkDispatch) => {
-	return ScreenitBackend.post("/locaties", {resultOptions: {first: 0, count: 10, sortOptions: {}}, status: status})
-		.then((response: AxiosResponse<LocatiesResponse>) => {
-			const locaties = response.data
-			dispatch(createActionSetLocaties({values: locaties, filter: status}))
-		})
+export const fetchLocaties = (status: LocatieStatus) => async (dispatch: AppThunkDispatch) => {
+	const response = await ScreenitBackend.post("/locaties", {resultOptions: {first: 0, count: 10, sortOptions: {}}, status: status})
+	const locaties = response.data
+	dispatch(createActionSetLocaties({values: locaties, filter: status}))
 }
 
 export const verifieerLocatie = (locatie: LocatieVerificatieDto) => async (dispatch: AppThunkDispatch) => {
-	return ScreenitBackend.post("/verificatie/verifieerLocatie", locatie)
-		.then(async (response: AxiosResponse<LocatieVerificatieResponseDto>) => {
-			if (response.data.succes) {
-				await dispatch(fetchLocatieVerificatie())
-				await dispatch(fetchLocaties(store.getState().locaties.filter))
-				await dispatch(fetchHuisarts())
-			}
-		})
+	const response: AxiosResponse<LocatieVerificatieResponseDto> = await ScreenitBackend.post("/verificatie/verifieerLocatie", locatie)
+	if (response.data.succes) {
+		await dispatch(fetchLocatieVerificatie())
+		await dispatch(fetchLocaties(store.getState().locaties.filter))
+		await dispatch(fetchHuisarts())
+	}
 }
 
 export const herzendVerificatieCode = (locatie: LocatieVerificatieDto) => () => {
@@ -60,9 +54,8 @@ export const herzendVerificatieCode = (locatie: LocatieVerificatieDto) => () => 
 }
 
 export const putLocatie = (locatie: LocatieDto) => async (dispatch: AppThunkDispatch): Promise<LocatieDto> => {
-	return await dispatch(validatingRequest<LocatieDto>("/locatie", "PUT", locatie)).then(async (response) => {
-		await dispatch(fetchLocatieVerificatie())
-		await dispatch(fetchLocaties(store.getState().locaties.filter))
-		return response
-	})
+	const response: LocatieDto = await dispatch(validatingRequest<LocatieDto>("/locatie", "PUT", locatie))
+	await dispatch(fetchLocatieVerificatie())
+	await dispatch(fetchLocaties(store.getState().locaties.filter))
+	return response
 }

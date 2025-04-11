@@ -33,6 +33,8 @@ import nl.rivm.screenit.model.enums.JobType;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -44,7 +46,7 @@ public class VervolgIntakeConclusieJobConfiguration extends AbstractJobConfigura
 	public Job vervolgIntakeConclusieJob(VervolgIntakeConclusieJobListener listener, Step verstuurNoShowBerichten, Step herinneringClientWilAndereIntakeLocatieStep,
 		Step onbevestigdeIntakeVerwijzingenStep)
 	{
-		return jobBuilderFactory.get(JobType.VERVOLG_INTAKE_CONCLUSIE_BATCH.name())
+		return new JobBuilder(JobType.VERVOLG_INTAKE_CONCLUSIE_BATCH.name(), repository)
 			.listener(listener)
 			.start(verstuurNoShowBerichten)
 			.on("*").to(herinneringClientWilAndereIntakeLocatieStep)
@@ -57,9 +59,8 @@ public class VervolgIntakeConclusieJobConfiguration extends AbstractJobConfigura
 	@Bean
 	public Step verstuurNoShowBerichten(HuisartsNoShowReader reader, HuisartsNoShowWriter writer)
 	{
-		return stepBuilderFactory.get("verstuurNoShowBerichten")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("verstuurNoShowBerichten", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -68,9 +69,8 @@ public class VervolgIntakeConclusieJobConfiguration extends AbstractJobConfigura
 	@Bean
 	public Step herinneringClientWilAndereIntakeLocatieStep(HerinneringClientWilAnderIntakeLocatieBriefReader reader, HerinneringClientWilAnderIntakeLocatieBriefWriter writer)
 	{
-		return stepBuilderFactory.get("herinneringClientWilAndereIntakeLocatieStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("herinneringClientWilAndereIntakeLocatieStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -79,9 +79,8 @@ public class VervolgIntakeConclusieJobConfiguration extends AbstractJobConfigura
 	@Bean
 	public Step onbevestigdeIntakeVerwijzingenStep(OnbevestigdeIntakeVerwijzingenReader reader, OnbevestigdeIntakeVerwijzingenWriter writer)
 	{
-		return stepBuilderFactory.get("onbevestigdeIntakeVerwijzingenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("onbevestigdeIntakeVerwijzingenStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

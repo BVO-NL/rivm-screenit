@@ -25,20 +25,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -57,6 +57,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
@@ -79,6 +81,7 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 public class MammaDossier extends Dossier<MammaScreeningRonde, MammaAfmelding> implements DeelnamemodusDossier
 {
 	@OneToOne(mappedBy = "mammaDossier", optional = false, fetch = FetchType.LAZY)
+	@JsonBackReference
 	private Client client;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "dossier")
@@ -142,7 +145,7 @@ public class MammaDossier extends Dossier<MammaScreeningRonde, MammaAfmelding> i
 	@Enumerated(EnumType.STRING)
 	private Deelnamemodus deelnamemodus = Deelnamemodus.STANDAARD;
 
-	@OneToOne(optional = true, mappedBy = "dossier", fetch = FetchType.LAZY, cascade = { javax.persistence.CascadeType.REMOVE })
+	@OneToOne(optional = true, mappedBy = "dossier", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE })
 	@Cascade(CascadeType.DELETE)
 	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	@NotAudited

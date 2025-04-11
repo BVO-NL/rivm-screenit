@@ -28,6 +28,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,7 +40,7 @@ public class ColonMislukteHuisartsberichtenVersturenJobConfiguration extends Abs
 	@Bean
 	public Job huisartsenberichtenOpnieuwVersturenJob(ColonMislukteHuisartsberichtenVersturenListener listener, Step huisartsenberichtenOpnieuwVersturenStep)
 	{
-		return jobBuilderFactory.get(JobType.COLON_HUISARTSBERICHTEN_OPNIEUW_VERSTUREN.name())
+		return new JobBuilder(JobType.COLON_HUISARTSBERICHTEN_OPNIEUW_VERSTUREN.name(), repository)
 			.listener(listener)
 			.start(huisartsenberichtenOpnieuwVersturenStep)
 			.build();
@@ -47,9 +49,8 @@ public class ColonMislukteHuisartsberichtenVersturenJobConfiguration extends Abs
 	@Bean
 	public Step huisartsenberichtenOpnieuwVersturenStep(ColonMislukteHuisartsberichtenVersturenReader reader, ColonMislukteHuisartsberichtenVersturenWriter writer)
 	{
-		return stepBuilderFactory.get("huisartsenberichtenOpnieuwVersturenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(50)
+		return new StepBuilder("huisartsenberichtenOpnieuwVersturenStep", repository)
+			.<Long, Long> chunk(50, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

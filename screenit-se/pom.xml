@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <relativePath></relativePath>
+        <relativePath/>
     </parent>
 
     <organization>
@@ -239,6 +239,38 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <configuration>
+                    <outputType>text</outputType>
+                    <sort>true</sort>
+
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>dependency list report</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>list</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>dependencies/list.txt</outputFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>dependency tree report</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>tree</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>dependencies/tree.txt</outputFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 

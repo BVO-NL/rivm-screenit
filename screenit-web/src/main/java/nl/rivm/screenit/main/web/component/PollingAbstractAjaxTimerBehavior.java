@@ -21,11 +21,12 @@ package nl.rivm.screenit.main.web.component;
  * =========================LICENSE_END==================================
  */
 
+import java.time.Duration;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
-import org.apache.wicket.util.time.Duration;
 
 public abstract class PollingAbstractAjaxTimerBehavior extends AbstractAjaxTimerBehavior
 {
@@ -33,13 +34,7 @@ public abstract class PollingAbstractAjaxTimerBehavior extends AbstractAjaxTimer
 
 	private boolean isFirstStart = false;
 
-	@Deprecated
 	protected PollingAbstractAjaxTimerBehavior(Duration updateInterval)
-	{
-		super(updateInterval);
-	}
-
-	protected PollingAbstractAjaxTimerBehavior(java.time.Duration updateInterval)
 	{
 		super(updateInterval);
 	}

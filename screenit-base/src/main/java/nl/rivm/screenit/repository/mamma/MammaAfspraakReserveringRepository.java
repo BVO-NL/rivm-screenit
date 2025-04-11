@@ -33,7 +33,6 @@ import nl.rivm.screenit.model.mamma.MammaAfspraakReservering;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 public interface MammaAfspraakReserveringRepository extends BaseJpaRepository<MammaAfspraakReservering>
 {
@@ -47,8 +46,7 @@ public interface MammaAfspraakReserveringRepository extends BaseJpaRepository<Ma
 			+ "ar.aangemaakt_op > :ophaalMoment "
 			+ "and ar.capaciteit_blok in :capaciteitBlokIds "
 			+ "and (:clientId is null or ar.client <> :clientId)")
-	List<MammaAfspraakReserveringView> haalReserveringenOpVoorCapaciteitsblokken(@Param("ophaalMoment") LocalDateTime ophaalMoment,
-		@Param("capaciteitBlokIds") Collection<Long> capaciteitBlokIds, @Param("clientId") Long clientId);
+	List<MammaAfspraakReserveringView> haalReserveringenOpVoorCapaciteitsblokken(LocalDateTime ophaalMoment, Collection<Long> capaciteitBlokIds, Long clientId);
 
 	void deleteAllByClient(Client client);
 

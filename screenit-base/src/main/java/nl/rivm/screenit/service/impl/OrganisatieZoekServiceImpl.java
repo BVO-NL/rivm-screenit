@@ -28,15 +28,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.Instelling_;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.SingleTableHibernateObject_;
@@ -142,14 +141,10 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 		return sort;
 	}
 
-	private javax.persistence.criteria.Order addJoinsForSortingOrCreateDedicatedOrders(Sort.Order order, Root<Instelling> r, CriteriaBuilder cb)
+	private jakarta.persistence.criteria.Order addJoinsForSortingOrCreateDedicatedOrders(Sort.Order order, Root<Instelling> r, CriteriaBuilder cb)
 	{
 		var sortProperty = order.getProperty();
-		if (sortProperty.startsWith(ADRESSEN))
-		{
-			join(r, Instelling_.adressen, JoinType.LEFT);
-		}
-		else if (sortProperty.startsWith(POSTADRES))
+		if (sortProperty.startsWith(POSTADRES))
 		{
 			var postadresJoin = join(treat(r, CervixHuisarts.class, cb), CervixHuisarts_.postadres, JoinType.LEFT);
 			Join<?, ?> propertyJoin = postadresJoin;

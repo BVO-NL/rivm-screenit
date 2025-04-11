@@ -29,8 +29,6 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -84,6 +82,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.Range;
 
 import ca.uhn.hl7v2.util.Pair;
+import jakarta.annotation.Nullable;
 
 import static nl.rivm.screenit.specification.colon.ColonTijdslotSpecification.heeftKamer;
 import static nl.rivm.screenit.specification.colon.ColonTijdslotSpecification.isAfspraakslot;

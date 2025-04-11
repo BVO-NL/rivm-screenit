@@ -24,9 +24,9 @@ package nl.rivm.screenit.model.algemeen;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -44,7 +44,7 @@ import org.hibernate.envers.Audited;
 @Setter
 public class BezwaarMergedBrieven extends MergedBrieven<BezwaarBrief>
 {
-	@OneToMany(mappedBy = "mergedBrieven", cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@OneToMany(mappedBy = "mergedBrieven", cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private List<BezwaarBrief> brieven = new ArrayList<>();
 }

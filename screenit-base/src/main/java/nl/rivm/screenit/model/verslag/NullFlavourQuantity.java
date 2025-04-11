@@ -22,8 +22,8 @@ package nl.rivm.screenit.model.verslag;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class NullFlavourQuantity extends Quantity

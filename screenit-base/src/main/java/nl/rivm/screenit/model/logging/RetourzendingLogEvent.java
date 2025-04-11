@@ -22,16 +22,16 @@ package nl.rivm.screenit.model.logging;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.RetourzendingAfhandelingType;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -39,7 +39,7 @@ import org.hibernate.annotations.CascadeType;
 @Table(schema = "gedeeld")
 public class RetourzendingLogEvent extends LogEvent
 {
-	@OneToOne(fetch = FetchType.LAZY, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private UploadDocument sanddBestand;
 

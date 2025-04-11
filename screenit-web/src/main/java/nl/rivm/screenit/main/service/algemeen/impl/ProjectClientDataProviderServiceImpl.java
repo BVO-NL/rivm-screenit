@@ -21,22 +21,16 @@ package nl.rivm.screenit.main.service.algemeen.impl;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-
 import nl.rivm.screenit.main.service.RepositoryDataProviderService;
 import nl.rivm.screenit.model.project.ProjectClient;
-import nl.rivm.screenit.model.project.ProjectClient_;
 import nl.rivm.screenit.repository.algemeen.ProjectClientRepository;
-import nl.rivm.screenit.specification.algemeen.ProjectClientSpecification;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNull;
+import static nl.rivm.screenit.specification.algemeen.ProjectClientSpecification.filterClient;
 
 @Service
 public class ProjectClientDataProviderServiceImpl extends RepositoryDataProviderService<ProjectClient, ProjectClientRepository, ProjectClient>
@@ -44,16 +38,6 @@ public class ProjectClientDataProviderServiceImpl extends RepositoryDataProvider
 	@Override
 	protected Specification<ProjectClient> getSpecification(ProjectClient filter, Sort sort)
 	{
-		return skipWhenNull(filter, ProjectClientSpecification.filterClient(filter.getClient()));
-	}
-
-	@Override
-	protected Order addJoinsForSortingOrCreateDedicatedOrders(Sort.Order order, Root<ProjectClient> r, CriteriaBuilder cb)
-	{
-		if (order.getProperty().startsWith(ProjectClient_.PROJECT))
-		{
-			join(r, ProjectClient_.project);
-		}
-		return super.addJoinsForSortingOrCreateDedicatedOrders(order, r, cb);
+		return skipWhenNull(filter, filterClient(filter.getClient()));
 	}
 }

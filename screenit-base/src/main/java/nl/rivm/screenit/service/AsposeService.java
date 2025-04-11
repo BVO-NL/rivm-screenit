@@ -26,7 +26,6 @@ import java.io.File;
 import nl.rivm.screenit.document.DocumentCreator;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.enums.MergeField;
-import nl.rivm.screenit.model.formulieren.ScreenitFormulierInstantie;
 
 import com.aspose.words.Document;
 import com.aspose.words.PdfSaveOptions;
@@ -41,8 +40,6 @@ public interface AsposeService
 	boolean heeftMergeField(File templateFile, MergeField mergeField);
 
 	Document processDocumentWithCreator(MailMergeContext context, File templateDocument, DocumentCreator creator, boolean replaceMergeFieldIfNull) throws Exception;
-
-	Document processVragenlijst(MailMergeContext context, ScreenitFormulierInstantie vragenlijst, boolean replaceMergeFieldIfNull) throws Exception;
 
 	PdfSaveOptions getPdfSaveOptions();
 

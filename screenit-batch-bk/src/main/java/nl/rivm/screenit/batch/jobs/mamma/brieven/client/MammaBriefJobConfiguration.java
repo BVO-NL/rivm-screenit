@@ -35,7 +35,9 @@ import nl.rivm.screenit.model.mamma.MammaBrief;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
@@ -47,7 +49,7 @@ public class MammaBriefJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job brievenJob(MammaBriefListener listener, Step brievenCleanupStep, Step brievenGenererenPartitionerStep, Step brievenControleStep)
 	{
-		return jobBuilderFactory.get(JobType.MAMMA_BRIEVEN.name())
+		return new JobBuilder(JobType.MAMMA_BRIEVEN.name(), repository)
 			.listener(listener)
 			.start(brievenCleanupStep)
 			.next(brievenGenererenPartitionerStep)
@@ -58,9 +60,8 @@ public class MammaBriefJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step brievenCleanupStep(MammaBriefCleanupReader reader, MammaBriefCleanupWriter writer)
 	{
-		return stepBuilderFactory.get("brievenCleanupStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("brievenCleanupStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -69,8 +70,7 @@ public class MammaBriefJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step brievenGenererenPartitionerStep(MammaBrievenGenererenPartitioner partitioner, TaskExecutorPartitionHandler brievenPartitionHandler, Step brievenGenererenStep)
 	{
-		return stepBuilderFactory.get("brievenGenererenPartitionerStep")
-			.transactionManager(transactionManager)
+		return new StepBuilder("brievenGenererenPartitionerStep", repository)
 			.partitioner("brievenGenererenStep", partitioner)
 			.partitionHandler(brievenPartitionHandler)
 			.step(brievenGenererenStep)
@@ -90,9 +90,8 @@ public class MammaBriefJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step brievenControleStep(MammaBrievenControleReader reader, MammaBrievenControleWriter writer)
 	{
-		return stepBuilderFactory.get("brievenControleStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("brievenControleStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -101,9 +100,8 @@ public class MammaBriefJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step brievenGenererenStep(MammaBrievenGenererenReader reader, MammaBrievenGenererenProcessor processor, MammaBrievenGenererenWriter writer)
 	{
-		return stepBuilderFactory.get("brievenGenererenStep")
-			.transactionManager(transactionManager)
-			.<Long, MammaBrief> chunk(50)
+		return new StepBuilder("brievenGenererenStep", repository)
+			.<Long, MammaBrief> chunk(50, transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)

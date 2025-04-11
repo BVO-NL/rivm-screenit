@@ -46,6 +46,7 @@ export type OnderzoekDto = {
 	extraFotosRedenen?: Array<ExtraFotosReden>;
 	adviesHuisarts?: string;
 	onderzoekType: OnderzoekType;
+	huidscheuring: boolean;
 };
 export type Onderzoek = {
 	eerderMammogramZorginstellingId?: number;
@@ -65,4 +66,5 @@ export type Onderzoek = {
 	extraFotosRedenen?: Array<ExtraFotosReden>;
 	adviesHuisarts?: string;
 	onderzoekType: OnderzoekType;
+	huidscheuring: boolean;
 };

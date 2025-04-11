@@ -21,12 +21,14 @@ package nl.rivm.screenit.model.colon;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
 public class IFOBTResult implements Serializable
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private String labID;

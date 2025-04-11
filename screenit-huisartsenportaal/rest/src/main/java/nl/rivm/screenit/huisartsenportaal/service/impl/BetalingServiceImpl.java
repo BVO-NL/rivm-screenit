@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.service.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -44,13 +44,11 @@ import nl.rivm.screenit.huisartsenportaal.service.VerrichtingenService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
 public class BetalingServiceImpl implements BetalingService
 {
 	@Autowired
@@ -60,7 +58,7 @@ public class BetalingServiceImpl implements BetalingService
 	private VerrichtingenService verrichtingenService;
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public BetalingenTotalenDto getBetalingen(Huisarts huisarts, BetalingZoekObjectDto betalingZoekObjectDto)
 	{
 		if (betalingZoekObjectDto.getResultOptions().getCount() == 0)

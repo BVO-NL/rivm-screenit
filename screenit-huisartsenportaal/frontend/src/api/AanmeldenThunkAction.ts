@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -20,37 +20,25 @@
  */
 import {AppThunkDispatch} from "../index"
 import ScreenitBackend from "../util/Backend"
-import {createActionSetOAuthToken} from "../state/OAuthState"
-import {OAuthToken} from "../state/datatypes/OAuthToken"
+import {createActionSetAuth} from "../state/AuthState"
 import {AxiosResponse} from "axios"
 import {fetchCurrentUser} from "./CurrentUserThunkAction"
-import {AuthenticationScope} from "../state/datatypes/enums/AuthenticationScope"
 import {fetchHuisarts} from "./HuisartsThunkAction"
 import {fetchLocaties, fetchLocatieVerificatie} from "./LocatieThunkAction"
 import {LocatieStatus} from "../state/datatypes/dto/LocatieDto"
 import {createActionSetAuthenticationLoading} from "../state/AuthenticationLoadingState"
+import {TokenDto} from "../state/datatypes/dto/TokenDto"
+import {CredentialsDto} from "../state/datatypes/dto/CredentialsDto"
 
-export const authenticate = (username: string, password: string, scope: AuthenticationScope) => async (dispatch: AppThunkDispatch) => {
-	const formData = new FormData()
-	formData.append("client_id", "screenit")
-	formData.append("grant_type", "password")
-	formData.append("username", username)
-	formData.append("password", password)
-	formData.append("scope", scope)
-	formData.append("client_secret", "123456")
+export const aanmelden = (loginDto: CredentialsDto) => async (dispatch: AppThunkDispatch) => {
+	const response: AxiosResponse<TokenDto> = await ScreenitBackend.post("/auth/inloggen", loginDto)
+	const token = response.data
+	dispatch(createActionSetAuthenticationLoading(true))
+	dispatch(createActionSetAuth(token))
+	await dispatch(fetchCurrentUser())
+	dispatch(createActionSetAuthenticationLoading(false))
+	await dispatch(fetchHuisarts())
+	await dispatch(fetchLocatieVerificatie())
+	await dispatch(fetchLocaties(LocatieStatus.ACTIEF))
 
-	return ScreenitBackend.post("/oauth/token", formData, {
-		headers: {
-			"Content-Type": "multipart/form-data",
-		},
-	}).then(async (response: AxiosResponse<OAuthToken>) => {
-		const token = response.data
-		dispatch(createActionSetAuthenticationLoading(true))
-		dispatch(createActionSetOAuthToken(token))
-		await dispatch(fetchCurrentUser())
-		dispatch(createActionSetAuthenticationLoading(false))
-		await dispatch(fetchHuisarts())
-		await dispatch(fetchLocatieVerificatie())
-		await dispatch(fetchLocaties(LocatieStatus.ACTIEF))
-	})
 }

@@ -59,6 +59,6 @@ public final class EnumStringUtil
 		UnaryOperator<String> getString)
 	{
 		String bvoNamen = Bevolkingsonderzoek.getAfkortingen(enumMetBvo.getBevolkingsonderzoeken());
-		return String.format("%s - %s", bvoNamen, getString.apply(EnumStringUtil.getPropertyString(enumMetBvo)));
+		return "%s - %s".formatted(bvoNamen, getString.apply(EnumStringUtil.getPropertyString(enumMetBvo)));
 	}
 }

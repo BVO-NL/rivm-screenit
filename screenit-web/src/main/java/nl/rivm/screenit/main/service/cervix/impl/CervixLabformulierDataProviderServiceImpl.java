@@ -23,11 +23,6 @@ package nl.rivm.screenit.main.service.cervix.impl;
 
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-
 import nl.rivm.screenit.main.service.RepositoryDataProviderService;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.OrganisatieType;
@@ -41,11 +36,14 @@ import nl.rivm.screenit.model.cervix.CervixScreeningRonde_;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging_;
 import nl.rivm.screenit.repository.cervix.CervixLabFormulierRepository;
 
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
 
 import static nl.rivm.screenit.specification.cervix.CervixLabformulierSpecification.filterBsnCheck;
 import static nl.rivm.screenit.specification.cervix.CervixLabformulierSpecification.filterHeeftGeboortedatum;
@@ -61,14 +59,10 @@ import static nl.rivm.screenit.specification.cervix.CervixLabformulierSpecificat
 import static nl.rivm.screenit.specification.cervix.CervixLabformulierSpecification.filterLabProcesStapIsHuisartsOnbekendOfControlerenVoorCytologie;
 import static nl.rivm.screenit.specification.cervix.CervixLabformulierSpecification.filterOrganisatieTypeIsScreeningorganisatie;
 import static nl.rivm.screenit.specification.cervix.CervixLabformulierSpecification.heeftGeldigHuisartsbericht;
-import static nl.rivm.screenit.specification.cervix.CervixLabformulierSpecification.persoonJoin;
 
 @Service("cervixLabformulierDataProviderService")
 public class CervixLabformulierDataProviderServiceImpl extends RepositoryDataProviderService<CervixLabformulier, CervixLabFormulierRepository, CervixLabformulierenFilter>
 {
-
-	@Autowired
-	private SessionFactory sessionFactory;
 
 	public static final String CLIENT_PROPERTY =
 		CervixLabformulier_.UITSTRIJKJE + "." + CervixMonster_.UITNODIGING + "." + CervixUitnodiging_.SCREENING_RONDE + "." + CervixScreeningRonde_.DOSSIER + "."
@@ -80,19 +74,7 @@ public class CervixLabformulierDataProviderServiceImpl extends RepositoryDataPro
 	@Override
 	protected Specification<CervixLabformulier> getSpecification(CervixLabformulierenFilter filter, Sort sortParam)
 	{
-
 		return labFormulierSpecification(filter);
-	}
-
-	@Override
-	protected Order addJoinsForSortingOrCreateDedicatedOrders(Sort.Order order, Root<CervixLabformulier> r, CriteriaBuilder cb)
-	{
-		var sortProperty = order.getProperty();
-		if (sortProperty.startsWith(PERSOON_PROPERTY))
-		{
-			persoonJoin(r, JoinType.LEFT);
-		}
-		return null;
 	}
 
 	public static Specification<CervixLabformulier> labFormulierSpecification(CervixLabformulierenFilter filter)

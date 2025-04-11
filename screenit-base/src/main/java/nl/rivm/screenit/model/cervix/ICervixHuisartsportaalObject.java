@@ -23,7 +23,7 @@ package nl.rivm.screenit.model.cervix;
 
 import java.util.Date;
 
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 
 public interface ICervixHuisartsportaalObject
 {

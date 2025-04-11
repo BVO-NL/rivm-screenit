@@ -25,21 +25,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -53,7 +53,7 @@ import nl.topicuszorg.organisatie.model.Adres;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.NaamGebruik;
 import nl.topicuszorg.yubikey.model.YubiKey;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -155,7 +155,7 @@ public class Gebruiker extends SingleTableHibernateObject implements Account, IA
 
 	@ManyToMany(
 		fetch = FetchType.LAZY,
-		cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE }
+		cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE }
 	)
 	@Cascade({ CascadeType.PERSIST, CascadeType.SAVE_UPDATE })
 	@Cache(
@@ -252,7 +252,7 @@ public class Gebruiker extends SingleTableHibernateObject implements Account, IA
 	@Column(length = HibernateMagicNumber.L25)
 	private String patholoogId;
 
-	@ManyToOne(cascade = javax.persistence.CascadeType.ALL)
+	@ManyToOne(cascade = jakarta.persistence.CascadeType.ALL)
 	@NotAudited
 	private YubiKey yubiKey;
 
@@ -264,7 +264,7 @@ public class Gebruiker extends SingleTableHibernateObject implements Account, IA
 	@NotAudited
 	private List<AfgeslotenMedewerkerOvereenkomst> afgeslotenKwaliteitsOvereenkomsten;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "gebruiker", cascade = javax.persistence.CascadeType.REMOVE)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "gebruiker", cascade = jakarta.persistence.CascadeType.REMOVE)
 	private List<GebruikerNieuwsItem> gebruikerNieuwsItems;
 
 	@OneToOne(fetch = FetchType.LAZY, optional = true)

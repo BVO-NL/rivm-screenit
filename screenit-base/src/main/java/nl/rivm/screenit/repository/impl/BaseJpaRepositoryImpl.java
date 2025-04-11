@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
 
 import nl.rivm.screenit.repository.BaseJpaRepository;
 import nl.rivm.screenit.repository.FluentJpaQuery;
@@ -90,10 +90,10 @@ public class BaseJpaRepositoryImpl<T extends HibernateObject> extends SimpleJpaR
 	public <S extends T> @NotNull S save(@NotNull S entity)
 	{
 		var savedEntity = super.save(entity);
-		if (entity instanceof HibernateProxy)
+		if (entity instanceof HibernateProxy proxy)
 		{
 
-			var hibernateLazyInitializer = ((HibernateProxy) entity).getHibernateLazyInitializer();
+			var hibernateLazyInitializer = proxy.getHibernateLazyInitializer();
 			if (hibernateLazyInitializer.getInternalIdentifier() == null)
 			{
 				var savedId = savedEntity.getId();

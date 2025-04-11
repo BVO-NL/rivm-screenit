@@ -2,7 +2,7 @@ package nl.rivm.screenit.clientportaal.controllers.mamma;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -65,7 +65,7 @@ public class MammaHuisartsController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> koppelMammaHuisarts(Authentication authentication, @RequestParam long id)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_HUISARTS_WIJZIGEN))
 		{
@@ -89,7 +89,7 @@ public class MammaHuisartsController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> ontkoppelMammaHuisarts(Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_HUISARTS_WIJZIGEN))
 		{
@@ -118,7 +118,7 @@ public class MammaHuisartsController extends AbstractController
 	@GetMapping(path = "/magverwijderen")
 	public ResponseEntity<Boolean> magMammaHuisartsVerwijderen(Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_HUISARTS_WIJZIGEN))
 		{
@@ -140,7 +140,7 @@ public class MammaHuisartsController extends AbstractController
 	public ResponseEntity<HuisartsDto> getVorigeMammaHuisarts(Authentication authentication)
 	{
 
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 		if (client != null && client.getMammaDossier() != null)
 		{
 			MammaScreeningRonde laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
@@ -153,7 +153,7 @@ public class MammaHuisartsController extends AbstractController
 	@GetMapping(path = "/huidige")
 	public ResponseEntity<HuisartsDto> getHuidigeMammaHuisarts(Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 		if (client != null && client.getMammaDossier() != null)
 		{
 			MammaScreeningRonde laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
@@ -169,7 +169,7 @@ public class MammaHuisartsController extends AbstractController
 	@GetMapping(path = "/vorige/geen")
 	public ResponseEntity<MammaGeenHuisartsOption> getVorigeMammaGeenHuisartsOptie(Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 		if (client != null && client.getMammaDossier() != null)
 		{
 			MammaScreeningRonde laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
@@ -182,7 +182,7 @@ public class MammaHuisartsController extends AbstractController
 	@GetMapping(path = "/huidige/geen")
 	public ResponseEntity<MammaGeenHuisartsOption> getHuidigeMammaGeenHuisartsOptie(Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 		if (client != null && client.getMammaDossier() != null)
 		{
 			MammaScreeningRonde laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
@@ -199,7 +199,7 @@ public class MammaHuisartsController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> bevestigVorigeMammaHuisarts(Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_HUISARTS_WIJZIGEN))
 		{

@@ -21,8 +21,8 @@ package nl.rivm.screenit.model.mamma.legacyLaesies;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 import nl.rivm.screenit.model.mamma.MammaLaesie;
 import nl.rivm.screenit.model.mamma.enums.MammaLaesieType;

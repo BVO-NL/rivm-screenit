@@ -80,9 +80,9 @@ public class BriefUtil
 		{
 			brief = (Brief) HibernateHelper.deproxy(brief);
 		}
-		if (brief instanceof ProjectBrief && ((ProjectBrief) brief).getBrief() != null)
+		if (brief instanceof ProjectBrief projectBrief && projectBrief.getBrief() != null)
 		{
-			brief = (ClientBrief<?, ?, ?>) HibernateHelper.deproxy(((ProjectBrief) brief).getBrief());
+			brief = (ClientBrief<?, ?, ?>) HibernateHelper.deproxy(projectBrief.getBrief());
 		}
 		return brief;
 	}
@@ -167,9 +167,9 @@ public class BriefUtil
 		if (brief != null)
 		{
 			brief = (Brief) HibernateHelper.deproxy(brief);
-			if (brief instanceof ClientBrief)
+			if (brief instanceof ClientBrief<?, ?, ?> clientBrief)
 			{
-				ProjectBrief projectBrief = ((ClientBrief<?, ?, ?>) brief).getProjectBrief();
+				ProjectBrief projectBrief = clientBrief.getProjectBrief();
 				if (projectBrief != null)
 				{
 					brief = projectBrief;

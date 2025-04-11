@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 
 import lombok.Setter;
@@ -45,17 +44,15 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.document.DocumentCreator;
-import nl.rivm.screenit.document.VragenlijstDocumentCreator;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.MergeField;
-import nl.rivm.screenit.model.formulieren.ScreenitFormulierInstantie;
 import nl.rivm.screenit.model.project.ProjectAttribuut;
 import nl.rivm.screenit.service.AsposeService;
 import nl.rivm.screenit.service.BarcodeService;
 import nl.rivm.screenit.service.UploadDocumentService;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.krysalis.barcode4j.impl.code128.Code128Bean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -71,6 +68,8 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+
+import jakarta.annotation.PostConstruct;
 
 @Slf4j
 @Service
@@ -159,13 +158,13 @@ public class AsposeServiceImpl implements AsposeService
 			{
 				veldnaam = fieldName;
 				var afdrukObject = getAfdrukObject(fieldName, context);
-				if (afdrukObject instanceof Entry)
+				if (afdrukObject instanceof Entry<?, ?> entry)
 				{
-					mergeValues.put(fieldName, ((Entry<?, ?>) afdrukObject).getValue());
+					mergeValues.put(fieldName, entry.getValue());
 				}
-				if (afdrukObject instanceof MergeField)
+				if (afdrukObject instanceof MergeField field)
 				{
-					mergeValues.put(fieldName, ((MergeField) afdrukObject).getValue(context));
+					mergeValues.put(fieldName, field.getValue(context));
 				}
 				if (mergeValues.get(fieldName) == null && !replaceMergeFieldIfNull)
 				{
@@ -209,15 +208,6 @@ public class AsposeServiceImpl implements AsposeService
 		{
 			LOG.error(e.getMessage(), e);
 		}
-		return document;
-	}
-
-	@Override
-	public Document processVragenlijst(MailMergeContext context, ScreenitFormulierInstantie vragenlijst, boolean replaceMergeFieldIfNull) throws Exception
-	{
-		var creator = new VragenlijstDocumentCreator(new File(vragenlijstTemplate), vragenlijst);
-		var document = creator.getDocument();
-		processDocument(document, context, replaceMergeFieldIfNull);
 		return document;
 	}
 
@@ -285,12 +275,11 @@ public class AsposeServiceImpl implements AsposeService
 					field.setImageStream(barcodeService.maakBarcodeInputStreamVoorBrief((entry).getValue(), new Code128Bean()));
 				}
 			}
-			if (afdrukObject instanceof MergeField)
+			if (afdrukObject instanceof MergeField mergeField)
 			{
-				var mergeField = (MergeField) afdrukObject;
 				var mergeFieldValue = mergeField.getValue(context);
 
-				if (mergeFieldValue == null || mergeFieldValue instanceof String && StringUtils.isBlank((String) mergeFieldValue))
+				if (mergeFieldValue == null || mergeFieldValue instanceof String stringMergeFieldValue && StringUtils.isBlank(stringMergeFieldValue))
 				{
 					throw new IllegalStateException("MergeField " + mergeField + " heeft geen waarde");
 				}
@@ -303,9 +292,9 @@ public class AsposeServiceImpl implements AsposeService
 				{
 					qrcodeMerger(field, mergeFieldValue.toString());
 				}
-				else if (mergeFieldValue instanceof UploadDocument)
+				else if (mergeFieldValue instanceof UploadDocument document)
 				{
-					imageMerger(field, (UploadDocument) mergeFieldValue);
+					imageMerger(field, document);
 				}
 			}
 		}

@@ -20,12 +20,12 @@
   -->
 <html xmlns:wicket="http://wicket.apache.org">
 <wicket:extend>
-    <form wicket:id="form">
-        <h1>Preferences:</h1>
+	<form wicket:id="form">
+		<h1>Voorkeuren:</h1>
 
-        <div class="form-horizontal">
-            <div class="control-group">
-                <label class="control-label">Mail verzenden</label>
+		<div class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label">Mail verzenden</label>
 
 				<div class="controls" wicket:id="mailVerzenden"></div>
 			</div>
@@ -56,12 +56,12 @@
 			<div class="control-group">
 				<label class="control-label">Standaard opkomstkans indien kansberekening BK niet gebruikt wordt</label>
 				<div class="controls">
-                    <input type="number" class="form-control input-small" wicket:id="defaultOpkomstkans"/>%
-                </div>
+					<input type="number" class="form-control input-small" wicket:id="defaultOpkomstkans"/>%
+				</div>
 
-            </div>
-            <a class="btn btn-primary" wicket:id="opslaan">Opslaan</a>
-        </div>
-    </form>
+			</div>
+			<button type="button" class="btn btn-primary" wicket:id="opslaan">Opslaan</button>
+		</div>
+	</form>
 </wicket:extend>
 </html>

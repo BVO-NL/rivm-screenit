@@ -28,6 +28,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,7 +40,7 @@ public class MammaControleUitslagJobConfiguration extends AbstractJobConfigurati
 	@Bean
 	public Job controleMissendeUitslagenJob(MammaControleUitslagJobListener listener, Step controleMissendeUitslagenStep)
 	{
-		return jobBuilderFactory.get(JobType.MAMMA_CONTROLE_MISSENDE_UITSLAGEN.name())
+		return new JobBuilder(JobType.MAMMA_CONTROLE_MISSENDE_UITSLAGEN.name(), repository)
 			.listener(listener)
 			.start(controleMissendeUitslagenStep)
 			.build();
@@ -47,9 +49,8 @@ public class MammaControleUitslagJobConfiguration extends AbstractJobConfigurati
 	@Bean
 	public Step controleMissendeUitslagenStep(MammaControleMissendeUitslagenReader reader, MammaControleMissendeUitslagenWriter writer)
 	{
-		return stepBuilderFactory.get("controleMissendeUitslagenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(50)
+		return new StepBuilder("controleMissendeUitslagenStep", repository)
+			.<Long, Long> chunk(50, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

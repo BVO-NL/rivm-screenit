@@ -23,15 +23,12 @@ package nl.rivm.screenit.service;
  */
 
 import java.util.Date;
-import java.util.Set;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.colon.MdlVerslag;
-import nl.topicuszorg.formulieren2.api.resultaat.Antwoord;
 
 public interface VerwerkVerslagService
 {
@@ -41,8 +38,6 @@ public interface VerwerkVerslagService
 	void onAfterVerwerkVerslagContent(Verslag verslag);
 
 	ScreeningRonde getValideScreeningsRonde(VerslagType type, Client client, Verslag olderVerslag, Date onderzoeksdatum);
-
-	void valideerVerslagVoorAfronden(Verslag verslag, Set<Antwoord<?>> antwoorden, InstellingGebruiker instellingGebruiker);
 
 	void ontkoppelOfVerwijderComplicaties(MdlVerslag mdlVerslag);
 

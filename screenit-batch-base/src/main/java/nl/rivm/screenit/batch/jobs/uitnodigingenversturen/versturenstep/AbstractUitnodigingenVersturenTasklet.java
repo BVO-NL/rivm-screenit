@@ -38,9 +38,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.dm_ict.photo._358.MERGEDATA;
@@ -93,6 +90,9 @@ import org.tempuri.IUpload;
 import org.tempuri.UploadRequest;
 
 import com.google.common.collect.Lists;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 
 @Slf4j
 public abstract class AbstractUitnodigingenVersturenTasklet<U extends InpakbareUitnodiging<?>> implements Tasklet

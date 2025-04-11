@@ -388,7 +388,7 @@ public class CervixFactoryImpl implements CervixFactory
 	{
 		Long monsterIdLong = monsterDao.getNextMonsterId();
 
-		String monsterId = monsterIdLong < 100 ? String.format("%010d", monsterIdLong) : monsterIdLong.toString();
+		String monsterId = monsterIdLong < 100 ? "%010d".formatted(monsterIdLong) : monsterIdLong.toString();
 
 		CervixUitstrijkje uitstrijkje = new CervixUitstrijkje();
 		uitnodiging.setMonster(uitstrijkje);

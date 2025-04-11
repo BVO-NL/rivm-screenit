@@ -24,9 +24,7 @@ package nl.rivm.screenit.service.colon.impl;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DossierStatus;
@@ -51,6 +49,7 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.IntervalEenheidAanduiding;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectInactiefReden;
+import nl.rivm.screenit.repository.colon.ColonUitnodigingsintervalRepository;
 import nl.rivm.screenit.service.BaseClientContactService;
 import nl.rivm.screenit.service.BaseDossierService;
 import nl.rivm.screenit.service.ClientService;
@@ -65,14 +64,12 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 {
 	@Autowired
@@ -95,6 +92,9 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 
 	@Autowired
 	private UploadDocumentService uploadDocumentService;
+
+	@Autowired
+	private ColonUitnodigingsintervalRepository uitnodigingsintervalRepository;
 
 	@Override
 	public LocalDate getDatumVolgendeUitnodiging(ColonDossier dossier)
@@ -141,10 +141,10 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void setDatumVolgendeUitnodiging(ColonDossier dossier, ColonUitnodigingsintervalType type)
 	{
-		ColonVolgendeUitnodiging volgendeUitnodiging = dossier.getVolgendeUitnodiging();
+		var volgendeUitnodiging = dossier.getVolgendeUitnodiging();
 		if (volgendeUitnodiging == null)
 		{
 			volgendeUitnodiging = new ColonVolgendeUitnodiging();
@@ -156,7 +156,6 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 		volgendeUitnodiging.setDatumVolgendeRonde(null);
 		volgendeUitnodiging.setInterval(getIntervalByType(type));
 		hibernateService.saveOrUpdate(volgendeUitnodiging);
-
 	}
 
 	private Date getPeildatum(ColonDossier dossier, ColonUitnodigingsintervalType type)
@@ -190,10 +189,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 
 	private ColonUitnodigingsinterval getIntervalByType(ColonUitnodigingsintervalType interval)
 	{
-		Map<String, Object> parameters = new HashMap<>();
-		parameters.put("type", interval);
-		List<ColonUitnodigingsinterval> intervalParameters = hibernateService.getByParameters(ColonUitnodigingsinterval.class, parameters);
-
+		var intervalParameters = uitnodigingsintervalRepository.findByType(interval);
 		if (intervalParameters.isEmpty())
 		{
 			throw new IllegalStateException("Kan interval entiteit behorende bij " + interval + " niet vinden");
@@ -202,7 +198,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void updateIntervalReferentieDatums()
 	{
 		for (ColonUitnodigingsintervalType type : ColonUitnodigingsintervalType.values())
@@ -233,7 +229,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void setVolgendeUitnodingVoorConclusie(ColonIntakeAfspraak afspraak)
 	{
 		ColonConclusie conclusie = afspraak.getConclusie();
@@ -261,7 +257,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void setVolgendeUitnodigingVoorVerslag(MdlVerslag verslag)
 	{
 		ColonUitnodigingsintervalType uitnodigingsintervalType = null;
@@ -314,7 +310,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void maakDossierLeeg(ColonDossier dossier)
 	{
 		Client client = dossier.getClient();

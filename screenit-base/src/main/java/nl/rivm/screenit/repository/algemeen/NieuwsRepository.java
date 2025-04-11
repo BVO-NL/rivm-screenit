@@ -23,8 +23,8 @@ package nl.rivm.screenit.repository.algemeen;
 
 import java.util.Date;
 
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 
 import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.nieuws.GebruikerNieuwsItem;

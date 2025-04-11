@@ -22,12 +22,14 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.io.Serial;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
@@ -40,6 +42,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 public class Woonplaats extends AbstractHibernateObject implements INaam
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Column(unique = true, length = 10, nullable = false)

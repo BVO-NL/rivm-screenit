@@ -31,6 +31,8 @@ import nl.rivm.screenit.model.enums.JobType;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,7 +44,7 @@ public class IlmAlgemeneGegevensVerwijderenJobConfiguration extends AbstractJobC
 	public Job ilmAlgemeneGegevensVerwijderenJob(IlmAlgemeneGegevensVerwijderenListener listener, Step ilmApplicatieLoggingVerwijderenStep,
 		Step ilmTechnischeBerichtenLoggingVerwijderenStep)
 	{
-		return jobBuilderFactory.get(JobType.ILM_ALGEMENE_GEGEVENS_VERWIJDEREN.name())
+		return new JobBuilder(JobType.ILM_ALGEMENE_GEGEVENS_VERWIJDEREN.name(), repository)
 			.listener(listener)
 			.start(ilmApplicatieLoggingVerwijderenStep)
 			.on("*").to(ilmTechnischeBerichtenLoggingVerwijderenStep)
@@ -53,9 +55,8 @@ public class IlmAlgemeneGegevensVerwijderenJobConfiguration extends AbstractJobC
 	@Bean
 	public Step ilmApplicatieLoggingVerwijderenStep(IlmApplicatieLoggingVerwijderenReader reader, IlmApplicatieLoggingVerwijderenWriter writer)
 	{
-		return stepBuilderFactory.get("ilmApplicatieLoggingVerwijderenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("ilmApplicatieLoggingVerwijderenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -64,9 +65,8 @@ public class IlmAlgemeneGegevensVerwijderenJobConfiguration extends AbstractJobC
 	@Bean
 	public Step ilmTechnischeBerichtenLoggingVerwijderenStep(IlmTechnischeBerichtenLoggingVerwijderenReader reader, IlmTechnischeBerichtenLoggingVerwijderenWriter writer)
 	{
-		return stepBuilderFactory.get("ilmTechnischeBerichtenLoggingVerwijderenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("ilmTechnischeBerichtenLoggingVerwijderenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

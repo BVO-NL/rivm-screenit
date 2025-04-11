@@ -57,7 +57,6 @@ import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.EnumLabel;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -113,7 +112,7 @@ public abstract class DocumentTemplateTestenFieldsPanel extends GenericPanel<Doc
 			.add(StringValidator.maximumLength(maxStringLength));
 	}
 
-	public static <T> ScreenitDropdown<T> getScreenitDropdown(String wicketId, List<T> choices, ChoiceRenderer<T> choiceRenderer, boolean nullValid)
+	public static <T> ScreenitDropdown<T> getScreenitDropdown(String wicketId, List<T> choices, IChoiceRenderer<T> choiceRenderer, boolean nullValid)
 	{
 		return new ScreenitDropdown<>(wicketId, choices, choiceRenderer)
 			.setNullValid(nullValid);

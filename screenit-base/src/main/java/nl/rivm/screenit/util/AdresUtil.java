@@ -101,9 +101,8 @@ public final class AdresUtil
 
 	private static String getTeGebruikenWoonplaats(Adres adres)
 	{
-		if (adres instanceof CervixHuisartsAdres)
+		if (adres instanceof CervixHuisartsAdres cervixAdres)
 		{
-			CervixHuisartsAdres cervixAdres = (CervixHuisartsAdres) adres;
 			return cervixAdres.getWoonplaats() != null ? cervixAdres.getWoonplaats().getNaam() : "";
 		}
 
@@ -323,27 +322,27 @@ public final class AdresUtil
 	public static String createKixCode(Adres adres)
 	{
 		StringBuilder kixcode = new StringBuilder();
-		if (adres != null && org.apache.commons.lang.StringUtils.isNotBlank(adres.getPostcode()))
+		if (adres != null && org.apache.commons.lang3.StringUtils.isNotBlank(adres.getPostcode()))
 		{
-			kixcode.append(org.apache.commons.lang.StringUtils.deleteWhitespace(adres.getPostcode()).replaceAll("[^A-Za-z0-9]", "").toUpperCase());
+			kixcode.append(org.apache.commons.lang3.StringUtils.deleteWhitespace(adres.getPostcode()).replaceAll("[^A-Za-z0-9]", "").toUpperCase());
 			if (adres.getHuisnummer() != null)
 			{
 				kixcode.append(adres.getHuisnummer());
 			}
 
-			if (org.apache.commons.lang.StringUtils.isNotBlank(adres.getHuisnummerToevoeging()))
+			if (org.apache.commons.lang3.StringUtils.isNotBlank(adres.getHuisnummerToevoeging()))
 			{
 				kixcode.append("X");
 				kixcode.append(adres.getHuisnummerToevoeging().replaceAll("[^A-Za-z0-9]", "").toUpperCase());
 			}
 
-			if (org.apache.commons.lang.StringUtils.isNotBlank(adres.getHuisnummerAanduiding()))
+			if (org.apache.commons.lang3.StringUtils.isNotBlank(adres.getHuisnummerAanduiding()))
 			{
 				kixcode.append("X");
 				kixcode.append(adres.getHuisnummerAanduiding().replaceAll("[^A-Za-z0-9]", "").toUpperCase());
 			}
 
-			if (org.apache.commons.lang.StringUtils.isNotBlank(adres.getHuisletter()))
+			if (org.apache.commons.lang3.StringUtils.isNotBlank(adres.getHuisletter()))
 			{
 				kixcode.append("X");
 				kixcode.append(adres.getHuisletter().toUpperCase());

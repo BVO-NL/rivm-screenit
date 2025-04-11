@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import nl.rivm.screenit.mamma.se.service.dtomapper.PlanningDtoMapper;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;

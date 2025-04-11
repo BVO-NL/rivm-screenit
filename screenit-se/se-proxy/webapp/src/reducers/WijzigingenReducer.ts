@@ -23,6 +23,7 @@ import {KIES_GEEN_HUISARTS_OPTIE, KIES_HUISARTS} from "../actions/HuisartsAction
 import {BEZWAAR_AANVRAGEN} from "../actions/AfspraakActions"
 import {WIJZIGINGEN_GEMAAKT, WIJZIGINGEN_VERWERKT} from "../actions/WijzigingenActions"
 import {
+	HUIDSCHEURING,
 	MAAK_AANVULLENDE_INFORMATIE_OPERATIE,
 	MAAK_EXTRA_MEDEWERKER,
 	MAAK_MBB_OPMERKING,
@@ -108,6 +109,7 @@ const WijzigingenReducer: Reducer<boolean> = (stateSlice = false, action: Unknow
 		case MAAK_SUBOPTIMALE_INSTELTECHNIEK:
 		case OPERATIE_RECHTS:
 		case OPERATIE_LINKS:
+		case HUIDSCHEURING:
 		case MAAK_VISUELE_INSPECTIE_ICOON:
 		case SET_VISUELE_INSPECTIE_ICOON_POSITION:
 		case SET_VISUELE_INSPECTIE_ICOON_TEKST:

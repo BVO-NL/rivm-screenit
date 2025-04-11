@@ -342,7 +342,6 @@ div.canvas.footer .row-fluid {
 }
 
 
-
 .inactive-element {
 	background-color: $inactive-be-background-color;
 }
@@ -580,11 +579,11 @@ textarea:disabled ~ i.icon-asterisk.icon-purple {
 	}
 }
 
-fieldset.mammaPathologieVerslag {
+fieldset.cdaVerslagSamenvatting {
 	min-inline-size: auto;
 }
 
-.mammaPathologieVerslag table {
+.cdaVerslagSamenvatting table {
 	display: block;
 	overflow-x: auto;
 }

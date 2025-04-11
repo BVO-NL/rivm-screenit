@@ -23,14 +23,17 @@ package nl.rivm.screenit.model.colon;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.UniqueConstraint;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
 import nl.rivm.screenit.model.enums.IntervalEenheidAanduiding;
@@ -45,6 +48,8 @@ import org.hibernate.envers.NotAudited;
 @Table(schema = "colon", name = "uitnodigingsinterval", uniqueConstraints = { @UniqueConstraint(columnNames = "type") })
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Audited
+@Getter
+@Setter
 public class ColonUitnodigingsinterval extends AbstractHibernateObject
 {
 
@@ -53,54 +58,14 @@ public class ColonUitnodigingsinterval extends AbstractHibernateObject
 	@NotAudited
 	private ColonUitnodigingsintervalType type;
 
-	@Column(nullable = true)
+	@Column
 	private Integer aantal;
 
-	@Column(nullable = true)
+	@Column
 	@Enumerated(EnumType.STRING)
 	private IntervalEenheidAanduiding eenheid;
 
 	@Temporal(TemporalType.DATE)
 	@NotAudited
 	private Date berekendeReferentieDatum;
-
-	public ColonUitnodigingsintervalType getType()
-	{
-		return type;
-	}
-
-	public void setType(ColonUitnodigingsintervalType type)
-	{
-		this.type = type;
-	}
-
-	public Integer getAantal()
-	{
-		return aantal;
-	}
-
-	public void setAantal(Integer aantal)
-	{
-		this.aantal = aantal;
-	}
-
-	public IntervalEenheidAanduiding getEenheid()
-	{
-		return eenheid;
-	}
-
-	public void setEenheid(IntervalEenheidAanduiding eenheid)
-	{
-		this.eenheid = eenheid;
-	}
-
-	public Date getBerekendeReferentieDatum()
-	{
-		return berekendeReferentieDatum;
-	}
-
-	public void setBerekendeReferentieDatum(Date berekendeReferentieDatum)
-	{
-		this.berekendeReferentieDatum = berekendeReferentieDatum;
-	}
 }

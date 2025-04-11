@@ -2,7 +2,7 @@ package nl.rivm.screenit.clientportaal.controllers;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -32,7 +32,6 @@ import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.model.EnovationHuisarts_;
 import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.EnovationHuisartsService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -52,8 +51,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class HuisartsController extends AbstractController
 {
-	private final HibernateService hibernateService;
-
 	private final ClientContactService clientContactService;
 
 	private final EnovationHuisartsService huisartsService;
@@ -65,7 +62,7 @@ public class HuisartsController extends AbstractController
 	@PostMapping
 	public ResponseEntity<List<HuisartsDto>> getHuisartsen(Authentication authentication, @RequestParam Integer paginaNummer, @RequestBody HuisartsZoekDto huisartsZoekobject)
 	{
-		var client = getClient(authentication, hibernateService);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_HUISARTS_WIJZIGEN)
 			|| clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_HUISARTS_WIJZIGEN))

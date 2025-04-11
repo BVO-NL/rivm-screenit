@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.dto;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,12 +21,12 @@ package nl.rivm.screenit.huisartsenportaal.dto;
  * =========================LICENSE_END==================================
  */
 
-import javax.validation.constraints.NotEmpty;
-
 import lombok.Getter;
 import lombok.Setter;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import jakarta.validation.constraints.NotEmpty;
 
 @JsonSerialize
 @Getter

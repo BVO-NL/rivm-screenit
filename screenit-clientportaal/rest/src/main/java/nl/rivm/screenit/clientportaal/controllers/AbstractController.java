@@ -2,7 +2,7 @@ package nl.rivm.screenit.clientportaal.controllers;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -26,8 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.clientportaal.filter.CPAccountResolverDelegate;
 import nl.rivm.screenit.clientportaal.security.userdetails.ScreenitUserDetails;
 import nl.rivm.screenit.model.Client;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.repository.algemeen.ClientRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -35,10 +36,15 @@ import org.springframework.security.core.Authentication;
 @Slf4j
 public abstract class AbstractController
 {
-	protected Client getClient(Authentication authentication, HibernateService hibernateService)
+	@Autowired
+	private ClientRepository clientRepository;
+
+	protected Client getClient(Authentication authentication)
 	{
-		Client client = hibernateService.get(Client.class, ((ScreenitUserDetails) authentication.getPrincipal()).getClientId());
+		var clientId = ((ScreenitUserDetails) authentication.getPrincipal()).getClientId();
+		var client = clientRepository.getReferenceById(clientId);
 		CPAccountResolverDelegate.setClient(client);
+
 		return client;
 	}
 

@@ -128,7 +128,6 @@ public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment
 		var heeftTegenhoudenRecht = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
 		var magTegenhouden = heeftTegenhoudenRecht && laatsteBrief != null && !BriefUtil.isTegengehouden(laatsteBrief) && BriefUtil.getMergedBrieven(laatsteBrief) == null;
 		var magDoorvoeren = heeftTegenhoudenRecht && BriefUtil.isTegengehouden(laatsteBrief);
-		var footnoteWeergeven = magDoorvoeren || magTegenhouden || magNogmaalsVersturen;
 
 		if (upload != null)
 		{
@@ -192,8 +191,6 @@ public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment
 				target.add(uploadForm);
 			}
 		}.setVisible(magDocumentVervangen));
-
-		add(new Label("footnote", getString("info.laatste.brief.footnote")).setVisible(footnoteWeergeven));
 	}
 
 	private void addVervangenPanel()
@@ -203,7 +200,7 @@ public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment
 			@Override
 			protected void vervangDocument(UploadDocument uploadDocument, AjaxRequestTarget target)
 			{
-				if (bezwaarService.bezwaarDocumentenVervangen(uploadDocument, getModelObject(), upload.getObject(), ScreenitSession.get().getLoggedInAccount()))
+				if (bezwaarService.ondertekendeBezwaarBriefVervangen(uploadDocument, getModelObject(), upload.getObject(), ScreenitSession.get().getLoggedInAccount()))
 				{
 					info(getString("info.vervangendocument"));
 					close(target);

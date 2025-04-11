@@ -32,6 +32,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -44,7 +46,7 @@ public class CervixBepalenVerrichtingenJobConfiguration extends AbstractJobConfi
 	@Bean
 	public Job bepalenVerrichtingenJob(CervixBepalenVerrichtingenListener listener, Step bepalenVerrichtingenStep, Step dubbeleCytologieVerrichtingenStep, Step betalingCleanUpStep)
 	{
-		return jobBuilderFactory.get(JobType.CERVIX_BEPALEN_VERRICHTINGEN.name())
+		return new JobBuilder(JobType.CERVIX_BEPALEN_VERRICHTINGEN.name(), repository)
 			.listener(listener)
 			.start(bepalenVerrichtingenStep)
 			.next(dubbeleCytologieVerrichtingenStep)
@@ -55,9 +57,8 @@ public class CervixBepalenVerrichtingenJobConfiguration extends AbstractJobConfi
 	@Bean
 	public Step bepalenVerrichtingenStep(CervixBepalenVerrichtingenReader reader, CervixBepalenVerrichtingenWriter writer)
 	{
-		return stepBuilderFactory.get("bepalenVerrichtingenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(100)
+		return new StepBuilder("bepalenVerrichtingenStep", repository)
+			.<Long, Long> chunk(100, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -66,9 +67,8 @@ public class CervixBepalenVerrichtingenJobConfiguration extends AbstractJobConfi
 	@Bean
 	public Step dubbeleCytologieVerrichtingenStep(CervixDubbeleCytologieVerrichtingenReader reader, CervixDubbeleCytologieVerrichtingenWriter writer)
 	{
-		return stepBuilderFactory.get("dubbeleCytologieVerrichtingenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(100)
+		return new StepBuilder("dubbeleCytologieVerrichtingenStep", repository)
+			.<Long, Long> chunk(100, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -77,9 +77,8 @@ public class CervixBepalenVerrichtingenJobConfiguration extends AbstractJobConfi
 	@Bean
 	public Step betalingCleanUpStep(BetalingBestandenCleanUpReader reader, BetalingBestandenCleanUpWriter writer)
 	{
-		return stepBuilderFactory.get("betalingCleanUpStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(1)
+		return new StepBuilder("betalingCleanUpStep", repository)
+			.<Long, Long> chunk(1, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

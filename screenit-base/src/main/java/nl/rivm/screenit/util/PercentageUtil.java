@@ -23,6 +23,7 @@ package nl.rivm.screenit.util;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 
 public abstract class PercentageUtil
 {
@@ -35,9 +36,9 @@ public abstract class PercentageUtil
 	public static String getPercentageVanGeheel(long deel, long geheel)
 	{
 		BigDecimal percentage = BigDecimal.valueOf(deel)
-			.divide(BigDecimal.valueOf(geheel), 4, BigDecimal.ROUND_HALF_UP)
+			.divide(BigDecimal.valueOf(geheel), 4, RoundingMode.HALF_UP)
 			.multiply(BigDecimal.valueOf(100), new MathContext(4));
 
-		return String.format("%.2f%%", percentage);
+		return "%.2f%%".formatted(percentage);
 	}
 }

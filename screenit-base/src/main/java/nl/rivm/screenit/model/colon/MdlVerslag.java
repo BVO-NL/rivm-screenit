@@ -22,13 +22,15 @@ package nl.rivm.screenit.model.colon;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.OneToOne;
+import java.io.Serial;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
 
 import nl.rivm.screenit.model.colon.enums.MdlVervolgbeleid;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerslagContent;
@@ -45,6 +47,7 @@ import org.hibernate.envers.NotAudited;
 public class MdlVerslag extends ColonVerslag<MdlVerslagContent>
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Enumerated(EnumType.STRING)

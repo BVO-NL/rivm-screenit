@@ -23,14 +23,6 @@ package nl.rivm.screenit.model.colon.planning;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +36,16 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Index;
 import org.hibernate.envers.Audited;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+
 @Setter
 @Getter
 @Slf4j
@@ -51,6 +53,7 @@ import org.hibernate.envers.Audited;
 @Table(schema = "colon", name = "tijdslot")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "colon.cache")
 @Audited
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class ColonTijdslot extends AbstractHibernateObject implements Cloneable
 {
 	@ManyToOne(optional = false)

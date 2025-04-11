@@ -21,10 +21,6 @@ package nl.rivm.screenit.batch.jobs.cervix.herinneren.uitstrijkjestep;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.jobs.cervix.herinneren.allsteps.CervixHerinnerenReader;
 import nl.rivm.screenit.model.MergedBrieven_;
@@ -38,6 +34,10 @@ import nl.rivm.screenit.specification.cervix.CervixUitnodigingSpecification;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
 
 @Component
 public class CervixUitstrijkjeHerinnerenReader extends CervixHerinnerenReader

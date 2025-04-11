@@ -23,13 +23,14 @@ package nl.rivm.screenit.specification;
 
 import java.util.function.Function;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -50,6 +51,16 @@ public interface ExtendedSpecification<T> extends Specification<T>
 	}
 
 	default <S> ExtendedSpecification<S> with(SingularAttribute<S, ? extends T> attribute, JoinType joinType)
+	{
+		return with(r -> SpecificationUtil.join(r, attribute, joinType));
+	}
+
+	default <S> ExtendedSpecification<S> with(ListAttribute<S, ? extends T> attribute)
+	{
+		return with(attribute, JoinType.INNER);
+	}
+
+	default <S> ExtendedSpecification<S> with(ListAttribute<S, ? extends T> attribute, JoinType joinType)
 	{
 		return with(r -> SpecificationUtil.join(r, attribute, joinType));
 	}

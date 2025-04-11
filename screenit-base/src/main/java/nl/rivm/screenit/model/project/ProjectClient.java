@@ -25,16 +25,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -71,10 +71,10 @@ public class ProjectClient extends AbstractHibernateObject implements IActief
 	@ManyToOne(fetch = FetchType.LAZY)
 	private ProjectGroep groep;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "projectClient", cascade = javax.persistence.CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "projectClient", cascade = jakarta.persistence.CascadeType.ALL)
 	private List<ProjectClientAttribuut> attributen = new ArrayList<>();
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "projectClient", cascade = javax.persistence.CascadeType.REMOVE)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "projectClient", cascade = jakarta.persistence.CascadeType.REMOVE)
 	@Cascade(CascadeType.DELETE)
 	private List<ProjectBrief> brieven = new ArrayList<>();
 
@@ -87,7 +87,7 @@ public class ProjectClient extends AbstractHibernateObject implements IActief
 	private Date projectInactiefDatum;
 
 	@Deprecated
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = javax.persistence.CascadeType.REMOVE)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = jakarta.persistence.CascadeType.REMOVE)
 	@NotAudited
 	@Cascade(CascadeType.DELETE)
 	private ProjectInactiveerDocument projectInactiveerDocument;

@@ -28,10 +28,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.batch.service.BarcodeValiderenService;
 import nl.rivm.screenit.batch.service.WebserviceInpakcentrumOpzettenService;
@@ -56,6 +52,9 @@ import org.tempuri.IUpload;
 import org.tempuri.UploadRequest;
 
 import generated.KOPPELDATA;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 
 public abstract class BaseKoppelReader implements ItemStream
 {

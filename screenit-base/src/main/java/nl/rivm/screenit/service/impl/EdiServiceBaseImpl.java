@@ -27,7 +27,6 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.dao.HuisartsBerichtTemplateDao;
 import nl.rivm.screenit.edi.model.MedVryOut;
 import nl.rivm.screenit.edi.model.OutboundMessageData;
 import nl.rivm.screenit.edi.service.EdiMessageService;
@@ -44,6 +43,7 @@ import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.HuisartsBerichtType;
 import nl.rivm.screenit.model.enums.MergeField;
+import nl.rivm.screenit.repository.algemeen.HuisartsBerichtTemplateRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.MailService;
@@ -52,7 +52,7 @@ import nl.topicuszorg.organisatie.model.Adres;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.NaamGebruik;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -75,7 +75,7 @@ public abstract class EdiServiceBaseImpl
 	private SimplePreferenceService simplePreferenceService;
 
 	@Autowired
-	private HuisartsBerichtTemplateDao templateDao;
+	private HuisartsBerichtTemplateRepository huisartsBerichtTemplateRepository;
 
 	@Autowired
 	private MailService mailService;
@@ -239,7 +239,7 @@ public abstract class EdiServiceBaseImpl
 	protected String merge(MailMergeContext context, HuisartsBerichtType berichtType)
 	{
 		String berichtInhoud = "";
-		HuisartsBerichtTemplate template = templateDao.getTemplateByType(berichtType);
+		HuisartsBerichtTemplate template = huisartsBerichtTemplateRepository.findByBerichtType(berichtType);
 		if (template != null)
 		{
 			berichtInhoud = template.getBerichtInhoud();

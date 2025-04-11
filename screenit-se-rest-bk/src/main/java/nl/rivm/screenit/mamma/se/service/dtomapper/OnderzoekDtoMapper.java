@@ -45,6 +45,7 @@ class OnderzoekDtoMapper
 			onderzoekDto.setOperatieLinks(onderzoek.getOperatieLinks() != null && onderzoek.getOperatieLinks());
 			onderzoekDto.setAmputatie(onderzoek.getAmputatie());
 			onderzoekDto.setAanvullendeInformatieOperatie(onderzoek.getAanvullendeInformatieOperatie());
+			onderzoekDto.setHuidscheuring(onderzoek.isHuidscheuring());
 			onderzoekDto.setStatus(onderzoek.getStatus());
 			onderzoekDto.setOnvolledigOnderzoek(onderzoek.getOnvolledigOnderzoek());
 			onderzoekDto.setOnderbrokenOnderzoek(onderzoek.getOnderbrokenOnderzoek());

@@ -32,8 +32,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.persistence.Column;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -84,6 +82,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import com.google.common.collect.ImmutableMap;
 
 import ca.uhn.hl7v2.HL7Exception;
+import jakarta.persistence.Column;
 
 @Slf4j
 @Service

@@ -2,7 +2,7 @@ package nl.rivm.screenit.clientportaal.controllers.mamma;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -58,7 +58,6 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EmailUtil;
 import nl.rivm.screenit.util.TelefoonnummerUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
@@ -80,8 +79,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class AfspraakController extends AbstractController
 {
-	private final HibernateService hibernateService;
-
 	private final ClientContactService clientContactService;
 
 	private final MammaBaseStandplaatsService standplaatsService;
@@ -97,7 +94,7 @@ public class AfspraakController extends AbstractController
 	@GetMapping("/standplaatsPlaatsen")
 	public ResponseEntity<List<String>> getStandplaatsPlaatsen(Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN)
 			|| clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN))
@@ -151,7 +148,7 @@ public class AfspraakController extends AbstractController
 
 	private ResponseEntity<List<LocalDate>> getResponseMetBeschikbareDagen(Authentication authentication, String plaats, String afstand)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN)
 			|| clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN))
@@ -170,7 +167,7 @@ public class AfspraakController extends AbstractController
 			return ResponseEntity.badRequest().build();
 		}
 
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN)
 			|| clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN))
@@ -197,7 +194,7 @@ public class AfspraakController extends AbstractController
 
 	public ResponseEntity<String> maakAfspraak(Authentication authentication, @RequestBody MammaAfspraakOptieDto afspraakOptie)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN)
 			|| clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN))
@@ -249,7 +246,7 @@ public class AfspraakController extends AbstractController
 	@PostMapping("/bevestiging")
 	public ResponseEntity<String> maakAfspraakBevestiging(Authentication authentication, @RequestBody MammaAfspraakBevestigingDto afspraakBevestiging)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 		try
 		{
 			var opslaanObjecten = maakAfspraakBevestigingOpslaanObjecten(afspraakBevestiging, client);
@@ -323,7 +320,7 @@ public class AfspraakController extends AbstractController
 	@GetMapping("/huidige")
 	public ResponseEntity<MammaHuidigeAfspraakDto> getHuidigeAfspraak(Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 		MammaAfspraak huidigeAfspraak = MammaScreeningRondeUtil.getLaatsteAfspraak(client.getMammaDossier().getLaatsteScreeningRonde());
 
 		if (huidigeAfspraak != null && huidigeAfspraak.getStatus().equals(MammaAfspraakStatus.GEPLAND) && huidigeAfspraak.getVanaf().compareTo(currentDateSupplier.getDate()) >= 0)

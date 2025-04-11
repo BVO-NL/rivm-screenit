@@ -64,9 +64,8 @@ public class BaseDossierServiceImpl implements BaseDossierService
 
 	private <D extends Dossier<?, A>, A extends Afmelding<?, ?, ?>> void colonSpecifiekeVerwijderVerwerking(D dossier)
 	{
-		if (dossier instanceof ColonDossier)
+		if (dossier instanceof ColonDossier colonDossier)
 		{
-			ColonDossier colonDossier = (ColonDossier) dossier;
 
 			for (ColonAfmelding afmelding : colonDossier.getAfmeldingen())
 			{

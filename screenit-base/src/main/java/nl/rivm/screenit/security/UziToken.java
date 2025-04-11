@@ -22,11 +22,14 @@ package nl.rivm.screenit.security;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
+
 import org.apache.shiro.authc.AuthenticationToken;
 
 public class UziToken implements AuthenticationToken
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private final String uziCode;

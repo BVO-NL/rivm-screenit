@@ -40,7 +40,7 @@ import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectStatus;
 import nl.rivm.screenit.model.project.ProjectType;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProjectUtil
@@ -121,27 +121,14 @@ public class ProjectUtil
 
 	public static ProjectClient getHuidigeProjectClient(Client client, Date referentieDatum, boolean groepActiefCheck)
 	{
-		ProjectClient projectClient = null;
-		if (referentieDatum != null && client != null && client.getProjecten() != null)
-		{
-			for (ProjectClient pClient : client.getProjecten())
-			{
-				Project project = pClient.getProject();
-				if (ProjectType.PROJECT.equals(project.getType()))
-				{
-					if (pClient.getActief() && (pClient.getGroep().getActief() || !groepActiefCheck)
-						&& !ProjectStatus.BEEINDIGD.equals(getStatus(project, referentieDatum)))
-					{
-						if (projectClient == null || projectClient.getActief() && ProjectStatus.NOG_TE_STARTEN.equals(getStatus(projectClient.getProject(), referentieDatum))
-							&& ProjectStatus.ACTIEF.equals(getStatus(project, referentieDatum)))
-						{
-							projectClient = pClient;
-						}
-					}
-				}
-			}
-		}
-		return projectClient;
+		return client.getProjecten().stream()
+			.filter(pClient -> ProjectType.PROJECT.equals(pClient.getProject().getType()))
+			.filter(pClient -> pClient.getActief() && (pClient.getGroep().getActief() || !groepActiefCheck))
+			.filter(pClient -> !ProjectStatus.BEEINDIGD.equals(getStatus(pClient.getProject(), referentieDatum)))
+			.reduce((current, pClient) ->
+				Boolean.TRUE.equals(current.getActief() && ProjectStatus.NOG_TE_STARTEN.equals(getStatus(current.getProject(), referentieDatum))) && ProjectStatus.ACTIEF.equals(
+					getStatus(pClient.getProject(), referentieDatum)) ? pClient : current)
+			.orElse(null);
 	}
 
 	public static List<ProjectClient> getHuidigeProjectClienten(Client client, Date date, boolean groepActiefCheck)

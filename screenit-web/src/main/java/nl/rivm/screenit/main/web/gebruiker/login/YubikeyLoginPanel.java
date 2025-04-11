@@ -21,6 +21,8 @@ package nl.rivm.screenit.main.web.gebruiker.login;
  * =========================LICENSE_END==================================
  */
 
+import java.time.Duration;
+
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ScreenitWachtwoordField;
@@ -43,7 +45,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.time.Duration;
 
 public class YubikeyLoginPanel extends Panel
 {
@@ -127,7 +128,7 @@ public class YubikeyLoginPanel extends Panel
 
 			});
 
-			add(new WebMarkupContainer("keepalive").add(new AjaxSelfUpdatingTimerBehavior(Duration.minutes(10))));
+			add(new WebMarkupContainer("keepalive").add(new AjaxSelfUpdatingTimerBehavior(Duration.ofMinutes(10))));
 
 		}
 	}

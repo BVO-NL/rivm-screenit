@@ -30,8 +30,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.JoinType;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -94,7 +94,7 @@ import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PropertyComparator;
 import org.springframework.data.domain.Sort;
@@ -245,22 +245,9 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 	public List<ColonIntakeAfspraak> getAfsprakenVoorIntakelocatie(WerklijstIntakeFilter zoekObject, ColonIntakelocatie intakelocatie, long first, long count,
 		Sort sort)
 	{
-		var afspraken = afspraakRepository.findWith(getAfsprakenVoorIntakelocatieSpecification(zoekObject, intakelocatie)
-			, q -> q.sortBy(getSorteringVoorAfspraken(sort), (order, r, cb) ->
-			{
-				var sortProperty = order.getProperty();
-				if (sortProperty.startsWith(ColonIntakeAfspraak_.CONCLUSIE))
-				{
-					join(r, ColonIntakeAfspraak_.conclusie, JoinType.LEFT);
-				}
-				else if (sortProperty.startsWith(propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.COLON_DOSSIER, ColonDossier_.VOLGENDE_UITNODIGING)))
-				{
-					var clientJoin = join(r, ColonIntakeAfspraak_.client);
-					var dossierJoin = join(clientJoin, Client_.colonDossier);
-					join(dossierJoin, ColonDossier_.volgendeUitnodiging);
-				}
-				return null;
-			})).all(first, count);
+		var afspraken = afspraakRepository.findWith(getAfsprakenVoorIntakelocatieSpecification(zoekObject, intakelocatie),
+				q -> q.sortBy(getSorteringVoorAfspraken(sort)))
+			.all(first, count);
 		if (moetNogOpGeboortedatumFilteren(zoekObject))
 		{
 			filterGeboortedatum(zoekObject.getGeboortedatum(), afspraken);

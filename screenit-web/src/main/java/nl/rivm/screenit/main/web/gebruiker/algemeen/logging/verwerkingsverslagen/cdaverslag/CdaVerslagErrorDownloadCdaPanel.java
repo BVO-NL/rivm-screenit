@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen.cdaverslag;
 
 /*-
@@ -22,16 +21,11 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslage
  * =========================LICENSE_END==================================
  */
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.model.logging.BerichtOntvangenLogEvent;
+import nl.rivm.screenit.service.BaseVerslagService;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.panel.GenericPanel;
@@ -39,13 +33,15 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.ContentDisposition;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
+@Slf4j
 public class CdaVerslagErrorDownloadCdaPanel extends GenericPanel<BerichtOntvangenLogEvent>
 {
 
-	private static final long serialVersionUID = 1L;
-
-	private static final Logger LOG = LoggerFactory.getLogger(CdaVerslagErrorDownloadCdaPanel.class);
+	@Autowired
+	private BaseVerslagService verslagService;
 
 	public CdaVerslagErrorDownloadCdaPanel(String id, IModel<BerichtOntvangenLogEvent> model)
 	{
@@ -55,8 +51,6 @@ public class CdaVerslagErrorDownloadCdaPanel extends GenericPanel<BerichtOntvang
 		add(new Label("melding"));
 		add(new ResourceLink<>("download", new AbstractResource()
 		{
-
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected ResourceResponse newResourceResponse(Attributes attributes)
@@ -68,43 +62,21 @@ public class CdaVerslagErrorDownloadCdaPanel extends GenericPanel<BerichtOntvang
 				response.setContentDisposition(ContentDisposition.ATTACHMENT);
 
 				response.setWriteCallback(new WriteCallback()
-				{
+										  {
+											  @Override
+											  public void writeData(Attributes attributes)
+											  {
+												  var cdaBericht = CdaVerslagErrorDownloadCdaPanel.this.getModelObject().getBericht();
+												  var outputStream = attributes.getResponse().getOutputStream();
 
-					@Override
-					public void writeData(Attributes attributes)
-					{
-						try
-						{
-							String xmlBericht = CdaVerslagErrorDownloadCdaPanel.this.getModelObject().getBericht().getXmlBericht();
-							try (InputStream writer = IOUtils.toInputStream(xmlBericht); OutputStream outputStream = attributes.getResponse().getOutputStream();)
-							{
-								IOUtils.copy(writer, outputStream);
-							}
-						}
-						catch (IOException e)
-						{
-							LOG.error("Fout bij laden uploadcoument: " + e.getMessage(), e);
-						}
-						catch (Exception e)
-						{
-							LOG.error("Error bij mailmerge: " + e.getMessage(), e);
-						}
-					}
-				}
+												  verslagService.getBerichtXml(cdaBericht, outputStream);
+											  }
+										  }
 
 				);
 				return response;
 			}
 		}
-
-		)).
-
-		setVisible(getModelObject()
-
-		.
-
-		getBericht()
-
-		!= null);
+		)).setVisible(getModelObject().getBericht() != null);
 	}
 }

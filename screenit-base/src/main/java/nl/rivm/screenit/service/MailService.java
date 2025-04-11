@@ -23,7 +23,7 @@ package nl.rivm.screenit.service;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import nl.rivm.screenit.dto.alg.client.contact.MailAttachmentDto;
 import nl.rivm.screenit.model.Client;

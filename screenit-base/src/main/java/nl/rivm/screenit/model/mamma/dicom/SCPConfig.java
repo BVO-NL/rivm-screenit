@@ -21,7 +21,7 @@ package nl.rivm.screenit.model.mamma.dicom;
  * =========================LICENSE_END==================================
  */
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class SCPConfig
 {

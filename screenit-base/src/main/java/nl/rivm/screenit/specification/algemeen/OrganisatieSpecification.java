@@ -28,13 +28,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -76,7 +76,7 @@ import nl.topicuszorg.organisatie.model.Adres;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -152,6 +152,14 @@ public class OrganisatieSpecification
 		));
 	}
 
+	public static ExtendedSpecification<Instelling> filterAgbCodeOfUziAbonneenummerContaining(String uniekeCode)
+	{
+		return skipWhenEmptyExtended(uniekeCode, (r, q, cb) -> cb.or(
+			containsCaseInsensitive(cb, r.get(Instelling_.uziAbonneenummer), uniekeCode),
+			containsCaseInsensitive(cb, r.get(Instelling_.agbcode), uniekeCode)
+		));
+	}
+
 	public static Specification<Instelling> filterUziAbonneeNummer(String uziAbonneeNummer)
 	{
 		return skipWhenEmpty(uziAbonneeNummer, (r, q, cb) -> cb.equal(r.get(Instelling_.uziAbonneenummer), uziAbonneeNummer));
@@ -219,6 +227,11 @@ public class OrganisatieSpecification
 		};
 	}
 
+	public static ExtendedSpecification<Instelling> filterPlaatsnaam(String plaatsnaam)
+	{
+		return skipWhenEmptyExtended(plaatsnaam, AdresSpecification.filterPlaatsContaining(plaatsnaam).with(Instelling_.adressen));
+	}
+
 	public static Specification<Instelling> heeftFqdn(String fqdn)
 	{
 		return (r, q, cb) -> cb.or(cb.equal(treat(r, ZorgInstelling.class, cb).get(ZorgInstelling_.fqdn), fqdn),
@@ -233,7 +246,7 @@ public class OrganisatieSpecification
 		{
 			var predicates = new ArrayList<Predicate>();
 			predicates.add(forceerDtypesVoorAlleMogelijkeOrganisationTypes(r, cb));
-			predicates.add(addHierachieCriteria(hierarchieCriteria, r, cb));
+			predicates.add(hierarchiePredicate(hierarchieCriteria, r, cb));
 
 			var spec = filterActief(organisatie.getActief())
 				.and(filterNaamContaining(organisatie.getNaam()))
@@ -250,15 +263,20 @@ public class OrganisatieSpecification
 		};
 	}
 
-	private static Predicate addHierachieCriteria(Map<OrganisatieType, List<Instelling>> hierarchieCriteria, Root<Instelling> r, CriteriaBuilder cb)
+	private static Predicate hierarchiePredicate(Map<OrganisatieType, List<Instelling>> hierarchieCriteria, From<?, ? extends Instelling> r, CriteriaBuilder cb)
 	{
 		if (MapUtils.isNotEmpty(hierarchieCriteria))
 		{
 			var disjunctionPredicates = new ArrayList<Predicate>();
-			hierarchieCriteria.entrySet().forEach(type -> disjunctionPredicates.add(addHierarchieCrit(type, r, cb)));
+			hierarchieCriteria.entrySet().forEach(type -> disjunctionPredicates.add(hierarchieEntryPredicate(type, r, cb)));
 			return composePredicatesOr(cb, disjunctionPredicates);
 		}
 		return null;
+	}
+
+	public static ExtendedSpecification<Instelling> filterHierarchie(Map<OrganisatieType, List<Instelling>> hierarchieCriteria)
+	{
+		return (r, q, cb) -> hierarchiePredicate(hierarchieCriteria, r, cb);
 	}
 
 	private static Specification<Instelling> getMedewerkerSpecifications(Instelling organisatie, LocalDateTime peilMoment)
@@ -307,7 +325,7 @@ public class OrganisatieSpecification
 		return composePredicatesOr(cb, organisatiePredicates);
 	}
 
-	public static Predicate addHierarchieCrit(Map.Entry<OrganisatieType, List<Instelling>> type, Root<Instelling> root, CriteriaBuilder cb)
+	public static Predicate hierarchieEntryPredicate(Map.Entry<OrganisatieType, List<Instelling>> type, From<?, ? extends Instelling> root, CriteriaBuilder cb)
 	{
 		var predicates = new ArrayList<Predicate>();
 		var organisatieType = type.getKey();

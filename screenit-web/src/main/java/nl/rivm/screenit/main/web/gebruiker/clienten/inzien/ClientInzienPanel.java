@@ -101,7 +101,7 @@ public class ClientInzienPanel extends GenericPanel<Client>
 		add(dialog);
 		var client = getModelObject();
 		addBezwaarPanel();
-
+		addOnderzoekresultatenActiePanel();
 		addAanvraagOverdrachtGegevensPanel();
 
 		var algemeneBrievenPanel = new ClientInzienAlgemeneBrievenPanel("algemeneBrievenPanel", getModel(), dialog);
@@ -168,8 +168,6 @@ public class ClientInzienPanel extends GenericPanel<Client>
 		add(new MultiLineLabel("adres", new IModel<String>()
 		{
 
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public String getObject()
 			{
@@ -235,6 +233,21 @@ public class ClientInzienPanel extends GenericPanel<Client>
 		else
 		{
 			add(new EmptyPanel("clientInzienBezwaarPanel"));
+		}
+	}
+
+	private void addOnderzoekresultatenActiePanel()
+	{
+		var bezwaarRecht = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_BEZWAAR, Actie.INZIEN);
+		if (bezwaarRecht)
+		{
+			var onderzoekresultatenActiePanel = new ClientInzienVerwijderdeOnderzoeksresultatenPanel("clientInzienOnderzoekresultatenActiePanel", getModel(), dialog);
+			onderzoekresultatenActiePanel.setEnabled(clientService.isClientActief(getModelObject()));
+			add(onderzoekresultatenActiePanel);
+		}
+		else
+		{
+			add(new EmptyPanel("clientInzienOnderzoekresultatenActiePanel"));
 		}
 	}
 

@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -50,12 +50,12 @@ import {fetchCurrentUser} from "../../api/CurrentUserThunkAction"
 import {useNavigate} from "react-router"
 
 const GegevensWijzigenFormComponent = () => {
-	const oauth = useAppSelector((state => state.oauth))
+	const auth = useAppSelector((state => state.auth))
 	const huisarts = useAppSelector((state => state.huisarts))
 	const locaties = useAppSelector((state => state.locaties.values))
 	const user = useAppSelector((state => state.user))
 
-	const isRegistreren = oauth?.scope === AuthenticationScope.REGISTREREN
+	const isRegistreren = auth?.scope === AuthenticationScope.REGISTREREN
 
 	const [controleren, setControleren] = useState<boolean>(false)
 	const [nieuweLocatieToevoegen, setNieuweLocatieToevoegen] = useState<boolean>(false)
@@ -65,9 +65,9 @@ const GegevensWijzigenFormComponent = () => {
 	const dispatch = useAppThunkDispatch()
 
 	useEffect(() => {
-		if (user && user.rollen.includes(Recht.ROLE_OVEREENKOMST)) {
+		if (user?.rollen.includes(Recht.ROLE_OVEREENKOMST)) {
 			dispatch(createActionPushToast({type: ToastType.INFO, message: getString(properties.message.overeenkomstGewijzigd)}))
-		} else if (user && user.rollen.includes(Recht.ROLE_REGISTEREN)) {
+		} else if (user?.rollen.includes(Recht.ROLE_REGISTEREN)) {
 			dispatch(createActionPushToast({type: ToastType.INFO, message: getString(properties.message.registrerenVerplicht)}))
 		}
 	}, [dispatch, user])
@@ -168,7 +168,7 @@ const GegevensWijzigenFormComponent = () => {
 					dispatch(loadingThunkAction(saveHuisarts(values))).then(() => {
 						if (isRegistreren) {
 							if (locaties?.locaties && !!locaties?.locaties.find(locatie => locatie.status === LocatieStatus.KLANTNUMMER_NIET_GEVERIFIEERD)) {
-								dispatch(afmelden(oauth)).then(() => {
+								dispatch(afmelden()).then(() => {
 									dispatch(createActionPushToast({type: ToastType.INFO, message: getString(properties.message.zorgmailVerificatie)}))
 								})
 							}

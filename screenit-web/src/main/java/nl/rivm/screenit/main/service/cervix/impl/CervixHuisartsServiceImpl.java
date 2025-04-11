@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.criteria.JoinType;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.huisartsenportaal.dto.ResetDto;
@@ -40,13 +38,10 @@ import nl.rivm.screenit.model.Brief_;
 import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker_;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsAdres;
-import nl.rivm.screenit.model.cervix.CervixHuisartsAdres_;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
-import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie_;
 import nl.rivm.screenit.model.cervix.CervixLabformulierAanvraag;
 import nl.rivm.screenit.model.cervix.CervixLabformulierAanvraag_;
 import nl.rivm.screenit.model.cervix.CervixRegioBrief;
@@ -90,11 +85,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static nl.rivm.screenit.specification.SpecificationUtil.join;
+import jakarta.persistence.criteria.JoinType;
+
 import static nl.rivm.screenit.specification.cervix.CervixHuisartsLocatieSpecification.heeftHuisarts;
 import static nl.rivm.screenit.specification.cervix.CervixHuisartsLocatieSpecification.heeftStatus;
 import static nl.rivm.screenit.specification.cervix.CervixHuisartsLocatieSpecification.isVolledig;
-import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
 @Slf4j
 @Service
@@ -468,16 +463,8 @@ public class CervixHuisartsServiceImpl implements CervixHuisartsService
 	public List<CervixLabformulierAanvraag> getCervixLabformulierOrdersVanHuisarts(CervixHuisarts huisarts, long first, long count, Sort sort)
 	{
 		return labformulierAanvraagRepository.findWith(CervixLabformulierAanvraagSpecification.getAanvragenVanHuisarts(huisarts),
-			q -> q.sortBy(sort, (order, r, cb) ->
-			{
-				var sortProperty = order.getProperty();
-				if (sortProperty.startsWith(propertyChain(CervixLabformulierAanvraag_.INSTELLING_GEBRUIKER, InstellingGebruiker_.ORGANISATIE)))
-				{
-					var instellingGebruikerJoin = join(r, CervixLabformulierAanvraag_.instellingGebruiker);
-					join(instellingGebruikerJoin, InstellingGebruiker_.organisatie);
-				}
-				return null;
-			})).all(first, count);
+				q -> q.sortBy(sort))
+			.all(first, count);
 	}
 
 	@Override
@@ -497,19 +484,7 @@ public class CervixHuisartsServiceImpl implements CervixHuisartsService
 	public List<CervixHuisartsLocatie> getLocatiesVanHuisarts(CervixHuisartsLocatie zoekObject, long first, long count, Sort sort)
 	{
 		var specification = getLocatiesVanHuisartsSpecification(zoekObject);
-		return huisartsLocatieRepository.findWith(specification, q -> q.sortBy(sort, (order, r, cb) ->
-		{
-			var sortProperty = order.getProperty();
-			if (sortProperty.startsWith(CervixHuisartsLocatie_.LOCATIE_ADRES))
-			{
-				join(r, CervixHuisartsLocatie_.locatieAdres);
-			}
-			if (sortProperty.startsWith(propertyChain(CervixHuisartsLocatie_.LOCATIE_ADRES, CervixHuisartsAdres_.WOONPLAATS)))
-			{
-				join(join(r, CervixHuisartsLocatie_.locatieAdres), CervixHuisartsAdres_.woonplaats);
-			}
-			return null;
-		})).all(first, count);
+		return huisartsLocatieRepository.findWith(specification, q -> q.sortBy(sort)).all(first, count);
 	}
 
 	@Override

@@ -112,11 +112,11 @@ public class TechnischeBerichtenLoggingSaverServiceImpl implements TechnischeBer
 		String logVerwijzing = logEvent.type + ": Vind %s bericht met 'select * from gedeeld.technische_berichten_log_regel where id = " + logEvent.exchangeId + "';";
 		if (logEvent.request)
 		{
-			LOGGER.info(String.format(logVerwijzing, "request"));
+			LOGGER.info(logVerwijzing.formatted("request"));
 		}
 		else
 		{
-			LOGGER.info(String.format(logVerwijzing, "response"));
+			LOGGER.info(logVerwijzing.formatted("response"));
 		}
 		EXECUTOR_SERVICE.submit(new LoggingSaverThread(logEvent));
 	}

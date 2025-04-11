@@ -21,21 +21,22 @@ package nl.rivm.screenit.model.mamma;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.UploadDocument;
@@ -56,6 +57,7 @@ import org.hibernate.envers.NotAudited;
 public class MammaDownloadOnderzoekenVerzoek extends AbstractHibernateObject
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@OneToOne(fetch = FetchType.LAZY)
@@ -78,7 +80,7 @@ public class MammaDownloadOnderzoekenVerzoek extends AbstractHibernateObject
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date gewijzigdOp;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "verzoek", cascade = { javax.persistence.CascadeType.REMOVE })
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "verzoek", cascade = { jakarta.persistence.CascadeType.REMOVE })
 	@Cascade(CascadeType.DELETE)
 	private List<MammaDownloadOnderzoek> onderzoeken = new ArrayList<>();
 

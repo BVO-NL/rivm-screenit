@@ -41,6 +41,8 @@ public interface CervixTestTimelineService
 
 	List<Client> maakOfVindClienten(TestTimelineModel model);
 
+	List<Client> vindClienten(TestTimelineModel model);
+
 	List<Client> maakOfWijzigClienten(TestTimelineModel timelineModel);
 
 	List<String> validateTestClienten(List<Client> clienten);

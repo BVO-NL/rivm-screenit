@@ -275,6 +275,41 @@ public class TestServiceImpl implements TestService
 		return clientService.getClientByBsn(bsn);
 	}
 
+	@Override
+	public List<Client> vindClienten(List<String> bsns, Bevolkingsonderzoek onderzoek)
+	{
+		var clienten = new ArrayList<Client>();
+		for (var bsn : bsns)
+		{
+			var client = getClientByBsn(bsn);
+			if (client != null && heeftDossierVoorBvo(onderzoek, client))
+			{
+				clienten.add(client);
+			}
+		}
+		return clienten;
+	}
+
+	private boolean heeftDossierVoorBvo(Bevolkingsonderzoek onderzoek, Client client)
+	{
+		if (onderzoek == Bevolkingsonderzoek.CERVIX)
+		{
+			return client.getCervixDossier() != null;
+		}
+		else if (onderzoek == Bevolkingsonderzoek.MAMMA)
+		{
+			return client.getMammaDossier() != null;
+		}
+		else if (onderzoek == Bevolkingsonderzoek.COLON)
+		{
+			return client.getColonDossier() != null;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	private Client geefClient(String bsn, Date geboortedatum, Date overlijdensDatum, Geslacht geslacht)
 	{
 		var client = clientService.getClientByBsn(bsn);
@@ -283,7 +318,6 @@ public class TestServiceImpl implements TestService
 			client = new Client();
 			var persoon = new GbaPersoon();
 			client.setPersoon(persoon);
-			persoon.setGeboorteplaats("Deventer");
 			persoon.setNaamGebruik(NaamGebruik.EIGEN);
 			switch (geslacht)
 			{
@@ -376,11 +410,11 @@ public class TestServiceImpl implements TestService
 			gbaAdres.setPostcode(postcode);
 			hibernateService.saveOrUpdate(gbaAdres);
 		}
-		else if (bagAdres.getGbaGemeente() != null)
+		else if (gemeente != null)
 		{
 			setDatumVertrokkenNederland(client, gemeente);
-			gbaAdres.setGbaGemeente(bagAdres.getGbaGemeente());
-			gbaAdres.setPlaats(bagAdres.getGbaGemeente().getNaam());
+			gbaAdres.setGbaGemeente(gemeente);
+			gbaAdres.setPlaats(gemeente.getNaam());
 
 			hibernateService.saveOrUpdate(gbaAdres);
 		}

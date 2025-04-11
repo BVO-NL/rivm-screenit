@@ -181,7 +181,7 @@ public class TestMammaLezingMakenPopup extends TestMammaAbstractPopupPanel
 		else if (MammaBeoordelingStatus.VERSLAG_MAKEN.equals(huidigeOnderzoeksStatus))
 		{
 			MammaLezing uitgangsituatieLezing = bepaalUitgangsituatieLezing(beoordeling);
-			return ModelUtil.cModel(baseBeoordelingService.maakVerslagLezing(beoordeling, uitgangsituatieLezing, beoordelaar, false));
+			return ModelUtil.cModel(baseBeoordelingService.maakVerslagLezing(uitgangsituatieLezing, beoordelaar, false));
 		}
 		else
 		{

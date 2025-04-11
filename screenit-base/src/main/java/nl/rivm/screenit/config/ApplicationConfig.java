@@ -21,11 +21,11 @@ package nl.rivm.screenit.config;
  * =========================LICENSE_END==================================
  */
 
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import lombok.Setter;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -72,104 +72,104 @@ public class ApplicationConfig
 	private String activemqPassword;
 
 	@Bean
-	public Boolean isJpa()
+	Boolean isJpa()
 	{
 		return true;
 	}
 
 	@Bean
-	public String applicationEnvironment()
+	String applicationEnvironment()
 	{
 		return environment;
 	}
 
 	@Bean
-	public String applicationName()
+	String applicationName()
 	{
 		return name;
 	}
 
 	@Bean
-	public String applicationInstance()
+	String applicationInstance()
 	{
 		return instance;
 	}
 
 	@Bean
-	public String applicationUrl()
+	String applicationUrl()
 	{
 		return StringUtils.defaultIfBlank(url, "");
 	}
 
 	@Bean
-	public String planningBkRestUrl()
+	String planningBkRestUrl()
 	{
 		return StringUtils.defaultIfBlank(planningBkRestUrl, "");
 	}
 
 	@Bean
-	public String kansberekeningServiceUrl()
+	String kansberekeningServiceUrl()
 	{
 		return StringUtils.defaultIfBlank(kansberekeningServiceUrl, "");
 	}
 
 	@Bean
 	@Profile("!test")
-	public String locatieFilestore()
+	String locatieFilestore()
 	{
-		return Paths.get(filestoreLocation).toString();
+		return Path.of(filestoreLocation).toString();
 	}
 
 	@Bean
-	public Boolean testModus()
+	Boolean testModus()
 	{
 		return testModus;
 	}
 
 	@Bean
-	public String asposeLicence()
+	String asposeLicence()
 	{
 		return StringUtils.defaultIfBlank(asposeLicense, filestoreLocation + "/aspose/Aspose.Words.lic");
 	}
 
 	@Bean
-	public String vragenlijstTemplate()
+	String vragenlijstTemplate()
 	{
 		return StringUtils.defaultIfBlank(asposeVragenlijstTemplate, "");
 	}
 
 	@Bean
-	public Integer planAhead()
+	Integer planAhead()
 	{
 		return planAhead != null ? planAhead : 0;
 	}
 
 	@Bean
-	public Integer maxRoosterUitrolInMonths()
+	Integer maxRoosterUitrolInMonths()
 	{
 		return maxRoosterUitrolInMonths != null ? maxRoosterUitrolInMonths : 15;
 	}
 
 	@Bean
-	public String zooKeeperServerUri()
+	String zooKeeperServerUri()
 	{
 		return StringUtils.defaultIfBlank(zooKeeperServerUri, "");
 	}
 
 	@Bean
-	public String medewerkerPortaalResourceUrl()
+	String medewerkerPortaalResourceUrl()
 	{
 		return StringUtils.defaultIfBlank(medewerkerPortaalResourceUrl, "");
 	}
 
 	@Bean
-	public String activemqUsername()
+	String activemqUsername()
 	{
 		return StringUtils.defaultIfBlank(activemqUsername, "");
 	}
 
 	@Bean
-	public String activemqPassword()
+	String activemqPassword()
 	{
 		return StringUtils.defaultIfBlank(activemqPassword, "");
 	}

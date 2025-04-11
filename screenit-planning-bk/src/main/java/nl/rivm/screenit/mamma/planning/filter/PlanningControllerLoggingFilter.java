@@ -35,24 +35,24 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ReadListener;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.WriteListener;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
-
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.io.output.TeeOutputStream;
+
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.WriteListener;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Slf4j
 public class PlanningControllerLoggingFilter implements Filter
@@ -364,20 +364,6 @@ public class PlanningControllerLoggingFilter implements Filter
 			return original.encodeRedirectURL(url);
 		}
 
-		@SuppressWarnings("deprecation")
-		@Override
-		public String encodeUrl(String url)
-		{
-			return original.encodeUrl(url);
-		}
-
-		@SuppressWarnings("deprecation")
-		@Override
-		public String encodeRedirectUrl(String url)
-		{
-			return original.encodeRedirectUrl(url);
-		}
-
 		@Override
 		public void sendError(int sc, String msg) throws IOException
 		{
@@ -484,13 +470,6 @@ public class PlanningControllerLoggingFilter implements Filter
 		public void setStatus(int sc)
 		{
 			original.setStatus(sc);
-		}
-
-		@SuppressWarnings("deprecation")
-		@Override
-		public void setStatus(int sc, String sm)
-		{
-			original.setStatus(sc, sm);
 		}
 
 		@Override

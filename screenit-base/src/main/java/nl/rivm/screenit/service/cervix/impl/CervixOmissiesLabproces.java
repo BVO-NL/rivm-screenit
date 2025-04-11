@@ -25,8 +25,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -107,8 +108,7 @@ public class CervixOmissiesLabproces
 				if (dateSupplier.getLocalDateTime().isAfter(DateUtil.toLocalDateTime(eindWachttijd)))
 				{
 					omissie.voerActieUit();
-					LOG.info("Omissie " + preferenceKeyWachttijd.name() + " uitgevoerd voor client met id "
-						+ monster.getOntvangstScreeningRonde().getDossier().getClient().getId());
+					LOG.info("Omissie {} uitgevoerd voor client met id {}", preferenceKeyWachttijd.name(), monster.getOntvangstScreeningRonde().getDossier().getClient().getId());
 					return omissie;
 				}
 
@@ -119,8 +119,8 @@ public class CervixOmissiesLabproces
 					if (dateSupplier.getLocalDateTime().isAfter(DateUtil.toLocalDateTime(eindWachttijdWaarschuwing)))
 					{
 						omissie.verstuurWaarschuwing();
-						LOG.info("Gewaarschuwd voor omissie " + preferenceKeyWachttijd.name() + " voor client met id "
-							+ monster.getOntvangstScreeningRonde().getDossier().getClient().getId());
+						LOG.info("Gewaarschuwd voor omissie {} voor client met id {}", preferenceKeyWachttijd.name(),
+							monster.getOntvangstScreeningRonde().getDossier().getClient().getId());
 					}
 				}
 			}
@@ -138,19 +138,13 @@ public class CervixOmissiesLabproces
 			@Override
 			protected boolean vanToepassing()
 			{
-				if (monster instanceof CervixUitstrijkje)
+				if (monster instanceof CervixUitstrijkje cervixUitstrijkje)
 				{
-					uitstrijkje = (CervixUitstrijkje) monster;
-					if (labformulier != null)
-					{
-						if (uitstrijkje.getUitstrijkjeStatus() == CervixUitstrijkjeStatus.NIET_ONTVANGEN
-							&& (labformulier.getStatus() == CervixLabformulierStatus.GECONTROLEERD
-							|| labformulier.getStatus() == CervixLabformulierStatus.GECONTROLEERD_CYTOLOGIE)
-							&& labformulier.getUitstrijkjeOntbreektHuisartsBericht() == null)
-						{
-							return true;
-						}
-					}
+					uitstrijkje = cervixUitstrijkje;
+					return labformulier != null && uitstrijkje.getUitstrijkjeStatus() == CervixUitstrijkjeStatus.NIET_ONTVANGEN
+						&& (labformulier.getStatus() == CervixLabformulierStatus.GECONTROLEERD
+						|| labformulier.getStatus() == CervixLabformulierStatus.GECONTROLEERD_CYTOLOGIE)
+						&& labformulier.getUitstrijkjeOntbreektHuisartsBericht() == null;
 				}
 				return false;
 			}
@@ -194,19 +188,12 @@ public class CervixOmissiesLabproces
 			@Override
 			protected boolean vanToepassing()
 			{
-				if (monster instanceof CervixUitstrijkje)
+				if (monster instanceof CervixUitstrijkje uitstrijkje)
 				{
-					CervixUitstrijkje uitstrijkje = (CervixUitstrijkje) monster;
-					if (labformulier != null)
-					{
-						if (uitstrijkje.getUitstrijkjeStatus() == CervixUitstrijkjeStatus.NIET_ONTVANGEN
-							&& (labformulier.getStatus() == CervixLabformulierStatus.GECONTROLEERD
-							|| labformulier.getStatus() == CervixLabformulierStatus.GECONTROLEERD_CYTOLOGIE
-							|| labformulier.getStatus() == CervixLabformulierStatus.HUISARTS_ONBEKEND))
-						{
-							return true;
-						}
-					}
+					return labformulier != null && uitstrijkje.getUitstrijkjeStatus() == CervixUitstrijkjeStatus.NIET_ONTVANGEN
+						&& (labformulier.getStatus() == CervixLabformulierStatus.GECONTROLEERD
+						|| labformulier.getStatus() == CervixLabformulierStatus.GECONTROLEERD_CYTOLOGIE
+						|| labformulier.getStatus() == CervixLabformulierStatus.HUISARTS_ONBEKEND);
 				}
 				return false;
 			}
@@ -296,11 +283,8 @@ public class CervixOmissiesLabproces
 				{
 					uitstrijkje = (CervixUitstrijkje) monster;
 
-					if (labformulier == null || labformulier.getStatus() == CervixLabformulierStatus.GESCAND
-						|| labformulier.getStatus() == CervixLabformulierStatus.AFGEKEURD && !labformulier.getKunstmatig())
-					{
-						return true;
-					}
+					return labformulier == null || labformulier.getStatus() == CervixLabformulierStatus.GESCAND
+						|| labformulier.getStatus() == CervixLabformulierStatus.AFGEKEURD && !labformulier.getKunstmatig();
 				}
 				return false;
 			}
@@ -360,12 +344,9 @@ public class CervixOmissiesLabproces
 				{
 					uitstrijkje = (CervixUitstrijkje) monster;
 
-					if (labformulier == null || labformulier.getStatus() == CervixLabformulierStatus.GESCAND
+					return labformulier == null || labformulier.getStatus() == CervixLabformulierStatus.GESCAND
 						|| labformulier.getStatus() == CervixLabformulierStatus.AFGEKEURD
-						|| labformulier.getStatus() == CervixLabformulierStatus.HUISARTS_ONBEKEND)
-					{
-						return true;
-					}
+						|| labformulier.getStatus() == CervixLabformulierStatus.HUISARTS_ONBEKEND;
 				}
 				return false;
 			}
@@ -417,10 +398,7 @@ public class CervixOmissiesLabproces
 				if (monsterHpvUitslag != null && monsterHpvUitslag.getLaatsteHpvBeoordeling().getHpvUitslag() == CervixHpvBeoordelingWaarde.POSITIEF)
 				{
 					uitstrijkje = (CervixUitstrijkje) monster;
-					if (labformulier != null && labformulier.getStatus() != CervixLabformulierStatus.GECONTROLEERD_CYTOLOGIE)
-					{
-						return true;
-					}
+					return labformulier != null && labformulier.getStatus() != CervixLabformulierStatus.GECONTROLEERD_CYTOLOGIE;
 				}
 				return false;
 			}
@@ -508,12 +486,16 @@ public class CervixOmissiesLabproces
 
 		protected CervixLabformulier labformulier;
 
+		@Getter
 		protected BriefType briefType;
 
+		@Getter
 		protected HuisartsBerichtType huisartsBerichtType;
 
+		@Getter
 		protected CervixHuisartsBericht uitstrijkjeOntbreektHuisartsBericht;
 
+		@Getter
 		protected CervixOmissieType omissieType;
 
 		protected Omissie(PreferenceKey preferenceKeyWachttijd, PreferenceKey preferenceKeyWachttijdWaarschuwing, CervixOmissieType type)
@@ -540,26 +522,6 @@ public class CervixOmissiesLabproces
 
 		protected abstract void verstuurWaarschuwing();
 
-		public BriefType getBriefType()
-		{
-			return briefType;
-		}
-
-		public HuisartsBerichtType getHuisartsBerichtType()
-		{
-			return huisartsBerichtType;
-		}
-
-		public CervixHuisartsBericht getUitstrijkjeOntbreektHuisartsBericht()
-		{
-			return uitstrijkjeOntbreektHuisartsBericht;
-		}
-
-		public CervixOmissieType getOmissieType()
-		{
-			return omissieType;
-		}
-
 		public void setPreferenceKeyWachttijd(PreferenceKey preferenceKeyWachttijd, CervixOmissieType type)
 		{
 			if (labformulier != null)
@@ -582,9 +544,9 @@ public class CervixOmissiesLabproces
 
 		public void setLabformulier()
 		{
-			if (monster instanceof CervixUitstrijkje)
+			if (monster instanceof CervixUitstrijkje uitstrijkje)
 			{
-				labformulier = ((CervixUitstrijkje) monster).getLabformulier();
+				labformulier = uitstrijkje.getLabformulier();
 			}
 		}
 

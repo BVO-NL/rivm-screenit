@@ -21,8 +21,6 @@ package nl.rivm.screenit.main.web.error;
  * =========================LICENSE_END==================================
  */
 
-import javax.servlet.http.HttpServletResponse;
-
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.base.BasePage;
 import nl.rivm.screenit.main.web.base.ScreenitContext;
@@ -46,6 +44,8 @@ import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 public class ErrorPage extends BasePage
 {

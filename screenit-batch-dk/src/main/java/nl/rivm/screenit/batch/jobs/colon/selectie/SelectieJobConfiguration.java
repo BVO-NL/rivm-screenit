@@ -44,9 +44,11 @@ import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.FlowBuilder;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.job.flow.support.SimpleFlow;
 import org.springframework.batch.core.listener.ExecutionContextPromotionListener;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
@@ -58,7 +60,7 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job selectieJob(SelectieListener listener, Flow mainFlow, Flow selectieSplitFlow)
 	{
-		return jobBuilderFactory.get(JobType.CLIENT_SELECTIE.name())
+		return new JobBuilder(JobType.CLIENT_SELECTIE.name(), repository)
 			.listener(listener)
 			.start(mainFlow)
 			.next(selectieSplitFlow)
@@ -93,18 +95,16 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step preSelectieStep(ClientPreSelectieTasklet tasklet)
 	{
-		return stepBuilderFactory.get("preSelectieStep")
-			.transactionManager(transactionManager)
-			.tasklet(tasklet)
+		return new StepBuilder("preSelectieStep", repository)
+			.tasklet(tasklet, transactionManager)
 			.build();
 	}
 
 	@Bean
 	public Step uitnodigingU1PushStep(UitnodigingU1PushProjectReader reader, ClientSelectieItemWriter writer)
 	{
-		return stepBuilderFactory.get("uitnodigingU1PushStep")
-			.transactionManager(transactionManager)
-			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1)
+		return new StepBuilder("uitnodigingU1PushStep", repository)
+			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -113,9 +113,8 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step uitnodigingU2PushStep(UitnodigingU2PushProjectReader reader, ClientSelectieItemWriter writer)
 	{
-		return stepBuilderFactory.get("uitnodigingU2PushStep")
-			.transactionManager(transactionManager)
-			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1)
+		return new StepBuilder("uitnodigingU2PushStep", repository)
+			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -124,9 +123,8 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step vooraankondigingNaVervolgonderzoekStep(ColonVooraankondigingNaVervolgonderzoekReader reader, ColonVooraankondigingNaVervolgonderzoekWriter writer)
 	{
-		return stepBuilderFactory.get("vooraankondigingNaVervolgonderzoekStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(1)
+		return new StepBuilder("vooraankondigingNaVervolgonderzoekStep", repository)
+			.<Long, Long> chunk(1, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -135,9 +133,8 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step afrondenStep(ColonVerlopenRondesReader reader, ColonVerlopenRondesWriter writer)
 	{
-		return stepBuilderFactory.get("afrondenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("afrondenStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -146,9 +143,8 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step projectIntervalToepassenStep(ColonProjectIntervalToepassenReader reader, ColonProjectIntervalToepassenWriter writer)
 	{
-		return stepBuilderFactory.get("projectIntervalToepassenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("projectIntervalToepassenStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -173,10 +169,9 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step selectieGebiedStep(ExecutionContextPromotionListener selectiePromotionListener, ClientSelectieMetCapaciteitItemReader reader, ClientSelectieItemWriter writer)
 	{
-		return stepBuilderFactory.get("selectieGebiedStep")
+		return new StepBuilder("selectieGebiedStep", repository)
 			.listener(selectiePromotionListener)
-			.transactionManager(transactionManager)
-			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1)
+			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -185,10 +180,9 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step selectieStep(ExecutionContextPromotionListener selectiePromotionListener, ClientSelectieItemReader reader, ClientSelectieItemWriter writer)
 	{
-		return stepBuilderFactory.get("selectieStep")
+		return new StepBuilder("selectieStep", repository)
 			.listener(selectiePromotionListener)
-			.transactionManager(transactionManager)
-			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1)
+			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -216,9 +210,8 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step uitnodigingU1PushMaxLeeftijdStep(UitnodigingU1PushMaxLeeftijdReader reader, ClientSelectieItemWriter writer)
 	{
-		return stepBuilderFactory.get("uitnodigingU1PushMaxLeeftijdStep")
-			.transactionManager(transactionManager)
-			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1)
+		return new StepBuilder("uitnodigingU1PushMaxLeeftijdStep", repository)
+			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -238,9 +231,8 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step uitnodigingU2PushMaxLeeftijdStep(UitnodigingU2PushMaxLeeftijdReader reader, ClientSelectieItemWriter writer)
 	{
-		return stepBuilderFactory.get("uitnodigingU2PushMaxLeeftijdStep")
-			.transactionManager(transactionManager)
-			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1)
+		return new StepBuilder("uitnodigingU2PushMaxLeeftijdStep", repository)
+			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

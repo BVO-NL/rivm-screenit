@@ -24,14 +24,14 @@ package nl.rivm.screenit.model.colon;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -46,6 +46,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(schema = "colon")
 @Audited
@@ -54,6 +56,7 @@ import org.hibernate.envers.NotAudited;
 public class ColonDossier extends Dossier<ColonScreeningRonde, ColonAfmelding>
 {
 	@OneToOne(mappedBy = "colonDossier", optional = false)
+	@JsonBackReference
 	private Client client;
 
 	@Enumerated(EnumType.STRING)
@@ -77,7 +80,7 @@ public class ColonDossier extends Dossier<ColonScreeningRonde, ColonAfmelding>
 	@OneToOne(optional = true, cascade = CascadeType.ALL)
 	private ColonAfmelding laatsteAfmelding;
 
-	@OneToOne(optional = true, mappedBy = "dossier", fetch = FetchType.LAZY, cascade = javax.persistence.CascadeType.REMOVE)
+	@OneToOne(optional = true, mappedBy = "dossier", fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.REMOVE)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE)
 	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private ColonVolgendeUitnodiging volgendeUitnodiging;

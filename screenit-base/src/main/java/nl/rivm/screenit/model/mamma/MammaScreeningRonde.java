@@ -21,23 +21,24 @@ package nl.rivm.screenit.model.mamma;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -74,6 +75,7 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 @Setter
 public class MammaScreeningRonde extends ScreeningRonde<MammaDossier, MammaBrief, MammaAfmelding, MammaUitnodiging>
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -97,7 +99,7 @@ public class MammaScreeningRonde extends ScreeningRonde<MammaDossier, MammaBrief
 	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	private List<MammaBrief> brieven = new ArrayList<>();
 
-	@OneToMany(mappedBy = "screeningRonde", fetch = FetchType.LAZY, cascade = { javax.persistence.CascadeType.REMOVE })
+	@OneToMany(mappedBy = "screeningRonde", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE })
 	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	@Cascade(CascadeType.DELETE)
 	private List<MammaDigitaalClientBericht> berichten = new ArrayList<>();
@@ -118,7 +120,7 @@ public class MammaScreeningRonde extends ScreeningRonde<MammaDossier, MammaBrief
 	@Column(unique = true, nullable = false)
 	private Long uitnodigingsNr;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Audited(targetAuditMode = NOT_AUDITED)
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private EnovationHuisarts huisarts;
@@ -171,7 +173,7 @@ public class MammaScreeningRonde extends ScreeningRonde<MammaDossier, MammaBrief
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	private MammaOnderzoek laatsteOnderzoek;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "screeningRonde", cascade = { javax.persistence.CascadeType.REMOVE })
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "screeningRonde", cascade = { jakarta.persistence.CascadeType.REMOVE })
 	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	@Cascade(CascadeType.DELETE)
 	private List<MammaConclusieReview> conclusieReviews = new ArrayList<>();

@@ -57,6 +57,7 @@ public abstract class TestCervixUitnodigingenLaboratoriaPopup extends TestCervix
 	{
 		super(id, clientModel);
 		Instelling instelling = ScreenitSession.get().getInstelling();
+
 		laboratoriaModel = ModelUtil.listModel(hiberateService.loadAll(BMHKLaboratorium.class, "naam", true));
 
 		BMHKLaboratorium laboratorium = null;

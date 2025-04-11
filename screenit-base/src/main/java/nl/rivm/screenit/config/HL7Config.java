@@ -23,7 +23,7 @@ package nl.rivm.screenit.config;
 
 import lombok.Setter;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,43 +52,43 @@ public class HL7Config
 	private String versionMapping;
 
 	@Bean
-	public String hpvHost()
+	String hpvHost()
 	{
 		return StringUtils.defaultIfBlank(hpvHost, "");
 	}
 
 	@Bean
-	public Integer hpvPort()
+	Integer hpvPort()
 	{
 		return hpvPort != null ? hpvPort : 0;
 	}
 
 	@Bean
-	public String hl7IfobtHost()
+	String hl7IfobtHost()
 	{
 		return StringUtils.defaultIfBlank(ifobtHost, "");
 	}
 
 	@Bean
-	public Integer hl7IfobtPort()
+	Integer hl7IfobtPort()
 	{
 		return ifobtPort != null ? ifobtPort : 0;
 	}
 
 	@Bean
-	public Integer hl7ImsPort()
+	Integer hl7ImsPort()
 	{
 		return imsPort != null ? imsPort : 0;
 	}
 
 	@Bean
-	public Integer hl7IlmPort()
+	Integer hl7IlmPort()
 	{
 		return ilmPort != null ? ilmPort : 0;
 	}
 
 	@Bean
-	public String versionMapping()
+	String versionMapping()
 	{
 		return StringUtils.defaultIfBlank(versionMapping, "");
 	}

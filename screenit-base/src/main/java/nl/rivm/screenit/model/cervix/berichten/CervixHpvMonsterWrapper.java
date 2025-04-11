@@ -170,9 +170,9 @@ public class CervixHpvMonsterWrapper
 			var result = order.getRESULT(repetitionIndex);
 			var obx = result.getOBX();
 			var data = obx.getObx5_ObservationValue(0).getData();
-			if (data instanceof ST)
+			if (data instanceof ST sT)
 			{
-				return ((ST) data).getValue();
+				return sT.getValue();
 			}
 		}
 		return null;

@@ -23,7 +23,6 @@ package nl.rivm.screenit.dao.impl;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import nl.rivm.screenit.dao.LogDao;
 import nl.rivm.screenit.model.SortState;
@@ -33,8 +32,8 @@ import nl.rivm.screenit.util.query.SQLQueryUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
 
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.SQLQuery;
+import org.hibernate.query.NativeQuery;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.type.LongType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -61,10 +60,10 @@ public class LogDaoImpl extends AbstractAutowiredDao implements LogDao
 		}
 
 		List<Long> logRegelIds = logSql.addScalar("id", LongType.INSTANCE).list();
-		return logRegelIds.stream().map(id -> hibernateService.load(LogRegel.class, id)).collect(Collectors.toList());
+		return logRegelIds.stream().map(id -> hibernateService.load(LogRegel.class, id)).toList();
 	}
 
-	public SQLQuery getLogSql(LoggingZoekCriteria loggingZoekCriteria, SortState<String> order)
+	private NativeQuery<Long> getLogSql(LoggingZoekCriteria loggingZoekCriteria, SortState<String> order)
 	{
 		var parameters = new HashMap<String, Object>();
 		var select = "SELECT ";
@@ -230,7 +229,7 @@ public class LogDaoImpl extends AbstractAutowiredDao implements LogDao
 		}
 
 		var loggingSql = select + from + where + groupby + orderby;
-		var criteria = getSession().createNativeQuery(loggingSql);
+		@SuppressWarnings("unchecked") NativeQuery<Long> criteria = getSession().createNativeQuery(loggingSql);
 		for (var param : parameters.entrySet())
 		{
 			criteria.setParameter(param.getKey(), param.getValue());

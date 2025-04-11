@@ -40,8 +40,10 @@ import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo107Bericht;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.flow.FlowExecutionStatus;
 import org.springframework.batch.core.listener.ExecutionContextPromotionListener;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -53,7 +55,7 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job gbaJob(GbaListener listener, Step verwerkVo107Step, Step verwerkVo105Step, Step uploadVo105Step, Step dossiersAanmakenStep)
 	{
-		return jobBuilderFactory.get(JobType.GBA.name())
+		return new JobBuilder(JobType.GBA.name(), repository)
 			.listener(listener)
 			.start(verwerkVo107Step)
 			.on("*").to(verwerkVo105Step)
@@ -71,7 +73,7 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job gbaZonderVo105Job(GbaListener listener, Step verwerkVo107Step, Step dossiersAanmakenStep)
 	{
-		return jobBuilderFactory.get(JobType.GBA_ZONDER_VO105.name())
+		return new JobBuilder(JobType.GBA_ZONDER_VO105.name(), repository)
 			.listener(listener)
 			.start(verwerkVo107Step)
 			.on("*").to(dossiersAanmakenStep)
@@ -83,10 +85,9 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step verwerkVo107Step(ExecutionContextPromotionListener gbaPromotionListener, Vo107ItemReader reader, ClientItemWriter writer)
 	{
-		return stepBuilderFactory.get("verwerkVo107Step")
-			.transactionManager(transactionManager)
+		return new StepBuilder("verwerkVo107Step", repository)
 			.listener(gbaPromotionListener)
-			.<Vo107Bericht, Vo107Bericht> chunk(1)
+			.<Vo107Bericht, Vo107Bericht> chunk(1, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -95,10 +96,9 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step verwerkVo105Step(ExecutionContextPromotionListener gbaPromotionListener, GbaVraagItemReader reader, Vo105ItemProcessor processor, Vo105ItemWriter writer)
 	{
-		return stepBuilderFactory.get("verwerkVo105Step")
-			.transactionManager(transactionManager)
+		return new StepBuilder("verwerkVo105Step", repository)
 			.listener(gbaPromotionListener)
-			.<Long, Vo105Bericht> chunk(10)
+			.<Long, Vo105Bericht> chunk(10, transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)
@@ -108,18 +108,16 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step uploadVo105Step(Vo105UploadTasklet tasklet)
 	{
-		return stepBuilderFactory.get("uploadVo105Step")
-			.transactionManager(transactionManager)
-			.tasklet(tasklet)
+		return new StepBuilder("uploadVo105Step", repository)
+			.tasklet(tasklet, transactionManager)
 			.build();
 	}
 
 	@Bean
 	public Step dossiersAanmakenStep(DossierReader reader, DossierWriter writer)
 	{
-		return stepBuilderFactory.get("dossiersAanmakenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("dossiersAanmakenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

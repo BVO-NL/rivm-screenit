@@ -23,7 +23,7 @@ package nl.rivm.screenit.mamma.se.controller;
 
 import java.time.LocalDate;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import nl.rivm.screenit.mamma.se.dto.ErrorDto;
 import nl.rivm.screenit.mamma.se.security.SEAccountResolverDelegate;

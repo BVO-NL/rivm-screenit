@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.service;
 
 /*-
@@ -24,9 +23,5 @@ package nl.rivm.screenit.main.service;
 
 public interface CorrectieService
 {
-
-	void clearHibernateCache();
-
 	void opruimenGefaaldeBatchJobs();
-
 }

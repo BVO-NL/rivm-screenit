@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import javax.cache.CacheManager;
 import javax.sql.DataSource;
 
-import nl.rivm.screenit.cache.JNDIJGroupsCacheManagerPeerProviderFactory;
 import nl.rivm.screenit.util.query.ExtractYearMetadataBuilderContributor;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.dao.impl.HibernateSearchServiceImpl;
@@ -37,14 +37,18 @@ import nl.topicuszorg.hibernate.spring.util.naming.ImplicitHibernate4LegacyNamin
 import nl.topicuszorg.hibernate.spring.util.naming.PhysicalHibernate4LegacyNamingStrategy;
 import nl.topicuszorg.hibernate.spring.util.sessionfactory.TopicusPostConfigurationSessionFactoryBean;
 
+import org.hibernate.SessionFactory;
 import org.hibernate.boot.spi.MetadataBuilderContributor;
+import org.hibernate.cache.jcache.ConfigSettings;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBuilder;
 import org.springframework.orm.jpa.support.SharedEntityManagerBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.AbstractPlatformTransactionManager;
@@ -59,22 +63,25 @@ public class BaseHibernateConfig
 	@ConfigurationProperties(prefix = "spring.datasource.hikari")
 	@Bean
 	@Profile("!cucumber & !test")
-	public HikariDataSource dataSource()
+	HikariDataSource dataSource()
 	{
 		return new HikariDataSource();
 	}
 
 	@Bean(name = { "entityManagerFactory", "hibernateSessionFactory" })
 	@Profile("!test & !cucumber")
-	public TopicusPostConfigurationSessionFactoryBean hibernateSessionFactory(DataSource dataSource, ApplicationConfig applicationConfig, JGroupsConfig jGroupsConfig,
-		Optional<List<Resource>> additionalHibernateConfigLocations)
+	public TopicusPostConfigurationSessionFactoryBean hibernateSessionFactory(DataSource dataSource, Optional<List<Resource>> additionalHibernateConfigLocations,
+		CacheManager cacheManager)
 	{
-		JNDIJGroupsCacheManagerPeerProviderFactory.applicationInstance = applicationConfig.applicationInstance();
-		JNDIJGroupsCacheManagerPeerProviderFactory.bindIp = jGroupsConfig.jgroupsBindIP();
-		JNDIJGroupsCacheManagerPeerProviderFactory.bindPort = jGroupsConfig.jgroupsEhcacheBindPort();
-		JNDIJGroupsCacheManagerPeerProviderFactory.initialHosts = jGroupsConfig.jgroupsEhcacheIPPorts();
-
-		final TopicusPostConfigurationSessionFactoryBean hibernateSessionFactory = new TopicusPostConfigurationSessionFactoryBean();
+		var hibernateSessionFactory = new TopicusPostConfigurationSessionFactoryBean()
+		{
+			@Override
+			protected SessionFactory buildSessionFactory(LocalSessionFactoryBuilder sfb)
+			{
+				sfb.getProperties().put(ConfigSettings.CACHE_MANAGER, cacheManager);
+				return super.buildSessionFactory(sfb);
+			}
+		};
 
 		List<Resource> configLocations = new ArrayList<>(Arrays.asList(
 			new ClassPathResource("hibernate.cfg.xml"),
@@ -82,8 +89,7 @@ public class BaseHibernateConfig
 			new ClassPathResource("hibernate-dataset-mapping.cfg.xml"),
 			new ClassPathResource("hibernate-mapping.cfg.xml"),
 			new ClassPathResource("hibernate-organisatie.cfg.xml"),
-			new ClassPathResource("hibernate-persoonsgegevens.cfg.xml"),
-			new ClassPathResource("hibernate-formulieren2.cfg.xml")));
+			new ClassPathResource("hibernate-persoonsgegevens.cfg.xml")));
 		additionalHibernateConfigLocations.ifPresent(configLocations::addAll);
 		hibernateSessionFactory.setConfigLocations(configLocations.toArray(Resource[]::new));
 
@@ -97,9 +103,9 @@ public class BaseHibernateConfig
 
 	@Bean
 	@Profile("!test")
-	public HibernateService hibernateService(TopicusPostConfigurationSessionFactoryBean hibernateSessionFactory)
+	HibernateService hibernateService(TopicusPostConfigurationSessionFactoryBean hibernateSessionFactory)
 	{
-		final HibernateServiceImpl hibernateService = new HibernateServiceImpl();
+		var hibernateService = new HibernateServiceImpl();
 		hibernateService.setSessionFactory(hibernateSessionFactory.getObject());
 		return hibernateService;
 	}
@@ -108,30 +114,31 @@ public class BaseHibernateConfig
 	@Profile("!test")
 	public HibernateSearchServiceImpl hibernateSearchService(TopicusPostConfigurationSessionFactoryBean hibernateSessionFactory)
 	{
-		final HibernateSearchServiceImpl hibernateSearchService = new HibernateSearchServiceImpl();
+		var hibernateSearchService = new HibernateSearchServiceImpl();
 		hibernateSearchService.setSessionFactory(hibernateSessionFactory.getObject());
 		return hibernateSearchService;
 	}
 
 	@Bean
-	public HibernateTransactionManager transactionManager(TopicusPostConfigurationSessionFactoryBean hibernateSessionFactory)
+	@DependsOnDatabaseInitialization
+	HibernateTransactionManager transactionManager(TopicusPostConfigurationSessionFactoryBean hibernateSessionFactory)
 	{
-		final HibernateTransactionManager transactionManager = new HibernateTransactionManager();
+		var transactionManager = new HibernateTransactionManager();
 		transactionManager.setSessionFactory(hibernateSessionFactory.getObject());
 		transactionManager.setTransactionSynchronization(AbstractPlatformTransactionManager.SYNCHRONIZATION_ON_ACTUAL_TRANSACTION);
 		return transactionManager;
 	}
 
 	@Bean
-	public SharedEntityManagerBean sharedEntityManager(TopicusPostConfigurationSessionFactoryBean hibernateSessionFactory)
+	SharedEntityManagerBean sharedEntityManager(TopicusPostConfigurationSessionFactoryBean hibernateSessionFactory)
 	{
-		SharedEntityManagerBean sharedEntityManager = new SharedEntityManagerBean();
+		var sharedEntityManager = new SharedEntityManagerBean();
 		sharedEntityManager.setEntityManagerFactory(hibernateSessionFactory.getObject());
 		return sharedEntityManager;
 	}
 
 	@Bean
-	public MetadataBuilderContributor extractYearFunctionContributor()
+	MetadataBuilderContributor extractYearFunctionContributor()
 	{
 		return new ExtractYearMetadataBuilderContributor();
 	}

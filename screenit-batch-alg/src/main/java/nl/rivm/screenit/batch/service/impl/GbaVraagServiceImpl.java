@@ -24,8 +24,6 @@ package nl.rivm.screenit.batch.service.impl;
 import java.util.List;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,6 +44,8 @@ import nl.topicuszorg.gba.vertrouwdverbonden.model.enums.Vo107_ArecordVeld;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
+
+import jakarta.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor

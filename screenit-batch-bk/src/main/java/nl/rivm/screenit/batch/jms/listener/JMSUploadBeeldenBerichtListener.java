@@ -23,8 +23,6 @@ package nl.rivm.screenit.batch.jms.listener;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.jms.Session;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,6 +36,8 @@ import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.jms.Session;
 
 @Transactional(propagation = Propagation.SUPPORTS)
 @Component

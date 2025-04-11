@@ -72,7 +72,7 @@ public abstract class BaseLogListener implements JobExecutionListener
 		if (jobExecution != null)
 		{
 			this.jobExecution = jobExecution;
-			jobExecution.setStartTime(currentDateSupplier.getDate());
+			jobExecution.setStartTime(currentDateSupplier.getLocalDateTime());
 		}
 		beforeStarting(jobExecution);
 		saveStartLogGebeurtenis();

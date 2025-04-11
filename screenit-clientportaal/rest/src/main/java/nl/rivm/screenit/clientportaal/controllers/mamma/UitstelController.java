@@ -2,7 +2,7 @@ package nl.rivm.screenit.clientportaal.controllers.mamma;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -41,7 +41,6 @@ import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -59,8 +58,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class UitstelController extends AbstractController
 {
-	private final HibernateService hibernateService;
-
 	private final ClientContactService clientContactService;
 
 	private final MammaBaseStandplaatsService standplaatsService;
@@ -85,7 +82,7 @@ public class UitstelController extends AbstractController
 			return ResponseEntity.badRequest().build();
 		}
 
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN)
 			|| clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN))
@@ -103,7 +100,7 @@ public class UitstelController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<String> maakUitstel(Authentication authentication, @RequestBody MammaStandplaatsperiodeOptieDto standplaatsPeriodeDto)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		var streefdatum = standplaatsPeriodeDto.getFilter().getVanaf();
 		if (datumValidatieService.datumIsInHetVerleden(streefdatum))

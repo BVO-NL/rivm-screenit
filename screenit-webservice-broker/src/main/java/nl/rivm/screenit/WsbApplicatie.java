@@ -43,10 +43,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 public class WsbApplicatie
 {
-
 	public static void main(String[] args)
 	{
 		SpringApplication.run(WsbApplicatie.class, args);
 	}
-
 }

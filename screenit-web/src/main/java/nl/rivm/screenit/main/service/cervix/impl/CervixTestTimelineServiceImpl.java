@@ -24,6 +24,7 @@ package nl.rivm.screenit.main.service.cervix.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -77,12 +78,10 @@ import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class CervixTestTimelineServiceImpl implements CervixTestTimelineService
 {
 	@Autowired
@@ -174,20 +173,17 @@ public class CervixTestTimelineServiceImpl implements CervixTestTimelineService
 	@Override
 	public List<TestVervolgKeuzeOptie> getSnelKeuzeOpties(Client client)
 	{
-		List<TestVervolgKeuzeOptie> keuzes = new ArrayList<>();
+		var keuzes = new ArrayList<TestVervolgKeuzeOptie>();
 		var dossier = client.getCervixDossier();
 		if (dossier != null)
 		{
 			var ronde = dossier.getLaatsteScreeningRonde();
 			if (ronde != null)
 			{
-				List<CervixUitnodiging> uitnodigingen = new ArrayList<>(ronde.getUitnodigingen());
-				dossier.getScreeningRondes().forEach(sr -> sr.getUitnodigingen().stream()
-					.filter(u -> (u.getMonster() != null && u.getMonster().getOntvangstScreeningRonde() != null && u.getMonster().getOntvangstScreeningRonde() == ronde)
-						|| (u.getMonster() != null && magBeoordeeldDoorCytologie(u) && ronde.getUitstrijkjeCytologieUitslag() == null))
-					.forEach(uitnodigingen::add));
-
-				var monsterOntvangen = uitnodigingen.stream().anyMatch(u -> u.getMonster() != null && u.getMonster().getOntvangstScreeningRonde() != null);
+				var uitnodigingen = ronde.getUitnodigingen();
+				uitnodigingen.addAll(dossier.getScreeningRondes().stream().flatMap(sr -> sr.getUitnodigingen().stream())
+					.filter(u -> u.getMonster() != null && (u.getMonster().getOntvangstScreeningRonde() == ronde)
+						|| (magBeoordeeldDoorCytologie(u) && ronde.getUitstrijkjeCytologieUitslag() == null)).toList());
 
 				if (uitnodigingen.isEmpty())
 				{
@@ -197,53 +193,52 @@ public class CervixTestTimelineServiceImpl implements CervixTestTimelineService
 
 				for (var uitnodiging : uitnodigingen)
 				{
-					if (!monsterOntvangen && magAanvraag(uitnodiging) && !keuzes.contains(TestVervolgKeuzeOptie.CERVIX_AANVRAAG))
+					var monsterUitUitnodigingOntvangen = uitnodiging.getMonster() != null && uitnodiging.getMonster().getOntvangstScreeningRonde() != null;
+					if (!monsterUitUitnodigingOntvangen && magAanvraag(uitnodiging))
 					{
 						keuzes.add(TestVervolgKeuzeOptie.CERVIX_AANVRAAG);
 					}
-					if (!monsterOntvangen && magOntvangen(uitnodiging) && !keuzes.contains(TestVervolgKeuzeOptie.CERVIX_ONTVANGEN))
+					if (!monsterUitUitnodigingOntvangen && magOntvangen(uitnodiging))
 					{
 						keuzes.add(TestVervolgKeuzeOptie.CERVIX_ONTVANGEN);
 					}
-					if (magNietAnalyseerbaar(uitnodiging) && !keuzes.contains(TestVervolgKeuzeOptie.CERVIX_NIET_ANALYSEERBAAR))
+					if (magNietAnalyseerbaar(uitnodiging))
 					{
 						keuzes.add(TestVervolgKeuzeOptie.CERVIX_NIET_ANALYSEERBAAR);
 					}
-					if (magGeanalyseerdOpHpv(uitnodiging) && !keuzes.contains(TestVervolgKeuzeOptie.CERVIX_GEANALYSEERD_OP_HPV))
+					if (magGeanalyseerdOpHpv(uitnodiging))
 					{
 						keuzes.add(TestVervolgKeuzeOptie.CERVIX_GEANALYSEERD_OP_HPV);
 					}
-					if (magBeoordeeldDoorCytologie(uitnodiging) && !keuzes.contains(TestVervolgKeuzeOptie.CERVIX_BEOORDEELD_DOOR_CYTOLOGIE))
+					if (magBeoordeeldDoorCytologie(uitnodiging))
 					{
 						keuzes.add(TestVervolgKeuzeOptie.CERVIX_BEOORDEELD_DOOR_CYTOLOGIE);
 					}
-					if (magLabformulierGescand(uitnodiging) && !keuzes.contains(TestVervolgKeuzeOptie.CERVIX_LABFORMULIER_GESCAND))
+					if (magLabformulierGescand(uitnodiging))
 					{
 						keuzes.add(TestVervolgKeuzeOptie.CERVIX_LABFORMULIER_GESCAND);
 					}
-					if (magHuisartsGekoppeldWorden(uitnodiging) && !keuzes.contains(TestVervolgKeuzeOptie.CERVIX_HUISARTS_KOPPELEN))
+					if (magHuisartsGekoppeldWorden(uitnodiging))
 					{
 						keuzes.add(TestVervolgKeuzeOptie.CERVIX_HUISARTS_KOPPELEN);
 					}
-					if (magLabformulierGecontroleerd(uitnodiging) && !keuzes.contains(TestVervolgKeuzeOptie.CERVIX_LABFORMULIER_GECONTROLEERD))
+					if (magLabformulierGecontroleerd(uitnodiging))
 					{
 						keuzes.add(TestVervolgKeuzeOptie.CERVIX_LABFORMULIER_GECONTROLEERD);
 					}
-					if (magLabformulierGecontroleerdVoorCytologie(uitnodiging)
-						&& !keuzes.contains(TestVervolgKeuzeOptie.CERVIX_LABFORMULIER_GECONTROLEERD_VOOR_CYTOLOGIE))
+					if (magLabformulierGecontroleerdVoorCytologie(uitnodiging))
 					{
 						keuzes.add(TestVervolgKeuzeOptie.CERVIX_LABFORMULIER_GECONTROLEERD_VOOR_CYTOLOGIE);
 					}
-					if (magOrderVerstuurd(uitnodiging) && !keuzes.contains(TestVervolgKeuzeOptie.CERVIX_ORDER_VERSTUURD))
+					if (magOrderVerstuurd(uitnodiging))
 					{
 						keuzes.add(TestVervolgKeuzeOptie.CERVIX_ORDER_VERSTUURD);
 					}
-					if (magVervolgonderzoekBrief(uitnodiging) && !keuzes.contains(TestVervolgKeuzeOptie.CERVIX_VERVOLGONDERZOEK_BRIEF))
+					if (magVervolgonderzoekBrief(uitnodiging))
 					{
 						keuzes.add(TestVervolgKeuzeOptie.CERVIX_VERVOLGONDERZOEK_BRIEF);
 					}
-
-					if (magZASActiesUitvoeren(uitnodiging) && !keuzes.contains(TestVervolgKeuzeOptie.CERVIX_ZAS))
+					if (magZASActiesUitvoeren(uitnodiging))
 					{
 						keuzes.add(TestVervolgKeuzeOptie.CERVIX_ZAS);
 					}
@@ -255,7 +250,7 @@ public class CervixTestTimelineServiceImpl implements CervixTestTimelineService
 				}
 			}
 		}
-		return keuzes;
+		return new ArrayList<>(new HashSet<>(keuzes));
 	}
 
 	@Override
@@ -492,7 +487,18 @@ public class CervixTestTimelineServiceImpl implements CervixTestTimelineService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	public List<Client> vindClienten(TestTimelineModel model)
+	{
+		var clienten = new ArrayList<Client>();
+		for (var bsn : model.getBsns())
+		{
+			clienten.add(testService.getClientByBsn(bsn));
+		}
+		return clienten;
+	}
+
+	@Override
+	@Transactional
 	public List<Client> maakOfVindClienten(TestTimelineModel model)
 	{
 		List<Client> clienten = new ArrayList<>();
@@ -523,7 +529,7 @@ public class CervixTestTimelineServiceImpl implements CervixTestTimelineService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public List<Client> maakOfWijzigClienten(TestTimelineModel model)
 	{
 		List<Client> clienten = new ArrayList<>();
@@ -646,7 +652,7 @@ public class CervixTestTimelineServiceImpl implements CervixTestTimelineService
 	@Override
 	public List<CervixTestTimeLineDossierTijdstip> getZasSnelKeuzeOpties(Client client)
 	{
-		List<CervixTestTimeLineDossierTijdstip> mogelijkeActies = new ArrayList<>();
+		var mogelijkeActies = new ArrayList<CervixTestTimeLineDossierTijdstip>();
 		var laatsteZasUitnodiging = client.getCervixDossier().getLaatsteScreeningRonde().getLaatsteZasUitnodiging();
 		if (laatsteZasUitnodiging == null || laatsteZasUitnodiging.getMonster() != null)
 		{
@@ -654,17 +660,13 @@ public class CervixTestTimelineServiceImpl implements CervixTestTimelineService
 			mogelijkeActies.add(CervixTestTimeLineDossierTijdstip.ZAS_KLAARGEZET);
 			mogelijkeActies.add(CervixTestTimeLineDossierTijdstip.ZAS_SAMENGESTELD);
 		}
-		if (laatsteZasUitnodiging != null)
+		else
 		{
 			if (!laatsteZasUitnodiging.isVerstuurd())
 			{
 				mogelijkeActies.add(CervixTestTimeLineDossierTijdstip.ZAS_KLAARGEZET);
-				mogelijkeActies.add(CervixTestTimeLineDossierTijdstip.ZAS_SAMENGESTELD);
 			}
-			else
-			{
-				mogelijkeActies.add(CervixTestTimeLineDossierTijdstip.ZAS_SAMENGESTELD);
-			}
+			mogelijkeActies.add(CervixTestTimeLineDossierTijdstip.ZAS_SAMENGESTELD);
 		}
 		return mogelijkeActies;
 	}
@@ -681,7 +683,7 @@ public class CervixTestTimelineServiceImpl implements CervixTestTimelineService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void herdruk(CervixScreeningRonde ronde, Account account)
 	{
 		testTimelineTimeService.rekenDossierTerug(ronde.getDossier(), CervixTestTimeLineDossierTijdstip.HERDRUK);
@@ -693,7 +695,7 @@ public class CervixTestTimelineServiceImpl implements CervixTestTimelineService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void registreerDeelnamewens(Client client)
 	{
 		var dto = deelnamemodusService.getDeelnamewensDto(client);

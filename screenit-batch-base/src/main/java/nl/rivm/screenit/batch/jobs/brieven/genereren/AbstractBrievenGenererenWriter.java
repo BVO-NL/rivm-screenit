@@ -25,7 +25,6 @@ import java.lang.reflect.ParameterizedType;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +48,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.ItemStreamWriter;
@@ -127,9 +127,9 @@ public abstract class AbstractBrievenGenererenWriter<T extends Brief, S extends 
 	}
 
 	@Override
-	public void write(List<? extends T> items) throws Exception
+	public void write(Chunk<? extends T> chunk) throws Exception
 	{
-		briefService.createOrAddMergedBrieven(items, this);
+		briefService.createOrAddMergedBrieven(chunk.getItems(), this);
 	}
 
 	protected abstract S createConcreteMergedBrieven(Date aangemaaktOp);

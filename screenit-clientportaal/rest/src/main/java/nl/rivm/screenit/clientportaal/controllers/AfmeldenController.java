@@ -2,7 +2,7 @@ package nl.rivm.screenit.clientportaal.controllers;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -41,7 +41,6 @@ import nl.rivm.screenit.model.mamma.enums.MammaAfmeldingReden;
 import nl.rivm.screenit.service.BaseAfmeldService;
 import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.LogService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,8 +62,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class AfmeldenController extends AbstractController
 {
-	private final HibernateService hibernateService;
-
 	private final ClientContactService clientContactService;
 
 	private final BaseAfmeldService baseAfmeldService;
@@ -76,7 +73,7 @@ public class AfmeldenController extends AbstractController
 	@GetMapping(value = "/{bevolkingsonderzoek}")
 	public ResponseEntity<AfmeldOptiesDto> getAfmeldOpties(@PathVariable Bevolkingsonderzoek bevolkingsonderzoek, Authentication authentication)
 	{
-		return ResponseEntity.ok(afmeldenService.getAfmeldOpties(getClient(authentication, hibernateService), bevolkingsonderzoek));
+		return ResponseEntity.ok(afmeldenService.getAfmeldOpties(getClient(authentication), bevolkingsonderzoek));
 	}
 
 	@PostMapping(value = "/cervix")
@@ -84,7 +81,7 @@ public class AfmeldenController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> saveCervixAfmelding(@RequestBody AfmeldingDto<CervixAfmeldingReden> afmeldingDto, Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.CERVIX_AFMELDEN))
 		{
@@ -100,7 +97,7 @@ public class AfmeldenController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> saveColonAfmelding(@RequestBody AfmeldingDto<ColonAfmeldingReden> afmeldingDto, Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AFMELDEN))
 		{
@@ -116,7 +113,7 @@ public class AfmeldenController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> saveMammaAfmelding(@RequestBody AfmeldingDto<MammaAfmeldingReden> afmeldingDto, Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFMELDEN))
 		{

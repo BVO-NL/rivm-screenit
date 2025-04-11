@@ -81,6 +81,7 @@
         <mapping class="nl.rivm.screenit.model.Permissie"/>
         <mapping class="nl.rivm.screenit.model.Bezwaar"/>
         <mapping class="nl.rivm.screenit.model.BezwaarMoment"/>
+        <mapping class="nl.rivm.screenit.model.OnderzoeksresultatenActie"/>
         <mapping class="nl.rivm.screenit.model.PreferenceItem"/>
 
         <mapping class="nl.rivm.screenit.model.messagequeue.Message"/>
@@ -258,23 +259,11 @@
         <mapping class="nl.rivm.screenit.model.project.ProjectBestand"/>
         <mapping class="nl.rivm.screenit.model.project.ProjectBestandVerwerking"/>
         <mapping class="nl.rivm.screenit.model.project.ProjectBestandVerwerkingEntry"/>
-
         <mapping class="nl.rivm.screenit.model.project.ProjectGroep"/>
         <mapping class="nl.rivm.screenit.model.project.ProjectAttribuut"/>
         <mapping class="nl.rivm.screenit.model.project.ProjectBriefActie"/>
         <mapping class="nl.rivm.screenit.model.project.ProjectMergedBrieven"/>
-
         <mapping class="nl.rivm.screenit.model.project.ProjectInactiveerDocument"/>
-
-        
-        <mapping class="nl.rivm.screenit.model.formulieren.ScreenitFormulierInstantie"/>
-        <mapping class="nl.rivm.screenit.model.formulieren.SimpleAntwoordKeuzeVraagDefinitieImpl"/>
-        <mapping class="nl.rivm.screenit.model.formulieren.SimpleKeuzeVraagDefinitieImpl"/>
-        <mapping class="nl.rivm.screenit.model.formulieren.SimpleVraagDefinitieImpl"/>
-        <mapping class="nl.rivm.screenit.model.formulieren.GebruikerAntwoord"/>
-        <mapping class="nl.rivm.screenit.model.formulieren.RomanHerhalingLabel"/>
-        <mapping class="nl.rivm.screenit.model.formulieren.PalgaLabel"/>
-        <mapping class="nl.rivm.screenit.model.formulieren.PalgaNumberAntwoordDefintie"/>
 
         
         <mapping class="nl.rivm.screenit.model.nieuws.NieuwsItem"/>

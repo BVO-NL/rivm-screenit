@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.config;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,68 +21,65 @@ package nl.rivm.screenit.huisartsenportaal.config;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.huisartsenportaal.config.autorizationproviders.ScreenITRegistrationAuthenticationProvider;
-import nl.rivm.screenit.huisartsenportaal.config.autorizationproviders.ScreenITUsernamePasswordAuthenticationProvider;
-import nl.rivm.screenit.huisartsenportaal.config.autorizationproviders.ScreenITWachtwoordVergetenAuthenticationProvider;
+import lombok.AllArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import nl.rivm.screenit.huisartsenportaal.filter.JwtAuthenticationFilter;
+import nl.rivm.screenit.webcommons.config.CsrfCustomAccessDeniedHandler;
+import nl.rivm.screenit.webcommons.config.SpaCsrfTokenRequestHandler;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter
+@AllArgsConstructor
+public class WebSecurityConfiguration
 {
-	@Autowired
-	private ScreenITUsernamePasswordAuthenticationProvider usernamePasswordAuthentication;
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-	@Autowired
-	private ScreenITRegistrationAuthenticationProvider registrationAuthenticationProvider;
+	private final AuthenticationProvider authenticationProvider;
 
-	@Autowired
-	private ScreenITWachtwoordVergetenAuthenticationProvider wachtwoordVergetenAuthenticationProvider;
-
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth)
-	{
-		auth.authenticationProvider(wachtwoordVergetenAuthenticationProvider);
-		auth.authenticationProvider(usernamePasswordAuthentication);
-		auth.authenticationProvider(registrationAuthenticationProvider);
-	}
-
-	@Override
 	@Bean
-	public AuthenticationManager authenticationManagerBean() throws Exception
-	{
-		return super.authenticationManagerBean();
-	}
-
-	@Override
-	protected void configure(HttpSecurity httpSecurity) throws Exception
+	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception
 	{
 		httpSecurity
-			.cors()
-			.and()
-			.csrf().disable()
-			.authorizeRequests()
-			.anyRequest()
-			.permitAll()
-			.and()
-			.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.NEVER)
-			.and()
-			.headers()
-			.contentSecurityPolicy("default-src 'self'; frame-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests; object-src 'none';")
-			.and()
-			.referrerPolicy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN)
-			.and()
-			.contentTypeOptions();
+			.cors(withDefaults())
+			.csrf(csrf ->
+				{
+					var repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+					repository.setCookiePath("/");
+					csrf.csrfTokenRepository(repository)
+						.csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler());
+				}
+			)
+			.exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler(new CsrfCustomAccessDeniedHandler()))
+			.authorizeHttpRequests(authorize -> authorize
+				.requestMatchers("/auth/**", "/build", "/status")
+				.permitAll()
+				.anyRequest()
+				.authenticated()
+			)
+			.authenticationProvider(authenticationProvider)
+			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.headers(headers ->
+				headers
+					.contentSecurityPolicy(policy -> policy.policyDirectives(
+						"form-action 'self'; frame-ancestors 'self'; default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'")
+					)
+					.referrerPolicy(policy -> policy.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN))
+					.contentTypeOptions(withDefaults())
+			);
+		return httpSecurity.build();
 	}
 }

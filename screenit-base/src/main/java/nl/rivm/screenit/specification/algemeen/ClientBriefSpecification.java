@@ -24,9 +24,9 @@ package nl.rivm.screenit.specification.algemeen;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

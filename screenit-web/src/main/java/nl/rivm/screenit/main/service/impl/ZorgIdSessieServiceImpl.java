@@ -28,10 +28,10 @@ import java.security.KeyStore;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
+
 import javax.net.ssl.SSLContext;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -54,8 +54,12 @@ import nl.topicuszorg.zorgid.model.sessie.OpenCancelledReason;
 import nl.topicuszorg.zorgid.webservice.SessionInitializedEvent;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.util.TimeValue;
+import org.apache.hc.core5.util.Timeout;
 import org.apache.http.ssl.SSLContexts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -435,17 +439,22 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 
 	private RestTemplate zorgidClientTemplate()
 	{
-		final int maxConnPerRoute = zorgidClientMaxConnections();
-		final CloseableHttpClient httpClient = HttpClients.custom()
-			.setSSLContext(zorgidSslContext())
+		var maxConnPerRoute = zorgidClientMaxConnections();
+		var socketConfig = SocketConfig.custom()
+			.setSoTimeout(Timeout.ofMilliseconds(zorgidClientReadTimeout())).build();
+		var httpClientConnectionManager = PoolingHttpClientConnectionManagerBuilder.create()
 			.setMaxConnPerRoute(maxConnPerRoute)
 			.setMaxConnTotal(2 * maxConnPerRoute)
-			.setConnectionTimeToLive(ZORG_ID_CONNECTION_TIME, TimeUnit.SECONDS)
+			.setDefaultSocketConfig(socketConfig)
+			.setConnectionTimeToLive(TimeValue.ofSeconds(ZORG_ID_CONNECTION_TIME))
+			.setSSLSocketFactory(new SSLConnectionSocketFactory(zorgidSslContext()))
 			.build();
-		final HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+		var httpClient = HttpClients.custom()
+			.setConnectionManager(httpClientConnectionManager)
+			.build();
+		var httpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		httpRequestFactory.setConnectionRequestTimeout(zorgidClientConnectTimeout());
 		httpRequestFactory.setConnectTimeout(zorgidClientConnectTimeout());
-		httpRequestFactory.setReadTimeout(zorgidClientReadTimeout());
 		return new RestTemplate(httpRequestFactory);
 	}
 

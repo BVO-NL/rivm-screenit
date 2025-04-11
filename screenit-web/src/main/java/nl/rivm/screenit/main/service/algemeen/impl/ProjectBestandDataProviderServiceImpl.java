@@ -21,20 +21,14 @@ package nl.rivm.screenit.main.service.algemeen.impl;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-
 import nl.rivm.screenit.main.service.RepositoryDataProviderService;
 import nl.rivm.screenit.model.project.ProjectBestand;
-import nl.rivm.screenit.model.project.ProjectBestand_;
 import nl.rivm.screenit.repository.algemeen.ProjectBestandRepository;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.ProjectBestandSpecification.heeftProject;
 
 @Service
@@ -46,10 +40,4 @@ public class ProjectBestandDataProviderServiceImpl extends RepositoryDataProvide
 		return heeftProject(filter.getProject());
 	}
 
-	@Override
-	protected Order addJoinsForSortingOrCreateDedicatedOrders(Sort.Order order, Root<ProjectBestand> r, CriteriaBuilder cb)
-	{
-		join(r, ProjectBestand_.uploadDocument);
-		return super.addJoinsForSortingOrCreateDedicatedOrders(order, r, cb);
-	}
 }

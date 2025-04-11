@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import React, {Component} from "react"
-import {Card, CardBody, Input, Label, Row} from "reactstrap"
+import {Card, CardBody, Row} from "reactstrap"
 import DropdownValue from "../../generic/DropdownValue"
 import type {SuboptimaleInsteltechniek} from "../../../datatypes/visueleinspectie/mbbsignalering/SuboptimaleInsteltechniek"
 import {getSuboptimaleInsteltechniekBeschrijving} from "../../../datatypes/visueleinspectie/mbbsignalering/SuboptimaleInsteltechniek"
@@ -28,6 +28,7 @@ import type {RedenFotobespreking} from "../../../datatypes/visueleinspectie/mbbs
 import {getRedenFotobesprekingString} from "../../../datatypes/visueleinspectie/mbbsignalering/RedenFotobespreking"
 import {zelfdeTekst} from "../../../util/StringUtil"
 import {getMandatory} from "../../../util/MapUtil"
+import CheckboxValue from "../../generic/CheckboxValue"
 
 export type MbbSignaleringViewStateProps = {
 	afspraakId: number;
@@ -41,6 +42,7 @@ export type MbbSignaleringViewStateProps = {
 	operatieRechts?: boolean;
 	operatieLinks?: boolean;
 	aanvullendeInformatieOperatie?: string;
+	huidscheuring?: boolean;
 	disabled: boolean;
 };
 
@@ -52,7 +54,8 @@ export type MbbSignaleringViewDispatchProps = {
 	verwerkOpmerkingVoorRadioloog: (afspraakId: number, opmerking: string) => void;
 	verwerkOperatieRechtsChanged: (afspraakId: number, operatieR: boolean) => void;
 	verwerkOperatieLinksChanged: (afspraakId: number, operatieL: boolean) => void;
-	verwerkaanvullendeInformatieOperatie: (afspraakId: number, value: string) => void;
+	verwerkAanvullendeInformatieOperatie: (afspraakId: number, value: string) => void;
+	verwerkHuidscheuringChanged: (afspraakId: number, operatieR: boolean) => void;
 }
 
 const optionInsteltechniek: Array<SuboptimaleInsteltechniek> = ["FYSIEK_BEPERKT", "MOBIEL_BEPERKT", "MOEILIJK_TE_POSITIONEREN"]
@@ -70,7 +73,8 @@ export default class MbbSignaleringView extends Component<MbbSignaleringViewStat
 		this.operatieRechtsDidChange.bind(this)
 		this.operatieLinksDidChange.bind(this)
 		this.aanvullendeInformatieOperatieDidChange.bind(this)
-		this.zonderIngelogdeGebruikerFilterFuncion.bind(this)
+		this.zonderIngelogdeGebruikerFilterFunction.bind(this)
+		this.huidscheuringDidChange.bind(this)
 	}
 
 	suboptimaleInsteltechniekDidChange = (value?: SuboptimaleInsteltechniek): void => {
@@ -115,11 +119,15 @@ export default class MbbSignaleringView extends Component<MbbSignaleringViewStat
 
 	aanvullendeInformatieOperatieDidChange = (value: string): void => {
 		if (!zelfdeTekst(value, this.props.aanvullendeInformatieOperatie)) {
-			this.props.verwerkaanvullendeInformatieOperatie(this.props.afspraakId, value)
+			this.props.verwerkAanvullendeInformatieOperatie(this.props.afspraakId, value)
 		}
 	}
 
-	zonderIngelogdeGebruikerFilterFuncion = (gebruiker: [string, string]): boolean => {
+	huidscheuringDidChange = (): void => {
+		this.props.verwerkHuidscheuringChanged(this.props.afspraakId, !this.props.huidscheuring)
+	}
+
+	zonderIngelogdeGebruikerFilterFunction = (gebruiker: [string, string]): boolean => {
 		return gebruiker[0] !== String(this.props.ingelogdeGebruikerId)
 	}
 
@@ -145,45 +153,49 @@ export default class MbbSignaleringView extends Component<MbbSignaleringViewStat
 					<DropdownValue id={"extraMedewerkerId"}
 								   value={!this.props.extraMedewerkerId || !this.props.seGebruikers.has(String(this.props.extraMedewerkerId)) ? undefined : ["none", getMandatory(this.props.seGebruikers, String(this.props.extraMedewerkerId))]}
 								   disabled={this.props.disabled}
-								   options={Array.from(this.props.seGebruikers).filter(this.zonderIngelogdeGebruikerFilterFuncion).sort((a, b) => String(a[1]) > String(b[1]) ? 1 : -1)}
-								   valueToLabel={(seGebruiker): string => seGebruiker[1] !== undefined ? seGebruiker[1] : ""}
+								   options={Array.from(this.props.seGebruikers).filter(this.zonderIngelogdeGebruikerFilterFunction).sort((a, b) => String(a[1]) > String(b[1]) ? 1 : -1)}
+								   valueToLabel={(seGebruiker): string => seGebruiker[1] ?? ""}
 								   lavendel={true} handleChange={this.extraMedewerkerDidChange}/>
 				</div>
 
 				<div className={"mbb-signalering-row"}>
 					<h6>Opmerking voor MBB&apos;er</h6>
-					<TextAreaValue value={this.props.opmerkingMbber || ""} disabled={this.props.disabled}
+					<TextAreaValue value={this.props.opmerkingMbber ?? ""} disabled={this.props.disabled}
 								   maxLength={maxOpmerkingLengte} onChange={this.opmerkingMbberDidChange}
 								   color={"lavender"}/>
 				</div>
 
 				<div className={"mbb-signalering-row"}>
 					<h6>Opmerking voor radioloog</h6>
-					<TextAreaValue value={this.props.opmerkingVoorRadioloog || ""} disabled={this.props.disabled}
+					<TextAreaValue value={this.props.opmerkingVoorRadioloog ?? ""} disabled={this.props.disabled}
 								   maxLength={maxOpmerkingLengte} onChange={this.opmerkingVoorRadioloogDidChange}
 								   color={"lavender"}/>
 				</div>
 
 				<div className={"mbb-signalering-row"}>
 					<Row noGutters>
-						<Label check className={"form-check-inline"}>
-							<Input type="checkbox" className="se-value" disabled={this.props.disabled}
-								   checked={this.props.operatieRechts}
-								   onChange={this.operatieRechtsDidChange.bind(this)}/>
-							Operatie R
-						</Label>
-						<Label check className={"form-check-inline"}>
-							<Input type="checkbox" className="se-value" disabled={this.props.disabled}
-								   checked={this.props.operatieLinks}
-								   onChange={this.operatieLinksDidChange.bind(this)}/>
-							Operatie L
-						</Label>
+						<CheckboxValue
+							label={"Operatie R"} checked={this.props.operatieRechts}
+							disabled={this.props.disabled}
+							handleChange={this.operatieRechtsDidChange}/>
+
+						<CheckboxValue
+							label={"Operatie L"} checked={this.props.operatieLinks}
+							disabled={this.props.disabled}
+							handleChange={this.operatieLinksDidChange}/>
 					</Row>
 					<TextAreaValue className={"mbb-signalering-text-area-input"}
-								   value={this.props.aanvullendeInformatieOperatie || ""}
+								   value={this.props.aanvullendeInformatieOperatie ?? ""}
 								   placeholder={"Aanvullende informatie"} disabled={this.props.disabled}
 								   maxLength={maxOpmerkingLengte} onChange={this.aanvullendeInformatieOperatieDidChange}
 								   color={"lavender"}/>
+				</div>
+
+				<div className={"mbb-signalering-row"}>
+					<CheckboxValue
+						label={"Huidscheuring opgetreden"} checked={this.props.huidscheuring}
+						disabled={this.props.disabled}
+						handleChange={this.huidscheuringDidChange}/>
 				</div>
 			</CardBody>
 		</Card>

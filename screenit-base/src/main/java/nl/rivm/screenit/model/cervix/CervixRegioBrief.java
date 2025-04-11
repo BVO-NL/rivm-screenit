@@ -21,11 +21,13 @@ package nl.rivm.screenit.model.cervix;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.io.Serial;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.MergedBrieven;
@@ -41,6 +43,7 @@ import org.hibernate.envers.Audited;
 public class CervixRegioBrief extends Brief
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -49,7 +52,7 @@ public class CervixRegioBrief extends Brief
 	@ManyToOne(fetch = FetchType.LAZY)
 	private CervixHuisarts huisarts;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.SAVE_UPDATE })
 	private CervixRegioMergedBrieven mergedBrieven;
 

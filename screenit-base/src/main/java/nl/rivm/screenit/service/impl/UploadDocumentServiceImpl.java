@@ -23,7 +23,9 @@ package nl.rivm.screenit.service.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.dao.UploadDocumentDao;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
+import nl.rivm.screenit.repository.algemeen.UploadDocumentRepository;
 import nl.rivm.screenit.service.FileService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
@@ -41,6 +44,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -59,6 +63,9 @@ public class UploadDocumentServiceImpl implements UploadDocumentService
 
 	@Autowired
 	private HibernateService hibernateService;
+
+	@Autowired
+	private UploadDocumentRepository uploadDocumentRepository;
 
 	@Override
 	@Transactional
@@ -182,8 +189,32 @@ public class UploadDocumentServiceImpl implements UploadDocumentService
 		}
 		catch (Exception e)
 		{
-			LOG.error("Er is een fout opgetreden! " + e.getMessage(), e);
+			LOG.error("Er is een fout opgetreden! {}", e.getMessage(), e);
 		}
+	}
+
+	@Override
+	public UploadDocument multipartToUploadDocument(MultipartFile fileUpload) throws IOException, IllegalStateException
+	{
+		UploadDocument uploadDocument = null;
+		if (fileUpload != null)
+		{
+			uploadDocument = new UploadDocument();
+			uploadDocument.setContentType("application/pdf");
+			var file = File.createTempFile(fileUpload.getOriginalFilename(), "pdf");
+			fileUpload.transferTo(file);
+			uploadDocument.setFile(file);
+			uploadDocument.setActief(true);
+			uploadDocument.setNaam(fileUpload.getOriginalFilename());
+			uploadDocument.setContentType(fileUpload.getContentType());
+		}
+		return uploadDocument;
+	}
+
+	@Override
+	public Optional<UploadDocument> getById(Long id)
+	{
+		return uploadDocumentRepository.findById(id);
 	}
 
 	private String getFullFilePath(UploadDocument document)
@@ -205,7 +236,7 @@ public class UploadDocumentServiceImpl implements UploadDocumentService
 	private String generateFiltestoreFileName()
 	{
 		var uniqueFileName = UUID.randomUUID().toString();
-		var random = (int) (Math.random() * 10.0D);
+		var random = new SecureRandom().nextInt(10);
 		return uniqueFileName + "-" + System.currentTimeMillis() + "-" + random;
 	}
 

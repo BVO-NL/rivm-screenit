@@ -21,6 +21,7 @@ package nl.rivm.screenit.security;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 
 public class Constraint extends Permissie
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private Class<?> scopeObjectClass;

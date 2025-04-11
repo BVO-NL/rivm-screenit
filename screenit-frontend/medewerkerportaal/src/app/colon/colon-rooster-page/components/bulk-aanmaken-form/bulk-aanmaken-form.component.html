@@ -1,0 +1,56 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<form [formGroup]="herhalingForm">
+  <clr-combobox-container>
+    <label for="herhaling-select">Herhalen</label>
+    <clr-combobox class="clr-col-12 clr-col-md-8 kamer-selector" data-testid="cb_herhaling_selector" formControlName="frequentie" id="herhaling-select" required>
+      <clr-options>
+        <clr-option [clrValue]="herhaling" *clrOptionItems="let herhaling of herhalingOpties; field: 'label'">{{ herhaling.label }}</clr-option>
+      </clr-options>
+    </clr-combobox>
+    <clr-control-error *clrIfError="'required'">'Herhalen' is verplicht.</clr-control-error>
+  </clr-combobox-container>
+
+  @if (geselecteerdeFrequentie === herhalingsfrequentie.DAGELIJKS) {
+    <clr-checkbox-container>
+      <clr-checkbox-wrapper>
+        <input type="checkbox" clrCheckbox id="alleenWerkdagen" formControlName="alleenWerkdagen" data-testid="checkbox_alleen_werkdagen">
+        <label for="alleenWerkdagen">Alleen op werkdagen</label>
+      </clr-checkbox-wrapper>
+    </clr-checkbox-container>
+  }
+
+  @if (geselecteerdeFrequentie === herhalingsfrequentie.WEKELIJKS || geselecteerdeFrequentie === herhalingsfrequentie.TWEE_WEKELIJKS) {
+    <app-weekdagen-selector formControlName="dagen"
+      />
+  }
+
+  @if (geselecteerdeFrequentie !== undefined && geselecteerdeFrequentie !== herhalingsfrequentie.GEEN_HERHALING) {
+    <clr-date-container>
+      <label class="clr-required-mark" for="eindDatum">Einddatum</label>
+      <input autocomplete="off" clrDate formControlName="eindDatum" id="eindDatum" type="date" class="clr-col-12 clr-col-md-8" [max]="maxDatum" [min]="minDatum"/>
+      <clr-control-error *clrIfError="'required'">De einddatum is verplicht</clr-control-error>
+      <clr-control-error *clrIfError="'minimumDatum'">{{ eindDatumCtrl.getError('minimumDatum') }}</clr-control-error>
+      <clr-control-error *clrIfError="'maximumDatum'">{{ eindDatumCtrl.getError('maximumDatum') }}</clr-control-error>
+      <clr-control-error *clrIfError="'valideDatum'">{{ eindDatumCtrl.getError('valideDatum') }}</clr-control-error>
+    </clr-date-container>
+  }
+</form>

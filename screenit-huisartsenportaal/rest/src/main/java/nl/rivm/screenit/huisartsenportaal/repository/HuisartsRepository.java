@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.repository;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,11 +21,10 @@ package nl.rivm.screenit.huisartsenportaal.repository;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
-
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+
+import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
+import nl.rivm.screenit.huisartsenportaal.model.enums.InlogMethode;
 
 public interface HuisartsRepository extends BaseRepository<Huisarts>
 {
@@ -40,4 +39,9 @@ public interface HuisartsRepository extends BaseRepository<Huisarts>
 
 	Long countByHuisartsportaalId(Long id);
 
+	Huisarts findByAgbcodeAndInlogCodeAndInlogMethode(String agbcode, String inlogCode, InlogMethode inlogMethode);
+
+	Huisarts findByGebruikersnaamAndInlogCodeAndInlogMethode(String gebruikersnaam, String inlogCode, InlogMethode inlogMethode);
+
+	Huisarts findByEmailAndInlogCodeAndInlogMethode(String email, String inlogCode, InlogMethode inlogMethode);
 }

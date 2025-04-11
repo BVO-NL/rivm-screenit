@@ -69,8 +69,8 @@ import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.model.DetachableListModel;
 import nl.topicuszorg.wicket.model.SortingListModel;
 
-import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -125,15 +125,11 @@ public class MammaTestTimelinePage extends TestenBasePage
 
 	private final IModel<TestTimelineModel> model;
 
-	private IModel<List<Client>> clientModel;
-
 	private IModel<List<TestTimelineRonde>> rondesModel;
 
 	private final IModel<List<Gemeente>> gemeentenModel;
 
 	private final Form<TestTimelineModel> form;
-
-	private WebMarkupContainer formComponents;
 
 	private final BootstrapDialog dialog;
 
@@ -255,7 +251,8 @@ public class MammaTestTimelinePage extends TestenBasePage
 		add(new MammaTestClientenMetBeeldenBeschikbaarPanel("clientenMetBeeldenBeschikbaar"));
 	}
 
-	private WebMarkupContainer getFormComponentsContainer()
+	@Override
+	protected WebMarkupContainer getFormComponentsContainer()
 	{
 		var container = new WebMarkupContainer("formComponents");
 		container.setOutputMarkupId(true);
@@ -268,16 +265,13 @@ public class MammaTestTimelinePage extends TestenBasePage
 		var aNummer = new Label("aNummer");
 		container.add(aNummer);
 
-		bsnField.add(new AjaxEventBehavior("change")
+		bsnField.add(new AjaxFormComponentUpdatingBehavior("change")
 		{
 			@Override
-			protected void onEvent(AjaxRequestTarget target)
+			protected void onUpdate(AjaxRequestTarget target)
 			{
-				var geContainer = getGebeurtenissenContainer();
-				gebeurtenissenContainer.replaceWith(geContainer);
-				gebeurtenissenContainer = geContainer;
-				gebeurtenissenContainer.setVisible(false);
-				target.add(gebeurtenissenContainer);
+				var clienten = testService.vindClienten(model.getObject().getBsns(), Bevolkingsonderzoek.MAMMA);
+				refreshForm(clienten, target, model.getObject());
 			}
 		});
 
@@ -318,26 +312,11 @@ public class MammaTestTimelinePage extends TestenBasePage
 				}
 				var clienten = testTimelineService.maakOfVindClienten(timelineModel);
 				var errors = testTimelineService.validateTestClienten(clienten);
-				for (var error : errors)
-				{
-					MammaTestTimelinePage.this.error(error);
-				}
+				errors.forEach(this::error);
 				clientModel = ModelUtil.listModel(clienten);
 				MammaTestTimelinePage.this.info("Client(en) zijn gevonden en/of succesvol aangemaakt");
 
-				if (!clienten.isEmpty())
-				{
-					refreshTimelineModel(timelineModel, clienten);
-					var fCcontainer = getFormComponentsContainer();
-					formComponents.replaceWith(fCcontainer);
-					formComponents = fCcontainer;
-					target.add(formComponents);
-				}
-
-				var geContainer = getGebeurtenissenContainer();
-				gebeurtenissenContainer.replaceWith(geContainer);
-				gebeurtenissenContainer = geContainer;
-				target.add(gebeurtenissenContainer);
+				refreshForm(clienten, target, timelineModel);
 			}
 		};
 		form.setDefaultButton(clientVindOfMaak);
@@ -355,26 +334,8 @@ public class MammaTestTimelinePage extends TestenBasePage
 				}
 				var clienten = testTimelineService.maakOfWijzigClienten(timelineModel);
 				var errors = testTimelineService.validateTestClienten(clienten);
-				for (var error : errors)
-				{
-					MammaTestTimelinePage.this.error(error);
-				}
-				clientModel = ModelUtil.listModel(clienten);
-				MammaTestTimelinePage.this.info("Client(en) zijn succesvol gewijzigd of aangemaakt");
-
-				if (!clienten.isEmpty())
-				{
-					refreshTimelineModel(timelineModel, clienten);
-					var fCcontainer = getFormComponentsContainer();
-					formComponents.replaceWith(fCcontainer);
-					formComponents = fCcontainer;
-					target.add(formComponents);
-				}
-
-				var geContainer = getGebeurtenissenContainer();
-				gebeurtenissenContainer.replaceWith(geContainer);
-				gebeurtenissenContainer = geContainer;
-				target.add(gebeurtenissenContainer);
+				errors.forEach(this::error);
+				refreshForm(clienten, target, timelineModel);
 			}
 		};
 		container.add(clientWijzigOfMaak);
@@ -419,7 +380,8 @@ public class MammaTestTimelinePage extends TestenBasePage
 				public List<TestVervolgKeuzeOptie> getOptions()
 				{
 					List<TestVervolgKeuzeOptie> keuzes = new ArrayList<>();
-					if (!Deelnamemodus.SELECTIEBLOKKADE.equals(clientModel.getObject().get(0).getMammaDossier().getDeelnamemodus()))
+					var dossier = clientModel.getObject().get(0).getMammaDossier();
+					if (!Deelnamemodus.SELECTIEBLOKKADE.equals(dossier.getDeelnamemodus()))
 					{
 						keuzes.add(TestVervolgKeuzeOptie.MAMMA_NIEUWE_RONDE_MET_AFSPRAAK_UITNODIGING);
 						keuzes.add(TestVervolgKeuzeOptie.MAMMA_NIEUWE_RONDE_MET_OPEN_UITNODIGING);
@@ -428,7 +390,7 @@ public class MammaTestTimelinePage extends TestenBasePage
 					{
 						keuzes.add(TestVervolgKeuzeOptie.MAMMA_DEELNAME_WENS);
 					}
-					if (clientModel.getObject().get(0).getMammaDossier().getLaatsteScreeningRonde() != null)
+					if (dossier.getLaatsteScreeningRonde() != null)
 					{
 						keuzes.add(TestVervolgKeuzeOptie.MAMMA_VERZET_TIJD);
 					}

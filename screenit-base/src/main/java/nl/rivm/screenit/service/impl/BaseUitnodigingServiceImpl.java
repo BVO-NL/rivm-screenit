@@ -24,9 +24,6 @@ package nl.rivm.screenit.service.impl;
 
 import java.util.Arrays;
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.JoinType;
-
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.GbaPersoon;
@@ -61,6 +58,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.JoinType;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 

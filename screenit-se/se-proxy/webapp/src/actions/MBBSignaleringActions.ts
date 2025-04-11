@@ -29,7 +29,8 @@ export type MBBSignaleringActions =
 	| RadioloogOpmerkingAction
 	| OperatieRechtsAction
 	| OperatieLinksAction
-	| AanvullendeInformatieOperatieAction;
+	| AanvullendeInformatieOperatieAction
+	| HuidscheuringAction;
 export const MAAK_SUBOPTIMALE_INSTELTECHNIEK = "MAAK_SUBOPTIMALE_INSTELTECHNIEK"
 export type SuboptimaleInsteltechniekAction = {
 	type: "MAAK_SUBOPTIMALE_INSTELTECHNIEK";
@@ -117,4 +118,15 @@ export const createActionMaakAanvullendeInformatieOperatie = (afspraakId: number
 	type: MAAK_AANVULLENDE_INFORMATIE_OPERATIE,
 	afspraakId: afspraakId,
 	aanvullendeInformatieOperatie: aanvullendeInformatieOperatie,
+})
+export const HUIDSCHEURING = "HUIDSCHEURING"
+export type HuidscheuringAction = {
+	type: "HUIDSCHEURING";
+	afspraakId: number;
+	huidscheuring: boolean;
+};
+export const createActionHuidscheuring = (afspraakId: number, huidscheuring: boolean): HuidscheuringAction => ({
+	type: HUIDSCHEURING,
+	afspraakId: afspraakId,
+	huidscheuring: huidscheuring,
 })

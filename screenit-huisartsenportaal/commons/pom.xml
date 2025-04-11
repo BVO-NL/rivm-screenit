@@ -15,8 +15,6 @@
     <name>screenit-huisartsenportaal-commons</name>
     <packaging>jar</packaging>
 
-    <inceptionYear>2016</inceptionYear>
-
     <build>
         <resources>
             <resource>

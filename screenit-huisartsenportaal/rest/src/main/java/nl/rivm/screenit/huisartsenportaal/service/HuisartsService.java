@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.service;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -32,20 +32,8 @@ public interface HuisartsService
 
 	Huisarts updateAndGetHuisarts(HuisartsDto huisartsDto);
 
-	Huisarts updateWachtwoord(Huisarts huisarts, String wachtwoord);
-
-	boolean controleerWachtwoord(String plainWachtwoord, String encodedWachtwoord);
-
-	Huisarts wachtwoordVergeten(Huisarts huisarts) throws IllegalStateException;
-
 	Huisarts getHuisartsWith(WachtwoordVergetenDto dto);
 
 	Huisarts getHuisartsWith(Long screenitId);
-
-	Integer incrementAttempts(Huisarts huisarts);
-
-	void resetAttempts(Huisarts huisarts);
-
-	Long remainingMinutesLock(Huisarts huisarts);
 
 }

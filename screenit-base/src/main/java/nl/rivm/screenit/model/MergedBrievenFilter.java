@@ -22,6 +22,7 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.util.List;
 
 import nl.rivm.screenit.model.IActief;
@@ -32,6 +33,7 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 public class MergedBrievenFilter<MB extends MergedBrieven<?>> extends BvoZoekCriteria implements IActief
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private Boolean controle;

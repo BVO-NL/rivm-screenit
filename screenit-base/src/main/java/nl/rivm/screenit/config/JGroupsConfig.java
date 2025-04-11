@@ -52,31 +52,19 @@ public class JGroupsConfig
 	}
 
 	@Bean
-	public Integer jgroupsCommonBindPort()
-	{
-		return common.bindPort;
-	}
-
-	@Bean
-	public Integer jgroupsEhcacheBindPort()
+	Integer jgroupsEhcacheBindPort()
 	{
 		return ehcache.bindPort;
 	}
 
 	@Bean
-	public String jgroupsCommonIPPorts()
-	{
-		return common.ipPorts;
-	}
-
-	@Bean
-	public String jgroupsEhcacheIPPorts()
+	String jgroupsEhcacheIPPorts()
 	{
 		return ehcache.ipPorts;
 	}
 
 	@Bean
-	public String jgroupsBindIP()
+	String jgroupsBindIP()
 	{
 		return bindIp;
 	}

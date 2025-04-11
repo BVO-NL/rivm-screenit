@@ -21,8 +21,6 @@ package nl.rivm.screenit.batch.jobs.mamma.aftergba.zonderpostcode;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.criteria.JoinType;
-
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.BagAdres_;
 import nl.rivm.screenit.model.Client;
@@ -34,6 +32,8 @@ import nl.rivm.screenit.specification.algemeen.GemeenteSpecification;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+
+import jakarta.persistence.criteria.JoinType;
 
 import static nl.rivm.screenit.batch.jobs.mamma.aftergba.AfterGbaJobConfiguration.AFTER_GBA_JOB_READER_FETCH_SIZE;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;

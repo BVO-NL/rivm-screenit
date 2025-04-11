@@ -22,8 +22,10 @@ package nl.rivm.screenit.util.rest;
  */
 
 import java.io.IOException;
+import java.net.URI;
 
-import org.springframework.http.HttpStatus;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 
@@ -32,13 +34,13 @@ public class ScreenitRestErrorHandler extends DefaultResponseErrorHandler
 	private static ThreadLocal<IRestErrorHandlerCallback> callbackHandler = new ThreadLocal<>();
 
 	@Override
-	protected void handleError(ClientHttpResponse response, HttpStatus statusCode) throws IOException
+	public void handleError(@NotNull URI url, @NotNull HttpMethod method, @NotNull ClientHttpResponse response) throws IOException
 	{
 		if (callbackHandler.get() != null)
 		{
-			callbackHandler.get().handleRestClientError(statusCode);
+			callbackHandler.get().handleRestClientError(response.getStatusCode());
 		}
-		super.handleError(response, statusCode);
+		super.handleError(url, method, response);
 	}
 
 	public static void set(IRestErrorHandlerCallback callbackHandler)

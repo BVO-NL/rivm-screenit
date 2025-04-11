@@ -1,0 +1,49 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<div class="clr-display-flex clr-justify-content-between clr-align-items-center">
+  <h2>Roosterbeperkingen voor feestdagen</h2>
+  <button (click)="openFeestdagDialog()" *appAutorisatie="toevoegenConstraint" class="btn btn-primary header-btn">
+    <cds-icon shape="plus"></cds-icon>
+    Feestdag
+  </button>
+</div>
+<clr-datagrid class="feestdag-grid">
+  <clr-dg-column clrDgField="naam">Naam</clr-dg-column>
+  <clr-dg-column clrDgField="datum">Datum</clr-dg-column>
+  <clr-dg-column clrDgField="beperking">Beperking</clr-dg-column>
+  <clr-dg-column [style.width.px]="105"></clr-dg-column>
+
+  @if (feestdagen$ | async; as feestdagen) {
+    <clr-dg-row *clrDgItems="let feestdag of feestdagen">
+      <clr-dg-cell>{{ feestdag.naam }}</clr-dg-cell>
+      <clr-dg-cell>{{ feestdag.datum | date: 'dd-MM-yyyy' }}</clr-dg-cell>
+      <clr-dg-cell>{{ feestdag.beperking | titlecase }}</clr-dg-cell>
+      <clr-dg-cell>
+        <button class="btn btn-sm btn-link btn-icon" (click)="openFeestdagDialog(feestdag)" *appAutorisatie="bewerkenConstraint">
+          <cds-icon shape="pencil"></cds-icon>
+        </button>
+        <button class="btn btn-sm btn-link btn-icon" (click)="confirmDeleteFeestdag(feestdag)" *appAutorisatie="verwijderenConstraint">
+          <cds-icon shape="trash"></cds-icon>
+        </button>
+      </clr-dg-cell>
+    </clr-dg-row>
+  }
+</clr-datagrid>

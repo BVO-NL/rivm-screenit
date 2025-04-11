@@ -21,22 +21,23 @@ package nl.rivm.screenit.model.colon;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import nl.rivm.screenit.model.EnovationHuisarts;
 import nl.rivm.screenit.model.ScreeningRonde;
@@ -56,6 +57,7 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 @Audited
 public class ColonScreeningRonde extends ScreeningRonde<ColonDossier, ColonBrief, ColonAfmelding, ColonUitnodiging>
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@OneToMany(mappedBy = "colonScreeningRonde", cascade = CascadeType.ALL)
@@ -69,7 +71,7 @@ public class ColonScreeningRonde extends ScreeningRonde<ColonDossier, ColonBrief
 	@OneToOne(optional = true, cascade = CascadeType.ALL)
 	private IFOBTTest laatsteIFOBTTestExtra;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Audited(targetAuditMode = NOT_AUDITED)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	private EnovationHuisarts colonHuisarts;

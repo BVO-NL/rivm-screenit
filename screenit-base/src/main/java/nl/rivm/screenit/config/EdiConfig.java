@@ -29,7 +29,7 @@ import nl.rivm.screenit.edi.service.impl.EdiMessageServiceImpl;
 import nl.rivm.screenit.edi.service.impl.ValidatedMessageFactoryImpl;
 import nl.rivm.screenit.service.LogService;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -89,7 +89,7 @@ public class EdiConfig
 	}
 
 	@Bean
-	public EdiMessageServiceImpl ediMessageService()
+	EdiMessageServiceImpl ediMessageService()
 	{
 		var ediMessageService = new EdiMessageServiceImpl();
 		ediMessageService.setLogInformatieService(logInformatieService);
@@ -104,7 +104,7 @@ public class EdiConfig
 	}
 
 	@Bean
-	public ValidatedMessageFactory validatedMessageFactory()
+	ValidatedMessageFactory validatedMessageFactory()
 	{
 		var validatedMessageFactory = new ValidatedMessageFactoryImpl();
 		validatedMessageFactory.setEdifactHandlingProperties("nl/rivm/screenit/edi/xml/edimessages.properties");
@@ -114,67 +114,67 @@ public class EdiConfig
 	}
 
 	@Bean
-	public String jndiSmtpBindIP()
+	String jndiSmtpBindIP()
 	{
 		return "";
 	}
 
 	@Bean
-	public String smtpIP()
+	String smtpIP()
 	{
 		return "";
 	}
 
 	@Bean
-	public Integer smtpPort()
+	Integer smtpPort()
 	{
 		return 0;
 	}
 
 	@Bean
-	public String mailRelayIp()
+	String mailRelayIp()
 	{
 		return mail != null ? mail.relay.ip : "";
 	}
 
 	@Bean
-	public Integer mailRelayPort()
+	Integer mailRelayPort()
 	{
 		return mail != null ? mail.relay.port : 0;
 	}
 
 	@Bean
-	public Boolean smtpOverSsl()
+	Boolean smtpOverSsl()
 	{
 		return smtp != null && smtp.overSsl;
 	}
 
 	@Bean
-	public String smtpAuthUsername()
+	String smtpAuthUsername()
 	{
 		return smtp != null && smtp.auth != null ? smtp.auth.username : "";
 	}
 
 	@Bean
-	public String smtpAuthPassword()
+	String smtpAuthPassword()
 	{
 		return smtp != null && smtp.auth != null ? smtp.auth.password : "";
 	}
 
 	@Bean
-	public String fromAddress()
+	String fromAddress()
 	{
 		return StringUtils.defaultIfBlank(fromAddress, "");
 	}
 
 	@Bean
-	public String ediAfleverAdres()
+	String ediAfleverAdres()
 	{
 		return StringUtils.defaultIfBlank(afleverAdres, "devnull@topicus.nl");
 	}
 
 	@Bean
-	public String applicationId()
+	String applicationId()
 	{
 		return StringUtils.defaultIfBlank(applicationId, "");
 	}

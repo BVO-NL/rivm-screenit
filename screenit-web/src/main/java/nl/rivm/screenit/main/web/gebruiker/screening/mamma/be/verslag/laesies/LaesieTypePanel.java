@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.verslag.laesies;
  */
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDto;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDtoMapper;
@@ -40,7 +39,7 @@ class LaesieTypePanel extends GenericPanel<LaesieDto>
 	@SpringBean
 	private MammaBaseLaesieService laesieService;
 
-	private List<LaesieDto> alleLaesies;
+	private final List<LaesieDto> alleLaesies;
 
 	private final LaesieDtoMapper mapper = new LaesieDtoMapper();
 
@@ -59,14 +58,16 @@ class LaesieTypePanel extends GenericPanel<LaesieDto>
 
 	private String getLaesieTypeEnEventueelVolgnummer()
 	{
-		return getModelObject().getLaesietype().getNaam() + volgnummerPostfix() + " (" + StringUtils.capitalize(getModelObject().getWelkeBorst().getNaam()) + ")";
+		var laesie = getModelObject();
+		var nullSafeLaesieVolgordeFormat = laesie.getLaesieVolgorde() == null ? "" : laesie.getLaesieVolgorde() + " ";
+		return nullSafeLaesieVolgordeFormat + laesie.getLaesietype().getNaam() + volgnummerPostfix() + " (" + StringUtils.capitalize(laesie.getWelkeBorst().getNaam()) + ")";
 	}
 
 	private String volgnummerPostfix()
 	{
 		LaesieDto laesie = getModelObject();
 		MammaLaesie mammaLaesie = mapper.laesieDtoToMammaLaesie(laesie);
-		final List<MammaLaesie> mammaLaesieList = alleLaesies.stream().map(mapper::laesieDtoToMammaLaesie).collect(Collectors.toList());
+		final List<MammaLaesie> mammaLaesieList = alleLaesies.stream().map(mapper::laesieDtoToMammaLaesie).toList();
 		return laesieService.isVolgnummerNodig(mammaLaesieList, mammaLaesie) ? " - " + laesie.getNummer() : "";
 	}
 

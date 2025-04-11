@@ -28,10 +28,12 @@ import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.Rol;
 
+import org.springframework.data.domain.Sort;
+
 public interface MedewerkerZoekService
 {
 	List<Gebruiker> searchMedewerkers(Gebruiker zoekObject, List<Functie> selectedFuncties, List<Rol> selectedRollen, InstellingGebruiker ingelogdeOrganisatieMedewerker,
-		boolean voorOrganisatieKoppelen, int first, int count, String sortProperty, boolean ascending);
+		boolean voorOrganisatieKoppelen, long first, long count, Sort sort);
 
 	long countMedewerkers(Gebruiker zoekObject, List<Functie> selectedFuncties, List<Rol> selectedRollen, InstellingGebruiker ingelogdeOrganisatieMedewerker,
 		boolean voorOrganisatieKoppelen);

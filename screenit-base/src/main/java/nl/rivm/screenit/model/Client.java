@@ -25,21 +25,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -64,6 +64,8 @@ import org.hibernate.annotations.Check;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 @Getter
@@ -77,14 +79,17 @@ public class Client extends SingleTableHibernateObject implements Account
 {
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@Audited(targetAuditMode = NOT_AUDITED)
+	@JsonManagedReference
 	private ColonDossier colonDossier;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@Audited(targetAuditMode = NOT_AUDITED)
+	@JsonManagedReference
 	private CervixDossier cervixDossier;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@Audited(targetAuditMode = NOT_AUDITED)
+	@JsonManagedReference
 	private MammaDossier mammaDossier;
 
 	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
@@ -121,10 +126,17 @@ public class Client extends SingleTableHibernateObject implements Account
 	@OneToMany(mappedBy = "client")
 	@OrderBy("bezwaarDatum DESC")
 	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
+	@JsonManagedReference
 	private List<BezwaarMoment> bezwaarMomenten = new ArrayList<>();
+
+	@OneToMany(mappedBy = "client")
+	@OrderBy("moment DESC")
+	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
+	private List<OnderzoeksresultatenActie> onderzoeksresultatenActies = new ArrayList<>();
 
 	@OneToOne(fetch = FetchType.LAZY, optional = true)
 	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
+	@JsonManagedReference
 	private BezwaarMoment laatstVoltooideBezwaarMoment;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "client")

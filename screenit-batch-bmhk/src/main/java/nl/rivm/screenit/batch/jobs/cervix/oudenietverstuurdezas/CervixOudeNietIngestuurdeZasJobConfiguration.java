@@ -30,6 +30,8 @@ import nl.rivm.screenit.model.enums.JobType;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -41,7 +43,7 @@ public class CervixOudeNietIngestuurdeZasJobConfiguration extends AbstractJobCon
 	public Job oudeNietIngestuurdeZasJob(CervixOudeNietIngestuurdeZasJobListener listener, Step dummyStep, CervixOudeNietIngestuurdeZasDecider oudeNietIngestuurdeZasDecider,
 		Step oudeNietIngestuurdeZasStep)
 	{
-		return jobBuilderFactory.get(JobType.CERVIX_OUDE_NIET_INGESTUURDE_ZAS.name())
+		return new JobBuilder(JobType.CERVIX_OUDE_NIET_INGESTUURDE_ZAS.name(), repository)
 			.listener(listener)
 			.start(dummyStep)
 			.next(oudeNietIngestuurdeZasDecider)
@@ -54,9 +56,8 @@ public class CervixOudeNietIngestuurdeZasJobConfiguration extends AbstractJobCon
 	@Bean
 	public Step oudeNietIngestuurdeZasStep(CervixOudeNietIngestuurdeZasReader reader, CervixOudeNietIngestuurdeZasWriter writer)
 	{
-		return stepBuilderFactory.get("oudeNietIngestuurdeZasStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(1)
+		return new StepBuilder("oudeNietIngestuurdeZasStep", repository)
+			.<Long, Long> chunk(1, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

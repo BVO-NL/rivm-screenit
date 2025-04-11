@@ -2,7 +2,7 @@ package nl.rivm.screenit.clientportaal.controllers.colon;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -29,7 +29,6 @@ import nl.rivm.screenit.clientportaal.services.colon.ColonFitService;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.service.ClientContactService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -46,8 +45,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class ColonFitAanvragenController extends AbstractController
 {
-	private final HibernateService hibernateService;
-
 	private final ClientContactService clientContactService;
 
 	private final ColonFitService fitService;
@@ -55,7 +52,7 @@ public class ColonFitAanvragenController extends AbstractController
 	@GetMapping("status")
 	public ResponseEntity<ColonFitStatusDto> getFitStatus(Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AANVRAGEN_NIEUWE_IFOBT))
 		{
@@ -68,7 +65,7 @@ public class ColonFitAanvragenController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> vraagFitAan(Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AANVRAGEN_NIEUWE_IFOBT))
 		{

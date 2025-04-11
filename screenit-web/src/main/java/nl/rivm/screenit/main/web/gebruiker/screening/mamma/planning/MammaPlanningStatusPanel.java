@@ -21,6 +21,8 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning;
  * =========================LICENSE_END==================================
  */
 
+import java.time.Duration;
+
 import nl.rivm.screenit.dto.mamma.planning.PlanningStatusDto;
 import nl.rivm.screenit.main.web.component.PollingAbstractAjaxTimerBehavior;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.dashboard.MammaPlanningDashboardPage;
@@ -40,7 +42,6 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.time.Duration;
 
 public class MammaPlanningStatusPanel extends GenericPanel<PlanningStatusDto>
 {
@@ -105,7 +106,7 @@ public class MammaPlanningStatusPanel extends GenericPanel<PlanningStatusDto>
 		container.add(terugNaarPlanning);
 		add(container);
 
-		add(new PollingAbstractAjaxTimerBehavior(Duration.seconds(3))
+		add(new PollingAbstractAjaxTimerBehavior(Duration.ofSeconds(3))
 		{
 			@Override
 			protected void onTimer(AjaxRequestTarget target)

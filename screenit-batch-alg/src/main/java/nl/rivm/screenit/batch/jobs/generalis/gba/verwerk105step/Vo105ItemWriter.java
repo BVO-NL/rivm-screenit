@@ -24,12 +24,12 @@ package nl.rivm.screenit.batch.jobs.generalis.gba.verwerk105step;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 
 import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo105Bericht;
 import nl.topicuszorg.gba.vertrouwdverbonden.model.utils.VoxHelper;
 
 import org.apache.commons.io.IOUtils;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.ItemStreamWriter;
@@ -44,9 +44,9 @@ public class Vo105ItemWriter implements ItemWriter<Vo105Bericht>, ItemStreamWrit
 	private String vo105FilePath;
 
 	@Override
-	public void write(List<? extends Vo105Bericht> berichten) throws IOException
+	public void write(Chunk<? extends Vo105Bericht> chunk) throws IOException
 	{
-		for (var vo105Bericht : berichten)
+		for (var vo105Bericht : chunk.getItems())
 		{
 			writeBericht(vo105Bericht);
 		}

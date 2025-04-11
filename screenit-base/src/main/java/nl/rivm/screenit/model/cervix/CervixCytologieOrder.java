@@ -21,18 +21,8 @@ package nl.rivm.screenit.model.cervix;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Index;
-import javax.persistence.Lob;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import nl.rivm.screenit.model.cervix.enums.CervixCytologieOrderStatus;
 import nl.rivm.screenit.model.cervix.enums.CervixCytologieReden;
@@ -43,6 +33,17 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Index;
+import jakarta.persistence.Lob;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+
 @Entity
 @Table(schema = "cervix", name = "cytologie_order", indexes = { @Index(name = "idx_CERVIX_CYTOLOGIE_ORDER_STATUS", columnList = "status") })
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
@@ -50,6 +51,7 @@ import org.hibernate.envers.Audited;
 public class CervixCytologieOrder extends AbstractHibernateObject
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@OneToOne(mappedBy = "cytologieOrder", optional = false)
@@ -68,8 +70,8 @@ public class CervixCytologieOrder extends AbstractHibernateObject
 	private CervixCytologieReden cytologieReden;
 
 	@Lob
-	@Type(type = "org.hibernate.type.TextType")
 	@Column(nullable = false)
+	@Type(type = "org.hibernate.type.TextType")
 	private String hl7Bericht;
 
 	public CervixUitstrijkje getUitstrijkje()

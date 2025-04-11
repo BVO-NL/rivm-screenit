@@ -25,25 +25,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SQLQueryUtil
 {
 
-	private SQLQueryUtil()
-	{
-	}
-
 	public static String whereOrAnd(String where)
 	{
-		if (where.equals(""))
+		if (where.isEmpty())
 		{
 			return "WHERE ";
 		}
 		return where + " AND ";
 	}
 
-	public static Map<String, Object> inExpressionParametersEnum(String baseParamName, List<? extends Enum> enums)
+	public static Map<String, Object> inExpressionParametersEnum(String baseParamName, List<? extends Enum<?>> enums)
 	{
-		Map<String, Object> inParams = new HashMap<String, Object>();
+		Map<String, Object> inParams = new HashMap<>();
 		for (int i = 0; i < enums.size(); i++)
 		{
 			String key = baseParamName + i;
@@ -54,7 +54,7 @@ public class SQLQueryUtil
 
 	public static Map<String, Object> inExpressionParametersLong(String baseParamName, List<Long> longs)
 	{
-		Map<String, Object> inParams = new HashMap<String, Object>();
+		Map<String, Object> inParams = new HashMap<>();
 		for (int i = 0; i < longs.size(); i++)
 		{
 			String key = baseParamName + i;

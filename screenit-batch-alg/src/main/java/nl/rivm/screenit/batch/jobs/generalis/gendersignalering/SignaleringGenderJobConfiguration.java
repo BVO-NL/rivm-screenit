@@ -26,6 +26,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,7 +38,7 @@ public class SignaleringGenderJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job signaleringGenderJob(SignaleringGenderListener listener, Step signaleringGenderStep)
 	{
-		return jobBuilderFactory.get(JobType.SIGNALERING_GENDER.name())
+		return new JobBuilder(JobType.SIGNALERING_GENDER.name(), repository)
 			.listener(listener)
 			.start(signaleringGenderStep)
 			.build();
@@ -45,9 +47,8 @@ public class SignaleringGenderJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step signaleringGenderStep(SignaleringGenderReader reader, SignaleringGenderWriter writer)
 	{
-		return stepBuilderFactory.get("signaleringGenderStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("signaleringGenderStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

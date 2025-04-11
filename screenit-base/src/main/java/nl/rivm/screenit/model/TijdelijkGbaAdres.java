@@ -21,7 +21,7 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 import nl.topicuszorg.organisatie.model.Adres;
 

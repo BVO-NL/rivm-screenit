@@ -21,13 +21,14 @@ package nl.rivm.screenit.model.mamma;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
@@ -44,10 +45,11 @@ import org.hibernate.envers.NotAudited;
 @Audited
 public class MammaAnnotatieAfbeelding extends AbstractHibernateObject
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
-	@OneToMany(mappedBy = "afbeelding", fetch = FetchType.LAZY, cascade = { javax.persistence.CascadeType.REMOVE, javax.persistence.CascadeType.PERSIST,
-		javax.persistence.CascadeType.MERGE })
+	@OneToMany(mappedBy = "afbeelding", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
+		jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	@NotAudited
 	private List<MammaAnnotatieIcoon> iconen = new ArrayList<>();

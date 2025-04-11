@@ -26,18 +26,17 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Properties;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.SQLQuery;
 
 @Slf4j
 public class StatusServlet extends HttpServlet
@@ -74,9 +73,10 @@ public class StatusServlet extends HttpServlet
 			applicatieNaam = ApplicationContextProvider.getApplicationContext().getBean("applicationName", String.class);
 			applicatieEnviroment = ApplicationContextProvider.getApplicationContext().getBean("applicationEnvironment", String.class);
 			applicatieInstantie = ApplicationContextProvider.getApplicationContext().getBean("applicationInstance", String.class);
-			HibernateService hibernateService = ApplicationContextProvider.getApplicationContext().getBean(HibernateService.class);
-			SQLQuery sqlQuery = hibernateService.getHibernateSession().createSQLQuery("select count(*) from algemeen.pref_prefitem;");
-			Object result = sqlQuery.uniqueResult();
+			var entityManagerFactory = ApplicationContextProvider.getApplicationContext().getBean(EntityManagerFactory.class);
+			var entityManager = entityManagerFactory.createEntityManager();
+
+			var result = entityManager.createNativeQuery("select count(*) from algemeen.pref_prefitem;").getSingleResult();
 			if (result != null)
 			{
 				database = "OK";
@@ -128,7 +128,7 @@ public class StatusServlet extends HttpServlet
 	{
 		StringBuilder versieBuilder = new StringBuilder();
 		Properties applicationProperties = new Properties();
-		try (InputStream resourceAsStream = this.getClass().getResourceAsStream("/build-info.properties");)
+		try (InputStream resourceAsStream = this.getClass().getResourceAsStream("/build-info.properties"))
 		{
 			applicationProperties.load(resourceAsStream);
 			String version = applicationProperties.getProperty("build.version");

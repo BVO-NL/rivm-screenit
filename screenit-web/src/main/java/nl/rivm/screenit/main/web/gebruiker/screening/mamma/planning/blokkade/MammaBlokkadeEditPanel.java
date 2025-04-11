@@ -27,8 +27,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-
 import nl.rivm.screenit.main.service.mamma.MammaAfspraakService;
 import nl.rivm.screenit.main.service.mamma.MammaScreeningsEenheidService;
 import nl.rivm.screenit.main.web.ScreenitSession;
@@ -65,6 +63,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 
+import jakarta.annotation.Nullable;
+
 import static nl.rivm.screenit.util.DateUtil.LOCAL_DATE_FORMAT;
 
 public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
@@ -81,9 +81,9 @@ public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
 	@SpringBean
 	private MammaAfspraakService afspraakService;
 
-	private IModel<MammaScreeningsEenheid> screeningsEenheidModel;
+	private final IModel<MammaScreeningsEenheid> screeningsEenheidModel;
 
-	private Form form;
+	private final Form form;
 
 	public MammaBlokkadeEditPanel(String id, @Nullable final IModel<MammaBlokkade> blokkadeModel,
 		@Nullable IModel<MammaScreeningsEenheid> screeningsEenheidModel)

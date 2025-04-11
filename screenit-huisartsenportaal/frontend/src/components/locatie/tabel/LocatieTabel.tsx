@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -31,6 +31,7 @@ import {putLocatie} from "../../../api/LocatieThunkAction"
 import LocatieToevoegenModal from "../toevoegen/LocatieToevoegenModal"
 import {AdresDto} from "../../../state/datatypes/dto/AdresDto"
 import LocatieTabelFilter from "./filter/LocatieTabelFilter"
+import {AuthenticationScope} from "../../../state/datatypes/enums/AuthenticationScope"
 
 export interface LocatieTabelProps {
 	nawGegevens?: AdresDto;
@@ -38,7 +39,7 @@ export interface LocatieTabelProps {
 
 const LocatieTabel = (props: LocatieTabelProps) => {
 	const dispatch = useAppThunkDispatch()
-	const auth = useAppSelector((state => state.oauth))
+	const auth = useAppSelector((state => state.auth))
 
 	const [wijzigLocatie, setWijzigLocatie] = useState<LocatieDto | undefined>(undefined)
 	const [verwijderLocatie, setVerwijderLocatie] = useState<LocatieDto | undefined>(undefined)
@@ -62,7 +63,7 @@ const LocatieTabel = (props: LocatieTabelProps) => {
 					<th>{getString(properties.table.headers.postcode)}</th>
 					<th>{getString(properties.table.headers.plaats)}</th>
 					<th>{getString(properties.table.headers.status)}</th>
-					{auth?.scope !== "registreren" && <th>{getString(properties.table.headers.wijzigen)}</th>}
+					{auth?.scope !== AuthenticationScope.REGISTREREN && <th>{getString(properties.table.headers.wijzigen)}</th>}
 					<th>{getString(properties.table.headers.verwijderen)}</th>
 				</tr>
 				</thead>
@@ -74,7 +75,7 @@ const LocatieTabel = (props: LocatieTabelProps) => {
 						<td>{locatie.locatieAdres.postcode}</td>
 						<td>{locatie.locatieAdres.woonplaats.naam}</td>
 						<td><LocatieStatusComponent status={locatie.status}/></td>
-						<td>{(auth?.scope !== "registreren" && locatie.status !== LocatieStatus.INACTIEF) &&
+						<td>{(auth?.scope !== AuthenticationScope.REGISTREREN && locatie.status !== LocatieStatus.INACTIEF) &&
 							<i className="bi bi-pencil" onClick={() => setWijzigLocatie(locatie)}/>}</td>
 						<td>{(locatie.status !== LocatieStatus.INACTIEF) &&
 							<i className="bi bi-trash3" onClick={() => setVerwijderLocatie(locatie)}/>}</td>

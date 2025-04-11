@@ -29,8 +29,8 @@ import nl.rivm.screenit.model.mamma.MammaPostcodeReeks_;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.data.util.Pair;
 
 import com.google.common.collect.Range;

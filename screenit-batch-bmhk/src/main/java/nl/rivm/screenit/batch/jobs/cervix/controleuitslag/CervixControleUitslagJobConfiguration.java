@@ -28,6 +28,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,7 +40,7 @@ public class CervixControleUitslagJobConfiguration extends AbstractJobConfigurat
 	@Bean
 	public Job controleMissendeUitslagenJob(CervixControleUitslagJobListener listener, Step controleMissendeUitslagenStep)
 	{
-		return jobBuilderFactory.get(JobType.CERVIX_CONTROLE_MISSENDE_UITSLAGEN.name())
+		return new JobBuilder(JobType.CERVIX_CONTROLE_MISSENDE_UITSLAGEN.name(), repository)
 			.listener(listener)
 			.start(controleMissendeUitslagenStep)
 			.build();
@@ -47,9 +49,8 @@ public class CervixControleUitslagJobConfiguration extends AbstractJobConfigurat
 	@Bean
 	public Step controleMissendeUitslagenStep(CervixControleMissendeUitslagenReader reader, CervixControleMissendeUitslagenWriter writer)
 	{
-		return stepBuilderFactory.get("controleMissendeUitslagenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(50)
+		return new StepBuilder("controleMissendeUitslagenStep", repository)
+			.<Long, Long> chunk(50, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

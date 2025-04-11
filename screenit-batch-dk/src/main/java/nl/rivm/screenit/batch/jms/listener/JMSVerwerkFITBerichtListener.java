@@ -21,9 +21,6 @@ package nl.rivm.screenit.batch.jms.listener;
  * =========================LICENSE_END==================================
  */
 
-import javax.jms.JMSException;
-import javax.jms.Session;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,6 +29,9 @@ import nl.rivm.screenit.batch.service.ColonFITHL7BerichtInlezenService;
 import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.stereotype.Component;
+
+import jakarta.jms.JMSException;
+import jakarta.jms.Session;
 
 @Component
 @Slf4j

@@ -24,12 +24,14 @@ package nl.rivm.screenit.model;
 
 import nl.rivm.screenit.model.enums.ClientGebeurtenisType;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
 public class ClientGebeurtenis implements Serializable, Comparable<ClientGebeurtenis>
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private Date datum;

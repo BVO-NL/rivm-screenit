@@ -24,14 +24,14 @@ package nl.rivm.screenit.model.colon;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -53,27 +53,27 @@ import org.hibernate.envers.Audited;
 @Setter
 public class ColonAfmelding extends Afmelding<ColonScreeningRonde, ColonDossier, ColonBrief>
 {
-	@ManyToOne(optional = true, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@ManyToOne(optional = true, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private ColonScreeningRonde screeningRonde;
 
-	@ManyToOne(optional = true, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@ManyToOne(optional = true, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private ColonDossier dossier;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = javax.persistence.CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = jakarta.persistence.CascadeType.ALL)
 	private ColonBrief afmeldingAanvraag;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = javax.persistence.CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = jakarta.persistence.CascadeType.ALL)
 	private ColonBrief afmeldingBevestiging;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = javax.persistence.CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = jakarta.persistence.CascadeType.ALL)
 	private ColonBrief heraanmeldAanvraag;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = javax.persistence.CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = jakarta.persistence.CascadeType.ALL)
 	private ColonBrief heraanmeldBevestiging;
 
-	@OneToMany(mappedBy = "afmelding", fetch = FetchType.LAZY, cascade = javax.persistence.CascadeType.ALL)
+	@OneToMany(mappedBy = "afmelding", fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.ALL)
 	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<ColonBrief> brieven = new ArrayList<>();
 

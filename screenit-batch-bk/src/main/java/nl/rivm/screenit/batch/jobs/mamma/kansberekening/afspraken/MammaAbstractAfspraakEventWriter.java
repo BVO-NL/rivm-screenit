@@ -23,8 +23,6 @@ package nl.rivm.screenit.batch.jobs.mamma.kansberekening.afspraken;
 
 import java.util.function.Consumer;
 
-import javax.persistence.EntityGraph;
-
 import nl.rivm.screenit.batch.jobs.mamma.kansberekening.MammaAbstractEventWriter;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
@@ -38,6 +36,8 @@ import nl.rivm.screenit.repository.mamma.MammaKansberekeningAfspraakEventReposit
 import nl.rivm.screenit.service.mamma.MammaBaseKansberekeningService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
+import jakarta.persistence.EntityGraph;
 
 public abstract class MammaAbstractAfspraakEventWriter extends MammaAbstractEventWriter<MammaAfspraak>
 {

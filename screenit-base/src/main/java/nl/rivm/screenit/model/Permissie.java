@@ -21,12 +21,12 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -89,9 +89,8 @@ public class Permissie extends AbstractHibernateObject implements Permission
 	@Override
 	public boolean implies(Permission p)
 	{
-		if (p instanceof Permissie)
+		if (p instanceof Permissie permissie)
 		{
-			Permissie permissie = (Permissie) p;
 			if (permissie.getRecht().equals(recht))
 			{
 				if (permissie.getActie() == null || permissie.getActie().getNiveau() <= actie.getNiveau()) 

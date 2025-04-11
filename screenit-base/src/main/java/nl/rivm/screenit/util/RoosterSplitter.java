@@ -55,13 +55,13 @@ public class RoosterSplitter
 			tot = startDate.plusMinutes(duurAfspraakInMinuten);
 			splittedAfspraakslot.setTot(tot);
 			startDate = tot;
-			if (session instanceof Session)
+			if (session instanceof Session session1)
 			{
-				((Session) session).saveOrUpdate(splittedAfspraakslot);
+				session1.saveOrUpdate(splittedAfspraakslot);
 			}
-			else if (session instanceof HibernateService)
+			else if (session instanceof HibernateService service)
 			{
-				((HibernateService) session).saveOrUpdate(splittedAfspraakslot);
+				service.saveOrUpdate(splittedAfspraakslot);
 			}
 		}
 	}

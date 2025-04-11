@@ -21,6 +21,13 @@ package nl.rivm.screenit.util.rest;
  * =========================LICENSE_END==================================
  */
 
+import java.time.Duration;
+
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.util.Timeout;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
@@ -31,27 +38,31 @@ public final class RestApiFactory
 
 	}
 
-	public static final RestTemplate create()
+	public static RestTemplate create()
 	{
 		return create(null);
 	}
 
-	public static final RestTemplate create(Integer readTimeout)
+	public static RestTemplate create(Duration readTimeout)
 	{
-		LoggingRequestInterceptor loggingInterceptor = new LoggingRequestInterceptor();
-		RestTemplate restTemplate = null;
-		if (readTimeout != null)
+		var connectionManager = new PoolingHttpClientConnectionManager();
+
+		if (readTimeout == null)
 		{
-			HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
-			httpRequestFactory.setReadTimeout(readTimeout);
-			restTemplate = new RestTemplate(httpRequestFactory);
+			readTimeout = Duration.ofMinutes(150); 
 		}
-		else
-		{
-			restTemplate = new RestTemplate();
-		}
-		restTemplate.setErrorHandler(new ScreenitRestErrorHandler());
-		restTemplate.getInterceptors().add(loggingInterceptor);
-		return restTemplate;
+		connectionManager.setDefaultSocketConfig(SocketConfig.custom()
+			.setSoTimeout(Timeout.of(readTimeout))
+			.build());
+
+		var httpClient = HttpClientBuilder.create()
+			.setConnectionManager(connectionManager)
+			.build();
+
+		return new RestTemplateBuilder()
+			.requestFactory(() -> new HttpComponentsClientHttpRequestFactory(httpClient))
+			.errorHandler(new ScreenitRestErrorHandler())
+			.additionalInterceptors(new LoggingRequestInterceptor())
+			.build();
 	}
 }

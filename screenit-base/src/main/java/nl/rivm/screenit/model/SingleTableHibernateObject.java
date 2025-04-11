@@ -21,19 +21,21 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.MappedSuperclass;
-import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serial;
 
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 
 import org.hibernate.Hibernate;
+
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 @XmlTransient
 @MappedSuperclass
@@ -41,6 +43,7 @@ import org.hibernate.Hibernate;
 public abstract class SingleTableHibernateObject implements HibernateObject
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@XmlTransient

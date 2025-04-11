@@ -28,6 +28,7 @@ import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.MergedBrievenFilter;
+import nl.rivm.screenit.model.OnderzoeksresultatenActie;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 
@@ -46,4 +47,6 @@ public interface BriefService
 	List<BezwaarBrief> getBrievenVanBezwaar(BezwaarMoment moment);
 
 	List<BezwaarBrief> getOorspronkelijkeBevestigingsbrieven(BezwaarMoment bezwaarMoment);
+
+	List<BezwaarBrief> getOorspronkelijkeBevestigingsbrieven(OnderzoeksresultatenActie actie);
 }

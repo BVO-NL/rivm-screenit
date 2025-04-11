@@ -29,6 +29,7 @@ public enum MammaLaesieTypeMergeField implements INaam
 	TABLE_CALCIFICATIES("Calificaties", "calcificaties"),
 	TABLE_ARCHITECTUUR_VERSTORING("Architectuur verstoring", "architectuur_verstoring"),
 	TABLE_ASYMMETRIE("Asymmetrie", "asymmetrie"),
+	_BK_LAESIE_VOLGORDE("Laesie volgorde", "_BK_LAESIE_VOLGORDE"),
 	_BK_LAESIE_ZIJDE("Laesie zijde", "_BK_LAESIE_ZIJDE"),
 	_BK_LAESIE_KWADRANT("Laesie kwadrant", "_BK_LAESIE_KWADRANT"),
 	_BK_LAESIE_DIEPTE("Laesie diepte", "_BK_LAESIE_DIEPTE"),

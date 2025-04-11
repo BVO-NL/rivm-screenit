@@ -21,13 +21,13 @@ package nl.rivm.screenit.batch.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import javax.annotation.PostConstruct;
-
 import nl.rivm.screenit.batch.JschLogger;
 
 import org.springframework.stereotype.Service;
 
 import com.jcraft.jsch.JSch;
+
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class JSCHLogInitializer

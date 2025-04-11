@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.jms.listener;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,9 +21,6 @@ package nl.rivm.screenit.huisartsenportaal.jms.listener;
  * =========================LICENSE_END==================================
  */
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-
 import nl.rivm.screenit.huisartsenportaal.dto.AanvraagDto;
 import nl.rivm.screenit.huisartsenportaal.dto.HuisartsDto;
 import nl.rivm.screenit.huisartsenportaal.dto.LocatieDto;
@@ -32,7 +29,7 @@ import nl.rivm.screenit.huisartsenportaal.dto.ResetDto;
 import nl.rivm.screenit.huisartsenportaal.dto.VerrichtingDto;
 import nl.rivm.screenit.huisartsenportaal.dto.WoonplaatsDto;
 import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
-import nl.rivm.screenit.huisartsenportaal.service.BetalingService;
+import nl.rivm.screenit.huisartsenportaal.service.AuthenticatieService;
 import nl.rivm.screenit.huisartsenportaal.service.HuisartsService;
 import nl.rivm.screenit.huisartsenportaal.service.LabformulierService;
 import nl.rivm.screenit.huisartsenportaal.service.LocatieService;
@@ -47,6 +44,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
+
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
 
 @Component
 public class MessageListener
@@ -73,7 +73,7 @@ public class MessageListener
 	private VerrichtingenService verrichtingenService;
 
 	@Autowired
-	private BetalingService betalingService;
+	private AuthenticatieService authenticatieService;
 
 	@Autowired
 	private SynchronisatieService synchronisatieService;
@@ -84,59 +84,52 @@ public class MessageListener
 		try
 		{
 			String loginfo = "Synchronisatie bericht " + message.getJMSMessageID();
-			if (message instanceof ActiveMQObjectMessage)
+			if (message instanceof ActiveMQObjectMessage objectMessage)
 			{
-				ActiveMQObjectMessage objectMessage = (ActiveMQObjectMessage) message;
 				Object object = objectMessage.getObject();
 
-				if (object instanceof HuisartsDto)
+				if (object instanceof HuisartsDto dto)
 				{
-					HuisartsDto dto = (HuisartsDto) object;
-					LOG.info(loginfo + " voor type huisarts(ha_id: " + dto.getHuisartsportaalId() + ", s_id: " + dto.getScreenitId() + ")");
+					LOG.info("{} voor type huisarts(ha_id: {}, s_id: {})", loginfo, dto.getHuisartsportaalId(), dto.getScreenitId());
 					huisartsService.updateAndGetHuisarts(dto);
 				}
 
-				else if (object instanceof LocatieDto)
+				else if (object instanceof LocatieDto dto)
 				{
-					LocatieDto dto = (LocatieDto) object;
 					Huisarts huisarts = huisartsService.getHuisartsWith(dto.getHuisartsId());
-					LOG.info(loginfo + " voor type locatie(ha_id: " + dto.getHuisartsportaalId() + ", s_id: " + dto.getScreenitId() + ")");
+					LOG.info("{} voor type locatie(ha_id: {}, s_id: {})", loginfo, dto.getHuisartsportaalId(), dto.getScreenitId());
+
 					locatieService.updateAndGetLocatie(huisarts, dto);
 					locatieService.nietVerstuurdeLabformulierenVerwijderen(dto);
 				}
-				else if (object instanceof OvereenkomstDto)
+				else if (object instanceof OvereenkomstDto dto)
 				{
-					OvereenkomstDto dto = (OvereenkomstDto) object;
-					LOG.info(loginfo + " voor type overeenkomst(ha_id: " + dto.getHuisartsportaalId() + ", s_id: " + dto.getScreenitId() + ")");
-					overeenkomstService.saveOrUpdateOvereenkomst((OvereenkomstDto) object);
+					LOG.info("{} voor type overeenkomst(ha_id: {}, s_id: {})", loginfo, dto.getHuisartsportaalId(), dto.getScreenitId());
+					overeenkomstService.saveOrUpdateOvereenkomst(dto);
 				}
-				else if (object instanceof AanvraagDto)
+				else if (object instanceof AanvraagDto dto)
 				{
-					AanvraagDto dto = (AanvraagDto) object;
-					LOG.info(loginfo + " voor type aanvraag(ha_id: " + dto.getHuisartsportaalId() + ", s_id: " + dto.getScreenitId() + ")");
-					labformulierService.saveScreenITAanvraag((AanvraagDto) object);
+					LOG.info("{} voor type aanvraag(ha_id: {}, s_id: {})", loginfo, dto.getHuisartsportaalId(), dto.getScreenitId());
+					labformulierService.saveScreenITAanvraag(dto);
 				}
-				else if (object instanceof WoonplaatsDto)
+				else if (object instanceof WoonplaatsDto dto)
 				{
-					WoonplaatsDto dto = (WoonplaatsDto) object;
-					LOG.info(loginfo + " voor type woonplaats(ha_id: " + dto.getHuisartsportaalId() + ", s_id: " + dto.getScreenitId() + ")");
-					woonplaatsService.saveScreenITWoonplaats((WoonplaatsDto) object);
+					LOG.info("{} voor type woonplaats(ha_id: {}, s_id: {})", loginfo, dto.getHuisartsportaalId(), dto.getScreenitId());
+					woonplaatsService.saveScreenITWoonplaats(dto);
 				}
-				else if (object instanceof ResetDto)
+				else if (object instanceof ResetDto dto)
 				{
-					ResetDto dto = (ResetDto) object;
 					Huisarts huisarts = huisartsService.getHuisartsWith(dto.getHuisarts_id());
-					huisarts = huisartsService.wachtwoordVergeten(huisarts);
+					huisarts = authenticatieService.wachtwoordVergeten(huisarts);
 					synchronisatieService.syncHuisarts(huisarts);
 				}
-				else if (object instanceof VerrichtingDto)
+				else if (object instanceof VerrichtingDto dto)
 				{
-					VerrichtingDto dto = (VerrichtingDto) object;
-					LOG.info(loginfo + " voor type verrichting(ha_id: " + dto.getHuisartsportaalId() + ", s_id: " + dto.getScreenitId() + ")");
+					LOG.info("{} voor type verrichting(ha_id: {}, s_id: {})", loginfo, dto.getHuisartsportaalId(), dto.getScreenitId());
 					verrichtingenService.saveScreenITVerrichting(dto);
 				}
 
-				LOG.info("Bericht succesvol verwerkt! " + message.getJMSMessageID());
+				LOG.info("Bericht succesvol verwerkt: {message.getJMSMessageID()}");
 			}
 		}
 		catch (JMSException e)

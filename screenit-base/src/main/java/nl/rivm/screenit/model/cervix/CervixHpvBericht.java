@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.cervix;
 
 /*-
@@ -22,21 +21,10 @@ package nl.rivm.screenit.model.cervix;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
@@ -48,6 +36,18 @@ import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+
 @Entity
 @Table(schema = "cervix", name = "hpv_bericht")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "cervix.cache")
@@ -55,6 +55,7 @@ import org.hibernate.envers.NotAudited;
 public class CervixHpvBericht extends AbstractHibernateObject
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Column(nullable = false, unique = true)
@@ -73,8 +74,8 @@ public class CervixHpvBericht extends AbstractHibernateObject
 	private Date statusDatum;
 
 	@Lob
-	@Type(type = "org.hibernate.type.TextType")
 	@Column(nullable = false)
+	@Type(type = "org.hibernate.type.TextType")
 	@NotAudited
 	private String hl7Bericht;
 

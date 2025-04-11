@@ -21,14 +21,13 @@ package nl.rivm.screenit.batch.jobs.generalis.coordinaten.gemeentecoordstep;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.service.CoordinatenService;
 import nl.rivm.screenit.service.WoonplaatsService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.stereotype.Component;
 
@@ -44,9 +43,9 @@ public class GemeenteCoordinatenWriter implements ItemWriter<String>
 	private final WoonplaatsService woonplaatsService;
 
 	@Override
-	public void write(List<? extends String> items)
+	public void write(Chunk<? extends String> chunk)
 	{
-		for (String item : items)
+		for (String item : chunk.getItems())
 		{
 			String[] lineParts = item.split(",");
 

@@ -25,30 +25,41 @@ import java.util.HashMap;
 
 import nl.rivm.screenit.security.ScreenitRealm;
 
-import org.apache.shiro.cache.ehcache.EhCacheManager;
-import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.cache.jcache.JCacheManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
-import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
+
+import jakarta.servlet.Filter;
 
 @Configuration
 public class ShiroConfig
 {
 	@Bean
-	public SecurityManager shiroSecurityManager(ScreenitRealm screenitRealm, EhCacheManager cacheManager)
+	@Profile("!test")
+	public DefaultWebSecurityManager shiroSecurityManager(ScreenitRealm realm, JCacheManager jCacheManager)
 	{
 		var securityManager = new DefaultWebSecurityManager();
-		securityManager.setRealm(screenitRealm);
-		securityManager.setCacheManager(cacheManager);
+		securityManager.setRealm(realm);
+		securityManager.setCacheManager(jCacheManager);
+		return securityManager;
+	}
+
+	@Bean(name = "shiroSecurityManager")
+	@Profile("test")
+	public DefaultWebSecurityManager shiroSecurityManagerTest(ScreenitRealm realm)
+	{
+		var securityManager = new DefaultWebSecurityManager();
+		securityManager.setRealm(realm);
 		return securityManager;
 	}
 
 	@Bean
-	public ShiroFilterFactoryBean shiroFilter(SecurityManager shiroSecurityManager)
+	public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager shiroSecurityManager)
 	{
 		var filter = new ShiroFilterFactoryBean();
 		filter.setSecurityManager(shiroSecurityManager);
@@ -57,10 +68,10 @@ public class ShiroConfig
 	}
 
 	@Bean
-	public FilterRegistrationBean<AbstractShiroFilter> shiroFilterProxy(ShiroFilterFactoryBean shiroFilter) throws Exception
+	public FilterRegistrationBean<Filter> shiroFilterProxy(ShiroFilterFactoryBean shiroFilter) throws Exception
 	{
-		var filter = new FilterRegistrationBean<AbstractShiroFilter>();
-		filter.setFilter(shiroFilter.getObject());
+		var filter = new FilterRegistrationBean<>();
+		filter.setFilter((Filter) shiroFilter.getObject());
 		filter.setName("shiroFilter");
 		filter.addInitParameter("targetFilterLifecycle", "true");
 		filter.addUrlPatterns("/*");

@@ -21,13 +21,15 @@ package nl.rivm.screenit.model.mamma;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import java.io.Serial;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.mamma.enums.MammaVerzettenReden;
@@ -39,6 +41,7 @@ import org.hibernate.envers.Audited;
 @Audited
 public class MammaKansberekeningAfspraakEvent extends MammaKansberekeningEvent
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "afspraakEvent", optional = false)

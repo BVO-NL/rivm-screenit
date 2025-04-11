@@ -23,8 +23,8 @@ package nl.rivm.screenit.model.cervix.facturatie;
 
 import java.math.BigDecimal;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 
 import lombok.Getter;
 import lombok.Setter;

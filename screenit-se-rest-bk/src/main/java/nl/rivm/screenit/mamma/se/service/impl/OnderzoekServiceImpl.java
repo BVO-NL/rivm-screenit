@@ -26,21 +26,17 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import nl.rivm.screenit.mamma.se.dto.ZorginstellingDto;
 import nl.rivm.screenit.mamma.se.dto.actions.MaakDubbeleTijdDto;
 import nl.rivm.screenit.mamma.se.dto.actions.MaakDubbeleTijdRedenDto;
 import nl.rivm.screenit.mamma.se.dto.actions.OnderzoekOpslaanDto;
 import nl.rivm.screenit.mamma.se.dto.actions.SignalerenOpslaanDto;
-import nl.rivm.screenit.mamma.se.dto.onderzoek.OnderzoekSeDto;
-import nl.rivm.screenit.mamma.se.dto.onderzoek.SignalerenSeDto;
 import nl.rivm.screenit.mamma.se.repository.MammaAfspraakRepository;
 import nl.rivm.screenit.mamma.se.service.MammaAfspraakService;
 import nl.rivm.screenit.mamma.se.service.OnderzoekAfrondenService;
 import nl.rivm.screenit.mamma.se.service.OnderzoekService;
 import nl.rivm.screenit.mamma.se.service.dtomapper.ZorginstellingDtoMapper;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContact;
 import nl.rivm.screenit.model.ClientContactActie;
 import nl.rivm.screenit.model.ClientContactActieType;
@@ -52,7 +48,6 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaDossier;
-import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekStatus;
 import nl.rivm.screenit.repository.algemeen.InstellingRepository;
@@ -114,10 +109,10 @@ public class OnderzoekServiceImpl implements OnderzoekService
 	@Override
 	public void opslaan(OnderzoekOpslaanDto action, InstellingGebruiker gebruiker)
 	{
-		MammaAfspraak afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), gebruiker);
-		OnderzoekSeDto onderzoekSeDto = action.getOnderzoek();
+		var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), gebruiker);
+		var onderzoekSeDto = action.getOnderzoek();
 
-		MammaOnderzoek onderzoek = afspraak.getOnderzoek();
+		var onderzoek = afspraak.getOnderzoek();
 		onderzoek.setEerderMammogramZorginstelling(
 			onderzoekSeDto.getEerderMammogramZorginstellingId() == null ? null : hibernateService.get(ZorgInstelling.class, onderzoekSeDto.getEerderMammogramZorginstellingId()));
 		onderzoek.setEerderMammogramJaartal(onderzoekSeDto.getEerderMammogramJaartal());
@@ -131,6 +126,7 @@ public class OnderzoekServiceImpl implements OnderzoekService
 		onderzoek.setOperatieLinks(onderzoekSeDto.isOperatieLinks());
 		onderzoek.setAmputatie(onderzoekSeDto.getAmputatie());
 		onderzoek.setAanvullendeInformatieOperatie(onderzoekSeDto.getAanvullendeInformatieOperatie());
+		onderzoek.setHuidscheuring(onderzoekSeDto.isHuidscheuring());
 		onderzoek.setStatus(onderzoekSeDto.getStatus());
 		onderzoek.setOnderzoekType(onderzoekSeDto.getOnderzoekType() != null ? onderzoekSeDto.getOnderzoekType() : MammaOnderzoekType.MAMMOGRAFIE);
 
@@ -139,16 +135,14 @@ public class OnderzoekServiceImpl implements OnderzoekService
 		onderzoek.setExtraFotosRedenen(onderzoekSeDto.getExtraFotosRedenen());
 
 		onderzoek.setAdviesHuisarts(onderzoekSeDto.getAdviesHuisarts());
-
-		hibernateService.saveOrUpdate(onderzoek);
 	}
 
 	@Override
 	public void signalerenOpslaan(SignalerenOpslaanDto action, InstellingGebruiker instellingGebruiker, LocalDateTime transactieDatumTijd)
 	{
-		final MammaAfspraak afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), instellingGebruiker);
-		SignalerenSeDto signalering = action.getSignaleren();
-		MammaOnderzoek onderzoek = afspraak.getOnderzoek();
+		var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), instellingGebruiker);
+		var signalering = action.getSignaleren();
+		var onderzoek = afspraak.getOnderzoek();
 		onderzoekAfrondenService.maakSignalering(instellingGebruiker, onderzoek, signalering, transactieDatumTijd);
 
 	}
@@ -156,8 +150,8 @@ public class OnderzoekServiceImpl implements OnderzoekService
 	@Override
 	public void maakDubbeleTijd(MaakDubbeleTijdDto action, InstellingGebruiker account, LocalDateTime transactieDatumTijd)
 	{
-		MammaAfspraak afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), account);
-		MammaDossier dossier = afspraak.getUitnodiging().getScreeningRonde().getDossier();
+		var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), account);
+		var dossier = afspraak.getUitnodiging().getScreeningRonde().getDossier();
 
 		if (moetDoelgroepUpdaten(action, dossier))
 		{
@@ -170,8 +164,8 @@ public class OnderzoekServiceImpl implements OnderzoekService
 	@Override
 	public void maakDubbeleTijdReden(MaakDubbeleTijdRedenDto action, InstellingGebruiker account)
 	{
-		MammaAfspraak afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), account);
-		MammaDossier dossier = afspraak.getUitnodiging().getScreeningRonde().getDossier();
+		var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), account);
+		var dossier = afspraak.getUitnodiging().getScreeningRonde().getDossier();
 
 		dossier.setDubbeleTijdReden(action.getDubbeleTijdReden());
 	}
@@ -234,28 +228,28 @@ public class OnderzoekServiceImpl implements OnderzoekService
 	@Override
 	public List<ZorginstellingDto> getBKZorginstellingen()
 	{
-		ZorginstellingDtoMapper mapper = new ZorginstellingDtoMapper();
+		var mapper = new ZorginstellingDtoMapper();
 		var lijstOrganisatieType = List.of(OrganisatieType.MAMMAPOLI, OrganisatieType.RADIOLOGIEAFDELING);
 		return instellingRepository.findWith(isZorgInstelling()
 				.and(heeftSubInstellingVanType(lijstOrganisatieType)), q -> q.distinct().all())
 			.stream().map(mapper::createZorginstellingDto)
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	private void maakLoggebeurtenisDoelgroepGewijzigd(MammaAfspraak afspraak, InstellingGebruiker account, LocalDateTime transactieDatumTijd)
 	{
-		ClientContact contact = new ClientContact();
-		final Client client = afspraak.getUitnodiging().getScreeningRonde().getDossier().getClient();
+		var contact = new ClientContact();
+		var client = afspraak.getUitnodiging().getScreeningRonde().getDossier().getClient();
 		contact.setClient(client);
 		contact.setInstellingGebruiker(account);
 		contact.setDatum(DateUtil.toUtilDate(currentDateSupplier.getLocalDateTime()));
 
-		ClientContactActie actie = new ClientContactActie();
+		var actie = new ClientContactActie();
 		actie.setType(ClientContactActieType.MAMMA_DOELGROEP_WIJZIGEN);
 		actie.setContact(contact);
 		hibernateService.saveOrUpdateAll(contact, actie);
 
-		String diffFieldToLatestVersion = EntityAuditUtil.getDiffFieldsToLatestVersion(afspraak.getUitnodiging().getScreeningRonde().getDossier(),
+		var diffFieldToLatestVersion = EntityAuditUtil.getDiffFieldsToLatestVersion(afspraak.getUitnodiging().getScreeningRonde().getDossier(),
 			hibernateService.getHibernateSession(), "doelgroep");
 		logService.logGebeurtenis(LogGebeurtenis.MAMMA_DOELGROEP_GEWIJZIGD, afspraak.getStandplaatsPeriode().getScreeningsEenheid(), account, client, diffFieldToLatestVersion,
 			transactieDatumTijd, Bevolkingsonderzoek.MAMMA);

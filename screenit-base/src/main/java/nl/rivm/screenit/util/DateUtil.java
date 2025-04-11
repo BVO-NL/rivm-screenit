@@ -44,7 +44,7 @@ import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.GbaPersoon;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BoundType;
@@ -255,9 +255,9 @@ public final class DateUtil
 		{
 			return null;
 		}
-		if (utilDate instanceof java.sql.Date)
+		if (utilDate instanceof java.sql.Date date)
 		{
-			return ((java.sql.Date) utilDate).toLocalDate(); 
+			return date.toLocalDate(); 
 		}
 		return toLocalDateTime(utilDate).toLocalDate();
 	}
@@ -277,13 +277,13 @@ public final class DateUtil
 		{
 			return null;
 		}
-		if (utilDate instanceof java.sql.Timestamp)
+		if (utilDate instanceof java.sql.Timestamp timestamp)
 		{
-			return ((java.sql.Timestamp) utilDate).toLocalDateTime(); 
+			return timestamp.toLocalDateTime(); 
 		}
-		if (utilDate instanceof java.sql.Date)
+		if (utilDate instanceof java.sql.Date date)
 		{
-			return ((java.sql.Date) utilDate).toLocalDate().atStartOfDay(); 
+			return date.toLocalDate().atStartOfDay(); 
 		}
 		return LocalDateTime.ofInstant(utilDate.toInstant(), SCREENIT_DEFAULT_ZONE);
 	}
@@ -294,9 +294,9 @@ public final class DateUtil
 		{
 			return null;
 		}
-		if (utilDate instanceof java.sql.Time)
+		if (utilDate instanceof java.sql.Time time)
 		{
-			return ((java.sql.Time) utilDate).toLocalTime(); 
+			return time.toLocalTime(); 
 		}
 		return toLocalDateTime(utilDate).toLocalTime();
 	}
@@ -318,13 +318,13 @@ public final class DateUtil
 		}
 
 		LocalDateTime localDateTime;
-		if (temporal instanceof LocalDate)
+		if (temporal instanceof LocalDate date)
 		{
-			localDateTime = ((LocalDate) temporal).atStartOfDay();
+			localDateTime = date.atStartOfDay();
 		}
-		else if (temporal instanceof LocalDateTime)
+		else if (temporal instanceof LocalDateTime time)
 		{
-			localDateTime = (LocalDateTime) temporal;
+			localDateTime = time;
 		}
 		else
 		{
@@ -633,6 +633,24 @@ public final class DateUtil
 			return 0;
 		}
 		return Ints.checkedCast(tijdseenheid.between(start, eind));
+	}
+
+	public static int aantalDagenVerschil(Date start, Date eind)
+	{
+		if (start == null || eind == null)
+		{
+			return 0;
+		}
+
+		var startdatum = toLocalDateTime(start);
+		var einddatum = toLocalDateTime(eind);
+
+		if (startdatum.isAfter(einddatum))
+		{
+			LOG.warn("Startdatum {} is na einddatum {}", startdatum, einddatum);
+		}
+
+		return getPeriodeTussenTweeDatums(startdatum.toLocalDate(), einddatum.toLocalDate(), ChronoUnit.DAYS);
 	}
 
 	public static boolean overlaps(Range<Date> a, Range<Date> b)

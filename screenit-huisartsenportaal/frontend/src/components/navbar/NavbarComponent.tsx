@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -35,7 +35,7 @@ import {ToastType} from "../../state/datatypes/Toast"
 import React from "react"
 
 const NavbarComponent = () => {
-	const auth = useAppSelector(state => state.oauth)
+	const auth = useAppSelector(state => state.auth)
 	const user = useAppSelector(state => state.user)
 	const navigate = useNavigate()
 	const dispatch = useAppThunkDispatch()
@@ -59,7 +59,7 @@ const NavbarComponent = () => {
 			{!!auth && <Nav className={"ms-auto"}>
 				{(user && heeftRecht(user, Recht.ROLE_AANVRAGEN)) && maakNavItem("/gegevens", "Wijzig gegevens")}
 				{maakNavItem("/logout", "Afmelden", () => {
-					dispatch(loadingThunkAction(afmelden(auth))).then(() => {
+					dispatch(loadingThunkAction(afmelden())).then(() => {
 						dispatch(createActionPushToast({type: ToastType.SUCCESS, message: "U bent uitgelogd"}))
 						navigate("/")
 					})

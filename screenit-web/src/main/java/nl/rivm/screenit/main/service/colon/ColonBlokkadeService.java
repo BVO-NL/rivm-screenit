@@ -25,8 +25,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.Nullable;
-
 import nl.rivm.screenit.exceptions.OpslaanVerwijderenTijdBlokException;
 import nl.rivm.screenit.main.exception.BulkAanmakenException;
 import nl.rivm.screenit.main.exception.BulkVerwijderenException;
@@ -44,6 +42,8 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import org.springframework.data.domain.Sort;
 
 import com.google.common.collect.Range;
+
+import jakarta.annotation.Nullable;
 
 public interface ColonBlokkadeService
 {

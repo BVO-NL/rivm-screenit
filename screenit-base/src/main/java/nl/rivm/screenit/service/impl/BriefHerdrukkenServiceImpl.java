@@ -171,17 +171,17 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 		nieuweProjectBrief.setBriefType(oudeProjectBrief.getBriefType());
 
 		ClientBrief nieuweBrief = null;
-		if (oudeBrief instanceof CervixBrief)
+		if (oudeBrief instanceof CervixBrief brief)
 		{
-			nieuweBrief = opnieuwAanmakenCervixBrief((CervixBrief) oudeBrief);
+			nieuweBrief = opnieuwAanmakenCervixBrief(brief);
 		}
-		else if (oudeBrief instanceof ColonBrief)
+		else if (oudeBrief instanceof ColonBrief brief)
 		{
-			nieuweBrief = opnieuwAanmakenColonBrief((ColonBrief) oudeBrief);
+			nieuweBrief = opnieuwAanmakenColonBrief(brief);
 		}
-		else if (oudeBrief instanceof MammaBrief)
+		else if (oudeBrief instanceof MammaBrief brief)
 		{
-			nieuweBrief = opnieuwAanmakenMammaBrief((MammaBrief) oudeBrief);
+			nieuweBrief = opnieuwAanmakenMammaBrief(brief);
 		}
 		if (nieuweBrief != null)
 		{
@@ -261,9 +261,8 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 
 		ClientBrief<?, ?, ?> origineleBrief = (ClientBrief<?, ?, ?>) BriefUtil.getOrigineleBrief(brief);
 		boolean magHerdrukken = true;
-		if (origineleBrief instanceof CervixBrief)
+		if (origineleBrief instanceof CervixBrief cervixBrief)
 		{
-			CervixBrief cervixBrief = (CervixBrief) origineleBrief;
 			if (BriefType.getCervixUitstrijkjeBrieven().contains(cervixBrief.getBriefType())
 				|| BriefType.getCervixZasBrieven().contains(cervixBrief.getBriefType()))
 			{
@@ -280,9 +279,8 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 				magHerdrukken = !briefService.briefTypeWachtOpKlaarzettenInDezeRonde(cervixBrief);
 			}
 		}
-		else if (origineleBrief instanceof MammaBrief)
+		else if (origineleBrief instanceof MammaBrief mammaBrief)
 		{
-			MammaBrief mammaBrief = (MammaBrief) origineleBrief;
 			MammaScreeningRonde screeningRonde = mammaBrief.getScreeningRonde();
 			if (mammaBrief.getUitnodiging() != null && screeningRonde.getStatus() == ScreeningRondeStatus.AFGEROND)
 			{
@@ -297,9 +295,8 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 		{
 			magHerdrukken = BriefUtil.isGegenereerd(brief);
 		}
-		else if (origineleBrief instanceof ProjectBrief && brief instanceof ProjectBrief)
+		else if (origineleBrief instanceof ProjectBrief && brief instanceof ProjectBrief projectBrief)
 		{
-			ProjectBrief projectBrief = (ProjectBrief) brief;
 			var bvoOnafhankelijkeBriefActieTypes = new ArrayList<>(List.of(ProjectBriefActieType.values()));
 			bvoOnafhankelijkeBriefActieTypes.remove(ProjectBriefActieType.VERVANGENDEBRIEF);
 			if (bvoOnafhankelijkeBriefActieTypes.contains(projectBrief.getDefinitie().getType())
@@ -310,9 +307,8 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 				magHerdrukken = false;
 			}
 		}
-		else if (origineleBrief instanceof AlgemeneBrief)
+		else if (origineleBrief instanceof AlgemeneBrief algemeneBrief)
 		{
-			AlgemeneBrief algemeneBrief = (AlgemeneBrief) origineleBrief;
 			magHerdrukken = BriefUtil.isGegenereerd(brief);
 			if (algemeneBrief.getBriefDefinitie() != null && algemeneBrief.getClient().getAlgemeneBrieven().stream()
 				.filter(b -> b.getBriefDefinitie().equals(algemeneBrief.getBriefDefinitie()))

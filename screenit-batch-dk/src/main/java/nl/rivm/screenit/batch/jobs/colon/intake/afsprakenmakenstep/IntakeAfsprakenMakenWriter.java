@@ -23,7 +23,6 @@ package nl.rivm.screenit.batch.jobs.colon.intake.afsprakenmakenstep;
 
 import java.math.BigDecimal;
 import java.util.Collections;
-import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,6 +58,7 @@ import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -99,7 +99,7 @@ public class IntakeAfsprakenMakenWriter implements ItemWriter<ClientAfspraak>
 	private static final int AANTAL_DAGEN = 14;
 
 	@Override
-	public void write(List<? extends ClientAfspraak> items)
+	public void write(Chunk<? extends ClientAfspraak> chunk)
 	{
 		Integer intakeafspraakperiode = preferenceService.getInteger(PreferenceKey.INTAKEAFSPRAAKPERIODE.name());
 		if (intakeafspraakperiode == null)
@@ -122,7 +122,7 @@ public class IntakeAfsprakenMakenWriter implements ItemWriter<ClientAfspraak>
 		Boolean allesVerwerkt = (Boolean) executionContext.get(IntakeAfsprakenMakenConstants.ALLE_INTAKES_VERWERKT);
 
 		boolean maxExtraDagenBereikt = intakeMelding.getAantalExtraDagen() >= preferenceService.getInteger(PreferenceKey.COLON_MAX_EXTRA_DAGEN_PLANNING_INTAKE.name());
-		for (var afspraakOptie : items)
+		for (var afspraakOptie : chunk.getItems())
 		{
 			String bsn = null;
 			Long clientId = null;

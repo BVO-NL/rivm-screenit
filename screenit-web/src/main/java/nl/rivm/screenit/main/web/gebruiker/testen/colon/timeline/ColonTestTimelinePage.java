@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.web.gebruiker.testen.colon.timeline;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
@@ -64,8 +63,8 @@ import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.model.DetachableListModel;
 import nl.topicuszorg.wicket.model.SortingListModel;
 
-import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -88,7 +87,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 import org.wicketstuff.shiro.ShiroConstraint;
-import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 
 @SecurityConstraint(
 	actie = Actie.INZIEN,
@@ -115,10 +113,6 @@ public class ColonTestTimelinePage extends TestenBasePage
 	private IModel<List<TestTimelineRonde>> rondesModel;
 
 	private final Form<TestTimelineModel> form;
-
-	private WebMarkupContainer formComponents;
-
-	private DatePicker<Date> geboortedatum;
 
 	private final BootstrapDialog dialog;
 
@@ -147,8 +141,6 @@ public class ColonTestTimelinePage extends TestenBasePage
 		clientResetForm.add(new AjaxButton("resetten", clientResetForm)
 		{
 
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void onSubmit(AjaxRequestTarget target)
 			{
@@ -167,7 +159,8 @@ public class ColonTestTimelinePage extends TestenBasePage
 		add(clientResetForm);
 	}
 
-	private WebMarkupContainer getFormComponentsContainer()
+	@Override
+	protected WebMarkupContainer getFormComponentsContainer()
 	{
 		WebMarkupContainer container = new WebMarkupContainer("formComponents");
 		container.setOutputMarkupId(true);
@@ -180,26 +173,23 @@ public class ColonTestTimelinePage extends TestenBasePage
 		Label aNummer = new Label("aNummer");
 		container.add(aNummer);
 
-		bsnField.add(new AjaxEventBehavior("change")
+		bsnField.add(new AjaxFormComponentUpdatingBehavior("change")
 		{
 			@Override
-			protected void onEvent(AjaxRequestTarget target)
+			protected void onUpdate(AjaxRequestTarget target)
 			{
-				WebMarkupContainer geContainer = getGebeurtenissenContainer();
-				gebeurtenissenContainer.replaceWith(geContainer);
-				gebeurtenissenContainer = geContainer;
-				gebeurtenissenContainer.setVisible(false);
-				target.add(gebeurtenissenContainer);
+				var clienten = testService.vindClienten(model.getObject().getBsns(), Bevolkingsonderzoek.COLON);
+				refreshForm(clienten, target, model.getObject());
 			}
 		});
 
 		addClientBsnGenererenButtons(container, model);
 
-		geboortedatum = ComponentHelper.monthYearDatePicker("geboortedatum");
+		var geboortedatum = ComponentHelper.monthYearDatePicker("geboortedatum");
 		geboortedatum.setOutputMarkupId(true);
 		container.add(geboortedatum);
 
-		List<Geslacht> geslachten = new ArrayList<Geslacht>(Arrays.asList(Geslacht.values()));
+		List<Geslacht> geslachten = new ArrayList<>(Arrays.asList(Geslacht.values()));
 		geslachten.remove(Geslacht.NIET_GESPECIFICEERD);
 		RadioChoice<Geslacht> geslachtRadio = new TestEnumRadioChoice<>("geslacht", geslachten, new EnumChoiceRenderer<>(this));
 		geslachtRadio.setPrefix("<label class=\"radio\">");
@@ -216,34 +206,21 @@ public class ColonTestTimelinePage extends TestenBasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				TestTimelineModel timelineModel = model.getObject();
-				List<Client> clienten = testTimelineService.maakOfVindClienten(timelineModel);
-				List<String> warnings = testTimelineService.validateTestClienten(clienten);
+				var clienten = testTimelineService.maakOfVindClienten(model.getObject());
+				var warnings = testTimelineService.validateTestClienten(clienten);
 				warnings.forEach(ColonTestTimelinePage.this::warn);
 				if (warnings.isEmpty())
 				{
-					submitClients(target, timelineModel, clienten);
+					submitClients(target, clienten);
 				}
 			}
 
-			private void submitClients(AjaxRequestTarget target, TestTimelineModel timelineModel, List<Client> clienten)
+			private void submitClients(AjaxRequestTarget target, List<Client> clienten)
 			{
 				clientModel = ModelUtil.listRModel(clienten);
 				ColonTestTimelinePage.this.info("Client(en) zijn gevonden en/of succesvol aangemaakt");
 
-				if (clienten != null && !clienten.isEmpty())
-				{
-					refreshTimelineModel(timelineModel, clienten);
-					WebMarkupContainer fCcontainer = getFormComponentsContainer();
-					formComponents.replaceWith(fCcontainer);
-					formComponents = fCcontainer;
-					target.add(formComponents);
-				}
-
-				WebMarkupContainer geContainer = getGebeurtenissenContainer();
-				gebeurtenissenContainer.replaceWith(geContainer);
-				gebeurtenissenContainer = geContainer;
-				target.add(gebeurtenissenContainer);
+				refreshForm(clienten, target, model.getObject());
 			}
 		};
 		form.setDefaultButton(clientVindOfMaak);
@@ -257,26 +234,8 @@ public class ColonTestTimelinePage extends TestenBasePage
 				TestTimelineModel timelineModel = model.getObject();
 				List<Client> clienten = testTimelineService.maakOfWijzigClienten(timelineModel);
 				List<String> errors = testTimelineService.validateTestClienten(clienten);
-				for (String error : errors)
-				{
-					this.error(error);
-				}
-				clientModel = ModelUtil.listModel(clienten);
-				this.info("Client(en) zijn succesvol gewijzigd of aangemaakt");
-
-				if (!clienten.isEmpty())
-				{
-					refreshTimelineModel(timelineModel, clienten);
-					WebMarkupContainer fCcontainer = getFormComponentsContainer();
-					formComponents.replaceWith(fCcontainer);
-					formComponents = fCcontainer;
-					target.add(formComponents);
-				}
-
-				WebMarkupContainer geContainer = getGebeurtenissenContainer();
-				gebeurtenissenContainer.replaceWith(geContainer);
-				gebeurtenissenContainer = geContainer;
-				target.add(gebeurtenissenContainer);
+				errors.forEach(this::error);
+				refreshForm(clienten, target, model.getObject());
 			}
 		};
 		container.add(clientWijzigOfMaak);
@@ -299,8 +258,6 @@ public class ColonTestTimelinePage extends TestenBasePage
 
 			container.add(new TestVervolgKeuzeKnop("nieuweRonde", clientModel, dialog)
 			{
-				private static final long serialVersionUID = 1L;
-
 				@Override
 				public boolean refreshContainer(AjaxRequestTarget target)
 				{

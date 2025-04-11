@@ -27,12 +27,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.persistence.Tuple;
-
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 
 import org.springframework.data.jpa.repository.Query;
+
+import jakarta.persistence.Tuple;
 
 import static nl.rivm.screenit.util.DateUtil.toLocalDate;
 

@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -26,14 +26,20 @@ import {showToast} from "./ToastUtil"
 import httpStatus from "../datatypes/HttpStatus"
 import {countRequest, countResponse} from "./SpinnerCounterUtil"
 import axios, {AxiosError} from "axios"
+import {getCookie} from "./CookieUtil"
 
 const BASE_URL = "/api"
 
-export const ScreenitBackend = axios.create({baseURL: BASE_URL})
+export const ScreenitBackend = axios.create({baseURL: BASE_URL, allowAbsoluteUrls: false})
 ScreenitBackend.interceptors.request.use((config) => {
 	countRequest()
-	if (keycloak && keycloak.token !== undefined && config.headers) {
+	if (keycloak?.token !== undefined && config.headers) {
 		config.headers.Authorization = `Bearer ${keycloak.token}`
+	}
+
+	const xsrfToken = getCookie("XSRF-TOKEN")
+	if (xsrfToken) {
+		config.headers["X-XSRF-TOKEN"] = xsrfToken
 	}
 
 	return config

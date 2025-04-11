@@ -25,25 +25,14 @@ import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.clienten.ClientPaspoortPanel;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ScreeningRonde;
-import nl.rivm.screenit.model.berichten.enums.VerslagGeneratie;
-import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
-import nl.rivm.screenit.model.colon.MdlVerslag;
-import nl.rivm.screenit.model.colon.PaVerslag;
-import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerslagContent;
-import nl.rivm.screenit.model.colon.verslag.pa.PaVerslagContent;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
-import nl.rivm.screenit.model.mamma.verslag.followup.MammaFollowUpVerslagContent;
 import nl.rivm.screenit.service.VerwerkVerslagService;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBasePaVerslagService;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
-import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
@@ -83,84 +72,10 @@ public class ClientVerslagenPanel extends GenericPanel<Client>
 		boolean magToevoegen = magMdlVerslagToevoegen || magPaVerslagToevoegen || magFollowUpPaVerslagToevoegen;
 		bezwaarOpIntake = baseAfspraakService.heeftClientIntakeAfspraakMetConclusieBezwaar(client.getPersoon().getBsn());
 
-		WebMarkupContainer toevoegen = new WebMarkupContainer("toevoegen");
-		toevoegen.setVisible(magToevoegen);
-		toevoegen.add(new IndicatingAjaxLink<Object>("mdl")
-		{
-
-			@Override
-			public void onClick(AjaxRequestTarget target)
-			{
-				MdlVerslag newVerslag = new MdlVerslag();
-				newVerslag.setStatus(VerslagStatus.IN_BEWERKING);
-				MdlVerslagContent content = new MdlVerslagContent();
-				newVerslag.setVerslagContent(content);
-				newVerslag.setType(VerslagType.MDL);
-				content.setVerslag(newVerslag);
-				content.setVersie(VerslagGeneratie.getHuidigeGeneratie(VerslagType.MDL));
-				newVerslag.setScreeningRonde(getLaatsteScreeningronde(VerslagType.MDL));
-				if (bezwaarOpIntake.equals(Boolean.TRUE))
-				{
-					info("Cliënt heeft bezwaar gemaakt tegen gegevensuitwisseling. Vastleggen van een verslag is niet mogelijk");
-				}
-				else
-				{
-					setResponsePage(new ClientVerslagPage(ModelUtil.dModel(newVerslag)));
-				}
-			}
-
-		}.setVisible(magMdlVerslagToevoegen));
-		toevoegen.add(new IndicatingAjaxLink<Object>("pa")
-		{
-
-			@Override
-			public void onClick(AjaxRequestTarget target)
-			{
-				PaVerslag newVerslag = new PaVerslag();
-				newVerslag.setStatus(VerslagStatus.IN_BEWERKING);
-				PaVerslagContent content = new PaVerslagContent();
-				newVerslag.setVerslagContent(content);
-				newVerslag.setType(VerslagType.PA_LAB);
-				content.setVerslag(newVerslag);
-				content.setVersie(VerslagGeneratie.getHuidigeGeneratie(VerslagType.PA_LAB));
-				newVerslag.setScreeningRonde(getLaatsteScreeningronde(VerslagType.PA_LAB));
-				if (bezwaarOpIntake.equals(Boolean.TRUE))
-				{
-					info("Cliënt heeft bezwaar gemaakt tegen gegevensuitwisseling. Vastleggen van een verslag is niet mogelijk");
-				}
-				else
-				{
-					setResponsePage(new ClientVerslagPage(ModelUtil.dModel(newVerslag)));
-				}
-			}
-
-		}.setVisible(magPaVerslagToevoegen));
-		add(toevoegen);
-		toevoegen.add(new IndicatingAjaxLink<Object>("follow-up")
-		{
-
-			@Override
-			public void onClick(AjaxRequestTarget target)
-			{
-				MammaFollowUpVerslag newVerslag = new MammaFollowUpVerslag();
-				newVerslag.setStatus(VerslagStatus.IN_BEWERKING);
-				MammaFollowUpVerslagContent content = new MammaFollowUpVerslagContent();
-				newVerslag.setVerslagContent(content);
-				newVerslag.setType(VerslagType.MAMMA_PA_FOLLOW_UP);
-				content.setVerslag(newVerslag);
-				content.setVersie(VerslagGeneratie.getHuidigeGeneratie(VerslagType.MAMMA_PA_FOLLOW_UP));
-				newVerslag.setScreeningRonde(getLaatsteScreeningronde(VerslagType.MAMMA_PA_FOLLOW_UP));
-				if (bezwaarOpIntake.equals(Boolean.TRUE))
-				{
-					info("Cliënt heeft bezwaar gemaakt tegen gegevensuitwisseling. Vastleggen van een verslag is niet mogelijk");
-				}
-				else
-				{
-					setResponsePage(new ClientVerslagPage(ModelUtil.dModel(newVerslag)));
-				}
-			}
-
-		}.setVisible(magFollowUpPaVerslagToevoegen));
+		var aanmakenAlert = new WebMarkupContainer("aanmakenAlert");
+		aanmakenAlert.setOutputMarkupId(true);
+		aanmakenAlert.setVisible(magToevoegen);
+		add(aanmakenAlert);
 
 		ColonClientVerslagenOverzichtPanel colonVerslagen = new ColonClientVerslagenOverzichtPanel("colonVerslagen", model);
 		add(colonVerslagen);

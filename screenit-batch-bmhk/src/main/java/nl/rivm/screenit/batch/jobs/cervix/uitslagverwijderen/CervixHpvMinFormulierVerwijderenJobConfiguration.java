@@ -30,6 +30,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,7 +42,7 @@ public class CervixHpvMinFormulierVerwijderenJobConfiguration extends AbstractJo
 	@Bean
 	public Job hpvminVerwijderenUitslagJob(CervixHpvMinFormulierVerwijderenListener listener, Step hpvMinFormulierVerwijderenStep, Step oudeLabformulierenVerwijderenStep)
 	{
-		return jobBuilderFactory.get(JobType.CERVIX_HPVMIN_VERWIJDEREN_UITSLAG.name())
+		return new JobBuilder(JobType.CERVIX_HPVMIN_VERWIJDEREN_UITSLAG.name(), repository)
 			.listener(listener)
 			.start(hpvMinFormulierVerwijderenStep)
 			.next(oudeLabformulierenVerwijderenStep)
@@ -50,9 +52,8 @@ public class CervixHpvMinFormulierVerwijderenJobConfiguration extends AbstractJo
 	@Bean
 	public Step hpvMinFormulierVerwijderenStep(CervixHpvMinFormulierVerwijderenReader reader, CervixHpvMinFormulierVerwijderenWriter writer)
 	{
-		return stepBuilderFactory.get("hpvMinFormulierVerwijderenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(100)
+		return new StepBuilder("hpvMinFormulierVerwijderenStep", repository)
+			.<Long, Long> chunk(100, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -61,9 +62,8 @@ public class CervixHpvMinFormulierVerwijderenJobConfiguration extends AbstractJo
 	@Bean
 	public Step oudeLabformulierenVerwijderenStep(CervixOudeLabformulierenVerwijderenReader reader, CervixOudeLabformulierenVerwijderenWriter writer)
 	{
-		return stepBuilderFactory.get("oudeLabformulierenVerwijderenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("oudeLabformulierenVerwijderenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

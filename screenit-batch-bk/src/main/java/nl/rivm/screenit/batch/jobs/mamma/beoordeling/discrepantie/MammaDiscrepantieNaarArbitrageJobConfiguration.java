@@ -28,6 +28,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,7 +40,7 @@ public class MammaDiscrepantieNaarArbitrageJobConfiguration extends AbstractJobC
 	@Bean
 	public Job beoordelingenDoorzettenNaarArbitrageJob(MammaDiscrepantieNaarArbitrageListener listener, Step beoordelingenDoorzettenNaarArbitrageStep)
 	{
-		return jobBuilderFactory.get(JobType.MAMMA_BEOORDELINGEN_DOORZETTEN_ARBITRAGE.name())
+		return new JobBuilder(JobType.MAMMA_BEOORDELINGEN_DOORZETTEN_ARBITRAGE.name(), repository)
 			.listener(listener)
 			.start(beoordelingenDoorzettenNaarArbitrageStep)
 			.build();
@@ -47,9 +49,8 @@ public class MammaDiscrepantieNaarArbitrageJobConfiguration extends AbstractJobC
 	@Bean
 	public Step beoordelingenDoorzettenNaarArbitrageStep(MammaDiscrepantieNaarArbitrageReader reader, MammaDiscrepantieNaarArbitrageWriter writer)
 	{
-		return stepBuilderFactory.get("beoordelingenDoorzettenNaarArbitrageStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(50)
+		return new StepBuilder("beoordelingenDoorzettenNaarArbitrageStep", repository)
+			.<Long, Long> chunk(50, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

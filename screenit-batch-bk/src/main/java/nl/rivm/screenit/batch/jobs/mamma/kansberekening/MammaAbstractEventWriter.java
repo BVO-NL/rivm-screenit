@@ -25,9 +25,6 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.function.Consumer;
 
-import javax.persistence.EntityGraph;
-import javax.persistence.FlushModeType;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.repository.impl.FluentJpaQueryImpl;
@@ -36,9 +33,13 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.FlushModeType;
 
 import static nl.rivm.screenit.specification.HibernateObjectSpecification.heeftIdIn;
 
@@ -75,12 +76,12 @@ public abstract class MammaAbstractEventWriter<T extends HibernateObject> implem
 	}
 
 	@Override
-	public void write(List<? extends Long> items)
+	public void write(Chunk<? extends Long> chunk)
 	{
 		var session = hibernateService.getHibernateSession();
 		session.setFlushMode(FlushModeType.COMMIT);
 		@SuppressWarnings("unchecked")
-		var ids = (List<Long>) items;
+		var ids = (List<Long>) chunk.getItems();
 		var entityClass = getEntityClass(getClass());
 
 		var jpaQuery = new FluentJpaQueryImpl<>(heeftIdIn(ids), session, entityClass, entityClass);

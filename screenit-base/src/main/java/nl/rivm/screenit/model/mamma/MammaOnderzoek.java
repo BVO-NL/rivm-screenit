@@ -25,21 +25,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -47,7 +47,6 @@ import lombok.Setter;
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.ZorgInstelling;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
-import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.mamma.enums.ExtraFotosReden;
 import nl.rivm.screenit.model.mamma.enums.MammaAmputatie;
 import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekRedenFotobespreking;
@@ -85,7 +84,7 @@ import org.hibernate.envers.Audited;
 	})
 public class MammaOnderzoek extends AbstractHibernateObject
 {
-	@OneToOne(optional = false, fetch = FetchType.LAZY, mappedBy = "onderzoek")
+	@OneToOne(optional = false, mappedBy = "onderzoek")
 	private MammaAfspraak afspraak;
 
 	@Column(nullable = false)
@@ -95,21 +94,21 @@ public class MammaOnderzoek extends AbstractHibernateObject
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private MammaScreeningsEenheid screeningsEenheid;
 
-	@OneToMany(mappedBy = "onderzoek", fetch = FetchType.LAZY, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE,
-		javax.persistence.CascadeType.REMOVE })
+	@OneToMany(mappedBy = "onderzoek", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE,
+		jakarta.persistence.CascadeType.REMOVE })
 	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private List<MammaBeoordeling> beoordelingen = new ArrayList<>();
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = javax.persistence.CascadeType.ALL)
+	@OneToOne(fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.ALL)
 	private MammaBeoordeling laatsteBeoordeling;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE,
-		javax.persistence.CascadeType.REMOVE })
+	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE,
+		jakarta.persistence.CascadeType.REMOVE })
 	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaMammografie mammografie;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE,
-		javax.persistence.CascadeType.REMOVE })
+	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE,
+		jakarta.persistence.CascadeType.REMOVE })
 	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaSignaleren signaleren;
 
@@ -117,24 +116,24 @@ public class MammaOnderzoek extends AbstractHibernateObject
 	@Enumerated(EnumType.STRING)
 	private MammaOnderzoekStatus status;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+	@ManyToOne(fetch = FetchType.LAZY)
 	private ZorgInstelling eerderMammogramZorginstelling;
 
 	@Column
 	private Integer eerderMammogramJaartal;
 
-	@Column(nullable = true)
+	@Column()
 	@Enumerated(EnumType.STRING)
 	private SuboptimaleInsteltechniek suboptimaleInsteltechniek;
 
-	@Column(nullable = true)
+	@Column()
 	@Enumerated(EnumType.STRING)
 	private MammaOnderzoekRedenFotobespreking redenFotobespreking;
 
-	@Column(nullable = true, length = HibernateMagicNumber.L255)
+	@Column()
 	private String opmerkingMbber;
 
-	@Column(nullable = true, length = HibernateMagicNumber.L255)
+	@Column()
 	private String opmerkingVoorRadioloog;
 
 	@Column(nullable = false)
@@ -150,11 +149,14 @@ public class MammaOnderzoek extends AbstractHibernateObject
 	@Column
 	private String aanvullendeInformatieOperatie;
 
-	@Column(nullable = true)
+	@Column(nullable = false)
+	private boolean huidscheuring;
+
+	@Column
 	@Enumerated(EnumType.STRING)
 	private OnvolledigOnderzoekOption onvolledigOnderzoek;
 
-	@Column(nullable = true)
+	@Column
 	@Enumerated(EnumType.STRING)
 	private OnderbrokenOnderzoekOption onderbrokenOnderzoek;
 
@@ -164,10 +166,10 @@ public class MammaOnderzoek extends AbstractHibernateObject
 	@CollectionTable(schema = "mamma", name = "extra_fotos_reden")
 	private List<ExtraFotosReden> extraFotosRedenen = new ArrayList<>();
 
-	@Column(nullable = true, length = HibernateMagicNumber.L255)
+	@Column
 	private String adviesHuisarts;
 
-	@Column(nullable = true)
+	@Column
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date afgerondOp;
 
@@ -181,6 +183,6 @@ public class MammaOnderzoek extends AbstractHibernateObject
 	@Enumerated(EnumType.STRING)
 	private MammaOnderzoekType onderzoekType;
 
-	@OneToOne(fetch = FetchType.LAZY, mappedBy = "onderzoek")
+	@OneToOne(mappedBy = "onderzoek")
 	private MammaAdhocMeekijkverzoek meekijkverzoek;
 }

@@ -43,7 +43,7 @@ import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.RangeUtil;
 import nl.topicuszorg.organisatie.model.Adres_;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.google.common.collect.BoundType;

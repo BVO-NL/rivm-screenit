@@ -48,7 +48,7 @@ import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.model.verslag.DSValue_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import static nl.rivm.screenit.specification.HibernateObjectSpecification.heeftId;

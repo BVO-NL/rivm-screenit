@@ -21,8 +21,6 @@ package nl.rivm.screenit.main.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.EntityGraph;
-
 import nl.rivm.screenit.main.service.RepositoryDataProviderService;
 import nl.rivm.screenit.model.EnovationHuisarts;
 import nl.rivm.screenit.model.EnovationHuisarts_;
@@ -33,6 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import jakarta.persistence.EntityGraph;
 
 @Service
 public class EnovationHuisartsDataProviderServiceImpl extends RepositoryDataProviderService<EnovationHuisarts, EnovationHuisartsRepository, EnovationHuisarts>

@@ -129,7 +129,7 @@ public class ProjectUitslagVerwerkingServiceImpl implements ProjectUitslagVerwer
 			var studietest = fitService.getFit(barcode).orElseThrow(() ->
 			{
 				var isVerwijderdeBarcode = fitService.isVerwijderdeBarcode(barcode);
-				return new ProjectUitslagenUploadException(String.format("Aan deze barcode zijn geen clientgegevens %sgekoppeld", isVerwijderdeBarcode ? "meer " : ""));
+				return new ProjectUitslagenUploadException("Aan deze barcode zijn geen clientgegevens %sgekoppeld".formatted(isVerwijderdeBarcode ? "meer " : ""));
 			});
 
 			clientIsHeraangemeld = studietestService.studietestHeraanmeldenIndienNodig(studietest);

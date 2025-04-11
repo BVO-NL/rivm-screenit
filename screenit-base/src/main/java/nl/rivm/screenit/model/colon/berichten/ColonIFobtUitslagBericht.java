@@ -21,18 +21,8 @@ package nl.rivm.screenit.model.colon.berichten;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
 import nl.rivm.screenit.model.colon.IFobtLaboratorium;
@@ -44,6 +34,17 @@ import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+
 @Entity
 @Table(schema = "colon", name = "ifobt_uitslag_bericht")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
@@ -51,6 +52,7 @@ import org.hibernate.envers.NotAudited;
 public class ColonIFobtUitslagBericht extends AbstractHibernateObject
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Column(nullable = false, unique = true)
@@ -69,8 +71,8 @@ public class ColonIFobtUitslagBericht extends AbstractHibernateObject
 	private Date statusDatum;
 
 	@Lob
-	@Type(type = "org.hibernate.type.TextType")
 	@Column(nullable = false)
+	@Type(type = "org.hibernate.type.TextType")
 	@NotAudited
 	private String hl7Bericht;
 

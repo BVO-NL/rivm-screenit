@@ -22,15 +22,17 @@ package nl.rivm.screenit.model.verslag;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Quantity implements Serializable
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Column

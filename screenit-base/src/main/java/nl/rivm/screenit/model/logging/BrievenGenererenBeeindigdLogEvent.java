@@ -24,12 +24,12 @@ package nl.rivm.screenit.model.logging;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.verwerkingverslag.BrievenGenererenRapportage;
@@ -41,7 +41,7 @@ import org.hibernate.annotations.CascadeType;
 @Table(schema = "gedeeld")
 public class BrievenGenererenBeeindigdLogEvent extends LogEvent
 {
-	@OneToOne(cascade = javax.persistence.CascadeType.REMOVE)
+	@OneToOne(cascade = jakarta.persistence.CascadeType.REMOVE)
 	@Cascade(CascadeType.DELETE)
 	private BrievenGenererenRapportage rapportage;
 

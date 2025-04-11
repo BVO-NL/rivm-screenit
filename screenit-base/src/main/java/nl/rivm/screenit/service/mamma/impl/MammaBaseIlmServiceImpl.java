@@ -127,7 +127,7 @@ public class MammaBaseIlmServiceImpl implements MammaBaseIlmService
 		var isVerwijderd = verwijderIlmBezwaarPoging(client.getMammaDossier(), accessionNumber);
 		if (isVerwijderd)
 		{
-			var melding = String.format("AccessionNumber: %d, status: %s, isBezwaar: %b, isUploaded: %b",
+			var melding = "AccessionNumber: %d, status: %s, isBezwaar: %b, isUploaded: %b".formatted(
 				accessionNumber, MammaMammografieIlmStatus.VERWIJDERD, false, false);
 			LOG.info(melding);
 			logService.logGebeurtenis(LogGebeurtenis.MAMMA_ILM_STATUS_GEFORCEERD, account, client, melding, Bevolkingsonderzoek.MAMMA);

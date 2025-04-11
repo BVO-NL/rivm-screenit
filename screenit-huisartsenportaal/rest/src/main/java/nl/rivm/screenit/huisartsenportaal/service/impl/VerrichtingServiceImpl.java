@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.service.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -45,13 +45,11 @@ import nl.rivm.screenit.huisartsenportaal.util.DateUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
 public class VerrichtingServiceImpl implements VerrichtingenService
 {
 	@Autowired
@@ -67,7 +65,7 @@ public class VerrichtingServiceImpl implements VerrichtingenService
 	private LocatieService locatieService;
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public VerrichtingTotalenDto getVerrichtingen(Huisarts huisarts, VerrichtingZoekObjectDto verrichtingDto)
 	{
 		if (verrichtingDto.getResultOptions().getCount() == 0)
@@ -186,7 +184,7 @@ public class VerrichtingServiceImpl implements VerrichtingenService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public Verrichting saveScreenITVerrichting(VerrichtingDto verrichtingDto)
 	{
 		Verrichting verrichting = verrichtingRepository.findByScreenitId(verrichtingDto.getScreenitId());

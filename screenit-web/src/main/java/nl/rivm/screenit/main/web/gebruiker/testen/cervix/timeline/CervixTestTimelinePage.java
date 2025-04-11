@@ -60,6 +60,7 @@ import nl.rivm.screenit.model.enums.GebeurtenisBron;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.repository.algemeen.GemeenteRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
+import nl.rivm.screenit.service.TestService;
 import nl.rivm.screenit.service.cervix.CervixTestService;
 import nl.rivm.screenit.specification.algemeen.GemeenteSpecification;
 import nl.rivm.screenit.util.DateUtil;
@@ -71,7 +72,6 @@ import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.model.DetachableListModel;
 import nl.topicuszorg.wicket.model.SortingListModel;
 
-import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -115,22 +115,21 @@ public class CervixTestTimelinePage extends TestenBasePage
 	private ICurrentDateSupplier dateSupplier;
 
 	@SpringBean
-	private CervixTestService testService;
+	private CervixTestService cervixTestService;
+
+	@SpringBean
+	private TestService testService;
 
 	@SpringBean
 	private GemeenteRepository gemeenteRepository;
 
 	private final IModel<TestTimelineModel> model;
 
-	private IModel<List<Client>> clientModel;
-
 	private IModel<List<TestTimelineRonde>> rondesModel;
 
 	private final IModel<List<Gemeente>> gemeentenModel;
 
 	private final Form<TestTimelineModel> form;
-
-	private WebMarkupContainer formComponents;
 
 	private final BootstrapDialog dialog;
 
@@ -182,7 +181,7 @@ public class CervixTestTimelinePage extends TestenBasePage
 			@Override
 			public void onSubmit(AjaxRequestTarget target)
 			{
-				String message = testService.clientenResetten(bsns.getObject());
+				String message = cervixTestService.clientenResetten(bsns.getObject());
 				if (message.contains("Succesvol"))
 				{
 					info(message);
@@ -212,7 +211,7 @@ public class CervixTestTimelinePage extends TestenBasePage
 			@Override
 			public void onSubmit(AjaxRequestTarget target)
 			{
-				int aantal = testService.clientenDefinitiefAfmelden(ModelUtil.nullSafeGet(clientModel), afmeldingReden.getObject());
+				int aantal = cervixTestService.clientenDefinitiefAfmelden(ModelUtil.nullSafeGet(clientModel), afmeldingReden.getObject());
 				info(aantal + " clienten definitief afgemeld");
 			}
 		});
@@ -225,7 +224,8 @@ public class CervixTestTimelinePage extends TestenBasePage
 		add(clientDefinitiefAfmeldenForm);
 	}
 
-	private WebMarkupContainer getFormComponentsContainer()
+	@Override
+	protected WebMarkupContainer getFormComponentsContainer()
 	{
 		WebMarkupContainer container = new WebMarkupContainer("formComponents");
 		container.setOutputMarkupId(true);
@@ -242,16 +242,13 @@ public class CervixTestTimelinePage extends TestenBasePage
 		leeftijd.setOutputMarkupId(true);
 		container.add(leeftijd);
 
-		bsnField.add(new AjaxEventBehavior("change")
+		bsnField.add(new AjaxFormComponentUpdatingBehavior("change")
 		{
 			@Override
-			protected void onEvent(AjaxRequestTarget target)
+			protected void onUpdate(AjaxRequestTarget target)
 			{
-				WebMarkupContainer geContainer = getGebeurtenissenContainer();
-				gebeurtenissenContainer.replaceWith(geContainer);
-				gebeurtenissenContainer = geContainer;
-				gebeurtenissenContainer.setVisible(false);
-				target.add(gebeurtenissenContainer);
+				var clienten = testService.vindClienten(model.getObject().getBsns(), Bevolkingsonderzoek.CERVIX);
+				refreshForm(clienten, target, model.getObject());
 			}
 		});
 
@@ -286,37 +283,21 @@ public class CervixTestTimelinePage extends TestenBasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				TestTimelineModel timelineModel = model.getObject();
-				List<Client> clienten = testTimelineService.maakOfVindClienten(timelineModel);
-				List<String> warnings = testTimelineService.validateTestClienten(clienten);
-				for (String warning : warnings)
-				{
-					CervixTestTimelinePage.this.warn(warning);
-				}
+				var clienten = testTimelineService.maakOfWijzigClienten(model.getObject());
+				var warnings = testTimelineService.validateTestClienten(clienten);
+				warnings.forEach(this::warn);
 				if (warnings.isEmpty())
 				{
-					submitClients(target, timelineModel, clienten);
+					submitClients(target, clienten);
 				}
 			}
 
-			private void submitClients(AjaxRequestTarget target, TestTimelineModel timelineModel, List<Client> clienten)
+			private void submitClients(AjaxRequestTarget target, List<Client> clienten)
 			{
 				clientModel = ModelUtil.listModel(clienten);
 				CervixTestTimelinePage.this.info("Client(en) zijn gevonden en/of succesvol aangemaakt");
 
-				if (!clienten.isEmpty())
-				{
-					refreshTimelineModel(timelineModel, clienten);
-					WebMarkupContainer fCcontainer = getFormComponentsContainer();
-					formComponents.replaceWith(fCcontainer);
-					formComponents = fCcontainer;
-					target.add(formComponents);
-				}
-
-				WebMarkupContainer geContainer = getGebeurtenissenContainer();
-				gebeurtenissenContainer.replaceWith(geContainer);
-				gebeurtenissenContainer = geContainer;
-				target.add(gebeurtenissenContainer);
+				refreshForm(clienten, target, model.getObject());
 			}
 		};
 		form.setDefaultButton(clientVindOfMaak);
@@ -327,26 +308,11 @@ public class CervixTestTimelinePage extends TestenBasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				TestTimelineModel timelineModel = model.getObject();
-				List<Client> clienten = testTimelineService.maakOfWijzigClienten(timelineModel);
-				List<String> errors = testTimelineService.validateTestClienten(clienten);
+				var clienten = testTimelineService.maakOfWijzigClienten(model.getObject());
+				var errors = testTimelineService.validateTestClienten(clienten);
 				errors.forEach(this::error);
-				clientModel = ModelUtil.listModel(clienten);
+				refreshForm(clienten, target, model.getObject());
 				CervixTestTimelinePage.this.info("Client(en) zijn succesvol gewijzigd of aangemaakt");
-
-				if (!clienten.isEmpty())
-				{
-					refreshTimelineModel(timelineModel, clienten);
-					WebMarkupContainer fCcontainer = getFormComponentsContainer();
-					formComponents.replaceWith(fCcontainer);
-					formComponents = fCcontainer;
-					target.add(formComponents);
-				}
-
-				WebMarkupContainer geContainer = getGebeurtenissenContainer();
-				gebeurtenissenContainer.replaceWith(geContainer);
-				gebeurtenissenContainer = geContainer;
-				target.add(gebeurtenissenContainer);
 			}
 		};
 		container.add(clientWijzigOfMaak);
@@ -361,78 +327,79 @@ public class CervixTestTimelinePage extends TestenBasePage
 		container.setOutputMarkupPlaceholderTag(true);
 
 		container.setVisible(clientModel != null);
-		if (clientModel != null)
+		if (clientModel == null)
 		{
-			List<TestTimelineRonde> rondes = testTimelineService.getTimelineRondes(clientModel.getObject().get(0));
-			rondes.sort((o1, o2) -> o2.getRondeNummer().compareTo(o1.getRondeNummer()));
-			rondesModel = new DetachableListModel<>(rondes);
-
-			container.add(new TestVervolgKeuzeKnop("nieuweRonde", clientModel, dialog)
-			{
-				@Override
-				public boolean refreshContainer(AjaxRequestTarget target)
-				{
-					List<Client> clienten = testTimelineService.maakOfVindClienten(model.getObject());
-					List<String> errors = testTimelineService.validateTestClienten(clienten);
-					for (String error : errors)
-					{
-						error(error);
-					}
-					clientModel = ModelUtil.listModel(clienten);
-
-					WebMarkupContainer geContainer = getGebeurtenissenContainer();
-					gebeurtenissenContainer.replaceWith(geContainer);
-					gebeurtenissenContainer = geContainer;
-					target.add(gebeurtenissenContainer);
-					target.add(clientDefinitiefAfmeldenForm);
-					return true;
-				}
-
-				@Override
-				public List<TestVervolgKeuzeOptie> getOptions()
-				{
-					var keuzes = new ArrayList<TestVervolgKeuzeOptie>();
-					CervixDossier dossier = clientModel.getObject().get(0).getCervixDossier();
-					if (!Deelnamemodus.SELECTIEBLOKKADE.equals(dossier.getDeelnamemodus()))
-					{
-						if (testTimelineService.magNieuweRondeStarten(dossier))
-						{
-							keuzes.add(TestVervolgKeuzeOptie.CERVIX_NIEUWE_RONDE);
-							if (dossier.getLaatsteScreeningRonde() == null)
-							{
-								keuzes.add(TestVervolgKeuzeOptie.CERVIX_NIEUWE_RONDE_MET_VOORAANKONDIGING);
-							}
-						}
-						keuzes.add(TestVervolgKeuzeOptie.CERVIX_NIEUWE_CISHISTORIE);
-						keuzes.add(TestVervolgKeuzeOptie.CERVIX_NIEUWE_CIS_RONDE0);
-						keuzes.add(TestVervolgKeuzeOptie.CERVIX_VERZET_TIJD);
-					}
-					else
-					{
-						keuzes.add(TestVervolgKeuzeOptie.CERVIX_DEELNAME_WENS);
-					}
-					return keuzes;
-				}
-
-				@Override
-				public boolean isVisible()
-				{
-					GbaPersoon persoon = clientModel.getObject().get(0).getPersoon();
-					boolean isOverleden = persoon.getOverlijdensdatum() != null;
-					return !isOverleden;
-				}
-
-				@Override
-				public String getNameAttribuut()
-				{
-					return "snelkeuze_ronde";
-				}
-			});
-
-			ListView<TestTimelineRonde> listView = getListView();
-			listView.setOutputMarkupId(true);
-			container.add(listView);
+			return container;
 		}
+
+		List<TestTimelineRonde> rondes = testTimelineService.getTimelineRondes(clientModel.getObject().get(0));
+		rondes.sort((o1, o2) -> o2.getRondeNummer().compareTo(o1.getRondeNummer()));
+		rondesModel = new DetachableListModel<>(rondes);
+		container.add(new TestVervolgKeuzeKnop("nieuweRonde", clientModel, dialog)
+		{
+			@Override
+			public boolean refreshContainer(AjaxRequestTarget target)
+			{
+				List<Client> clienten = testTimelineService.maakOfVindClienten(model.getObject());
+				List<String> errors = testTimelineService.validateTestClienten(clienten);
+				for (String error : errors)
+				{
+					error(error);
+				}
+				clientModel = ModelUtil.listModel(clienten);
+
+				WebMarkupContainer geContainer = getGebeurtenissenContainer();
+				gebeurtenissenContainer.replaceWith(geContainer);
+				gebeurtenissenContainer = geContainer;
+				target.add(gebeurtenissenContainer);
+				target.add(clientDefinitiefAfmeldenForm);
+				return true;
+			}
+
+			@Override
+			public List<TestVervolgKeuzeOptie> getOptions()
+			{
+				var keuzes = new ArrayList<TestVervolgKeuzeOptie>();
+				CervixDossier dossier = clientModel.getObject().get(0).getCervixDossier();
+				if (!Deelnamemodus.SELECTIEBLOKKADE.equals(dossier.getDeelnamemodus()))
+				{
+					if (testTimelineService.magNieuweRondeStarten(dossier))
+					{
+						keuzes.add(TestVervolgKeuzeOptie.CERVIX_NIEUWE_RONDE);
+						if (dossier.getLaatsteScreeningRonde() == null)
+						{
+							keuzes.add(TestVervolgKeuzeOptie.CERVIX_NIEUWE_RONDE_MET_VOORAANKONDIGING);
+						}
+					}
+					keuzes.add(TestVervolgKeuzeOptie.CERVIX_NIEUWE_CISHISTORIE);
+					keuzes.add(TestVervolgKeuzeOptie.CERVIX_NIEUWE_CIS_RONDE0);
+					keuzes.add(TestVervolgKeuzeOptie.CERVIX_VERZET_TIJD);
+				}
+				else
+				{
+					keuzes.add(TestVervolgKeuzeOptie.CERVIX_DEELNAME_WENS);
+				}
+				return keuzes;
+			}
+
+			@Override
+			public boolean isVisible()
+			{
+				GbaPersoon persoon = clientModel.getObject().get(0).getPersoon();
+				boolean isOverleden = persoon.getOverlijdensdatum() != null;
+				return !isOverleden;
+			}
+
+			@Override
+			public String getNameAttribuut()
+			{
+				return "snelkeuze_ronde";
+			}
+		});
+
+		ListView<TestTimelineRonde> listView = getListView();
+		listView.setOutputMarkupId(true);
+		container.add(listView);
 
 		addButtons(container);
 		return container;

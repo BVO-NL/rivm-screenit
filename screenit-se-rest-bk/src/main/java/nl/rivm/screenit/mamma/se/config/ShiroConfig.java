@@ -23,14 +23,14 @@ package nl.rivm.screenit.mamma.se.config;
 
 import nl.rivm.screenit.mamma.se.security.SERealm;
 
-import org.apache.shiro.cache.ehcache.EhCacheManager;
-import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.cache.jcache.JCacheManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 
 @Configuration
@@ -38,16 +38,26 @@ public class ShiroConfig
 {
 
 	@Bean
-	public SecurityManager shiroSecurityManager(SERealm seRealm, EhCacheManager cacheManager)
+	@Profile("!test")
+	public DefaultWebSecurityManager shiroSecurityManager(SERealm realm, JCacheManager jCacheManager)
 	{
 		var securityManager = new DefaultWebSecurityManager();
-		securityManager.setRealm(seRealm);
-		securityManager.setCacheManager(cacheManager);
+		securityManager.setRealm(realm);
+		securityManager.setCacheManager(jCacheManager);
+		return securityManager;
+	}
+
+	@Bean(name = "shiroSecurityManager")
+	@Profile("test")
+	public DefaultWebSecurityManager shiroSecurityManagerTest(SERealm realm)
+	{
+		var securityManager = new DefaultWebSecurityManager();
+		securityManager.setRealm(realm);
 		return securityManager;
 	}
 
 	@Bean
-	public ShiroFilterFactoryBean shiroFilter(SecurityManager shiroSecurityManager)
+	public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager shiroSecurityManager)
 	{
 		var filter = new ShiroFilterFactoryBean();
 		filter.setSecurityManager(shiroSecurityManager);
@@ -58,7 +68,7 @@ public class ShiroConfig
 	public FilterRegistrationBean<AbstractShiroFilter> shiroFilterProxy(ShiroFilterFactoryBean shiroFilter) throws Exception
 	{
 		var filter = new FilterRegistrationBean<AbstractShiroFilter>();
-		filter.setFilter(shiroFilter.getObject());
+		filter.setFilter((AbstractShiroFilter) shiroFilter.getObject());
 		filter.setName("shiroFilter");
 		filter.addInitParameter("targetFilterLifecycle", "true");
 		filter.addUrlPatterns("/*");

@@ -63,6 +63,8 @@ public class OnderzoekSeDto extends SeDto
 
 	private String aanvullendeInformatieOperatie;
 
+	private boolean huidscheuring;
+
 	private MammaOnderzoekStatus status;
 
 	private OnvolledigOnderzoekOption onvolledigOnderzoek;

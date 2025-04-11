@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -20,21 +20,12 @@
  */
 import {AppThunkDispatch} from "../index"
 import ScreenitBackend from "../util/Backend"
-import {OAuthToken} from "../state/datatypes/OAuthToken"
 import {createClearStateAction} from "../state"
 
-export const afmelden = (token: OAuthToken) => async (dispatch: AppThunkDispatch) => {
-	const formData = new FormData()
-	formData.append("client_id", "screenit")
-	formData.append("client_secret", "123456")
-	formData.append("token", token.refresh_token)
-	formData.append("token_type_hint", "refresh_token")
-
-	return ScreenitBackend.post("/oauth/token/revoke", formData, {
-		headers: {
-			"Content-Type": "multipart/form-data",
-		},
-	}).finally(async () => {
-		await dispatch(createClearStateAction())
-	})
+export const afmelden = () => async (dispatch: AppThunkDispatch) => {
+	try {
+		await ScreenitBackend.post("/uitloggen")
+	} finally {
+		dispatch(createClearStateAction())
+	}
 }

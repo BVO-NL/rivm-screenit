@@ -21,13 +21,14 @@ package nl.rivm.screenit.model.cervix;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -43,6 +44,7 @@ import org.hibernate.envers.Audited;
 public class CervixZas extends CervixMonster
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Enumerated(EnumType.STRING)

@@ -1,0 +1,60 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<div class="content-container">
+  <h2>Keuze gebruik gegevens herstellen</h2>
+  <form clrForm [formGroup]="formGroup" (ngSubmit)="keuzeHerstellen()">
+    <div class="card mb-3  w-100">
+      <div class="card-block">
+        <div class="clr-row">
+          <div class="clr-col-12 clr-col-md-6">
+            <clr-date-container>
+              <label class="clr-required-mark clr-col-md-4" for="geboortedatum">Geboortedatum</label>
+              <input type="date" clrDate class="clr-col-md-8" formControlName="geboortedatum" id="geboortedatum" [max]="maxGeboorteDatum"/>
+              <clr-control-error *clrIfError="'required'">De geboortedatum is verplicht</clr-control-error>
+              <clr-control-error *clrIfError="'valideDatum'">{{ geboortedatumCtrl.getError('valideDatum') }}</clr-control-error>
+              <clr-control-error *clrIfError="'max'">De geboortedatum mag niet in de toekomst liggen</clr-control-error>
+            </clr-date-container>
+            <clr-input-container>
+              <label class="clr-required-mark clr-col-md-4" for="bsn">Burgerservicenummer</label>
+              <input clrInput id="bsn" class="clr-col-md-8" type="text" formControlName="bsn" data-testid="input_bsn"/>
+              <clr-control-error *clrIfError="'required'">Het burgerservicenummer is verplicht</clr-control-error>
+              <clr-control-error *clrIfError="'bsn'">{{ bsnCtrl.getError('bsn') }}</clr-control-error>
+            </clr-input-container>
+          </div>
+          <div class="clr-col-12 clr-col-md-6">
+            <clr-file-input-container>
+              <label class="clr-required-mark" for="file">Bestand</label>
+              <input type="file" id="file" formControlName="bestand" required clrFileInput accept="application/pdf"/>
+              <clr-control-error *clrIfError="'required'">Het bestand is verplicht</clr-control-error>
+              <clr-control-error *clrIfError="'accept'">
+                Alleen PDF's zijn toegestaan
+              </clr-control-error>
+            </clr-file-input-container>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Bevestigen</button>
+        </div>
+      </div>
+
+    </div>
+  </form>
+</div>

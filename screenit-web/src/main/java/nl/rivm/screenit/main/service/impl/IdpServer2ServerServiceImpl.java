@@ -24,8 +24,6 @@ package nl.rivm.screenit.main.service.impl;
 import java.io.File;
 import java.security.Key;
 
-import javax.inject.Inject;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.service.IdpServer2ServerService;
@@ -38,6 +36,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
+
+import jakarta.inject.Inject;
 
 @Slf4j
 @Configuration

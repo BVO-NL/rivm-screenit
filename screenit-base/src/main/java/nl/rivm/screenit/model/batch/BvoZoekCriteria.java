@@ -21,6 +21,7 @@ package nl.rivm.screenit.model.batch;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ import nl.rivm.screenit.model.enums.Level;
 public class BvoZoekCriteria implements Serializable, IBevolkingsonderzoek
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private List<Bevolkingsonderzoek> bevolkingsonderzoeken = new ArrayList<>();

@@ -23,17 +23,17 @@ package nl.rivm.screenit.model.project;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -58,7 +58,7 @@ import org.hibernate.envers.NotAudited;
 public class ProjectBestand extends AbstractHibernateObject
 {
 
-	@OneToOne(optional = false, fetch = FetchType.LAZY, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@OneToOne(optional = false, fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.SAVE_UPDATE })
 	private UploadDocument uploadDocument;
 
@@ -67,11 +67,11 @@ public class ProjectBestand extends AbstractHibernateObject
 	private Date uploadDatum;
 
 	@Cascade({ CascadeType.SAVE_UPDATE })
-	@ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	private Project project;
 
 	@Cascade({ CascadeType.SAVE_UPDATE })
-	@ManyToOne(optional = true, fetch = FetchType.LAZY, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@ManyToOne(optional = true, fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	private ProjectGroep groep;
 
 	@Column(nullable = false)
@@ -91,7 +91,7 @@ public class ProjectBestand extends AbstractHibernateObject
 	private boolean attributen = false;
 
 	@NotAudited
-	@OneToOne(fetch = FetchType.LAZY, optional = true, mappedBy = "projectBestand", cascade = javax.persistence.CascadeType.ALL)
+	@OneToOne(fetch = FetchType.LAZY, optional = true, mappedBy = "projectBestand", cascade = jakarta.persistence.CascadeType.ALL)
 	private ProjectBestandVerwerking verwerking;
 
 	@Column(nullable = true)

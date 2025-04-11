@@ -25,10 +25,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import javax.persistence.NonUniqueResultException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,12 +42,14 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import generated.KOPPELDATA.VERZONDENUITNODIGING;
 import generated.KOPPELDATA.VERZONDENUITNODIGING.MATCHINGFIELDS.MATCHINGFIELD;
+import jakarta.persistence.NonUniqueResultException;
 
 @Component
 @Slf4j
@@ -68,12 +67,12 @@ public class ZasKoppelWriter implements ItemWriter<VERZONDENUITNODIGING>
 	private ZasKoppelingBeeindigdLogEvent logEvent;
 
 	@Override
-	public void write(List<? extends VERZONDENUITNODIGING> items) throws Exception
+	public void write(Chunk<? extends VERZONDENUITNODIGING> chunk) throws Exception
 	{
 		logEvent = (ZasKoppelingBeeindigdLogEvent) stepExecution.getJobExecution().getExecutionContext().get(ZasKoppelenConstants.RAPPORTAGEKEYZASKOPPELEN);
 
 		var verzendDatumFormat = new SimpleDateFormat("dd-MM-yyyy");
-		for (VERZONDENUITNODIGING verzondenUitnodiging : items)
+		for (VERZONDENUITNODIGING verzondenUitnodiging : chunk.getItems())
 		{
 
 			String zasBarcode = null;

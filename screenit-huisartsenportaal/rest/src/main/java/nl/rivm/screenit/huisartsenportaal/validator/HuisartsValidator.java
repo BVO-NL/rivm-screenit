@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.validator;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -30,7 +30,6 @@ import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
 import nl.rivm.screenit.huisartsenportaal.model.Locatie;
 import nl.rivm.screenit.huisartsenportaal.model.enums.AanmeldStatus;
 import nl.rivm.screenit.huisartsenportaal.repository.LocatieCriteriaRepository;
-import nl.rivm.screenit.huisartsenportaal.repository.LocatieRepository;
 import nl.rivm.screenit.huisartsenportaal.util.CervixLocatieUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +40,6 @@ import org.springframework.validation.Errors;
 @Component
 public class HuisartsValidator extends BaseValidator<HuisartsDto>
 {
-
-	@Autowired
-	private LocatieRepository locatieRepository;
 
 	@Autowired
 	private LocatieCriteriaRepository locatieCriteriaRepository;

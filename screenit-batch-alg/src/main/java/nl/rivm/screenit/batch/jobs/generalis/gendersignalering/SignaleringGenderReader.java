@@ -40,7 +40,7 @@ import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import static javax.persistence.criteria.JoinType.LEFT;
+import static jakarta.persistence.criteria.JoinType.LEFT;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftActieveClient;
 import static nl.rivm.screenit.specification.algemeen.DossierSpecification.heeftDeelnamemodus;

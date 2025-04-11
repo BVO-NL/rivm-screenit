@@ -24,6 +24,9 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.mamma.enums.MammaAsymmetrieSpecificatie;
 import nl.rivm.screenit.model.mamma.enums.MammaCalcificatiesDistributie;
 import nl.rivm.screenit.model.mamma.enums.MammaCalcificatiesVorm;
@@ -33,6 +36,8 @@ import nl.rivm.screenit.model.mamma.enums.MammaMassaDensiteit;
 import nl.rivm.screenit.model.mamma.enums.MammaMassaVorm;
 import nl.rivm.screenit.model.mamma.enums.MammaZijde;
 
+@Getter
+@Setter
 public class LaesieDto implements Serializable
 {
 	private MammaLaesieType laesietype;
@@ -59,123 +64,5 @@ public class LaesieDto implements Serializable
 
 	private BigDecimal laesieGrootteInCm;
 
-	public MammaLaesieType getLaesietype()
-	{
-		return laesietype;
-	}
-
-	public void setLaesietype(MammaLaesieType laesietype)
-	{
-		this.laesietype = laesietype;
-	}
-
-	public MammaZijde getWelkeBorst()
-	{
-		return welkeBorst;
-	}
-
-	public void setWelkeBorst(MammaZijde welkeBorst)
-	{
-		this.welkeBorst = welkeBorst;
-	}
-
-	public MammaLaesieIcoonDto getVerticaleDoorsnede()
-	{
-		return verticaleDoorsnede;
-	}
-
-	public void setVerticaleDoorsnede(MammaLaesieIcoonDto verticaleDoorsnede)
-	{
-		this.verticaleDoorsnede = verticaleDoorsnede;
-	}
-
-	public MammaLaesieIcoonDto getHorizontaleDoorsnede()
-	{
-		return horizontaleDoorsnede;
-	}
-
-	public void setHorizontaleDoorsnede(MammaLaesieIcoonDto horizontaleDoorsnede)
-	{
-		this.horizontaleDoorsnede = horizontaleDoorsnede;
-	}
-
-	public int getNummer()
-	{
-		return nummer;
-	}
-
-	public void setNummer(int nummer)
-	{
-		this.nummer = nummer;
-	}
-
-	public MammaAsymmetrieSpecificatie getAsymmetrieSpecificatie()
-	{
-		return asymmetrieSpecificatie;
-	}
-
-	public void setAsymmetrieSpecificatie(MammaAsymmetrieSpecificatie asymmetrieSpecificatie)
-	{
-		this.asymmetrieSpecificatie = asymmetrieSpecificatie;
-	}
-
-	public MammaMassaVorm getMassaVorm()
-	{
-		return massaVorm;
-	}
-
-	public void setMassaVorm(MammaMassaVorm massaVorm)
-	{
-		this.massaVorm = massaVorm;
-	}
-
-	public MammaMassaBegrenzing getMassaBegrenzing()
-	{
-		return massaBegrenzing;
-	}
-
-	public void setMassaBegrenzing(MammaMassaBegrenzing massaBegrenzing)
-	{
-		this.massaBegrenzing = massaBegrenzing;
-	}
-
-	public MammaMassaDensiteit getMassaDensiteit()
-	{
-		return massaDensiteit;
-	}
-
-	public void setMassaDensiteit(MammaMassaDensiteit massaDensiteit)
-	{
-		this.massaDensiteit = massaDensiteit;
-	}
-
-	public MammaCalcificatiesVorm getCalcificatiesVorm()
-	{
-		return calcificatiesVorm;
-	}
-
-	public void setCalcificatiesVorm(MammaCalcificatiesVorm calcificatiesVorm)
-	{
-		this.calcificatiesVorm = calcificatiesVorm;
-	}
-
-	public MammaCalcificatiesDistributie getCalcificatiesDistributie()
-	{
-		return calcificatiesDistributie;
-	}
-
-	public void setCalcificatiesDistributie(MammaCalcificatiesDistributie calcificatiesDistributie)
-	{
-		this.calcificatiesDistributie = calcificatiesDistributie;
-	}
-
-	public BigDecimal getLaesieGrootteInCm()
-	{
-		return laesieGrootteInCm;
-	}
-
-	public void setLaesieGrootteInCm(BigDecimal laesieGrootteInCm)
-	{
-		this.laesieGrootteInCm = laesieGrootteInCm;
-	}
+	private String laesieVolgorde;
 }

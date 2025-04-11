@@ -21,9 +21,13 @@ package nl.rivm.screenit.repository.colon;
  * =========================LICENSE_END==================================
  */
 
+import java.util.List;
+
 import nl.rivm.screenit.model.colon.ColonUitnodigingsinterval;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 
 public interface ColonUitnodigingsintervalRepository extends BaseJpaRepository<ColonUitnodigingsinterval>
 {
+	List<ColonUitnodigingsinterval> findByType(ColonUitnodigingsintervalType type);
 }

@@ -22,6 +22,7 @@ package nl.rivm.screenit.security;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import nl.rivm.screenit.model.Account;
@@ -29,6 +30,7 @@ import nl.rivm.screenit.model.Account;
 public class ScreenitPrincipal implements Serializable
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private final Class<? extends Account> accountClass;

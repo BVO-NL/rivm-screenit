@@ -24,9 +24,9 @@ package nl.rivm.screenit.service.impl;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
 
 import nl.rivm.screenit.dao.ProjectDao;
 import nl.rivm.screenit.model.Client;
@@ -87,6 +87,7 @@ import static nl.rivm.screenit.specification.algemeen.ProjectClientSpecification
 import static nl.rivm.screenit.specification.algemeen.ProjectClientSpecification.isNietInProjectBrief;
 import static nl.rivm.screenit.specification.algemeen.ProjectClientSpecification.isProjectClientActief;
 import static nl.rivm.screenit.specification.algemeen.ProjectSpecification.isActiefOpDatum;
+import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
 @Service
 public class BaseProjectServiceImpl implements BaseProjectService
@@ -269,7 +270,7 @@ public class BaseProjectServiceImpl implements BaseProjectService
 	private static Order addJoinsForSortingOrCreateDedicatedOrders(Sort.Order order, Root<ProjectGroep> r, CriteriaBuilder cb)
 	{
 		var sortProperty = order.getProperty();
-		if (sortProperty.startsWith(ProjectGroep_.PROJECT + "." + Project_.PARAMETERS + "." + ProjectParameter_.VALUE))
+		if (sortProperty.startsWith(propertyChain(ProjectGroep_.PROJECT, Project_.PARAMETERS, ProjectParameter_.VALUE)))
 		{
 			var project = join(r, ProjectGroep_.project);
 			var parameters = join(project, Project_.parameters);

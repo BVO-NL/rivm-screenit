@@ -21,9 +21,6 @@ package nl.rivm.screenit.batch.jobs.cervix.aftergba.retourzendingstep;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Root;
-
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.batch.jobs.aftergba.retourzendingstep.BaseRetourzendingReader;
 import nl.rivm.screenit.model.Client;
@@ -33,6 +30,9 @@ import nl.rivm.screenit.model.cervix.CervixDossier_;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde_;
 
 import org.springframework.stereotype.Component;
+
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Root;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 

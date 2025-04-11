@@ -65,7 +65,7 @@ public class EnovationHuisartsCsvFileProvider implements CsvFileProvider
 
 			if (url.getUserInfo() != null)
 			{
-				String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(url.getUserInfo().getBytes());
+				String basicAuth = "Basic " + jakarta.xml.bind.DatatypeConverter.printBase64Binary(url.getUserInfo().getBytes());
 				uc.setRequestProperty("Authorization", basicAuth);
 			}
 

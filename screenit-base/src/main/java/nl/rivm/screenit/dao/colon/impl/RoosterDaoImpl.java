@@ -39,8 +39,8 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
 
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.SQLQuery;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -78,10 +78,10 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 			criteria.setMaxResults(Ints.checkedCast(count));
 		}
 
-		return criteria.list();
+		return criteria.getResultList();
 	}
 
-	private SQLQuery createAfspraakslotsCriteria(RoosterListViewFilter filter, ColonIntakelocatie intakeLocatie, String sortProperty, boolean asc)
+	private NativeQuery createAfspraakslotsCriteria(RoosterListViewFilter filter, ColonIntakelocatie intakeLocatie, String sortProperty, boolean asc)
 	{
 		getSession().flush();
 		var selectFromQueryString = "select ";
@@ -208,14 +208,14 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 	public List<VrijSlotZonderKamer> getVrijeSlotenZonderKamer(String sortProperty, boolean asc, VrijSlotZonderKamerFilter filter)
 	{
 		var query = createVrijSlotZonderKamerQuery(filter, sortProperty, asc);
-		return query.list();
+		return query.getResultList();
 	}
 
 	@Override
 	public List<VrijSlotZonderKamer> getVrijeSlotenZonderKamer(VrijSlotZonderKamerFilter filter)
 	{
 		var query = createVrijSlotZonderKamerQuery(filter, "niet", true);
-		return query.list();
+		return query.getResultList();
 	}
 
 	@Override
@@ -225,7 +225,7 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 		return ((Number) query.uniqueResult()).longValue();
 	}
 
-	private SQLQuery createVrijSlotZonderKamerQuery(VrijSlotZonderKamerFilter filter, String sortProperty, boolean asc)
+	private NativeQuery createVrijSlotZonderKamerQuery(VrijSlotZonderKamerFilter filter, String sortProperty, boolean asc)
 	{
 		getSession().flush();
 

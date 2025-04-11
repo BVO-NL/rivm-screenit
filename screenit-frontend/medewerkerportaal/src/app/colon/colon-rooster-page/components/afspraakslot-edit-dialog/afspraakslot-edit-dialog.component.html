@@ -1,0 +1,91 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog (sluiten)="cancel()" [size]="isNieuw ? 'lg' : 'md'" [titel]="title" [justifyButtons]="verwijderenToegestaan">
+  <form body class="clr-row form-in-modal" clrForm [formGroup]="afspraakslotForm" novalidate>
+    <div class="clr-col">
+      <clr-combobox-container>
+        <label [class.clr-required-mark]="!afspraakslotForm.get('kamer')?.disabled" for="kamer">Kamer</label>
+        <clr-combobox formControlName="kamer" required id="kamer" class=" kamer-selector" data-testid="cb_kamer_selector">
+          <clr-options>
+            <clr-option [clrValue]="kamer" *clrOptionItems="let kamer of kamers$(); field: 'naam'">{{ kamer.naam }}</clr-option>
+          </clr-options>
+        </clr-combobox>
+        <clr-control-error>De kamer is verplicht</clr-control-error>
+      </clr-combobox-container>
+      <clr-date-container>
+        <label [class.clr-required-mark]="!datumCtrl.disabled" for="datum">Datum</label>
+        <input autocomplete="off" clrDate formControlName="datum" [disabled]="!bewerkenToegestaan" name="datum" id="datum" type="date" [min]="now"
+               data-testid="input_datum"/>
+        <clr-control-error *clrIfError="'required'">De datum is verplicht</clr-control-error>
+        <clr-control-error *clrIfError="'datumInVerleden'">{{ datumCtrl.getError('datumInVerleden') }}</clr-control-error>
+        <clr-control-error *clrIfError="'valideDatum'">{{ datumCtrl.getError('valideDatum') }}</clr-control-error>
+      </clr-date-container>
+      @if (isNieuw) {
+        <clr-input-container>
+          <label class="clr-required-mark" for="blokken">Aantal afspraakslots</label>
+          <input clrInput autocomplete="off" formControlName="aantalBlokken" [min]="1" id="blokken" type="number" data-testid="input_blokken"/>
+          <clr-control-error *clrIfError="'required'">Het aantal afspraakslots is verplicht</clr-control-error>
+          <clr-control-error *clrIfError="'min'">Minimum aantal afspraakslots moet groter zijn dan 0</clr-control-error>
+          <clr-control-error *clrIfError="'pattern'">Het aantal afspraakslots moet een geheel getal zijn</clr-control-error>
+          <clr-control-helper>van {{ instellingen$().duurAfspraakInMinuten }} minuten</clr-control-helper>
+        </clr-input-container>
+      }
+      <clr-input-container>
+        <label [class.clr-required-mark]="!startTijdCtrl.disabled" for="startTijd">Starttijd</label>
+        <input clrInput autocomplete="off" formControlName="vanaf" id="startTijd" type="time" data-testid="input_start_tijd"/>
+        <clr-control-error *clrIfError="'required'">De starttijd is verplicht</clr-control-error>
+        <clr-control-error *clrIfError="'tijdStappen'">{{ startTijdCtrl.getError('tijdStappen') }}</clr-control-error>
+      </clr-input-container>
+      <clr-input-container>
+        <label for="eindTijd">Eindtijd</label>
+        <input clrInput autocomplete="off" formControlName="tot" id="eindTijd" type="time" data-testid="input_eind_tijd"/>
+      </clr-input-container>
+    </div>
+    @if (isNieuw) {
+      <div class="clr-col">
+        <app-bulk-aanmaken formControlName="herhaling"/>
+      </div>
+    }
+  </form>
+  <ng-container buttons>
+    @if (verwijderenToegestaan) {
+      <button type="button"
+              class="btn btn-danger"
+              (click)="confirmDeleteSlot()"
+              data-testid="btn-verwijderen">
+        Verwijderen
+      </button>
+    }
+    <div class="btn-group">
+      <button type="button" class="btn" (click)="cancel()" data-testid="btn_annuleren">{{ bewerkenToegestaan ? 'Annuleren' : 'Sluiten' }}</button>
+      @if (bewerkenToegestaan) {
+        <button type="button"
+                class="btn btn-primary"
+                [disabled]="afspraakslotForm.invalid"
+                (click)="save()"
+                data-testid="btn_opslaan"
+        >
+          Opslaan
+        </button>
+      }
+    </div>
+  </ng-container>
+</app-base-dialog>

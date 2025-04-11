@@ -35,7 +35,7 @@ import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
-import org.springframework.scheduling.support.CronSequenceGenerator;
+import org.springframework.scheduling.support.CronExpression;
 
 public class TechnischBeheerSeParametersPanel extends BaseTechnischBeheerParametersPanel
 {
@@ -56,7 +56,7 @@ public class TechnischBeheerSeParametersPanel extends BaseTechnischBeheerParamet
 		form.add(sePongTimeoutVeld);
 		form.add(new TextField<>("internalMammaSeInformatieOphalenCron", String.class).add((IValidator<String>) validatable ->
 		{
-			if (!CronSequenceGenerator.isValidExpression(validatable.getValue()))
+			if (!CronExpression.isValidExpression(validatable.getValue()))
 			{
 				validatable.error(new ValidationError("Invalide cron expressie"));
 			}

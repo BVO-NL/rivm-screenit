@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.jms.Destination;
+import jakarta.jms.Destination;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.Client;

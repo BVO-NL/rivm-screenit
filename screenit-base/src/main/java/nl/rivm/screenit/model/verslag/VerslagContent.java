@@ -22,20 +22,26 @@ package nl.rivm.screenit.model.verslag;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
+import java.io.Serial;
 
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.enums.VerslagGeneratie;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
+
 @Entity
 @Table(schema = "gedeeld")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class VerslagContent<T extends Verslag> extends AbstractHibernateObject
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Enumerated(EnumType.STRING)

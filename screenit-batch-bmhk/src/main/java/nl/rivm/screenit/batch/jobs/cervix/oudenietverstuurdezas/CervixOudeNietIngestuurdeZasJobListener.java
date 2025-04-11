@@ -37,18 +37,20 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.project.GroepSelectieType;
 import nl.rivm.screenit.model.project.Project;
-import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.rivm.screenit.model.project.ProjectStatus;
 import nl.rivm.screenit.model.project.ProjectType;
+import nl.rivm.screenit.repository.algemeen.ProjectGroepRepository;
 import nl.rivm.screenit.service.BaseProjectService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @Component
 @Slf4j
@@ -61,7 +63,10 @@ public class CervixOudeNietIngestuurdeZasJobListener extends BaseLogListener
 	private BaseProjectService projectService;
 
 	@Autowired
-	private HibernateService hibernateService;
+	private ProjectGroepRepository projectGroepRepository;
+
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	private String projectNaam;
 
@@ -136,7 +141,7 @@ public class CervixOudeNietIngestuurdeZasJobListener extends BaseLogListener
 				if (executionContext.containsKey(CervixOudeNietIngestuurdeZasConstants.PROJECT_GROEP_ID))
 				{
 					var groepId = executionContext.getLong(CervixOudeNietIngestuurdeZasConstants.PROJECT_GROEP_ID);
-					var groep = hibernateService.get(ProjectGroep.class, groepId);
+					var groep = projectGroepRepository.findById(groepId).orElse(null);
 					if (groep != null)
 					{
 						if (groep.getPopulatie() > 0)
@@ -172,10 +177,10 @@ public class CervixOudeNietIngestuurdeZasJobListener extends BaseLogListener
 			queryString = queryString
 				.replace("select c.id clientId", "select count(c.id)")
 				.replace("order by a.verstuurd_datum", "");
-			var query = hibernateService.getHibernateSession().createSQLQuery(queryString);
+			var query = entityManager.createNativeQuery(queryString);
 			query.setParameter("projectId", projectId);
 
-			return query.setReadOnly(true).uniqueResult().toString();
+			return query.setHint("org.hibernate.readOnly", true).getSingleResult().toString();
 		}
 		catch (IOException e)
 		{

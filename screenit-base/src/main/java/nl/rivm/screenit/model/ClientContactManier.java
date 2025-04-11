@@ -42,7 +42,9 @@ public enum ClientContactManier
 
 	FORMULIER_VOOR_ALLES_VERWIJDEREN(BriefType.CLIENT_BEZWAAR_ALLES_VERWIJDEREN),
 
-	DIRECT;
+	DIRECT,
+
+	GEGEVENS_VERWIJDEREN;
 
 	private BriefType briefType;
 

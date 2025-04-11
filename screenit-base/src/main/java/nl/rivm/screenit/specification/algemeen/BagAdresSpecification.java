@@ -24,7 +24,7 @@ package nl.rivm.screenit.specification.algemeen;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

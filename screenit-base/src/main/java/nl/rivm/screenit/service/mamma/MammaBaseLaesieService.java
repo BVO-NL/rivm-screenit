@@ -34,14 +34,11 @@ import nl.rivm.screenit.service.mamma.be.verslag.MammaLaesieTypeMergeField;
 
 public interface MammaBaseLaesieService
 {
-
-	Map<MammaLaesieTypeMergeField, String> getBaseLaesieMap(MammaLaesie laesie);
-
 	Map<MammaLaesieTypeMergeField, String> getAsymetrieLaesieMap(MammaAsymmetrieLaesie laesie);
 
 	Map<MammaLaesieTypeMergeField, String> getArchitectuurVerstoringMap(MammaArchitectuurverstoringLaesie laesie);
 
-	Map<MammaLaesieTypeMergeField, String> getCalificatiesMap(MammaCalcificatiesLaesie laesie);
+	Map<MammaLaesieTypeMergeField, String> getCalcificatiesMap(MammaCalcificatiesLaesie laesie);
 
 	Map<MammaLaesieTypeMergeField, String> getMassaMap(MammaMassaLaesie laesie);
 

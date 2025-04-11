@@ -28,12 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-
 import nl.rivm.screenit.batch.jobs.cervix.CervixLabPartitioner;
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.BMHKLaboratorium;
@@ -78,7 +72,13 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import static javax.persistence.criteria.JoinType.LEFT;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
+
+import static jakarta.persistence.criteria.JoinType.LEFT;
 import static nl.rivm.screenit.model.cervix.berichten.CervixHpvResultValue.POS_OTHER_HR_HPV;
 import static nl.rivm.screenit.specification.ExtendedSpecification.not;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;

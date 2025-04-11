@@ -28,6 +28,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,7 +40,7 @@ public class ColonFITHerinneringJobConfiguration extends AbstractJobConfiguratio
 	@Bean
 	public Job fitHerinneringJob(ColonFITHerinneringJobListener listener, Step fitHerinneringStep)
 	{
-		return jobBuilderFactory.get(JobType.IFOBT_HERINNERING.name())
+		return new JobBuilder(JobType.IFOBT_HERINNERING.name(), repository)
 			.listener(listener)
 			.start(fitHerinneringStep)
 			.build();
@@ -47,9 +49,8 @@ public class ColonFITHerinneringJobConfiguration extends AbstractJobConfiguratio
 	@Bean
 	public Step fitHerinneringStep(ColonFITHerinneringBriefReader reader, ColonFITHerinneringBriefWriter writer)
 	{
-		return stepBuilderFactory.get("fitHerinneringStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("fitHerinneringStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

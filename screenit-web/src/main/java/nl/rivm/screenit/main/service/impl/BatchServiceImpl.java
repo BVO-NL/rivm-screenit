@@ -29,15 +29,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.QueueBrowser;
-import javax.jms.Session;
-import javax.jms.TemporaryQueue;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.service.AsyncMessageReceiver;
@@ -60,7 +51,6 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.helper.ActiveMQHelper;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.service.LogService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +61,17 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.core.SessionCallback;
 import org.springframework.stereotype.Service;
+
+import jakarta.jms.DeliveryMode;
+import jakarta.jms.Destination;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.QueueBrowser;
+import jakarta.jms.Session;
+import jakarta.jms.TemporaryQueue;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @Slf4j
 @Service
@@ -94,8 +95,8 @@ public class BatchServiceImpl implements BatchService
 	@Autowired
 	private LogService logService;
 
-	@Autowired
-	private HibernateService hibernateService;
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Override
 	public List<BatchServerStatus> getBatchServerStatus() throws UncategorizedJmsException
@@ -128,9 +129,8 @@ public class BatchServiceImpl implements BatchService
 					while (enumeration.hasMoreElements())
 					{
 						Message message = enumeration.nextElement();
-						if (message instanceof ObjectMessage)
+						if (message instanceof ObjectMessage objectMessage)
 						{
-							ObjectMessage objectMessage = (ObjectMessage) message;
 							if (objectMessage.getObject() instanceof BatchServerStatus)
 							{
 								result.add((BatchServerStatus) objectMessage.getObject());
@@ -191,9 +191,8 @@ public class BatchServiceImpl implements BatchService
 							while (enumeration.hasMoreElements())
 							{
 								Message message = enumeration.nextElement();
-								if (message instanceof ObjectMessage)
+								if (message instanceof ObjectMessage objectMessage)
 								{
-									ObjectMessage objectMessage = (ObjectMessage) message;
 									if (objectMessage.getObject() instanceof BatchServerStatus)
 									{
 										result = (Boolean) objectMessage.getObject();
@@ -245,12 +244,10 @@ public class BatchServiceImpl implements BatchService
 					Thread.sleep(2000);
 
 					Message receivedMessage = message.get();
-					if (receivedMessage instanceof ObjectMessage)
+					if (receivedMessage instanceof ObjectMessage objectMessage)
 					{
-						ObjectMessage objectMessage = (ObjectMessage) receivedMessage;
-						if (objectMessage.getObject() instanceof GetTriggersResponse)
+						if (objectMessage.getObject() instanceof GetTriggersResponse getTriggersResponse)
 						{
-							GetTriggersResponse getTriggersResponse = (GetTriggersResponse) objectMessage.getObject();
 							return getTriggersResponse.getTriggers();
 						}
 					}
@@ -314,12 +311,10 @@ public class BatchServiceImpl implements BatchService
 				{
 					LOG.error("Error getting async result", e);
 				}
-				if (receivedMessage instanceof ObjectMessage)
+				if (receivedMessage instanceof ObjectMessage objectMessage)
 				{
-					ObjectMessage objectMessage = (ObjectMessage) receivedMessage;
-					if (objectMessage.getObject() instanceof AddTriggerResponse)
+					if (objectMessage.getObject() instanceof AddTriggerResponse addTriggerResponse)
 					{
-						AddTriggerResponse addTriggerResponse = (AddTriggerResponse) objectMessage.getObject();
 						trigger.setTriggerNaam(addTriggerResponse.getTriggerName());
 						return addTriggerResponse.getFirstScheduleDate();
 					}
@@ -403,12 +398,10 @@ public class BatchServiceImpl implements BatchService
 					LOG.error("Error getting async result", e);
 				}
 
-				if (receivedMessage instanceof ObjectMessage)
+				if (receivedMessage instanceof ObjectMessage objectMessage)
 				{
-					ObjectMessage objectMessage = (ObjectMessage) receivedMessage;
-					if (objectMessage.getObject() instanceof RemoveTriggerResponse)
+					if (objectMessage.getObject() instanceof RemoveTriggerResponse removeTriggerResponse)
 					{
-						RemoveTriggerResponse removeTriggerResponse = (RemoveTriggerResponse) objectMessage.getObject();
 						return removeTriggerResponse.getRemoveResult();
 					}
 
@@ -435,7 +428,7 @@ public class BatchServiceImpl implements BatchService
 	@Override
 	public List<JobType> getBatchQueue()
 	{
-		List<?> list = hibernateService.getHibernateSession().createSQLQuery(BatchQueue.SQL_GET_QUEUE).list();
+		List<?> list = entityManager.createNativeQuery(BatchQueue.SQL_GET_QUEUE).getResultList();
 		List<JobType> jobTypes = new ArrayList<>();
 		for (Object object : list)
 		{

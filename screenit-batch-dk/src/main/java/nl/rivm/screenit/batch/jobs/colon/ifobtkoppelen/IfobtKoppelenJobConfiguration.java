@@ -32,6 +32,8 @@ import nl.rivm.screenit.util.logging.cxf.ScreenITLoggingSaver;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -44,7 +46,7 @@ public class IfobtKoppelenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job koppeldataVerwerkingJob(IfobtKoppelenListener listener, KoppelPromotionListener koppelPromotionListener, Step koppelenStep)
 	{
-		return jobBuilderFactory.get(JobType.KOPPELDATA_VERWERKING.name())
+		return new JobBuilder(JobType.KOPPELDATA_VERWERKING.name(), repository)
 			.listener(listener)
 			.listener(koppelPromotionListener)
 			.start(koppelenStep)
@@ -54,9 +56,8 @@ public class IfobtKoppelenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step koppelenStep(IFobtKoppelReader reader, IFobtKoppelWriter writer)
 	{
-		return stepBuilderFactory.get("koppelenStep")
-			.transactionManager(transactionManager)
-			.<KOPPELDATA.VERZONDENUITNODIGING, KOPPELDATA.VERZONDENUITNODIGING> chunk(250)
+		return new StepBuilder("koppelenStep", repository)
+			.<KOPPELDATA.VERZONDENUITNODIGING, KOPPELDATA.VERZONDENUITNODIGING> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

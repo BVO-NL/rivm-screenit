@@ -35,4 +35,6 @@ public enum DossierGebeurtenisType
 
 	ALGEMENE_BRIEF,
 
+	ONDERZOEKSRESULTATEN_ACTIE
+
 }

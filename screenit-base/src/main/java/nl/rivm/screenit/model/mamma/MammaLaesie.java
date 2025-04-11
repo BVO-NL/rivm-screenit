@@ -23,18 +23,21 @@ package nl.rivm.screenit.model.mamma;
 
 import java.math.BigDecimal;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.SingleTableHibernateObject;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
@@ -52,6 +55,8 @@ import org.hibernate.envers.Audited;
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 @Audited
 @Check(constraints = "laesie.laesie_grootte_in_cm >= 0")
+@Getter
+@Setter
 public abstract class MammaLaesie extends SingleTableHibernateObject
 {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -78,73 +83,11 @@ public abstract class MammaLaesie extends SingleTableHibernateObject
 	@Column(nullable = false)
 	private Integer nummer;
 
+	@Column(nullable = true, length = 3)
+	private String laesieVolgorde;
+
 	@Column(precision = 5, scale = 1)
 	private BigDecimal laesieGrootteInCm;
 
-	public MammaLezing getLezing()
-	{
-		return lezing;
-	}
-
-	public void setLezing(MammaLezing lezing)
-	{
-		this.lezing = lezing;
-	}
-
-	public MammaLaesieIcoon getVerticaleDoorsnedeIcoon()
-	{
-		return verticaleDoorsnedeIcoon;
-	}
-
-	public void setVerticaleDoorsnedeIcoon(MammaLaesieIcoon verticaleDoorsnedeIcoon)
-	{
-		this.verticaleDoorsnedeIcoon = verticaleDoorsnedeIcoon;
-	}
-
-	public MammaLaesieIcoon getHorizontaleDoorsnedeIcoon()
-	{
-		return horizontaleDoorsnedeIcoon;
-	}
-
-	public void setHorizontaleDoorsnedeIcoon(MammaLaesieIcoon horizontaleDoorsnedeIcoon)
-	{
-		this.horizontaleDoorsnedeIcoon = horizontaleDoorsnedeIcoon;
-	}
-
-	public int getNummer()
-	{
-		return nummer;
-	}
-
-	public void setNummer(int nummer)
-	{
-		this.nummer = nummer;
-	}
-
-	public MammaZijde getMammaZijde()
-	{
-		return mammaZijde;
-	}
-
-	public void setMammaZijde(MammaZijde mammaZijde)
-	{
-		this.mammaZijde = mammaZijde;
-	}
-
 	public abstract MammaLaesieType getMammaLaesieType();
-
-	public void setNummer(Integer nummer)
-	{
-		this.nummer = nummer;
-	}
-
-	public BigDecimal getLaesieGrootteInCm()
-	{
-		return laesieGrootteInCm;
-	}
-
-	public void setLaesieGrootteInCm(BigDecimal newValue)
-	{
-		this.laesieGrootteInCm = newValue;
-	}
 }

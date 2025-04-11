@@ -23,9 +23,6 @@ package nl.rivm.screenit.batch.jobs.mamma.brieven.client.genererenstep;
 
 import java.time.LocalDate;
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.brieven.genereren.AbstractBrievenGenererenReader;
@@ -52,7 +49,10 @@ import nl.rivm.screenit.specification.ExtendedSpecification;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import static javax.persistence.criteria.JoinType.LEFT;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+
+import static jakarta.persistence.criteria.JoinType.LEFT;
 import static nl.rivm.screenit.specification.ExtendedSpecification.not;
 import static nl.rivm.screenit.specification.HibernateObjectSpecification.heeftId;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;

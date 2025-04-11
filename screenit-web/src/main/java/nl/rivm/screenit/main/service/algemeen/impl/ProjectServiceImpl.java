@@ -49,7 +49,6 @@ import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.rivm.screenit.model.project.ProjectType;
 import nl.rivm.screenit.model.project.Project_;
 import nl.rivm.screenit.repository.algemeen.ProjectAttribuutRepository;
-import nl.rivm.screenit.repository.algemeen.ProjectBriefActieRepository;
 import nl.rivm.screenit.repository.algemeen.ProjectClientRepository;
 import nl.rivm.screenit.repository.algemeen.ProjectRepository;
 import nl.rivm.screenit.service.AutorisatieService;
@@ -120,9 +119,6 @@ public class ProjectServiceImpl implements ProjectService
 
 	@Autowired
 	private ClientProjectAttributenDataProviderServiceImpl clientProjectAttributenDataProviderService;
-
-	@Autowired
-	private ProjectBriefActieRepository projectBriefActieRepository;
 
 	@Autowired
 	private ProjectAttribuutRepository projectAttribuutRepository;

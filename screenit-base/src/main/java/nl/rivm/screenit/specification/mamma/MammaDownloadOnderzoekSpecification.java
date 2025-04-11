@@ -21,9 +21,6 @@ package nl.rivm.screenit.specification.mamma;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.Instelling;
@@ -41,6 +38,9 @@ import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 
 import org.springframework.data.jpa.domain.Specification;
+
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 

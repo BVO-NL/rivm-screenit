@@ -2,7 +2,7 @@ package nl.rivm.screenit.clientportaal.controllers;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -26,7 +26,6 @@ import lombok.AllArgsConstructor;
 import nl.rivm.screenit.clientportaal.model.colon.ContactActiesDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.service.ClientContactService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -42,14 +41,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class ContactActiesController extends AbstractController
 {
-	private final HibernateService hibernateService;
-
 	private final ClientContactService clientContactService;
 
 	@GetMapping("/beschikbaar")
 	public ResponseEntity<ContactActiesDto> getContactActies(Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 		return ResponseEntity.ok(new ContactActiesDto(clientContactService.getAvailableActies(client, true)));
 	}
 }

@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -28,8 +28,6 @@ import App from "./App"
 import {loadState, saveState} from "./util/StorageUtil"
 import RootReducer from "./state"
 import {BrowserRouter} from "react-router-dom"
-import createCache from "@emotion/cache"
-import {CacheProvider} from "@emotion/react"
 import {createRoot} from "react-dom/client"
 import IdleTimerWrapper from "./components/IdleTimerWrapper"
 import {NonceProvider} from "react-select"
@@ -44,11 +42,9 @@ store.subscribe(() => {
 })
 
 export type AppState = ReturnType<typeof store.getState>
-type AppDispatch = typeof store.dispatch
 export type AppThunkDispatch = ThunkDispatch<AppState, any, AnyAction>;
 
 export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector
-export const useAppDispatch = () => useDispatch<AppDispatch>()
 export const useAppThunkDispatch = () => useDispatch<AppThunkDispatch>()
 
 interface NonceElement extends Element {
@@ -69,5 +65,5 @@ root.render(
 				</IdleTimerWrapper>
 			</BrowserRouter>
 		</NonceProvider>
-	</Provider>
+	</Provider>,
 )

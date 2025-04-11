@@ -22,6 +22,7 @@ package nl.rivm.screenit.service.impl;
  */
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -40,7 +41,9 @@ import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.Brief_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactManier;
+import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.OnderzoeksresultatenActie;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.algemeen.BezwaarGroupViewWrapper;
@@ -52,11 +55,15 @@ import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.model.enums.OnderzoeksresultatenActieType;
 import nl.rivm.screenit.model.envers.RevisionKenmerk;
 import nl.rivm.screenit.model.envers.RevisionKenmerkInThreadHolder;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.project.ProjectInactiefReden;
 import nl.rivm.screenit.repository.algemeen.BezwaarBriefRepository;
+import nl.rivm.screenit.repository.algemeen.BezwaarMomentRepository;
+import nl.rivm.screenit.repository.algemeen.OnderzoeksresultatenActieRepository;
+import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.repository.cervix.CervixBaseMonsterRepository;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BaseGbaVraagService;
@@ -81,12 +88,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import static nl.rivm.screenit.model.enums.BezwaarType.GEEN_GEBRUIK_LICHAAMSMATERIAAL_WETENSCHAPPELIJK_ONDERZOEK;
 import static nl.rivm.screenit.model.enums.BezwaarType.GEEN_SIGNALERING_VERWIJSADVIES;
 import static nl.rivm.screenit.specification.algemeen.BezwaarBriefSpecification.heeftClient;
 import static nl.rivm.screenit.specification.algemeen.BezwaarBriefSpecification.isNietVerstuurd;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefType;
+import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.heeftBsn;
+import static nl.rivm.screenit.util.DateUtil.isGeboortedatumGelijk;
 import static nl.topicuszorg.util.collections.CollectionUtils.isEqualCollection;
 import static nl.topicuszorg.util.collections.CollectionUtils.isNotEmpty;
 
@@ -142,6 +152,15 @@ public class BezwaarServiceImpl implements BezwaarService
 	@Autowired
 	private BezwaarBriefRepository bezwaarBriefRepository;
 
+	@Autowired
+	private ClientRepository clientRepository;
+
+	@Autowired
+	private OnderzoeksresultatenActieRepository onderzoeksresultatenActieRepository;
+
+	@Autowired
+	private BezwaarMomentRepository bezwaarMomentRepository;
+
 	public BezwaarGroupViewWrapper getBezwaarGroupViewWrapperFromList(List<BezwaarGroupViewWrapper> lijstBezwaarGroupViewWrappers, Bevolkingsonderzoek onderzoek)
 	{
 		var wrapperName = "ALGEMEEN";
@@ -163,14 +182,15 @@ public class BezwaarServiceImpl implements BezwaarService
 	@Override
 	public List<BezwaarGroupViewWrapper> getEditBezwaarGroupViewWrappers(Client client, BezwaarMoment laatstVoltooideMoment)
 	{
-		return getEditBezwaarGroupViewWrappers(client, laatstVoltooideMoment, true);
+		return getEditBezwaarGroupViewWrappers(client, laatstVoltooideMoment, true, BezwaarType.ALGEMENE_BEZWAAR_TYPES);
 	}
 
 	@Override
-	public List<BezwaarGroupViewWrapper> getEditBezwaarGroupViewWrappers(Client client, BezwaarMoment laatstVoltooideMoment, boolean checkDossierBezwaar)
+	public List<BezwaarGroupViewWrapper> getEditBezwaarGroupViewWrappers(Client client, BezwaarMoment laatstVoltooideMoment, boolean checkDossierBezwaar,
+		List<BezwaarType> bezwaarTypes)
 	{
 
-		List<BezwaarGroupViewWrapper> lijstBezwaarViewWrappers = new ArrayList<BezwaarGroupViewWrapper>();
+		var lijstBezwaarViewWrappers = new ArrayList<BezwaarGroupViewWrapper>();
 		lijstBezwaarViewWrappers.add(getGroupWrapper(null));
 
 		var onderzoeken = doelgroepService.totWelkeBevolkingsonderzoekenHoortDezeClient(client);
@@ -182,7 +202,7 @@ public class BezwaarServiceImpl implements BezwaarService
 
 		for (var groupWrapper : lijstBezwaarViewWrappers)
 		{
-			voegBezwaarToe(groupWrapper, laatstVoltooideMoment, checkDossierBezwaar);
+			voegBezwaarToe(groupWrapper, laatstVoltooideMoment, checkDossierBezwaar, bezwaarTypes);
 		}
 		return removeEmptyGroupViewWrappers(lijstBezwaarViewWrappers);
 	}
@@ -228,14 +248,42 @@ public class BezwaarServiceImpl implements BezwaarService
 	@Transactional
 	public void bezwaarAfronden(BezwaarMoment moment, Account account, List<BezwaarGroupViewWrapper> groupWrappers) throws IllegalStateException
 	{
-		var bezwaren = maakNieuweBezwaren(moment, groupWrappers);
+		var bezwaren = maakNieuweBezwaren(moment, groupWrappers, moment.getClient().getLaatstVoltooideBezwaarMoment());
 		moment.setBezwaren(bezwaren);
 		bezwaarAfronden(moment, account, true);
-		var resetMoment = maakResetMoment(moment, groupWrappers);
-		if (resetMoment != null)
+	}
+
+	@Override
+	@Transactional
+	public void onderzoeksresultatenVerwijderen(OnderzoeksresultatenActie actie, Account account, List<BezwaarGroupViewWrapper> groupWrappers)
+	{
+		for (var groupWrapper : groupWrappers)
 		{
-			bezwaarAfronden(resetMoment, account, false);
+			for (var wrapper : groupWrapper.getBezwaren().stream()
+				.filter(wrapper -> Boolean.TRUE.equals(wrapper.getActief()) && wrapper.getType() == BezwaarType.VERZOEK_TOT_VERWIJDERING_DOSSIER).toList())
+			{
+				var bevolkingsonderzoek = wrapper.getBevolkingsonderzoek();
+				var client = actie.getClient();
+
+				var onderzoeksresultatenActie = new OnderzoeksresultatenActie();
+				onderzoeksresultatenActie.setMoment(currentDateSupplier.getLocalDateTime());
+				onderzoeksresultatenActie.setType(OnderzoeksresultatenActieType.getTypeVoorBevolkingsonderzoek(bevolkingsonderzoek));
+				onderzoeksresultatenActie.setGetekendeBrief(actie.getGetekendeBrief());
+				onderzoeksresultatenActie.setClient(client);
+				client.getOnderzoeksresultatenActies().add(actie);
+
+				var brief = briefService.maakBezwaarBrief(client, BriefType.CLIENT_BEZWAAR_BEVESTIGING_VERWIJDERING_DOSSIER, currentDateSupplier.getDate());
+				onderzoeksresultatenActie.getBrieven().add(brief);
+				brief.setOnderzoeksresultatenActie(onderzoeksresultatenActie);
+
+				onderzoeksresultatenActieRepository.save(onderzoeksresultatenActie);
+
+				verwerkVerwijderDossier(client, bevolkingsonderzoek);
+
+				logService.logGebeurtenis(LogGebeurtenis.CLIENT_ONDERZOEKRESULTATEN_ACTIE, account, client, onderzoeksresultatenActie.getType().getOmschrijving());
+			}
 		}
+
 	}
 
 	@Override
@@ -263,7 +311,7 @@ public class BezwaarServiceImpl implements BezwaarService
 	public BezwaarGroupViewWrapper getGroupWrapperForClientPortaal(BezwaarMoment laatstVoltooideMoment, Bevolkingsonderzoek bevolkingsonderzoek)
 	{
 		var groupWrapper = getGroupWrapper(bevolkingsonderzoek);
-		voegBezwaarToe(groupWrapper, laatstVoltooideMoment, true, true);
+		voegBezwaarToe(groupWrapper, laatstVoltooideMoment, true, true, BezwaarType.ALGEMENE_BEZWAAR_TYPES);
 		return groupWrapper;
 	}
 
@@ -282,9 +330,6 @@ public class BezwaarServiceImpl implements BezwaarService
 				break;
 			case GEEN_OPNAME_UIT_BPR:
 				bezwaarOpnameUitBrp(client);
-				break;
-			case VERZOEK_TOT_VERWIJDERING_DOSSIER:
-				bezwaarVerzoekTotVerwijderingDossier(bezwaar);
 				break;
 			case GEEN_GEBRUIK_LICHAAMSMATERIAAL_WETENSCHAPPELIJK_ONDERZOEK:
 				if (isBezwaarNieuwVergelekenMetVorigeBezwaarMoment(moment, GEEN_GEBRUIK_LICHAAMSMATERIAAL_WETENSCHAPPELIJK_ONDERZOEK))
@@ -309,17 +354,18 @@ public class BezwaarServiceImpl implements BezwaarService
 
 	@Override
 	@Transactional
-	public void bezwaarBRPIntrekken(Account account, Client client, UploadDocument document) throws IOException, IllegalStateException
+	public void bezwaarBRPIntrekken(Account account, Client client, MultipartFile briefBestand) throws IOException, IllegalStateException
 	{
 		try
 		{
-			uploadDocumentService.saveOrUpdate(document, FileStoreLocation.BEZWAAR, client.getId());
+			var uploadDocument = uploadDocumentService.multipartToUploadDocument(briefBestand);
+			uploadDocumentService.saveOrUpdate(uploadDocument, FileStoreLocation.BEZWAAR, client.getId());
 
 			var huidigeMoment = client.getLaatstVoltooideBezwaarMoment();
 
 			var nieuweBezwaarMoment = new BezwaarMoment();
 			nieuweBezwaarMoment.setClient(client);
-			nieuweBezwaarMoment.setBezwaarBrief(document);
+			nieuweBezwaarMoment.setBezwaarBrief(uploadDocument);
 			nieuweBezwaarMoment.setManier(ClientContactManier.DIRECT);
 			for (var bezwaar : huidigeMoment.getBezwaren())
 			{
@@ -334,7 +380,7 @@ public class BezwaarServiceImpl implements BezwaarService
 			logService.logGebeurtenis(LogGebeurtenis.CLIENT_BEZWAAR_BRP_INGETROKKEN, account, client);
 
 		}
-		catch (IOException | IllegalStateException e)
+		catch (IllegalStateException e)
 		{
 			LOG.error("Er is een fout opgetreden bij het intrekken van het Bezwaar BRP.", e);
 			throw e;
@@ -342,14 +388,40 @@ public class BezwaarServiceImpl implements BezwaarService
 	}
 
 	@Override
-	public boolean bezwaarDocumentenVervangen(UploadDocument nieuwDocument, BezwaarMoment bezwaarMoment, UploadDocument huidigDocument, Account account)
+	public boolean ondertekendeBezwaarBriefVervangen(UploadDocument nieuwDocument, BezwaarMoment bezwaarMoment, UploadDocument huidigDocument, Account account)
 	{
 		bezwaarMoment.setBezwaarBrief(null);
+		var isVervangen = ondertekendeBriefVervangen(nieuwDocument, bezwaarMoment.getClient(), huidigDocument, account);
+		if (isVervangen)
+		{
+			bezwaarMoment.setBezwaarBrief(nieuwDocument);
+			bezwaarMomentRepository.save(bezwaarMoment);
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean ondertekendeOnderzoeksresultatenBriefVervangen(UploadDocument nieuwDocument, OnderzoeksresultatenActie actie, UploadDocument huidigDocument, Account account)
+	{
+		actie.setGetekendeBrief(null);
+		var isVervangen = ondertekendeBriefVervangen(nieuwDocument, actie.getClient(), huidigDocument, account);
+		if (isVervangen)
+		{
+			actie.setGetekendeBrief(nieuwDocument);
+			onderzoeksresultatenActieRepository.save(actie);
+			return true;
+		}
+		return false;
+	}
+
+	private boolean ondertekendeBriefVervangen(UploadDocument nieuwDocument, Client client, UploadDocument huidigDocument, Account account)
+	{
 		uploadDocumentService.delete(huidigDocument);
-		bezwaarMoment.setBezwaarBrief(nieuwDocument);
 		try
 		{
-			uploadDocumentService.saveOrUpdate(nieuwDocument, FileStoreLocation.BEZWAAR, bezwaarMoment.getClient().getId());
+			uploadDocumentService.saveOrUpdate(nieuwDocument, FileStoreLocation.BEZWAAR, client.getId());
 		}
 		catch (IOException e)
 		{
@@ -357,7 +429,7 @@ public class BezwaarServiceImpl implements BezwaarService
 			return false;
 		}
 
-		logService.logGebeurtenis(LogGebeurtenis.VERVANGEN_DOCUMENT, account, bezwaarMoment.getClient(), "Ondertekende brief is vervangen.");
+		logService.logGebeurtenis(LogGebeurtenis.VERVANGEN_DOCUMENT, account, client, "Ondertekende brief is vervangen.");
 		return true;
 	}
 
@@ -370,14 +442,14 @@ public class BezwaarServiceImpl implements BezwaarService
 			.flatMap(bm -> bm.getBezwaren().stream())
 			.filter(b -> Boolean.TRUE.equals(b.getActief()))
 			.map(bmm -> bvo + "_" + bmm.getType())
-			.collect(Collectors.toList());
+			.toList();
 
 		if (laatsteVoltooideBezwaarMoment != null)
 		{
 			var huidigeBezwaarTypen = laatsteVoltooideBezwaarMoment.getBezwaren().stream()
 				.filter(b -> bvo == null || b.getBevolkingsonderzoek() == null || b.getBevolkingsonderzoek().equals(bvo))
 				.map(b -> b.getBevolkingsonderzoek() + "_" + b.getType())
-				.collect(Collectors.toList());
+				.toList();
 			return !isEqualCollection(huidigeBezwaarTypen, nieuweBezwaarTypen);
 		}
 		return !nieuweBezwaarTypen.isEmpty();
@@ -467,6 +539,15 @@ public class BezwaarServiceImpl implements BezwaarService
 			.anyMatch(wrapper -> type.equals(wrapper.getType()));
 	}
 
+	@Override
+	public List<Client> getClientenMetBezwaarBrp(String bsn, LocalDate geboortedatum)
+	{
+		return clientRepository.findAll(heeftBsn(bsn).with(Client_.persoon))
+			.stream()
+			.filter(client -> BezwaarUtil.isBezwaarActiefVoor(client, BezwaarType.GEEN_OPNAME_UIT_BPR) && isGeboortedatumGelijk(geboortedatum, client))
+			.toList();
+	}
+
 	private BezwaarMoment haalBezwaarMomentOp(Optional<BezwaarBrief> bezwaarBrief, Client client)
 	{
 		if (bezwaarBrief.isPresent() && bezwaarBrief.get().getBezwaarMoment() != null)
@@ -510,27 +591,27 @@ public class BezwaarServiceImpl implements BezwaarService
 		return groupWrapper;
 	}
 
-	private void voegBezwaarToe(BezwaarGroupViewWrapper groupWrapper, BezwaarMoment laatstVoltooideMoment, boolean checkDossierBezwaar)
+	private void voegBezwaarToe(BezwaarGroupViewWrapper groupWrapper, BezwaarMoment laatstVoltooideMoment, boolean checkDossierBezwaar, List<BezwaarType> bezwaarTypes)
 	{
-		voegBezwaarToe(groupWrapper, laatstVoltooideMoment, false, checkDossierBezwaar);
+		voegBezwaarToe(groupWrapper, laatstVoltooideMoment, false, checkDossierBezwaar, bezwaarTypes);
 	}
 
-	private void voegBezwaarToe(BezwaarGroupViewWrapper groupWrapper, BezwaarMoment voltooideMoment, boolean clientPortaal, boolean checkDossierBezwaar)
+	private void voegBezwaarToe(BezwaarGroupViewWrapper groupWrapper, BezwaarMoment voltooideMoment, boolean clientPortaal, boolean checkDossierBezwaar,
+		List<BezwaarType> bezwaarTypes)
 	{
 		var onderzoek = groupWrapper.getBevolkingsonderzoek();
-		for (var type : BezwaarType.values())
+		bezwaarTypes.forEach(type ->
 		{
 			var onderzoekenByType = Arrays.asList(type.getBevolkingsonderzoeken());
 			if ((onderzoek == null && onderzoekenByType.isEmpty() || onderzoekenByType.contains(onderzoek))
 				&& (!clientPortaal || !type.getOnzichtbaarOpClientPortaal())
-				&& (!BezwaarType.GEEN_UITWISSELING_MET_DE_HUISARTS.equals(type) || BezwaarUtil.isBezwaarActiefVoor(voltooideMoment, type, onderzoek, checkDossierBezwaar))
-				&& !BezwaarType.GEEN_REGISTRATIE_GEBOORTELAND.equals(type))
+				&& (!BezwaarType.GEEN_UITWISSELING_MET_DE_HUISARTS.equals(type) || BezwaarUtil.isBezwaarActiefVoor(voltooideMoment, type, onderzoek, checkDossierBezwaar)))
 			{
 				var wrapper = getBezwaarViewWrapper(type, BezwaarUtil.isBezwaarActiefVoor(voltooideMoment, type, onderzoek, checkDossierBezwaar), onderzoek);
 				wrapper.setResourceKey("BezwaarType." + groupWrapper.getKey() + "." + wrapper.getType());
 				groupWrapper.getBezwaren().add(wrapper);
 			}
-		}
+		});
 	}
 
 	private BezwaarViewWrapper getBezwaarViewWrapper(BezwaarType type, Boolean actief, Bevolkingsonderzoek bvo)
@@ -540,35 +621,6 @@ public class BezwaarServiceImpl implements BezwaarService
 		wrapper.setActief(actief);
 		wrapper.setBevolkingsonderzoek(bvo);
 		return wrapper;
-	}
-
-	private BezwaarMoment maakResetMoment(BezwaarMoment moment, List<BezwaarGroupViewWrapper> groupWrappers)
-	{
-		BezwaarMoment resetMoment = null;
-		var resetNodig = false;
-		for (var wrapper : groupWrappers)
-		{
-			for (var bezwaarView : wrapper.getBezwaren())
-			{
-				if (BezwaarType.VERZOEK_TOT_VERWIJDERING_DOSSIER.equals(bezwaarView.getType()) && bezwaarView.getActief())
-				{
-					bezwaarView.setActief(false);
-					resetNodig = true;
-				}
-			}
-		}
-		if (resetNodig)
-		{
-			resetMoment = new BezwaarMoment();
-			var bezwaren = maakNieuweBezwaren(resetMoment, groupWrappers);
-			resetMoment.setBezwaarBrief(moment.getBezwaarBrief());
-			resetMoment.setBezwaren(bezwaren);
-			resetMoment.setStatusDatum(moment.getStatusDatum());
-			resetMoment.setStatus(moment.getStatus());
-			resetMoment.setClient(moment.getClient());
-			resetMoment.setBezwaarDatum(moment.getBezwaarDatum());
-		}
-		return resetMoment;
 	}
 
 	private void bezwaarAfronden(BezwaarMoment moment, Account account, boolean maakBrief)
@@ -595,14 +647,6 @@ public class BezwaarServiceImpl implements BezwaarService
 		bezwarenDoorvoeren(moment);
 	}
 
-	private void maakBevestigingsbrief(BezwaarMoment moment, BriefType briefType)
-	{
-		var brief = briefService.maakBezwaarBrief(moment.getClient(), briefType, currentDateSupplier.getDate());
-		brief.setBezwaarMoment(moment);
-		moment.getBrieven().add(brief);
-		hibernateService.saveOrUpdate(moment);
-	}
-
 	private List<BriefType> bepaalBevestigingBriefTypesVoorAfrondenBezwaar(BezwaarMoment moment)
 	{
 		var list = moment.getBezwaren()
@@ -627,6 +671,14 @@ public class BezwaarServiceImpl implements BezwaarService
 		}
 
 		return list;
+	}
+
+	private void maakBevestigingsbrief(BezwaarMoment moment, BriefType briefType)
+	{
+		var brief = briefService.maakBezwaarBrief(moment.getClient(), briefType, currentDateSupplier.getDate());
+		brief.setBezwaarMoment(moment);
+		moment.getBrieven().add(brief);
+		hibernateService.saveOrUpdate(moment);
 	}
 
 	private void bezwaarAangepastLogging(Account account, BezwaarMoment moment)
@@ -672,14 +724,14 @@ public class BezwaarServiceImpl implements BezwaarService
 		logService.logGebeurtenis(LogGebeurtenis.CLIENT_BEZWAAR_AANGEPAST, logEvent, account, moment.getClient());
 	}
 
-	private List<Bezwaar> maakNieuweBezwaren(BezwaarMoment moment, List<BezwaarGroupViewWrapper> groupWrappers)
+	private List<Bezwaar> maakNieuweBezwaren(BezwaarMoment nieuwMoment, List<BezwaarGroupViewWrapper> groupWrappers, BezwaarMoment laatstVoltooideBezwaarMoment)
 	{
-		List<Bezwaar> bezwaren = new ArrayList<Bezwaar>();
+		var bezwaren = kopieerBezwaren(laatstVoltooideBezwaarMoment, nieuwMoment);
 		for (var groupWrapper : groupWrappers)
 		{
 			for (var wrapper : groupWrapper.getBezwaren())
 			{
-				if (wrapper.getActief())
+				if (Boolean.TRUE.equals(wrapper.getActief()))
 				{
 					var bezwaar = new Bezwaar();
 					var onderzoek = groupWrapper.getBevolkingsonderzoek();
@@ -688,12 +740,41 @@ public class BezwaarServiceImpl implements BezwaarService
 						bezwaar.setBevolkingsonderzoek(onderzoek);
 					}
 					bezwaar.setType(wrapper.getType());
-					bezwaar.setBezwaarMoment(moment);
-					bezwaren.add(bezwaar);
+					bezwaar.setBezwaarMoment(nieuwMoment);
+					if (!heeftBezwaar(bezwaren, wrapper))
+					{
+						bezwaren.add(bezwaar);
+					}
+				}
+				else if (heeftBezwaar(bezwaren, wrapper))
+				{
+					bezwaren.removeIf(bezwaar -> bezwaar.getType().equals(wrapper.getType()));
 				}
 			}
 		}
 		return bezwaren;
+	}
+
+	private boolean heeftBezwaar(List<Bezwaar> bezwaren, BezwaarViewWrapper wrapper)
+	{
+		return bezwaren.stream().anyMatch(bezwaar -> bezwaar.getType() == wrapper.getType() && bezwaar.getBevolkingsonderzoek() == wrapper.getBevolkingsonderzoek());
+	}
+
+	private List<Bezwaar> kopieerBezwaren(BezwaarMoment bronBezwaarMoment, BezwaarMoment doelBezwaarMoment)
+	{
+		if (bronBezwaarMoment == null)
+		{
+			return new ArrayList<>();
+		}
+
+		return new ArrayList<>(bronBezwaarMoment.getBezwaren().stream().map(b ->
+		{
+			var bezwaar = new Bezwaar();
+			bezwaar.setBevolkingsonderzoek(b.getBevolkingsonderzoek());
+			bezwaar.setType(b.getType());
+			bezwaar.setBezwaarMoment(doelBezwaarMoment);
+			return bezwaar;
+		}).toList());
 	}
 
 	private void bezwarenOngedaanMaken(Account account, BezwaarMoment huidigBezwaar, BezwaarMoment nieuwBezwaar)
@@ -785,23 +866,22 @@ public class BezwaarServiceImpl implements BezwaarService
 		}
 	}
 
-	private void bezwaarVerzoekTotVerwijderingDossier(Bezwaar bezwaar)
+	private void verwerkVerwijderDossier(Client client, Bevolkingsonderzoek bevolkingsonderzoek)
 	{
-		var client = bezwaar.getBezwaarMoment().getClient();
 		RevisionKenmerkInThreadHolder.setKenmerk(RevisionKenmerk.DOSSIERVERWIJDERING_DOOR_BEZWAAR, applicationEventPublisher);
-		if (Bevolkingsonderzoek.COLON.equals(bezwaar.getBevolkingsonderzoek()))
+		if (Bevolkingsonderzoek.COLON.equals(bevolkingsonderzoek))
 		{
 			var dossier = client.getColonDossier();
 			colonDossierBaseService.maakDossierLeeg(dossier);
 		}
 
-		if (Bevolkingsonderzoek.CERVIX.equals(bezwaar.getBevolkingsonderzoek()))
+		if (Bevolkingsonderzoek.CERVIX.equals(bevolkingsonderzoek))
 		{
 			var dossier = client.getCervixDossier();
 			cervixBaseDossierService.maakDossierLeeg(dossier);
 		}
 
-		if (Bevolkingsonderzoek.MAMMA.equals(bezwaar.getBevolkingsonderzoek()))
+		if (Bevolkingsonderzoek.MAMMA.equals(bevolkingsonderzoek))
 		{
 			var dossier = client.getMammaDossier();
 			mammaBaseDossierService.maakDossierLeeg(dossier);

@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.controller;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -23,12 +23,11 @@ package nl.rivm.screenit.huisartsenportaal.controller;
 
 import java.io.FileInputStream;
 
-import javax.validation.Valid;
-
 import lombok.SneakyThrows;
 
 import nl.rivm.screenit.huisartsenportaal.dto.BetalingZoekObjectDto;
 import nl.rivm.screenit.huisartsenportaal.dto.BetalingenTotalenDto;
+import nl.rivm.screenit.huisartsenportaal.exception.ValidatieException;
 import nl.rivm.screenit.huisartsenportaal.service.BetalingService;
 import nl.rivm.screenit.huisartsenportaal.validator.BetalingenValidator;
 
@@ -38,18 +37,18 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("betaling")
-@PreAuthorize("isAuthenticated()")
 public class BetalingController extends BaseController
 {
 	@Autowired
@@ -65,21 +64,19 @@ public class BetalingController extends BaseController
 		binder.addValidators(betalingenValidator);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, path = "/all")
-	@PreAuthorize("hasRole('ROLE_AANVRAGEN')")
+	@PostMapping("/all")
 	public ResponseEntity getHuidigeBetalingen(@Valid @RequestBody BetalingZoekObjectDto betalingZoekObjectDto, BindingResult result)
 	{
 		if (result.hasErrors())
 		{
-			return ResponseEntity.badRequest().body(result.getAllErrors());
+			throw new ValidatieException(result.getAllErrors());
 		}
 		BetalingenTotalenDto betalingenTotalenDto = betalingService.getBetalingen(getIngelogdeHuisarts(), betalingZoekObjectDto);
 		return new ResponseEntity(betalingenTotalenDto, HttpStatus.OK);
 	}
 
 	@SneakyThrows
-	@RequestMapping(method = RequestMethod.POST, path = "/csv", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	@PreAuthorize("hasRole('ROLE_AANVRAGEN')")
+	@PostMapping(value = "/csv", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public ResponseEntity<Resource> getHuidigeBetalingenCsv(@Valid @RequestBody BetalingZoekObjectDto betalingZoekObjectDto, BindingResult result)
 	{
 		if (result.hasErrors())

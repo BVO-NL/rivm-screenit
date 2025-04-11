@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -268,9 +268,9 @@ public class CDAHelper
 				{
 					pathElements.remove(0);
 
-					if (simpleProperty instanceof List)
+					if (simpleProperty instanceof List list)
 					{
-						for (Object simplePropertyElement : (List) simpleProperty)
+						for (Object simplePropertyElement : list)
 						{
 							if (hasTemplateId(simplePropertyElement, oid))
 							{
@@ -301,11 +301,9 @@ public class CDAHelper
 			try
 			{
 				Object list = PropertyUtils.getProperty(simpleProperty, "templateIds");
-				if (list instanceof List)
+				if (list instanceof List templateIds)
 				{
 					hasTemplateId = false;
-					@SuppressWarnings("rawtypes")
-					List templateIds = (List) list;
 					if (templateIds != null && !templateIds.isEmpty() && templateIds.get(0) instanceof II)
 					{
 						hasTemplateId = hasRootOidId(oid, templateIds);

@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.validator;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -22,7 +22,6 @@ package nl.rivm.screenit.huisartsenportaal.validator;
  */
 
 import nl.rivm.screenit.huisartsenportaal.dto.WachtwoordVergetenDto;
-import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
 import nl.rivm.screenit.huisartsenportaal.service.HuisartsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +42,8 @@ public class WachtwoordVergetenValidator extends BaseValidator<WachtwoordVergete
 			errors.reject("error.field.null", "Vul een gebruikersnaam en e-mail in om opnieuw uw wachtwoord op te vragen.");
 		}
 
-		Huisarts huisarts = huisartsService.getHuisartsWith(dto);
-		if (huisarts == null || !huisarts.isEnabled())
+		var huisarts = huisartsService.getHuisartsWith(dto);
+		if (huisarts == null || !huisarts.getActief())
 		{
 			errors.reject("error.invalid.huisarts", "Huisarts niet gevonden met deze gebruikersnaam en e-mail");
 		}

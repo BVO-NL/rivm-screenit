@@ -2,7 +2,7 @@ package nl.rivm.screenit.clientportaal.controllers;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -25,7 +25,6 @@ import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.clientportaal.model.LandingOverzichtDto;
 import nl.rivm.screenit.clientportaal.services.LandingOverzichtService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -41,14 +40,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class LandingOverzichtController extends AbstractController
 {
-	private final HibernateService hibernateService;
-
 	private final LandingOverzichtService landingOverzichtService;
 
 	@GetMapping
 	public ResponseEntity<LandingOverzichtDto> getLandingInfo(Authentication authentication)
 	{
-		return ResponseEntity.ok(landingOverzichtService.getLandingOverzicht(getClient(authentication, hibernateService)));
+		return ResponseEntity.ok(landingOverzichtService.getLandingOverzicht(getClient(authentication)));
 	}
 
 }

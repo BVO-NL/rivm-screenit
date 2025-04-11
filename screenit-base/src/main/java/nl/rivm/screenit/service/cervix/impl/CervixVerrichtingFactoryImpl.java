@@ -107,7 +107,7 @@ public class CervixVerrichtingFactoryImpl implements CervixVerrichtingFactory
 				break;
 
 			default:
-				throw new IllegalStateException(String.format("Verrichting %s kan niet verwerkt worden door lab", tariefType.name()));
+				throw new IllegalStateException("Verrichting %s kan niet verwerkt worden door lab".formatted(tariefType.name()));
 			}
 		}
 

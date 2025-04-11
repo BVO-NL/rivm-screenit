@@ -28,6 +28,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,7 +40,7 @@ public class CervixVervolgonderzoekJobConfiguration extends AbstractJobConfigura
 	@Bean
 	public Job vervolgonderzoekJob(CervixVervolgonderzoekJobListener listener, Step vervolgonderzoekStep)
 	{
-		return jobBuilderFactory.get(JobType.CERVIX_VERVOLGONDERZOEK.name())
+		return new JobBuilder(JobType.CERVIX_VERVOLGONDERZOEK.name(), repository)
 			.listener(listener)
 			.start(vervolgonderzoekStep)
 			.build();
@@ -47,9 +49,8 @@ public class CervixVervolgonderzoekJobConfiguration extends AbstractJobConfigura
 	@Bean
 	public Step vervolgonderzoekStep(CervixVervolgonderzoekReader reader, CervixVervolgonderzoekWriter writer)
 	{
-		return stepBuilderFactory.get("vervolgonderzoekStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("vervolgonderzoekStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

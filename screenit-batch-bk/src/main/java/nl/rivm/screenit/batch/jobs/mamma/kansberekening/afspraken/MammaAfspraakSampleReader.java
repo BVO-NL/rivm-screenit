@@ -23,8 +23,6 @@ package nl.rivm.screenit.batch.jobs.mamma.kansberekening.afspraken;
 
 import java.util.List;
 
-import javax.persistence.criteria.JoinType;
-
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
@@ -36,6 +34,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Range;
+
+import jakarta.persistence.criteria.JoinType;
 
 import static nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus.BEEINDIGD;
 import static nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus.GEPLAND;

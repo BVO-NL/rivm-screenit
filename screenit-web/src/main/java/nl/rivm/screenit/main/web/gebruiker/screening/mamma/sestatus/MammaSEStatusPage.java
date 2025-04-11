@@ -21,6 +21,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.sestatus;
  * =========================LICENSE_END==================================
  */
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -64,7 +65,6 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.time.Duration;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 import static nl.rivm.screenit.util.StringUtil.propertyChain;
@@ -200,7 +200,7 @@ public class MammaSEStatusPage extends GebruikerBasePage
 
 	private PollingAbstractAjaxTimerBehavior createRefreshTimer()
 	{
-		return new PollingAbstractAjaxTimerBehavior(Duration.seconds(5))
+		return new PollingAbstractAjaxTimerBehavior(Duration.ofSeconds(5))
 		{
 			@Override
 			protected void onTimer(AjaxRequestTarget target)

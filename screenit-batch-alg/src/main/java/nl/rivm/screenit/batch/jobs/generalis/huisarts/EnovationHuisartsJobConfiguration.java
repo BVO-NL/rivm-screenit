@@ -30,6 +30,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,7 +42,7 @@ public class EnovationHuisartsJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job enovationHuisartsenBatchJob(EnovationHuisartsJobListener listener, Step huisartsInfoUpdateStep, Step runAfterJobsStep)
 	{
-		return jobBuilderFactory.get(JobType.ENOVATION_HUISARTSEN_BATCH.name())
+		return new JobBuilder(JobType.ENOVATION_HUISARTSEN_BATCH.name(), repository)
 			.listener(listener)
 			.start(huisartsInfoUpdateStep)
 			.next(runAfterJobsStep)
@@ -50,9 +52,8 @@ public class EnovationHuisartsJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step huisartsInfoUpdateStep(EnovationHuisartsReader reader, EnovationHuisartsWriter writer)
 	{
-		return stepBuilderFactory.get("huisartsInfoUpdateStep")
-			.transactionManager(transactionManager)
-			.<Object[], Object[]> chunk(10)
+		return new StepBuilder("huisartsInfoUpdateStep", repository)
+			.<Object[], Object[]> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -61,9 +62,8 @@ public class EnovationHuisartsJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step runAfterJobsStep(AfterImportEnovationHuisartsTasklet tasklet)
 	{
-		return stepBuilderFactory.get("runAfterJobsStep")
-			.transactionManager(transactionManager)
-			.tasklet(tasklet)
+		return new StepBuilder("runAfterJobsStep", repository)
+			.tasklet(tasklet, transactionManager)
 			.build();
 	}
 

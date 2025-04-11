@@ -119,7 +119,7 @@ public class MammaReadOnlyLezingPanel extends GenericPanel<MammaBeoordeling>
 	public IModel<MammaLezing> maakVerslagLezing()
 	{
 		InstellingGebruiker beoordelaar = ScreenitSession.get().getLoggedInInstellingGebruiker();
-		MammaLezing verslagLezing = baseBeoordelingService.maakVerslagLezing(getModelObject(), lezingModel.getObject(), beoordelaar, isOnervarenRadioloog());
+		MammaLezing verslagLezing = baseBeoordelingService.maakVerslagLezing(lezingModel.getObject(), beoordelaar, isOnervarenRadioloog());
 		return ModelUtil.cModel(verslagLezing);
 	}
 

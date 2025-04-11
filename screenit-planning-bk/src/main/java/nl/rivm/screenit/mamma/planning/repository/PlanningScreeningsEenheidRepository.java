@@ -23,9 +23,6 @@ package nl.rivm.screenit.mamma.planning.repository;
 
 import java.util.List;
 
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
-
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaMammograaf;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
@@ -35,7 +32,10 @@ import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode_;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
-import static javax.persistence.criteria.JoinType.LEFT;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
+
+import static jakarta.persistence.criteria.JoinType.LEFT;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.BeoordelingsEenheidSpecification.heeftScreeningOrganisatieId;
 import static nl.rivm.screenit.specification.mamma.MammaScreeningsEenheidSpecification.isActief;

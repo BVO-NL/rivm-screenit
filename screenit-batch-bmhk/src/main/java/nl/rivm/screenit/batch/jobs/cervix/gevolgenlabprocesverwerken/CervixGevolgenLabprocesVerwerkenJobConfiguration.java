@@ -28,6 +28,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,7 +40,7 @@ public class CervixGevolgenLabprocesVerwerkenJobConfiguration extends AbstractJo
 	@Bean
 	public Job gevolgenLabprocesVerwerkenJob(CervixGevolgenLabprocesVerwerkenJobListener listener, Step gevolgenLabprocesVerwerkenStep)
 	{
-		return jobBuilderFactory.get(JobType.CERVIX_GEVOLGEN_LABPROCES_VERWERKEN.name())
+		return new JobBuilder(JobType.CERVIX_GEVOLGEN_LABPROCES_VERWERKEN.name(), repository)
 			.listener(listener)
 			.start(gevolgenLabprocesVerwerkenStep)
 			.build();
@@ -47,9 +49,8 @@ public class CervixGevolgenLabprocesVerwerkenJobConfiguration extends AbstractJo
 	@Bean
 	public Step gevolgenLabprocesVerwerkenStep(CervixGevolgenLabprocesVerwerkenReader reader, CervixGevolgenLabprocesVerwerkenWriter writer)
 	{
-		return stepBuilderFactory.get("gevolgenLabprocesVerwerkenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(1000)
+		return new StepBuilder("gevolgenLabprocesVerwerkenStep", repository)
+			.<Long, Long> chunk(1000, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

@@ -27,7 +27,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import nl.rivm.screenit.model.mamma.MammaArchitectuurverstoringLaesie;
 import nl.rivm.screenit.model.mamma.MammaAsymmetrieLaesie;
@@ -36,6 +35,7 @@ import nl.rivm.screenit.model.mamma.MammaLaesie;
 import nl.rivm.screenit.model.mamma.MammaLaesieIcoon;
 import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.model.mamma.MammaMassaLaesie;
+import nl.rivm.screenit.model.mamma.enums.MammaZijde;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -43,14 +43,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class LaesieDtoMapper implements Serializable
 {
+
+	private static final ObjectMapper objectMapper = new ObjectMapper();
+
 	public List<LaesieDto> lezingToLaesieDtos(MammaLezing lezing)
 	{
-		return lezing.getLaesies().stream().map(this::mammaLaesieToLaesieDto).sorted(getLaesieDtoComparator()).collect(Collectors.toList());
+		return lezing.getLaesies().stream().map(this::mammaLaesieToLaesieDto).sorted(getLaesieDtoComparator()).toList();
 	}
 
 	public void koppelNieuweLaesiesAanLezing(List<MammaLaesie> nieuweLaesies, MammaLezing lezing)
 	{
-		List<MammaLaesie> laesies = lezing.getLaesies();
+		var laesies = lezing.getLaesies();
 		laesies.clear();
 		laesies.addAll(nieuweLaesies);
 		laesies.forEach(l -> l.setLezing(lezing));
@@ -58,11 +61,10 @@ public class LaesieDtoMapper implements Serializable
 
 	public List<LaesieDto> laesieJsonToLaesieDto(String laesieJson)
 	{
-		ObjectMapper objectMapper = new ObjectMapper();
 		List<LaesieDto> laesieDtos;
 		try
 		{
-			laesieDtos = objectMapper.readValue(laesieJson, new TypeReference<List<LaesieDto>>()
+			laesieDtos = objectMapper.readValue(laesieJson, new TypeReference<>()
 			{
 			});
 		}
@@ -70,12 +72,26 @@ public class LaesieDtoMapper implements Serializable
 		{
 			throw new IllegalStateException("Cannot convert Json to Dto", e);
 		}
-		return laesieDtos.stream().sorted(getLaesieDtoComparator()).collect(Collectors.toList());
+
+		var sortedLaesies = laesieDtos.stream().sorted(getLaesieDtoComparator()).toList();
+		voegLaesieVolgordeToeAanLaesies(sortedLaesies);
+		return sortedLaesies;
+	}
+
+	private void voegLaesieVolgordeToeAanLaesies(List<LaesieDto> sortedLaesieDtos)
+	{
+		sortedLaesieDtos.forEach(laesieDto ->
+		{
+			var laesiesUitDezelfdeZijde = sortedLaesieDtos.stream().filter(teFilterenLaesie -> teFilterenLaesie.getWelkeBorst().equals(laesieDto.getWelkeBorst())).toList();
+			var zijdePrefix = MammaZijde.RECHTER_BORST.equals(laesieDto.getWelkeBorst()) ? "R" : "L";
+			var volgordeNummer = laesiesUitDezelfdeZijde.indexOf(laesieDto) + 1;
+			laesieDto.setLaesieVolgorde(zijdePrefix + volgordeNummer);
+		});
 	}
 
 	public List<MammaLaesie> laesieDtosToMammaLaesies(List<LaesieDto> laesieDtos)
 	{
-		return laesieDtos.stream().map(this::laesieDtoToMammaLaesie).collect(Collectors.toList());
+		return laesieDtos.stream().map(this::laesieDtoToMammaLaesie).toList();
 	}
 
 	public String laesiesDtosToJson(List<LaesieDto> laesieDtos)
@@ -85,24 +101,25 @@ public class LaesieDtoMapper implements Serializable
 
 	public MammaLaesie laesieDtoToMammaLaesie(LaesieDto laesieDto)
 	{
-		MammaLaesie mammaLaesie = createMammaLaesie(laesieDto);
-		mammaLaesie.setMammaZijde(laesieDto.getWelkeBorst());
+		var laesie = createMammaLaesie(laesieDto);
+		laesie.setMammaZijde(laesieDto.getWelkeBorst());
 		if (laesieDto.getVerticaleDoorsnede() != null)
 		{
-			MammaLaesieIcoon mammaLaesieIcoonHorizontaal = createMammaLaesieIcoon(laesieDto.getVerticaleDoorsnede());
-			mammaLaesie.setVerticaleDoorsnedeIcoon(mammaLaesieIcoonHorizontaal);
+			var mammaLaesieIcoonHorizontaal = createMammaLaesieIcoon(laesieDto.getVerticaleDoorsnede());
+			laesie.setVerticaleDoorsnedeIcoon(mammaLaesieIcoonHorizontaal);
 		}
 		if (laesieDto.getHorizontaleDoorsnede() != null)
 		{
-			MammaLaesieIcoon mammaLaesieIcoonVerticaal = createMammaLaesieIcoon(laesieDto.getHorizontaleDoorsnede());
-			mammaLaesie.setHorizontaleDoorsnedeIcoon(mammaLaesieIcoonVerticaal);
+			var mammaLaesieIcoonVerticaal = createMammaLaesieIcoon(laesieDto.getHorizontaleDoorsnede());
+			laesie.setHorizontaleDoorsnedeIcoon(mammaLaesieIcoonVerticaal);
 		}
 		if (laesieDto.getLaesieGrootteInCm() != null)
 		{
-			mammaLaesie.setLaesieGrootteInCm(laesieDto.getLaesieGrootteInCm());
+			laesie.setLaesieGrootteInCm(laesieDto.getLaesieGrootteInCm());
 		}
-		mammaLaesie.setNummer(laesieDto.getNummer());
-		return mammaLaesie;
+		laesie.setNummer(laesieDto.getNummer());
+		laesie.setLaesieVolgorde(laesieDto.getLaesieVolgorde());
+		return laesie;
 	}
 
 	private MammaLaesie createMammaLaesie(LaesieDto laesieDto)
@@ -112,16 +129,16 @@ public class LaesieDtoMapper implements Serializable
 		case ARCHITECTUURVERSTORING:
 			return new MammaArchitectuurverstoringLaesie();
 		case ASYMMETRIE:
-			MammaAsymmetrieLaesie asymmetrieLaesie = new MammaAsymmetrieLaesie();
+			var asymmetrieLaesie = new MammaAsymmetrieLaesie();
 			asymmetrieLaesie.setAsymmetrieSpecificatie(laesieDto.getAsymmetrieSpecificatie());
 			return asymmetrieLaesie;
 		case CALCIFICATIES:
-			MammaCalcificatiesLaesie calcificatiesLaesie = new MammaCalcificatiesLaesie();
+			var calcificatiesLaesie = new MammaCalcificatiesLaesie();
 			calcificatiesLaesie.setCalcificatiesDistributie(laesieDto.getCalcificatiesDistributie());
 			calcificatiesLaesie.setCalcificatiesVorm(laesieDto.getCalcificatiesVorm());
 			return calcificatiesLaesie;
 		case MASSA:
-			MammaMassaLaesie mammaMassaLaesie = new MammaMassaLaesie();
+			var mammaMassaLaesie = new MammaMassaLaesie();
 			mammaMassaLaesie.setMassaBegrenzing(laesieDto.getMassaBegrenzing());
 			mammaMassaLaesie.setMassaDensiteit(laesieDto.getMassaDensiteit());
 			mammaMassaLaesie.setMassaVorm(laesieDto.getMassaVorm());
@@ -133,32 +150,32 @@ public class LaesieDtoMapper implements Serializable
 
 	private MammaLaesieIcoon createMammaLaesieIcoon(MammaLaesieIcoonDto mammaLaesieIcoonDto)
 	{
-		MammaLaesieIcoon mammaLaesieIcoon = new MammaLaesieIcoon();
-		BigDecimal posX = new BigDecimal(mammaLaesieIcoonDto.getX());
+		var mammaLaesieIcoon = new MammaLaesieIcoon();
+		var posX = BigDecimal.valueOf(mammaLaesieIcoonDto.getX());
 		mammaLaesieIcoon.setPositieX(posX.setScale(3, RoundingMode.HALF_UP));
-		BigDecimal posY = new BigDecimal(mammaLaesieIcoonDto.getY());
+		var posY = BigDecimal.valueOf(mammaLaesieIcoonDto.getY());
 		mammaLaesieIcoon.setPositieY(posY.setScale(3, RoundingMode.HALF_UP));
 		return mammaLaesieIcoon;
 	}
 
 	private List<LaesieDto> sortMammaLaesieDtos(List<LaesieDto> mammaLaesies)
 	{
-		return mammaLaesies.stream().sorted(Comparator.comparing(LaesieDto::getNummer)).collect(Collectors.toList());
+		return mammaLaesies.stream().sorted(Comparator.comparing(LaesieDto::getNummer)).toList();
 	}
 
 	public LaesieDto mammaLaesieToLaesieDto(MammaLaesie mammaLaesie)
 	{
-		LaesieDto laesieDto = new LaesieDto();
+		var laesieDto = new LaesieDto();
 		laesieDto.setLaesietype(mammaLaesie.getMammaLaesieType());
 		laesieDto.setWelkeBorst(mammaLaesie.getMammaZijde());
 		if (mammaLaesie.getVerticaleDoorsnedeIcoon() != null)
 		{
-			MammaLaesieIcoonDto mammaLaesieIcoonDtoVerticaal = createMammaLaesieIcoonDto(mammaLaesie.getVerticaleDoorsnedeIcoon());
+			var mammaLaesieIcoonDtoVerticaal = createMammaLaesieIcoonDto(mammaLaesie.getVerticaleDoorsnedeIcoon());
 			laesieDto.setVerticaleDoorsnede(mammaLaesieIcoonDtoVerticaal);
 		}
 		if (mammaLaesie.getHorizontaleDoorsnedeIcoon() != null)
 		{
-			MammaLaesieIcoonDto mammaLaesieIcoonDtoHorizontaal = createMammaLaesieIcoonDto(mammaLaesie.getHorizontaleDoorsnedeIcoon());
+			var mammaLaesieIcoonDtoHorizontaal = createMammaLaesieIcoonDto(mammaLaesie.getHorizontaleDoorsnedeIcoon());
 			laesieDto.setHorizontaleDoorsnede(mammaLaesieIcoonDtoHorizontaal);
 		}
 		if (mammaLaesie.getLaesieGrootteInCm() != null)
@@ -168,6 +185,7 @@ public class LaesieDtoMapper implements Serializable
 
 		setMammaAnnotatieSpecificaties(mammaLaesie, laesieDto);
 		laesieDto.setNummer(mammaLaesie.getNummer());
+		laesieDto.setLaesieVolgorde(mammaLaesie.getLaesieVolgorde());
 		return laesieDto;
 	}
 
@@ -175,18 +193,18 @@ public class LaesieDtoMapper implements Serializable
 	{
 		switch (mammaLaesie.getMammaLaesieType())
 		{
-		case ARCHITECTUURVERSTORING:
-		case LEGACY_ARCHITECTUURVERSTORING_MET_CALCIFICATIES:
-		case LEGACY_MASSA_MET_ARCHITECTUURVERSTORING:
-		case LEGACY_CONFORM:
-		case LEGACY_GEEN_BIJZONDERHEDEN:
-		case LEGACY_MASSA_MET_SPICULAE:
-		case LEGACY_PROJECTIE_NAAR_LINKS:
-		case LEGACY_PROJECTIE_NAAR_RECHTS:
-		case LEGACY_MASSA_MET_CALCIFICATIES:
-		case LEGACY_MASSA_MET_SPICULAE_EN_CALCIFICATIES:
-		case LEGACY_MARKERING:
-		case LEGACY_BENIGNE_KALK:
+		case ARCHITECTUURVERSTORING,
+			 LEGACY_ARCHITECTUURVERSTORING_MET_CALCIFICATIES,
+			 LEGACY_MASSA_MET_ARCHITECTUURVERSTORING,
+			 LEGACY_CONFORM,
+			 LEGACY_GEEN_BIJZONDERHEDEN,
+			 LEGACY_MASSA_MET_SPICULAE,
+			 LEGACY_PROJECTIE_NAAR_LINKS,
+			 LEGACY_PROJECTIE_NAAR_RECHTS,
+			 LEGACY_MASSA_MET_CALCIFICATIES,
+			 LEGACY_MASSA_MET_SPICULAE_EN_CALCIFICATIES,
+			 LEGACY_MARKERING,
+			 LEGACY_BENIGNE_KALK:
 			break;
 		case ASYMMETRIE:
 			dto.setAsymmetrieSpecificatie(((MammaAsymmetrieLaesie) mammaLaesie).getAsymmetrieSpecificatie());
@@ -207,10 +225,10 @@ public class LaesieDtoMapper implements Serializable
 
 	private MammaLaesieIcoonDto createMammaLaesieIcoonDto(MammaLaesieIcoon mammaLaesieIcoon)
 	{
-		MammaLaesieIcoonDto mammaLaesieIcoonDto = new MammaLaesieIcoonDto();
-		double x = mammaLaesieIcoon.getPositieX().doubleValue();
+		var mammaLaesieIcoonDto = new MammaLaesieIcoonDto();
+		var x = mammaLaesieIcoon.getPositieX().doubleValue();
 		mammaLaesieIcoonDto.setX(x);
-		double y = mammaLaesieIcoon.getPositieY().doubleValue();
+		var y = mammaLaesieIcoon.getPositieY().doubleValue();
 		mammaLaesieIcoonDto.setY(y);
 		return mammaLaesieIcoonDto;
 	}
@@ -219,7 +237,6 @@ public class LaesieDtoMapper implements Serializable
 	{
 		try
 		{
-			ObjectMapper objectMapper = new ObjectMapper();
 			return objectMapper.writeValueAsString(laesieDto);
 		}
 		catch (JsonProcessingException e)

@@ -28,6 +28,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,7 +40,7 @@ public class MammaHerinnerenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job herinnerenJob(MammaHerinnerenListener listener, Step herinnerenStep)
 	{
-		return jobBuilderFactory.get(JobType.MAMMA_HERINNEREN.name())
+		return new JobBuilder(JobType.MAMMA_HERINNEREN.name(), repository)
 			.listener(listener)
 			.start(herinnerenStep)
 			.build();
@@ -47,9 +49,8 @@ public class MammaHerinnerenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step herinnerenStep(MammaHerinnerenReader reader, MammaHerinnerenWriter writer)
 	{
-		return stepBuilderFactory.get("herinnerenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("herinnerenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

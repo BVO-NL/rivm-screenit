@@ -37,7 +37,9 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
@@ -48,9 +50,10 @@ public class AlgemeneBrievenJobConfiguration extends AbstractJobConfiguration
 {
 
 	@Bean
-	public Job algemeneBrievenJob(AlgemeneBrievenListener listener, Step algemeneBrievenCleanupStep, Step algemeneBrievenPartitionerStep, Step algemeneBrievenControleStep)
+	public Job algemeneBrievenJob(AlgemeneBrievenListener listener, Step algemeneBrievenCleanupStep, Step algemeneBrievenPartitionerStep,
+		Step algemeneBrievenControleStep)
 	{
-		return jobBuilderFactory.get(JobType.ALGEMENE_BRIEVEN.name())
+		return new JobBuilder(JobType.ALGEMENE_BRIEVEN.name(), repository)
 			.listener(listener)
 			.start(algemeneBrievenCleanupStep)
 			.next(algemeneBrievenPartitionerStep)
@@ -61,9 +64,8 @@ public class AlgemeneBrievenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step algemeneBrievenCleanupStep(AlgemeneBrievenCleanupReader reader, AlgemeneBrievenCleanupWriter writer)
 	{
-		return stepBuilderFactory.get("algemeneBrievenCleanupStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("algemeneBrievenCleanupStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -73,8 +75,7 @@ public class AlgemeneBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step algemeneBrievenPartitionerStep(AlgemeneBrievenGenererenPartitioner partitioner, Step algemeneBrievenGenererenStep,
 		TaskExecutorPartitionHandler algemeneBrievenPartitionHandler)
 	{
-		return stepBuilderFactory.get("algemeneBrievenPartitionerStep")
-			.transactionManager(transactionManager)
+		return new StepBuilder("algemeneBrievenPartitionerStep", repository)
 			.partitioner("algemeneBrievenGenererenStep", partitioner)
 			.partitionHandler(algemeneBrievenPartitionHandler)
 			.step(algemeneBrievenGenererenStep)
@@ -84,9 +85,8 @@ public class AlgemeneBrievenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step algemeneBrievenControleStep(AlgemeneBrievenControleReader reader, AlgemeneBrievenControleWriter writer)
 	{
-		return stepBuilderFactory.get("algemeneBrievenControleStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("algemeneBrievenControleStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -95,9 +95,8 @@ public class AlgemeneBrievenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step algemeneBrievenGenererenStep(AlgemeneBrievenGenererenReader reader, AlgemeneBrievenGenererenProcessor processor, AlgemeneBrievenGenererenWriter writer)
 	{
-		return stepBuilderFactory.get("algemeneBrievenGenererenStep")
-			.transactionManager(transactionManager)
-			.<Long, AlgemeneBrief> chunk(250)
+		return new StepBuilder("algemeneBrievenGenererenStep", repository)
+			.<Long, AlgemeneBrief> chunk(250, transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)

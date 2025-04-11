@@ -23,8 +23,6 @@ package nl.rivm.screenit.batch.jobs.mamma.kansberekening.dossiers;
 
 import java.time.LocalDate;
 
-import javax.persistence.criteria.From;
-
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.Constants;
@@ -43,13 +41,15 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Range;
 
-import static javax.persistence.criteria.JoinType.LEFT;
+import jakarta.persistence.criteria.From;
+
+import static jakarta.persistence.criteria.JoinType.LEFT;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.isAangemaaktVoor;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.isGegenereerd;
 import static nl.rivm.screenit.specification.algemeen.MammaBriefSpecification.heeftGeenMergedBrieven;
-import static nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification.heeftPrintDatumVoor;
 import static nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification.heeftPrintDatum;
+import static nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification.heeftPrintDatumVoor;
 import static nl.rivm.screenit.specification.algemeen.ScreeningRondeSpecification.isAangemaaktIn;
 import static nl.rivm.screenit.specification.mamma.MammaScreeningRondeSpecification.heeftGeenScreeningRondeEvent;
 

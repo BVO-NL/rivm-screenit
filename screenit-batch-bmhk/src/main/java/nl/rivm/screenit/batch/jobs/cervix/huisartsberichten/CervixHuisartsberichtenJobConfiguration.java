@@ -30,6 +30,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,7 +44,7 @@ public class CervixHuisartsberichtenJobConfiguration extends AbstractJobConfigur
 	@Bean
 	public Job huisartsberichtenJob(CervixHuisartsberichtenJobListener listener, Step huisartsBepalenStep, Step huisartsBerichtVersturenStep)
 	{
-		return jobBuilderFactory.get(JobType.CERVIX_HUISARTSBERICHTEN.name())
+		return new JobBuilder(JobType.CERVIX_HUISARTSBERICHTEN.name(), repository)
 			.listener(listener)
 			.start(huisartsBepalenStep)
 			.next(huisartsBerichtVersturenStep)
@@ -52,9 +54,8 @@ public class CervixHuisartsberichtenJobConfiguration extends AbstractJobConfigur
 	@Bean
 	public Step huisartsBepalenStep(CervixHuisartsBepalenReader reader, CervixHuisartsBepalenWriter writer)
 	{
-		return stepBuilderFactory.get("huisartsBepalenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("huisartsBepalenStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -63,9 +64,8 @@ public class CervixHuisartsberichtenJobConfiguration extends AbstractJobConfigur
 	@Bean
 	public Step huisartsBerichtVersturenStep(CervixHuisartsberichtVersturenReader reader, CervixHuisartsberichtVersturenWriter writer)
 	{
-		return stepBuilderFactory.get("huisartsBerichtVersturenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("huisartsBerichtVersturenStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

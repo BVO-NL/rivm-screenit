@@ -29,7 +29,6 @@ import java.util.List;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.InpakbareUitnodiging;
-import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -41,24 +40,24 @@ public abstract class TestCervixUitnodigingenPopup extends TestCervixAbstractPop
 {
 	private IModel<CervixUitnodiging> uitnodigingModel;
 
-	private IModel<List<CervixUitnodiging>> uitnodigingenModel;
+	private final IModel<List<CervixUitnodiging>> uitnodigingenModel;
 
-	private HashMap<Long, SimpleListHibernateModel<CervixUitnodiging>> uitnodigingenMap = new HashMap<>();
+	private final HashMap<Long, SimpleListHibernateModel<CervixUitnodiging>> uitnodigingenMap = new HashMap<>();
 
-	public TestCervixUitnodigingenPopup(String id, IModel<List<Client>> clientModel)
+	protected TestCervixUitnodigingenPopup(String id, IModel<List<Client>> clientModel)
 	{
 		super(id, clientModel);
 
-		Client eersteClient = clientModel.getObject().get(0);
-		List<CervixUitnodiging> mogelijkeUitnodigingen = new ArrayList<>();
+		var eersteClient = clientModel.getObject().get(0);
+		var mogelijkeUitnodigingen = new ArrayList<CervixUitnodiging>();
 
-		for (CervixScreeningRonde ronde : eersteClient.getCervixDossier().getScreeningRondes())
+		for (var ronde : eersteClient.getCervixDossier().getScreeningRondes())
 		{
-			List<CervixUitnodiging> uitnodigingenList = ronde.getUitnodigingen();
-			uitnodigingenList.sort(Comparator.comparing(InpakbareUitnodiging::getUitnodigingsId));
-			for (CervixUitnodiging uitnodiging : uitnodigingenList)
-			{
-				if (magUitnodiging(uitnodiging))
+			var uitnodigingenList = ronde.getUitnodigingen();
+			uitnodigingenList.stream()
+				.sorted(Comparator.comparing(InpakbareUitnodiging::getUitnodigingsId))
+				.filter(this::magUitnodiging)
+				.forEach(uitnodiging ->
 				{
 					if (uitnodigingModel == null)
 					{
@@ -67,40 +66,33 @@ public abstract class TestCervixUitnodigingenPopup extends TestCervixAbstractPop
 					mogelijkeUitnodigingen.add(uitnodiging);
 					List<CervixUitnodiging> uitnodigingen = new ArrayList<>();
 					uitnodigingen.add(uitnodiging);
-					SimpleListHibernateModel<CervixUitnodiging> uitnodigingenModel = new SimpleListHibernateModel<>(uitnodigingen);
+					var uitnodigingenModel = new SimpleListHibernateModel<>(uitnodigingen);
 					uitnodigingenMap.put(uitnodiging.getUitnodigingsId(), uitnodigingenModel);
-				}
-			}
+				});
 		}
 
 		uitnodigingenModel = ModelUtil.listModel(mogelijkeUitnodigingen);
 
 		if (getModelObject().size() > 1)
 		{
-			for (Client client : getModelObject().subList(1, getModelObject().size()))
-			{
-				for (CervixScreeningRonde ronde : client.getCervixDossier().getScreeningRondes())
-				{
-					for (int i = 0; i < ronde.getUitnodigingen().size(); i++)
-					{
-						CervixUitnodiging uitnodiging = ronde.getUitnodigingen().get(i);
-						if (magUitnodiging(uitnodiging))
-						{
-							SimpleListHibernateModel<CervixUitnodiging> uitnodigingen = uitnodigingenMap.get(mogelijkeUitnodigingen.get(i).getUitnodigingsId());
-							uitnodigingen.add(uitnodiging);
-						}
-					}
-				}
-			}
+			mergeUitnodigingenVanAlleClienten();
 		}
 
-		ScreenitDropdown<CervixUitnodiging> uitnodigingDropDown = new ScreenitDropdown<>("uitnodigingen", uitnodigingModel, uitnodigingenModel,
-			new IChoiceRenderer<CervixUitnodiging>()
+		var uitnodigingDropDown = maakUitnodigingDropdown();
+		uitnodigingDropDown.setRequired(true);
+		add(uitnodigingDropDown);
+	}
+
+	private ScreenitDropdown<CervixUitnodiging> maakUitnodigingDropdown()
+	{
+
+		return new ScreenitDropdown<>("uitnodigingen", uitnodigingModel, uitnodigingenModel,
+			new IChoiceRenderer<>()
 			{
 				@Override
 				public Object getDisplayValue(CervixUitnodiging uitnodiging)
 				{
-					String monsterId = uitnodiging.getMonster().getMonsterId();
+					var monsterId = uitnodiging.getMonster().getMonsterId();
 					if (monsterId != null)
 					{
 						return "Monster-id: " + monsterId;
@@ -125,9 +117,27 @@ public abstract class TestCervixUitnodigingenPopup extends TestCervixAbstractPop
 				}
 
 			});
-		uitnodigingDropDown.setRequired(true);
-		add(uitnodigingDropDown);
+	}
 
+	private void mergeUitnodigingenVanAlleClienten()
+	{
+		var andereClienten = getModelObject().subList(1, getModelObject().size());
+		andereClienten.stream().flatMap(client -> client.getCervixDossier().getScreeningRondes().stream().flatMap(ronde -> ronde.getUitnodigingen().stream()))
+			.filter(this::magUitnodiging)
+			.forEach(uitnodiging ->
+			{
+				var uitnodigingsId = uitnodiging.getUitnodigingsId();
+				if (uitnodigingenMap.containsKey(uitnodigingsId))
+				{
+					uitnodigingenMap.get(uitnodigingsId).add(uitnodiging);
+				}
+				else
+				{
+					var uitnodigingen = new ArrayList<CervixUitnodiging>();
+					var uitnodigingenModel = new SimpleListHibernateModel<>(uitnodigingen);
+					uitnodigingenMap.put(uitnodigingsId, uitnodigingenModel);
+				}
+			});
 	}
 
 	protected abstract boolean magUitnodiging(CervixUitnodiging uitnodiging);
@@ -135,17 +145,17 @@ public abstract class TestCervixUitnodigingenPopup extends TestCervixAbstractPop
 	protected List<CervixUitnodiging> getCurrentUitnodigingen()
 	{
 		List<CervixUitnodiging> uitnodigingen = new ArrayList<>();
-		Long eersteClientUitnodigingId = uitnodigingModel.getObject().getUitnodigingsId();
+		var eersteClientUitnodigingId = uitnodigingModel.getObject().getUitnodigingsId();
 		if (eersteClientUitnodigingId != null && uitnodigingenMap.containsKey(eersteClientUitnodigingId))
 		{
-			uitnodigingenMap.get(eersteClientUitnodigingId).getObject().forEach(uitnodiging -> getModelObject().forEach(client -> {
-				client.getCervixDossier().getScreeningRondes().forEach(ronde -> ronde.getUitnodigingen().forEach(u -> {
+			uitnodigingenMap.get(eersteClientUitnodigingId).getObject().forEach(uitnodiging -> getModelObject().forEach(client ->
+				client.getCervixDossier().getScreeningRondes().forEach(ronde -> ronde.getUitnodigingen().forEach(u ->
+				{
 					if (u.getId().equals(uitnodiging.getId()))
 					{
 						uitnodigingen.add(u);
 					}
-				}));
-			}));
+				}))));
 		}
 		return uitnodigingen;
 	}

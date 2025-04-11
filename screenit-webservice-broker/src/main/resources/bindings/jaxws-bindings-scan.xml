@@ -18,10 +18,10 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<jaxws:bindings version="2.1"
+<jaxws:bindings version="3.0.0"
                 xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
-                xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
-                xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"
+                xmlns:jxb="https://jakarta.ee/xml/ns/jaxb"
+                xmlns:jaxws="https://jakarta.ee/xml/ns/jaxws"
                 xmlns:soap="http://cxf.apache.org/bindings/soap">
 
     <jxb:globalBindings generateMixedExtensions="true">

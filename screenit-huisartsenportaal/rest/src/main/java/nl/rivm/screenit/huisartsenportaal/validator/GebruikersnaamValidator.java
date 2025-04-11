@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.validator;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -22,7 +22,6 @@ package nl.rivm.screenit.huisartsenportaal.validator;
  */
 
 import nl.rivm.screenit.huisartsenportaal.dto.HuisartsDto;
-import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
 import nl.rivm.screenit.huisartsenportaal.repository.HuisartsRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +38,11 @@ public class GebruikersnaamValidator extends BaseValidator<HuisartsDto>
 	@Override
 	public void validateTarget(HuisartsDto target, Errors errors)
 	{
-		Huisarts ingelogdeHuisarts = getIngelogdeHuisarts();
+		var ingelogdeHuisarts = getIngelogdeHuisarts();
 		if (target.getUsername() != null)
 		{
-			Huisarts gevondeHuisarts = huisartsRepository.findByGebruikersnaam(target.getUsername());
-			if (gevondeHuisarts != null && !ingelogdeHuisarts.getHuisartsportaalId().equals(gevondeHuisarts.getHuisartsportaalId()))
+			var gevondenHuisarts = huisartsRepository.findByGebruikersnaam(target.getUsername());
+			if (gevondenHuisarts != null && !ingelogdeHuisarts.getHuisartsportaalId().equals(gevondenHuisarts.getHuisartsportaalId()))
 			{
 				errors.reject("error.username.gebruikt", "De gekozen gebruikersnaam wordt al gebruikt door een andere gebruiker.");
 			}

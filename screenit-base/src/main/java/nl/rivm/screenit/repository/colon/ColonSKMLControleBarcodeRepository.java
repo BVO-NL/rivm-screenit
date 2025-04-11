@@ -29,4 +29,6 @@ import nl.rivm.screenit.repository.BaseJpaRepository;
 public interface ColonSKMLControleBarcodeRepository extends BaseJpaRepository<SKMLControleBarcode>
 {
 	Optional<SKMLControleBarcode> findByBarcode(String barcode);
+
+	boolean existsByBarcode(String barcode);
 }

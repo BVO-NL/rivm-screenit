@@ -45,6 +45,7 @@ import {isAuthorized} from "../util/AutorisatieUtil"
 import {AutorisatieDto} from "../datatypes/AutorisatieDto"
 import {navigateToConnectiestatus} from "../util/NavigationUtil"
 import {readEnvironmentInfo} from "./EnvironmentInfoRestclient"
+import {getCookie} from "../util/CookieUtil"
 
 export const GEEN_OTP = "GEEN_OTP"
 export const GEEN_IDENTIFICATIE = "GEEN_IDENTIFICATIE"
@@ -58,10 +59,17 @@ export const identificeer = (yubikeyIdentificatie: string, yubikey: string): voi
 		console.log(`${nuTimestamp()}: Skip identificeren omdat er login bezig is`)
 		return
 	}
+	const headers = new Headers()
+
+	const csrfToken = getCookie("XSRF-TOKEN")
+	if (csrfToken) {
+		headers.append("X-XSRF-TOKEN", csrfToken)
+	}
 
 	fetch(`${baseUrl}authenticatie/identificeren`, {
 		method: "POST",
 		body: yubikeyIdentificatie,
+		headers: headers,
 	}).then((response) => {
 		if (response.status === 200) {
 			response.json().then(identificatie => {
@@ -104,6 +112,10 @@ export const login = (username: string, password: string, yubikeyIdentificatie: 
 			Yubikey: yubikey ? yubikey : GEEN_OTP,
 			nfcServerVersie: versieResponse.nfcServerVersie,
 		})
+		const csrfToken = getCookie("XSRF-TOKEN")
+		if (csrfToken) {
+			loginHeader.append("X-XSRF-TOKEN", csrfToken)
+		}
 		const sessieMeenemen: boolean = username === "" && password === ""
 		const meldingTechnischeFout = "Inloggen mislukt (technische fout)"
 		fetch(`${baseUrl}authenticatie/inloggen`, {

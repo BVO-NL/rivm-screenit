@@ -25,13 +25,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.SingularAttribute;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -73,7 +66,14 @@ import org.apache.shiro.util.CollectionUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
-import static javax.persistence.criteria.JoinType.LEFT;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.SingularAttribute;
+
+import static jakarta.persistence.criteria.JoinType.LEFT;
 import static nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus.ARBITRAGE;
 import static nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus.DISCREPANTIE;
 import static nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus.EERSTE_LEZING;
@@ -156,7 +156,7 @@ public class MammaBeoordelingWerklijstSpecification
 				.and(filterBsn(zoekObject.getBsn()))
 				.and(filterPostcode(zoekObject.getPostcode()))
 				.and(filterHuisnummer(zoekObject.getHuisnummer()))
-				.withRoot(MammaBeoordelingWerklijstSpecification::persoonJoin));
+				.with(r -> persoonJoin(r)));
 	}
 
 	private static Specification<MammaOnderzoek> filterBeWerklijst(MammaBeWerklijstZoekObject zoekObject)
@@ -265,9 +265,9 @@ public class MammaBeoordelingWerklijstSpecification
 			r.get(MammaBeoordeling_.toegewezenGebruiker).isNull());
 	}
 
-	private static Join<Client, GbaPersoon> persoonJoin(Root<MammaOnderzoek> r)
+	private static Join<Client, GbaPersoon> persoonJoin(From<?, ? extends MammaOnderzoek> onderzoekRoot)
 	{
-		var screeningRondeJoin = screeningRondeJoin(r);
+		var screeningRondeJoin = screeningRondeJoin(onderzoekRoot);
 		var dossierJoin = join(screeningRondeJoin, MammaScreeningRonde_.dossier);
 		var clientJoin = join(dossierJoin, MammaDossier_.client);
 		return join(clientJoin, Client_.persoon);

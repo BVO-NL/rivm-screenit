@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.model;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -23,15 +23,6 @@ package nl.rivm.screenit.huisartsenportaal.model;
 
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,6 +30,15 @@ import nl.rivm.screenit.huisartsenportaal.ICervixHuisartsLocatie;
 import nl.rivm.screenit.huisartsenportaal.enums.CervixLocatieStatus;
 
 import org.hibernate.envers.Audited;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 @Entity
 @Audited

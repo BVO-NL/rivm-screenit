@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.factory.colon.DefaultVrijSlotFactory;
 import nl.rivm.screenit.repository.impl.BaseJpaRepositoryImpl;
+import nl.topicuszorg.wicket.session.DozerSessionFinderImpl;
 import nl.topicuszorg.zorgid.webservice.ZorgidWebservice;
 
 import org.springframework.boot.SpringApplication;
@@ -35,12 +36,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @Slf4j
-@EnableJpaRepositories(basePackages = { "nl.rivm.screenit" }, repositoryBaseClass = BaseJpaRepositoryImpl.class)
+@EnableJpaRepositories(basePackages = { "nl.rivm.screenit", "nl.topicuszorg.wicket.password.repository" }, repositoryBaseClass = BaseJpaRepositoryImpl.class)
 @ComponentScan(
 	basePackages = { "nl.rivm.screenit", "nl.topicuszorg" },
 	excludeFilters = {
 		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = ZorgidWebservice.class),
 		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = DefaultVrijSlotFactory.class),
+		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "nl.topicuszorg.wicket.session.DozerSessionFinderImpl"),
 		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "nl.topicuszorg.hibernate.spring.module.test.impl.TestServiceImpl"),
 		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "nl.topicuszorg.loginformatie.services.impl.LogInformatieServiceImpl"),
 		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "nl.topicuszorg.hl7.*")

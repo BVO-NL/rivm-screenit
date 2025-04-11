@@ -32,6 +32,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,7 +44,7 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job afterGbaJob(AfterGbaListener listener, Step retourzendingStep, Step uitnodigingsgebiedStep, Step overledenStep)
 	{
-		return jobBuilderFactory.get(JobType.COLON_NA_GBA.name())
+		return new JobBuilder(JobType.COLON_NA_GBA.name(), repository)
 			.listener(listener)
 			.start(retourzendingStep)
 			.next(uitnodigingsgebiedStep)
@@ -53,9 +55,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step retourzendingStep(RetourzendingReader reader, RetourzendingWriter writer)
 	{
-		return stepBuilderFactory.get("retourzendingStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("retourzendingStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -64,9 +65,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step uitnodigingsgebiedStep(UitnodigingsgebiedReader reader, UitnodigingsgebiedWriter writer)
 	{
-		return stepBuilderFactory.get("uitnodigingsgebiedStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("uitnodigingsgebiedStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -75,9 +75,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step overledenStep(OverledenReader reader, OverledenWriter writer)
 	{
-		return stepBuilderFactory.get("overledenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(20)
+		return new StepBuilder("overledenStep", repository)
+			.<Long, Long> chunk(20, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

@@ -24,8 +24,9 @@ package nl.rivm.screenit.mamma.se.controller;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
+import nl.rivm.screenit.SafeStringUtil;
 import nl.rivm.screenit.mamma.se.SELogin;
 import nl.rivm.screenit.mamma.se.SERequestHeader;
 import nl.rivm.screenit.mamma.se.dto.LoginDto;
@@ -40,11 +41,10 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.util.NaamUtil;
-import nl.rivm.screenit.SafeStringUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.codec.Base64;
+import org.apache.shiro.lang.codec.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

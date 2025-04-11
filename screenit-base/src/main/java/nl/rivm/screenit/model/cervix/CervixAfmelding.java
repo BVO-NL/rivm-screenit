@@ -21,16 +21,17 @@ package nl.rivm.screenit.model.cervix;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.cervix.enums.CervixAfmeldingReden;
@@ -47,6 +48,7 @@ import org.hibernate.envers.Audited;
 public class CervixAfmelding extends Afmelding<CervixScreeningRonde, CervixDossier, CervixBrief>
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
@@ -55,19 +57,19 @@ public class CervixAfmelding extends Afmelding<CervixScreeningRonde, CervixDossi
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	private CervixDossier dossier;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = javax.persistence.CascadeType.REMOVE)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = jakarta.persistence.CascadeType.REMOVE)
 	@Cascade(CascadeType.DELETE)
 	private CervixBrief afmeldingAanvraag;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = javax.persistence.CascadeType.REMOVE)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = jakarta.persistence.CascadeType.REMOVE)
 	@Cascade(CascadeType.DELETE)
 	private CervixBrief afmeldingBevestiging;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = javax.persistence.CascadeType.REMOVE)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = jakarta.persistence.CascadeType.REMOVE)
 	@Cascade(CascadeType.DELETE)
 	private CervixBrief heraanmeldAanvraag;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = javax.persistence.CascadeType.REMOVE)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = jakarta.persistence.CascadeType.REMOVE)
 	@Cascade(CascadeType.DELETE)
 	private CervixBrief heraanmeldBevestiging;
 

@@ -105,7 +105,7 @@ public final class BigDecimalUtil
 		{
 			return null;
 		}
-		return bigDecimal.divide(HALF, 0, BigDecimal.ROUND_HALF_UP).multiply(HALF).setScale(1);
+		return bigDecimal.divide(HALF, 0, RoundingMode.HALF_UP).multiply(HALF).setScale(1);
 	}
 
 	public static BigDecimal stringToBigDecimal(final String formattedString, final Locale locale)

@@ -25,13 +25,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -54,12 +54,12 @@ public class MammaUitnodigenRapportage extends AbstractHibernateObject
 	@Setter
 	private Date datumVerwerking;
 
-	@OneToMany(mappedBy = "uitnodigenRapportage", fetch = FetchType.LAZY, cascade = { javax.persistence.CascadeType.REMOVE })
+	@OneToMany(mappedBy = "uitnodigenRapportage", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE })
 	@Cascade(CascadeType.DELETE)
 	@Getter
 	private List<MammaStandplaatsRondeUitnodigenRapportage> standplaatsRondeUitnodigenRapportages = new ArrayList<>();
 
-	@OneToMany(mappedBy = "uitnodigenRapportage", fetch = FetchType.LAZY, cascade = { javax.persistence.CascadeType.REMOVE })
+	@OneToMany(mappedBy = "uitnodigenRapportage", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE })
 	@Cascade(CascadeType.DELETE)
 	@Getter
 	private List<MammaIntervalUitnodigenRapportage> intervalUitnodigenRapportages = new ArrayList<>();

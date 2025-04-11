@@ -24,9 +24,6 @@ package nl.rivm.screenit.specification.mamma;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -43,6 +40,9 @@ import nl.rivm.screenit.specification.SpecificationUtil;
 import nl.rivm.screenit.util.DateUtil;
 
 import org.springframework.data.jpa.domain.Specification;
+
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MammaMammografieBaseSpecification

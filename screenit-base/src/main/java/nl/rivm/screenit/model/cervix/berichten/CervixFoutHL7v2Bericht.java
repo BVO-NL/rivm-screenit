@@ -23,15 +23,6 @@ package nl.rivm.screenit.model.cervix.berichten;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -45,6 +36,15 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Type;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Setter
 @Getter
@@ -72,7 +72,7 @@ public class CervixFoutHL7v2Bericht extends AbstractHibernateObject
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private BMHKLaboratorium laboratorium;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = false, cascade = javax.persistence.CascadeType.REMOVE)
+	@OneToOne(fetch = FetchType.LAZY, optional = false, cascade = jakarta.persistence.CascadeType.REMOVE)
 	@Cascade(CascadeType.DELETE)
 	private Message message;
 

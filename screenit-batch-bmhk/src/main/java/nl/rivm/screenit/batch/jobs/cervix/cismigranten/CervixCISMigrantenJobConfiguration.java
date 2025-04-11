@@ -26,6 +26,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,7 +38,7 @@ public class CervixCISMigrantenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job cismigrantenUitnodigenJob(CervixCISMigrantenJobListener listener, Step migrantenUitnodigenStep)
 	{
-		return jobBuilderFactory.get(JobType.CERVIX_CISMIGRANTEN_UITNODIGEN.name())
+		return new JobBuilder(JobType.CERVIX_CISMIGRANTEN_UITNODIGEN.name(), repository)
 			.listener(listener)
 			.start(migrantenUitnodigenStep)
 			.build();
@@ -45,9 +47,8 @@ public class CervixCISMigrantenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step migrantenUitnodigenStep(CervixCISMigrantenReader reader, CervixCISMigrantenWriter writer)
 	{
-		return stepBuilderFactory.get("migrantenUitnodigenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("migrantenUitnodigenStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

@@ -23,7 +23,7 @@ package nl.rivm.screenit.model.helper;
 
 import java.io.Serializable;
 
-import javax.jms.JMSException;
+import jakarta.jms.JMSException;
 
 import lombok.extern.slf4j.Slf4j;
 

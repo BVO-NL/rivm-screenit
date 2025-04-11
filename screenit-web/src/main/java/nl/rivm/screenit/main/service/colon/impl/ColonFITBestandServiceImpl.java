@@ -24,13 +24,10 @@ package nl.rivm.screenit.main.service.colon.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.criteria.Predicate;
-
 import nl.rivm.screenit.main.model.colon.IFobtBatchFilter;
 import nl.rivm.screenit.main.service.colon.ColonFITBestandService;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.colon.IFOBTBestand;
-import nl.rivm.screenit.model.colon.IFOBTBestand_;
 import nl.rivm.screenit.model.colon.IFOBTUitslag;
 import nl.rivm.screenit.model.colon.IFOBTUitslag_;
 import nl.rivm.screenit.model.colon.IFobtLaboratorium;
@@ -52,8 +49,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.BoundType;
 
+import jakarta.persistence.criteria.Predicate;
+
 import static nl.rivm.screenit.specification.SpecificationUtil.composePredicates;
-import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.colon.ColonFITBestandSpecification.filterLaboratorium;
 import static nl.rivm.screenit.specification.colon.ColonFITBestandSpecification.filterStatus;
 import static nl.rivm.screenit.specification.colon.ColonFITBestandSpecification.heeftStatusDatumTussen;
@@ -79,15 +77,7 @@ public class ColonFITBestandServiceImpl implements ColonFITBestandService
 			return List.of();
 		}
 
-		return fitBestandRepository.findWith(getBestandenSpecification(filter), q -> q.sortBy(sort, (order, r, cb) ->
-		{
-			var sortProperty = order.getProperty();
-			if (sortProperty.startsWith(IFOBTBestand_.LABORATORIUM))
-			{
-				join(r, IFOBTBestand_.laboratorium);
-			}
-			return null;
-		})).all(first, count);
+		return fitBestandRepository.findWith(getBestandenSpecification(filter), q -> q.sortBy(sort)).all(first, count);
 	}
 
 	@Override

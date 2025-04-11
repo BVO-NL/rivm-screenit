@@ -24,20 +24,18 @@ package nl.rivm.screenit.service.impl;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-import javax.annotation.PostConstruct;
+import jakarta.jms.Destination;
 
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.model.helper.ActiveMQHelper;
 import nl.rivm.screenit.service.CurrentDateDispatcher;
-import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.JGroupsChannel;
 
-import org.jgroups.blocks.RequestOptions;
-import org.jgroups.blocks.ResponseMode;
-import org.jgroups.blocks.RpcDispatcher;
-import org.jgroups.util.RspList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jms.JmsException;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 @Service(value = "currentDateDispatcher")
@@ -45,36 +43,23 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CurrentDateDispatcherImpl implements CurrentDateDispatcher
 {
+	@Autowired
+	private JmsTemplate jmsTemplate;
 
 	@Autowired
-	private ICurrentDateSupplier currentDateSupplier;
-
-	@Autowired
-	private JGroupsChannel jGroupsRpcChannel;
-
-	private RpcDispatcher dispatcher;
-
-	@PostConstruct
-	public void init()
-	{
-		dispatcher = new RpcDispatcher(jGroupsRpcChannel.getChannel(), currentDateSupplier);
-	}
+	@Qualifier("changeDateTimeOffsetDestination")
+	private Destination changeDateTimeOffsetDestination;
 
 	@Override
 	public void setOffset(Duration offset)
 	{
-		if (dispatcher != null)
+		try
 		{
-			RequestOptions options = new RequestOptions(ResponseMode.GET_ALL, 5000);
-			try
-			{
-				RspList<Object> rsps = dispatcher.callRemoteMethods(null, "setOffset", new Object[] { offset }, new Class[] { Duration.class }, options);
-				LOG.debug(rsps.toString());
-			}
-			catch (Exception e)
-			{
-				LOG.error("Error tijdens setten van offset via jqroups chanel", e);
-			}
+			jmsTemplate.send(changeDateTimeOffsetDestination, session -> ActiveMQHelper.getActiveMqObjectMessage(offset.toString()));
+		}
+		catch (JmsException e)
+		{
+			LOG.error("Error tijdens setten van offset via activeMQ", e);
 		}
 	}
 

@@ -1,0 +1,43 @@
+/*-
+ * ========================LICENSE_START=================================
+ * medewerkerportaal
+ * %%
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+.clr-form.form-in-modal .clr-control-label {
+  flex: 0 0 88px;
+  max-width: 88px;
+}
+
+.control-checkbox-grid {
+  display: grid;
+  grid-template-columns: 308px 95px;
+  grid-template-areas: 'control checkbox';
+
+  .clr-combobox-control {
+    grid-area: control;
+  }
+
+  .clr-checkbox-wrapper {
+    grid-area: checkbox;
+    margin-top: 1.2rem;
+    label {
+      flex: 1;
+      max-width: unset;
+    }
+  }
+}

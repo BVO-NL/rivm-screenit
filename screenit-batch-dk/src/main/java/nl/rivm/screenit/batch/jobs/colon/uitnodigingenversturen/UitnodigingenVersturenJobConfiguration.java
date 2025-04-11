@@ -29,6 +29,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,7 +41,7 @@ public class UitnodigingenVersturenJobConfiguration extends AbstractJobConfigura
 	@Bean
 	public Job uitnodigingVersturenNaarInpakcentrumJob(UitnodigingenVersturenListener listener, Step uitnodigingenBrievenCleanupStep, Step uitnodigingenVersturenStep)
 	{
-		return jobBuilderFactory.get(JobType.UITNODIGING_VERSTUREN_NAAR_INPAKCENTRUM_JOB_DK.name())
+		return new JobBuilder(JobType.UITNODIGING_VERSTUREN_NAAR_INPAKCENTRUM_JOB_DK.name(), repository)
 			.listener(listener)
 			.start(uitnodigingenBrievenCleanupStep)
 			.next(uitnodigingenVersturenStep)
@@ -49,9 +51,8 @@ public class UitnodigingenVersturenJobConfiguration extends AbstractJobConfigura
 	@Bean
 	public Step uitnodigingenBrievenCleanupStep(ColonUitnodigingenBrievenCleanUpReader reader, ColonUitnodigingenBrievenCleanUpWriter writer)
 	{
-		return stepBuilderFactory.get("uitnodigingenBrievenCleanupStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("uitnodigingenBrievenCleanupStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -60,9 +61,8 @@ public class UitnodigingenVersturenJobConfiguration extends AbstractJobConfigura
 	@Bean
 	public Step uitnodigingenVersturenStep(ColonUitnodigingenVersturenTasklet tasklet)
 	{
-		return stepBuilderFactory.get("uitnodigingenVersturenStep")
-			.transactionManager(transactionManager)
-			.tasklet(tasklet)
+		return new StepBuilder("uitnodigingenVersturenStep", repository)
+			.tasklet(tasklet, transactionManager)
 			.build();
 	}
 

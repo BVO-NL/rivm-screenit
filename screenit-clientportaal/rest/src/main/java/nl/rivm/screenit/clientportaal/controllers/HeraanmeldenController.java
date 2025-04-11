@@ -2,7 +2,7 @@ package nl.rivm.screenit.clientportaal.controllers;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -31,7 +31,6 @@ import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.service.ClientContactService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,8 +49,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class HeraanmeldenController extends AbstractController
 {
-	private final HibernateService hibernateService;
-
 	private final ClientContactService clientContactService;
 
 	private final HeraanmeldenService heraanmeldenService;
@@ -59,7 +56,7 @@ public class HeraanmeldenController extends AbstractController
 	@GetMapping(value = "/{bevolkingsonderzoek}")
 	public ResponseEntity<HeraanmeldenOptiesDto> getHeraanmeldStatus(@PathVariable Bevolkingsonderzoek bevolkingsonderzoek, Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, getClientContactActieType(bevolkingsonderzoek)))
 		{
@@ -81,12 +78,12 @@ public class HeraanmeldenController extends AbstractController
 	public ResponseEntity<String> saveHeraanmeldVerzoek(@PathVariable Bevolkingsonderzoek bevolkingsonderzoek, @PathVariable boolean wilNieuweUitnodigingOntvangen,
 		Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 		try
 		{
 			if (clientContactService.availableActiesBevatBenodigdeActie(client, getClientContactActieType(bevolkingsonderzoek)))
 			{
-				heraanmeldenService.saveHeraanmeldenVerzoek(getClient(authentication, hibernateService), bevolkingsonderzoek, wilNieuweUitnodigingOntvangen);
+				heraanmeldenService.saveHeraanmeldenVerzoek(getClient(authentication), bevolkingsonderzoek, wilNieuweUitnodigingOntvangen);
 				return ResponseEntity.ok().build();
 			}
 		}

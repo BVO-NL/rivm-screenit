@@ -28,6 +28,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,7 +40,7 @@ public class ColonHuisartsOntkoppelenJobConfiguration extends AbstractJobConfigu
 	@Bean
 	public Job huisartsOntkoppelenJob(ColonHuisartsOntkoppelenListener listener, Step huisartsOntkoppelenStep)
 	{
-		return jobBuilderFactory.get(JobType.HUISARTS_ONTKOPPELEN_JOB_DK.name())
+		return new JobBuilder(JobType.HUISARTS_ONTKOPPELEN_JOB_DK.name(), repository)
 			.listener(listener)
 			.start(huisartsOntkoppelenStep)
 			.build();
@@ -47,9 +49,8 @@ public class ColonHuisartsOntkoppelenJobConfiguration extends AbstractJobConfigu
 	@Bean
 	public Step huisartsOntkoppelenStep(ColonHuisartsOntkoppelenReader reader, ColonHuisartsOntkoppelenWriter writer)
 	{
-		return stepBuilderFactory.get("huisartsOntkoppelenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("huisartsOntkoppelenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

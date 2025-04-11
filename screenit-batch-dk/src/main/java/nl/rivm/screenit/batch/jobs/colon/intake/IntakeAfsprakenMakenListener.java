@@ -27,7 +27,7 @@ import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.IntakeMakenLogEvent;
 import nl.rivm.screenit.model.logging.LogEvent;
-import nl.topicuszorg.util.date.DateUtil;
+import nl.rivm.screenit.util.DateUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.core.JobExecution;

@@ -21,22 +21,16 @@ package nl.rivm.screenit.main.service.cervix.impl;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-
 import nl.rivm.screenit.main.service.RepositoryDataProviderService;
 import nl.rivm.screenit.model.cervix.facturatie.CervixBetaalopdracht;
-import nl.rivm.screenit.model.cervix.facturatie.CervixBetaalopdracht_;
 import nl.rivm.screenit.model.enums.BestandStatus;
 import nl.rivm.screenit.repository.cervix.CervixBetaalopdrachtRepository;
-import nl.rivm.screenit.specification.cervix.CervixBetaalopdrachtSpecification;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import static nl.rivm.screenit.specification.SpecificationUtil.join;
+import static nl.rivm.screenit.specification.cervix.CervixBetaalopdrachtSpecification.heeftNietStatus;
 
 @Service("cervixBetalingenDataProviderService")
 public class CervixBetalingenDataProviderServiceImpl extends RepositoryDataProviderService<CervixBetaalopdracht, CervixBetaalopdrachtRepository, Void>
@@ -44,16 +38,6 @@ public class CervixBetalingenDataProviderServiceImpl extends RepositoryDataProvi
 	@Override
 	protected Specification<CervixBetaalopdracht> getSpecification(Void filter, Sort sort)
 	{
-		return CervixBetaalopdrachtSpecification.heeftNietStatus(BestandStatus.VERWIJDERD);
-	}
-
-	@Override
-	protected Order addJoinsForSortingOrCreateDedicatedOrders(Sort.Order order, Root<CervixBetaalopdracht> r, CriteriaBuilder cb)
-	{
-		if (order.getProperty().startsWith(CervixBetaalopdracht_.SCREENING_ORGANISATIE))
-		{
-			join(r, CervixBetaalopdracht_.screeningOrganisatie);
-		}
-		return super.addJoinsForSortingOrCreateDedicatedOrders(order, r, cb);
+		return heeftNietStatus(BestandStatus.VERWIJDERD);
 	}
 }

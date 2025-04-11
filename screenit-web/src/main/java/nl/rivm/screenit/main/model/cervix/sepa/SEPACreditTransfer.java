@@ -30,9 +30,6 @@ import java.util.GregorianCalendar;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -61,6 +58,10 @@ import nl.rivm.screenit.generated.sepa.ServiceLevel8Choice;
 import nl.rivm.screenit.util.DateUtil;
 
 import org.apache.commons.lang3.StringUtils;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -96,7 +97,9 @@ public class SEPACreditTransfer
 		groupHeader = new GroupHeader32();
 
 		if (msgId == null)
+		{
 			msgId = UUID.randomUUID().toString().replaceAll("-", "");
+		}
 		checkArgument(msgId.length() <= 35, "length of msgId is more than 35");
 		checkArgument(msgId.length() > 1, "length of msgId is less than 1");
 		groupHeader.setMsgId(msgId);
@@ -154,7 +157,7 @@ public class SEPACreditTransfer
 	public class Betaalgroep
 	{
 
-		private PaymentInstructionInformation3 paymentInstructionInformation3;
+		private final PaymentInstructionInformation3 paymentInstructionInformation3;
 
 		public Betaalgroep(PaymentInstructionInformation3 paymentInstructionInformation3)
 		{

@@ -24,9 +24,6 @@ package nl.rivm.screenit.repository.algemeen;
 import nl.rivm.screenit.model.PostcodeGebied;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 
-import org.springframework.stereotype.Repository;
-
-@Repository
 public interface PostcodeGebiedRepository extends BaseJpaRepository<PostcodeGebied>
 {
 }

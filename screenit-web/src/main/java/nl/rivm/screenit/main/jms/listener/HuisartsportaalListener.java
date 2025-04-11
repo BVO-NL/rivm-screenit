@@ -21,9 +21,6 @@ package nl.rivm.screenit.main.jms.listener;
  * =========================LICENSE_END==================================
  */
 
-import javax.jms.JMSException;
-import javax.jms.Session;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.huisartsenportaal.dto.AanvraagDto;
@@ -35,6 +32,9 @@ import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.stereotype.Component;
+
+import jakarta.jms.JMSException;
+import jakarta.jms.Session;
 
 @Slf4j
 @Component
@@ -52,25 +52,22 @@ public class HuisartsportaalListener implements SessionAwareMessageListener<Acti
 			String loginfo = "Synchronisatie bericht " + objectMessage.getJMSMessageID();
 			Object object = objectMessage.getObject();
 
-			if (object instanceof AanvraagDto)
+			if (object instanceof AanvraagDto aanvraagDto)
 			{
-				AanvraagDto aanvraagDto = (AanvraagDto) object;
-				LOG.info(loginfo + " voor type aanvraag(ha_id: " + aanvraagDto.getHuisartsportaalId() + ", s_id: " + aanvraagDto.getScreenitId() + ")");
+				LOG.info("{} voor type aanvraag(ha_id: {}, s_id: {})", loginfo, aanvraagDto.getHuisartsportaalId(), aanvraagDto.getScreenitId());
 				cervixHuisartsSyncService.setLabformulierAanvraag(aanvraagDto);
 			}
-			else if (object instanceof LocatieDto)
+			else if (object instanceof LocatieDto locatieDto)
 			{
-				LocatieDto locatieDto = (LocatieDto) object;
-				LOG.info(loginfo + " voor type aanvraag(ha_id: " + locatieDto.getHuisartsportaalId() + ", s_id: " + locatieDto.getScreenitId() + ")");
+				LOG.info("{} voor type locatie(ha_id: {}, s_id: {})", loginfo, locatieDto.getHuisartsportaalId(), locatieDto.getScreenitId());
 				cervixHuisartsSyncService.updateLocatie(locatieDto);
 			}
-			else if (object instanceof HuisartsDto)
+			else if (object instanceof HuisartsDto huisartsDto)
 			{
-				HuisartsDto huisartsDto = (HuisartsDto) object;
-				LOG.info(loginfo + " voor type aanvraag(ha_id: " + huisartsDto.getHuisartsportaalId() + ", s_id: " + huisartsDto.getScreenitId() + ")");
+				LOG.info("{} voor type huisarts(ha_id: {}, s_id: {})", loginfo, huisartsDto.getHuisartsportaalId(), huisartsDto.getScreenitId());
 				cervixHuisartsSyncService.updateHuisarts(huisartsDto);
 			}
-			LOG.info("Bericht succesvol verwerkt! " + objectMessage.getJMSMessageID());
+			LOG.info("Bericht succesvol verwerkt: {}", objectMessage.getJMSMessageID());
 		}
 		catch (JMSException e)
 		{

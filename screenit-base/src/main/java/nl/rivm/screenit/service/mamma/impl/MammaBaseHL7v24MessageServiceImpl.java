@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
-import nl.rivm.screenit.repository.mamma.MammaHL7v24MessageRepository;
+import nl.rivm.screenit.repository.mamma.MammaHL7v24MessageNativeQueryRepository;
 import nl.rivm.screenit.service.mamma.MammaBaseHL7v24MessageService;
 
 import org.springframework.stereotype.Service;
@@ -37,7 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MammaBaseHL7v24MessageServiceImpl implements MammaBaseHL7v24MessageService
 {
-	private final MammaHL7v24MessageRepository mammaHL7v24MessageRepository;
+
+	private final MammaHL7v24MessageNativeQueryRepository hl7v24MessageRepository;
 
 	@Transactional
 	@Override
@@ -45,11 +46,11 @@ public class MammaBaseHL7v24MessageServiceImpl implements MammaBaseHL7v24Message
 	{
 		if (verwijderAlleBerichten)
 		{
-			mammaHL7v24MessageRepository.verwijderAlleBerichtenVanClient(client.getId());
+			hl7v24MessageRepository.verwijderAlleBerichtenVanClient(client.getId());
 		}
 		else
 		{
-			mammaHL7v24MessageRepository.verwijderAlleBerichtenExclusiefImsVoorClient(client.getId(), MammaHL7v24ORMBerichtStatus.DELETE.name(),
+			hl7v24MessageRepository.verwijderAlleBerichtenExclusiefImsVoorClient(client.getId(), MammaHL7v24ORMBerichtStatus.DELETE.name(),
 				MammaHL7v24ORMBerichtStatus.GOINGTODELETE.name());
 		}
 	}

@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.controller;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -34,9 +34,8 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aspose.words.Document;
@@ -44,7 +43,6 @@ import com.aspose.words.PdfSaveOptions;
 
 @RestController
 @RequestMapping("overeenkomst")
-@PreAuthorize("isAuthenticated()")
 @Slf4j
 public class OvereenkomstController extends BaseController
 {
@@ -56,7 +54,7 @@ public class OvereenkomstController extends BaseController
 	@Value("${app.filestoreLocatie}")
 	private String filestoreLocatie;
 
-	@RequestMapping(method = RequestMethod.GET, produces = "application/pdf")
+	@GetMapping(produces = "application/pdf")
 	public FileSystemResource getOvereenkomst()
 	{
 		Overeenkomst overeenkomst = overeenkomstService.geefLaatsteOvereenkomst();

@@ -22,8 +22,6 @@ package nl.rivm.screenit.main.web.base;
  * =========================LICENSE_END==================================
  */
 
-import javax.servlet.http.HttpSession;
-
 import nl.rivm.screenit.main.web.gebruiker.base.angular.AngularBasePage;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -40,6 +38,8 @@ import org.apache.wicket.resource.JQueryResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.http.HttpSession;
 
 public abstract class BasePage extends WebPage
 {

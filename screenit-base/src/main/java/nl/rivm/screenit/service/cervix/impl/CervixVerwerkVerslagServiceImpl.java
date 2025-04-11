@@ -62,7 +62,7 @@ public class CervixVerwerkVerslagServiceImpl implements CervixVerwerkVerslagServ
 		monsterIdentificatie = monsterIdentificatie.replaceFirst("^0+(?!$)", ""); 
 		var uitstrijkje = monsterService.getUitstrijkje(monsterIdentificatie).orElseThrow(() ->
 			new IllegalStateException(
-				String.format("Dossier kan niet worden verwerkt, het uitstrijkje voor verslag met id %d kan niet worden gevonden", cytologieVerslag.getId())));
+				"Dossier kan niet worden verwerkt, het uitstrijkje voor verslag met id %d kan niet worden gevonden".formatted(cytologieVerslag.getId())));
 		var ontvangstRonde = uitstrijkje.getOntvangstScreeningRonde();
 
 		if (!ontvangstRonde.getVerslagen().contains(cytologieVerslag))

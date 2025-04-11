@@ -28,12 +28,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.Column;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.Column;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,10 +49,8 @@ import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.logging.LogRegel;
-import nl.rivm.screenit.model.logging.LogRegel_;
 import nl.rivm.screenit.model.logging.LoggingZoekCriteria;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
-import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid_;
 import nl.rivm.screenit.repository.algemeen.DashboardLogRegelRepository;
 import nl.rivm.screenit.repository.algemeen.LogRegelRepository;
 import nl.rivm.screenit.service.DashboardService;
@@ -73,10 +67,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Strings;
 
-import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.DashboardLogRegelSpecification.heeftDashboardType;
 import static nl.rivm.screenit.specification.algemeen.DashboardLogRegelSpecification.heeftOrganisatie;
-import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
 @Service(value = "logInformatieService")
 @Slf4j
@@ -140,23 +132,12 @@ public class LogServiceImpl implements LogService
 	public List<LogRegel> getLogRegelsVanDashboard(DashboardStatus item, long first, long count, Sort sort)
 	{
 		return dashboardLogRegelRepository.findWith(getLogRegelsSpecification(item), LogRegel.class,
-			q -> q.projection((cb, r) -> r.get(DashboardLogRegel_.logRegel)).sortBy(sort, LogServiceImpl::sorteerLogRegels)).all(first, count);
-	}
-
-	private static Order sorteerLogRegels(Sort.Order order, Root<DashboardLogRegel> r, CriteriaBuilder cb)
-	{
-		if (order.getProperty().equals(propertyChain(LogRegel_.SCREENINGS_EENHEID, MammaScreeningsEenheid_.NAAM)))
-		{
-			var logregelJoin = join(r, DashboardLogRegel_.logRegel);
-			join(logregelJoin, LogRegel_.screeningsEenheid, JoinType.LEFT);
-		}
-		return null;
+			q -> q.projection((cb, r) -> r.get(DashboardLogRegel_.logRegel)).sortBy(sort)).all(first, count);
 	}
 
 	@Override
 	public List<LogRegel> getLogRegelsVanDashboard(DashboardStatus item)
 	{
-
 		return dashboardLogRegelRepository.findWith(getLogRegelsSpecification(item), LogRegel.class,
 			q -> q.projection((cb, r) -> r.get(DashboardLogRegel_.logRegel))).all();
 	}
@@ -374,9 +355,9 @@ public class LogServiceImpl implements LogService
 
 		logRegel.setLogEvent(logEvent);
 		logEvent.setLogRegel(logRegel);
-		if (client == null && account instanceof Client)
+		if (client == null && account instanceof Client client1)
 		{
-			client = (Client) account;
+			client = client1;
 		}
 		logRegel.setClient(client);
 		if (bevolkingsonderzoeken != null)
@@ -457,13 +438,13 @@ public class LogServiceImpl implements LogService
 
 	private Gebruiker getGebruiker(Account account)
 	{
-		if (account instanceof InstellingGebruiker)
+		if (account instanceof InstellingGebruiker gebruiker)
 		{
-			return ((InstellingGebruiker) account).getMedewerker();
+			return gebruiker.getMedewerker();
 		}
-		else if (account instanceof Gebruiker)
+		else if (account instanceof Gebruiker gebruiker)
 		{
-			return (Gebruiker) account;
+			return gebruiker;
 		}
 		else
 		{
@@ -473,9 +454,9 @@ public class LogServiceImpl implements LogService
 
 	private InstellingGebruiker getIngelogdeGebruiker(Account account)
 	{
-		if (account instanceof InstellingGebruiker)
+		if (account instanceof InstellingGebruiker gebruiker)
 		{
-			return (InstellingGebruiker) account;
+			return gebruiker;
 		}
 		else
 		{

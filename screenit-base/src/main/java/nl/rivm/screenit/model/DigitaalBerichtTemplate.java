@@ -23,13 +23,6 @@ package nl.rivm.screenit.model;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Lob;
-import javax.persistence.Table;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,6 +36,13 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
 
 @Getter
 @Setter
@@ -65,8 +65,8 @@ public class DigitaalBerichtTemplate extends AbstractHibernateObject
 	private String subject;
 
 	@Lob
-	@Type(type = "org.hibernate.type.TextType")
 	@DiffSpecs(displayName = "inhoud")
+	@Type(type = "org.hibernate.type.TextType")
 	@Column(nullable = false)
 	private String body;
 }

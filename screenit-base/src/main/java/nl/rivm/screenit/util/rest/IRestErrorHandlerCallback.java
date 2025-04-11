@@ -21,9 +21,9 @@ package nl.rivm.screenit.util.rest;
  * =========================LICENSE_END==================================
  */
 
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 
 public interface IRestErrorHandlerCallback
 {
-	void handleRestClientError(HttpStatus httpStatus);
+	void handleRestClientError(HttpStatusCode httpStatusCode);
 }

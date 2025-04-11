@@ -21,334 +21,70 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.service.FileService;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.S3ClientBuilder;
-import software.amazon.awssdk.services.s3.model.Delete;
-import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
-import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Exception;
-import software.amazon.awssdk.services.s3.model.S3Object;
-import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
-
-import static org.apache.commons.lang3.StringUtils.chomp;
 
 @Slf4j
 @Service
 @ConditionalOnProperty(value = "s3.enabled", havingValue = "true")
-public class S3FileServiceImpl implements FileService, InitializingBean
+@Primary
+public class S3FileServiceImpl extends AbstractS3FileServiceImpl implements FileService
 {
 
-	public S3FileServiceImpl()
+	public S3FileServiceImpl(@Qualifier("s3bucketEndpointOverride") String s3bucketEndpointOverride, @Qualifier("s3bucketAccessId") String s3bucketAccessId,
+		@Qualifier("s3bucketAccessSecret") String s3bucketAccessSecret, @Qualifier("s3bucketRegion") String s3bucketRegion, @Qualifier("s3bucketName") String s3bucketName)
 	{
 		LOG.info("S3 Fileservice");
+		this.s3bucketEndpointOverride = s3bucketEndpointOverride;
+		this.s3bucketAccessId = s3bucketAccessId;
+		this.s3bucketAccessSecret = s3bucketAccessSecret;
+		this.s3bucketRegion = s3bucketRegion;
+		this.s3bucketName = s3bucketName;
 	}
 
-	@Autowired
-	@Qualifier("s3bucketEndpointOverride")
-	private String s3bucketEndpointOverride;
+	protected final String s3bucketEndpointOverride;
 
-	@Autowired
-	@Qualifier("s3bucketAccessId")
-	private String s3bucketAccessId;
+	protected final String s3bucketAccessId;
 
-	@Autowired
-	@Qualifier("s3bucketAccessSecret")
-	private String s3bucketAccessSecret;
+	protected final String s3bucketAccessSecret;
 
-	@Autowired
-	@Qualifier("s3bucketRegion")
-	private String s3bucketRegion;
+	protected final String s3bucketRegion;
 
-	@Autowired
-	@Qualifier("s3bucketName")
-	private String s3bucketName;
-
-	private S3Client s3;
+	protected final String s3bucketName;
 
 	@Override
-	public boolean exists(String fullFilePath)
+	protected String getS3bucketEndpointOverride()
 	{
-		try
-		{
-			return s3.headObject(HeadObjectRequest.builder()
-				.bucket(s3bucketName)
-				.key(getS3Path(fullFilePath))
-				.build()).sdkHttpResponse().isSuccessful();
-		}
-		catch (S3Exception e)
-		{
-			return false;
-		}
+		return s3bucketEndpointOverride;
 	}
 
 	@Override
-	public void save(String fullFilePath, File tempFile) throws IOException
+	protected String getS3bucketAccessId()
 	{
-		save(fullFilePath, new FileInputStream(tempFile), tempFile.length());
+		return s3bucketAccessId;
 	}
 
 	@Override
-	public void save(String fullFilePath, InputStream content, Long contentLength) throws IOException
+	protected String getS3bucketAccessSecret()
 	{
-		if (StringUtils.isBlank(fullFilePath))
-		{
-			throw new IllegalStateException("Er is geen pad opgegeven om op te slaan");
-		}
-		try
-		{
-			var objectResponse = s3.putObject(PutObjectRequest
-				.builder()
-				.bucket(s3bucketName)
-				.key(getS3Path(fullFilePath)).build(), RequestBody.fromInputStream(content, contentLength));
-
-			if (!objectResponse.sdkHttpResponse().isSuccessful())
-			{
-				throw new IOException("HTTP error bij uploaden bestand " + fullFilePath + " naar S3 (code=" + objectResponse.sdkHttpResponse().statusCode() + ")");
-			}
-		}
-		catch (S3Exception e)
-		{
-			throw new IOException("Fout bij uploaden van bestand " + fullFilePath + " naar S3", e);
-		}
+		return s3bucketAccessSecret;
 	}
 
 	@Override
-	public File load(String fullFilePath)
+	protected String getS3bucketRegion()
 	{
-		try
-		{
-			var file = File.createTempFile(FilenameUtils.getBaseName(fullFilePath), "." + FilenameUtils.getExtension(fullFilePath));
-			LOG.debug("Tijdelijk bestand {} aangemaakt van S3 bestand {}", file.getPath(), fullFilePath);
-			try (InputStream documentStream = loadAsStream(fullFilePath))
-			{
-				Files.write(file.toPath(), IOUtils.toByteArray(documentStream), StandardOpenOption.WRITE);
-			}
-			return file;
-		}
-		catch (Exception e)
-		{
-			LOG.error("Fout bij downloaden van bestand {} als 'File' uit S3 door {}", fullFilePath, e.getMessage(), e);
-			return null;
-		}
+		return s3bucketRegion;
 	}
 
 	@Override
-	public InputStream loadAsStream(String fullFilePath) throws IOException
+	protected String getS3bucketName()
 	{
-		if (StringUtils.isBlank(fullFilePath))
-		{
-			return null;
-		}
-		try
-		{
-			return s3.getObject(GetObjectRequest
-				.builder()
-				.bucket(s3bucketName)
-				.key(getS3Path(fullFilePath))
-				.build());
-		}
-		catch (S3Exception e)
-		{
-			LOG.error("Fout bij downloaden van bestand {} uit S3 door {}", fullFilePath, e.getMessage(), e);
-			throw new IOException(e);
-		}
-	}
-
-	@Override
-	public boolean delete(String fullFilePath)
-	{
-		if (StringUtils.isBlank(fullFilePath))
-		{
-			return false;
-		}
-		try
-		{
-			var key = ObjectIdentifier.builder().key(getS3Path(fullFilePath)).build();
-			var request = DeleteObjectsRequest
-				.builder()
-				.bucket(s3bucketName)
-				.delete(Delete
-					.builder()
-					.objects(key)
-					.build())
-				.build();
-			var response = s3.deleteObjects(request);
-			return response.sdkHttpResponse().isSuccessful();
-		}
-		catch (S3Exception e)
-		{
-			LOG.error("Fout bij verwijderen van bestand {} uit S3 door {}", fullFilePath, e.getMessage(), e);
-		}
-		return false;
-	}
-
-	@Override
-	public boolean deleteQuietly(String fullFilePath)
-	{
-		if (StringUtils.isBlank(fullFilePath))
-		{
-			return false;
-		}
-		try
-		{
-			var key = ObjectIdentifier.builder().key(getS3Path(fullFilePath)).build();
-			var request = DeleteObjectsRequest
-				.builder()
-				.bucket(s3bucketName)
-				.delete(Delete
-					.builder()
-					.objects(key)
-					.build())
-				.build();
-			var response = s3.deleteObjects(request);
-			return response.sdkHttpResponse().isSuccessful();
-		}
-		catch (S3Exception e)
-		{
-
-		}
-		return false;
-	}
-
-	@Override
-	public void cleanDirectory(String directory) throws IOException
-	{
-		deleteDirectory(directory);
-	}
-
-	@Override
-	public void deleteDirectory(String directory) throws IOException
-	{
-		var filesInDirectory = listFiles(directory);
-		filesInDirectory.forEach(this::delete);
-	}
-
-	@Override
-	public void deleteFileOrDirectory(String bestand) throws IOException
-	{
-
-		delete(bestand);
-	}
-
-	@Override
-	public List<String> listFiles(String directory) throws IOException
-	{
-		try
-		{
-			var response = getObjectsFromDirectory(directory);
-			if (response == null)
-			{
-				return new ArrayList<>();
-			}
-			return response.stream().flatMap(page -> page.contents().stream()).map(S3Object::key).collect(Collectors.toList());
-		}
-		catch (S3Exception e)
-		{
-			LOG.error("Fout bij ophalen van bestandlijst in map {} uit S3 door {}", directory, e.getMessage(), e);
-			throw new IOException(e);
-		}
-	}
-
-	@Override
-	public List<String> listFilesGesorteerd(String directory) throws IOException
-	{
-		var response = getObjectsFromDirectory(directory);
-		if (response == null)
-		{
-			return new ArrayList<>();
-		}
-		try
-		{
-			return response.stream().flatMap(page -> page.contents().stream()).sorted(Comparator.comparing(S3Object::lastModified).reversed()).map(S3Object::key).collect(
-				Collectors.toList());
-		}
-		catch (S3Exception e)
-		{
-			LOG.error("Fout bij ophalen van bestandlijst in map {} uit S3 door {}", directory, e.getMessage(), e);
-			throw new IOException(e);
-		}
-	}
-
-	private ListObjectsV2Iterable getObjectsFromDirectory(String directory)
-	{
-		if (StringUtils.isBlank(directory))
-		{
-			return null;
-		}
-		var request = ListObjectsV2Request
-			.builder()
-			.bucket(s3bucketName)
-			.prefix(directory)
-			.build();
-		return s3.listObjectsV2Paginator(request);
-	}
-
-	@Override
-	public void afterPropertiesSet()
-	{
-		final var basicCredentials = AwsBasicCredentials.create(s3bucketAccessId, s3bucketAccessSecret);
-
-		s3 = S3Client
-			.builder()
-			.credentialsProvider(StaticCredentialsProvider.create(basicCredentials))
-			.region(Region.of(s3bucketRegion))
-			.applyMutation(this::setEndpointOverrideIfPresent)
-			.build();
-	}
-
-	private void setEndpointOverrideIfPresent(final S3ClientBuilder s3ClientBuilder) throws IllegalArgumentException
-	{
-		if (StringUtils.isNotBlank(s3bucketEndpointOverride))
-		{
-			try
-			{
-				final var endpointOverrideURI = URI.create(s3bucketEndpointOverride);
-				s3ClientBuilder.endpointOverride(endpointOverrideURI);
-			}
-			catch (final IllegalArgumentException e)
-			{
-				LOG.error("Invalid endpoint override URI", e);
-				throw e;
-			}
-		}
-	}
-
-	private String getS3Path(String path)
-	{
-		var formattedPath = path.replace("\\", "/").replaceAll("\\\\", "/").replaceAll("//", "/");
-		return formattedPath.endsWith("/") ? chomp(formattedPath) : formattedPath;
+		return s3bucketName;
 	}
 }

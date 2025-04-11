@@ -22,7 +22,6 @@ package nl.rivm.screenit.batch.jobs.generalis.huisarts.importstep;
  */
 
 import java.text.ParseException;
-import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,6 +35,7 @@ import nl.rivm.screenit.service.ZorgmailImportVoortgang;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,11 +52,11 @@ public class EnovationHuisartsWriter implements ItemWriter<Object[]>
 	private ExecutionContext executionContext;
 
 	@Override
-	public void write(List<? extends Object[]> chunk) throws Exception
+	public void write(Chunk<? extends Object[]> chunk) throws Exception
 	{
 		ZorgmailImportMapping mapping = (ZorgmailImportMapping) executionContext.get(EnovationHuisartsJobListener.ZM_BESTAND_MAPPING);
 		ZorgmailImportVoortgang voortgang = (ZorgmailImportVoortgang) executionContext.get(EnovationHuisartsJobListener.ZM_BESTAND_VOORTGANG);
-		for (Object[] lineObjects : chunk)
+		for (Object[] lineObjects : chunk.getItems())
 		{
 			Integer lineNumber = (Integer) lineObjects[0];
 			if (lineNumber > 1)

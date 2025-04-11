@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -64,8 +64,8 @@ const isProductie = window.location.hostname === "mijn.bevolkingsonderzoeknederl
 
 if (isAcceptatie || isProductie) {
 	datadogRum.init({
-		applicationId: isAcceptatie ? "9247fc9b-d035-4f9f-9d74-f9140c41c834" : "20ecf71c-5501-45b0-a633-b7a097b0348f",
-		clientToken: isAcceptatie ? "pub4c285cbd766641dd2f560ee6b9a9cb63" : "pub172ddfb3747a8a76a8dd9ea1797bcdc0",
+		applicationId: isAcceptatie ? process.env.REACT_APP_DD_RUM_APPLICATION_ID_ACC : process.env.REACT_APP_DD_RUM_APPLICATION_ID_PROD,
+		clientToken: isAcceptatie ? process.env.REACT_APP_DD_RUM_CLIENT_TOKEN_ACC : process.env.REACT_APP_DD_RUM_CLIENT_TOKEN_PROD,
 		site: "datadoghq.eu",
 		service: "clientportaal",
 		sessionReplaySampleRate: 0,

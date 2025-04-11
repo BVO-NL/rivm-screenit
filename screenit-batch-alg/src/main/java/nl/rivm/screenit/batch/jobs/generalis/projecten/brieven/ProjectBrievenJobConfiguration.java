@@ -37,7 +37,9 @@ import nl.rivm.screenit.model.project.ProjectBrief;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
@@ -50,7 +52,7 @@ public class ProjectBrievenJobConfiguration extends AbstractJobConfiguration
 	public Job projectBrievenJob(ProjectBrievenListener listener, Step projectBrievenCleanupStep, Step projectBrievenKlaarzettenStep, Step projectBrievenPartitionerStep,
 		Step projectBrievenControleStep)
 	{
-		return jobBuilderFactory.get(JobType.PROJECT_BRIEVEN.name())
+		return new JobBuilder(JobType.PROJECT_BRIEVEN.name(), repository)
 			.listener(listener)
 			.start(projectBrievenCleanupStep)
 			.next(projectBrievenKlaarzettenStep)
@@ -62,9 +64,8 @@ public class ProjectBrievenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step projectBrievenCleanupStep(ProjectBriefCleanUpReader reader, ProjectBriefCleanUpWriter writer)
 	{
-		return stepBuilderFactory.get("projectBrievenCleanupStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("projectBrievenCleanupStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -73,9 +74,8 @@ public class ProjectBrievenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step projectBrievenKlaarzettenStep(ProjectBrievenAanmaakReader reader, ProjectBrievenAanmaakWriter writer)
 	{
-		return stepBuilderFactory.get("projectBrievenKlaarzettenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("projectBrievenKlaarzettenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -85,8 +85,7 @@ public class ProjectBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step projectBrievenPartitionerStep(ProjectBrievenGenererenPartitioner partitioner, Step projectBrievenGenererenStep,
 		TaskExecutorPartitionHandler projectBrievenPartitionHandler)
 	{
-		return stepBuilderFactory.get("projectBrievenPartitionerStep")
-			.transactionManager(transactionManager)
+		return new StepBuilder("projectBrievenPartitionerStep", repository)
 			.partitioner("projectBrievenGenererenStep", partitioner)
 			.partitionHandler(projectBrievenPartitionHandler)
 			.step(projectBrievenGenererenStep)
@@ -96,9 +95,8 @@ public class ProjectBrievenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step projectBrievenControleStep(ProjectBrievenControleReader reader, ProjectBrievenControleWriter writer)
 	{
-		return stepBuilderFactory.get("projectBrievenControleStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("projectBrievenControleStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -107,9 +105,8 @@ public class ProjectBrievenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step projectBrievenGenererenStep(ProjectBrievenGenererenReader reader, ProjectBrievenGenererenProcessor processor, ProjectBrievenGenererenWriter writer)
 	{
-		return stepBuilderFactory.get("projectBrievenGenererenStep")
-			.transactionManager(transactionManager)
-			.<Long, ProjectBrief> chunk(250)
+		return new StepBuilder("projectBrievenGenererenStep", repository)
+			.<Long, ProjectBrief> chunk(250, transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)

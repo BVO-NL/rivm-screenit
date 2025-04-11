@@ -1,9 +1,8 @@
-
 package nl.rivm.screenit.huisartsenportaal.service.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -32,18 +31,16 @@ import nl.rivm.screenit.huisartsenportaal.service.WoonplaatsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
 public class WoonplaatsServiceImpl implements WoonplaatsService
 {
 	@Autowired
 	private WoonplaatsRepository woonplaatsRepository;
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void saveScreenITWoonplaats(WoonplaatsDto object)
 	{
 		Woonplaats woonplaats = woonplaatsRepository.findByScreenitId(object.getScreenitId());
@@ -63,7 +60,8 @@ public class WoonplaatsServiceImpl implements WoonplaatsService
 	{
 		Iterable<Woonplaats> woonplaatsen = woonplaatsRepository.find(value + "%");
 		List<WoonplaatsDto> woonplaatsDtos = new ArrayList<WoonplaatsDto>();
-		woonplaatsen.forEach(woonplaats -> {
+		woonplaatsen.forEach(woonplaats ->
+		{
 			WoonplaatsDto woonplaatsDto = new WoonplaatsDto();
 			woonplaatsDto.setGemeente(woonplaats.getGemeente());
 			woonplaatsDto.setNaam(woonplaats.getNaam());

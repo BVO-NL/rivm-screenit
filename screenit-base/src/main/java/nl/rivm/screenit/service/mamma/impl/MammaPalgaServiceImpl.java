@@ -75,7 +75,7 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ZipUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -132,7 +132,7 @@ public class MammaPalgaServiceImpl implements MammaPalgaService
 	{
 		if (naam != null && loggedInAccount != null)
 		{
-			var logRegel = String.format("Verwijderd: %s", naam);
+			var logRegel = "Verwijderd: %s".formatted(naam);
 			logService.logGebeurtenis(LogGebeurtenis.MAMMA_PALGA_CSV_EXPORT, loggedInAccount, logRegel);
 		}
 		var exports = getExports();

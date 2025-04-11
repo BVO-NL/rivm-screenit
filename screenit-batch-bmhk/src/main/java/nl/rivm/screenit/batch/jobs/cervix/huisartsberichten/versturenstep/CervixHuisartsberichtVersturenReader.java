@@ -23,10 +23,6 @@ package nl.rivm.screenit.batch.jobs.cervix.huisartsberichten.versturenstep;
 
 import java.util.List;
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.BagAdres_;
@@ -45,6 +41,10 @@ import nl.rivm.screenit.specification.cervix.CervixBriefSpecification;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 
 import static nl.rivm.screenit.batch.jobs.cervix.huisartsberichten.CervixHuisartsberichtenJobConfiguration.CERVIX_HUISARTSENBERICHTEN_JOB_READERS_FETCH_SIZE;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;

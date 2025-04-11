@@ -24,10 +24,6 @@ package nl.rivm.screenit.batch.jobs.colon.ifobtverwerking.verwerkingstep;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.colon.IFOBTUitslag;
 import nl.rivm.screenit.model.colon.IFOBTUitslag_;
@@ -35,6 +31,10 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
 
 import static nl.rivm.screenit.model.colon.enums.IFOBTBestandStatus.GEAUTORISEERD;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;

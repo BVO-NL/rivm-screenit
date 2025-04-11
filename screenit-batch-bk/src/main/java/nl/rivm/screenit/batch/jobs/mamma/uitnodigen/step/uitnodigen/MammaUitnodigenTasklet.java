@@ -21,8 +21,6 @@ package nl.rivm.screenit.batch.jobs.mamma.uitnodigen.step.uitnodigen;
  * =========================LICENSE_END==================================
  */
 
-import javax.annotation.PostConstruct;
-
 import nl.rivm.screenit.dto.mamma.planning.PlanningRestConstants;
 import nl.rivm.screenit.util.rest.RestApiFactory;
 
@@ -34,6 +32,8 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class MammaUitnodigenTasklet implements Tasklet

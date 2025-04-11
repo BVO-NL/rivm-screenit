@@ -24,6 +24,7 @@ import {MELDING_SESSIE_NIET_GELDIG, MELDING_TECHNISCHE_FOUT, showErrorToast, sho
 import {logoutClient} from "../restclient/AuthenticatieRestclient"
 import type {ErrorDto} from "../datatypes/ErrorDto"
 import {datumFormaat, nu} from "./DateUtil"
+import {getCookie} from "./CookieUtil"
 
 export const baseUrl = "./api/"
 export const fetchApi = (method: string, url: string, callBack?: ((...args: Array<any>) => any), body?: string): void => {
@@ -123,6 +124,10 @@ export const createClientHeaders = (): Headers => {
 	const accountId = getAccountId()
 	if (accountId) {
 		clientHeaders.append("accountId", String(accountId))
+	}
+	const csrfToken = getCookie("XSRF-TOKEN")
+	if (csrfToken) {
+		clientHeaders.append("X-XSRF-TOKEN", csrfToken)
 	}
 	return clientHeaders
 }

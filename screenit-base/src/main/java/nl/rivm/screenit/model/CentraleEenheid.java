@@ -21,8 +21,10 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import java.io.Serial;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 
@@ -32,6 +34,7 @@ import org.hibernate.envers.Audited;
 @Audited
 public class CentraleEenheid extends Instelling
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Column(length = HibernateMagicNumber.L20)

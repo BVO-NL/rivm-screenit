@@ -22,6 +22,7 @@ package nl.rivm.screenit.model.batch;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +36,7 @@ import nl.rivm.screenit.model.enums.JobType;
 @Setter
 public class BatchJob implements Serializable
 {
+	@Serial
 	private static final long serialVersionUID = -1615797420971302370L;
 
 	private JobType jobType;

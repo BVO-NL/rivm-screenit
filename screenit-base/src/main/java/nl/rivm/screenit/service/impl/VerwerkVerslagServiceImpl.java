@@ -23,12 +23,8 @@ package nl.rivm.screenit.service.impl;
  */
 
 import java.util.Date;
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.VerslagProjectVersionMapping;
@@ -42,7 +38,6 @@ import nl.rivm.screenit.service.VerwerkVerslagService;
 import nl.rivm.screenit.service.cervix.CervixVerwerkVerslagService;
 import nl.rivm.screenit.service.colon.ColonVerwerkVerslagService;
 import nl.rivm.screenit.service.mamma.MammaVerwerkVerslagService;
-import nl.topicuszorg.formulieren2.api.resultaat.Antwoord;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +45,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.annotation.PostConstruct;
 
 @Service
 @Transactional(propagation = Propagation.SUPPORTS)
@@ -153,27 +150,6 @@ public class VerwerkVerslagServiceImpl implements VerwerkVerslagService
 			return mammaVerwerkVerslagService.getValideScreeningsRonde(client, onderzoeksdatum);
 		}
 		return null;
-	}
-
-	@Override
-	public void valideerVerslagVoorAfronden(Verslag verslag, Set<Antwoord<?>> antwoorden, InstellingGebruiker instellingGebruiker)
-	{
-		switch (verslag.getType())
-		{
-		case MDL:
-			colonVerwerkVerslagService.valideerVerslagVoorAfronden((MdlVerslag) verslag, antwoorden, instellingGebruiker);
-			break;
-		case PA_LAB:
-			colonVerwerkVerslagService.valideerVerslagVoorAfronden((PaVerslag) verslag, instellingGebruiker);
-			break;
-		case CERVIX_CYTOLOGIE:
-			break;
-		case MAMMA_PA_FOLLOW_UP:
-			mammaVerwerkVerslagService.valideerVerslagVoorAfronden((MammaFollowUpVerslag) verslag, instellingGebruiker);
-			break;
-		default:
-			throw new IllegalStateException("Unexpected value: " + verslag.getType());
-		}
 	}
 
 	@Override

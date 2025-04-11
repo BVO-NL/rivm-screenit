@@ -21,10 +21,10 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -41,14 +41,14 @@ import org.hibernate.envers.Audited;
 @Setter
 public abstract class ClientBrief<SR extends ScreeningRonde, AF extends Afmelding, CB extends ClientBrief> extends Brief
 {
-	@OneToOne(optional = true, fetch = FetchType.LAZY, mappedBy = "brief", cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE,
-		javax.persistence.CascadeType.REMOVE })
+	@OneToOne(optional = true, fetch = FetchType.LAZY, mappedBy = "brief", cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE,
+		jakarta.persistence.CascadeType.REMOVE })
 	@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.DELETE })
 	private ProjectBrief projectBrief;
 
 	private boolean vervangendeProjectBrief = false;
 
-	@ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.SAVE_UPDATE })
 	private Client client;
 

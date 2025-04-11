@@ -27,7 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -41,13 +41,15 @@ import nl.rivm.screenit.service.FileService;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @ConditionalOnProperty(value = "s3.enabled", havingValue = "false")
+@Primary
 public class DiskFileServiceImpl implements FileService
 {
 	public DiskFileServiceImpl()
@@ -132,7 +134,7 @@ public class DiskFileServiceImpl implements FileService
 
 		try
 		{
-			return Files.newInputStream(Paths.get(fullFilePath));
+			return Files.newInputStream(Path.of(fullFilePath));
 		}
 		catch (IOException e)
 		{

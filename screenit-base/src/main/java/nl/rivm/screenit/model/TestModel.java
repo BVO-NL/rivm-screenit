@@ -21,6 +21,7 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -31,6 +32,7 @@ import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 public class TestModel implements Serializable
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private ColonTest colonTestActies;

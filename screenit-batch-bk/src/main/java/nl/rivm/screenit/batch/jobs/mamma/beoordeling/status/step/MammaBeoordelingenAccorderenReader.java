@@ -21,8 +21,6 @@ package nl.rivm.screenit.batch.jobs.mamma.beoordeling.status.step;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.criteria.JoinType;
-
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling_;
@@ -32,6 +30,8 @@ import nl.rivm.screenit.specification.mamma.MammaLezingSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+
+import jakarta.persistence.criteria.JoinType;
 
 import static nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus.EERSTE_LEZING_OPGESLAGEN;
 import static nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus.TWEEDE_LEZING_OPGESLAGEN;

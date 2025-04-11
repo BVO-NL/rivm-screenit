@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import {combineReducers} from "redux"
-import {OAuthReducer} from "./OAuthState"
+import {AuthReducer} from "./AuthState"
 import {UserReducer} from "./UserState"
 import {LoadingReducer} from "./LoadingState"
 import {LocatieVerificatieReducer} from "./LocatieVerificatieState"
@@ -36,7 +36,7 @@ export const createClearStateAction = (): ClearStateAction => ({
 })
 
 const reducers = combineReducers({
-	oauth: OAuthReducer,
+	auth: AuthReducer,
 	user: UserReducer,
 	loading: LoadingReducer,
 	locatieVerificatie: LocatieVerificatieReducer,

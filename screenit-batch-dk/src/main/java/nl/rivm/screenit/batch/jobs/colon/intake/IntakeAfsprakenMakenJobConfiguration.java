@@ -30,6 +30,8 @@ import nl.rivm.screenit.model.enums.JobType;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,7 +42,7 @@ public class IntakeAfsprakenMakenJobConfiguration extends AbstractJobConfigurati
 	@Bean
 	public Job intakeAfsprakenMakenJob(IntakeAfsprakenMakenListener listener, Step dummyStep, IntakeAfsprakenMakenDecider decider, Step intakeAfsprakenMakenStep)
 	{
-		return jobBuilderFactory.get(JobType.INTAKE_AFSPRAKEN_MAKEN.name())
+		return new JobBuilder(JobType.INTAKE_AFSPRAKEN_MAKEN.name(), repository)
 			.listener(listener)
 			.start(dummyStep)
 			.next(decider)
@@ -53,9 +55,8 @@ public class IntakeAfsprakenMakenJobConfiguration extends AbstractJobConfigurati
 	@Bean
 	public Step intakeAfsprakenMakenStep(IntakeAfsprakenMakenReader reader, IntakeAfsprakenMakenWriter writer)
 	{
-		return stepBuilderFactory.get("intakeAfsprakenMakenStep")
-			.transactionManager(transactionManager)
-			.<ClientAfspraak, ClientAfspraak> chunk(20)
+		return new StepBuilder("intakeAfsprakenMakenStep", repository)
+			.<ClientAfspraak, ClientAfspraak> chunk(20, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

@@ -37,19 +37,16 @@ public class ScreenitRevisionListener implements RevisionListener
 		Account account = RevisionInformationResolver.getAccount();
 		if (account != null)
 		{
-			if (account instanceof Gebruiker)
+			if (account instanceof Gebruiker gebruiker)
 			{
-				Gebruiker gebruiker = (Gebruiker) account;
 				screenitRevisionEntity.setGebruiker(gebruiker);
 			}
-			if (account instanceof InstellingGebruiker)
+			if (account instanceof InstellingGebruiker instellingGebruiker)
 			{
-				InstellingGebruiker instellingGebruiker = (InstellingGebruiker) account;
 				screenitRevisionEntity.setInstellingGebruiker(instellingGebruiker);
 			}
-			else if (account instanceof Client)
+			else if (account instanceof Client client)
 			{
-				Client client = (Client) account;
 				screenitRevisionEntity.setClient(client);
 			}
 		}

@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 
 import lombok.NoArgsConstructor;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class StringUtil
@@ -73,15 +73,13 @@ public class StringUtil
 				builder.append(", ");
 			}
 			Object next = iterator.next();
-			if (next instanceof Entry)
+			if (next instanceof Entry entry)
 			{
-				Entry entry = (Entry) next;
 				builder.append(entry.getKey());
 				builder.append("=");
 				Object value = entry.getValue();
-				if (value instanceof BigDecimal)
+				if (value instanceof BigDecimal decimal)
 				{
-					BigDecimal decimal = (BigDecimal) value;
 					builder.append(BigDecimalUtil.decimalToString(decimal));
 				}
 				else

@@ -22,14 +22,15 @@ package nl.rivm.screenit.model.gba;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
@@ -42,6 +43,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 public class Nationaliteit extends AbstractHibernateObject implements GbaStamtabel
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Column(unique = true)

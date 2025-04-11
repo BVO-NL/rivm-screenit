@@ -32,6 +32,8 @@ import nl.rivm.screenit.model.enums.JobType;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,7 +44,7 @@ public class CervixILMJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job ilmJob(CervixILMJobListener listener, Step rondesVerwijderenStep, Step applicatieLoggingVerwijderenStep)
 	{
-		return jobBuilderFactory.get(JobType.CERVIX_ILM.name())
+		return new JobBuilder(JobType.CERVIX_ILM.name(), repository)
 			.listener(listener)
 			.start(rondesVerwijderenStep)
 			.on("*").to(applicatieLoggingVerwijderenStep)
@@ -54,9 +56,8 @@ public class CervixILMJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step rondesVerwijderenStep(CervixILMRondesVerwijderenReader reader, CervixILMRondesVerwijderenWriter writer)
 	{
-		return stepBuilderFactory.get("rondesVerwijderenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("rondesVerwijderenStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -65,9 +66,8 @@ public class CervixILMJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step applicatieLoggingVerwijderenStep(IlmApplicatieLoggingVerwijderenReader reader, IlmApplicatieLoggingVerwijderenWriter writer)
 	{
-		return stepBuilderFactory.get("applicatieLoggingVerwijderenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("applicatieLoggingVerwijderenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

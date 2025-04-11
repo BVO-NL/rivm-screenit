@@ -25,9 +25,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
-
 import nl.rivm.screenit.mamma.planning.repository.projectie.ClientProjectie;
 import nl.rivm.screenit.model.BagAdres_;
 import nl.rivm.screenit.model.Client;
@@ -61,7 +58,10 @@ import nl.topicuszorg.organisatie.model.Adres_;
 
 import com.google.common.collect.Range;
 
-import static javax.persistence.criteria.JoinType.LEFT;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
+
+import static jakarta.persistence.criteria.JoinType.LEFT;
 import static nl.rivm.screenit.mamma.planning.model.PlanningConstanten.plannenTotEnMetGeboortedatum;
 import static nl.rivm.screenit.mamma.planning.model.PlanningConstanten.plannenVanafGeboortedatum;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;

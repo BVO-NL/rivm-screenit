@@ -23,7 +23,7 @@ package nl.rivm.screenit.specification.mamma;
 
 import java.util.Date;
 
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.JoinType;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

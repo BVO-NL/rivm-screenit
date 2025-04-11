@@ -24,13 +24,6 @@ package nl.rivm.screenit.specification.colon;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -58,8 +51,15 @@ import nl.rivm.screenit.specification.algemeen.ScreeningRondeSpecification;
 
 import org.jetbrains.annotations.NotNull;
 
-import static javax.persistence.criteria.JoinType.INNER;
-import static javax.persistence.criteria.JoinType.LEFT;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
+
+import static jakarta.persistence.criteria.JoinType.INNER;
+import static jakarta.persistence.criteria.JoinType.LEFT;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.BagAdresSpecification.valtBinnen;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftActieveClient;

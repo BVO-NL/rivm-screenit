@@ -37,6 +37,7 @@ import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.algemeen.BezwaarGroupViewWrapper;
 import nl.rivm.screenit.model.algemeen.BezwaarMergedBrieven;
+import nl.rivm.screenit.model.enums.BezwaarType;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -75,7 +76,7 @@ public class BezwaarBrievenGenererenWriter extends AbstractBrievenGenererenWrite
 		BezwaarBrief brief = (BezwaarBrief) BriefUtil.getOrigineleBrief(context.getBrief());
 		BezwaarMoment moment = getBezwaarMomentVoorBrief(client, brief);
 		List<BezwaarGroupViewWrapper> wrappers = bezwaarService.getEditBezwaarGroupViewWrappers(client, moment,
-			brief.getBriefType() != BriefType.CLIENT_BEZWAAR_BEVESTIGING_VERWIJDERING_DOSSIER);
+			brief.getBriefType() != BriefType.CLIENT_BEZWAAR_BEVESTIGING_VERWIJDERING_DOSSIER, BezwaarType.ALGEMENE_BEZWAAR_TYPES);
 		return new BezwaarDocumentCreatorOneDatasetCoupleTables(wrappers, brief.getBriefType());
 	}
 

@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -20,10 +20,11 @@
  */
 import React from "react"
 import {Navigate, RouteProps} from "react-router"
-import {useAppSelector} from "../index"
+import {useAppSelector, useAppThunkDispatch} from "../index"
 import {AuthenticationScope} from "../state/datatypes/enums/AuthenticationScope"
 import {Recht} from "../state/datatypes/enums/Recht"
 import LocatieVerificatieMeldingComponent from "../components/locatie/verificatie/LocatieVerificatieMeldingComponent"
+import {createClearStateAction} from "../state"
 
 type PrivateRouteParams = RouteProps & {
 	scope: AuthenticationScope;
@@ -32,23 +33,25 @@ type PrivateRouteParams = RouteProps & {
 }
 
 const PrivateRoute: React.FC<PrivateRouteParams> = ({scope, recht, component: Component}) => {
-	const oauthToken = useAppSelector(state => state.oauth)
+	const auth = useAppSelector(state => state.auth)
 	const locatieVerificatie = useAppSelector(state => state.locatieVerificatie)
 	const user = useAppSelector(state => state.user)
 	const authenticationLoading = useAppSelector(state => state.authenticationLoading)
+	const dispatch = useAppThunkDispatch()
 
 	if (authenticationLoading) {
 		return <div><span>Inloggen...</span></div>
-	} else if (oauthToken?.scope === scope && (!recht || (user?.rollen.includes(recht)))) {
+	} else if (auth?.scope === scope && (!recht || (user?.rollen.includes(recht)))) {
 		return <div>
 			{(scope === AuthenticationScope.LOGIN && locatieVerificatie && locatieVerificatie.length > 0) && <LocatieVerificatieMeldingComponent/>}
 			<Component/>
 		</div>
 	} else if (user?.rollen.includes(Recht.ROLE_OVEREENKOMST)) {
 		return <Navigate replace to={"/overeenkomst"}/>
-	} else if (oauthToken?.scope === AuthenticationScope.REGISTREREN) {
+	} else if (auth?.scope === AuthenticationScope.REGISTREREN) {
 		return <Navigate replace to={"/registreren/voltooien"}/>
 	} else {
+		dispatch(createClearStateAction())
 		return <Navigate replace to={"/login"}/>
 	}
 }

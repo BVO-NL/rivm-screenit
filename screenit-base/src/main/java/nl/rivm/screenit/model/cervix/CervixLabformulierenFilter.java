@@ -21,6 +21,7 @@ package nl.rivm.screenit.model.cervix;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +39,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @Setter
 public class CervixLabformulierenFilter implements Serializable
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private Long instellingId;

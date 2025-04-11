@@ -27,9 +27,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -40,6 +37,9 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 
 import com.google.common.collect.Range;
+
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 
 import static nl.rivm.screenit.specification.DateSpecification.bevatLocalDateToDate;
 import static nl.rivm.screenit.specification.DateSpecification.extractYear;

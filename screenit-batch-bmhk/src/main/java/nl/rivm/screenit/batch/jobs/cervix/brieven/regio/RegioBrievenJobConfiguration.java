@@ -39,7 +39,9 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
@@ -52,7 +54,7 @@ public class RegioBrievenJobConfiguration extends AbstractJobConfiguration
 	public Job regioBrievenJob(RegioBrievenListener listener, Step regioBrievenCleanupStep, Step regioBrievenGenererenPartitionerStep, Step labformulierenGenererenPartitionerStep,
 		Step regioBrievenControleStep)
 	{
-		return jobBuilderFactory.get(JobType.REGIO_BRIEVEN.name())
+		return new JobBuilder(JobType.REGIO_BRIEVEN.name(), repository)
 			.listener(listener)
 			.start(regioBrievenCleanupStep)
 			.next(regioBrievenGenererenPartitionerStep)
@@ -64,9 +66,8 @@ public class RegioBrievenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step regioBrievenCleanupStep(RegioBrievenCleanUpReader reader, RegioBrievenCleanUpWriter writer)
 	{
-		return stepBuilderFactory.get("regioBrievenCleanupStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("regioBrievenCleanupStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -76,8 +77,7 @@ public class RegioBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step regioBrievenGenererenPartitionerStep(RegioBrievenGenererenPartitioner partitioner, TaskExecutorPartitionHandler regioBrievenPartitionHandler,
 		Step regioBrievenGenererenStep)
 	{
-		return stepBuilderFactory.get("regioBrievenGenererenPartitionerStep")
-			.transactionManager(transactionManager)
+		return new StepBuilder("regioBrievenGenererenPartitionerStep", repository)
 			.partitioner("regioBrievenGenererenStep", partitioner)
 			.partitionHandler(regioBrievenPartitionHandler)
 			.step(regioBrievenGenererenStep)
@@ -88,8 +88,7 @@ public class RegioBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step labformulierenGenererenPartitionerStep(LabformulierGenererenPartitioner partitioner, TaskExecutorPartitionHandler labformulierenGenererenPartitionHandler,
 		Step labformulierenGenererenStep)
 	{
-		return stepBuilderFactory.get("labformulierenGenererenPartitionerStep")
-			.transactionManager(transactionManager)
+		return new StepBuilder("labformulierenGenererenPartitionerStep", repository)
 			.partitioner("labformulierenGenererenStep", partitioner)
 			.partitionHandler(labformulierenGenererenPartitionHandler)
 			.step(labformulierenGenererenStep)
@@ -117,9 +116,8 @@ public class RegioBrievenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step regioBrievenControleStep(RegioBrievenControleReader reader, RegioBrievenControleWriter writer)
 	{
-		return stepBuilderFactory.get("regioBrievenControleStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("regioBrievenControleStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -128,9 +126,8 @@ public class RegioBrievenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step regioBrievenGenererenStep(RegioBrievenGenererenReader reader, RegioBrievenGenererenProcessor processor, RegioBrievenGenererenWriter writer)
 	{
-		return stepBuilderFactory.get("regioBrievenGenererenStep")
-			.transactionManager(transactionManager)
-			.<Long, CervixRegioBrief> chunk(250)
+		return new StepBuilder("regioBrievenGenererenStep", repository)
+			.<Long, CervixRegioBrief> chunk(250, transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)
@@ -140,9 +137,8 @@ public class RegioBrievenJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step labformulierenGenererenStep(LabformulierGenererenReader reader, LabformulierGenererenWriter writer)
 	{
-		return stepBuilderFactory.get("labformulierenGenererenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("labformulierenGenererenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

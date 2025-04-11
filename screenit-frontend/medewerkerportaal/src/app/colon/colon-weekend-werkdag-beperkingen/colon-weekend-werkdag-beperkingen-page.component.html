@@ -1,0 +1,65 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<div class="content-container">
+  <div class="content-area">
+    <h2>Roosterbeperkingen voor tijd en weekend</h2>
+    <form clrForm clrLayout="compact" [formGroup]="beperkingForm" (ngSubmit)="save()">
+      <div class="card mb-3">
+        <h3 class="card-header">Tijdsbeperking (elke dag)</h3>
+
+        <div class="card-block">
+          <app-colon-rooster-beperking [required]="true" formControlName="nachtBeperkingType" label="Beperking"/>
+
+          <div class="mt-3">
+            <clr-input-container class="nacht-beperking">
+              <label class="clr-required-mark" for="ochtend">Ochtend</label>
+              <input clrInput formControlName="nachtBeperkingEindDisabled" autocomplete="off" type="time" value="00:00"/>
+              <input clrInput autocomplete="off" formControlName="nachtBeperkingEind" id="ochtend" type="time"
+                     data-testid="input_nacht_beperking_eind"/>
+              <clr-control-error *clrIfError="'required'">De eindtijd is verplicht</clr-control-error>
+            </clr-input-container>
+
+            <clr-input-container class="nacht-beperking">
+              <label class="clr-required-mark not-greyed-out" for="avond">Avond</label>
+              <input clrInput autocomplete="off" class="not-greyed-out" formControlName="nachtBeperkingBegin" id="avond" type="time"
+                     data-testid="input_nacht_beperking_start"/>
+              <input clrInput formControlName="nachtBeperkingBeginDisabled" autocomplete="off" type="time" value="23:59"/>
+              <clr-control-error *clrIfError="'required'">De eindtijd is verplicht</clr-control-error>
+            </clr-input-container>
+
+          </div>
+        </div>
+      </div>
+      <div class="card mb-4">
+        <h3 class="card-header">Weekendbeperking</h3>
+        <div class="card-block">
+          <div class="mb-3">
+            <app-colon-rooster-beperking [required]="true" formControlName="zaterdagBeperkingType" label="Zaterdag"/>
+          </div>
+          <div class="mb-3">
+            <app-colon-rooster-beperking [required]="true" formControlName="zondagBeperkingType" label="Zondag"/>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" type="submit" *appAutorisatie="constraint">Opslaan</button>
+    </form>
+  </div>
+</div>

@@ -20,21 +20,22 @@
  */
 
 .alert {
-  position: fixed;
-  left: 50%;
-  margin-left: -200px;
-  width: 400px;
-  clear: both;
+	position: fixed;
+	left: 50%;
+	margin-left: -200px;
+	width: 400px;
+	clear: both;
 }
 
 .alert.alert-inline {
-  position: relative;
-  left: auto;
-  margin-left: 0;
-  width: auto;
-  clear: none;
+	position: relative;
+	left: auto;
+	margin-left: 0;
+	width: auto;
+	clear: none;
+	z-index: 1;
 }
 
 ul li span p {
-  display: inline;
+	display: inline;
 }

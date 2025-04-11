@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.util;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -63,6 +63,28 @@ public class DateUtil
 		Instant instant = atZone.toInstant();
 
 		return Date.from(instant);
+	}
+
+	public static LocalDate toLocalDate(Date utilDate)
+	{
+		if (utilDate == null)
+		{
+			return null;
+		}
+		if (utilDate instanceof java.sql.Date date)
+		{
+			return date.toLocalDate(); 
+		}
+		return toLocalDateTime(utilDate).toLocalDate();
+	}
+
+	public static LocalDate toLocalDate(LocalDateTime localDateTime)
+	{
+		if (localDateTime == null)
+		{
+			return null;
+		}
+		return localDateTime.toLocalDate();
 	}
 
 	public static LocalDateTime toLocalDateTime(Date utilDate)

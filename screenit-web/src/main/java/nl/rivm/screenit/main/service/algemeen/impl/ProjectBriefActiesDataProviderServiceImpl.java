@@ -21,21 +21,15 @@ package nl.rivm.screenit.main.service.algemeen.impl;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-
 import nl.rivm.screenit.main.service.RepositoryDataProviderService;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.model.project.ProjectBriefActieType;
-import nl.rivm.screenit.model.project.ProjectBriefActie_;
 import nl.rivm.screenit.repository.algemeen.ProjectBriefActieRepository;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.ProjectBriefActieSpecification.filterActief;
 import static nl.rivm.screenit.specification.algemeen.ProjectBriefActieSpecification.filterProject;
 import static nl.rivm.screenit.specification.algemeen.ProjectBriefActieSpecification.isNietType;
@@ -47,15 +41,5 @@ public class ProjectBriefActiesDataProviderServiceImpl extends RepositoryDataPro
 	protected Specification<ProjectBriefActie> getSpecification(ProjectBriefActie filter, Sort sortParam)
 	{
 		return isNietType(ProjectBriefActieType.HERINNERING).and(filterProject(filter.getProject())).and(filterActief(filter.getActief()));
-	}
-
-	@Override
-	protected Order addJoinsForSortingOrCreateDedicatedOrders(Sort.Order order, Root<ProjectBriefActie> r, CriteriaBuilder cb)
-	{
-		if (order.getProperty().startsWith(ProjectBriefActie_.DOCUMENT))
-		{
-			join(r, ProjectBriefActie_.document);
-		}
-		return super.addJoinsForSortingOrCreateDedicatedOrders(order, r, cb);
 	}
 }

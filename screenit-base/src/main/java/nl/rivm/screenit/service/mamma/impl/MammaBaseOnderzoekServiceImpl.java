@@ -512,7 +512,7 @@ public class MammaBaseOnderzoekServiceImpl implements MammaBaseOnderzoekService
 		});
 		if (isChanged.get())
 		{
-			var melding = String.format("AccessionNumber: %d, status: %s, isBezwaar: %b, isUpload: %b", accessionNumber, status.toString(), false, false);
+			var melding = "AccessionNumber: %d, status: %s, isBezwaar: %b, isUpload: %b".formatted(accessionNumber, status.toString(), false, false);
 			var client = mammografieen.get(0).getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient();
 			logService.logGebeurtenis(LogGebeurtenis.MAMMA_ILM_STATUS_GEFORCEERD, account, client, melding, Bevolkingsonderzoek.MAMMA);
 		}

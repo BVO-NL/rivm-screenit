@@ -27,26 +27,25 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-
 import nl.rivm.screenit.repository.impl.FluentJpaQueryImpl;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 
 import org.hibernate.ScrollableResults;
-import org.hibernate.StatelessSession;
 import org.hibernate.internal.EmptyScrollableResults;
 import org.springframework.data.jpa.domain.Specification;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
 
 public abstract class BaseSpecificationScrollableResultReader<T extends HibernateObject> extends BaseIdScrollableResultReader
 {
 
 	@Override
-	protected ScrollableResults createScrollableResults(StatelessSession session)
+	protected ScrollableResults createScrollableResults()
 	{
 		var maxResults = getMaxResults();
 		if (maxResults == 0)

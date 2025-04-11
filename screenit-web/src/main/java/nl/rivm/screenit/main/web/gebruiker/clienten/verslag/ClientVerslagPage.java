@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.web.gebruiker.clienten.verslag;
 
 /*-
@@ -22,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.verslag;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.service.FormulierService;
 import nl.rivm.screenit.main.service.VerslagService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxLink;
@@ -30,43 +28,37 @@ import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.ClientPage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.ClientPaspoortPanel;
-import nl.rivm.screenit.main.web.gebruiker.gedeeld.formulieren.FormulierIndicatingAjaxSubmitLink;
-import nl.rivm.screenit.main.web.gebruiker.gedeeld.formulieren.FormulierRenderContext;
-import nl.rivm.screenit.main.web.gebruiker.gedeeld.formulieren.ScreenitFormulierRenderPanel;
+import nl.rivm.screenit.main.web.gebruiker.screening.cervix.cytologie.CervixCytologieVerslagInzienPanel;
+import nl.rivm.screenit.main.web.gebruiker.screening.colon.verslagen.ColonMdlVerslagInzienPanel;
+import nl.rivm.screenit.main.web.gebruiker.screening.colon.verslagen.ColonPaVerslagInzienPanel;
+import nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup.followuppathologie.MammaFollowUpPathologieVerslagInzienPanel;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
-import nl.rivm.screenit.model.berichten.enums.VerslagType;
-import nl.rivm.screenit.model.colon.ColonVerslag;
+import nl.rivm.screenit.model.cervix.CervixCytologieVerslag;
+import nl.rivm.screenit.model.colon.MdlVerslag;
+import nl.rivm.screenit.model.colon.PaVerslag;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.model.formulieren.ScreenitFormulierInstantie;
-import nl.rivm.screenit.model.formulieren.TypeFormulier;
 import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
-import nl.rivm.screenit.model.mamma.verslag.MammaVerslag;
-import nl.rivm.screenit.model.verslag.VerslagContent;
 import nl.rivm.screenit.service.BaseVerslagService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.VerwerkVerslagService;
-import nl.topicuszorg.formulieren2.persistence.resultaat.FormulierResultaatImpl;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
-import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.resource.AbstractResource;
+import org.apache.wicket.request.resource.ContentDisposition;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.wicketstuff.wiquery.core.javascript.JsQuery;
-import org.wicketstuff.wiquery.core.javascript.JsStatement;
 
 public class ClientVerslagPage extends ClientPage
 {
@@ -78,9 +70,6 @@ public class ClientVerslagPage extends ClientPage
 	private VerwerkVerslagService verwerkVerslagService;
 
 	@SpringBean
-	private FormulierService formulierService;
-
-	@SpringBean
 	private HibernateService hibernateService;
 
 	@SpringBean
@@ -89,19 +78,9 @@ public class ClientVerslagPage extends ClientPage
 	@SpringBean
 	private BaseVerslagService baseVerslagService;
 
-	private boolean checkRequired;
-
-	private IModel<FormulierResultaatImpl> formulierResultaatModel;
-
-	private FormulierRenderContext formulierRenderContext;
-
 	private final IModel<? extends Verslag<?, ?>> verslagModel;
 
 	private final BootstrapDialog verwijderDialog;
-
-	private AjaxSubmitLink opslaanButton;
-
-	private boolean logout = false;
 
 	public ClientVerslagPage(IModel<? extends Verslag<?, ?>> verslagModel)
 	{
@@ -109,31 +88,27 @@ public class ClientVerslagPage extends ClientPage
 		this.verslagModel = verslagModel;
 
 		var verslag = verslagModel.getObject();
-
-		boolean isOpenstaand = verslag.getStatus().equals(VerslagStatus.IN_BEWERKING);
-		boolean isNieuw = verslag.getId() == null;
-
-		boolean magVerslagAanpassen;
+		var isOpenstaand = verslag.getStatus().equals(VerslagStatus.IN_BEWERKING);
+		var isNieuw = verslag.getId() == null;
+		var client = verslag.getScreeningRonde().getDossier().getClient();
+		var magVerslagDownloaden = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_VERSLAGEN, Actie.AANPASSEN, client);
 		boolean magVerslagVerwijderen;
-		Client client = verslag.getScreeningRonde().getDossier().getClient();
 
 		switch (verslag.getType())
 		{
 		case MDL:
-			magVerslagAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN, Actie.AANPASSEN, client);
 			magVerslagVerwijderen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN, Actie.VERWIJDEREN, client);
 			break;
 		case PA_LAB:
-			magVerslagAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_UITSLAGPATHOLOGIEONTVANGEN, Actie.AANPASSEN, client);
 			magVerslagVerwijderen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_UITSLAGPATHOLOGIEONTVANGEN, Actie.VERWIJDEREN, client);
 			break;
 		case CERVIX_CYTOLOGIE:
-			magVerslagAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CERVIX_CYTOLOGIE_VERSLAG, Actie.AANPASSEN, client);
 			magVerslagVerwijderen = false;
+			magVerslagDownloaden = false;
 			break;
 		case MAMMA_PA_FOLLOW_UP:
-			magVerslagAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_MAMMA_FOLLOW_UP_VERSLAG, Actie.AANPASSEN, client);
 			magVerslagVerwijderen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_MAMMA_FOLLOW_UP_VERSLAG, Actie.VERWIJDEREN, client);
+			magVerslagDownloaden = false;
 			break;
 		default:
 			throw new IllegalStateException("Unexpected value: " + verslag.getType());
@@ -141,96 +116,10 @@ public class ClientVerslagPage extends ClientPage
 
 		verwijderDialog = new BootstrapDialog("dialog");
 		add(verwijderDialog);
-
-		ScreenitFormulierRenderPanel formulierRenderPanel = new ScreenitFormulierRenderPanel("formulier",
-			ModelUtil.sModel(formulierService.getFormulierInstantie(verslag.getType().getTypeFormulier())))
-		{
-			@Override
-			protected boolean checkRequired()
-			{
-				return checkRequired;
-			}
-
-			@Override
-			protected boolean isTitleVisible()
-			{
-				return false;
-			}
-
-			@Override
-			protected IModel<FormulierResultaatImpl> createRenderContextModel(ScreenitFormulierInstantie formulierInstantie, FormulierRenderContext formulierRenderContext)
-			{
-				ClientVerslagPage.this.formulierRenderContext = formulierRenderContext;
-				var innerVerslag = ClientVerslagPage.this.verslagModel.getObject();
-				TypeFormulier typeFormulier = formulierInstantie.getTypeFormulier();
-				switch (typeFormulier)
-				{
-				case MDL:
-				case PALGA:
-				case CYTOLOGIE:
-				case MAMMA_PA_FOLLOW_UP:
-					formulierRenderContext.setRootObject(new PropertyModel<>(ClientVerslagPage.this.verslagModel, "verslagContent"));
-					break;
-				default:
-					break;
-				}
-
-				formulierResultaatModel = super.createRenderContextModel(formulierInstantie, formulierRenderContext);
-
-				verslagService.preFillAntwoorden(innerVerslag, formulierResultaatModel.getObject(), ScreenitSession.get().getLoggedInInstellingGebruiker().getMedewerker());
-				return formulierResultaatModel;
-			}
-
-		};
-		formulierRenderPanel.setEnabled(isOpenstaand && magVerslagAanpassen);
-		add(formulierRenderPanel);
-
+		addInzienPanel(verslag);
 		add(new ClientPaspoortPanel("passpoort", (IModel<Client>) getDefaultModel()));
-
-		Form<Void> form = formulierRenderPanel.getForm();
-		form.add(new AbstractFormValidator()
-		{
-			@Override
-			public void validate(Form<?> form)
-			{
-
-				Client client = (Client) getDefaultModelObject();
-				hibernateService.saveOrUpdate(client);
-				client.getComplicaties().size();
-
-				Object rootObject = formulierRenderContext.getRootObject();
-				if (rootObject instanceof VerslagContent<?> verslagContent && checkRequired)
-				{
-					FormulierResultaatImpl resultaat = formulierResultaatModel.getObject();
-
-					try
-					{
-						verwerkVerslagService.valideerVerslagVoorAfronden(verslagContent.getVerslag(), resultaat.getAntwoorden(),
-							ScreenitSession.get().getLoggedInInstellingGebruiker());
-					}
-					catch (IllegalStateException e)
-					{
-						String message = e.getMessage();
-						if (message != null && message.startsWith("error."))
-						{
-							form.error(getString(message));
-						}
-					}
-				}
-
-			}
-
-			@Override
-			public FormComponent<?>[] getDependentFormComponents()
-			{
-				return null;
-			}
-		});
-
 		addVerslagVerwijderenButton(isOpenstaand, isNieuw, magVerslagVerwijderen);
-		addOpslaanButton(isOpenstaand, magVerslagAanpassen, form);
-		addAfrondenButton(verslag, isOpenstaand, magVerslagAanpassen, client, form);
-		addHeropenenButton(verslag, magVerslagAanpassen);
+		addDownloadButton(verslag, magVerslagDownloaden);
 		addAnnulerenButton();
 		addTerugButton();
 
@@ -255,62 +144,36 @@ public class ClientVerslagPage extends ClientPage
 		}
 	}
 
-	private void addHeropenenButton(Verslag<?, ?> verslag, boolean magVerslagAanpassen)
+	private void addDownloadButton(Verslag<?, ?> verslag, boolean magVerslagDownloaden)
 	{
-		IndicatingAjaxLink<Void> heropenen = new IndicatingAjaxLink<>("heropenen")
+		add(new ResourceLink<>("downloaden", new AbstractResource()
 		{
+
 			@Override
-			public void onClick(AjaxRequestTarget target)
+			protected ResourceResponse newResourceResponse(Attributes attributes)
 			{
+				ResourceResponse response = new ResourceResponse();
+				response.setFileName("bericht.xml");
+				response.setContentType("application/xml");
+				response.getHeaders().addHeader("Cache-Control", "no-cache");
+				response.setContentDisposition(ContentDisposition.ATTACHMENT);
 
-				var innerVerslag = verslagModel.getObject();
-				if (innerVerslag.getType().getBevolkingsonderzoek() != Bevolkingsonderzoek.CERVIX)
-				{
-					innerVerslag = verslagService.heropenVerslag(innerVerslag, ScreenitSession.get().getLoggedInInstellingGebruiker());
-					IModel<? extends Verslag<?, ?>> model;
-					switch (innerVerslag.getType().getBevolkingsonderzoek())
-					{
-					case COLON:
-						model = ModelUtil.dModel((ColonVerslag<?>) innerVerslag);
-						break;
-					case MAMMA:
-						model = ModelUtil.dModel((MammaVerslag<?>) innerVerslag);
-						break;
-					default:
-						throw new IllegalStateException();
-					}
-					ScreenitSession.get().info("Verslag heropend");
-					setResponsePage(new ClientVerslagPage(model));
-					markeerFormulierenOpgeslagen(target);
-				}
-				else
-				{
-					ScreenitSession.get().warn("In BMHK is heropenen van verslagen niet toegestaan.");
-				}
+				response.setWriteCallback(new WriteCallback()
+										  {
+											  @Override
+											  public void writeData(Attributes attributes)
+											  {
+												  var cdaBericht = verslagModel.getObject().getOntvangenBericht();
+												  var outputStream = attributes.getResponse().getOutputStream();
+
+												  baseVerslagService.getBerichtXml(cdaBericht, outputStream);
+											  }
+										  }
+
+				);
+				return response;
 			}
-		};
-		heropenen.setVisible(magHeropenen(verslag, magVerslagAanpassen));
-		add(heropenen);
-	}
-
-	private boolean magHeropenen(Verslag<?, ?> verslag, boolean magVerslagAanpassen)
-	{
-		return verslag.getStatus().equals(VerslagStatus.AFGEROND) && magVerslagAanpassen
-			&& verslag.getOntvangenBericht() == null && !isElektronischPalgaVerslag(verslag);
-	}
-
-	private boolean isElektronischPalgaVerslag(Verslag<?, ?> verslag)
-	{
-		return verslag.getType() == VerslagType.MAMMA_PA_FOLLOW_UP && baseVerslagService.isElektronischPalgaVerslag((MammaFollowUpVerslag) verslag);
-	}
-
-	@Override
-	protected boolean opslaan(AjaxRequestTarget target)
-	{
-		logout = true;
-		JsStatement statement = new JsQuery(opslaanButton).$().chain("click");
-		target.appendJavaScript(statement.render());
-		return true;
+		}).setVisible(verslag.getOntvangenBericht() != null && magVerslagDownloaden));
 	}
 
 	@Override
@@ -345,54 +208,6 @@ public class ClientVerslagPage extends ClientPage
 		});
 	}
 
-	@SuppressWarnings("rawtypes")
-	private void addAfrondenButton(Verslag verslag, boolean isOpenstaand, boolean magVerslagAanpassen, Client client, Form<Void> form)
-	{
-		AjaxSubmitLink afrondenButton = new FormulierIndicatingAjaxSubmitLink("afronden", form)
-		{
-			@Override
-			protected void onSubmit(AjaxRequestTarget target)
-			{
-				saveOrAfronden(target, true);
-			}
-
-			@Override
-			protected void onBeforeHandleEvent()
-			{
-				checkRequired = true;
-			}
-
-		};
-		boolean magAfronden = verslagService.magAfronden(verslag.getType(), client);
-		afrondenButton.setVisible(isOpenstaand && magVerslagAanpassen && magAfronden);
-		add(afrondenButton);
-	}
-
-	private void addOpslaanButton(boolean isOpenstaand, boolean magVerslagAanpassen, Form<Void> form)
-	{
-		opslaanButton = new FormulierIndicatingAjaxSubmitLink("opslaan", form)
-		{
-			@Override
-			protected void onSubmit(AjaxRequestTarget target)
-			{
-				saveOrAfronden(target, false);
-				if (logout)
-				{
-					logout();
-				}
-			}
-
-			@Override
-			protected void onBeforeHandleEvent()
-			{
-				checkRequired = false;
-			}
-
-		};
-		opslaanButton.setVisible(isOpenstaand && magVerslagAanpassen);
-		add(opslaanButton);
-	}
-
 	private void addVerslagVerwijderenButton(boolean isOpenstaand, boolean isNieuw, boolean magVerslagVerwijderen)
 	{
 		IndicatingAjaxLink<Void> verwijderen = new ConfirmingIndicatingAjaxLink<>("verwijderen", verwijderDialog, "verwijder.verslag")
@@ -420,19 +235,23 @@ public class ClientVerslagPage extends ClientPage
 		verwijderen.setVisible((isOpenstaand || verslagModel.getObject().getOntvangenBericht() != null) && magVerslagVerwijderen && !isNieuw);
 	}
 
-	private void saveOrAfronden(AjaxRequestTarget target, boolean afronden)
+	private void addInzienPanel(Verslag<?, ?> verslag)
 	{
-		Object rootObject = formulierRenderContext.getRootObject();
-		if (rootObject instanceof VerslagContent<?> verslagContent)
+		switch (verslag.getType())
 		{
-			var verslag = verslagContent.getVerslag();
-			verslag.setInvoerder(ScreenitSession.get().getLoggedInInstellingGebruiker());
-			verslag.setDatumVerwerkt(dateSupplier.getDate());
-			verslagService.saveOrAfronden(verslagContent, formulierResultaatModel.getObject(), afronden, ScreenitSession.get().getLoggedInInstellingGebruiker());
+		case MAMMA_PA_FOLLOW_UP:
+			add(new MammaFollowUpPathologieVerslagInzienPanel("inzienPanel", (IModel<MammaFollowUpVerslag>) verslagModel));
+			break;
+		case CERVIX_CYTOLOGIE:
+			add(new CervixCytologieVerslagInzienPanel("inzienPanel", (IModel<CervixCytologieVerslag>) verslagModel));
+			break;
+		case MDL:
+			add(new ColonMdlVerslagInzienPanel("inzienPanel", (IModel<MdlVerslag>) verslagModel));
+			break;
+		case PA_LAB:
+			add(new ColonPaVerslagInzienPanel("inzienPanel", (IModel<PaVerslag>) verslagModel));
+			break;
 		}
-		markeerFormulierenOpgeslagen(target);
-		setResponsePage(new ClientVerslagenPage(ModelUtil.sModel((Client) getDefaultModelObject())));
-
 	}
 
 	@Override
@@ -448,18 +267,10 @@ public class ClientVerslagPage extends ClientPage
 	}
 
 	@Override
-	protected boolean bevatFormulieren()
-	{
-		return true;
-	}
-
-	@Override
 	public void detachModels()
 	{
 		super.detachModels();
-
 		ModelUtil.nullSafeDetach(verslagModel);
-		ModelUtil.nullSafeDetach(formulierRenderContext);
 	}
 
 }

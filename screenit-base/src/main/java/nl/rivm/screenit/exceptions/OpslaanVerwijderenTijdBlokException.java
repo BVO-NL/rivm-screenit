@@ -46,13 +46,12 @@ public abstract class OpslaanVerwijderenTijdBlokException extends Exception
 		{
 			String startTijd;
 			String eindTijd;
-			if (item instanceof Range)
+			if (item instanceof Range range)
 			{
-				var range = (Range<?>) item;
 				var lowerEndpoint = range.lowerEndpoint();
-				if (lowerEndpoint instanceof Date)
+				if (lowerEndpoint instanceof Date date)
 				{
-					startTijd = DateUtil.formatShortDateTime((Date) lowerEndpoint);
+					startTijd = DateUtil.formatShortDateTime(date);
 					eindTijd = DateUtil.formatTime((Date) range.upperEndpoint());
 				}
 				else
@@ -62,9 +61,8 @@ public abstract class OpslaanVerwijderenTijdBlokException extends Exception
 					eindTijd = DateUtil.formatTime(DateUtil.toUtilDate((LocalDateTime) range.upperEndpoint()));
 				}
 			}
-			else if (item instanceof ColonTijdslot)
+			else if (item instanceof ColonTijdslot tijdslot)
 			{
-				var tijdslot = (ColonTijdslot) item;
 				startTijd = DateUtil.formatShortDateTime(tijdslot.getVanaf());
 				eindTijd = DateUtil.formatLocalTime(tijdslot.getTot());
 			}

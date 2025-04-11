@@ -25,6 +25,8 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 
+import jakarta.persistence.criteria.JoinType;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

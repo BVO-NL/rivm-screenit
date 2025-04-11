@@ -93,7 +93,7 @@ public class CervixBaseDossierServiceImpl implements CervixBaseDossierService
 	private void verwijderFoutHl7V2Berichten(Client client)
 	{
 		var foutBerichten = foutHL7v2BerichtRepository.findAllByClient(client);
-		foutHL7v2BerichtRepository.deleteInBatch(foutBerichten);
+		foutHL7v2BerichtRepository.deleteAllInBatch(foutBerichten);
 	}
 
 	private void opruimenDossier(CervixDossier dossier)

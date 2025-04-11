@@ -27,6 +27,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -37,7 +39,7 @@ public class MammaConceptModelJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job conceptModelJob(MammaConceptModelListener listener, Step resetConceptStep)
 	{
-		return jobBuilderFactory.get(JobType.MAMMA_CONCEPT_MODEL.name())
+		return new JobBuilder(JobType.MAMMA_CONCEPT_MODEL.name(), repository)
 			.listener(listener)
 			.start(resetConceptStep)
 			.build();
@@ -46,9 +48,8 @@ public class MammaConceptModelJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step resetConceptStep(MammaConceptModelResettenTasklet tasklet)
 	{
-		return stepBuilderFactory.get("resetConceptStep")
-			.transactionManager(transactionManager)
-			.tasklet(tasklet)
+		return new StepBuilder("resetConceptStep", repository)
+			.tasklet(tasklet, transactionManager)
 			.build();
 	}
 

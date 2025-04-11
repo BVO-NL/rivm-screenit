@@ -24,13 +24,13 @@ package nl.rivm.screenit.batch.service.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.PostConstruct;
-
 import nl.rivm.screenit.batch.service.RevisionInformationService;
 import nl.rivm.screenit.model.envers.RevisionInformationResolver;
 import nl.rivm.screenit.model.envers.RevisionKenmerk;
 
 import org.springframework.stereotype.Service;
+
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class RevisionInformationServiceImpl implements RevisionInformationService

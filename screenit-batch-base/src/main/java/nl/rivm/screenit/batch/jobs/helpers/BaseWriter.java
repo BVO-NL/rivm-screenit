@@ -35,6 +35,7 @@ import org.hibernate.HibernateException;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,12 +56,12 @@ public abstract class BaseWriter<S extends HibernateObject> implements ItemWrite
 	}
 
 	@Override
-	public void write(List<? extends Long> items) throws Exception
+	public void write(Chunk<? extends Long> chunk) throws Exception
 	{
 		try
 		{
 			beforeWrite();
-			writeItems(items);
+			writeItems(chunk.getItems());
 		}
 		catch (HibernateException e)
 		{

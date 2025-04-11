@@ -21,8 +21,6 @@ package nl.rivm.screenit.batch.jobs.mamma.conceptmodel.step.resetconcept;
  * =========================LICENSE_END==================================
  */
 
-import javax.annotation.PostConstruct;
-
 import nl.rivm.screenit.dto.mamma.planning.PlanningRestConstants;
 import nl.rivm.screenit.util.rest.RestApiFactory;
 
@@ -35,6 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class MammaConceptModelResettenTasklet implements Tasklet

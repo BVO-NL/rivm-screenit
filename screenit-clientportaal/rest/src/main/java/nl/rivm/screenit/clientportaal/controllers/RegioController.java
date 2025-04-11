@@ -2,7 +2,7 @@ package nl.rivm.screenit.clientportaal.controllers;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -49,7 +49,7 @@ public class RegioController extends AbstractController
 	@GetMapping
 	public ResponseEntity<String> getRegio(Authentication authentication)
 	{
-		Client client = getClient(authentication, hibernateService);
+		Client client = getClient(authentication);
 		Instelling regio = clientService.getScreeningOrganisatieVan(client).size() == 1 ? clientService.getScreeningOrganisatieVan(client).get(0) : null;
 		return ResponseEntity.ok(regio != null ? regio.getNaam() : "");
 	}

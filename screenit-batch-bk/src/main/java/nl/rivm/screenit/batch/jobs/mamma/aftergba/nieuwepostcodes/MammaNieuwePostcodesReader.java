@@ -24,8 +24,7 @@ package nl.rivm.screenit.batch.jobs.mamma.aftergba.nieuwepostcodes;
 import nl.rivm.screenit.batch.jobs.helpers.BaseSqlScrollableResultReader;
 
 import org.hibernate.HibernateException;
-import org.hibernate.SQLQuery;
-import org.hibernate.StatelessSession;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.type.StandardBasicTypes;
 import org.springframework.stereotype.Component;
 
@@ -41,24 +40,25 @@ public class MammaNieuwePostcodesReader extends BaseSqlScrollableResultReader
 	}
 
 	@Override
-	public SQLQuery createCriteria(StatelessSession session) throws HibernateException
+	protected NativeQuery createNativeQuery() throws HibernateException
 	{
-		SQLQuery criteria = session.createSQLQuery("select c.id "
-			+ "from org_adres a "
-			+ "inner join pat_persoon pc on pc.gba_adres = a.id "
-			+ "inner join pat_patient c on c.id = pc.patient "
-			+ "inner join algemeen.gemeente g on g.id = a.gba_gemeente "
 
-			+ "left outer join mamma.postcode_reeks r on (a.postcode >= r.van_postcode and a.postcode <= r.tot_postcode) "
-			+ "where a.dtype = 'BagAdres' "
-			+ "and r.id is null "
-			+ "and a.postcode is not null "
-			+ "and g.screening_organisatie is not null "
-			+ "and pc.datum_vertrokken_uit_nederland is null "
-			+ "and pc.overlijdensdatum is null "
-			+ "and c.gba_status = 'INDICATIE_AANWEZIG'"
-			+ "and c.mamma_dossier is not null");
-		criteria.addScalar("id", StandardBasicTypes.LONG);
-		return criteria;
+		var query = getHibernateSession().createNativeQuery("""
+			select c.id
+			from org_adres a
+			inner join pat_persoon pc on pc.gba_adres = a.id
+			inner join pat_patient c on c.id = pc.patient
+			inner join algemeen.gemeente g on g.id = a.gba_gemeente
+			left outer join mamma.postcode_reeks r on (a.postcode >= r.van_postcode and a.postcode <= r.tot_postcode)
+			where a.dtype = 'BagAdres'
+			and r.id is null
+			and a.postcode is not null
+			and g.screening_organisatie is not null
+			and pc.datum_vertrokken_uit_nederland is null
+			and pc.overlijdensdatum is null
+			and c.gba_status = 'INDICATIE_AANWEZIG'
+			and c.mamma_dossier is not null""");
+		query.addScalar("id", StandardBasicTypes.LONG);
+		return query;
 	}
 }

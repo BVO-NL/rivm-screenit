@@ -31,6 +31,8 @@ import nl.rivm.screenit.model.enums.JobType;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -41,7 +43,7 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job afterGbaJob(AfterGbaListener listener, Step deelnamemodusBijwerkenStep, Step retourzendingStep)
 	{
-		return jobBuilderFactory.get(JobType.CERVIX_NA_GBA.name())
+		return new JobBuilder(JobType.CERVIX_NA_GBA.name(), repository)
 			.listener(listener)
 			.start(deelnamemodusBijwerkenStep)
 			.on("*").to(retourzendingStep)
@@ -53,9 +55,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step deelnamemodusBijwerkenStep(CervixDeelnamemodusReader reader, CervixDeelnamemodusWriter writer)
 	{
-		return stepBuilderFactory.get("deelnamemodusBijwerkenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(50)
+		return new StepBuilder("deelnamemodusBijwerkenStep", repository)
+			.<Long, Long> chunk(50, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -64,9 +65,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step retourzendingStep(RetourzendingReader reader, RetourzendingWriter writer)
 	{
-		return stepBuilderFactory.get("retourzendingStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("retourzendingStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

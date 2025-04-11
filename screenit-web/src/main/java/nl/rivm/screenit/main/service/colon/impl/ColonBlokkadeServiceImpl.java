@@ -28,8 +28,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,7 +60,6 @@ import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.colon.ColonIntakeKamerSpecification;
 import nl.rivm.screenit.specification.colon.ColonTijdslotSpecification;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.data.domain.Sort;
@@ -70,6 +67,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Range;
+
+import jakarta.annotation.Nullable;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.colon.ColonTijdslotSpecification.heeftKamer;
@@ -90,8 +89,6 @@ public class ColonBlokkadeServiceImpl implements ColonBlokkadeService
 	private final ICurrentDateSupplier currentDateSupplier;
 
 	private final ColonBaseAfspraakService afspraakService;
-
-	private final HibernateService hibernateService; 
 
 	@Override
 	@Transactional

@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.verslag;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.dries.wicket.hibernate.dozer.DozerModel;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
@@ -39,6 +38,7 @@ import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
 import nl.rivm.screenit.service.BaseVerslagService;
 import nl.rivm.screenit.service.RondeNummerService;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
+import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -137,7 +137,7 @@ public abstract class ClientVerslagenOverzichtPanel<V extends Verslag<?, ?>> ext
 				}
 				if (inzien)
 				{
-					setResponsePage(new ClientVerslagPage(new DozerModel<>(model.getObject())));
+					setResponsePage(new ClientVerslagPage(ModelUtil.sModel(model.getObject())));
 				}
 
 			}

@@ -115,10 +115,10 @@ public class CervixBepaalVervolgContext
 		huidigeOntvangstdatum = huidigeMonster.getOntvangstdatum();
 		huidigeMonsterBrief = huidigeMonster.getBrief();
 
-		if (huidigeMonster instanceof CervixUitstrijkje)
+		if (huidigeMonster instanceof CervixUitstrijkje uitstrijkje)
 		{
 			huidigMonsterType = CervixMonsterType.UITSTRIJKJE;
-			huidigUitstrijkje = (CervixUitstrijkje) huidigeMonster;
+			huidigUitstrijkje = uitstrijkje;
 			huidigUitstrijkjeStatus = huidigUitstrijkje.getUitstrijkjeStatus();
 			if (digitaalLabformulier && huidigUitstrijkjeStatus == CervixUitstrijkjeStatus.NIET_ONTVANGEN)
 			{

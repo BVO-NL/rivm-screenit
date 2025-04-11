@@ -29,4 +29,6 @@ import nl.rivm.screenit.repository.BaseJpaRepository;
 public interface ColonFITRepository extends BaseJpaRepository<IFOBTTest>
 {
 	Optional<IFOBTTest> findByBarcode(String barcode);
+
+	boolean existsByBarcode(String barcode);
 }

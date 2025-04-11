@@ -30,6 +30,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,7 +42,7 @@ public class CervixOrderJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job orderJob(CervixOrderListener listener, Step orderAanmaakStep, Step orderVersturenStep)
 	{
-		return jobBuilderFactory.get(JobType.CERVIX_ORDER.name())
+		return new JobBuilder(JobType.CERVIX_ORDER.name(), repository)
 			.listener(listener)
 			.start(orderAanmaakStep)
 			.next(orderVersturenStep)
@@ -50,9 +52,8 @@ public class CervixOrderJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step orderAanmaakStep(CervixOrderAanmaakReader reader, CervixOrderAanmaakWriter writer)
 	{
-		return stepBuilderFactory.get("orderAanmaakStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("orderAanmaakStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -61,9 +62,8 @@ public class CervixOrderJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step orderVersturenStep(CervixOrderVersturenReader reader, CervixOrderVersturenWriter writer)
 	{
-		return stepBuilderFactory.get("orderVersturenStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(1) 
+		return new StepBuilder("orderVersturenStep", repository)
+			.<Long, Long> chunk(1, transactionManager) 
 			.reader(reader)
 			.writer(writer)
 			.build();

@@ -23,9 +23,6 @@ package nl.rivm.screenit.main.service.mamma.impl;
 
 import java.time.LocalDate;
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-
 import nl.rivm.screenit.dto.mamma.MammaLezingRapportageDto;
 import nl.rivm.screenit.main.service.mamma.MammaLezingService;
 import nl.rivm.screenit.model.Client;
@@ -52,6 +49,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
 
 import static nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus.UITSLAG_ONGUNSTIG;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;

@@ -21,91 +21,54 @@ package nl.rivm.screenit.main.web.component.bezwaar.edit;
  * =========================LICENSE_END==================================
  */
 
+import java.util.Comparator;
 import java.util.List;
 
 import nl.rivm.screenit.model.algemeen.BezwaarGroupViewWrapper;
 import nl.rivm.screenit.model.algemeen.BezwaarViewWrapper;
-import nl.rivm.screenit.model.enums.BezwaarType;
-import nl.rivm.screenit.service.BezwaarService;
+import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 
-import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class BezwaarEditPanel extends Panel
 {
-
-	@SpringBean
-	private BezwaarService bezwaarService;
-
-	public BezwaarEditPanel(String id, List<BezwaarGroupViewWrapper> wrappers, boolean magVerwijderenVanDossierGetoondWorden)
+	public BezwaarEditPanel(String id, List<BezwaarGroupViewWrapper> wrappers)
 	{
 		super(id);
 
-		final int span = bepaalSpan(wrappers);
-		ListView<BezwaarGroupViewWrapper> listView = new ListView<BezwaarGroupViewWrapper>("listView", wrappers)
-		{
+		var sortedWrappers = wrappers.stream()
+			.sorted(Comparator.comparing(
+				BezwaarGroupViewWrapper::getBevolkingsonderzoek,
+				Comparator.nullsFirst(Comparator.comparing(Bevolkingsonderzoek::getNaam))
+			))
+			.toList();
 
+		var listView = new ListView<>("listView", sortedWrappers)
+		{
 			@Override
 			protected void populateItem(ListItem<BezwaarGroupViewWrapper> item)
 			{
 				BezwaarGroupViewWrapper wrapper = item.getModelObject();
 
 				WebMarkupContainer container = new WebMarkupContainer("container");
-				if ("ALGEMEEN".equals(wrapper.getKey()))
-				{
-					container.add(new AttributeAppender("class", "span12"));
-				}
-				else
-				{
-					container.add(new AttributeAppender("class", "span" + span));
-				}
-
 				container.add(new Label("bvo", getString("Bevolkingsonderzoek." + wrapper.getKey())));
 
-				ListView<BezwaarViewWrapper> bezwaren = new ListView<BezwaarViewWrapper>("bezwaren", wrapper.getBezwaren())
+				var bezwaren = new ListView<>("bezwaren", wrapper.getBezwaren())
 				{
-
 					@Override
 					protected void populateItem(ListItem<BezwaarViewWrapper> item)
 					{
-
-						BezwaarType type = item.getModelObject().getType();
-						if (!BezwaarType.VERZOEK_TOT_VERWIJDERING_DOSSIER.equals(type)
-							|| (magVerwijderenVanDossierGetoondWorden && BezwaarType.VERZOEK_TOT_VERWIJDERING_DOSSIER.equals(type)))
-						{
-							item.add(new BezwaarRadioChoice("bezwaarRadioChoice", item.getModel()));
-						}
-						else
-						{
-							item.add(new EmptyPanel("bezwaarRadioChoice"));
-						}
+						item.add(new BezwaarCheckBox("bezwaarCheckBox", item.getModel()));
 					}
-
 				};
 				container.add(bezwaren);
 				item.add(container);
 			}
 		};
 		add(listView);
-	}
-
-	private static int bepaalSpan(List<BezwaarGroupViewWrapper> wrappers)
-	{
-		int span = 12; 
-		if (wrappers.size() == 3)
-		{
-			span = 6; 
-		}
-		else if (wrappers.size() == 4)
-		{
-			span = 4; 
-		}
-		return span;
 	}
 }

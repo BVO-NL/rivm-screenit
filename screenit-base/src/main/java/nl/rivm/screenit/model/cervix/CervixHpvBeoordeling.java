@@ -23,15 +23,15 @@ package nl.rivm.screenit.model.cervix;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -61,7 +61,7 @@ public class CervixHpvBeoordeling extends AbstractHibernateObject
 	@Enumerated(EnumType.STRING)
 	private CervixHpvBeoordelingWaarde hpvUitslag;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = javax.persistence.CascadeType.REMOVE)
+	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = jakarta.persistence.CascadeType.REMOVE)
 	@Cascade(CascadeType.DELETE)
 	private CervixHpvAnalyseresultaten analyseresultaten;
 

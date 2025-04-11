@@ -24,15 +24,6 @@ package nl.rivm.screenit.main.web.filter;
 import java.io.IOException;
 import java.util.Locale;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.service.LocaleResolver;
@@ -51,6 +42,15 @@ import org.springframework.orm.hibernate5.support.OpenSessionInViewFilter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Slf4j
 public class LogFilter implements Filter
@@ -87,10 +87,9 @@ public class LogFilter implements Filter
 
 		LocaleResolver localeResolver = DEFAULT_LOCALE_RESOLVER;
 
-		if (hasTransactionalSession && request instanceof HttpServletRequest)
+		if (hasTransactionalSession && request instanceof HttpServletRequest httpRequest)
 		{
 
-			HttpServletRequest httpRequest = (HttpServletRequest) request;
 			HttpSession httpSession = httpRequest.getSession(true);
 
 			String attributeName = ScreenitApplication.getSessionAttributePrefix() + Session.SESSION_ATTRIBUTE_NAME;

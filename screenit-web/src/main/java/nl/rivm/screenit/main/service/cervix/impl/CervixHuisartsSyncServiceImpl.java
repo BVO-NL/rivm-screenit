@@ -65,11 +65,9 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
 public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 {
 
@@ -113,7 +111,6 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 	public void sendData(CervixHuisarts cervixHuisarts)
 	{
 		var huisartsDto = CervixHuisartsToDtoUtil.getHuisartsDto(cervixHuisarts);
-
 		huisartsenportaalSyncService.sendJmsBericht(huisartsDto);
 	}
 
@@ -124,7 +121,7 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public CervixHuisarts updateAndGetHuisarts(HuisartsDto dto, Date mutatieDatum)
 	{
 		var huisarts = Optional.ofNullable(dto.getScreenitId())
@@ -169,10 +166,9 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 	@Override
 	public String getPraktijkNaam(Gebruiker gebruiker)
 	{
-		var builder = new StringBuilder();
-		builder.append("Praktijk van ");
-		builder.append(NaamUtil.getTussenvoegselEnAchternaam(gebruiker));
-		return builder.toString();
+		String builder = "Praktijk van "
+			+ NaamUtil.getTussenvoegselEnAchternaam(gebruiker);
+		return builder;
 	}
 
 	private CervixHuisarts setWachtwoordInlogcode(CervixHuisarts huisarts, String inlogCode)
@@ -291,7 +287,7 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void updateHuisarts(HuisartsDto huisartsDto)
 	{
 		var mutatieDatum = currentDateSupplier.getDate();
@@ -299,7 +295,7 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void nieuweAanvraagLabformulieren(AanvraagDto aanvraagDto)
 	{
 		var nu = currentDateSupplier.getDate();
@@ -346,7 +342,7 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void updateLocatie(LocatieDto locatieDto)
 	{
 		var mutatieDatum = currentDateSupplier.getDate();
@@ -359,7 +355,7 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void setLabformulierAanvraag(AanvraagDto aanvraagDto)
 	{
 		var aanvraag = Optional.ofNullable(aanvraagDto.getScreenitId())

@@ -25,25 +25,27 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.batch.jobs.mamma.kansberekening.MammaAbstractKansberekeningTasklet;
 import nl.rivm.screenit.batch.jobs.mamma.kansberekening.MammaKansberekeningConstants;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.io.IOUtils;
-import org.hibernate.SQLQuery;
 import org.springframework.stereotype.Component;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MammaGemiddeldenTasklet extends MammaAbstractKansberekeningTasklet
 {
-	private final HibernateService hibernateService;
-
 	private final ICurrentDateSupplier dateSupplier;
+
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Override
 	protected void execute()
@@ -53,11 +55,11 @@ public class MammaGemiddeldenTasklet extends MammaAbstractKansberekeningTasklet
 			var nu = dateSupplier.getLocalDateTime().toString();
 
 			var sql = IOUtils.toString(MammaGemiddeldenTasklet.class.getResourceAsStream("/updateDeelnameGemiddelden.sql"));
-			SQLQuery sqlQuery = hibernateService.getHibernateSession().createSQLQuery(sql);
+			var sqlQuery = entityManager.createNativeQuery(sql);
 			sqlQuery.setParameter("nu", nu);
 			sqlQuery.setParameter("deelnamekansberekening_na_weken", Constants.DEELNAMEKANSBEREKENING_NA_WEKEN);
 
-			List<Object[]> list = sqlQuery.list();
+			List<Object[]> list = sqlQuery.getResultList();
 			for (Object[] result : list)
 			{
 				context.putLong(MammaKansberekeningConstants.REGIO_DEELNAME_GEMIDDELDEN_KEY, ((BigInteger) result[0]).longValue());
@@ -65,10 +67,10 @@ public class MammaGemiddeldenTasklet extends MammaAbstractKansberekeningTasklet
 			}
 
 			sql = IOUtils.toString(MammaGemiddeldenTasklet.class.getResourceAsStream("/updateOpkomstGemiddelden.sql"));
-			sqlQuery = hibernateService.getHibernateSession().createSQLQuery(sql);
+			sqlQuery = entityManager.createNativeQuery(sql);
 			sqlQuery.setParameter("nu", nu);
 
-			list = sqlQuery.list();
+			list = sqlQuery.getResultList();
 			for (Object[] result : list)
 			{
 				context.putLong(MammaKansberekeningConstants.REGIO_OPKOMST_GEMIDDELDEN__KEY, ((BigInteger) result[0]).longValue());

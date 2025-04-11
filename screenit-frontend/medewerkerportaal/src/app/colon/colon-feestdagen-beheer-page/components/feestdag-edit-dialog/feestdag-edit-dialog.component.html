@@ -1,0 +1,46 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog (sluiten)="cancel()" size="md" [titel]="modalTitle">
+  <form body class="clr-row form-in-modal" clrForm [formGroup]="feestdagForm" novalidate>
+    <div class="clr-col">
+      <clr-input-container>
+        <label class="clr-required-mark" for="naam">Naam</label>
+        <input clrInput id="naam" type="text" formControlName="feestdagNaam" maxlength="255"
+          class="clr-col-12 clr-col-md-8"
+          data-testid="input_feestdag_naam"/>
+        <clr-control-error *clrIfError="'required'">De naam is verplicht</clr-control-error>
+      </clr-input-container>
+      <clr-date-container>
+        <label class="clr-required-mark" for="datum">Datum</label>
+        <input clrDate autocomplete="off" formControlName="feestdagDatum" id="datum" type="date" [min]="now"
+          class="clr-col-12 clr-col-md-8"/>
+        <clr-control-error *clrIfError="'required'">De datum is verplicht</clr-control-error>
+        <clr-control-error *clrIfError="'datumInVerleden'">{{ datumCtrl.getError('datumInVerleden') }}</clr-control-error>
+        <clr-control-error *clrIfError="'valideDatum'">{{ datumCtrl.getError('valideDatum') }}</clr-control-error>
+      </clr-date-container>
+      <app-colon-rooster-beperking formControlName="feestdagBeperking" label="Beperking"/>
+    </div>
+  </form>
+  <div class="btn-group" buttons>
+    <button (click)="cancel()" class="btn" type="button">Annuleren</button>
+    <button [disabled]="feestdagForm.invalid" (click)="save()" class="btn btn-primary" type="button">Opslaan</button>
+  </div>
+</app-base-dialog>

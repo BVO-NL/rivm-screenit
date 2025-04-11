@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.service.impl;
 
 /*-
@@ -23,43 +22,25 @@ package nl.rivm.screenit.main.service.impl;
  */
 
 import nl.rivm.screenit.main.service.CorrectieService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
-import org.hibernate.Query;
-import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
 public class CorrectieServiceImpl implements CorrectieService
 {
-
-	private static final Logger LOG = LoggerFactory.getLogger(CorrectieServiceImpl.class);
-
-	@Autowired
-	private HibernateService hibernateService;
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Override
-	public void clearHibernateCache()
-	{
-		SessionFactory sf = hibernateService.getHibernateSession().getSessionFactory();
-		sf.getCache().evictEntityRegions();
-		sf.getCache().evictCollectionRegions();
-		sf.getCache().evictDefaultQueryRegion();
-		sf.getCache().evictQueryRegions();
-	}
-
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void opruimenGefaaldeBatchJobs()
 	{
-		Query query = hibernateService.getHibernateSession()
-			.createSQLQuery("UPDATE gedeeld.batch_job_execution SET status = 'COMPLETED', end_time= now() where status = 'STARTED'");
+		var query = entityManager
+			.createNativeQuery("UPDATE gedeeld.batch_job_execution SET status = 'COMPLETED', end_time= now() where status = 'STARTED'");
 		query.executeUpdate();
 	}
 

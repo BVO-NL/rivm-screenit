@@ -21,8 +21,6 @@ package nl.rivm.screenit.batch.jobs.generalis.gba.verwerk107step;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.batch.jobs.generalis.gba.GbaConstants;
 import nl.rivm.screenit.batch.jobs.generalis.gba.exception.GbaImportException;
 import nl.rivm.screenit.batch.service.GbaService;
@@ -32,6 +30,7 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -48,11 +47,11 @@ public class ClientItemWriter implements ItemWriter<Vo107Bericht>
 	private StepExecution stepExecution;
 
 	@Override
-	public void write(List<? extends Vo107Bericht> items)
+	public void write(Chunk<? extends Vo107Bericht> chunk)
 	{
 		GbaVerwerkingsLog verwerkingsLog = (GbaVerwerkingsLog) stepExecution.getJobExecution().getExecutionContext().get(GbaConstants.RAPPORTAGEKEYGBA);
 
-		for (Vo107Bericht vo107Bericht : items)
+		for (Vo107Bericht vo107Bericht : chunk.getItems())
 		{
 			try
 			{

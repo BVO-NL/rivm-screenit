@@ -46,7 +46,7 @@ import nl.rivm.screenit.util.EntityAuditUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -111,7 +111,7 @@ public class DigitaalBerichtTemplateServiceImpl implements DigitaalBerichtTempla
 		var verschilTekst = EntityAuditUtil.getDiffFieldsToLatestVersion(template, hibernateService.getHibernateSession());
 		if (StringUtils.isNotBlank(verschilTekst))
 		{
-			var logBericht = String.format("Berichttemplate %s aangepast", berichtTemplateTypeNaam);
+			var logBericht = "Berichttemplate %s aangepast".formatted(berichtTemplateTypeNaam);
 			logService.logGebeurtenis(LogGebeurtenis.PARAMETERISATIE_WIJZIG, account, logBericht);
 		}
 	}

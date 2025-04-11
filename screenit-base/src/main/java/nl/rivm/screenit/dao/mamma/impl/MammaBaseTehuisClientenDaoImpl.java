@@ -31,6 +31,7 @@ import nl.rivm.screenit.dao.mamma.MammaBaseTehuisClientenDao;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
+import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.model.mamma.MammaTehuis;
@@ -38,12 +39,11 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseTehuisService;
 import nl.rivm.screenit.service.mamma.enums.MammaTehuisSelectie;
 import nl.rivm.screenit.util.DateUtil;
-import nl.rivm.screenit.util.query.ScreenitRestrictions;
 import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
 import nl.topicuszorg.organisatie.model.Adres;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -176,7 +176,7 @@ public class MammaBaseTehuisClientenDaoImpl extends AbstractAutowiredDao impleme
 
 		if (tehuisSelectie == TEHUIS_ADRES || tehuisSelectie == GEKOPPELD)
 		{
-			whereString.append(" and ").append(ScreenitRestrictions.getPersoonBaseRestrictions("persoon"));
+			whereString.append(" and ").append(getPersoonBaseRestrictions("persoon"));
 		}
 		if (tehuisSelectie == GEKOPPELD || tehuisSelectie == UIT_TE_NODIGEN)
 		{
@@ -184,7 +184,7 @@ public class MammaBaseTehuisClientenDaoImpl extends AbstractAutowiredDao impleme
 		}
 		if (tehuisSelectie == UIT_TE_NODIGEN)
 		{
-			whereString.append(" and ").append(ScreenitRestrictions.getClientBaseRestrictions("client", "persoon"));
+			whereString.append(" and ").append(getClientBaseRestrictions("client", "persoon"));
 
 			whereString.append(" and dossier.deelnamemodus <> \'").append(Deelnamemodus.SELECTIEBLOKKADE.name()).append("\'");
 			whereString.append(" and dossier.status = \'").append(DossierStatus.ACTIEF).append("\'");
@@ -274,6 +274,18 @@ public class MammaBaseTehuisClientenDaoImpl extends AbstractAutowiredDao impleme
 		}
 
 		return orderStringNieuw;
+	}
+
+	private static String getClientBaseRestrictions(String clientAlias, String persoonAlias)
+	{
+		return clientAlias + ".gba_status = '" + GbaStatus.INDICATIE_AANWEZIG + "' and "
+			+ getPersoonBaseRestrictions(persoonAlias);
+	}
+
+	private static String getPersoonBaseRestrictions(String persoonAlias)
+	{
+		return persoonAlias + ".overlijdensdatum is null"
+			+ " and " + persoonAlias + ".datum_vertrokken_uit_nederland is null";
 	}
 
 	@Override

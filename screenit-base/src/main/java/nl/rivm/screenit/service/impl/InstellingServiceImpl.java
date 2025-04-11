@@ -26,14 +26,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import javax.annotation.Nonnull;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.JoinType;
+import jakarta.annotation.Nonnull;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.JoinType;
 
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.dao.InstellingDao;
 import nl.rivm.screenit.dto.mamma.planning.PlanningScreeningsOrganisatieDto;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.CentraleEenheid;
@@ -81,7 +81,7 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 import nl.topicuszorg.organisatie.model.Adres;
 
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -103,9 +103,6 @@ public class InstellingServiceImpl implements InstellingService
 {
 
 	private static final String GEEN_WAARDE = "(geen waarde)";
-
-	@Autowired
-	private InstellingDao instellingDao;
 
 	@Autowired
 	private HibernateService hibernateService;
@@ -175,7 +172,7 @@ public class InstellingServiceImpl implements InstellingService
 				.and(OrganisatieMedewerkerSpecification.heeftMedewerker(medewerker))
 				.and(OrganisatieSpecification.isActief(true).with(InstellingGebruiker_.organisatie))
 				.and(OrganisatieSpecification.heeftOrganisatieType(OrganisatieType.HUISARTS).with(InstellingGebruiker_.organisatie)
-					.or(OrganisatieMedewerkerRolSpecification.isActiefOpDatum(currentDateSupplier.getLocalDateTime()).with(organisatieMedewerkerRolJoin()).and(
+					.or(OrganisatieMedewerkerRolSpecification.isActiefOpDatum(currentDateSupplier.getLocalDate()).with(organisatieMedewerkerRolJoin()).and(
 						RolSpecification.isActief(true).with(r -> join(join(r, InstellingGebruiker_.rollen, JoinType.LEFT), InstellingGebruikerRol_.rol, JoinType.LEFT))))),
 			Sort.by(Sort.Order.asc(propertyChain(InstellingGebruiker_.ORGANISATIE, Instelling_.NAAM))));
 
@@ -327,8 +324,11 @@ public class InstellingServiceImpl implements InstellingService
 	@SuppressWarnings("unchecked")
 	public <T extends Instelling> List<T> getActieveInstellingen(Class<T> typeInstelling)
 	{
-		return (List<T>) organisatieRepository.findAll(OrganisatieSpecification.isActieveInstelling(typeInstelling),
-			Sort.by(Sort.Order.asc(Instelling_.NAAM)));
+		return organisatieRepository
+			.findAll(OrganisatieSpecification.isActieveInstelling(typeInstelling), Sort.by(Sort.Order.asc(Instelling_.NAAM)))
+			.stream()
+			.map(o -> (T) hibernateService.deproxy(o))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -396,8 +396,13 @@ public class InstellingServiceImpl implements InstellingService
 	@SuppressWarnings("unchecked")
 	public <T extends Instelling> List<T> getChildrenOrganisaties(@Nonnull Instelling organisatie, @Nonnull Class<T> organisatieClass)
 	{
-		return (List<T>) organisatieRepository.findAll(OrganisatieSpecification.isActief(true).and(OrganisatieSpecification.heeftParent(organisatie, organisatieClass)),
-			Sort.by(Sort.Order.asc(Instelling_.NAAM)));
+		var specification = OrganisatieSpecification.isActief(true).and(OrganisatieSpecification.heeftParent(organisatie, organisatieClass));
+
+		return organisatieRepository
+			.findAll(specification, Sort.by(Sort.Order.asc(Instelling_.NAAM)))
+			.stream()
+			.map(o -> (T) hibernateService.deproxy(o))
+			.collect(Collectors.toList());
 	}
 
 	@Override

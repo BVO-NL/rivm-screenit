@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -24,9 +24,7 @@ import {AxiosResponse} from "axios"
 import {BuildDto} from "../state/datatypes/dto/BuildDto"
 import {createActionSetBuildInfo} from "../state/BuildInfoState"
 
-export const fetchBuildInfo = () => (dispatch: AppThunkDispatch) => {
-	return ScreenitBackend.get("/build")
-		.then((response: AxiosResponse<BuildDto>) => {
-			dispatch(createActionSetBuildInfo(response.data))
-		})
+export const fetchBuildInfo = () => async (dispatch: AppThunkDispatch) => {
+	const response: AxiosResponse<BuildDto> = await ScreenitBackend.get("/build")
+	return dispatch(createActionSetBuildInfo(response.data))
 }

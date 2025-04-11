@@ -56,6 +56,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import static nl.rivm.screenit.model.cervix.enums.CervixMonsterType.UITSTRIJKJE;
+
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
 @Slf4j
@@ -84,7 +86,7 @@ public class CervixTestTimelineTimeServiceImpl implements CervixTestTimelineTime
 	@Override
 	public boolean rekenDossierTerug(CervixDossier dossier, int aantalDagen)
 	{
-		LOG.debug("Dossier aantal dagen terug gezet: " + aantalDagen);
+		LOG.debug("Dossier aantal dagen terug gezet: {}", aantalDagen);
 		baseTestTimelineService.rekenObjectTerug(dossier, aantalDagen);
 		hibernateService.saveOrUpdate(dossier);
 
@@ -169,23 +171,23 @@ public class CervixTestTimelineTimeServiceImpl implements CervixTestTimelineTime
 
 	private void rekenMonsterTerug(CervixMonster monster, int aantalDagen)
 	{
-		if (monster != null)
+		if (monster == null)
 		{
-			for (CervixHpvBeoordeling hpvBeoordeling : monster.getHpvBeoordelingen())
-			{
-				rekenHpvBeoordelingTerug(hpvBeoordeling, aantalDagen);
-			}
+			return;
+		}
 
-			switch (monster.getUitnodiging().getMonsterType())
-			{
-			case UITSTRIJKJE:
-				rekenUitstrijkjeTerug((CervixUitstrijkje) monster, aantalDagen);
-				break;
-			case ZAS:
-				rekenZasTerug((CervixZas) monster, aantalDagen);
-				break;
-			}
+		for (var hpvBeoordeling : monster.getHpvBeoordelingen())
+		{
+			rekenHpvBeoordelingTerug(hpvBeoordeling, aantalDagen);
+		}
 
+		if (monster.getUitnodiging().getMonsterType() == UITSTRIJKJE)
+		{
+			rekenUitstrijkjeTerug((CervixUitstrijkje) monster, aantalDagen);
+		}
+		else
+		{
+			rekenZasTerug((CervixZas) monster, aantalDagen);
 		}
 	}
 
@@ -270,18 +272,14 @@ public class CervixTestTimelineTimeServiceImpl implements CervixTestTimelineTime
 
 	private int aantalDagenCalculator(CervixTestTimeLineDossierTijdstip tijdstip)
 	{
-		switch (tijdstip)
+		return switch (tijdstip)
 		{
-		case ONTVANGEN:
-			return 14;
-		case VERVOLGONDERZOEK_BRIEF:
-			return Math.toIntExact(ChronoUnit.DAYS.between(currentDateSupplier.getLocalDate(),
+			case ONTVANGEN -> 14;
+			case VERVOLGONDERZOEK_BRIEF -> Math.toIntExact(ChronoUnit.DAYS.between(currentDateSupplier.getLocalDate(),
 				currentDateSupplier.getLocalDate().plusMonths(preferenceService.getInteger(PreferenceKey.CERVIX_INTERVAL_CONTROLE_UITSTRIJKJE.name()))));
-		case NIEUWE_RONDE:
-			return 1825;
-		default:
-			return 1;
-		}
+			case NIEUWE_RONDE -> 1825;
+			default -> 1;
+		};
 	}
 
 }

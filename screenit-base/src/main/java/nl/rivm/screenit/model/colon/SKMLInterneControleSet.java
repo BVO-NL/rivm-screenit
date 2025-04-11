@@ -22,9 +22,11 @@ package nl.rivm.screenit.model.colon;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import java.io.Serial;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
@@ -37,6 +39,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 public class SKMLInterneControleSet extends AbstractHibernateObject implements Comparable<SKMLInterneControleSet>
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Column(nullable = false)

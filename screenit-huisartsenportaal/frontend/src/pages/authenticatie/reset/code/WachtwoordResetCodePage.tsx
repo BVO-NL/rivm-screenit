@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -20,12 +20,11 @@
  */
 import {useAppThunkDispatch} from "../../../../index"
 import BaseAuthenticationPage from "../../BaseAuthenticationPage"
-import {WachtwoordVergetenLoginDto} from "../../../../state/datatypes/dto/WachtwoordVergetenLoginDto"
+import {WachtwoordAanvragenDto} from "../../../../state/datatypes/dto/WachtwoordAanvragenDto"
 import properties from "./WachtwoordResetCodePage.json"
 import validatieProperties from "../../../../util/ValidatieUtil.json"
 import {getString} from "../../../../util/TekstPropertyUtil"
 import {loadingThunkAction} from "../../../../api/LoadingThunkAction"
-import {authenticate} from "../../../../api/AanmeldenThunkAction"
 import {AuthenticationScope} from "../../../../state/datatypes/enums/AuthenticationScope"
 import {createActionPushToast} from "../../../../state/ToastsState"
 import {ToastType} from "../../../../state/datatypes/Toast"
@@ -33,25 +32,27 @@ import FormTextField from "../../../../components/form/text/FormTextField"
 import {useNavigate} from "react-router"
 import * as Yup from "yup"
 import React from "react"
+import {wachtwoordAanvragen} from "../../../../api/WachtwoordThunkAction"
 
 const WachtwoordResetCodePage = () => {
 	const dispatch = useAppThunkDispatch()
 	const navigate = useNavigate()
 
 	return (
-		<BaseAuthenticationPage<WachtwoordVergetenLoginDto>
+		<BaseAuthenticationPage<WachtwoordAanvragenDto>
 			title={getString(properties.title)}
 			submitText={getString(properties.form.buttons.submit)}
 			initialValues={{
 				emailOfGebruikersnaam: "",
-				inlogcode: "",
+				inlogCode: "",
+				scope: AuthenticationScope.WACHTWOORDVERGETEN,
 			}}
 			validationSchema={Yup.object({
 				emailOfGebruikersnaam: Yup.string().required(getString(validatieProperties.required)),
-				inlogcode: Yup.string().required(getString(validatieProperties.required)),
+				inlogCode: Yup.string().required(getString(validatieProperties.required)),
 			})}
 			onSubmit={(loginDto => {
-				dispatch(loadingThunkAction(authenticate(loginDto.emailOfGebruikersnaam, loginDto.inlogcode, AuthenticationScope.WACHTWOORDVERGETEN))).then(() => {
+				dispatch(loadingThunkAction(wachtwoordAanvragen(loginDto))).then(() => {
 					dispatch(createActionPushToast({type: ToastType.SUCCESS, message: getString(properties.toast.success)}))
 					navigate("/wachtwoordvergeten/voltooien")
 				})
@@ -59,7 +60,7 @@ const WachtwoordResetCodePage = () => {
 			{(formikProps => <>
 				<FormTextField className={"row my-3"} property={"emailOfGebruikersnaam"} error={formikProps.errors.emailOfGebruikersnaam} required
 							   label={getString(properties.form.labels.emailOfGebruikersnaam)}/>
-				<FormTextField className={"row my-3"} property={"inlogcode"} required error={formikProps.errors.inlogcode}
+				<FormTextField className={"row my-3"} property={"inlogCode"} required error={formikProps.errors.inlogCode}
 							   label={getString(properties.form.labels.inlogcode)}/>
 			</>)}
 		</BaseAuthenticationPage>

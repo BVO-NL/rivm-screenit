@@ -60,7 +60,7 @@
 			<wicket:enclosure child="bezwaarTekstPanel">
 				<div class="row">
 					<div class="control-group">
-						<label class="control-label">Aanpassing(en):</label>
+						<label class="control-label">Actieve keuze(s):</label>
 						<div class="controls">
 							<div wicket:id="bezwaarTekstPanel"></div>
 						</div>
@@ -72,12 +72,11 @@
 	</div>
 	<div class="modal-footer">
 		<button class="btn left" wicket:id="bezwaarformulierHandImg"><i class="icon-download"></i> Downloaden</button>
-		<button class="btn left" wicket:id="nogmaalsVersturen">Nogmaals versturen <span class="muted">*</span></button>
-		<button class="btn left" wicket:id="tegenhouden">Brief tegenhouden <span class="muted">*</span></button>
-		<button class="btn left" wicket:id="doorvoeren">Brief aanmaken herstellen <span class="muted">*</span></button>
+		<button class="btn left" wicket:id="nogmaalsVersturen">Nogmaals versturen</button>
+		<button class="btn left" wicket:id="tegenhouden">Brief tegenhouden</button>
+		<button class="btn left" wicket:id="doorvoeren">Brief aanmaken herstellen</button>
 		<button class="btn left" wicket:id="vervangen">Vervangen document</button>
 		<button class="btn btn-primary" data-dismiss="modal">Sluiten</button>
-		<p class="muted" wicket:id="footnote">* geldt voor de laatste brief</p>
 	</div>
 </wicket:panel>
 </html>

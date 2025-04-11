@@ -21,20 +21,20 @@ package nl.rivm.screenit.security;
  * =========================LICENSE_END==================================
  */
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import ua_parser.Parser;
 
 public class UserAgentUtil {
 
     public static String getParsedUserAgentInfo(String userAgent) {
         var client = new Parser().parse(userAgent);
-        return String.format("Browser: %s %s.%s, OS: %s %s%s",
-                client.userAgent.family,
-                client.userAgent.major,
-                client.userAgent.minor,
-                client.os.family,
-                client.os.major,
-                StringUtils.isNotBlank(client.os.minor) ? String.format(".%s", client.os.minor) : "");
+        return "Browser: %s %s.%s, OS: %s %s%s".formatted(
+			client.userAgent.family,
+			client.userAgent.major,
+			client.userAgent.minor,
+			client.os.family,
+			client.os.major,
+			StringUtils.isNotBlank(client.os.minor) ? ".%s".formatted(client.os.minor) : "");
     }
 
 }

@@ -21,8 +21,6 @@ package nl.rivm.screenit.main.config;
  * =========================LICENSE_END==================================
  */
 
-import javax.jms.Destination;
-
 import nl.rivm.screenit.main.jms.listener.HuisartsportaalListener;
 
 import org.apache.activemq.pool.PooledConnectionFactory;
@@ -30,6 +28,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
+
+import jakarta.jms.Destination;
 
 @Configuration
 public class HuisartsenportaalJmsConfig

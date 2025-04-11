@@ -23,9 +23,6 @@ package nl.rivm.screenit.batch.repository;
 
 import java.util.List;
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-
 import nl.rivm.screenit.model.ClientBrief_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -44,7 +41,10 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import static javax.persistence.criteria.JoinType.LEFT;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+
+import static jakarta.persistence.criteria.JoinType.LEFT;
 import static nl.rivm.screenit.specification.ExtendedSpecification.not;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefType;

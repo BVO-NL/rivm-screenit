@@ -90,9 +90,8 @@ public class ScopeServiceImpl implements ScopeService
 		else if (Instelling.class.isAssignableFrom(constraintToCheck.getScopeObjectClass()))
 		{
 
-			if (account instanceof InstellingGebruiker)
+			if (account instanceof InstellingGebruiker instellingGebruiker)
 			{
-				InstellingGebruiker instellingGebruiker = (InstellingGebruiker) account;
 				if (scope == ToegangLevel.LANDELIJK)
 				{
 					result = true;
@@ -113,7 +112,7 @@ public class ScopeServiceImpl implements ScopeService
 			{
 				result = true;
 			}
-			else if (scope == ToegangLevel.REGIO && account instanceof InstellingGebruiker && ((InstellingGebruiker) account).getOrganisatie() instanceof ScreeningOrganisatie)
+			else if (scope == ToegangLevel.REGIO && account instanceof InstellingGebruiker gebruiker && ((InstellingGebruiker) account).getOrganisatie() instanceof ScreeningOrganisatie)
 			{
 				Gemeente gemeente = null;
 				if (Gemeente.class.isAssignableFrom(constraintToCheck.getScopeObjectClass()))
@@ -125,7 +124,7 @@ public class ScopeServiceImpl implements ScopeService
 					gemeente = hibernateService.load(UitnodigingsGebied.class, constraintToCheck.getScopeObjectId()).getGemeente();
 				}
 
-				result = ((ScreeningOrganisatie) ((InstellingGebruiker) account).getOrganisatie()).getGemeentes().contains(gemeente);
+				result = ((ScreeningOrganisatie) gebruiker.getOrganisatie()).getGemeentes().contains(gemeente);
 			}
 			else
 			{

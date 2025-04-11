@@ -620,9 +620,9 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 	public MammaAfspraak getLaatsteAfspraakVanBriefronde(Brief brief)
 	{
 		brief = (Brief) HibernateHelper.deproxy(brief);
-		if (brief instanceof MammaBrief)
+		if (brief instanceof MammaBrief mammaBrief)
 		{
-			var screeningRonde = ((MammaBrief) brief).getScreeningRonde();
+			var screeningRonde = mammaBrief.getScreeningRonde();
 			if (screeningRonde != null && screeningRonde.getLaatsteUitnodiging() != null)
 			{
 				return screeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak();

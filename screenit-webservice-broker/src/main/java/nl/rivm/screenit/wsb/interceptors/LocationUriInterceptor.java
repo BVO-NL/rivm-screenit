@@ -23,8 +23,6 @@ package nl.rivm.screenit.wsb.interceptors;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.binding.soap.interceptor.EndpointSelectionInterceptor;
 import org.apache.cxf.common.util.UrlUtils;
@@ -39,6 +37,8 @@ import org.apache.cxf.service.model.EndpointInfo;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public class LocationUriInterceptor extends AbstractPhaseInterceptor<Message>
 {

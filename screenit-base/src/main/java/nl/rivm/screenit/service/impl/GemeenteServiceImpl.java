@@ -47,7 +47,7 @@ import static nl.rivm.screenit.specification.algemeen.GemeenteSpecification.heef
 import static nl.rivm.screenit.specification.algemeen.GemeenteSpecification.heeftGeenScreeningOrganisatieOfGekoppeldAan;
 import static nl.rivm.screenit.specification.algemeen.GemeenteSpecification.heeftNaamEnScreeningOrganisatie;
 import static nl.rivm.screenit.specification.algemeen.GemeenteSpecification.isGemeenteActiefOpMoment;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Service

@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-clientportaal
+ * screenit-clientportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -48,8 +48,6 @@ import {Bevolkingsonderzoek} from "../../../../../datatypes/Bevolkingsonderzoek"
 export type MammaAfspraakBevestigingsWizardProps = {
 	setGekozenAfspraak: React.Dispatch<React.SetStateAction<KandidaatAfspraak | undefined>>,
 	gekozenAfspraak: KandidaatAfspraak | undefined,
-	setAfspraakMakenNietGelukt: React.Dispatch<React.SetStateAction<boolean>>,
-	afspraakMakenNietGelukt: boolean,
 	zoekAfspraken: (zoekFilter: AfspraakZoekFilter) => void,
 	zoekFilter: AfspraakZoekFilter
 }
@@ -60,7 +58,7 @@ const MammaAfspraakBevestigingsWizard = (props: MammaAfspraakBevestigingsWizardP
 	const navigate = useNavigate()
 
 	const [afspraakBevestiging, setAfspraakBevestiging] = React.useState<AfspraakBevestigingOpties | undefined>(undefined)
-	const [wizardStap, setWizardStap] = React.useState<AfspraakBevestigingsWizardStap>(props.afspraakMakenNietGelukt ? AfspraakBevestigingsWizardStap.AFSPRAAK_MAKEN_MISLUKT : AfspraakBevestigingsWizardStap.AFSPRAAK_MAKEN)
+	const [wizardStap, setWizardStap] = React.useState<AfspraakBevestigingsWizardStap>(AfspraakBevestigingsWizardStap.AFSPRAAK_MAKEN)
 
 	const huidigeHuisarts = useSelector((state: State) => state.client.mammaDossier.huisartsHuidigeRonde)
 	const vorigeHuisarts = useSelector((state: State) => state.client.mammaDossier.huisartsVorigeRonde)
@@ -126,10 +124,9 @@ const MammaAfspraakBevestigingsWizard = (props: MammaAfspraakBevestigingsWizardP
 	function toonAfspraakMakenMisluktPopup() {
 		return <MammaAfspraakMakenPopup afspraak={props.gekozenAfspraak!}
 										isBevestigingsPopup={false}
-										onNext={() => {
+										onAndereAfspraakKiezen={() => {
 											props.setGekozenAfspraak(undefined)
 											props.zoekAfspraken(props.zoekFilter)
-											props.setAfspraakMakenNietGelukt(false)
 											setAfspraakBevestiging(undefined)
 										}}/>
 	}
@@ -139,8 +136,8 @@ const MammaAfspraakBevestigingsWizard = (props: MammaAfspraakBevestigingsWizardP
 										isBevestigingsPopup={true}
 										onNext={() => gaNaarVolgendePopup()}
 										onFailure={() => {
-											props.setAfspraakMakenNietGelukt(true)
 											setAfspraakBevestiging(undefined)
+											setWizardStap(AfspraakBevestigingsWizardStap.AFSPRAAK_MAKEN_MISLUKT)
 										}}
 										onAndereAfspraakKiezen={() => {
 											props.zoekAfspraken(props.zoekFilter)

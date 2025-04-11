@@ -28,6 +28,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,7 +40,7 @@ public class CervixUitstelJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job uitstelJob(CervixUitstelJobListener listener, Step uitstelStep)
 	{
-		return jobBuilderFactory.get(JobType.CERVIX_UITSTEL.name())
+		return new JobBuilder(JobType.CERVIX_UITSTEL.name(), repository)
 			.listener(listener)
 			.start(uitstelStep)
 			.build();
@@ -47,9 +49,8 @@ public class CervixUitstelJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step uitstelStep(CervixUitstelReader reader, CervixUitstelWriter writer)
 	{
-		return stepBuilderFactory.get("uitstelStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(10)
+		return new StepBuilder("uitstelStep", repository)
+			.<Long, Long> chunk(10, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

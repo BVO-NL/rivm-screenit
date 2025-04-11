@@ -32,12 +32,9 @@ import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.wicketstuff.shiro.ShiroConstraint;
 
-@SecurityConstraint(constraint = ShiroConstraint.HasPermission, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX }, recht = { Recht.GEBRUIKER_KLAARZETTEN_CERVIX_HUISARTS})
+@SecurityConstraint(constraint = ShiroConstraint.HasPermission, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX }, recht = { Recht.GEBRUIKER_KLAARZETTEN_CERVIX_HUISARTS })
 public class CervixKlaarzettenHuisartsPage extends CervixScreeningBasePage
 {
-
-	private static final long serialVersionUID = 1L;
-
 	private CervixHuisartsOpvraagPanel huisartsZoekPanel;
 
 	private Panel cervixRegistratieUitstrijkendArtsPanel;
@@ -54,9 +51,6 @@ public class CervixKlaarzettenHuisartsPage extends CervixScreeningBasePage
 	{
 		huisartsZoekPanel = new CervixHuisartsOpvraagPanel("huisartsOpvraagPanel")
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void setUitstrijkendArts(AjaxRequestTarget target, CervixHuisarts arts)
 			{
@@ -70,8 +64,6 @@ public class CervixKlaarzettenHuisartsPage extends CervixScreeningBasePage
 	{
 		Panel nieuwPanel = new CervixKlaarzettenHuisartsPanel("registratieUitstrijkendArtsPanel", arts)
 		{
-
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void closeAanvraag(AjaxRequestTarget target)

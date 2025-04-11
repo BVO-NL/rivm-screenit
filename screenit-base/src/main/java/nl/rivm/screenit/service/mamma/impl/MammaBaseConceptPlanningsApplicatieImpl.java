@@ -21,6 +21,7 @@ package nl.rivm.screenit.service.mamma.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -31,8 +32,6 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import javax.annotation.PostConstruct;
 
 import nl.rivm.screenit.dto.mamma.planning.PlanningBlokkadeDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
@@ -79,6 +78,8 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import jakarta.annotation.PostConstruct;
+
 @Service
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConceptPlanningsApplicatie
@@ -121,7 +122,7 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 						}
 						if (currentRequestDto != null)
 						{
-							sendToPlanningApplicatie(PlanningRestConstants.C_CLIENT, currentRequestDto, false, null, Integer.valueOf(120000)); 
+							sendToPlanningApplicatie(PlanningRestConstants.C_CLIENT, currentRequestDto, false, null, Duration.ofSeconds(120)); 
 							synchronized (mutex)
 							{
 								requestDtos.remove(currentRequestDto);
@@ -198,7 +199,7 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 		sendToPlanningApplicatie(context, dto, isNieuw, ingelogdeInstellingGebruiker, null);
 	}
 
-	private <T extends PlanningDto> void sendToPlanningApplicatie(String context, T dto, boolean isNieuw, InstellingGebruiker ingelogdeInstellingGebruiker, Integer readTimeout)
+	private <T extends PlanningDto> void sendToPlanningApplicatie(String context, T dto, boolean isNieuw, InstellingGebruiker ingelogdeInstellingGebruiker, Duration readTimeout)
 	{
 		RestTemplate restApi = RestApiFactory.create(readTimeout);
 		if (isNieuw)

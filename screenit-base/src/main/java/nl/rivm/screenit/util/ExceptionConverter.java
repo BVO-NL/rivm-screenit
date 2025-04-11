@@ -48,23 +48,23 @@ public final class ExceptionConverter
 		String uiMessage = null;
 		Throwable cause = null;
 		GenericJDBCException jdbException = null;
-		if (e instanceof HibernateJdbcException)
+		if (e instanceof HibernateJdbcException exception)
 		{
-			cause = ((HibernateJdbcException) e).getCause();
+			cause = exception.getCause();
 		}
-		else if (e instanceof AssertionFailure)
+		else if (e instanceof AssertionFailure failure)
 		{
 
-			cause = ((AssertionFailure) e).getCause();
+			cause = failure.getCause();
 			cause = cause != null ? cause.getCause() : null;
 		}
 		else
 		{
 			cause = e;
 		}
-		if (cause instanceof GenericJDBCException)
+		if (cause instanceof GenericJDBCException exception)
 		{
-			jdbException = (GenericJDBCException) cause;
+			jdbException = exception;
 			if (jdbException.getSQLException() != null)
 			{
 				String message = jdbException.getSQLException().getMessage();

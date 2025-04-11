@@ -329,7 +329,7 @@ public class MammaBaseAfbeeldingServiceImpl implements MammaBaseAfbeeldingServic
 			var xPath = XPathFactory.newInstance().newXPath();
 			var nodeList = (NodeList) xPath.compile("/svg/g").evaluate(afbeelding, XPathConstants.NODESET);
 			item = (Element) nodeList.item(0).cloneNode(true);
-			item.setAttribute("transform", String.format("translate(%s,%s)", x, y));
+			item.setAttribute("transform", "translate(%s,%s)".formatted(x, y));
 		}
 		catch (XPathExpressionException e)
 		{

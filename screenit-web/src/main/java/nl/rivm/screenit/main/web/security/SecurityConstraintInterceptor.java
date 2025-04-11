@@ -23,9 +23,6 @@ package nl.rivm.screenit.main.web.security;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
@@ -35,18 +32,20 @@ import nl.rivm.screenit.security.Constraint;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Slf4j
-public class SecurityConstraintInterceptor extends HandlerInterceptorAdapter
+public class SecurityConstraintInterceptor implements HandlerInterceptor
 {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception
 	{
-		if (handler instanceof HandlerMethod)
+		if (handler instanceof HandlerMethod handlerMethod)
 		{
-			HandlerMethod handlerMethod = (HandlerMethod) handler;
 			SecurityConstraint securityConstraint = handlerMethod.getMethodAnnotation(SecurityConstraint.class);
 
 			if (securityConstraint != null)

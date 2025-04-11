@@ -22,7 +22,6 @@ package nl.rivm.screenit.batch.jobs.colon.ifobtverwerking.verwerkingstep;
  */
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,6 +43,7 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -68,7 +68,7 @@ public class IFOBTVerwerkingWriter implements ItemWriter<IFOBTUitslag>
 	private StepExecution stepExecution;
 
 	@Override
-	public void write(List<? extends IFOBTUitslag> items)
+	public void write(Chunk<? extends IFOBTUitslag> chunk)
 	{
 		var logEvent = (IfobtVerwerkingBeeindigdLogEvent) stepExecution.getJobExecution().getExecutionContext()
 			.get(IfobtVerwerkingConstants.RAPPORTAGEKEYVERWERKING);
@@ -78,7 +78,7 @@ public class IFOBTVerwerkingWriter implements ItemWriter<IFOBTUitslag>
 		IFOBTBestand bestand = null;
 		IfobtVerwerkingRapportageEntry verslagEntry = null;
 
-		for (var ifobtResult : items)
+		for (var ifobtResult : chunk.getItems())
 		{
 			var ifobtTest = fitService.getFit(ifobtResult.getBarcode()).orElse(null);
 

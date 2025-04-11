@@ -26,15 +26,15 @@ from util import classification, predict, preprocess, dao
 
 def predict_afspraken():
     logging.info("Start predict afspraak eerste ronde")
-    _predit_afspraken_eerste_ronde()
+    _predict_afspraken_eerste_ronde()
     logging.info("Eind predict afspraak eerste ronde")
 
     logging.info("Start predict afspraak Vervolgronde")
-    _predit_afspraken_vervolgronde()
+    _predict_afspraken_vervolgronde()
     logging.info("Eind predict afspraak Vervolgronde")
 
 
-def _predit_afspraken_eerste_ronde():
+def _predict_afspraken_eerste_ronde():
     _afspraken = dao.get_afspraak_events_eerste_ronde()
     if _afspraken.empty:
         logging.warning('Geen afspraak events')
@@ -46,7 +46,7 @@ def _predit_afspraken_eerste_ronde():
         dao.update_opkomstkansen(_idsScores)
 
 
-def _predit_afspraken_vervolgronde():
+def _predict_afspraken_vervolgronde():
     _afspraken = dao.get_afspraak_events_vervolgronde()
     if _afspraken.empty:
         logging.warning('Geen afspraak events')

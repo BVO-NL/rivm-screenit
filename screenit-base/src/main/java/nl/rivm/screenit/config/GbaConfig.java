@@ -110,19 +110,19 @@ public class GbaConfig
 	}
 
 	@Bean
-	public Integer sftpConnectionTimeout()
+	Integer sftpConnectionTimeout()
 	{
 		return sftpConnectionTimeout != null ? sftpConnectionTimeout : DEFAULT_SFTP_TIMEOUT;
 	}
 
 	@Bean
-	public Long tryInterval()
+	Long tryInterval()
 	{
 		return tryInterval != null ? tryInterval : DEFAULT_TRY_INTERVAL;
 	}
 
 	@Bean
-	public Integer maxNoTries()
+	Integer maxNoTries()
 	{
 		return maxNoTries != null ? maxNoTries : DEFAULT_MAX_NO_TRIES;
 	}

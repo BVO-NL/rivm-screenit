@@ -27,6 +27,8 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -37,7 +39,7 @@ public class MammaPalgaCsvExportJobConfiguration extends AbstractJobConfiguratio
 	@Bean
 	public Job palgaCsvExportJob(MammaPalgaCsvExportListener listener, Step exporterenStep)
 	{
-		return jobBuilderFactory.get(JobType.MAMMA_PALGA_CSV_EXPORT.name())
+		return new JobBuilder(JobType.MAMMA_PALGA_CSV_EXPORT.name(), repository)
 			.listener(listener)
 			.start(exporterenStep)
 			.build();
@@ -46,9 +48,8 @@ public class MammaPalgaCsvExportJobConfiguration extends AbstractJobConfiguratio
 	@Bean
 	public Step exporterenStep(MammaPalgaCsvExportTasklet tasklet)
 	{
-		return stepBuilderFactory.get("exporterenStep")
-			.transactionManager(transactionManager)
-			.tasklet(tasklet)
+		return new StepBuilder("exporterenStep", repository)
+			.tasklet(tasklet, transactionManager)
 			.build();
 	}
 

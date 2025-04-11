@@ -23,15 +23,15 @@ package nl.rivm.screenit.batch.jms.listener;
 
 import java.util.List;
 
-import javax.jms.JMSException;
-import javax.jms.Session;
-
 import nl.rivm.screenit.batch.service.VerwerkCdaBerichtService;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 
 import org.apache.activemq.command.ActiveMQMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.listener.SessionAwareMessageListener;
+
+import jakarta.jms.JMSException;
+import jakarta.jms.Session;
 
 public class JMSVerwerkCdaBerichtListener implements SessionAwareMessageListener<ActiveMQMessage>
 {

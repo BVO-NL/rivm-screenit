@@ -86,7 +86,7 @@ import nl.rivm.screenit.util.mamma.MammaBeoordelingUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
@@ -543,7 +543,7 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 		}
 		else if (MammaBeoordelingStatus.VERSLAG_MAKEN == beoordeling.getStatus())
 		{
-			var errorString = String.format("MammaBeoordeling met status %s en id '%d' zou hier niet moeten komen.", beoordeling.getStatus(), beoordeling.getId());
+			var errorString = "MammaBeoordeling met status %s en id '%d' zou hier niet moeten komen.".formatted(beoordeling.getStatus(), beoordeling.getId());
 			throw new IllegalStateException(errorString);
 		}
 
@@ -655,7 +655,7 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 	}
 
 	@Override
-	public MammaLezing maakVerslagLezing(MammaBeoordeling beoordeling, MammaLezing uitgangsituatieLezing, InstellingGebruiker beoordelaar, boolean onervarenRadioloog)
+	public MammaLezing maakVerslagLezing(MammaLezing uitgangsituatieLezing, InstellingGebruiker beoordelaar, boolean onervarenRadioloog)
 	{
 		var verslagLezing = new MammaLezing();
 		verslagLezing.setLezingType(MammaLezingType.VERSLAG_LEZING);
@@ -685,6 +685,7 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 		var kopieMammaLaesie = createLaesie(mammaLaesie.getMammaLaesieType());
 		kopieMammaLaesie.setMammaZijde(mammaLaesie.getMammaZijde());
 		kopieMammaLaesie.setNummer(mammaLaesie.getNummer());
+		kopieMammaLaesie.setLaesieVolgorde(mammaLaesie.getLaesieVolgorde());
 		if (mammaLaesie.getHorizontaleDoorsnedeIcoon() != null)
 		{
 			var mammaLaesieIcoonHorizontaal = cloneMammaLaesieIcoon(mammaLaesie.getHorizontaleDoorsnedeIcoon());

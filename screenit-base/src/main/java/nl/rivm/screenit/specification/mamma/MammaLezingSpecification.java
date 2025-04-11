@@ -24,7 +24,7 @@ package nl.rivm.screenit.specification.mamma;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import javax.persistence.criteria.Path;
+import jakarta.persistence.criteria.Path;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

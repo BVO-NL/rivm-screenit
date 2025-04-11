@@ -21,25 +21,9 @@ package nl.rivm.screenit.main.dao;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-import java.util.Map;
-
-import nl.rivm.screenit.model.Functie;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.OrganisatieType;
-import nl.rivm.screenit.model.Rol;
-import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 
 public interface MedewerkerDao
 {
-	List<Gebruiker> searchMedewerkers(Gebruiker searchObject, List<Functie> selectedFuncties, List<Rol> selectedRollen,
-		Map<OrganisatieType, List<Instelling>> hierarchieCriteria, List<Bevolkingsonderzoek> bevolkingsonderzoeken, int first, int count, String sortProperty, boolean ascending);
-
-	long countMedewerkers(Gebruiker searchObject, List<Functie> selectedFuncties, List<Rol> selectedRollen, Map<OrganisatieType, List<Instelling>> hierarchieCriteria,
-		List<Bevolkingsonderzoek> bevolkingsonderzoeken);
-
 	void saveOrUpdateInstellingGebruiker(InstellingGebruiker organisatieMedewerker);
-
 }

@@ -21,13 +21,14 @@ package nl.rivm.screenit.model.cervix;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import nl.rivm.screenit.model.MergedBrieven;
 
@@ -40,9 +41,10 @@ import org.hibernate.envers.Audited;
 @Audited
 public class CervixRegioMergedBrieven extends MergedBrieven<CervixRegioBrief>
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
-	@OneToMany(mappedBy = "mergedBrieven", fetch = FetchType.LAZY, cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE })
+	@OneToMany(mappedBy = "mergedBrieven", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private List<CervixRegioBrief> brieven = new ArrayList<>();
 

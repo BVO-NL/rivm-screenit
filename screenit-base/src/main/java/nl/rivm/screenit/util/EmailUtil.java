@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.GbaPersoon;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EmailUtil

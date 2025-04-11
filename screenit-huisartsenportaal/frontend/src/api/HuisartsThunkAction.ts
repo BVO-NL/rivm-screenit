@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -25,24 +25,19 @@ import {createActionSetHuisarts} from "../state/HuisartsState"
 import {HuisartsDto} from "../state/datatypes/dto/HuisartsDto"
 
 export const fetchHuisarts = () => async (dispatch: AppThunkDispatch) => {
-	const huisarts = await ScreenitBackend.get("/huisarts")
-		.then((response: AxiosResponse<HuisartsDto>) => {
-			return response.data
-		})
+	const response: AxiosResponse<HuisartsDto> = await ScreenitBackend.get("/huisarts")
+	const huisarts = response.data
 	if (huisarts) {
 		dispatch(createActionSetHuisarts(huisarts))
 	}
 }
 
 export const controleerHuisarts = (huisarts: HuisartsDto) => async (dispatch: AppThunkDispatch): Promise<HuisartsDto> => {
-	return await dispatch(validatingRequest<HuisartsDto>("/huisarts/controle", "PUT", huisarts)).then((response) => {
-		return response
-	})
+	return dispatch(validatingRequest<HuisartsDto>("/huisarts/controle", "PUT", huisarts))
 }
 
 export const saveHuisarts = (huisarts: HuisartsDto) => async (dispatch: AppThunkDispatch): Promise<HuisartsDto> => {
-	return await dispatch(validatingRequest<HuisartsDto>("/huisarts", "PUT", huisarts)).then((response) => {
-		dispatch(createActionSetHuisarts(response))
-		return response
-	})
+	const response = await dispatch(validatingRequest<HuisartsDto>("/huisarts", "PUT", huisarts))
+	dispatch(createActionSetHuisarts(response))
+	return response
 }

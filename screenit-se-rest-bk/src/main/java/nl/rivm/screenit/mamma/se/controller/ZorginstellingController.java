@@ -23,7 +23,7 @@ package nl.rivm.screenit.mamma.se.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import nl.rivm.screenit.mamma.se.dto.ZorginstellingDto;
 import nl.rivm.screenit.mamma.se.service.OnderzoekService;

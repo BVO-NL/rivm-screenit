@@ -21,6 +21,9 @@ package nl.rivm.screenit.mamma.se.proxy.configuration;
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.webcommons.config.CsrfCustomAccessDeniedHandler;
+import nl.rivm.screenit.webcommons.config.SpaCsrfTokenRequestHandler;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +32,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 
@@ -43,13 +47,13 @@ public class SecurityConfig
 	private static final String IMS_ENDPOINT = "https://localhost:7001";
 
 	@Bean
-	@SuppressWarnings(
-
-		"java:S4502"
-	)
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception
 	{
-		http.csrf(AbstractHttpConfigurer::disable)
+		http.csrf(csrf -> csrf
+				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+				.csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
+			)
+			.exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler(new CsrfCustomAccessDeniedHandler()))
 			.cors(AbstractHttpConfigurer::disable)
 			.headers(headers -> headers.referrerPolicy(
 					policy -> policy.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN))

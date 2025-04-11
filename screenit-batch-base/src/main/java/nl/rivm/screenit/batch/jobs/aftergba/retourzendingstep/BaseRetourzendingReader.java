@@ -21,9 +21,6 @@ package nl.rivm.screenit.batch.jobs.aftergba.retourzendingstep;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Root;
-
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
@@ -33,6 +30,9 @@ import nl.rivm.screenit.specification.algemeen.GbaMutatieSpecification;
 import nl.rivm.screenit.specification.algemeen.InpakbareUitnodigingSpecification;
 
 import org.springframework.data.jpa.domain.Specification;
+
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Root;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 

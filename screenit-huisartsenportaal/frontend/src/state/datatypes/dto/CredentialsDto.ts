@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -18,7 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import {AuthenticationScope} from "../enums/AuthenticationScope"
+
 export interface CredentialsDto {
 	gebruikersnaam: string;
 	wachtwoord: string;
+	scope: AuthenticationScope;
 }

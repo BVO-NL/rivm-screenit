@@ -22,9 +22,9 @@ package nl.rivm.screenit.model.logging;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import nl.rivm.screenit.model.gba.GbaVerwerkingsLog;
 
@@ -35,7 +35,7 @@ import org.hibernate.annotations.CascadeType;
 @Table(schema = "gedeeld")
 public class GbaVerwerkingBeeindigdLogEvent extends LogEvent
 {
-	@OneToOne(cascade = javax.persistence.CascadeType.REMOVE)
+	@OneToOne(cascade = jakarta.persistence.CascadeType.REMOVE)
 	@Cascade(CascadeType.DELETE)
 	private GbaVerwerkingsLog verwerkingsLog;
 

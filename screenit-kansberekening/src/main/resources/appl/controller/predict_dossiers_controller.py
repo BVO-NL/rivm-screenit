@@ -27,7 +27,7 @@ from util import classification, predict, preprocess, dao
 
 def predict_dossiers():
     logging.info("Start predict dossier eerste ronde")
-    predit_dossier_eerste_ronde_per_geboortejaar()
+    predict_dossier_eerste_ronde_per_geboortejaar()
     logging.info("Eind predict dossier eerste ronde")
 
     logging.info("Start predict dossier vervolgronde")
@@ -35,13 +35,13 @@ def predict_dossiers():
     logging.info("Eind predict dossier vervolgronde")
 
 
-def predit_dossier_eerste_ronde_per_geboortejaar():
+def predict_dossier_eerste_ronde_per_geboortejaar():
     huidig_jaar = date.today().year
     for geboortejaar in range(huidig_jaar - dao.get_maximale_leeftijd() - 1, huidig_jaar - dao.get_minimale_leeftijd() + 4):
-        _predit_dossier_eerste_ronde(geboortejaar)
+        _predict_dossier_eerste_ronde(geboortejaar)
 
 
-def _predit_dossier_eerste_ronde(geboortejaar):
+def _predict_dossier_eerste_ronde(geboortejaar):
     logging.info('Start predict dossier eerste ronde voor geboortejeaar ' + str(geboortejaar))
     _screening_ronde_events = dao.get_dossier_events_eerste_ronde(geboortejaar)
     if _screening_ronde_events.empty:

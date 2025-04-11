@@ -51,9 +51,9 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ProjectUtil;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,9 +82,6 @@ public class ColonUitnodigingServiceImpl implements ColonUitnodigingService
 	@Autowired
 	@Lazy
 	private BaseUitnodigingService baseUitnodigingService;
-
-	@Autowired
-	private SessionFactory sessionFactory;
 
 	@Autowired
 	private UitnodigingCohortRepository uitnodigingCohortRepository;
@@ -210,13 +207,11 @@ public class ColonUitnodigingServiceImpl implements ColonUitnodigingService
 	@Override
 	public List<Integer> getUitnodigingCohorten()
 	{
-		var currentSession = sessionFactory.getCurrentSession();
-		var cb = currentSession.getCriteriaBuilder();
-		var q = cb.createQuery(Integer.class);
-		var r = q.from(UitnodigingCohort.class);
 		var specification = UitnodigingCohortSpecification.heeftJaarMinderOfGelijkAan(currentDateSupplier.getLocalDate().getYear());
-		var query = q.select(r.get(UitnodigingCohort_.jaar)).where(specification.toPredicate(r, q, cb)).orderBy(cb.asc(r.get(UitnodigingCohort_.jaar)));
-		return currentSession.createQuery(query).getResultList();
+		return uitnodigingCohortRepository.findWith(specification, Integer.class, q -> q
+				.projection((cb, r) -> r.get(UitnodigingCohort_.jaar))
+				.sortBy(Sort.by(UitnodigingCohort_.JAAR)))
+			.all();
 	}
 
 	@Override

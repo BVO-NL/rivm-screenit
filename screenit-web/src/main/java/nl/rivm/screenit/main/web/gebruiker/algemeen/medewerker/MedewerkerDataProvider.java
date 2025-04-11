@@ -42,6 +42,8 @@ import org.apache.wicket.injection.Injector;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
+import static nl.rivm.screenit.main.util.WicketSpringDataUtil.toSpringSort;
+
 public class MedewerkerDataProvider extends SortableDataProvider<Gebruiker, String>
 {
 	@SpringBean
@@ -76,7 +78,7 @@ public class MedewerkerDataProvider extends SortableDataProvider<Gebruiker, Stri
 	{
 		updateZoekObjectVoorZoekActie();
 		var searchMedewerkers = medewerkerZoekService.searchMedewerkers(getZoekObject(), getSelectedFuncties(), getSelectedRollen(), getLoggedInInstellingGebruiker(),
-			voorOrganisatieKoppelen, (int) first, (int) count, getSort().getProperty(), getSort().isAscending());
+			voorOrganisatieKoppelen, first, count, toSpringSort(getSort()));
 		updateZoekObjectNaZoekActie();
 		return searchMedewerkers.iterator();
 	}

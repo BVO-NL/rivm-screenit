@@ -23,12 +23,6 @@ package nl.rivm.screenit.batch.jobs.colon.selectie.uitnodingingpushstep;
 
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-
 import nl.rivm.screenit.batch.jobs.colon.selectie.AbstractUitnodigingPushReader;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.BagAdres_;
@@ -45,6 +39,12 @@ import nl.rivm.screenit.specification.algemeen.ProjectGroepSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.ProjectClientSpecification.heeftIsUitgenodigdInProjectPeriode;

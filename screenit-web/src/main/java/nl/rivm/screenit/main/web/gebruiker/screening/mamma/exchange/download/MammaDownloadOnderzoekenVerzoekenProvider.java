@@ -25,33 +25,50 @@ import java.util.Iterator;
 
 import nl.rivm.screenit.main.service.mamma.impl.MammaDownloadOnderzoekenVerzoekenDataProviderServiceImpl;
 import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek;
-import nl.topicuszorg.wicket.search.HibernateDataProvider;
+import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
+import org.apache.wicket.injection.Injector;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-public class MammaDownloadOnderzoekenVerzoekenProvider extends HibernateDataProvider<MammaDownloadOnderzoekenVerzoek>
+public class MammaDownloadOnderzoekenVerzoekenProvider extends SortableDataProvider<MammaDownloadOnderzoekenVerzoek, String>
 {
+	private IModel<MammaDownloadOnderzoekenVerzoek> filter;
+
 	@SpringBean
 	private MammaDownloadOnderzoekenVerzoekenDataProviderServiceImpl downloadOnderzoekenVerzoekenDataProviderService;
 
 	public MammaDownloadOnderzoekenVerzoekenProvider(IModel<MammaDownloadOnderzoekenVerzoek> filter)
 	{
-		super(filter, "aangemaaktOp");
+		super();
+		Injector.get().inject(this);
+		this.filter = filter;
 		setSort("aangemaaktOp", SortOrder.DESCENDING);
 	}
 
 	@Override
 	public Iterator<MammaDownloadOnderzoekenVerzoek> iterator(long first, long count)
 	{
-		return downloadOnderzoekenVerzoekenDataProviderService.findPage(first, count, getSearchObject(), getSort()).iterator();
+		return downloadOnderzoekenVerzoekenDataProviderService.findPage(first, count, ModelUtil.nullSafeGet(filter), getSort()).iterator();
 	}
 
 	@Override
 	public long size()
 	{
-		return downloadOnderzoekenVerzoekenDataProviderService.size(getSearchObject());
+		return downloadOnderzoekenVerzoekenDataProviderService.size(ModelUtil.nullSafeGet(filter));
 	}
 
+	@Override
+	public IModel<MammaDownloadOnderzoekenVerzoek> model(MammaDownloadOnderzoekenVerzoek object)
+	{
+		return ModelUtil.sModel(object);
+	}
+
+	@Override
+	public void detach()
+	{
+		ModelUtil.nullSafeDetach(filter);
+	}
 }

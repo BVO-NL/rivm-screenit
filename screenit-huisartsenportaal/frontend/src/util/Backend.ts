@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -23,21 +23,25 @@ import {AppThunkDispatch, store} from "../index"
 import {createActionPushToast} from "../state/ToastsState"
 import {ToastType} from "../state/datatypes/Toast"
 import {BackendError} from "../state/datatypes/dto/BackendError"
-import {refreshOAuthThunkAction} from "../api/RefreshOAuthThunkAction"
 import {createClearStateAction} from "../state"
 import {isValidationResponseDtoArray, ValidatieResponseDto} from "../state/datatypes/dto/ValidatieResponseDto"
+import {getCookie} from "./CookieUtil"
 
 const BASE_URL = "/api/v1/"
 
-export const ScreenitBackend = axios.create({baseURL: BASE_URL})
+export const ScreenitBackend = axios.create({baseURL: BASE_URL, allowAbsoluteUrls: false})
 
 ScreenitBackend.interceptors.request.use(async (config) => {
-	const oauth = store.getState().oauth
+	const auth = store.getState().auth
 
-	if (oauth) {
-		if (config.headers && oauth && !config.headers.Authorization) {
-			config.headers.Authorization = `Bearer ${oauth.access_token}`
+	if (auth) {
+		if (config.headers && !config.headers.Authorization) {
+			config.headers.Authorization = `Bearer ${auth.token}`
 		}
+	}
+	const xsrfToken = getCookie("XSRF-TOKEN")
+	if (xsrfToken) {
+		config.headers["X-XSRF-TOKEN"] = xsrfToken
 	}
 
 	return config
@@ -46,30 +50,19 @@ ScreenitBackend.interceptors.request.use(async (config) => {
 ScreenitBackend.interceptors.response.use((response) => {
 	return response
 }, async (error: AxiosError<BackendError>) => {
-	const oauth = store.getState().oauth
+	const oauth = store.getState().auth
 	const dispatch = store.dispatch as AppThunkDispatch
 
-	if (error.response?.data.error_description) {
-		if (error.response.data.error === "invalid_token") {
+	if (error.response?.data?.message) {
+		if (error.response.data.exception === "ExpiredJwtException") {
 			if (oauth) {
-				await dispatch(refreshOAuthThunkAction(oauth)).then(token => {
-					if (token) {
-						const config = error.config
-						if (typeof config !== "undefined" && config.headers) {
-							config.headers.Authorization = `Bearer ${token.access_token}`
-						}
-
-						return ScreenitBackend.request(error.config!)
-					}
-				}).catch(() => {
-					dispatch(createClearStateAction())
-					dispatch(createActionPushToast({type: ToastType.ERROR, message: "Uw sessie is verlopen. Om door te gaan dient u opnieuw in te loggen."}))
-				})
+				setTimeout(() => dispatch(createActionPushToast({type: ToastType.ERROR, message: "Uw sessie is verlopen. Om door te gaan dient u opnieuw in te loggen."})))
+				dispatch(createClearStateAction())
 			}
 		} else {
 			dispatch(createActionPushToast({
 				type: ToastType.ERROR,
-				message: error.response.data.error_description,
+				message: error.response.data.message,
 			}))
 		}
 	} else if (error.response?.status === 500) {

@@ -2,7 +2,7 @@ package nl.rivm.screenit.huisartsenportaal.controller;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-rest
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -37,7 +37,7 @@ public class BaseController
 	{
 		SecurityContext context = SecurityContextHolder.getContext();
 
-		if (context != null && context.getAuthentication() != null && context.getAuthentication().getPrincipal() instanceof Huisarts)
+		if (context != null && context.getAuthentication() != null)
 		{
 
 			Huisarts huisarts = (Huisarts) context.getAuthentication().getPrincipal();

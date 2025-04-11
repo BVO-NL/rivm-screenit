@@ -25,19 +25,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.UniqueConstraint;
 
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.InstellingGebruiker;
@@ -69,28 +69,28 @@ public class MammaBeoordeling extends AbstractHibernateObject
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date statusDatum;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = { javax.persistence.CascadeType.REMOVE, javax.persistence.CascadeType.PERSIST,
-		javax.persistence.CascadeType.MERGE })
+	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
+		jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaLezing eersteLezing;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = { javax.persistence.CascadeType.REMOVE, javax.persistence.CascadeType.PERSIST,
-		javax.persistence.CascadeType.MERGE })
+	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
+		jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaLezing tweedeLezing;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = { javax.persistence.CascadeType.REMOVE, javax.persistence.CascadeType.PERSIST,
-		javax.persistence.CascadeType.MERGE })
+	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
+		jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaLezing discrepantieLezing;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = { javax.persistence.CascadeType.REMOVE, javax.persistence.CascadeType.PERSIST,
-		javax.persistence.CascadeType.MERGE })
+	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
+		jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaLezing arbitrageLezing;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = { javax.persistence.CascadeType.REMOVE, javax.persistence.CascadeType.PERSIST,
-		javax.persistence.CascadeType.MERGE })
+	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
+		jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaLezing verslagLezing;
 

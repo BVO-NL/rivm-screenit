@@ -25,19 +25,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -50,6 +50,9 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Getter
 @Setter
@@ -59,6 +62,7 @@ import org.hibernate.envers.NotAudited;
 public class BezwaarMoment extends AbstractHibernateObject
 {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JsonBackReference
 	private Client client;
 
 	@Enumerated(EnumType.STRING)
@@ -81,6 +85,7 @@ public class BezwaarMoment extends AbstractHibernateObject
 
 	@NotAudited
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "bezwaarMoment", fetch = FetchType.LAZY)
+	@JsonManagedReference
 	private List<Bezwaar> bezwaren = new ArrayList<Bezwaar>();
 
 	@Transient

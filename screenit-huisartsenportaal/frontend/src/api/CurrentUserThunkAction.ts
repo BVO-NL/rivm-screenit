@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -25,15 +25,14 @@ import {AxiosResponse} from "axios"
 import {createActionSetUser} from "../state/UserState"
 
 export const fetchCurrentUser = () => async (dispatch: AppThunkDispatch) => {
-	const user = await ScreenitBackend.get("/huisarts/currentuser")
-		.then((response: AxiosResponse<UserDto>) => {
-			return response.data
-		}).catch(error => {
-			console.log(error)
-			return null
-		})
-
-	if (user) {
-		dispatch(createActionSetUser(user))
+	try {
+		const response: AxiosResponse<UserDto> = await ScreenitBackend.get("/huisarts/currentuser")
+		const user = response.data
+		if (user) {
+			dispatch(createActionSetUser(user))
+		}
+	} catch (error) {
+		console.log(error)
+		return null
 	}
 }

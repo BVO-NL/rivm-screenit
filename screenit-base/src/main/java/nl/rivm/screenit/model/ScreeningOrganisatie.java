@@ -21,18 +21,19 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 
@@ -46,6 +47,7 @@ import org.hibernate.envers.NotAudited;
 @Audited
 public class ScreeningOrganisatie extends Instelling
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@OneToMany(mappedBy = "screeningOrganisatie", cascade = CascadeType.ALL)

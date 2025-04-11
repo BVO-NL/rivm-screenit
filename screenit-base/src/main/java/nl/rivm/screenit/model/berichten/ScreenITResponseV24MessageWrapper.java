@@ -21,6 +21,8 @@ package nl.rivm.screenit.model.berichten;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serial;
+
 import ca.uhn.hl7v2.AcknowledgmentCode;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v24.datatype.ELD;
@@ -32,6 +34,7 @@ import ca.uhn.hl7v2.util.StringUtil;
 public class ScreenITResponseV24MessageWrapper implements ScreenITResponseHL7v2MessageWrapper
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private final AcknowledgmentCode acknowledgmentCode;

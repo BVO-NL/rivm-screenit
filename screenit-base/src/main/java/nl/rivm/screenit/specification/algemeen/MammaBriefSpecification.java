@@ -21,8 +21,8 @@ package nl.rivm.screenit.specification.algemeen;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

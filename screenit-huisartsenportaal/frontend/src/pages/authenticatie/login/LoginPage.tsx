@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * screenit-huisartsenportaal
+ * screenit-huisartsenportaal-frontend
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -25,7 +25,7 @@ import {CredentialsDto} from "../../../state/datatypes/dto/CredentialsDto"
 import {getString} from "../../../util/TekstPropertyUtil"
 import BaseAuthenticationPage from "../BaseAuthenticationPage"
 import {loadingThunkAction} from "../../../api/LoadingThunkAction"
-import {authenticate} from "../../../api/AanmeldenThunkAction"
+import {aanmelden} from "../../../api/AanmeldenThunkAction"
 import {AuthenticationScope} from "../../../state/datatypes/enums/AuthenticationScope"
 import FormTextField from "../../../components/form/text/FormTextField"
 import FormPasswordTextField from "../../../components/form/text/FormPasswordTextField"
@@ -36,13 +36,13 @@ import React, {useEffect} from "react"
 export const LoginPage = () => {
 	const dispatch = useAppThunkDispatch()
 	const navigate = useNavigate()
-	const oauth = useAppSelector(state => state.oauth)
+	const token = useAppSelector(state => state.auth)
 
 	useEffect(() => {
-		if (oauth) {
+		if (token) {
 			navigate("/")
 		}
-	}, [oauth, navigate])
+	}, [token, navigate])
 
 	return (
 		<BaseAuthenticationPage<CredentialsDto>
@@ -52,9 +52,10 @@ export const LoginPage = () => {
 			initialValues={{
 				gebruikersnaam: "",
 				wachtwoord: "",
+				scope: AuthenticationScope.LOGIN,
 			}}
 			onSubmit={(credentials => {
-				dispatch(loadingThunkAction(authenticate(credentials.gebruikersnaam, credentials.wachtwoord, AuthenticationScope.LOGIN))).then(() => {
+				dispatch(loadingThunkAction(aanmelden(credentials))).then(() => {
 					navigate("/")
 				})
 			})}>

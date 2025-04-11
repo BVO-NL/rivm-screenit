@@ -21,14 +21,13 @@ package nl.rivm.screenit.batch.jobs.generalis.coordinaten.postcodecoordstep;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.service.CoordinatenService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.stereotype.Component;
 
@@ -43,9 +42,9 @@ public class PostcodeCoordinatenWriter implements ItemWriter<String>
 	private final CoordinatenService coordinatenService;
 
 	@Override
-	public void write(List<? extends String> items)
+	public void write(Chunk<? extends String> chunk)
 	{
-		for (String item : items)
+		for (String item : chunk.getItems())
 		{
 			String[] lineParts = item.split(",");
 			if (lineParts.length == 11 && !lineParts[0].equals("nummeraanduiding_id"))

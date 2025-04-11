@@ -21,14 +21,14 @@ package nl.rivm.screenit.model.enums;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import lombok.Getter;
 
 import nl.rivm.screenit.model.INaam;
 import nl.rivm.screenit.model.OrganisatieType;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Getter
 public enum Recht implements INaam
@@ -83,12 +83,6 @@ public enum Recht implements INaam
 		"Verslag intake uitgeven",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON },
 		new ToegangLevel[] { ToegangLevel.INSTELLING, ToegangLevel.REGIO, ToegangLevel.LANDELIJK }),
-
-	GEBRUIKER_FORMULIER_BEHEER(
-		"Beheer colon formulierdefinities",
-		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA },
-		new ToegangLevel[] { ToegangLevel.LANDELIJK },
-		Actie.TOEVOEGEN),
 
 	GEBRUIKER_VERSLAGEN(
 		"Beheer verslagen",
@@ -610,7 +604,7 @@ public enum Recht implements INaam
 		"Bezwaar BRP",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA },
 		new ToegangLevel[] { ToegangLevel.LANDELIJK },
-		Actie.AANPASSEN),
+		Actie.INZIEN, Actie.AANPASSEN),
 
 	GEBRUIKER_KOPPELRESULTATEN_KANKERREGISTRATIE(
 		"Upload koppelbestand Kankerregistratie",

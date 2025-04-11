@@ -28,8 +28,9 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import nl.rivm.screenit.mamma.se.service.MammaScreeningsEenheidStatusService;
 import nl.rivm.screenit.mamma.se.service.SELogService;
@@ -37,6 +38,7 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.websocket.WebsocketBerichtType;
 
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
@@ -150,9 +152,15 @@ public class SeProxyWebsocket implements ApplicationContextAware
 
 	private void stuurCommandoNaarSe(Session session, String commando) throws Exception
 	{
-
-		Future<Void> sendStringFuture = session.getRemote().sendStringByFuture(commando);
-		sendStringFuture.get(10, TimeUnit.SECONDS);
+		try
+		{
+			Callback.Completable.with(completable -> session.sendText(commando, completable))
+				.get(10, TimeUnit.SECONDS);
+		}
+		catch (ExecutionException | TimeoutException exception)
+		{
+			LOG.error("Websocket Commando '{}' naar SE FAILED! code: {}; session: {}", commando, getSeCodeVanSession(session), session.hashCode(), exception);
+		}
 	}
 
 	public void sendTijdUpdateNaarIedereSe(Duration offset)

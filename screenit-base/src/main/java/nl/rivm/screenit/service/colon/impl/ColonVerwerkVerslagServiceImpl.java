@@ -29,14 +29,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DossierStatus;
-import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
@@ -50,7 +47,6 @@ import nl.rivm.screenit.model.colon.Complicatie;
 import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.MdlVerslag_;
-import nl.rivm.screenit.model.colon.PaLaboratorium;
 import nl.rivm.screenit.model.colon.PaVerslag;
 import nl.rivm.screenit.model.colon.enums.MdlVervolgbeleid;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlColoscopieMedischeObservatie;
@@ -58,14 +54,12 @@ import nl.rivm.screenit.model.colon.verslag.mdl.MdlDefinitiefVervolgbeleidVoorBe
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlIncidentcomplicatie;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlLaesiecoloscopiecentrum;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlPoliep;
-import nl.rivm.screenit.model.colon.verslag.mdl.MdlTnummerPathologieVerslag;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerslagContent;
 import nl.rivm.screenit.model.colon.verslag.pa.PaPathologieProtocolColonbioptperPoliep;
 import nl.rivm.screenit.model.colon.verslag.pa.PaVerslagContent;
 import nl.rivm.screenit.model.enums.ComplicatieErnst;
 import nl.rivm.screenit.model.enums.ComplicatieMoment;
 import nl.rivm.screenit.model.enums.ComplicatieSoort;
-import nl.rivm.screenit.model.formulieren.IdentifierElement;
 import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.model.verslag.Quantity;
 import nl.rivm.screenit.repository.colon.ColonMdlVerslagRepository;
@@ -76,16 +70,10 @@ import nl.rivm.screenit.service.colon.ColonVerwerkVerslagService;
 import nl.rivm.screenit.service.colon.ComplicatieService;
 import nl.rivm.screenit.util.ColonScreeningRondeUtil;
 import nl.rivm.screenit.util.DateUtil;
-import nl.rivm.screenit.util.RomanNumeral;
-import nl.topicuszorg.formulieren2.api.definitie.VraagDefinitie;
-import nl.topicuszorg.formulieren2.api.resultaat.Antwoord;
-import nl.topicuszorg.formulieren2.persistence.resultaat.BooleanAntwoord;
-import nl.topicuszorg.formulieren2.persistence.resultaat.DateAntwoord;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PropertyComparator;
 import org.springframework.data.domain.Sort;
@@ -613,10 +601,10 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 	{
 		ColonDossier dossier = client.getColonDossier();
 		ColonScreeningRonde rondeVoorVerslag = null;
-		if (oudeVersieVerslag instanceof ColonVerslag)
+		if (oudeVersieVerslag instanceof ColonVerslag<?> verslag)
 		{
 
-			rondeVoorVerslag = ((ColonVerslag<?>) oudeVersieVerslag).getScreeningRonde();
+			rondeVoorVerslag = verslag.getScreeningRonde();
 		}
 		if (rondeVoorVerslag == null)
 		{
@@ -639,317 +627,5 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 	{
 		IFOBTTest eersteOngunstigeTest = ColonScreeningRondeUtil.getEersteOngunstigeTest(ronde);
 		return eersteOngunstigeTest != null && eersteOngunstigeTest.getVerwerkingsDatum().compareTo(onderzoeksdatum) < 0;
-	}
-
-	@Override
-	public void valideerVerslagVoorAfronden(PaVerslag verslag, InstellingGebruiker instellingGebruiker)
-	{
-		PaVerslagContent paVerslagContent = verslag.getVerslagContent();
-		MdlVerslag mdlVerslag = null;
-		if (paVerslagContent.getPathologieMedischeObservatie() != null)
-		{
-			mdlVerslag = verslagService.getMdlVerslagMetTNummer(paVerslagContent);
-		}
-		if (mdlVerslag != null)
-		{
-			Instelling paLab = instellingGebruiker.getOrganisatie();
-			Instelling mdlOrganisatie = mdlVerslag.getUitvoerderOrganisatie();
-			boolean paLabGekoppeld = false;
-			if (OrganisatieType.PA_LABORATORIUM.equals(paLab.getOrganisatieType()))
-			{
-				PaLaboratorium paLaboratorium = hibernateService.load(PaLaboratorium.class, paLab.getId());
-				for (Instelling locatie : paLaboratorium.getColoscopielocaties())
-				{
-					switch (mdlOrganisatie.getOrganisatieType())
-					{
-					case COLOSCOPIELOCATIE:
-						if (locatie.equals(mdlOrganisatie))
-						{
-							paLabGekoppeld = true;
-						}
-						break;
-					case ZORGINSTELLING:
-						if (locatie.getParent() != null && locatie.getParent().equals(mdlOrganisatie))
-						{
-							paLabGekoppeld = true;
-						}
-						break;
-					default:
-						break;
-					}
-				}
-			}
-			else
-			{
-				paLabGekoppeld = true;
-			}
-			if (!paLabGekoppeld)
-			{
-				throw new IllegalStateException("error.pa.lab.niet.gekoppeld");
-			}
-		}
-		if (getValideScreeningsRonde(verslag.getScreeningRonde().getDossier().getClient(), null, paVerslagContent.getVerrichting().getAanvangVerrichting()) == null)
-		{
-			throw new IllegalStateException("error.aanvang.verrichting.voor.eerste.ongunstige.uitslag");
-		}
-
-	}
-
-	@Override
-	public void valideerVerslagVoorAfronden(MdlVerslag verslag, Set<Antwoord<?>> antwoorden, InstellingGebruiker instellingGebruiker)
-	{
-		MdlVerslagContent mdlVerslagContent = verslag.getVerslagContent();
-
-		List<MdlLaesiecoloscopiecentrum> laesies = mdlVerslagContent.getLaesiecoloscopiecentrum();
-
-		int aantalNietIngezonden = 0;
-		int totaalAantalGedetecteerde = 0;
-		MdlColoscopieMedischeObservatie coloscopieMedischeObservatie = mdlVerslagContent.getColoscopieMedischeObservatie();
-		if (coloscopieMedischeObservatie != null)
-		{
-			aantalNietIngezonden = getIntegerValue(coloscopieMedischeObservatie.getAantalVerwijderdeLaesiesNietIngezondenVoorPaEnG());
-			totaalAantalGedetecteerde = getIntegerValue(coloscopieMedischeObservatie.getTotaalAantalGedetecteerdeLaesies());
-		}
-
-		int aantalLaesies = laesies.size();
-		boolean leasieJaNeeFound = false;
-		boolean datumVerrichtingFound = false;
-		boolean incidentComplicatieFound = false;
-		boolean incidentComplicatieGeselecteerd = false;
-
-		for (Antwoord<?> antwoord : antwoorden)
-		{
-			VraagDefinitie<?> vraagDefinitie = antwoord.getVraagInstantie().getVraagDefinitie();
-			if (vraagDefinitie instanceof IdentifierElement identifierElement)
-			{
-				if (identifierElement.getIdentifier() != null)
-				{
-					switch (identifierElement.getIdentifier())
-					{
-					case Constants.VRAAG_LAESIE_JA_NEE:
-
-						if (antwoord instanceof BooleanAntwoord booleanAntwoord)
-						{
-							Boolean value = booleanAntwoord.getValue();
-							if (!Boolean.TRUE.equals(value))
-							{
-								aantalLaesies = 0;
-							}
-						}
-						leasieJaNeeFound = true;
-						break;
-					case Constants.VRAAG_DATUM_VERRICHTING:
-						if (antwoord instanceof DateAntwoord dateAntwoord)
-						{
-							Date value = dateAntwoord.getValue();
-							if (value != null)
-							{
-								mdlVerslagContent.getVerrichting().setAanvangVerrichting(value);
-							}
-						}
-						datumVerrichtingFound = true;
-						break;
-					case Constants.VRAAG_INCIDENT_COMPLICATIE_JA_NEE:
-						if (antwoord instanceof BooleanAntwoord booleanAntwoord)
-						{
-							Boolean value = booleanAntwoord.getValue();
-							incidentComplicatieGeselecteerd = Boolean.TRUE.equals(value);
-						}
-						incidentComplicatieFound = true;
-						break;
-					default:
-						break;
-					}
-				}
-			}
-			if (leasieJaNeeFound && datumVerrichtingFound && incidentComplicatieFound)
-			{
-				break;
-			}
-		}
-
-		valideerAantalLeasies(aantalNietIngezonden, totaalAantalGedetecteerde, aantalLaesies);
-
-		List<Integer> usedPotjeNummers = valideerPotjesNummers(mdlVerslagContent);
-
-		valideerTNummerInvoer(mdlVerslagContent, usedPotjeNummers);
-
-		valideerPALabGekoppeldAanCLBijOvereenkomstigTNummer(mdlVerslagContent, instellingGebruiker);
-
-		valideerOnderzoeksdatumInvoer(mdlVerslagContent, incidentComplicatieGeselecteerd);
-
-		valideerSurveillanceInvoer(mdlVerslagContent);
-	}
-
-	private void valideerAantalLeasies(int aantalNietIngezonden, int totaalAantalGedetecteerde, int aantalLaesies)
-	{
-		if (aantalLaesies + aantalNietIngezonden != totaalAantalGedetecteerde)
-		{
-			throw new IllegalStateException("error.totaal.laesies.ongelijk.gedetecteerde.plus.niet.ingezonden");
-		}
-	}
-
-	private List<Integer> valideerPotjesNummers(MdlVerslagContent mdlVerslagContent)
-	{
-
-		List<Integer> usedPotjeNummers = new ArrayList<>();
-		for (MdlLaesiecoloscopiecentrum leasie : mdlVerslagContent.getLaesiecoloscopiecentrum())
-		{
-			String nummerPotjeMonster = leasie.getNummerPotjeMonster();
-			if (StringUtils.isNotBlank(nummerPotjeMonster))
-			{
-				Integer uniformPotjenummer = null;
-				if (StringUtils.isNumeric(nummerPotjeMonster))
-				{
-					uniformPotjenummer = Integer.valueOf(nummerPotjeMonster);
-				}
-				else
-				{
-					try
-					{
-						uniformPotjenummer = RomanNumeral.toInteger(nummerPotjeMonster);
-					}
-					catch (IllegalArgumentException e)
-					{
-						throw new IllegalStateException("error.mdl.potjenummers.geen.nummer");
-					}
-				}
-				if (usedPotjeNummers.contains(uniformPotjenummer))
-				{
-					throw new IllegalStateException("error.mdl.potjenummers.niet.uniek");
-				}
-				else
-				{
-					usedPotjeNummers.add(uniformPotjenummer);
-				}
-			}
-		}
-		return usedPotjeNummers;
-	}
-
-	private void valideerTNummerInvoer(MdlVerslagContent mdlVerslagContent, List<Integer> usedPotjeNummers)
-	{
-
-		if (!usedPotjeNummers.isEmpty())
-		{
-			boolean hasTnummer = false;
-			if (mdlVerslagContent.getColoscopieMedischeObservatie() != null)
-			{
-				for (MdlTnummerPathologieVerslag tnummer : mdlVerslagContent.getColoscopieMedischeObservatie().getTnummerPathologieVerslag())
-				{
-					if (StringUtils.isNotEmpty(tnummer.getTnummerPathologieVerslag()))
-					{
-						hasTnummer = true;
-						break;
-					}
-				}
-			}
-			if (!hasTnummer)
-			{
-				throw new IllegalStateException("error.mdl.tnummer.verplicht.bij.monster");
-			}
-		}
-	}
-
-	private void valideerPALabGekoppeldAanCLBijOvereenkomstigTNummer(MdlVerslagContent mdlVerslagContent, InstellingGebruiker instellingGebruiker)
-	{
-
-		List<PaVerslag> paVerslagen = verslagService.getPaVerslagMetTNummer(mdlVerslagContent);
-		for (PaVerslag paVerslag : paVerslagen)
-		{
-			Instelling mdlOrganisatie = instellingGebruiker.getOrganisatie();
-			Instelling paLab = paVerslag.getUitvoerderOrganisatie();
-			boolean paLabGekoppeld = false;
-			if (OrganisatieType.PA_LABORATORIUM.equals(paLab.getOrganisatieType()))
-			{
-				PaLaboratorium paLaboratorium = hibernateService.load(PaLaboratorium.class, paLab.getId());
-				for (Instelling locatie : paLaboratorium.getColoscopielocaties())
-				{
-					switch (mdlOrganisatie.getOrganisatieType())
-					{
-					case COLOSCOPIELOCATIE:
-						if (locatie.equals(mdlOrganisatie))
-						{
-							paLabGekoppeld = true;
-						}
-						break;
-					case ZORGINSTELLING:
-						if (locatie.getParent() != null && locatie.getParent().equals(mdlOrganisatie))
-						{
-							paLabGekoppeld = true;
-						}
-						break;
-					default:
-						break;
-					}
-				}
-			}
-			else
-			{
-				paLabGekoppeld = true;
-			}
-			if (!paLabGekoppeld)
-			{
-				throw new IllegalStateException("error.mdl.lab.niet.gekoppeld");
-			}
-		}
-	}
-
-	private void valideerOnderzoeksdatumInvoer(MdlVerslagContent mdlVerslagContent, boolean incidentComplicatieGeselecteerd)
-	{
-
-		var aanvangVerrichting = mdlVerslagContent.getVerrichting().getAanvangVerrichting();
-		var hasMdlVerslagWithOnderzoekDatum = verslagService.heeftMdlVerslagenMetOnderzoekDatum(mdlVerslagContent.getVerslag(), aanvangVerrichting);
-		if (hasMdlVerslagWithOnderzoekDatum)
-		{
-			throw new IllegalStateException("error.mdl.onderzoekdatum.al.gebruikt");
-		}
-		if (aanvangVerrichting != null && !complicatieService.magComplicatieVastleggen(aanvangVerrichting)
-			&& CollectionUtils.isNotEmpty(mdlVerslagContent.getVerrichting().getIncidentcomplicatie()) && incidentComplicatieGeselecteerd)
-		{
-			throw new IllegalStateException("error.mdl.complicaties.niet.meer.vastleggen");
-		}
-		if (getValideScreeningsRonde(mdlVerslagContent.getVerslag().getScreeningRonde().getDossier().getClient(), null, aanvangVerrichting) == null)
-		{
-			throw new IllegalStateException("error.aanvang.verrichting.voor.eerste.ongunstige.uitslag");
-		}
-	}
-
-	private void valideerSurveillanceInvoer(MdlVerslagContent mdlVerslagContent)
-	{
-
-		var vervolgbeleid = dossierBaseService.getVervolgbeleid(mdlVerslagContent.getVerslag());
-		var coloscopieMedischeObservatie = mdlVerslagContent.getColoscopieMedischeObservatie();
-		if (vervolgbeleid != null && coloscopieMedischeObservatie != null)
-		{
-			var periodeVervolgSurveillancescopie = coloscopieMedischeObservatie.getDefinitiefVervolgbeleidVoorBevolkingsonderzoekg().getPeriodeVervolgSurveillancescopie();
-			String code = null;
-			if (periodeVervolgSurveillancescopie != null)
-			{
-				code = periodeVervolgSurveillancescopie.getCode();
-			}
-			if (vervolgbeleid == MdlVervolgbeleid.SURVEILLANCE)
-			{
-				if (!SURVAILLANCE_CODES.contains(code))
-				{
-					throw new IllegalStateException("error.mdl.surveillance.alleen.1.3.5.jaar");
-				}
-			}
-			else if ((vervolgbeleid == MdlVervolgbeleid.POLIEPECTOMIE || vervolgbeleid == MdlVervolgbeleid.COLONOSCOPY || vervolgbeleid == MdlVervolgbeleid.COLONOSCOPY_NEW)
-				&& SURVAILLANCE_CODES.contains(code))
-			{
-				throw new IllegalStateException("error.mdl.scopieen.alleen.maanden");
-			}
-		}
-	}
-
-	private static int getIntegerValue(Quantity quantity)
-	{
-		int aantalNietIngezonden = 0;
-		if (quantity != null && NumberUtils.isCreatable(quantity.getValue()))
-		{
-			aantalNietIngezonden = (int) Double.parseDouble(quantity.getValue());
-		}
-		return aantalNietIngezonden;
 	}
 }

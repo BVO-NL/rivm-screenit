@@ -24,11 +24,6 @@ package nl.rivm.screenit.main.service.cervix.impl;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-
 import nl.rivm.screenit.dto.cervix.facturatie.CervixVerrichtingenZoekObject;
 import nl.rivm.screenit.main.service.RepositoryDataProviderService;
 import nl.rivm.screenit.model.Client_;
@@ -47,18 +42,18 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
-import static nl.rivm.screenit.specification.SpecificationUtil.join;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
+
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.filterBsn;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.filterGeboortedatum;
 import static nl.rivm.screenit.specification.cervix.CervixBetaalopdrachtSpecification.filterOpBetalingskenmerkContaining;
 import static nl.rivm.screenit.specification.cervix.CervixBoekRegelSpecification.filterAlleenVerrichtingen;
 import static nl.rivm.screenit.specification.cervix.CervixBoekRegelSpecification.filterAlleenZonderBetalingskenmerk;
 import static nl.rivm.screenit.specification.cervix.CervixBoekRegelSpecification.filterDebet;
-import static nl.rivm.screenit.specification.cervix.CervixBoekRegelSpecification.huisartsLocatieJoin;
 import static nl.rivm.screenit.specification.cervix.CervixBoekRegelSpecification.labformulierJoin;
-import static nl.rivm.screenit.specification.cervix.CervixBoekRegelSpecification.monsterJoin;
-import static nl.rivm.screenit.specification.cervix.CervixBoekRegelSpecification.persoonJoin;
-import static nl.rivm.screenit.specification.cervix.CervixBoekRegelSpecification.verrichtingJoin;
 import static nl.rivm.screenit.specification.cervix.CervixMonsterSpecification.filterMonsterId;
 import static nl.rivm.screenit.specification.cervix.CervixVerrichtingSpecification.filterScreeningOrganisatie;
 import static nl.rivm.screenit.specification.cervix.CervixVerrichtingSpecification.filterVerrichtingType;
@@ -113,27 +108,6 @@ public abstract class AbstractCervixBoekregelsDataProviderServiceImpl
 			var property = sortProperty.substring(LABFORMULIER_PROPERTY.length() + 1);
 			var exp = labformulierJoin(r, cb, JoinType.LEFT).get(property);
 			return order.isAscending() ? cb.asc(exp) : cb.desc(exp);
-		}
-		else if (sortProperty.startsWith(HUISARTS_LOCATIE_PROPERTY))
-		{
-			huisartsLocatieJoin(r);
-		}
-		else if (sortProperty.startsWith(MONSTER_PROPERTY))
-		{
-			monsterJoin(r);
-		}
-		else if (sortProperty.startsWith(PERSOON_PROPERTY))
-		{
-			persoonJoin(r);
-		}
-		else if (sortProperty.startsWith(REGIO_PROPERTY))
-		{
-			join(verrichtingJoin(r), CervixVerrichting_.regio);
-		}
-		else if (sortProperty.startsWith(BETAALOPDRACHT_PROPERTY))
-		{
-			join(join(join(r, CervixBoekRegel_.specificatie, JoinType.LEFT), CervixBetaalopdrachtRegelSpecificatie_.betaalopdrachtRegel, JoinType.LEFT),
-				CervixBetaalopdrachtRegel_.betaalopdracht, JoinType.LEFT);
 		}
 		return null;
 	}

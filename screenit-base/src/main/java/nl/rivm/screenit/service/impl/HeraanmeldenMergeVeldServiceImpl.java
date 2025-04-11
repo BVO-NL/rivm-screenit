@@ -63,14 +63,14 @@ public class HeraanmeldenMergeVeldServiceImpl implements HeraanmeldenMergeVeldSe
 	private PreferenceKey getBriefPreferenceKey(ClientBrief clientBrief)
 	{
 		ClientBrief brief = (ClientBrief) HibernateHelper.deproxy(clientBrief);
-		if (brief instanceof ColonBrief)
+		if (brief instanceof ColonBrief colonBrief)
 		{
-			IFOBTTest ifobtTest = ((ColonBrief) brief).getIfobtTest();
+			IFOBTTest ifobtTest = colonBrief.getIfobtTest();
 			return ifobtTest != null ? ifobtTest.getHeraanmeldenTekstKey() : null;
 		}
-		else if (brief instanceof CervixBrief)
+		else if (brief instanceof CervixBrief cervixBrief)
 		{
-			return ((CervixBrief) brief).getHeraanmeldenTekstKey();
+			return cervixBrief.getHeraanmeldenTekstKey();
 		}
 		else
 		{

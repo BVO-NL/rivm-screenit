@@ -24,8 +24,8 @@ package nl.rivm.screenit.model.mamma;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 

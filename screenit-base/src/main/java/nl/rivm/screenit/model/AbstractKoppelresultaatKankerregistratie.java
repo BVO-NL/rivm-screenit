@@ -22,7 +22,9 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Entity;
+import java.io.Serial;
+
+import jakarta.persistence.Entity;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -32,6 +34,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 public abstract class AbstractKoppelresultaatKankerregistratie<SR> extends TablePerClassHibernateObject
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	public abstract SR getScreeningsRonde();

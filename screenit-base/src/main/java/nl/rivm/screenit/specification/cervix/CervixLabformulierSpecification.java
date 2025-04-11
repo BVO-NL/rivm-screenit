@@ -24,9 +24,8 @@ package nl.rivm.screenit.specification.cervix;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.JoinType;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -63,7 +62,7 @@ import nl.rivm.screenit.model.cervix.facturatie.CervixBoekRegel;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import static nl.rivm.screenit.model.cervix.CervixLabformulierenFilter.LabprocesStap;
@@ -223,7 +222,7 @@ public class CervixLabformulierSpecification
 		return (r, q, cb) -> cb.equal(r.get(CervixLabformulier_.digitaal), heeftDigitaal);
 	}
 
-	public static Specification<CervixLabformulier> heeftStatussen(List<CervixUitstrijkjeStatus> statussen)
+	public static ExtendedSpecification<CervixLabformulier> heeftStatussen(List<CervixUitstrijkjeStatus> statussen)
 	{
 		return (r, q, cb) ->
 		{
@@ -251,7 +250,7 @@ public class CervixLabformulierSpecification
 		}
 	}
 
-	public static From<Client, GbaPersoon> persoonJoin(Root<CervixLabformulier> labformulierRoot, JoinType joinType)
+	public static From<Client, GbaPersoon> persoonJoin(From<?, ? extends CervixLabformulier> labformulierRoot, JoinType joinType)
 	{
 		var uitstrijkjeJoin = join(labformulierRoot, CervixLabformulier_.uitstrijkje, joinType);
 		var uitnodigingJoin = join(uitstrijkjeJoin, CervixMonster_.uitnodiging, joinType);
@@ -261,7 +260,7 @@ public class CervixLabformulierSpecification
 		return join(clientJoin, Client_.persoon, joinType);
 	}
 
-	private static From<Gemeente, ScreeningOrganisatie> screeningOrganisatieJoin(Root<CervixLabformulier> labformulierRoot)
+	private static From<Gemeente, ScreeningOrganisatie> screeningOrganisatieJoin(From<?, ? extends CervixLabformulier> labformulierRoot)
 	{
 		var persoonJoin = persoonJoin(labformulierRoot, JoinType.INNER);
 		var adresJoin = join(persoonJoin, GbaPersoon_.gbaAdres);

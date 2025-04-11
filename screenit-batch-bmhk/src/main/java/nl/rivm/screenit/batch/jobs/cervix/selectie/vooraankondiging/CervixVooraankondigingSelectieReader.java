@@ -21,9 +21,6 @@ package nl.rivm.screenit.batch.jobs.cervix.selectie.vooraankondiging;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.jobs.cervix.CervixLabPartitioner;
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
@@ -44,6 +41,9 @@ import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
 
 import static nl.rivm.screenit.model.DossierStatus.ACTIEF;
 import static nl.rivm.screenit.specification.ExtendedSpecification.not;

@@ -22,10 +22,12 @@ package nl.rivm.screenit.model.colon;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToOne;
+import java.io.Serial;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
 
 import nl.rivm.screenit.model.colon.verslag.pa.PaVerslagContent;
 
@@ -40,6 +42,7 @@ import org.hibernate.envers.NotAudited;
 public class PaVerslag extends ColonVerslag<PaVerslagContent>
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)

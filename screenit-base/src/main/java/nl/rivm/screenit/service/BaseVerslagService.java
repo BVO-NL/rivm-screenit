@@ -21,11 +21,13 @@ package nl.rivm.screenit.service;
  * =========================LICENSE_END==================================
  */
 
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.berichten.Verslag;
+import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.PaVerslag;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerslagContent;
@@ -54,4 +56,6 @@ public interface BaseVerslagService
 	boolean heeftMdlVerslagenMetOnderzoekDatum(MdlVerslag verslag, Date onderzoekDatum);
 
 	void setBerichtenOpnieuwVerwerken(List<Long> ids);
+
+	void getBerichtXml(OntvangenCdaBericht ontvangenCdaBericht, OutputStream outputStream);
 }

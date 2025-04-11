@@ -35,7 +35,9 @@ import nl.rivm.screenit.model.enums.JobType;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
@@ -47,7 +49,7 @@ public class CervixBriefJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Job brievenJob(CervixBriefListener listener, Step brievenCleanupStep, Step brievenGenererenPartitionerStep, Step brievenControleStep)
 	{
-		return jobBuilderFactory.get(JobType.CERVIX_BRIEVEN.name())
+		return new JobBuilder(JobType.CERVIX_BRIEVEN.name(), repository)
 			.listener(listener)
 			.start(brievenCleanupStep)
 			.next(brievenGenererenPartitionerStep)
@@ -58,9 +60,8 @@ public class CervixBriefJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step brievenCleanupStep(CervixBriefCleanupReader reader, CervixBriefCleanupWriter writer)
 	{
-		return stepBuilderFactory.get("brievenCleanupStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("brievenCleanupStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -69,8 +70,7 @@ public class CervixBriefJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step brievenGenererenPartitionerStep(CervixBrievenGenererenPartitioner partitioner, TaskExecutorPartitionHandler brievenPartitionHandler, Step brievenGenererenStep)
 	{
-		return stepBuilderFactory.get("brievenGenererenPartitionerStep")
-			.transactionManager(transactionManager)
+		return new StepBuilder("brievenGenererenPartitionerStep", repository)
 			.partitioner("brievenGenererenStep", partitioner)
 			.partitionHandler(brievenPartitionHandler)
 			.step(brievenGenererenStep)
@@ -90,9 +90,8 @@ public class CervixBriefJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step brievenControleStep(CervixBrievenControleReader reader, CervixBrievenControleWriter writer)
 	{
-		return stepBuilderFactory.get("brievenControleStep")
-			.transactionManager(transactionManager)
-			.<Long, Long> chunk(250)
+		return new StepBuilder("brievenControleStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -101,9 +100,8 @@ public class CervixBriefJobConfiguration extends AbstractJobConfiguration
 	@Bean
 	public Step brievenGenererenStep(CervixBrievenGenererenReader reader, CervixBrievenGenererenProcessor processor, CervixBrievenGenererenWriter writer)
 	{
-		return stepBuilderFactory.get("brievenGenererenStep")
-			.transactionManager(transactionManager)
-			.<Long, CervixBrief> chunk(50)
+		return new StepBuilder("brievenGenererenStep", repository)
+			.<Long, CervixBrief> chunk(50, transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)

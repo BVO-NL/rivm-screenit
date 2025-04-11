@@ -32,9 +32,10 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.table.ActiefPropertyColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.medewerker.MedewerkerDataProvider;
+import nl.rivm.screenit.model.Functie_;
 import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Gebruiker_;
 import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruikerRol;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
@@ -60,6 +61,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+
+import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
 public abstract class MedewerkerSmallZoekPanel extends GenericPanel<Gebruiker>
 {
@@ -91,9 +94,9 @@ public abstract class MedewerkerSmallZoekPanel extends GenericPanel<Gebruiker>
 	{
 		super.onInitialize();
 
-		var loggedInInstellingGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
+		var ingelogdeOrganisatieMedewerker = ScreenitSession.get().getLoggedInInstellingGebruiker();
 
-		var toegangLevel = autorisatieService.getToegangLevel(ScreenitSession.get().getLoggedInInstellingGebruiker(), minimumActie, true,
+		var toegangLevel = autorisatieService.getToegangLevel(ingelogdeOrganisatieMedewerker, minimumActie, true,
 			Recht.GEBRUIKER_MEDEWERKER_BEHEER);
 		var searchObject = new Gebruiker();
 		searchObject.setActief(Boolean.TRUE);
@@ -101,7 +104,7 @@ public abstract class MedewerkerSmallZoekPanel extends GenericPanel<Gebruiker>
 		{
 			searchObject.setOrganisatieMedewerkers(new ArrayList<>());
 			searchObject.getOrganisatieMedewerkers().add(new InstellingGebruiker());
-			searchObject.getOrganisatieMedewerkers().get(0).setOrganisatie(loggedInInstellingGebruiker.getOrganisatie());
+			searchObject.getOrganisatieMedewerkers().get(0).setOrganisatie(ingelogdeOrganisatieMedewerker.getOrganisatie());
 		}
 
 		var searchObjectModel = ModelUtil.ccModel(searchObject);
@@ -171,7 +174,7 @@ public abstract class MedewerkerSmallZoekPanel extends GenericPanel<Gebruiker>
 		setVorigZoekObject(searchObject);
 
 		return new ScreenitDataTable<>("medewerkers", columns,
-			new MedewerkerDataProvider("achternaam", getModel()), new Model<>("medewerkers"))
+			new MedewerkerDataProvider(Gebruiker_.ACHTERNAAM, getModel()), new Model<>("medewerkers"))
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<Gebruiker> model)
@@ -195,7 +198,7 @@ public abstract class MedewerkerSmallZoekPanel extends GenericPanel<Gebruiker>
 	{
 		List<IColumn<Gebruiker, String>> columns = new ArrayList<>();
 
-		columns.add(new PropertyColumn<>(Model.of("Naam medewerker"), "achternaam", "naamVolledigMetVoornaam"));
+		columns.add(new PropertyColumn<>(Model.of("Naam medewerker"), Gebruiker_.ACHTERNAAM, "naamVolledigMetVoornaam"));
 		columns.add(new PropertyColumn<>(Model.of("Organisaties"), "instelling")
 		{
 			@Override
@@ -233,7 +236,7 @@ public abstract class MedewerkerSmallZoekPanel extends GenericPanel<Gebruiker>
 				item.add(new Label(componentId, organisaties));
 			}
 		});
-		columns.add(new PropertyColumn<>(Model.of("Functie"), "functie", "functie.naam"));
+		columns.add(new PropertyColumn<>(Model.of("Functie"), propertyChain(Gebruiker_.FUNCTIE, Functie_.FUNCTIE), "functie.naam"));
 		columns.add(new ActiefPropertyColumn<>(Model.of(""), "actief", medewerkersContainer, searchModel));
 
 		return columns;

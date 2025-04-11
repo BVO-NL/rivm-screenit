@@ -50,7 +50,6 @@ import nl.rivm.screenit.repository.cervix.CervixLabTariefRepository;
 import nl.rivm.screenit.util.cervix.CervixTariefUtil;
 
 import org.hibernate.Hibernate;
-import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -69,9 +68,6 @@ import static nl.rivm.screenit.specification.cervix.CervixVerrichtingSpecificati
 @Slf4j
 public class CervixVerrichtingServiceImpl implements CervixVerrichtingService
 {
-	@Autowired
-	private SessionFactory sessionFactory;
-
 	@Autowired
 	@Qualifier("cervixLabBoekregelsDataProviderService")
 	private CervixLabBoekregelsDataProviderServiceImpl labBoekregelsDataProviderService;

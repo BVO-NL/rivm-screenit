@@ -23,10 +23,6 @@ package nl.rivm.screenit.batch.jobs.mamma.uitnodigen.afronden;
 
 import java.time.LocalDate;
 
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
-
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.Constants;
@@ -49,6 +45,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Range;
+
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
 
 import static nl.rivm.screenit.model.enums.Deelnamemodus.SELECTIEBLOKKADE;
 import static nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus.GEPLAND;

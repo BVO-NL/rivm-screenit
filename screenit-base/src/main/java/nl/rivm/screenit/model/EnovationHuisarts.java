@@ -22,8 +22,10 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import java.io.Serial;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 import org.hibernate.envers.Audited;
 
@@ -33,6 +35,7 @@ import org.hibernate.envers.Audited;
 public class EnovationHuisarts extends Huisarts
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 }

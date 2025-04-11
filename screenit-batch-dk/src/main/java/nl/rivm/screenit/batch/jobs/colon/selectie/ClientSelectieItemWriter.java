@@ -76,6 +76,7 @@ import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.stereotype.Component;
@@ -112,13 +113,13 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 	private StepExecution stepExecution;
 
 	@Override
-	public void write(List<? extends ClientCategorieEntry> items)
+	public void write(Chunk<? extends ClientCategorieEntry> chunk)
 	{
 		var selectieRapportage = hibernateService.load(SelectieRapportage.class,
 			stepExecution.getJobExecution().getExecutionContext().getLong(SelectieConstants.RAPPORTAGEKEYSELECTIE));
 		int aantalRondesUitnodigingsbriefZonderFit = simplePreferenceService.getInteger(PreferenceKey.COLON_AANTAL_RONDES_UITNODIGINGSBRIEF_ZONDER_FIT.name());
 
-		for (var categorieEntry : items)
+		for (var categorieEntry : chunk.getItems())
 		{
 			var client = hibernateService.load(Client.class, categorieEntry.getClientId());
 
@@ -223,6 +224,12 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 			hibernateService.saveOrUpdate(laatsteScreeningRonde);
 			hibernateService.saveOrUpdate(dossier);
 			dossierBaseService.setDatumVolgendeUitnodiging(dossier, ColonUitnodigingsintervalType.UITNODIGING_ONTVANGEN);
+
+			var gebruikAfwijkingUitnodigingsinterval = dossier.getVolgendeUitnodiging().getGebruikAfwijkingUitnodigingsinterval();
+			if (gebruikAfwijkingUitnodigingsinterval != null && gebruikAfwijkingUitnodigingsinterval > 0)
+			{
+				dossier.getVolgendeUitnodiging().setGebruikAfwijkingUitnodigingsinterval(gebruikAfwijkingUitnodigingsinterval - 1);
+			}
 
 			if (pClient != null && pClient.getProject() != null)
 			{

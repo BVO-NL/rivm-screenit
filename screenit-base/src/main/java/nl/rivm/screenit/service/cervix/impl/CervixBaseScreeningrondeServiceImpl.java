@@ -436,9 +436,9 @@ public class CervixBaseScreeningrondeServiceImpl implements CervixBaseScreeningr
 	public CervixScreeningRonde getOntvangstRondeVoorMonster(CervixMonster monster)
 	{
 		var peilmoment = monster.getOntvangstdatum();
-		if (monster instanceof CervixUitstrijkje)
+		if (monster instanceof CervixUitstrijkje uitstrijkje)
 		{
-			var labformulier = ((CervixUitstrijkje) monster).getLabformulier();
+			var labformulier = uitstrijkje.getLabformulier();
 			if (labformulier != null
 				&& (peilmoment == null || DateUtil.compareBefore(labformulier.getScanDatum(), peilmoment))
 				&& (labformulier.getStatus() == CervixLabformulierStatus.GECONTROLEERD

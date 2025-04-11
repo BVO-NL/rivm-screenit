@@ -25,13 +25,13 @@ package nl.rivm.screenit.model.logging;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.verwerkingverslag.SelectieRapportage;
@@ -50,7 +50,7 @@ public class SelectieRondeBeeindigdLogEvent extends LogEvent
 	@CollectionTable(schema = "gedeeld", name = "selectie_ronde_beeindigd_log_event_exception_stack_trace")
 	private List<String> exceptionStackTrace = new ArrayList<>();
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = javax.persistence.CascadeType.REMOVE)
+	@OneToOne(fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.REMOVE)
 	@Cascade(CascadeType.DELETE)
 	private SelectieRapportage rapportage;
 

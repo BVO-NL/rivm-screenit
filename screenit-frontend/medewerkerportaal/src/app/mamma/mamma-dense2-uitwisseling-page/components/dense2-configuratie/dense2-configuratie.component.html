@@ -1,0 +1,72 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-card>
+  <div header>Configuratie</div>
+  <div body>
+    <div class="mb-3">Vul hier de configuratie in voor de DENSE-2 studie. Links ziet u de projecten waarvoor de configuratie geldt en rechts de projectnaam.</div>
+
+    <form [formGroup]="configuratieForm" clrForm clrLayout="horizontal" clrLabelSize="4">
+      <clr-input-container>
+        <label class="clr-required-mark" for="cem">DENSE-2 CEM</label>
+        <input clrInput autocomplete="off" formControlName="cem" id="cem" type="text"
+               data-testid="input_cem"/>
+        <clr-control-error *clrIfError="'required'">CEM is verplicht</clr-control-error>
+      </clr-input-container>
+      <clr-input-container>
+        <label class="clr-required-mark" for="mri">DENSE-2 MRI</label>
+        <input clrInput autocomplete="off" formControlName="mri" id="mri" type="text"
+               data-testid="input_mri"/>
+        <clr-control-error *clrIfError="'required'">MRI is verplicht</clr-control-error>
+      </clr-input-container>
+      <clr-input-container>
+        <label class="clr-required-mark" for="controleGroep">DENSE-2 Controlegroep</label>
+        <input clrInput autocomplete="off" formControlName="controleGroep" id="controleGroep" type="text"
+               data-testid="input_controlegroep"/>
+        <clr-control-error *clrIfError="'required'">Controlegroep is verplicht</clr-control-error>
+      </clr-input-container>
+      <clr-input-container>
+        <label class="clr-required-mark" for="herinneringCem">DENSE-2 Herinnering CEM</label>
+        <input clrInput autocomplete="off" formControlName="herinneringCem" id="herinneringCem" type="text"
+               data-testid="input_herinnering_cem"/>
+        <clr-control-error *clrIfError="'required'">Herinnering CEM is verplicht</clr-control-error>
+      </clr-input-container>
+
+      <clr-input-container>
+        <label class="clr-required-mark" for="herinneringMri">DENSE-2 Herinnering MRI</label>
+        <input clrInput autocomplete="off" formControlName="herinneringMri" id="herinneringMri" type="text"
+               data-testid="input_herinnering_mri"/>
+        <clr-control-error *clrIfError="'required'">Herinnering MRI is verplicht</clr-control-error>
+      </clr-input-container>
+
+      <app-project-selector formControlName="excludeProjecten" label="Deelnemers uit deze projecten excluderen"/>
+
+      <clr-toggle-container>
+        <label for="metingOpslaan" class="meting-opslaan">Densiteit meting DENSE-2 opslaan</label>
+        <clr-toggle-wrapper>
+          <input type="checkbox" clrToggle id="metingOpslaan" value="true" formControlName="metingOpslaan" class="clr-col-md-8 clr-col-12"/>
+          <label for="metingOpslaan">{{ metingOpslaanCtrl.value ? 'Aan' : 'Uit' }}</label>
+        </clr-toggle-wrapper>
+      </clr-toggle-container>
+
+    </form>
+  </div>
+  <button footer class="btn btn-primary" [disabled]="configuratieForm.invalid" (click)="configuratieOpslaan()">Opslaan</button>
+</app-card>

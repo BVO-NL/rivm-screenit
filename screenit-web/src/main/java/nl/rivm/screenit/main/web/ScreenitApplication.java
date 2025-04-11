@@ -31,10 +31,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import net.ftlines.wicketsource.WicketSource;
-
-import nl.dries.wicket.hibernate.dozer.SessionFinder;
-import nl.dries.wicket.hibernate.dozer.SessionFinderHolder;
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.service.ZorgIdSessieService;
 import nl.rivm.screenit.main.web.ScreenitSession.ScreenitSessionRevisionInformationResolverDelegate;
@@ -47,7 +43,6 @@ import nl.rivm.screenit.main.web.component.TimeLocalTimeConverter;
 import nl.rivm.screenit.main.web.error.ErrorPage;
 import nl.rivm.screenit.main.web.error.PageExpiredPage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.verslag.ClientVerslagPage;
-import nl.rivm.screenit.main.web.gebruiker.gedeeld.formulieren.ScreenitExpressieProvider;
 import nl.rivm.screenit.main.web.gebruiker.login.MedewerkerLoginMethodPage;
 import nl.rivm.screenit.main.web.gebruiker.login.OrganisatieSelectiePage;
 import nl.rivm.screenit.main.web.gebruiker.login.PasswordChangePage;
@@ -58,8 +53,6 @@ import nl.rivm.screenit.model.envers.RevisionInformationResolver;
 import nl.rivm.screenit.model.envers.RevisionKenmerkInThreadHolder;
 import nl.topicuszorg.cloud.distributedsessions.RedisConfig;
 import nl.topicuszorg.cloud.distributedsessions.wicket.RedisPageManagerProvider;
-import nl.topicuszorg.formulieren2.expressie.ExpressieSettings;
-import nl.topicuszorg.formulieren2.expressie.definitie.IExpressieProvider;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 import nl.topicuszorg.wicket.hibernate.util.EntityAndSerializableCheckerListener;
 import nl.topicuszorg.wicket.input.converters.DoubleConverter;
@@ -74,7 +67,6 @@ import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.AjaxRequestTarget.IJavaScriptResponse;
 import org.apache.wicket.ajax.AjaxRequestTarget.IListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.coop.CrossOriginOpenerPolicyConfiguration;
@@ -85,6 +77,7 @@ import org.apache.wicket.csp.CSPDirectiveSrcValue;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxLazyLoadPanel;
 import org.apache.wicket.feedback.FeedbackMessages;
 import org.apache.wicket.markup.html.pages.ExceptionErrorPage;
+import org.apache.wicket.protocol.http.ResourceIsolationRequestCycleListener;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IExceptionMapper;
 import org.apache.wicket.request.IRequestHandler;
@@ -100,7 +93,18 @@ import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.jennybrown8.wicketsource.WicketSource;
 import com.googlecode.wicket.jquery.ui.settings.JQueryUILibrarySettings;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.function.Supplier;
 
 @org.springframework.stereotype.Component
 public class ScreenitApplication extends WebApplication
@@ -121,7 +125,6 @@ public class ScreenitApplication extends WebApplication
 		super.init();
 
 		RevisionInformationResolver.registerDelegate(new ScreenitSessionRevisionInformationResolverDelegate());
-		SessionFinderHolder.setSessionFinder(ApplicationContextProvider.getApplicationContext().getBean(SessionFinder.class));
 		sessionAttributePrefix = getSessionAttributePrefix(null, null);
 
 		readVersie();
@@ -130,16 +133,18 @@ public class ScreenitApplication extends WebApplication
 		getMarkupSettings().setStripWicketTags(true);
 		getPageSettings().setRecreateBookmarkablePagesAfterExpiry(false);
 
-		getRequestCycleListeners().add(new ScreenITCsrfRequestCycleListener());
+		getRequestCycleListeners().add(new ResourceIsolationRequestCycleListener(new ScreenITOriginResourceIsolationPolicy()));
 
 		getCspSettings().blocking().strict().remove(CSPDirective.DEFAULT_SRC)
 			.add(CSPDirective.DEFAULT_SRC, CSPDirectiveSrcValue.SELF)
 			.add(CSPDirective.OBJECT_SRC, CSPDirectiveSrcValue.SELF)
+			.add(CSPDirective.FRAME_SRC, "'self'", "blob:")
 			.add(CSPDirective.STYLE_SRC, CSPDirectiveSrcValue.SELF)
 			.add(CSPDirective.FONT_SRC, CSPDirectiveSrcValue.SELF)
 			.add(CSPDirective.FRAME_ANCESTORS, CSPDirectiveSrcValue.SELF)
 			.add(CSPDirective.IMG_SRC, "data:")
-			.add(CSPDirective.CONNECT_SRC, "https://browser-intake-datadoghq.eu", "https://www.datadoghq-browser-agent.com");
+			.add(CSPDirective.CONNECT_SRC, "https://browser-intake-datadoghq.eu", "https://www.datadoghq-browser-agent.com")
+			.add(CSPDirective.FORM_ACTION, CSPDirectiveSrcValue.SELF);
 		getSecuritySettings().setCrossOriginOpenerPolicyConfiguration(CrossOriginOpenerPolicyConfiguration.CoopMode.SAME_ORIGIN_ALLOW_POPUPS);
 
 		ScreenitAnnotationsShiroAuthorizationStrategy authz = new ScreenitAnnotationsShiroAuthorizationStrategy();
@@ -160,9 +165,8 @@ public class ScreenitApplication extends WebApplication
 			@Override
 			public void onBeforeRespond(Map<String, Component> map, AjaxRequestTarget target)
 			{
-				if (target.getPage() instanceof BasePage)
+				if (target.getPage() instanceof BasePage basePage)
 				{
-					BasePage basePage = (BasePage) target.getPage();
 					if (map != null && map.size() == 1 && map.values().toArray()[0] instanceof AjaxLazyLoadPanel)
 					{
 						boolean sessionFeedbackMessages = !Session.get().getFeedbackMessages().isEmpty();
@@ -202,13 +206,8 @@ public class ScreenitApplication extends WebApplication
 			}
 
 			@Override
-			public void onAfterRespond(Map<String, Component> map, IJavaScriptResponse response)
+			public void onAfterRespond(Map<String, Component> map, AjaxRequestTarget response)
 			{
-				IExpressieProvider expressieProvider = ExpressieSettings.getExpressieProvider();
-				if (expressieProvider instanceof ScreenitExpressieProvider)
-				{
-					((ScreenitExpressieProvider) expressieProvider).resetCache();
-				}
 				RevisionKenmerkInThreadHolder.resetKenmerk();
 			}
 
@@ -220,12 +219,11 @@ public class ScreenitApplication extends WebApplication
 
 		if (RuntimeConfigurationType.DEPLOYMENT != getConfigurationType())
 		{
-			getRequestCycleListeners().add(new EntityAndSerializableCheckerListener(new Class[] { OrganisatieSelectiePage.class }, true));
+			getRequestCycleListeners().add(new EntityAndSerializableCheckerListener(new Class[] { OrganisatieSelectiePage.class }, false));
 			WicketSource.configure(this);
 		}
 
 		getJavaScriptLibrarySettings().setJQueryReference(JQueryResourceReference.getV3());
-
 		JQueryUILibrarySettings jQueryUILibrarySettings = JQueryUILibrarySettings.get();
 		jQueryUILibrarySettings.setJavaScriptReference(new JavaScriptResourceReference(ScreenitApplication.class, "jquery-ui-1.10.3.js"));
 
