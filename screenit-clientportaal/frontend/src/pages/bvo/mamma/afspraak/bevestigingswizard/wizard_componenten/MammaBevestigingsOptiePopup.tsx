@@ -62,19 +62,17 @@ const MammaBevestigingsOptiePopup = (props: MammaBevestigingsOptiePopupProps) =>
 								props.afspraakBevestiging.bevestigingsType = BevestigingsType.MAIL
 								props.onVolgende()
 							}}>
-						{formikProps => (
+						{({errors, values, isSubmitting, setFieldValue, handleSubmit}) => (
 							<><ScreenitTextfield name={"mail"}
 												 placeholder={"E-mailadres"}
-												 value={formikProps.values.clientNieuwEmailAdres}
-												 invalidMessage={formikProps.errors.clientNieuwEmailAdres}
-												 onChange={value => {
-													 formikProps.setFieldValue("clientNieuwEmailAdres", value)
-												 }}/>
+												 value={values.clientNieuwEmailAdres}
+												 invalidMessage={errors.clientNieuwEmailAdres}
+												 onChange={value => setFieldValue("clientNieuwEmailAdres", value)}/>
 								<Button label={properties.mail.mail_knop_tekst}
-										disableButton={formikProps.isSubmitting}
+										disableButton={isSubmitting}
 										onClick={() => {
-											props.afspraakBevestiging.clientNieuwEmailAdres = formikProps.values.clientNieuwEmailAdres
-											formikProps.handleSubmit()
+											props.afspraakBevestiging.clientNieuwEmailAdres = values.clientNieuwEmailAdres
+											handleSubmit()
 										}}
 										displayArrow={ArrowType.ARROW_RIGHT}/></>)}
 					</Formik>

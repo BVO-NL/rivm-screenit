@@ -83,13 +83,17 @@ public class ApplicationConfiguration
 			{
 				throw new UserNotFoundException("Inloggen mislukt. Gebruiker niet gevonden.");
 			}
-			if (AanmeldStatus.GEREGISTREERD != huisarts.getAanmeldStatus() && huisarts.getInlogCode() != null)
+
+			if (huisarts.getInlogCode() != null)
 			{
-				throw new CredentialsExpiredException("U moet zich eerst opnieuw registreren voor u weer kunt inloggen. Volg de instructies die u per brief heeft ontvangen.");
-			}
-			if (AanmeldStatus.GEREGISTREERD == huisarts.getAanmeldStatus() && huisarts.getInlogCode() != null)
-			{
-				throw new CredentialsExpiredException("U heeft een nieuw wachtwoord aangevraagd. Volg de instructies die u per e-mail heeft ontvangen.");
+				if (AanmeldStatus.GEREGISTREERD == huisarts.getAanmeldStatus())
+				{
+					throw new CredentialsExpiredException("U moet zich eerst opnieuw registreren voor u weer kunt inloggen. Volg de instructies die u per brief heeft ontvangen.");
+				}
+				if (AanmeldStatus.WACHTWOORD_RESET != huisarts.getAanmeldStatus())
+				{
+					throw new CredentialsExpiredException("U heeft een nieuw wachtwoord aangevraagd. Volg de instructies die u per e-mail heeft ontvangen.");
+				}
 			}
 			if (!huisarts.isAccountNonLocked())
 			{

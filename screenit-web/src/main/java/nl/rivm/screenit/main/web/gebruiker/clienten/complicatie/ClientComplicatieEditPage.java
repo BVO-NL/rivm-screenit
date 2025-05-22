@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import nl.rivm.screenit.main.service.VerslagService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
@@ -50,6 +49,7 @@ import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.ScopeService;
+import nl.rivm.screenit.service.colon.ColonVerwerkVerslagService;
 import nl.rivm.screenit.service.colon.ComplicatieService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
@@ -96,7 +96,7 @@ public class ClientComplicatieEditPage extends ClientPage
 	private LogService logService;
 
 	@SpringBean
-	private VerslagService verslagService;
+	private ColonVerwerkVerslagService verwerkVerslagService;
 
 	boolean inactiefTonen = Boolean.TRUE;
 
@@ -155,48 +155,48 @@ public class ClientComplicatieEditPage extends ClientPage
 		form.add(momentChoice);
 
 		ScreenitDropdown<MdlVerslag> mdlVerslagen = new ScreenitDropdown<MdlVerslag>("mdlverslag",
-			ModelUtil.listRModel(verslagService.getAlleMdlVerslagenVanClient(client.getObject())), new IChoiceRenderer<MdlVerslag>()
+			ModelUtil.listRModel(verwerkVerslagService.getAlleMdlVerslagenVanClient(client.getObject())), new IChoiceRenderer<MdlVerslag>()
+		{
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public Object getDisplayValue(MdlVerslag object)
 			{
-
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public Object getDisplayValue(MdlVerslag object)
+				DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+				String date = "";
+				if (object.getDatumOnderzoek() != null)
 				{
-					DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
-					String date = "";
-					if (object.getDatumOnderzoek() != null)
-					{
-						date += df.format(object.getDatumOnderzoek());
-						date += " - ";
-					}
-					if (object.getUitvoerderOrganisatie() != null)
-					{
-						date += object.getUitvoerderOrganisatie().getNaam();
-					}
-					if (date.equals("") || date.isEmpty())
-					{
-						date = "MDL verslag binnen ScreenIT";
-					}
-					return date;
+					date += df.format(object.getDatumOnderzoek());
+					date += " - ";
 				}
-
-				@Override
-				public String getIdValue(MdlVerslag object, int index)
+				if (object.getUitvoerderOrganisatie() != null)
 				{
-					return object.getId().toString();
+					date += object.getUitvoerderOrganisatie().getNaam();
 				}
-
-				@Override
-				public MdlVerslag getObject(String id, IModel<? extends List<? extends MdlVerslag>> choices)
+				if (date.equals("") || date.isEmpty())
 				{
-					if (id != null)
-					{
-						return choices.getObject().stream().filter(o -> o.getId().toString().equals(id)).findFirst().orElse(null);
-					}
-					return null;
+					date = "MDL verslag binnen ScreenIT";
 				}
-			});
+				return date;
+			}
+
+			@Override
+			public String getIdValue(MdlVerslag object, int index)
+			{
+				return object.getId().toString();
+			}
+
+			@Override
+			public MdlVerslag getObject(String id, IModel<? extends List<? extends MdlVerslag>> choices)
+			{
+				if (id != null)
+				{
+					return choices.getObject().stream().filter(o -> o.getId().toString().equals(id)).findFirst().orElse(null);
+				}
+				return null;
+			}
+		});
 		mdlVerslagen.setNullValid(true);
 		mdlVerslagen.setEnabled(toegangsLevelInzien != null);
 

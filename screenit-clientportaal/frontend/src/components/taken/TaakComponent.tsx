@@ -25,7 +25,7 @@ import {BevolkingsonderzoekStyle, BevolkingsonderzoekToptaakStyle} from "../../d
 import bvoStyle from "../BvoStyle.module.scss"
 import {useSelectedBvo} from "../../utils/Hooks"
 import {RoutePath} from "../../routes/routes"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 
 export type TaakComponentProps = {
 	tekst: string,

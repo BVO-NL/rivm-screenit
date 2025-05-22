@@ -33,14 +33,13 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.ContentDisposition;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 @Slf4j
 public class CdaVerslagErrorDownloadCdaPanel extends GenericPanel<BerichtOntvangenLogEvent>
 {
-
-	@Autowired
+	@SpringBean
 	private BaseVerslagService verslagService;
 
 	public CdaVerslagErrorDownloadCdaPanel(String id, IModel<BerichtOntvangenLogEvent> model)

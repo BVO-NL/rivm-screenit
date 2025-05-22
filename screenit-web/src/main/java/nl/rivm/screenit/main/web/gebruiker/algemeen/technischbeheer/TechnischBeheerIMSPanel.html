@@ -20,67 +20,82 @@
   -->
 <html xmlns:wicket="http://wicket.apache.org">
 <wicket:panel>
-    <form wicket:id="imsConfigForm">
-        <fieldset>
-            <div class="row-fluid">
-                <div class="span12">
-                    <legend>IMS settings</legend>
-                </div>
-            </div>
-            <div class="row-fluid">
-                <div class="span6">
-                    <div class="control-group">
-                        <label class="control-label">Host name</label>
-                        <div class="controls">
-                            <input type="text" wicket:id="hostName" class="input-xxlarge">
-                        </div>
-                    </div>
+	<form wicket:id="imsConfigForm">
+		<fieldset>
+			<div class="row-fluid">
+				<div class="span12">
+					<legend>IMS settings</legend>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span6">
+					<div class="control-group">
+						<label class="control-label">Host name</label>
+						<div class="controls">
+							<input type="text" wicket:id="hostName" class="input-xxlarge">
+						</div>
+					</div>
 
-                    <div class="control-group">
-                        <label class="control-label">ORM poort:</label>
-                        <div class="controls">
-                            <input type="number" wicket:id="ormPort" class="input-xxlarge">
-                        </div>
-                    </div>
+					<div class="control-group">
+						<label class="control-label">ORM poort:</label>
+						<div class="controls">
+							<input type="number" wicket:id="ormPort" class="input-xxlarge">
+						</div>
+					</div>
 
-                    <div class="control-group">
-                        <label class="control-label">ADT poort:</label>
-                        <div class="controls">
-                            <input type="number" wicket:id="adtPort" class="input-xxlarge">
-                        </div>
-                    </div>
+					<div class="control-group">
+						<label class="control-label">ADT poort:</label>
+						<div class="controls">
+							<input type="number" wicket:id="adtPort" class="input-xxlarge">
+						</div>
+					</div>
 
-                    <div class="control-group">
-                        <label class="control-label">ILM poort:</label>
-                        <div class="controls">
-                            <input type="number" wicket:id="ilmPort" class="input-xxlarge">
-                        </div>
-                    </div>
-                </div>
+					<div class="control-group">
+						<label class="control-label">ILM poort:</label>
+						<div class="controls">
+							<input type="number" wicket:id="ilmPort" class="input-xxlarge">
+						</div>
+					</div>
 
-                <div class="span6">
-                    <div class="control-group">
-                        <label class="control-label">Bezwaar termijn verwijderde beelden:</label>
-                        <div class="controls">
-                            <input type="number" wicket:id="bezwaarTermijnVerwijderdeBeelden" class="input-xxlarge"> dagen
-                        </div>
-                    </div>
+					<div class="control-group">
+						<label class="control-label">Launch URL wachtwoord:</label>
+						<div class="controls">
+							<input type="text" wicket:id="launchUrlPassword" class="input-xxlarge">
+						</div>
+					</div>
 
-                    <div class="control-group">
-                        <label class="control-label">IMS berichten wachtrij waarschuwingsdrempel:</label>
-                        <div class="controls">
-                            <input type="number" wicket:id="imsQueueSizeWarningThreshold" class="input-xxlarge">
-                        </div>
-                    </div>
-                </div>
+					<div class="control-group">
+						<label class="control-label">Launch URL oude SHA1 modus:</label>
+						<div class="controls">
+							<input type="checkbox" wicket:id="launchUrlSha1Mode">
+						</div>
+					</div>
 
-                <div class="btn-top dropdown right">
-                    <button wicket:id="submitIMSConfiguratie" class="btn btn-primary" type="button">
-                        Opslaan IMS configuratie
-                    </button>
-                </div>
-            </div>
-        </fieldset>
-    </form>
+				</div>
+
+				<div class="span6">
+					<div class="control-group">
+						<label class="control-label">Bezwaar termijn verwijderde beelden:</label>
+						<div class="controls">
+							<input type="number" wicket:id="bezwaarTermijnVerwijderdeBeelden" class="input-xxlarge"> dagen
+						</div>
+					</div>
+
+					<div class="control-group">
+						<label class="control-label">IMS berichten wachtrij waarschuwingsdrempel:</label>
+						<div class="controls">
+							<input type="number" wicket:id="imsQueueSizeWarningThreshold" class="input-xxlarge">
+						</div>
+					</div>
+				</div>
+
+				<div class="btn-top dropdown right">
+					<button wicket:id="submitIMSConfiguratie" class="btn btn-primary" type="button">
+						Opslaan IMS configuratie
+					</button>
+				</div>
+			</div>
+		</fieldset>
+	</form>
 </wicket:panel>
 </html>

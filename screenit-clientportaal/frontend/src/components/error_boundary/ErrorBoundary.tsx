@@ -79,8 +79,8 @@ class ErrorBoundary extends Component<Props, State> {
 						justifyContent="center"
 						style={{minHeight: "80vh"}}
 					>
-						<Grid item xs={this.isSupportedBrowser ? 5 : 8}>
-							<Grid item xs={10} justifyContent="center" alignItems="center" container style={{minHeight: "10vh"}}
+						<Grid size={{xs: this.isSupportedBrowser ? 5 : 8}}>
+							<Grid size={{xs: 10}} justifyContent="center" alignItems="center" container style={{minHeight: "10vh"}}
 							>
 								<MijnBevolkingsOnderzoekLogo/>
 							</Grid>

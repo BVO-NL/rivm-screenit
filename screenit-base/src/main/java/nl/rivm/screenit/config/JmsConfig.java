@@ -23,6 +23,8 @@ package nl.rivm.screenit.config;
 
 import java.util.Arrays;
 
+import jakarta.jms.Destination;
+
 import lombok.AllArgsConstructor;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -36,8 +38,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jms.core.JmsTemplate;
-
-import jakarta.jms.Destination;
 
 @Configuration
 @AllArgsConstructor
@@ -162,6 +162,24 @@ public class JmsConfig
 	public Destination quartzDestination()
 	{
 		return new ActiveMQQueue("nl.rivm.screenit.batch.quartz." + appConfig.applicationEnvironment());
+	}
+
+	@Bean
+	public Destination colonDossierLegenDestination()
+	{
+		return new ActiveMQQueue("nl.rivm.screenit.batch.colon.dossierlegen." + appConfig.applicationEnvironment());
+	}
+
+	@Bean
+	public Destination cervixDossierLegenDestination()
+	{
+		return new ActiveMQQueue("nl.rivm.screenit.batch.cervix.dossierlegen." + appConfig.applicationEnvironment());
+	}
+
+	@Bean
+	public Destination mammaDossierLegenDestination()
+	{
+		return new ActiveMQQueue("nl.rivm.screenit.batch.mamma.dossierlegen." + appConfig.applicationEnvironment());
 	}
 
 	@Bean

@@ -18,15 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import * as React from "react";
+import * as React from "react"
+import DOMPurify from "dompurify"
 
 export type SpanWithHtmlProps = {
-    className?: string,
-    value: string,
+	className?: string,
+	value: string,
 }
 
+export const ALLOWED_TAGS = ["b", "p", "a", "ul", "ol", "li", "br"]
+
 const SpanWithHtml = (props: SpanWithHtmlProps) => {
-    return <span className={props.className} dangerouslySetInnerHTML={{__html: props.value}}/>
+	const sanitizedHtml = DOMPurify.sanitize(props.value, {ALLOWED_TAGS, ADD_ATTR: ["target"]})
+	return <span className={props.className} dangerouslySetInnerHTML={{__html: sanitizedHtml}}/>
 }
 
 export default SpanWithHtml

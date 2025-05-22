@@ -30,6 +30,11 @@ export const createMaxAantalBlokkenValidator = (duurAfspraakInMinuten: number, t
 
     const aantalBlokken = control.get('aantalBlokken')?.value
     const startTime = control.get('vanaf')?.value
+
+    if (!aantalBlokken || !startTime) {
+      return null
+    }
+
     const startDate = parse(startTime, 'HH:mm', new Date())
     const midnight = new Date().setHours(24, 0, 0, 0)
     const minutesTillMidnight = (midnight - startDate.getTime()) / 6e4

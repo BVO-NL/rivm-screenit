@@ -36,7 +36,6 @@ import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.cervix.CervixCytologieVerslag;
 import nl.rivm.screenit.model.colon.ColonVerslag;
-import nl.rivm.screenit.model.colon.ColonVerslag_;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.PaVerslag;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -51,7 +50,6 @@ import nl.rivm.screenit.repository.mamma.MammaFollowUpVerslagRepository;
 import nl.rivm.screenit.service.BaseVerslagService;
 import nl.rivm.screenit.service.BerichtToBatchService;
 import nl.rivm.screenit.service.LogService;
-import nl.rivm.screenit.service.VerwerkVerslagService;
 import nl.rivm.screenit.service.mamma.MammaBaseFollowUpService;
 import nl.rivm.screenit.specification.cervix.CervixVerslagSpecification;
 import nl.rivm.screenit.specification.colon.ColonVerslagSpecification;
@@ -59,8 +57,6 @@ import nl.rivm.screenit.specification.mamma.MammaFollowUpVerslagSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -71,33 +67,15 @@ import static java.util.Arrays.stream;
 import static nl.rivm.screenit.specification.algemeen.OntvangenCdaBerichtSpecification.maakZoekSpecification;
 import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftClientIdInMdlVerslag;
 import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftClientIdInPaVerslag;
-import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftColonDossier;
 import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftTypeInMdlVerslag;
 import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftTypeInPaVerslag;
-import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftVerslagStatus;
-import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
 public class VerslagServiceImpl implements VerslagService
 {
 
-	private static final String VRAAG_SEDATIE_JA_NEE = "sedatie_ja_nee_vraag";
-
-	private static final String PATIENTNUMMER = "patientnummer";
-
-	private static final String VRAAG_AANTAL_POTJES = "aantal_potjes";
-
-	private static final String VRAAG_PATHOLOOG = "patholoog_vraag";
-
-	private static final String VRAAG_ENDOSCOPIST = "endoscopist_vraag";
-
-	private static final Logger LOG = LoggerFactory.getLogger(VerslagServiceImpl.class);
-
 	@Autowired
 	private HibernateService hibernateService;
-
-	@Autowired
-	private VerwerkVerslagService verwerkVerslagService;
 
 	@Autowired
 	private LogService logService;
@@ -154,13 +132,6 @@ public class VerslagServiceImpl implements VerslagService
 		{
 			followUpService.refreshUpdateFollowUpConclusie((MammaDossier) verslag.getScreeningRonde().getDossier());
 		}
-	}
-
-	@Override
-	public List<MdlVerslag> getAlleMdlVerslagenVanClient(Client client)
-	{
-		var spec = heeftColonDossier(client.getColonDossier()).and(heeftVerslagStatus(VerslagStatus.AFGEROND));
-		return mdlVerslagRepository.findAll(spec, Sort.by(DESC, ColonVerslag_.DATUM_ONDERZOEK));
 	}
 
 	@Override

@@ -25,7 +25,7 @@ import {BevolkingsonderzoekStyle} from "../../datatypes/Bevolkingsonderzoek"
 import bvoStyle from "../BvoStyle.module.scss"
 import {useSelectedBvo} from "../../utils/Hooks"
 import {isExternalUrl} from "../../utils/UrlUtil"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 
 export type BigUrlButtonProps = {
 	title: string,

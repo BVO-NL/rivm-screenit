@@ -59,6 +59,7 @@ import nl.rivm.screenit.service.mamma.MammaAfspraakReserveringService;
 import nl.rivm.screenit.service.mamma.MammaBaseDossierService;
 import nl.rivm.screenit.service.mamma.MammaBaseFactory;
 import nl.rivm.screenit.service.mamma.MammaBaseFollowUpService;
+import nl.rivm.screenit.service.mamma.MammaBaseIlmService;
 import nl.rivm.screenit.service.mamma.MammaBaseOnderzoekService;
 import nl.rivm.screenit.service.mamma.MammaBaseScreeningrondeService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
@@ -72,12 +73,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class MammaBaseDossierServiceImpl implements MammaBaseDossierService
 {
 	@Autowired
@@ -97,7 +96,7 @@ public class MammaBaseDossierServiceImpl implements MammaBaseDossierService
 	private BaseDossierService baseDossierService;
 
 	@Autowired
-	private BaseClientContactService baseClientContactService;
+	private BaseClientContactService clientContactService;
 
 	@Autowired
 	@Lazy
@@ -136,6 +135,9 @@ public class MammaBaseDossierServiceImpl implements MammaBaseDossierService
 
 	@Autowired
 	private LogService logService;
+
+	@Autowired
+	private MammaBaseIlmService baseIlmService;
 
 	@Override
 	public MammaFactorType getFactorType(MammaDossier dossier)
@@ -353,20 +355,49 @@ public class MammaBaseDossierServiceImpl implements MammaBaseDossierService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
-	public void maakDossierLeeg(MammaDossier dossier)
+	@Transactional
+	public void maakDossierLeeg(Long clientId)
 	{
-		if (dossier != null)
+		var dossier = clientService.getClientById(clientId).map(Client::getMammaDossier);
+		dossier.ifPresent(d -> maakDossierLeeg(d, true));
+	}
+
+	@Override
+	@Transactional
+	public void maakDossierLeeg(MammaDossier dossier, boolean alleAfmeldingen)
+	{
+		if (dossier == null)
+		{
+			return;
+		}
+
+		try
 		{
 			var client = dossier.getClient();
 
-			baseClientContactService.verwijderClientContacten(client, Bevolkingsonderzoek.MAMMA);
+			clientContactService.verwijderClientContacten(client, Bevolkingsonderzoek.MAMMA);
 
 			screeningrondeService.verwijderAlleScreeningRondes(dossier);
 
 			afspraakReserveringService.verwijderReserveringenVoorClient(client);
+			if (dossier.getDeelnamekans() != null)
+			{
+				hibernateService.delete(dossier.getDeelnamekans());
+				dossier.setDeelnamekans(null);
+			}
+
+			baseIlmService.verwijderIlmBezwaarPogingen(dossier);
 
 			opruimenDossier(dossier);
+
+			if (alleAfmeldingen)
+			{
+				baseDossierService.verwijderAlleAfmeldingenUitDossier(dossier);
+			}
+			else
+			{
+				baseDossierService.verwijderNietLaatsteDefinitieveAfmeldingenUitDossier(client.getMammaDossier());
+			}
 
 			var screeningRondeEvent = dossier.getScreeningRondeEvent();
 			if (screeningRondeEvent != null)
@@ -378,8 +409,6 @@ public class MammaBaseDossierServiceImpl implements MammaBaseDossierService
 			hibernateService.saveOrUpdate(dossier);
 			followUpService.refreshUpdateFollowUpConclusie(dossier);
 
-			baseDossierService.verwijderNietLaatsteDefinitieveAfmeldingenUitDossier(client.getMammaDossier());
-
 			hibernateService.saveOrUpdate(client);
 
 			var projectClient = ProjectUtil.getHuidigeProjectClient(client, currentDateSupplier.getDate(), false);
@@ -387,6 +416,12 @@ public class MammaBaseDossierServiceImpl implements MammaBaseDossierService
 			{
 				clientService.projectClientInactiveren(projectClient, ProjectInactiefReden.VERWIJDERING_VAN_DOSSIER, Bevolkingsonderzoek.MAMMA);
 			}
+
+			LOG.info("Dossier van client '{}' geleegd", dossier.getClient().getId());
+		}
+		catch (Exception ex)
+		{
+			LOG.error("Fout bij legen van dossier van client '{}'", dossier.getClient().getId(), ex);
 		}
 	}
 
@@ -402,7 +437,7 @@ public class MammaBaseDossierServiceImpl implements MammaBaseDossierService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public boolean setUitslagenGecontroleerdEnUpdateDashboard(LogRegel logRegel, InstellingGebruiker medewerker, DashboardStatus dashboardStatus)
 	{
 		var dossier = logRegel.getClient().getMammaDossier();

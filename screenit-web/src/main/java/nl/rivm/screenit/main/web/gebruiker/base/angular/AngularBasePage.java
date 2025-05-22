@@ -55,7 +55,6 @@ public abstract class AngularBasePage extends GebruikerBasePage
 	private String medewerkerPortaalResourceUrl;
 
 	private final List<String> scripts = List.of(
-		"runtime.js",
 		"polyfills.js",
 		"main.js"
 	);

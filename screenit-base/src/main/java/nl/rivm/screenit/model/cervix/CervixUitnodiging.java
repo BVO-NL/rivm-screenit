@@ -45,7 +45,6 @@ import nl.rivm.screenit.model.cervix.enums.CervixRedenUitnodiging;
 
 import org.hibernate.annotations.Check;
 import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 
 @Getter
 @Setter
@@ -100,10 +99,8 @@ public class CervixUitnodiging extends InpakbareUitnodiging<CervixScreeningRonde
 	private Boolean uitgesteld;
 
 	@Column(nullable = false)
-	@NotAudited
 	private Boolean aangevraagdeHerdruk;
 
-	@NotAudited
 	private Boolean zasAangevraagdDoorClient;
 
 	@Enumerated(EnumType.STRING)

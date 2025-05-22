@@ -19,13 +19,8 @@
  * =========================LICENSE_END==================================
  */
 import {AppThunkDispatch} from "../index"
-import ScreenitBackend from "../util/Backend"
 import {createClearStateAction} from "../state"
 
 export const afmelden = () => async (dispatch: AppThunkDispatch) => {
-	try {
-		await ScreenitBackend.post("/uitloggen")
-	} finally {
-		dispatch(createClearStateAction())
-	}
+	dispatch(createClearStateAction())
 }

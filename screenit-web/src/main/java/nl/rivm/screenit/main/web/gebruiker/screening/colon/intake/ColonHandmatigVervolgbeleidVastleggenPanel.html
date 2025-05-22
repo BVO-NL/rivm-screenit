@@ -1,0 +1,75 @@
+<!--
+  ========================LICENSE_START=================================
+  screenit-web
+  %%
+  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<html xmlns:wicket="http://wicket.apache.org">
+<body>
+<wicket:panel>
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">x</button>
+		<h3>Vervolgbeleid en eindconclusie vastleggen</h3>
+	</div>
+	<form wicket:id="form">
+		<div class="modal-body">
+			<fieldset class="form-horizontal fieldset-last">
+				<div class="control-group">
+					<label class="control-label" wicket:for="verslagContent.verrichting.aanvangVerrichting">Datum verrichting</label>
+					<div class="controls">
+						<div class="input-append">
+							<input wicket:id="verslagContent.verrichting.aanvangVerrichting" type="text" placeholder="dd-mm-jjjj" size="16" class="input-small">
+							<a class="btn js-datepicker-show" title="Datum"><i class="icon-calendar"></i></a>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" wicket:for="verslagContent.coloscopieMedischeObservatie.eindconclusie">Eindconclusie</label>
+					<div class="controls">
+						<select wicket:id="verslagContent.coloscopieMedischeObservatie.eindconclusie" class="form-control width-100procent"></select>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label"
+						   wicket:for="verslagContent.coloscopieMedischeObservatie.definitiefVervolgbeleidVoorBevolkingsonderzoekg.definitiefVervolgbeleidVoorBevolkingsonderzoek">Definitief
+						vervolgbeleid</label>
+					<div class="controls">
+						<select wicket:id="verslagContent.coloscopieMedischeObservatie.definitiefVervolgbeleidVoorBevolkingsonderzoekg.definitiefVervolgbeleidVoorBevolkingsonderzoek"
+								class="form-control width-100procent"></select>
+					</div>
+				</div>
+				<div wicket:id="periodeVervolgSurveillancescopie">
+					<div class="control-group">
+						<label class="control-label"
+							   wicket:for="verslagContent.coloscopieMedischeObservatie.definitiefVervolgbeleidVoorBevolkingsonderzoekg.periodeVervolgSurveillancescopie">Periode
+							vervolg surveillance/scopie</label>
+						<div class="controls">
+							<select wicket:id="verslagContent.coloscopieMedischeObservatie.definitiefVervolgbeleidVoorBevolkingsonderzoekg.periodeVervolgSurveillancescopie"
+									class="form-control width-100procent"></select>
+						</div>
+					</div>
+				</div>
+			</fieldset>
+		</div>
+		<div class="modal-footer">
+			<button class="btn" data-dismiss="modal">Annuleren</button>
+			<button class="btn btn-primary" wicket:id="opslaan" type="submit">Opslaan</button>
+		</div>
+	</form>
+</wicket:panel>
+</body>
+</html>

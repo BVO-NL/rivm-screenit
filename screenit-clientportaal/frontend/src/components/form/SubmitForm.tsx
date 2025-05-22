@@ -30,32 +30,32 @@ import VerticalDividerComponent from "../vectors/VerticalDividerComponent"
 import {FormikProps} from "formik"
 
 export type FormProps<T> = {
-    className?: string
-    title: string
-    formikProps: FormikProps<T>
-    buttonLabel: string
-    children: React.ReactNode
+	className?: string
+	title: string
+	formikProps: FormikProps<T>
+	buttonLabel: string
+	children: React.ReactNode
 }
 
 const SubmitForm = <T extends any>(props: FormProps<T>) => {
-    const selectedBvo = useSelectedBvo()
+	const selectedBvo = useSelectedBvo()
 
-    return (
-        <form className={classNames(props.className, styles.content, selectedBvo && BevolkingsonderzoekStyle[selectedBvo])}>
-            <VerticalDividerComponent className={styles.verticalRectangle}/>
-            <div>
-                <h3>{props.title}</h3>
-            </div>
-            <div>
-                {props.children}
-            </div>
-            <Button className={classNames(bvoStyle.baseBackgroundColor, styles.submitButton)}
-                    disableButton={props.formikProps.isSubmitting}
-                    label={props.buttonLabel}
-                    displayArrow={ArrowType.ARROW_RIGHT}
-                    onClick={props.formikProps.handleSubmit}/>
-        </form>
-    )
+	return (
+		<form className={classNames(props.className, styles.content, selectedBvo && BevolkingsonderzoekStyle[selectedBvo])}>
+			<VerticalDividerComponent className={styles.verticalRectangle}/>
+			<div>
+				<h3>{props.title}</h3>
+			</div>
+			<div>
+				{props.children}
+			</div>
+			<Button className={classNames(bvoStyle.baseBackgroundColor, styles.submitButton)}
+					disableButton={props.formikProps.isSubmitting}
+					label={props.buttonLabel}
+					displayArrow={ArrowType.ARROW_RIGHT}
+					onClick={props.formikProps.handleSubmit}/>
+		</form>
+	)
 }
 
 export default SubmitForm

@@ -32,7 +32,7 @@ import {State} from "../../../datatypes/State"
 import {formatDateText} from "../../../utils/DateUtil"
 import CervixUitstelAanvragenForm from "./CervixUitstelAanvragenForm"
 import {showToast} from "../../../utils/ToastUtil"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 
 const CervixUitstelAanvragenPage = () => {
 	const selectedBvo = useSelectedBvo()!
@@ -57,15 +57,18 @@ const CervixUitstelAanvragenPage = () => {
 			{cervixUitstel.isInSync && getZasAangevraagdError()}
 
 			{cervixUitstel.isInSync && <CervixUitstelAanvragenForm
-				cervixUitstel={cervixUitstel} geboortedatumDisplay={geboortedatumDisplay} onSubmitSucces={(initialValues) =>
-				dispatch(saveCervixUitstel(initialValues, minPeriodeTussenZwangerEnOnderzoek)).then(() => {
-					showToast(getString(properties.toast.title, [formatDateText(getUitstellenTotDatum(
-						initialValues, minPeriodeTussenZwangerEnOnderzoek))]), getString(properties.toast.description))
-					navigate("/cervix")
-				})} uitstelStatus={uitstelStatus}/>}
+				cervixUitstel={cervixUitstel}
+				geboortedatumDisplay={geboortedatumDisplay}
+				onSubmitSucces={(initialValues) =>
+					dispatch(saveCervixUitstel(initialValues, minPeriodeTussenZwangerEnOnderzoek)).then(() => {
+						showToast(getString(properties.toast.title, [formatDateText(getUitstellenTotDatum(
+							initialValues, minPeriodeTussenZwangerEnOnderzoek))]), getString(properties.toast.description))
+						navigate("/cervix")
+					})}
+				uitstelStatus={uitstelStatus}/>}
 
 		</ActieBasePage>
-    )
+	)
 
 	function getZasAangevraagdError() {
 		return (uitstelStatus && uitstelStatus.zasAanvraagInBehandeling) &&

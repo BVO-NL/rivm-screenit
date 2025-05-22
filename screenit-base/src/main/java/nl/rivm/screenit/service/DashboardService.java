@@ -49,4 +49,6 @@ public interface DashboardService
 	List<DashboardStatus> getListOfDashboardStatussen(Instelling ingelogdVoorOrganisatie, List<Bevolkingsonderzoek> bevolkingsOnderzoeken, List<Level> loggingLevels);
 
 	List<DashboardLogRegel> getDashboardLogRegelMetLogRegel(LogRegel logRegel);
+
+	void verwijderDashboardLogRegelMetLogRegel(LogRegel logRegel);
 }

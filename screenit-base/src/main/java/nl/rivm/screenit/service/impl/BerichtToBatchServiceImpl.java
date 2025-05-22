@@ -108,6 +108,18 @@ public class BerichtToBatchServiceImpl implements BerichtToBatchService
 	private Destination mammaUploadBeeldenVerzoekBerichtDestination;
 
 	@Autowired
+	@Qualifier("colonDossierLegenDestination")
+	private Destination colonDossierLegenDestination;
+
+	@Autowired
+	@Qualifier("cervixDossierLegenDestination")
+	private Destination cervixDossierLegenDestination;
+
+	@Autowired
+	@Qualifier("mammaDossierLegenDestination")
+	private Destination mammaDossierLegenDestination;
+
+	@Autowired
 	private HibernateService hibernateService;
 
 	@Autowired
@@ -365,6 +377,26 @@ public class BerichtToBatchServiceImpl implements BerichtToBatchService
 		else
 		{
 			throw new IllegalStateException("Geen BSN's gevonden bij MAMMA_IMS_CLIENT_BSN_GEWIJZIGD_MARKER");
+		}
+	}
+
+	@Override
+	public void queueDossierLegenBericht(Long clientId, Bevolkingsonderzoek bvo)
+	{
+		switch (bvo)
+		{
+		case COLON:
+			LOG.debug("Sending ActiveMq message to batch DK");
+			queueBericht(colonDossierLegenDestination, clientId);
+			break;
+		case CERVIX:
+			LOG.debug("Sending ActiveMq message to batch BMHK");
+			queueBericht(cervixDossierLegenDestination, clientId);
+			break;
+		case MAMMA:
+			LOG.debug("Sending ActiveMq message to batch BK");
+			queueBericht(mammaDossierLegenDestination, clientId);
+			break;
 		}
 	}
 

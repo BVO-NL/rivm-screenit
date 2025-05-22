@@ -25,16 +25,17 @@ import classNames from "classnames"
 import SpanWithHtml from "../span/SpanWithHtml"
 
 interface ErrorToastProps {
-    index: number
-    title?: string
-    description: string
-    clickClearButton: () => void
+	index: number
+	title?: string
+	description: string
+	clickClearButton: () => void
+	ariaLive: "off" | "assertive" | "polite" | undefined
 }
 
 const ErrorToast = (props: ErrorToastProps) => {
-    const {index, title, description, clickClearButton} = props
-    return (
-        <Row className={classNames(styles.toast, styles.error)} key={"toast_" + index}>
+	const {index, title, description, clickClearButton, ariaLive} = props
+	return (
+		<Row className={classNames(styles.toast, styles.error)} key={"toast_" + index} role="alert" aria-live={ariaLive}>
 			<Col xs={10} className={styles.toastText}>
 				<i className={classNames("material-icons")}>warning</i>
 				<SpanWithHtml className={styles.title} value={title || ""}/>
@@ -45,7 +46,7 @@ const ErrorToast = (props: ErrorToastProps) => {
 				<i className={classNames("material-icons", styles.error, "zwart")}>clear</i>
 			</Col>
 		</Row>
-    )
+	)
 }
 
 export default ErrorToast

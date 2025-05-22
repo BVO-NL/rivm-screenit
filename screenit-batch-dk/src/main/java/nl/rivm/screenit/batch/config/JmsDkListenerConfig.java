@@ -21,11 +21,15 @@ package nl.rivm.screenit.batch.config;
  * =========================LICENSE_END==================================
  */
 
+import lombok.AllArgsConstructor;
+
 import nl.rivm.screenit.batch.base.config.JmsBatchBaseConfig;
+import nl.rivm.screenit.batch.jms.listener.JMSDossierLegenListener;
 import nl.rivm.screenit.batch.jms.listener.JMSVerwerkCdaBerichtListener;
 import nl.rivm.screenit.batch.jms.listener.JMSVerwerkFITBerichtListener;
 import nl.rivm.screenit.config.JmsConfig;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
+import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,17 +38,14 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 @Configuration
 @Profile("!test")
+@AllArgsConstructor
 public class JmsDkListenerConfig
 {
 	private final JmsConfig jmsConfig;
 
 	private final JmsBatchBaseConfig jmsBatchBaseConfig;
 
-	public JmsDkListenerConfig(JmsConfig jmsConfig, JmsBatchBaseConfig jmsBatchBaseConfig)
-	{
-		this.jmsConfig = jmsConfig;
-		this.jmsBatchBaseConfig = jmsBatchBaseConfig;
-	}
+	private final ColonDossierBaseService dossierService;
 
 	@Bean
 	public JMSVerwerkCdaBerichtListener verwerkColonCdaBerichtListener()
@@ -85,6 +86,19 @@ public class JmsDkListenerConfig
 		listenerContainer.setDestination(jmsConfig.colonJobsDestination());
 		listenerContainer.setMessageListener(jmsBatchBaseConfig.startJobMessageListener());
 		listenerContainer.setSessionTransacted(true);
+		return listenerContainer;
+	}
+
+	@Bean
+	public DefaultMessageListenerContainer clientgegevensVerwijderenListenerContainer(JMSDossierLegenListener dossierLegenListener)
+	{
+		var listenerContainer = new DefaultMessageListenerContainer();
+		listenerContainer.setConcurrentConsumers(1);
+		listenerContainer.setConnectionFactory(jmsConfig.jmsFactory());
+		listenerContainer.setDestination(jmsConfig.colonDossierLegenDestination());
+		listenerContainer.setMessageListener(dossierLegenListener);
+		listenerContainer.setSessionTransacted(true);
+		dossierLegenListener.setDossierService(dossierService);
 		return listenerContainer;
 	}
 

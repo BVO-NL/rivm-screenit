@@ -382,7 +382,7 @@ const updateAanzicht = (doorsnede: AnnotatieAfbeelding, action: any, iconenById:
 
 	return {
 		afspraakId: action.afspraakId,
-		iconenById: new Map([...doorsnede.iconenById ? doorsnede.iconenById : new Map(), ...iconenById]),
+		iconenById: new Map([...(doorsnede.iconenById ? doorsnede.iconenById : new Map()), ...iconenById]),
 	}
 }
 
@@ -411,7 +411,7 @@ const getUpdatedAnnotatieAfbeeldingMoveIcoon = (bestaandeDoorsnedeAfbeelding: An
 }
 
 const getUpdatedAnnotatieAfbeeldingDeleteIcoon = (bestaandeDoorsnedeAfbeelding: AnnotatieAfbeelding, action: any): AnnotatieAfbeelding => {
-	const newIconenById: Map<number, AnnotatieIcoon> = new Map([...bestaandeDoorsnedeAfbeelding.iconenById ? bestaandeDoorsnedeAfbeelding.iconenById : new Map()])
+	const newIconenById: Map<number, AnnotatieIcoon> = new Map([...(bestaandeDoorsnedeAfbeelding.iconenById ? bestaandeDoorsnedeAfbeelding.iconenById : new Map())])
 	newIconenById.delete(action.icoonId)
 	return {
 		afspraakId: action.afspraakId,

@@ -20,7 +20,7 @@
  */
 import * as React from "react"
 import {useContext} from "react"
-import {Navigate, RouteProps} from "react-router-dom"
+import {Navigate, RouteProps} from "react-router"
 import {useSelector} from "react-redux"
 import {State} from "../datatypes/State"
 import {KeycloakContext} from "../components/KeycloakProvider"

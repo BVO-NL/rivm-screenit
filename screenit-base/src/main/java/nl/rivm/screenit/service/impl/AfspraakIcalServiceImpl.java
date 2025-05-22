@@ -23,7 +23,6 @@ package nl.rivm.screenit.service.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Optional;
@@ -34,6 +33,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.TimeZone;
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.Attendee;
 import net.fortuna.ical4j.model.property.CalScale;
@@ -49,6 +50,7 @@ import net.fortuna.ical4j.model.property.Version;
 
 import nl.rivm.screenit.service.AfspraakIcalService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
+import nl.rivm.screenit.util.DateUtil;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
@@ -90,15 +92,18 @@ public class AfspraakIcalServiceImpl implements AfspraakIcalService
 	@NotNull
 	private VEvent maakEventAan(LocalDateTime startDatum, LocalDateTime eindDatum, String ontvanger, String locatie, String afspraakId, String omschrijving, String content)
 	{
-		var timeStampStartDatum = createDateTimeUtc(startDatum);
-		var timeStampEindDatum = createDateTimeUtc(eindDatum);
-		var timeStampNu = createDateTimeUtc(currentDateSupplier.getLocalDateTime());
+		var registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+		var timeZone = registry.getTimeZone(DateUtil.SCREENIT_DEFAULT_ZONE.getId());
+
+		var timeStampStartDatum = createDateTime(startDatum, timeZone);
+		var timeStampEindDatum = createDateTime(eindDatum, timeZone);
+		var timeStampNu = createDateTime(currentDateSupplier.getLocalDateTime(), timeZone);
 
 		var event = new VEvent(timeStampStartDatum, timeStampEindDatum, omschrijving);
 
 		var meetingProperties = event.getProperties();
 		meetingProperties.remove(event.getProperty("DTSTAMP")); 
-		meetingProperties.add(new DtStamp(createDateTimeUtc(currentDateSupplier.getLocalDateTime())));
+		meetingProperties.add(new DtStamp(timeStampNu));
 		meetingProperties.add(new Uid(afspraakId));
 		meetingProperties.add(new Attendee(URI.create(ontvanger)));
 		meetingProperties.add(new Location(locatie));
@@ -121,10 +126,10 @@ public class AfspraakIcalServiceImpl implements AfspraakIcalService
 		return calendar;
 	}
 
-	private DateTime createDateTimeUtc(LocalDateTime date)
+	private DateTime createDateTime(LocalDateTime date, TimeZone timeZone)
 	{
-		DateTime icalDateTime = new DateTime(Timestamp.valueOf(date).getTime());
-		icalDateTime.setUtc(true);
+		var icalDateTime = new DateTime(date.atZone(DateUtil.SCREENIT_DEFAULT_ZONE).toInstant().toEpochMilli());
+		icalDateTime.setTimeZone(timeZone);
 		return icalDateTime;
 	}
 }

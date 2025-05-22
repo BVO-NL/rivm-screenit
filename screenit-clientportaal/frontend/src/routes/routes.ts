@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {RouteProps} from "react-router-dom"
+import {RouteProps} from "react-router"
 import * as React from "react"
 import {ClientContactActieType} from "../datatypes/ClientContactActieType"
 import LoginPage from "../pages/authentication/LoginPage"

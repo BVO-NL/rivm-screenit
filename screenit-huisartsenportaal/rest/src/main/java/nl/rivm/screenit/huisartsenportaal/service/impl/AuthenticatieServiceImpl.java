@@ -102,7 +102,7 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 		{
 			throw new BadCredentialsException("Gebruiker niet gevonden.");
 		}
-		huisarts.setInlogCode(null);
+		huisarts.setAanmeldStatus(AanmeldStatus.WACHTWOORD_RESET);
 		huisartsRepository.save(huisarts);
 
 		return getToken(huisarts, Scope.WACHTWOORDVERGETEN);

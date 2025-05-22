@@ -22,9 +22,13 @@ package nl.rivm.screenit.service.colon;
  */
 
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.berichten.Verslag;
+import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.PaVerslag;
@@ -43,4 +47,11 @@ public interface ColonVerwerkVerslagService
 
 	ColonScreeningRonde getValideScreeningsRonde(Client client, Verslag olderVerslag, Date onderzoeksdatum);
 
+	List<MdlVerslag> getAlleMdlVerslagenVanClient(Client client);
+
+	Optional<MdlVerslag> getMdlVerslagUitRonde(ColonScreeningRonde ronde);
+
+	MdlVerslag maakMdlVerslagVoorAfspraak(ColonIntakeAfspraak afspraak);
+
+	void handmatigMdlVerslagOpslaan(MdlVerslag verslag, InstellingGebruiker ingelogdeGebruiker);
 }

@@ -81,6 +81,8 @@ public class WebserviceInpakcentrumOpzettenServiceImpl implements WebserviceInpa
 
 		var policy = new HTTPClientPolicy();
 		policy.setVersion("1.1");
+		policy.setConnectionTimeout(150000);
+		policy.setReceiveTimeout(150000);
 		httpConduit.setClient(policy);
 
 		ConduitSelector selector = new PreexistingConduitSelector(httpConduit, client.getEndpoint());

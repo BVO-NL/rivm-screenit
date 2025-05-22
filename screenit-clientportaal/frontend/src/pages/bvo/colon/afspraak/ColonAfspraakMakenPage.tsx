@@ -52,7 +52,7 @@ import {useRegio, useWindowDimensions} from "../../../../utils/Hooks"
 import AdvancedSearchLinkComponent from "../../../../components/form/AdvancedSearchLinkComponent"
 import SearchForm from "../../../../components/form/SearchForm"
 import ScreenitDatePicker from "../../../../components/input/ScreenitDatePicker"
-import {useLocation} from "react-router-dom"
+import {useLocation} from "react-router"
 
 export type VrijSlotZonderKamerFilter = {
 	ziekenhuisnaam?: string,
@@ -180,52 +180,48 @@ const ColonAfspraakMakenPage = () => {
 				<Col md={5}>
 					<Formik initialValues={initialValues}
 							validationSchema={validationSchema}
-							onSubmit={(values) => {
-								zoekAfspraken(values as VrijSlotZonderKamerFilter)
+							onSubmit={async (values) => {
+								await zoekAfspraken(values as VrijSlotZonderKamerFilter)
 								if (width <= 768 && gevondenAfsprakenDiv.current) {
 									window.scrollTo(0, gevondenAfsprakenDiv.current.offsetTop - 100)
 								}
 							}}>
-						{formikProps => (
+						{({errors, values, initialValues, setFieldValue, handleSubmit}) => (
 							<SearchForm title={getString(properties.search.title)}>
-								<ScreenitTextfield onChange={value => {
-									formikProps.setFieldValue("plaats", value)
-									formikProps.setFieldValue("afstand", "")
+								<ScreenitTextfield onChange={async value => {
+									await setFieldValue("plaats", value)
+									await setFieldValue("afstand", "")
 								}}
-												   value={formikProps.values.plaats}
-												   invalidMessage={formikProps.errors.plaats}
+												   value={values.plaats}
+												   invalidMessage={errors.plaats}
 												   name={"plaats"}
 												   placeholder={getString(properties.searchitems.plaats.placeholder)}/>
 
-								<ScreenitTextfield onChange={value => {
-									formikProps.setFieldValue("ziekenhuisnaam", value)
-									formikProps.setFieldValue("afstand", "")
+								<ScreenitTextfield onChange={async value => {
+									await setFieldValue("ziekenhuisnaam", value)
+									await setFieldValue("afstand", "")
 								}}
-												   value={formikProps.values.ziekenhuisnaam}
-												   invalidMessage={formikProps.errors.ziekenhuisnaam}
+												   value={values.ziekenhuisnaam}
+												   invalidMessage={errors.ziekenhuisnaam}
 												   name={"ziekenhuisnaam"}
 												   placeholder={getString(properties.searchitems.ziekenhuis.placeholder)}/>
 
 								<ScreenitDatePicker className={styles.datepicker}
 													propertyName={"vanaf"}
 													label={getString(properties.searchitems.datefrom.placeholder)}
-													value={formikProps.values.vanaf}
-													errorLabel={formikProps.errors.vanaf}
-													onChange={value => {
-														formikProps.setFieldValue("vanaf", value)
-													}}/>
+													value={values.vanaf}
+													errorLabel={errors.vanaf}
+													onChange={value => setFieldValue("vanaf", value)}/>
 								<ScreenitDatePicker className={styles.datepicker}
 													propertyName={"totEnMet"}
 													label={getString(properties.searchitems.datetil.placeholder)}
-													value={formikProps.values.totEnMet}
-													errorLabel={formikProps.errors.totEnMet}
-													onChange={value => {
-														formikProps.setFieldValue("totEnMet", value)
-													}}/>
+													value={values.totEnMet}
+													errorLabel={errors.totEnMet}
+													onChange={value => setFieldValue("totEnMet", value)}/>
 								<div>
 									<div className={styles.advancedSearchButton}
-										 onClick={() => {
-											 formikProps.setFieldValue("afstand", "")
+										 onClick={async () => {
+											 await setFieldValue("afstand", "")
 											 setAdvancedSearch(!isAdvancedSearch)
 										 }}>
 										<AdvancedSearchLinkComponent advancedSearch={isAdvancedSearch}/>
@@ -233,19 +229,19 @@ const ColonAfspraakMakenPage = () => {
 								</div>
 								{isAdvancedSearch &&
 									<ScreenitDropdown propertyName={"afstand"}
-													  invalidMessage={formikProps.errors.afstand}
-													  value={formikProps.values.afstand}
+													  invalidMessage={errors.afstand}
+													  value={values.afstand}
 													  options={afstandOpties()}
 													  placeholder={getString(properties.searchitems.afstand.placeholder)}
-													  onChange={(event) => {
-														  formikProps.setFieldValue("afstand", event.target.value)
-														  formikProps.setFieldValue("plaats", "")
-														  formikProps.setFieldValue("ziekenhuisnaam", "")
+													  onChange={async (event) => {
+														  await setFieldValue("afstand", event.target.value)
+														  await setFieldValue("plaats", "")
+														  await setFieldValue("ziekenhuisnaam", "")
 													  }}/>}
 								<Button className={bvoStyle.darkBackgroundColor}
 										label={getString(properties.search.do_search)}
 										displayArrow={ArrowType.ARROW_RIGHT}
-										onClick={formikProps.handleSubmit}/>
+										onClick={handleSubmit}/>
 							</SearchForm>)}
 					</Formik>
 				</Col>

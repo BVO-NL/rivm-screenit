@@ -44,7 +44,7 @@ import bvoStyle from "../../../../components/BvoStyle.module.scss"
 import {ArrowType} from "../../../../components/vectors/ArrowIconComponent"
 import Button from "../../../../components/input/Button"
 import SearchForm from "../../../../components/form/SearchForm"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 import ScreenitDatePicker from "../../../../components/input/ScreenitDatePicker"
 
 export type UitstelZoekFilter = {
@@ -105,21 +105,20 @@ const MammaAfspraakUitstellenPage = () => {
 					<Formik initialValues={initialValues}
 							validationSchema={validatieSchema}
 							onSubmit={zoek}>
-						{formikProps => (<SearchForm title={getString(properties.form.title)}>
+						{({errors, values, setFieldValue, handleSubmit}) => (<SearchForm title={getString(properties.form.title)}>
 							<div>{getString(properties.form.toelichting)}</div>
 							<ScreenitDatePicker className={styles.datepicker}
 												propertyName={"vanaf"}
 												label={getString(properties.form.placeholder)}
 												alleenWerkdagen={true}
-												errorLabel={formikProps.errors.vanaf}
-												value={formikProps.values.vanaf}
-												onChange={value => {
-													formikProps.setFieldValue("vanaf", value)
-												}}/>
+												errorLabel={errors.vanaf}
+												value={values.vanaf}
+												onChange={value => setFieldValue("vanaf", value)}
+							/>
 							<Button className={classNames(bvoStyle.darkBackgroundColor, styles.button)}
 									label={getString(properties.form.button)}
 									displayArrow={ArrowType.ARROW_RIGHT}
-									onClick={formikProps.handleSubmit}/>
+									onClick={handleSubmit}/>
 
 						</SearchForm>)}
 					</Formik>

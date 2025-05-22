@@ -29,7 +29,7 @@ import {getString} from "../../../utils/TekstPropertyUtil"
 import {ArrowType} from "../../../components/vectors/ArrowIconComponent"
 import properties from "./CervixHerdrukAanvragenPage.json"
 import SubmitButton from "../../../components/input/SubmitButton"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 import {showToast} from "../../../utils/ToastUtil"
 
 const CervixHerdrukAanvragenPage = () => {

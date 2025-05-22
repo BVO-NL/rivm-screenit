@@ -407,6 +407,20 @@ public class LogServiceImpl implements LogService
 		return dashboardService.verwijderLogRegelsVanDashboards(logRegels);
 	}
 
+	@Override
+	@Transactional
+	public void verwijderLogRegelsVanClient(Client client)
+	{
+		var loggingZoekCriteria = new LoggingZoekCriteria();
+		loggingZoekCriteria.setBsnClient(client.getPersoon().getBsn());
+		var logRegels = getLogRegels(loggingZoekCriteria, -1, -1, new SortState<>("logGebeurtenis", Boolean.TRUE));
+		for (var logRegel : logRegels)
+		{
+			dashboardService.verwijderDashboardLogRegelMetLogRegel(logRegel);
+			logRegelRepository.delete(logRegel);
+		}
+	}
+
 	private LogEvent getLogEvent(Level level, String melding)
 	{
 		LogEvent logEvent = new LogEvent();

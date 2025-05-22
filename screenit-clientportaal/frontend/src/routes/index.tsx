@@ -20,7 +20,7 @@
  */
 import * as React from "react"
 import {useContext} from "react"
-import {Navigate, Route, Routes} from "react-router-dom"
+import {Navigate, Route, Routes} from "react-router"
 import NotFound from "../pages/NotFoundPage"
 import {ClientContactActieType} from "../datatypes/ClientContactActieType"
 import PrivateRoute from "./PrivateRoute"

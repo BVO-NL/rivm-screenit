@@ -1123,7 +1123,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 					continue;
 				}
 				baseTestService.clientReset(client, false);
-				testService.verwijderClientContacten(client, Bevolkingsonderzoek.MAMMA);
+				testService.verwijderClientContacten(client, false, false, true);
 				gevondenEnIsVerwijderd++;
 			}
 			catch (Exception e)

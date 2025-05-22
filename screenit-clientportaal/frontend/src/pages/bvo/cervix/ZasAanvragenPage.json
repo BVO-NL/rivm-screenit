@@ -2,13 +2,13 @@
   "inleiding": {
     "title": "Zelfafnameset aanvragen",
     "description": {
-      "algemeen": "Wilt u meedoen aan het bevolkingsonderzoek met een zelfafnameset, dan kunt u deze hier aanvragen.</br></br>Met de zelfafnameset neemt u gemakkelijk en betrouwbaar zelf vaginaal materiaal af. Dit materiaal stuurt u vervolgens in een retourenvelop op naar het laboratorium. Hier wordt het onderzocht op het humaan papillomavirus (HPV). Bij ongeveer 1&nbsp;op de 10 vrouwen wordt HPV gevonden. Indien dit het geval is moet u toch nog een uitstrijkje laten maken om te kijken of er ook afwijkende cellen zijn.</br></br>U ontvangt de zelfafnameset binnen 14 dagen per post.",
-      "na_uitstel": "Wilt u meedoen aan het bevolkingsonderzoek met een zelfafnameset, dan kunt u deze hier aanvragen.</br></br>Met de zelfafnameset neemt u gemakkelijk en betrouwbaar zelf vaginaal materiaal af. Dit materiaal stuurt u vervolgens in een retourenvelop op naar het laboratorium. Hier wordt het onderzocht op het humaan papillomavirus (HPV). Bij ongeveer 1&nbsp;op de 10 vrouwen wordt HPV gevonden. Indien dit het geval is moet u toch nog een uitstrijkje laten maken om te kijken of er ook afwijkende cellen zijn."
+      "algemeen": "Wilt u meedoen aan het bevolkingsonderzoek met een zelfafnameset, dan kunt u deze hier aanvragen.<br><br>Met de zelfafnameset neemt u gemakkelijk en betrouwbaar zelf vaginaal materiaal af. Dit materiaal stuurt u vervolgens in een retourenvelop op naar het laboratorium. Hier wordt het onderzocht op het humaan papillomavirus (HPV). Bij ongeveer 1&nbsp;op de 10 vrouwen wordt HPV gevonden. Indien dit het geval is moet u toch nog een uitstrijkje laten maken om te kijken of er ook afwijkende cellen zijn.<br><br>U ontvangt de zelfafnameset binnen 14 dagen per post.",
+      "na_uitstel": "Wilt u meedoen aan het bevolkingsonderzoek met een zelfafnameset, dan kunt u deze hier aanvragen.<br><br>Met de zelfafnameset neemt u gemakkelijk en betrouwbaar zelf vaginaal materiaal af. Dit materiaal stuurt u vervolgens in een retourenvelop op naar het laboratorium. Hier wordt het onderzocht op het humaan papillomavirus (HPV). Bij ongeveer 1&nbsp;op de 10 vrouwen wordt HPV gevonden. Indien dit het geval is moet u toch nog een uitstrijkje laten maken om te kijken of er ook afwijkende cellen zijn."
     }
   },
   "error": {
-    "zas_te_vaak_aangevraagd": "Het is niet meer mogelijk om een zelfafnameset aan te vragen via Mijn Bevolkingsonderzoek.<br/>Neem contact op met de informatielijn voor het aanvragen van een zelfafnameset.",
-    "zas_request": "Helaas, er is iets fout gegaan. We kunnen uw aanvraag nu niet verwerken. Probeer het nog een keer.<br/> Krijgt u steeds deze foutmelding? Bel dan met onze informatielijn."
+    "zas_te_vaak_aangevraagd": "Het is niet meer mogelijk om een zelfafnameset aan te vragen via Mijn Bevolkingsonderzoek.<br>Neem contact op met de informatielijn voor het aanvragen van een zelfafnameset.",
+    "zas_request": "Helaas, er is iets fout gegaan. We kunnen uw aanvraag nu niet verwerken. Probeer het nog een keer.<br> Krijgt u steeds deze foutmelding? Bel dan met onze informatielijn."
   },
   "form": {
     "title": "U heeft aangegeven dat u later mee wilt doen aan het bevolkingsonderzoek.",

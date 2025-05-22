@@ -48,4 +48,6 @@ public interface DashboardLogRegelRepository extends BaseJpaRepository<Dashboard
 	List<DashboardLogRegel> findByLogRegel(LogRegel logRegel);
 
 	List<DashboardLogRegel> findByDashboardStatus(DashboardStatus status);
+
+	void deleteAllByLogRegel(LogRegel logRegel);
 }

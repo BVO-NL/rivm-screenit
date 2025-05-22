@@ -42,5 +42,4 @@ public class BezwaarBriefSpecification
 	{
 		return (r, q, cb) -> cb.isNull(r.get(BezwaarBrief_.mergedBrieven));
 	}
-
 }

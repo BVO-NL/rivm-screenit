@@ -52,13 +52,7 @@ public interface TestService
 
 	void importClientenViaCsv(File file, ImportBvoViaCsv importBvoViaCsv) throws IOException, ParseException;
 
-	boolean verwijderClientContacten(Client client, Bevolkingsonderzoek... onderzoeken);
-
-	boolean verwijderClientContacten(Client client, boolean isDossierVerwijderdDK, boolean isDossierVerwijderdBMHK, boolean isDossierVerwijderdBK);
-
-	boolean verwijderClientContacten(Client client, List<Bevolkingsonderzoek> onderzoeken);
-
-	void projectenVerwijderen(Client client);
+	void verwijderClientContacten(Client client, boolean isDossierVerwijderdDK, boolean isDossierVerwijderdBMHK, boolean isDossierVerwijderdBK);
 
 	BMHKLaboratorium getEersteBMHKLaboratorium();
 

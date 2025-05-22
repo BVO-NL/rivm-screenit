@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {Link, useLocation} from "react-router-dom"
+import {Link, useLocation} from "react-router"
 import React from "react"
 import classNames from "classnames"
 import styles from "./NavigationLinkComponent.module.scss"
@@ -28,33 +28,34 @@ import {BevolkingsonderzoekStyle} from "../../datatypes/Bevolkingsonderzoek"
 import {isExternalUrl} from "../../utils/UrlUtil"
 
 export type NavigationLinkComponentProps = {
-    url: string;
-    text: string;
-    bold: boolean,
-    onClick?: () => void;
+	url: string;
+	text: string;
+	bold: boolean,
+	onClick?: () => void;
 }
 
 const NavigationLinkComponent = (props: NavigationLinkComponentProps) => {
 
-    const location = useLocation()
-    const selectedBvo = useSelectedBvo()
+	const location = useLocation()
+	const selectedBvo = useSelectedBvo()
 
-    return (
-        isExternalUrl(props.url) ?
-            <a href={props.url}
-               aria-controls={"navbar-collapse"}
-               className={classNames(selectedBvo && BevolkingsonderzoekStyle[selectedBvo], bvoStyle.bvoNav, styles.navItem, props.bold && styles.navItemBvo, "nav-link", location.pathname.startsWith(props.url) && styles.navItemActive)}
-               rel="noopener noreferrer">
-                {props.text}
-            </a> :
-            <Link to={props.url}
-                  aria-controls={"navbar-collapse"}
-                  onClick={props.onClick}
-                  className={classNames(selectedBvo && BevolkingsonderzoekStyle[selectedBvo], bvoStyle.bvoNav, styles.navItem, props.bold && styles.navItemBvo, "nav-link", location.pathname.startsWith(props.url) && styles.navItemActive)}>
-                {props.text}
-            </Link>
+	return (
+		isExternalUrl(props.url) ?
+			<a href={props.url}
+			   aria-controls={"navbar-collapse"}
+			   className={classNames(selectedBvo && BevolkingsonderzoekStyle[selectedBvo], bvoStyle.bvoNav, styles.navItem, props.bold && styles.navItemBvo, "nav-link", location.pathname.startsWith(props.url) && styles.navItemActive)}
+			   rel="noopener noreferrer"
+			   target="_blank">
+				{props.text}
+			</a> :
+			<Link to={props.url}
+				  aria-controls={"navbar-collapse"}
+				  onClick={props.onClick}
+				  className={classNames(selectedBvo && BevolkingsonderzoekStyle[selectedBvo], bvoStyle.bvoNav, styles.navItem, props.bold && styles.navItemBvo, "nav-link", location.pathname.startsWith(props.url) && styles.navItemActive)}>
+				{props.text}
+			</Link>
 
-    )
+	)
 
 }
 

@@ -21,10 +21,14 @@ package nl.rivm.screenit.service;
  * =========================LICENSE_END==================================
  */
 
+import java.util.List;
+
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 
 public interface BaseClientContactService
 {
-	void verwijderClientContacten(Client client, Bevolkingsonderzoek bevolkingsonderzoek);
+	void verwijderClientContacten(Client client, Bevolkingsonderzoek... onderzoeken);
+
+	void verwijderClientContacten(Client client, List<Bevolkingsonderzoek> onderzoeken);
 }

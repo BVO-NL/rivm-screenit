@@ -19,7 +19,13 @@
  * =========================LICENSE_END==================================
  */
 import renderer, {ReactTestRenderer} from "react-test-renderer"
+import userEvent from "@testing-library/user-event"
+import {screen} from "@testing-library/react"
 
 export function rerender(component: ReactTestRenderer): renderer.ReactTestRendererJSON {
-    return component.toJSON() as renderer.ReactTestRendererJSON
+	return component.toJSON() as renderer.ReactTestRendererJSON
+}
+
+export function enterDate(testId: string, datum: string): Promise<void> {
+	return userEvent.type(screen.getByTestId(testId), ` ${datum}`)
 }

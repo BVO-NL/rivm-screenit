@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen.cdaverslag;
 
 /*-
@@ -42,9 +41,6 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX })
 public class CdaVerslagErrorDownloadCdaPage extends AlgemeenPage
 {
-
-	private static final long serialVersionUID = 1L;
-
 	public CdaVerslagErrorDownloadCdaPage(IModel<BerichtOntvangenLogEvent> model)
 	{
 		add(new CdaVerslagErrorDownloadCdaPanel("panel", model));

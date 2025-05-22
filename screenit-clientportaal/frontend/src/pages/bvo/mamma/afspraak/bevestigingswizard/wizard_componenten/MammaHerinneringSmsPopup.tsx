@@ -60,20 +60,18 @@ const MammaHerinneringSmsPopup = (props: MammaHerinneringSmsPopupProps) => {
 							props.afspraakBevestiging.wilHerinneringsSms = true
 							props.onVolgende()
 						}}>
-						{formikProps => (
+						{({errors, values, isSubmitting, setFieldValue, handleSubmit}) => (
 							<><ScreenitTextfield
 								name={"mobielnummer"}
 								placeholder={"Mobiel nummer"}
-								value={formikProps.values.clientNieuwMobielNummer}
-								invalidMessage={formikProps.errors.clientNieuwMobielNummer}
-								onChange={value => {
-									formikProps.setFieldValue("clientNieuwMobielNummer", value)
-								}}/>
+								value={values.clientNieuwMobielNummer}
+								invalidMessage={errors.clientNieuwMobielNummer}
+								onChange={value => setFieldValue("clientNieuwMobielNummer", value)}/>
 								<Button label={properties.sms.sms_knop_tekst}
-										disableButton={formikProps.isSubmitting}
+										disableButton={isSubmitting}
 										onClick={() => {
-											props.afspraakBevestiging.clientNieuwMobielNummer = formikProps.values.clientNieuwMobielNummer
-											formikProps.handleSubmit()
+											props.afspraakBevestiging.clientNieuwMobielNummer = values.clientNieuwMobielNummer
+											handleSubmit()
 										}}
 										displayArrow={ArrowType.ARROW_RIGHT}/></>)}
 					</Formik>

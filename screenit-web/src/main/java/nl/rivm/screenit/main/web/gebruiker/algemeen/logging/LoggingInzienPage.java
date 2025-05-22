@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import nl.rivm.screenit.Constants;
@@ -40,6 +41,10 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitListMultipleChoice;
 import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
+import nl.rivm.screenit.model.BagAdres;
+import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Actie;
@@ -142,10 +147,12 @@ public class LoggingInzienPage extends AlgemeenPage
 
 				LogRegel logRegel = rowModel.getObject();
 
-				if (logRegel.getClient() != null && logRegel.getClient().getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie() != null)
-				{
-					regio = logRegel.getClient().getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie();
-				}
+				regio = Optional.ofNullable(logRegel.getClient())
+					.map(Client::getPersoon)
+					.map(GbaPersoon::getGbaAdres)
+					.map(BagAdres::getGbaGemeente)
+					.map(Gemeente::getScreeningOrganisatie)
+					.orElse(null);
 
 				if (regio == null)
 				{

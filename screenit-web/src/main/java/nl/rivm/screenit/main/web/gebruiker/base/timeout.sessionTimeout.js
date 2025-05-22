@@ -47,7 +47,7 @@
 			window.setTimeout(function () {
 				const instance = new Notification("ScreenIT - Timeout waarschuwing", {
 					body: "Uw sessie verloopt binnen 5 minuten.",
-					icon: "../assets/favicon/favicon-160x160.png"
+					icon: "../../assets/favicon/apple-touch-icon-180x180.png"
 				});
 				instance.onclick = function () {
 					this.close();

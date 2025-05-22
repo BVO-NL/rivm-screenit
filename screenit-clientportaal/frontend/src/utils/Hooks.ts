@@ -20,7 +20,7 @@
  */
 import {useEffect, useState} from "react"
 import keycloak from "../utils/Keycloak"
-import {useLocation} from "react-router-dom"
+import {useLocation} from "react-router"
 import {Bevolkingsonderzoek} from "../datatypes/Bevolkingsonderzoek"
 import {useDispatch, useSelector} from "react-redux"
 import {State} from "../datatypes/State"

@@ -754,4 +754,16 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	{
 		return ronde.getBrieven().stream().anyMatch(brief -> briefTypes.contains(brief.getBriefType()));
 	}
+
+	@Override
+	public <B extends Brief> void verwijderBrief(B brief)
+	{
+		var mergedBrieven = brief.getMergedBrieven();
+		if (mergedBrieven != null)
+		{
+			mergedBrieven.getBrieven().remove(brief);
+			hibernateService.save(mergedBrieven);
+		}
+		hibernateService.delete(brief);
+	}
 }

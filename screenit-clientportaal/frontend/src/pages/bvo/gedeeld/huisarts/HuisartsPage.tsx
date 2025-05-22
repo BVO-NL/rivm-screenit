@@ -59,7 +59,7 @@ import SearchResultHuisarts from "../../../../components/search_results/SearchRe
 import SubmitForm from "../../../../components/form/SubmitForm"
 import {FormControl, FormControlLabel, Radio, RadioGroup} from "@mui/material"
 import SearchForm from "../../../../components/form/SearchForm"
-import {useLocation, useNavigate} from "react-router-dom"
+import {useLocation, useNavigate} from "react-router"
 import {showToast} from "../../../../utils/ToastUtil"
 
 const HuisartsPage = () => {
@@ -150,7 +150,7 @@ const HuisartsPage = () => {
 			dispatch(createShowToastAction({
 				title: getString(properties.gedeeld.toasts.zelfde.title),
 				description: getString(properties.gedeeld.toasts.zelfde.description),
-				alGetoond: false
+				alGetoond: false,
 			}))
 		} else {
 			setGekozenHuisarts(huisarts)
@@ -187,7 +187,7 @@ const HuisartsPage = () => {
 	function toonKeuzePagina() {
 		if (!wilZoeken && !huidigeHuisarts && !mammaHuidigeGeenHuisartsOptie && (vorigeHuisarts || mammaVorigeGeenHuisartsOptie)) {
 			return (
-                <ActieBasePage className={styles.keuzePagina}
+				<ActieBasePage className={styles.keuzePagina}
 							   bvoName={bevolkingsonderzoekNaam}
 							   title={getString(properties.gedeeld.title)}
 							   description={
@@ -233,7 +233,7 @@ const HuisartsPage = () => {
 						</SubmitForm>)}
 					</Formik>
 				</ActieBasePage>
-            )
+			)
 		} else {
 			return toonZoekpagina()
 		}
@@ -266,51 +266,43 @@ const HuisartsPage = () => {
 						<Formik initialValues={initialSearchFormValues}
 								validationSchema={searchFormValidatieSchema}
 								onSubmit={zoek}>
-							{formikProps => (
+							{({errors, values, initialValues, setFieldValue, handleSubmit}) => (
 								<SearchForm title={getString(properties.gedeeld.zoekpagina.zoekform.title)}>
 
-									<ScreenitTextfield onChange={value => {
-										formikProps.setFieldValue("naam", value)
-									}}
-													   value={formikProps.values.naam}
+									<ScreenitTextfield onChange={value => setFieldValue("naam", value)}
+													   value={values.naam}
 													   name={"naam"}
 													   placeholder={getString(properties.gedeeld.zoekpagina.zoekform.placeholders.naam)}/>
 
-									<ScreenitTextfield onChange={value => {
-										formikProps.setFieldValue("adres.plaats", value)
-									}}
-													   value={formikProps.values.adres.plaats}
+									<ScreenitTextfield onChange={value => setFieldValue("adres.plaats", value)}
+													   value={values.adres.plaats}
 													   name={"adres.plaats"}
 													   placeholder={getString(properties.gedeeld.zoekpagina.zoekform.placeholders.plaats)}/>
 
 									<div className={styles.advancedSearchButton}
-										 onClick={() => {
-											 formikProps.setFieldValue("adres.postcode", "")
-											 formikProps.setFieldValue("adres.straat", "")
+										 onClick={async () => {
+											 await setFieldValue("adres.postcode", "")
+											 await setFieldValue("adres.straat", "")
 											 setAdvancedSearch(!isAdvancedSearch)
 										 }}>
 										<AdvancedSearchLinkComponent advancedSearch={isAdvancedSearch}/>
 									</div>
 									{isAdvancedSearch && <div>
-										<ScreenitTextfield onChange={value => {
-											formikProps.setFieldValue("adres.postcode", value)
-										}}
-														   value={formikProps.values.adres.postcode}
+										<ScreenitTextfield onChange={value => setFieldValue("adres.postcode", value)}
+														   value={values.adres.postcode}
 														   name={"adres.postcode"}
 														   placeholder={getString(properties.gedeeld.zoekpagina.zoekform.placeholders.postcode)}
-														   invalidMessage={formikProps.errors.adres?.postcode}/>
+														   invalidMessage={errors.adres?.postcode}/>
 
-										<ScreenitTextfield onChange={value => {
-											formikProps.setFieldValue("adres.straat", value)
-										}}
-														   value={formikProps.values.adres.straat}
+										<ScreenitTextfield onChange={value => setFieldValue("adres.straat", value)}
+														   value={values.adres.straat}
 														   name={"adres.straat"}
 														   placeholder={getString(properties.gedeeld.zoekpagina.zoekform.placeholders.straat)}/>
 									</div>}
 									<Button className={bvoStyle.darkBackgroundColor}
 											label={getString(properties.gedeeld.zoekpagina.zoekform.submit)}
 											displayArrow={ArrowType.ARROW_RIGHT}
-											onClick={formikProps.handleSubmit}/>
+											onClick={handleSubmit}/>
 								</SearchForm>)}
 						</Formik>
 					</Col>

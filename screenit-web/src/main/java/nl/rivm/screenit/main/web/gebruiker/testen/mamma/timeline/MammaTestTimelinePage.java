@@ -65,6 +65,7 @@ import nl.rivm.screenit.util.TestBsnGenerator;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
+import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.model.DetachableListModel;
 import nl.topicuszorg.wicket.model.SortingListModel;
@@ -352,7 +353,8 @@ public class MammaTestTimelinePage extends TestenBasePage
 		if (clientModel != null)
 		{
 			reloadClienten();
-			var rondes = testTimelineService.getTimelineRondes(clientModel.getObject().get(0));
+			var client = ModelProxyHelper.deproxy(clientModel.getObject().get(0));
+			var rondes = testTimelineService.getTimelineRondes(client);
 			rondes.sort((o1, o2) -> o2.getRondeNummer().compareTo(o1.getRondeNummer()));
 			rondesModel = new DetachableListModel<>(rondes);
 
@@ -446,7 +448,8 @@ public class MammaTestTimelinePage extends TestenBasePage
 					@Override
 					public List<TestVervolgKeuzeOptie> getOptions()
 					{
-						return testTimelineService.getSnelKeuzeOpties(clientModel.getObject().get(0));
+						var client = ModelProxyHelper.deproxy(getModelObject().get(0));
+						return testTimelineService.getSnelKeuzeOpties(client);
 					}
 
 					@Override

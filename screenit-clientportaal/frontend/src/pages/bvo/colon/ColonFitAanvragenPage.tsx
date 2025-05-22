@@ -31,7 +31,7 @@ import {ArrowType} from "../../../components/vectors/ArrowIconComponent"
 import {getString} from "../../../utils/TekstPropertyUtil"
 import properties from "./ColonFitAanvragenPage.json"
 import SubmitButton from "../../../components/input/SubmitButton"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 
 const ColonFitAanvragenPage = () => {
 	const dispatch = useThunkDispatch()

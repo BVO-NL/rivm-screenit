@@ -22,6 +22,7 @@ package nl.rivm.screenit.service.cervix.impl;
  */
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DossierStatus;
@@ -42,12 +43,12 @@ import nl.rivm.screenit.util.ProjectUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
-@Transactional(propagation = Propagation.REQUIRED)
+@Slf4j
+@Transactional
 public class CervixBaseDossierServiceImpl implements CervixBaseDossierService
 {
 	private final HibernateService hibernateService;
@@ -56,7 +57,7 @@ public class CervixBaseDossierServiceImpl implements CervixBaseDossierService
 
 	private final CervixFoutHL7v2BerichtRepository foutHL7v2BerichtRepository;
 
-	private final BaseClientContactService baseClientContactService;
+	private final BaseClientContactService clientContactService;
 
 	private final BaseDossierService baseDossierService;
 
@@ -65,28 +66,56 @@ public class CervixBaseDossierServiceImpl implements CervixBaseDossierService
 	private final ICurrentDateSupplier currentDateSupplier;
 
 	@Override
-	public void maakDossierLeeg(CervixDossier dossier)
+	@Transactional
+	public void maakDossierLeeg(Long clientId)
 	{
-		Client client = dossier.getClient();
+		var dossier = clientService.getClientById(clientId).map(Client::getCervixDossier);
+		dossier.ifPresent(d -> maakDossierLeeg(d, true));
+	}
 
-		baseScreeningrondeService.verwijderScreeningRondes(dossier);
-
-		baseDossierService.verwijderNietLaatsteDefinitieveAfmeldingenUitDossier(dossier);
-
-		baseClientContactService.verwijderClientContacten(client, Bevolkingsonderzoek.CERVIX);
-
-		verwijderCisHistorie(dossier.getCisHistorie());
-
-		verwijderFoutHl7V2Berichten(client);
-
-		opruimenDossier(dossier);
-
-		hibernateService.saveOrUpdate(client);
-
-		ProjectClient projectClient = ProjectUtil.getHuidigeProjectClient(client, currentDateSupplier.getDate(), false);
-		if (projectClient != null)
+	@Override
+	public void maakDossierLeeg(CervixDossier dossier, boolean alleAfmeldingen)
+	{
+		if (dossier == null)
 		{
-			clientService.projectClientInactiveren(projectClient, ProjectInactiefReden.VERWIJDERING_VAN_DOSSIER, Bevolkingsonderzoek.CERVIX);
+			return;
+		}
+
+		try
+		{
+			Client client = dossier.getClient();
+
+			baseScreeningrondeService.verwijderScreeningRondes(dossier);
+
+			clientContactService.verwijderClientContacten(client, Bevolkingsonderzoek.CERVIX);
+
+			if (alleAfmeldingen)
+			{
+				baseDossierService.verwijderAlleAfmeldingenUitDossier(dossier);
+			}
+			else
+			{
+				baseDossierService.verwijderNietLaatsteDefinitieveAfmeldingenUitDossier(dossier);
+			}
+			verwijderCisHistorie(dossier.getCisHistorie());
+
+			verwijderFoutHl7V2Berichten(client);
+
+			opruimenDossier(dossier);
+
+			hibernateService.saveOrUpdate(client);
+
+			ProjectClient projectClient = ProjectUtil.getHuidigeProjectClient(client, currentDateSupplier.getDate(), false);
+			if (projectClient != null)
+			{
+				clientService.projectClientInactiveren(projectClient, ProjectInactiefReden.VERWIJDERING_VAN_DOSSIER, Bevolkingsonderzoek.CERVIX);
+			}
+
+			LOG.info("Dossier van client '{}' geleegd", dossier.getClient().getId());
+		}
+		catch (Exception ex)
+		{
+			LOG.error("Fout bij legen van dossier van client '{}'", dossier.getClient().getId(), ex);
 		}
 	}
 

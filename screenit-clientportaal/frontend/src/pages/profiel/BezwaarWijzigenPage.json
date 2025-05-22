@@ -2,7 +2,7 @@
   "page": {
     "header": {
       "title": "Het gebruik van mijn gegevens beheren",
-      "description": "Uw gegevens staan in ons systeem. Wij zorgen ervoor dat uw gegevens goed beschermd worden.<br />Op de pagina <a href='https://www.bevolkingsonderzoeknederland.nl/privacy/' target='_blank'>'Privacy'</a> op onze website leest u meer over hoe wij omgaan met gegevens, waar we ze voor gebruiken, met wie we ze uitwisselen en hoe we ze beschermen.  <br />Wilt u niet dat we uw gegevens gebruiken, delen of bewaren? Dan kunt u dit bij ons aangeven. Hieronder leest u welke keuzes u kunt maken. <br />Vink uw keuze aan. U krijgt van ons een brief waarin staat welke keuze u heeft gemaakt.</br>"
+      "description": "Uw gegevens staan in ons systeem. Wij zorgen ervoor dat uw gegevens goed beschermd worden.<br>Op de pagina <a target='_blank' href='https://www.bevolkingsonderzoeknederland.nl/privacy/' rel='noopener noreferrer'>'Privacy'</a> op onze website leest u meer over hoe wij omgaan met gegevens, waar we ze voor gebruiken, met wie we ze uitwisselen en hoe we ze beschermen.  <br>Wilt u niet dat we uw gegevens gebruiken, delen of bewaren? Dan kunt u dit bij ons aangeven. Hieronder leest u welke keuzes u kunt maken. <br>Vink uw keuze aan. U krijgt van ons een brief waarin staat welke keuze u heeft gemaakt.<br>"
     }
   },
   "opslaan": {
@@ -22,11 +22,11 @@
   },
   "overige_zorgverleners": {
     "title": "Wilt u dat we uw gegevens niet gebruiken voor contact met andere zorgverleners?",
-    "text": "Wij delen gegevens met huisartsen en andere zorgverleners. Zoals het ziekenhuis of laboratorium. Het gaat dan bijvoorbeeld over uw uitslag of uw doorverwijzing. Zo kunnen we u samen de zorg geven die bij u past. <br />Hieronder ziet u welke keuzes u kunt maken als u wilt dat wij uw gegevens niet delen met andere zorgverleners."
+    "text": "Wij delen gegevens met huisartsen en andere zorgverleners. Zoals het ziekenhuis of laboratorium. Het gaat dan bijvoorbeeld over uw uitslag of uw doorverwijzing. Zo kunnen we u samen de zorg geven die bij u past. <br>Hieronder ziet u welke keuzes u kunt maken als u wilt dat wij uw gegevens niet delen met andere zorgverleners."
   },
   "overige": {
     "gba": "Wilt u dat we de resultaten van uw onderzoek niet bewaren, of wilt u dat we uw contactgegevens en onderzoeksresultaten allemaal verwijderen?",
-    "infolijn": "Bel dan met onze <a href='https://www.bevolkingsonderzoeknederland.nl/contact/'>informatielijn</a>."
+    "infolijn": "Bel dan met onze <a href='https://www.bevolkingsonderzoeknederland.nl/contact/' target='_blank' rel='noopener noreferrer'>informatielijn</a>."
   },
   "GEEN_UITWISSELING_MET_DE_HUISARTS": {
     "title": "Geen uitwisseling van mijn gegevens met de huisarts",
@@ -66,11 +66,11 @@
   "uitwisseling_pathologie_databank": {
     "title": "Het laboratorium wisselt gegevens uit met het de pathologie-databank. Wilt u dat niet?",
     "abstract": "",
-    "meer": "Het laboratorium dat de uitstrijkjes en zelfafnamesets van het bevolkingsonderzoek baarmoederhalskanker beoordeelt, geeft de uitslagen ook door aan PALGA, de landelijke pathologie-databank. Wilt u dit niet? Dan moet u dit doorgeven aan het laboratorium. Wij hebben hiervoor een <a href='https://www.bevolkingsonderzoeknederland.nl/media/gb5lh2dr/bezwaar-uitwisseling-gegevens-met-palga.pdf'>formulier</a>, dat u naar het laboratorium op moet sturen. Dit kunt u pas doen nadat u een uitstrijkje heeft laten maken of de zelfafnameset heeft ingestuurd. <br />Neem <a href='https://www.bevolkingsonderzoeknederland.nl/contact/'>contact</a> met ons op voor het adres van het laboratorium dat uw uitstrijkje of zelfafnameset beoordeelt."
+    "meer": "Het laboratorium dat de uitstrijkjes en zelfafnamesets van het bevolkingsonderzoek baarmoederhalskanker beoordeelt, geeft de uitslagen ook door aan PALGA, de landelijke pathologie-databank. Wilt u dit niet? Dan moet u dit doorgeven aan het laboratorium. Wij hebben hiervoor een <a href='https://www.bevolkingsonderzoeknederland.nl/media/gb5lh2dr/bezwaar-uitwisseling-gegevens-met-palga.pdf' target='_blank' rel='noopener noreferrer'>formulier</a>, dat u naar het laboratorium op moet sturen. Dit kunt u pas doen nadat u een uitstrijkje heeft laten maken of de zelfafnameset heeft ingestuurd. <br>Neem <a href='https://www.bevolkingsonderzoeknederland.nl/contact/'>contact</a> met ons op voor het adres van het laboratorium dat uw uitstrijkje of zelfafnameset beoordeelt."
   },
   "uitwisseling_coloscopiecentrum": {
     "title": "Wij wisselen gegevens uit met het coloscopiecentrum. Wilt u dat niet?",
     "abstract": "",
-    "meer": "Als er vervolgonderzoek nodig is na uw deelname aan het bevolkingsonderzoek darmkanker, maken wij automatisch een afspraak voor een gesprek in een coloscopiecentrum. Wij geven uw gegevens dan door aan het centrum. Wilt u dit niet? Dan moet u vóórdat u uw ontlastingstest instuurt hierover <a href='https://www.bevolkingsonderzoeknederland.nl/contact/'>contact</a> met ons opnemen. "
+    "meer": "Als er vervolgonderzoek nodig is na uw deelname aan het bevolkingsonderzoek darmkanker, maken wij automatisch een afspraak voor een gesprek in een coloscopiecentrum. Wij geven uw gegevens dan door aan het centrum. Wilt u dit niet? Dan moet u vóórdat u uw ontlastingstest instuurt hierover <a href='https://www.bevolkingsonderzoeknederland.nl/contact/' target='_blank' rel='noopener noreferrer'>contact</a> met ons opnemen. "
   }
 }

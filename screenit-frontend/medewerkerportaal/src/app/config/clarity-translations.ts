@@ -124,6 +124,7 @@ export const clarityTranslations: ClrCommonStrings = {
   apply: 'Toepassen',
   cancel: 'Annuleren',
   datagridFilterLabel: '{COLUMN} filter',
+  sidePanelPin: 'Zet zijpaneel vast',
   breadcrumbsLabel: 'broodkruimels',
   expandBreadcrumbsLabel: 'klap broodkruimels open',
 }

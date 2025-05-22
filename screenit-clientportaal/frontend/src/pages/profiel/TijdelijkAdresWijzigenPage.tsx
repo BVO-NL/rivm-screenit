@@ -27,7 +27,7 @@ import {useSelector} from "react-redux"
 import {State} from "../../datatypes/State"
 import properties from "./TijdelijkAdresWijzigenPage.json"
 import TijdelijkAdresWijzigenForm from "../../components/form/adres/TijdelijkAdresWijzigenForm"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 import {showToast} from "../../utils/ToastUtil"
 
 const TijdelijkAdresWijzigenPage = () => {

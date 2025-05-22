@@ -35,7 +35,7 @@ import {State} from "../../../datatypes/State"
 import {ArrowType} from "../../../components/vectors/ArrowIconComponent"
 import LadenComponent from "../../../components/laden/LadenComponent"
 import SubmitButton from "../../../components/input/SubmitButton"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 
 const ZasAanvragenPage = () => {
 	const dispatch = useThunkDispatch()

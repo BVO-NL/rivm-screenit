@@ -22,23 +22,21 @@ package nl.rivm.screenit.service.impl;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContact;
-import nl.rivm.screenit.model.ClientContactActie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.service.BaseClientContactService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.util.collections.CollectionUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(propagation = Propagation.REQUIRED)
+@Transactional
 public class BaseClientContactServiceImpl implements BaseClientContactService
 {
 
@@ -46,32 +44,40 @@ public class BaseClientContactServiceImpl implements BaseClientContactService
 	private HibernateService hibernateService;
 
 	@Override
-	public void verwijderClientContacten(Client client, Bevolkingsonderzoek bevolkingsonderzoek)
+	public void verwijderClientContacten(Client client, List<Bevolkingsonderzoek> onderzoeken)
 	{
-		if (CollectionUtils.isNotEmpty(client.getContacten()))
+		var contacten = client.getContacten();
+		if (contacten.isEmpty())
 		{
-			List<Bevolkingsonderzoek> onderzoeken = new ArrayList<Bevolkingsonderzoek>();
-			onderzoeken.add(bevolkingsonderzoek);
-			List<ClientContact> contacten = client.getContacten();
-			for (ClientContact contact : contacten)
+			return;
+		}
+		var verwijderdeContacten = new ArrayList<ClientContact>();
+		for (var contact : contacten)
+		{
+			boolean clientContactMagWeg = true;
+			for (var actie : contact.getActies())
 			{
-				boolean clientContactMagWeg = true;
-				for (ClientContactActie actie : contact.getActies())
+				if (onderzoeken.equals(actie.getType().getBevolkingsonderzoeken()))
 				{
-					if (onderzoeken.equals(actie.getType().getBevolkingsonderzoeken()))
-					{
-						hibernateService.delete(actie);
-					}
-					else
-					{
-						clientContactMagWeg = false;
-					}
+					hibernateService.delete(actie);
 				}
-				if (clientContactMagWeg)
+				else
 				{
-					hibernateService.delete(contact);
+					clientContactMagWeg = false;
 				}
 			}
+			if (clientContactMagWeg)
+			{
+				hibernateService.delete(contact);
+				verwijderdeContacten.add(contact);
+			}
 		}
+		client.getContacten().removeAll(verwijderdeContacten);
+	}
+
+	@Override
+	public void verwijderClientContacten(Client client, Bevolkingsonderzoek... onderzoeken)
+	{
+		verwijderClientContacten(client, Arrays.asList(onderzoeken));
 	}
 }

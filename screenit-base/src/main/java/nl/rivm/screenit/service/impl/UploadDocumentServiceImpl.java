@@ -30,13 +30,11 @@ import java.util.UUID;
 
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.dao.UploadDocumentDao;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.repository.algemeen.UploadDocumentRepository;
 import nl.rivm.screenit.service.FileService;
 import nl.rivm.screenit.service.UploadDocumentService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,12 +57,6 @@ public class UploadDocumentServiceImpl implements UploadDocumentService
 	private FileService fileService;
 
 	@Autowired
-	private UploadDocumentDao uploadDocumentDao;
-
-	@Autowired
-	private HibernateService hibernateService;
-
-	@Autowired
 	private UploadDocumentRepository uploadDocumentRepository;
 
 	@Override
@@ -72,7 +64,7 @@ public class UploadDocumentServiceImpl implements UploadDocumentService
 	public void delete(UploadDocument document)
 	{
 		fileService.delete(getFullFilePath(document));
-		uploadDocumentDao.delete(document);
+		uploadDocumentRepository.delete(document);
 	}
 
 	@Override
@@ -135,10 +127,8 @@ public class UploadDocumentServiceImpl implements UploadDocumentService
 
 		if (save(document, path))
 		{
-			uploadDocumentDao.saveOrUpdate(document);
+			uploadDocumentRepository.save(document);
 		}
-
-		hibernateService.saveOrUpdate(document);
 
 		if (tmpFile != null && !tmpFile.delete())
 		{
@@ -148,20 +138,20 @@ public class UploadDocumentServiceImpl implements UploadDocumentService
 
 	private boolean save(UploadDocument uploadDocument, String path) throws IOException
 	{
-		if (StringUtils.isBlank(uploadDocument.getPath()))
+		if (!StringUtils.isBlank(uploadDocument.getPath()))
 		{
-			var filestoreFileName = generateFiltestoreFileName();
-
-			var fullFilePath = locatieFilestore + path + File.separator + filestoreFileName;
-
-			fileService.save(fullFilePath, uploadDocument.getFile());
-			LOG.debug("UploadDocument {} is geupload onder {}", uploadDocument.getId(), fullFilePath);
-
-			uploadDocument.setPath(path + File.separator + filestoreFileName);
-			return true;
+			return false;
 		}
 
-		return false;
+		var filestoreFileName = generateFiltestoreFileName();
+
+		var fullFilePath = locatieFilestore + path + File.separator + filestoreFileName;
+
+		fileService.save(fullFilePath, uploadDocument.getFile());
+		LOG.debug("UploadDocument {} is geupload onder {}", uploadDocument.getId(), fullFilePath);
+
+		uploadDocument.setPath(path + File.separator + filestoreFileName);
+		return true;
 	}
 
 	@Override
@@ -175,7 +165,7 @@ public class UploadDocumentServiceImpl implements UploadDocumentService
 			LOG.debug("Bestand voor UploadDocument {} vervangen", uploadDocument.getId());
 		}
 
-		uploadDocumentDao.saveOrUpdate(uploadDocument);
+		uploadDocumentRepository.save(uploadDocument);
 	}
 
 	@Override

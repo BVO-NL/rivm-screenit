@@ -39,7 +39,7 @@ import {selectBezwaren} from "../../selectors/BezwaarSelectors"
 import BezwaarBlok from "./BezwaarBlok"
 import BezwaarInformatieBlok from "./BezwaarInformatieBlok"
 import {BezwaarType} from "../../datatypes/BezwaarType"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 
 const BezwaarWijzigenPage = () => {
 	const dispatch = useThunkDispatch()
@@ -101,9 +101,9 @@ const BezwaarWijzigenPage = () => {
 																buttonLabel={properties.opslaan.button.label}>
 
 						{bvoSpecifiekeBezwaren.length > 0 && bvoSpecifiekeBezwaren.map((b, index) =>
-							<BezwaarBlok bezwaar={b} key={b.type + "_" + index} onChange={(event) => {
-								formikProps.setFieldValue(String(alleBezwaren.indexOf(b)), event)
-							}} abstract={getBezwaarString(b.type, "abstract")}
+							<BezwaarBlok bezwaar={b} key={b.type + "_" + index}
+										 onChange={(event) => formikProps.setFieldValue(String(alleBezwaren.indexOf(b)), event)}
+										 abstract={getBezwaarString(b.type, "abstract")}
 										 meer={getBezwaarString(b.type, "meer")} standalone={false}
 										 titel={getBezwaarString(b.type, "title")}/>,
 						)}
@@ -114,9 +114,10 @@ const BezwaarWijzigenPage = () => {
 						</div>
 
 						{zorgverlenerBezwaren.length > 0 && zorgverlenerBezwaren.map((b, index) =>
-							<BezwaarBlok bezwaar={b} key={b.type + "_" + index} onChange={(event) => {
-								formikProps.setFieldValue(String(alleBezwaren.indexOf(b)), event)
-							}} abstract={getBezwaarString(b.type, "abstract")}
+							<BezwaarBlok bezwaar={b}
+										 key={b.type + "_" + index}
+										 onChange={(event) => formikProps.setFieldValue(String(alleBezwaren.indexOf(b)), event)}
+										 abstract={getBezwaarString(b.type, "abstract")}
 										 meer={getBezwaarString(b.type, "meer")} standalone={false}
 										 titel={getBezwaarString(b.type, "title")}/>,
 						)}
@@ -124,14 +125,18 @@ const BezwaarWijzigenPage = () => {
 						{behoortTotCervixDoelgroep && (
 							<div className={styles.overigeBezwaren}>
 								<label>{getString(properties.uitwisseling_pathologie_databank.title)}</label>
-								<BezwaarInformatieBlok abstract={""} meer={getString(properties.uitwisseling_pathologie_databank.meer)} standalone={true}/>
+								<BezwaarInformatieBlok abstract={""}
+													   meer={getString(properties.uitwisseling_pathologie_databank.meer)}
+													   standalone={true}/>
 							</div>
 						)}
 
 						{behoortTotColonDoelgroep && (
 							<div className={styles.overigeBezwaren}>
 								<label>{getString(properties.uitwisseling_coloscopiecentrum.title)}</label>
-								<BezwaarInformatieBlok abstract={""} meer={getString(properties.uitwisseling_coloscopiecentrum.meer)} standalone={true}/>
+								<BezwaarInformatieBlok abstract={""}
+													   meer={getString(properties.uitwisseling_coloscopiecentrum.meer)}
+													   standalone={true}/>
 							</div>
 						)}
 

@@ -185,7 +185,10 @@ public class TestenBasePage extends GebruikerBasePage
 		if (mammaDossier != null)
 		{
 			timelineModel.setDoelgroep(mammaDossier.getDoelgroep());
-			timelineModel.setDeelnamekans(mammaDossier.getDeelnamekans().getDeelnamekans());
+			if (mammaDossier.getDeelnamekans() != null)
+			{
+				timelineModel.setDeelnamekans(mammaDossier.getDeelnamekans().getDeelnamekans());
+			}
 		}
 		timelineModel.setBsn(clienten.stream().map(c -> c.getPersoon().getBsn()).collect(Collectors.joining(",")));
 		timelineModel.setANummer(clienten.stream().map(c ->

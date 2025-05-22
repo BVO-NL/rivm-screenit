@@ -27,7 +27,7 @@ import {setLoggingInAction} from "../../actions/AuthenticatieAction"
 import properties from "./AutoLoginPage.json"
 import {getString} from "../../utils/TekstPropertyUtil"
 import {getBevolkingsonderzoekNederlandUrl, getBevolkingsonderzoekNederlandUrlNaam} from "../../utils/UrlUtil"
-import {Navigate} from "react-router-dom"
+import {Navigate} from "react-router"
 import {KeycloakContext} from "../../components/KeycloakProvider"
 
 const AutoLoginPage = () => {

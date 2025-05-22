@@ -59,6 +59,7 @@ import nl.rivm.screenit.service.colon.ColonTestService;
 import nl.rivm.screenit.util.TestBsnGenerator;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
+import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.model.DetachableListModel;
 import nl.topicuszorg.wicket.model.SortingListModel;
@@ -93,8 +94,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
 	recht = Recht.TESTEN,
-	bevolkingsonderzoekScopes = {
-		Bevolkingsonderzoek.COLON })
+	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class ColonTestTimelinePage extends TestenBasePage
 {
 	@SpringBean
@@ -107,8 +107,6 @@ public class ColonTestTimelinePage extends TestenBasePage
 	private TestService testService;
 
 	private final IModel<TestTimelineModel> model;
-
-	private IModel<List<Client>> clientModel;
 
 	private IModel<List<TestTimelineRonde>> rondesModel;
 
@@ -162,7 +160,7 @@ public class ColonTestTimelinePage extends TestenBasePage
 	@Override
 	protected WebMarkupContainer getFormComponentsContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("formComponents");
+		var container = new WebMarkupContainer("formComponents");
 		container.setOutputMarkupId(true);
 
 		bsnField = new TextField<>("bsn");
@@ -170,7 +168,7 @@ public class ColonTestTimelinePage extends TestenBasePage
 		bsnField.setOutputMarkupId(true);
 		container.add(bsnField);
 
-		Label aNummer = new Label("aNummer");
+		var aNummer = new Label("aNummer");
 		container.add(aNummer);
 
 		bsnField.add(new AjaxFormComponentUpdatingBehavior("change")
@@ -252,7 +250,8 @@ public class ColonTestTimelinePage extends TestenBasePage
 		container.setVisible(clientModel != null);
 		if (clientModel != null && !clientModel.getObject().isEmpty())
 		{
-			List<TestTimelineRonde> rondes = testTimelineService.getTimelineRondes(clientModel.getObject().get(0));
+			var client = ModelProxyHelper.deproxy(clientModel.getObject().get(0));
+			var rondes = testTimelineService.getTimelineRondes(client);
 			rondes.sort((o1, o2) -> o2.getRondeNummer().compareTo(o1.getRondeNummer()));
 			rondesModel = new DetachableListModel<>(rondes);
 
@@ -326,7 +325,8 @@ public class ColonTestTimelinePage extends TestenBasePage
 					@Override
 					public List<TestVervolgKeuzeOptie> getOptions()
 					{
-						return testTimelineService.getSnelKeuzeOpties(getModelObject().get(0));
+						var client = ModelProxyHelper.deproxy(getModelObject().get(0));
+						return testTimelineService.getSnelKeuzeOpties(client);
 					}
 
 					@Override

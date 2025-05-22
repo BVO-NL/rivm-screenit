@@ -20,7 +20,7 @@
  */
 import * as React from "react"
 import {useCallback, useContext} from "react"
-import {Navigate, useLocation} from "react-router-dom"
+import {Navigate, useLocation} from "react-router"
 import {useDispatch, useSelector} from "react-redux"
 import {Col, Row} from "react-bootstrap"
 import authenticationStyle from "./AuthenticationPage.module.scss"

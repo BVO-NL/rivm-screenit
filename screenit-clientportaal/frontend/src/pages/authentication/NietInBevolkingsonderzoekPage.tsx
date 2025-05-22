@@ -29,7 +29,7 @@ import {getBevolkingsonderzoekNederlandUrl, getBevolkingsonderzoekNederlandUrlNa
 import properties from "./NietInBevolkingsonderzoekPage.json"
 import Button from "../../components/input/Button"
 import {ArrowType} from "../../components/vectors/ArrowIconComponent"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 
 const NietInBevolkingsonderzoekPage = () => {
 	const navigate = useNavigate()

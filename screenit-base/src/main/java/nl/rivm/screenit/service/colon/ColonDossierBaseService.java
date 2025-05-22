@@ -28,8 +28,9 @@ import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
 import nl.rivm.screenit.model.colon.enums.MdlVervolgbeleid;
+import nl.rivm.screenit.service.LeegDossierService;
 
-public interface ColonDossierBaseService
+public interface ColonDossierBaseService extends LeegDossierService
 {
 	LocalDate getDatumVolgendeUitnodiging(ColonDossier dossier);
 
@@ -43,7 +44,7 @@ public interface ColonDossierBaseService
 
 	void setVolgendeUitnodigingVoorVerslag(MdlVerslag verslag);
 
-	void maakDossierLeeg(ColonDossier dossier);
+	void maakDossierLeeg(ColonDossier dossier, boolean alleAfmeldingen);
 
 	MdlVervolgbeleid getVervolgbeleid(MdlVerslag mdlVerslag);
 }

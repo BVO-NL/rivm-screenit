@@ -28,31 +28,31 @@ import properties from "./FooterComponent.json"
 
 const FooterComponent = () => {
 
-    const regio = useRegio()
+	const regio = useRegio()
 
-    return (
-        <Row className={classNames(styles.footer, "footer", "align-items-center")}>
-            <Col md={4}>
-                <span className={styles.footerName}>{properties.title}</span>
-            </Col>
-            <Col md={8}>
-                <ul className={styles.footerUrls}>
-                    <a href={`${getBevolkingsonderzoekNederlandUrl()}/privacy/`}
-                       rel="noopener noreferrer">
-                        <li>{properties.links.privacy}</li>
-                    </a>
-                    <a href={`${getBevolkingsonderzoekNederlandUrl()}/responsible-disclosure/`}
-                       rel="noopener noreferrer">
-                        <li>{properties.links.responsible_disclosure}</li>
-                    </a>
-                    <a href={getContactUrl(regio)}
-                       rel="noopener noreferrer">
-                        <li>{properties.links.contact}</li>
-                    </a>
-                </ul>
-            </Col>
-        </Row>
-    )
+	return (
+		<Row className={classNames(styles.footer, "footer", "align-items-center")}>
+			<Col md={4}>
+				<span className={styles.footerName}>{properties.title}</span>
+			</Col>
+			<Col md={8}>
+				<ul className={styles.footerUrls}>
+					<a href={`${getBevolkingsonderzoekNederlandUrl()}/privacy/`}
+					   rel="noopener noreferrer" target="_blank">
+						<li>{properties.links.privacy}</li>
+					</a>
+					<a href={`${getBevolkingsonderzoekNederlandUrl()}/responsible-disclosure/`}
+					   rel="noopener noreferrer" target="_blank">
+						<li>{properties.links.responsible_disclosure}</li>
+					</a>
+					<a href={getContactUrl(regio)}
+					   rel="noopener noreferrer" target="_blank">
+						<li>{properties.links.contact}</li>
+					</a>
+				</ul>
+			</Col>
+		</Row>
+	)
 
 }
 

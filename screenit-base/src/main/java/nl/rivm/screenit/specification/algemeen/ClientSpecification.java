@@ -54,7 +54,7 @@ public class ClientSpecification
 {
 	public static ExtendedSpecification<Client> heeftIndicatie()
 	{
-		return (r, q, cb) -> cb.equal(r.get(Client_.gbaStatus), GbaStatus.INDICATIE_AANWEZIG);
+		return heeftGbaStatus(GbaStatus.INDICATIE_AANWEZIG);
 	}
 
 	public static ExtendedSpecification<Client> isNietAfgevoerd()
@@ -154,6 +154,11 @@ public class ClientSpecification
 	public static Specification<Client> heeftCervixDossier()
 	{
 		return (r, q, cb) -> cb.isNotNull(r.get(Client_.cervixDossier));
+	}
+
+	public static Specification<Client> heeftDossiers()
+	{
+		return heeftCervixDossier().or(heeftColonDossier()).or(heeftMammaDossier());
 	}
 
 	public static Specification<Client> voldoetAanMammaClientSelectieRestricties()

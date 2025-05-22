@@ -61,6 +61,7 @@ public class ColonAfgerondeIntakesWerklijstPage extends WerklijstIntakePage
 		var columns = super.getColumns();
 		addStatusColumn(columns);
 		addVerwezenColumn(columns);
+		addHandmatigVervolgbeleidColumn(columns);
 		return columns;
 	}
 }

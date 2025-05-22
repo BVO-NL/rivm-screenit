@@ -332,7 +332,8 @@ public class CervixTestTimelinePage extends TestenBasePage
 			return container;
 		}
 
-		List<TestTimelineRonde> rondes = testTimelineService.getTimelineRondes(clientModel.getObject().get(0));
+		var client = ModelProxyHelper.deproxy(clientModel.getObject().get(0));
+		var rondes = testTimelineService.getTimelineRondes(client);
 		rondes.sort((o1, o2) -> o2.getRondeNummer().compareTo(o1.getRondeNummer()));
 		rondesModel = new DetachableListModel<>(rondes);
 		container.add(new TestVervolgKeuzeKnop("nieuweRonde", clientModel, dialog)
@@ -418,7 +419,8 @@ public class CervixTestTimelinePage extends TestenBasePage
 					@Override
 					public List<TestVervolgKeuzeOptie> getOptions()
 					{
-						return testTimelineService.getSnelKeuzeOpties(ModelProxyHelper.deproxy(clientModel.getObject().get(0)));
+						var client = ModelProxyHelper.deproxy(getModelObject().get(0));
+						return testTimelineService.getSnelKeuzeOpties(client);
 					}
 
 					@Override

@@ -28,7 +28,7 @@ import {State} from "../../datatypes/State"
 import properties from "./AanhefWijzigenPage.json"
 import {Formik} from "formik"
 import SubmitForm from "../../components/form/SubmitForm"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 import {showToast} from "../../utils/ToastUtil"
 import {saveAanhef} from "../../api/AanspreekvormWijzigenThunkAction"
 import {FormControl, FormControlLabel, Radio, RadioGroup} from "@mui/material"
@@ -50,7 +50,7 @@ const AanhefWijzigenPage = () => {
 	})
 
 	return (
-        <ActieBasePage
+		<ActieBasePage
 			bvoName={""}
 			title={getString(properties.page.title)}
 			description={getString(properties.page.description)}>
@@ -100,7 +100,7 @@ const AanhefWijzigenPage = () => {
 					</SubmitForm>)}
 			</Formik>
 		</ActieBasePage>
-    );
+	)
 
 	function gekozenAanhef(persoon: Persoon) {
 		let aanhef = persoon.aanhef

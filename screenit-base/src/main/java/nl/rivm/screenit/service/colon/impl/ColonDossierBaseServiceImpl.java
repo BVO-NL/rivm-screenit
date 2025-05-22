@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.colon.ColonBrief;
@@ -69,6 +71,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
+@Slf4j
 @Service
 public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 {
@@ -311,33 +314,63 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 
 	@Override
 	@Transactional
-	public void maakDossierLeeg(ColonDossier dossier)
+	public void maakDossierLeeg(Long clientId)
 	{
-		Client client = dossier.getClient();
+		var dossier = clientService.getClientById(clientId).map(Client::getColonDossier);
+		dossier.ifPresent(d -> maakDossierLeeg(d, true));
+	}
 
-		if (dossier.getLaatsteScreeningRonde() != null)
+	@Override
+	@Transactional
+	public void maakDossierLeeg(ColonDossier dossier, boolean alleAfmeldingen)
+	{
+		if (dossier == null)
 		{
-			setDatumVolgendeUitnodiging(dossier, ColonUitnodigingsintervalType.VERWIJDERD_DOSSIER);
+			return;
 		}
-		verwijderRondesVanDossier(dossier);
 
-		baseDossierService.verwijderNietLaatsteDefinitieveAfmeldingenUitDossier(dossier);
-
-		baseClientContactService.verwijderClientContacten(client, Bevolkingsonderzoek.COLON);
-
-		opruimenAfspraken(client);
-
-		opruimenComplicaties(client);
-
-		opruimenDossier(dossier);
-
-		hibernateService.saveOrUpdate(client);
-
-		ProjectClient projectClient = ProjectUtil.getHuidigeProjectClient(client, currentDateSupplier.getDate(), false);
-		if (projectClient != null)
+		try
 		{
-			clientService.projectClientInactiveren(projectClient, ProjectInactiefReden.VERWIJDERING_VAN_DOSSIER, Bevolkingsonderzoek.COLON);
+			Client client = dossier.getClient();
+
+			if (dossier.getLaatsteScreeningRonde() != null)
+			{
+				setDatumVolgendeUitnodiging(dossier, ColonUitnodigingsintervalType.VERWIJDERD_DOSSIER);
+			}
+			verwijderRondesVanDossier(dossier);
+
+			if (alleAfmeldingen)
+			{
+				baseDossierService.verwijderAlleAfmeldingenUitDossier(dossier);
+			}
+			else
+			{
+				baseDossierService.verwijderNietLaatsteDefinitieveAfmeldingenUitDossier(dossier);
+			}
+
+			baseClientContactService.verwijderClientContacten(client, Bevolkingsonderzoek.COLON);
+
+			opruimenAfspraken(client);
+
+			opruimenComplicaties(client);
+
+			opruimenDossier(dossier);
+
+			hibernateService.saveOrUpdate(client);
+
+			ProjectClient projectClient = ProjectUtil.getHuidigeProjectClient(client, currentDateSupplier.getDate(), false);
+			if (projectClient != null)
+			{
+				clientService.projectClientInactiveren(projectClient, ProjectInactiefReden.VERWIJDERING_VAN_DOSSIER, Bevolkingsonderzoek.COLON);
+			}
+
+			LOG.info("Dossier van client '{}' geleegd", dossier.getClient().getId());
 		}
+		catch (Exception e)
+		{
+			LOG.error("Fout bij legen van dossier van client '{}'", dossier.getClient().getId(), e);
+		}
+
 	}
 
 	private void opruimenDossier(ColonDossier dossier)
@@ -480,14 +513,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 		var definitiefVervolgbeleid = defVervolgbeleid.getDefinitiefVervolgbeleidVoorBevolkingsonderzoek();
 		if (definitiefVervolgbeleid != null)
 		{
-			for (var beleid : MdlVervolgbeleid.values())
-			{
-				if (beleid.getCodeSystem().equals(definitiefVervolgbeleid.getCodeSystem()) && beleid.getCode().equals(definitiefVervolgbeleid.getCode()))
-				{
-					vervolgbeleid = beleid;
-					break;
-				}
-			}
+			vervolgbeleid = MdlVervolgbeleid.fromCode(definitiefVervolgbeleid.getCode());
 		}
 		return vervolgbeleid;
 	}

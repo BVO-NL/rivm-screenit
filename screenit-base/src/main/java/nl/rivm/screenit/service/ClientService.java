@@ -23,6 +23,7 @@ package nl.rivm.screenit.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.BagAdres;
@@ -43,6 +44,8 @@ import nl.rivm.screenit.model.project.ProjectInactiefReden;
 public interface ClientService
 {
 	Client getClientByBsn(String bsn);
+
+	Optional<Client> getClientById(Long id);
 
 	Client getClientZonderBezwaar(String bsn);
 

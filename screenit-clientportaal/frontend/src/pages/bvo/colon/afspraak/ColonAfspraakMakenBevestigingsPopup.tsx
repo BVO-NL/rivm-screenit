@@ -36,7 +36,7 @@ import {useThunkDispatch} from "../../../../index"
 import {ArrowType} from "../../../../components/vectors/ArrowIconComponent"
 import SubmitButton from "../../../../components/input/SubmitButton"
 import {getBvoBaseUrl} from "../../../../utils/UrlUtil"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 
 export type ColonAfspraakMakenBevestigingsPopupProps = {
 	afspraak: VrijSlotZonderKamer

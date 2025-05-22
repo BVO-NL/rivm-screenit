@@ -108,7 +108,8 @@ public class BezwaarController
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 	public ResponseEntity getClienten(@RequestParam String bsn, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate geboortedatum)
 	{
-		var clienten = bezwaarService.getClientenMetBezwaarBrp(bsn, geboortedatum);
+		var account = ScreenitSession.get().getLoggedInInstellingGebruiker();
+		var clienten = bezwaarService.getClientenMetBezwaarBrp(bsn, geboortedatum, account);
 		var clientDtos = clienten.stream().map(clientMapper::clientToBezwaarDto).toList();
 		return ResponseEntity.ok(clientDtos);
 	}

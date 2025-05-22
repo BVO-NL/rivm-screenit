@@ -21,9 +21,13 @@ package nl.rivm.screenit.repository.algemeen;
  * =========================LICENSE_END==================================
  */
 
+import java.util.List;
+
+import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 
 public interface ClientBriefRepository extends BaseJpaRepository<ClientBrief<?, ?, ?>>
 {
+	List<ClientBrief> findByClient(Client client);
 }

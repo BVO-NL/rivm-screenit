@@ -23,12 +23,6 @@ package nl.rivm.screenit.main.web.filter;
 
 import java.io.IOException;
 
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.wicket.csp.CSPHeaderMode;
-import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.request.http.WebResponse;
-
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -37,6 +31,12 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import lombok.extern.slf4j.Slf4j;
+
+import org.apache.wicket.csp.CSPHeaderMode;
+import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.request.http.WebResponse;
 
 import static org.apache.wicket.ThreadContext.getRequestCycle;
 

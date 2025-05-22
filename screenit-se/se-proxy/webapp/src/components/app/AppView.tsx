@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import React, {KeyboardEvent} from "react"
-import {BrowserRouter} from "react-router-dom"
+import {BrowserRouter} from "react-router"
 import TabbarContainer from "./TabbarContainer"
 import type {Session} from "../../datatypes/Session"
 import {ToastContainer} from "react-toastify"

@@ -221,6 +221,8 @@ public enum PreferenceKey
 
 	COLON_TIJDELIJKE_AFMELDING_BEVESTIGING_TEKST("Tijdelijk afgemeld bevestiging tekst", String.class),
 
+	COLON_HANDMATIG_MDL_VERSLAG_TERMIJN("Termijn waarna een MDL verslag handmatig ingediend mag worden", Integer.class),
+
 	COLON_SIGNALERINGSTERMIJN_GEEN_CAPACITEIT("Signaleringstermijn voor geen opgegeven capaciteit", Integer.class),
 
 	CERVIX_WACHTTIJD_UITSTRIJKJE_ONTBREEKT_ANALOOG("Uitstrijkje ontbreekt (analoog labformulier)", Integer.class),
@@ -332,6 +334,10 @@ public enum PreferenceKey
 	MAMMA_IMS_ORM_ILM_PORT("IMS ORM ILM port voor BK", Integer.class),
 
 	MAMMA_IMS_ADT_PORT("IMS ADT port voor BK", Integer.class),
+
+	MAMMA_IMS_LAUNCH_URL_PASSWORD("IMS launch URL password", String.class),
+
+	MAMMA_IMS_LAUNCH_URL_SHA1_MODE("IMS launch URL legacy SHA1 mode", Boolean.class),
 
 	MAMMA_HL7_ENABLED("Versturen van Hl7 berichten aan of uit.", Boolean.class),
 
@@ -462,7 +468,11 @@ public enum PreferenceKey
 	COLON_ROOSTER_NACHT_BEPERKING_EIND("Eind tijd voor de nacht beperking voor het DK rooster", String.class),
 	COLON_ROOSTER_ZATERDAG_BEPERKING_TYPE("Harde of zachte beperking op zaterdag voor het DK rooster", String.class),
 	COLON_ROOSTER_ZONDAG_BEPERKING_TYPE("Harde of zachte beperking op zondag voor het DK rooster", String.class),
-	GEEN_HANDTEKENING_BRIEF_TEKST("Geen handtekening onder bezwaar brief tekst", String.class);
+	GEEN_HANDTEKENING_BRIEF_TEKST("Geen handtekening onder bezwaar brief tekst", String.class),
+
+	LEEFTIJD_PERSOONSGEGEVENS_UIT_EXTRA_BEVEILIGDE_OMGEVING_VERWIJDEREN("Leeftijd van de client waarbij persoonsgegevens uit de extra beveiligde omgeving verwijderd worden",
+		Integer.class),
+	;
 
 	private final String layoutName;
 

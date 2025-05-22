@@ -164,11 +164,9 @@ public class MammaBaseTestServiceImpl implements MammaBaseTestService
 			return;
 		}
 
-		mammaBaseDossierService.maakDossierLeeg(dossier);
+		mammaBaseDossierService.maakDossierLeeg(dossier, false);
 
 		baseDossierService.verwijderLaatsteAfmelding(dossier);
-
-		baseIlmService.verwijderIlmBezwaarPogingen(dossier);
 
 		baseIlmService.verwijderIlmRapportageEntriesVoorClient(client);
 

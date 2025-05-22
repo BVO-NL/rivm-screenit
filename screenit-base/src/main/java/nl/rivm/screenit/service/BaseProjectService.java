@@ -57,4 +57,6 @@ public interface BaseProjectService
 	ProjectClientAttribuut getProjectClientAttribuut(ProjectClient client, ProjectAttribuut attribuut);
 
 	ProjectClient getProjectClient(Client client, Project project);
+
+	void verwijderClientVanProjecten(Client client);
 }

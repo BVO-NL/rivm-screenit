@@ -35,12 +35,11 @@ import nl.rivm.screenit.service.UploadDocumentService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
-@Transactional(propagation = Propagation.REQUIRED)
+@Transactional
 public class BaseDossierServiceImpl implements BaseDossierService
 {
 	private final UploadDocumentService uploadDocumentService;
@@ -53,36 +52,33 @@ public class BaseDossierServiceImpl implements BaseDossierService
 	public <D extends Dossier<?, A>, A extends Afmelding<?, ?, ?>> void verwijderNietLaatsteDefinitieveAfmeldingenUitDossier(D dossier)
 	{
 		colonSpecifiekeVerwijderVerwerking(dossier);
-		for (A afmelding : dossier.getAfmeldingen())
+		for (A afmelding : dossier.getAfmeldingen().stream().filter(afmelding -> !afmelding.equals(dossier.getLaatsteAfmelding()) && afmelding.getHeraanmeldDatum() != null)
+			.toList())
 		{
-			if (!afmelding.equals(dossier.getLaatsteAfmelding()) && afmelding.getHeraanmeldDatum() != null)
-			{
-				verwijderAfmeldingEnDocumenten(afmelding);
-			}
+			verwijderAfmeldingEnDocumenten(afmelding);
 		}
 	}
 
 	private <D extends Dossier<?, A>, A extends Afmelding<?, ?, ?>> void colonSpecifiekeVerwijderVerwerking(D dossier)
 	{
-		if (dossier instanceof ColonDossier colonDossier)
+		if (!(dossier instanceof ColonDossier colonDossier))
 		{
+			return;
+		}
 
-			for (ColonAfmelding afmelding : colonDossier.getAfmeldingen())
+		for (ColonAfmelding afmelding : colonDossier.getAfmeldingen().stream().filter(afmelding -> ColonAfmeldingReden.PROEF_BEVOLKINGSONDERZOEK.equals(afmelding.getReden()))
+			.toList())
+		{
+			if (clientService.isHandtekeningBriefGebruiktBijMeedereColonAfmeldingen(afmelding.getHandtekeningDocumentAfmelding(), "handtekeningDocumentAfmelding"))
 			{
-				if (ColonAfmeldingReden.PROEF_BEVOLKINGSONDERZOEK.equals(afmelding.getReden()))
-				{
-					if (clientService.isHandtekeningBriefGebruiktBijMeedereColonAfmeldingen(afmelding.getHandtekeningDocumentAfmelding(), "handtekeningDocumentAfmelding"))
-					{
-						afmelding.setHandtekeningDocumentAfmelding(null);
-						hibernateService.saveOrUpdate(afmelding);
-					}
-					if (clientService.isHandtekeningBriefGebruiktBijMeedereColonAfmeldingen(afmelding.getHandtekeningDocumentHeraanmelding(),
-						"handtekeningDocumentHeraanmelding"))
-					{
-						afmelding.setHandtekeningDocumentHeraanmelding(null);
-						hibernateService.saveOrUpdate(afmelding);
-					}
-				}
+				afmelding.setHandtekeningDocumentAfmelding(null);
+				hibernateService.saveOrUpdate(afmelding);
+			}
+			if (clientService.isHandtekeningBriefGebruiktBijMeedereColonAfmeldingen(afmelding.getHandtekeningDocumentHeraanmelding(),
+				"handtekeningDocumentHeraanmelding"))
+			{
+				afmelding.setHandtekeningDocumentHeraanmelding(null);
+				hibernateService.saveOrUpdate(afmelding);
 			}
 		}
 	}
@@ -95,6 +91,19 @@ public class BaseDossierServiceImpl implements BaseDossierService
 		{
 			verwijderAfmeldingEnDocumenten(afmelding);
 		}
+	}
+
+	@Override
+	public <D extends Dossier<?, A>, A extends Afmelding<?, ?, ?>> void verwijderAlleAfmeldingenUitDossier(D dossier)
+	{
+		colonSpecifiekeVerwijderVerwerking(dossier);
+		for (A afmelding : dossier.getAfmeldingen())
+		{
+			verwijderAfmeldingEnDocumenten(afmelding);
+		}
+		dossier.setLaatsteAfmelding(null);
+		dossier.getAfmeldingen().clear();
+		hibernateService.saveOrUpdate(dossier);
 	}
 
 	@Override

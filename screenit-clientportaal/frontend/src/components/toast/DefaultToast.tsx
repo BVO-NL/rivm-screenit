@@ -25,28 +25,29 @@ import VerticalDividerComponent from "../vectors/VerticalDividerComponent"
 import SpanWithHtml from "../span/SpanWithHtml"
 
 interface DefaultToastProps {
-    index: number
-    title?: string
-    description: string
-    clickClearButton: () => void
+	index: number
+	title?: string
+	description: string
+	clickClearButton: () => void
+	ariaLive: "off" | "assertive" | "polite" | undefined
 }
 
 const DefaultToast = (props: DefaultToastProps) => {
 
-    const {index, title, description, clickClearButton} = props
-    return (
-        <Row className={styles.toast} key={"toast_" + index}>
-            <VerticalDividerComponent className={styles.verticalRectangle} heightSubtraction={34}/>
-            <Col xs={10} className={styles.toastText}>
-                <SpanWithHtml className={styles.title} value={title!}/>
-                <SpanWithHtml className={styles.description} value={description!}/>
-            </Col>
-            <Col xs={2} className={styles.toastClear}
-                 onClick={clickClearButton}>
-                <i className="material-icons">clear</i>
-            </Col>
-        </Row>
-    )
+	const {index, title, description, clickClearButton, ariaLive} = props
+	return (
+		<Row className={styles.toast} key={"toast_" + index} role="alert" aria-live={ariaLive}>
+			<VerticalDividerComponent className={styles.verticalRectangle} heightSubtraction={34}/>
+			<Col xs={10} className={styles.toastText}>
+				<SpanWithHtml className={styles.title} value={title!}/>
+				<SpanWithHtml className={styles.description} value={description!}/>
+			</Col>
+			<Col xs={2} className={styles.toastClear}
+				 onClick={clickClearButton}>
+				<i className="material-icons">clear</i>
+			</Col>
+		</Row>
+	)
 
 }
 

@@ -21,13 +21,17 @@ package nl.rivm.screenit.batch.config;
  * =========================LICENSE_END==================================
  */
 
+import lombok.AllArgsConstructor;
+
 import nl.rivm.screenit.batch.base.config.JmsBatchBaseConfig;
+import nl.rivm.screenit.batch.jms.listener.JMSDossierLegenListener;
 import nl.rivm.screenit.batch.jms.listener.JMSUploadBeeldenBerichtListener;
 import nl.rivm.screenit.batch.jms.listener.JMSVerwerkCdaBerichtListener;
 import nl.rivm.screenit.batch.jms.listener.JMSVerwerkIMSBerichtListener;
 import nl.rivm.screenit.batch.jms.listener.JMSVerzamelOnderzoekDataBerichtListener;
 import nl.rivm.screenit.config.JmsConfig;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
+import nl.rivm.screenit.service.mamma.MammaBaseDossierService;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,17 +40,14 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 @Configuration
 @Profile("!test")
+@AllArgsConstructor
 public class JmsBkListenerConfig
 {
 	private final JmsConfig jmsConfig;
 
 	private final JmsBatchBaseConfig jmsBatchBaseConfig;
 
-	public JmsBkListenerConfig(JmsConfig jmsConfig, JmsBatchBaseConfig jmsBatchBaseConfig)
-	{
-		this.jmsConfig = jmsConfig;
-		this.jmsBatchBaseConfig = jmsBatchBaseConfig;
-	}
+	private final MammaBaseDossierService dossierService;
 
 	@Bean
 	public JMSVerwerkCdaBerichtListener verwerkMammaCdaBerichtListener()
@@ -111,6 +112,19 @@ public class JmsBkListenerConfig
 		listenerContainer.setConnectionFactory(jmsConfig.jmsFactory());
 		listenerContainer.setDestination(jmsConfig.verwerkMammaCdaBerichtDestination());
 		listenerContainer.setMessageListener(verwerkMammaCdaBerichtListener);
+		listenerContainer.setSessionTransacted(true);
+		return listenerContainer;
+	}
+
+	@Bean
+	public DefaultMessageListenerContainer clientgegevensVerwijderenListenerContainer(JMSDossierLegenListener dossierLegenListener)
+	{
+		var listenerContainer = new DefaultMessageListenerContainer();
+		listenerContainer.setConcurrentConsumers(1);
+		listenerContainer.setConnectionFactory(jmsConfig.jmsFactory());
+		listenerContainer.setDestination(jmsConfig.mammaDossierLegenDestination());
+		listenerContainer.setMessageListener(dossierLegenListener);
+		dossierLegenListener.setDossierService(dossierService);
 		listenerContainer.setSessionTransacted(true);
 		return listenerContainer;
 	}

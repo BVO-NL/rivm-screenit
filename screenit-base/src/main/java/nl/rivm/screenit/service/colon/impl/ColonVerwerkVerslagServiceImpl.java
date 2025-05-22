@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,9 +41,12 @@ import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.enums.VerslagGeneratie;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
+import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.colon.ColonDossier;
+import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonVerslag;
+import nl.rivm.screenit.model.colon.ColonVerslag_;
 import nl.rivm.screenit.model.colon.Complicatie;
 import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.colon.MdlVerslag;
@@ -54,17 +58,21 @@ import nl.rivm.screenit.model.colon.verslag.mdl.MdlDefinitiefVervolgbeleidVoorBe
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlIncidentcomplicatie;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlLaesiecoloscopiecentrum;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlPoliep;
+import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerrichting;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerslagContent;
 import nl.rivm.screenit.model.colon.verslag.pa.PaPathologieProtocolColonbioptperPoliep;
 import nl.rivm.screenit.model.colon.verslag.pa.PaVerslagContent;
+import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.ComplicatieErnst;
 import nl.rivm.screenit.model.enums.ComplicatieMoment;
 import nl.rivm.screenit.model.enums.ComplicatieSoort;
+import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.model.verslag.Quantity;
 import nl.rivm.screenit.repository.colon.ColonMdlVerslagRepository;
 import nl.rivm.screenit.service.BaseVerslagService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
+import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.service.colon.ColonVerwerkVerslagService;
 import nl.rivm.screenit.service.colon.ComplicatieService;
@@ -80,8 +88,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftColonDossier;
+import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftGeenOntvangenBericht;
 import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftScreeningRondeInMdlVerslag;
 import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftVerslagStatus;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
 @Slf4j
@@ -107,6 +118,9 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 
 	@Autowired
 	private ColonMdlVerslagRepository mdlVerslagRepository;
+
+	@Autowired
+	private LogService logService;
 
 	@Override
 	@Transactional
@@ -258,6 +272,69 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 			}
 			verslag.getVerslagContent().getPathologieMedischeObservatie().setConsultrevisieMateriaalAangevraagd(null);
 		}
+	}
+
+	@Override
+	public List<MdlVerslag> getAlleMdlVerslagenVanClient(Client client)
+	{
+		var spec = heeftColonDossier(client.getColonDossier()).and(heeftVerslagStatus(VerslagStatus.AFGEROND));
+		return mdlVerslagRepository.findAll(spec, Sort.by(DESC, ColonVerslag_.DATUM_ONDERZOEK));
+	}
+
+	@Override
+	public Optional<MdlVerslag> getMdlVerslagUitRonde(ColonScreeningRonde ronde)
+	{
+		var spec = heeftScreeningRondeInMdlVerslag(ronde).and(heeftVerslagStatus(VerslagStatus.AFGEROND).and(heeftGeenOntvangenBericht()));
+		return mdlVerslagRepository.findFirst(spec, Sort.by(Sort.Direction.DESC, MdlVerslag_.DATUM_VERWERKT));
+	}
+
+	@Override
+	public MdlVerslag maakMdlVerslagVoorAfspraak(ColonIntakeAfspraak afspraak)
+	{
+		var ronde = afspraak.getColonScreeningRonde();
+
+		var verslag = new MdlVerslag();
+		verslag.setDatumVerwerkt(currentDateSupplier.getDate());
+		verslag.setScreeningRonde(ronde);
+		verslag.setStatus(VerslagStatus.AFGEROND);
+		verslag.setType(VerslagType.MDL);
+
+		var content = new MdlVerslagContent();
+		verslag.setVerslagContent(content);
+		content.setVerslag(verslag);
+
+		var coloscopieMedischeObservatie = new MdlColoscopieMedischeObservatie();
+		content.setColoscopieMedischeObservatie(coloscopieMedischeObservatie);
+		coloscopieMedischeObservatie.setVerslagContent(content);
+
+		var definitiefVervolgbeleidVoorBevolkingsonderzoekg = new MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg();
+		coloscopieMedischeObservatie.setDefinitiefVervolgbeleidVoorBevolkingsonderzoekg(definitiefVervolgbeleidVoorBevolkingsonderzoekg);
+		definitiefVervolgbeleidVoorBevolkingsonderzoekg.setColoscopieMedischeObservatie(coloscopieMedischeObservatie);
+
+		var verrichting = new MdlVerrichting();
+		verrichting.setVerslagContent(content);
+		content.setVerrichting(verrichting);
+
+		ronde.getVerslagen().add(verslag);
+		return verslag;
+	}
+
+	@Override
+	@Transactional
+	public void handmatigMdlVerslagOpslaan(MdlVerslag verslag, InstellingGebruiker ingelogdeGebruiker)
+	{
+		verslag.setInvoerder(ingelogdeGebruiker);
+		verslag.getVerslagContent().setVersie(VerslagGeneratie.getHuidigeGeneratie(VerslagType.MDL));
+		verslag.setDatumVerwerkt(currentDateSupplier.getDate());
+		verwerkInDossier(verslag);
+		onAfterVerwerkVerslagContent(verslag);
+		var client = verslag.getScreeningRonde().getDossier().getClient();
+		var organisatie = ingelogdeGebruiker.getOrganisatie();
+		var melding = "Handmatige invoer eindconclusie en vervolgbeleid.";
+		melding += " Datum onderzoek: " + DateUtil.formatShortDate(verslag.getVerslagContent().getVerrichting().getAanvangVerrichting());
+		melding += " Coloscopie locatie: " + organisatie.getNaam();
+		logService.logGebeurtenis(LogGebeurtenis.MDL_VERSLAG_VAST, ingelogdeGebruiker, client, melding,
+			Bevolkingsonderzoek.COLON);
 	}
 
 	private void converteerVolledigheidWegnameMateriaal(MdlVerslag mdlVerslag)

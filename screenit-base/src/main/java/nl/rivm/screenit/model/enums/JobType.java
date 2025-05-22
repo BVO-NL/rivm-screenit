@@ -189,6 +189,8 @@ public enum JobType
 
 	SIGNALERING_GENDER(BatchApplicationType.GENERALIS, new Bevolkingsonderzoek[] { CERVIX, MAMMA }),
 
+	CLIENTGEGEVENS_VERWIJDEREN(BatchApplicationType.GENERALIS, new Bevolkingsonderzoek[] { COLON, CERVIX, MAMMA }),
+
 	;
 
 	private static Set<JobType> getJobTypes(BatchApplicationType batchApplicationType)

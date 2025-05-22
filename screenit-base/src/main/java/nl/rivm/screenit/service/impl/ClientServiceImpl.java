@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import jakarta.persistence.criteria.From;
@@ -153,6 +154,12 @@ public class ClientServiceImpl implements ClientService
 	public Client getClientByBsn(String bsn)
 	{
 		return clientRepository.findOne(heeftBsn(bsn).with(Client_.persoon)).orElse(null);
+	}
+
+	@Override
+	public Optional<Client> getClientById(Long id)
+	{
+		return clientRepository.findById(id);
 	}
 
 	@Override

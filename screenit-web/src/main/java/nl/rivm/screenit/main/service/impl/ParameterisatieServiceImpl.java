@@ -31,7 +31,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -92,7 +91,7 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 	{
 		String loggingTekst;
 		List<String> changedCohortes = new ArrayList<>();
-		for (UitnodigingCohortGeboortejarenDto geboortejarenDto : nieuweParameterisatieObject.getCohorten())
+		for (var geboortejarenDto : nieuweParameterisatieObject.getCohorten())
 		{
 			if ((loggingTekst = hasCohortBeenChanged(oudeCohorten, geboortejarenDto)) != null)
 			{
@@ -111,7 +110,7 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 	private void saveOrUpdateUitnodigingCohort(List<UitnodigingCohort> oudeCohorten, UitnodigingCohortGeboortejarenDto geboortejarenDto)
 	{
 		UitnodigingCohort updatedCohort = null;
-		for (UitnodigingCohort oudeCohort : oudeCohorten)
+		for (var oudeCohort : oudeCohorten)
 		{
 			if (oudeCohort.getJaar().equals(geboortejarenDto.getJaar()))
 			{
@@ -134,15 +133,15 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 
 	private List<UitnodigingCohortGeboortejaren> getUitnodigingsCohortGeboortejaar(UitnodigingCohort cohort, List<Integer> geboortejarenDto)
 	{
-		for (UitnodigingCohortGeboortejaren oudeGeboortejaar : cohort.getGeboortejaren())
+		for (var oudeGeboortejaar : cohort.getGeboortejaren())
 		{
 			hibernateService.delete(oudeGeboortejaar);
 		}
 
 		List<UitnodigingCohortGeboortejaren> geboortejaren = new ArrayList<>();
-		for (Integer geboortejaar : geboortejarenDto)
+		for (var geboortejaar : geboortejarenDto)
 		{
-			UitnodigingCohortGeboortejaren cohortGeboortejaar = new UitnodigingCohortGeboortejaren();
+			var cohortGeboortejaar = new UitnodigingCohortGeboortejaren();
 			cohortGeboortejaar.setGeboortejaren(geboortejaar);
 			cohortGeboortejaar.setUitnodigingCohort(cohort);
 			hibernateService.saveOrUpdate(cohortGeboortejaar);
@@ -153,8 +152,8 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 
 	private String hasCohortBeenChanged(List<UitnodigingCohort> oudParameterisatieObject, UitnodigingCohortGeboortejarenDto nieuweGeboortejarenDto)
 	{
-		List<UitnodigingCohort> cohorten = oudParameterisatieObject;
-		UitnodigingCohort oudCohort = cohorten.stream()
+		var cohorten = oudParameterisatieObject;
+		var oudCohort = cohorten.stream()
 			.filter(c ->
 			{
 				c = (UitnodigingCohort) HibernateHelper.deproxy(c);
@@ -166,7 +165,7 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 			return "Cohort van het jaar " + nieuweGeboortejarenDto.getJaar() + " is toegevoegd. (" +
 				nieuweGeboortejarenDto.getGeboortejaren().stream().map(Object::toString).collect(Collectors.joining(", ")) + ")";
 		}
-		if (!CollectionUtils.disjunction(oudCohort.getGeboortejaren().stream().map(UitnodigingCohortGeboortejaren::getGeboortejaren).collect(Collectors.toList()),
+		if (!CollectionUtils.disjunction(oudCohort.getGeboortejaren().stream().map(UitnodigingCohortGeboortejaren::getGeboortejaren).toList(),
 			nieuweGeboortejarenDto.getGeboortejaren()).isEmpty())
 		{
 			return "Cohort van jaar " + nieuweGeboortejarenDto.getJaar() + " is aangepast. ("
@@ -179,12 +178,12 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 	@Override
 	public Parameterisatie loadParameterisatie()
 	{
-		Parameterisatie parameterisatie = new Parameterisatie();
+		var parameterisatie = new Parameterisatie();
 		Map<PreferenceKey, Object> values = new EnumMap<>(PreferenceKey.class);
 
-		for (PreferenceKey preferenceKey : PreferenceKey.values())
+		for (var preferenceKey : PreferenceKey.values())
 		{
-			Class<?> clazz = preferenceKey.getType();
+			var clazz = preferenceKey.getType();
 
 			if (clazz.equals(Integer.class))
 			{
@@ -205,10 +204,10 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 			else if (clazz.equals(Date.class))
 			{
 				Date dateValue = null;
-				String string = simplePreferenceService.getString(preferenceKey.name());
+				var string = simplePreferenceService.getString(preferenceKey.name());
 				if (StringUtils.isNotBlank(string))
 				{
-					SimpleDateFormat dateFormatter = new SimpleDateFormat(Constants.DATE_FORMAT_YYYYMMDD);
+					var dateFormatter = new SimpleDateFormat(Constants.DATE_FORMAT_YYYYMMDD);
 					try
 					{
 						dateValue = dateFormatter.parse(string);
@@ -223,7 +222,7 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 			else if (clazz.equals(LocalDate.class))
 			{
 				LocalDate dateValue = null;
-				String string = simplePreferenceService.getString(preferenceKey.name());
+				var string = simplePreferenceService.getString(preferenceKey.name());
 				if (StringUtils.isNotBlank(string))
 				{
 					dateValue = LocalDate.parse(string, DateUtil.LOCAL_DATE_FORMAT);
@@ -233,7 +232,7 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 			else if (clazz.equals(LocalDateTime.class))
 			{
 				LocalDateTime dateTimeValue = null;
-				String string = simplePreferenceService.getString(preferenceKey.name());
+				var string = simplePreferenceService.getString(preferenceKey.name());
 				if (StringUtils.isNotBlank(string))
 				{
 					dateTimeValue = LocalDateTime.parse(string, DateUtil.LOCAL_DATE_TIME_FORMAT);
@@ -243,7 +242,7 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 			else if (clazz.equals(LocalTime.class))
 			{
 				LocalTime timeValue = null;
-				String string = simplePreferenceService.getString(preferenceKey.name());
+				var string = simplePreferenceService.getString(preferenceKey.name());
 				if (StringUtils.isNotBlank(string))
 				{
 					timeValue = LocalTime.parse(string, DateUtil.LOCAL_TIME_FORMAT);
@@ -258,8 +257,8 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 
 	private double getDoubleValue(PreferenceKey preferenceKey)
 	{
-		Integer intValue = simplePreferenceService.getInteger(preferenceKey.name());
-		double value = 0.0;
+		var intValue = simplePreferenceService.getInteger(preferenceKey.name());
+		var value = 0.0;
 		if (intValue != null)
 		{
 			value = intValue.doubleValue() / 100;
@@ -270,7 +269,7 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 	@Override
 	public EmailConfiguratie loadEmailConfiguratie()
 	{
-		EmailConfiguratie emailConfiguratie = new EmailConfiguratie();
+		var emailConfiguratie = new EmailConfiguratie();
 		emailConfiguratie.setInactiverenemail(simplePreferenceService.getString(PreferenceKey.INACTIVERENEMAIL.name()));
 		emailConfiguratie.setInactiverenemailsubject(simplePreferenceService.getString(PreferenceKey.INACTIVERENSUBJECT.name()));
 		emailConfiguratie.setGeblokkeerdemail(simplePreferenceService.getString(PreferenceKey.GEBLOKKEERDEMAIL.name()));
@@ -299,7 +298,7 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 	@Override
 	public OvereenkomstConfiguratie loadOvereenkomstConfiguratie()
 	{
-		OvereenkomstConfiguratie overeenkomstConfiguratie = new OvereenkomstConfiguratie();
+		var overeenkomstConfiguratie = new OvereenkomstConfiguratie();
 		overeenkomstConfiguratie.setEmailContent(simplePreferenceService.getString(PreferenceKey.OVEREEENKOMSTMAIL.name()));
 		overeenkomstConfiguratie.setEmailSubject(simplePreferenceService.getString(PreferenceKey.OVEREENKOMSTSUBJECT.name()));
 		overeenkomstConfiguratie.setEmailContentZVUA(simplePreferenceService.getString(PreferenceKey.OVEREEENKOMSTMAIL_ZVUA.name()));
@@ -323,10 +322,10 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 	{
 		String logInformatie;
 		List<String> lijstAanpassingen = new ArrayList<>();
-		for (Entry<PreferenceKey, Object> entry : parameterisatie.getParameters().entrySet())
+		for (var entry : parameterisatie.getParameters().entrySet())
 		{
-			PreferenceKey preferenceKey = entry.getKey();
-			Object value = entry.getValue();
+			var preferenceKey = entry.getKey();
+			var value = entry.getValue();
 
 			if ((logInformatie = valueChanged(preferenceKey, value, oudParameterObject)) != null)
 			{
@@ -334,7 +333,7 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 				put(preferenceKey, value);
 			}
 		}
-		String loggingTekst = "Er zijn geen parameters aangepast!";
+		var loggingTekst = "Er zijn geen parameters aangepast!";
 		if (CollectionUtils.isNotEmpty(lijstAanpassingen))
 		{
 			loggingTekst = getLoginformatieString(lijstAanpassingen);
@@ -349,11 +348,11 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 
 	private String valueChanged(PreferenceKey key, Object value, Parameterisatie oudParameterObject)
 	{
-		Map<PreferenceKey, Object> oudeParameters = oudParameterObject.getParameters();
-		Object oldValue = oudeParameters.get(key);
+		var oudeParameters = oudParameterObject.getParameters();
+		var oldValue = oudeParameters.get(key);
 		if (value != null && oldValue != null && !value.equals(oldValue) || value == null && oldValue != null || value != null && oldValue == null)
 		{
-			String stringKeyNaam = key.getLayoutName();
+			var stringKeyNaam = key.getLayoutName();
 			if (stringKeyNaam == null)
 			{
 				stringKeyNaam = key.name();
@@ -377,8 +376,8 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 		}
 		else if (preferenceKey.getType().equals(Date.class))
 		{
-			SimpleDateFormat dateFormatter = new SimpleDateFormat(Constants.DATE_FORMAT_YYYYMMDD);
-			String stringValue = dateFormatter.format(value);
+			var dateFormatter = new SimpleDateFormat(Constants.DATE_FORMAT_YYYYMMDD);
+			var stringValue = dateFormatter.format(value);
 			simplePreferenceService.putString(preferenceKey.name(), stringValue);
 		}
 		else if (preferenceKey.getType().equals(String.class))
@@ -400,19 +399,19 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 		else if (preferenceKey.getType().equals(LocalTime.class))
 		{
 			var timeFormatter = DateUtil.LOCAL_TIME_FORMAT;
-			String stringValue = timeFormatter.format((LocalTime) value);
+			var stringValue = timeFormatter.format((LocalTime) value);
 			simplePreferenceService.putString(preferenceKey.name(), stringValue);
 		}
 		else if (preferenceKey.getType().equals(LocalDate.class))
 		{
 			var timeFormatter = DateUtil.LOCAL_DATE_FORMAT;
-			String stringValue = timeFormatter.format((LocalDate) value);
+			var stringValue = timeFormatter.format((LocalDate) value);
 			simplePreferenceService.putString(preferenceKey.name(), stringValue);
 		}
 		else if (preferenceKey.getType().equals(LocalDateTime.class))
 		{
 			var timeFormatter = DateUtil.LOCAL_DATE_TIME_FORMAT;
-			String stringValue = timeFormatter.format((LocalDateTime) value);
+			var stringValue = timeFormatter.format((LocalDateTime) value);
 			simplePreferenceService.putString(preferenceKey.name(), stringValue);
 		}
 		else
@@ -437,13 +436,18 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 	@Override
 	public IMSConfiguratie getIMSConfiguratie()
 	{
-		String hostName = simplePreferenceService.getString(PreferenceKey.MAMMA_IMS_HOST_NAME.name());
+		var hostName = simplePreferenceService.getString(PreferenceKey.MAMMA_IMS_HOST_NAME.name());
 		int ormPort = simplePreferenceService.getInteger(PreferenceKey.MAMMA_IMS_ORM_PORT.name());
 		int adtPort = simplePreferenceService.getInteger(PreferenceKey.MAMMA_IMS_ADT_PORT.name());
 		int ilmPort = simplePreferenceService.getInteger(PreferenceKey.MAMMA_IMS_ORM_ILM_PORT.name());
+
 		int imsQueueSizeWarningThreshold = simplePreferenceService.getInteger(PreferenceKey.MAMMA_IMS_QUEUE_SIZE_WARNING_THRESHOLD.name());
 		int bezwaarTermijnVerwijderdeBeelden = simplePreferenceService.getInteger(PreferenceKey.ILM_BEZWAARTERMIJN_BEELDEN_VERWIJDERD.name());
-		return new IMSConfiguratie(hostName, ormPort, adtPort, ilmPort, bezwaarTermijnVerwijderdeBeelden, imsQueueSizeWarningThreshold);
+
+		var launchUrlPassword = simplePreferenceService.getString(PreferenceKey.MAMMA_IMS_LAUNCH_URL_PASSWORD.name());
+		boolean launchUrlSha1Mode = simplePreferenceService.getBoolean(PreferenceKey.MAMMA_IMS_LAUNCH_URL_SHA1_MODE.name(), true);
+
+		return new IMSConfiguratie(hostName, ormPort, adtPort, ilmPort, bezwaarTermijnVerwijderdeBeelden, imsQueueSizeWarningThreshold, launchUrlPassword, launchUrlSha1Mode);
 	}
 
 	@Override
@@ -451,14 +455,16 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 	public void saveIMSConfiguratie(Account account, IMSConfiguratie configuratie)
 	{
 		LOG.info("Opslaan IMS config");
-		this.simplePreferenceService.putString(PreferenceKey.MAMMA_IMS_HOST_NAME.name(), configuratie.getHostName());
-		this.simplePreferenceService.putInteger(PreferenceKey.MAMMA_IMS_ORM_PORT.name(), configuratie.getOrmPort());
-		this.simplePreferenceService.putInteger(PreferenceKey.MAMMA_IMS_ADT_PORT.name(), configuratie.getAdtPort());
-		this.simplePreferenceService.putInteger(PreferenceKey.MAMMA_IMS_ORM_ILM_PORT.name(), configuratie.getIlmPort());
+		simplePreferenceService.putString(PreferenceKey.MAMMA_IMS_HOST_NAME.name(), configuratie.getHostName());
+		simplePreferenceService.putInteger(PreferenceKey.MAMMA_IMS_ORM_PORT.name(), configuratie.getOrmPort());
+		simplePreferenceService.putInteger(PreferenceKey.MAMMA_IMS_ADT_PORT.name(), configuratie.getAdtPort());
+		simplePreferenceService.putInteger(PreferenceKey.MAMMA_IMS_ORM_ILM_PORT.name(), configuratie.getIlmPort());
 
-		this.simplePreferenceService.putInteger(PreferenceKey.ILM_BEZWAARTERMIJN_BEELDEN_VERWIJDERD.name(), configuratie.getBezwaarTermijnVerwijderdeBeelden());
+		simplePreferenceService.putInteger(PreferenceKey.ILM_BEZWAARTERMIJN_BEELDEN_VERWIJDERD.name(), configuratie.getBezwaarTermijnVerwijderdeBeelden());
+		simplePreferenceService.putInteger(PreferenceKey.MAMMA_IMS_QUEUE_SIZE_WARNING_THRESHOLD.name(), configuratie.getImsQueueSizeWarningThreshold());
 
-		this.simplePreferenceService.putInteger(PreferenceKey.MAMMA_IMS_QUEUE_SIZE_WARNING_THRESHOLD.name(), configuratie.getImsQueueSizeWarningThreshold());
+		simplePreferenceService.putString(PreferenceKey.MAMMA_IMS_LAUNCH_URL_PASSWORD.name(), configuratie.getLaunchUrlPassword());
+		simplePreferenceService.putBoolean(PreferenceKey.MAMMA_IMS_LAUNCH_URL_SHA1_MODE.name(), configuratie.isLaunchUrlSha1Mode());
 
 		logService.logGebeurtenis(LogGebeurtenis.PARAMETERISATIE_WIJZIG, account, "IMS configuratie aangepast", Bevolkingsonderzoek.MAMMA);
 	}
@@ -487,7 +493,7 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 	public void saveMammaIntervalParameters(List<MammaUitnodigingsinterval> nieuweParameters, Map<MammaUitnodigingsintervalType, Integer> oudeParameters, Account account)
 	{
 		hibernateService.saveOrUpdateAll(nieuweParameters);
-		String melding = mammaIntervalWijzigingLogtekst(nieuweParameters, oudeParameters);
+		var melding = mammaIntervalWijzigingLogtekst(nieuweParameters, oudeParameters);
 		logService.logGebeurtenis(LogGebeurtenis.PARAMETERISATIE_WIJZIG, account, melding, Bevolkingsonderzoek.MAMMA);
 	}
 

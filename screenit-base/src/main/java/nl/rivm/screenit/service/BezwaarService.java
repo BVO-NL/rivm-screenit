@@ -85,5 +85,13 @@ public interface BezwaarService
 
 	List<BezwaarBrief> getBezwaarBrievenVanClient(Client client);
 
-	List<Client> getClientenMetBezwaarBrp(String bsn, LocalDate geboortedatum);
+	List<Client> getClientenMetBezwaarBrp(String bsn, LocalDate geboortedatum, Account account);
+
+	void verwijderPersoonsgegevens(Client client);
+
+	void verwijderBezwaarMomenten(Client client);
+
+	void verwijderClient(Client client);
+
+	void leegDossiers(Client client);
 }

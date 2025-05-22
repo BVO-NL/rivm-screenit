@@ -35,10 +35,12 @@ import nl.rivm.screenit.main.web.component.ScreenitDateTextField;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
+import nl.rivm.screenit.main.web.component.table.AjaxImageCellPanel;
 import nl.rivm.screenit.main.web.component.table.ClientColumn;
 import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
 import nl.rivm.screenit.main.web.component.table.ExportToCsvLink;
 import nl.rivm.screenit.main.web.component.table.GeboortedatumColumn;
+import nl.rivm.screenit.main.web.component.table.NotClickablePropertyColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.component.table.ScreenitDateTimePropertyColumn;
 import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
@@ -59,6 +61,7 @@ import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonVolgendeUitnodiging_;
 import nl.rivm.screenit.model.colon.ConclusieTypeFilter;
+import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.WerklijstIntakeFilter;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
@@ -72,7 +75,9 @@ import nl.rivm.screenit.model.project.ProjectBrief;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
+import nl.rivm.screenit.service.colon.ColonVerwerkVerslagService;
 import nl.rivm.screenit.util.AdresUtil;
+import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.util.NaamUtil;
 import nl.topicuszorg.organisatie.model.Adres;
@@ -146,6 +151,9 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 	@SpringBean
 	private SimplePreferenceService preferenceService;
 
+	@SpringBean
+	private ColonVerwerkVerslagService verwerkVerslagService;
+
 	private Label aantalLabel;
 
 	private static final int AANTAL_PER_PAGINA = 10;
@@ -179,7 +187,6 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 			{
 				dialog.openWith(target, new ColonConclusieVastleggenPanel(IDialog.CONTENT_ID, ModelUtil.ccModel(ModelUtil.nullSafeGet(model)))
 				{
-
 					@Override
 					protected void close(AjaxRequestTarget target)
 					{
@@ -187,7 +194,6 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 						target.add(aantalLabel);
 						dialog.close(target);
 					}
-
 				});
 			}
 
@@ -375,7 +381,63 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 				return new Model<>(PostcodeFormatter.formatPostcode(adres.getPostcode(), true) + " " + adres.getPlaats());
 			}
 		});
+
 		return columns;
+	}
+
+	protected void addHandmatigVervolgbeleidColumn(List<IColumn<ColonIntakeAfspraak, String>> columns)
+	{
+		if (ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN, Actie.AANPASSEN))
+		{
+
+			columns.add(new NotClickablePropertyColumn<>(Model.of("Handmatig vervolgbeleid"), "")
+			{
+				@Override
+				public void populateItem(Item<ICellPopulator<ColonIntakeAfspraak>> cellItem, String componentId, IModel<ColonIntakeAfspraak> model)
+				{
+					var afspraak = model.getObject();
+					var conclusie = afspraak.getConclusie();
+					var verslagModel = ModelUtil.ccModel(zoekOfMaakMdlVerslag(afspraak));
+					var handmatigInvoerenTermijn = preferenceService.getInteger(PreferenceKey.COLON_HANDMATIG_MDL_VERSLAG_TERMIJN.name(), 12);
+					var isTermijnVerlopen =
+						conclusie != null && !dateSupplier.getLocalDate().minusMonths(handmatigInvoerenTermijn).isBefore(DateUtil.toLocalDate(conclusie.getDatum()));
+					var conclusieColoscopie = conclusie != null && conclusie.getType().equals(ColonConclusieType.COLOSCOPIE);
+					var isLaatsteRonde = afspraak.getColonScreeningRonde().equals(afspraak.getClient().getColonDossier().getLaatsteScreeningRonde());
+
+					if (isTermijnVerlopen && conclusieColoscopie && isLaatsteRonde)
+					{
+						cellItem.add(new AjaxImageCellPanel<>(componentId, model, "icon-file")
+						{
+							@Override
+							protected void onClick(AjaxRequestTarget target)
+							{
+								dialog.openWith(target, new ColonHandmatigVervolgbeleidVastleggenPanel(IDialog.CONTENT_ID, verslagModel)
+								{
+									@Override
+									protected void close(AjaxRequestTarget target)
+									{
+										target.add(table);
+										dialog.close(target);
+									}
+
+								});
+							}
+						});
+					}
+					else
+					{
+						cellItem.add(new Label(componentId, ""));
+					}
+				}
+			});
+		}
+	}
+
+	private MdlVerslag zoekOfMaakMdlVerslag(ColonIntakeAfspraak afspraak)
+	{
+		var ronde = afspraak.getColonScreeningRonde();
+
+		return verwerkVerslagService.getMdlVerslagUitRonde(ronde).orElseGet(() -> verwerkVerslagService.maakMdlVerslagVoorAfspraak(afspraak));
 	}
 
 	protected void addDatumBriefAfspraakColumn(List<IColumn<ColonIntakeAfspraak, String>> columns)

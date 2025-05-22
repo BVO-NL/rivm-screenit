@@ -24,7 +24,8 @@ package nl.rivm.screenit.huisartsenportaal.validator;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import jakarta.persistence.EntityManagerFactory;
 
 import nl.rivm.screenit.huisartsenportaal.dto.WachtwoordWijzigenDto;
 import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
@@ -39,8 +40,6 @@ import org.hibernate.envers.query.AuditQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-
-import jakarta.persistence.EntityManagerFactory;
 
 @Component
 public class WachtwoordWijzigenValidator extends BaseWachtwoordValidator<WachtwoordWijzigenDto>
@@ -66,10 +65,7 @@ public class WachtwoordWijzigenValidator extends BaseWachtwoordValidator<Wachtwo
 			controleerOudeWachtwoordEnControleWachtwoord(huisarts, target, errors);
 			controleerGebruikersnaamInWachtwoord(huisarts.getGebruikersnaam(), target.getNieuweWachtwoord(), errors);
 			controleerTekenEisen(target.getNieuweWachtwoord(), errors);
-			if (getVorigeWachtwoordenAfgelopenJaren(huisarts, 2).stream().anyMatch(wachtwoord -> target.getNieuweWachtwoord().equals(wachtwoord)))
-			{
-				errors.reject("error.password.eerder.gebruikt", "Wachtwoord mag niet in de afgelopen twee jaar gebruikt zijn.");
-			}
+			controleerHergebruikOudeWachtwoord(target.getNieuweWachtwoord(), errors);
 		}
 	}
 
@@ -89,6 +85,15 @@ public class WachtwoordWijzigenValidator extends BaseWachtwoordValidator<Wachtwo
 		}
 	}
 
+	void controleerHergebruikOudeWachtwoord(String nieuwWachtwoord, Errors errors)
+	{
+		var vorigeWachtwoorden = getVorigeWachtwoordenAfgelopenJaren(getIngelogdeHuisarts(), 2);
+		if (vorigeWachtwoorden != null && vorigeWachtwoorden.stream().anyMatch(oudeWachtwoord -> authenticatieService.controleerWachtwoord(nieuwWachtwoord, oudeWachtwoord)))
+		{
+			errors.reject("error.password.hergebruik", "Het nieuwe wachtwoord mag niet gelijk zijn aan een van de laatste 2 wachtwoorden.");
+		}
+	}
+
 	protected List<String> getVorigeWachtwoordenAfgelopenJaren(Huisarts huisarts, int jaren)
 	{
 		AuditReader auditReader = AuditReaderFactory.get(entityManagerFactory.createEntityManager());
@@ -99,10 +104,12 @@ public class WachtwoordWijzigenValidator extends BaseWachtwoordValidator<Wachtwo
 		query.add(AuditEntity.revisionProperty("timestamp").gt(Instant.now().minus(Duration.ofDays(365L * jaren)).toEpochMilli()));
 
 		return (List<String>) query.getResultList().stream().map((Object auditRow) ->
-		{
-			Huisarts huisartsAtRevision = (Huisarts) ((Object[]) auditRow)[0];
-			return huisartsAtRevision.getPassword();
-		}).collect(Collectors.toList());
+			{
+				Huisarts huisartsAtRevision = (Huisarts) ((Object[]) auditRow)[0];
+				return huisartsAtRevision.getPassword();
+			})
+			.limit(2)
+			.toList();
 	}
 
 }

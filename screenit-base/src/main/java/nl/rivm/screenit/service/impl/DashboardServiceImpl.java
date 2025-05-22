@@ -259,6 +259,12 @@ public class DashboardServiceImpl implements DashboardService
 		return dashboardLogRegelRepository.findByLogRegel(logRegel);
 	}
 
+	@Override
+	public void verwijderDashboardLogRegelMetLogRegel(LogRegel logRegel)
+	{
+		dashboardLogRegelRepository.deleteAllByLogRegel(logRegel);
+	}
+
 	private boolean downgradeDashboardStatussenLevelNaarBenedenAlsMogelijk(List<DashboardStatus> dashboardStatussen)
 	{
 		var downgraded = new AtomicBoolean(false);

@@ -29,7 +29,7 @@ import { RoosterService } from '@/colon/colon-rooster-page/services/rooster.serv
 import { CommonModule } from '@angular/common'
 import { RoosterControlsComponent } from '@/colon/colon-rooster-page/components/rooster-controls/rooster-controls.component'
 import { CalendarView } from '@shared/types/calendar-view'
-import { format, isValid } from 'date-fns'
+import { Duration, format, isValid } from 'date-fns'
 import { CalendarKamer } from '@shared/types/calendar-kamer'
 import { WINDOW } from '@shared/tokens/window.token'
 import { ColonKamer } from '@shared/types/colon/colon-kamer'

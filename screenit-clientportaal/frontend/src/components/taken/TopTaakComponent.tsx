@@ -26,7 +26,7 @@ import bvoStyle from "../BvoStyle.module.scss"
 import {useSelectedBvo} from "../../utils/Hooks"
 import SpanWithHtml from "../span/SpanWithHtml"
 import {RoutePath} from "../../routes/routes"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 
 export type TopTaakProps = {
 	link: RoutePath,

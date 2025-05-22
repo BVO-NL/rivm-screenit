@@ -31,7 +31,7 @@
       },
       "nieuwe_afspraak": {
         "title": "Fout herplannen afspraak",
-        "message": "Helaas, er is iets fout gegaan. Probeer het nog een keer.<br/>Krijgt u steeds deze foutmelding? Bel dan met onze informatielijn.",
+        "message": "Helaas, er is iets fout gegaan. Probeer het nog een keer.<br>Krijgt u steeds deze foutmelding? Bel dan met onze informatielijn.",
         "niet_beschikbaar": "Dit tijdstip is niet meer beschikbaar."
       }
     }

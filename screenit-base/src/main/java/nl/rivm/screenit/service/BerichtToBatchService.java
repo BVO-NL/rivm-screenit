@@ -61,4 +61,6 @@ public interface BerichtToBatchService
 	void queueMammaBsnWijzigingenImsBericht(Client client, GbaMutatie mutatie);
 
 	void queueMammaVerzamelOnderzoeksDataBericht();
+
+	void queueDossierLegenBericht(Long clientId, Bevolkingsonderzoek bvo);
 }

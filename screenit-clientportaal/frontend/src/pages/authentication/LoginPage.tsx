@@ -34,7 +34,7 @@ import SpanWithHtml from "../../components/span/SpanWithHtml"
 import Button from "../../components/input/Button"
 import {ArrowType} from "../../components/vectors/ArrowIconComponent"
 import properties from "./LoginPage.json"
-import {Navigate} from "react-router-dom"
+import {Navigate} from "react-router"
 import {KeycloakContext} from "../../components/KeycloakProvider"
 
 const LoginPage = () => {

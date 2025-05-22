@@ -132,7 +132,8 @@ public class MammaDossier extends Dossier<MammaScreeningRonde, MammaAfmelding> i
 	@SkipFieldForDiff
 	private MammaKansberekeningScreeningRondeEvent screeningRondeEvent;
 
-	@OneToOne(mappedBy = "dossier", optional = false, fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "dossier", optional = false, fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE })
+	@Cascade(CascadeType.DELETE)
 	@NotAudited
 	@SkipFieldForDiff
 	private MammaDeelnamekans deelnamekans;

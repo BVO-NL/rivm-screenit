@@ -158,10 +158,10 @@ const MammaAfspraakMakenForm = (props: MammaAfspraakMakenFormProps) => {
 								  initialValue={initialValues.plaats}
 								  options={standplaatsOpties(props.laatsteStandplaatsZoekFilter)}
 								  placeholder={getString(properties.form.placeholder.plaats)}
-								  onChange={(event) => {
+								  onChange={async (event) => {
 									  props.onChange()
-									  setFieldValue("afstand", undefined)
-									  setFieldValue("plaats", event.target.value)
+									  await setFieldValue("afstand", undefined)
+									  await setFieldValue("plaats", event.target.value)
 									  setGekozenPlaats(event.target.value as string)
 									  setGekozenAfstand(undefined)
 								  }}/>
@@ -172,15 +172,15 @@ const MammaAfspraakMakenForm = (props: MammaAfspraakMakenFormProps) => {
 																 value={values.vanaf}
 																 beschikbareDagen={beschikbareDagen}
 																 errorLabel={errors.vanaf}
-																 onChange={value => {
-																	 setFieldValue("vanaf", value)
+																 onChange={async value => {
+																	 await setFieldValue("vanaf", value)
 																	 value && isValid(value) && handleSubmit()
 																 }}/>}
 				{!beschikbaarheidOpgehaald && <CircularProgress/>}
 
 				<div className={classNames(styles.advancedSearchButton)}
-					 onClick={() => {
-						 setFieldValue("afstand", undefined)
+					 onClick={async () => {
+						 await setFieldValue("afstand", undefined)
 						 setAdvancedSearch(!isAdvancedSearch)
 					 }}>
 					<AdvancedSearchLinkComponent advancedSearch={isAdvancedSearch}/>
@@ -192,10 +192,10 @@ const MammaAfspraakMakenForm = (props: MammaAfspraakMakenFormProps) => {
 													   initialValue={initialValues.afstand}
 													   options={afstandOpties()}
 													   placeholder={getString(properties.form.placeholder.afstand)}
-													   onChange={(event) => {
+													   onChange={async (event) => {
 														   props.onChange()
-														   setFieldValue("afstand", event.target.value)
-														   setFieldValue("plaats", undefined)
+														   await setFieldValue("afstand", event.target.value)
+														   await setFieldValue("plaats", undefined)
 														   setGekozenAfstand(event.target.value as string)
 														   setGekozenPlaats(undefined)
 													   }}/>}

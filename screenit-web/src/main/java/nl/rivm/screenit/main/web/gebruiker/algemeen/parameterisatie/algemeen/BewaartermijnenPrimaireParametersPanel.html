@@ -30,27 +30,36 @@
 			<div class="row-fluid">
 				<div class="span6">
 					<div class="control-group">
-						<label class="control-label">Bewaartermijn</label>
+						<label class="control-label" wicket:for="ilmBewaartermijn">Bewaartermijn</label>
 						<div class="controls">
 							<input wicket:id="ilmBewaartermijn" class="input-small" type="text"> dagen
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label">Bewaartermijn niet medisch</label>
+						<label class="control-label" wicket:for="ilmBewaartermijnNietMedisch">Bewaartermijn niet medisch</label>
 						<div class="controls">
 							<input wicket:id="ilmBewaartermijnNietMedisch" class="input-small" type="text"> dagen
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label">Signaleertermijn beelden niet verwijderd</label>
+						<label class="control-label" wicket:for="ilmSignaleertermijnBeeldenStatus">Signaleertermijn beelden niet verwijderd</label>
 						<div class="controls">
 							<input wicket:id="ilmSignaleertermijnBeeldenStatus" class="input-small" type="text"> dagen
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label">Bewaartermijn Palga verslagen</label>
+						<label class="control-label" wicket:for="ilmBewaartermijnPalga">Bewaartermijn Palga verslagen</label>
 						<div class="controls">
 							<input wicket:id="ilmBewaartermijnPalga" class="input-small" type="text"> dagen
+						</div>
+					</div>
+					<div class="control-group" wicket:enclosure="leeftijdPersoonsgegevensUitExtraBeveiligdeOmgevingVerwijderen">
+						<label class="control-label" wicket:for="leeftijdPersoonsgegevensUitExtraBeveiligdeOmgevingVerwijderen">Leeftijd persoonsgegevens uit extra beveiligde
+							omgeving
+							verwijderen</label>
+						<div class="controls">
+							<input wicket:id="leeftijdPersoonsgegevensUitExtraBeveiligdeOmgevingVerwijderen"
+								   class="input-small" type="text"> jaar
 						</div>
 					</div>
 				</div>

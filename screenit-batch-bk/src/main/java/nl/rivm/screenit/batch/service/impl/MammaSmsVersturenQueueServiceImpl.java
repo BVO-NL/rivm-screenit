@@ -55,7 +55,7 @@ public class MammaSmsVersturenQueueServiceImpl
 
 	private AwsSqsService awsSqsService;
 
-	private final String queueName;
+	private final String queueNameSms;
 
 	private MessageBirdConfig messageBirdConfig;
 
@@ -66,9 +66,9 @@ public class MammaSmsVersturenQueueServiceImpl
 	{
 		LOG.info("Running sms berichten herinnering queue");
 
-		try (var sqsClient = ApplicationContextProvider.getApplicationContext().getBean(SqsClient.class))
+		try (var sqsClient = ApplicationContextProvider.getApplicationContext().getBean("sqsClientSms", SqsClient.class))
 		{
-			String sqsQueueUrl = awsSqsService.getSqsQueueUrl(sqsClient, queueName);
+			String sqsQueueUrl = awsSqsService.getSqsQueueUrl(sqsClient, queueNameSms);
 			if (StringUtils.isNotBlank(sqsQueueUrl))
 			{
 				var afsprakenIds = digitaalContactService.getAfsprakenVoorSmsVersturen();

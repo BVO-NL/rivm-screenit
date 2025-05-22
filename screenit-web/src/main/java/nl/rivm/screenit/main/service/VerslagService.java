@@ -24,17 +24,13 @@ package nl.rivm.screenit.main.service;
 import java.util.List;
 
 import nl.rivm.screenit.model.BerichtZoekFilter;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
-import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 
 public interface VerslagService
 {
-	List<MdlVerslag> getAlleMdlVerslagenVanClient(Client client);
-
 	List<OntvangenCdaBericht> zoekBerichten(BerichtZoekFilter filter, long first, long count, String property, boolean ascending);
 
 	long countBerichten(BerichtZoekFilter filter);

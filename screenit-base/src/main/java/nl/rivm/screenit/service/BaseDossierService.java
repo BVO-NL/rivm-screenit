@@ -32,4 +32,6 @@ public interface BaseDossierService
 	<SR extends ScreeningRonde<?, ?, A, ?>, A extends Afmelding<SR, ?, ?>> void verwijderAlleAfmeldingenUitRonde(SR ronde);
 
 	<D extends Dossier<?, A>, A extends Afmelding<?, ?, ?>> void verwijderLaatsteAfmelding(D dossier);
+
+	<D extends Dossier<?, A>, A extends Afmelding<?, ?, ?>> void verwijderAlleAfmeldingenUitDossier(D dossier);
 }

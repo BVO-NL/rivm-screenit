@@ -404,19 +404,20 @@ public class DossierServiceImpl implements DossierService
 	private void maakDKVerslagGebeurtenis(ScreeningRondeGebeurtenissen rondeDossier, ColonVerslag<?> verslag)
 	{
 		Date ontvangen;
-		if (verslag.getOntvangenBericht() != null)
+		var handmatigVerslag = verslag.getOntvangenBericht() == null;
+		if (handmatigVerslag)
 		{
-			ontvangen = verslag.getOntvangenBericht().getOntvangen();
+			ontvangen = verslag.getDatumVerwerkt();
 		}
 		else
 		{
-			ontvangen = verslag.getDatumVerwerkt();
+			ontvangen = verslag.getOntvangenBericht().getOntvangen();
 		}
 		if (verslag.getType() == VerslagType.MDL && verslag.getStatus() == VerslagStatus.AFGEROND)
 		{
 			var screeningRondeGebeurtenis = new ScreeningRondeGebeurtenis();
 			screeningRondeGebeurtenis.setDatum(ontvangen);
-			screeningRondeGebeurtenis.setGebeurtenis(TypeGebeurtenis.UITSLAGCOLOSCOPIEONTVANGEN);
+			screeningRondeGebeurtenis.setGebeurtenis(handmatigVerslag ? TypeGebeurtenis.HANDMATIGEUITSLAGCOLOSCOPIEONTVANGEN : TypeGebeurtenis.UITSLAGCOLOSCOPIEONTVANGEN);
 			screeningRondeGebeurtenis.setVerslag(verslag);
 			screeningRondeGebeurtenis.setExtraOmschrijving(EnumStringUtil.getPropertyString(((MdlVerslag) verslag).getVervolgbeleid()));
 			screeningRondeGebeurtenis.setScreeningRondeGebeurtenissen(rondeDossier);

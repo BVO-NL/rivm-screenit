@@ -5,8 +5,8 @@
       "wijzigen": "Tijdelijk adres wijzigen"
     },
     "description": {
-      "doorgeven": "Wij gebruiken voor de post over het bevolkingsonderzoek het adres waarop u staat ingeschreven bij de gemeente. Woont u tijdelijk op een ander adres, waarop u niet ingeschreven staat? Of wilt u dat wij de post naar een ander adres sturen? Dan kunt u een tijdelijk adres doorgeven. U kunt alleen een adres in Nederland invullen. </br></br>Bent u verhuisd of gaat u verhuizen? Dan moet u uw nieuwe adres doorgeven aan de gemeente waar u woont. Wij krijgen uw nieuwe adres dan automatisch.",
-      "wijzigen": "U heeft een tijdelijk adres doorgegeven. Wij sturen uw post van het bevolkingsonderzoek naar dit adres. \nWilt u dat wij uw post naar een ander tijdelijk adres sturen? Vul dan hieronder dat adres in. </br></br>Bent u verhuisd of gaat u verhuizen? Dan moet u uw nieuwe adres doorgeven aan de gemeente waar u woont. Wij krijgen uw nieuwe adres dan automatisch."
+      "doorgeven": "Wij gebruiken voor de post over het bevolkingsonderzoek het adres waarop u staat ingeschreven bij de gemeente. Woont u tijdelijk op een ander adres, waarop u niet ingeschreven staat? Of wilt u dat wij de post naar een ander adres sturen? Dan kunt u een tijdelijk adres doorgeven. U kunt alleen een adres in Nederland invullen. <br><br>Bent u verhuisd of gaat u verhuizen? Dan moet u uw nieuwe adres doorgeven aan de gemeente waar u woont. Wij krijgen uw nieuwe adres dan automatisch.",
+      "wijzigen": "U heeft een tijdelijk adres doorgegeven. Wij sturen uw post van het bevolkingsonderzoek naar dit adres. \nWilt u dat wij uw post naar een ander tijdelijk adres sturen? Vul dan hieronder dat adres in. <br><br>Bent u verhuisd of gaat u verhuizen? Dan moet u uw nieuwe adres doorgeven aan de gemeente waar u woont. Wij krijgen uw nieuwe adres dan automatisch."
     }
   },
   "form": {

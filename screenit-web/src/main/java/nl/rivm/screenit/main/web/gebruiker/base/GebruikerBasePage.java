@@ -606,6 +606,7 @@ public abstract class GebruikerBasePage extends BasePage
 			protected void updateAjaxAttributes(AjaxRequestAttributes attributes)
 			{
 				super.updateAjaxAttributes(attributes);
+				stopPollers(attributes);
 				if (heeftImsKoppelingRecht)
 				{
 					GebruikerBasePage basePage = GebruikerBasePage.this;
@@ -624,6 +625,13 @@ public abstract class GebruikerBasePage extends BasePage
 			}
 
 		});
+	}
+
+	private void stopPollers(AjaxRequestAttributes attributes)
+	{
+		var listener = new AjaxCallListener();
+		listener.onBefore("if (screenit && screenit.setIsPolling) screenit.setIsPolling(false);");
+		attributes.getAjaxCallListeners().add(listener);
 	}
 
 	protected void logoutFromIms(AjaxRequestAttributes attributes)

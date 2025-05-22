@@ -32,8 +32,9 @@ import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.enums.MammaFactorType;
+import nl.rivm.screenit.service.LeegDossierService;
 
-public interface MammaBaseDossierService
+public interface MammaBaseDossierService extends LeegDossierService
 {
 	MammaFactorType getFactorType(MammaDossier dossier);
 
@@ -59,7 +60,7 @@ public interface MammaBaseDossierService
 
 	boolean isAutomatischRondeForcerenNaHeraanmeldenMogelijk(MammaDossier dossier);
 
-	void maakDossierLeeg(MammaDossier dossier);
+	void maakDossierLeeg(MammaDossier dossier, boolean alleAfmeldingen);
 
 	boolean setUitslagenGecontroleerdEnUpdateDashboard(LogRegel logRegel, InstellingGebruiker medewerker, DashboardStatus dashboardStatus);
 

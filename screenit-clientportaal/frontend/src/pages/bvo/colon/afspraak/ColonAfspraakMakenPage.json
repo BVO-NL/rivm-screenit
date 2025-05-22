@@ -53,7 +53,7 @@
     "do_search": "Zoeken",
     "result": {
       "tijdstip": "%s&nbsp;uur",
-      "locatie": "%s</br> %s %s"
+      "locatie": "%s<br> %s %s"
     }
   },
   "toast": {

@@ -73,6 +73,11 @@ public class AdresSpecification
 		return (r, q, cb) -> cb.isNotNull(r.get(Adres_.postcode));
 	}
 
+	public static ExtendedSpecification<Adres> heeftEenHuisnummer()
+	{
+		return (r, q, cb) -> cb.isNotNull(r.get(Adres_.huisnummer));
+	}
+
 	public static ExtendedSpecification<Adres> heeftHuisnummerOfNull(Integer huisnummer)
 	{
 		return isAttribuutGelijkOfNull(Adres_.huisnummer, huisnummer);

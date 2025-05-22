@@ -37,7 +37,6 @@ import nl.rivm.screenit.repository.cervix.CervixBoekRegelRepository;
 import nl.rivm.screenit.service.cervix.Cervix2023StartBepalingService;
 import nl.rivm.screenit.service.cervix.CervixBaseBetalingService;
 import nl.rivm.screenit.util.cervix.CervixTariefUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.stereotype.Service;
 
@@ -51,8 +50,6 @@ import static nl.rivm.screenit.specification.cervix.CervixBoekRegelSpecification
 public class CervixBaseBetalingServiceImpl implements CervixBaseBetalingService
 {
 	private final CervixBoekRegelRepository boekRegelRepository;
-
-	private final HibernateService hibernateService;
 
 	private final Cervix2023StartBepalingService cervix2023StartBepalingService;
 

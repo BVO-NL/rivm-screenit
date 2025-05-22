@@ -60,7 +60,6 @@ import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
 import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
 import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot_;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
-import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.HuisartsBerichtType;
@@ -898,7 +897,7 @@ public class ColonTestServiceImpl implements ColonTestService
 					continue;
 				}
 				clientReset(client);
-				testService.verwijderClientContacten(client, Bevolkingsonderzoek.COLON);
+				testService.verwijderClientContacten(client, true, false, false);
 				gevondenEnIsVerwijderd++;
 			}
 			catch (Exception e)
@@ -918,7 +917,7 @@ public class ColonTestServiceImpl implements ColonTestService
 		{
 			return;
 		}
-		dossierService.maakDossierLeeg(dossier);
+		dossierService.maakDossierLeeg(dossier, false);
 
 		baseDossierService.verwijderLaatsteAfmelding(dossier);
 

@@ -22,9 +22,9 @@ package nl.rivm.screenit.service.cervix;
  */
 
 import nl.rivm.screenit.model.cervix.CervixDossier;
+import nl.rivm.screenit.service.LeegDossierService;
 
-public interface CervixBaseDossierService
+public interface CervixBaseDossierService extends LeegDossierService
 {
-	void maakDossierLeeg(CervixDossier dossier);
-
+	void maakDossierLeeg(CervixDossier dossier, boolean alleAfmeldingen);
 }

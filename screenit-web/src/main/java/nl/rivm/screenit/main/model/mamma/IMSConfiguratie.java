@@ -23,11 +23,15 @@ package nl.rivm.screenit.main.model.mamma;
 
 import java.io.Serializable;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class IMSConfiguratie implements Serializable
 {
 	private String hostName;
@@ -42,17 +46,7 @@ public class IMSConfiguratie implements Serializable
 
 	private int imsQueueSizeWarningThreshold;
 
-	public IMSConfiguratie()
-	{
-	}
+	private String launchUrlPassword;
 
-	public IMSConfiguratie(String hostName, int ormPort, int adtPort, int ilmPort, int bezwaarTermijnVerwijderdeBeelden, int imsQueueSizeWarningThreshold)
-	{
-		this.hostName = hostName;
-		this.ormPort = ormPort;
-		this.adtPort = adtPort;
-		this.ilmPort = ilmPort;
-		this.bezwaarTermijnVerwijderdeBeelden = bezwaarTermijnVerwijderdeBeelden;
-		this.imsQueueSizeWarningThreshold = imsQueueSizeWarningThreshold;
-	}
+	private boolean launchUrlSha1Mode;
 }

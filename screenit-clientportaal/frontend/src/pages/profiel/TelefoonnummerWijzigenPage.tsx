@@ -31,7 +31,7 @@ import {Formik} from "formik"
 import SubmitForm from "../../components/form/SubmitForm"
 import ScreenitTextfield from "../../components/input/ScreenitTextfield"
 import {isMobielnummerValid, isTelefoonnummerValid} from "../../validators/TelefoonnummerValidator"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 import {showToast} from "../../utils/ToastUtil"
 
 const TelefoonnummerWijzigenPage = () => {

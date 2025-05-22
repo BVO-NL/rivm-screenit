@@ -22,7 +22,7 @@ import React from "react"
 import styles from "./KruimelpadComponent.module.scss"
 import bvoStyles from "../BvoStyle.module.scss"
 import routes from "../../routes/routes"
-import {Link, matchPath, useLocation, useNavigate} from "react-router-dom"
+import {Link, matchPath, useLocation, useNavigate} from "react-router"
 import classNames from "classnames"
 import Button from "../input/Button"
 import ArrowIconComponent, {ArrowType} from "../vectors/ArrowIconComponent"
@@ -51,7 +51,7 @@ const KruimelpadComponent = (props: KruimelpadComponentProps) => {
 					const containsRegexCharacters = subPath.match(/(\(|\)|[|]|\*)/g)
 					return containsRegexCharacters ? Object.values(matchedPath.params)[currentRegexIndex++] : subPath
 				}).join("/"),
-			};
+			}
 		})
 	return (
 		<div className={classNames(styles.style, props.className)}>

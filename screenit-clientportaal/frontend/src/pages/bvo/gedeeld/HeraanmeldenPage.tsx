@@ -35,7 +35,7 @@ import {getBvoBaseUrl} from "../../../utils/UrlUtil"
 import LadenComponent from "../../../components/laden/LadenComponent"
 import SubmitButton from "../../../components/input/SubmitButton"
 import {ClientContactActieType} from "../../../datatypes/ClientContactActieType"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 import {showToast} from "../../../utils/ToastUtil"
 
 const HeraanmeldenPage = () => {

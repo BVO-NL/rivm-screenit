@@ -23,6 +23,7 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.parameterisatie;
  */
 
 import nl.rivm.screenit.main.model.Parameterisatie;
+import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
 import nl.rivm.screenit.main.web.component.validator.EmailAddressenValidator;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
@@ -32,7 +33,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
-import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
 import org.apache.wicket.validation.validator.RangeValidator;
 
 public class ColonPrimaireParametersPanel extends BasePrimaireParametersPanel
@@ -80,6 +80,7 @@ public class ColonPrimaireParametersPanel extends BasePrimaireParametersPanel
 		form.add(new TextField<>("wachttijdVerzendenPakketTweeOpEenAdres", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
 		form.add(new TextField<>("colonAantalRondesUitnodigingsbriefZonderFit", Integer.class).add(RangeValidator.minimum(1)).setRequired(true));
 		form.add(new TextField<>("colonSignaleringstermijnGeenCapaciteit", Integer.class).add(RangeValidator.minimum(1)).setRequired(true));
+		form.add(new TextField<>("colonHandmatigMdlVerslagTermijn", Integer.class).add(RangeValidator.minimum(1)).setRequired(true));
 
 		addTextAreaField(form, "colonEenmaligHeraanmeldenTekst");
 		addTextAreaField(form, "colonTijdelijkHeraanmeldenTekst");

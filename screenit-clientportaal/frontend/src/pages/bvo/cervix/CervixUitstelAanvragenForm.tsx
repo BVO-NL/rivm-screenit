@@ -91,13 +91,7 @@ const CervixUitstelAanvragenForm = (props: CervixUitstelAanvragenFormProps) => {
 	return <>
 		<Formik<CervixUitstelFormulier> initialValues={initialValues}
 										validationSchema={validatieSchema}
-										onSubmit={(values) => {
-											props.onSubmitSucces({
-												...values,
-												uitgerekendeDatum: values.uitgerekendeDatum == null ? null : new Date(values.uitgerekendeDatum),
-												uitstellenTotDatum: values.uitstellenTotDatum == null ? null : new Date(values.uitstellenTotDatum),
-											})
-										}}>
+										onSubmit={(values) => props.onSubmitSucces(values)}>
 			{formikProps => (
 				<SubmitForm<CervixUitstelFormulier> title={getString(properties.form.title)}
 													formikProps={formikProps}
@@ -132,9 +126,7 @@ const CervixUitstelAanvragenForm = (props: CervixUitstelAanvragenFormProps) => {
 											title={getString(properties.form.label.zwanger)}
 											value={formikProps.values.uitgerekendeDatum}
 											errorLabel={formikProps.errors.uitgerekendeDatum}
-											onChange={value => {
-												formikProps.setFieldValue("uitgerekendeDatum", value)
-											}}/>}
+											onChange={value => formikProps.setFieldValue("uitgerekendeDatum", value)}/>}
 
 					{formikProps.values.uitstelType === CervixUitstelType.ANDERS &&
 						<ScreenitDatePicker className={styles.datepicker}
@@ -143,9 +135,7 @@ const CervixUitstelAanvragenForm = (props: CervixUitstelAanvragenFormProps) => {
 											title={getString(properties.form.label.anders)}
 											value={formikProps.values.uitstellenTotDatum}
 											errorLabel={formikProps.errors.uitstellenTotDatum}
-											onChange={value => {
-												formikProps.setFieldValue("uitstellenTotDatum", value)
-											}}/>}
+											onChange={value => formikProps.setFieldValue("uitstellenTotDatum", value)}/>}
 				</SubmitForm>)}
 		</Formik>
 

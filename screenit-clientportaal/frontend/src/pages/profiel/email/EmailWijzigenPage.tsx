@@ -20,7 +20,7 @@
  */
 import React from "react"
 import {useThunkDispatch} from "../../.."
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 import {useSelector} from "react-redux"
 import {State} from "../../../datatypes/State"
 import * as Yup from "yup"

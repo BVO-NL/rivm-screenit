@@ -100,4 +100,6 @@ public interface LogService
 	boolean heeftGeenBestaandeLogregelBinnenPeriode(List<LogGebeurtenis> gebeurtenissen, String bsn, List<Level> levels, String melding, int dagen);
 
 	boolean verwijderLogRegelsVanDashboards(List<LogRegel> logRegels, InstellingGebruiker ingelogdeGebruiker, LogGebeurtenis logGebeurtenis);
+
+	void verwijderLogRegelsVanClient(Client client);
 }

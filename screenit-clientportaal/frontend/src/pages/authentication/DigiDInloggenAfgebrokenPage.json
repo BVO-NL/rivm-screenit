@@ -5,7 +5,7 @@
     },
     "digid": {
       "error": {
-        "tekst": "Er is een fout opgetreden in de communicatie met DigiD. Probeer het later nogmaals. Indien deze fout blijft aanhouden, kijk dan op de website <a href='https://www.digid.nl'>https://www.digid.nl</a> voor de laatste informatie.<br><br>Of maak hier uw keuze:",
+        "tekst": "Er is een fout opgetreden in de communicatie met DigiD. Probeer het later nogmaals. Indien deze fout blijft aanhouden, kijk dan op de website <a href='https://www.digid.nl' target='_blank' rel='noopener noreferrer'>https://www.digid.nl</a> voor de laatste informatie.<br><br>Of maak hier uw keuze:",
         "title": "Fout bij inloggen"
       },
       "cancelled": {

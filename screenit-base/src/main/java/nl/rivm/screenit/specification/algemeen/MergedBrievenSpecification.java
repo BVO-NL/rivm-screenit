@@ -53,6 +53,16 @@ public class MergedBrievenSpecification
 		return (r, q, cb) -> cb.isNotNull(r.get(MergedBrieven_.printDatum));
 	}
 
+	public static <M extends MergedBrieven<?>> ExtendedSpecification<M> isGeprint()
+	{
+		return (r, q, cb) -> cb.isTrue(r.get(MergedBrieven_.geprint));
+	}
+
+	public static <M extends MergedBrieven<?>> ExtendedSpecification<M> isVerstuurd()
+	{
+		return (r, q, cb) -> isGeprint().and(heeftPrintDatum()).toPredicate(r, q, cb);
+	}
+
 	public static <M extends MergedBrieven<?>> ExtendedSpecification<M> heeftPrintDatumVoor(LocalDate peilDatum)
 	{
 		return (r, q, cb) -> cb.lessThan(r.get(MergedBrieven_.printDatum), DateUtil.toUtilDate(peilDatum));

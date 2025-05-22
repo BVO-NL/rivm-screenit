@@ -21,15 +21,12 @@ package nl.rivm.screenit.main.config;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.main.filter.AuthorizationFilter;
 import nl.rivm.screenit.main.web.ScreenitSessionListener;
 import nl.rivm.screenit.main.web.filter.LogFilter;
 import nl.rivm.screenit.main.web.filter.MedewerkerportaalControllerLoggingFilter;
 import nl.rivm.screenit.main.web.filter.PlanningRestErrorHandlerFilter;
 import nl.rivm.screenit.main.web.filter.SecurityHeadersFilter;
-import nl.rivm.screenit.main.web.status.StatusServlet;
 import nl.topicuszorg.wicket.filter.CacheFilter;
 
 import org.apache.wicket.protocol.http.WicketFilter;
@@ -37,7 +34,6 @@ import org.apache.wicket.protocol.http.servlet.WicketSessionFilter;
 import org.apache.wicket.spring.SpringWebApplicationFactory;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.hibernate5.support.OpenSessionInViewFilter;
@@ -66,15 +62,6 @@ public class FilterConfig
 		var listener = new ServletListenerRegistrationBean<ScreenitSessionListener>();
 		listener.setListener(new ScreenitSessionListener());
 		return listener;
-	}
-
-	@Bean
-	public ServletRegistrationBean<StatusServlet> statusServlet()
-	{
-		var servlet = new ServletRegistrationBean<StatusServlet>();
-		servlet.setServlet(new StatusServlet());
-		servlet.setUrlMappings(List.of("/status/*"));
-		return servlet;
 	}
 
 	@Bean

@@ -21,14 +21,14 @@ package nl.rivm.screenit.model.enums;
  * =========================LICENSE_END==================================
  */
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import lombok.Getter;
 
 import nl.rivm.screenit.model.INaam;
 import nl.rivm.screenit.model.OrganisatieType;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 @Getter
 public enum Recht implements INaam

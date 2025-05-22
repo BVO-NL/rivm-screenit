@@ -52,7 +52,6 @@ import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
@@ -100,9 +99,6 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 
 	@SpringBean
 	private ColonDossierBaseService dossierBaseService;
-
-	@SpringBean
-	private ClientService clientService;
 
 	@SpringBean
 	private ICurrentDateSupplier dateSupplier;
@@ -191,8 +187,6 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 
 	private class ConclusieForm extends Form<ColonIntakeAfspraak>
 	{
-
-		private static final long serialVersionUID = 1L;
 
 		private final BootstrapDialog dialog;
 

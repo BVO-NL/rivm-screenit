@@ -106,7 +106,7 @@ public class ColonMissendeMdlVerslagenWerklijstPage extends WerklijstIntakePage
 			propertyChain(ColonIntakeAfspraak_.CONCLUSIE, ColonConclusie_.DATUM)));
 		columns.add(new DateTimePropertyColumn<>(Model.of("Datum coloscopie"), propertyChain(ColonIntakeAfspraak_.CONCLUSIE, ColonConclusie_.DATUM_COLOSCOPIE),
 			propertyChain(ColonIntakeAfspraak_.CONCLUSIE, ColonConclusie_.DATUM_COLOSCOPIE), new SimpleDateFormat("dd-MM-yyyy")));
-
+		addHandmatigVervolgbeleidColumn(columns);
 		return columns;
 	}
 

@@ -192,12 +192,13 @@ public class ColonScreeningRondeSpecification
 	{
 		return (r, q, cb) ->
 		{
-			var subquery = q.subquery(ColonScreeningRonde.class);
+			var subquery = q.subquery(Long.class);
 			var subRoot = subquery.from(MdlVerslag.class);
-			subquery.select(join(subRoot, ColonVerslag_.screeningRonde))
-				.where(heeftColonVerslagStatus(VerslagStatus.AFGEROND).toPredicate(subRoot, q, cb))
-				.distinct(true);
-			return r.in(subquery);
+			subquery.select(cb.literal(1L))
+				.where(cb.and(
+					cb.equal(subRoot.get(ColonVerslag_.screeningRonde), r),
+					heeftColonVerslagStatus(VerslagStatus.AFGEROND).toPredicate(subRoot, q, cb)));
+			return cb.exists(subquery);
 		};
 	}
 

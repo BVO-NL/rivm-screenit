@@ -32,6 +32,7 @@ import {Col, Row} from "react-bootstrap"
 import {REGEX_HUISLETTER, REGEX_HUISNUMMER, REGEX_POSTCODE_EXACT} from "../../../validators/AdresValidator"
 import classNames from "classnames"
 import ScreenitDatePicker from "../../input/ScreenitDatePicker"
+import DOMPurify from "dompurify"
 
 export type TijdelijkAdresWijzigenFormProps = {
 	huidigTijdelijkAdres?: TijdelijkAdres
@@ -88,16 +89,22 @@ const TijdelijkAdresWijzigenForm = (props: TijdelijkAdresWijzigenFormProps) => {
 			.typeError(getString(properties.form.error.datum.ongeldig)),
 	})
 
+	const purifyInput = (value: string | undefined): string => {
+		return value ? DOMPurify.sanitize(value, {ALLOWED_TAGS: []}) : ""
+	}
+
 	return <>
 		<Formik<TijdelijkAdres> initialValues={initialValues}
 								validationSchema={validatieSchema}
 								onSubmit={(values) =>
 									props.onSubmitSucces({
 										...values,
+										straat: purifyInput(values.straat),
+										plaats: purifyInput(values.plaats),
 										id: props.huidigTijdelijkAdres ? props.huidigTijdelijkAdres.id : undefined,
 										huisnummer: Number(values.huisnummer),
-										startDatum: new Date(values.startDatum),
-										eindDatum: values.eindDatum == null ? null : new Date(values.eindDatum),
+										startDatum: values.startDatum,
+										eindDatum: values.eindDatum,
 									})
 								}>
 			{formikProps => (
@@ -171,18 +178,14 @@ const TijdelijkAdresWijzigenForm = (props: TijdelijkAdresWijzigenFormProps) => {
 													label={getString(properties.form.placeholder.startdatum)}
 													value={formikProps.values.startDatum}
 													errorLabel={formikProps.errors.startDatum}
-													onChange={value => {
-														formikProps.setFieldValue("startDatum", value)
-													}}/>
+													onChange={value => formikProps.setFieldValue("startDatum", value)}/>
 							</Col>
 							<Col xs={6} className={classNames(styles.inputColumn, styles.datum)}>
 								<ScreenitDatePicker propertyName={"eindDatum"}
 													label={getString(properties.form.placeholder.einddatum)}
 													value={formikProps.values.eindDatum}
 													errorLabel={formikProps.errors.eindDatum}
-													onChange={value => {
-														formikProps.setFieldValue("eindDatum", value)
-													}}/>
+													onChange={value => formikProps.setFieldValue("eindDatum", value)}/>
 							</Col>
 						</Row>
 					</div>

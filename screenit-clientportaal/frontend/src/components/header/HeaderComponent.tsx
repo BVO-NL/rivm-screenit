@@ -27,7 +27,7 @@ import {useSelector} from "react-redux"
 import {getBevolkingsonderzoekNederlandUrl, getBevolkingsonderzoekNederlandUrlNaam} from "../../utils/UrlUtil"
 import {State} from "../../datatypes/State"
 import {Persoon} from "../../datatypes/Persoon"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 import {KeycloakContext} from "../KeycloakProvider"
 
 const HeaderComponent = () => {

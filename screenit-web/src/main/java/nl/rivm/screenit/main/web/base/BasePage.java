@@ -22,6 +22,8 @@ package nl.rivm.screenit.main.web.base;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.servlet.http.HttpSession;
+
 import nl.rivm.screenit.main.web.gebruiker.base.angular.AngularBasePage;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -38,8 +40,6 @@ import org.apache.wicket.resource.JQueryResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jakarta.servlet.http.HttpSession;
 
 public abstract class BasePage extends WebPage
 {
@@ -87,7 +87,7 @@ public abstract class BasePage extends WebPage
 		response.render(JavaScriptHeaderItem.forUrl("assets/js/laadEvents.js"));
 		response.render(JavaScriptHeaderItem.forUrl("assets/js/brieventemplates/brieventemplatesUitklappen.js"));
 
-		response.render(JavaScriptHeaderItem.forUrl("https://www.datadoghq-browser-agent.com/eu1/v5/datadog-rum.js"));
+		response.render(JavaScriptHeaderItem.forUrl("https://www.datadoghq-browser-agent.com/eu1/v6/datadog-rum.js"));
 		response.render(JavaScriptHeaderItem.forScript("initDatadog('" + datadogApplicationId + "','" + datadogToken + "')", "datadog"));
 
 		if (!(this instanceof AngularBasePage))

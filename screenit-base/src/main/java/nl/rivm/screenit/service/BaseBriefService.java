@@ -119,4 +119,6 @@ public interface BaseBriefService
 	void briefNietMeerTegenhouden(ClientBrief brief, Account account);
 
 	boolean briefTypeGemaaktInDezeRonde(ScreeningRonde<?, ?, ?, ?> ronde, Collection<BriefType> briefTypes);
+
+	<B extends Brief> void verwijderBrief(B brief);
 }

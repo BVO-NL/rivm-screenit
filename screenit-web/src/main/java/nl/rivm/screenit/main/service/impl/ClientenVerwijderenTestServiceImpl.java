@@ -22,33 +22,25 @@ package nl.rivm.screenit.main.service.impl;
  */
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.ApplicationEnvironment;
 import nl.rivm.screenit.main.service.ClientenVerwijderenTestService;
-import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContact;
-import nl.rivm.screenit.model.SortState;
-import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.algemeen.AlgemeneBrief;
 import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
-import nl.rivm.screenit.model.dashboard.DashboardLogRegel;
 import nl.rivm.screenit.model.exception.VerwijderClientException;
 import nl.rivm.screenit.model.gba.GbaVraag;
-import nl.rivm.screenit.model.logging.LogRegel;
-import nl.rivm.screenit.model.logging.LoggingZoekCriteria;
 import nl.rivm.screenit.model.logging.NieuweIFobtAanvraagLogEvent;
 import nl.rivm.screenit.model.mamma.MammaDeelnamekans;
+import nl.rivm.screenit.service.BaseProjectService;
+import nl.rivm.screenit.service.BezwaarService;
 import nl.rivm.screenit.service.ClientService;
-import nl.rivm.screenit.service.DashboardService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.TestService;
-import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.service.cervix.CervixTestService;
 import nl.rivm.screenit.service.colon.ColonTestService;
 import nl.rivm.screenit.service.mamma.MammaBaseScreeningrondeService;
@@ -58,14 +50,13 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.ImmutableMap;
 
 @Slf4j
 @Service
-@Transactional(propagation = Propagation.REQUIRED)
+@Transactional
 public class ClientenVerwijderenTestServiceImpl implements ClientenVerwijderenTestService
 {
 	@Autowired
@@ -84,7 +75,7 @@ public class ClientenVerwijderenTestServiceImpl implements ClientenVerwijderenTe
 	private TestService testService;
 
 	@Autowired
-	private UploadDocumentService uploadDocumentService;
+	private BaseProjectService projectService;
 
 	@Autowired
 	private ClientService clientService;
@@ -93,13 +84,13 @@ public class ClientenVerwijderenTestServiceImpl implements ClientenVerwijderenTe
 	private LogService logService;
 
 	@Autowired
-	private DashboardService dashboardService;
-
-	@Autowired
 	private MammaBaseScreeningrondeService screeningrondeService;
 
 	@Autowired
 	private String applicationEnvironment;
+
+	@Autowired
+	private BezwaarService bezwaarService;
 
 	@Override
 	public String clientenVerwijderen(String bsns)
@@ -123,11 +114,12 @@ public class ClientenVerwijderenTestServiceImpl implements ClientenVerwijderenTe
 				}
 
 				boolean isKetenEnvironment = ApplicationEnvironment.KTN.getEnvNaam().equalsIgnoreCase(applicationEnvironment);
-				if (isKetenEnvironment && heeftBeelden(client)) {
+				if (isKetenEnvironment && heeftBeelden(client))
+				{
 					throw new VerwijderClientException("Ronde bevat beelden. Client moet eerst gereset worden.");
 				}
 
-				testService.projectenVerwijderen(client);
+				projectService.verwijderClientVanProjecten(client);
 
 				cervixTestService.clientReset(client);
 				colonTestService.clientReset(client);
@@ -135,35 +127,12 @@ public class ClientenVerwijderenTestServiceImpl implements ClientenVerwijderenTe
 
 				testService.verwijderClientContacten(client, true, true, true);
 
-				LoggingZoekCriteria loggingZoekCriteria = new LoggingZoekCriteria();
-				loggingZoekCriteria.setBsnClient(bsn);
-				List<LogRegel> logRegels = logService.getLogRegels(loggingZoekCriteria, -1, -1, new SortState<String>("logGebeurtenis", Boolean.TRUE));
-				for (LogRegel logRegel : logRegels)
-				{
-					List<DashboardLogRegel> dashboardLogRegels = dashboardService.getDashboardLogRegelMetLogRegel(logRegel);
-					hibernateService.deleteAll(dashboardLogRegels);
-
-					hibernateService.delete(logRegel);
-				}
+				logService.verwijderLogRegelsVanClient(client);
 
 				List<NieuweIFobtAanvraagLogEvent> logEvents = hibernateService.getByParameters(NieuweIFobtAanvraagLogEvent.class, ImmutableMap.of("client", client));
 				logEvents.forEach(le -> hibernateService.delete(le.getLogRegel()));
 
-				Set<UploadDocument> bezwaarBrieven = new HashSet<>();
-				for (BezwaarMoment bezwaarMoment : client.getBezwaarMomenten())
-				{
-					UploadDocument brief = bezwaarMoment.getBezwaarBrief();
-					if (brief != null)
-					{
-						bezwaarMoment.setBezwaarBrief(null);
-						hibernateService.saveOrUpdate(bezwaarMoment);
-						bezwaarBrieven.add(brief);
-					}
-				}
-				bezwaarBrieven.forEach(b -> uploadDocumentService.delete(b));
-				client.setLaatstVoltooideBezwaarMoment(null);
-
-				hibernateService.deleteAll(client.getBezwaarMomenten());
+				bezwaarService.verwijderBezwaarMomenten(client);
 				List<GbaVraag> gbaVragen = client.getGbaVragen();
 				hibernateService.deleteAll(gbaVragen);
 
@@ -210,7 +179,8 @@ public class ClientenVerwijderenTestServiceImpl implements ClientenVerwijderenTe
 	private boolean heeftBeelden(Client client)
 	{
 		var dossier = client.getMammaDossier();
-		if (dossier == null) {
+		if (dossier == null)
+		{
 			return false;
 		}
 

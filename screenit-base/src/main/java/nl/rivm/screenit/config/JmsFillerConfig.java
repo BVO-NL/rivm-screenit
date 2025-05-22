@@ -21,6 +21,8 @@ package nl.rivm.screenit.config;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.jms.Destination;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.command.ActiveMQTopic;
@@ -30,8 +32,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
-
-import jakarta.jms.Destination;
 
 @Configuration
 @Profile("filler & !test")
@@ -149,6 +149,24 @@ public class JmsFillerConfig
 	public Destination quartzDestination()
 	{
 		return new ActiveMQQueue("nl.rivm.screenit.batch.quartz.filler");
+	}
+
+	@Bean
+	public Destination colonDossierLegenDestination()
+	{
+		return new ActiveMQQueue("nl.rivm.screenit.batch.colon.dossierlegen.filler");
+	}
+
+	@Bean
+	public Destination cervixDossierLegenDestination()
+	{
+		return new ActiveMQQueue("nl.rivm.screenit.batch.cervix.dossierlegen.filler");
+	}
+
+	@Bean
+	public Destination mammaDossierLegenDestination()
+	{
+		return new ActiveMQQueue("nl.rivm.screenit.batch.mamma.dossierlegen.filler");
 	}
 
 	@Bean(initMethod = "start", destroyMethod = "stop")

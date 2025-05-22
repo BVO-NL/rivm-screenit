@@ -180,4 +180,9 @@ public class ColonVerslagSpecification
 	{
 		return (r, q, cb) -> cb.equal(r.get(ColonVerslag_.type), type);
 	}
+
+	public static Specification<MdlVerslag> heeftGeenOntvangenBericht()
+	{
+		return (r, q, cb) -> cb.isNull(r.get(ColonVerslag_.ontvangenCdaBericht));
+	}
 }

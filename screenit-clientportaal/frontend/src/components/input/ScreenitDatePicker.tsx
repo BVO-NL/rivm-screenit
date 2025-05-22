@@ -19,13 +19,13 @@
  * =========================LICENSE_END==================================
  */
 import React from "react"
-import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers"
-import {TextField} from "@mui/material"
+import {DatePicker, DateValidationError, LocalizationProvider} from "@mui/x-date-pickers"
 import styles from "./ScreenitDatePicker.module.scss"
 import {FormikErrors} from "formik"
 import {getBovengrensUitLijst, getOndergrensUitLijst, isWerkdag, lijstBevatMeegegevenDatum} from "../../utils/DateUtil"
-import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns"
+import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFnsV3"
 import {nl} from "date-fns/locale"
+import {PickerChangeHandlerContext} from "@mui/x-date-pickers/models"
 
 export type ScreenitDatePickerProps = {
 	className?: string,
@@ -36,7 +36,7 @@ export type ScreenitDatePickerProps = {
 	value?: Date | null,
 	beschikbareDagen?: Date[],
 	alleenWerkdagen?: boolean,
-	onChange: (date: Date | null, value: string | undefined | null) => void
+	onChange: (value: Date | null, context: PickerChangeHandlerContext<DateValidationError>) => void
 }
 
 const ScreenitDatePicker = (props: ScreenitDatePickerProps) => {
@@ -52,13 +52,12 @@ const ScreenitDatePicker = (props: ScreenitDatePickerProps) => {
 					<DatePicker
 						views={["day"]}
 						className={props.className}
-						inputFormat="dd-MM-yyyy"
+						format="dd-MM-yyyy"
 						label={props.label}
 						value={props.value}
 						onChange={props.onChange}
 						shouldDisableDate={(date) => shouldDisableDate(date, ondergrens, bovengrens, props.beschikbareDagen, props.alleenWerkdagen)}
-						renderInput={(params) => <TextField data-testid={"input_" + props.propertyName}
-															variant="standard" {...params}  />}
+						slotProps={{textField: {variant: "standard", inputProps: {"data-testid": "input_" + props.propertyName}}}}
 					/>
 
 				</LocalizationProvider>

@@ -193,11 +193,11 @@ public class ColonClientSelectieContext
 	public void init(List<Integer> uitnodigingsJaren, List<ProjectGroep> projectGroepen)
 	{
 		addProjectGroepTaken(projectGroepen);
-		taken.add(new VervolgrondeUitnodiging());
 		for (var cohortJaar : uitnodigingsJaren)
 		{
 			taken.add(new EersteRondeUitnodiging(cohortJaar));
 		}
+		taken.add(new VervolgrondeUitnodiging());
 		LOG.info("Taken: " + taken);
 	}
 
@@ -205,10 +205,10 @@ public class ColonClientSelectieContext
 	{
 		for (var groep : projectGroepen)
 		{
-			taken.add(new ProjectGroupUitnodiging(groep.getId(), ColonUitnodigingCategorie.U2));
-			LOG.info("Categorie: U2, Project {}/{} (groepId: '{}')", groep.getProject().getNaam(), groep.getNaam(), groep.getId());
 			taken.add(new ProjectGroupUitnodiging(groep.getId(), ColonUitnodigingCategorie.U1));
 			LOG.info("Categorie: U1, Project {}/{} (groepId: '{}')", groep.getProject().getNaam(), groep.getNaam(), groep.getId());
+			taken.add(new ProjectGroupUitnodiging(groep.getId(), ColonUitnodigingCategorie.U2));
+			LOG.info("Categorie: U2, Project {}/{} (groepId: '{}')", groep.getProject().getNaam(), groep.getNaam(), groep.getId());
 			exclusieGroepIds.add(groep.getId());
 		}
 	}

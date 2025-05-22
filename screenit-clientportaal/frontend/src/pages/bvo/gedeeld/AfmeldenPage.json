@@ -18,7 +18,7 @@
       "info": "U wilt of u kunt nooit meer meedoen aan het bevolkingsonderzoek. U krijgt geen nieuwe uitnodigingen meer."
     }
   },
-  "errorIntakeAfspraak": "Let op: Er is een afspraak voor u gepland voor een gesprek over vervolgonderzoek. </br>Meldt u zich nu af? Dan gaat dit gesprek niet door.",
+  "errorIntakeAfspraak": "Let op: Er is een afspraak voor u gepland voor een gesprek over vervolgonderzoek. <br>Meldt u zich nu af? Dan gaat dit gesprek niet door.",
   "form": {
     "title": {
       "afmeldType": {

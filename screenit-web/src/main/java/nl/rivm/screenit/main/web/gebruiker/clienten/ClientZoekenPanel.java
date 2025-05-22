@@ -248,11 +248,19 @@ public class ClientZoekenPanel extends Panel
 				@Override
 				public void onClick(AjaxRequestTarget target, IModel<Client> model)
 				{
-					for (Object[] menuItem : ClientPage.getClientDossierTabs(model.getObject()))
+					var client = model.getObject();
+					for (Object[] menuItem : ClientPage.getClientDossierTabs(client))
 					{
 						Class<ClientPage> targetPageClass = (Class<ClientPage>) menuItem[1];
 						if (Session.get().getAuthorizationStrategy().isInstantiationAuthorized(targetPageClass))
 						{
+
+							if (client.getPersoon().getGbaAdres() == null)
+							{
+								error(getString("error.client.hersteld.zonder.adres"));
+								return;
+							}
+
 							List<Object> params = new ArrayList<>();
 							params.add(model);
 							try
@@ -261,7 +269,7 @@ public class ClientZoekenPanel extends Panel
 							}
 							catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e)
 							{
-								LOG.error("Fout bij aanmaken van " + targetPageClass, e);
+								LOG.error("Fout bij aanmaken van {}", targetPageClass, e);
 							}
 							break;
 						}

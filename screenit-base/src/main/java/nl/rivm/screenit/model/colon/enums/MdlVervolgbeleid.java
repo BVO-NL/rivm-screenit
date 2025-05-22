@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.colon.enums;
 
 /*-
@@ -24,6 +23,9 @@ package nl.rivm.screenit.model.colon.enums;
 
 import java.util.Arrays;
 
+import lombok.Getter;
+
+@Getter
 public enum MdlVervolgbeleid
 {
 
@@ -59,16 +61,6 @@ public enum MdlVervolgbeleid
 		this.uitnodigingsintervalType = uitnodigingsintervalType;
 	}
 
-	public String getCode()
-	{
-		return code;
-	}
-
-	public String getCodeSystem()
-	{
-		return codeSystem;
-	}
-
 	public ColonUitnodigingsintervalType getUitnodigingsinterval()
 	{
 		return uitnodigingsintervalType;
@@ -78,4 +70,10 @@ public enum MdlVervolgbeleid
 	{
 		return Arrays.asList(DEFINITIEF_DEFINITIEF_VERVOLGBELEID).contains(beleid);
 	}
+
+	public static MdlVervolgbeleid fromCode(String code)
+	{
+		return Arrays.stream(values()).filter(vervolgBeleid -> vervolgBeleid.getCode().equals(code)).findFirst().orElse(null);
+	}
+
 }

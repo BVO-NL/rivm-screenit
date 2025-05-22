@@ -32,7 +32,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,8 +43,6 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.ClientContact;
-import nl.rivm.screenit.model.ClientContactActie;
 import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Gemeente_;
@@ -57,6 +54,7 @@ import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.repository.algemeen.GemeenteRepository;
 import nl.rivm.screenit.repository.algemeen.InstellingRepository;
 import nl.rivm.screenit.repository.cervix.BmhkLaboratoriumRepository;
+import nl.rivm.screenit.service.BaseClientContactService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.CoordinatenService;
 import nl.rivm.screenit.service.DossierFactory;
@@ -120,6 +118,9 @@ public class TestServiceImpl implements TestService
 
 	@Autowired
 	private BmhkLaboratoriumRepository bmhkLaboratoriumRepository;
+
+	@Autowired
+	private BaseClientContactService clientContactService;
 
 	private static String getValue2(String value)
 	{
@@ -579,14 +580,7 @@ public class TestServiceImpl implements TestService
 
 	@Override
 	@Transactional
-	public boolean verwijderClientContacten(Client client, Bevolkingsonderzoek... onderzoeken)
-	{
-		return verwijderClientContacten(client, Arrays.asList(onderzoeken));
-	}
-
-	@Override
-	@Transactional
-	public boolean verwijderClientContacten(Client client, boolean isDossierVerwijderdDK, boolean isDossierVerwijderdBMHK, boolean isDossierVerwijderdBK)
+	public void verwijderClientContacten(Client client, boolean isDossierVerwijderdDK, boolean isDossierVerwijderdBMHK, boolean isDossierVerwijderdBK)
 	{
 		var onderzoeken = new ArrayList<Bevolkingsonderzoek>();
 		if (isDossierVerwijderdBMHK)
@@ -601,91 +595,7 @@ public class TestServiceImpl implements TestService
 		{
 			onderzoeken.add(Bevolkingsonderzoek.MAMMA);
 		}
-		return verwijderClientContacten(client, onderzoeken);
-	}
-
-	@Override
-	@Transactional
-	public boolean verwijderClientContacten(Client client, List<Bevolkingsonderzoek> onderzoeken)
-	{
-
-		if (CollectionUtils.isNotEmpty(client.getContacten()))
-		{
-			var verwijderdeContactenLijst = new ArrayList<ClientContact>();
-			for (var contact : client.getContacten())
-			{
-				var clientContactMagWeg = true;
-				var verwijderenContactActieLijst = new ArrayList<ClientContactActie>();
-				for (var actie : contact.getActies())
-				{
-					if (onderzoeken.equals(actie.getType().getBevolkingsonderzoeken()))
-					{
-						hibernateService.delete(actie);
-						verwijderenContactActieLijst.add(actie);
-					}
-					else
-					{
-						clientContactMagWeg = false;
-					}
-				}
-				contact.getActies().removeAll(verwijderenContactActieLijst);
-				if (clientContactMagWeg)
-				{
-					hibernateService.delete(contact);
-					verwijderdeContactenLijst.add(contact);
-				}
-			}
-			client.getContacten().removeAll(verwijderdeContactenLijst);
-		}
-		return false;
-	}
-
-	@Override
-	@Transactional
-	public void projectenVerwijderen(Client client)
-	{
-		for (var pclient : client.getProjecten())
-		{
-			var projectBrieven = pclient.getBrieven();
-			projectBrieven.forEach(projectBrief ->
-			{
-				var clientBrief = projectBrief.getBrief();
-				if (clientBrief != null)
-				{
-					clientBrief.setProjectBrief(null);
-				}
-				var mergedBrieven = projectBrief.getMergedBrieven();
-				if (mergedBrieven != null)
-				{
-					mergedBrieven.getBrieven().remove(projectBrief);
-					hibernateService.saveOrUpdate(mergedBrieven);
-				}
-			});
-
-			var projectInactiveerDocument = pclient.getProjectInactiveerDocument();
-			if (projectInactiveerDocument != null)
-			{
-				var projectClienten = projectInactiveerDocument.getProjectClienten();
-				pclient.setProjectInactiveerDocument(null);
-				if (projectClienten.isEmpty())
-				{
-					hibernateService.delete(projectInactiveerDocument);
-					uploadDocumentService.delete(projectInactiveerDocument.getUploadDocument());
-				}
-				else
-				{
-					projectClienten.remove(pclient);
-					hibernateService.saveOrUpdate(projectInactiveerDocument);
-				}
-			}
-			hibernateService.deleteAll(projectBrieven);
-			var groep = pclient.getGroep();
-			groep.setPopulatie(groep.getPopulatie() - 1);
-			groep.getClienten().remove(pclient);
-			hibernateService.saveOrUpdateAll(groep);
-			hibernateService.delete(pclient);
-		}
-		hibernateService.saveOrUpdate(client);
+		clientContactService.verwijderClientContacten(client, onderzoeken);
 	}
 
 	@Override

@@ -21,22 +21,17 @@ package nl.rivm.screenit.config;
  * =========================LICENSE_END==================================
  */
 
-import java.net.URI;
-
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.commons.lang3.StringUtils;
+import nl.rivm.screenit.util.aws.SqsUtil;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
-import software.amazon.awssdk.services.sqs.SqsClientBuilder;
 
 @Slf4j
 @Configuration
@@ -50,27 +45,9 @@ public class SmsConfig
 
 	@Bean
 	@Scope("prototype")
-	SqsClient sqsClient()
+	SqsClient sqsClientSms()
 	{
-		SqsClientBuilder sqsClientBuilder = SqsClient.builder()
-			.region(Region.EU_WEST_1)
-			.credentialsProvider(StaticCredentialsProvider.create(getAwsBasicCredentials()));
-			if (StringUtils.isNotBlank(sqs.getEndpointOverride()))
-			{
-				sqsClientBuilder.endpointOverride(URI.create(sqs.getEndpointOverride()));
-			}
-		return sqsClientBuilder.build();
-	}
-
-	private AwsBasicCredentials getAwsBasicCredentials()
-	{
-		if (StringUtils.isNotBlank(sqs.getUsername()) && StringUtils.isNotBlank(sqs.getPassword()))
-		{
-			return AwsBasicCredentials.create(
-				sqs.getUsername(),
-				sqs.getPassword());
-		}
-		throw new IllegalStateException("Geen AWS credentials meegegeven");
+		return SqsUtil.sqsClient(sqs);
 	}
 
 	@Bean
@@ -80,8 +57,8 @@ public class SmsConfig
 	}
 
 	@Bean
-	String queueName()
+	String queueNameSms()
 	{
-		return sqs == null ? null : sqs.getQueueName();
+		return SqsUtil.queueName(sqs);
 	}
 }

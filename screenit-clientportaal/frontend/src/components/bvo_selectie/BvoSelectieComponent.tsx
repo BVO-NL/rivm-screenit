@@ -25,7 +25,7 @@ import {Bevolkingsonderzoek} from "../../datatypes/Bevolkingsonderzoek"
 import React from "react"
 import classNames from "classnames"
 import {useSelector} from "react-redux"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 import {selectBehoortTotCervixDoelgroep, selectBehoortTotColonDoelgroep, selectBehoortTotMammaDoelgroep} from "../../selectors/BvoSelectors"
 
 type BvoSelectieComponentProps = {

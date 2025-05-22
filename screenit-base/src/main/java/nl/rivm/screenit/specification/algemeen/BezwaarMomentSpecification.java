@@ -1,4 +1,4 @@
-package nl.rivm.screenit.dao;
+package nl.rivm.screenit.specification.algemeen;
 
 /*-
  * ========================LICENSE_START=================================
@@ -21,12 +21,18 @@ package nl.rivm.screenit.dao;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.UploadDocument;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-public interface UploadDocumentDao
+import nl.rivm.screenit.model.BezwaarMoment;
+import nl.rivm.screenit.model.BezwaarMoment_;
+import nl.rivm.screenit.specification.ExtendedSpecification;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class BezwaarMomentSpecification
 {
-
-	void saveOrUpdate(UploadDocument document);
-
-	void delete(UploadDocument document);
+	public static ExtendedSpecification<BezwaarMoment> heeftBezwaarBrief()
+	{
+		return (r, q, cb) -> cb.isNotNull(r.get(BezwaarMoment_.bezwaarBrief));
+	}
 }

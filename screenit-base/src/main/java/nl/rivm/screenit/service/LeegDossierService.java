@@ -1,4 +1,4 @@
-package nl.rivm.screenit.dao.impl;
+package nl.rivm.screenit.service;
 
 /*-
  * ========================LICENSE_START=================================
@@ -21,30 +21,7 @@ package nl.rivm.screenit.dao.impl;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.dao.UploadDocumentDao;
-import nl.rivm.screenit.model.UploadDocument;
-import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
-
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-@Repository
-@Transactional(propagation = Propagation.SUPPORTS)
-public class UploadDocumentDaoImpl extends AbstractAutowiredDao implements UploadDocumentDao
+public interface LeegDossierService
 {
-
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
-	public void saveOrUpdate(UploadDocument document)
-	{
-		getSession().saveOrUpdate(document);
-	}
-
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
-	public void delete(UploadDocument document)
-	{
-		getSession().delete(document);
-	}
+	void maakDossierLeeg(Long clientId);
 }

@@ -31,25 +31,25 @@ import ErrorToast from "./ErrorToast"
 import DefaultToast from "./DefaultToast"
 
 const ActiveToastsComponent = () => {
-    const toasts = useSelector((state: State) => state.toasts)
-    const dispatch = useDispatch()
-    const selectedBvo = useSelectedBvo()
+	const toasts = useSelector((state: State) => state.toasts)
+	const dispatch = useDispatch()
+	const selectedBvo = useSelectedBvo()
 
-    return (
-        <div
-            className={classNames(styles.overlay, toasts.length === 0 && styles.hidden, selectedBvo && BevolkingsonderzoekStyle[selectedBvo])}>
-            {toasts.map((toast, index) => {
-                switch (toast.type) {
-                    case ToastMessageType.ERROR:
-                        return <ErrorToast key={index} title={toast.title} description={toast.description} index={index}
-                                           clickClearButton={() => dispatch(createHideToastAction(index))}/>
-                    default:
-                        return <DefaultToast key={index} title={toast.title} description={toast.description} index={index}
-                                             clickClearButton={() => dispatch(createHideToastAction(index))}/>
-                }
-            })}
-        </div>
-    )
+	return (
+		<div
+			className={classNames(styles.overlay, toasts.length === 0 && styles.hidden, selectedBvo && BevolkingsonderzoekStyle[selectedBvo])}>
+			{toasts.map((toast, index) => {
+				switch (toast.type) {
+					case ToastMessageType.ERROR:
+						return <ErrorToast ariaLive="assertive" key={index} title={toast.title} description={toast.description} index={index}
+										   clickClearButton={() => dispatch(createHideToastAction(index))}/>
+					default:
+						return <DefaultToast ariaLive="polite" key={index} title={toast.title} description={toast.description} index={index}
+											 clickClearButton={() => dispatch(createHideToastAction(index))}/>
+				}
+			})}
+		</div>
+	)
 }
 
 export default ActiveToastsComponent

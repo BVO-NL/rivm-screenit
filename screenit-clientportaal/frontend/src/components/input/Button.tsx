@@ -24,31 +24,33 @@ import classNames from "classnames"
 import ArrowIconComponent, {ArrowType} from "../vectors/ArrowIconComponent"
 
 export type ButtonProps = {
-    className?: string
-    label: string,
-    disableButton?: boolean
-    displayArrow?: ArrowType,
-    arrowBeforeLabel?: boolean,
-    onClick: () => void,
-    lightStyle?: boolean
+	className?: string
+	label: string,
+	disableButton?: boolean
+	displayArrow?: ArrowType,
+	arrowBeforeLabel?: boolean,
+	onClick: () => void,
+	lightStyle?: boolean
+	testId?: string
 }
 
 const Button = (props: ButtonProps) => {
-    return (
-        <button
+	return (
+		<button
 			type={"submit"}
 			className={classNames(styles.style, props.className, props.lightStyle ? styles.light : styles.normal)}
 			onClick={(event) => {
 				event.preventDefault()
 				!props.disableButton && props.onClick()
-			}}>
+			}}
+		>
             <span>
                 {!props.arrowBeforeLabel && props.label}
 				{props.displayArrow && <ArrowIconComponent className={props.arrowBeforeLabel ? styles.icon_left : styles.icon_right} type={props.displayArrow}/>}
 				{props.arrowBeforeLabel && props.label}
             </span>
 		</button>
-    )
+	)
 
 }
 

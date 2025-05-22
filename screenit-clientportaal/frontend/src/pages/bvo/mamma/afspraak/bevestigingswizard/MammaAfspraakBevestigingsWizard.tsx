@@ -42,7 +42,7 @@ import {bevestigVorige} from "../../../../../api/HuisartsThunkAction"
 import {getBvoBaseUrl} from "../../../../../utils/UrlUtil"
 import {useThunkDispatch} from "../../../../../index"
 import {useSelectedBvo} from "../../../../../utils/Hooks"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 import {Bevolkingsonderzoek} from "../../../../../datatypes/Bevolkingsonderzoek"
 
 export type MammaAfspraakBevestigingsWizardProps = {

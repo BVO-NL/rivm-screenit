@@ -167,7 +167,7 @@ public class GbaPersoon extends SingleTableHibernateObject
 	@JoinTable(schema = "algemeen", name = "pat_persoon_adressen")
 	private List<Adres> adressen = new ArrayList<>();
 
-	@Column(length = 12, nullable = false)
+	@Column(length = 12)
 	private String bsn;
 
 	@Deprecated(forRemoval = true)
@@ -183,7 +183,7 @@ public class GbaPersoon extends SingleTableHibernateObject
 	@Column(length = MAX_EMAIL_LENGTH)
 	private String emailadres;
 
-	@Column(nullable = true)
+	@Column
 	@Temporal(TemporalType.DATE)
 	private Date geboortedatum;
 

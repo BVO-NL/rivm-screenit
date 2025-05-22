@@ -48,7 +48,6 @@ import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.enums.CervixAfmeldingReden;
 import nl.rivm.screenit.model.cervix.enums.CervixLabformulierStatus;
 import nl.rivm.screenit.model.cervix.enums.CervixUitstrijkjeStatus;
-import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.service.AsposeService;
 import nl.rivm.screenit.service.BaseAfmeldService;
@@ -280,7 +279,7 @@ public class CervixTestServiceImpl implements CervixTestService
 					continue;
 				}
 				clientReset(client);
-				testService.verwijderClientContacten(client, Bevolkingsonderzoek.CERVIX);
+				testService.verwijderClientContacten(client, false, true, false);
 				gevondenEnIsVerwijderd++;
 			}
 			catch (Exception e)
@@ -301,7 +300,7 @@ public class CervixTestServiceImpl implements CervixTestService
 		{
 			return;
 		}
-		cervixBaseDossierService.maakDossierLeeg(dossier);
+		cervixBaseDossierService.maakDossierLeeg(dossier, false);
 
 		baseDossierService.verwijderLaatsteAfmelding(dossier);
 

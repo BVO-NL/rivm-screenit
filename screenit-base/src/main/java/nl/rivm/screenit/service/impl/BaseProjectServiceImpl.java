@@ -57,6 +57,7 @@ import nl.rivm.screenit.service.BaseProjectService;
 import nl.rivm.screenit.service.ClientDoelgroepService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
+import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.specification.algemeen.ProjectBriefActieSpecification;
 import nl.rivm.screenit.specification.algemeen.ProjectGroepSpecification;
 import nl.rivm.screenit.util.AfmeldingUtil;
@@ -124,6 +125,9 @@ public class BaseProjectServiceImpl implements BaseProjectService
 
 	@Autowired
 	private ProjectGroepRepository projectGroepRepository;
+
+	@Autowired
+	private UploadDocumentService uploadDocumentService;
 
 	@Override
 	public List<Project> getProjecten(Project zoekObject, List<Long> instellingIdsProject, List<Long> instellingIdsBriefproject, long first, long count,
@@ -324,4 +328,52 @@ public class BaseProjectServiceImpl implements BaseProjectService
 		return projectClientRepository.findOneByProjectAndClient(project, client).orElse(null);
 	}
 
+	@Override
+	@Transactional
+	public void verwijderClientVanProjecten(Client client)
+	{
+		for (var pclient : client.getProjecten())
+		{
+			var projectBrieven = pclient.getBrieven();
+			projectBrieven.forEach(projectBrief ->
+			{
+				var clientBrief = projectBrief.getBrief();
+				if (clientBrief != null)
+				{
+					clientBrief.setProjectBrief(null);
+				}
+				var mergedBrieven = projectBrief.getMergedBrieven();
+				if (mergedBrieven != null)
+				{
+					mergedBrieven.getBrieven().remove(projectBrief);
+					hibernateService.save(mergedBrieven);
+				}
+			});
+
+			var projectInactiveerDocument = pclient.getProjectInactiveerDocument();
+			if (projectInactiveerDocument != null)
+			{
+				var projectClienten = projectInactiveerDocument.getProjectClienten();
+				pclient.setProjectInactiveerDocument(null);
+				if (projectClienten.isEmpty())
+				{
+					hibernateService.delete(projectInactiveerDocument);
+					uploadDocumentService.delete(projectInactiveerDocument.getUploadDocument());
+				}
+				else
+				{
+					projectClienten.remove(pclient);
+					hibernateService.save(projectInactiveerDocument);
+				}
+			}
+			hibernateService.deleteAll(projectBrieven);
+			var groep = pclient.getGroep();
+			groep.setPopulatie(groep.getPopulatie() - 1);
+			groep.getClienten().remove(pclient);
+			hibernateService.save(groep);
+			hibernateService.delete(pclient);
+		}
+		client.getProjecten().clear();
+		hibernateService.saveOrUpdate(client);
+	}
 }

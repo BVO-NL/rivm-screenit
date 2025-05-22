@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dto.alg.client.contact.DeelnamewensDto;
@@ -143,8 +145,6 @@ import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.hibernate.Hibernate;
 import org.hibernate.exception.GenericJDBCException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate5.HibernateJdbcException;
@@ -160,11 +160,10 @@ import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Component
+@Slf4j
 @Transactional
 public class ClientContactServiceImpl implements ClientContactService
 {
-	private static final Logger LOG = LoggerFactory.getLogger(ClientContactServiceImpl.class);
-
 	@Autowired
 	private HibernateService hibernateService;
 
@@ -529,7 +528,7 @@ public class ClientContactServiceImpl implements ClientContactService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void mammaAfspraakBevestigingMakenVanuitClientPortaal(Client client, Map<ExtraOpslaanKey, Object> extraOpslaanParams)
 	{
 		var afspraak = hibernateService.get(MammaAfspraak.class, (Long) extraOpslaanParams.get(ExtraOpslaanKey.MAMMA_NIEUWE_AFSPRAAK_ID));
@@ -874,7 +873,7 @@ public class ClientContactServiceImpl implements ClientContactService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void saveTijdelijkAdres(Account account, Client client, TijdelijkAdres tijdelijkAdres)
 	{
 		client.getPersoon().setTijdelijkAdres(tijdelijkAdres);
@@ -898,7 +897,7 @@ public class ClientContactServiceImpl implements ClientContactService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void saveAanhef(Account account, Client client, Aanhef aanhef)
 	{
 		var persoon = client.getPersoon();
@@ -1405,7 +1404,7 @@ public class ClientContactServiceImpl implements ClientContactService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public NieuweIfobtResultaat vraagNieuweIfobtAan(Client client, Account account)
 	{
 		var laatsteScreeningRonde = client.getColonDossier().getLaatsteScreeningRonde();
@@ -1695,7 +1694,7 @@ public class ClientContactServiceImpl implements ClientContactService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void updateContact(ClientContact contact, InstellingGebruiker loggedInInstellingGebruiker)
 	{
 		hibernateService.saveOrUpdate(contact);
@@ -1705,7 +1704,7 @@ public class ClientContactServiceImpl implements ClientContactService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void verwijderContact(ClientContact contact, InstellingGebruiker loggedInInstellingGebruiker)
 	{
 		var format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
@@ -1771,5 +1770,4 @@ public class ClientContactServiceImpl implements ClientContactService
 		}
 		return clientContactRepository.findAll(spec);
 	}
-
 }

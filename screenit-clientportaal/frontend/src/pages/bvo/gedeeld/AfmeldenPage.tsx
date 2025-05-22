@@ -40,7 +40,7 @@ import LadenComponent from "../../../components/laden/LadenComponent"
 import {AfmeldingDto} from "../../../datatypes/afmelden/AfmeldingDto"
 import {CervixAfmeldingReden} from "../../../datatypes/afmelden/CervixAfmeldingReden"
 import {getBvoBaseUrl} from "../../../utils/UrlUtil"
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router"
 import {showToast} from "../../../utils/ToastUtil"
 
 const AfmeldenPage = () => {
@@ -145,10 +145,7 @@ const AfmeldenPage = () => {
 									name="afmeldType"
 									onChange={formikProps.handleChange}
 									value={formikProps.values.afmeldType || ""}
-									onClick={() => {
-										selectedBvo === Bevolkingsonderzoek.COLON ? formikProps.setFieldValue("afmeldReden", null) :
-											formikProps.setFieldValue("afmeldReden", "")
-									}}>
+									onClick={() => formikProps.setFieldValue("afmeldReden", selectedBvo === Bevolkingsonderzoek.COLON ? null : "")}>
 									<ul>
 										{magEenmaligAfmelden && <li><FormControlLabel
 											value={AfmeldType.EENMALIG}

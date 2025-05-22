@@ -30,12 +30,14 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.exceptions.OpslaanVerwijderenTijdBlokException;
 
 import org.apache.wicket.Application;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -46,6 +48,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class GlobalExceptionHandler
 {
 	private final ObjectMapper objectMapper = new ObjectMapper();
+
+	@SpringBean(name = "applicationEnvironment")
+	private String applicationEnvironment;
 
 	@ExceptionHandler(ValidatieException.class)
 	public ResponseEntity<String> handleValidatieException(ValidatieException ex)
@@ -67,13 +72,13 @@ public class GlobalExceptionHandler
 		var node = objectMapper.createObjectNode();
 		node.set("messages", messagesArrayNode);
 		node.put("beperkingType", ex.getBeperkingType().toString());
-		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(objectMapper.writeValueAsString(node));
+		return ResponseEntity.unprocessableEntity().body(objectMapper.writeValueAsString(node));
 	}
 
 	@ExceptionHandler(BulkAanmakenException.class)
 	public ResponseEntity<String> handleBulkAanmakenException(BulkAanmakenException ex)
 	{
-		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(ex.toJson());
+		return ResponseEntity.unprocessableEntity().body(ex.toJson());
 	}
 
 	@ExceptionHandler(OpslaanVerwijderenTijdBlokException.class)
@@ -84,14 +89,14 @@ public class GlobalExceptionHandler
 		var node = objectMapper.createObjectNode();
 		node.put("message", message);
 		node.put("additionalInfo", ex.getAdditionalMessageInfo());
-		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(node.toString());
+		return ResponseEntity.unprocessableEntity().body(node.toString());
 	}
 
 	@ExceptionHandler(BulkVerwijderenException.class)
 	public ResponseEntity<String> handleBulkVerwijderenException(BulkVerwijderenException ex)
 	{
 		LOG.error(ex.getMessage());
-		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(ex.toJson());
+		return ResponseEntity.unprocessableEntity().body(ex.toJson());
 	}
 
 	@ExceptionHandler(IllegalStateException.class)
@@ -101,7 +106,22 @@ public class GlobalExceptionHandler
 		LOG.error(message);
 		var node = objectMapper.createObjectNode();
 		node.put("message", message);
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(node.toString());
+		return ResponseEntity.badRequest().body(node.toString());
+	}
+
+	@ExceptionHandler(NoResourceFoundException.class)
+	protected ResponseEntity<Object> handleNoResourceFoundException(NoResourceFoundException ex)
+	{
+
+		var message = ex.getBody().getDetail();
+		if (message != null && (applicationEnvironment.equalsIgnoreCase("development") && message.contains(".map") || message.contains("favicon.ico")))
+		{
+			return ResponseEntity.ok().build();
+		}
+		LOG.error(ex.getMessage());
+		var node = objectMapper.createObjectNode();
+		node.put("message", ex.getMessage());
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(node.toString());
 	}
 
 	@ExceptionHandler(Exception.class)

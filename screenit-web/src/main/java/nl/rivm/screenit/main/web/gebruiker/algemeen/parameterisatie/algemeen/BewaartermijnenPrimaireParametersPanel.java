@@ -48,6 +48,7 @@ public class BewaartermijnenPrimaireParametersPanel extends BasePrimaireParamete
 		form.add(new TextField<>("ilmBewaartermijnNietMedisch", Integer.class).add(RangeValidator.minimum(1825)).setRequired(true));
 		form.add(new TextField<>("ilmSignaleertermijnBeeldenStatus", Integer.class).add(RangeValidator.minimum(1)).setRequired(true));
 		form.add(new TextField<>("ilmBewaartermijnPalga", Integer.class).add(RangeValidator.minimum(1)).setRequired(true));
+		form.add(new TextField<>("leeftijdPersoonsgegevensUitExtraBeveiligdeOmgevingVerwijderen", Integer.class).add(RangeValidator.minimum(1)).setRequired(true));
 		return form;
 	}
 

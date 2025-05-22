@@ -22,17 +22,17 @@ import React from "react"
 import styles from "./BvoUrlComponent.module.scss"
 
 export type BvoUrlProperties = {
-    link: string
-    tekst: string;
+	link: string
+	tekst: string;
 }
 
 export const BvoUrlComponent = (props: BvoUrlProperties) => {
-    return (
-        <div className={styles.infoLinkContainer}>
-            <a href={props.link}>
-                <span>{props.tekst}</span>
-            </a>
-        </div>)
+	return (
+		<div className={styles.infoLinkContainer}>
+			<a href={props.link} target="_blank" rel="noopener noreferrer">
+				<span>{props.tekst}</span>
+			</a>
+		</div>)
 }
 
 export default BvoUrlComponent

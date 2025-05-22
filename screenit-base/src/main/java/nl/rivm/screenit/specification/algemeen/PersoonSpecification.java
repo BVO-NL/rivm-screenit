@@ -27,6 +27,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -37,9 +40,6 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 
 import com.google.common.collect.Range;
-
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
 
 import static nl.rivm.screenit.specification.DateSpecification.bevatLocalDateToDate;
 import static nl.rivm.screenit.specification.DateSpecification.extractYear;
@@ -168,5 +168,10 @@ public class PersoonSpecification
 	public static ExtendedSpecification<GbaPersoon> heeftGeslachtIn(Collection<Geslacht> geslachten)
 	{
 		return (r, q, cb) -> r.get(GbaPersoon_.geslacht).in(geslachten);
+	}
+
+	public static ExtendedSpecification<GbaPersoon> heeftGbaAdres()
+	{
+		return (r, q, cb) -> cb.isNotNull(r.get(GbaPersoon_.gbaAdres));
 	}
 }
