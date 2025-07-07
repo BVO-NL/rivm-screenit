@@ -39,6 +39,7 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.InlogMethode;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
+import nl.rivm.screenit.repository.algemeen.InstellingGebruikerRolRepository;
 import nl.rivm.screenit.security.Constraint;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -72,6 +73,9 @@ public class AutorisatieServiceImpl implements AutorisatieService
 
 	@Autowired
 	private ICurrentDateSupplier currentDateSupplier;
+
+	@Autowired
+	private InstellingGebruikerRolRepository organisatieMedewerkerRolRepository;
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
@@ -438,5 +442,14 @@ public class AutorisatieServiceImpl implements AutorisatieService
 			}
 		}
 		return rechten;
+	}
+
+	@Override
+	@Transactional
+	public void inactiveerRolKoppeling(InstellingGebruikerRol rolKoppeling)
+	{
+		rolKoppeling.setActief(false);
+		rolKoppeling.setEindDatum(currentDateSupplier.getDate());
+		organisatieMedewerkerRolRepository.save(rolKoppeling);
 	}
 }

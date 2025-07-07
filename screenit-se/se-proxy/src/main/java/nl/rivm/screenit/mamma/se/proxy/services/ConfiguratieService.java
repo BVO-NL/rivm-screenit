@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.se.proxy.services;
  * ========================LICENSE_START=================================
  * se-proxy
  * %%
- * Copyright (C) 2017 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,7 +31,7 @@ public interface ConfiguratieService
 
 	Integer getConfiguratieIntegerValue(SeConfiguratieKey key);
 
-	Boolean getConfiguratieBooleanValue(SeConfiguratieKey key);
+	Boolean getConfiguratieBooleanValue(SeConfiguratieKey key, boolean defaultValue);
 
 	void insertOrUpdateConfiguratieValue(SeConfiguratieKey key, String value);
 

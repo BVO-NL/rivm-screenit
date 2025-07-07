@@ -37,14 +37,10 @@ import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.enums.Level;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Getter
 @Setter
 @Table(schema = "gedeeld", uniqueConstraints = { @UniqueConstraint(name = "dashboardOrganisatie", columnNames = { "type", "organisatie" }) })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class DashboardStatus extends AbstractHibernateObject
 {
 	@Enumerated(EnumType.STRING)

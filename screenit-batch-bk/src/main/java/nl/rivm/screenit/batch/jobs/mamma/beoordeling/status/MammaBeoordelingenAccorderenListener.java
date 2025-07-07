@@ -72,7 +72,7 @@ public class MammaBeoordelingenAccorderenListener extends BaseLogListener
 	@Override
 	protected LogEvent eindLogging(JobExecution jobExecution)
 	{
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_BEOORDELINGEN_GEACCORDEERD, null, getResultLoggingString(jobExecution), Bevolkingsonderzoek.MAMMA);
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_BEOORDELINGEN_GEACCORDEERD, getResultLoggingString(jobExecution), Bevolkingsonderzoek.MAMMA);
 
 		return super.eindLogging(jobExecution);
 	}

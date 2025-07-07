@@ -56,8 +56,6 @@ import nl.rivm.screenit.model.mamma.enums.OnvolledigOnderzoekOption;
 import nl.rivm.screenit.model.mamma.enums.SuboptimaleInsteltechniek;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.FetchMode;
@@ -74,7 +72,6 @@ import org.hibernate.envers.Audited;
 	indexes = {
 		@Index(name = "idx_mamma_onderzoek_status", columnList = "status"),
 	})
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 @Audited
 @FetchProfile(
 	name = "kansberekening",

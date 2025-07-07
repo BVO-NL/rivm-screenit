@@ -31,8 +31,6 @@ import lombok.NoArgsConstructor;
 import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.Instelling_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
@@ -100,7 +98,7 @@ public class MammaFollowUpRadiologieVerslagSpecification
 			var laatsteOnderzoekJoin = join(rondeJoin, MammaScreeningRonde_.laatsteOnderzoek);
 			var laatsteBeoordelingJoin = join(laatsteOnderzoekJoin, MammaOnderzoek_.laatsteBeoordeling);
 
-			return cb.equal(laatsteBeoordelingJoin.get(AbstractHibernateObject_.id), dossierJoin.get(MammaDossier_.laatsteBeoordelingMetUitslag));
+			return cb.equal(laatsteBeoordelingJoin, dossierJoin.get(MammaDossier_.laatsteBeoordelingMetUitslag));
 		};
 	}
 
@@ -127,8 +125,8 @@ public class MammaFollowUpRadiologieVerslagSpecification
 			var parentJoin = join(organisatieJoin, Instelling_.parent, JoinType.LEFT);
 
 			return cb.or(
-				cb.equal(organisatieJoin.get(Instelling_.parent), screeningOrganisatie.getId()),
-				cb.equal(parentJoin.get(Instelling_.parent), screeningOrganisatie.getId())
+				cb.equal(organisatieJoin.get(Instelling_.parent).get(AbstractHibernateObject_.id), screeningOrganisatie.getId()),
+				cb.equal(parentJoin.get(Instelling_.parent).get(AbstractHibernateObject_.id), screeningOrganisatie.getId())
 			);
 		});
 
@@ -164,7 +162,7 @@ public class MammaFollowUpRadiologieVerslagSpecification
 
 			var subquery = q.subquery(Long.class);
 			var subRoot = subquery.from(MammaFollowUpVerslag.class);
-			subquery.select(subRoot.get(SingleTableHibernateObject_.id))
+			subquery.select(subRoot.get(AbstractHibernateObject_.id))
 				.where(cb.equal(subRoot.get(MammaVerslag_.status), VerslagStatus.AFGEROND),
 					cb.equal(subRoot.get(MammaVerslag_.screeningRonde), screeningRondeJoin),
 					cb.equal(subRoot.get(MammaVerslag_.type), VerslagType.MAMMA_PA_FOLLOW_UP));
@@ -201,7 +199,7 @@ public class MammaFollowUpRadiologieVerslagSpecification
 			var onderzoekJoin = join(beoordelingJoin, MammaBeoordeling_.onderzoek);
 			var afspraakJoin = join(onderzoekJoin, MammaOnderzoek_.afspraak);
 			var uitnodigingJoin = join(afspraakJoin, MammaAfspraak_.uitnodiging);
-			return cb.equal(uitnodigingJoin.get(MammaUitnodiging_.screeningRonde), screeningRondeJoin.get(TablePerClassHibernateObject_.id));
+			return cb.equal(uitnodigingJoin.get(MammaUitnodiging_.screeningRonde), screeningRondeJoin);
 		};
 
 	}

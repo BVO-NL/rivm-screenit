@@ -32,7 +32,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 import nl.rivm.screenit.model.Uitnodiging;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
@@ -40,10 +39,7 @@ import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import org.hibernate.envers.Audited;
 
 @Entity
-@Table(
-	schema = "mamma",
-	name = "uitnodiging",
-	uniqueConstraints = { @UniqueConstraint(columnNames = "brief"), @UniqueConstraint(columnNames = "laatste_afspraak") })
+@Table(schema = "mamma", name = "uitnodiging")
 @Audited
 public class MammaUitnodiging extends Uitnodiging<MammaScreeningRonde>
 {

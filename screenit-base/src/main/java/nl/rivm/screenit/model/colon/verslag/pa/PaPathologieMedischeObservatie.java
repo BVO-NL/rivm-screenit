@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.colon.verslag.pa;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -32,9 +31,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
-import nl.rivm.screenit.model.verslag.DSValue;
-import nl.rivm.screenit.model.verslag.DSValueSet;
-import nl.rivm.screenit.model.verslag.DSValueSetValue;
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.verslag.VraagElement;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
@@ -42,12 +41,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "colon")
+@Getter
+@Setter
 public class PaPathologieMedischeObservatie
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -55,88 +53,32 @@ public class PaPathologieMedischeObservatie
 
 	@Temporal(TemporalType.DATE)
 	@Column
-	@VraagElement(displayName = "Datum ontvangst materiaal", extraTekst = "Datum ontvangst materiaal", code = "2.16.840.1.113883.2.4.3.36.77.2.11.148", isVerplicht = true)
+	@VraagElement(conceptId = "148", displayName = "Datum ontvangst materiaal", xpaths = {
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent/hl7:effectiveTime/hl7:low|@value",
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent/hl7:effectiveTime/hl7:low|@value"
+	}, isVerplicht = true)
 	private Date datumOntvangstMateriaal;
 
 	@Column(length = 255)
-	@VraagElement(displayName = "T-nummer laboratorium", extraTekst = "T-nummer laboratorium", code = "2.16.840.1.113883.2.4.3.36.77.2.11.149", isVerplicht = true)
+	@VraagElement(conceptId = "149", displayName = "T-nummer laboratorium", xpaths = {
+		"/hl7:ClinicalDocument/hl7:setId|@extension",
+		"/hl7:ClinicalDocument/hl7:setId/@extension"
+	}, isVerplicht = true)
 	private String tnummerLaboratorium;
 
 	@Temporal(TemporalType.DATE)
 	@Column
-	@VraagElement(displayName = "Datum autorisatie uitslag", extraTekst = "Datum waarop uitslag is geautoriseerd (en doorgegeven aan MDL arts)", code = "2.16.840.1.113883.2.4.3.36.77.2.11.150", isVerplicht = true)
+	@VraagElement(conceptId = "150", displayName = "Datum autorisatie uitslag", xpaths = {
+		"/hl7:ClinicalDocument/hl7:effectiveTime|@value",
+		"/hl7:ClinicalDocument/hl7:effectiveTime|@value"
+	}, isVerplicht = true)
 	private Date datumAutorisatieUitslag;
 
 	@Column(length = 4096)
-	@VraagElement(displayName = "Versie protocol", extraTekst = "Versienummer van het gebruikte protocol m.b.v. de Palga protocolmodule", code = "2.16.840.1.113883.2.4.3.36.77.2.11.151", isVerplicht = true)
+	@VraagElement(conceptId = "151", displayName = "Versie protocol", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.212']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.430']]]/hl7:observation/hl7:value",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.212']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.430']]]/hl7:observation/hl7:value"
+	}, isVerplicht = true)
 	private String versieProtocol;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@DSValueSet(name = "vs_internextern", values = {
-		@DSValueSetValue(code = "260521003", codeSystem = "2.16.840.1.113883.6.96"),
-		@DSValueSetValue(code = "261074009", codeSystem = "2.16.840.1.113883.6.96")
-	})
-	@VraagElement(displayName = "Consult/revisie materiaal aangevraagd", extraTekst = "Of er (intern/extern) consult/revisie materiaal is opgevraagd uit een ander laboratorium", code = "2.16.840.1.113883.2.4.3.36.77.2.3.150010", useInFormulier = false)
-	private DSValue consultrevisieMateriaalAangevraagd;
-
-	public PaVerslagContent getVerslagContent()
-	{
-		return verslagContent;
-	}
-
-	public void setVerslagContent(PaVerslagContent verslagContent)
-	{
-		this.verslagContent = verslagContent;
-	}
-
-	public Date getDatumOntvangstMateriaal()
-	{
-		return datumOntvangstMateriaal;
-	}
-
-	public void setDatumOntvangstMateriaal(Date datumOntvangstMateriaal)
-	{
-		this.datumOntvangstMateriaal = datumOntvangstMateriaal;
-	}
-
-	public String getTnummerLaboratorium()
-	{
-		return tnummerLaboratorium;
-	}
-
-	public void setTnummerLaboratorium(String tnummerLaboratorium)
-	{
-		this.tnummerLaboratorium = tnummerLaboratorium;
-	}
-
-	public Date getDatumAutorisatieUitslag()
-	{
-		return datumAutorisatieUitslag;
-	}
-
-	public void setDatumAutorisatieUitslag(Date datumAutorisatieUitslag)
-	{
-		this.datumAutorisatieUitslag = datumAutorisatieUitslag;
-	}
-
-	public String getVersieProtocol()
-	{
-		return versieProtocol;
-	}
-
-	public void setVersieProtocol(String versieProtocol)
-	{
-		this.versieProtocol = versieProtocol;
-	}
-
-	public DSValue getConsultrevisieMateriaalAangevraagd()
-	{
-		return consultrevisieMateriaalAangevraagd;
-	}
-
-	public void setConsultrevisieMateriaalAangevraagd(DSValue consultrevisieMateriaalAangevraagd)
-	{
-		this.consultrevisieMateriaalAangevraagd = consultrevisieMateriaalAangevraagd;
-	}
 
 }

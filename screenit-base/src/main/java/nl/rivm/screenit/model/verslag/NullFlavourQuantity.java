@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.verslag;
 
 /*-
@@ -22,13 +21,19 @@ package nl.rivm.screenit.model.verslag;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serializable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
-@Embeddable
-public class NullFlavourQuantity extends Quantity
-{
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
+@Embeddable
+public class NullFlavourQuantity implements Serializable
+{
 	@Column
 	private Boolean nullFlavour;
 
@@ -37,39 +42,5 @@ public class NullFlavourQuantity extends Quantity
 
 	@Column
 	private String unit;
-
-	public Boolean getNullFlavour()
-	{
-		return nullFlavour;
-	}
-
-	public void setNullFlavour(Boolean nullFlavour)
-	{
-		this.nullFlavour = nullFlavour;
-	}
-
-	@Override
-	public String getValue()
-	{
-		return value;
-	}
-
-	@Override
-	public void setValue(String value)
-	{
-		this.value = value;
-	}
-
-	@Override
-	public String getUnit()
-	{
-		return unit;
-	}
-
-	@Override
-	public void setUnit(String unit)
-	{
-		this.unit = unit;
-	}
 
 }

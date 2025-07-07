@@ -25,7 +25,6 @@ import java.util.List;
 
 import nl.rivm.screenit.batch.service.CervixUitnodigingService;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.Uitnodiging_;
 import nl.rivm.screenit.model.cervix.enums.CervixMonsterType;
 import nl.rivm.screenit.repository.cervix.CervixUitnodigingRepository;
@@ -33,6 +32,7 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.specification.algemeen.InpakbareUitnodigingSpecification;
 import nl.rivm.screenit.specification.cervix.CervixUitnodigingSpecification;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -64,7 +64,7 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 
 		var maxAantalUitnodigingen = getMaxAantalZasUitnodigingen();
 		var query = uitnodigingRepository.findWith(specification, Long.class,
-			q -> q.projection((cb, r) -> r.get(TablePerClassHibernateObject_.id)));
+			q -> q.projection((cb, r) -> r.get(AbstractHibernateObject_.id)));
 		if (maxAantalUitnodigingen != null)
 		{
 			return query

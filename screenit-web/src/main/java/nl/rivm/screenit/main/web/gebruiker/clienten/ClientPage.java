@@ -32,7 +32,6 @@ import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.clienten.agenda.ClientAgendaPage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.cis.ClientCISHistoriePage;
-import nl.rivm.screenit.main.web.gebruiker.clienten.complicatie.ClientComplicatiePage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.ClientContactPage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.documenten.ClientDocumentenPage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.ClientDossierPage;
@@ -82,7 +81,6 @@ public abstract class ClientPage extends GebruikerBasePage
 			dossierTabs.add(new Object[] { "label.rondes", ClientDossierPage.class });
 			dossierTabs.add(new Object[] { "label.clientcontact", ClientContactPage.class });
 			dossierTabs.add(new Object[] { "label.clientverslagen", ClientVerslagenPage.class });
-			dossierTabs.add(new Object[] { "label.clientcomplicaties", ClientComplicatiePage.class });
 			dossierTabs.add(new Object[] { "label.clientdocumenten", ClientDocumentenPage.class });
 			dossierTabs.add(new Object[] { "label.clientprojecten", ClientProjectenPage.class });
 			dossierTabs.add(new Object[] { "label.cis-historie", ClientCISHistoriePage.class });

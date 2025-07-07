@@ -39,14 +39,10 @@ import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.PostcodeGebied;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Getter
 @Setter
 @Table(schema = "colon")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class UitnodigingsGebied extends AbstractHibernateObject
 {
 
@@ -67,6 +63,5 @@ public class UitnodigingsGebied extends AbstractHibernateObject
 	private Gemeente gemeente;
 
 	@OneToMany(mappedBy = "uitnodigingsGebied", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<ColoscopieCentrumColonCapaciteitVerdeling> verdeling = new ArrayList<>();
 }

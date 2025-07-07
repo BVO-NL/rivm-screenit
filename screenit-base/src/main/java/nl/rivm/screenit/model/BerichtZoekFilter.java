@@ -42,6 +42,8 @@ public class BerichtZoekFilter implements Serializable
 
 	private String text;
 
+	private String topdeskTicket;
+
 	public ScreeningOrganisatie getScreeningOrganisatie()
 	{
 		return null;

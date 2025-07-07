@@ -36,6 +36,7 @@ import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitListMultipleChoice;
+import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
 import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
@@ -58,7 +59,6 @@ import nl.rivm.screenit.util.ProjectUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
-import nl.topicuszorg.wicket.hibernate.markup.form.validation.UniqueFieldValidator;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.input.radiochoice.BooleanRadioChoice;
 import nl.topicuszorg.wicket.input.validator.DependantDateValidator;
@@ -142,7 +142,8 @@ public class ProjectEditPage extends AlgemeenPage
 		Form<Project> form = new Form<Project>("form", model);
 		add(form);
 
-		ComponentHelper.addTextField(form, "naam", true, 255, false).add(new UniqueFieldValidator(Project.class, project.getId(), "naam", hibernateService));
+		ComponentHelper.addTextField(form, "naam", true, 255, false)
+			.add(new ScreenitUniqueFieldValidator<>(Project.class, project.getId(), "naam", false));
 
 		ScreenitListMultipleChoice<Instelling> soDropDown = new ScreenitListMultipleChoice<Instelling>("screeningOrganisaties",
 			new SimpleListHibernateModel<>(organisatieZoekService.getAllActieveOrganisatiesWithType(ScreeningOrganisatie.class)), new ChoiceRenderer<Instelling>("naam"));
@@ -365,58 +366,58 @@ public class ProjectEditPage extends AlgemeenPage
 
 		ScreenitDropdown<InstellingGebruiker> contactPersoonDropDown = new ScreenitDropdown<InstellingGebruiker>("contactpersoon",
 			new SimpleListHibernateModel<>(lijstMetMogelijkeMedewerkers), new IChoiceRenderer<InstellingGebruiker>()
+		{
+			@Override
+			public Object getDisplayValue(InstellingGebruiker object)
 			{
-				@Override
-				public Object getDisplayValue(InstellingGebruiker object)
-				{
-					return object.getMedewerker().getNaamVolledig();
-				}
+				return object.getMedewerker().getNaamVolledig();
+			}
 
-				@Override
-				public String getIdValue(InstellingGebruiker object, int index)
-				{
-					return object.getId().toString();
-				}
+			@Override
+			public String getIdValue(InstellingGebruiker object, int index)
+			{
+				return object.getId().toString();
+			}
 
-				@Override
-				public InstellingGebruiker getObject(String id, IModel<? extends List<? extends InstellingGebruiker>> choices)
+			@Override
+			public InstellingGebruiker getObject(String id, IModel<? extends List<? extends InstellingGebruiker>> choices)
+			{
+				if (id != null)
 				{
-					if (id != null)
-					{
-						return choices.getObject().stream().filter(i -> i.getId().toString().equals(id)).findFirst().orElse(null);
-					}
-					return null;
+					return choices.getObject().stream().filter(i -> i.getId().toString().equals(id)).findFirst().orElse(null);
 				}
+				return null;
+			}
 
-			});
+		});
 		contactPersoonDropDown.setRequired(true);
 		medewerkersContainer.add(contactPersoonDropDown);
 		ScreenitListMultipleChoice<InstellingGebruiker> medewerkersMulti = new ScreenitListMultipleChoice<InstellingGebruiker>("medewerkers",
 			new SimpleListHibernateModel<>(lijstMetMogelijkeMedewerkers), new IChoiceRenderer<InstellingGebruiker>()
+		{
+			@Override
+			public Object getDisplayValue(InstellingGebruiker object)
 			{
-				@Override
-				public Object getDisplayValue(InstellingGebruiker object)
-				{
-					return object.getMedewerker().getNaamVolledig();
-				}
+				return object.getMedewerker().getNaamVolledig();
+			}
 
-				@Override
-				public String getIdValue(InstellingGebruiker object, int index)
-				{
-					return object.getId().toString();
-				}
+			@Override
+			public String getIdValue(InstellingGebruiker object, int index)
+			{
+				return object.getId().toString();
+			}
 
-				@Override
-				public InstellingGebruiker getObject(String id, IModel<? extends List<? extends InstellingGebruiker>> choices)
+			@Override
+			public InstellingGebruiker getObject(String id, IModel<? extends List<? extends InstellingGebruiker>> choices)
+			{
+				if (id != null)
 				{
-					if (id != null)
-					{
-						return choices.getObject().stream().filter(i -> i.getId().toString().equals(id)).findFirst().orElse(null);
-					}
-					return null;
+					return choices.getObject().stream().filter(i -> i.getId().toString().equals(id)).findFirst().orElse(null);
 				}
+				return null;
+			}
 
-			});
+		});
 		medewerkersContainer.add(medewerkersMulti);
 
 		return medewerkersContainer;

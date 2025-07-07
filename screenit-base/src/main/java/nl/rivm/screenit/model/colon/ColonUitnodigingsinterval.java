@@ -39,14 +39,11 @@ import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
 import nl.rivm.screenit.model.enums.IntervalEenheidAanduiding;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
 @Entity
 @Table(schema = "colon", name = "uitnodigingsinterval", uniqueConstraints = { @UniqueConstraint(columnNames = "type") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Audited
 @Getter
 @Setter

@@ -40,6 +40,7 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitListMultipleChoice;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.modal.DefaultConfirmCallback;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
+import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
 import nl.rivm.screenit.main.web.gebruiker.gedeeld.formulieren.FormulierIndicatingAjaxSubmitLink;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.mappers.RolMapper;
@@ -54,8 +55,6 @@ import nl.rivm.screenit.model.helper.INaamComparator;
 import nl.rivm.screenit.model.helper.PermissieComparator;
 import nl.rivm.screenit.security.IScreenitRealm;
 import nl.rivm.screenit.service.AutorisatieService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.wicket.hibernate.markup.form.validation.UniqueFieldValidator;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -84,6 +83,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.visit.IVisitor;
@@ -97,9 +97,6 @@ public class RolEditPanel extends GenericPanel<Rol>
 
 	@SpringBean
 	private RolService rolService;
-
-	@SpringBean
-	private HibernateService hibernateService;
 
 	@SpringBean
 	private AutorisatieService autorisatieService;
@@ -171,7 +168,7 @@ public class RolEditPanel extends GenericPanel<Rol>
 		Map<String, Object> restrictions = new HashMap<>();
 		restrictions.put("actief", Boolean.TRUE);
 		textField.setEnabled(magAanpassen);
-		textField.add(new UniqueFieldValidator<>(Rol.class, rol.getId(), "naam", hibernateService, restrictions));
+		textField.add(new ScreenitUniqueFieldValidator<>(Rol.class, rol.getId(), "naam", restrictions));
 	}
 
 	private ListView<Permissie> getPermissieListView()
@@ -367,12 +364,23 @@ public class RolEditPanel extends GenericPanel<Rol>
 		opslaan.setVisible(magAanpassen);
 		rolForm.add(opslaan);
 
-		AjaxLink<Rol> inActiveren = new ConfirmingIndicatingAjaxLink<>("inActiveren", dialog, "question.remove.rol")
+		var inActiveren = new ConfirmingIndicatingAjaxLink<>("inActiveren", dialog, "question.remove.rol")
 		{
+			@Override
+			protected IModel<String> getContentStringModel()
+			{
+				var medewerkersMetRol = medewerkerService.getOrganisatieMedewerkersMetRol(RolEditPanel.this.getModelObject());
+				if (!medewerkersMetRol.isEmpty())
+				{
+					return new StringResourceModel("question.remove.rol.content").setParameters(medewerkersMetRol.size());
+				}
+				return Model.of("");
+			}
+
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				rolService.setRechtActiefOfInactief(RolEditPanel.this.getModelObject(), ScreenitSession.get().getLoggedInAccount());
+				rolService.setRolActiefOfInactief(RolEditPanel.this.getModelObject(), ScreenitSession.get().getLoggedInAccount());
 				setResponsePage(RollenBeheer.class);
 			}
 

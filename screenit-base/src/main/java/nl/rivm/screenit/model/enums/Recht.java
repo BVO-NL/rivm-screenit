@@ -334,8 +334,6 @@ public enum Recht implements INaam
 
 	GEBRUIKER_CLIENT_CONTACT("Registreren cli\u00EBnt contact", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA }),
 
-	GEBRUIKER_CLIENT_COMPLICATIE_REGISTREREN("Registreren complicaties", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }),
-
 	GEBRUIKER_CLIENT_BEZWAAR("Bezwaar cli\u00EBnt", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA }),
 
 	GEBRUIKER_CLIENT_DEELNAMEWENS_REGISTREREN(

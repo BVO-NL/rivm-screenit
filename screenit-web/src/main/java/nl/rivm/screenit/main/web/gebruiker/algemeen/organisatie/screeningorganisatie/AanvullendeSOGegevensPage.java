@@ -33,6 +33,7 @@ import nl.rivm.screenit.main.web.component.PercentageIntegerField;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.pingpong.PingPongInput;
 import nl.rivm.screenit.main.web.component.validator.ScreenITIBANValidator;
+import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieBeheer;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatiePaspoortPanel;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieZoeken;
@@ -57,7 +58,6 @@ import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.organisatie.model.Adres;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
-import nl.topicuszorg.wicket.hibernate.markup.form.validation.UniqueFieldValidator;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -144,7 +144,7 @@ public class AanvullendeSOGegevensPage extends OrganisatieBeheer
 		form.add(percentageIntegerField);
 
 		ComponentHelper.addTextField(form, "regioCode", true, 2, String.class, inzien).setOutputMarkupId(true).add(StringValidator.exactLength(2))
-			.add(new UniqueFieldValidator<>(ScreeningOrganisatie.class, instelling.getId(), "regioCode", hibernateService));
+			.add(new ScreenitUniqueFieldValidator<>(ScreeningOrganisatie.class, instelling.getId(), "regioCode", false));
 		ComponentHelper.addTextField(form, "rechtbank", false, 255, String.class, inzien);
 		ComponentHelper.addTextField(form, "rcmdl", false, 255, String.class, inzien);
 		form.add(new TextArea<String>("vertegenwoordiger").add(StringValidator.maximumLength(512)).setEnabled(!inzien));

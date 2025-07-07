@@ -21,8 +21,6 @@ package nl.rivm.screenit.model.verwerkingverslag.cervix;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -33,18 +31,10 @@ import jakarta.persistence.Table;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(schema = "cervix", name = "herinneren_rapportage_brief_type")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class CervixHerinnerenRapportageBriefType extends AbstractHibernateObject
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@ManyToOne(optional = false)
 	private CervixHerinnerenRapportage rapportage;
 

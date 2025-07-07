@@ -28,10 +28,10 @@ import jakarta.persistence.criteria.JoinType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.cervix.CervixHuisartsBericht;
 import nl.rivm.screenit.model.cervix.CervixHuisartsBericht_;
 import nl.rivm.screenit.model.cervix.enums.CervixHuisartsBerichtStatus;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -65,7 +65,7 @@ public class CervixHuisartsBerichtSpecification
 		return (r, q, cb) ->
 		{
 			var uitstrijkjeJoin = join(r, CervixHuisartsBericht_.uitstrijkje, JoinType.LEFT);
-			return cb.isNull(uitstrijkjeJoin.get(SingleTableHibernateObject_.id));
+			return cb.isNull(uitstrijkjeJoin.get(AbstractHibernateObject_.id));
 		};
 	}
 }

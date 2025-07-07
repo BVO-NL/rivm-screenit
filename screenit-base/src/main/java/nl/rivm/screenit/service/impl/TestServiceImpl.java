@@ -48,7 +48,6 @@ import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Gemeente_;
 import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.repository.algemeen.GemeenteRepository;
@@ -601,7 +600,7 @@ public class TestServiceImpl implements TestService
 	@Override
 	public BMHKLaboratorium getEersteBMHKLaboratorium()
 	{
-		return bmhkLaboratoriumRepository.findFirst(null, Sort.by(SingleTableHibernateObject_.ID)).orElse(null);
+		return bmhkLaboratoriumRepository.findFirst(null, Sort.by(AbstractHibernateObject_.ID)).orElse(null);
 	}
 
 	@Override

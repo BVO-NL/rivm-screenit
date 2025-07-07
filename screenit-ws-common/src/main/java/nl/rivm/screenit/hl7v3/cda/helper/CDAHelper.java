@@ -233,7 +233,7 @@ public class CDAHelper
 		var values = new ArrayList<T>();
 		if (root != null && path != null && !path.trim().isEmpty())
 		{
-			getValueFromChild(root, new ArrayList<String>(Arrays.asList(path.split(":"))), values);
+			getValueFromChild(root, new ArrayList<>(Arrays.asList(path.split(":"))), values);
 		}
 		return values;
 	}
@@ -244,46 +244,19 @@ public class CDAHelper
 		String element = pathElements.get(0);
 		try
 		{
-			String oid = null;
+
 			if (element.contains("["))
 			{
-				oid = element.substring(element.indexOf('[') + 1, element.indexOf(']'));
+				String oid = element.substring(element.indexOf('[') + 1, element.indexOf(']'));
 				element = element.substring(0, element.indexOf('['));
+				for (String splittedOid : oid.split("\\|"))
+				{
+					getValuesFromProperty(bean, new ArrayList<>(pathElements), values, element, splittedOid);
+				}
 			}
-			Object simpleProperty = PropertyUtils.getSimpleProperty(bean, element);
-			if (simpleProperty != null)
+			else
 			{
-				if (pathElements.size() == 1)
-				{
-					if (simpleProperty instanceof List)
-					{
-						values.addAll((List<T>) simpleProperty);
-					}
-					else
-					{
-						values.add((T) simpleProperty);
-					}
-				}
-				else
-				{
-					pathElements.remove(0);
-
-					if (simpleProperty instanceof List list)
-					{
-						for (Object simplePropertyElement : list)
-						{
-							if (hasTemplateId(simplePropertyElement, oid))
-							{
-								getValueFromChild(simplePropertyElement, new ArrayList<>(pathElements), values);
-							}
-						}
-					}
-					else if (hasTemplateId(simpleProperty, oid))
-					{
-						getValueFromChild(simpleProperty, new ArrayList<>(pathElements), values);
-					}
-
-				}
+				getValuesFromProperty(bean, pathElements, values, element, null);
 			}
 		}
 		catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | StringIndexOutOfBoundsException e)
@@ -292,11 +265,51 @@ public class CDAHelper
 		}
 	}
 
+	private static <T> void getValuesFromProperty(Object bean, List<String> pathElements, List<T> values, String element, String oid)
+		throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
+	{
+		Object simpleProperty = PropertyUtils.getSimpleProperty(bean, element);
+		if (simpleProperty != null)
+		{
+			if (pathElements.size() == 1)
+			{
+				if (simpleProperty instanceof List)
+				{
+					values.addAll((List<T>) simpleProperty);
+				}
+				else
+				{
+					values.add((T) simpleProperty);
+				}
+			}
+			else
+			{
+				pathElements.remove(0);
+
+				if (simpleProperty instanceof List list)
+				{
+					for (Object simplePropertyElement : list)
+					{
+						if (hasTemplateId(simplePropertyElement, oid))
+						{
+							getValueFromChild(simplePropertyElement, new ArrayList<>(pathElements), values);
+						}
+					}
+				}
+				else if (hasTemplateId(simpleProperty, oid))
+				{
+					getValueFromChild(simpleProperty, new ArrayList<>(pathElements), values);
+				}
+
+			}
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	private static <T> boolean hasTemplateId(T simpleProperty, String oid)
 	{
 		boolean hasTemplateId = true;
-		if (oid != null && oid.trim().length() > 0)
+		if (oid != null && !oid.trim().isEmpty())
 		{
 			try
 			{

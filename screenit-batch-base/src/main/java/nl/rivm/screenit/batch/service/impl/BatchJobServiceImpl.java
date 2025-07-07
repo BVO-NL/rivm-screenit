@@ -23,7 +23,6 @@ package nl.rivm.screenit.batch.service.impl;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -197,7 +196,7 @@ public class BatchJobServiceImpl implements BatchJobService
 			Long id = null;
 			if (ids != null && !ids.isEmpty() && ids.get(0) != null)
 			{
-				id = ((BigInteger) ids.get(0)).longValue();
+				id = ((Long) ids.get(0)).longValue();
 			}
 
 			if (id != null)

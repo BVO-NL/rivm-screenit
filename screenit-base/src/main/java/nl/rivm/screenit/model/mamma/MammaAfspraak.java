@@ -36,14 +36,12 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
-import jakarta.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.enums.SmsStatus;
-import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaIdentificatiesoort;
 import nl.rivm.screenit.model.mamma.enums.MammaVerzettenReden;
@@ -51,8 +49,6 @@ import nl.rivm.screenit.util.DiffSpecs;
 import nl.rivm.screenit.util.SkipFieldForDiff;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
 import org.hibernate.envers.Audited;
@@ -64,14 +60,10 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 @Table(
 	schema = "mamma",
 	name = "afspraak",
-	uniqueConstraints = {
-		@UniqueConstraint(columnNames = "onderzoek"),
-		@UniqueConstraint(columnNames = "afspraak_event") },
 	indexes = {
 		@Index(name = "idx_mamma_afspraak_vanaf", columnList = "vanaf"),
 		@Index(name = "idx_mamma_afspraak_status", columnList = "status")
 	})
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 @Audited
 @FetchProfile(
 	name = "kansberekening",
@@ -121,7 +113,7 @@ public class MammaAfspraak extends AbstractHibernateObject
 	@DiffSpecs(displayProperty = "standplaatsRonde.standplaats.naam")
 	private MammaStandplaatsPeriode standplaatsPeriode;
 
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	private MammaOnderzoek onderzoek;
 
 	@Column(nullable = false)
@@ -138,7 +130,7 @@ public class MammaAfspraak extends AbstractHibernateObject
 	@SkipFieldForDiff
 	private MammaIdentificatiesoort identificatiesoort;
 
-	@Column(length = HibernateMagicNumber.L255)
+	@Column
 	@SkipFieldForDiff
 	private String identificatienummer;
 
@@ -146,17 +138,17 @@ public class MammaAfspraak extends AbstractHibernateObject
 	@SkipFieldForDiff
 	private BigDecimal benodigdeCapaciteit;
 
-	@Column(nullable = true)
+	@Column
 	@Temporal(TemporalType.TIMESTAMP)
 	@SkipFieldForDiff
 	private Date afgezegdOp;
 
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	@Audited(targetAuditMode = NOT_AUDITED)
 	@SkipFieldForDiff
 	private MammaKansberekeningAfspraakEvent afspraakEvent;
 
-	@Column(nullable = true, length = 6)
+	@Column(length = 6)
 	@SkipFieldForDiff
 	private String postcode;
 

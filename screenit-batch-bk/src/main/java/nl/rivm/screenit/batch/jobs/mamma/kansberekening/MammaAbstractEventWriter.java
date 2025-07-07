@@ -25,6 +25,9 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.function.Consumer;
 
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.FlushModeType;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.repository.impl.FluentJpaQueryImpl;
@@ -37,9 +40,6 @@ import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import jakarta.persistence.EntityGraph;
-import jakarta.persistence.FlushModeType;
 
 import static nl.rivm.screenit.specification.HibernateObjectSpecification.heeftIdIn;
 
@@ -86,7 +86,8 @@ public abstract class MammaAbstractEventWriter<T extends HibernateObject> implem
 
 		var jpaQuery = new FluentJpaQueryImpl<>(heeftIdIn(ids), session, entityClass, entityClass);
 
-		jpaQuery.fetch(getEntityGraphFunction())
+		jpaQuery
+			.fetch(getEntityGraphFunction(), 6)
 			.all()
 			.forEach(this::write);
 	}

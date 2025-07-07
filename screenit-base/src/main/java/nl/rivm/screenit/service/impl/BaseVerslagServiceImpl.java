@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +35,6 @@ import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht_;
@@ -73,16 +71,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import static nl.rivm.screenit.specification.HibernateObjectSpecification.heeftNietId;
 import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftCode;
 import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftCodeSystem;
-import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftDatumOnderzoek;
 import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftScreeningRondeInMdlVerslag;
 import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftScreeningRondeInPaVerslag;
 import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftTNummerIn;
 import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftTNummerInPaVerslag;
 import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftValueSetName;
-import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftVerslagStatus;
 
 @Service
 @Slf4j
@@ -303,7 +298,7 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 	{
 		var spec = heeftScreeningRondeInMdlVerslag(verslagContent.getVerslag().getScreeningRonde()).and(
 			heeftTNummerInPaVerslag(verslagContent.getPathologieMedischeObservatie().getTnummerLaboratorium()));
-		return mdlVerslagRepository.findFirst(spec, Sort.by(SingleTableHibernateObject_.ID)).orElse(null);
+		return mdlVerslagRepository.findFirst(spec, Sort.by(AbstractHibernateObject_.ID)).orElse(null);
 	}
 
 	@Override
@@ -333,20 +328,6 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 	{
 		var spec = heeftCode(code, ignoreCase).and(heeftCodeSystem(codeSystem)).and(heeftValueSetName(valueSetName));
 		return dsValueRepository.findFirst(spec, Sort.by(AbstractHibernateObject_.ID)).orElse(null);
-	}
-
-	@Override
-	public boolean heeftMdlVerslagenMetOnderzoekDatum(MdlVerslag verslag, Date onderzoekDatum)
-	{
-		var specification = heeftScreeningRondeInMdlVerslag(verslag.getScreeningRonde()).and(heeftVerslagStatus(VerslagStatus.AFGEROND)).and(
-			heeftDatumOnderzoek(onderzoekDatum));
-
-		if (verslag.getId() != null)
-		{
-			specification = specification.and(heeftNietId(verslag.getId()));
-		}
-		return mdlVerslagRepository.exists(specification);
-
 	}
 
 	@Override

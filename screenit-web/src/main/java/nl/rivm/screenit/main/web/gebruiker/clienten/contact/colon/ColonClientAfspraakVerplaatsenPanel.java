@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.contact.colon;
  */
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -168,7 +167,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 		gekozenVrijSlotZonderKamer = new VrijSlotZonderKamer();
 		if (!locatieWijzigen || ColonAfspraakStatus.GEANNULEERD_AFMELDEN.equals(getModelObject().getStatus()))
 		{
-			gekozenVrijSlotZonderKamer.setIntakelocatieId(BigInteger.valueOf(getModelObject().getKamer().getIntakelocatie().getId()));
+			gekozenVrijSlotZonderKamer.setIntakelocatieId(getModelObject().getKamer().getIntakelocatie().getId());
 		}
 
 		nieuweAfspraakContainer = new WebMarkupContainer("nieuweAfspraak");

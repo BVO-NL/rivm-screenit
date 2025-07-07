@@ -109,8 +109,6 @@ public class Constants
 
 	private static final ThreadLocalDateFormat DATE_TIME_SECONDS_FORMAT = new ThreadLocalDateFormat(DEFAULT_DATE_TIME_SECONDS_FORMAT);
 
-	public static final String VRAAG_INCIDENT_COMPLICATIE_JA_NEE = "incident_complicatie_ja_nee";
-
 	public static final String VRAAG_LAESIE_JA_NEE = "laesie_ja_nee_vraag";
 
 	public static final String VRAAG_DATUM_VERRICHTING = "datum_verrichting_vraag";
@@ -144,8 +142,6 @@ public class Constants
 	private static Map<Boolean, String> booleanWeergave;
 
 	public static final BigDecimal BK_MAXIMALE_TUMOR_GROOTTE = BigDecimal.valueOf(99.9);
-
-	public static final String CDA_NULL_FLAVOR_VALUESET_NAME = "vs_null_flavor";
 
 	public static final String HTTP_HEADER_X_CLIENT_CERT = "X-CLIENT-CERT";
 

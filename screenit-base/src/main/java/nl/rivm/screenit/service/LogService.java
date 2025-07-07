@@ -44,6 +44,8 @@ public interface LogService
 {
 	void createAndSaveLogInformatie(InstellingGebruiker ingelogd, LogGebeurtenis gebeurtenis, String omschrijving);
 
+	void logGebeurtenis(LogGebeurtenis gebeurtenis, String melding, Bevolkingsonderzoek... bevolkingsonderzoeken);
+
 	void logGebeurtenis(LogGebeurtenis gebeurtenis, Account account, Bevolkingsonderzoek... bevolkingsonderzoeken);
 
 	void logGebeurtenis(LogGebeurtenis gebeurtenis, Account account, String melding, Bevolkingsonderzoek... bevolkingsonderzoeken);

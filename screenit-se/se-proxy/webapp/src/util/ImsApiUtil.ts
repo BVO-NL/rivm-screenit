@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * se-proxy
  * %%
- * Copyright (C) 2017 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,8 +20,9 @@
  */
 import {createEmptyStudyIms, createLogoffIms, createLogonIms, createStudyIms} from "./ImsFactory"
 import {store} from "../Store"
-import {createActionSetStudyForIms} from "../actions/ImsActions"
+import {createActionClearStudyForIms, createActionSetStudyForIms} from "../actions/ImsActions"
 import {createActionPutIMSConnectieStatus} from "../actions/ConnectieStatusActions"
+import {fetchApiPromise} from "./ApiUtil"
 
 const url = "https:
 
@@ -31,43 +32,70 @@ const getStandardHeaders = (): Headers => {
 	return headers
 }
 
-export const setStudyForIms = (uitnodigingsNr?: number): void => {
+const setStudyForIms = (uitnodigingsNr: number): void => {
 	store.dispatch(createActionSetStudyForIms(uitnodigingsNr))
 }
 
-export const sendStudyMessageToIMS = (uitnodigingsNr: number, bsn: string, username: string): void => {
+const clearStudyForIms = (): void => {
+	store.dispatch(createActionClearStudyForIms())
+}
+
+export const sendStudyMessageToIMS = async (uitnodigingsNr: number, bsn: string, username: string): Promise<void> => {
 	console.log("Study openen naar IMS")
 	setStudyForIms(uitnodigingsNr)
-	fetchIMS(createStudyIms(uitnodigingsNr, bsn, username))
+
+	try {
+		const response = await fetchApiPromise("POST", "ims/launchUrl/desktopSync", createLaunchUrlContext(username, bsn, uitnodigingsNr))
+		const launchUrl = await response.text()
+		return fetchIMS(createStudyIms(uitnodigingsNr, bsn, username, launchUrl))
+	} catch {
+		console.error("Fout bij ophalen desktopSync launchUrl van proxy")
+	}
 }
 
-export const sendEmptyStudyMessageToIMS = (username: string): void => {
-	console.log("Empty study naar IMS")
-	setStudyForIms(undefined)
-	fetchIMS(createEmptyStudyIms(username))
-}
-
-export const logonToIMS = (username: string): void => {
-	console.log("Inloggen naar IMS")
-	setStudyForIms(undefined)
-	fetchIMS(createLogonIms(username))
-}
-
-export const logoffToIMS = (username: string): void => {
-	console.log("Uitloggen naar IMS")
-	setStudyForIms(undefined)
-	fetchIMS(createLogoffIms(username))
-}
-
-const fetchIMS = (imsAction: any): void => {
-	fetch(url, {
-		method: "PUT",
-		mode: "cors",
-		headers: getStandardHeaders(),
-		body: JSON.stringify(imsAction),
-	}).then(() => {
-		store.dispatch(createActionPutIMSConnectieStatus("OK"))
-	}).catch(() => {
-		store.dispatch(createActionPutIMSConnectieStatus("FAULT"))
+const createLaunchUrlContext = (username: string, bsn?: string, uitnodigingsNr?: number): string => {
+	return JSON.stringify({
+		gebruikersnaam: username,
+		bsn: bsn,
+		uitnodigingsNr: uitnodigingsNr,
 	})
+}
+
+export const sendEmptyStudyMessageToIMS = async (username: string): Promise<void> => {
+	console.log("Empty study naar IMS")
+	clearStudyForIms()
+	return fetchIMS(createEmptyStudyIms(username))
+}
+
+export const logonToIMS = async (username: string): Promise<void> => {
+	console.log("Inloggen naar IMS")
+	clearStudyForIms()
+
+	try {
+		const response = await fetchApiPromise("POST", "ims/launchUrl/login", createLaunchUrlContext(username))
+		const launchUrl = await response.text()
+		return fetchIMS(createLogonIms(username, launchUrl))
+	} catch {
+		console.error("Fout bij ophalen logon launchUrl van proxy")
+	}
+}
+
+export const logoffToIMS = async (username: string): Promise<void> => {
+	console.log("Uitloggen naar IMS")
+	clearStudyForIms()
+	return fetchIMS(createLogoffIms(username))
+}
+
+const fetchIMS = async (imsAction: any): Promise<void> => {
+	try {
+		await fetch(url, {
+			method: "PUT",
+			mode: "cors",
+			headers: getStandardHeaders(),
+			body: JSON.stringify(imsAction),
+		})
+		store.dispatch(createActionPutIMSConnectieStatus("OK"))
+	} catch {
+		store.dispatch(createActionPutIMSConnectieStatus("FAULT"))
+	}
 }

@@ -45,14 +45,11 @@ import nl.rivm.screenit.model.gba.GbaStamtabel;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
 @Entity
 @Table(schema = "algemeen", indexes = @Index(columnList = "code", name = "IDX_GEMEENTE_CODE", unique = true))
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Audited
 @Getter
 @Setter
@@ -72,7 +69,6 @@ public class Gemeente extends AbstractHibernateObject implements GbaStamtabel, I
 	private Date eindDatum;
 
 	@OneToMany(mappedBy = "gemeente", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@NotAudited
 	private List<UitnodigingsGebied> uitnodigingsGebieden = new ArrayList<>();
 

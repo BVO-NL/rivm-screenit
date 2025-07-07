@@ -21,34 +21,26 @@ package nl.rivm.screenit.model.mamma;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 import nl.rivm.screenit.model.mamma.verslag.MammaVerslag;
 import nl.rivm.screenit.model.mamma.verslag.followup.MammaFollowUpVerslagContent;
 
 import org.hibernate.annotations.Proxy;
 import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 @Entity
-@Proxy(lazy = true)
-@Table(
-	uniqueConstraints = { @UniqueConstraint(columnNames = "verslagContent") })
+@Proxy
 @Audited
 public class MammaFollowUpVerslag extends MammaVerslag<MammaFollowUpVerslagContent>
 {
-	@Serial
-	private static final long serialVersionUID = 1L;
 
 	@OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@NotAudited
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	private MammaFollowUpVerslagContent verslagContent;
 
 	@Override

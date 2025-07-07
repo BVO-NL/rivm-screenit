@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakDto;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakReserveringDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakReserveringView;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaCapaciteitBlokDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
 import nl.rivm.screenit.model.Client;
@@ -49,7 +49,7 @@ import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.model.mamma.enums.MammaFactorType;
-import nl.rivm.screenit.repository.mamma.MammaAfspraakReserveringNativeQueryRepository;
+import nl.rivm.screenit.repository.mamma.MammaAfspraakReserveringRepository;
 import nl.rivm.screenit.repository.mamma.MammaCapaciteitBlokRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
@@ -88,7 +88,7 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 	private MammaBaseAfspraakService afspraakService;
 
 	@Autowired
-	private MammaAfspraakReserveringNativeQueryRepository afspraakReserveringRepository;
+	private MammaAfspraakReserveringRepository afspraakReserveringRepository;
 
 	@Autowired
 	private SimplePreferenceService preferenceService;
@@ -228,7 +228,7 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 	private boolean standplaatsPeriodeOverlaptMetZoekBereik(MammaStandplaatsPeriode standplaatsPeriode, Date zoekVanaf, Date zoekTotEnMet)
 	{
 		return (standplaatsPeriode.getVanaf().before(zoekTotEnMet) || standplaatsPeriode.getVanaf().equals(zoekTotEnMet))
-			   && (standplaatsPeriode.getTotEnMet().after(zoekVanaf) || standplaatsPeriode.getTotEnMet().equals(zoekVanaf));
+			&& (standplaatsPeriode.getTotEnMet().after(zoekVanaf) || standplaatsPeriode.getTotEnMet().equals(zoekVanaf));
 	}
 
 	private void haalAfspraakReserveringenOpEnVoegToeAanCapaciteitBlokken(Map<Long, MammaCapaciteitBlokDto> capaciteitBlokDtoMap, ScreeningOrganisatie screeningOrganisatie,
@@ -246,16 +246,16 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 		}
 	}
 
-	private void converteerReserveringNaarAfspraakInCapaciteitBlok(MammaAfspraakReserveringDto reservering, Map<Long, MammaCapaciteitBlokDto> capaciteitBlokDtoMap,
+	private void converteerReserveringNaarAfspraakInCapaciteitBlok(MammaAfspraakReserveringView reservering, Map<Long, MammaCapaciteitBlokDto> capaciteitBlokDtoMap,
 		ScreeningOrganisatie screeningOrganisatie)
 	{
 		var doelgroep = reservering.getDoelgroep();
-		var factor = MammaFactorType.getFactorType(reservering.getTehuisId() != null, doelgroep, reservering.isEersteOnderzoek()).getFactor(screeningOrganisatie);
+		var factor = MammaFactorType.getFactorType(reservering.getTehuisId() != null, doelgroep, reservering.getEersteOnderzoek()).getFactor(screeningOrganisatie);
 
 		var capaciteitBlokDto = capaciteitBlokDtoMap.get(reservering.getCapaciteitBlokId());
 		var afspraakDto = new MammaAfspraakDto();
 		afspraakDto.setCapaciteitBlokDto(capaciteitBlokDto);
-		afspraakDto.setVanaf(reservering.getVanaf());
+		afspraakDto.setVanaf(DateUtil.toLocalDateTime(reservering.getVanaf()));
 		afspraakDto.setBenodigdeCapaciteit(factor.multiply(reservering.getOpkomstkans()));
 		afspraakDto.setMinderValide(doelgroep.equals(MammaDoelgroep.MINDER_VALIDE));
 		afspraakDto.setDubbeleTijd(doelgroep.equals(MammaDoelgroep.DUBBELE_TIJD));

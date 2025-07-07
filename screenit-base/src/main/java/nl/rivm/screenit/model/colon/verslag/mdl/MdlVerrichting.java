@@ -21,20 +21,18 @@ package nl.rivm.screenit.model.colon.verslag.mdl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.model.verslag.DSValueSet;
@@ -46,19 +44,21 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "colon")
+@Getter
+@Setter
 public class MdlVerrichting
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private MdlVerslagContent verslagContent;
 
 	@Column(length = 255)
-	@VraagElement(displayName = "Identificatie onderzoek", extraTekst = "Identificatie onderzoek", code = "2.16.840.1.113883.2.4.3.36.77.2.11.69", isVerplicht = true)
+	@VraagElement(conceptId = "69", displayName = "Identificatie onderzoek", xpaths = {
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent/hl7:id|@extension",
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent/hl7:id|@extension"
+	}, isVerplicht = true)
 	private String identificatieOnderzoek;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -66,81 +66,26 @@ public class MdlVerrichting
 		@DSValueSetValue(code = "444783004:246513007=261423007", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "444783004:246513007=134433005", codeSystem = "2.16.840.1.113883.6.96")
 	})
-	@VraagElement(displayName = "Indicatie verrichting", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.2.11.70", isVerplicht = true)
+	@VraagElement(conceptId = "70", displayName = "Indicatie verrichting", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.202']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.382']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.202']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.382']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue indicatieVerrichting;
 
 	@Temporal(TemporalType.DATE)
 	@Column
-	@VraagElement(displayName = "Aanvang verrichting", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.2.11.72", isVerplicht = true)
+	@VraagElement(conceptId = "72", displayName = "Aanvang verrichting", xpaths = {
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent/hl7:effectiveTime/hl7:low|@value",
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent/hl7:effectiveTime/hl7:low|@value"
+	}, isVerplicht = true)
 	private Date aanvangVerrichting;
-
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "verrichting", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Incident/complicatie", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.2.11.74", isReference = true)
-	private List<MdlIncidentcomplicatie> incidentcomplicatie = new ArrayList<>();
 
 	@Temporal(TemporalType.DATE)
 	@Column
-	@VraagElement(displayName = "Autorisatiedatum verslag", extraTekst = "Datum waarop uitslag is doorgegeven aan de (aanvragende/verwijzende) zorgverlener. In het geval van pathologie gaat het om de autorisatiedatum.", code = "2.16.840.1.113883.2.4.3.36.77.2.11.79", isVerplicht = true)
+	@VraagElement(conceptId = "79", displayName = "Autorisatiedatum verslag", xpaths = {
+		"/hl7:ClinicalDocument/hl7:legalAuthenticator/hl7:time|@value",
+		"/hl7:ClinicalDocument/hl7:legalAuthenticator/hl7:time|@value"
+	}, isVerplicht = true)
 	private Date autorisatiedatumVerslag;
-
-	public MdlVerslagContent getVerslagContent()
-	{
-		return verslagContent;
-	}
-
-	public void setVerslagContent(MdlVerslagContent verslagContent)
-	{
-		this.verslagContent = verslagContent;
-	}
-
-	public String getIdentificatieOnderzoek()
-	{
-		return identificatieOnderzoek;
-	}
-
-	public void setIdentificatieOnderzoek(String identificatieOnderzoek)
-	{
-		this.identificatieOnderzoek = identificatieOnderzoek;
-	}
-
-	public DSValue getIndicatieVerrichting()
-	{
-		return indicatieVerrichting;
-	}
-
-	public void setIndicatieVerrichting(DSValue indicatieVerrichting)
-	{
-		this.indicatieVerrichting = indicatieVerrichting;
-	}
-
-	public Date getAanvangVerrichting()
-	{
-		return aanvangVerrichting;
-	}
-
-	public void setAanvangVerrichting(Date aanvangVerrichting)
-	{
-		this.aanvangVerrichting = aanvangVerrichting;
-	}
-
-	public List<MdlIncidentcomplicatie> getIncidentcomplicatie()
-	{
-		return incidentcomplicatie;
-	}
-
-	public void setIncidentcomplicatie(List<MdlIncidentcomplicatie> incidentcomplicatie)
-	{
-		this.incidentcomplicatie = incidentcomplicatie;
-	}
-
-	public Date getAutorisatiedatumVerslag()
-	{
-		return autorisatiedatumVerslag;
-	}
-
-	public void setAutorisatiedatumVerslag(Date autorisatiedatumVerslag)
-	{
-		this.autorisatiedatumVerslag = autorisatiedatumVerslag;
-	}
 
 }

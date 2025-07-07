@@ -28,24 +28,27 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.model.enums.HuisartsGeslacht;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import nl.topicuszorg.organisatie.model.Adres;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
+@Table
 @Audited
 @Getter
 @Setter
-public abstract class Huisarts extends TablePerClassHibernateObject
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class Huisarts extends AbstractHibernateObject
 {
 	private String achternaam;
 

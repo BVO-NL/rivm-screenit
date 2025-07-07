@@ -30,11 +30,11 @@ import nl.rivm.screenit.main.service.cervix.CervixUitnodigingService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.TablePerClassHibernateObject;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.service.LogService;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.input.validator.BSNValidator;
 
@@ -136,7 +136,7 @@ public abstract class CervixMonsterZoekenPanel extends Panel
 
 	private void toonUitnodigingen(AjaxRequestTarget target, List<CervixUitnodiging> uitnodigingen)
 	{
-		uitnodigingen.sort(Comparator.comparing(TablePerClassHibernateObject::getId));
+		uitnodigingen.sort(Comparator.comparing(AbstractHibernateObject::getId));
 		uitnodigingenPanel.replaceUitnodigingenPanel(target, uitnodigingen);
 		if (!uitnodigingen.isEmpty())
 		{

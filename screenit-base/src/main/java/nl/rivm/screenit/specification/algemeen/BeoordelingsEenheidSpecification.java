@@ -33,6 +33,7 @@ import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.Instelling_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.SpecificationUtil;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -57,7 +58,7 @@ public class BeoordelingsEenheidSpecification
 		return (r, q, cb) ->
 		{
 			var centraleEenheidJoin = join(r, Instelling_.parent);
-			return cb.equal(centraleEenheidJoin.get(Instelling_.regio), screeningOrganisatieId);
+			return cb.equal(centraleEenheidJoin.get(Instelling_.regio).get(AbstractHibernateObject_.id), screeningOrganisatieId);
 		};
 	}
 

@@ -23,6 +23,7 @@ package nl.rivm.screenit.service.impl;
 
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -139,9 +140,24 @@ public class BaseAfmeldServiceImpl implements BaseAfmeldService
 		{
 			laatsteRonde.getAfmeldingen().add(afmelding);
 		}
+		if (!laatsteRonde.equals(afmelding.getScreeningRonde()))
+		{
+			ontkoppelAfmeldingVanOudeRonde(afmelding);
+		}
 		laatsteRonde.setLaatsteAfmelding(afmelding);
 		afmelding.setScreeningRonde(laatsteRonde);
 		return dossier;
+	}
+
+	private <R extends ScreeningRonde<?, ?, AF, ?>, AF extends Afmelding<R, ?, ?>> void ontkoppelAfmeldingVanOudeRonde(AF afmelding)
+	{
+		var oudeRonde = afmelding.getScreeningRonde();
+		if (oudeRonde != null)
+		{
+			oudeRonde.getAfmeldingen().remove(afmelding);
+			oudeRonde.setLaatsteAfmelding(oudeRonde.getAfmeldingen().stream().max(Comparator.comparing(Afmelding::getAfmeldDatum)).orElse(null));
+			hibernateService.saveOrUpdate(oudeRonde);
+		}
 	}
 
 	private Dossier<?, ?> koppelDefinitieveAfmelding(Client client, Afmelding afmelding)
@@ -355,8 +371,7 @@ public class BaseAfmeldServiceImpl implements BaseAfmeldService
 
 	private void definitiefAfmelden(Afmelding<?, ?, ?> afmelding, boolean handtekeningDocumentVerplicht)
 	{
-		LOG.info("Definitief afmelden " + afmelding.getBevolkingsonderzoek().getAfkorting() + " aanvragen voor client(id: "
-			+ afmelding.getDossier().getClient().getId() + ")");
+		LOG.info("Definitief afmelden {} aanvragen voor client(id: '{}')", afmelding.getBevolkingsonderzoek().getAfkorting(), afmelding.getDossier().getClient().getId());
 
 		var dossier = afmelding.getDossier();
 		updateDossierEnAfmeldingDirectEnTijdelijkAfmelden(dossier, afmelding, handtekeningDocumentVerplicht);
@@ -364,7 +379,7 @@ public class BaseAfmeldServiceImpl implements BaseAfmeldService
 
 	private void tijdelijkAfmelden(Afmelding<?, ?, ?> afmelding, boolean handtekeningDocumentVerplicht)
 	{
-		LOG.info("Tijdelijk afmelden {} aanvragen voor client(id: {})", afmelding.getBevolkingsonderzoek().getAfkorting(),
+		LOG.info("Tijdelijk afmelden {} aanvragen voor client(id: '{}')", afmelding.getBevolkingsonderzoek().getAfkorting(),
 			afmelding.getScreeningRonde().getDossier().getClient().getId());
 
 		var dossier = afmelding.getScreeningRonde().getDossier();

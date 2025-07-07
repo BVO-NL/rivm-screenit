@@ -34,12 +34,12 @@ import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.ProjectBestandVerwerkingService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5SessionInThread;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
-public class ProjectBestandVerwerkThread extends OpenHibernate5SessionInThread
+public class ProjectBestandVerwerkThread extends OpenHibernateSessionInThread
 {
 	@Autowired
 	private HibernateService hibernateService;
@@ -85,11 +85,11 @@ public class ProjectBestandVerwerkThread extends OpenHibernate5SessionInThread
 			projectBestandVerwerkingService.setBestandStatus(bestand, BestandStatus.VERWERKT);
 			if (bestand.getVerwerking().getRegelsMislukt() == 0)
 			{
-				logService.logGebeurtenis(LogGebeurtenis.PROJECT_BESTAND_VERWERKT, null, getLoggingMelding(bestand));
+				logService.logGebeurtenis(LogGebeurtenis.PROJECT_BESTAND_VERWERKT, getLoggingMelding(bestand));
 			}
 			else
 			{
-				logService.logGebeurtenis(LogGebeurtenis.PROJECT_BESTAND_VERWERKT_MET_FOUTEN, null, getLoggingMelding(bestand));
+				logService.logGebeurtenis(LogGebeurtenis.PROJECT_BESTAND_VERWERKT_MET_FOUTEN, getLoggingMelding(bestand));
 			}
 		}
 		catch (IllegalStateException e)

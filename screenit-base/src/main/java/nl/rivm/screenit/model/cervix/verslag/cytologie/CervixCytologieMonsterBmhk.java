@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.cervix.verslag.cytologie;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -31,6 +30,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.model.verslag.DSValueSet;
@@ -42,29 +44,37 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "cervix")
+@Getter
+@Setter
 public class CervixCytologieMonsterBmhk
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private CervixCytologieCytologieUitslagBvoBmhk cytologieUitslagBvoBmhk;
 
 	@Column(length = 255)
-	@VraagElement(displayName = "Monster identificatie", extraTekst = "Het ID van het monster, dit is de code die gescand wordt bij het binnenboeken.", code = "2.16.840.1.113883.2.4.3.36.77.2.11.248", isVerplicht = true)
+	@VraagElement(conceptId = "248", displayName = "Monster identificatie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.213']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.384']]]/hl7:organizer/hl7:component/hl7:procedure/hl7:participant/hl7:participantRole/hl7:id|@extension",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.213']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.384']]]/hl7:organizer/hl7:component/hl7:procedure/hl7:participant/hl7:participantRole/hl7:id|@extension"
+	}, isVerplicht = true)
 	private String monsterIdentificatie;
 
 	@Temporal(TemporalType.DATE)
 	@Column
-	@VraagElement(displayName = "Datum afname materiaal", extraTekst = "Datum waarop het materiaal is afgenomen bij de cli\u00ebnt (uitstrijkje) of is afgenomen door de cli\u00ebnt (ZAS)", code = "2.16.840.1.113883.2.4.3.36.77.2.11.249", isVerplicht = true)
+	@VraagElement(conceptId = "249", displayName = "Datum afname materiaal", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.213']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.384']]]/hl7:organizer/hl7:component/hl7:procedure/hl7:effectiveTime",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.213']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.384']]]/hl7:organizer/hl7:component/hl7:procedure/hl7:effectiveTime"
+	}, isVerplicht = true)
 	private Date datumAfnameMateriaal;
 
 	@Temporal(TemporalType.DATE)
 	@Column
-	@VraagElement(displayName = "Datum ontvangst materiaal", extraTekst = "Datum waarop het materiaal is ontvangen in het laboratorium", code = "2.16.840.1.113883.2.4.3.36.77.2.11.250", isVerplicht = true)
+	@VraagElement(conceptId = "250", displayName = "Datum ontvangst materiaal", xpaths = {
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent/hl7:effectiveTime/hl7:low|@value",
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent/hl7:effectiveTime/hl7:low|@value"
+	}, isVerplicht = true)
 	private Date datumOntvangstMateriaal;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -72,72 +82,18 @@ public class CervixCytologieMonsterBmhk
 		@DSValueSetValue(code = "308728002", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "ZAS", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.241")
 	})
-	@VraagElement(displayName = "Type materiaal", extraTekst = "Het soort monster dat is afgenomen en de reden.", code = "2.16.840.1.113883.2.4.3.36.77.2.11.251", isVerplicht = true)
+	@VraagElement(conceptId = "251", displayName = "Type materiaal", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.213']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.384']]]/hl7:organizer/hl7:component/hl7:procedure/hl7:code|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.213']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.384']]]/hl7:organizer/hl7:component/hl7:procedure/hl7:code|@code"
+	}, isVerplicht = true)
 	private DSValue typeMateriaal;
 
 	@Temporal(TemporalType.DATE)
 	@Column
-	@VraagElement(displayName = "Datum autorisatie", extraTekst = "Datum waarop het resultaat is geautoriseerd", code = "2.16.840.1.113883.2.4.3.36.77.2.11.252", isVerplicht = true)
+	@VraagElement(conceptId = "252", displayName = "Datum autorisatie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:effectiveTime|@value",
+		"/hl7:ClinicalDocument/hl7:effectiveTime|@value"
+	}, isVerplicht = true)
 	private Date datumAutorisatie;
-
-	public CervixCytologieCytologieUitslagBvoBmhk getCytologieUitslagBvoBmhk()
-	{
-		return cytologieUitslagBvoBmhk;
-	}
-
-	public void setCytologieUitslagBvoBmhk(CervixCytologieCytologieUitslagBvoBmhk cytologieUitslagBvoBmhk)
-	{
-		this.cytologieUitslagBvoBmhk = cytologieUitslagBvoBmhk;
-	}
-
-	public String getMonsterIdentificatie()
-	{
-		return monsterIdentificatie;
-	}
-
-	public void setMonsterIdentificatie(String monsterIdentificatie)
-	{
-		this.monsterIdentificatie = monsterIdentificatie;
-	}
-
-	public Date getDatumAfnameMateriaal()
-	{
-		return datumAfnameMateriaal;
-	}
-
-	public void setDatumAfnameMateriaal(Date datumAfnameMateriaal)
-	{
-		this.datumAfnameMateriaal = datumAfnameMateriaal;
-	}
-
-	public Date getDatumOntvangstMateriaal()
-	{
-		return datumOntvangstMateriaal;
-	}
-
-	public void setDatumOntvangstMateriaal(Date datumOntvangstMateriaal)
-	{
-		this.datumOntvangstMateriaal = datumOntvangstMateriaal;
-	}
-
-	public DSValue getTypeMateriaal()
-	{
-		return typeMateriaal;
-	}
-
-	public void setTypeMateriaal(DSValue typeMateriaal)
-	{
-		this.typeMateriaal = typeMateriaal;
-	}
-
-	public Date getDatumAutorisatie()
-	{
-		return datumAutorisatie;
-	}
-
-	public void setDatumAutorisatie(Date datumAutorisatie)
-	{
-		this.datumAutorisatie = datumAutorisatie;
-	}
 
 }

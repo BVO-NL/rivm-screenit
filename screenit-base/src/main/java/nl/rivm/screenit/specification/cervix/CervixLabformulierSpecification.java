@@ -41,7 +41,6 @@ import nl.rivm.screenit.model.MergedBrieven_;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.ScannedFormulier_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.cervix.CervixBrief_;
 import nl.rivm.screenit.model.cervix.CervixCytologieOrder_;
 import nl.rivm.screenit.model.cervix.CervixDossier_;
@@ -61,6 +60,7 @@ import nl.rivm.screenit.model.cervix.enums.CervixUitstrijkjeStatus;
 import nl.rivm.screenit.model.cervix.facturatie.CervixBoekRegel;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -85,11 +85,11 @@ public class CervixLabformulierSpecification
 		{
 			if (organisatieType == OrganisatieType.BMHK_LABORATORIUM)
 			{
-				return cb.equal(join(r, CervixLabformulier_.laboratorium).get(SingleTableHibernateObject_.id), instellingId);
+				return cb.equal(join(r, CervixLabformulier_.laboratorium).get(AbstractHibernateObject_.id), instellingId);
 			}
 			else if (organisatieType == OrganisatieType.SCREENINGSORGANISATIE)
 			{
-				return cb.equal(screeningOrganisatieJoin(r).get(SingleTableHibernateObject_.id), instellingId);
+				return cb.equal(screeningOrganisatieJoin(r).get(AbstractHibernateObject_.id), instellingId);
 			}
 			else
 			{
@@ -209,7 +209,7 @@ public class CervixLabformulierSpecification
 	public static Specification<CervixLabformulier> filterOrganisatieTypeIsScreeningorganisatie(OrganisatieType organisatieType, Long instellingId)
 	{
 		return skipWhenFalse(organisatieType == OrganisatieType.SCREENINGSORGANISATIE,
-			(r, q, cb) -> cb.and(cb.equal(screeningOrganisatieJoin(r).get(SingleTableHibernateObject_.id), instellingId)));
+			(r, q, cb) -> cb.and(cb.equal(screeningOrganisatieJoin(r).get(AbstractHibernateObject_.id), instellingId)));
 	}
 
 	public static Specification<CervixLabformulier> filterIsDigitaal(Boolean heeftDigitaal)

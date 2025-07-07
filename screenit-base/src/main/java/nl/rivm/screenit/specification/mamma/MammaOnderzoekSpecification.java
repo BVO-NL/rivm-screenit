@@ -45,7 +45,6 @@ import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Dossier_;
 import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
@@ -275,7 +274,7 @@ public class MammaOnderzoekSpecification
 
 			var subquery = q.subquery(Long.class);
 			var subRoot = subquery.from(MammaBrief.class);
-			subquery.select(subRoot.get(TablePerClassHibernateObject_.id))
+			subquery.select(subRoot.get(AbstractHibernateObject_.id))
 				.where(maakPredicateVoorBriefSubquery(q, cb, subRoot, rondeJoin));
 			return cb.not(cb.exists(subquery));
 		};
@@ -312,7 +311,7 @@ public class MammaOnderzoekSpecification
 		return join(clientJoin, Client_.persoon);
 	}
 
-	public static Specification<MammaOnderzoek> filterOnderzoekType(MammaOnderzoekType onderzoekType)
+	public static ExtendedSpecification<MammaOnderzoek> filterOnderzoekType(MammaOnderzoekType onderzoekType)
 	{
 		return skipWhenNullExtended(onderzoekType, (r, q, cb) -> cb.equal(r.get(MammaOnderzoek_.onderzoekType), onderzoekType));
 	}
@@ -348,18 +347,6 @@ public class MammaOnderzoekSpecification
 		return bevatLocalDateToDate(periode, o -> o.get(MammaOnderzoek_.creatieDatum));
 	}
 
-	public static Specification<MammaOnderzoek> isVanLaatsteAfspraakVanRonde()
-	{
-		return (r, q, cb) ->
-		{
-			var uitnodigingJoin = uitnodigingJoin(r);
-			var screeningRondeJoin = join(uitnodigingJoin, MammaUitnodiging_.screeningRonde);
-			return cb.and(
-				cb.equal(screeningRondeJoin.get(MammaScreeningRonde_.laatsteUitnodiging), uitnodigingJoin),
-				cb.equal(uitnodigingJoin.get(MammaUitnodiging_.laatsteAfspraak), r.get(MammaOnderzoek_.afspraak).get(AbstractHibernateObject_.id)));
-		};
-	}
-
 	public static Join<MammaUitnodiging, MammaScreeningRonde> screeningRondeJoin(From<?, ? extends MammaOnderzoek> root)
 	{
 		return join(uitnodigingJoin(root), MammaUitnodiging_.screeningRonde);
@@ -370,4 +357,5 @@ public class MammaOnderzoekSpecification
 		var afspraakJoin = join(root, MammaOnderzoek_.afspraak);
 		return join(afspraakJoin, MammaAfspraak_.uitnodiging);
 	}
+
 }

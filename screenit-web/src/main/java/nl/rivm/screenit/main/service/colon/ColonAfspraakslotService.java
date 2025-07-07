@@ -62,6 +62,9 @@ public interface ColonAfspraakslotService
 
 	List<ColonAfspraakslotDto> getAfspraakslots(LocalDate startDate, LocalDate endDate, ColonIntakelocatie intakeLocatie);
 
+	ColonAfspraakslot getEerstBeschikbareAfspraakslot(LocalDate startDatum, LocalDate eindDatum, List<ColonAfspraakslotStatus> beschikbareStatussen,
+		ColonIntakelocatie intakeLocatie);
+
 	List<ColonTijdslotDto> searchAfspraakslots(RoosterListViewFilter filter, long intakelocatieId);
 
 	ColonAfspraakslotStatus getAfspraakslotStatus(ColonAfspraakslot afspraakslot);

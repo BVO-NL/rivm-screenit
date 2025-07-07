@@ -27,6 +27,7 @@ import lombok.NoArgsConstructor;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContact;
 import nl.rivm.screenit.model.ClientContact_;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -40,7 +41,7 @@ public class ClientContactSpecification
 
 	public static Specification<ClientContact> heeftClientId(Long clientId)
 	{
-		return (r, q, cb) -> cb.equal(r.get(ClientContact_.client), clientId);
+		return (r, q, cb) -> cb.equal(r.get(ClientContact_.client).get(AbstractHibernateObject_.id), clientId);
 	}
 
 	public static Specification<ClientContact> heeftOpmerking()

@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.cervix;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,9 +38,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.UniqueConstraint;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -49,8 +46,6 @@ import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.cervix.enums.CervixLeeftijdcategorie;
 import nl.rivm.screenit.model.cervix.verslag.CervixVerslag;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -62,17 +57,10 @@ import org.hibernate.envers.NotAudited;
 	name = "screening_ronde",
 	indexes = { @Index(name = "idx_CERVIX_SCREENING_RONDE_STATUS", columnList = "status"),
 		@Index(name = "idx_CERVIX_SCREENING_RONDE_LEEFTIJDCATEGORIE", columnList = "leeftijdcategorie"),
-		@Index(name = "idx_CERVIX_SCREENING_RONDE_IN_VERVOLGONDERZOEK_DATUM", columnList = "inVervolgonderzoekDatum") },
-	uniqueConstraints = {
-		@UniqueConstraint(columnNames = "laatste_afmelding"), @UniqueConstraint(columnNames = "laatste_brief"), @UniqueConstraint(columnNames = "laatste_uitnodiging"),
-		@UniqueConstraint(columnNames = "uitnodiging_vervolgonderzoek"), @UniqueConstraint(columnNames = "uitstel"), @UniqueConstraint(columnNames = "monster_hpv_uitslag"),
-		@UniqueConstraint(columnNames = "uitstrijkje_cytologie_uitslag"), @UniqueConstraint(columnNames = "uitstrijkje_vervolgonderzoek_uitslag") })
+		@Index(name = "idx_CERVIX_SCREENING_RONDE_IN_VERVOLGONDERZOEK_DATUM", columnList = "inVervolgonderzoekDatum") })
 @Audited
 public class CervixScreeningRonde extends ScreeningRonde<CervixDossier, CervixBrief, CervixAfmelding, CervixUitnodiging>
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	private CervixDossier dossier;
@@ -82,7 +70,6 @@ public class CervixScreeningRonde extends ScreeningRonde<CervixDossier, CervixBr
 	private CervixLeeftijdcategorie leeftijdcategorie;
 
 	@OneToMany(mappedBy = "screeningRonde", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<CervixUitnodiging> uitnodigingen = new ArrayList<>();
 
 	@OneToOne(fetch = FetchType.LAZY)
@@ -95,19 +82,16 @@ public class CervixScreeningRonde extends ScreeningRonde<CervixDossier, CervixBr
 	private CervixUitnodiging uitnodigingVervolgonderzoek;
 
 	@OneToMany(mappedBy = "screeningRonde", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<CervixBrief> brieven = new ArrayList<>();
 
 	@OneToOne(fetch = FetchType.LAZY)
 	private CervixBrief laatsteBrief;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "screeningRonde")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@NotAudited
 	private List<CervixHuisartsBericht> huisartsBerichten = new ArrayList<>();
 
 	@OneToMany(mappedBy = "screeningRonde", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<CervixAfmelding> afmeldingen = new ArrayList<>();
 
 	@OneToOne(fetch = FetchType.LAZY)
@@ -132,7 +116,6 @@ public class CervixScreeningRonde extends ScreeningRonde<CervixDossier, CervixBr
 	private CervixUitnodiging laatsteZasUitnodiging;
 
 	@OneToMany(mappedBy = "screeningRonde", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<CervixVerslag> verslagen = new ArrayList<>();
 
 	@Column(nullable = true)

@@ -27,19 +27,25 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.model.enums.DigitaalBerichtTemplateType;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.hibernate.envers.Audited;
 
 @Entity
+@Table
 @Audited
 @Getter
 @Setter
-public abstract class DigitaalClientBericht<SR extends ScreeningRonde> extends TablePerClassHibernateObject
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class DigitaalClientBericht<SR extends ScreeningRonde> extends AbstractHibernateObject
 {
 	@Column(nullable = false)
 	private LocalDateTime creatieMoment;

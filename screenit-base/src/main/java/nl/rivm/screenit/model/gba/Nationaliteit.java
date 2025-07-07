@@ -34,12 +34,8 @@ import jakarta.persistence.TemporalType;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
-@Table(schema = "algemeen", indexes = @Index(columnList = "code", name = "IDX_NATIONALITEIT_CODE", unique = true) )
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
+@Table(schema = "algemeen", indexes = @Index(columnList = "code", name = "IDX_NATIONALITEIT_CODE", unique = true))
 public class Nationaliteit extends AbstractHibernateObject implements GbaStamtabel
 {
 

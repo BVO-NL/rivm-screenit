@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.colon.verslag.pa;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +29,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.colon.PaVerslag;
 import nl.rivm.screenit.model.verslag.VerslagContent;
@@ -41,70 +42,32 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "colon")
+@Getter
+@Setter
 public class PaVerslagContent
 	extends VerslagContent<PaVerslag>
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false, mappedBy = "verslagContent")
 	@JsonIgnore
 	private PaVerslag verslag;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "verslagContent", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Verrichting", extraTekst = "Verrichting", code = "2.16.840.1.113883.2.4.3.36.77.2.11.68", isReference = true)
+	@VraagElement(conceptId = "68", displayName = "Verrichting", xpaths = {
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent",
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent"
+	})
 	private PaVerrichting verrichting;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "verslagContent", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Pathologie : medische observatie", extraTekst = "Pathologie : medische observatie", code = "2.16.840.1.113883.2.4.3.36.77.2.11.147", isReference = true)
+	@VraagElement(conceptId = "147", displayName = "Pathologie : medische observatie")
 	private PaPathologieMedischeObservatie pathologieMedischeObservatie;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "verslagContent", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Pathologie protocol: colonbiopt (per poliep)", extraTekst = "Pathologie protocol: colonbiopt (per poliep)", code = "2.16.840.1.113883.2.4.3.36.77.2.11.152", isReference = true)
-	@OrderBy("to_number(coalesce(nullif(nummerPotjeMateriaal,''),to_char(id, '9999999999')), '9999999999')")
+	@VraagElement(conceptId = "152", displayName = "Pathologie protocol: colonbiopt (per poliep)", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.210']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.550']]]",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.210']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.550']]]"
+	})
 	private List<PaPathologieProtocolColonbioptperPoliep> pathologieProtocolColonbioptperPoliep = new ArrayList<>();
-
-	@Override
-	public PaVerslag getVerslag()
-	{
-		return verslag;
-	}
-
-	@Override
-	public void setVerslag(PaVerslag verslag)
-	{
-		this.verslag = verslag;
-	}
-
-	public PaVerrichting getVerrichting()
-	{
-		return verrichting;
-	}
-
-	public void setVerrichting(PaVerrichting verrichting)
-	{
-		this.verrichting = verrichting;
-	}
-
-	public PaPathologieMedischeObservatie getPathologieMedischeObservatie()
-	{
-		return pathologieMedischeObservatie;
-	}
-
-	public void setPathologieMedischeObservatie(PaPathologieMedischeObservatie pathologieMedischeObservatie)
-	{
-		this.pathologieMedischeObservatie = pathologieMedischeObservatie;
-	}
-
-	public List<PaPathologieProtocolColonbioptperPoliep> getPathologieProtocolColonbioptperPoliep()
-	{
-		return pathologieProtocolColonbioptperPoliep;
-	}
-
-	public void setPathologieProtocolColonbioptperPoliep(List<PaPathologieProtocolColonbioptperPoliep> pathologieProtocolColonbioptperPoliep)
-	{
-		this.pathologieProtocolColonbioptperPoliep = pathologieProtocolColonbioptperPoliep;
-	}
 
 }

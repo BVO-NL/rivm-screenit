@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.cervix;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,12 +33,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.Index;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.UniqueConstraint;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.cervix.enums.CervixCytologieUitslag;
@@ -50,25 +49,20 @@ import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import org.hibernate.annotations.Proxy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 @Entity
-@Proxy(lazy = true)
-@Table(
-	uniqueConstraints = { @UniqueConstraint(columnNames = "verslagContent") },
-	indexes = {
-		@Index(name = "idx_CERVIX_CYTOLOGIE_VERSLAG_CYTOLOGIE_UITSLAG", columnList = "cytologieUitslag") })
+@Proxy
 @Audited
+@Getter
+@Setter
 public class CervixCytologieVerslag extends CervixVerslag<CervixCytologieVerslagContent>
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@OneToOne(mappedBy = "cytologieVerslag", optional = false, fetch = FetchType.LAZY)
 	private CervixUitstrijkje uitstrijkje;
 
 	@OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@NotAudited
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	private CervixCytologieVerslagContent verslagContent;
 
 	@Enumerated(EnumType.STRING)
@@ -85,28 +79,6 @@ public class CervixCytologieVerslag extends CervixVerslag<CervixCytologieVerslag
 	@Column(nullable = false)
 	private String patholoogNaam;
 
-	@Override
-	public CervixCytologieVerslagContent getVerslagContent()
-	{
-		return verslagContent;
-	}
-
-	@Override
-	public void setVerslagContent(CervixCytologieVerslagContent verslagContent)
-	{
-		this.verslagContent = verslagContent;
-	}
-
-	public CervixUitstrijkje getUitstrijkje()
-	{
-		return uitstrijkje;
-	}
-
-	public void setUitstrijkje(CervixUitstrijkje uitstrijkje)
-	{
-		this.uitstrijkje = uitstrijkje;
-	}
-
 	public BMHKLaboratorium getLaboratorium()
 	{
 		return (BMHKLaboratorium) HibernateHelper.deproxy(getUitvoerderOrganisatie());
@@ -117,33 +89,4 @@ public class CervixCytologieVerslag extends CervixVerslag<CervixCytologieVerslag
 		setUitvoerderOrganisatie(laboratorium);
 	}
 
-	public CervixCytologieUitslag getCytologieUitslag()
-	{
-		return cytologieUitslag;
-	}
-
-	public void setCytologieUitslag(CervixCytologieUitslag cytologieUitslag)
-	{
-		this.cytologieUitslag = cytologieUitslag;
-	}
-
-	public List<Date> getHerzieningenOntvangen()
-	{
-		return herzieningenOntvangen;
-	}
-
-	public void setHerzieningenOntvangen(List<Date> herzieningenOntvangen)
-	{
-		this.herzieningenOntvangen = herzieningenOntvangen;
-	}
-
-	public String getPatholoogNaam()
-	{
-		return patholoogNaam;
-	}
-
-	public void setPatholoogNaam(String patholoogNaam)
-	{
-		this.patholoogNaam = patholoogNaam;
-	}
 }

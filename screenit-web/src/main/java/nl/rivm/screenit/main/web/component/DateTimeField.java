@@ -21,18 +21,17 @@ package nl.rivm.screenit.main.web.component;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDateTime;
 import java.util.Date;
+
+import nl.rivm.screenit.util.DateUtil;
 
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.IModel;
-import org.joda.time.DateTime;
-import org.joda.time.MutableDateTime;
 import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 
 public class DateTimeField extends FormComponentPanel<Date>
 {
-
-	private static final long serialVersionUID = 1L;
 
 	private DatePicker<Date> datePicker;
 
@@ -73,22 +72,40 @@ public class DateTimeField extends FormComponentPanel<Date>
 	@Override
 	public void convertInput()
 	{
-		if (datePicker.getConvertedInput() == null || timeField.getConvertedInput() == null)
+		if (getDatePicker().getConvertedInput() == null && getDatePicker().getModelObject() == null && getTimeField().getConvertedInput() == null
+			&& getTimeField().getModelObject() == null)
 		{
 			invalid();
 		}
 		else
 		{
 
-			MutableDateTime datum = new MutableDateTime(datePicker.getConvertedInput());
-			datum.setSecondOfDay(0); 
+			LocalDateTime datum;
+			if (getDatePicker().getConvertedInput() != null)
+			{
+				datum = DateUtil.toLocalDateTime(getDatePicker().getConvertedInput());
+			}
+			else
+			{
+				datum = DateUtil.toLocalDateTime(getDatePicker().getModelObject());
+			}
 
-			DateTime tijd = new DateTime(timeField.getConvertedInput());
+			LocalDateTime tijd;
+			if (getTimeField().getConvertedInput() != null)
+			{
+				tijd = DateUtil.toLocalDateTime(getTimeField().getConvertedInput());
+			}
+			else
+			{
+				tijd = DateUtil.toLocalDateTime(getTimeField().getModelObject());
+			}
 
-			datum.setHourOfDay(tijd.getHourOfDay());
-			datum.setMinuteOfHour(tijd.getMinuteOfHour());
-
-			setConvertedInput(datum.toDate());
+			setConvertedInput(DateUtil.toUtilDate(datum
+				.withHour(tijd.getHour())
+				.withMinute(tijd.getMinute())
+				.withSecond(0)
+				.withNano(0)
+			));
 		}
 	}
 

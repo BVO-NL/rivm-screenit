@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.colon.verslag.pa;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -32,6 +31,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.verslag.VraagElement;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
@@ -39,12 +41,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "colon")
+@Getter
+@Setter
 public class PaVerrichting
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -52,42 +53,18 @@ public class PaVerrichting
 
 	@Temporal(TemporalType.DATE)
 	@Column
-	@VraagElement(displayName = "Aanvang verrichting", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.2.11.72", isVerplicht = true)
+	@VraagElement(conceptId = "72", displayName = "Aanvang verrichting", xpaths = {
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent/hl7:effectiveTime/hl7:low|@value",
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent/hl7:effectiveTime/hl7:low|@value"
+	}, isVerplicht = true)
 	private Date aanvangVerrichting;
 
 	@Temporal(TemporalType.DATE)
 	@Column
-	@VraagElement(displayName = "Einde verrichting", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.2.11.73", isVerplicht = true)
+	@VraagElement(conceptId = "73", displayName = "Einde verrichting", xpaths = {
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent/hl7:effectiveTime/hl7:high|@value",
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent/hl7:effectiveTime/hl7:high|@value"
+	}, isVerplicht = true)
 	private Date eindeVerrichting;
-
-	public PaVerslagContent getVerslagContent()
-	{
-		return verslagContent;
-	}
-
-	public void setVerslagContent(PaVerslagContent verslagContent)
-	{
-		this.verslagContent = verslagContent;
-	}
-
-	public Date getAanvangVerrichting()
-	{
-		return aanvangVerrichting;
-	}
-
-	public void setAanvangVerrichting(Date aanvangVerrichting)
-	{
-		this.aanvangVerrichting = aanvangVerrichting;
-	}
-
-	public Date getEindeVerrichting()
-	{
-		return eindeVerrichting;
-	}
-
-	public void setEindeVerrichting(Date eindeVerrichting)
-	{
-		this.eindeVerrichting = eindeVerrichting;
-	}
 
 }

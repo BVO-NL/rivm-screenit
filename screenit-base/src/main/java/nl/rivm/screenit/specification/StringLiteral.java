@@ -23,22 +23,21 @@ package nl.rivm.screenit.specification;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 
-import org.hibernate.query.criteria.internal.CriteriaBuilderImpl;
-import org.hibernate.query.criteria.internal.compile.RenderingContext;
-import org.hibernate.query.criteria.internal.expression.LiteralExpression;
+import org.hibernate.query.sqm.NodeBuilder;
+import org.hibernate.query.sqm.tree.expression.SqmLiteral;
 
 @SuppressWarnings("java:S110")
-public class StringLiteral extends LiteralExpression<String>
+public class StringLiteral extends SqmLiteral<String>
 {
 
 	public StringLiteral(CriteriaBuilder criteriaBuilder, String literal)
 	{
-		super((CriteriaBuilderImpl) criteriaBuilder, String.class, literal);
+		super(literal, null, (NodeBuilder) criteriaBuilder);
 	}
 
 	@Override
-	public String render(RenderingContext renderingContext)
+	public void appendHqlString(StringBuilder sb)
 	{
-		return "'" + this.getLiteral() + "'";
+		sb.append("'").append(getLiteralValue()).append("'");
 	}
 }

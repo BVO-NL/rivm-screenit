@@ -22,12 +22,10 @@ package nl.rivm.screenit.main.web.component;
  */
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -39,11 +37,10 @@ import nl.rivm.screenit.util.ThreadLocalDateFormat;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.util.convert.ConversionException;
-import org.joda.time.format.DateTimeFormatter;
-import org.wicketstuff.datetime.DateConverter;
+import org.apache.wicket.util.convert.IConverter;
 
 @Slf4j
-public class MultiDateConverter extends DateConverter
+public class MultiDateConverter implements IConverter<Date>
 {
 
 	private static final String[] FORMATS = new String[] { Constants.DEFAULT_DATE_TIME_FORMAT_SHORT_YEAR, "ddMMyy", "dMyy" };
@@ -52,8 +49,6 @@ public class MultiDateConverter extends DateConverter
 
 	public MultiDateConverter()
 	{
-		super(false);
-
 		for (String s : FORMATS)
 		{
 			patterns.add(new ThreadLocalDateFormat(s));
@@ -67,12 +62,12 @@ public class MultiDateConverter extends DateConverter
 
 		if (StringUtils.isNotBlank(value))
 		{
-			Iterator<ThreadLocalDateFormat> iter = patterns.iterator();
+			var iter = patterns.iterator();
 			while (parsed == null && iter.hasNext())
 			{
 				try
 				{
-					SimpleDateFormat sdf = iter.next().get();
+					var sdf = iter.next().get();
 					sdf.setLenient(false);
 					sdf.set2DigitYearStart(DateUtil.toUtilDate(beginThisYear().minusYears(98)));
 					parsed = sdf.parse(value);
@@ -101,18 +96,6 @@ public class MultiDateConverter extends DateConverter
 			return Constants.getDateFormat().format(value);
 		}
 
-		return null;
-	}
-
-	@Override
-	public String getDatePattern(Locale locale)
-	{
-		return Constants.DEFAULT_DATE_FORMAT;
-	}
-
-	@Override
-	protected DateTimeFormatter getFormat(Locale locale)
-	{
 		return null;
 	}
 

@@ -27,6 +27,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -40,8 +44,6 @@ import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Gemeente_;
 import nl.rivm.screenit.model.PostcodeCoordinaten_;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonDossier_;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
@@ -69,10 +71,6 @@ import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.isNietOverledenOfAfgevoerd;
@@ -214,15 +212,15 @@ public class ColonIntakeAfspraakServiceImpl implements ColonIntakeAfspraakServic
 				var intakeJoin = join(screeningRondeJoin, ColonScreeningRonde_.laatsteAfspraak, JoinType.LEFT);
 
 				return List.of(
-					r.get(SingleTableHibernateObject_.id),
-					screeningRondeJoin.get(TablePerClassHibernateObject_.id),
+					r.get(AbstractHibernateObject_.id),
+					screeningRondeJoin.get(AbstractHibernateObject_.id),
 					testenJoin.get(IFOBTTest_.analyseDatum),
 					coordinatenJoin.get(PostcodeCoordinaten_.latitude),
 					coordinatenJoin.get(PostcodeCoordinaten_.longitude),
 					gemeenteJoin.get(Gemeente_.latitude),
 					gemeenteJoin.get(Gemeente_.longitude),
 					gemeenteJoin.get(Gemeente_.naam),
-					screeningOrganisatieJoin.get(SingleTableHibernateObject_.id),
+					screeningOrganisatieJoin.get(AbstractHibernateObject_.id),
 					intakeJoin.get(AbstractHibernateObject_.id),
 					persoonJoin.get(GbaPersoon_.bsn),
 					persoonJoin.get(GbaPersoon_.geboortedatum)

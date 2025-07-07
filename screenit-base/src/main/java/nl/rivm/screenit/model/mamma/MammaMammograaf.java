@@ -33,8 +33,6 @@ import jakarta.persistence.UniqueConstraint;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -43,7 +41,6 @@ import org.hibernate.envers.Audited;
 	name = "mammograaf",
 	uniqueConstraints = { @UniqueConstraint(name = "uc_mammograaf_aeTitle", columnNames = { "aeTitle" }),
 		@UniqueConstraint(name = "uc_mammograaf_werkstationIpAdres", columnNames = { "werkstationIpAdres" }) })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 @Audited
 public class MammaMammograaf extends AbstractHibernateObject
 {

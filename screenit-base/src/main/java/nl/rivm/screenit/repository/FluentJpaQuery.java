@@ -52,6 +52,8 @@ public interface FluentJpaQuery<T, P>
 
 	FluentJpaQuery<T, P> groupBy(BiFunction<CriteriaBuilder, Root<T>, List<Expression<?>>> projectionFunction);
 
+	FluentJpaQuery<T, P> fetch(Consumer<EntityGraph<T>> entityGraphFunction, int entityGraphDepth);
+
 	FluentJpaQuery<T, P> fetch(Consumer<EntityGraph<T>> entityGraphFunction);
 
 	FluentJpaQuery<T, P> distinct();

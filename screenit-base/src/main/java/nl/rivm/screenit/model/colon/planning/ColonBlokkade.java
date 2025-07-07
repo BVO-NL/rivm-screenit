@@ -32,8 +32,6 @@ import lombok.Setter;
 import nl.rivm.screenit.model.colon.enums.ColonTijdslotType;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Getter
@@ -41,7 +39,6 @@ import org.hibernate.envers.Audited;
 @Entity
 @Table(schema = "colon", name = "blokkade")
 @Audited
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "colon.cache")
 public class ColonBlokkade extends ColonTijdslot implements Comparable<ColonBlokkade>
 {
 	public ColonBlokkade()

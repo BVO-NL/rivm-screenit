@@ -21,21 +21,15 @@ package nl.rivm.screenit.model.berichten;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
+import org.apache.commons.lang.StringUtils;
 
 import ca.uhn.hl7v2.AcknowledgmentCode;
 import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v251.datatype.CWE;
 import ca.uhn.hl7v2.model.v251.message.ACK;
-import ca.uhn.hl7v2.model.v251.segment.ERR;
-import ca.uhn.hl7v2.model.v251.segment.MSA;
 import ca.uhn.hl7v2.util.StringUtil;
 
 public class ScreenITResponseV251MessageWrapper implements ScreenITResponseHL7v2MessageWrapper
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
 
 	private final AcknowledgmentCode acknowledgmentCode;
 
@@ -45,23 +39,23 @@ public class ScreenITResponseV251MessageWrapper implements ScreenITResponseHL7v2
 
 	public ScreenITResponseV251MessageWrapper(Message message)
 	{
-		this.acknowledgmentCodeString = getFoutCode(message);
+		acknowledgmentCodeString = getAckCode(message);
 		if (acknowledgmentCodeString != null)
 		{
-			this.acknowledgmentCode = AcknowledgmentCode.valueOf(acknowledgmentCodeString);
+			acknowledgmentCode = AcknowledgmentCode.valueOf(acknowledgmentCodeString);
 		}
 		else
 		{
 			acknowledgmentCode = AcknowledgmentCode.AE;
 		}
-		String meldingUitBericht = getFoutmelding(message);
+		var meldingUitBericht = getFoutmelding(message);
 		if (StringUtil.isBlank(meldingUitBericht) && acknowledgmentCodeString == null)
 		{
-			this.melding = "Kon de acknowledgmentcode niet uit het bericht halen.";
+			melding = "Kon de acknowledgmentcode niet uit het bericht halen.";
 		}
 		else
 		{
-			this.melding = getFoutmelding(message);
+			melding = meldingUitBericht.trim();
 		}
 	}
 
@@ -79,16 +73,18 @@ public class ScreenITResponseV251MessageWrapper implements ScreenITResponseHL7v2
 
 	private String getFoutmelding(Message response)
 	{
-		ACK ack = (ACK) response;
-		ERR error = ack.getERR(0);
-		CWE cwe = error.getErr3_HL7ErrorCode();
-		return cwe.getCwe9_OriginalText().getValue();
+		var ack = (ACK) response;
+		var error = ack.getERR(0);
+		var cwe = error.getErr3_HL7ErrorCode();
+		var errorMelding = StringUtils.defaultIfBlank(cwe.getCwe9_OriginalText().getValue(), "");
+		var ackMelding = StringUtils.defaultIfBlank(ack.getMSA().getMsa3_TextMessage().getValue(), "");
+		return errorMelding + " " + ackMelding;
 	}
 
-	private String getFoutCode(Message response)
+	private String getAckCode(Message response)
 	{
-		ACK ack = (ACK) response;
-		MSA msa = ack.getMSA();
+		var ack = (ACK) response;
+		var msa = ack.getMSA();
 		return msa.getAcknowledgmentCode().getValue();
 	}
 

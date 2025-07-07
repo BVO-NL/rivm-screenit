@@ -26,9 +26,7 @@ import java.io.Serial;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 
 import nl.topicuszorg.organisatie.model.Adres;
 
@@ -36,9 +34,6 @@ import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
 @Entity
-@Table(indexes = { @Index(name = "IDX_ADRES_HUISNUMMER", columnList = "huisnummer"), @Index(name = "IDX_ADRES_HUISLETTER", columnList = "huisletter"),
-	@Index(name = "IDX_ADRES_TOEVOEGING", columnList = "huisnummerToevoeging"), @Index(name = "IDX_ADRES_AANDUIDING", columnList = "huisnummerAanduiding"),
-	@Index(name = "IDX_ADRES_POSTCODE", columnList = "postcode"), @Index(name = "IDX_ADRES_LOCATIEBESCHRIJVING", columnList = "locatieBeschrijving") })
 @Audited
 public class BagAdres extends Adres
 {

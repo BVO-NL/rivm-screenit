@@ -293,7 +293,7 @@ public class HL7v24BerichtenQueueSenderServiceImpl
 				String melding = "IMS berichten worden weer succesvol verstuurd.";
 				LOG.info(melding);
 
-				logService.logGebeurtenis(LogGebeurtenis.MAMMA_HL7_BERICHT_VERBINDING_HERSTELD, null, melding, Bevolkingsonderzoek.MAMMA);
+				logService.logGebeurtenis(LogGebeurtenis.MAMMA_HL7_BERICHT_VERBINDING_HERSTELD, melding, Bevolkingsonderzoek.MAMMA);
 				mailGestuurdBijError = false;
 				verstuurProblemenCount = 0;
 			}
@@ -411,7 +411,7 @@ public class HL7v24BerichtenQueueSenderServiceImpl
 	{
 		if (!mailGestuurdBijError)
 		{
-			logService.logGebeurtenis(logGebeurtenis, null, melding, Bevolkingsonderzoek.MAMMA);
+			logService.logGebeurtenis(logGebeurtenis, melding, Bevolkingsonderzoek.MAMMA);
 			mailGestuurdBijError = true;
 		}
 	}

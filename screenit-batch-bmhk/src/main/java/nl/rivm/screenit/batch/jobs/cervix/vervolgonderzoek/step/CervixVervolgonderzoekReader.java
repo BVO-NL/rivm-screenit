@@ -23,22 +23,22 @@ package nl.rivm.screenit.batch.jobs.cervix.vervolgonderzoek.step;
 
 import java.util.function.Function;
 
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.JoinType;
+
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.cervix.CervixDossier_;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde_;
 import nl.rivm.screenit.model.cervix.CervixUitstel;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.JoinType;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftActieveClient;
@@ -77,7 +77,7 @@ public class CervixVervolgonderzoekReader extends BaseSpecificationScrollableRes
 					.or(heeftGeannuleerdDatum().with(uitstelJoin())))
 				.and(heeftControleUitstrijkjeDatumVoorOfOp(dateSupplier.getLocalDate()))
 				.and((subRoot, subQuery, subBuilder) ->
-					subBuilder.not(subRoot.get(TablePerClassHibernateObject_.id).in(subquery))
+					subBuilder.not(subRoot.get(AbstractHibernateObject_.id).in(subquery))
 				)
 				.toPredicate(r, q, cb);
 		};

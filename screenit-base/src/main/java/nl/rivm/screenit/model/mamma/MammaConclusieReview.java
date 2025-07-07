@@ -45,8 +45,6 @@ import nl.rivm.screenit.model.mamma.enums.MammaLezingRedenenFotobesprekingRadiol
 import nl.rivm.screenit.model.mamma.enums.MammaRetourCeReden;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -57,7 +55,6 @@ import org.hibernate.envers.Audited;
 	schema = "mamma",
 	name = "conclusie_review",
 	uniqueConstraints = @UniqueConstraint(columnNames = { "screening_ronde", "radioloog", "reviewAlsCoordinerendRadioloog" }))
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 public class MammaConclusieReview extends AbstractHibernateObject
 {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -79,14 +76,12 @@ public class MammaConclusieReview extends AbstractHibernateObject
 	@ElementCollection(targetClass = MammaLezingRedenenFotobesprekingRadioloog.class)
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = true)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	@CollectionTable(schema = "mamma", name = "conclusie_review_redenen_fotobespreking_radioloog")
 	private List<MammaLezingRedenenFotobesprekingRadioloog> redenenFotobesprekingRadioloog = new ArrayList<>();
 
 	@ElementCollection(targetClass = MammaLezingRedenenFotobesprekingMbber.class)
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = true)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	@CollectionTable(schema = "mamma", name = "conclusie_review_redenen_fotobespreking_mbber")
 	private List<MammaLezingRedenenFotobesprekingMbber> redenenFotobesprekingMbber = new ArrayList<>();
 

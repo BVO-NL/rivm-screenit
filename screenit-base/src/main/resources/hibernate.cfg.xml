@@ -26,7 +26,7 @@
 
 <hibernate-configuration>
     <session-factory>
-        <property name="hibernate.dialect">nl.rivm.screenit.ScreenITPostgreSQLDialect</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
         <property name="hibernate.mapping.precedence">class, hbm</property>
 
         
@@ -42,7 +42,7 @@
         <property name="hibernate.jdbc.use_streams_for_binary">true</property>
 
         <property name="connection.isolation">2</property>
-        <property name="hibernate.max_fetch_depth">1</property>
+        <property name="hibernate.max_fetch_depth">1</property> 
 
         
         <property name="hibernate.session_factory_name">ScreenITSessionFactory</property>
@@ -52,17 +52,14 @@
         <property name="hibernate.listeners.envers.autoRegister">true</property>
         <property name="org.hibernate.envers.store_data_at_delete">true</property>
 
-        
-        <property name="hibernate.cache.region.factory_class">jcache</property>
-        <property name="hibernate.javax.cache.provider">org.ehcache.jsr107.EhcacheCachingProvider</property>
-        <property name="hibernate.cache.use_minimal_puts">false</property>
-        <property name="hibernate.cache.use_query_cache">false</property>
-        <property name="hibernate.cache.use_second_level_cache">false</property>
-        <property name="hibernate.cache.use_structured_entries">false</property>
         <property name="hibernate.jdbc.batch_size">20</property>
         <property name="hibernate.jdbc.lob.non_contextual_creation">true</property>
         <property name="org.hibernate.envers.revision_on_collection_change">false</property>
         <property name="hibernate.metadata_builder_contributor">nl.rivm.screenit.config.BaseHibernateConfig</property>
+        <property name="hibernate.id.db_structure_naming_strategy">single</property>
         <property name="default_schema">gedeeld</property>
+        <property name="hibernate.query.mutation_strategy.global_temporary.create_tables">false</property>
+        <property name="hibernate.query.mutation_strategy.global_temporary.drop_tables">false</property>
+        <property name="hibernate.session_factory.statement_inspector">nl.rivm.screenit.util.hibernate.CustomStatementInspector</property>
     </session-factory>
 </hibernate-configuration>

@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.berichten.cda;
 
 /*-
@@ -22,7 +21,6 @@ package nl.rivm.screenit.model.berichten.cda;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -33,23 +31,20 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity(name = "cda_melding_ongeldig_bericht")
-@Table(schema = "gedeeld", indexes = @Index(name = "idx_cda_melding_ongeldig_bericht_actief", columnList = "actief") )
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "verslag.cache")
+@Table(schema = "gedeeld", indexes = @Index(name = "idx_cda_melding_ongeldig_bericht_actief", columnList = "actief"))
+@Getter
+@Setter
 public class MeldingOngeldigCdaBericht extends AbstractHibernateObject
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
 
 	@ManyToOne
 	private OntvangenCdaBericht ontvangenCdaBericht;
@@ -69,103 +64,13 @@ public class MeldingOngeldigCdaBericht extends AbstractHibernateObject
 	@Column(nullable = false)
 	private Boolean actief;
 
+	@Column(length = HibernateMagicNumber.L20)
+	private String topdeskTicket;
+
 	@Column(length = HibernateMagicNumber.L12)
 	private String bsn;
 
-	@ManyToOne
-	private ScreeningOrganisatie screeningOrganisatie;
-
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date datum;
-
-	public OntvangenCdaBericht getOntvangenCdaBericht()
-	{
-		return ontvangenCdaBericht;
-	}
-
-	public void setOntvangenCdaBericht(OntvangenCdaBericht ontvangenCdaBericht)
-	{
-		this.ontvangenCdaBericht = ontvangenCdaBericht;
-	}
-
-	public Gebruiker getUitvoerder()
-	{
-		return uitvoerder;
-	}
-
-	public void setUitvoerder(Gebruiker uitvoerder)
-	{
-		this.uitvoerder = uitvoerder;
-	}
-
-	public String getMelding()
-	{
-		return melding;
-	}
-
-	public void setMelding(String melding)
-	{
-		this.melding = melding;
-	}
-
-	public Boolean getHerstelbaar()
-	{
-		return herstelbaar;
-	}
-
-	public void setHerstelbaar(Boolean herstelbaar)
-	{
-		this.herstelbaar = herstelbaar;
-	}
-
-	public Instelling getUitvoerendeOrganisatie()
-	{
-		return uitvoerendeOrganisatie;
-	}
-
-	public void setUitvoerendeOrganisatie(Instelling uitvoerendeOrganisatie)
-	{
-		this.uitvoerendeOrganisatie = uitvoerendeOrganisatie;
-	}
-
-	public Boolean getActief()
-	{
-		return actief;
-	}
-
-	public void setActief(Boolean actief)
-	{
-		this.actief = actief;
-	}
-
-	public String getBsn()
-	{
-		return bsn;
-	}
-
-	public void setBsn(String bsn)
-	{
-		this.bsn = bsn;
-	}
-
-	public ScreeningOrganisatie getScreeningOrganisatie()
-	{
-		return screeningOrganisatie;
-	}
-
-	public void setScreeningOrganisatie(ScreeningOrganisatie screeningOrganisatie)
-	{
-		this.screeningOrganisatie = screeningOrganisatie;
-	}
-
-	public Date getDatum()
-	{
-		return datum;
-	}
-
-	public void setDatum(Date datum)
-	{
-		this.datum = datum;
-	}
 
 }

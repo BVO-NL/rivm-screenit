@@ -111,7 +111,7 @@ public abstract class BaseTypedScrollableResultReader<T> implements ItemReader<T
 	@Override
 	public void close() throws ItemStreamException
 	{
-		ScrollableResults scrollableResults = resultSet.get();
+		var scrollableResults = resultSet.get();
 		if (scrollableResults != null)
 		{
 			scrollableResults.close();

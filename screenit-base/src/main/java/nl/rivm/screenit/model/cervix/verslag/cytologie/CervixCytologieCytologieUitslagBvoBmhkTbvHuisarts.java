@@ -21,13 +21,14 @@ package nl.rivm.screenit.model.cervix.verslag.cytologie;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.verslag.VraagElement;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
@@ -36,53 +37,28 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "cervix")
+@Getter
+@Setter
 public class CervixCytologieCytologieUitslagBvoBmhkTbvHuisarts
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private CervixCytologieVerslagContent verslagContent;
 
 	@Column(length = 4096)
-	@VraagElement(displayName = "Protocollair verslag", extraTekst = "Het protocollair verslag (PV) zoals gegenereerd door de PALGA Protocol Module t.b.v. de uitslagverstrekking aan de huisarts", code = "2.16.840.1.113883.2.4.3.36.77.2.11.267", isVerplicht = true)
+	@VraagElement(conceptId = "267", displayName = "Protocollair verslag", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.214']]]/hl7:section/hl7:text",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.214']]]/hl7:section/hl7:text"
+	}, isVerplicht = true)
 	private String protocollairVerslag;
 
 	@Column(length = 4096)
-	@VraagElement(displayName = "Conclusie", extraTekst = "De tekstuele conclusie zoals gegenereerd door de PALGA Protocol Module t.b.v. de uitslagverstrekking aan de huisarts", code = "2.16.840.1.113883.2.4.3.36.77.2.11.268", isVerplicht = true)
+	@VraagElement(conceptId = "268", displayName = "Conclusie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.212']]]/hl7:section/hl7:text",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.212']]]/hl7:section/hl7:text"
+	}, isVerplicht = true)
 	private String conclusie;
-
-	public CervixCytologieVerslagContent getVerslagContent()
-	{
-		return verslagContent;
-	}
-
-	public void setVerslagContent(CervixCytologieVerslagContent verslagContent)
-	{
-		this.verslagContent = verslagContent;
-	}
-
-	public String getProtocollairVerslag()
-	{
-		return protocollairVerslag;
-	}
-
-	public void setProtocollairVerslag(String protocollairVerslag)
-	{
-		this.protocollairVerslag = protocollairVerslag;
-	}
-
-	public String getConclusie()
-	{
-		return conclusie;
-	}
-
-	public void setConclusie(String conclusie)
-	{
-		this.conclusie = conclusie;
-	}
 
 }

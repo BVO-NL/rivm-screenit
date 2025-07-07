@@ -44,7 +44,7 @@ import nl.rivm.screenit.main.service.impl.zorgid.OpenedSessieState;
 import nl.rivm.screenit.main.service.impl.zorgid.SessieState;
 import nl.topicuszorg.cloud.distributedsessions.RedisConfig;
 import nl.topicuszorg.cloud.distributedsessions.jedis.JedisFactory;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5Session;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.zorgid.client.ZorgidClient;
 import nl.topicuszorg.zorgid.client.impl.ZorgidClientImpl;
@@ -136,7 +136,7 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 			objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.NONE);
 			objectMapper.addMixIn(Object.class, MixInByPropName.class);
 			LOG.info("doInit");
-			OpenHibernate5Session.withCommittedTransaction().run(() ->
+			OpenHibernateSession.withCommittedTransaction().run(() ->
 			{
 				try
 				{

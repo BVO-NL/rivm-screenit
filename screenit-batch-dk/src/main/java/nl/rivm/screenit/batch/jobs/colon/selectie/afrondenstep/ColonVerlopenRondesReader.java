@@ -21,12 +21,13 @@ package nl.rivm.screenit.batch.jobs.colon.selectie.afrondenstep;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.criteria.JoinType;
+
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.colon.ColonDossier_;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
@@ -37,12 +38,11 @@ import nl.rivm.screenit.specification.algemeen.ScreeningRondeSpecification;
 import nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification;
 import nl.rivm.screenit.specification.colon.ColonScreeningRondeSpecification;
 import nl.rivm.screenit.specification.colon.ColonUitnodigingSpecification;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-
-import jakarta.persistence.criteria.JoinType;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
@@ -83,7 +83,7 @@ public class ColonVerlopenRondesReader extends BaseSpecificationScrollableResult
 					.or(ColonUitnodigingSpecification.heeftVerlopenFit(maxLengteRondeDatum).with(root -> uitnodigingJoin))
 					.or(ColonScreeningRondeSpecification.heeftGeenLaatsteAfspraak())
 					.or(ColonIntakeAfspraakSpecification.conclusieNietBinnenWachtperiodeVerwerkt(wachttijdNaAfspraakDatum).with(root -> afspraakJoin))
-					.or(ColonScreeningRondeSpecification.isEersteOngunstigeUitslagUitLaatsteRonde(testenJoin.get(IFOBTTest_.statusDatum), r.get(TablePerClassHibernateObject_.id),
+					.or(ColonScreeningRondeSpecification.isEersteOngunstigeUitslagUitLaatsteRonde(testenJoin.get(IFOBTTest_.statusDatum), r.get(AbstractHibernateObject_.id),
 						maxLengteRondeDatum))
 				)
 				.toPredicate(r, q, cb);

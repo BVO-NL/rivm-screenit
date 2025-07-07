@@ -35,14 +35,11 @@ import lombok.Setter;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @Getter
 @Setter
 @Table(schema = "gedeeld", indexes = { @Index(name = "IDX_gba_mutaties_aanvullende_informatie", columnList = "aanvullendeInformatie") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class GbaMutatie extends AbstractHibernateObject
 {
 	@Temporal(TemporalType.TIMESTAMP)

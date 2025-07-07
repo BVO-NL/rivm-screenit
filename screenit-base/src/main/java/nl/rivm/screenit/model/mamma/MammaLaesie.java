@@ -39,25 +39,22 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.SingleTableHibernateObject;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.mamma.enums.MammaLaesieType;
 import nl.rivm.screenit.model.mamma.enums.MammaZijde;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "mamma", name = "laesie")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 @Audited
 @Check(constraints = "laesie.laesie_grootte_in_cm >= 0")
 @Getter
 @Setter
-public abstract class MammaLaesie extends SingleTableHibernateObject
+public abstract class MammaLaesie extends AbstractHibernateObject
 {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private MammaLezing lezing;

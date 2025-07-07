@@ -29,9 +29,10 @@ import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.criteria.From;
+
 import lombok.AllArgsConstructor;
 
-import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dto.InstellingGebruikerRolDto;
 import nl.rivm.screenit.main.dao.MedewerkerDao;
 import nl.rivm.screenit.main.service.MedewerkerService;
@@ -54,9 +55,7 @@ import nl.rivm.screenit.repository.algemeen.GebruikerRepository;
 import nl.rivm.screenit.repository.algemeen.InstellingGebruikerRepository;
 import nl.rivm.screenit.repository.algemeen.InstellingGebruikerRolRepository;
 import nl.rivm.screenit.service.AuthenticatieService;
-import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
-import nl.rivm.screenit.service.MailService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.specification.HibernateObjectSpecification;
 import nl.rivm.screenit.specification.algemeen.MedewerkerSpecification;
@@ -65,16 +64,11 @@ import nl.rivm.screenit.specification.algemeen.OrganisatieMedewerkerSpecificatio
 import nl.rivm.screenit.specification.algemeen.PermissieSpecification;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import jakarta.persistence.criteria.From;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.MedewerkerSpecification.heeftHandtekening;
@@ -90,12 +84,6 @@ public class MedewerkerServiceImpl implements MedewerkerService
 	private final HibernateService hibernateService;
 
 	private final AuthenticatieService authenticatieService;
-
-	private final SimplePreferenceService preferenceService;
-
-	private final MailService mailService;
-
-	private final ICurrentDateSupplier currentDateSupplier;
 
 	private final UploadDocumentService uploadDocumentService;
 
@@ -114,11 +102,10 @@ public class MedewerkerServiceImpl implements MedewerkerService
 		return organisatieMedewerkerRepository.findWith(spec, InstellingGebruiker.class, q -> q.sortBy(sort))
 			.fetch(g ->
 			{
-				g.addSubgraph(InstellingGebruiker_.MEDEWERKER);
-				g.addSubgraph(InstellingGebruiker_.ORGANISATIE);
+				g.addSubgraph(InstellingGebruiker_.medewerker);
+				g.addSubgraph(InstellingGebruiker_.organisatie);
 			})
-			.distinct()
-			.all(first, count);
+			.all(first, count); 
 	}
 
 	@Override
@@ -137,8 +124,7 @@ public class MedewerkerServiceImpl implements MedewerkerService
 
 		return organisatieMedewerkerRepository.findWith(spec, InstellingGebruiker.class, q -> q.sortBy(sort))
 			.fetch(g -> g.addSubgraph(InstellingGebruiker_.MEDEWERKER))
-			.distinct()
-			.all();
+			.all();  
 	}
 
 	@Override
@@ -186,7 +172,7 @@ public class MedewerkerServiceImpl implements MedewerkerService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void saveOrUpdateRollen(InstellingGebruiker ingelogdeInstellingGebruiker, List<InstellingGebruikerRolDto> initieleRollen, InstellingGebruiker instellingGebruiker)
 	{
 		medewerkerDao.saveOrUpdateInstellingGebruiker(instellingGebruiker);
@@ -254,7 +240,7 @@ public class MedewerkerServiceImpl implements MedewerkerService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public boolean saveOrUpdateGebruiker(Gebruiker medewerker, boolean isBestaande, boolean wordGeblokkeerd)
 	{
 		var gelukt = true;
@@ -295,60 +281,7 @@ public class MedewerkerServiceImpl implements MedewerkerService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
-	public void inActiveerGebruiker(Gebruiker medewerker)
-	{
-		medewerker.setActief(Boolean.FALSE.equals(medewerker.getActief()));
-		hibernateService.saveOrUpdate(medewerker);
-		if (Boolean.FALSE.equals(medewerker.getActief()))
-		{
-			if (StringUtils.isNotBlank(medewerker.getEmailextra()))
-			{
-				var inactiverenemail = preferenceService.getString(PreferenceKey.INACTIVERENEMAIL.name(), "Beste gebruiker, <br><br>"
-					+ "U gebruiker account met de gebruikersnaam '{gebruikersnaam}' is ge&iuml;nactiveerd." + " <br><br>Met vriendelijke groeten, <br>Het ScreenIT team");
-				inactiverenemail = inactiverenemail.replaceAll("\\{gebruikersnaam\\}", medewerker.getGebruikersnaam());
-				var aanhef = "";
-				if (medewerker.getAanhef() != null)
-				{
-					aanhef = " " + medewerker.getAanhef().getNaam();
-				}
-
-				var titel = "";
-				if (medewerker.getTitel() != null)
-				{
-					titel = " " + medewerker.getTitel().getNaam();
-				}
-
-				var achternaam = "";
-				if (StringUtils.isNotBlank(medewerker.getAchternaam()))
-				{
-					achternaam = " " + medewerker.getAchternaam();
-				}
-
-				var tussenvoegsel = "";
-				if (StringUtils.isNotBlank(medewerker.getTussenvoegsel()))
-				{
-					tussenvoegsel = " " + medewerker.getTussenvoegsel();
-				}
-
-				var voorletters = "";
-				if (StringUtils.isNotBlank(medewerker.getVoorletters()))
-				{
-					voorletters = " " + medewerker.getVoorletters();
-				}
-				inactiverenemail = inactiverenemail.replaceAll("\\{aanhef\\}", aanhef);
-				inactiverenemail = inactiverenemail.replaceAll("\\{titel\\}", titel);
-				inactiverenemail = inactiverenemail.replaceAll("\\{achternaam\\}", achternaam);
-				inactiverenemail = inactiverenemail.replaceAll("\\{tussenvoegsel\\}", tussenvoegsel);
-				inactiverenemail = inactiverenemail.replaceAll("\\{voorletters\\}", voorletters);
-				var inactiverensubject = preferenceService.getString(PreferenceKey.INACTIVERENSUBJECT.name(), "ScreenIT - Gebruiker account ge\u00EFnactiveerd");
-				mailService.queueMailAanProfessional(medewerker.getEmailextra(), inactiverensubject, inactiverenemail);
-			}
-		}
-	}
-
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public boolean resetWachtwoord(Gebruiker gebruiker)
 	{
 		gebruiker.setWachtwoord(null);
@@ -394,7 +327,8 @@ public class MedewerkerServiceImpl implements MedewerkerService
 		return organisatieMedewerkerRepository.findOne(spec).orElse(null);
 	}
 
-	private List<InstellingGebruikerRol> getOrganisatieMedewerkersMetRol(Rol rol)
+	@Override
+	public List<InstellingGebruikerRol> getOrganisatieMedewerkersMetRol(Rol rol)
 	{
 		var spec = OrganisatieMedewerkerRolSpecification.isActief(Boolean.TRUE)
 			.and(OrganisatieMedewerkerRolSpecification.heeftRol(rol));

@@ -32,15 +32,12 @@ import jakarta.persistence.Table;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Proxy;
 
 @Entity
-@Table(schema = "algemeen", indexes = @Index(name = "functie_actiefIndex", columnList = "actief") )
+@Table(schema = "algemeen", indexes = @Index(name = "functie_actiefIndex", columnList = "actief"))
 @Proxy(lazy = true)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 public class Functie extends AbstractHibernateObject implements INaam
 {
 

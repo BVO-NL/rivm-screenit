@@ -33,12 +33,8 @@ import jakarta.persistence.Table;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(schema = "gedeeld", indexes = @Index(columnList = "code", name = "IDX_WOONPLAATS_CODE", unique = true))
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class Woonplaats extends AbstractHibernateObject implements INaam
 {
 

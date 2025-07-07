@@ -24,6 +24,8 @@ package nl.rivm.screenit.mamma.se.service.impl;
 import java.util.EnumMap;
 import java.util.Map;
 
+import lombok.RequiredArgsConstructor;
+
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.mamma.se.dto.SeAutorisatieDto;
 import nl.rivm.screenit.mamma.se.dto.SeConfiguratieKey;
@@ -31,18 +33,12 @@ import nl.rivm.screenit.mamma.se.service.ConfiguratieService;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
+@RequiredArgsConstructor
 public class ConfiguratieServiceImpl implements ConfiguratieService
 {
-
-	@Autowired
-	private SimplePreferenceService preferenceService;
 
 	private static final int SE_PING_INTERVAL_DEFAULT = 2500;
 
@@ -53,6 +49,8 @@ public class ConfiguratieServiceImpl implements ConfiguratieService
 	public static final int SE_DAGLIJST_OPHALEN_VOOR_DAGEN_DEFAULT = 1;
 
 	private static final int MAMMA_SE_MAX_OFFLINE_INLOGPERIODE_DEFAULT = 0;
+
+	private final SimplePreferenceService preferenceService;
 
 	@Override
 	public void voegParametersToe(SeAutorisatieDto result, String versie, MammaScreeningsEenheid screeningsEenheid)
@@ -70,6 +68,13 @@ public class ConfiguratieServiceImpl implements ConfiguratieService
 		seParameters.put(SeConfiguratieKey.SE_PONG_TIMEOUT,
 			Integer.toString(preferenceService.getInteger(PreferenceKey.INTERNAL_MAMMA_SE_PONG_TIMEOUT.name(), SE_PONG_TIMEOUT_DEFAULT)));
 		seParameters.put(SeConfiguratieKey.TOMOSYNTHESE_MOGELIJK, screeningsEenheid.getTomosyntheseMogelijk().toString());
+
+		if (versie != null && !versie.startsWith("25.3")) 
+		{
+			seParameters.put(SeConfiguratieKey.IMS_LAUNCH_URL_PASSWORD, preferenceService.getString(PreferenceKey.MAMMA_IMS_LAUNCH_URL_PASSWORD.name(), ""));
+			seParameters.put(SeConfiguratieKey.MAMMA_IMS_LAUNCH_URL_SHA1_MODE,
+				String.valueOf(preferenceService.getBoolean(PreferenceKey.MAMMA_IMS_LAUNCH_URL_SHA1_MODE.name(), true)));
+		}
 
 		result.setSeParameters(seParameters);
 	}

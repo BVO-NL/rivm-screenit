@@ -32,6 +32,7 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.table.AjaxImageCellPanel;
 import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
+import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.RetourredenAfhandeling;
 import nl.rivm.screenit.model.enums.Actie;
@@ -39,7 +40,6 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.RetourzendingAfhandelingType;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.wicket.hibernate.markup.form.validation.UniqueFieldValidator;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -92,7 +92,7 @@ public class RetourzendingRedenBeheerPage extends RetourzendingBasePage
 		add(retourRedenAfhandelingForm);
 
 		TextField<String> retourRedenTextField = ComponentHelper.newTextField("retourReden", 255, true);
-		retourRedenTextField.add(new UniqueFieldValidator<>(RetourredenAfhandeling.class, retourredenAfhandeling.getRetourReden(), "retourReden", hibernateService, true));
+		retourRedenTextField.add(new ScreenitUniqueFieldValidator<>(RetourredenAfhandeling.class, retourredenAfhandeling.getRetourReden(), "retourReden", true));
 		retourRedenAfhandelingForm.add(retourRedenTextField);
 
 		final ScreenitDropdown<RetourzendingAfhandelingType> afhandelingenDropdown = ComponentHelper.newDropDownChoice("afhandeling",

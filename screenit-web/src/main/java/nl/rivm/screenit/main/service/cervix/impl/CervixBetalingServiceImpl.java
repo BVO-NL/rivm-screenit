@@ -87,7 +87,7 @@ import nl.rivm.screenit.util.cervix.CervixHuisartsToDtoUtil;
 import nl.rivm.screenit.util.cervix.CervixTariefUtil;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5SessionInThread;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -684,7 +684,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 		return betalingenDataProviderService.size(null);
 	}
 
-	private class CervixBetalingsBestandenThread extends OpenHibernate5SessionInThread
+	private class CervixBetalingsBestandenThread extends OpenHibernateSessionInThread
 	{
 		@Autowired
 		private CervixBetalingService cervixBetalingService;

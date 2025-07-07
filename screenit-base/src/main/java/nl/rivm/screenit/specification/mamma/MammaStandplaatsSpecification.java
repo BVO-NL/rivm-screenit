@@ -34,6 +34,7 @@ import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode_;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde_;
 import nl.rivm.screenit.model.mamma.MammaStandplaats_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.organisatie.model.Adres_;
 
 import org.springframework.data.jpa.domain.Specification;
@@ -105,6 +106,6 @@ public class MammaStandplaatsSpecification
 
 	public static ExtendedSpecification<MammaStandplaats> heeftScreeningOrganisatieId(Long soId)
 	{
-		return (r, q, cb) -> cb.equal(r.get(MammaStandplaats_.regio), soId);
+		return (r, q, cb) -> cb.equal(r.get(MammaStandplaats_.regio).get(AbstractHibernateObject_.id), soId);
 	}
 }

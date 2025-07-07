@@ -31,7 +31,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -43,8 +42,6 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Proxy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
@@ -52,22 +49,16 @@ import org.hibernate.envers.RelationTargetAuditMode;
 @Entity
 @Table(schema = "algemeen", name = "org_organisatie_medewerker", indexes = { @Index(name = "idx_organisatie_medewerker_actief", columnList = "actief") })
 @Proxy
-@Cache(
-	usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
-	region = "organisatie.cache"
-)
 @Audited
 @Getter
 @Setter
 public class InstellingGebruiker extends AbstractHibernateObject implements Account, IActief
 {
-	@ManyToOne
-	@JoinColumn(nullable = false)
+	@ManyToOne(optional = false)
 	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	private Instelling organisatie;
 
-	@ManyToOne
-	@JoinColumn(nullable = false)
+	@ManyToOne(optional = false)
 	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	private Gebruiker medewerker;
 
@@ -84,7 +75,6 @@ public class InstellingGebruiker extends AbstractHibernateObject implements Acco
 	private String uzipasnummer;
 
 	@OneToMany(mappedBy = "instellingGebruiker")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 	private List<InstellingGebruikerRol> rollen = new ArrayList<>();
 
 	@ElementCollection(targetClass = Bevolkingsonderzoek.class)

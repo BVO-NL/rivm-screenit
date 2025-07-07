@@ -33,6 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.sqs.SqsAsyncClient;
+import software.amazon.awssdk.services.sqs.SqsBaseClientBuilder;
 import software.amazon.awssdk.services.sqs.SqsClient;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -44,11 +46,26 @@ public final class SqsUtil
 			.region(Region.EU_WEST_1)
 			.credentialsProvider(StaticCredentialsProvider.create(getAwsBasicCredentials(sqsConfig)));
 
+		overrideEndpointIfNeeded(sqsConfig, sqsClientBuilder);
+		return sqsClientBuilder.build();
+	}
+
+	private static void overrideEndpointIfNeeded(SqsConfig sqsConfig, SqsBaseClientBuilder<?, ?> sqsClientBuilder)
+	{
 		if (StringUtils.isNotBlank(sqsConfig.getEndpointOverride()))
 		{
 			sqsClientBuilder.endpointOverride(URI.create(sqsConfig.getEndpointOverride()));
 		}
-		return sqsClientBuilder.build();
+	}
+
+	public static SqsAsyncClient sqsAsyncClient(SqsConfig sqsConfig)
+	{
+		var sqsAsyncClientBuilder = SqsAsyncClient.builder()
+			.region(Region.EU_WEST_1)
+			.credentialsProvider(StaticCredentialsProvider.create(getAwsBasicCredentials(sqsConfig)));
+
+		overrideEndpointIfNeeded(sqsConfig, sqsAsyncClientBuilder);
+		return sqsAsyncClientBuilder.build();
 	}
 
 	public static String queueName(SqsConfig sqsConfig)

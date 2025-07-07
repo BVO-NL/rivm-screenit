@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
  * ========================LICENSE_START=================================
  * se-proxy
  * %%
- * Copyright (C) 2017 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,6 +21,9 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 import nl.rivm.screenit.mamma.se.proxy.SeProxyApplication;
 import nl.rivm.screenit.mamma.se.proxy.model.EnvironmentInfoDto;
 import nl.rivm.screenit.mamma.se.proxy.model.SeConfiguratieKey;
@@ -36,9 +39,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/environmentInfo")
@@ -72,7 +72,7 @@ public class EnvironmentInfoProxyController
 		environmentInfo.setDagenInDaglijstCache(seDaglijstService.dagenInCache());
 		environmentInfo.setCacheVulling(proxyService.cacheVullingInfo());
 		environmentInfo.setDagenDaglijstOphalenLimiet(configuratieService.getConfiguratieIntegerValue(SeConfiguratieKey.SE_DAGLIJST_OPHALEN_VOOR_DAGEN));
-		environmentInfo.setTomosyntheseMogelijk(configuratieService.getConfiguratieBooleanValue(SeConfiguratieKey.TOMOSYNTHESE_MOGELIJK));
+		environmentInfo.setTomosyntheseMogelijk(configuratieService.getConfiguratieBooleanValue(SeConfiguratieKey.TOMOSYNTHESE_MOGELIJK, false));
 		return ResponseEntity.ok(environmentInfo);
 	}
 }

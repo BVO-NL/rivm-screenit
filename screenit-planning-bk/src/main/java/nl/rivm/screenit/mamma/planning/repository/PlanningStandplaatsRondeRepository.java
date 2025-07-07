@@ -26,7 +26,6 @@ import java.util.List;
 
 import nl.rivm.screenit.mamma.planning.repository.projectie.CapaciteitBeschikbaarVoorProjectie;
 import nl.rivm.screenit.mamma.planning.repository.projectie.StandplaatsRondeProjectie;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde_;
 import nl.rivm.screenit.repository.BaseJpaRepository;
@@ -60,7 +59,7 @@ public interface PlanningStandplaatsRondeRepository extends BaseJpaRepository<Ma
 		return findWith(heeftAfspraakcapaciteitBeschikbaarVoor().and(heeftIdIn(standplaatsRondeIds)), CapaciteitBeschikbaarVoorProjectie.class, q -> q.projections((cb, r) ->
 			List.of(
 				r.get(AbstractHibernateObject_.id),
-				join(r, MammaStandplaatsRonde_.afspraakcapaciteitBeschikbaarVoor).get(SingleTableHibernateObject_.id)
+				join(r, MammaStandplaatsRonde_.afspraakcapaciteitBeschikbaarVoor).get(AbstractHibernateObject_.id)
 			)
 		).all());
 	}

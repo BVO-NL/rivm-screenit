@@ -40,7 +40,7 @@ public interface DashboardLogRegelRepository extends BaseJpaRepository<Dashboard
 	void maakDashboardStatusLeegVoorLandelijk(DashboardType dashboardType, Level level);
 
 	@Modifying
-	@Query("delete from DashboardLogRegel dl where dl.dashboardStatus in (select ds.id from DashboardStatus ds where ds.type = :dashboardType)")
+	@Query("delete from DashboardLogRegel dl where dl.dashboardStatus.id in (select ds.id from DashboardStatus ds where ds.type = :dashboardType)")
 	void maakDashboardStatusLeeg(DashboardType dashboardType);
 
 	boolean existsByDashboardStatusType(DashboardType dashboardType);

@@ -109,8 +109,8 @@ public class CervixVerwerkHpvBerichtServiceImpl implements CervixVerwerkHpvBeric
 			var hapiMsg = parser.parse(hpvBericht);
 			var bericht = new CervixHpvBerichtWrapper((OUL_R22) hapiMsg);
 
-			LOG.info("Bericht wordt verwerkt! Aantal: {}", bericht.getResultaten().size());
-			for (CervixHpvMonsterWrapper sample : bericht.getResultaten())
+			LOG.info("Bericht wordt verwerkt! Aantal: {}", bericht.getResults().size());
+			for (CervixHpvMonsterWrapper sample : bericht.getResults())
 			{
 				try
 				{

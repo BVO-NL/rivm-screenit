@@ -25,20 +25,17 @@ import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
-import nl.rivm.screenit.repository.mamma.MammaHL7v24MessageNativeQueryRepository;
+import nl.rivm.screenit.repository.mamma.MammaHL7v24MessageRepository;
 import nl.rivm.screenit.service.mamma.MammaBaseHL7v24MessageService;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 @RequiredArgsConstructor
 public class MammaBaseHL7v24MessageServiceImpl implements MammaBaseHL7v24MessageService
 {
-
-	private final MammaHL7v24MessageNativeQueryRepository hl7v24MessageRepository;
+	private final MammaHL7v24MessageRepository hl7v24MessageRepository;
 
 	@Transactional
 	@Override

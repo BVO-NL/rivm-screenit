@@ -29,7 +29,7 @@ import java.util.concurrent.TimeoutException;
 import nl.rivm.screenit.mamma.se.dto.DagverslagDto;
 import nl.rivm.screenit.mamma.se.service.DagverslagService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5SessionInThread;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +73,7 @@ public class DagverslagController extends AuthorizedController
 		}
 	}
 
-	private class DagverslagOphaler extends OpenHibernate5SessionInThread
+	private class DagverslagOphaler extends OpenHibernateSessionInThread
 	{
 		private final LocalDate datum;
 

@@ -99,7 +99,7 @@ public class ColonUitnodigingenVersturenTasklet extends AbstractUitnodigingenVer
 	protected void logMislukt(Long uitnodigingId)
 	{
 		String melding = String.format("Fout bij het versturen van uitnodiging met technisch id: %s", uitnodigingId);
-		logService.logGebeurtenis(LogGebeurtenis.UITNODIGING_VERSTUREN_NAAR_INPAKCENTRUM_MISLUKT, null, melding, Bevolkingsonderzoek.COLON);
+		logService.logGebeurtenis(LogGebeurtenis.UITNODIGING_VERSTUREN_NAAR_INPAKCENTRUM_MISLUKT, melding, Bevolkingsonderzoek.COLON);
 	}
 
 	@Override

@@ -30,6 +30,7 @@ import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxLink;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
+import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
 import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaPlanningBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaPostcodeReeksEditPage;
@@ -45,9 +46,7 @@ import nl.rivm.screenit.model.mamma.MammaPostcodeReeks;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.service.InstellingService;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
-import nl.topicuszorg.wicket.hibernate.markup.form.validation.UniqueFieldValidator;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.lang.StringUtils;
@@ -79,9 +78,6 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 
 	@SpringBean
 	private MammaScreeningsEenheidService screeningsEenheidService;
-
-	@SpringBean
-	private HibernateService hibernateService;
 
 	@SpringBean
 	private InstellingService instellingService;
@@ -143,7 +139,7 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 		mainForm.setOutputMarkupId(true);
 		nieuwMainContainer.add(mainForm);
 		ComponentHelper.addTextField(mainForm, "naam", true, 255, String.class, !magAanpassen || !ingelogdNamensRegio)
-			.add(new UniqueFieldValidator<>(MammaStandplaats.class, getStandplaats().getId(), "naam", hibernateService));
+			.add(new ScreenitUniqueFieldValidator<>(MammaStandplaats.class, getStandplaats().getId(), "naam", false));
 
 		mainForm.add(new Label("gekoppeldeSEs", screeningsEenheidService.getGekoppeldeScreeningsEenhedenTekst(getStandplaats())));
 

@@ -34,8 +34,6 @@ import lombok.Setter;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.enums.ColonTijdslotType;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Getter
@@ -43,7 +41,6 @@ import org.hibernate.envers.Audited;
 @Entity
 @Table(schema = "colon", name = "afspraakslot")
 @Audited
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "colon.cache")
 public class ColonAfspraakslot extends ColonTijdslot
 {
 	public ColonAfspraakslot()

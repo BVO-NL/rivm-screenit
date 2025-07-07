@@ -22,6 +22,7 @@ package nl.rivm.screenit.main.service.colon.impl;
  */
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,6 +43,7 @@ import nl.rivm.screenit.main.service.ClientDossierFilter;
 import nl.rivm.screenit.main.service.DossierService;
 import nl.rivm.screenit.main.service.RetourzendingService;
 import nl.rivm.screenit.main.service.TestTimelineTimeService;
+import nl.rivm.screenit.main.service.colon.ColonAfspraakslotService;
 import nl.rivm.screenit.main.service.colon.ColonDossierService;
 import nl.rivm.screenit.main.service.colon.ColonTestTimelineService;
 import nl.rivm.screenit.main.service.colon.ColonVervolgonderzoekKeuzesDto;
@@ -68,11 +70,13 @@ import nl.rivm.screenit.model.colon.IFOBTType;
 import nl.rivm.screenit.model.colon.IFOBTVervaldatum;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
+import nl.rivm.screenit.model.colon.enums.ColonAfspraakslotStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
 import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
 import nl.rivm.screenit.model.colon.enums.MdlVervolgbeleid;
+import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlColoscopieMedischeObservatie;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg;
@@ -157,6 +161,9 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 	@Autowired
 	private OrganisatieParameterService organisatieParameterService;
 
+	@Autowired
+	private ColonAfspraakslotService afspraakslotService;
+
 	@Override
 	public List<TestVervolgKeuzeOptie> getSnelKeuzeOpties(Client client)
 	{
@@ -236,7 +243,8 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 		{
 			if (ronde.getAfspraken().isEmpty())
 			{
-				keuzes.add(TestVervolgKeuzeOptie.INTAKE_AFSPRAAK);
+				keuzes.add(TestVervolgKeuzeOptie.INTAKE_AFSPRAAK_BUITEN_ROOSTER);
+				keuzes.add(TestVervolgKeuzeOptie.INTAKE_AFSPRAAK_BINNEN_ROOSTER);
 			}
 			keuzes.add(TestVervolgKeuzeOptie.MDL_VERSLAG);
 		}
@@ -245,20 +253,18 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 	private void keuzeIntakeAfspraakConclusie(List<TestVervolgKeuzeOptie> keuzes, ColonScreeningRonde ronde)
 	{
 		var afspraak = ronde.getLaatsteAfspraak();
-		if (afspraak != null)
+		if (afspraak != null && afspraak.getConclusie() == null && !ColonScreeningRondeUtil.heeftAfgerondeVerslag(ronde, VerslagType.MDL))
 		{
-			if (afspraak.getConclusie() == null && !ColonScreeningRondeUtil.heeftAfgerondeVerslag(ronde, VerslagType.MDL))
-			{
-				keuzes.add(TestVervolgKeuzeOptie.INTAKE_AFSPRAAK_CONCLUSIE);
-			}
+			keuzes.add(TestVervolgKeuzeOptie.INTAKE_AFSPRAAK_CONCLUSIE);
 		}
+
 	}
 
 	@Override
 	@Transactional
 	public List<Client> maakOfVindClienten(TestTimelineModel model)
 	{
-		List<Client> clienten = new ArrayList<>();
+		var clienten = new ArrayList<Client>();
 		for (var bsn : model.getBsns())
 		{
 			clienten.add(maakOfVindClient(model, bsn));
@@ -289,7 +295,7 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 	@Transactional
 	public List<Client> maakOfWijzigClienten(TestTimelineModel model)
 	{
-		List<Client> clienten = new ArrayList<>();
+		var clienten = new ArrayList<Client>();
 		for (var bsn : model.getBsns())
 		{
 			var client = maakOfVindClient(model, bsn);
@@ -761,7 +767,7 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 
 	@Override
 	@Transactional
-	public void maaktIntakeAfspraakVoorClient(Client client, ColonIntakelocatie intakelocatie)
+	public void maaktIntakeAfspraakVoorClient(Client client, ColonIntakelocatie intakelocatie, boolean binnenRooster)
 	{
 		var dossier = client.getColonDossier();
 		testTimelineTimeService.calculateBackwards(client.getColonDossier(), 1);
@@ -771,23 +777,31 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 		var brief = briefService.maakBvoBrief(ronde, BriefType.COLON_UITNODIGING_INTAKE);
 		brief.setCreatieDatum(DateUtil.minusTijdseenheid(brief.getCreatieDatum(), 5, ChronoUnit.SECONDS));
 
-		ColonIntakekamer actieveKamer = null;
-
-		Integer duurAfspraakInMinuten = null;
-		for (var kamer : intakelocatie.getKamers())
-		{
-			if (kamer.getActief())
-			{
-				actieveKamer = kamer;
-				duurAfspraakInMinuten = organisatieParameterService.getOrganisatieParameter(actieveKamer.getIntakelocatie(),
-					OrganisatieParameterKey.COLON_DUUR_AFSPRAAK_IN_MINUTEN, 15);
-				break;
-			}
-		}
-
 		var intakeAfspraak = ronde.getLaatsteAfspraak();
 		if (intakeAfspraak == null)
 		{
+			LocalDateTime startDatum;
+			ColonIntakekamer intakekamer;
+			ColonAfspraakslot afspraakslot = null;
+			var duurAfspraakInMinuten = organisatieParameterService.getOrganisatieParameter(intakelocatie, OrganisatieParameterKey.COLON_DUUR_AFSPRAAK_IN_MINUTEN, 15);
+
+			if (binnenRooster)
+			{
+				afspraakslot = vindEersteBeschikbareAfspraakslot(intakelocatie);
+				startDatum = afspraakslot.getVanaf();
+				intakekamer = afspraakslot.getKamer();
+			}
+			else
+			{
+				var eersteActieveKamer = intakelocatie.getKamers().stream().filter(kamer -> Boolean.TRUE.equals(kamer.getActief())).findFirst();
+				if (eersteActieveKamer.isEmpty())
+				{
+					throw new IllegalStateException("Intakelocatie heeft geen actieve kamers");
+				}
+				startDatum = currentDateSupplier.getLocalDateTime().plusDays(1);
+				intakekamer = eersteActieveKamer.get();
+			}
+
 			intakeAfspraak = new ColonIntakeAfspraak();
 			intakeAfspraak.setAfstand(BigDecimal.valueOf(2.3));
 			intakeAfspraak.setClient(client);
@@ -797,9 +811,10 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 			ronde.setLaatsteAfspraak(intakeAfspraak);
 			ronde.getAfspraken().add(intakeAfspraak);
 			intakeAfspraak.setColonScreeningRonde(ronde);
-			intakeAfspraak.setVanaf(currentDateSupplier.getLocalDateTime().plusDays(1));
-			intakeAfspraak.setKamer(actieveKamer);
+			intakeAfspraak.setKamer(intakekamer);
+			intakeAfspraak.setVanaf(startDatum);
 			intakeAfspraak.setTot(intakeAfspraak.getVanaf().plusMinutes(duurAfspraakInMinuten));
+			intakeAfspraak.setAfspraakslot(afspraakslot);
 		}
 		intakeAfspraak.setBezwaar(false);
 		intakeAfspraak.setStatus(ColonAfspraakStatus.GEPLAND);
@@ -810,6 +825,21 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 		hibernateService.saveOrUpdate(client);
 
 		colonDossierBaseService.setDatumVolgendeUitnodiging(ronde.getDossier(), ColonUitnodigingsintervalType.GEPLANDE_INTAKE_AFSPRAAK);
+	}
+
+	private ColonAfspraakslot vindEersteBeschikbareAfspraakslot(ColonIntakelocatie intakeLocatie)
+	{
+		var intakeNietWijzigbaar = preferenceService.getInteger(PreferenceKey.INTAKE_NIET_WIJZIGBAAR.name());
+		var startDatum = currentDateSupplier.getLocalDate().plusDays(intakeNietWijzigbaar);
+		var eindDatum = startDatum.plusYears(1);
+		var beschikbareStatussen = List.of(ColonAfspraakslotStatus.GEBRUIKT_VOOR_CAPACITEIT, ColonAfspraakslotStatus.VRIJ_TE_VERPLAATSEN);
+		var beschikbareAfspraakslot = afspraakslotService.getEerstBeschikbareAfspraakslot(startDatum, eindDatum, beschikbareStatussen, intakeLocatie);
+
+		if (beschikbareAfspraakslot == null)
+		{
+			throw new IllegalStateException("Intakelocatie heeft geen beschikbare afspraakslots");
+		}
+		return beschikbareAfspraakslot;
 
 	}
 

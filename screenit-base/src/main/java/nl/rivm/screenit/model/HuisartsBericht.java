@@ -28,23 +28,26 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.model.enums.HuisartsBerichtType;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Setter
 @Getter
 @Entity
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
+@Table
 @Audited
-public abstract class HuisartsBericht extends TablePerClassHibernateObject
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class HuisartsBericht extends AbstractHibernateObject
 {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private Client client;

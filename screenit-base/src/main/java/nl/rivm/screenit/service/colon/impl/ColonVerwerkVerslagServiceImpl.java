@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.service.colon.impl;
 
 /*-
@@ -22,10 +21,7 @@ package nl.rivm.screenit.service.colon.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -36,7 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.enums.VerslagGeneratie;
@@ -47,7 +42,6 @@ import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonVerslag;
 import nl.rivm.screenit.model.colon.ColonVerslag_;
-import nl.rivm.screenit.model.colon.Complicatie;
 import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.MdlVerslag_;
@@ -55,33 +49,24 @@ import nl.rivm.screenit.model.colon.PaVerslag;
 import nl.rivm.screenit.model.colon.enums.MdlVervolgbeleid;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlColoscopieMedischeObservatie;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg;
-import nl.rivm.screenit.model.colon.verslag.mdl.MdlIncidentcomplicatie;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlLaesiecoloscopiecentrum;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlPoliep;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerrichting;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerslagContent;
-import nl.rivm.screenit.model.colon.verslag.pa.PaPathologieProtocolColonbioptperPoliep;
 import nl.rivm.screenit.model.colon.verslag.pa.PaVerslagContent;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
-import nl.rivm.screenit.model.enums.ComplicatieErnst;
-import nl.rivm.screenit.model.enums.ComplicatieMoment;
-import nl.rivm.screenit.model.enums.ComplicatieSoort;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.verslag.DSValue;
-import nl.rivm.screenit.model.verslag.Quantity;
 import nl.rivm.screenit.repository.colon.ColonMdlVerslagRepository;
 import nl.rivm.screenit.service.BaseVerslagService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.service.colon.ColonVerwerkVerslagService;
-import nl.rivm.screenit.service.colon.ComplicatieService;
 import nl.rivm.screenit.util.ColonScreeningRondeUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PropertyComparator;
 import org.springframework.data.domain.Sort;
@@ -99,8 +84,6 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagService
 {
 
-	private static final List<String> SURVAILLANCE_CODES = Arrays.asList("12", "13", "14", "15");
-
 	@Autowired
 	private HibernateService hibernateService;
 
@@ -112,9 +95,6 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 
 	@Autowired
 	private ICurrentDateSupplier currentDateSupplier;
-
-	@Autowired
-	private ComplicatieService complicatieService;
 
 	@Autowired
 	private ColonMdlVerslagRepository mdlVerslagRepository;
@@ -175,77 +155,50 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 		return actueelsteVerslag.map(mdlVerslag -> dossierBaseService.getVervolgbeleid(mdlVerslag)).orElse(null);
 	}
 
-	private boolean complicatieUnkown(Client client, MdlVerslag mdlVerslag, Date complicatieDatum, ComplicatieErnst complicatieErnst, ComplicatieMoment complicatieMoment,
-		ComplicatieSoort complicatieSoort)
-	{
-		boolean complicatieUnkown = false;
-		if (complicatieDatum != null && complicatieErnst != null && complicatieMoment != null && complicatieSoort != null)
-		{
-			complicatieUnkown = true;
-			for (Complicatie complicatie : client.getComplicaties())
-			{
-				if (complicatieDatum.equals(complicatie.getDatum()) && complicatieErnst.equals(complicatie.getErnst()) && complicatieMoment.equals(complicatie.getMoment())
-					&& complicatieSoort.equals(complicatie.getSoort()))
-				{
-					boolean changed = false;
-					if (complicatie.getMdlverslag() == null)
-					{
-						complicatie.setMdlverslag(mdlVerslag);
-						changed = true;
-					}
-					if (!complicatie.isActief())
-					{
-						complicatie.setActief(true);
-						changed = true;
-					}
-					if (changed)
-					{
-						hibernateService.saveOrUpdate(complicatie);
-					}
-					complicatieUnkown = false;
-					break;
-				}
-			}
-		}
-		return complicatieUnkown;
-	}
-
 	@Override
 	@Transactional
 	public void onAfterVerwerkVerslagContent(MdlVerslag verslag)
 	{
 
-		MdlVerslagContent content = verslag.getVerslagContent();
-		var aanvangVerrichting = content.getVerrichting().getAanvangVerrichting();
-		if (content.getColoscopieMedischeObservatie() != null)
+		var content = verslag.getVerslagContent();
+		var coloscopieMedischeObservatie = content.getColoscopieMedischeObservatie();
+		if (coloscopieMedischeObservatie != null)
 		{
-			MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg defVervolgbeleid = content.getColoscopieMedischeObservatie().getDefinitiefVervolgbeleidVoorBevolkingsonderzoekg();
-
-			if (defVervolgbeleid != null)
-			{
-				fixSurveillanceColoscopie(defVervolgbeleid, DateUtil.toLocalDate(aanvangVerrichting));
-				fixDefinitiefVervolgbeleid(content.getColoscopieMedischeObservatie());
-			}
-			fixAfbrekenColoscopie(content.getColoscopieMedischeObservatie());
+			fixAfbrekenColoscopie(coloscopieMedischeObservatie);
+			fixPeriodeVervolgScopieSurveillance(coloscopieMedischeObservatie);
+			copyEindconclusieNaarProfiel(coloscopieMedischeObservatie);
 			bepaalEnSetUitnodigingsinterval(verslag, verslag.getScreeningRonde().getDossier());
 		}
-		verslag.setDatumOnderzoek(aanvangVerrichting);
+		verslag.setDatumOnderzoek(content.getVerrichting().getAanvangVerrichting());
 
-		if (verslag.getDatumOnderzoek() == null || complicatieService.magComplicatieVastleggen(verslag.getDatumOnderzoek()))
-		{
-			maakClientComplicatieUitMdlVerslag(verslag, content);
-		}
-		else if (content.getVerrichting() != null && CollectionUtils.isNotEmpty(content.getVerrichting().getIncidentcomplicatie()))
-		{
-			List<MdlIncidentcomplicatie> incidentcomplicaties = content.getVerrichting().getIncidentcomplicatie();
-			if (incidentcomplicaties.get(0).getId() != null)
-			{
-				hibernateService.deleteAll(incidentcomplicaties);
-			}
-			incidentcomplicaties.clear();
-			hibernateService.saveOrUpdate(content.getVerrichting());
-		}
 		converteerVolledigheidWegnameMateriaal(verslag);
+	}
+
+	private void copyEindconclusieNaarProfiel(MdlColoscopieMedischeObservatie coloscopieMedischeObservatie)
+	{
+		var eindconclusie = coloscopieMedischeObservatie.getEindconclusie();
+		if (eindconclusie != null && List.of("HRP", "LRP").contains(eindconclusie.getCode()))
+		{
+			coloscopieMedischeObservatie.setProfiel(verslagService.getDsValue(eindconclusie.getCode(), eindconclusie.getCodeSystem(), "ProfielColoscopie"));
+		}
+	}
+
+	private void fixPeriodeVervolgScopieSurveillance(MdlColoscopieMedischeObservatie coloscopieMedischeObservatie)
+	{
+		var definitiefVervolgbeleidVoorBevolkingsonderzoekg = coloscopieMedischeObservatie.getDefinitiefVervolgbeleidVoorBevolkingsonderzoekg();
+		if (definitiefVervolgbeleidVoorBevolkingsonderzoekg != null)
+		{
+			var periodeVervolgScopie = definitiefVervolgbeleidVoorBevolkingsonderzoekg.getPeriodeVervolgScopie();
+			var definitiefVervolgbeleidVoorBevolkingsonderzoek = definitiefVervolgbeleidVoorBevolkingsonderzoekg.getDefinitiefVervolgbeleidVoorBevolkingsonderzoek();
+			if (definitiefVervolgbeleidVoorBevolkingsonderzoek != null && periodeVervolgScopie != null
+				&& definitiefVervolgbeleidVoorBevolkingsonderzoek.getCode().equals("410410006") 
+				&& List.of("6", "12", "13", "14", "15").contains(periodeVervolgScopie.getCode())) 
+			{
+				definitiefVervolgbeleidVoorBevolkingsonderzoekg.setPeriodeVervolgSurveillance(
+					verslagService.getDsValue(periodeVervolgScopie.getCode(), periodeVervolgScopie.getCodeSystem(), "vs_periode_vervolg_surveillance"));
+				definitiefVervolgbeleidVoorBevolkingsonderzoekg.setPeriodeVervolgScopie(null);
+			}
+		}
 	}
 
 	@Override
@@ -261,16 +214,6 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 			{
 				verslag.setDatumOnderzoek(content.getVerrichting().getEindeVerrichting());
 			}
-		}
-		DSValue consultrevisieMateriaalAangevraagd = verslag.getVerslagContent().getPathologieMedischeObservatie().getConsultrevisieMateriaalAangevraagd();
-
-		if (consultrevisieMateriaalAangevraagd != null)
-		{
-			for (PaPathologieProtocolColonbioptperPoliep paPathologieProtocolColonbioptperPoliep : verslag.getVerslagContent().getPathologieProtocolColonbioptperPoliep())
-			{
-				paPathologieProtocolColonbioptperPoliep.setConsultMateriaalAangevraagd(consultrevisieMateriaalAangevraagd);
-			}
-			verslag.getVerslagContent().getPathologieMedischeObservatie().setConsultrevisieMateriaalAangevraagd(null);
 		}
 	}
 
@@ -398,278 +341,6 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 		if (redenCoecumNietBereikt != null && (redenCoecumNietBereikt.getCode().equals("6") || redenCoecumNietBereikt.getCode().equals("7")))
 		{
 			coloscopieMedischeObservatie.setRedenCoecumNietBereikt(verslagService.getDsValue("12", "2.16.840.1.113883.2.4.3.36.77.5.37", "vs_afbreken_coloscopie"));
-		}
-	}
-
-	private void fixDefinitiefVervolgbeleid(MdlColoscopieMedischeObservatie coloscopieMedischeObservatie)
-	{
-		MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg definitiefVervolgbeleidgroep = coloscopieMedischeObservatie.getDefinitiefVervolgbeleidVoorBevolkingsonderzoekg();
-		DSValue vervolgbeleidNavAfbrekingColoscopie = coloscopieMedischeObservatie.getVervolgbeleidNavAfbrekingColoscopie();
-		if (vervolgbeleidNavAfbrekingColoscopie != null)
-		{
-			if (vervolgbeleidNavAfbrekingColoscopie.getCode().equals("2"))
-			{
-
-				definitiefVervolgbeleidgroep.setDefinitiefVervolgbeleidVoorBevolkingsonderzoek(
-					verslagService.getDsValue("418714002", "2.16.840.1.113883.6.96", "vs_vervolgbeleid"));
-			}
-			else if (definitiefVervolgbeleidgroep.getDefinitiefVervolgbeleidVoorBevolkingsonderzoek() != null && (vervolgbeleidNavAfbrekingColoscopie.getCode().equals("1")
-				&& definitiefVervolgbeleidgroep.getDefinitiefVervolgbeleidVoorBevolkingsonderzoek().getCode().equals("183851006")
-				|| definitiefVervolgbeleidgroep.getDefinitiefVervolgbeleidVoorBevolkingsonderzoek().getCode().equals("73761001")))
-			{
-
-				definitiefVervolgbeleidgroep
-					.setDefinitiefVervolgbeleidVoorBevolkingsonderzoek(verslagService.getDsValue("73761001:260870009=64695001", "2.16.840.1.113883.6.96", "vs_vervolgbeleid"));
-			}
-		}
-	}
-
-	private void fixSurveillanceColoscopie(MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg defVervolgbeleid, LocalDate aanvangVerrichting)
-	{
-		MdlVerslagContent content = defVervolgbeleid.getColoscopieMedischeObservatie().getVerslagContent();
-
-		Quantity surveillancecoloscopieCda = defVervolgbeleid.getPeriodeVervolgSurveillancecoloscopieCda();
-		String value = null;
-		String unit = null;
-		if (surveillancecoloscopieCda != null)
-		{
-			value = surveillancecoloscopieCda.getValue();
-			unit = surveillancecoloscopieCda.getUnit();
-		}
-
-		if (value != null && StringUtils.isBlank(unit) && aanvangVerrichting != null && content.getVersie().ordinal() < VerslagGeneratie.V3.ordinal())
-		{
-			try
-			{
-				LocalDate periodeDatum = null;
-				if (value.length() == 6)
-				{
-					periodeDatum = DateUtil.parseLocalDateForPattern(value + "01", "yyyyMMdd");
-				}
-				else if (value.length() == 4)
-				{
-					periodeDatum = DateUtil.parseLocalDateForPattern(value, "yyyy").withMonth(aanvangVerrichting.getMonthValue());
-				}
-				if (periodeDatum != null)
-				{
-					periodeDatum = periodeDatum.withDayOfMonth(1);
-					int months = DateUtil.getMonthsBetweenDates(DateUtil.toUtilDate(aanvangVerrichting), DateUtil.toUtilDate(periodeDatum));
-					value = "" + months;
-					unit = "maand";
-					surveillancecoloscopieCda.setUnit(unit);
-					surveillancecoloscopieCda.setValue(value);
-				}
-			}
-			catch (DateTimeParseException e)
-			{
-				LOG.error("Fout bij vertalen surveillancecoloscopie naar waarde en unit " + value, e);
-			}
-		}
-
-		boolean cdaBericht = content.getVerslag().getOntvangenBericht() != null;
-		if (defVervolgbeleid.getPeriodeVervolgSurveillancescopie() == null)
-		{
-
-			if (StringUtils.isNotBlank(unit) && StringUtils.isNotBlank(value) && cdaBericht)
-			{
-				DSValue dsValue = null;
-				try
-				{
-					int codeValue = Double.valueOf(value).intValue();
-					String codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.226";
-					String valueSetName = "vs_periode_vervolg";
-					String code2Jaar = "13";
-					String code3Jaar = "14";
-					String code5Jaar = "15";
-					if (unit.equals("maand") || unit.equals("mo"))
-					{
-						if (codeValue > 0 && codeValue <= 12)
-						{
-							dsValue = verslagService.getDsValue(codeValue + "", codeSystem, valueSetName);
-						}
-						else if (codeValue == 24)
-						{
-							dsValue = verslagService.getDsValue(code2Jaar, codeSystem, valueSetName);
-						}
-						else if (codeValue == 36)
-						{
-							dsValue = verslagService.getDsValue(code3Jaar, codeSystem, valueSetName);
-						}
-						else if (codeValue == 60)
-						{
-							dsValue = verslagService.getDsValue(code5Jaar, codeSystem, valueSetName);
-						}
-					}
-					else if (unit.equals("jaar"))
-					{
-						if (codeValue == 2)
-						{
-							dsValue = verslagService.getDsValue(code2Jaar, codeSystem, valueSetName);
-						}
-						else if (codeValue == 3)
-						{
-							dsValue = verslagService.getDsValue(code3Jaar, codeSystem, valueSetName);
-						}
-						else if (codeValue == 5)
-						{
-							dsValue = verslagService.getDsValue(code5Jaar, codeSystem, valueSetName);
-						}
-					}
-
-					if (dsValue != null)
-					{
-						defVervolgbeleid.setPeriodeVervolgSurveillancescopie(dsValue);
-					}
-				}
-				catch (NumberFormatException e)
-				{
-					LOG.error("Fout bij vertalen surveillancecoloscopie van cda waarde naar intvalue " + value);
-				}
-			}
-			else
-			{
-
-				if (surveillancecoloscopieCda != null)
-				{
-					surveillancecoloscopieCda.setUnit(null);
-					surveillancecoloscopieCda.setValue(null);
-				}
-			}
-		}
-		else
-		{
-
-			DSValue periodeVervolgSurveillancecoloscopie = defVervolgbeleid.getPeriodeVervolgSurveillancescopie();
-			unit = "maand";
-			String code = periodeVervolgSurveillancecoloscopie.getCode();
-			switch (code)
-			{
-			case "1":
-			case "2":
-			case "3":
-			case "4":
-			case "5":
-			case "6":
-			case "7":
-			case "8":
-			case "9":
-			case "10":
-			case "12":
-				value = Double.valueOf(code).intValue() + "";
-				break;
-			case "13":
-				value = "24"; 
-				break;
-			case "14":
-				value = "36"; 
-				break;
-			case "15":
-				value = "60"; 
-				break;
-			default:
-				unit = null;
-				value = null;
-			}
-
-			if (surveillancecoloscopieCda == null)
-			{
-				surveillancecoloscopieCda = new Quantity();
-				defVervolgbeleid.setPeriodeVervolgSurveillancecoloscopieCda(surveillancecoloscopieCda);
-			}
-			if (StringUtils.isNotBlank(unit) && StringUtils.isNotBlank(value))
-			{
-				surveillancecoloscopieCda.setUnit(unit);
-				surveillancecoloscopieCda.setValue(value);
-			}
-		}
-	}
-
-	@Override
-	@Transactional
-	public void ontkoppelOfVerwijderComplicaties(MdlVerslag mdlVerslag)
-	{
-		Client client = mdlVerslag.getScreeningRonde().getDossier().getClient();
-		List<Complicatie> complToDelete = new ArrayList<>();
-		for (Complicatie complicatie : client.getComplicaties())
-		{
-			if (mdlVerslag.equals(complicatie.getMdlverslag()))
-			{
-				if (!Boolean.FALSE.equals(complicatie.getHandmatig()))
-				{
-					complicatie.setMdlverslag(null);
-					hibernateService.saveOrUpdate(complicatie);
-				}
-				else
-				{
-					complToDelete.add(complicatie);
-				}
-			}
-		}
-		for (Complicatie complicatie : complToDelete)
-		{
-			client.getComplicaties().remove(complicatie);
-			hibernateService.delete(complicatie);
-		}
-		hibernateService.saveOrUpdate(client);
-	}
-
-	private void maakClientComplicatieUitMdlVerslag(MdlVerslag mdlVerslag, MdlVerslagContent verslagContent)
-	{
-		InstellingGebruiker instellingGebruiker = mdlVerslag.getInvoerder();
-		if (instellingGebruiker == null && mdlVerslag.getUitvoerderMedewerker().getOrganisatieMedewerkers() != null)
-		{
-			for (InstellingGebruiker ig : mdlVerslag.getUitvoerderMedewerker().getOrganisatieMedewerkers())
-			{
-				if (Boolean.TRUE.equals(ig.getActief()) && Boolean.TRUE.equals(ig.getOrganisatie().getActief())
-					&& ig.getOrganisatie().equals(mdlVerslag.getUitvoerderOrganisatie()))
-				{
-					instellingGebruiker = ig;
-					break;
-				}
-			}
-			if (instellingGebruiker == null && OrganisatieType.ZORGINSTELLING.equals(mdlVerslag.getUitvoerderOrganisatie().getOrganisatieType()))
-			{
-				for (InstellingGebruiker ig : mdlVerslag.getUitvoerderMedewerker().getOrganisatieMedewerkers())
-				{
-					if (Boolean.TRUE.equals(ig.getActief()) && Boolean.TRUE.equals(ig.getOrganisatie().getActief()) && ig.getOrganisatie().getParent() != null
-						&& Boolean.TRUE.equals(ig.getOrganisatie().getParent().getActief()) && ig.getOrganisatie().getParent().equals(mdlVerslag.getUitvoerderOrganisatie()))
-					{
-						instellingGebruiker = ig;
-						break;
-					}
-				}
-			}
-		}
-
-		Client client = mdlVerslag.getScreeningRonde().getDossier().getClient();
-		if (verslagContent != null && verslagContent.getVerrichting() != null && CollectionUtils.isNotEmpty(verslagContent.getVerrichting().getIncidentcomplicatie()))
-		{
-			for (MdlIncidentcomplicatie incidentcomplicatie : verslagContent.getVerrichting().getIncidentcomplicatie())
-			{
-				Date complicatieDatum = mdlVerslag.getDatumOnderzoek();
-				ComplicatieErnst complicatieErnst = ComplicatieErnst.getValue(incidentcomplicatie.getErnstIncidentcomplicatie());
-				ComplicatieMoment complicatieMoment = ComplicatieMoment.BINNEN_24_UUR;
-				ComplicatieSoort complicatieSoort = ComplicatieSoort.getValue(incidentcomplicatie.getTypeIncidentcomplicatie());
-
-				if (complicatieUnkown(client, mdlVerslag, complicatieDatum, complicatieErnst, complicatieMoment, complicatieSoort))
-				{
-					Complicatie complicatie = new Complicatie();
-					complicatie.setActief(true);
-					complicatie.setClient(client);
-					complicatie.setHandmatig(false);
-					complicatie.setInstellingGebruiker(instellingGebruiker);
-					complicatie.setDatum(complicatieDatum);
-					complicatie.setErnst(complicatieErnst);
-					complicatie.setMoment(complicatieMoment);
-					complicatie.setMdlverslag(mdlVerslag);
-
-					complicatie.setSoort(complicatieSoort);
-					client.getComplicaties().add(complicatie);
-
-					hibernateService.saveOrUpdate(complicatie);
-				}
-			}
-			hibernateService.saveOrUpdate(client);
 		}
 	}
 

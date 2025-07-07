@@ -21,9 +21,10 @@ package nl.rivm.screenit.mamma.planning.repository;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
+
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
 
 import nl.rivm.screenit.mamma.planning.repository.projectie.ClientProjectie;
 import nl.rivm.screenit.model.BagAdres_;
@@ -32,8 +33,6 @@ import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Gemeente_;
 import nl.rivm.screenit.model.ScreeningRonde_;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.Uitnodiging_;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaDeelnamekans_;
@@ -57,9 +56,6 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.organisatie.model.Adres_;
 
 import com.google.common.collect.Range;
-
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Root;
 
 import static jakarta.persistence.criteria.JoinType.LEFT;
 import static nl.rivm.screenit.mamma.planning.model.PlanningConstanten.plannenTotEnMetGeboortedatum;
@@ -97,31 +93,31 @@ public interface PlanningClientRepository extends BaseJpaRepository<Client>
 				var uitnodigingsIntervalJoin = join(volgendeUitnodigingJoin, MammaVolgendeUitnodiging_.interval, LEFT);
 
 				return List.of(
-					r.get(SingleTableHibernateObject_.id).alias("id"),
-					persoonJoin.get(GbaPersoon_.geboortedatum).as(LocalDate.class).alias("geboortedatum"),
+					r.get(AbstractHibernateObject_.id).alias("id"),
+					persoonJoin.get(GbaPersoon_.geboortedatum).alias("geboortedatum"),
 					adresJoin.get(Adres_.postcode).alias("postcode"),
 					tijdelijkGbaAdresJoin.get(Adres_.postcode).alias("tijdelijkGbaPostcode"),
-					screeningOrganisatieJoin.get(SingleTableHibernateObject_.id).alias("screeningOrgansatieId"),
-					dossierJoin.get(TablePerClassHibernateObject_.id).alias("dossierId"),
+					screeningOrganisatieJoin.get(AbstractHibernateObject_.id).alias("screeningOrganisatieId"),
+					dossierJoin.get(AbstractHibernateObject_.id).alias("dossierId"),
 					dossierJoin.get(MammaDossier_.doelgroep).alias("doelgroep"),
 					dossierJoin.get(MammaDossier_.tehuis).get(AbstractHibernateObject_.id).alias("tehuisId"),
 					dossierJoin.get(MammaDossier_.eersteOnderzoek).alias("eersteOnderzoek"),
-					dossierJoin.get(MammaDossier_.laatsteMammografieAfgerond).as(LocalDateTime.class).alias("laatsteMammografieAfgerondOp"),
+					dossierJoin.get(MammaDossier_.laatsteMammografieAfgerond).alias("laatsteMammografieAfgerondOp"),
 					deelnamekansJoin.get(MammaDeelnamekans_.deelnamekans).alias("deelnamekans"),
-					laatsteScreeningRondeJoin.get(ScreeningRonde_.creatieDatum).as(LocalDateTime.class).alias("screeningRondeCreatieDatum"),
+					laatsteScreeningRondeJoin.get(ScreeningRonde_.creatieDatum).alias("screeningRondeCreatieDatum"),
 					laatsteScreeningRondeJoin.get(MammaScreeningRonde_.standplaatsRonde).get(AbstractHibernateObject_.id).alias("oorspronkelijkeStandplaatsRondeId"),
 					laatsteScreeningRondeJoin.get(MammaScreeningRonde_.isGeforceerd).alias("screeningRondeIsGeforceerd"),
 					laatsteUitstelJoin.get(MammaUitstel_.standplaats).get(AbstractHibernateObject_.id).alias("uitstelStandplaatsId"),
-					laatsteUitstelJoin.get(MammaUitstel_.streefDatum).as(LocalDate.class).alias("uitstelStreefDatum"),
+					laatsteUitstelJoin.get(MammaUitstel_.streefDatum).alias("uitstelStreefDatum"),
 					laatsteUitstelJoin.get(MammaUitstel_.uitstelReden).alias("uitstelReden"),
-					laatsteUitstelJoin.get(MammaUitstel_.uitnodiging).get(TablePerClassHibernateObject_.id).alias("uitstelUitnodigingId"),
+					laatsteUitstelJoin.get(MammaUitstel_.uitnodiging).get(AbstractHibernateObject_.id).alias("uitstelUitnodigingId"),
 					laatsteUitnodigingJoin.get(MammaUitnodiging_.standplaatsRonde).get(AbstractHibernateObject_.id).alias("uitnodigingStandplaatsRondeId"),
 					laatsteAfspraakStandplaatsPeriodeJoin.get(MammaStandplaatsPeriode_.standplaatsRonde).get(AbstractHibernateObject_.id).alias("afspraakStandplaatsRondeId"),
-					laatsteAfspraakJoin.get(MammaAfspraak_.afgezegdOp).as(LocalDateTime.class).alias("afspraakAfgezegdOp"),
+					laatsteAfspraakJoin.get(MammaAfspraak_.afgezegdOp).alias("afspraakAfgezegdOp"),
 					screeningRondeEventJoin.get(MammaKansberekeningEvent_.voorgaandeScreeningRondes).alias("voorgaandeScreeningRondes"),
-					laatsteUitnodigingJoin.get(Uitnodiging_.creatieDatum).as(LocalDateTime.class).alias("laatsteUitnodigingDatum"),
+					laatsteUitnodigingJoin.get(Uitnodiging_.creatieDatum).alias("laatsteUitnodigingDatum"),
 					laatsteAfspraakJoin.get(MammaAfspraak_.status).alias("afspraakStatus"),
-					laatsteAfspraakJoin.get(MammaAfspraak_.vanaf).as(LocalDateTime.class).alias("afspraakMoment"),
+					laatsteAfspraakJoin.get(MammaAfspraak_.vanaf).alias("afspraakMoment"),
 					uitnodigingsIntervalJoin.get(MammaUitnodigingsinterval_.type).alias("uitnodigingsIntervalType"));
 			})
 			.all());

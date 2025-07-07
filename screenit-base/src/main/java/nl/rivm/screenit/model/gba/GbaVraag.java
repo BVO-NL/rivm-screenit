@@ -40,13 +40,10 @@ import nl.rivm.screenit.model.RedenGbaVraag;
 import nl.rivm.screenit.model.enums.GbaVraagType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
 
 @Entity
 @Table(schema = "algemeen", indexes = @Index(name = "idx_gba_vraag_bsn", columnList = "bsn"))
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Getter
 @Setter
 @Check(constraints = "(bsn is not null or client is not null) AND"

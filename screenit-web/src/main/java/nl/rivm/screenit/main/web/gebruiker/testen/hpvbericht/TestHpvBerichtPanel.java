@@ -33,12 +33,12 @@ import nl.rivm.screenit.model.cervix.berichten.CervixHpvResultCode;
 import nl.rivm.screenit.model.cervix.berichten.CervixHpvResultValue;
 import nl.rivm.screenit.model.cervix.enums.CervixHpvResultaatBerichtBron;
 import nl.rivm.screenit.repository.cervix.CervixHpvBerichtRepository;
-import nl.rivm.screenit.specification.cervix.CervixHpvBerichtSpecification;
 import nl.rivm.screenit.util.cervix.hpv_berichtgenerator.CervixHpvBerichtGenerator;
 import nl.rivm.screenit.util.cervix.hpv_berichtgenerator.CervixHpvBerichtGeneratorMonsterWrapper;
 import nl.rivm.screenit.util.cervix.hpv_berichtgenerator.CervixHpvBerichtGeneratorWrapper;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -54,7 +54,6 @@ import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.util.StringUtil;
 
 public class TestHpvBerichtPanel extends GenericPanel<CervixHpvBerichtGeneratorWrapper>
 {
@@ -92,15 +91,9 @@ public class TestHpvBerichtPanel extends GenericPanel<CervixHpvBerichtGeneratorW
 			{
 				super.onSubmit(target);
 				CervixHpvBerichtGeneratorWrapper wrapper = getModelObject();
-				String alAangeleverd = "";
-				if (hpvBerichtRepository.exists(CervixHpvBerichtSpecification.heeftMessageId(wrapper.getMessageId())))
-				{
-					alAangeleverd = ", Bericht al een keer aangeleverd met dit messageId. Dit bericht wordt daarom niet meer verwerkt door de batch maar levert wel een AA op!";
-				}
-
 				Message hl7bericht = CervixHpvBerichtGenerator.geefHL7Bericht(wrapper);
 
-				ScreenITResponseV251MessageWrapper result = null;
+				ScreenITResponseV251MessageWrapper result;
 				try
 				{
 					result = hpvSendingMessageService.verstuurHpvBericht(hl7bericht);
@@ -114,7 +107,7 @@ public class TestHpvBerichtPanel extends GenericPanel<CervixHpvBerichtGeneratorW
 				if (result != null)
 				{
 					melding += result.getAcknowledgmentCode();
-					if (result.getMelding() != null)
+					if (StringUtils.isNotBlank(result.getMelding()))
 					{
 						melding += ", reden: " + result.getMelding();
 					}
@@ -122,10 +115,6 @@ public class TestHpvBerichtPanel extends GenericPanel<CervixHpvBerichtGeneratorW
 				else
 				{
 					melding += "<geen response>";
-				}
-				if (StringUtil.isNotBlank(alAangeleverd))
-				{
-					melding += alAangeleverd;
 				}
 				info(melding);
 

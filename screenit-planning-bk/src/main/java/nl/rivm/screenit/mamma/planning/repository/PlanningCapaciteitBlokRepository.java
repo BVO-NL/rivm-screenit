@@ -22,7 +22,6 @@ package nl.rivm.screenit.mamma.planning.repository;
  */
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -59,8 +58,8 @@ public interface PlanningCapaciteitBlokRepository extends BaseJpaRepository<Mamm
 			PlanningCapaciteitBlokProjectie.class,
 			q -> q.projections((cb, r) -> List.of(
 					r.get(AbstractHibernateObject_.id),
-					r.get(MammaCapaciteitBlok_.vanaf).as(LocalDateTime.class),
-					r.get(MammaCapaciteitBlok_.tot).as(LocalDateTime.class),
+					r.get(MammaCapaciteitBlok_.vanaf),
+					r.get(MammaCapaciteitBlok_.tot),
 					r.get(MammaCapaciteitBlok_.aantalOnderzoeken),
 					r.get(MammaCapaciteitBlok_.blokType),
 					r.get(MammaCapaciteitBlok_.opmerkingen),

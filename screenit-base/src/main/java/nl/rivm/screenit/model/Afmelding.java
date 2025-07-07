@@ -30,7 +30,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
@@ -42,19 +45,19 @@ import nl.rivm.screenit.model.cervix.CervixAfmelding;
 import nl.rivm.screenit.model.colon.ColonAfmelding;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.mamma.MammaAfmelding;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
 @Entity
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
+@Table
 @Audited
 @Getter
 @Setter
-public abstract class Afmelding<SR extends ScreeningRonde<?, ?, ?, ?>, D extends Dossier<?, ?>, B extends ClientBrief<?, ?, ?>> extends TablePerClassHibernateObject
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class Afmelding<SR extends ScreeningRonde<?, ?, ?, ?>, D extends Dossier<?, ?>, B extends ClientBrief<?, ?, ?>> extends AbstractHibernateObject
 {
 	@Column(nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
@@ -75,7 +78,7 @@ public abstract class Afmelding<SR extends ScreeningRonde<?, ?, ?, ?>, D extends
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date statusAfmeldDatum;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@NotAudited
 	private UploadDocument handtekeningDocumentAfmelding;
 
@@ -94,7 +97,7 @@ public abstract class Afmelding<SR extends ScreeningRonde<?, ?, ?, ?>, D extends
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date statusHeraanmeldDatum;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
 	@NotAudited
 	private UploadDocument handtekeningDocumentHeraanmelding;
 
@@ -137,15 +140,15 @@ public abstract class Afmelding<SR extends ScreeningRonde<?, ?, ?, ?>, D extends
 	{
 		var aClass = Hibernate.getClass(this);
 		Bevolkingsonderzoek bevolkingsonderzoek = null;
-		if (aClass == ColonAfmelding.class)
+		if (ColonAfmelding.class.isAssignableFrom(aClass))
 		{
 			bevolkingsonderzoek = Bevolkingsonderzoek.COLON;
 		}
-		else if (aClass == CervixAfmelding.class)
+		else if (CervixAfmelding.class.isAssignableFrom(aClass))
 		{
 			bevolkingsonderzoek = Bevolkingsonderzoek.CERVIX;
 		}
-		else if (aClass == MammaAfmelding.class)
+		else if (MammaAfmelding.class.isAssignableFrom(aClass))
 		{
 			bevolkingsonderzoek = Bevolkingsonderzoek.MAMMA;
 		}

@@ -39,5 +39,7 @@ public interface OngeldigeBerichtenService
 
 	void verwijderenOngeldigBericht(MeldingOngeldigCdaBericht object);
 
-	void herverwerkAlleBerichten(BerichtenZoekFilter berichtenZoekFilter);
+	void herverwerkAlleBerichten(BerichtZoekFilter berichtZoekFilter);
+
+	void slaMeldingOp(MeldingOngeldigCdaBericht meldingOngeldigCdaBericht);
 }

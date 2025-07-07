@@ -24,31 +24,26 @@ package nl.rivm.screenit.huisartsenportaal.repository.impl;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
-
-import nl.rivm.screenit.huisartsenportaal.dto.TableResultOptionsDto;
-import nl.rivm.screenit.huisartsenportaal.dto.locatie.LocatieSearchDto;
-import nl.rivm.screenit.huisartsenportaal.enums.CervixLocatieStatus;
-import nl.rivm.screenit.huisartsenportaal.model.Adres;
-import nl.rivm.screenit.huisartsenportaal.model.Adres_;
-import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
-import nl.rivm.screenit.huisartsenportaal.model.Locatie;
-import nl.rivm.screenit.huisartsenportaal.model.Locatie_;
-import nl.rivm.screenit.huisartsenportaal.model.Woonplaats;
-import nl.rivm.screenit.huisartsenportaal.repository.LocatieCriteriaRepository;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+
+import nl.rivm.screenit.huisartsenportaal.dto.locatie.LocatieSearchDto;
+import nl.rivm.screenit.huisartsenportaal.enums.CervixLocatieStatus;
+import nl.rivm.screenit.huisartsenportaal.model.Adres_;
+import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
+import nl.rivm.screenit.huisartsenportaal.model.Locatie;
+import nl.rivm.screenit.huisartsenportaal.model.Locatie_;
+import nl.rivm.screenit.huisartsenportaal.repository.LocatieCriteriaRepository;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Repository
@@ -59,22 +54,23 @@ public class LocatieCriteriaRepositoryImpl extends BaseCustomRepositoryImpl impl
 	public List<Locatie> getLocaties(Huisarts huisarts, LocatieSearchDto locatieSearchDto)
 	{
 
-		CriteriaQuery<Locatie> query = getCriteriaBuilder().createQuery(Locatie.class);
+		var cb = getCriteriaBuilder();
+		var q = cb.createQuery(Locatie.class);
 
-		Root<Locatie> locatieRoot = query.from(Locatie.class);
-		Join<Locatie, Adres> adresJoin = locatieRoot.join(Locatie_.locatieAdres, JoinType.LEFT);
-		Join<Adres, Woonplaats> woonplaatsJoin = adresJoin.join(Adres_.woonplaats, JoinType.LEFT);
+		var r = q.from(Locatie.class);
+		var adresJoin = r.join(Locatie_.locatieAdres, JoinType.LEFT);
+		var woonplaatsJoin = adresJoin.join(Adres_.woonplaats, JoinType.LEFT);
 
-		query.select(locatieRoot);
+		q.select(r);
 
-		whereLocaties(query, locatieRoot, huisarts, locatieSearchDto);
+		whereLocaties(q, r, huisarts, locatieSearchDto);
 
-		TableResultOptionsDto resultOptions = locatieSearchDto.getResultOptions();
+		var resultOptions = locatieSearchDto.getResultOptions();
 		if (resultOptions.getSortOptions() != null && !resultOptions.getSortOptions().isEmpty())
 		{
-			Map.Entry<String, String> entry = resultOptions.getSortOptions().entrySet().iterator().next();
-			From orderByObject = locatieRoot;
-			String filter = StringUtils.remove(entry.getKey(), '.'); 
+			var entry = resultOptions.getSortOptions().entrySet().iterator().next();
+			From orderByObject = r;
+			var filter = StringUtils.remove(entry.getKey(), '.'); 
 			if (StringUtils.startsWith(filter, "locatieAdres"))
 			{
 				filter = filter.replace("locatieAdres", "");
@@ -88,84 +84,72 @@ public class LocatieCriteriaRepositoryImpl extends BaseCustomRepositoryImpl impl
 
 			if (entry.getValue().equalsIgnoreCase("desc"))
 			{
-				query.orderBy(getCriteriaBuilder().desc(orderByObject.get(filter)));
+				q.orderBy(cb.desc(orderByObject.get(filter)));
 			}
 			else
 			{
-				query.orderBy(getCriteriaBuilder().asc(orderByObject.get(filter)));
+				q.orderBy(cb.asc(orderByObject.get(filter)));
 			}
 		}
 
 		if (resultOptions.getCount() > -1 && resultOptions.getFirst() > -1)
 		{
-			return getResultList(query, resultOptions.getFirst(), resultOptions.getCount());
+			return getResultList(q, resultOptions.getFirst(), resultOptions.getCount());
 		}
 
-		return getResultList(query);
+		return getResultList(q);
 	}
 
-	public void whereLocaties(CriteriaQuery<?> query, Root<Locatie> locatieRoot, Huisarts huisarts, LocatieSearchDto locatieSearchDto)
+	public void whereLocaties(CriteriaQuery<?> q, Root<Locatie> r, Huisarts huisarts, LocatieSearchDto locatieSearchDto)
 	{
-		List<Predicate> condities = new ArrayList<Predicate>();
-		condities.add(getCriteriaBuilder().equal(locatieRoot.get(Locatie_.huisarts), huisarts));
-		if (locatieSearchDto.getStatus() != null)
+		var cb = getCriteriaBuilder();
+		var statussen = new ArrayList<CervixLocatieStatus>();
+		var statusString = locatieSearchDto.getStatus();
+		if (statusString != null)
 		{
+			var locatieStatus = CervixLocatieStatus.valueOf(statusString);
+			statussen.add(locatieStatus);
 
-			if (CervixLocatieStatus.ACTIEF.equals(CervixLocatieStatus.valueOf(locatieSearchDto.getStatus())))
+			if (locatieStatus == CervixLocatieStatus.ACTIEF)
 			{
-				condities.add(getCriteriaBuilder().or(getCriteriaBuilder().equal(locatieRoot.get(Locatie_.status), CervixLocatieStatus.valueOf(locatieSearchDto.getStatus())),
-					getCriteriaBuilder().equal(locatieRoot.get(Locatie_.status), CervixLocatieStatus.KLANTNUMMER_NIET_GEVERIFIEERD)));
-			}
-			else
-			{
-				condities.add(getCriteriaBuilder().equal(locatieRoot.get(Locatie_.status), CervixLocatieStatus.valueOf(locatieSearchDto.getStatus())));
+				statussen.add(CervixLocatieStatus.KLANTNUMMER_NIET_GEVERIFIEERD);
 			}
 		}
-		if (CollectionUtils.isNotEmpty(condities))
-		{
-			query.where(condities.toArray(new Predicate[condities.size()]));
-		}
+		q.where(getHuisartsMetLocatiesMetStatussen(huisarts, EnumSet.copyOf(statussen), cb, r));
 	}
 
 	@Override
 	public long countLocaties(Huisarts huisarts, LocatieSearchDto locatieSearchDto)
 	{
-		CriteriaBuilder cb = getCriteriaBuilder();
-		CriteriaQuery<Long> query = cb.createQuery(Long.class);
+		var cb = getCriteriaBuilder();
+		var q = cb.createQuery(Long.class);
 
-		Root<Locatie> locatieRoot = query.from(Locatie.class);
-		query.select(cb.count(locatieRoot));
-		whereLocaties(query, locatieRoot, huisarts, locatieSearchDto);
+		var locatieRoot = q.from(Locatie.class);
+		q.select(cb.count(locatieRoot));
+		whereLocaties(q, locatieRoot, huisarts, locatieSearchDto);
 
-		return getEntityManager().createQuery(query).getSingleResult();
+		return getEntityManager().createQuery(q).getSingleResult();
 	}
 
 	public List<Locatie> findByHuisartsAndStatussen(Huisarts huisarts, EnumSet<CervixLocatieStatus> statussen)
 	{
-		CriteriaQuery<Locatie> query = getCriteriaBuilder().createQuery(Locatie.class);
+		var cb = getCriteriaBuilder();
+		var q = cb.createQuery(Locatie.class);
+		var r = q.from(Locatie.class);
 
-		Root<Locatie> locatieRoot = query.from(Locatie.class);
-		Join<Locatie, Huisarts> huisartsJoin = locatieRoot.join(Locatie_.huisarts, JoinType.INNER);
+		q.select(r).where(getHuisartsMetLocatiesMetStatussen(huisarts, statussen, cb, r));
 
-		query.select(locatieRoot);
+		return getResultList(q);
 
-		List<Predicate> condities = new ArrayList<Predicate>();
+	}
 
-		condities.add(getCriteriaBuilder().equal(locatieRoot.get(Locatie_.huisarts), huisarts));
-
-		Predicate or = getCriteriaBuilder().disjunction();
-		for (CervixLocatieStatus status : statussen)
+	private static Predicate getHuisartsMetLocatiesMetStatussen(Huisarts huisarts, EnumSet<CervixLocatieStatus> statussen, CriteriaBuilder cb, Root<Locatie> r)
+	{
+		var huisartsCriteria = cb.equal(r.get(Locatie_.huisarts), huisarts);
+		if (CollectionUtils.isEmpty(statussen))
 		{
-			or.getExpressions().add(getCriteriaBuilder().equal(locatieRoot.get(Locatie_.status), status));
+			return huisartsCriteria;
 		}
-
-		condities.add(or);
-		if (CollectionUtils.isNotEmpty(condities))
-		{
-			query.where(condities.toArray(new Predicate[condities.size()]));
-		}
-
-		return getResultList(query);
-
+		return cb.and(huisartsCriteria, r.get(Locatie_.status).in(statussen));
 	}
 }

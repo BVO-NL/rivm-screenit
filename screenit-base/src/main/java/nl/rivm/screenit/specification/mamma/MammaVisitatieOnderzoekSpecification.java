@@ -33,6 +33,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderzoekStatus;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import static nl.rivm.screenit.specification.SpecificationUtil.equalsOrFalseIfParamNull;
 import static org.springframework.data.jpa.domain.Specification.not;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -45,7 +46,7 @@ public class MammaVisitatieOnderzoekSpecification
 
 	public static Specification<MammaVisitatieOnderzoek> heeftVisitatie(MammaVisitatie visitatie)
 	{
-		return (r, q, cb) -> cb.equal(r.get(MammaVisitatieOnderzoek_.visitatie), visitatie);
+		return (r, q, cb) -> equalsOrFalseIfParamNull(r.get(MammaVisitatieOnderzoek_.visitatie), visitatie, cb);
 	}
 
 	public static Specification<MammaVisitatieOnderzoek> heeftStatus(MammaVisitatieOnderzoekStatus status)

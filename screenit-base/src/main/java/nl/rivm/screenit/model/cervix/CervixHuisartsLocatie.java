@@ -50,8 +50,6 @@ import nl.rivm.screenit.model.cervix.enums.CervixHuisartsLocatieMutatieSoort;
 import nl.rivm.screenit.model.cervix.facturatie.CervixVerrichting;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -61,7 +59,6 @@ import org.hibernate.envers.Audited;
 	uniqueConstraints = { @UniqueConstraint(columnNames = "locatie_adres") },
 	indexes = {
 		@Index(name = "idx_cervix_huisarts_locatie_naam", columnList = "naam") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 @Audited
 @Setter
 @Getter
@@ -74,15 +71,12 @@ public class CervixHuisartsLocatie extends AbstractHibernateObject implements IC
 	private CervixHuisarts huisarts;
 
 	@OneToMany(mappedBy = "huisartsLocatie", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<CervixHuisartsBericht> huisartsberichten = new ArrayList<>();
 
 	@OneToMany(mappedBy = "huisartsLocatie", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<CervixLabformulier> labformulieren = new ArrayList<>();
 
 	@OneToMany(mappedBy = "huisartsLocatie", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<CervixVerrichting> verrichtingen;
 
 	@Column

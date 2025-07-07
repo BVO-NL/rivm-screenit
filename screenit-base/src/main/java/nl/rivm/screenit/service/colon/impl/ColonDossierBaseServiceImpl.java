@@ -39,7 +39,6 @@ import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.ColonUitnodigingsinterval;
 import nl.rivm.screenit.model.colon.ColonVolgendeUitnodiging;
 import nl.rivm.screenit.model.colon.ColonVooraankondiging;
-import nl.rivm.screenit.model.colon.Complicatie;
 import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
@@ -68,7 +67,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
 @Slf4j
@@ -288,23 +286,27 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 	@NotNull
 	private static ColonUitnodigingsintervalType getUitnodigingsintervalTypeVoorSurvaillance(MdlVerslag verslag)
 	{
-		var uitnodigingsintervalType = ColonUitnodigingsintervalType.ENDOSCOPIEVERSLAG_SURVEILLANCE_1_JAAR;
+		var uitnodigingsintervalType = ColonUitnodigingsintervalType.ENDOSCOPIEVERSLAG_SURVEILLANCE_2025_1_JAAR;
 		var definitiefVervolgbeleidVoorBevolkingsonderzoekg = verslag.getVerslagContent().getColoscopieMedischeObservatie()
 			.getDefinitiefVervolgbeleidVoorBevolkingsonderzoekg();
 		if (definitiefVervolgbeleidVoorBevolkingsonderzoekg != null)
 		{
-			var periodeVervolgSurveillancescopie = definitiefVervolgbeleidVoorBevolkingsonderzoekg.getPeriodeVervolgSurveillancescopie();
+			var periodeVervolgSurveillancescopie = definitiefVervolgbeleidVoorBevolkingsonderzoekg.getPeriodeVervolgSurveillance();
 			if (periodeVervolgSurveillancescopie != null)
 			{
 				var code = periodeVervolgSurveillancescopie.getCode();
 				switch (code)
 				{
+				case "6":
+					return ColonUitnodigingsintervalType.ENDOSCOPIEVERSLAG_SURVEILLANCE_2025_6_MND;
 				case "12":
-					return ColonUitnodigingsintervalType.ENDOSCOPIEVERSLAG_SURVEILLANCE_1_JAAR;
+					return ColonUitnodigingsintervalType.ENDOSCOPIEVERSLAG_SURVEILLANCE_2025_1_JAAR;
+				case "13":
+					return ColonUitnodigingsintervalType.ENDOSCOPIEVERSLAG_SURVEILLANCE_2025_2_JAAR;
 				case "14":
-					return ColonUitnodigingsintervalType.ENDOSCOPIEVERSLAG_SURVEILLANCE_3_JAAR;
+					return ColonUitnodigingsintervalType.ENDOSCOPIEVERSLAG_SURVEILLANCE_2025_3_JAAR;
 				case "15":
-					return ColonUitnodigingsintervalType.ENDOSCOPIEVERSLAG_SURVEILLANCE_5_JAAR;
+					return ColonUitnodigingsintervalType.ENDOSCOPIEVERSLAG_SURVEILLANCE_2025_5_JAAR_EXCLUSIE;
 				default:
 				}
 			}
@@ -352,8 +354,6 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 
 			opruimenAfspraken(client);
 
-			opruimenComplicaties(client);
-
 			opruimenDossier(dossier);
 
 			hibernateService.saveOrUpdate(client);
@@ -385,17 +385,6 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 		}
 
 		hibernateService.saveOrUpdate(dossier);
-	}
-
-	private void opruimenComplicaties(Client client)
-	{
-		if (!isEmpty(client.getComplicaties()))
-		{
-			for (Complicatie complicatie : client.getComplicaties())
-			{
-				hibernateService.delete(complicatie);
-			}
-		}
 	}
 
 	private void opruimenAfspraken(Client client)
@@ -495,7 +484,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 	{
 		var content = mdlVerslag.getVerslagContent();
 		var vervolgbeleid = mdlVerslag.getVervolgbeleid();
-		if (vervolgbeleid == null && content != null && content.getColoscopieMedischeObservatie() != null)
+		if (content != null && content.getColoscopieMedischeObservatie() != null)
 		{
 			var defVervolgbeleid = content.getColoscopieMedischeObservatie().getDefinitiefVervolgbeleidVoorBevolkingsonderzoekg();
 

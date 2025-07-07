@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.colon.verslag.mdl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +33,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.model.verslag.DSValueSet;
 import nl.rivm.screenit.model.verslag.DSValueSetValue;
@@ -44,12 +46,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "colon")
+@Getter
+@Setter
 public class MdlVoorbereidingColoscopie
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -68,7 +69,10 @@ public class MdlVoorbereidingColoscopie
 		@DSValueSetValue(code = "9", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.75"),
 		@DSValueSetValue(code = "OTH", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Type voorbereiding", extraTekst = "Voorbereiding voor coloscopie door cli\u00ebnt", code = "2.16.840.1.113883.2.4.3.36.77.2.11.82", isVerplicht = true)
+	@VraagElement(conceptId = "82", displayName = "Type voorbereiding", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.307']]]/hl7:act/hl7:entryRelationship[hl7:substanceAdministration[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.341']]]/hl7:substanceAdministration/hl7:consumable/hl7:manufacturedProduct/hl7:manufacturedMaterial/hl7:code|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.307']]]/hl7:act/hl7:entryRelationship[hl7:substanceAdministration[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.341']]]/hl7:substanceAdministration/hl7:consumable/hl7:manufacturedProduct/hl7:manufacturedMaterial/hl7:code|@code"
+	}, isVerplicht = true)
 	private List<DSValue> typeVoorbereiding = new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -77,51 +81,17 @@ public class MdlVoorbereidingColoscopie
 		@DSValueSetValue(code = "1217004", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "UNK", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Split dose", extraTekst = "Indien de medicatie ter voorbereiding op de coloscopie als split-dose is voorgeschreven geef dat dan hier aan met \"ja\"", code = "2.16.840.1.113883.2.4.3.36.77.2.11.83", isVerplicht = true)
+	@VraagElement(conceptId = "83", displayName = "Split dose", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.307']]]/hl7:act/hl7:code[(@code='225106003' and @codeSystem='2.16.840.1.113883.6.96')]/hl7:qualifier/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.307']]]/hl7:act/hl7:code[(@code='225106003' and @codeSystem='2.16.840.1.113883.6.96')]/hl7:qualifier/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue splitDose;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "voorbereidingColoscopie", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Boston Bowel Preparation", extraTekst = "Boston Bowel Preparation Scale: Locatie en score", code = "2.16.840.1.113883.2.4.3.36.77.2.11.84", isReference = true)
+	@VraagElement(conceptId = "84", displayName = "Boston Bowel Preparation", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.307']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.310']]]/hl7:observation",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.307']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.310']]]/hl7:observation"
+	})
 	private MdlBostonBowelPreparation bostonBowelPreparation;
-
-	public MdlColoscopieMedischeObservatie getColoscopieMedischeObservatie()
-	{
-		return coloscopieMedischeObservatie;
-	}
-
-	public void setColoscopieMedischeObservatie(MdlColoscopieMedischeObservatie coloscopieMedischeObservatie)
-	{
-		this.coloscopieMedischeObservatie = coloscopieMedischeObservatie;
-	}
-
-	public List<DSValue> getTypeVoorbereiding()
-	{
-		return typeVoorbereiding;
-	}
-
-	public void setTypeVoorbereiding(List<DSValue> typeVoorbereiding)
-	{
-		this.typeVoorbereiding = typeVoorbereiding;
-	}
-
-	public DSValue getSplitDose()
-	{
-		return splitDose;
-	}
-
-	public void setSplitDose(DSValue splitDose)
-	{
-		this.splitDose = splitDose;
-	}
-
-	public MdlBostonBowelPreparation getBostonBowelPreparation()
-	{
-		return bostonBowelPreparation;
-	}
-
-	public void setBostonBowelPreparation(MdlBostonBowelPreparation bostonBowelPreparation)
-	{
-		this.bostonBowelPreparation = bostonBowelPreparation;
-	}
 
 }

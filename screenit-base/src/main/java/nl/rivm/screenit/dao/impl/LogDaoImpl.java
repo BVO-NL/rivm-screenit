@@ -32,9 +32,8 @@ import nl.rivm.screenit.util.query.SQLQueryUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
 
-import org.hibernate.query.NativeQuery;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.type.LongType;
+import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -59,7 +58,7 @@ public class LogDaoImpl extends AbstractAutowiredDao implements LogDao
 			logSql.setMaxResults(Ints.checkedCast(count));
 		}
 
-		List<Long> logRegelIds = logSql.addScalar("id", LongType.INSTANCE).list();
+		List<Long> logRegelIds = logSql.addScalar("id", Long.class).list();
 		return logRegelIds.stream().map(id -> hibernateService.load(LogRegel.class, id)).toList();
 	}
 

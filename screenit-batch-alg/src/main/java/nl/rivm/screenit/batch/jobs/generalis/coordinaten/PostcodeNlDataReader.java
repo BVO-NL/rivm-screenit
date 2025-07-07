@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.service.impl.PostcodeNlRestService;
 import nl.rivm.screenit.model.PostcodeNlProductCode;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5Session;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.batch.item.ExecutionContext;
@@ -80,7 +80,7 @@ public class PostcodeNlDataReader implements ItemReader<String>, ItemStream
 	public void open(ExecutionContext executionContext)
 	{
 		LOG.info("Inputstream voor " + productCode + " wordt geopend en ingelezen.");
-		OpenHibernate5Session.withoutTransaction().run(() ->
+		OpenHibernateSession.withoutTransaction().run(() ->
 		{
 			try
 			{

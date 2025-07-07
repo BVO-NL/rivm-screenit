@@ -29,22 +29,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import nl.rivm.screenit.repository.FluentJpaQuery;
-import nl.rivm.screenit.util.functionalinterfaces.TriFunction;
-
-import org.hibernate.ScrollMode;
-import org.hibernate.ScrollableResults;
-import org.hibernate.internal.EmptyScrollableResults;
-import org.hibernate.query.Query;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.query.QueryUtils;
-import org.springframework.util.Assert;
-
-import com.google.common.primitives.Ints;
-
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Tuple;
@@ -55,6 +39,24 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
+
+import nl.rivm.screenit.repository.FluentJpaQuery;
+import nl.rivm.screenit.util.functionalinterfaces.TriFunction;
+
+import org.hibernate.ScrollMode;
+import org.hibernate.ScrollableResults;
+import org.hibernate.boot.internal.SessionFactoryOptionsBuilder;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.internal.EmptyScrollableResults;
+import org.hibernate.query.Query;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.query.QueryUtils;
+import org.springframework.util.Assert;
+
+import com.google.common.primitives.Ints;
 
 public class FluentJpaQueryImpl<T, P> implements FluentJpaQuery<T, P>
 {
@@ -79,6 +81,8 @@ public class FluentJpaQueryImpl<T, P> implements FluentJpaQuery<T, P>
 	private BiFunction<Root<T>, CriteriaBuilder, List<Order>> ordersFunction;
 
 	private EntityGraph<T> entityGraph;
+
+	private int maxEntityGraphDepth;
 
 	private int fetchSize;
 
@@ -149,11 +153,17 @@ public class FluentJpaQueryImpl<T, P> implements FluentJpaQuery<T, P>
 	@Override
 	public FluentJpaQuery<T, P> fetch(Consumer<EntityGraph<T>> entityGraphFunction)
 	{
+		return fetch(entityGraphFunction, getDefaultMaxFetchDepth());
+	}
+
+	@Override
+	public FluentJpaQuery<T, P> fetch(Consumer<EntityGraph<T>> entityGraphFunction, int entityGraphDepth)
+	{
+		this.maxEntityGraphDepth = Math.max(this.maxEntityGraphDepth, entityGraphDepth);
 		if (entityGraph == null)
 		{
 			entityGraph = entityManager.createEntityGraph(entityType);
 		}
-
 		entityGraphFunction.accept(this.entityGraph);
 
 		return this;
@@ -169,7 +179,21 @@ public class FluentJpaQueryImpl<T, P> implements FluentJpaQuery<T, P>
 	@Override
 	public List<P> all()
 	{
-		return createTypedQuery().getResultList();
+		var oldGraphDepth = applyEntityFetchGraphDepth();
+		try
+		{
+			var typedQuery = getTypedQuery();
+			return typedQuery.getResultList();
+		}
+		finally
+		{
+			resetEntityFetchGraphDepth(oldGraphDepth);
+		}
+	}
+
+	private TypedQuery<P> getTypedQuery()
+	{
+		return createTypedQuery();
 	}
 
 	@Override
@@ -185,32 +209,55 @@ public class FluentJpaQueryImpl<T, P> implements FluentJpaQuery<T, P>
 		{
 			query.setMaxResults(Ints.checkedCast(count));
 		}
-		return query.getResultList();
+		var oldGraphDepth = applyEntityFetchGraphDepth();
+		try
+		{
+			return query.getResultList();
+		}
+		finally
+		{
+			resetEntityFetchGraphDepth(oldGraphDepth);
+		}
 	}
 
 	@Override
 	public Optional<P> first()
 	{
 		Assert.isTrue(sort.isSorted(), "Sorting is required for first()");
-		return createTypedQuery()
-			.setMaxResults(1)
-			.getResultList()
-			.stream()
-			.findFirst();
+		var oldGraphDepth = applyEntityFetchGraphDepth();
+		try
+		{
+			return createTypedQuery()
+				.setMaxResults(1)
+				.getResultList()
+				.stream()
+				.findFirst();
+		}
+		finally
+		{
+			resetEntityFetchGraphDepth(oldGraphDepth);
+		}
 	}
 
 	@Override
 	public Optional<P> one()
 	{
-		var results = createTypedQuery()
-			.setMaxResults(2)
-			.getResultList();
-
-		if (results.size() > 1)
+		var oldGraphDepth = applyEntityFetchGraphDepth();
+		try
 		{
-			throw new IncorrectResultSizeDataAccessException(1);
+			var results = createTypedQuery()
+				.setMaxResults(2)
+				.getResultList();
+			if (results.size() > 1)
+			{
+				throw new IncorrectResultSizeDataAccessException(1);
+			}
+			return results.stream().filter(Objects::nonNull).findFirst();
 		}
-		return results.stream().filter(Objects::nonNull).findFirst();
+		finally
+		{
+			resetEntityFetchGraphDepth(oldGraphDepth);
+		}
 	}
 
 	@Override
@@ -230,7 +277,15 @@ public class FluentJpaQueryImpl<T, P> implements FluentJpaQuery<T, P>
 		}
 		if (typedQuery instanceof Query)
 		{
-			return ((Query<P>) typedQuery).setFetchSize(fetchSize).scroll(ScrollMode.FORWARD_ONLY);
+			var oldGraphDepth = applyEntityFetchGraphDepth();
+			try
+			{
+				return ((Query<P>) typedQuery).setFetchSize(fetchSize).scroll(ScrollMode.FORWARD_ONLY);
+			}
+			finally
+			{
+				resetEntityFetchGraphDepth(oldGraphDepth);
+			}
 		}
 		return new EmptyScrollableResults();
 	}
@@ -331,8 +386,35 @@ public class FluentJpaQueryImpl<T, P> implements FluentJpaQuery<T, P>
 	{
 		if (entityGraph != null)
 		{
-			typedQuery.setHint("jakarta.persistence.fetchgraph", entityGraph);
+			typedQuery.setHint("jakarta.persistence.loadgraph", entityGraph);
 		}
 	}
 
+	private int getDefaultMaxFetchDepth()
+	{
+		return getSessionFactoryOptionsBuilder().getMaximumFetchDepth();
+	}
+
+	private @NotNull Integer applyEntityFetchGraphDepth()
+	{
+		var sfob = getSessionFactoryOptionsBuilder();
+		var oldGraphDepth = sfob.getMaximumFetchDepth();
+		if (entityGraph != null)
+		{
+			sfob.applyMaximumFetchDepth(maxEntityGraphDepth);
+		}
+		return oldGraphDepth;
+	}
+
+	private void resetEntityFetchGraphDepth(Integer oldGraphDepth)
+	{
+		var sfob = getSessionFactoryOptionsBuilder();
+		sfob.applyMaximumFetchDepth(oldGraphDepth);
+	}
+
+	private @NotNull SessionFactoryOptionsBuilder getSessionFactoryOptionsBuilder()
+	{
+		var sfi = entityManager.getEntityManagerFactory().unwrap(SessionFactoryImplementor.class);
+		return (SessionFactoryOptionsBuilder) sfi.getSessionFactoryOptions();
+	}
 }

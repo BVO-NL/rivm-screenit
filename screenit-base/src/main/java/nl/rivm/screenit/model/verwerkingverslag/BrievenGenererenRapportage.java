@@ -34,17 +34,11 @@ import jakarta.persistence.TemporalType;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(schema = "gedeeld")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class BrievenGenererenRapportage extends AbstractHibernateObject
 {
-
 	@OneToMany(mappedBy = "rapportage", cascade = CascadeType.ALL)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<BrievenGenererenRapportageEntry> entries = new ArrayList<>();
 
 	@Temporal(TemporalType.TIMESTAMP)

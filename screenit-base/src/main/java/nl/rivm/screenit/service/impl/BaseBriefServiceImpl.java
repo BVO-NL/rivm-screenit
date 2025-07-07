@@ -660,7 +660,7 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	private <B extends Brief> IDocument getDefinitiveBriefDefinitie(B brief)
 	{
 		IDocument briefDefinitie = getNieuwsteBriefDefinitie(brief.getBriefType());
-		Class<B> briefClass = Hibernate.getClass(brief);
+		var briefClass = Hibernate.getClass(brief);
 		if (ProjectBrief.class.isAssignableFrom(briefClass))
 		{
 			ProjectBrief projectBrief = (ProjectBrief) HibernateHelper.deproxy(brief);

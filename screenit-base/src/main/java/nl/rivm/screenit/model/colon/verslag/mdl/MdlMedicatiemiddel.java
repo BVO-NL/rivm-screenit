@@ -21,9 +21,6 @@ package nl.rivm.screenit.model.colon.verslag.mdl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -33,24 +30,25 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.model.verslag.DSValueSet;
 import nl.rivm.screenit.model.verslag.DSValueSetValue;
 import nl.rivm.screenit.model.verslag.NullFlavourQuantity;
 import nl.rivm.screenit.model.verslag.VraagElement;
-import nl.rivm.screenit.model.verslag.VraagElementUnit;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "colon")
+@Getter
+@Setter
 public class MdlMedicatiemiddel
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -68,50 +66,22 @@ public class MdlMedicatiemiddel
 		@DSValueSetValue(code = "N01AH03", codeSystem = "2.16.840.1.113883.6.73"),
 		@DSValueSetValue(code = "OTH", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Medicatie tijdens coloscopie", extraTekst = "Medicatie gegevens tijdens coloscopie, middel ter sedatie of relaxerend. Dit concept bevat de naam van het middel.", code = "2.16.840.1.113883.2.4.3.36.77.2.11.92", isVerplicht = true)
+	@VraagElement(conceptId = "92", displayName = "Medicatie tijdens coloscopie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.203']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.502']]]/hl7:organizer/hl7:component[hl7:substanceAdministration[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.503']]]/hl7:substanceAdministration/hl7:consumable/hl7:manufacturedProduct/hl7:manufacturedLabeledDrug/hl7:code|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.203']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.502']]]/hl7:organizer/hl7:component[hl7:substanceAdministration[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.503']]]/hl7:substanceAdministration/hl7:consumable/hl7:manufacturedProduct/hl7:manufacturedLabeledDrug/hl7:code|@code"
+	}, isVerplicht = true)
 	private DSValue medicatieTijdensColoscopie;
 
 	@Embedded
-	@Nonnull
 	@AttributeOverrides({
 		@AttributeOverride(name = "value", column = @Column(name = "doseringMedicatieValue")),
 		@AttributeOverride(name = "unit", column = @Column(name = "doseringMedicatieUnit")),
 		@AttributeOverride(name = "nullFlavour", column = @Column(name = "doseringMedicatieNf"))
 	})
-	@VraagElement(displayName = "Dosering medicatie", extraTekst = "Hoeveelheid medicatie die gegeven is tijdens de coloscopie", code = "2.16.840.1.113883.2.4.3.36.77.2.11.94", isVerplicht = true, unit = {
-		@VraagElementUnit(unit = "mg"),
-		@VraagElementUnit(unit = "\u00b5g")
-	})
+	@VraagElement(conceptId = "94", displayName = "Dosering medicatie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.203']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.502']]]/hl7:organizer/hl7:component[hl7:substanceAdministration[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.503']]]/hl7:substanceAdministration/hl7:doseQuantity",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.203']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.502']]]/hl7:organizer/hl7:component[hl7:substanceAdministration[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.503']]]/hl7:substanceAdministration/hl7:doseQuantity"
+	}, isVerplicht = true)
 	private NullFlavourQuantity doseringMedicatie;
-
-	public MdlMedicatie getMedicatie()
-	{
-		return medicatie;
-	}
-
-	public void setMedicatie(MdlMedicatie medicatie)
-	{
-		this.medicatie = medicatie;
-	}
-
-	public DSValue getMedicatieTijdensColoscopie()
-	{
-		return medicatieTijdensColoscopie;
-	}
-
-	public void setMedicatieTijdensColoscopie(DSValue medicatieTijdensColoscopie)
-	{
-		this.medicatieTijdensColoscopie = medicatieTijdensColoscopie;
-	}
-
-	public NullFlavourQuantity getDoseringMedicatie()
-	{
-		return doseringMedicatie;
-	}
-
-	public void setDoseringMedicatie(NullFlavourQuantity doseringMedicatie)
-	{
-		this.doseringMedicatie = doseringMedicatie;
-	}
 
 }

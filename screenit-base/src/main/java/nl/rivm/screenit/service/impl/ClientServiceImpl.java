@@ -712,4 +712,4 @@ public class ClientServiceImpl implements ClientService
 	{
 		return countUsedColonHandtekeningBrief(handtekeningBrief, handtekeningProperty) > 1;
 	}
-}
+}	

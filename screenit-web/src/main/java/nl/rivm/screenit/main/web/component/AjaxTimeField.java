@@ -41,19 +41,11 @@ import org.wicketstuff.wiquery.core.javascript.JsUtils;
 
 public abstract class AjaxTimeField extends TimeField
 {
-
-	private static final long serialVersionUID = 1L;
-
 	private TimeFieldBehavior behavior;
 
 	public AjaxTimeField(String id, IModel<Date> model)
 	{
 		super(id, model);
-	}
-
-	public AjaxTimeField(String id)
-	{
-		super(id);
 	}
 
 	@Override
@@ -99,9 +91,6 @@ public abstract class AjaxTimeField extends TimeField
 
 	private class TimeFieldBehavior extends AbstractDefaultAjaxBehavior
 	{
-
-		private static final long serialVersionUID = 1L;
-
 		@Override
 		protected void respond(AjaxRequestTarget target)
 		{

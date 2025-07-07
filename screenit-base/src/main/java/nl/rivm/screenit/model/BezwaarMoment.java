@@ -33,7 +33,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -45,8 +44,6 @@ import lombok.Setter;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -57,7 +54,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Getter
 @Setter
 @Table(schema = "algemeen")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Audited
 public class BezwaarMoment extends AbstractHibernateObject
 {
@@ -73,14 +69,13 @@ public class BezwaarMoment extends AbstractHibernateObject
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date statusDatum;
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@NotAudited
 	private UploadDocument bezwaarBrief;
 
 	private Date bezwaarDatum;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "bezwaarMoment")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<BezwaarBrief> brieven = new ArrayList<BezwaarBrief>();
 
 	@NotAudited

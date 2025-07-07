@@ -47,6 +47,7 @@ import nl.rivm.screenit.main.web.component.table.NotClickablePropertyColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.component.table.ScreenitDateTimePropertyColumn;
 import nl.rivm.screenit.main.web.component.table.VerwijderPropertyColumn;
+import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
 import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.gedeeld.MammaDoelgroepIndicatorPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaPlanningBasePage;
@@ -66,11 +67,9 @@ import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.service.mamma.MammaBaseTehuisService;
 import nl.rivm.screenit.service.mamma.enums.MammaTehuisSelectie;
 import nl.rivm.screenit.util.AdresUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.component.modifier.AttributeToggleModifier;
 import nl.topicuszorg.wicket.hibernate.SimpleHibernateModel;
-import nl.topicuszorg.wicket.hibernate.markup.form.validation.UniqueFieldValidator;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.input.validator.TelefoonnummerValidator;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
@@ -123,9 +122,6 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 
 	@SpringBean
 	private MammaBaseTehuisClientenDao baseTehuisClientenDao;
-
-	@SpringBean
-	private HibernateService hibernateService;
 
 	@SpringBean
 	private MammaBaseStandplaatsService standplaatsService;
@@ -414,7 +410,8 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 			}
 		});
 		columns.add(
-			new ScreenitDateTimePropertyColumn<>(Model.of("Laatste afspraak"), "mammaDossier.laatsteScreeningRonde.laatsteUitnodiging.laatsteAfspraak.vanaf", Constants.getDateTimeFormat())
+			new ScreenitDateTimePropertyColumn<>(Model.of("Laatste afspraak"), "mammaDossier.laatsteScreeningRonde.laatsteUitnodiging.laatsteAfspraak.vanaf",
+				Constants.getDateTimeFormat())
 			{
 				@Override
 				public IModel<Object> getDataModel(IModel<Client> embeddedModel)
@@ -522,7 +519,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 	private void createOrReplaceNaamComponent(Form<MammaTehuis> tehuisWijzigenForm, AjaxRequestTarget target)
 	{
 		ComponentHelper.addTextField(tehuisWijzigenForm, "naam", true, 255, String.class, !magTehuisAanpassen) 
-			.add(new UniqueFieldValidator<>(MammaTehuis.class, getTehuis().getId(), "naam", hibernateService));
+			.add(new ScreenitUniqueFieldValidator<>(MammaTehuis.class, getTehuis().getId(), "naam", false));
 
 		if (target != null)
 		{

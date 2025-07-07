@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
  * ========================LICENSE_START=================================
  * se-proxy
  * %%
- * Copyright (C) 2017 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,9 +23,12 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
 
 import java.io.IOException;
 
+import jakarta.servlet.http.HttpServletRequest;
+
+import lombok.RequiredArgsConstructor;
+
 import nl.rivm.screenit.mamma.se.proxy.SeProxyApplication;
 import nl.rivm.screenit.mamma.se.proxy.model.AutorisatieDto;
-import nl.rivm.screenit.mamma.se.proxy.model.IngelogdeGebruikerDto;
 import nl.rivm.screenit.mamma.se.proxy.model.LoginContext;
 import nl.rivm.screenit.mamma.se.proxy.model.LogischeSessie;
 import nl.rivm.screenit.mamma.se.proxy.model.NavigatieDto;
@@ -48,54 +51,28 @@ import nl.rivm.screenit.mamma.se.proxy.util.SafeStringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.http.RequestEntity;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/authenticatie")
+@RequiredArgsConstructor
 public class AuthenticatieProxyController
 {
 	private final ObjectMapper objectMapper = new ObjectMapper();
-
-	@Autowired
-	private ProxyService proxyService;
-
-	@Autowired
-	private LogischeSessieService logischeSessieService;
-
-	@Autowired
-	private GebruikerStoreService gebruikerStoreService;
-
-	@Autowired
-	private NfcOtpAdministratieService nfcOtpAdministratieService;
-
-	@Autowired
-	private SeRestSocketService seRestSocketService;
-
-	@Autowired
-	private ConfiguratieService configuratieService;
-
-	@Autowired
-	private AchtergrondRequestService achtergrondRequestService;
-
-	private static final String JSESSIONID = "JSESSIONID";
 
 	private static final Logger LOG = LoggerFactory.getLogger(AuthenticatieProxyController.class);
 
@@ -103,35 +80,44 @@ public class AuthenticatieProxyController
 
 	private static final boolean GENEREER_GEEN_LOGGING = false;
 
-	@Autowired
-	private SeStatusService seStatusService;
+	private final ProxyService proxyService;
 
-	@Autowired
-	private WebSocketProxyService webSocketProxyService;
+	private final LogischeSessieService logischeSessieService;
 
-	@Autowired
-	private TransactionQueueService transactionQueueService;
+	private final GebruikerStoreService gebruikerStoreService;
 
-	@Autowired
-	private AuthenticatieService authenticatieService;
+	private final NfcOtpAdministratieService nfcOtpAdministratieService;
 
-	@Autowired
-	private AutorisatieService autorisatieService;
+	private final SeRestSocketService seRestSocketService;
+
+	private final ConfiguratieService configuratieService;
+
+	private final AchtergrondRequestService achtergrondRequestService;
+
+	private final SeStatusService seStatusService;
+
+	private final WebSocketProxyService webSocketProxyService;
+
+	private final TransactionQueueService transactionQueueService;
+
+	private final AuthenticatieService authenticatieService;
+
+	private final AutorisatieService autorisatieService;
 
 	@Value("${DISABLE_NFC_AUTHENTICATION:#{false}}")
-	private boolean disableNFCAuthentication;
+	private final boolean disableNFCAuthentication;
 
-	@RequestMapping(value = "/inloggen", method = RequestMethod.POST)
+	@PostMapping("/inloggen")
 	public ResponseEntity<String> login(@RequestHeader(value = "Authorization") String credentials, @RequestHeader String yubikeyIdentificatie,
 		@RequestHeader String nfcServerVersie,
-		@RequestHeader(value = "Yubikey") String yubikey, HttpSession httpSession, HttpServletRequest request) throws JsonProcessingException
+		@RequestHeader(value = "Yubikey") String yubikey, HttpServletRequest request) throws JsonProcessingException
 	{
 		seStatusService.setProxyIpFromClientIpIfSeCodeIsMissing(request.getRemoteAddr());
 		ResponseEntity<String> response;
 		if (disableNFCAuthentication)
 		{
-			LogischeSessie logischeSessie = new LogischeSessie(credentials, Constants.GEEN_IDENTIFICATIE);
-			response = login(httpSession, logischeSessie, Constants.GEEN_OTP, null, GENEREER_LOGGING, nfcServerVersie);
+			var logischeSessie = new LogischeSessie(credentials, Constants.GEEN_IDENTIFICATIE);
+			response = login(logischeSessie, Constants.GEEN_OTP, null, GENEREER_LOGGING, nfcServerVersie);
 		}
 		else if (yubikeyIdentificatie.equals(Constants.GEEN_IDENTIFICATIE) || yubikey.equals(Constants.GEEN_OTP))
 		{
@@ -140,7 +126,7 @@ public class AuthenticatieProxyController
 		}
 		else if (credentials.equals(Constants.EMPTY_CREDENTIALS))
 		{
-			response = meenemenLogischeSessie(yubikeyIdentificatie, yubikey, httpSession);
+			response = meenemenLogischeSessie(yubikeyIdentificatie, yubikey);
 		}
 		else if (nfcOtpAdministratieService.zelfdeOtpAlsLaatsteSuccesvolle(yubikeyIdentificatie, yubikey))
 		{
@@ -149,8 +135,8 @@ public class AuthenticatieProxyController
 		}
 		else
 		{
-			LogischeSessie logischeSessie = new LogischeSessie(credentials, yubikeyIdentificatie);
-			response = login(httpSession, logischeSessie, yubikey, null, GENEREER_LOGGING, nfcServerVersie);
+			var logischeSessie = new LogischeSessie(credentials, yubikeyIdentificatie);
+			response = login(logischeSessie, yubikey, null, GENEREER_LOGGING, nfcServerVersie);
 			if (response.getStatusCode().equals(HttpStatus.OK))
 			{
 				logischeSessieService.addLogischeSessie(logischeSessie);
@@ -161,84 +147,83 @@ public class AuthenticatieProxyController
 		return response;
 	}
 
-	private ResponseEntity<String> meenemenLogischeSessie(String yubikeyIdentificatie, String yubikey, HttpSession httpSession) throws JsonProcessingException
+	private ResponseEntity<String> meenemenLogischeSessie(String yubikeyIdentificatie, String yubikey) throws JsonProcessingException
 	{
 		ResponseEntity<String> response;
-		LogischeSessie logischeSessie = logischeSessieService.getLogischeSessieMetIdentificatie(yubikeyIdentificatie);
+		var logischeSessie = logischeSessieService.getLogischeSessieMetIdentificatie(yubikeyIdentificatie);
 		if (logischeSessie == null)
 		{
-			LOG.warn("INLOGGEN (sessie meenemen) met identificatie: " + yubikeyIdentificatie + " -> Logische sessie niet gevonden, gebruiker niet geautoriseerd.");
+			LOG.warn("INLOGGEN (sessie meenemen) met identificatie: {} -> Logische sessie niet gevonden, gebruiker niet geautoriseerd.", yubikeyIdentificatie);
 			response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 		else if (!seStatusService.isOnline())
 		{
-			LOG.info("INLOGGEN (sessie meenemen) met identificatie: " + yubikeyIdentificatie + " -> SE is offline, haal huidige logische sessie op.");
+			LOG.info("INLOGGEN (sessie meenemen) met identificatie: {} -> SE is offline, haal huidige logische sessie op.", yubikeyIdentificatie);
 			response = logischeSessie.getLoginAntwoord();
 		}
 		else if (nfcOtpAdministratieService.zelfdeOtpAlsLaatsteSuccesvolle(yubikeyIdentificatie, yubikey))
 		{
-			LOG.info("INLOGGEN (sessie meenemen) met identificatie: " + yubikeyIdentificatie + " -> Zelfde OTP, skip inlog op centraal");
+			LOG.info("INLOGGEN (sessie meenemen) met identificatie: {} -> Zelfde OTP, skip inlog op centraal", yubikeyIdentificatie);
 			broadcastOnlineStatus();
 			response = logischeSessie.getLoginAntwoord();
 		}
 		else
 		{
-			ResponseEntity<String> huidigLoginAntwoord = logischeSessie.getLoginAntwoord();
-			LOG.info("INLOGGEN (sessie meenemen) met identificatie: " + yubikeyIdentificatie + " -> SE is online, controleer Yubikey op centraal.");
-			response = login(httpSession, logischeSessie, yubikey, logischeSessie.getNavigatie(), GENEREER_GEEN_LOGGING, "");
+			var huidigLoginAntwoord = logischeSessie.getLoginAntwoord();
+			LOG.info("INLOGGEN (sessie meenemen) met identificatie: {} -> SE is online, controleer Yubikey op centraal.", yubikeyIdentificatie);
+			response = login(logischeSessie, yubikey, logischeSessie.getNavigatie(), GENEREER_GEEN_LOGGING, "");
 			if (response.getStatusCode() != HttpStatus.OK && response.getStatusCode() != HttpStatus.FORBIDDEN)
 			{
 				logischeSessie.setLoginAntwoord(huidigLoginAntwoord);
 				seRestSocketService.setSeVerbindingStatus(false);
-				LOG.info(
-					"INLOGGEN (sessie meenemen) met identificatie: " + yubikeyIdentificatie + " -> Sessie meenemen ging fout, Error code " + response.getStatusCode()
-						+ ". haal huidige sessie op");
+				LOG.info("INLOGGEN (sessie meenemen) met identificatie: {} -> Sessie meenemen ging fout, Error code {}. Haal huidige sessie op", yubikeyIdentificatie,
+					response.getStatusCode());
 				response = logischeSessie.getLoginAntwoord();
 			}
 		}
 		return response;
 	}
 
-	private ResponseEntity<String> login(HttpSession httpSession, LogischeSessie logischeSessie, String yubikey, NavigatieDto navigatie, boolean genereerLogging,
+	private ResponseEntity<String> login(LogischeSessie logischeSessie, String yubikey, NavigatieDto navigatie, boolean genereerLogging,
 		String nfcServerVersie)
 		throws JsonProcessingException
 	{
 		if (seStatusService.isOnline() || seStatusService.getSeCode() == null)
 		{
-			return onlineInloggen(httpSession, logischeSessie, yubikey, navigatie, genereerLogging, nfcServerVersie);
+			return onlineInloggen(logischeSessie, yubikey, navigatie, genereerLogging, nfcServerVersie);
 		}
 		else
 		{
-			LOG.info("INLOGGEN met identificatie: " + logischeSessie.getYubikeyIdentificatie() + " -> SE is offline, probeer offline in te loggen.");
-			return offlineInloggen(httpSession, logischeSessie);
+			LOG.info("INLOGGEN met identificatie: {} -> SE is offline, probeer offline in te loggen.", logischeSessie.getYubikeyIdentificatie());
+			return offlineInloggen(logischeSessie);
 		}
 	}
 
-	private ResponseEntity<String> onlineInloggen(HttpSession httpSession, LogischeSessie logischeSessie, String yubikey, NavigatieDto navigatie, boolean genereerLogging,
-		String nfcServerVersie) throws JsonProcessingException
+	private ResponseEntity<String> onlineInloggen(LogischeSessie logischeSessie, String yubikey, NavigatieDto navigatie, boolean genereerLogging, String nfcServerVersie)
+		throws JsonProcessingException
 	{
 		logischeSessie.setLaatsteUpdate(DateUtil.getCurrentDateTime());
-		String pathPostfix = genereerLogging ? "/authenticatie/inloggen/logging" : "/authenticatie/inloggen/geen_logging";
-		RequestEntity.BodyBuilder requestBuilder = proxyService.getProxyRequestEntity(pathPostfix, HttpMethod.POST);
+		var pathPostfix = genereerLogging ? "/authenticatie/inloggen/logging" : "/authenticatie/inloggen/geen_logging";
+		var requestBuilder = proxyService.getProxyRequestEntity(pathPostfix, HttpMethod.POST);
 		requestBuilder.header("Authorization", logischeSessie.getCredentials());
 		requestBuilder.header("nfcServerVersie", nfcServerVersie);
 		requestBuilder.header("yubikey", yubikey);
 		requestBuilder.header("navigatie", navigatie == null ? "{}" : objectMapper.writeValueAsString(navigatie).replace("navigatieType", "type"));
-		ResponseEntity<String> responseEntity = proxyService.sendUncheckedProxyRequest(requestBuilder.build(), String.class);
+		var responseEntity = proxyService.sendUncheckedProxyRequest(requestBuilder.build(), String.class);
 		logischeSessie.setLoginAntwoord(responseEntity);
-		verwerkLoginResponse(httpSession, true, logischeSessie);
+		responseEntity = verwerkLoginResponse(true, logischeSessie);
 		updateLaatstSuccesvolleOtp(yubikey, responseEntity.getStatusCode(), logischeSessie.getYubikeyIdentificatie());
 		seRestSocketService.verversPingEnPongConfig();
 
 		return responseEntity;
 	}
 
-	private ResponseEntity<String> offlineInloggen(HttpSession httpSession, LogischeSessie logischeSessie)
+	private ResponseEntity<String> offlineInloggen(LogischeSessie logischeSessie)
 	{
-		LoginContext loginContext = createLoginContext(logischeSessie, authenticatieService.getAccountIdFromUsername(logischeSessie.getGebruikersnaam()));
+		var loginContext = createLoginContext(logischeSessie, authenticatieService.getAccountIdFromUsername(logischeSessie.getGebruikersnaam()));
 		if (loginContext.getAccountId() != null)
 		{
-			IngelogdeGebruikerDto ingelogdeGebruikerDto = authenticatieService.getIngelogdeGebruiker(loginContext);
+			var ingelogdeGebruikerDto = authenticatieService.getIngelogdeGebruiker(loginContext);
 
 			if (ingelogdeGebruikerDto != null)
 			{
@@ -249,10 +234,9 @@ public class AuthenticatieProxyController
 						logischeSessie.setLaatsteUpdate(DateUtil.getCurrentDateTime());
 						ingelogdeGebruikerDto.setLaatsteInlog(DateUtil.getCurrentDateTime().toLocalDate());
 						authenticatieService.updateIngelogdeGebruiker(ingelogdeGebruikerDto);
-						ResponseEntity<String> responseEntity = ResponseEntity.ok(ingelogdeGebruikerDto.getLoginResponse());
+						var responseEntity = ResponseEntity.ok(ingelogdeGebruikerDto.getLoginResponse());
 						logischeSessie.setLoginAntwoord(responseEntity);
-						verwerkLoginResponse(httpSession, false, logischeSessie);
-						return responseEntity;
+						return verwerkLoginResponse(false, logischeSessie);
 					}
 				}
 				catch (IOException e)
@@ -283,18 +267,18 @@ public class AuthenticatieProxyController
 		}
 	}
 
-	private void verwerkLoginResponse(HttpSession httpSession, boolean vanCentraal, LogischeSessie logischeSessie)
+	private ResponseEntity<String> verwerkLoginResponse(boolean vanCentraal, LogischeSessie logischeSessie)
 	{
-		ResponseEntity<String> response = logischeSessie.getLoginAntwoord();
+		var response = logischeSessie.getLoginAntwoord();
 
 		if (response.getStatusCode().equals(HttpStatus.OK))
 		{
 			try
 			{
-				AutorisatieDto responseObject = objectMapper.readValue(response.getBody(), AutorisatieDto.class);
-				long instellingGebruikerId = responseObject.getInstellingGebruikerId();
-				String displayName = responseObject.getDisplayName();
-				String seCode = responseObject.getSeCode();
+				var autorisatieDto = objectMapper.readValue(response.getBody(), AutorisatieDto.class);
+				var instellingGebruikerId = autorisatieDto.getInstellingGebruikerId();
+				var displayName = autorisatieDto.getDisplayName();
+				var seCode = autorisatieDto.getSeCode();
 
 				if (seStatusService.getSeCode() == null)
 				{
@@ -303,9 +287,8 @@ public class AuthenticatieProxyController
 
 				if (vanCentraal)
 				{
-					configuratieService.insertOrUpdateConfiguratieValues(responseObject.getSeParameters());
-
-					LoginContext loginContext = createLoginContext(logischeSessie, instellingGebruikerId);
+					response = verwerkParametersVanCentraal(autorisatieDto);
+					var loginContext = createLoginContext(logischeSessie, instellingGebruikerId);
 					authenticatieService.administreerOnlineInlog(loginContext, response.getBody());
 				}
 				broadcastOnlineStatus();
@@ -318,6 +301,18 @@ public class AuthenticatieProxyController
 			achtergrondRequestService.ensureRunning();
 			transactionQueueService.ensureRunningQueueVerwerking();
 		}
+		return response;
+	}
+
+	private ResponseEntity<String> verwerkParametersVanCentraal(AutorisatieDto autorisatieDto) throws JsonProcessingException
+	{
+		var seParameters = autorisatieDto.getSeParameters();
+		configuratieService.insertOrUpdateConfiguratieValues(seParameters);
+
+		seParameters.clear(); 
+
+		var newResponseBody = objectMapper.writeValueAsString(autorisatieDto);
+		return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(newResponseBody);
 	}
 
 	private void broadcastOnlineStatus()
@@ -325,11 +320,11 @@ public class AuthenticatieProxyController
 		webSocketProxyService.broadcast(seStatusService.isOnline() ? "ONLINE" : "OFFLINE");
 	}
 
-	@RequestMapping(value = "/identificeren", method = RequestMethod.POST)
-	public ResponseEntity<String> identificeer(@RequestBody String yubikeyIdentificatie, HttpSession httpSession)
+	@PostMapping("/identificeren")
+	public ResponseEntity<String> identificeer(@RequestBody String yubikeyIdentificatie)
 	{
-		LogischeSessie logischeSessie = logischeSessieService.getLogischeSessieMetIdentificatie(yubikeyIdentificatie);
-		String safeYubikeyIdentificatie = SafeStringUtil.maakStringMetUserInputVeiligVoorLogging(yubikeyIdentificatie);
+		var logischeSessie = logischeSessieService.getLogischeSessieMetIdentificatie(yubikeyIdentificatie);
+		var safeYubikeyIdentificatie = SafeStringUtil.maakStringMetUserInputVeiligVoorLogging(yubikeyIdentificatie);
 		if (logischeSessie == null)
 		{
 			if (yubikeyIdentificatie.equals(Constants.GEEN_IDENTIFICATIE) || yubikeyIdentificatie.equals(Constants.GEEN_OTP))
@@ -354,24 +349,24 @@ public class AuthenticatieProxyController
 		return ResponseEntity.status(HttpStatus.OK).body(responseJson("Yubikey herkend", "YUBIKEY_HERKEND"));
 	}
 
-	@RequestMapping(value = "/isNfcEnabled", method = RequestMethod.GET)
+	@GetMapping("/isNfcEnabled")
 	public ResponseEntity<String> isNfcEnabled()
 	{
 		return ResponseEntity.status(HttpStatus.OK).header("NFC_ENABLED", SeProxyApplication.getEnvironmentInfo().isNfcEnabled().toString()).build();
 	}
 
-	@RequestMapping(value = "/uitloggen", method = RequestMethod.POST)
-	public ResponseEntity<String> logout(@RequestBody String yubikeyIdentificatie, @RequestHeader("accountId") String accountId, HttpSession httpSession)
+	@PostMapping("/uitloggen")
+	public ResponseEntity<String> logout(@RequestBody String yubikeyIdentificatie, @RequestHeader("accountId") String accountId)
 	{
-		String safeYubikeyIdentificatie = SafeStringUtil.maakStringMetUserInputVeiligVoorLogging(yubikeyIdentificatie);
-		LOG.debug("Identification:\t" + safeYubikeyIdentificatie);
+		var safeYubikeyIdentificatie = SafeStringUtil.maakStringMetUserInputVeiligVoorLogging(yubikeyIdentificatie);
+		LOG.debug("Identification:\t {}", safeYubikeyIdentificatie);
 
-		LogischeSessie logischeSessie = logischeSessieService.getLogischeSessieMetIdentificatie(yubikeyIdentificatie);
+		var logischeSessie = logischeSessieService.getLogischeSessieMetIdentificatie(yubikeyIdentificatie);
 		logischeSessieService.verwijderLogischeSessie(logischeSessie);
 
 		if (seStatusService.isOnline())
 		{
-			RequestEntity.BodyBuilder requestBuilder = proxyService.getProxyRequestEntityAccount("/authenticatie/uitloggen", HttpMethod.POST, accountId);
+			var requestBuilder = proxyService.getProxyRequestEntityAccount("/authenticatie/uitloggen", HttpMethod.POST, accountId);
 			return proxyService.sendUncheckedProxyRequest(requestBuilder.build(), String.class);
 		}
 		else
@@ -382,7 +377,7 @@ public class AuthenticatieProxyController
 
 	private String responseJson(String message, String code)
 	{
-		ObjectNode node = objectMapper.createObjectNode();
+		var node = objectMapper.createObjectNode();
 		node.put("message", message);
 		node.put("code", code);
 		return node.toString();
@@ -390,11 +385,11 @@ public class AuthenticatieProxyController
 
 	private LoginContext createLoginContext(LogischeSessie logischeSessie, Long accountId)
 	{
-		LoginContext loginContext = new LoginContext();
+		var loginContext = new LoginContext();
 		loginContext.setGebruikersnaam(logischeSessie.getGebruikersnaam());
 		loginContext.setPlainWachtwoord(logischeSessie.getWachtWoord());
 
-		String yubikeyIdentificatie = logischeSessie.getYubikeyIdentificatie();
+		var yubikeyIdentificatie = logischeSessie.getYubikeyIdentificatie();
 		if (Constants.GEEN_IDENTIFICATIE.equals(yubikeyIdentificatie))
 		{
 			yubikeyIdentificatie += "-" + accountId;

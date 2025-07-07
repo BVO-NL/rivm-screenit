@@ -41,15 +41,12 @@ import lombok.Setter;
 import nl.rivm.screenit.model.cervix.enums.CervixTariefType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Getter
 @Setter
 @Table(schema = "cervix", name = "betaalopdracht_regel_specificatie")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Audited
 public class CervixBetaalopdrachtRegelSpecificatie extends AbstractHibernateObject
 {

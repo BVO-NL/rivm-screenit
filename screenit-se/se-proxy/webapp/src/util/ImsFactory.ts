@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * se-proxy
  * %%
- * Copyright (C) 2017 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -63,7 +63,7 @@ const createFocus = (bsn: string, uitnodigingsNr: number | string): FhirFocus =>
 	}
 }
 
-export const createStudyIms = (uitnodigingsNr: number, bsn: string, username: string): FhirUserSession => {
+export const createStudyIms = (uitnodigingsNr: number, bsn: string, username: string, launchUrl: string): FhirUserSession => {
 	return {
 		resourceType: "UserSession",
 		user: createUser(username),
@@ -72,6 +72,7 @@ export const createStudyIms = (uitnodigingsNr: number, bsn: string, username: st
 			worklist: [],
 			type: "Worklist",
 			value: "UpcomingCases",
+			launchUrl,
 		},
 	}
 }
@@ -87,13 +88,14 @@ export const createEmptyStudyIms = (username: string): FhirUserSession => {
 		},
 	}
 }
-export const createLogonIms = (username: string): FhirUserSession => {
+export const createLogonIms = (username: string, launchUrl: string): FhirUserSession => {
 	return {
 		resourceType: "UserSession",
 		user: createUser(username),
 		context: {
 			type: "Session",
 			value: "LogOn",
+			launchUrl,
 		},
 	}
 }

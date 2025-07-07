@@ -21,15 +21,26 @@ package nl.rivm.screenit.clientportaal.model.colon;
  * =========================LICENSE_END==================================
  */
 
+import java.util.Date;
+
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamer;
-
 @Getter
 @Setter
-public class ColonVrijSlotZonderKamerDto extends VrijSlotZonderKamer
+public class ColonVrijSlotZonderKamerDto
 {
+
+	private Date startTijd;
+
+	private Date eindTijd;
+
+	private Long intakelocatieId;
+
+	private String plaats;
+
+	private Double afstand;
+
 	private String adres;
 
 	private String postcode;

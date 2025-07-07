@@ -44,6 +44,7 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.afbeelding.MammaLa
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.beoordelen.popup.MammaBeoordelenPreLezingOpslaanDialoog;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDto;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDtoMapper;
+import nl.rivm.screenit.mamma.imsapi.model.FhirUserSession;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -62,7 +63,6 @@ import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingOpschortenReden;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaLezingRedenenFotobesprekingMbber;
 import nl.rivm.screenit.model.mamma.enums.MammaLezingRedenenFotobesprekingRadioloog;
-import nl.rivm.screenit.model.mamma.imsapi.FhirUserSession;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;

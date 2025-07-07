@@ -108,7 +108,7 @@ public abstract class BaseKoppelReader implements ItemStream
 		}
 		finally
 		{
-			hibernateSession.getSession().close();
+			hibernateSession.close();
 		}
 	}
 
@@ -119,7 +119,7 @@ public abstract class BaseKoppelReader implements ItemStream
 
 	protected final Session getHibernateSession()
 	{
-		return hibernateSession.getSession();
+		return hibernateSession;
 	}
 
 	protected final StepExecution getStepExecution()

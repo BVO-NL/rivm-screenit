@@ -38,14 +38,10 @@ import lombok.Setter;
 import nl.rivm.screenit.model.colon.enums.IFOBTUitslagType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Getter
 @Setter
 @Entity
 @Table(schema = "colon")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class IFOBTUitslag extends AbstractHibernateObject
 {
 	@Enumerated(EnumType.STRING)

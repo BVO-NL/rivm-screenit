@@ -23,6 +23,7 @@ package nl.rivm.screenit.huisartsenportaal.config;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 
@@ -90,7 +91,7 @@ public class ApplicationConfiguration
 				{
 					throw new CredentialsExpiredException("U moet zich eerst opnieuw registreren voor u weer kunt inloggen. Volg de instructies die u per brief heeft ontvangen.");
 				}
-				if (AanmeldStatus.WACHTWOORD_RESET != huisarts.getAanmeldStatus())
+				if (!List.of(AanmeldStatus.WACHTWOORD_RESET, AanmeldStatus.AANGEMAAKT).contains(huisarts.getAanmeldStatus()))
 				{
 					throw new CredentialsExpiredException("U heeft een nieuw wachtwoord aangevraagd. Volg de instructies die u per e-mail heeft ontvangen.");
 				}

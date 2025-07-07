@@ -21,25 +21,29 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon.verslagen;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.Constants;
+import java.util.List;
+
+import nl.rivm.screenit.main.web.gebruiker.screening.gedeeld.verslagen.VerslagInzienPanel;
 import nl.rivm.screenit.model.colon.PaVerslag;
 
-import org.apache.wicket.markup.html.panel.GenericPanel;
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
-import org.wicketstuff.datetime.markup.html.basic.DateLabel;
+import org.jetbrains.annotations.NotNull;
 
-public class ColonPaVerslagInzienPanel extends GenericPanel<PaVerslag>
+import static nl.rivm.screenit.model.colon.PaVerslag_.VERSLAG_CONTENT;
+import static nl.rivm.screenit.model.colon.verslag.pa.PaVerrichting_.AANVANG_VERRICHTING;
+import static nl.rivm.screenit.model.colon.verslag.pa.PaVerslagContent_.VERRICHTING;
+import static nl.rivm.screenit.util.StringUtil.propertyChain;
+
+public class ColonPaVerslagInzienPanel extends VerslagInzienPanel<PaVerslag>
 {
 	public ColonPaVerslagInzienPanel(String id, IModel<PaVerslag> model)
 	{
-		super(id, new CompoundPropertyModel<>(model));
+		super(id, model);
 	}
 
 	@Override
-	protected void onInitialize()
+	protected @NotNull List<String> getSelectedFields()
 	{
-		super.onInitialize();
-		add(DateLabel.forDatePattern("verslagContent.verrichting.aanvangVerrichting", Constants.DEFAULT_DATE_FORMAT));
+		return List.of(propertyChain(VERSLAG_CONTENT, VERRICHTING, AANVANG_VERRICHTING));
 	}
 }

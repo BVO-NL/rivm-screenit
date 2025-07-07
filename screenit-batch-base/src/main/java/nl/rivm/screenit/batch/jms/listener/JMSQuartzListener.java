@@ -24,6 +24,7 @@ package nl.rivm.screenit.batch.jms.listener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +40,6 @@ import nl.rivm.screenit.model.enums.JobType;
 import nl.rivm.screenit.model.helper.ActiveMQHelper;
 
 import org.apache.activemq.command.ActiveMQObjectMessage;
-import org.jgroups.util.UUID;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;

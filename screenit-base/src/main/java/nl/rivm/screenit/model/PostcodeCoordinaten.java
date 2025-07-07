@@ -35,16 +35,12 @@ import lombok.Setter;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Setter
 @Getter
 @Table(schema = "gedeeld", uniqueConstraints = @UniqueConstraint(name = "uc_postcode_coord", columnNames = { "postcode", "huisnummer", "huisnummerToevoeging" }), indexes = {
 	@Index(name = "COORDINATEN_POSTCODE", columnList = "postcode"), @Index(name = "COORDINATEN_HUISNUMMER", columnList = "huisnummer"),
 	@Index(name = "COORDINATEN_HUISNUMMERTOEVOEGING", columnList = "huisnummerToevoeging") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class PostcodeCoordinaten extends AbstractHibernateObject implements IGeografischeCoordinaten
 {
 	@Column(nullable = false, length = HibernateMagicNumber.L7)

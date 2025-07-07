@@ -83,7 +83,7 @@ public class ZorgmailImportPoolExecuterServiceImpl implements ZorgmailImportPool
 				catch (Exception e) 
 				{
 					LOG.error("Er is een onvoorziene crash geweest in de Zorgmail Import Thread, deze is nu gesloten. " + e.getMessage(), e);
-					logService.logGebeurtenis(LogGebeurtenis.HUISARTS_IMPORT_FOUT, null,
+					logService.logGebeurtenis(LogGebeurtenis.HUISARTS_IMPORT_FOUT,
 						"Importeren van Huisartsen Adresboek is mislukt. Er is een crash opgetreden, alle gemaakte wijzigingen zijn terugggedraaid.", Bevolkingsonderzoek.COLON);
 				}
 				finally

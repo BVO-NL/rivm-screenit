@@ -23,25 +23,19 @@ package nl.rivm.screenit.model.mamma;
 
 import java.util.Date;
 
-import nl.rivm.screenit.model.mamma.enums.MammaHL7BerichtType;
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import nl.rivm.screenit.model.mamma.enums.MammaHL7BerichtType;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
+
 @Entity
 @Table(schema = "mamma", name = "hl7v24_message")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 public class MammaHL7v24Message extends AbstractHibernateObject
 {
 
@@ -53,8 +47,7 @@ public class MammaHL7v24Message extends AbstractHibernateObject
 	@Column(nullable = false)
 	private MammaHL7BerichtType hl7BerichtType;
 
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
+	@Column(columnDefinition = "TEXT")
 	private String dtoJson;
 
 	public Date getCreateTime()

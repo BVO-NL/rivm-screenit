@@ -29,9 +29,6 @@ import lombok.Setter;
 import nl.rivm.screenit.model.colon.enums.IFOBTUitslagType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -46,7 +43,6 @@ import jakarta.persistence.TemporalType;
 @Getter
 @Setter
 @Table(schema = "colon")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class SKMLControleBarcode extends AbstractHibernateObject implements Comparable<SKMLControleBarcode>
 {

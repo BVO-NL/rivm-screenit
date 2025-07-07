@@ -29,14 +29,10 @@ import jakarta.persistence.Table;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "algemeen")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class GbaVerwerkingEntry extends AbstractHibernateObject
 {
 

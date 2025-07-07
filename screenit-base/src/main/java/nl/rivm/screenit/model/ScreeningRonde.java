@@ -21,7 +21,6 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +29,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
@@ -39,22 +41,18 @@ import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
+@Table
 @Audited
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class ScreeningRonde<D extends Dossier<?, ?>, B extends ClientBrief<?, ?, ?>, AF extends Afmelding<?, ?, ?>, U extends Uitnodiging<?>>
-	extends
-	TablePerClassHibernateObject
+	extends AbstractHibernateObject
 {
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date creatieDatum;
 

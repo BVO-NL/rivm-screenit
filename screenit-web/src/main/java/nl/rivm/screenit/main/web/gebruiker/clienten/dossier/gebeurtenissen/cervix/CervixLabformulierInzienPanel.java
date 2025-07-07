@@ -24,8 +24,9 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.cerv
 import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.AbstractGebeurtenisDetailPanel;
+import nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.controleren.CervixLabformulierPanel;
+import nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.controleren.S3LabformulierResourceLink;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.controleren.SpherionResourceLink;
-import nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.controleren.SpherionViewerContainer;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
@@ -35,6 +36,7 @@ import nl.rivm.screenit.model.cervix.enums.CervixHpvBeoordelingWaarde;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
+import nl.rivm.screenit.service.cervix.CervixLabformulierService;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 
@@ -42,6 +44,7 @@ import org.apache.wicket.markup.html.basic.EnumLabel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(
@@ -52,6 +55,8 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	bevolkingsonderzoekScopes = Bevolkingsonderzoek.CERVIX)
 public class CervixLabformulierInzienPanel extends AbstractGebeurtenisDetailPanel
 {
+	@SpringBean
+	private CervixLabformulierService labformulierService;
 
 	public CervixLabformulierInzienPanel(String id, IModel<ScreeningRondeGebeurtenis> model)
 	{
@@ -77,8 +82,9 @@ public class CervixLabformulierInzienPanel extends AbstractGebeurtenisDetailPane
 		{
 			if (Boolean.FALSE.equals(isFormulierDigitaal))
 			{
-				add(new SpherionResourceLink("download", objid));
-				add(new SpherionViewerContainer("labformulier", objid));
+				var betreftEenS3Labformulier = labformulierService.betreftEenS3Labformulier(objid);
+				add(betreftEenS3Labformulier ? new S3LabformulierResourceLink("download", objid) : new SpherionResourceLink("download", objid));
+				add(new CervixLabformulierPanel("labformulier", objid));
 			}
 			else
 			{

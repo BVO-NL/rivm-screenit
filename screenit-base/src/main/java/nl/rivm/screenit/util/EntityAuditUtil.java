@@ -21,7 +21,6 @@ package nl.rivm.screenit.util;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Time;
@@ -32,6 +31,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+
+import jakarta.persistence.Temporal;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -54,10 +55,7 @@ import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
 import org.hibernate.envers.query.criteria.AuditCriterion;
-import org.hibernate.proxy.HibernateProxyHelper;
 import org.reflections.ReflectionUtils;
-
-import jakarta.persistence.Temporal;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
@@ -67,7 +65,7 @@ public final class EntityAuditUtil
 	{
 		AuditReader reader = AuditReaderFactory.get(session);
 		Class<?> clazz;
-		Serializable id;
+		Object id;
 		try
 		{
 			clazz = Hibernate.getClass(entity);
@@ -76,7 +74,7 @@ public final class EntityAuditUtil
 		catch (ObjectNotFoundException e)
 		{
 
-			clazz = HibernateProxyHelper.getClassWithoutInitializingProxy(entity);
+			clazz = Hibernate.getClassLazy(entity);
 			id = HibernateHelper.getId(entity);
 		}
 		AuditQuery query = reader.createQuery().forRevisionsOfEntity(clazz, false, true);

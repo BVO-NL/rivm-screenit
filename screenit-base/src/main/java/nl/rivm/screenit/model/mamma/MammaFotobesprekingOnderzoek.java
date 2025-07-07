@@ -21,8 +21,6 @@ package nl.rivm.screenit.model.mamma;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -35,8 +33,6 @@ import jakarta.persistence.UniqueConstraint;
 import nl.rivm.screenit.model.mamma.enums.MammaFotobesprekingOnderzoekStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -46,12 +42,8 @@ import org.hibernate.envers.NotAudited;
 	schema = "mamma",
 	name = "fotobespreking_onderzoek",
 	uniqueConstraints = { @UniqueConstraint(columnNames = { "fotobespreking", "volgnummer" }, name = "uc_mamma_fotobespreking_volgnummer") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 public class MammaFotobesprekingOnderzoek extends AbstractHibernateObject
 {
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private MammaBeoordeling beoordeling;
 

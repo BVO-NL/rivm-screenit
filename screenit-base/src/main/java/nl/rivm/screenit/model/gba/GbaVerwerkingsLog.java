@@ -35,13 +35,10 @@ import jakarta.persistence.TemporalType;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 
 @Entity
 @Table(schema = "algemeen")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class GbaVerwerkingsLog extends AbstractHibernateObject
 {
 	@Temporal(TemporalType.TIMESTAMP)
@@ -64,16 +61,13 @@ public class GbaVerwerkingsLog extends AbstractHibernateObject
 	private Long aantalNieuweMammaDossiers = 0L;
 
 	@OneToMany(mappedBy = "verwerkingsLog", cascade = CascadeType.REMOVE)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE)
 	private List<GbaVerwerkingEntry> entries = new ArrayList<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "verwerkingsLog")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<GbaFoutRegel> fouten = new ArrayList<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "gbaVerwerkingsLog")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<GbaFile> bestanden = new ArrayList<>();
 
 	public Integer getAantalNieuweBurgers()

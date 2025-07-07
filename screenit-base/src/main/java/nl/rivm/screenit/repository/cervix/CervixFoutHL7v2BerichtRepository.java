@@ -30,4 +30,6 @@ import nl.rivm.screenit.repository.BaseJpaRepository;
 public interface CervixFoutHL7v2BerichtRepository extends BaseJpaRepository<CervixFoutHL7v2Bericht>
 {
 	List<CervixFoutHL7v2Bericht> findAllByClient(Client client);
+
+	List<CervixFoutHL7v2Bericht> findAllByLaboratoriumId(Long labId);
 }

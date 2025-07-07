@@ -21,14 +21,12 @@ package nl.rivm.screenit.model.logging;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import org.hibernate.annotations.Type;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
 
 @Entity
 @Table(schema = "gedeeld")
@@ -36,7 +34,6 @@ import jakarta.persistence.Table;
 @Setter
 public class MammaHl7v24BerichtLogEvent extends LogEvent
 {
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
+	@Column(columnDefinition = "TEXT")
 	private String hl7MessageStructure;
 }

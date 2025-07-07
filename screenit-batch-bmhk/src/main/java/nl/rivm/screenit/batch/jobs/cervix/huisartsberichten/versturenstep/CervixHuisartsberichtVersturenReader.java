@@ -23,10 +23,16 @@ package nl.rivm.screenit.batch.jobs.cervix.huisartsberichten.versturenstep;
 
 import java.util.List;
 
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.BagAdres_;
+import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
+import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.HuisartsBericht_;
@@ -37,14 +43,11 @@ import nl.rivm.screenit.model.cervix.CervixMonster_;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.enums.CervixHuisartsBerichtStatus;
 import nl.rivm.screenit.specification.algemeen.GemeenteSpecification;
+import nl.rivm.screenit.specification.algemeen.PersoonSpecification;
 import nl.rivm.screenit.specification.cervix.CervixBriefSpecification;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
 
 import static nl.rivm.screenit.batch.jobs.cervix.huisartsberichten.CervixHuisartsberichtenJobConfiguration.CERVIX_HUISARTSENBERICHTEN_JOB_READERS_FETCH_SIZE;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
@@ -72,6 +75,7 @@ public class CervixHuisartsberichtVersturenReader extends BaseSpecificationScrol
 
 				.or(CervixBriefSpecification.heeftGeenUitnodiging().with(r -> getBriefJoin(r)))
 				.or(GemeenteSpecification.heeftBmhkLaboratorium().with(r -> getGemeenteJoin(r)))
+				.or(PersoonSpecification.woontInBuitenland().with(r -> getPersoonJoin(r)))
 			);
 	}
 
@@ -83,9 +87,14 @@ public class CervixHuisartsberichtVersturenReader extends BaseSpecificationScrol
 
 	private static Join<BagAdres, Gemeente> getGemeenteJoin(From<?, ? extends CervixHuisartsBericht> r)
 	{
-		var clientJoin = join(r, HuisartsBericht_.client);
-		var persoonJoin = join(clientJoin, Client_.persoon);
+		var persoonJoin = getPersoonJoin(r);
 		var adresJoin = join(persoonJoin, GbaPersoon_.gbaAdres);
 		return join(adresJoin, BagAdres_.gbaGemeente);
+	}
+
+	private static Join<Client, GbaPersoon> getPersoonJoin(From<?, ? extends CervixHuisartsBericht> r)
+	{
+		var clientJoin = join(r, HuisartsBericht_.client);
+		return join(clientJoin, Client_.persoon);
 	}
 }

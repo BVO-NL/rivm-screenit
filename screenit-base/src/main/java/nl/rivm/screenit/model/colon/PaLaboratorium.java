@@ -37,8 +37,6 @@ import lombok.Setter;
 import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
@@ -51,7 +49,6 @@ public class PaLaboratorium extends Instelling
 {
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade(CascadeType.SAVE_UPDATE)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@JoinTable(schema = "colon", name = "org_organisatie_coloscopielocaties", joinColumns = { @JoinColumn(name = "org_organisatie") })
 	private List<ColoscopieLocatie> coloscopielocaties = new ArrayList<>();
 

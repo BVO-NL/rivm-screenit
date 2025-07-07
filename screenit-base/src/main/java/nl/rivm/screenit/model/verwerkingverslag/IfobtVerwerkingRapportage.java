@@ -37,18 +37,13 @@ import lombok.Setter;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Getter
 @Setter
 @Table(schema = "colon")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class IfobtVerwerkingRapportage extends AbstractHibernateObject
 {
 	@OneToMany(mappedBy = "rapportage", cascade = CascadeType.ALL)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<IfobtVerwerkingRapportageEntry> bestanden = new ArrayList<>();
 
 	@Temporal(TemporalType.TIMESTAMP)

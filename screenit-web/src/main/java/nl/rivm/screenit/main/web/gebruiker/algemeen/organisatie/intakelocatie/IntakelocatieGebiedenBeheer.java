@@ -85,8 +85,6 @@ public class IntakelocatieGebiedenBeheer extends OrganisatieBeheer
 			columns, new ColoscopieCentrumColonCapaciteitVerdelingDataProvider(), 10, new Model<>("gebieden"))
 		{
 
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<ColoscopieCentrumColonCapaciteitVerdeling> model)
 			{

@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import nl.rivm.screenit.main.service.algemeen.impl.RolDataProviderServiceImpl;
+import nl.rivm.screenit.main.service.RolService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.form.FilterBvoFormPanel;
 import nl.rivm.screenit.main.web.component.table.ActiefPropertyColumn;
@@ -34,6 +34,7 @@ import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Permissie;
 import nl.rivm.screenit.model.Rol;
+import nl.rivm.screenit.model.Rol_;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -52,6 +53,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
 
+import static nl.rivm.screenit.main.util.WicketSpringDataUtil.toSpringSort;
+
 @SecurityConstraint(
 	actie = Actie.INZIEN,
 	checkScope = true,
@@ -62,7 +65,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 public class RollenOverzichtPanel extends GenericPanel<Rol>
 {
 	@SpringBean
-	private RolDataProviderServiceImpl rolDataProviderService;
+	private RolService rolService;
 
 	private WebMarkupContainer refreshContainer;
 
@@ -121,8 +124,8 @@ public class RollenOverzichtPanel extends GenericPanel<Rol>
 	{
 		List<IColumn<Rol, String>> columns = new ArrayList<>();
 		columns.add(new BvoColumn<>(Model.of("Bvo")));
-		columns.add(new PropertyColumn<>(Model.of("Naam"), "naam", "naam"));
-		columns.add(new ActiefPropertyColumn<>(Model.of(""), "actief", refreshContainer, zoekRol));
+		columns.add(new PropertyColumn<>(Model.of("Naam"), Rol_.NAAM, Rol_.NAAM));
+		columns.add(new ActiefPropertyColumn<>(Model.of(""), Rol_.ACTIEF, refreshContainer, zoekRol));
 
 		ScreenitDataTable<Rol, String> linkDataTable = new ScreenitDataTable<Rol, String>("rollen", columns,
 			new RolDataProvider(), Model.of("rollen"))
@@ -149,19 +152,19 @@ public class RollenOverzichtPanel extends GenericPanel<Rol>
 		public RolDataProvider()
 		{
 			super();
-			setSort("naam", SortOrder.ASCENDING);
+			setSort(Rol_.NAAM, SortOrder.ASCENDING);
 		}
 
 		@Override
 		public Iterator<Rol> iterator(long first, long count)
 		{
-			return rolDataProviderService.findPage(first, count, ModelUtil.nullSafeGet(rolModel), getSort()).iterator();
+			return rolService.getRollen(ModelUtil.nullSafeGet(rolModel), toSpringSort(getSort()), first, count).iterator();
 		}
 
 		@Override
 		public long size()
 		{
-			return rolDataProviderService.size(ModelUtil.nullSafeGet(rolModel));
+			return rolService.getRollenCount(ModelUtil.nullSafeGet(rolModel));
 		}
 
 		@Override

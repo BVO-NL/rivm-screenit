@@ -26,31 +26,26 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import nl.rivm.screenit.model.BMHKLaboratorium;
+import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
+
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+
 @Entity
 @Table(schema = "cervix", name = "hpv_bericht")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "cervix.cache")
 @Audited
 public class CervixHpvBericht extends AbstractHibernateObject
 {
@@ -73,9 +68,7 @@ public class CervixHpvBericht extends AbstractHibernateObject
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date statusDatum;
 
-	@Lob
-	@Column(nullable = false)
-	@Type(type = "org.hibernate.type.TextType")
+	@Column(nullable = false, columnDefinition = "TEXT")
 	@NotAudited
 	private String hl7Bericht;
 

@@ -48,8 +48,6 @@ import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -60,7 +58,6 @@ import org.hibernate.envers.NotAudited;
 	name = "capaciteit_blok",
 	indexes = { @Index(name = "idx_mamma_capaciteit_blok_vanaf", columnList = "vanaf"),
 		@Index(name = "idx_mamma_capaciteit_blok_tot", columnList = "tot"), @Index(name = "idx_mamma_capaciteit_blok_blok_type", columnList = "blokType") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 @Audited
 @Getter
 @Setter

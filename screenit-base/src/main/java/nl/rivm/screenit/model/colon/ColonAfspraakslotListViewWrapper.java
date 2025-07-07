@@ -22,7 +22,7 @@ package nl.rivm.screenit.model.colon;
  */
 
 import java.io.Serializable;
-import java.math.BigInteger;
+import java.time.temporal.Temporal;
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
@@ -31,6 +31,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakslotStatus;
+import nl.rivm.screenit.util.DateUtil;
 
 @Getter
 @Setter
@@ -53,14 +54,13 @@ public class ColonAfspraakslotListViewWrapper implements Serializable
 
 	private Long kamerId;
 
-	public void setAfspraakslotId(BigInteger afspraakslotId)
+	public void setStartDatum(Temporal startDatum)
 	{
-		this.afspraakslotId = afspraakslotId.longValue();
+		this.startDatum = DateUtil.toUtilDate(startDatum);
 	}
 
-	public void setKamerId(BigInteger kamerId)
+	public void setEindDatum(Temporal eindDatum)
 	{
-		this.kamerId = kamerId.longValue();
+		this.eindDatum = DateUtil.toUtilDate(eindDatum);
 	}
-
 }

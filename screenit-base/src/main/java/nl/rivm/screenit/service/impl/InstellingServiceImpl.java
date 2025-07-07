@@ -49,7 +49,6 @@ import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.PostcodeCoordinaten;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.ZASRetouradres;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
@@ -77,6 +76,7 @@ import nl.rivm.screenit.specification.algemeen.OrganisatieSpecification;
 import nl.rivm.screenit.specification.algemeen.RolSpecification;
 import nl.rivm.screenit.util.EntityAuditUtil;
 import nl.rivm.screenit.util.MedewerkerUtil;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 import nl.topicuszorg.organisatie.model.Adres;
@@ -440,7 +440,7 @@ public class InstellingServiceImpl implements InstellingService
 	public List<Long> getOrganisatieIdsMetType(OrganisatieType type)
 	{
 		return organisatieRepository.findWith(heeftOrganisatieType(type).and(OrganisatieSpecification.isActief(true)), Long.class,
-			q -> q.projection((cb, r) -> r.get(SingleTableHibernateObject_.id))).all();
+			q -> q.projection((cb, r) -> r.get(AbstractHibernateObject_.id))).all();
 	}
 
 }

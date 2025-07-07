@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.se.proxy;
  * ========================LICENSE_START=================================
  * se-proxy
  * %%
- * Copyright (C) 2017 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -44,9 +44,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 @SpringBootApplication
+@ComponentScan(basePackages = { "nl.rivm.screenit" })
 public class SeProxyApplication implements ApplicationListener<ContextRefreshedEvent>
 {
 	private static final Logger LOG = LoggerFactory.getLogger(SeProxyApplication.class);

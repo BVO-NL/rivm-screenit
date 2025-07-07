@@ -27,17 +27,21 @@ import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
+
 import org.hibernate.envers.Audited;
 
 @Entity
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
+@Table
 @Audited
-public abstract class ScannedFormulier extends TablePerClassHibernateObject
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class ScannedFormulier extends AbstractHibernateObject
 {
 
 	@Serial

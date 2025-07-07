@@ -31,31 +31,26 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.model.IActief;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
-import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.util.DiffSpecs;
 import nl.rivm.screenit.util.SkipFieldForDiff;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
-@Table(schema = "mamma", name = "standplaats", uniqueConstraints = { @UniqueConstraint(columnNames = "locatie"), @UniqueConstraint(columnNames = "tijdelijke_locatie") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
+@Table(schema = "mamma", name = "standplaats")
 @Audited
 @Getter
 @Setter
 public class MammaStandplaats extends AbstractHibernateObject implements IActief
 {
-	@Column(nullable = false, length = HibernateMagicNumber.L255)
+	@Column(nullable = false)
 	private String naam;
 
 	@OneToMany(mappedBy = "standplaats", fetch = FetchType.LAZY)

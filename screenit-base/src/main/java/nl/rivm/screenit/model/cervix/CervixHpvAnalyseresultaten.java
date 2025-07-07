@@ -33,12 +33,8 @@ import lombok.Setter;
 import nl.rivm.screenit.model.cervix.berichten.CervixHpvResultValue;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(schema = "cervix", name = "hpv_analyseresultaten")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Getter
 @Setter
 public class CervixHpvAnalyseresultaten extends AbstractHibernateObject

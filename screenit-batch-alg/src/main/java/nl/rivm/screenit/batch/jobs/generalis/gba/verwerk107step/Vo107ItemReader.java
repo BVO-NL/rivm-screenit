@@ -43,7 +43,7 @@ import nl.rivm.screenit.util.ZipUtil;
 import nl.topicuszorg.gba.vertrouwdverbonden.exceptions.Vo107ParseException;
 import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo107Bericht;
 import nl.topicuszorg.gba.vertrouwdverbonden.services.VO107Service;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5Session;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -153,7 +153,7 @@ public class Vo107ItemReader implements ItemReader<Vo107Bericht>, ItemStream
 		fileIterator = null;
 		offset = 0;
 
-		OpenHibernate5Session.withCommittedTransaction().run(() ->
+		OpenHibernateSession.withCommittedTransaction().run(() ->
 		{
 			GbaVerwerkingsLog verwerkingsLog = (GbaVerwerkingsLog) stepExecution.getJobExecution().getExecutionContext().get(GbaConstants.RAPPORTAGEKEYGBA);
 

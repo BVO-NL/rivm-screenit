@@ -21,13 +21,14 @@ package nl.rivm.screenit.model.cervix.verslag.cytologie;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.cervix.CervixCytologieVerslag;
 import nl.rivm.screenit.model.verslag.VerslagContent;
@@ -37,69 +38,29 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "cervix")
+@Getter
+@Setter
 public class CervixCytologieVerslagContent
 	extends VerslagContent<CervixCytologieVerslag>
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false, mappedBy = "verslagContent")
 	@JsonIgnore
 	private CervixCytologieVerslag verslag;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "verslagContent", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Verrichting", extraTekst = "Verrichting", code = "2.16.840.1.113883.2.4.3.36.77.2.11.68", isReference = true)
+	@VraagElement(conceptId = "68", displayName = "Verrichting", xpaths = {
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent",
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent"
+	})
 	private CervixCytologieVerrichting verrichting;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "verslagContent", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Cytologie uitslag BVO BMHK", extraTekst = "Cytologie uitslag BVO BMHK", code = "2.16.840.1.113883.2.4.3.36.77.2.11.246", isReference = true)
+	@VraagElement(conceptId = "246", displayName = "Cytologie uitslag BVO BMHK")
 	private CervixCytologieCytologieUitslagBvoBmhk cytologieUitslagBvoBmhk;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "verslagContent", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Cytologie uitslag BVO BMHK tbv huisarts", extraTekst = "Cytologie uitslag BVO BMHK tbv huisarts", code = "2.16.840.1.113883.2.4.3.36.77.2.11.266", isReference = true)
+	@VraagElement(conceptId = "266", displayName = "Cytologie uitslag BVO BMHK tbv huisarts")
 	private CervixCytologieCytologieUitslagBvoBmhkTbvHuisarts cytologieUitslagBvoBmhkTbvHuisarts;
-
-	@Override
-	public CervixCytologieVerslag getVerslag()
-	{
-		return verslag;
-	}
-
-	@Override
-	public void setVerslag(CervixCytologieVerslag verslag)
-	{
-		this.verslag = verslag;
-	}
-
-	public CervixCytologieVerrichting getVerrichting()
-	{
-		return verrichting;
-	}
-
-	public void setVerrichting(CervixCytologieVerrichting verrichting)
-	{
-		this.verrichting = verrichting;
-	}
-
-	public CervixCytologieCytologieUitslagBvoBmhk getCytologieUitslagBvoBmhk()
-	{
-		return cytologieUitslagBvoBmhk;
-	}
-
-	public void setCytologieUitslagBvoBmhk(CervixCytologieCytologieUitslagBvoBmhk cytologieUitslagBvoBmhk)
-	{
-		this.cytologieUitslagBvoBmhk = cytologieUitslagBvoBmhk;
-	}
-
-	public CervixCytologieCytologieUitslagBvoBmhkTbvHuisarts getCytologieUitslagBvoBmhkTbvHuisarts()
-	{
-		return cytologieUitslagBvoBmhkTbvHuisarts;
-	}
-
-	public void setCytologieUitslagBvoBmhkTbvHuisarts(CervixCytologieCytologieUitslagBvoBmhkTbvHuisarts cytologieUitslagBvoBmhkTbvHuisarts)
-	{
-		this.cytologieUitslagBvoBmhkTbvHuisarts = cytologieUitslagBvoBmhkTbvHuisarts;
-	}
 
 }

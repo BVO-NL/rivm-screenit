@@ -43,6 +43,8 @@ import nl.rivm.screenit.main.web.component.ScreenitIndicatingAjaxSubmitLink;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.component.validator.AchternaamValidator;
+import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
+import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
 import nl.rivm.screenit.main.web.component.validator.TussenvoegselValidator;
 import nl.rivm.screenit.main.web.component.validator.VoorlettersValidator;
 import nl.rivm.screenit.main.web.component.validator.VoornaamValidator;
@@ -62,14 +64,13 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.AuthenticatieService;
 import nl.rivm.screenit.service.AutorisatieService;
+import nl.rivm.screenit.service.BaseMedewerkerService;
 import nl.rivm.screenit.service.GebruikersService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.StamtabellenService;
 import nl.rivm.screenit.service.WachtwoordService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.organisatie.model.Adres;
-import nl.topicuszorg.wicket.hibernate.markup.form.validation.UniqueFieldValidator;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.yubikey.model.YubiKey;
 
@@ -95,7 +96,6 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
 import org.apache.wicket.validation.validator.PatternValidator;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.wicketstuff.shiro.ShiroConstraint;
@@ -110,9 +110,6 @@ import org.wicketstuff.shiro.ShiroConstraint;
 public class MedewerkerBasisgegevens extends MedewerkerBeheer
 {
 	@SpringBean
-	private HibernateService hibernateService;
-
-	@SpringBean
 	private LogService logService;
 
 	@SpringBean
@@ -120,6 +117,9 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 
 	@SpringBean
 	private MedewerkerService medewerkerService;
+
+	@SpringBean
+	private BaseMedewerkerService baseMedewerkerService;
 
 	@SpringBean
 	private GebruikersService gebruikersService;
@@ -278,7 +278,7 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 			add(bigNummerLabel);
 
 			bigNummer = ComponentHelper.addTextField(this, "bignummer", false, 11, inzien)
-				.add(new UniqueFieldValidator<>(Gebruiker.class, medewerker.getId(), "bignummer", hibernateService)).setVisible(isZorgverlener);
+				.add(new ScreenitUniqueFieldValidator<>(Gebruiker.class, medewerker.getId(), "bignummer", false)).setVisible(isZorgverlener);
 			bigNummer.setOutputMarkupPlaceholderTag(true);
 			DateTextField geboortedatum = new ScreenitDateTextField("geboortedatum");
 			geboortedatum.setOutputMarkupId(true);
@@ -287,7 +287,7 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 			uziContainer = new WebMarkupContainer("uzi-container");
 			uziContainer.setOutputMarkupPlaceholderTag(true);
 			ComponentHelper.addTextField(uziContainer, "uzinummer", false, 9, inzien)
-				.add(new UniqueFieldValidator<>(Gebruiker.class, medewerker.getId(), "uzinummer", hibernateService)).add(new PatternValidator("[0-9]*"));
+				.add(new ScreenitUniqueFieldValidator<>(Gebruiker.class, medewerker.getId(), "uzinummer", false)).add(new PatternValidator("[0-9]*"));
 			add(uziContainer);
 
 			ComponentHelper.addTextField(this, "patholoogId", false, 25, inzien).setEnabled(!inzien);
@@ -321,7 +321,7 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 			ComponentHelper.addTextField(this, "telefoonnummerextra", false, 25, inzien);
 
 			ComponentHelper.addTextField(this, "emailextra", false, 255, inzien).add(EmailAddressValidator.getInstance()).setLabel(Model.of("E-mailadres"))
-				.add(new UniqueFieldValidator<>(Gebruiker.class, medewerker.getId(), "emailextra", hibernateService, restrictions));
+				.add(new ScreenitUniqueFieldValidator<>(Gebruiker.class, medewerker.getId(), "emailextra", restrictions));
 			ComponentHelper.addTextField(this, "adressen[0].plaats", false, 80, inzien);
 			ComponentHelper.addTextField(this, "telefoonnummerprive", false, 25, inzien);
 
@@ -352,7 +352,7 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 		{
 			FormComponent<String> gebruikersnaam = ComponentHelper.addTextField(this, "gebruikersnaam", true, 30, inzien);
 			gebruikersnaam.setEnabled(!inzien && isBeheerder);
-			gebruikersnaam.add(new UniqueFieldValidator<>(Gebruiker.class, medewerker.getId(), "gebruikersnaam", hibernateService, true));
+			gebruikersnaam.add(new ScreenitUniqueFieldValidator<>(Gebruiker.class, medewerker.getId(), "gebruikersnaam", true));
 			gebruikersnaam.setLabel(Model.of("Gebruikersnaam"));
 
 			geenWachtwoordContainer = new WebMarkupContainer("geenWachtwoord");
@@ -500,7 +500,7 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 				{
 					Gebruiker medewerker = MedewerkerEditForm.this.getModelObject();
 
-					medewerkerService.inActiveerGebruiker(medewerker);
+					baseMedewerkerService.inActiveerMedewerker(medewerker);
 					if (Boolean.FALSE.equals(medewerker.getActief()))
 					{
 						logAction(LogGebeurtenis.MEDEWERKER_INACTIVEERD, medewerker);

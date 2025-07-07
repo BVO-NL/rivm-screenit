@@ -30,11 +30,11 @@ import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultRead
 import nl.rivm.screenit.model.Brief_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.cervix.enums.CervixLeeftijdcategorie;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.jpa.domain.Specification;
@@ -81,7 +81,7 @@ public class SignaleringGenderReader extends BaseSpecificationScrollableResultRe
 		{
 			var algemeneBriefJoin = join(r, Client_.algemeneBrieven, LEFT);
 			algemeneBriefJoin.on(cb.equal(algemeneBriefJoin.get(Brief_.briefType), BriefType.CLIENT_SIGNALERING_GENDER));
-			return cb.isNull(algemeneBriefJoin.get(TablePerClassHibernateObject_.id));
+			return cb.isNull(algemeneBriefJoin.get(AbstractHibernateObject_.id));
 		};
 	}
 }

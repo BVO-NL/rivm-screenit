@@ -23,6 +23,14 @@ package nl.rivm.screenit.model.mamma.berichten;
 
 import java.util.Date;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,24 +39,11 @@ import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-
 @Entity
 @Table(schema = "mamma", name = "ims_bericht")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Audited
 @Getter
 @Setter
@@ -63,9 +58,7 @@ public class MammaIMSBericht extends AbstractHibernateObject
 	@Enumerated(EnumType.STRING)
 	private BerichtStatus berichtStatus;
 
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
-	@Column(nullable = false)
+	@Column(nullable = false, columnDefinition = "TEXT")
 	@NotAudited
 	private String hl7Bericht;
 

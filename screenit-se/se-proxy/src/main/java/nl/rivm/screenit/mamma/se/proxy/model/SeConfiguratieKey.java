@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.se.proxy.model;
  * ========================LICENSE_START=================================
  * se-proxy
  * %%
- * Copyright (C) 2017 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,5 +30,7 @@ public enum SeConfiguratieKey
 	SE_INFORMATIE_OPHALEN_CRON,
 	SE_PING_INTERVAL,
 	SE_PONG_TIMEOUT,
-	TOMOSYNTHESE_MOGELIJK
+	TOMOSYNTHESE_MOGELIJK,
+	IMS_LAUNCH_URL_PASSWORD,
+	MAMMA_IMS_LAUNCH_URL_SHA1_MODE;
 }

@@ -29,6 +29,8 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.annotation.Nullable;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -82,7 +84,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.Range;
 
 import ca.uhn.hl7v2.util.Pair;
-import jakarta.annotation.Nullable;
 
 import static nl.rivm.screenit.specification.colon.ColonTijdslotSpecification.heeftKamer;
 import static nl.rivm.screenit.specification.colon.ColonTijdslotSpecification.isAfspraakslot;
@@ -304,6 +305,27 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 			afspraakslots.add(afspraakslotMapper.roosterListItemViewWrapperToColonAfspraakslotDto(gevondenAfspraakslot));
 		}
 		return afspraakslots;
+	}
+
+	@Override
+	public ColonAfspraakslot getEerstBeschikbareAfspraakslot(LocalDate startDatum, LocalDate eindDatum, List<ColonAfspraakslotStatus> beschikbareStatussen,
+		ColonIntakelocatie intakeLocatie)
+	{
+		var filter = new RoosterListViewFilter();
+		filter.setStartDatum(DateUtil.toUtilDate(startDatum));
+		filter.setEindDatum(DateUtil.toUtilDate(eindDatum));
+
+		var slots = roosterService.getAlleAfspraakslotsInPeriode("vanaf", true, filter, intakeLocatie);
+		for (var slot : slots)
+		{
+			var afspraakslot = afspraakslotRepository.findById(slot.getAfspraakslotId()).orElseThrow();
+			var status = getAfspraakslotStatus(afspraakslot);
+			if (beschikbareStatussen.contains(status))
+			{
+				return afspraakslot;
+			}
+		}
+		return null;
 	}
 
 	@Override

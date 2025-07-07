@@ -21,11 +21,9 @@ package nl.rivm.screenit.model.colon.verslag.mdl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -37,38 +35,39 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.model.verslag.DSValueSet;
 import nl.rivm.screenit.model.verslag.DSValueSetValue;
 import nl.rivm.screenit.model.verslag.Quantity;
 import nl.rivm.screenit.model.verslag.VraagElement;
-import nl.rivm.screenit.model.verslag.VraagElementUnit;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "colon")
+@Getter
+@Setter
 public class MdlPoliep
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private MdlLaesiecoloscopiecentrum laesiecoloscopiecentrum;
 
 	@Embedded
-	@Nonnull
 	@AttributeOverrides({
 		@AttributeOverride(name = "value", column = @Column(name = "diameterPoliepValue")),
 		@AttributeOverride(name = "unit", column = @Column(name = "diameterPoliepUnit"))
 	})
-	@VraagElement(displayName = "Diameter poliep", extraTekst = "Diameter van de poliep zoals vastgesteld door endoscopist", code = "2.16.840.1.113883.2.4.3.36.77.2.11.133", isVerplicht = true, unit = {
-		@VraagElementUnit(unit = "mm")
-	})
+	@VraagElement(conceptId = "133", displayName = "Diameter poliep", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.205']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.383']]]/hl7:organizer/hl7:component[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.333']]]/hl7:act/hl7:specimen/hl7:specimenRole/lab:subjectOf[lab:observationEvent/lab:code/@code='384627007']/lab:observationEvent/lab:value|@value",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.205']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.383']]]/hl7:organizer/hl7:component[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.333']]]/hl7:act/hl7:specimen/hl7:specimenRole/lab:subjectOf[lab:observationEvent/lab:code/@code='384627007']/lab:observationEvent/lab:value|@value"
+	}, isVerplicht = true)
 	private Quantity diameterPoliep;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -81,7 +80,10 @@ public class MdlPoliep
 		@DSValueSetValue(code = "6", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.29"),
 		@DSValueSetValue(code = "UNK", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Morfologie", extraTekst = "Beschrijving morfologie van de poliep", code = "2.16.840.1.113883.2.4.3.36.77.2.11.134", isVerplicht = true)
+	@VraagElement(conceptId = "134", displayName = "Morfologie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.205']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.383']]]/hl7:organizer/hl7:component[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.333']]]/hl7:act/hl7:specimen/hl7:specimenRole/lab:subjectOf[lab:observationEvent/lab:code/@code='41329004']/lab:observationEvent/lab:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.205']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.383']]]/hl7:organizer/hl7:component[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.333']]]/hl7:act/hl7:specimen/hl7:specimenRole/lab:subjectOf[lab:observationEvent/lab:code/@code='41329004']/lab:observationEvent/lab:value|@code"
+	}, isVerplicht = true)
 	private DSValue morfologie;
 
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -98,7 +100,10 @@ public class MdlPoliep
 		@DSValueSetValue(code = "9", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.34"),
 		@DSValueSetValue(code = "OTH", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Manier van verwijderen", extraTekst = "Manier waarop de poliep of anderszins is weggehaald", code = "2.16.840.1.113883.2.4.3.36.77.2.11.135", isVerplicht = true)
+	@VraagElement(conceptId = "135", displayName = "Manier van verwijderen", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.205']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.383']]]/hl7:organizer/hl7:component[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.333']]]/hl7:act/hl7:specimen/hl7:specimenRole/lab:productOf/lab:specimenCollectionProcess/lab:methodCode|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.205']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.383']]]/hl7:organizer/hl7:component[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.333']]]/hl7:act/hl7:specimen/hl7:specimenRole/lab:productOf/lab:specimenCollectionProcess/lab:methodCode|@code"
+	}, isVerplicht = true)
 	private List<DSValue> manierVanVerwijderen = new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -108,11 +113,14 @@ public class MdlPoliep
 		@DSValueSetValue(code = "255599008", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "0", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.35")
 	})
-	@VraagElement(displayName = "Volledigheid wegname materiaal", extraTekst = "Of materiaal volledig/partieel is weggenomen", code = "2.16.840.1.113883.2.4.3.36.77.2.3.145090", isVerplicht = true, useInFormulier = false)
+	@VraagElement(conceptId = "145090", displayName = "Volledigheid wegname materiaal", isVerplicht = true, useInCda = false)
 	private DSValue volledigheidWegnameMateriaal;
 
 	@Column(length = 4096)
-	@VraagElement(displayName = "Overige manier van verwijderen", extraTekst = "Overige manier van verwijderen", code = "2.16.840.1.113883.2.4.3.36.77.2.11.136", isVerplicht = true)
+	@VraagElement(conceptId = "136", displayName = "Overige manier van verwijderen", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.205']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.383']]]/hl7:organizer/hl7:component[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.333']]]/hl7:act/hl7:specimen/hl7:specimenRole/lab:productOf/lab:specimenCollectionProcess/lab:methodCode/lab:originalText",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.205']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.383']]]/hl7:organizer/hl7:component[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.333']]]/hl7:act/hl7:specimen/hl7:specimenRole/lab:productOf/lab:specimenCollectionProcess/lab:methodCode/lab:originalText"
+	}, isVerplicht = true)
 	private String overigeManierVanVerwijderen;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -120,7 +128,10 @@ public class MdlPoliep
 		@DSValueSetValue(code = "255619001", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "2", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.35")
 	})
-	@VraagElement(displayName = "Methode van verwijderen", extraTekst = "Methode van verwijderen", code = "2.16.840.1.113883.2.4.3.36.77.2.11.137", isVerplicht = true)
+	@VraagElement(conceptId = "137", displayName = "Methode van verwijderen", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.205']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.383']]]/hl7:organizer/hl7:component[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.333']]]/hl7:act/hl7:specimen/hl7:specimenRole/lab:productOf/lab:specimenCollectionProcess/lab:code/lab:qualifier[lab:name/@code='246386008']/lab:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.205']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.383']]]/hl7:organizer/hl7:component[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.333']]]/hl7:act/hl7:specimen/hl7:specimenRole/lab:productOf/lab:specimenCollectionProcess/lab:code/lab:qualifier[lab:name/@code='246386008']/lab:value|@code"
+	}, isVerplicht = true)
 	private DSValue methodeVanVerwijderen;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -128,87 +139,10 @@ public class MdlPoliep
 		@DSValueSetValue(code = "255612005", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "255599008", codeSystem = "2.16.840.1.113883.6.96")
 	})
-	@VraagElement(displayName = "Resultaat verwijdering", extraTekst = "Resultaat verwijdering", code = "2.16.840.1.113883.2.4.3.36.77.2.11.138", isVerplicht = true)
+	@VraagElement(conceptId = "138", displayName = "Resultaat verwijdering", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.205']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.383']]]/hl7:organizer/hl7:component[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.333']]]/hl7:act/hl7:specimen/hl7:specimenRole/lab:productOf/lab:specimenCollectionProcess/lab:code/lab:qualifier[lab:name/@code='260858005']/lab:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.205']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.383']]]/hl7:organizer/hl7:component[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.333']]]/hl7:act/hl7:specimen/hl7:specimenRole/lab:productOf/lab:specimenCollectionProcess/lab:code/lab:qualifier[lab:name/@code='260858005']/lab:value|@code"
+	}, isVerplicht = true)
 	private DSValue resultaatVerwijdering;
-
-	public MdlLaesiecoloscopiecentrum getLaesiecoloscopiecentrum()
-	{
-		return laesiecoloscopiecentrum;
-	}
-
-	public void setLaesiecoloscopiecentrum(MdlLaesiecoloscopiecentrum laesiecoloscopiecentrum)
-	{
-		this.laesiecoloscopiecentrum = laesiecoloscopiecentrum;
-	}
-
-	public Quantity getDiameterPoliep()
-	{
-		return diameterPoliep;
-	}
-
-	public void setDiameterPoliep(Quantity diameterPoliep)
-	{
-		this.diameterPoliep = diameterPoliep;
-	}
-
-	public DSValue getMorfologie()
-	{
-		return morfologie;
-	}
-
-	public void setMorfologie(DSValue morfologie)
-	{
-		this.morfologie = morfologie;
-	}
-
-	public DSValue getVolledigheidWegnameMateriaal()
-	{
-		return volledigheidWegnameMateriaal;
-	}
-
-	public void setVolledigheidWegnameMateriaal(DSValue volledigheidWegnameMateriaal)
-	{
-		this.volledigheidWegnameMateriaal = volledigheidWegnameMateriaal;
-	}
-
-	public List<DSValue> getManierVanVerwijderen()
-	{
-		return manierVanVerwijderen;
-	}
-
-	public void setManierVanVerwijderen(List<DSValue> manierVanVerwijderen)
-	{
-		this.manierVanVerwijderen = manierVanVerwijderen;
-	}
-
-	public String getOverigeManierVanVerwijderen()
-	{
-		return overigeManierVanVerwijderen;
-	}
-
-	public void setOverigeManierVanVerwijderen(String overigeManierVanVerwijderen)
-	{
-		this.overigeManierVanVerwijderen = overigeManierVanVerwijderen;
-	}
-
-	public DSValue getMethodeVanVerwijderen()
-	{
-		return methodeVanVerwijderen;
-	}
-
-	public void setMethodeVanVerwijderen(DSValue methodeVanVerwijderen)
-	{
-		this.methodeVanVerwijderen = methodeVanVerwijderen;
-	}
-
-	public DSValue getResultaatVerwijdering()
-	{
-		return resultaatVerwijdering;
-	}
-
-	public void setResultaatVerwijdering(DSValue resultaatVerwijdering)
-	{
-		this.resultaatVerwijdering = resultaatVerwijdering;
-	}
 
 }

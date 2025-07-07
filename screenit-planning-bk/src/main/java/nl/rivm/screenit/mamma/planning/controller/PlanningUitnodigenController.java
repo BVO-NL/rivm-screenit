@@ -83,12 +83,13 @@ import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5Session;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.hibernate.FlushMode;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.persistence.FlushModeType;
 
 @Slf4j
 @RestController
@@ -236,7 +237,7 @@ public class PlanningUitnodigenController
 
 			conceptmodelService.resetConceptmodel();
 
-			hibernateService.getHibernateSession().setFlushMode(FlushMode.COMMIT);
+			hibernateService.getHibernateSession().setFlushMode(FlushModeType.COMMIT);
 
 			MammaUitnodigenRapportage rapportage = new MammaUitnodigenRapportage();
 
@@ -344,7 +345,7 @@ public class PlanningUitnodigenController
 		{
 			try
 			{
-				OpenHibernate5Session.withCommittedTransaction().run(() ->
+				OpenHibernateSession.withCommittedTransaction().run(() ->
 				{
 					LOG.info("uitnodigen standplaatsRonde: " + standplaatsRonde.getId());
 					PlanningStandplaats standplaats = standplaatsRonde.getStandplaats();

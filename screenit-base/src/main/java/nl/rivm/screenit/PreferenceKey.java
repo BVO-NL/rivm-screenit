@@ -225,6 +225,8 @@ public enum PreferenceKey
 
 	COLON_SIGNALERINGSTERMIJN_GEEN_CAPACITEIT("Signaleringstermijn voor geen opgegeven capaciteit", Integer.class),
 
+	COLON_SIGNALERINGSTERMIJN_AANEENGESLOTEN_PERIODE("Aaneengesloten periode signalering", Integer.class),
+
 	CERVIX_WACHTTIJD_UITSTRIJKJE_ONTBREEKT_ANALOOG("Uitstrijkje ontbreekt (analoog labformulier)", Integer.class),
 
 	CERVIX_WACHTTIJD_WACHT_OP_UITSTRIJKJE_ONTVANGEN_ANALOOG("Wacht op uitstrijkje ontvangen (analoog labformulier)", Integer.class),
@@ -363,8 +365,6 @@ public enum PreferenceKey
 
 	CERVIX_VOORAANKONDIGINGS_PERIODE("Het aantal dagen voor de 30e verjaardag dat de vooraankondiging gegenereerd wordt", Integer.class),
 
-	INTERNAL_COLON_COMPLICATIE_VERWERKING_STOP("Stopdatum verwerking complicaties DK", Date.class),
-
 	INTERNAL_WSB_SCHEMATRON_VERSIONPATHMAPPING("Schematron version path mapping", String.class),
 
 	INTERNAL_CDA_VERSIONMAPPING("Schematron cda version path mapping", String.class),
@@ -472,6 +472,9 @@ public enum PreferenceKey
 
 	LEEFTIJD_PERSOONSGEGEVENS_UIT_EXTRA_BEVEILIGDE_OMGEVING_VERWIJDEREN("Leeftijd van de client waarbij persoonsgegevens uit de extra beveiligde omgeving verwijderd worden",
 		Integer.class),
+	COLON_START_DK2026("Startdatum DK2026", Date.class),
+
+	COLON_BETROUWBARE_LIMIET_FIT("Betrouwbare limiet FIT uitslag", Integer.class),
 	;
 
 	private final String layoutName;

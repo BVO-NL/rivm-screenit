@@ -186,7 +186,7 @@ public class CervixHerindexeerVerrichtingenServiceImpl implements CervixHerindex
 		{
 			LOG.error("Fout bij maken string van herindexatieDto", e);
 		}
-		logService.logGebeurtenis(gebeurtenis, null, melding, Bevolkingsonderzoek.CERVIX);
+		logService.logGebeurtenis(gebeurtenis, melding, Bevolkingsonderzoek.CERVIX);
 	}
 
 	@Override
@@ -202,7 +202,7 @@ public class CervixHerindexeerVerrichtingenServiceImpl implements CervixHerindex
 			gebeurtenis = LogGebeurtenis.CERVIX_LAB_TARIEF_INDEXEERD;
 		}
 		LOG.info(melding);
-		logService.logGebeurtenis(gebeurtenis, null, melding, Bevolkingsonderzoek.CERVIX);
+		logService.logGebeurtenis(gebeurtenis, melding, Bevolkingsonderzoek.CERVIX);
 	}
 
 	@Override

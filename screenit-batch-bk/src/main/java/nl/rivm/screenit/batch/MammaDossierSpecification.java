@@ -24,7 +24,6 @@ package nl.rivm.screenit.batch;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling_;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaDossier_;
@@ -33,6 +32,7 @@ import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde_;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaFollowUpConclusieStatus;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -57,7 +57,7 @@ public class MammaDossierSpecification
 			var onderzoekJoinDossier = join(rondeJoin, MammaScreeningRonde_.laatsteOnderzoek);
 			var beoordelingJoinDossier = join(onderzoekJoinDossier, MammaOnderzoek_.laatsteBeoordeling);
 
-			subquery.select(subqueryRoot.get(TablePerClassHibernateObject_.id))
+			subquery.select(subqueryRoot.get(AbstractHibernateObject_.id))
 				.where(
 					cb.or(
 						beoordelingJoinDossier.get(MammaBeoordeling_.status).in(MammaBeoordelingStatus.UITSLAG_ONGUNSTIG, MammaBeoordelingStatus.ONBEOORDEELBAAR),
@@ -68,7 +68,7 @@ public class MammaDossierSpecification
 					)
 				);
 
-			return cb.not(r.get(TablePerClassHibernateObject_.id).in(subquery));
+			return cb.not(r.get(AbstractHibernateObject_.id).in(subquery));
 		};
 	}
 
@@ -79,7 +79,7 @@ public class MammaDossierSpecification
 			var subquery = q.subquery(Long.class);
 			var subqueryRoot = subquery.from(MammaScreeningRonde.class);
 
-			subquery.select(cb.count(subqueryRoot.get(TablePerClassHibernateObject_.id)))
+			subquery.select(cb.count(subqueryRoot.get(AbstractHibernateObject_.id)))
 				.where(
 					heeftBeeldenMetGunstigeUitslag(r).toPredicate(subqueryRoot, q, cb)
 				);

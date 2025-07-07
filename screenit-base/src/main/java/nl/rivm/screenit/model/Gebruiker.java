@@ -48,15 +48,13 @@ import nl.rivm.screenit.model.enums.InlogMethode;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.nieuws.GebruikerNieuwsItem;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst;
-import nl.topicuszorg.hibernate.object.annot.ExactValue;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import nl.topicuszorg.organisatie.model.Adres;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.NaamGebruik;
 import nl.topicuszorg.yubikey.model.YubiKey;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Proxy;
@@ -69,32 +67,25 @@ import org.hibernate.envers.NotAudited;
 		@Index(name = "IDX_GEBRUIKER_ACTIEF", columnList = "actief"),
 		@Index(name = "IDX_GEBRUIKER_ACHTERNAAM", columnList = "achternaam") })
 @Proxy
-@Cache(
-	usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
-	region = "organisatie.cache"
-)
 @Audited
 @Getter
 @Setter
-public class Gebruiker extends SingleTableHibernateObject implements Account, IActief
+public class Gebruiker extends AbstractHibernateObject implements Account, IActief
 {
 	@Column(
 		unique = true,
-		nullable = true,
 		length = 8
 	)
 	private String agbcode;
 
 	@Column(
 		unique = true,
-		nullable = true,
 		length = 11
 	)
 	private String bignummer;
 
 	@Column(
 		unique = true,
-		nullable = true,
 		length = 9
 	)
 	private String uzinummer;
@@ -102,14 +93,12 @@ public class Gebruiker extends SingleTableHibernateObject implements Account, IA
 	@Deprecated(forRemoval = true)
 	@Column(
 		unique = true,
-		nullable = true,
 		length = 10
 	)
 	private String pasnummer;
 
 	@Deprecated(forRemoval = true)
 	@Column(
-		nullable = true,
 		length = 8
 	)
 	private String rolCode;
@@ -117,7 +106,6 @@ public class Gebruiker extends SingleTableHibernateObject implements Account, IA
 	@Deprecated(forRemoval = true)
 	@Column(
 		unique = true,
-		nullable = true,
 		length = 100
 	)
 	private String uziPasSerial;
@@ -146,10 +134,6 @@ public class Gebruiker extends SingleTableHibernateObject implements Account, IA
 	@OneToMany(
 		mappedBy = "medewerker"
 	)
-	@Cache(
-		usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
-		region = "organisatie.cache"
-	)
 	@XmlTransient
 	private List<InstellingGebruiker> organisatieMedewerkers = new ArrayList<>();
 
@@ -158,23 +142,17 @@ public class Gebruiker extends SingleTableHibernateObject implements Account, IA
 		cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE }
 	)
 	@Cascade({ CascadeType.PERSIST, CascadeType.SAVE_UPDATE })
-	@Cache(
-		usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
-		region = "organisatie.cache"
-	)
 	private List<Adres> adressen = new ArrayList<>();
 
 	@Deprecated(forRemoval = true)
 	@Column(
-		length = 200,
-		nullable = true
+		length = 200
 	)
 	private String partnerAchternaam;
 
 	@Deprecated(forRemoval = true)
 	@Column(
-		length = 10,
-		nullable = true
+		length = 10
 	)
 	private String partnerTussenvoegsel;
 
@@ -183,9 +161,7 @@ public class Gebruiker extends SingleTableHibernateObject implements Account, IA
 	private NaamGebruik naamGebruik;
 
 	@Deprecated(forRemoval = true)
-	@Column(
-		nullable = true
-	)
+	@Column
 	private String volledigenaamweergave;
 
 	@Enumerated(EnumType.STRING)
@@ -213,7 +189,6 @@ public class Gebruiker extends SingleTableHibernateObject implements Account, IA
 	private Date geboortedatum;
 
 	@Column(unique = true, nullable = false)
-	@ExactValue
 	private String gebruikersnaam;
 
 	private String wachtwoord;

@@ -21,11 +21,9 @@ package nl.rivm.screenit.model.colon.verslag.mdl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
@@ -40,48 +38,64 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.model.verslag.DSValueSet;
 import nl.rivm.screenit.model.verslag.DSValueSetValue;
 import nl.rivm.screenit.model.verslag.NullFlavourQuantity;
 import nl.rivm.screenit.model.verslag.Quantity;
 import nl.rivm.screenit.model.verslag.VraagElement;
-import nl.rivm.screenit.model.verslag.VraagElementUnit;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "colon")
+@Getter
+@Setter
 public class MdlColoscopieMedischeObservatie
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private MdlVerslagContent verslagContent;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "coloscopieMedischeObservatie", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Voorbereiding coloscopie", extraTekst = "Voorbereiding voor coloscopie door cli\u00ebnt", code = "2.16.840.1.113883.2.4.3.36.77.2.11.81", isReference = true)
+	@VraagElement(conceptId = "81", displayName = "Voorbereiding coloscopie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.307']]]/hl7:act",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.307']]]/hl7:act"
+	})
 	private MdlVoorbereidingColoscopie voorbereidingColoscopie;
 
 	@Column
-	@VraagElement(displayName = "Time-out procedure doorlopen", extraTekst = "Time-out procedure doorlopen ja/nee", code = "2.16.840.1.113883.2.4.3.36.77.2.11.89", isVerplicht = true)
+	@VraagElement(conceptId = "89", displayName = "Time-out procedure doorlopen", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.203']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.342']]]/hl7:observation/hl7:value|@value",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.203']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.342']]]/hl7:observation/hl7:value|@value"
+	}, isVerplicht = true)
 	private Boolean timeoutProcedureDoorlopen;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "coloscopieMedischeObservatie", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Medicatie", extraTekst = "Medicatie gegeven tijdens coloscopie", code = "2.16.840.1.113883.2.4.3.36.77.2.11.90", isReference = true)
+	@VraagElement(conceptId = "90", displayName = "Medicatie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.203']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.502']]]/hl7:organizer",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.203']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.502']]]/hl7:organizer"
+	})
 	private MdlMedicatie medicatie;
 
 	@Column
-	@VraagElement(displayName = "CO2 insufflatie", extraTekst = "Wel of geen CO2 insufflatie gebruikt", code = "2.16.840.1.113883.2.4.3.36.77.2.11.97", isVerplicht = true)
+	@VraagElement(conceptId = "97", displayName = "CO2 insufflatie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.322']]]/hl7:observation/hl7:value|@value",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.322']]]/hl7:observation/hl7:value|@value"
+	}, isVerplicht = true)
 	private Boolean co2Insufflatie;
 
 	@Column
-	@VraagElement(displayName = "Coecum / terminaal ileum intubatie", extraTekst = "Coecum / terminaal ileum bereikt (ja/nee)", code = "2.16.840.1.113883.2.4.3.36.77.2.11.98", isVerplicht = true)
+	@VraagElement(conceptId = "98", displayName = "Coecum / terminaal ileum intubatie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.329']]]/hl7:observation/hl7:value|@value",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.329']]]/hl7:observation/hl7:value|@value"
+	}, isVerplicht = true)
 	private Boolean coecumTerminaalIleumIntubatie;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -101,11 +115,17 @@ public class MdlColoscopieMedischeObservatie
 		@DSValueSetValue(code = "13", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.250"),
 		@DSValueSetValue(code = "OTH", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Reden coecum niet bereikt", extraTekst = "Als het coecum niet is bereikt is, wat is de reden", code = "2.16.840.1.113883.2.4.3.36.77.2.11.99", isVerplicht = true)
+	@VraagElement(conceptId = "99", displayName = "Reden coecum niet bereikt", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.343']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.343']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue redenCoecumNietBereikt;
 
 	@Column(length = 4096)
-	@VraagElement(displayName = "Text reden coecum niet bereikt", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.2.11.100", isVerplicht = true)
+	@VraagElement(conceptId = "100", displayName = "Text reden coecum niet bereikt", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.343']]]/hl7:observation/hl7:value/hl7:originalText",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.343']]]/hl7:observation/hl7:value/hl7:originalText"
+	}, isVerplicht = true)
 	private String textRedenCoecumNietBereikt;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -126,35 +146,41 @@ public class MdlColoscopieMedischeObservatie
 		@DSValueSetValue(code = "34402009", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "OTH", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Diepste punt insertie", extraTekst = "Als het coecum niet bereikt is, hoever er wel gekomen is (diepste punt insertie)", code = "2.16.840.1.113883.2.4.3.36.77.2.11.101", isVerplicht = true)
+	@VraagElement(conceptId = "101", displayName = "Diepste punt insertie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.330']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.330']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue diepstePuntInsertie;
 
 	@Embedded
-	@Nonnull
 	@AttributeOverrides({
 		@AttributeOverride(name = "value", column = @Column(name = "afstandVanafAnusValue")),
 		@AttributeOverride(name = "unit", column = @Column(name = "afstandVanafAnusUnit")),
 		@AttributeOverride(name = "nullFlavour", column = @Column(name = "afstandVanafAnusNf"))
 	})
-	@VraagElement(displayName = "Afstand vanaf anus", extraTekst = "Afstand vanaf anus (in cm)", code = "2.16.840.1.113883.2.4.3.36.77.2.11.102", isVerplicht = true, unit = {
-		@VraagElementUnit(unit = "cm", min = "1.0", max = "200.0")
-	})
+	@VraagElement(conceptId = "102", displayName = "Afstand vanaf anus", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.344']]]/hl7:observation/hl7:value|@value",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.344']]]/hl7:observation/hl7:value|@value"
+	}, isVerplicht = true)
 	private NullFlavourQuantity afstandVanafAnus;
 
 	@Embedded
-	@Nonnull
 	@AttributeOverrides({
 		@AttributeOverride(name = "value", column = @Column(name = "totaleTerugtrektijdValue")),
 		@AttributeOverride(name = "unit", column = @Column(name = "totaleTerugtrektijdUnit")),
 		@AttributeOverride(name = "nullFlavour", column = @Column(name = "totaleTerugtrektijdNf"))
 	})
-	@VraagElement(displayName = "Totale terugtrektijd", extraTekst = "Totale terugtrektijd in minuten. Ongecorrigeerd voor tijdelijke stops voor bijv. nemen van een biopt of poliepectomie", code = "2.16.840.1.113883.2.4.3.36.77.2.11.103", isVerplicht = true, unit = {
-		@VraagElementUnit(unit = "min")
-	})
+	@VraagElement(conceptId = "103", displayName = "Totale terugtrektijd", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.323']]]/hl7:observation/hl7:value[not(@nullFlavor)]|@value",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.323']]]/hl7:observation/hl7:value[not(@nullFlavor)]|@value"
+	}, isVerplicht = true)
 	private NullFlavourQuantity totaleTerugtrektijd;
 
 	@Column
-	@VraagElement(displayName = "Retroflexie rectum", extraTekst = "Retroflexie rectum", code = "2.16.840.1.113883.2.4.3.36.77.2.11.104", isVerplicht = true)
+	@VraagElement(conceptId = "104", displayName = "Retroflexie rectum", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.331']]]/hl7:observation/hl7:value|@value",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.331']]]/hl7:observation/hl7:value|@value"
+	}, isVerplicht = true)
 	private Boolean retroflexieRectum;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -165,7 +191,10 @@ public class MdlColoscopieMedischeObservatie
 		@DSValueSetValue(code = "4", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.104"),
 		@DSValueSetValue(code = "5", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.104")
 	})
-	@VraagElement(displayName = "Pati\u00ebntcomfort (GCS)", extraTekst = "Mate van pati\u00ebntcomfort, gecodeerd volgens Gloucester comfort score standaard", code = "2.16.840.1.113883.2.4.3.36.77.2.11.105", isVerplicht = true)
+	@VraagElement(conceptId = "105", displayName = "Pati\u00ebntcomfort (GCS)", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.328']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.328']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue patientcomfortgcs;
 
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -185,11 +214,17 @@ public class MdlColoscopieMedischeObservatie
 		@DSValueSetValue(code = "12", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.37"),
 		@DSValueSetValue(code = "OTH", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Reden afbreking coloscopie", extraTekst = "Als de coloscopie is afgebroken, wat is de reden dat het onderzoek incompleet is", code = "2.16.840.1.113883.2.4.3.36.77.2.11.106")
+	@VraagElement(conceptId = "106", displayName = "Reden afbreking coloscopie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.334']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.334']]]/hl7:observation/hl7:value|@code"
+	})
 	private List<DSValue> redenAfbrekingColoscopie = new ArrayList<>();
 
 	@Column(length = 4096)
-	@VraagElement(displayName = "Text reden afbreking coloscopie", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.2.11.107", isVerplicht = true)
+	@VraagElement(conceptId = "107", displayName = "Text reden afbreking coloscopie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.334']]]/hl7:observation/hl7:value/hl7:originalText",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.320']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.334']]]/hl7:observation/hl7:value/hl7:originalText"
+	}, isVerplicht = true)
 	private String textRedenAfbrekingColoscopie;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -203,16 +238,25 @@ public class MdlColoscopieMedischeObservatie
 		@DSValueSetValue(code = "7", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.38"),
 		@DSValueSetValue(code = "8", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.38")
 	})
-	@VraagElement(displayName = "Terugkoppeling cli\u00ebnt", extraTekst = "Directe terugkoppeling naar cli\u00ebnt na afloop van coloscopie", code = "2.16.840.1.113883.2.4.3.36.77.2.11.108")
+	@VraagElement(conceptId = "108", displayName = "Terugkoppeling cli\u00ebnt", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.207']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.370']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.207']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.370']]]/hl7:observation/hl7:value|@code"
+	})
 	private DSValue terugkoppelingClient;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "coloscopieMedischeObservatie", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Definitief vervolgbeleid voor bevolkingsonderzoek (groep)", extraTekst = "Definitief vervolgbeleid voor bevolkingsonderzoek (groep)", code = "2.16.840.1.113883.2.4.3.36.77.2.11.109", isReference = true)
+	@VraagElement(conceptId = "109", displayName = "Definitief vervolgbeleid voor bevolkingsonderzoek (groep)", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.207']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.372']]]/hl7:act",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.207']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.372']]]/hl7:act"
+	})
 	private MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg definitiefVervolgbeleidVoorBevolkingsonderzoekg;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(schema = "colon", name = "mdl_coloscopie_medische_observatie_overige_bevinding")
 	@DSValueSet(name = "vs_overige_bevindingen", values = {
+		@DSValueSetValue(code = "255046005", codeSystem = "2.16.840.1.113883.6.96"),
+		@DSValueSetValue(code = "448315008", codeSystem = "2.16.840.1.113883.6.96"),
+		@DSValueSetValue(code = "285611007", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "64226004", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "3951002", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "52457000", codeSystem = "2.16.840.1.113883.6.96"),
@@ -224,29 +268,32 @@ public class MdlColoscopieMedischeObservatie
 		@DSValueSetValue(code = "90858003", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "OTH", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Overige bevinding", extraTekst = "Bevinding die niet binnen screening past", code = "2.16.840.1.113883.2.4.3.36.77.2.11.114")
+	@VraagElement(conceptId = "114", displayName = "Overige bevinding", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.208']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.381']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.208']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.381']]]/hl7:observation/hl7:value|@code"
+	})
 	private List<DSValue> overigeBevinding = new ArrayList<>();
 
 	@Embedded
-	@Nonnull
 	@AttributeOverrides({
 		@AttributeOverride(name = "value", column = @Column(name = "totaalAantalGedetecteerdeLaesiesValue")),
 		@AttributeOverride(name = "unit", column = @Column(name = "totaalAantalGedetecteerdeLaesiesUnit"))
 	})
-	@VraagElement(displayName = "Totaal aantal gedetecteerde laesies", extraTekst = "Het totaal aantal gedetecteerde laesies, omvat alle poliepen, ongeacht of deze zijn verwijderd, zijn geregistreerd of zijn ingezonden voor PA", code = "2.16.840.1.113883.2.4.3.36.77.2.11.115", isVerplicht = true, unit = {
-		@VraagElementUnit(unit = "aantal")
-	})
+	@VraagElement(conceptId = "115", displayName = "Totaal aantal gedetecteerde laesies", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.205']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.345']]]/hl7:observation/hl7:value|@value",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.205']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.345']]]/hl7:observation/hl7:value|@value"
+	}, isVerplicht = true)
 	private Quantity totaalAantalGedetecteerdeLaesies;
 
 	@Embedded
-	@Nonnull
 	@AttributeOverrides({
 		@AttributeOverride(name = "value", column = @Column(name = "aantalVerwijderdeLaesiesNietIngezondenVoorPaEnGValue")),
 		@AttributeOverride(name = "unit", column = @Column(name = "aantalVerwijderdeLaesiesNietIngezondenVoorPaEnGUnit"))
 	})
-	@VraagElement(displayName = "Aantal verwijderde laesies niet ingezonden voor PA en gegevens niet vastgelegd", extraTekst = "Totaal aantal verwijderde poliepen van het totaal aantal gedetecteerde poliepen, welke niet zijn vastgelegd en niet zijn ingezonden voor PA", code = "2.16.840.1.113883.2.4.3.36.77.2.11.116", isVerplicht = true, unit = {
-		@VraagElementUnit(unit = "aantal")
-	})
+	@VraagElement(conceptId = "116", displayName = "Aantal verwijderde laesies niet ingezonden voor PA en gegevens niet vastgelegd", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.205']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.346']]]/hl7:observation/hl7:value|@value",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.205']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.346']]]/hl7:observation/hl7:value|@value"
+	}, isVerplicht = true)
 	private Quantity aantalVerwijderdeLaesiesNietIngezondenVoorPaEnG;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -257,293 +304,54 @@ public class MdlColoscopieMedischeObservatie
 		@DSValueSetValue(code = "4", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.224"),
 		@DSValueSetValue(code = "OTH", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Reden poliep(en) niet ingezonden voor pathologie", extraTekst = "Reden poliep(en) niet ingezonden voor pathologie", code = "2.16.840.1.113883.2.4.3.36.77.2.11.117", isVerplicht = true)
+	@VraagElement(conceptId = "117", displayName = "Reden poliep(en) niet ingezonden voor pathologie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.205']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.346']]]/hl7:observation/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.347']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.205']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.346']]]/hl7:observation/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.347']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue redenPoliepenNietIngezondenVoorPathologie;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "coloscopieMedischeObservatie", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Opdrachtnummer PA-lab", extraTekst = "Opdrachtnummer PA-lab", code = "2.16.840.1.113883.2.4.3.36.77.2.11.118-group", isReference = true)
+	@VraagElement(conceptId = "118-group", displayName = "Opdrachtnummer PA-lab", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.205']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.332']]]/hl7:act/hl7:id|@extension",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.205']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.332']]]/hl7:act/hl7:id|@extension"
+	})
 	private List<MdlOpdrachtnummerPalab> opdrachtnummerPalab = new ArrayList<>();
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "coloscopieMedischeObservatie", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "T-nummer pathologie verslag", extraTekst = "T-nummer pathologie verslag", code = "2.16.840.1.113883.2.4.3.36.77.2.11.119-group", isReference = true)
+	@VraagElement(conceptId = "119-group", displayName = "T-nummer pathologie verslag", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.205']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.338']]]/hl7:act/hl7:id|@extension",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.205']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.338']]]/hl7:act/hl7:id|@extension"
+	})
 	private List<MdlTnummerPathologieVerslag> tnummerPathologieVerslag = new ArrayList<>();
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@DSValueSet(name = "ProfielColoscopie", values = {
+		@DSValueSetValue(code = "HRP", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.78"),
+		@DSValueSetValue(code = "LRP", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.78")
+	})
+	@VraagElement(conceptId = "13", displayName = "Profiel", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.208']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.900837']]]/hl7:observation/hl7:value|@code"
+	})
+	private DSValue profiel;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@DSValueSet(name = "vs_conclusie_coloscopie", values = {
 		@DSValueSetValue(code = "313170008", codeSystem = "2.16.840.1.113883.6.96"),
-		@DSValueSetValue(code = "NAAD", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.78", deprecated = true),
-		@DSValueSetValue(code = "AAD", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.78", deprecated = true),
-		@DSValueSetValue(code = "449855005", codeSystem = "2.16.840.1.113883.6.96", deprecated = true),
+		@DSValueSetValue(code = "NAAD", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.78"),
+		@DSValueSetValue(code = "AAD", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.78"),
+		@DSValueSetValue(code = "449855005", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "CRC", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.78"),
-		@DSValueSetValue(code = "255046005", codeSystem = "2.16.840.1.113883.6.96"),
-		@DSValueSetValue(code = "448315008", codeSystem = "2.16.840.1.113883.6.96"),
-		@DSValueSetValue(code = "285611007", codeSystem = "2.16.840.1.113883.6.96"),
-		@DSValueSetValue(code = "HRP", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.78"),
-		@DSValueSetValue(code = "LRP", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.78"),
+		@DSValueSetValue(code = "255046005", codeSystem = "2.16.840.1.113883.6.96", deprecated = true),
+		@DSValueSetValue(code = "448315008", codeSystem = "2.16.840.1.113883.6.96", deprecated = true),
+		@DSValueSetValue(code = "285611007", codeSystem = "2.16.840.1.113883.6.96", deprecated = true),
+		@DSValueSetValue(code = "HRP", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.78", deprecated = true),
+		@DSValueSetValue(code = "LRP", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.78", deprecated = true),
 		@DSValueSetValue(code = "OTH", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Eindconclusie", extraTekst = "Eindconclusie na interpretatie van eventueel PA verslag. Op basis van dit veld wordt vervolgbeleid voor deze pati\u00ebnt vastgesteld. Het gaat hier om vastlegging van de meest significante afwijking.", code = "2.16.840.1.113883.2.4.3.36.77.2.11.120", isVerplicht = true)
+	@VraagElement(conceptId = "120", displayName = "Eindconclusie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.208']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.380']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.208']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.380']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue eindconclusie;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@DSValueSet(name = "vs_vervolgbeleid_afbreken_coloscopie", values = {
-		@DSValueSetValue(code = "1", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.106"),
-		@DSValueSetValue(code = "2", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.106"),
-		@DSValueSetValue(code = "5", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.106"),
-		@DSValueSetValue(code = "3", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.106"),
-		@DSValueSetValue(code = "OTH", codeSystem = "2.16.840.1.113883.5.1008")
-	})
-	@VraagElement(displayName = "Vervolgbeleid n.a.v. afbreking coloscopie", extraTekst = "Vervolgbeleid n.a.v. afbreking coloscopie", code = "2.16.840.1.113883.2.4.3.36.77.2.2.140122", useInFormulier = false)
-	private DSValue vervolgbeleidNavAfbrekingColoscopie;
-
-	public MdlVerslagContent getVerslagContent()
-	{
-		return verslagContent;
-	}
-
-	public void setVerslagContent(MdlVerslagContent verslagContent)
-	{
-		this.verslagContent = verslagContent;
-	}
-
-	public MdlVoorbereidingColoscopie getVoorbereidingColoscopie()
-	{
-		return voorbereidingColoscopie;
-	}
-
-	public void setVoorbereidingColoscopie(MdlVoorbereidingColoscopie voorbereidingColoscopie)
-	{
-		this.voorbereidingColoscopie = voorbereidingColoscopie;
-	}
-
-	public Boolean getTimeoutProcedureDoorlopen()
-	{
-		return timeoutProcedureDoorlopen;
-	}
-
-	public void setTimeoutProcedureDoorlopen(Boolean timeoutProcedureDoorlopen)
-	{
-		this.timeoutProcedureDoorlopen = timeoutProcedureDoorlopen;
-	}
-
-	public MdlMedicatie getMedicatie()
-	{
-		return medicatie;
-	}
-
-	public void setMedicatie(MdlMedicatie medicatie)
-	{
-		this.medicatie = medicatie;
-	}
-
-	public Boolean getCo2Insufflatie()
-	{
-		return co2Insufflatie;
-	}
-
-	public void setCo2Insufflatie(Boolean co2Insufflatie)
-	{
-		this.co2Insufflatie = co2Insufflatie;
-	}
-
-	public Boolean getCoecumTerminaalIleumIntubatie()
-	{
-		return coecumTerminaalIleumIntubatie;
-	}
-
-	public void setCoecumTerminaalIleumIntubatie(Boolean coecumTerminaalIleumIntubatie)
-	{
-		this.coecumTerminaalIleumIntubatie = coecumTerminaalIleumIntubatie;
-	}
-
-	public DSValue getRedenCoecumNietBereikt()
-	{
-		return redenCoecumNietBereikt;
-	}
-
-	public void setRedenCoecumNietBereikt(DSValue redenCoecumNietBereikt)
-	{
-		this.redenCoecumNietBereikt = redenCoecumNietBereikt;
-	}
-
-	public String getTextRedenCoecumNietBereikt()
-	{
-		return textRedenCoecumNietBereikt;
-	}
-
-	public void setTextRedenCoecumNietBereikt(String textRedenCoecumNietBereikt)
-	{
-		this.textRedenCoecumNietBereikt = textRedenCoecumNietBereikt;
-	}
-
-	public DSValue getDiepstePuntInsertie()
-	{
-		return diepstePuntInsertie;
-	}
-
-	public void setDiepstePuntInsertie(DSValue diepstePuntInsertie)
-	{
-		this.diepstePuntInsertie = diepstePuntInsertie;
-	}
-
-	public NullFlavourQuantity getAfstandVanafAnus()
-	{
-		return afstandVanafAnus;
-	}
-
-	public void setAfstandVanafAnus(NullFlavourQuantity afstandVanafAnus)
-	{
-		this.afstandVanafAnus = afstandVanafAnus;
-	}
-
-	public NullFlavourQuantity getTotaleTerugtrektijd()
-	{
-		return totaleTerugtrektijd;
-	}
-
-	public void setTotaleTerugtrektijd(NullFlavourQuantity totaleTerugtrektijd)
-	{
-		this.totaleTerugtrektijd = totaleTerugtrektijd;
-	}
-
-	public Boolean getRetroflexieRectum()
-	{
-		return retroflexieRectum;
-	}
-
-	public void setRetroflexieRectum(Boolean retroflexieRectum)
-	{
-		this.retroflexieRectum = retroflexieRectum;
-	}
-
-	public DSValue getPatientcomfortgcs()
-	{
-		return patientcomfortgcs;
-	}
-
-	public void setPatientcomfortgcs(DSValue patientcomfortgcs)
-	{
-		this.patientcomfortgcs = patientcomfortgcs;
-	}
-
-	public List<DSValue> getRedenAfbrekingColoscopie()
-	{
-		return redenAfbrekingColoscopie;
-	}
-
-	public void setRedenAfbrekingColoscopie(List<DSValue> redenAfbrekingColoscopie)
-	{
-		this.redenAfbrekingColoscopie = redenAfbrekingColoscopie;
-	}
-
-	public String getTextRedenAfbrekingColoscopie()
-	{
-		return textRedenAfbrekingColoscopie;
-	}
-
-	public void setTextRedenAfbrekingColoscopie(String textRedenAfbrekingColoscopie)
-	{
-		this.textRedenAfbrekingColoscopie = textRedenAfbrekingColoscopie;
-	}
-
-	public DSValue getTerugkoppelingClient()
-	{
-		return terugkoppelingClient;
-	}
-
-	public void setTerugkoppelingClient(DSValue terugkoppelingClient)
-	{
-		this.terugkoppelingClient = terugkoppelingClient;
-	}
-
-	public MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg getDefinitiefVervolgbeleidVoorBevolkingsonderzoekg()
-	{
-		return definitiefVervolgbeleidVoorBevolkingsonderzoekg;
-	}
-
-	public void setDefinitiefVervolgbeleidVoorBevolkingsonderzoekg(MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg definitiefVervolgbeleidVoorBevolkingsonderzoekg)
-	{
-		this.definitiefVervolgbeleidVoorBevolkingsonderzoekg = definitiefVervolgbeleidVoorBevolkingsonderzoekg;
-	}
-
-	public List<DSValue> getOverigeBevinding()
-	{
-		return overigeBevinding;
-	}
-
-	public void setOverigeBevinding(List<DSValue> overigeBevinding)
-	{
-		this.overigeBevinding = overigeBevinding;
-	}
-
-	public Quantity getTotaalAantalGedetecteerdeLaesies()
-	{
-		return totaalAantalGedetecteerdeLaesies;
-	}
-
-	public void setTotaalAantalGedetecteerdeLaesies(Quantity totaalAantalGedetecteerdeLaesies)
-	{
-		this.totaalAantalGedetecteerdeLaesies = totaalAantalGedetecteerdeLaesies;
-	}
-
-	public Quantity getAantalVerwijderdeLaesiesNietIngezondenVoorPaEnG()
-	{
-		return aantalVerwijderdeLaesiesNietIngezondenVoorPaEnG;
-	}
-
-	public void setAantalVerwijderdeLaesiesNietIngezondenVoorPaEnG(Quantity aantalVerwijderdeLaesiesNietIngezondenVoorPaEnG)
-	{
-		this.aantalVerwijderdeLaesiesNietIngezondenVoorPaEnG = aantalVerwijderdeLaesiesNietIngezondenVoorPaEnG;
-	}
-
-	public DSValue getRedenPoliepenNietIngezondenVoorPathologie()
-	{
-		return redenPoliepenNietIngezondenVoorPathologie;
-	}
-
-	public void setRedenPoliepenNietIngezondenVoorPathologie(DSValue redenPoliepenNietIngezondenVoorPathologie)
-	{
-		this.redenPoliepenNietIngezondenVoorPathologie = redenPoliepenNietIngezondenVoorPathologie;
-	}
-
-	public List<MdlOpdrachtnummerPalab> getOpdrachtnummerPalab()
-	{
-		return opdrachtnummerPalab;
-	}
-
-	public void setOpdrachtnummerPalab(List<MdlOpdrachtnummerPalab> opdrachtnummerPalab)
-	{
-		this.opdrachtnummerPalab = opdrachtnummerPalab;
-	}
-
-	public List<MdlTnummerPathologieVerslag> getTnummerPathologieVerslag()
-	{
-		return tnummerPathologieVerslag;
-	}
-
-	public void setTnummerPathologieVerslag(List<MdlTnummerPathologieVerslag> tnummerPathologieVerslag)
-	{
-		this.tnummerPathologieVerslag = tnummerPathologieVerslag;
-	}
-
-	public DSValue getEindconclusie()
-	{
-		return eindconclusie;
-	}
-
-	public void setEindconclusie(DSValue eindconclusie)
-	{
-		this.eindconclusie = eindconclusie;
-	}
-
-	public DSValue getVervolgbeleidNavAfbrekingColoscopie()
-	{
-		return vervolgbeleidNavAfbrekingColoscopie;
-	}
-
-	public void setVervolgbeleidNavAfbrekingColoscopie(DSValue vervolgbeleidNavAfbrekingColoscopie)
-	{
-		this.vervolgbeleidNavAfbrekingColoscopie = vervolgbeleidNavAfbrekingColoscopie;
-	}
 
 }

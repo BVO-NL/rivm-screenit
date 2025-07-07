@@ -26,17 +26,9 @@ import java.util.Date;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.model.IModel;
-import org.joda.time.DateTime;
-import org.joda.time.MutableDateTime;
 
 public abstract class AjaxDateTimeField extends DateTimeField
 {
-
-	public AjaxDateTimeField(String id, IModel<Date> model)
-	{
-		super(id, model);
-	}
-
 	public AjaxDateTimeField(String id)
 	{
 		super(id);
@@ -50,8 +42,6 @@ public abstract class AjaxDateTimeField extends DateTimeField
 		getDatePicker().setOutputMarkupId(true);
 		getDatePicker().add(new AjaxFormComponentUpdatingBehavior("change")
 		{
-
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
@@ -77,9 +67,6 @@ public abstract class AjaxDateTimeField extends DateTimeField
 	{
 		return new AjaxTimeField(wicketId, model)
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
@@ -88,45 +75,6 @@ public abstract class AjaxDateTimeField extends DateTimeField
 				AjaxDateTimeField.this.onUpdate(target);
 			}
 		};
-	}
-
-	@Override
-	public void convertInput()
-	{
-		if ((getDatePicker().getConvertedInput() == null && getDatePicker().getModelObject() == null)
-			|| (getTimeField().getConvertedInput() == null && getTimeField().getConvertedInput() == null))
-		{
-			invalid();
-		}
-		else
-		{
-
-			MutableDateTime datum = null;
-			if (getDatePicker().getConvertedInput() != null)
-			{
-				datum = new MutableDateTime(getDatePicker().getConvertedInput());
-			}
-			else
-			{
-				datum = new MutableDateTime(getDatePicker().getModelObject());
-			}
-			datum.setSecondOfDay(0); 
-
-			DateTime tijd = null;
-			if (getTimeField().getConvertedInput() != null)
-			{
-				tijd = new DateTime(getTimeField().getConvertedInput());
-			}
-			else
-			{
-				tijd = new DateTime(getTimeField().getModelObject());
-			}
-
-			datum.setHourOfDay(tijd.getHourOfDay());
-			datum.setMinuteOfHour(tijd.getMinuteOfHour());
-
-			setConvertedInput(datum.toDate());
-		}
 	}
 
 	protected abstract void onUpdate(AjaxRequestTarget target);

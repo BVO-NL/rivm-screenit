@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.cervix;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -38,21 +37,14 @@ import jakarta.persistence.TemporalType;
 import nl.rivm.screenit.model.cervix.enums.CervixUitstelType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "cervix", name = "uitstel", indexes = { @Index(name = "idx_cervix_uitstel_geannuleerd_datum", columnList = "geannuleerdDatum"),
 	@Index(name = "idx_cervix_uitstel_uitstellen_tot_datum", columnList = "uitstellenTotDatum") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Audited
 public class CervixUitstel extends AbstractHibernateObject
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@OneToOne(mappedBy = "uitstel", fetch = FetchType.LAZY)
 	private CervixScreeningRonde screeningRonde;
 

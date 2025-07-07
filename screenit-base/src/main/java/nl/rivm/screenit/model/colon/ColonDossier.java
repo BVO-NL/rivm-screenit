@@ -40,8 +40,6 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.colon.enums.InactiveerReden;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -62,26 +60,23 @@ public class ColonDossier extends Dossier<ColonScreeningRonde, ColonAfmelding>
 	@Enumerated(EnumType.STRING)
 	private InactiveerReden inactiveerReden;
 
-	@OneToOne(optional = true, cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL)
 	@NotAudited
 	private ColonVooraankondiging colonVooraankondiging;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "dossier", cascade = CascadeType.ALL)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<ColonScreeningRonde> screeningRondes = new ArrayList<>();
 
-	@OneToOne(optional = true, cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL)
 	private ColonScreeningRonde laatsteScreeningRonde;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "dossier")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<ColonAfmelding> afmeldingen = new ArrayList<>();
 
-	@OneToOne(optional = true, cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL)
 	private ColonAfmelding laatsteAfmelding;
 
-	@OneToOne(optional = true, mappedBy = "dossier", fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.REMOVE)
+	@OneToOne(mappedBy = "dossier", fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.REMOVE)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private ColonVolgendeUitnodiging volgendeUitnodiging;
 }

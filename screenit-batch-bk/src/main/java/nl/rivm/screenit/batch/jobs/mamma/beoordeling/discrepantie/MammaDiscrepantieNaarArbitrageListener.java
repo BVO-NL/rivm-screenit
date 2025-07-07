@@ -72,7 +72,7 @@ public class MammaDiscrepantieNaarArbitrageListener extends BaseLogListener
 	@Override
 	protected LogEvent eindLogging(JobExecution jobExecution)
 	{
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_DISCREPANTIE_BEOORDELINGEN_DOORZETTEN, null, getResultLoggingString(jobExecution), Bevolkingsonderzoek.MAMMA);
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_DISCREPANTIE_BEOORDELINGEN_DOORZETTEN, getResultLoggingString(jobExecution), Bevolkingsonderzoek.MAMMA);
 		return super.eindLogging(jobExecution);
 	}
 

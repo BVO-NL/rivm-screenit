@@ -54,7 +54,10 @@ const TijdelijkAdresWijzigenForm = (props: TijdelijkAdresWijzigenFormProps) => {
 
 	const validatieSchema: Yup.AnyObjectSchema = Yup.object().shape({
 		straat: Yup.string().max(43, getString(properties.form.error.lengte))
-			.required(getString(properties.form.error.verplicht)),
+			.required(getString(properties.form.error.verplicht))
+			.test("dompurify", getString(properties.form.error.ongeldig), function (value) {
+				return purifyInput(value) !== ""
+			}),
 		huisnummer: Yup.string().required(getString(properties.form.error.verplicht))
 			.max(10, getString(properties.form.error.lengte))
 			.matches(REGEX_HUISNUMMER, getString(properties.form.error.huisnummer)),
@@ -66,7 +69,10 @@ const TijdelijkAdresWijzigenForm = (props: TijdelijkAdresWijzigenFormProps) => {
 			.max(6, getString(properties.form.error.lengte))
 			.matches(REGEX_POSTCODE_EXACT, getString(properties.form.error.postcode)),
 		plaats: Yup.string().max(30, getString(properties.form.error.lengte))
-			.required(getString(properties.form.error.verplicht)),
+			.required(getString(properties.form.error.verplicht))
+			.test("dompurify", getString(properties.form.error.ongeldig), function (value) {
+				return purifyInput(value) !== ""
+			}),
 		startDatum: Yup.date()
 			.test("datumTest", getString(properties.form.error.datum.eind_voor_start), function (value) {
 				return this.parent.eindDatum ? this.parent.eindDatum > value! : true

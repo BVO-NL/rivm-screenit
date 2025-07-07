@@ -113,9 +113,11 @@ public class MammaTehuisAdresServiceImpl implements MammaTehuisAdresService
 	}
 
 	@Override
+	@Transactional 
 	public List<Client> getTehuisAdresClienten(MammaTehuis tehuis, Adres zoekAdres, int first, int count, String sortProperty, boolean isAscending)
 	{
 		List<Client> tehuisAdresClienten;
+		hibernateService.getHibernateSession().flush();
 		if (sortProperty.equals("uitTeNodigen"))
 		{
 			tehuisAdresClienten = baseTehuisClientenDao.getClienten(tehuis, MammaTehuisSelectie.TEHUIS_ADRES, zoekAdres);

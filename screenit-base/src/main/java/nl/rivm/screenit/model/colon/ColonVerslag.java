@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.colon;
 
 /*-
@@ -22,7 +21,6 @@ package nl.rivm.screenit.model.colon;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -36,37 +34,35 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.SingleTableHibernateObject;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.verslag.VerslagContent;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Proxy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
+@Getter
+@Setter
 @Entity(name = "colon.cda_verslag")
 @Table(schema = "colon", name = "cda_verslag")
-@Proxy(lazy = true)
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "verslag.cache")
+@Proxy
 @Audited
-public class ColonVerslag<T extends VerslagContent<?>> extends SingleTableHibernateObject implements Verslag<T, ColonScreeningRonde>
+public class ColonVerslag<T extends VerslagContent<?>> extends AbstractHibernateObject implements Verslag<T, ColonScreeningRonde>
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private ColonScreeningRonde screeningRonde;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true)
+	@OneToOne(fetch = FetchType.LAZY)
 	@NotAudited
 	private OntvangenCdaBericht ontvangenCdaBericht;
 
@@ -94,30 +90,6 @@ public class ColonVerslag<T extends VerslagContent<?>> extends SingleTableHibern
 	private VerslagType type;
 
 	@Override
-	public ColonScreeningRonde getScreeningRonde()
-	{
-		return screeningRonde;
-	}
-
-	@Override
-	public void setScreeningRonde(ColonScreeningRonde screeningRonde)
-	{
-		this.screeningRonde = screeningRonde;
-	}
-
-	@Override
-	public T getVerslagContent()
-	{
-		return null;
-	}
-
-	@Override
-	public void setVerslagContent(T verslagContent)
-	{
-
-	}
-
-	@Override
 	public OntvangenCdaBericht getOntvangenBericht()
 	{
 		return ontvangenCdaBericht;
@@ -130,86 +102,14 @@ public class ColonVerslag<T extends VerslagContent<?>> extends SingleTableHibern
 	}
 
 	@Override
-	public Instelling getUitvoerderOrganisatie()
+	public T getVerslagContent()
 	{
-		return uitvoerderOrganisatie;
+		return null;
 	}
 
 	@Override
-	public void setUitvoerderOrganisatie(Instelling uitvoerderOrganisatie)
+	public void setVerslagContent(T verslagContent)
 	{
-		this.uitvoerderOrganisatie = uitvoerderOrganisatie;
-	}
 
-	@Override
-	public Gebruiker getUitvoerderMedewerker()
-	{
-		return uitvoerderMedewerker;
-	}
-
-	@Override
-	public void setUitvoerderMedewerker(Gebruiker uitvoerderMedewerker)
-	{
-		this.uitvoerderMedewerker = uitvoerderMedewerker;
-	}
-
-	@Override
-	public Date getDatumVerwerkt()
-	{
-		return datumVerwerkt;
-	}
-
-	@Override
-	public void setDatumVerwerkt(Date datumVerwerkt)
-	{
-		this.datumVerwerkt = datumVerwerkt;
-	}
-
-	@Override
-	public InstellingGebruiker getInvoerder()
-	{
-		return invoerder;
-	}
-
-	@Override
-	public void setInvoerder(InstellingGebruiker invoerder)
-	{
-		this.invoerder = invoerder;
-	}
-
-	@Override
-	public Date getDatumOnderzoek()
-	{
-		return datumOnderzoek;
-	}
-
-	@Override
-	public void setDatumOnderzoek(Date datumOnderzoek)
-	{
-		this.datumOnderzoek = datumOnderzoek;
-	}
-
-	@Override
-	public VerslagStatus getStatus()
-	{
-		return status;
-	}
-
-	@Override
-	public void setStatus(VerslagStatus status)
-	{
-		this.status = status;
-	}
-
-	@Override
-	public VerslagType getType()
-	{
-		return type;
-	}
-
-	@Override
-	public void setType(VerslagType type)
-	{
-		this.type = type;
 	}
 }

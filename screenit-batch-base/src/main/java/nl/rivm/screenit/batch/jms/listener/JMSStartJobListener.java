@@ -39,7 +39,7 @@ import nl.rivm.screenit.model.enums.JobStartParameter;
 import nl.rivm.screenit.model.enums.JobType;
 import nl.rivm.screenit.model.enums.MailPriority;
 import nl.rivm.screenit.service.MailService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5Session;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.activemq.command.ActiveMQObjectMessage;
@@ -364,7 +364,7 @@ public class JMSStartJobListener implements SessionAwareMessageListener<ActiveMQ
 			try
 			{
 				AtomicReference<String> emailadressen = new AtomicReference<>();
-				OpenHibernate5Session.withoutTransaction().run(() ->
+				OpenHibernateSession.withoutTransaction().run(() ->
 					emailadressen.set(simplePreferenceService.getString(PreferenceKey.DASHBOARDEMAIL.name()))
 				);
 				if (emailadressen.get() != null)

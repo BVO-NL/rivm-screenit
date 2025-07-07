@@ -35,8 +35,6 @@ public interface VerslagService
 
 	long countBerichten(BerichtZoekFilter filter);
 
-	<V extends Verslag<?, ?>> V heropenVerslag(V verslag, InstellingGebruiker instellingGebruiker);
-
 	void herverwerkAlleBerichten(BerichtZoekFilter nullSafeGet);
 
 	<V extends Verslag<?, ?>> List<V> zoekVerslagen(V zoekObject, int first, int count, String property, boolean ascending);

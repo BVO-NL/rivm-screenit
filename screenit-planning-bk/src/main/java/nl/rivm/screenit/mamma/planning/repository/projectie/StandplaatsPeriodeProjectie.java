@@ -22,9 +22,12 @@ package nl.rivm.screenit.mamma.planning.repository.projectie;
  */
 
 import java.time.LocalDate;
+import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import nl.rivm.screenit.util.DateUtil;
 
 @Getter
 @AllArgsConstructor
@@ -41,4 +44,9 @@ public class StandplaatsPeriodeProjectie
 	private LocalDate vanaf;
 
 	private LocalDate totEnMet;
+
+	public StandplaatsPeriodeProjectie(long standplaatsPeriodeId, long standplaatsRondeId, long screeningOrganisatieId, int wekenVanTevorenUitnodigen, Date vanaf, Date totEnMet)
+	{
+		this(standplaatsPeriodeId, standplaatsRondeId, screeningOrganisatieId, wekenVanTevorenUitnodigen, DateUtil.toLocalDate(vanaf), DateUtil.toLocalDate(totEnMet));
+	}
 }

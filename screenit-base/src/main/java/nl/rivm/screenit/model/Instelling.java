@@ -45,11 +45,10 @@ import lombok.Setter;
 
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenInstellingOvereenkomst;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import nl.topicuszorg.organisatie.model.Adres;
 
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Proxy;
@@ -60,37 +59,29 @@ import org.hibernate.envers.NotAudited;
 @Getter
 @Entity
 @Proxy
-@Cache(
-	usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
-	region = "organisatie.cache"
-)
 @Table(schema = "algemeen", name = "org_organisatie", indexes = { @Index(name = "idx_instelling_agbcode", columnList = "agbcode"),
 	@Index(name = "idx_instelling_actief", columnList = "actief") })
 @Audited
-public class Instelling extends SingleTableHibernateObject implements IActief
+public class Instelling extends AbstractHibernateObject implements IActief
 {
 	@Column(
-		nullable = false,
-		length = 255
+		nullable = false
 	)
 	private String naam;
 
 	@Column(
 		unique = true,
-		nullable = true,
 		length = 8
 	)
 	private String agbcode;
 
 	@Column(
 		unique = true,
-		nullable = true,
 		length = 8
 	)
 	private String uziAbonneenummer;
 
 	@Column(
-		nullable = true,
 		length = 20
 	)
 	private String applicatieId;
@@ -120,10 +111,6 @@ public class Instelling extends SingleTableHibernateObject implements IActief
 		orphanRemoval = true,
 		cascade = jakarta.persistence.CascadeType.ALL
 	)
-	@Cache(
-		usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
-		region = "organisatie.cache"
-	)
 	private List<InstellingGebruiker> organisatieMedewerkers = new ArrayList<>();
 
 	@ManyToMany(
@@ -131,17 +118,12 @@ public class Instelling extends SingleTableHibernateObject implements IActief
 		cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE }
 	)
 	@Cascade(CascadeType.SAVE_UPDATE)
-	@Cache(
-		usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
-		region = "organisatie.cache"
-	)
 	private List<Adres> adressen = new ArrayList<>();
 
 	private Date einddatum;
 
 	@Column(
 		unique = true,
-		nullable = true,
 		length = 9
 	)
 	private String uziNummerServerCertificaat;
@@ -168,7 +150,6 @@ public class Instelling extends SingleTableHibernateObject implements IActief
 
 	@NotAudited
 	@OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 	private List<Instelling> children = new ArrayList<>();
 
 	@NotAudited
@@ -180,7 +161,6 @@ public class Instelling extends SingleTableHibernateObject implements IActief
 	private Gebruiker gemachtigde;
 
 	@OneToMany(fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 	@JoinTable(schema = "gedeeld", name = "org_organisatie_documents", joinColumns = { @JoinColumn(name = "org_organisatie") })
 	private List<UploadDocument> documents;
 

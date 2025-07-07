@@ -24,30 +24,24 @@ package nl.rivm.screenit.model.cervix.berichten;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.model.v251.datatype.HD;
-import ca.uhn.hl7v2.model.v251.datatype.IS;
-import ca.uhn.hl7v2.model.v251.datatype.ST;
-import ca.uhn.hl7v2.model.v251.group.OUL_R22_SPECIMEN;
 import ca.uhn.hl7v2.model.v251.message.OUL_R22;
-import ca.uhn.hl7v2.model.v251.segment.MSH;
 
+@Slf4j
 public class CervixHpvBerichtWrapper
 {
-	private static final Logger LOG = LoggerFactory.getLogger(CervixHpvBerichtWrapper.class);
-
 	private static String POSCONTROL = "POSCONTROL";
 
 	private static String NEGCONTROL = "NEGCONTROL";
 
+	@Getter
 	private final OUL_R22 message;
 
-	private List<OUL_R22_SPECIMEN> controles = new ArrayList<>();
-
-	private List<CervixHpvMonsterWrapper> results = new ArrayList<CervixHpvMonsterWrapper>();
+	@Getter
+	private final List<CervixHpvMonsterWrapper> results = new ArrayList<>();
 
 	public CervixHpvBerichtWrapper(OUL_R22 message) throws HL7Exception
 	{
@@ -57,61 +51,44 @@ public class CervixHpvBerichtWrapper
 
 	private void splitsResults() throws HL7Exception
 	{
-		List<CervixHpvMonsterWrapper> results = new ArrayList<CervixHpvMonsterWrapper>();
-		List<OUL_R22_SPECIMEN> allSpecimen = message.getSPECIMENAll();
-		for (OUL_R22_SPECIMEN specimen : allSpecimen)
+		var allSpecimen = message.getSPECIMENAll();
+		for (var specimen : allSpecimen)
 		{
-			CervixHpvMonsterWrapper cervixHpvMonsterWrapper = new CervixHpvMonsterWrapper(specimen);
+			var cervixHpvMonsterWrapper = new CervixHpvMonsterWrapper(specimen);
 			if (!isControleWaarde(cervixHpvMonsterWrapper))
 			{
 				results.add(cervixHpvMonsterWrapper);
 			}
 		}
-		this.results = results;
 	}
 
-	private boolean isControleWaarde(CervixHpvMonsterWrapper cervixHpvMonsterWrapper)
+	private boolean isControleWaarde(CervixHpvMonsterWrapper hpvMonsterWrapper)
 	{
-		if (NEGCONTROL.equals(cervixHpvMonsterWrapper.getControleWaarde()) || POSCONTROL.equals(cervixHpvMonsterWrapper.getControleWaarde())
-			|| cervixHpvMonsterWrapper.getBarcode().toUpperCase().startsWith("Q"))
-		{
-			controles.add(cervixHpvMonsterWrapper.getSpecimen());
-			return true;
-		}
-		return false;
+		return NEGCONTROL.equals(hpvMonsterWrapper.getControleWaarde()) || POSCONTROL.equals(hpvMonsterWrapper.getControleWaarde())
+			|| hpvMonsterWrapper.getBarcode().toUpperCase().startsWith("Q");
 	}
 
 	public String getMessageId()
 	{
-		MSH header = message.getMSH();
-		ST messageId = header.getMsh10_MessageControlID();
+		var header = message.getMSH();
+		var messageId = header.getMsh10_MessageControlID();
 		return messageId.getValue();
 	}
 
 	public String getInstrumentId()
 	{
-		MSH header = message.getMSH();
-		HD sendingApplication = header.getMsh3_SendingApplication();
-		ST instrumentId = sendingApplication.getHd2_UniversalID();
+		var header = message.getMSH();
+		var sendingApplication = header.getMsh3_SendingApplication();
+		var instrumentId = sendingApplication.getHd2_UniversalID();
 		return instrumentId.getValue();
 	}
 
 	public String getLabnaam()
 	{
-		MSH header = message.getMSH();
-		HD sendingFacility = header.getMsh4_SendingFacility();
-		IS labNaam = sendingFacility.getHd1_NamespaceID();
+		var header = message.getMSH();
+		var sendingFacility = header.getMsh4_SendingFacility();
+		var labNaam = sendingFacility.getHd1_NamespaceID();
 		return labNaam.getValue();
-	}
-
-	public List<CervixHpvMonsterWrapper> getResultaten()
-	{
-		return results;
-	}
-
-	public List<OUL_R22_SPECIMEN> getControles()
-	{
-		return controles;
 	}
 
 	public boolean isValid()
@@ -123,7 +100,7 @@ public class CervixHpvBerichtWrapper
 		LOG.debug("Aantal uitslagen: " + results.size());
 		if (getMessageId() != null && getInstrumentId() != null)
 		{
-			for (CervixHpvMonsterWrapper sample : getResultaten())
+			for (var sample : results)
 			{
 				if (!sample.isValid())
 				{
@@ -136,11 +113,6 @@ public class CervixHpvBerichtWrapper
 		}
 		LOG.debug("Bericht invalide");
 		return false;
-	}
-
-	public OUL_R22 getMessage()
-	{
-		return message;
 	}
 
 }

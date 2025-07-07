@@ -72,6 +72,11 @@ public class PersoonSpecification
 		return (r, q, cb) -> cb.isNull(r.get(GbaPersoon_.datumVertrokkenUitNederland));
 	}
 
+	public static ExtendedSpecification<GbaPersoon> woontInBuitenland()
+	{
+		return (r, q, cb) -> cb.isNotNull(r.get(GbaPersoon_.datumVertrokkenUitNederland));
+	}
+
 	public static ExtendedSpecification<GbaPersoon> filterGeboortedatum(Date geboortedatum)
 	{
 		return skipWhenNullExtended(geboortedatum, (r, q, cb) -> cb.equal(r.get(GbaPersoon_.geboortedatum), geboortedatum));

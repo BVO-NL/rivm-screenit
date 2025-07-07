@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.mamma.verslag.followup;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -32,6 +31,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.verslag.VraagElement;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
@@ -39,12 +41,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "mamma")
+@Getter
+@Setter
 public class MammaFollowUpPathologieMedischeObservatie
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -52,70 +53,28 @@ public class MammaFollowUpPathologieMedischeObservatie
 
 	@Temporal(TemporalType.DATE)
 	@Column
-	@VraagElement(displayName = "Datum ontvangst materiaal", extraTekst = "Datum ontvangst materiaal", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.150060", isVerplicht = true)
+	@VraagElement(conceptId = "150060", displayName = "Datum ontvangst materiaal", xpaths = {
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent/hl7:effectiveTime/hl7:low|@value"
+	}, isVerplicht = true)
 	private Date datumOntvangstMateriaal;
 
 	@Column(length = 255)
-	@VraagElement(displayName = "T-nummer laboratorium", extraTekst = "T-nummer laboratorium", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.150080", isVerplicht = true)
+	@VraagElement(conceptId = "150080", displayName = "T-nummer laboratorium", xpaths = {
+		"/hl7:ClinicalDocument/hl7:setId/@extension"
+	}, isVerplicht = true)
 	private String tnummerLaboratorium;
 
 	@Temporal(TemporalType.DATE)
 	@Column
-	@VraagElement(displayName = "Datum autorisatie uitslag", extraTekst = "Datum waarop uitslag is geautoriseerd (en doorgegeven aan MDL arts)", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.150050", isVerplicht = true)
+	@VraagElement(conceptId = "150050", displayName = "Datum autorisatie uitslag", xpaths = {
+		"/hl7:ClinicalDocument/hl7:effectiveTime|@value"
+	}, isVerplicht = true)
 	private Date datumAutorisatieUitslag;
 
 	@Column(length = 4096)
-	@VraagElement(displayName = "Versie protocol", extraTekst = "Versienummer van het gebruikte protocol m.b.v. de Palga protocolmodule", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.150090", isVerplicht = true)
+	@VraagElement(conceptId = "150090", displayName = "Versie protocol", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.430']]]/hl7:observation/hl7:value"
+	}, isVerplicht = true)
 	private String versieProtocol;
-
-	public MammaFollowUpVerslagContent getVerslagContent()
-	{
-		return verslagContent;
-	}
-
-	public void setVerslagContent(MammaFollowUpVerslagContent verslagContent)
-	{
-		this.verslagContent = verslagContent;
-	}
-
-	public Date getDatumOntvangstMateriaal()
-	{
-		return datumOntvangstMateriaal;
-	}
-
-	public void setDatumOntvangstMateriaal(Date datumOntvangstMateriaal)
-	{
-		this.datumOntvangstMateriaal = datumOntvangstMateriaal;
-	}
-
-	public String getTnummerLaboratorium()
-	{
-		return tnummerLaboratorium;
-	}
-
-	public void setTnummerLaboratorium(String tnummerLaboratorium)
-	{
-		this.tnummerLaboratorium = tnummerLaboratorium;
-	}
-
-	public Date getDatumAutorisatieUitslag()
-	{
-		return datumAutorisatieUitslag;
-	}
-
-	public void setDatumAutorisatieUitslag(Date datumAutorisatieUitslag)
-	{
-		this.datumAutorisatieUitslag = datumAutorisatieUitslag;
-	}
-
-	public String getVersieProtocol()
-	{
-		return versieProtocol;
-	}
-
-	public void setVersieProtocol(String versieProtocol)
-	{
-		this.versieProtocol = versieProtocol;
-	}
 
 }

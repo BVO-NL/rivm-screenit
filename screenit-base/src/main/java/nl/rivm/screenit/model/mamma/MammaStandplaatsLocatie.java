@@ -25,8 +25,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.UploadDocument;
@@ -34,9 +35,10 @@ import nl.rivm.screenit.util.DiffSpecs;
 
 import org.hibernate.envers.Audited;
 
+@Getter
+@Setter
 @Entity
 @Audited
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = "standplaats_locatie_bijlage") })
 public class MammaStandplaatsLocatie extends TijdelijkAdres
 {
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
@@ -48,34 +50,4 @@ public class MammaStandplaatsLocatie extends TijdelijkAdres
 
 	@Column(nullable = true)
 	private Boolean toonHuisnummerInBrieven;
-
-	public UploadDocument getStandplaatsLocatieBijlage()
-	{
-		return standplaatsLocatieBijlage;
-	}
-
-	public void setStandplaatsLocatieBijlage(UploadDocument standplaatsLocatieBijlage)
-	{
-		this.standplaatsLocatieBijlage = standplaatsLocatieBijlage;
-	}
-
-	public Boolean getToonHuisnummerInBrieven()
-	{
-		return toonHuisnummerInBrieven;
-	}
-
-	public void setToonHuisnummerInBrieven(Boolean toonHuisnummerInBrieven)
-	{
-		this.toonHuisnummerInBrieven = toonHuisnummerInBrieven;
-	}
-
-	public Boolean getBrievenApartPrinten()
-	{
-		return brievenApartPrinten;
-	}
-
-	public void setBrievenApartPrinten(Boolean briefApartPrinten)
-	{
-		this.brievenApartPrinten = briefApartPrinten;
-	}
 }

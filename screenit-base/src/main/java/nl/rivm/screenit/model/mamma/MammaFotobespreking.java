@@ -41,13 +41,11 @@ import lombok.Setter;
 
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.SingleTableHibernateObject;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.mamma.enums.MammaFotobesprekingType;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
@@ -55,11 +53,10 @@ import org.hibernate.envers.NotAudited;
 
 @Entity
 @Table(schema = "mamma", name = "fotobespreking")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 @Audited
 @Setter
 @Getter
-public class MammaFotobespreking extends SingleTableHibernateObject implements MammaIKwaliteitscontrole
+public class MammaFotobespreking extends AbstractHibernateObject implements MammaIKwaliteitscontrole
 {
 	@Column(nullable = false, length = HibernateMagicNumber.L256, unique = true)
 	private String omschrijving;
@@ -72,13 +69,13 @@ public class MammaFotobespreking extends SingleTableHibernateObject implements M
 	@NotAudited
 	private InstellingGebruiker aangemaaktDoor;
 
-	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	private BeoordelingsEenheid beoordelingsEenheid;
 
-	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	private MammaScreeningsEenheid screeningsEenheid;
 
-	@Column(nullable = true)
+	@Column
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date gestartOp;
 
@@ -86,7 +83,7 @@ public class MammaFotobespreking extends SingleTableHibernateObject implements M
 	@Cascade(CascadeType.DELETE)
 	private List<MammaFotobesprekingOnderzoek> onderzoeken = new ArrayList<>();
 
-	@Column(nullable = true)
+	@Column
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date afgerondOp;
 

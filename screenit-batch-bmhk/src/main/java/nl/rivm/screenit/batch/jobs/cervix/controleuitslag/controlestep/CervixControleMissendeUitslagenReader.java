@@ -21,25 +21,25 @@ package nl.rivm.screenit.batch.jobs.cervix.controleuitslag.controlestep;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
+
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.cervix.CervixMonster;
 import nl.rivm.screenit.model.cervix.CervixMonster_;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde_;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.cervix.CervixBaseMonsterService;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Root;
 
 import static nl.rivm.screenit.Constants.MAX_AANTAL_DAGEN_TERUGKIJKEN_CONTROLE_MISSENDE_UITSLAGEN;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
@@ -73,7 +73,7 @@ public class CervixControleMissendeUitslagenReader extends BaseSpecificationScro
 	@Override
 	protected Expression<Long> createProjection(Root<CervixMonster> r, CriteriaBuilder cb)
 	{
-		return join(join(r, CervixMonster_.ontvangstScreeningRonde), CervixScreeningRonde_.dossier).get(TablePerClassHibernateObject_.id);
+		return join(join(r, CervixMonster_.ontvangstScreeningRonde), CervixScreeningRonde_.dossier).get(AbstractHibernateObject_.id);
 	}
 
 	@Override

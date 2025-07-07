@@ -36,7 +36,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -55,8 +54,6 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
@@ -64,7 +61,6 @@ import org.hibernate.envers.NotAudited;
 
 @Entity
 @Table(schema = "algemeen", uniqueConstraints = @UniqueConstraint(name = "uc_project_naam", columnNames = "naam"))
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Audited
 @Getter
 @Setter
@@ -95,7 +91,7 @@ public class Project extends AbstractHibernateObject implements INaam, IBevolkin
 	private GroepSelectieType groepSelectieType;
 
 	@NotAudited
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Instelling organisatie;
 
 	@Cascade({ CascadeType.SAVE_UPDATE })
@@ -110,7 +106,6 @@ public class Project extends AbstractHibernateObject implements INaam, IBevolkin
 
 	@NotAudited
 	@ManyToMany(fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@JoinTable(schema = "algemeen", name = "project_screening_organisaties")
 	private List<Instelling> screeningOrganisaties = new ArrayList<Instelling>();
 
@@ -128,7 +123,6 @@ public class Project extends AbstractHibernateObject implements INaam, IBevolkin
 	private List<Bevolkingsonderzoek> excludeerOpenRonde = new ArrayList<>();
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = jakarta.persistence.CascadeType.ALL)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<ProjectGroep> groepen = new ArrayList<>();
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = jakarta.persistence.CascadeType.ALL)

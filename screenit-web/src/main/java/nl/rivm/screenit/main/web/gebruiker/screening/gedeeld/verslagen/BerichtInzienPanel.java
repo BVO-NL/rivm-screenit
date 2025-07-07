@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.web.gebruiker.screening.gedeeld.verslagen;
 
 /*-
@@ -35,7 +34,6 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.ClientService;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
@@ -44,23 +42,22 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 public abstract class BerichtInzienPanel extends GenericPanel<MeldingOngeldigCdaBericht>
 {
 
-	private static final long serialVersionUID = 1L;
-
 	@SpringBean
 	private ClientService clientService;
 
-	public BerichtInzienPanel(String id, IModel<MeldingOngeldigCdaBericht> model)
+	protected BerichtInzienPanel(String id, IModel<MeldingOngeldigCdaBericht> model)
 	{
 		super(id, new CompoundPropertyModel<>(model));
 
 		BootstrapDialog confirmDialog = new BootstrapDialog("confirmDialog");
 		add(confirmDialog);
 		add(DateLabel.forDatePattern("ontvangenCdaBericht.ontvangen", "dd-MM-yyyy HH:mm:ss"));
-		add(new Label("ontvangenCdaBericht.berichtType"));
+		add(new Label("ontvangenCdaBericht.berichtType.naam"));
 		add(new Label("melding"));
 		MeldingOngeldigCdaBericht cdaMelding = model.getObject();
 		OntvangenCdaBericht ontvangenCdaBericht = cdaMelding.getOntvangenCdaBericht();
@@ -97,8 +94,6 @@ public abstract class BerichtInzienPanel extends GenericPanel<MeldingOngeldigCda
 
 		add(new IndicatingAjaxLink<MeldingOngeldigCdaBericht>("opnieuwAanbieden")
 		{
-
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void onClick(AjaxRequestTarget target)

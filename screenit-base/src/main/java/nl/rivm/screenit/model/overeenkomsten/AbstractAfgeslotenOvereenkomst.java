@@ -36,20 +36,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.model.ScreeningOrganisatie;
-import nl.rivm.screenit.model.SingleTableHibernateObject;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 @Entity
 @Getter
 @Setter
 @Table(schema = "gedeeld", indexes = { @Index(name = "IDX_AFG_OVEREENKOMST_AKKOORD", columnList = "akkoordDatum, eindDatum, startDatum") })
 @DiscriminatorColumn(length = HibernateMagicNumber.L100)
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
-public abstract class AbstractAfgeslotenOvereenkomst extends SingleTableHibernateObject
+public abstract class AbstractAfgeslotenOvereenkomst extends AbstractHibernateObject
 {
 	@Column(unique = true)
 	private String code;

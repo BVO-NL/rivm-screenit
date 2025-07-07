@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.cervix.verslag.cytologie;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -32,6 +31,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.verslag.VraagElement;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
@@ -39,12 +41,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "cervix")
+@Getter
+@Setter
 public class CervixCytologieVerrichting
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -52,27 +53,10 @@ public class CervixCytologieVerrichting
 
 	@Temporal(TemporalType.DATE)
 	@Column
-	@VraagElement(displayName = "Einde verrichting", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.2.11.73", isVerplicht = true)
+	@VraagElement(conceptId = "73", displayName = "Einde verrichting", xpaths = {
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent/hl7:effectiveTime/hl7:high|@value",
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent/hl7:effectiveTime/hl7:high|@value"
+	}, isVerplicht = true)
 	private Date eindeVerrichting;
-
-	public CervixCytologieVerslagContent getVerslagContent()
-	{
-		return verslagContent;
-	}
-
-	public void setVerslagContent(CervixCytologieVerslagContent verslagContent)
-	{
-		this.verslagContent = verslagContent;
-	}
-
-	public Date getEindeVerrichting()
-	{
-		return eindeVerrichting;
-	}
-
-	public void setEindeVerrichting(Date eindeVerrichting)
-	{
-		this.eindeVerrichting = eindeVerrichting;
-	}
 
 }

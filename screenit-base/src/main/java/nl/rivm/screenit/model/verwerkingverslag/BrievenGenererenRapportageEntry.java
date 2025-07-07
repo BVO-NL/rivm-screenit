@@ -28,12 +28,8 @@ import jakarta.persistence.Table;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(schema = "gedeeld")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class BrievenGenererenRapportageEntry extends AbstractHibernateObject
 {
 	@ManyToOne

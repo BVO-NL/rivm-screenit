@@ -23,9 +23,10 @@ package nl.rivm.screenit.main.config;
 
 import java.util.HashMap;
 
+import jakarta.servlet.Filter;
+
 import nl.rivm.screenit.security.ScreenitRealm;
 
-import org.apache.shiro.cache.jcache.JCacheManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -34,18 +35,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 
-import jakarta.servlet.Filter;
-
 @Configuration
 public class ShiroConfig
 {
 	@Bean
 	@Profile("!test")
-	public DefaultWebSecurityManager shiroSecurityManager(ScreenitRealm realm, JCacheManager jCacheManager)
+	public DefaultWebSecurityManager shiroSecurityManager(ScreenitRealm realm)
 	{
 		var securityManager = new DefaultWebSecurityManager();
 		securityManager.setRealm(realm);
-		securityManager.setCacheManager(jCacheManager);
 		return securityManager;
 	}
 

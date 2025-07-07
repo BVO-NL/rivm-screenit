@@ -40,8 +40,6 @@ import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.colon.enums.ColonAfmeldingReden;
 import nl.rivm.screenit.model.enums.BriefType;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
@@ -74,7 +72,6 @@ public class ColonAfmelding extends Afmelding<ColonScreeningRonde, ColonDossier,
 	private ColonBrief heraanmeldBevestiging;
 
 	@OneToMany(mappedBy = "afmelding", fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.ALL)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<ColonBrief> brieven = new ArrayList<>();
 
 	@Enumerated(EnumType.STRING)

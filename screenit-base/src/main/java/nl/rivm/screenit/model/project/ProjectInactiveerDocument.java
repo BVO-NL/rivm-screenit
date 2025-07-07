@@ -36,14 +36,11 @@ import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 @Entity
 @Table(schema = "algemeen")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class ProjectInactiveerDocument extends AbstractHibernateObject
 {
 

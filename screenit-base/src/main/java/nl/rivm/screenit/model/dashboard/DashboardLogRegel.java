@@ -33,14 +33,10 @@ import lombok.Setter;
 import nl.rivm.screenit.model.logging.LogRegel;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Setter
 @Getter
 @Entity
 @Table(schema = "gedeeld", uniqueConstraints = { @UniqueConstraint(name = "dashboardStatusLogRegel", columnNames = { "dashboard_status", "log_regel" }) })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class DashboardLogRegel extends AbstractHibernateObject
 {
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)

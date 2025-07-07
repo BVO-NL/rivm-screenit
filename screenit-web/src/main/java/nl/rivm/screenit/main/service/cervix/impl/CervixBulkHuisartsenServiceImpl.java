@@ -65,7 +65,7 @@ import nl.rivm.screenit.service.WoonplaatsService;
 import nl.rivm.screenit.util.CodeGenerator;
 import nl.rivm.screenit.util.cervix.CervixHuisartsToDtoUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5SessionInThread;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.NonUniqueResultException;
@@ -116,7 +116,7 @@ public class CervixBulkHuisartsenServiceImpl implements CervixBulkHuisartsenServ
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void verwerkBulkHuisartsen(CervixBulkUpload cervixBulkUpload)
 	{
-		executorService.submit(new OpenHibernate5SessionInThread()
+		executorService.submit(new OpenHibernateSessionInThread()
 		{
 			@Override
 			protected void runInternal()

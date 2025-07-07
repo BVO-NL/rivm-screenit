@@ -23,6 +23,13 @@ package nl.rivm.screenit.model.cervix.berichten;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,42 +38,26 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.messagequeue.Message;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.Type;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 @Setter
 @Getter
 @Entity
-@Table(schema = "cervix", name = "fout_hl7v2_bericht", uniqueConstraints = { @UniqueConstraint(columnNames = "message"), @UniqueConstraint(columnNames = "client") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
+@Table(schema = "cervix", name = "fout_hl7v2_bericht")
 public class CervixFoutHL7v2Bericht extends AbstractHibernateObject
 {
 
 	@Column(nullable = false)
 	private LocalDateTime responseMoment;
 
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
-	@Column(nullable = false)
+	@Column(nullable = false, columnDefinition = "TEXT")
 	private String request;
 
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
+	@Column(columnDefinition = "TEXT")
 	private String response;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@OneToOne(fetch = FetchType.LAZY, optional = false)
 	private Client client;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)

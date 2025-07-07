@@ -31,7 +31,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -39,8 +38,6 @@ import lombok.Setter;
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
@@ -48,12 +45,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @Getter
 @Entity
-@Table(
-	schema = "mamma",
-	name = "signaleren",
-	uniqueConstraints = { @UniqueConstraint(columnNames = "rechts_verticale_doorsnede"), @UniqueConstraint(columnNames = "links_verticale_doorsnede"),
-		@UniqueConstraint(columnNames = "rechts_horizontale_doorsnede"), @UniqueConstraint(columnNames = "links_horizontale_doorsnede") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
+@Table(schema = "mamma", name = "signaleren")
 @Audited
 public class MammaSignaleren extends AbstractHibernateObject
 {

@@ -25,8 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.repository.impl.BaseJpaRepositoryImpl;
 import nl.rivm.screenit.service.DistributedLockService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5Session;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5SessionInThread;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.core.StandardHost;
@@ -47,8 +47,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = DistributedLockService.class),
 		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "nl.topicuszorg.hibernate.spring.module.test.impl.TestServiceImpl"),
 		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "nl.topicuszorg.loginformatie.services.impl.LogInformatieServiceImpl"),
-		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = OpenHibernate5SessionInThread.class),
-		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = OpenHibernate5Session.class),
+		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = OpenHibernateSessionInThread.class),
+		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = OpenHibernateSession.class),
 		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "nl.topicuszorg.hl7.*")
 	})
 @SpringBootApplication

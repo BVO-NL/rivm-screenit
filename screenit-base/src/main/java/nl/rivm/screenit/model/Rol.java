@@ -42,8 +42,6 @@ import lombok.Setter;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Where;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -51,7 +49,6 @@ import org.hibernate.envers.NotAudited;
 @Entity
 @Table(schema = "algemeen")
 @Audited
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 @Getter
 @Setter
 public class Rol extends AbstractHibernateObject implements INaam, IActief, IBevolkingsonderzoek
@@ -62,7 +59,6 @@ public class Rol extends AbstractHibernateObject implements INaam, IActief, IBev
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "rol")
 	@Where(clause = "actief = true")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 	private List<Permissie> permissies = new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)

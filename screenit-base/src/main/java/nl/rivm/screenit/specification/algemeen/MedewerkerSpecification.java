@@ -119,6 +119,20 @@ public class MedewerkerSpecification
 		return (r, q, cb) -> cb.isNotNull(r.get(Gebruiker_.handtekening));
 	}
 
+	public static Specification<Gebruiker> isActiefTotEnMetVoor(LocalDate peilDatum)
+	{
+		return (r, q, cb) ->
+		{
+			var totEnMetExpression = cb.coalesce(r.get(Gebruiker_.actiefTotEnMet), DateUtil.END_OF_TIME);
+			return cb.lessThan(totEnMetExpression, DateUtil.toUtilDate(peilDatum));
+		};
+	}
+
+	public static Specification<Gebruiker> isActief(boolean waarde)
+	{
+		return (r, q, cb) -> cb.equal(r.get(Gebruiker_.actief), waarde);
+	}
+
 	public static ExtendedSpecification<Gebruiker> filterAchternaamContaining(String achternaam)
 	{
 		return skipWhenEmptyExtended(achternaam, (r, q, cb) -> containsCaseInsensitive(cb, r.get(Gebruiker_.achternaam), achternaam));

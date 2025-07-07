@@ -25,7 +25,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 
 import nl.rivm.screenit.util.DiffSpecs;
 import nl.topicuszorg.organisatie.model.Adres;
@@ -34,7 +33,6 @@ import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
-@Table
 public class MammaTehuisAdres extends Adres
 {
 

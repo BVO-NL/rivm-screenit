@@ -33,6 +33,7 @@ import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.RangeSpecification;
 import nl.rivm.screenit.util.DateUtil;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -113,7 +114,7 @@ public class GemeenteSpecification
 	public static ExtendedSpecification<Gemeente> heeftBmhkLaboratorium(Long bmhkLabId)
 	{
 		return (r, q, cb) ->
-			cb.equal(r.get(Gemeente_.bmhkLaboratorium), bmhkLabId);
+			cb.equal(r.get(Gemeente_.bmhkLaboratorium).get(AbstractHibernateObject_.id), bmhkLabId);
 	}
 
 	public static ExtendedSpecification<Gemeente> heeftGeenUitnodigingsGebieden()

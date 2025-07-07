@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.colon;
 
 /*-
@@ -22,44 +21,32 @@ package nl.rivm.screenit.model.colon;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.colon.verslag.pa.PaVerslagContent;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Proxy;
 import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 @Entity(name = "paverslag")
-@Proxy(lazy = true)
+@Proxy
 @Audited
+@Setter
+@Getter
 public class PaVerslag extends ColonVerslag<PaVerslagContent>
 {
 
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-	@ForeignKey(name = "none")
-	@NotAudited
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	@JoinColumn(foreignKey = @jakarta.persistence.ForeignKey(name = "none"))
 	private PaVerslagContent verslagContent;
-
-	@Override
-	public PaVerslagContent getVerslagContent()
-	{
-		return verslagContent;
-	}
-
-	@Override
-	public void setVerslagContent(PaVerslagContent verslagContent)
-	{
-		this.verslagContent = verslagContent;
-	}
 
 }

@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.mamma;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -34,7 +33,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -43,25 +41,15 @@ import nl.rivm.screenit.model.mamma.enums.MammaUitstelGeannuleerdReden;
 import nl.rivm.screenit.model.mamma.enums.MammaUitstelReden;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
-@Table(
-	schema = "mamma",
-	name = "uitstel",
-	uniqueConstraints = {
-		@UniqueConstraint(columnNames = "uitnodiging") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
+@Table(schema = "mamma", name = "uitstel")
 @Audited
 @Getter
 @Setter
 public class MammaUitstel extends AbstractHibernateObject
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	private MammaScreeningRonde screeningRonde;

@@ -24,12 +24,12 @@ package nl.rivm.screenit.main.service.mamma;
 import java.io.IOException;
 import java.util.List;
 
+import nl.rivm.screenit.mamma.imsapi.model.FhirUserSession;
 import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeFocusMode;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
-import nl.rivm.screenit.model.mamma.imsapi.FhirUserSession;
 import nl.rivm.screenit.util.functionalinterfaces.StringResolver;
 
 public interface MammaImsService
@@ -42,7 +42,8 @@ public interface MammaImsService
 
 	String createLogoffMessage(Gebruiker gebruiker, MammobridgeRole mammobridgeRole);
 
-	String createDesktopSyncMessage(Gebruiker gebruiker, MammobridgeRole mammobridgeRole, Long huidigeOnderzoekId, List<Long> komendeBeoordelingIds, MammobridgeFocusMode focusMode);
+	String createDesktopSyncMessage(Gebruiker gebruiker, MammobridgeRole mammobridgeRole, Long huidigeOnderzoekId, List<Long> komendeBeoordelingIds,
+		MammobridgeFocusMode focusMode);
 
 	String createEmptyDesktopSyncMessage(Gebruiker gebruiker, MammobridgeRole mammobridgeRole);
 

@@ -39,14 +39,12 @@ import jakarta.persistence.TemporalType;
 
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.SingleTableHibernateObject;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieStatus;
 import nl.rivm.screenit.util.DiffSpecs;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
@@ -54,9 +52,8 @@ import org.hibernate.envers.NotAudited;
 
 @Entity
 @Table(schema = "mamma", name = "visitatie")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 @Audited
-public class MammaVisitatie extends SingleTableHibernateObject implements MammaIKwaliteitscontrole
+public class MammaVisitatie extends AbstractHibernateObject implements MammaIKwaliteitscontrole
 {
 	@Column(nullable = false, length = HibernateMagicNumber.L256, unique = true)
 	private String omschrijving;

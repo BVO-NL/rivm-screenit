@@ -31,8 +31,6 @@ import nl.rivm.screenit.model.colon.enums.ColonTijdslotType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Index;
 import org.hibernate.envers.Audited;
 
@@ -51,7 +49,6 @@ import jakarta.persistence.Transient;
 @Slf4j
 @Entity
 @Table(schema = "colon", name = "tijdslot")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "colon.cache")
 @Audited
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class ColonTijdslot extends AbstractHibernateObject implements Cloneable

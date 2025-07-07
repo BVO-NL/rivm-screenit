@@ -26,11 +26,11 @@ import nl.rivm.screenit.main.service.mamma.MammaScreeningsEenheidService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
+import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
 import nl.rivm.screenit.model.mamma.MammaMammograaf;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
-import nl.topicuszorg.wicket.hibernate.markup.form.validation.UniqueFieldValidator;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
@@ -58,9 +58,9 @@ abstract class MammaMammograafEditPanel extends GenericPanel<MammaMammograaf>
 
 		final Long mammograafId = model.getObject().getId();
 		ComponentHelper.addTextField(form, "aeTitle", true, 15, String.class, false)
-			.add(new UniqueFieldValidator<>(MammaMammograaf.class, mammograafId, "aeTitle", hibernateService, true));
+			.add(new ScreenitUniqueFieldValidator<>(MammaMammograaf.class, mammograafId, "aeTitle", true));
 		ComponentHelper.addTextField(form, "werkstationIpAdres", true, 15, String.class, false)
-			.add(new UniqueFieldValidator<>(MammaMammograaf.class, mammograafId, "werkstationIpAdres", hibernateService, true));
+			.add(new ScreenitUniqueFieldValidator<>(MammaMammograaf.class, mammograafId, "werkstationIpAdres", true));
 
 		form.add(new IndicatingAjaxSubmitLink("opslaan")
 		{

@@ -49,16 +49,12 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Setter
 @Getter
 @Entity
 @Table(schema = "gedeeld", indexes = { @Index(name = "logGebeurtenis", columnList = "logGebeurtenis"), @Index(name = "gebeurtenisDatum", columnList = "gebeurtenisDatum") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class LogRegel extends AbstractHibernateObject
 {
 	@Enumerated(EnumType.STRING)

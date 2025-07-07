@@ -22,11 +22,13 @@ package nl.rivm.screenit.mamma.planning.repository.projectie;
  */
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
+import nl.rivm.screenit.util.DateUtil;
 
 @Getter
 @AllArgsConstructor
@@ -45,4 +47,10 @@ public class PlanningCapaciteitBlokProjectie
 	private String opmerkingen;
 
 	private boolean minderValideAfspraakMogelijk;
+
+	public PlanningCapaciteitBlokProjectie(long id, Date vanaf, Date tot, Integer aantalOnderzoeken, MammaCapaciteitBlokType blokType, String opmerkingen,
+		boolean minderValideAfspraakMogelijk)
+	{
+		this(id, DateUtil.toLocalDateTime(vanaf), DateUtil.toLocalDateTime(tot), aantalOnderzoeken, blokType, opmerkingen, minderValideAfspraakMogelijk);
+	}
 }

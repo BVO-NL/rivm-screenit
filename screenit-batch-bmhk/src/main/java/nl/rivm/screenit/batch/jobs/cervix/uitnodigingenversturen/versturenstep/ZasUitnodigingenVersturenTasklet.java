@@ -209,7 +209,7 @@ public class ZasUitnodigingenVersturenTasklet extends AbstractUitnodigingenVerst
 	protected void logMislukt(Long uitnodigingsId)
 	{
 		var melding = String.format("Fout bij het versturen van uitnodiging met uitnodigingsId: '%s'", uitnodigingsId);
-		logService.logGebeurtenis(LogGebeurtenis.CERVIX_ZAS_UITNODIGING_VERSTUREN_NAAR_INPAKCENTRUM_MISLUKT, null, melding, Bevolkingsonderzoek.COLON);
+		logService.logGebeurtenis(LogGebeurtenis.CERVIX_ZAS_UITNODIGING_VERSTUREN_NAAR_INPAKCENTRUM_MISLUKT, melding, Bevolkingsonderzoek.COLON);
 	}
 
 	@Override

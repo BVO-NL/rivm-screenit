@@ -41,13 +41,10 @@ import nl.rivm.screenit.model.mamma.enums.MammaBlokkadeType;
 import nl.rivm.screenit.util.DiffSpecs;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "mamma", name = "blokkade")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 @Audited
 public class MammaBlokkade extends AbstractHibernateObject implements IActief
 {

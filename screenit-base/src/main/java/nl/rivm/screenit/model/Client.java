@@ -49,17 +49,15 @@ import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
 import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
-import nl.rivm.screenit.model.colon.Complicatie;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.RedenIntrekkenGbaIndicatie;
 import nl.rivm.screenit.model.gba.GbaMutatie;
 import nl.rivm.screenit.model.gba.GbaVraag;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.project.ProjectClient;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.BsnBron;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -73,9 +71,8 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 @Audited
 @Entity(name = "pat_patient")
 @Table(schema = "gedeeld", indexes = { @Index(name = "IDX_GBASTATUS", columnList = "gbaStatus") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "patient.registratie.cache")
 @Check(constraints = "reden_intrekken_gba_indicatie_door_bvo = 'NIET_INGETROKKEN' OR gba_status IN ('INDICATIE_AANWEZIG', 'PUNT_ADRES', 'BEZWAAR')")
-public class Client extends SingleTableHibernateObject implements Account
+public class Client extends AbstractHibernateObject implements Account
 {
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@Audited(targetAuditMode = NOT_AUDITED)
@@ -93,12 +90,7 @@ public class Client extends SingleTableHibernateObject implements Account
 	private MammaDossier mammaDossier;
 
 	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<ColonIntakeAfspraak> afspraken = new ArrayList<>();
-
-	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
-	private List<Complicatie> complicaties = new ArrayList<>();
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -109,49 +101,40 @@ public class Client extends SingleTableHibernateObject implements Account
 	private RedenIntrekkenGbaIndicatie redenIntrekkenGbaIndicatieDoorBvo = RedenIntrekkenGbaIndicatie.NIET_INGETROKKEN;
 
 	@OneToMany(cascade = CascadeType.ALL)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@NotAudited
 	@JoinTable(schema = "gedeeld", name = "pat_patient_gba_mutaties", joinColumns = { @JoinColumn(name = "pat_patient") })
 	private List<GbaMutatie> gbaMutaties = new ArrayList<>();
 
 	@OneToMany(mappedBy = "client")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@NotAudited
 	private List<GbaVraag> gbaVragen = new ArrayList<>();
 
 	@OneToMany(mappedBy = "client")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<ClientContact> contacten = new ArrayList<>();
 
 	@OneToMany(mappedBy = "client")
 	@OrderBy("bezwaarDatum DESC")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@JsonManagedReference
 	private List<BezwaarMoment> bezwaarMomenten = new ArrayList<>();
 
 	@OneToMany(mappedBy = "client")
 	@OrderBy("moment DESC")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<OnderzoeksresultatenActie> onderzoeksresultatenActies = new ArrayList<>();
 
 	@OneToOne(fetch = FetchType.LAZY, optional = true)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@JsonManagedReference
 	private BezwaarMoment laatstVoltooideBezwaarMoment;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "client")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@NotAudited
 	private List<HuisartsBericht> huisartsBerichten = new ArrayList<>();
 
 	@OneToMany(fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@NotAudited
 	@JoinTable(schema = "gedeeld", name = "pat_patient_documents", joinColumns = { @JoinColumn(name = "pat_patient") })
 	private List<UploadDocument> documents;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "client")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@NotAudited
 	private List<ProjectClient> projecten = new ArrayList<>();
 
@@ -161,13 +144,11 @@ public class Client extends SingleTableHibernateObject implements Account
 
 	@OneToMany(mappedBy = "client")
 	@OrderBy("statusDatum DESC")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<OverdrachtPersoonsgegevens> overdrachtPersoonsgegevensLijst = new ArrayList<>();
 
 	@Getter
 	@Setter
 	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<AlgemeneBrief> algemeneBrieven = new ArrayList<>();
 
 	@Column(length = 20)

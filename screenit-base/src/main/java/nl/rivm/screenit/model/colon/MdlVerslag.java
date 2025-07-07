@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.colon;
 
 /*-
@@ -22,74 +21,41 @@ package nl.rivm.screenit.model.colon;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.colon.enums.MdlVervolgbeleid;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerslagContent;
-import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Proxy;
 import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 @Entity(name = "mdlverslag")
-@Proxy(lazy = true)
+@Proxy
 @Audited
+@Getter
+@Setter
 public class MdlVerslag extends ColonVerslag<MdlVerslagContent>
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
 
 	@Enumerated(EnumType.STRING)
 	private MdlVervolgbeleid vervolgbeleid;
 
-	@Column(length = HibernateMagicNumber.L255)
+	@Column
 	private String patientnummer;
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-	@ForeignKey(name = "none")
-	@NotAudited
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	@JoinColumn(foreignKey = @jakarta.persistence.ForeignKey(name = "none"))
 	private MdlVerslagContent verslagContent;
-
-	public MdlVervolgbeleid getVervolgbeleid()
-	{
-		return vervolgbeleid;
-	}
-
-	public void setVervolgbeleid(MdlVervolgbeleid vervolgbeleid)
-	{
-		this.vervolgbeleid = vervolgbeleid;
-	}
-
-	public String getPatientnummer()
-	{
-		return patientnummer;
-	}
-
-	public void setPatientnummer(String patientnummer)
-	{
-		this.patientnummer = patientnummer;
-	}
-
-	@Override
-	public MdlVerslagContent getVerslagContent()
-	{
-		return verslagContent;
-	}
-
-	@Override
-	public void setVerslagContent(MdlVerslagContent verslagContent)
-	{
-		this.verslagContent = verslagContent;
-	}
 }

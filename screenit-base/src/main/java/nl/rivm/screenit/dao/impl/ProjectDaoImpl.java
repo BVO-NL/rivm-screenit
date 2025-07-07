@@ -42,8 +42,6 @@ import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.util.CollectionUtils;
 import org.hibernate.query.NativeQuery;
-import org.hibernate.type.DateType;
-import org.hibernate.type.LongType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
@@ -234,7 +232,7 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 		SortState<String> sortState)
 	{
 		var query = getDefaultSqlProjectQuery(zoekObject, instellingIdsProject, instellingIdsBriefproject, sortState);
-		query.addScalar("id", LongType.INSTANCE);
+		query.addScalar("id", Long.class);
 		if (count > 0)
 		{
 			query.setMaxResults((int) count);
@@ -289,8 +287,8 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 			"and projectBevolkingsonderzoeken3_.bevolkingsonderzoeken='%s')").formatted(
 			getSchema(bvo), getDossierTable(bvo), getSchema(bvo), getDossierTable(bvo), getJoinColumn(bvo), bvo.name());
 		var query = getSession().createNativeQuery(sql);
-		query.setParameter("startDatum", nu, DateType.INSTANCE);
-		query.setParameter("eindDatum", nu, DateType.INSTANCE);
+		query.setParameter("startDatum", nu, Date.class);
+		query.setParameter("eindDatum", nu, Date.class);
 		var aantal = query.executeUpdate();
 		LOG.debug("Aantal geset {}", aantal);
 	}

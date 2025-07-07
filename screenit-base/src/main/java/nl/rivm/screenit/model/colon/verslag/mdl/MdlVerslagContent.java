@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.colon.verslag.mdl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +29,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.verslag.VerslagContent;
@@ -41,70 +42,35 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "colon")
+@Getter
+@Setter
 public class MdlVerslagContent
 	extends VerslagContent<MdlVerslag>
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false, mappedBy = "verslagContent")
 	@JsonIgnore
 	private MdlVerslag verslag;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "verslagContent", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Verrichting", extraTekst = "Verrichting", code = "2.16.840.1.113883.2.4.3.36.77.2.11.68", isReference = true)
+	@VraagElement(conceptId = "68", displayName = "Verrichting", xpaths = {
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent",
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent"
+	})
 	private MdlVerrichting verrichting;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "verslagContent", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Coloscopie : medische observatie", extraTekst = "Coloscopie : medische observatie", code = "2.16.840.1.113883.2.4.3.36.77.2.11.80", isReference = true)
+	@VraagElement(conceptId = "80", displayName = "Coloscopie : medische observatie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section"
+	})
 	private MdlColoscopieMedischeObservatie coloscopieMedischeObservatie;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "verslagContent", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Laesie (coloscopiecentrum)", extraTekst = "Weggenomen materiaal, poliep, verdenking carcinoom (coloscopiecentrum)", code = "2.16.840.1.113883.2.4.3.36.77.2.11.121", isReference = true)
-	@OrderBy("to_number(coalesce(nullif(volgnummerLaesie.value,''),to_char(id, '9999999999')), '9999999999')")
+	@VraagElement(conceptId = "121", displayName = "Laesie (coloscopiecentrum)", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.205']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.383']]]/hl7:organizer/hl7:component",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.205']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.383']]]/hl7:organizer/hl7:component"
+	})
 	private List<MdlLaesiecoloscopiecentrum> laesiecoloscopiecentrum = new ArrayList<>();
-
-	@Override
-	public MdlVerslag getVerslag()
-	{
-		return verslag;
-	}
-
-	@Override
-	public void setVerslag(MdlVerslag verslag)
-	{
-		this.verslag = verslag;
-	}
-
-	public MdlVerrichting getVerrichting()
-	{
-		return verrichting;
-	}
-
-	public void setVerrichting(MdlVerrichting verrichting)
-	{
-		this.verrichting = verrichting;
-	}
-
-	public MdlColoscopieMedischeObservatie getColoscopieMedischeObservatie()
-	{
-		return coloscopieMedischeObservatie;
-	}
-
-	public void setColoscopieMedischeObservatie(MdlColoscopieMedischeObservatie coloscopieMedischeObservatie)
-	{
-		this.coloscopieMedischeObservatie = coloscopieMedischeObservatie;
-	}
-
-	public List<MdlLaesiecoloscopiecentrum> getLaesiecoloscopiecentrum()
-	{
-		return laesiecoloscopiecentrum;
-	}
-
-	public void setLaesiecoloscopiecentrum(List<MdlLaesiecoloscopiecentrum> laesiecoloscopiecentrum)
-	{
-		this.laesiecoloscopiecentrum = laesiecoloscopiecentrum;
-	}
 
 }

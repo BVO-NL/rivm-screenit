@@ -951,7 +951,7 @@ public class GbaServiceImpl implements GbaService
 			hibernateService.saveOrUpdate(client);
 
 			createFout(client, verwerkingsLog, "Gemeente was niet bekend, toegevoegd. Gemeentecode: " + gemeenteCode, GbaFoutCategorie.INHOUDELIJK);
-			logService.logGebeurtenis(LogGebeurtenis.GBA_IMPORT_GEMEENTE_TOEGEVOEGD, null, "Gemeente was niet bekend, toegevoegd. Gemeentecode: " + gemeenteCode);
+			logService.logGebeurtenis(LogGebeurtenis.GBA_IMPORT_GEMEENTE_TOEGEVOEGD, "Gemeente was niet bekend, toegevoegd. Gemeentecode: " + gemeenteCode);
 			hibernateService.saveOrUpdate(gemeente);
 		}
 		return gemeente;

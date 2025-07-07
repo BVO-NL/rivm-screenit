@@ -44,7 +44,6 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.SmsStatus;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaDigitaalClientBericht;
-import nl.rivm.screenit.repository.mamma.MammaBaseAfspraakNativeQueryRepository;
 import nl.rivm.screenit.repository.mamma.MammaBaseAfspraakRepository;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.ClientService;
@@ -82,8 +81,6 @@ public class MammaDigitaalContactServiceImpl implements MammaDigitaalContactServ
 
 	private final MammaBaseAfspraakRepository baseAfspraakRepository;
 
-	private final MammaBaseAfspraakNativeQueryRepository baseAfspraakNativeQueryRepository;
-
 	private final SimplePreferenceService preferenceService;
 
 	private final Boolean testModus;
@@ -116,7 +113,7 @@ public class MammaDigitaalContactServiceImpl implements MammaDigitaalContactServ
 			LocalDateTime volgendeDag = currentDateSupplier.getLocalDateTime().plusDays(1).withHour(7).withMinute(0);
 			LocalDateTime termijnDatum = currentDateSupplier.getLocalDateTime().plusHours(termijn);
 
-			return baseAfspraakNativeQueryRepository.findTop250AfsprakenOmSmsTeVersturen(DateUtil.toUtilDate(volgendeDag), DateUtil.toUtilDate(termijnDatum));
+			return baseAfspraakRepository.findTop250AfsprakenOmSmsTeVersturen(DateUtil.toUtilDate(volgendeDag), DateUtil.toUtilDate(termijnDatum));
 		}
 		LOG.warn("Sms verzenden staat op uit, er wordt geen sms gestuurd.");
 		return new ArrayList<>();

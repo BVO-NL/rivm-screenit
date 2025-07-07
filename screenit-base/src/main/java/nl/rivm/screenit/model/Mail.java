@@ -33,15 +33,12 @@ import nl.rivm.screenit.model.enums.MailPriority;
 import nl.rivm.screenit.model.enums.MailServerKeuze;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Type;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -56,19 +53,13 @@ public class Mail extends AbstractHibernateObject
 	@Column(nullable = false)
 	private LocalDateTime createTime;
 
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
-	@Column(nullable = false)
+	@Column(nullable = false, columnDefinition = "TEXT")
 	private String recipient;
 
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
-	@Column(nullable = false)
+	@Column(nullable = false, columnDefinition = "TEXT")
 	private String subject;
 
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
-	@Column(nullable = false)
+	@Column(nullable = false, columnDefinition = "TEXT")
 	private String content;
 
 	@Column(nullable = false)

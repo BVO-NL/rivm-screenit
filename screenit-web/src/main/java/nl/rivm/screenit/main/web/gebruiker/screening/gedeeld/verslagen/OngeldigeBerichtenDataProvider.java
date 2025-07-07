@@ -24,8 +24,8 @@ package nl.rivm.screenit.main.web.gebruiker.screening.gedeeld.verslagen;
 import java.util.Iterator;
 import java.util.List;
 
-import nl.rivm.screenit.main.service.BerichtenZoekFilter;
 import nl.rivm.screenit.main.service.OngeldigeBerichtenService;
+import nl.rivm.screenit.model.BerichtZoekFilter;
 import nl.rivm.screenit.model.berichten.cda.MeldingOngeldigCdaBericht;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -39,14 +39,12 @@ import static nl.rivm.screenit.main.util.WicketSpringDataUtil.toSpringSort;
 
 public class OngeldigeBerichtenDataProvider extends SortableDataProvider<MeldingOngeldigCdaBericht, String>
 {
-	private static final long serialVersionUID = 1L;
-
 	@SpringBean
 	private OngeldigeBerichtenService ongeldigeBerichtenService;
 
-	private final IModel<BerichtenZoekFilter> filter;
+	private final IModel<BerichtZoekFilter> filter;
 
-	public OngeldigeBerichtenDataProvider(IModel<BerichtenZoekFilter> filter)
+	public OngeldigeBerichtenDataProvider(IModel<BerichtZoekFilter> filter)
 	{
 		setSort("datum", SortOrder.DESCENDING);
 		this.filter = filter;

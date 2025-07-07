@@ -36,5 +36,5 @@ public interface ColonAfspraakService
 
 	void intakeAfspraakAfzeggen(Client client);
 
-	ColonIntakeAfspraak initNieuweAfspraak(ColonIntakeAfspraak oudeAfspraak, VrijSlotZonderKamer gekozenVrijSlotZonderKamer);
+	ColonIntakeAfspraak initNieuweAfspraak(ColonIntakeAfspraak oudeAfspraak, ColonVrijSlotZonderKamerDto gekozenVrijSlotZonderKamer);
 }

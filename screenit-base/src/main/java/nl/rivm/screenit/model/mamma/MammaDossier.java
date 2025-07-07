@@ -51,8 +51,6 @@ import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.util.SkipFieldForDiff;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
@@ -85,7 +83,6 @@ public class MammaDossier extends Dossier<MammaScreeningRonde, MammaAfmelding> i
 	private Client client;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "dossier")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	private List<MammaScreeningRonde> screeningRondes = new ArrayList<>();
 
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
@@ -98,7 +95,6 @@ public class MammaDossier extends Dossier<MammaScreeningRonde, MammaAfmelding> i
 	private Boolean updateFollowUpConclusie = false;
 
 	@OneToMany(mappedBy = "dossier", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	private List<MammaAfmelding> afmeldingen = new ArrayList<>();
 
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
@@ -139,7 +135,6 @@ public class MammaDossier extends Dossier<MammaScreeningRonde, MammaAfmelding> i
 	private MammaDeelnamekans deelnamekans;
 
 	@OneToMany(mappedBy = "dossier", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	private List<MammaIlmBezwaarPoging> ilmBezwaarPogingen = new ArrayList<>();
 
 	@Column(nullable = false)
@@ -148,7 +143,6 @@ public class MammaDossier extends Dossier<MammaScreeningRonde, MammaAfmelding> i
 
 	@OneToOne(optional = true, mappedBy = "dossier", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE })
 	@Cascade(CascadeType.DELETE)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	@NotAudited
 	private MammaVolgendeUitnodiging volgendeUitnodiging;
 

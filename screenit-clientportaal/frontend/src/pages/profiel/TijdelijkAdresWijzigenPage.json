@@ -35,7 +35,8 @@
         "eind_voor_start": "Ongeldig - de begindatum moet voor de einddatum liggen",
         "minimum": "Ongeldig - Kies een datum vanaf %s",
         "ongeldig": "Vul een geldige datum in"
-      }
+      },
+      "ongeldig": "Invoer is ongeldig"
     },
     "button": "Gegevens opslaan"
   },

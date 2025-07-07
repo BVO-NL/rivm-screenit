@@ -21,20 +21,17 @@ package nl.rivm.screenit.main.web.component;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.TimeZone;
+
+import nl.rivm.screenit.util.DateUtil;
 
 import org.apache.wicket.model.IModel;
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.DateTimeZone;
-import org.joda.time.MutableDateTime;
 
 public class TimeField extends BaseTimeField<Date>
 {
 
-	private static final long serialVersionUID = 1L;
-
-	private MutableDateTime date;
+	private LocalDateTime dateTime;
 
 	public TimeField(String id)
 	{
@@ -53,64 +50,45 @@ public class TimeField extends BaseTimeField<Date>
 
 		setType(Date.class);
 
-		Date d = (Date) getDefaultModelObject();
+		var d = (Date) getDefaultModelObject();
 		if (d != null)
 		{
-			date = new MutableDateTime(d);
+			dateTime = DateUtil.toLocalDateTime(d);
+			setHours(Integer.valueOf(dateTime.getHour()));
+			setMinutes(Integer.valueOf(dateTime.getMinute()));
 		}
 		else
 		{
-			date = null;
+			dateTime = null;
 			setHours(null);
 			setMinutes(null);
-		}
-
-		if (date != null)
-		{
-			TimeZone zone = getClientTimeZone();
-
-			if (zone != null)
-			{
-				date.setMillis(getMillis(TimeZone.getDefault(), zone, date.getMillis()));
-			}
-
-			setHours(Integer.valueOf(date.get(DateTimeFieldType.hourOfDay())));
-			setMinutes(Integer.valueOf(date.getMinuteOfHour()));
 		}
 	}
 
 	@Override
 	public void convertInput()
 	{
-		MutableDateTime d = new MutableDateTime(getDefaultModelObject());
-		Integer h = getHoursField().getConvertedInput();
-		Integer m = getMinutesField().getConvertedInput();
+		var dt = getDefaultModelObject() != null ? DateUtil.toLocalDateTime((Date) getDefaultModelObject()) : LocalDateTime.now();
+		var h = getHoursField().getConvertedInput();
+		var m = getMinutesField().getConvertedInput();
 
 		try
 		{
 			if (h != null)
 			{
-				d.set(DateTimeFieldType.hourOfDay(), h.intValue() % 24);
-
+				dt = dt.withHour(h);
 			}
 			if (m != null)
 			{
-				d.setMinuteOfHour(m.intValue());
+				dt = dt.withMinute(m);
 			}
 			else
 			{
-				d.setMinuteOfHour(0);
+				dt = dt.withMinute(0);
 			}
+			dt = dt.withSecond(0).withNano(0);
 
-			TimeZone zone = getClientTimeZone();
-			if (zone != null)
-			{
-				d.setMillis(getMillis(zone, TimeZone.getDefault(), d.getMillis()));
-			}
-
-			d.setSecondOfMinute(0);
-
-			setConvertedInput(d.toDate());
+			setConvertedInput(DateUtil.toUtilDate(dt));
 		}
 		catch (RuntimeException e)
 		{
@@ -118,52 +96,40 @@ public class TimeField extends BaseTimeField<Date>
 		}
 	}
 
-	private long getMillis(TimeZone to, TimeZone from, long instant)
-	{
-		return DateTimeZone.forTimeZone(from).getMillisKeepLocal(DateTimeZone.forTimeZone(to), instant);
-	}
-
 	public Date getDate()
 	{
-		if (date != null)
-		{
-			return date.toDate();
-		}
-		else
-		{
-			return null;
-		}
+		return DateUtil.toUtilDate(dateTime);
 	}
 
-	public void setDate(Date date)
+	public void setDate(Date dateTime)
 	{
-		if (date == null)
+		if (dateTime == null)
 		{
-			this.date = null;
+			this.dateTime = null;
 			setDefaultModelObject(null);
 			setHours(null);
 			setMinutes(null);
 			return;
 		}
 
-		this.date = new MutableDateTime(date);
-		setDefaultModelObject(date);
+		this.dateTime = DateUtil.toLocalDateTime(dateTime);
+		setDefaultModelObject(dateTime);
 
-		Integer h = getHours();
-		Integer m = getMinutes();
+		var h = getHours();
+		var m = getMinutes();
 
 		if (h != null)
 		{
-			this.date.set(DateTimeFieldType.hourOfDay(), h.intValue() % 24);
+			this.dateTime = this.dateTime.withHour(h);
 			if (m != null)
 			{
-				this.date.setMinuteOfHour(m.intValue());
+				this.dateTime = this.dateTime.withMinute(m.intValue());
 			}
 			else
 			{
-				this.date.setMinuteOfHour(0);
+				this.dateTime = this.dateTime.withMinute(0);
 			}
 		}
-		setDefaultModelObject(this.date.toDate());
+		setDefaultModelObject(DateUtil.toUtilDate(this.dateTime));
 	}
 }

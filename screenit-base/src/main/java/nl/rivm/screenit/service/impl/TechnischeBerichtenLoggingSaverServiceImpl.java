@@ -31,7 +31,7 @@ import nl.rivm.screenit.util.DatabaseSequence;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.SequenceGenerator;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5SessionInThread;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
@@ -121,7 +121,7 @@ public class TechnischeBerichtenLoggingSaverServiceImpl implements TechnischeBer
 		EXECUTOR_SERVICE.submit(new LoggingSaverThread(logEvent));
 	}
 
-	private class LoggingSaverThread extends OpenHibernate5SessionInThread
+	private class LoggingSaverThread extends OpenHibernateSessionInThread
 	{
 
 		private TechnischeLogEvent logEvent;

@@ -31,12 +31,8 @@ import jakarta.persistence.TemporalType;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(schema = "cervix", name = "uitstel_rapportage")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class CervixUitstelRapportage extends AbstractHibernateObject
 {
 	private long aantal;

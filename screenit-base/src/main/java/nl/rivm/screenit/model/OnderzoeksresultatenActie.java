@@ -33,7 +33,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import lombok.Getter;
@@ -43,8 +42,6 @@ import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.enums.OnderzoeksresultatenActieType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -62,12 +59,11 @@ public class OnderzoeksresultatenActie extends AbstractHibernateObject
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private Client client;
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@NotAudited
 	private UploadDocument getekendeBrief;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "onderzoeksresultatenActie")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<BezwaarBrief> brieven = new ArrayList<>();
 
 	@Column(nullable = false)

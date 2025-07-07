@@ -34,6 +34,7 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitBooleanDropdown;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.validator.Ip4Validator;
+import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
 import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaPlanningBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
@@ -48,7 +49,6 @@ import nl.rivm.screenit.model.mamma.enums.MammaDuurMinderValideAfspraak;
 import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.wicket.hibernate.markup.form.validation.UniqueFieldValidator;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.input.timefield.TimeField;
 
@@ -211,7 +211,7 @@ public class MammaSEEditPage extends MammaPlanningBasePage
 	private void createOrReplaceCodeComponent(Form<MammaScreeningsEenheid> seWijzigenForm, AjaxRequestTarget target)
 	{
 		ComponentHelper.addTextField(seWijzigenForm, "code", true, 255, String.class, !magAanpassen || seWijzigenForm.getModelObject().getCode() != null)
-			.add(new UniqueFieldValidator<>(MammaScreeningsEenheid.class, getScreeningsEenheid().getId(), "code", hibernateService, true))
+			.add(new ScreenitUniqueFieldValidator<>(MammaScreeningsEenheid.class, getScreeningsEenheid().getId(), "code", true))
 			.add(new MammaSECodeValidator());
 
 		if (target != null)
@@ -233,7 +233,7 @@ public class MammaSEEditPage extends MammaPlanningBasePage
 	private void createOrReplaceIpAdresComponent(Form<MammaScreeningsEenheid> seWijzigenForm, AjaxRequestTarget target)
 	{
 		ComponentHelper.addTextField(seWijzigenForm, "ipAdres", true, 255, String.class, !magAanpassen)
-			.add(new UniqueFieldValidator<>(MammaScreeningsEenheid.class, getScreeningsEenheid().getId(), "ipAdres", hibernateService, true))
+			.add(new ScreenitUniqueFieldValidator<>(MammaScreeningsEenheid.class, getScreeningsEenheid().getId(), "ipAdres", true))
 			.add(Ip4Validator.getInstance());
 
 		if (target != null)

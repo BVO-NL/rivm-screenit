@@ -23,6 +23,9 @@ package nl.rivm.screenit.batch.jobs.mamma.brieven.client.genererenstep;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.brieven.genereren.AbstractBrievenGenererenReader;
@@ -49,12 +52,10 @@ import nl.rivm.screenit.specification.ExtendedSpecification;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
-
 import static jakarta.persistence.criteria.JoinType.LEFT;
 import static nl.rivm.screenit.specification.ExtendedSpecification.not;
 import static nl.rivm.screenit.specification.HibernateObjectSpecification.heeftId;
+import static nl.rivm.screenit.specification.SpecificationUtil.cast;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefType;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftIndicatie;
@@ -138,11 +139,11 @@ public class MammaBrievenGenererenReader extends AbstractBrievenGenererenReader<
 		{
 			var laatsteAfspraakJoin = laatsteAfspraakJoin(r);
 			var tijdelijkeLocatieJoin = tijdelijkeLocatieJoin(laatsteAfspraakJoin);
-			var laatsteAfspraakVanafDatum = laatsteAfspraakJoin.get(MammaAfspraak_.vanaf).as(LocalDate.class);
+			var laatsteAfspraakVanafDatum = cast(laatsteAfspraakJoin.get(MammaAfspraak_.vanaf), LocalDate.class, cb);
 			return cb.and(
 				cb.isNotNull(tijdelijkeLocatieJoin.get(TijdelijkAdres_.startDatum)), 
-				cb.greaterThanOrEqualTo(laatsteAfspraakVanafDatum, tijdelijkeLocatieJoin.get(TijdelijkAdres_.startDatum).as(LocalDate.class)),
-				cb.lessThanOrEqualTo(laatsteAfspraakVanafDatum, tijdelijkeLocatieJoin.get(TijdelijkAdres_.eindDatum).as(LocalDate.class))
+				cb.greaterThanOrEqualTo(laatsteAfspraakVanafDatum, cast(tijdelijkeLocatieJoin.get(TijdelijkAdres_.startDatum), LocalDate.class, cb)),
+				cb.lessThanOrEqualTo(laatsteAfspraakVanafDatum, cast(tijdelijkeLocatieJoin.get(TijdelijkAdres_.eindDatum), LocalDate.class, cb))
 			);
 		};
 	}

@@ -70,7 +70,7 @@ public class ColonVolgendeUitnodigingSpecification
 	{
 		return (r, q, cb) -> cb.and(
 			cb.isNotNull(r.get(ColonVolgendeUitnodiging_.projectPeildatum)),
-			cb.lessThanOrEqualTo(r.get(ColonVolgendeUitnodiging_.projectPeildatum).as(LocalDate.class),
+			cb.lessThanOrEqualTo(r.get(ColonVolgendeUitnodiging_.projectPeildatum),
 				intervalJoin(r, intervalJoinType).get(ColonUitnodigingsinterval_.berekendeReferentieDatum).as(LocalDate.class))
 		);
 	}
@@ -79,9 +79,8 @@ public class ColonVolgendeUitnodigingSpecification
 	{
 		return (r, q, cb) -> cb.and(
 			cb.isNotNull(r.get(ColonVolgendeUitnodiging_.projectPeildatum)),
-			cb.lessThanOrEqualTo(r.get(ColonVolgendeUitnodiging_.projectPeildatum).as(LocalDate.class),
-				intervalInDagen(cb, intervalJoin(r, intervalJoinType).get(ColonUitnodigingsinterval_.berekendeReferentieDatum), dagen).as(LocalDate.class))
-		);
+			cb.lessThanOrEqualTo(r.get(ColonVolgendeUitnodiging_.projectPeildatum),
+				intervalInDagen(cb, intervalJoin(r, intervalJoinType).get(ColonUitnodigingsinterval_.berekendeReferentieDatum), dagen).as(LocalDate.class)));
 	}
 
 	public static ExtendedSpecification<ColonVolgendeUitnodiging> heeftDatumVolgendeRondeVanaf(LocalDate datum)

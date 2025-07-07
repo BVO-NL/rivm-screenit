@@ -24,27 +24,21 @@ package nl.rivm.screenit.model.berichten.cda;
 import java.io.Serial;
 import java.util.Date;
 
-import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
-import nl.rivm.screenit.model.berichten.enums.BerichtType;
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Index;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
+import nl.rivm.screenit.model.berichten.enums.BerichtType;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
+
 @Entity(name = "cda_ontvangenbericht")
 @Table(schema = "gedeeld", indexes = { @Index(name = "idx_ontvangenbericht_status", columnList = "status") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "verslag.cache")
 public class OntvangenCdaBericht extends AbstractHibernateObject
 {
 	@Serial
@@ -70,8 +64,7 @@ public class OntvangenCdaBericht extends AbstractHibernateObject
 	@Column
 	private Long versie;
 
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
+	@Column(columnDefinition = "TEXT")
 	private String xmlBericht;
 
 	@Column

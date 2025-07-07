@@ -26,13 +26,13 @@ import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.huisartsenportaal.enums.CervixLocatieStatus;
 import nl.rivm.screenit.model.Instelling_;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie_;
 import nl.rivm.screenit.model.cervix.CervixHuisarts_;
 import nl.rivm.screenit.model.cervix.enums.CervixHuisartsAanmeldStatus;
 import nl.rivm.screenit.specification.ExtendedSpecification;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -67,7 +67,7 @@ public class CervixHuisartsSpecification
 			subquery.select(cb.count(subqueryRoot)).where(
 				cb.and(
 					cb.equal(subqueryRoot.get(CervixHuisartsLocatie_.status), CervixLocatieStatus.ACTIEF),
-					cb.equal(subqueryRoot.get(CervixHuisartsLocatie_.huisarts).get(SingleTableHibernateObject_.id), r.get(SingleTableHibernateObject_.id))
+					cb.equal(subqueryRoot.get(CervixHuisartsLocatie_.huisarts).get(AbstractHibernateObject_.id), r.get(AbstractHibernateObject_.id))
 				)
 			);
 			return cb.equal(subquery, 1);

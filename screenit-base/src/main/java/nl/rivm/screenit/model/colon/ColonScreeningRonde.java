@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.colon;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,8 +42,6 @@ import nl.rivm.screenit.model.EnovationHuisarts;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.colon.enums.ColonDefinitiefVervolgbeleid;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -57,11 +54,8 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 @Audited
 public class ColonScreeningRonde extends ScreeningRonde<ColonDossier, ColonBrief, ColonAfmelding, ColonUitnodiging>
 {
-	@Serial
-	private static final long serialVersionUID = 1L;
 
 	@OneToMany(mappedBy = "colonScreeningRonde", cascade = CascadeType.ALL)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<IFOBTTest> ifobtTesten = new ArrayList<>();
 
 	@OneToOne(optional = true, cascade = CascadeType.ALL)
@@ -80,35 +74,30 @@ public class ColonScreeningRonde extends ScreeningRonde<ColonDossier, ColonBrief
 	private Date datumVastleggenHuisarts;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "colonScreeningRonde")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<ColonIntakeAfspraak> afspraken = new ArrayList<>();
 
 	@ManyToOne(cascade = CascadeType.ALL)
 	private ColonIntakeAfspraak laatsteAfspraak;
 
 	@OneToMany(mappedBy = "screeningRonde", cascade = CascadeType.ALL)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<ColonVerslag> verslagen = new ArrayList<>();
 
 	@ManyToOne(optional = false)
 	private ColonDossier dossier;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "screeningRonde")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<ColonUitnodiging> uitnodigingen = new ArrayList<>();
 
 	@ManyToOne()
 	private ColonUitnodiging laatsteUitnodiging;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "screeningRonde")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<ColonBrief> brieven = new ArrayList<>();
 
 	@ManyToOne()
 	private ColonBrief laatsteBrief;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "screeningRonde")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<ColonAfmelding> afmeldingen = new ArrayList<>();
 
 	@OneToOne(optional = true, cascade = CascadeType.ALL)
@@ -118,7 +107,6 @@ public class ColonScreeningRonde extends ScreeningRonde<ColonDossier, ColonBrief
 	private OpenUitnodiging openUitnodiging;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "screeningsRonde")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@NotAudited
 	private List<ColonHuisartsBericht> huisartsBerichten = new ArrayList<>();
 
@@ -127,7 +115,6 @@ public class ColonScreeningRonde extends ScreeningRonde<ColonDossier, ColonBrief
 	private ColonDefinitiefVervolgbeleid definitiefVervolgbeleid;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "screeningsRonde")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@NotAudited
 	private List<ColonKoppelresultaatKankerregistratie> koppelresultatenKankerregistratie = new ArrayList<>();
 

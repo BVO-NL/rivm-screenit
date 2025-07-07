@@ -67,7 +67,7 @@ public class ClientBriefSpecification
 
 	public static <B extends ClientBrief<?, ?, ?>> ExtendedSpecification<B> heeftGeenMergedBrieven(Class<? extends B> briefClass)
 	{
-		return (r, q, cb) -> cb.and(treat(r, briefClass, cb).get(MERGED_BRIEVEN).isNull(), cb.equal(r.type(), briefClass));
+		return (r, q, cb) -> cb.isNull(treat(r, briefClass, cb).get(MERGED_BRIEVEN));
 	}
 
 	public static <B extends ClientBrief<?, ?, ?>> ExtendedSpecification<B> heeftVervangendeProjectBrief(boolean heeftVervangendeProjectBrief)

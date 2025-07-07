@@ -159,8 +159,13 @@ public class NietTeBeoordelenMonstersPage extends ColonScreeningBasePage
 		});
 
 		statusForm.add(
-			new ScreenitDropdown<>("redenNietTeBeoordelen", Arrays.asList(RedenNietTeBeoordelen.values()), new EnumChoiceRenderer<>())
-				.setNullValid(true).setRequired(true));
+			new ScreenitDropdown<>("redenNietTeBeoordelen",
+				Arrays.stream(RedenNietTeBeoordelen.values())
+					.filter(value -> value != RedenNietTeBeoordelen.MANUELE_FOUT && value != RedenNietTeBeoordelen.TECHNISCHE_FOUT)
+					.toList(),
+				new EnumChoiceRenderer<>())
+				.setNullValid(true)
+				.setRequired(true));
 
 		Instelling ingelogdVoorInstelling = ScreenitSession.get().getInstelling();
 		statusForm.add(new ScreenitDropdown<>( 

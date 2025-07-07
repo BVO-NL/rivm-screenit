@@ -25,21 +25,17 @@ package nl.rivm.screenit.model.algemeen;
 import java.io.Serial;
 import java.util.Date;
 
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
+
 @Entity
 @Table(schema = "gedeeld")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class KoppelData extends AbstractHibernateObject
 {
 
@@ -55,8 +51,7 @@ public class KoppelData extends AbstractHibernateObject
 	@Deprecated
 	private byte[] xmlData;
 
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
+	@Column(columnDefinition = "TEXT")
 	private String xmlBericht;
 
 	@Deprecated

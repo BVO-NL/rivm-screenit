@@ -46,12 +46,12 @@ import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.Rivm;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.ZorgInstelling;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.cda.CdaConstants;
 import nl.rivm.screenit.model.berichten.cda.CdaOID;
 import nl.rivm.screenit.model.berichten.cda.MeldingOngeldigCdaBericht;
+import nl.rivm.screenit.model.berichten.cda.MeldingOngeldigCdaBericht_;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
 import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
 import nl.rivm.screenit.model.berichten.enums.BerichtType;
@@ -74,6 +74,7 @@ import nl.rivm.screenit.model.logging.BerichtOntvangenLogEvent;
 import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
 import nl.rivm.screenit.model.mamma.verslag.MammaVerslag;
 import nl.rivm.screenit.model.mamma.verslag.followup.MammaFollowUpVerslagContent;
+import nl.rivm.screenit.repository.algemeen.MeldingOngeldigCdaBerichtRepository;
 import nl.rivm.screenit.repository.algemeen.VerslagRepository;
 import nl.rivm.screenit.repository.cervix.CervixCytologieOrderRepository;
 import nl.rivm.screenit.service.BaseCdaVerslagService;
@@ -92,9 +93,11 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static nl.rivm.screenit.specification.algemeen.MeldingOngeldigCdaBerichtSpecification.heeftMelding;
 import static nl.rivm.screenit.specification.cervix.CervixMonsterSpecification.heeftMonsterId;
 
 @Service
@@ -136,6 +139,9 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 
 	@Autowired
 	private VerslagRepository verslagRepository;
+
+	@Autowired
+	private MeldingOngeldigCdaBerichtRepository meldingOngeldigCdaBerichtRepository;
 
 	@Override
 	@Transactional
@@ -179,7 +185,6 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 		{
 		case MDL_VERSLAG:
 			var mdlVerslag = (MdlVerslag) bestaandeVerslag;
-			verwerkVerslagService.ontkoppelOfVerwijderComplicaties(mdlVerslag);
 			verwerkMdlVerslagContent(cdaDocument, mdlVerslag);
 			break;
 		case PA_LAB_VERSLAG:
@@ -327,11 +332,6 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 				ontvangenCdaBerichtBestaandeVerslag = bestaandeVerslag.getOntvangenBericht();
 				if (bestaandeVerslag != null && ontvangenCdaBericht.getVersie().longValue() > ontvangenCdaBerichtBestaandeVerslag.getVersie().longValue())
 				{
-					if (VerslagType.MDL.equals(bestaandeVerslag.getType()))
-					{
-						verwerkVerslagService.ontkoppelOfVerwijderComplicaties((MdlVerslag) bestaandeVerslag);
-					}
-
 					var colonVerslag = (ColonVerslag<?>) bestaandeVerslag;
 					var screeningRonde = colonVerslag.getScreeningRonde();
 					screeningRonde.getVerslagen().remove(bestaandeVerslag);
@@ -424,6 +424,7 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 				}
 				break;
 			case CERVIX_CYTOLOGIE_VERSLAG:
+
 				List<II> monsterIdentificatieIds = CDAHelper.getAllValues(cdaDocument, CdaConstants.CYTOLOGIE_VERSLAG_MONSTER_IDENTIFICATIE_IDS);
 				var monsterIdentificatie = CDAHelper.getExtension(CdaOID.CYTOLOGIE_VERSLAG_MONSTER_IDENTIFICATIE, monsterIdentificatieIds);
 				if (monsterIdentificatie != null)
@@ -547,28 +548,20 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 		melding.setActief(true);
 		melding.setDatum(currentDateSupplier.getDate());
 		melding.setBsn(getBsnFromDocument(cdaDocument));
-
-		if (instelling != null)
-		{
-			ScreeningOrganisatie screeningOrganisatie = null;
-			if (instelling.getRegio() != null)
-			{
-				screeningOrganisatie = hibernateService.get(ScreeningOrganisatie.class, instelling.getRegio().getId());
-			}
-			else
-			{
-				var parent = instelling.getParent();
-				if (parent != null && OrganisatieType.SCREENINGSORGANISATIE.equals(parent.getOrganisatieType()))
-				{
-					screeningOrganisatie = hibernateService.get(ScreeningOrganisatie.class, parent.getId());
-				}
-			}
-			melding.setScreeningOrganisatie(screeningOrganisatie);
-		}
-
 		melding.setMelding(message);
+
+		var bestaandeMeldingen = getOngeldigeBerichtenVoorMelding(message);
+		if (!bestaandeMeldingen.isEmpty())
+		{
+			melding.setTopdeskTicket(bestaandeMeldingen.get(0).getTopdeskTicket());
+		}
 		hibernateService.saveOrUpdate(melding);
 		throw new OngeldigCdaException(message);
+	}
+
+	private List<MeldingOngeldigCdaBericht> getOngeldigeBerichtenVoorMelding(String melding)
+	{
+		return meldingOngeldigCdaBerichtRepository.findAll(heeftMelding(melding), Sort.by(Sort.Order.desc(MeldingOngeldigCdaBericht_.DATUM)));
 	}
 
 	private void verwerkPaLabVerslagContent(PaVerslag verslag)

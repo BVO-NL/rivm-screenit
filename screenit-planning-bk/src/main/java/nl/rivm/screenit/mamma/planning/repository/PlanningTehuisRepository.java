@@ -24,7 +24,6 @@ package nl.rivm.screenit.mamma.planning.repository;
 import java.util.List;
 
 import nl.rivm.screenit.mamma.planning.repository.projectie.TehuisProjectie;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.mamma.MammaStandplaats_;
 import nl.rivm.screenit.model.mamma.MammaTehuis;
 import nl.rivm.screenit.model.mamma.MammaTehuis_;
@@ -44,7 +43,7 @@ public interface PlanningTehuisRepository extends BaseJpaRepository<MammaTehuis>
 			return List.of(
 				r.get(AbstractHibernateObject_.id),
 				standplaatsJoin.get(AbstractHibernateObject_.id),
-				standplaatsJoin.get(MammaStandplaats_.regio).get(SingleTableHibernateObject_.id)
+				standplaatsJoin.get(MammaStandplaats_.regio).get(AbstractHibernateObject_.id)
 			);
 		})).all();
 	}

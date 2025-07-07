@@ -36,13 +36,10 @@ import jakarta.persistence.TemporalType;
 import nl.rivm.screenit.model.enums.OpenUitnodigingUitslag;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "colon")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 @Audited
 public class OpenUitnodiging extends AbstractHibernateObject
 {

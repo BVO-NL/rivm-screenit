@@ -26,12 +26,9 @@ import lombok.Setter;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Type;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -41,9 +38,7 @@ import jakarta.persistence.Table;
 @Table(schema = "gedeeld")
 public class MailAttachment extends AbstractHibernateObject
 {
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
-	@Column(nullable = false)
+	@Column(nullable = false, columnDefinition = "TEXT")
 	private String content;
 
 	private String inlineContentId;

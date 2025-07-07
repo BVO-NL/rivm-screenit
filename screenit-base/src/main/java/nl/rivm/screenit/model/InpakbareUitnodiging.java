@@ -37,13 +37,10 @@ import lombok.Setter;
 import nl.rivm.screenit.model.colon.enums.RetourzendingStatus;
 import nl.rivm.screenit.model.colon.enums.RetourzendingWijze;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Audited
 @Getter
 @Setter

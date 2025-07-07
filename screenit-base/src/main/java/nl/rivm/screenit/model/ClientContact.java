@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model;
 
 /*-
@@ -22,7 +21,6 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,20 +38,13 @@ import jakarta.persistence.TemporalType;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "algemeen")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Audited
 public class ClientContact extends AbstractHibernateObject
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	private Client client;
 
@@ -68,7 +59,6 @@ public class ClientContact extends AbstractHibernateObject
 	private String opmerking;
 
 	@OneToMany(mappedBy = "contact", cascade = CascadeType.ALL)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<ClientContactActie> acties = new ArrayList<>();
 
 	public Client getClient()

@@ -43,7 +43,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.mamma.enums.MammaAfwijkingTeZienOp;
 import nl.rivm.screenit.model.mamma.enums.MammaBIRADSWaarde;
 import nl.rivm.screenit.model.mamma.enums.MammaBeperktBeoordeelbaarReden;
@@ -53,8 +52,6 @@ import nl.rivm.screenit.model.mamma.enums.MammaLezingType;
 import nl.rivm.screenit.model.mamma.enums.MammaNevenbevindingen;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Check;
@@ -62,7 +59,6 @@ import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "mamma", name = "lezing")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 @Audited
 @Getter
 @Setter
@@ -92,12 +88,11 @@ public class MammaLezing extends AbstractHibernateObject
 	@Enumerated(EnumType.STRING)
 	private MammaBIRADSWaarde biradsRechts;
 
-	@Column(length = HibernateMagicNumber.L255)
+	@Column
 	private String biradsOpmerking;
 
 	@OneToMany(mappedBy = "lezing", fetch = FetchType.LAZY, orphanRemoval = true, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
 		jakarta.persistence.CascadeType.MERGE })
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private List<MammaLaesie> laesies = new ArrayList<>();
 
@@ -105,34 +100,28 @@ public class MammaLezing extends AbstractHibernateObject
 	@Enumerated(EnumType.STRING)
 	private MammaLezingType lezingType;
 
-	@Column(length = HibernateMagicNumber.L255)
+	@Column
 	@Enumerated(EnumType.STRING)
 	private MammaBeperktBeoordeelbaarReden beperktBeoordeelbaarReden;
 
-	@Column(length = HibernateMagicNumber.L255)
+	@Column
 	private String waaromGeenBeoordelingMogelijk;
 
 	@ElementCollection(targetClass = MammaNevenbevindingen.class, fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = true)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	@CollectionTable(schema = "mamma", name = "lezing_nevenbevindingen")
 	private List<MammaNevenbevindingen> nevenbevindingen = new ArrayList<>();
 
-	@Column(length = HibernateMagicNumber.L255, nullable = true)
+	@Column
 	private String nevenbevindingOpmerking;
 
 	@ElementCollection(targetClass = MammaLezingRedenenFotobesprekingRadioloog.class)
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = true)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	@CollectionTable(schema = "mamma", name = "lezing_redenen_fotobespreking_radioloog")
 	private List<MammaLezingRedenenFotobesprekingRadioloog> redenenFotobesprekingRadioloog = new ArrayList<>();
 
 	@ElementCollection(targetClass = MammaLezingRedenenFotobesprekingMbber.class)
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = true)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	@CollectionTable(schema = "mamma", name = "lezing_redenen_fotobespreking_mbber")
 	private List<MammaLezingRedenenFotobesprekingMbber> redenenFotobesprekingMbber = new ArrayList<>();
 
@@ -140,13 +129,13 @@ public class MammaLezing extends AbstractHibernateObject
 	private Boolean tomosyntheseRelevantVoorBeoordeling;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = true)
+	@Column
 	private MammaAfwijkingTeZienOp afwijkingTeZienOp;
 
-	@Column(nullable = true)
+	@Column
 	private Integer zichtbaarOpCcNummer;
 
-	@Column(nullable = true)
+	@Column
 	private Integer zichtbaarOpMloNummer;
 
 	@Transient

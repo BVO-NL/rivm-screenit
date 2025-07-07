@@ -52,6 +52,7 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.messagequeue.Message;
 import nl.rivm.screenit.model.messagequeue.MessageType;
 import nl.rivm.screenit.model.messagequeue.dto.CervixHL7v24HpvOrderTriggerDto;
+import nl.rivm.screenit.repository.cervix.CervixFoutHL7v2BerichtRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
@@ -59,7 +60,7 @@ import nl.rivm.screenit.service.MessageService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5Session;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
@@ -111,6 +112,9 @@ public class CervixHl7v2TriggerMessageQueue
 
 	@Autowired
 	private ICurrentDateSupplier currentDateSupplier;
+
+	@Autowired
+	private CervixFoutHL7v2BerichtRepository foutHL7v2BerichtRepository;
 
 	private static final long MILLIS_WAIT_TIME = TimeUnit.SECONDS.toMillis(10);
 
@@ -270,7 +274,7 @@ public class CervixHl7v2TriggerMessageQueue
 			{
 				logMessage = String.format("Lab %s: %s %s", labNaam, e.getMessage(), e.getCause() != null ? e.getCause().getMessage() : null);
 			}
-			logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_BATCH_GESTOPT, null, logMessage, Bevolkingsonderzoek.CERVIX);
+			logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_BATCH_GESTOPT, logMessage, Bevolkingsonderzoek.CERVIX);
 			if (e instanceof InterruptedException)
 			{
 				Thread.currentThread().interrupt();
@@ -325,10 +329,11 @@ public class CervixHl7v2TriggerMessageQueue
 
 		private void verwerkLabMessageTriggers(List<Long> messageIds, ScreenITHL7MessageContext messageContext) throws HL7Exception
 		{
-			OpenHibernate5Session.withCommittedTransaction().run(() ->
-				clientIdsFoutBerichten = hibernateService.getByParameters(CervixFoutHL7v2Bericht.class, Map.of("laboratorium", labId)).stream()
+			OpenHibernateSession.withCommittedTransaction().run(() ->
+				clientIdsFoutBerichten = foutHL7v2BerichtRepository.findAllByLaboratoriumId(labId).stream()
 					.map(b -> b.getClient().getId())
-					.collect(Collectors.toList()));
+					.collect(Collectors.toList())
+			);
 			for (Long messageId : messageIds)
 			{
 				CervixHL7v24HpvOrderTriggerDto hl7v2HpvOrderTriggerDto = null;
@@ -501,8 +506,8 @@ public class CervixHl7v2TriggerMessageQueue
 				}
 				if (connectieProblemenGelogd)
 				{
-					OpenHibernate5Session.withCommittedTransaction().run(() ->
-						logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERBINDING_HERSTELD, null,
+					OpenHibernateSession.withCommittedTransaction().run(() ->
+						logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERBINDING_HERSTELD,
 							String.format("Lab %s: Verbinding is hersteld. HL7v2 berichten kunnen weer verstuurd worden.", labNaam), Bevolkingsonderzoek.CERVIX));
 				}
 			}
@@ -513,8 +518,8 @@ public class CervixHl7v2TriggerMessageQueue
 		{
 			if (!connectieProblemenGelogd || logMislukteConnection(messageContext, oldHost, oldPort))
 			{
-				OpenHibernate5Session.withCommittedTransaction()
-					.run(() -> logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERSTUREN_MISLUKT, null, e.getMessage(), Bevolkingsonderzoek.CERVIX));
+				OpenHibernateSession.withCommittedTransaction()
+					.run(() -> logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERSTUREN_MISLUKT, e.getMessage(), Bevolkingsonderzoek.CERVIX));
 			}
 			long connectingRetryTime = CONNECTING_RETRY_TIME_LONG;
 			if (e instanceof IllegalStateException)
@@ -543,8 +548,8 @@ public class CervixHl7v2TriggerMessageQueue
 		{
 			if (verstuurProblemen)
 			{
-				OpenHibernate5Session.withCommittedTransaction().run(() ->
-					logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERBINDING_HERSTELD, null,
+				OpenHibernateSession.withCommittedTransaction().run(() ->
+					logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERBINDING_HERSTELD,
 						String.format("Lab %s: HL7v2 berichten worden weer succesvol verstuurd", labNaam),
 						Bevolkingsonderzoek.CERVIX));
 				verstuurProblemen = false;
@@ -556,8 +561,8 @@ public class CervixHl7v2TriggerMessageQueue
 			if (!verstuurProblemen)
 			{
 				LOG.error(e.getMessage(), e);
-				OpenHibernate5Session.withCommittedTransaction().run(() ->
-					logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERSTUREN_MISLUKT, null,
+				OpenHibernateSession.withCommittedTransaction().run(() ->
+					logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERSTUREN_MISLUKT,
 						String.format("Lab %s: Onbekende fout bij het ophalen van het te versturen HL7v2 bericht.", labNaam),
 						Bevolkingsonderzoek.CERVIX));
 				verstuurProblemen = true;
@@ -571,7 +576,7 @@ public class CervixHl7v2TriggerMessageQueue
 				String logMelding = String.format("Lab %s: HL7v2 bericht (id:%s) (%s) kon niet worden verstuurd. Reden: %s", labNaam, message.getId(), message.getType(),
 					e.getMessage());
 				LOG.error(logMelding, e);
-				OpenHibernate5Session.withCommittedTransaction().run(() ->
+				OpenHibernateSession.withCommittedTransaction().run(() ->
 					logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERSTUREN_MISLUKT, getClient(getMonster(hl7BerichtTriggerDto)), logMelding,
 						Bevolkingsonderzoek.CERVIX));
 				verstuurProblemen = true;
@@ -591,16 +596,16 @@ public class CervixHl7v2TriggerMessageQueue
 				if (queueSizeWarning)
 				{
 					LOG.warn("Lab {}: Queue size wordt te groot!", labNaam);
-					OpenHibernate5Session.withCommittedTransaction().run(() ->
-						logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_QUEUE_ERG_GROOT, null,
+					OpenHibernateSession.withCommittedTransaction().run(() ->
+						logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_QUEUE_ERG_GROOT,
 							String.format("Lab %s: Er staan meer dan %d berichten in de queue", labNaam, QUEUE_WARNING_THRESHOLD),
 							Bevolkingsonderzoek.CERVIX));
 				}
 				else
 				{
 					LOG.info("Lab {}: Queue size wordt weer klein genoeg", labNaam);
-					OpenHibernate5Session.withCommittedTransaction().run(() ->
-						logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_QUEUE_NORMAAL, null,
+					OpenHibernateSession.withCommittedTransaction().run(() ->
+						logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_QUEUE_NORMAAL,
 							String.format("Lab %s: Het aantal berichten in de queue is weer normaal.", labNaam),
 							Bevolkingsonderzoek.CERVIX));
 				}

@@ -39,16 +39,12 @@ import lombok.Setter;
 import nl.rivm.screenit.model.Client;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(schema = "mamma", name = "ilm_beelden_status_rapportage_entry")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class MammaIlmBeeldenStatusRapportageEntry extends AbstractHibernateObject
 {
 	@Column(nullable = false)

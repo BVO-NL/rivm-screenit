@@ -28,36 +28,39 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.UniqueConstraint;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.SingleTableHibernateObject;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.verslag.VerslagContent;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
+@Getter
+@Setter
 @Entity
-@Table(schema = "cervix", name = "cda_verslag", uniqueConstraints = { @UniqueConstraint(columnNames = "ontvangen_cda_bericht") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "verslag.cache")
+@Table(schema = "cervix", name = "cda_verslag",
+	indexes = { @Index(name = "idx_CERVIX_CYTOLOGIE_VERSLAG_CYTOLOGIE_UITSLAG", columnList = "cytologieUitslag") }
+)
 @Audited
-public abstract class CervixVerslag<T extends VerslagContent<?>> extends SingleTableHibernateObject implements Verslag<T, CervixScreeningRonde>
+public class CervixVerslag<T extends VerslagContent<?>> extends AbstractHibernateObject implements Verslag<T, CervixScreeningRonde>
 {
-
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private CervixScreeningRonde screeningRonde;
 
@@ -107,101 +110,4 @@ public abstract class CervixVerslag<T extends VerslagContent<?>> extends SingleT
 	{
 		this.ontvangenCdaBericht = ontvangencdaBericht;
 	}
-
-	public Instelling getUitvoerderOrganisatie()
-	{
-		return uitvoerderOrganisatie;
-	}
-
-	public void setUitvoerderOrganisatie(Instelling uitvoerderOrganisatie)
-	{
-		this.uitvoerderOrganisatie = uitvoerderOrganisatie;
-	}
-
-	public Gebruiker getUitvoerderMedewerker()
-	{
-		return uitvoerderMedewerker;
-	}
-
-	public void setUitvoerderMedewerker(Gebruiker uitvoerderMedewerker)
-	{
-		this.uitvoerderMedewerker = uitvoerderMedewerker;
-	}
-
-	@Override
-	public Date getDatumVerwerkt()
-	{
-		return datumVerwerkt;
-	}
-
-	@Override
-	public void setDatumVerwerkt(Date datumVerwerkt)
-	{
-		this.datumVerwerkt = datumVerwerkt;
-	}
-
-	public InstellingGebruiker getInvoerder()
-	{
-		return invoerder;
-	}
-
-	public void setInvoerder(InstellingGebruiker invoerder)
-	{
-		this.invoerder = invoerder;
-	}
-
-	@Override
-	public Date getDatumOnderzoek()
-	{
-		return datumOnderzoek;
-	}
-
-	@Override
-	public void setDatumOnderzoek(Date datumOnderzoek)
-	{
-		this.datumOnderzoek = datumOnderzoek;
-	}
-
-	public VerslagStatus getStatus()
-	{
-		return status;
-	}
-
-	public void setStatus(VerslagStatus status)
-	{
-		this.status = status;
-	}
-
-	public VerslagType getType()
-	{
-		return type;
-	}
-
-	public void setType(VerslagType type)
-	{
-		this.type = type;
-	}
-
-	@Override
-	public CervixScreeningRonde getScreeningRonde()
-	{
-		return screeningRonde;
-	}
-
-	@Override
-	public void setScreeningRonde(CervixScreeningRonde screeningRonde)
-	{
-		this.screeningRonde = screeningRonde;
-	}
-
-	public OntvangenCdaBericht getOntvangenCdaBericht()
-	{
-		return ontvangenCdaBericht;
-	}
-
-	public void setOntvangenCdaBericht(OntvangenCdaBericht ontvangenCdaBericht)
-	{
-		this.ontvangenCdaBericht = ontvangenCdaBericht;
-	}
-
 }

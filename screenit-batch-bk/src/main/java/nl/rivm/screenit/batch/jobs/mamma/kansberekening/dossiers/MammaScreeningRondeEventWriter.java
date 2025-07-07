@@ -23,6 +23,8 @@ package nl.rivm.screenit.batch.jobs.mamma.kansberekening.dossiers;
 
 import java.util.function.Consumer;
 
+import jakarta.persistence.EntityGraph;
+
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.mamma.kansberekening.MammaAbstractEventWriter;
@@ -35,8 +37,6 @@ import nl.rivm.screenit.model.mamma.MammaKansberekeningScreeningRondeEvent_;
 import nl.rivm.screenit.service.mamma.MammaBaseKansberekeningService;
 
 import org.springframework.stereotype.Component;
-
-import jakarta.persistence.EntityGraph;
 
 @Component
 @AllArgsConstructor

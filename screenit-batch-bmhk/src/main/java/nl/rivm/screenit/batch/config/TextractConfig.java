@@ -21,6 +21,8 @@ package nl.rivm.screenit.batch.config;
  * =========================LICENSE_END==================================
  */
 
+import java.time.Duration;
+
 import lombok.Setter;
 
 import nl.rivm.screenit.config.SqsConfig;
@@ -32,7 +34,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
-import software.amazon.awssdk.services.sqs.SqsClient;
+import io.awspring.cloud.sqs.config.SqsMessageListenerContainerFactory;
+import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 
 @Configuration
 @ConfigurationProperties(prefix = "textract")
@@ -75,9 +78,9 @@ public class TextractConfig
 
 	@Bean
 	@Scope("prototype")
-	public SqsClient sqsClientTextract()
+	public SqsAsyncClient sqsClientTextract()
 	{
-		return SqsUtil.sqsClient(sqs);
+		return SqsUtil.sqsAsyncClient(sqs);
 	}
 
 	@Bean
@@ -85,4 +88,19 @@ public class TextractConfig
 	{
 		return SqsUtil.queueName(sqs);
 	}
+
+	@Bean
+	public SqsMessageListenerContainerFactory<Object> textractSqsListenerContainerFactory()
+	{
+		return SqsMessageListenerContainerFactory
+			.builder()
+			.sqsAsyncClient(sqsClientTextract())
+			.configure(options -> options
+				.maxConcurrentMessages(10)
+				.pollTimeout(Duration.ofSeconds(20))
+				.messageVisibility(Duration.ofSeconds(30))
+			)
+			.build();
+	}
+
 }

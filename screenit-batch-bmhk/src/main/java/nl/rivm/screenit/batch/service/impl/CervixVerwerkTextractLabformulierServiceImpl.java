@@ -39,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.enums.LabformulierVraagDefinitie;
 import nl.rivm.screenit.batch.service.CervixVerwerkTextractLabformulierService;
+import nl.rivm.screenit.batch.util.TextractVerwerkenUtil;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
 import nl.rivm.screenit.repository.cervix.CervixHuisartsLocatieRepository;
@@ -203,7 +204,7 @@ public class CervixVerwerkTextractLabformulierServiceImpl implements CervixVerwe
 	private void vulHuisartsLocatieAntwoord(AnalyzeDocumentResponse textractResponse, EnumMap<LabformulierVraagDefinitie, Antwoord> antwoordenPerVraag)
 	{
 		textractResponse.blocks().stream()
-			.filter(block -> StringUtils.contains(block.text(), "LocatieID") && block.blockType() == BlockType.LINE)
+			.filter(TextractVerwerkenUtil::isValideHuisartsLocatieBlock)
 			.findFirst()
 			.ifPresent(block -> antwoordenPerVraag.put(HUISARTS_LOCATIE, new Antwoord(List.of(block), List.of(block))));
 	}
@@ -304,18 +305,13 @@ public class CervixVerwerkTextractLabformulierServiceImpl implements CervixVerwe
 	{
 		try
 		{
-			return Integer.parseInt(valueBlocks.stream().map(b -> vervangLettersMetCijfers(b.text())).collect(Collectors.joining()));
+			return Integer.parseInt(valueBlocks.stream().map(b -> TextractVerwerkenUtil.vervangLettersMetCijfers(b.text())).collect(Collectors.joining()));
 		}
 		catch (NumberFormatException e)
 		{
 			LOG.debug("Fout bij ophalen integer waarde", e);
 			return null;
 		}
-	}
-
-	private String vervangLettersMetCijfers(String tekst)
-	{
-		return StringUtils.replace(StringUtils.replace(tekst, "I", "1"), "O", "0");
 	}
 
 	private String getStringAntwoordWaarde(List<Block> valueBlocks)
@@ -330,10 +326,10 @@ public class CervixVerwerkTextractLabformulierServiceImpl implements CervixVerwe
 		{
 			var block = antwoord.valueBlocks.get(0);
 			var huisartsLocatieRuw = block.text(); 
-			var huisartsLocatieId = StringUtils.substringBetween(huisartsLocatieRuw, "LocatieID: ", ",");
-			if (StringUtils.isNotBlank(huisartsLocatieId))
+			var huisartsLocatieId = getHuisartsLocatieIdLong(huisartsLocatieRuw);
+			if (huisartsLocatieId != null)
 			{
-				var huisartsLocatie = huisartsLocatieRepository.findById(Long.parseLong(vervangLettersMetCijfers(huisartsLocatieId)));
+				var huisartsLocatie = huisartsLocatieRepository.findById(huisartsLocatieId);
 				if (huisartsLocatie.isPresent())
 				{
 					return huisartsLocatie.get();
@@ -341,6 +337,21 @@ public class CervixVerwerkTextractLabformulierServiceImpl implements CervixVerwe
 				LOG.error("Huisartslocatie niet gevonden voor id: {}", huisartsLocatieId);
 			}
 		}
+		return null;
+	}
+
+	private Long getHuisartsLocatieIdLong(String huisartsLocatieRuw)
+	{
+		var huisartsLocatieIdString = StringUtils.substringBetween(huisartsLocatieRuw, ":", ",");
+		try
+		{
+			return Long.parseLong(StringUtils.trim(TextractVerwerkenUtil.vervangLettersMetCijfers(huisartsLocatieIdString)));
+		}
+		catch (NumberFormatException e)
+		{
+			LOG.error("Fout bij ophalen huisarts locatie id uit tekst: {}", huisartsLocatieRuw, e);
+		}
+
 		return null;
 	}
 

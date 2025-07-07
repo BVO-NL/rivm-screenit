@@ -81,7 +81,7 @@ public class ZorgmailImportServiceImpl implements ZorgmailImportService
 		ZorgmailImportVoortgang voortgang = verwerkCsv(reader, ediAdresOverschrijven);
 		enovationHuisartsService.verwijderdeHuisartsenOntkoppelen();
 
-		logService.logGebeurtenis(LogGebeurtenis.HUISARTS_IMPORT_AFGEROND, null,
+		logService.logGebeurtenis(LogGebeurtenis.HUISARTS_IMPORT_AFGEROND,
 			"Importeren van Huisartsen Adresboek is afgerond. Zorgmail adresboek import is voltooid. Aantal nieuwe Huisartsen: " + voortgang.getNieuweHuisartsen()
 				+ ", aantal geupdate Huisartsen: " + voortgang.getGeupdateHuisartsen() + ", aantal geinactiveerde Huisartsen: " + voortgang.getGeinactiveerdeHuisartsen()
 				+ ". EDI-adres overschrijven: " + ediAdresOverschrijven + ".",

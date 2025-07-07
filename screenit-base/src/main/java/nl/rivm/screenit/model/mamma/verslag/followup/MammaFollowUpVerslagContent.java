@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.mamma.verslag.followup;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +31,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
 import nl.rivm.screenit.model.verslag.VerslagContent;
 import nl.rivm.screenit.model.verslag.VraagElement;
@@ -40,69 +42,30 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "mamma")
+@Getter
+@Setter
 public class MammaFollowUpVerslagContent
 	extends VerslagContent<MammaFollowUpVerslag>
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false, mappedBy = "verslagContent")
 	@JsonIgnore
 	private MammaFollowUpVerslag verslag;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "verslagContent", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Verrichting", extraTekst = "Verrichting", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.125000", isReference = true)
+	@VraagElement(conceptId = "125000", displayName = "Verrichting", xpaths = {
+		"/hl7:ClinicalDocument/hl7:documentationOf/hl7:serviceEvent"
+	})
 	private MammaFollowUpVerrichting verrichting;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "verslagContent", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Pathologie : medische observatie", extraTekst = "Pathologie : medische observatie", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.150000", isReference = true)
+	@VraagElement(conceptId = "150000", displayName = "Pathologie : medische observatie")
 	private MammaFollowUpPathologieMedischeObservatie pathologieMedischeObservatie;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "verslagContent", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Follow-up PA", extraTekst = "Follow-up PA", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.300000", isReference = true)
+	@VraagElement(conceptId = "300000", displayName = "Follow-up PA", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act"
+	})
 	private List<MammaFollowUpFollowupPa> followupPa = new ArrayList<>();
-
-	@Override
-	public MammaFollowUpVerslag getVerslag()
-	{
-		return verslag;
-	}
-
-	@Override
-	public void setVerslag(MammaFollowUpVerslag verslag)
-	{
-		this.verslag = verslag;
-	}
-
-	public MammaFollowUpVerrichting getVerrichting()
-	{
-		return verrichting;
-	}
-
-	public void setVerrichting(MammaFollowUpVerrichting verrichting)
-	{
-		this.verrichting = verrichting;
-	}
-
-	public MammaFollowUpPathologieMedischeObservatie getPathologieMedischeObservatie()
-	{
-		return pathologieMedischeObservatie;
-	}
-
-	public void setPathologieMedischeObservatie(MammaFollowUpPathologieMedischeObservatie pathologieMedischeObservatie)
-	{
-		this.pathologieMedischeObservatie = pathologieMedischeObservatie;
-	}
-
-	public List<MammaFollowUpFollowupPa> getFollowupPa()
-	{
-		return followupPa;
-	}
-
-	public void setFollowupPa(List<MammaFollowUpFollowupPa> followupPa)
-	{
-		this.followupPa = followupPa;
-	}
 
 }

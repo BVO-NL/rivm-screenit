@@ -37,6 +37,7 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.panels.UploadDocumentFormComponentPanel;
 import nl.rivm.screenit.main.web.component.validator.AantalBestandenUploadenValidator;
 import nl.rivm.screenit.main.web.component.validator.FileValidator;
+import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.Actie;
@@ -46,8 +47,6 @@ import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.mamma.MammaVisitatie;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderdeel;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieStatus;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.wicket.hibernate.markup.form.validation.UniqueFieldValidator;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -78,9 +77,6 @@ public abstract class MammaVisitatieEditPopupPanel extends GenericPanel<MammaVis
 	@SpringBean
 	private MammaBeoordelingsEenheidService beoordelingsEenheidService;
 
-	@SpringBean
-	private HibernateService hibernateService;
-
 	private Map<MammaVisitatieOnderdeel, IModel<List<FileUpload>>> filesUploaded = new HashMap<>();
 
 	public MammaVisitatieEditPopupPanel(String id, IModel<MammaVisitatie> model)
@@ -94,7 +90,7 @@ public abstract class MammaVisitatieEditPopupPanel extends GenericPanel<MammaVis
 
 		List<BeoordelingsEenheid> beoordelingsEenheden = beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getInstelling());
 		ComponentHelper.addTextField(form, "omschrijving", true, HibernateMagicNumber.L256, String.class, false)
-			.add(new UniqueFieldValidator<>(MammaVisitatie.class, getModelObject().getId(), "omschrijving", hibernateService));
+			.add(new ScreenitUniqueFieldValidator<>(MammaVisitatie.class, getModelObject().getId(), "omschrijving", false));
 		ScreenitDropdown<BeoordelingsEenheid> beDropdown = new ScreenitDropdown<>("beoordelingsEenheid", ModelUtil.listRModel(beoordelingsEenheden, false),
 			new ChoiceRenderer<>("naam"));
 		beDropdown.setRequired(true);

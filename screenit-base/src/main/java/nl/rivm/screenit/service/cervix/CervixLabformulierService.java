@@ -34,4 +34,6 @@ public interface CervixLabformulierService
 	void koppelDigitaalLabformulier(CervixLabformulier labformulier);
 
 	void updateLabformulierLaboratoriumNaOntvangstMonster(CervixMonster monster);
+
+	boolean betreftEenS3Labformulier(String objid);
 }

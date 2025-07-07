@@ -39,8 +39,6 @@ import nl.rivm.screenit.model.PostcodeCoordinaten;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 import nl.topicuszorg.organisatie.model.Adres;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -52,12 +50,10 @@ public class ColonIntakelocatie extends Instelling
 {
 
 	@OneToMany(mappedBy = "intakelocatie")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@NotAudited
 	private List<ColoscopieCentrumColonCapaciteitVerdeling> capaciteitVerdeling = new ArrayList<>();
 
 	@OneToMany(mappedBy = "intakelocatie", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 	private List<ColonIntakekamer> kamers = new ArrayList<>();
 
 	@ManyToOne

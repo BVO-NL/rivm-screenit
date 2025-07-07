@@ -605,9 +605,9 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public boolean isBevoegdVoorArbitrage(InstellingGebruiker gebruiker)
+	public boolean isBevoegdVoorArbitrage(InstellingGebruiker organisatieMedewerker)
 	{
-		return autorisatieService.getToegangLevel(gebruiker, Actie.TOEVOEGEN, true, Recht.GEBRUIKER_SCREENING_MAMMA_ARBITRAGE_WERKLIJST) != null;
+		return autorisatieService.getToegangLevel(organisatieMedewerker, Actie.TOEVOEGEN, true, Recht.GEBRUIKER_SCREENING_MAMMA_ARBITRAGE_WERKLIJST) != null;
 	}
 
 	@Override

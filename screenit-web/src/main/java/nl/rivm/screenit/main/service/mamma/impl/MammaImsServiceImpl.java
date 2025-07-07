@@ -27,8 +27,22 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
+
+import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.model.mamma.MammaImsErrorType;
 import nl.rivm.screenit.main.service.mamma.MammaImsService;
+import nl.rivm.screenit.mamma.imsapi.model.FhirCodableConcept;
+import nl.rivm.screenit.mamma.imsapi.model.FhirCoding;
+import nl.rivm.screenit.mamma.imsapi.model.FhirContext;
+import nl.rivm.screenit.mamma.imsapi.model.FhirFocus;
+import nl.rivm.screenit.mamma.imsapi.model.FhirIdentifiableEntity;
+import nl.rivm.screenit.mamma.imsapi.model.FhirIdentifier;
+import nl.rivm.screenit.mamma.imsapi.model.FhirImagingStudy;
+import nl.rivm.screenit.mamma.imsapi.model.FhirPatientStudy;
+import nl.rivm.screenit.mamma.imsapi.model.FhirUserSession;
+import nl.rivm.screenit.mamma.imsapi.model.FhirWorklistItem;
+import nl.rivm.screenit.mamma.imsapi.service.MammaImsLaunchUrlGenerator;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.InstellingGebruiker;
@@ -41,21 +55,11 @@ import nl.rivm.screenit.model.mamma.MammaUploadBeeldenVerzoekStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeFocusMode;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
-import nl.rivm.screenit.model.mamma.imsapi.FhirCodableConcept;
-import nl.rivm.screenit.model.mamma.imsapi.FhirCoding;
-import nl.rivm.screenit.model.mamma.imsapi.FhirContext;
-import nl.rivm.screenit.model.mamma.imsapi.FhirFocus;
-import nl.rivm.screenit.model.mamma.imsapi.FhirIdentifiableEntity;
-import nl.rivm.screenit.model.mamma.imsapi.FhirIdentifier;
-import nl.rivm.screenit.model.mamma.imsapi.FhirImagingStudy;
-import nl.rivm.screenit.model.mamma.imsapi.FhirPatientStudy;
-import nl.rivm.screenit.model.mamma.imsapi.FhirUserSession;
-import nl.rivm.screenit.model.mamma.imsapi.FhirWorklistItem;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.util.functionalinterfaces.StringResolver;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,28 +69,33 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true) 
+@RequiredArgsConstructor
 public class MammaImsServiceImpl implements MammaImsService
 {
-	@Autowired
-	private HibernateService hibernateService;
-
 	private static final ObjectMapper mapper = new ObjectMapper();
 
-	@Autowired
-	private LogService logService;
+	private final HibernateService hibernateService;
+
+	private final LogService logService;
+
+	private final SimplePreferenceService preferenceService;
+
+	private final MammaImsLaunchUrlGenerator launchUrlGenerator;
 
 	@Override
 	public String createDesktopSyncMessage(Gebruiker gebruiker, MammobridgeRole role, Long huidigeOnderzoekId, List<Long> komendeBeoordelingIds, MammobridgeFocusMode focusMode)
 	{
-		FhirUserSession userSession = createUserSession(gebruiker, role);
+		var userSession = createUserSession(gebruiker, role);
 
-		MammaOnderzoek huidigeOnderzoek = hibernateService.get(MammaOnderzoek.class, huidigeOnderzoekId);
+		var huidigeOnderzoek = hibernateService.get(MammaOnderzoek.class, huidigeOnderzoekId);
 
 		userSession.setFocus(createFocus(huidigeOnderzoek, focusMode));
 
-		List<FhirWorklistItem> worklist = createWorklist(komendeBeoordelingIds, focusMode);
+		var worklist = createWorklist(komendeBeoordelingIds, focusMode);
 
-		userSession.setContext(createUpcomingCasesContext(worklist));
+		var upcomingCasesContext = createUpcomingCasesContext(worklist);
+		upcomingCasesContext.setLaunchUrl(desktopSyncLaunchUrl(gebruiker, role, getBsn(huidigeOnderzoek), getAccessionNumber(huidigeOnderzoek, focusMode)));
+		userSession.setContext(upcomingCasesContext);
 
 		return toJsonString(userSession);
 	}
@@ -94,7 +103,7 @@ public class MammaImsServiceImpl implements MammaImsService
 	@Override
 	public String createEmptyDesktopSyncMessage(Gebruiker gebruiker, MammobridgeRole role)
 	{
-		FhirUserSession userSession = createUserSession(gebruiker, role);
+		var userSession = createUserSession(gebruiker, role);
 		userSession.setFocus(createEmptyFocus());
 		userSession.setContext(createUpcomingCasesContext(Collections.emptyList()));
 		return toJsonString(userSession);
@@ -103,9 +112,9 @@ public class MammaImsServiceImpl implements MammaImsService
 	@Override
 	public String createAllImagesSeenMessage(Gebruiker gebruiker, MammobridgeRole role, MammaOnderzoek onderzoek, MammobridgeFocusMode focusMode)
 	{
-		FhirUserSession userSession = createUserSession(gebruiker, role);
-		FhirFocus focus = createFocus(onderzoek, focusMode);
-		FhirContext context = createContext("layoutImages", "requestLayoutsImagesSeenCurrentFocus");
+		var userSession = createUserSession(gebruiker, role);
+		var focus = createFocus(onderzoek, focusMode);
+		var context = createContext("layoutImages", "requestLayoutsImagesSeenCurrentFocus");
 		userSession.setFocus(focus);
 		userSession.setContext(context);
 		return toJsonString(userSession);
@@ -120,16 +129,15 @@ public class MammaImsServiceImpl implements MammaImsService
 	@Override
 	public String createLogonMessage(Gebruiker gebruiker, MammobridgeRole role)
 	{
-		FhirUserSession userSession = createUserSession(gebruiker, role);
-		userSession.setContext(createLogonContext());
-
+		var userSession = createUserSession(gebruiker, role);
+		userSession.setContext(createLogonContext(gebruiker, role));
 		return toJsonString(userSession);
 	}
 
 	@Override
 	public String createLogoffMessage(Gebruiker gebruiker, MammobridgeRole role)
 	{
-		FhirUserSession userSession = createUserSession(gebruiker, role);
+		var userSession = createUserSession(gebruiker, role);
 		userSession.setContext(createLogoffContext());
 
 		return toJsonString(userSession);
@@ -137,21 +145,21 @@ public class MammaImsServiceImpl implements MammaImsService
 
 	private FhirUserSession createUserSession(Gebruiker gebruiker, MammobridgeRole role)
 	{
-		FhirUserSession userSession = new FhirUserSession();
+		var userSession = new FhirUserSession();
 		userSession.setUser(createUser(gebruiker, role));
 		return userSession;
 	}
 
 	private FhirFocus createFocus(MammaOnderzoek onderzoek, MammobridgeFocusMode focusMode)
 	{
-		FhirFocus focus = new FhirFocus();
+		var focus = new FhirFocus();
 		setPatientStudy(focus, onderzoek, focusMode);
 		return focus;
 	}
 
 	private FhirFocus createEmptyFocus()
 	{
-		FhirFocus focus = new FhirFocus();
+		var focus = new FhirFocus();
 		focus.setPatient(createPatient(""));
 		focus.setImagingStudy(createStudy(""));
 		return focus;
@@ -160,7 +168,7 @@ public class MammaImsServiceImpl implements MammaImsService
 	private List<FhirWorklistItem> createWorklist(List<Long> komendeBeoordelingIds, MammobridgeFocusMode focusMode)
 	{
 		List<FhirWorklistItem> worklist = new ArrayList<>();
-		for (Long beoordelingId : komendeBeoordelingIds)
+		for (var beoordelingId : komendeBeoordelingIds)
 		{
 			worklist.add(createWorklistItem(beoordelingId, focusMode));
 		}
@@ -169,8 +177,8 @@ public class MammaImsServiceImpl implements MammaImsService
 
 	private FhirWorklistItem createWorklistItem(Long beoordelingId, MammobridgeFocusMode focusMode)
 	{
-		MammaBeoordeling beoordeling = hibernateService.get(MammaBeoordeling.class, beoordelingId);
-		FhirWorklistItem worklistItem = new FhirWorklistItem();
+		var beoordeling = hibernateService.get(MammaBeoordeling.class, beoordelingId);
+		var worklistItem = new FhirWorklistItem();
 		setPatientStudy(worklistItem, beoordeling.getOnderzoek(), focusMode);
 		return worklistItem;
 	}
@@ -198,16 +206,12 @@ public class MammaImsServiceImpl implements MammaImsService
 
 	private String getAccessionNumber(MammaOnderzoek onderzoek, MammobridgeFocusMode focusMode)
 	{
-		MammaScreeningRonde screeningRonde = getScreeningRonde(onderzoek);
-		switch (focusMode)
+		var screeningRonde = getScreeningRonde(onderzoek);
+		return switch (focusMode)
 		{
-		case ALLEEN_BVO_BEELDEN:
-			return Long.toString(screeningRonde.getUitnodigingsNr());
-		case INCLUSIEF_UPLOAD_BEELDEN:
-			return Long.toString(bepaalAccNrInclusiefUploads(screeningRonde));
-		default:
-			throw new IllegalStateException("Unexpected value: " + focusMode);
-		}
+			case ALLEEN_BVO_BEELDEN -> Long.toString(screeningRonde.getUitnodigingsNr());
+			case INCLUSIEF_UPLOAD_BEELDEN -> Long.toString(bepaalAccNrInclusiefUploads(screeningRonde));
+		};
 	}
 
 	private Long bepaalAccNrInclusiefUploads(MammaScreeningRonde screeningRonde)
@@ -223,15 +227,15 @@ public class MammaImsServiceImpl implements MammaImsService
 
 	private FhirIdentifiableEntity createUser(Gebruiker username, MammobridgeRole role)
 	{
-		FhirIdentifiableEntity user = new FhirIdentifiableEntity();
-		user.setIdentifier(createIndentifier("ScreenIT", username.getGebruikersnaam()));
+		var user = new FhirIdentifiableEntity();
+		user.setIdentifier(createIdentifier("ScreenIT", username.getGebruikersnaam()));
 		user.getIdentifier().setType(createRole(role));
 		return user;
 	}
 
 	private FhirCodableConcept createRole(MammobridgeRole role)
 	{
-		FhirCodableConcept type = new FhirCodableConcept();
+		var type = new FhirCodableConcept();
 		type.setCoding(new FhirCoding());
 		type.getCoding().setCode(role.getIds7Role());
 		type.getCoding().setSystem("ScreenIT");
@@ -240,29 +244,31 @@ public class MammaImsServiceImpl implements MammaImsService
 
 	private FhirIdentifiableEntity createPatient(String bsn)
 	{
-		FhirIdentifiableEntity patient = new FhirIdentifiableEntity();
-		patient.setIdentifier(createIndentifier("NLMINBIZA", bsn));
+		var patient = new FhirIdentifiableEntity();
+		patient.setIdentifier(createIdentifier("NLMINBIZA", bsn));
 		return patient;
 	}
 
 	private FhirImagingStudy createStudy(String accessionNumber)
 	{
-		FhirImagingStudy study = new FhirImagingStudy();
-		study.setAccession(createIndentifier("ScreenIT", accessionNumber));
-		study.setIdentifier(createIndentifier("ScreenIT", accessionNumber));
+		var study = new FhirImagingStudy();
+		study.setAccession(createIdentifier("ScreenIT", accessionNumber));
+		study.setIdentifier(createIdentifier("ScreenIT", accessionNumber));
 		return study;
 	}
 
 	private FhirContext createUpcomingCasesContext(List<FhirWorklistItem> worklist)
 	{
-		FhirContext context = createContext("Worklist", "UpcomingCases");
+		var context = createContext("Worklist", "UpcomingCases");
 		context.setWorklist(worklist);
 		return context;
 	}
 
-	private FhirContext createLogonContext()
+	private FhirContext createLogonContext(Gebruiker gebruiker, MammobridgeRole role)
 	{
-		return createContext("Session", "LogOn");
+		var context = createContext("Session", "LogOn");
+		context.setLaunchUrl(logonLaunchUrl(gebruiker, role));
+		return context;
 	}
 
 	private FhirContext createLogoffContext()
@@ -272,25 +278,41 @@ public class MammaImsServiceImpl implements MammaImsService
 
 	private FhirContext createContext(String type, String value)
 	{
-		FhirContext context = new FhirContext();
+		var context = new FhirContext();
 		context.setType(type);
 		context.setValue(value);
 		return context;
 	}
 
-	private FhirIdentifier createIndentifier(String system, String value)
+	private FhirIdentifier createIdentifier(String system, String value)
 	{
-		FhirIdentifier identifier = new FhirIdentifier();
+		var identifier = new FhirIdentifier();
 		identifier.setSystem(system);
 		identifier.setValue(value);
 		return identifier;
+	}
+
+	private String logonLaunchUrl(Gebruiker gebruiker, MammobridgeRole role)
+	{
+		var launchUrlPassword = preferenceService.getString(PreferenceKey.MAMMA_IMS_LAUNCH_URL_PASSWORD.name());
+		boolean launchUrlSha1Mode = preferenceService.getBoolean(PreferenceKey.MAMMA_IMS_LAUNCH_URL_SHA1_MODE.name(), true);
+
+		return launchUrlGenerator.generateLoginLaunchUrl(launchUrlPassword, gebruiker.getGebruikersnaam(), role.getIds7Role(), launchUrlSha1Mode);
+	}
+
+	private String desktopSyncLaunchUrl(Gebruiker gebruiker, MammobridgeRole role, String bsn, String accessionNumber)
+	{
+		var launchUrlPassword = preferenceService.getString(PreferenceKey.MAMMA_IMS_LAUNCH_URL_PASSWORD.name());
+		boolean launchUrlSha1Mode = preferenceService.getBoolean(PreferenceKey.MAMMA_IMS_LAUNCH_URL_SHA1_MODE.name(), true);
+
+		return launchUrlGenerator.generateDesktopSyncLaunchUrl(launchUrlPassword, gebruiker.getGebruikersnaam(), role.getIds7Role(), bsn, accessionNumber, launchUrlSha1Mode);
 	}
 
 	private String toJsonString(FhirUserSession userSession)
 	{
 		try
 		{
-			ObjectMapper objectMapper = new ObjectMapper();
+			var objectMapper = new ObjectMapper();
 			return objectMapper.writeValueAsString(userSession);
 		}
 		catch (JsonProcessingException e)
@@ -302,8 +324,8 @@ public class MammaImsServiceImpl implements MammaImsService
 	@Override
 	public String handleError(String error, InstellingGebruiker gebruiker, StringResolver stringResolver, Long onderzoekId)
 	{
-		MammaImsErrorType errorType = MammaImsErrorType.findForCode(error);
-		String foutmelding = stringResolver.resolveString(errorType.getMeldingProperty());
+		var errorType = MammaImsErrorType.findForCode(error);
+		var foutmelding = stringResolver.resolveString(errorType.getMeldingProperty());
 		logService.logGebeurtenis(errorType.getLogGebeurtenis(), new LogEvent(foutmelding + " (" + error + ")"), gebruiker, getClientVoorLogGebeurtenis(onderzoekId));
 		return foutmelding;
 	}

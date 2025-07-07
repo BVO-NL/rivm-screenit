@@ -26,6 +26,7 @@ import java.util.List;
 import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.InstellingGebruikerRol;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -50,5 +51,7 @@ public interface AutorisatieService
 	List<Bevolkingsonderzoek> getBevolkingsonderzoeken(InstellingGebruiker instellingGebruiker);
 
 	List<Recht> getRechtWithBevolkingsonderzoek(List<Bevolkingsonderzoek> onderzoeken);
+
+	void inactiveerRolKoppeling(InstellingGebruikerRol rolKoppeling);
 
 }

@@ -21,9 +21,6 @@ package nl.rivm.screenit.model.colon.verslag.pa;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
@@ -35,31 +32,35 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.model.verslag.DSValueSet;
 import nl.rivm.screenit.model.verslag.DSValueSetValue;
 import nl.rivm.screenit.model.verslag.NullFlavourQuantity;
 import nl.rivm.screenit.model.verslag.VraagElement;
-import nl.rivm.screenit.model.verslag.VraagElementUnit;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "colon")
+@Getter
+@Setter
 public class PaPathologieProtocolColonbioptperPoliep
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private PaVerslagContent verslagContent;
 
 	@Column(length = 255)
-	@VraagElement(displayName = "Nummer potje materiaal", extraTekst = "Nummer potje van het binngekomen materiaal", code = "2.16.840.1.113883.2.4.3.36.77.2.11.156", isVerplicht = true)
+	@VraagElement(conceptId = "156", displayName = "Nummer potje materiaal", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.210']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.550']]]/hl7:act/hl7:specimen/hl7:specimenRole/hl7:specimenPlayingEntity/lab:asSpecimenInContainer/lab:container/lab:id",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.210']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.550']]]/hl7:act/hl7:specimen/hl7:specimenRole/hl7:specimenPlayingEntity/lab:asSpecimenInContainer/lab:container/lab:id|@extension"
+	}, isVerplicht = true)
 	private String nummerPotjeMateriaal;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -67,7 +68,10 @@ public class PaPathologieProtocolColonbioptperPoliep
 		@DSValueSetValue(code = "260521003", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "261074009", codeSystem = "2.16.840.1.113883.6.96")
 	})
-	@VraagElement(displayName = "Consult materiaal aangevraagd", extraTekst = "Of er (intern/extern) consult materiaal is opgevraagd uit een ander laboratorium", code = "2.16.840.1.113883.2.4.3.36.77.2.11.157")
+	@VraagElement(conceptId = "157", displayName = "Consult materiaal aangevraagd", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.211']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.551']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.429']]]/hl7:act/hl7:code[(@code='726007' and @codeSystem='2.16.840.1.113883.6.96')]/hl7:qualifier/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.211']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.551']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.429']]]/hl7:act/hl7:code[(@code='726007' and @codeSystem='2.16.840.1.113883.6.96')]/hl7:qualifier/hl7:value|@code"
+	})
 	private DSValue consultMateriaalAangevraagd;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -76,19 +80,22 @@ public class PaPathologieProtocolColonbioptperPoliep
 		@DSValueSetValue(code = "399415002", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "UNK", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Dysplasiegraad", extraTekst = "Hoog- of laaggradige dysplasie", code = "2.16.840.1.113883.2.4.3.36.77.2.11.158", isVerplicht = true)
+	@VraagElement(conceptId = "158", displayName = "Dysplasiegraad", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.211']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.551']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.401']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.211']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.551']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.401']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue dysplasiegraad;
 
 	@Embedded
-	@Nonnull
 	@AttributeOverrides({
 		@AttributeOverride(name = "value", column = @Column(name = "diameterPoliepValue")),
 		@AttributeOverride(name = "unit", column = @Column(name = "diameterPoliepUnit")),
 		@AttributeOverride(name = "nullFlavour", column = @Column(name = "diameterPoliepNf"))
 	})
-	@VraagElement(displayName = "Diameter poliep", extraTekst = "Diameter van het verwijderde materiaal", code = "2.16.840.1.113883.2.4.3.36.77.2.11.160", isVerplicht = true, unit = {
-		@VraagElementUnit(unit = "cm", min = "0.1", max = "20.0")
-	})
+	@VraagElement(conceptId = "160", displayName = "Diameter poliep", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.211']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.551']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.402']]]/hl7:observation/hl7:value|@value",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.211']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.551']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.402']]]/hl7:observation/hl7:value|@value"
+	}, isVerplicht = true)
 	private NullFlavourQuantity diameterPoliep;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -122,16 +129,22 @@ public class PaPathologieProtocolColonbioptperPoliep
 		@DSValueSetValue(code = "373379001", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "162572001:246090004=269533000", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "64226004", codeSystem = "2.16.840.1.113883.6.96"),
-		@DSValueSetValue(code = "MUCPOL", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.13", deprecated = true),
 		@DSValueSetValue(code = "MESPOL", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.13", deprecated = true),
+		@DSValueSetValue(code = "MUCPOL", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.13", deprecated = true),
 		@DSValueSetValue(code = "269533000:408729009=415684004", codeSystem = "2.16.840.1.113883.6.96", deprecated = true),
 		@DSValueSetValue(code = "OTH", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Primaire afwijking", extraTekst = "Gevonden primaire afwijking", code = "2.16.840.1.113883.2.4.3.36.77.2.11.162", isVerplicht = true)
+	@VraagElement(conceptId = "162", displayName = "Primaire afwijking", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.211']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.551']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.403']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.211']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.551']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.403']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue primaireAfwijking;
 
 	@Column(length = 4096)
-	@VraagElement(displayName = "Andere primaire afwijking", extraTekst = "Specificatie (tekst) andere primaire afwijking", code = "2.16.840.1.113883.2.4.3.36.77.2.11.163")
+	@VraagElement(conceptId = "163", displayName = "Andere primaire afwijking", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.211']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.551']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.403']]]/hl7:observation/hl7:text",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.211']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.551']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.403']]]/hl7:observation/hl7:text"
+	})
 	private String anderePrimaireAfwijking;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -142,115 +155,21 @@ public class PaPathologieProtocolColonbioptperPoliep
 		@DSValueSetValue(code = "162572001:246090004=269533000", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "OTH", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Bevinding", extraTekst = "Bevinding", code = "2.16.840.1.113883.2.4.3.36.77.2.11.164")
+	@VraagElement(conceptId = "164", displayName = "Bevinding", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.211']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.551']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.404']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.211']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.551']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.404']]]/hl7:observation/hl7:value|@code"
+	})
 	private DSValue bevinding;
 
 	@Column(length = 4096)
-	@VraagElement(displayName = "Specificatie overige bevinding", extraTekst = "Specificatie (tekst) overige bevinding", code = "2.16.840.1.113883.2.4.3.36.77.2.11.165")
+	@VraagElement(conceptId = "165", displayName = "Specificatie overige bevinding", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.211']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.551']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.404']]]/hl7:observation/hl7:text",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.211']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.551']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.404']]]/hl7:observation/hl7:text"
+	})
 	private String specificatieOverigeBevinding;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "pathologieProtocolColonbioptperPoliep", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Gegevens bij maligniteit", extraTekst = "Gegevens bij maligniteit", code = "2.16.840.1.113883.2.4.3.36.77.2.11.177", isReference = true)
+	@VraagElement(conceptId = "177", displayName = "Gegevens bij maligniteit")
 	private PaGegevensBijMaligniteit gegevensBijMaligniteit;
-
-	public PaVerslagContent getVerslagContent()
-	{
-		return verslagContent;
-	}
-
-	public void setVerslagContent(PaVerslagContent verslagContent)
-	{
-		this.verslagContent = verslagContent;
-	}
-
-	public String getNummerPotjeMateriaal()
-	{
-		return nummerPotjeMateriaal;
-	}
-
-	public void setNummerPotjeMateriaal(String nummerPotjeMateriaal)
-	{
-		this.nummerPotjeMateriaal = nummerPotjeMateriaal;
-	}
-
-	public DSValue getConsultMateriaalAangevraagd()
-	{
-		return consultMateriaalAangevraagd;
-	}
-
-	public void setConsultMateriaalAangevraagd(DSValue consultMateriaalAangevraagd)
-	{
-		this.consultMateriaalAangevraagd = consultMateriaalAangevraagd;
-	}
-
-	public DSValue getDysplasiegraad()
-	{
-		return dysplasiegraad;
-	}
-
-	public void setDysplasiegraad(DSValue dysplasiegraad)
-	{
-		this.dysplasiegraad = dysplasiegraad;
-	}
-
-	public NullFlavourQuantity getDiameterPoliep()
-	{
-		return diameterPoliep;
-	}
-
-	public void setDiameterPoliep(NullFlavourQuantity diameterPoliep)
-	{
-		this.diameterPoliep = diameterPoliep;
-	}
-
-	public DSValue getPrimaireAfwijking()
-	{
-		return primaireAfwijking;
-	}
-
-	public void setPrimaireAfwijking(DSValue primaireAfwijking)
-	{
-		this.primaireAfwijking = primaireAfwijking;
-	}
-
-	public String getAnderePrimaireAfwijking()
-	{
-		return anderePrimaireAfwijking;
-	}
-
-	public void setAnderePrimaireAfwijking(String anderePrimaireAfwijking)
-	{
-		this.anderePrimaireAfwijking = anderePrimaireAfwijking;
-	}
-
-	public DSValue getBevinding()
-	{
-		return bevinding;
-	}
-
-	public void setBevinding(DSValue bevinding)
-	{
-		this.bevinding = bevinding;
-	}
-
-	public String getSpecificatieOverigeBevinding()
-	{
-		return specificatieOverigeBevinding;
-	}
-
-	public void setSpecificatieOverigeBevinding(String specificatieOverigeBevinding)
-	{
-		this.specificatieOverigeBevinding = specificatieOverigeBevinding;
-	}
-
-	public PaGegevensBijMaligniteit getGegevensBijMaligniteit()
-	{
-		return gegevensBijMaligniteit;
-	}
-
-	public void setGegevensBijMaligniteit(PaGegevensBijMaligniteit gegevensBijMaligniteit)
-	{
-		this.gegevensBijMaligniteit = gegevensBijMaligniteit;
-	}
 
 }

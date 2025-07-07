@@ -26,20 +26,15 @@ import java.util.stream.Collectors;
 
 import nl.rivm.screenit.main.service.VerslagService;
 import nl.rivm.screenit.model.BerichtZoekFilter;
-import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht_;
 import nl.rivm.screenit.model.berichten.enums.BerichtType;
-import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
-import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.cervix.CervixCytologieVerslag;
 import nl.rivm.screenit.model.colon.ColonVerslag;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.PaVerslag;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
-import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
 import nl.rivm.screenit.repository.algemeen.OntvangenCdaBerichtRepository;
 import nl.rivm.screenit.repository.cervix.CervixCytologieVerslagRepository;
@@ -49,13 +44,10 @@ import nl.rivm.screenit.repository.colon.ColonVerslagRepository;
 import nl.rivm.screenit.repository.mamma.MammaFollowUpVerslagRepository;
 import nl.rivm.screenit.service.BaseVerslagService;
 import nl.rivm.screenit.service.BerichtToBatchService;
-import nl.rivm.screenit.service.LogService;
-import nl.rivm.screenit.service.mamma.MammaBaseFollowUpService;
 import nl.rivm.screenit.specification.cervix.CervixVerslagSpecification;
 import nl.rivm.screenit.specification.colon.ColonVerslagSpecification;
 import nl.rivm.screenit.specification.mamma.MammaFollowUpVerslagSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -75,16 +67,7 @@ public class VerslagServiceImpl implements VerslagService
 {
 
 	@Autowired
-	private HibernateService hibernateService;
-
-	@Autowired
-	private LogService logService;
-
-	@Autowired
 	private BerichtToBatchService cdaBerichtToBatchService;
-
-	@Autowired(required = false)
-	private MammaBaseFollowUpService followUpService;
 
 	@Autowired
 	private BaseVerslagService baseVerslagService;
@@ -106,33 +89,6 @@ public class VerslagServiceImpl implements VerslagService
 
 	@Autowired
 	private ColonVerslagRepository colonVerslagRepository;
-
-	@Override
-	@Transactional
-	public <V extends Verslag<?, ?>> V heropenVerslag(V verslag, InstellingGebruiker instellingGebruiker)
-	{
-		VerslagType verslagType = verslag.getType();
-		Class<? extends Verslag<?, ?>> verslagClazz = verslagType.getClazz();
-		verslag = (V) hibernateService.load(verslagClazz, verslag.getId());
-		baseVerslagService.heropenRondeEnDossier(verslag);
-
-		verslag.setStatus(VerslagStatus.IN_BEWERKING);
-		hibernateService.saveOrUpdate(verslag);
-		refreshUpdateFollowUpConclusie(verslag);
-
-		Client client = verslag.getScreeningRonde().getDossier().getClient();
-		String melding = baseVerslagService.createLogMelding(verslag);
-		logService.logGebeurtenis(verslagType.getHeropendVerslagLogGebeurtenis(), instellingGebruiker, client, melding, verslagType.getBevolkingsonderzoek());
-		return verslag;
-	}
-
-	private void refreshUpdateFollowUpConclusie(Verslag<?, ?> verslag)
-	{
-		if (verslag.getType() == VerslagType.MAMMA_PA_FOLLOW_UP)
-		{
-			followUpService.refreshUpdateFollowUpConclusie((MammaDossier) verslag.getScreeningRonde().getDossier());
-		}
-	}
 
 	@Override
 	public List<OntvangenCdaBericht> zoekBerichten(BerichtZoekFilter filter, long first, long count, String property, boolean ascending)

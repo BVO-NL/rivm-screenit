@@ -22,7 +22,6 @@ package nl.rivm.screenit.batch.service.impl;
  */
 
 import java.net.URI;
-import java.util.Optional;
 
 import jakarta.annotation.PostConstruct;
 
@@ -44,7 +43,6 @@ import software.amazon.awssdk.services.textract.TextractClientBuilder;
 import software.amazon.awssdk.services.textract.model.AnalyzeDocumentRequest;
 import software.amazon.awssdk.services.textract.model.AnalyzeDocumentResponse;
 import software.amazon.awssdk.services.textract.model.FeatureType;
-import software.amazon.awssdk.services.textract.model.TextractException;
 
 @Slf4j
 @Service
@@ -70,19 +68,11 @@ public class TextractServiceImpl implements TextractService
 	}
 
 	@Override
-	public Optional<AnalyzeDocumentResponse> analyseerFormDocument(String bucketName, String bestandsnaam)
+	public AnalyzeDocumentResponse analyseerFormDocument(String bestandsnaam, String bucketName)
 	{
-		try
-		{
-			var analyzeDocumentRequest = AnalyzeDocumentRequest.builder().featureTypes(FeatureType.FORMS)
-				.document(document -> document.s3Object(s3Object -> s3Object.bucket(bucketName).name(bestandsnaam))).build();
-			return Optional.of(textractClient.analyzeDocument(analyzeDocumentRequest));
-		}
-		catch (TextractException e)
-		{
-			LOG.error("Fout bij uitlezen textract", e);
-		}
-		return Optional.empty();
+		var analyzeDocumentRequest = AnalyzeDocumentRequest.builder().featureTypes(FeatureType.FORMS)
+			.document(document -> document.s3Object(s3Object -> s3Object.bucket(bucketName).name(bestandsnaam))).build();
+		return textractClient.analyzeDocument(analyzeDocumentRequest);
 	}
 
 	private void setEndpointOverrideIfPresent(TextractClientBuilder textractClientBuilder)

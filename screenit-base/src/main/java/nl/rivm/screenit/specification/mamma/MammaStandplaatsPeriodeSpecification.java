@@ -46,6 +46,7 @@ import nl.rivm.screenit.model.mamma.MammaStandplaats_;
 import nl.rivm.screenit.specification.DateSpecification;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.organisatie.model.Adres_;
 
 import org.springframework.data.jpa.domain.Specification;
@@ -168,7 +169,7 @@ public class MammaStandplaatsPeriodeSpecification
 
 	public static Specification<MammaStandplaatsPeriode> heeftScreeningsEenheidId(Long screeningsEenheidId)
 	{
-		return (r, q, cb) -> cb.equal(r.get(MammaStandplaatsPeriode_.screeningsEenheid), screeningsEenheidId);
+		return (r, q, cb) -> cb.equal(r.get(MammaStandplaatsPeriode_.screeningsEenheid).get(AbstractHibernateObject_.id), screeningsEenheidId);
 	}
 
 	public static Specification<MammaStandplaatsPeriode> isActiefOpDatum(Date datum)

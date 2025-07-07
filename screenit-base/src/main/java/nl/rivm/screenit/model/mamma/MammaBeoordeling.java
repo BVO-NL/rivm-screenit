@@ -47,8 +47,6 @@ import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingOpschortenReden;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
@@ -61,7 +59,6 @@ import org.hibernate.envers.Audited;
 		@UniqueConstraint(columnNames = "eerste_lezing"), @UniqueConstraint(columnNames = "tweede_lezing"),
 		@UniqueConstraint(columnNames = "discrepantie_lezing"), @UniqueConstraint(columnNames = "arbitrage_lezing"), @UniqueConstraint(columnNames = "verslag_lezing") },
 	indexes = { @Index(name = "idx_mamma_beoordeling_status", columnList = "status") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 @Audited
 public class MammaBeoordeling extends AbstractHibernateObject
 {

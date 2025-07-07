@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.logging;
 
 /*-
@@ -22,14 +21,6 @@ package nl.rivm.screenit.model.logging;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.enums.Level;
-import nl.rivm.screenit.model.helper.HibernateMagicNumber;
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,21 +29,22 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.Lob;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+
+import nl.rivm.screenit.model.enums.Level;
+import nl.rivm.screenit.model.helper.HibernateMagicNumber;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 @Entity
 @Table(schema = "gedeeld")
 @Inheritance(strategy = InheritanceType.JOINED)
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class LogEvent extends AbstractHibernateObject
 {
 	@Column(length = HibernateMagicNumber.L4096)
 	private String melding;
 
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
+	@Column(columnDefinition = "TEXT")
 	private String volledigeMelding;
 
 	@Enumerated(EnumType.STRING)

@@ -83,17 +83,6 @@
                     <mainClass>nl.rivm.screenit.huisartsenportaal.Application</mainClass>
                 </configuration>
             </plugin>
-
-            <plugin>
-                <groupId>org.bsc.maven</groupId>
-                <artifactId>maven-processor-plugin</artifactId>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.hibernate.orm</groupId>
-                        <artifactId>hibernate-jpamodelgen</artifactId>
-                    </dependency>
-                </dependencies>
-            </plugin>
         </plugins>
     </build>
 
@@ -116,10 +105,6 @@
                     <artifactId>junit-vintage-engine</artifactId>
                     <groupId>org.junit.vintage</groupId>
                 </exclusion>
-                <exclusion>
-                    <groupId>org.junit.jupiter</groupId>
-                    <artifactId>junit-jupiter</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
 
@@ -136,16 +121,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>hibernate-core</artifactId>
-                    <groupId>org.hibernate.orm</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-envers-jakarta</artifactId>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-envers</artifactId>
         </dependency>
 
         <dependency>
@@ -228,16 +207,6 @@
         <dependency>
             <groupId>nl.rivm.screenit</groupId>
             <artifactId>screenit-huisartsenportaal-commons</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
         </dependency>
 
         <dependency>

@@ -25,6 +25,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.SingularAttribute;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -36,7 +43,6 @@ import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.ScreeningRonde_;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
@@ -45,9 +51,6 @@ import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling_;
 import nl.rivm.screenit.model.mamma.MammaBrief;
 import nl.rivm.screenit.model.mamma.MammaDossier_;
-import nl.rivm.screenit.model.mamma.MammaFollowUpRadiologieVerslag;
-import nl.rivm.screenit.model.mamma.MammaFollowUpRadiologieVerslag_;
-import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
 import nl.rivm.screenit.model.mamma.MammaLezing_;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek_;
@@ -65,13 +68,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.util.CollectionUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.metamodel.SingularAttribute;
 
 import static jakarta.persistence.criteria.JoinType.LEFT;
 import static nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus.ARBITRAGE;
@@ -126,7 +122,7 @@ public class MammaBeoordelingWerklijstSpecification
 			.and(filterBeWerklijst(zoekObject));
 	}
 
-	public static Specification<MammaOnderzoek> ceWerklijstSpecification(MammaCeWerklijstZoekObject zoekObject, LocalDate peildatumOngunstigeUitslagen)
+	public static ExtendedSpecification<MammaOnderzoek> ceWerklijstSpecification(MammaCeWerklijstZoekObject zoekObject, LocalDate peildatumOngunstigeUitslagen)
 	{
 		return filterBeEnCe(zoekObject)
 			.and(filterBeoordelingStatusVoorCeWerklijst(zoekObject.getBeoordelingStatussen(), peildatumOngunstigeUitslagen))
@@ -140,14 +136,14 @@ public class MammaBeoordelingWerklijstSpecification
 			.and(heeftStatusDatumVoor(peildatumProcesMonitoring).with(beoordelingAttribute()));
 	}
 
-	private static Specification<MammaOnderzoek> basisFilterBeoordelingWerklijst(MammaBaseWerklijstZoekObject zoekObject)
+	private static ExtendedSpecification<MammaOnderzoek> basisFilterBeoordelingWerklijst(MammaBaseWerklijstZoekObject zoekObject)
 	{
 		return persoonSpecification(zoekObject)
 			.and(filterScreeningsEenheid(zoekObject.getScreeningsEenheden()))
 			.and(filterOnderzoekType(zoekObject.getOnderzoekType()));
 	}
 
-	private static Specification<MammaOnderzoek> persoonSpecification(MammaBaseWerklijstZoekObject zoekObject)
+	private static ExtendedSpecification<MammaOnderzoek> persoonSpecification(MammaBaseWerklijstZoekObject zoekObject)
 	{
 		var filterNodig = zoekObject.getGeboortedatum() != null || StringUtils.isNotBlank(zoekObject.getBsn())
 			|| StringUtils.isNotBlank(zoekObject.getPostcode()) || zoekObject.getHuisnummer() != null;
@@ -345,51 +341,46 @@ public class MammaBeoordelingWerklijstSpecification
 		return null;
 	}
 
-	public static Specification<MammaOnderzoek> heeftGeenAfspraakNaScreeningRondeVanBeoordeling()
+	public static ExtendedSpecification<MammaScreeningRonde> heeftGeenAfspraakNaScreeningRondeVanBeoordeling()
 	{
 		return (r, q, cb) ->
 		{
-			var hoofdScreeningRondeJoin = screeningRondeJoin(r);
-
 			var subquery = q.subquery(Long.class);
 			var subRoot = subquery.from(MammaAfspraak.class);
 			var subUitnodigingJoin = join(subRoot, MammaAfspraak_.uitnodiging);
 			var subScreeningRondeJoin = join(subUitnodigingJoin, MammaUitnodiging_.screeningRonde);
 
-			subquery.select(cb.count(subRoot))
+			subquery.select(cb.literal(1L))
 				.where(cb.and(
-					cb.equal(subScreeningRondeJoin.get(MammaScreeningRonde_.dossier), hoofdScreeningRondeJoin.get(MammaScreeningRonde_.dossier)),
-					cb.greaterThan(subScreeningRondeJoin.get(ScreeningRonde_.creatieDatum), hoofdScreeningRondeJoin.get(ScreeningRonde_.creatieDatum))
+					cb.equal(subScreeningRondeJoin.get(MammaScreeningRonde_.dossier), r.get(MammaScreeningRonde_.dossier)),
+					cb.greaterThan(subScreeningRondeJoin.get(ScreeningRonde_.creatieDatum), r.get(ScreeningRonde_.creatieDatum))
 				));
 
-			return cb.equal(subquery, 0L);
+			return cb.not(cb.exists(subquery));
 		};
 	}
 
-	public static Specification<MammaOnderzoek> zijnBeeldenNietGedownload()
+	public static ExtendedSpecification<MammaScreeningRonde> zijnBeeldenNietGedownload()
+	{
+		return (r, q, cb) -> cb.isEmpty(r.get(MammaScreeningRonde_.FOLLOW_UP_RADIOLOGIE_VERSLAGEN));
+	}
+
+	public static ExtendedSpecification<MammaScreeningRonde> heeftGeenPathologieVerslag()
 	{
 		return (r, q, cb) ->
 		{
 			var subquery = q.subquery(Long.class);
-			var subRoot = subquery.from(MammaFollowUpRadiologieVerslag.class);
-			subquery.select(subRoot.get(MammaFollowUpRadiologieVerslag_.screeningRonde).get(TablePerClassHibernateObject_.id));
+			var subRoot = subquery.correlate((Root<MammaScreeningRonde>) r);
+			var subRootJoin = join(subRoot, MammaScreeningRonde_.followUpVerslagen);
+			subquery.select(cb.literal(1L))
+				.where(cb.equal(subRootJoin.get(MammaVerslag_.type), VerslagType.MAMMA_PA_FOLLOW_UP));
 
-			var hoofdScreeningRondeJoin = screeningRondeJoin(r);
-			return cb.not(hoofdScreeningRondeJoin.get(TablePerClassHibernateObject_.id).in(subquery));
+			return cb.not(cb.exists(subquery));
 		};
 	}
 
-	public static Specification<MammaOnderzoek> heeftGeenPathologieVerslag()
+	public static Join<MammaAfspraak, MammaOnderzoek> laatsteOnderzoekVanLaatsteAfspraakJoin(From<?, ? extends MammaScreeningRonde> root)
 	{
-		return (r, q, cb) ->
-		{
-			var subquery = q.subquery(Long.class);
-			var subRoot = subquery.from(MammaFollowUpVerslag.class);
-			subquery.select(subRoot.get(MammaVerslag_.screeningRonde).get(TablePerClassHibernateObject_.id))
-				.where(cb.equal(subRoot.get(MammaVerslag_.type), VerslagType.MAMMA_PA_FOLLOW_UP));
-
-			var hoofdScreeningRondeJoin = screeningRondeJoin(r);
-			return cb.not(hoofdScreeningRondeJoin.get(TablePerClassHibernateObject_.id).in(subquery));
-		};
+		return join(join(join(root, MammaScreeningRonde_.laatsteUitnodiging), MammaUitnodiging_.laatsteAfspraak), MammaAfspraak_.onderzoek);
 	}
 }

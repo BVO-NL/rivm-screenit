@@ -21,10 +21,15 @@ package nl.rivm.screenit.batch.jobs.mamma.controleuitslag.controlestep;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
+
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
@@ -33,15 +38,10 @@ import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde_;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.service.mamma.MammaBaseOnderzoekService;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Root;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
@@ -60,7 +60,7 @@ public class MammaControleMissendeUitslagenReader extends BaseSpecificationScrol
 	@Override
 	protected Expression<Long> createProjection(Root<MammaOnderzoek> r, CriteriaBuilder cb)
 	{
-		return dossierJoin(r).get(TablePerClassHibernateObject_.id);
+		return dossierJoin(r).get(AbstractHibernateObject_.id);
 	}
 
 	@Override

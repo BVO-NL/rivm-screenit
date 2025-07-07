@@ -111,6 +111,7 @@ import static nl.rivm.screenit.main.service.cervix.impl.AbstractCervixBoekregels
 import static nl.rivm.screenit.main.service.cervix.impl.AbstractCervixBoekregelsDataProviderServiceImpl.MONSTER_PROPERTY;
 import static nl.rivm.screenit.main.service.cervix.impl.AbstractCervixBoekregelsDataProviderServiceImpl.PERSOON_PROPERTY;
 import static nl.rivm.screenit.main.service.cervix.impl.AbstractCervixBoekregelsDataProviderServiceImpl.REGIO_PROPERTY;
+import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
 @SecurityConstraint(
 	actie = Actie.INZIEN,
@@ -363,20 +364,21 @@ public class CervixBmhkLaboratoriumOverzichtVerrichtingenPage extends Organisati
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy");
 
 		List<IColumn<CervixBoekRegel, String>> columns = new ArrayList<>();
-		columns.add(new PropertyColumn<>(Model.of("Screeningsorganisatie"), REGIO_PROPERTY + "." + Instelling_.NAAM, REGIO_PROPERTY + "." + Instelling_.NAAM));
-		columns.add(new ClientColumn<>(PERSOON_PROPERTY + "." + GbaPersoon_.ACHTERNAAM, CervixBoekRegel_.VERRICHTING + "." + CervixVerrichting_.CLIENT));
-		columns.add(new GeboortedatumColumn<>(PERSOON_PROPERTY + "." + GbaPersoon_.GEBOORTEDATUM, PERSOON_PROPERTY));
-		columns.add(new PropertyColumn<>(Model.of("BSN"), PERSOON_PROPERTY + "." + GbaPersoon_.BSN, PERSOON_PROPERTY + "." + GbaPersoon_.BSN));
-		columns.add(new PropertyColumn<>(Model.of("Monster-id"), MONSTER_PROPERTY + "." + CervixMonster_.MONSTER_ID, MONSTER_PROPERTY + "." + CervixMonster_.MONSTER_ID));
-		columns.add(new EnumPropertyColumn<CervixBoekRegel, String, CervixTariefType>(Model.of("Type verrichting"), CervixBoekRegel_.VERRICHTING + "." + CervixVerrichting_.TYPE,
-			CervixBoekRegel_.VERRICHTING + "." + CervixVerrichting_.TYPE));
-		columns.add(new DateTimePropertyColumn<>(Model.of("Verrichtingsdatum"), CervixBoekRegel_.VERRICHTING + "." + CervixVerrichting_.VERRICHTINGS_DATUM,
-			CervixBoekRegel_.VERRICHTING + "." + CervixVerrichting_.VERRICHTINGS_DATUM, dateFormatter));
-		columns.add(new DateTimePropertyColumn<>(Model.of("Ontvangst monster"), MONSTER_PROPERTY + "." + CervixMonster_.ONTVANGSTDATUM,
-			MONSTER_PROPERTY + "." + CervixMonster_.ONTVANGSTDATUM, dateFormatter));
+		columns.add(new PropertyColumn<>(Model.of("Screeningsorganisatie"), propertyChain(REGIO_PROPERTY, Instelling_.NAAM), propertyChain(REGIO_PROPERTY, Instelling_.NAAM)));
+		columns.add(new ClientColumn<>(propertyChain(PERSOON_PROPERTY, GbaPersoon_.ACHTERNAAM), propertyChain(CervixBoekRegel_.VERRICHTING, CervixVerrichting_.CLIENT)));
+		columns.add(new GeboortedatumColumn<>(propertyChain(PERSOON_PROPERTY, GbaPersoon_.GEBOORTEDATUM), PERSOON_PROPERTY));
+		columns.add(new PropertyColumn<>(Model.of("BSN"), propertyChain(PERSOON_PROPERTY, GbaPersoon_.BSN), propertyChain(PERSOON_PROPERTY, GbaPersoon_.BSN)));
+		columns.add(
+			new PropertyColumn<>(Model.of("Monster-id"), propertyChain(MONSTER_PROPERTY, CervixMonster_.MONSTER_ID), propertyChain(MONSTER_PROPERTY, CervixMonster_.MONSTER_ID)));
+		columns.add(new EnumPropertyColumn<>(Model.of("Type verrichting"), propertyChain(CervixBoekRegel_.VERRICHTING, CervixVerrichting_.TYPE),
+			propertyChain(CervixBoekRegel_.VERRICHTING, CervixVerrichting_.TYPE)));
+		columns.add(new DateTimePropertyColumn<>(Model.of("Verrichtingsdatum"), propertyChain(CervixBoekRegel_.VERRICHTING, CervixVerrichting_.VERRICHTINGS_DATUM),
+			propertyChain(CervixBoekRegel_.VERRICHTING, CervixVerrichting_.VERRICHTINGS_DATUM), dateFormatter));
+		columns.add(new DateTimePropertyColumn<>(Model.of("Ontvangst monster"), propertyChain(MONSTER_PROPERTY, CervixMonster_.ONTVANGSTDATUM),
+			propertyChain(MONSTER_PROPERTY, CervixMonster_.ONTVANGSTDATUM), dateFormatter));
 		columns
-			.add(new DateTimePropertyColumn<>(Model.of("Ontvangst formulier"), LABFORMULIER_PROPERTY + "." + CervixLabformulier_.SCAN_DATUM,
-				LABFORMULIER_PROPERTY + "." + CervixLabformulier_.SCAN_DATUM, dateFormatter)
+			.add(new DateTimePropertyColumn<>(Model.of("Ontvangst formulier"), propertyChain(LABFORMULIER_PROPERTY, CervixLabformulier_.SCAN_DATUM),
+				propertyChain(LABFORMULIER_PROPERTY, CervixLabformulier_.SCAN_DATUM), dateFormatter)
 			{
 
 				@Override
@@ -420,11 +422,11 @@ public class CervixBmhkLaboratoriumOverzichtVerrichtingenPage extends Organisati
 				cellItem.add(new BigDecimalPriceLabel(componentId, bedrag));
 			}
 		});
-		columns.add(new DateTimePropertyColumn<>(Model.of("Betalingsdatum"), BETAALOPDRACHT_PROPERTY + "." + CervixBetaalopdracht_.STATUS_DATUM,
-			BETAALOPDRACHT_PROPERTY + "." + CervixBetaalopdracht_.STATUS_DATUM,
+		columns.add(new DateTimePropertyColumn<>(Model.of("Betalingsdatum"), propertyChain(BETAALOPDRACHT_PROPERTY, CervixBetaalopdracht_.STATUS_DATUM),
+			propertyChain(BETAALOPDRACHT_PROPERTY, CervixBetaalopdracht_.STATUS_DATUM),
 			dateFormatter));
-		columns.add(new PropertyColumn<>(Model.of("Betalingskenmerk"), BETAALOPDRACHT_PROPERTY + "." + CervixBetaalopdracht_.BETALINGSKENMERK,
-			BETAALOPDRACHT_PROPERTY + "." + CervixBetaalopdracht_.BETALINGSKENMERK));
+		columns.add(new PropertyColumn<>(Model.of("Betalingskenmerk"), propertyChain(BETAALOPDRACHT_PROPERTY, CervixBetaalopdracht_.BETALINGSKENMERK),
+			propertyChain(BETAALOPDRACHT_PROPERTY, CervixBetaalopdracht_.BETALINGSKENMERK)));
 
 		bmhkLaboratoriumVerrichtingenTabel = new ScreenitDataTable<>("bmhkLaboratoriumVerrichtingenTabel", columns,
 			verrichtingenDataProvider, Model.of("boekingsregels"))

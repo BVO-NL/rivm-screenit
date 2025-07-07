@@ -22,11 +22,13 @@ package nl.rivm.screenit.main.transformer;
  */
 
 import java.time.LocalDate;
+import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
+import nl.rivm.screenit.util.DateUtil;
 
 @Getter
 @AllArgsConstructor
@@ -35,4 +37,9 @@ public class MammaScreeningsEenheidMetDatumDto
 	private MammaScreeningsEenheid screeningsEenheid;
 
 	private LocalDate datum;
+
+	public MammaScreeningsEenheidMetDatumDto(MammaScreeningsEenheid screeningsEenheid, Date datum)
+	{
+		this(screeningsEenheid, DateUtil.toLocalDate(datum));
+	}
 }

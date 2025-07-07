@@ -46,8 +46,6 @@ import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -55,7 +53,6 @@ import org.hibernate.envers.Audited;
 @Setter
 @Table(schema = "algemeen")
 @Audited
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class ProjectBriefActie extends AbstractHibernateObject implements IActief, IDocument
 {
 	private Boolean actief = true;

@@ -24,14 +24,6 @@ package nl.rivm.screenit.model;
 import java.io.Serial;
 import java.util.Date;
 
-import javax.annotation.CheckForNull;
-
-import nl.rivm.screenit.model.enums.BriefType;
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,9 +37,13 @@ import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 
+import javax.annotation.CheckForNull;
+
+import nl.rivm.screenit.model.enums.BriefType;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
+
 @Entity
 @Table(schema = "algemeen", uniqueConstraints = @UniqueConstraint(name = "uc_brief_definitie_type_laatst_gewijzigd", columnNames = { "briefType", "laatstGewijzigd" }))
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class BriefDefinitie extends AbstractHibernateObject implements IDocument
 {
 	@Serial

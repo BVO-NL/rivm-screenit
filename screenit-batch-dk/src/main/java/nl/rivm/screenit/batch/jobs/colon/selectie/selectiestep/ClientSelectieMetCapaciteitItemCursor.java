@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.batch.jobs.BatchConstants;
 import nl.rivm.screenit.batch.service.impl.ColonUitnodigingsgebiedSelectieContext;
 import nl.rivm.screenit.model.colon.ClientCategorieEntry;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5Session;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 
 import org.springframework.batch.item.ExecutionContext;
 
@@ -71,7 +71,7 @@ public class ClientSelectieMetCapaciteitItemCursor implements ClientSelectieItem
 		LOG.info("Start selecteren van clienten voor " + uitnodigingsgebieden.size() + " uitnodigingsgebieden.");
 		for (ColonUitnodigingsgebiedSelectieContext uitnodigingsgebied : uitnodigingsgebieden)
 		{
-			forkJoinPool.submit(() -> OpenHibernate5Session.withCommittedTransaction().run(() -> selecteerClientenVoorUitnodigingsgebied(uitnodigingsgebied)));
+			forkJoinPool.submit(() -> OpenHibernateSession.withCommittedTransaction().run(() -> selecteerClientenVoorUitnodigingsgebied(uitnodigingsgebied)));
 		}
 		forkJoinPool.shutdown();
 	}

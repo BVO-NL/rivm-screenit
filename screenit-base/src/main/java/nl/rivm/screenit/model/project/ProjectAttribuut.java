@@ -35,8 +35,6 @@ import nl.rivm.screenit.model.IActief;
 import nl.rivm.screenit.model.INaam;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
@@ -44,7 +42,6 @@ import org.hibernate.envers.Audited;
 @Entity
 @Audited
 @Table(schema = "algemeen", uniqueConstraints = @UniqueConstraint(name = "uc_project_attribuut_naam_project", columnNames = { "naam", "project" }))
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class ProjectAttribuut extends AbstractHibernateObject implements INaam, IActief
 {
 

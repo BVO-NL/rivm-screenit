@@ -38,15 +38,12 @@ import nl.rivm.screenit.model.IActief;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Setter
 @Getter
 @Entity
 @Table(schema = "colon", name = "intakekamer")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "colon.cache")
 @Audited
 public class ColonIntakekamer extends AbstractHibernateObject implements IActief
 {
@@ -57,7 +54,6 @@ public class ColonIntakekamer extends AbstractHibernateObject implements IActief
 	private String omschrijving;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "kamer")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "colon.cache")
 	private List<ColonTijdslot> tijdslots = new ArrayList<>();
 
 	@Column(nullable = false)

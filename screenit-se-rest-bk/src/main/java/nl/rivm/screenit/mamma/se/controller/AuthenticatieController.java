@@ -26,7 +26,6 @@ import java.time.LocalDateTime;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import nl.rivm.screenit.SafeStringUtil;
 import nl.rivm.screenit.mamma.se.SELogin;
 import nl.rivm.screenit.mamma.se.SERequestHeader;
 import nl.rivm.screenit.mamma.se.dto.LoginDto;
@@ -45,8 +44,6 @@ import nl.rivm.screenit.util.NaamUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.lang.codec.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -61,8 +58,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/authenticatie")
 public class AuthenticatieController extends AuthorizedController
 {
-	private static final Logger LOG = LoggerFactory.getLogger(AuthenticatieController.class);
-
 	@Autowired
 	private MammaScreeningsEenheidService screeningsEenheidService;
 
@@ -105,7 +100,7 @@ public class AuthenticatieController extends AuthorizedController
 			seCode = screeningsEenheidService.getSeCodeMetIpAdres(proxy_ip);
 			if (seCode == null)
 			{
-				logService.logGebeurtenis(LogGebeurtenis.MAMMA_SE_CODE_OPHALEN_MET_IPADRES, null, "Kon SE-Code niet vinden op basis van IP-adres: " + proxy_ip,
+				logService.logGebeurtenis(LogGebeurtenis.MAMMA_SE_CODE_OPHALEN_MET_IPADRES, "Kon SE-Code niet vinden op basis van IP-adres: " + proxy_ip,
 					Bevolkingsonderzoek.MAMMA);
 				return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).build();
 			}
@@ -138,8 +133,6 @@ public class AuthenticatieController extends AuthorizedController
 	@RequestMapping(value = "/uitloggen", method = RequestMethod.POST)
 	public ResponseEntity logout(HttpServletRequest request)
 	{
-		var safeRequestString = SafeStringUtil.maakMetUserInputStringVeiligVoorLogging(request.toString());
-		LOG.debug(safeRequestString);
 		InstellingGebruiker instellingGebruiker = getInstellingGebruiker(request);
 		if (instellingGebruiker != null)
 		{

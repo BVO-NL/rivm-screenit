@@ -22,7 +22,6 @@ package nl.rivm.screenit.util.cervix.hpv_berichtgenerator;
  */
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.concurrent.Executors;
 
@@ -40,7 +39,7 @@ import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.HapiContext;
 import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.parser.Parser;
+import ca.uhn.hl7v2.model.v251.message.OUL_R22;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -68,14 +67,14 @@ public class CervixHpvBerichtGenerator
 
 	public static Message geefHL7Bericht(CervixHpvBerichtGeneratorWrapper wrapper)
 	{
-		String bericht = geefHL7BerichtTekst(wrapper);
+		var bericht = geefHL7BerichtTekst(wrapper);
 
 		return createMessage(bericht);
 	}
 
-	public static Message geefHL7Bericht(String file)
+	public static OUL_R22 maakHpvOULMessage(String file)
 	{
-		String bericht = getFileContents(file);
+		var bericht = getFileContents(file);
 		if (!bericht.contains("\r\n"))
 		{
 			if (bericht.contains("\n"))
@@ -92,7 +91,7 @@ public class CervixHpvBerichtGenerator
 
 	public static String getFileContents(String relatiefResourcePad)
 	{
-		InputStream inputStream = CervixHpvBerichtGenerator.class.getResourceAsStream(relatiefResourcePad);
+		var inputStream = CervixHpvBerichtGenerator.class.getResourceAsStream(relatiefResourcePad);
 
 		String outputText;
 		try
@@ -107,13 +106,13 @@ public class CervixHpvBerichtGenerator
 		return outputText;
 	}
 
-	private static Message createMessage(String bericht)
+	public static OUL_R22 createMessage(String bericht)
 	{
 		try (HapiContext context = new DefaultHapiContext())
 		{
 			context.setExecutorService(Executors.newSingleThreadExecutor()); 
-			Parser parser = context.getPipeParser();
-			return parser.parse(bericht);
+			var parser = context.getPipeParser();
+			return (OUL_R22) parser.parse(bericht);
 		}
 		catch (HL7Exception | IOException e)
 		{
@@ -123,11 +122,11 @@ public class CervixHpvBerichtGenerator
 
 	public static String geefHL7BerichtTekst(CervixHpvBerichtGeneratorWrapper wrapper)
 	{
-		String monsterTemplate = getMonsterTemplate(wrapper.getResultaatBerichtBron());
-		String analyseTemplate = getAnalyseTemplate(wrapper.getResultaatBerichtBron());
+		var monsterTemplate = getMonsterTemplate(wrapper.getResultaatBerichtBron());
+		var analyseTemplate = getAnalyseTemplate(wrapper.getResultaatBerichtBron());
 
-		StringBuilder berichtTekst = new StringBuilder(getHeaderTemplate());
-		for (CervixHpvBerichtGeneratorMonsterWrapper monsterWrapper : wrapper.getMonsterWrappers())
+		var berichtTekst = new StringBuilder(getHeaderTemplate());
+		for (var monsterWrapper : wrapper.getMonsterWrappers())
 		{
 			berichtTekst.append(monsterSnippet(monsterWrapper, monsterTemplate, analyseTemplate, getStartRepetitionIndex(wrapper)));
 		}

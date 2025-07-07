@@ -26,7 +26,6 @@ import java.util.List;
 import nl.rivm.screenit.main.service.RepositoryDataProviderService;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.OrganisatieType;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.cervix.CervixDossier_;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
 import nl.rivm.screenit.model.cervix.CervixLabformulier_;
@@ -34,16 +33,12 @@ import nl.rivm.screenit.model.cervix.CervixLabformulierenFilter;
 import nl.rivm.screenit.model.cervix.CervixMonster_;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde_;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging_;
-import nl.rivm.screenit.repository.cervix.CervixLabFormulierRepository;
+import nl.rivm.screenit.repository.cervix.CervixLabformulierRepository;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Root;
 
 import static nl.rivm.screenit.specification.cervix.CervixLabformulierSpecification.filterBsnCheck;
 import static nl.rivm.screenit.specification.cervix.CervixLabformulierSpecification.filterHeeftGeboortedatum;
@@ -61,7 +56,7 @@ import static nl.rivm.screenit.specification.cervix.CervixLabformulierSpecificat
 import static nl.rivm.screenit.specification.cervix.CervixLabformulierSpecification.heeftGeldigHuisartsbericht;
 
 @Service("cervixLabformulierDataProviderService")
-public class CervixLabformulierDataProviderServiceImpl extends RepositoryDataProviderService<CervixLabformulier, CervixLabFormulierRepository, CervixLabformulierenFilter>
+public class CervixLabformulierDataProviderServiceImpl extends RepositoryDataProviderService<CervixLabformulier, CervixLabformulierRepository, CervixLabformulierenFilter>
 {
 
 	public static final String CLIENT_PROPERTY =
@@ -109,6 +104,6 @@ public class CervixLabformulierDataProviderServiceImpl extends RepositoryDataPro
 	public List<Long> getLabformulierenIds(CervixLabformulierenFilter filter, Sort sort)
 	{
 		var spec = labFormulierSpecification(filter);
-		return getRepository().findWith(spec, Long.class, q -> q.sortBy(sort).projection((cb, r) -> r.get(TablePerClassHibernateObject_.id))).all();
+		return getRepository().findWith(spec, Long.class, q -> q.sortBy(sort).projection((cb, r) -> r.get(AbstractHibernateObject_.id))).all();
 	}
 }

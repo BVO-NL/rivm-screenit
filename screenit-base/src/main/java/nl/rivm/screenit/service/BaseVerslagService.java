@@ -22,7 +22,6 @@ package nl.rivm.screenit.service;
  */
 
 import java.io.OutputStream;
-import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.model.InstellingGebruiker;
@@ -52,8 +51,6 @@ public interface BaseVerslagService
 	DSValue getDsValue(String code, String codeSystem, String valueSetName);
 
 	DSValue getDsValue(String code, String codeSystem, String valueSetName, boolean ignoreCase);
-
-	boolean heeftMdlVerslagenMetOnderzoekDatum(MdlVerslag verslag, Date onderzoekDatum);
 
 	void setBerichtenOpnieuwVerwerken(List<Long> ids);
 

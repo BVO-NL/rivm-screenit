@@ -35,7 +35,7 @@ import nl.rivm.screenit.model.mamma.dicom.CMoveConfig;
 import nl.rivm.screenit.model.mamma.dicom.SCPConfig;
 import nl.rivm.screenit.service.mamma.MammaBaseUitwisselportaalService;
 import nl.rivm.screenit.wsb.service.mamma.MammaDownloadOnderzoekService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5Session;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang.StringUtils;
@@ -94,7 +94,7 @@ public class MammaDicomCStroreServiceProviderImpl implements ApplicationListener
 	{
 		if (doInit)
 		{
-			OpenHibernate5Session.withoutTransaction().run(() ->
+			OpenHibernateSession.withoutTransaction().run(() ->
 			{
 				var connectionString = preferenceService.getString(PreferenceKey.INTERNAL_MAMMA_IMS_DICOM_CMOVE_CONFIG.toString(),
 					"DICOM_QR_SCP@localhost:11114,SIT_STORE_SCP@localhost:11113");

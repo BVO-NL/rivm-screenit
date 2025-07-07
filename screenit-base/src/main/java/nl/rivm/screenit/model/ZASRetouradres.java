@@ -33,13 +33,10 @@ import jakarta.persistence.Table;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import nl.topicuszorg.organisatie.model.Adres;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "algemeen")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 @Audited
 public class ZASRetouradres extends AbstractHibernateObject
 {
@@ -48,15 +45,12 @@ public class ZASRetouradres extends AbstractHibernateObject
 	private static final long serialVersionUID = 1L;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 	private ScreeningOrganisatie regio;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 	private BMHKLaboratorium laboratorium;
 
 	@OneToOne(optional = false, fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 	private Adres adres;
 
 	public ScreeningOrganisatie getRegio()

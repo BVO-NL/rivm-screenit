@@ -36,9 +36,10 @@ import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.dto.PermissieDto;
 import nl.rivm.screenit.dto.RolDto;
+import nl.rivm.screenit.main.service.MedewerkerService;
 import nl.rivm.screenit.main.service.RolService;
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.Account;
+import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.InstellingGebruikerRol;
 import nl.rivm.screenit.model.Permissie;
@@ -47,18 +48,20 @@ import nl.rivm.screenit.model.Rol_;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.repository.algemeen.RolRepository;
+import nl.rivm.screenit.service.BaseMedewerkerService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.specification.algemeen.RolSpecification;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import static nl.rivm.screenit.specification.algemeen.RolSpecification.filterBevolkingsonderzoek;
 import static nl.rivm.screenit.specification.algemeen.RolSpecification.isActief;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
 @AllArgsConstructor
 public class RolServiceImpl implements RolService
 {
@@ -68,17 +71,41 @@ public class RolServiceImpl implements RolService
 
 	private final HibernateService hibernateService;
 
-	@Transactional(propagation = Propagation.REQUIRED)
+	private final BaseMedewerkerService baseMedewerkerService;
+
+	private final MedewerkerService medewerkerService;
+
+	@Transactional
 	@Override
-	public void setRechtActiefOfInactief(Rol rol, Account ingelogdeAccount)
+	public void setRolActiefOfInactief(Rol rol, Account ingelogdeAccount)
 	{
-		boolean actief = rol.getActief();
+		boolean nieuwInActief = !rol.getActief();
 		long rolId = rol.getId();
 		hibernateService.getHibernateSession().evict(rol);
-		Rol opslaanRol = hibernateService.get(Rol.class, rolId);
-		opslaanRol.setActief(actief);
-		saveLoginformatieVoorActieverenRol(opslaanRol, ingelogdeAccount);
-		hibernateService.saveOrUpdate(opslaanRol);
+
+		var melding = "Rol: " + rol.getNaam();
+		var logGebeurtenis = LogGebeurtenis.ROL_ACTIVEREN;
+
+		if (!nieuwInActief)
+		{
+
+			var organisatieMedewerkersMetRol = medewerkerService.getOrganisatieMedewerkersMetRol(rol);
+			baseMedewerkerService.inactiveerOrganisatieMedewerkersMetRol(organisatieMedewerkersMetRol);
+			melding += ". Medewerkers met deze rol: " + organisatieMedewerkersMetRol.stream()
+				.map(InstellingGebruikerRol::getInstellingGebruiker)
+				.map(InstellingGebruiker::getMedewerker)
+				.map(Gebruiker::getMedewerkercode)
+				.filter(Objects::nonNull)
+				.map(Object::toString)
+				.collect(Collectors.joining(", "));
+			logGebeurtenis = LogGebeurtenis.ROL_VERWIJDEREN;
+		}
+
+		var opslaanRol = hibernateService.get(Rol.class, rolId);
+		opslaanRol.setActief(nieuwInActief);
+		rolRepository.save(opslaanRol);
+
+		logService.logGebeurtenis(logGebeurtenis, ingelogdeAccount, melding);
 	}
 
 	@Override
@@ -199,6 +226,23 @@ public class RolServiceImpl implements RolService
 		return rol.getPermissies()
 			.stream()
 			.anyMatch(permissie -> Collections.disjoint(Arrays.asList(permissie.getRecht().getBevolkingsonderzoeken()), rol.getBevolkingsonderzoeken()));
+	}
+
+	@Override
+	public List<Rol> getRollen(Rol filter, Sort sortParam, long first, long count)
+	{
+		return rolRepository.findWith(getRollenSpecification(filter), q -> q.sortBy(sortParam)).all(first, count);
+	}
+
+	@Override
+	public long getRollenCount(Rol filter)
+	{
+		return rolRepository.count(getRollenSpecification(filter));
+	}
+
+	private Specification<Rol> getRollenSpecification(Rol filter)
+	{
+		return RolSpecification.filterBevolkingsonderzoek(filter.getBevolkingsonderzoeken()).and(RolSpecification.filterIsActief(filter.getActief()));
 	}
 
 	private void saveLogInformatieVoorRol(RolDto initieleRol, Rol rol, InstellingGebruiker instellingGebruiker)
@@ -327,17 +371,21 @@ public class RolServiceImpl implements RolService
 		return actief;
 	}
 
-	private void saveLoginformatieVoorActieverenRol(Rol rol, Account ingelogdeAccount)
+	private void maakLogGebeurtenis(Rol rol, Account ingelogdeAccount, List<InstellingGebruikerRol> organisatieMedewerkersMetRol)
 	{
-		if (Boolean.FALSE.equals(rol.getActief()))
+		var melding = "Rol: " + rol.getNaam();
+		var rolActief = rol.getActief();
+		if (rolActief)
 		{
-			rol.setActief(Boolean.TRUE);
-			logService.logGebeurtenis(LogGebeurtenis.ROL_ACTIVEREN, ingelogdeAccount, "Rol: " + rol.getNaam());
+			melding += ". Medewerkers met deze rol: " + organisatieMedewerkersMetRol.stream()
+				.map(InstellingGebruikerRol::getInstellingGebruiker)
+				.map(InstellingGebruiker::getMedewerker)
+				.map(Gebruiker::getMedewerkercode)
+				.filter(Objects::nonNull)
+				.map(Object::toString)
+				.collect(Collectors.joining(", "));
 		}
-		else
-		{
-			rol.setActief(Boolean.FALSE);
-			logService.logGebeurtenis(LogGebeurtenis.ROL_VERWIJDEREN, ScreenitSession.get().getLoggedInAccount(), "Rol: " + rol.getNaam());
-		}
+		var logGebeurtenis = rolActief ? LogGebeurtenis.ROL_VERWIJDEREN : LogGebeurtenis.ROL_ACTIVEREN;
+		logService.logGebeurtenis(logGebeurtenis, ingelogdeAccount, melding);
 	}
 }

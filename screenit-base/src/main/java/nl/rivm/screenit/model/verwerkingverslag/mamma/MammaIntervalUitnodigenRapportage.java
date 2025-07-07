@@ -34,13 +34,9 @@ import lombok.Setter;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(schema = "mamma", name = "interval_uitnodigen_rapportage",
 	uniqueConstraints = @UniqueConstraint(columnNames = { "uitnodigen_rapportage", "screening_organisatie" }))
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Getter
 @Setter
 public class MammaIntervalUitnodigenRapportage extends AbstractHibernateObject

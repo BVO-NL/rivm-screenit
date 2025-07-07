@@ -57,6 +57,7 @@ import nl.rivm.screenit.model.enums.IndicatieGeheim;
 import nl.rivm.screenit.model.gba.Land;
 import nl.rivm.screenit.model.gba.Nationaliteit;
 import nl.rivm.screenit.util.DateUtil;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import nl.topicuszorg.organisatie.model.Adres;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.BurgelijkeStaat;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.DocumentType;
@@ -64,8 +65,6 @@ import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.NaamGebruik;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Polis;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.AuditJoinTable;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -78,9 +77,8 @@ import org.hibernate.envers.NotAudited;
 	indexes = { @Index(name = "pat_per_geboortedatumIndex", columnList = "geboortedatum") },
 	uniqueConstraints = { @UniqueConstraint(columnNames = "bsn"), @UniqueConstraint(columnNames = "anummer") })
 @Audited
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "patient.registratie.cache")
 
-public class GbaPersoon extends SingleTableHibernateObject
+public class GbaPersoon extends AbstractHibernateObject
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -110,7 +108,6 @@ public class GbaPersoon extends SingleTableHibernateObject
 
 	@Deprecated(forRemoval = true)
 	@ManyToMany
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@NotAudited
 	@JoinTable(schema = "gedeeld", name = "pat_persoon_gba_nationaliteiten", joinColumns = { @JoinColumn(name = "pat_persoon") })
 	private List<Nationaliteit> gbaNationaliteiten = new ArrayList<>();
@@ -163,7 +160,6 @@ public class GbaPersoon extends SingleTableHibernateObject
 	private String achternaam;
 
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "patient.registratie.cache")
 	@JoinTable(schema = "algemeen", name = "pat_persoon_adressen")
 	private List<Adres> adressen = new ArrayList<>();
 
@@ -225,7 +221,6 @@ public class GbaPersoon extends SingleTableHibernateObject
 
 	@Deprecated(forRemoval = true)
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "persoon")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "patient.registratie.cache")
 	private List<Polis> polissen = new ArrayList<>();
 
 	@Deprecated(forRemoval = true)

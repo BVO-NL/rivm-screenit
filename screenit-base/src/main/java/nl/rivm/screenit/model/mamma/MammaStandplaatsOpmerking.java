@@ -38,13 +38,10 @@ import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.util.SkipFieldForDiff;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "mamma", name = "standplaats_opmerking")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 @Audited
 public class MammaStandplaatsOpmerking extends AbstractHibernateObject implements IActief
 {

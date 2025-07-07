@@ -37,15 +37,11 @@ import jakarta.persistence.Table;
 import nl.rivm.screenit.model.colon.IntakeMakenLogEventRegel;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(schema = "gedeeld")
 public class IntakeMakenLogEvent extends LogEvent
 {
 	@OneToMany(mappedBy = "logEvent", cascade = CascadeType.ALL)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<IntakeMakenLogEventRegel> regels = new ArrayList<>();
 
 	@Column(length = HibernateMagicNumber.L1024)
@@ -53,7 +49,6 @@ public class IntakeMakenLogEvent extends LogEvent
 
 	@ElementCollection
 	@Column(length = HibernateMagicNumber.L4000)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	@CollectionTable(schema = "gedeeld", name = "intake_maken_log_event_exception_stack_trace")
 	private List<String> exceptionStackTrace = new ArrayList<>();
 

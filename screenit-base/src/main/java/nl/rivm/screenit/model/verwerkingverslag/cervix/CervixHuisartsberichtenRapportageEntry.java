@@ -31,12 +31,8 @@ import jakarta.persistence.Table;
 import nl.rivm.screenit.model.enums.HuisartsBerichtType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(schema = "cervix", name = "huisartsberichten_rapportage_entry")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class CervixHuisartsberichtenRapportageEntry extends AbstractHibernateObject
 {
 	@ManyToOne(optional = false)

@@ -69,7 +69,7 @@ import nl.rivm.screenit.service.MailService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.ZipUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5Session;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.io.FileUtils;
@@ -211,7 +211,7 @@ public abstract class AbstractUitnodigingenVersturenTasklet<U extends InpakbareU
 			var startMetGenererenTijd = System.currentTimeMillis();
 			for (var uitnodigingId : uitnodigingIds)
 			{
-				forkJoinPool.submit(() -> OpenHibernate5Session.withCommittedTransaction().run(() ->
+				forkJoinPool.submit(() -> OpenHibernateSession.withCommittedTransaction().run(() ->
 					genereerUitnodiging(uitnodigingId)));
 			}
 			forkJoinPool.shutdown();

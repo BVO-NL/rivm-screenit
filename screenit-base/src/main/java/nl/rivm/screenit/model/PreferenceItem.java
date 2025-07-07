@@ -31,8 +31,6 @@ import lombok.Setter;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import nl.topicuszorg.preferencemodule.model.IPreferenceItem;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Getter
@@ -40,7 +38,6 @@ import org.hibernate.envers.Audited;
 @Audited
 @Table(schema = "algemeen")
 @Entity(name = "pref_prefitem")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class PreferenceItem extends AbstractHibernateObject implements IPreferenceItem
 {
 

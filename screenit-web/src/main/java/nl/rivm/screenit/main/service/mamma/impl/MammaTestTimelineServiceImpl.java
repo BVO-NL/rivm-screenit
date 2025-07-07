@@ -60,9 +60,12 @@ import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Huisarts_;
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.InstellingGebruiker_;
+import nl.rivm.screenit.model.Permissie;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
+import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
+import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaAnnotatieAfbeelding;
@@ -108,6 +111,7 @@ import nl.rivm.screenit.service.mamma.MammaBaseTestTimelineService;
 import nl.rivm.screenit.service.mamma.MammaBaseTestTimelineTimeService;
 import nl.rivm.screenit.service.mamma.MammaVolgendeUitnodigingService;
 import nl.rivm.screenit.service.mamma.enums.MammaTestTimeLineDossierTijdstip;
+import nl.rivm.screenit.util.AutorisatieUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
@@ -960,8 +964,8 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		var sort = Sort.by(Sort.Order.asc(propertyChain(InstellingGebruiker_.MEDEWERKER, Gebruiker_.GEBRUIKERSNAAM)));
 		var instellingGebruikers = medewerkerService.getActieveRadiologen(zoekInstellingGebruiker, new ArrayList<>(), sort)
 			.stream()
-			.filter(m -> beoordelingService.isBevoegdVoorArbitrage(m))
-			.collect(Collectors.toList());
+			.filter(this::isBevoegdVoorArbitrage)
+			.toList();
 		var iterator = instellingGebruikers.iterator();
 
 		var radiologen = new InstellingGebruiker[2];
@@ -977,6 +981,17 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		}
 
 		return radiologen;
+	}
+
+	private boolean isBevoegdVoorArbitrage(InstellingGebruiker organisatieMedewerker)
+	{
+
+		return organisatieMedewerker.getRollen().stream()
+			.filter(organisatieRol -> organisatieRol.getActief() && organisatieRol.getRol().getActief())
+			.flatMap(organisatieRol -> organisatieRol.getRol().getPermissies().stream())
+			.filter(Permissie::getActief)
+			.anyMatch(permissie -> permissie.getRecht() == Recht.GEBRUIKER_SCREENING_MAMMA_ARBITRAGE_WERKLIJST &&
+				AutorisatieUtil.isMinimumActie(permissie.getActie(), Actie.TOEVOEGEN));
 	}
 
 	@Override

@@ -33,13 +33,10 @@ import jakarta.persistence.UniqueConstraint;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "algemeen", uniqueConstraints = @UniqueConstraint(name = "uk_organisatie_parameter", columnNames = { "organisatie", "key" }))
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 @Audited
 public class OrganisatieParameter extends AbstractHibernateObject
 {

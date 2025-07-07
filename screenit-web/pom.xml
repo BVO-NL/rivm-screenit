@@ -160,6 +160,10 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>nl.rivm.screenit</groupId>
+            <artifactId>screenit-ims-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
@@ -228,12 +232,6 @@
         <dependency>
             <groupId>org.wicketstuff</groupId>
             <artifactId>wicket-datetime</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.wicketstuff</groupId>
@@ -243,21 +241,6 @@
         <dependency>
             <groupId>org.wicketstuff</groupId>
             <artifactId>wicketstuff-shiro</artifactId>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>wicket</artifactId>
-                    <groupId>org.apache.wicket</groupId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.shiro</groupId>
-                    <artifactId>shiro-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.shiro</groupId>
-                    <artifactId>shiro-web</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -332,6 +315,12 @@
         <dependency>
             <groupId>nl.topicuszorg.wicket-extensions</groupId>
             <artifactId>wicket-extensions</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-ant</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

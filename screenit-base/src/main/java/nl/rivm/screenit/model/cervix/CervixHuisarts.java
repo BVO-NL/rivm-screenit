@@ -33,10 +33,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.UniqueConstraint;
 
 import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.OrganisatieType;
@@ -45,10 +43,6 @@ import nl.rivm.screenit.model.cervix.enums.CervixHuisartsAanmeldStatus;
 import org.hibernate.envers.Audited;
 
 @Entity
-@Table(
-	schema = "cervix",
-	name = "huisarts",
-	uniqueConstraints = { @UniqueConstraint(columnNames = "postadres") })
 @Audited
 public class CervixHuisarts extends Instelling implements ICervixHuisartsportaalObject
 {

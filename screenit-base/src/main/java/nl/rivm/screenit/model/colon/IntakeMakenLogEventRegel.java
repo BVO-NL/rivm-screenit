@@ -29,14 +29,10 @@ import jakarta.persistence.Table;
 import nl.rivm.screenit.model.logging.IntakeMakenLogEvent;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "colon")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class IntakeMakenLogEventRegel extends AbstractHibernateObject
 {
 	@ManyToOne

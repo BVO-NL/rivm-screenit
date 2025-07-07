@@ -35,7 +35,6 @@ import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.Instelling_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
@@ -115,7 +114,7 @@ public class MammaUploadBeeldenServiceImpl implements MammaUploadBeeldenService
 					{
 						var ziekenhuisJoin = join(r, MammaUploadBeeldenVerzoek_.ziekenhuis);
 						return List.of(
-							ziekenhuisJoin.get(SingleTableHibernateObject_.id),
+							ziekenhuisJoin.get(AbstractHibernateObject_.id),
 							ziekenhuisJoin.get(Instelling_.naam),
 							cb.count(r.get(AbstractHibernateObject_.id)),
 							ziekenhuisJoin.get(Instelling_.telefoon),
@@ -126,7 +125,7 @@ public class MammaUploadBeeldenServiceImpl implements MammaUploadBeeldenService
 					{
 						var ziekenhuisJoin = join(r, MammaUploadBeeldenVerzoek_.ziekenhuis);
 						return List.of(
-							ziekenhuisJoin.get(SingleTableHibernateObject_.id),
+							ziekenhuisJoin.get(AbstractHibernateObject_.id),
 							ziekenhuisJoin.get(Instelling_.naam),
 							ziekenhuisJoin.get(Instelling_.telefoon),
 							ziekenhuisJoin.get(Instelling_.telefoon2)

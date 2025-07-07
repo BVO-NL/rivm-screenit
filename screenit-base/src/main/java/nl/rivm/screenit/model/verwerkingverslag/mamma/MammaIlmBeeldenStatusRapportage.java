@@ -35,14 +35,10 @@ import lombok.Setter;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Getter
 @Setter
 @Table(schema = "mamma", name = "ilm_beelden_status_rapportage")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class MammaIlmBeeldenStatusRapportage extends AbstractHibernateObject
 {
 	@Column(nullable = false)
@@ -52,6 +48,5 @@ public class MammaIlmBeeldenStatusRapportage extends AbstractHibernateObject
 	private long aantalFailedRetries = 0;
 
 	@OneToMany(mappedBy = "rapportage", cascade = CascadeType.ALL)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<MammaIlmBeeldenStatusRapportageEntry> entries = new ArrayList<>();
 }

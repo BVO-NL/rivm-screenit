@@ -247,7 +247,6 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 			protected void onUpdate(AjaxRequestTarget target)
 			{
 				setDateForEndTimeField();
-
 			}
 		};
 

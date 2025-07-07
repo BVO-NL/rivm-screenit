@@ -43,8 +43,6 @@ public interface ColonVerwerkVerslagService
 
 	void onAfterVerwerkVerslagContent(PaVerslag verslag);
 
-	void ontkoppelOfVerwijderComplicaties(MdlVerslag mdlVerslag);
-
 	ColonScreeningRonde getValideScreeningsRonde(Client client, Verslag olderVerslag, Date onderzoeksdatum);
 
 	List<MdlVerslag> getAlleMdlVerslagenVanClient(Client client);

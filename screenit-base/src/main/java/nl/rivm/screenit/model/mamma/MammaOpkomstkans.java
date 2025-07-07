@@ -33,15 +33,11 @@ import jakarta.persistence.UniqueConstraint;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(
 	schema = "mamma",
 	name = "opkomstkans",
 	uniqueConstraints = { @UniqueConstraint(columnNames = "afspraak"), })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 public class MammaOpkomstkans extends AbstractHibernateObject
 {
 	@OneToOne(optional = false, fetch = FetchType.LAZY)

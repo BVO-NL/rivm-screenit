@@ -60,7 +60,6 @@
         <mapping class="nl.rivm.screenit.model.BagAdres"/>
         <mapping class="nl.rivm.screenit.model.GbaPersoon"/>
         <mapping class="nl.rivm.screenit.model.PostcodeCoordinaten"/>
-        <mapping class="nl.rivm.screenit.model.colon.Complicatie"/>
 
         <mapping class="nl.rivm.screenit.model.BriefDefinitie"/>
         <mapping class="nl.rivm.screenit.model.colon.ColonBrief"/>

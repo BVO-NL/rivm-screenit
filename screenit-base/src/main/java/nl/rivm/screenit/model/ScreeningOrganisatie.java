@@ -37,8 +37,6 @@ import jakarta.persistence.OneToOne;
 
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -51,11 +49,9 @@ public class ScreeningOrganisatie extends Instelling
 	private static final long serialVersionUID = 1L;
 
 	@OneToMany(mappedBy = "screeningOrganisatie", cascade = CascadeType.ALL)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 	private List<Gemeente> gemeentes = new ArrayList<>();
 
 	@OneToMany(mappedBy = "regio", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 	private List<ZASRetouradres> retouradressen = new ArrayList<>();
 
 	private Integer ifobtRetourPercentage;

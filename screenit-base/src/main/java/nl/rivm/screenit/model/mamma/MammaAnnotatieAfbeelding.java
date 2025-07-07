@@ -32,8 +32,6 @@ import jakarta.persistence.Table;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
@@ -41,7 +39,6 @@ import org.hibernate.envers.NotAudited;
 
 @Entity
 @Table(schema = "mamma", name = "annotatie_afbeelding")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 @Audited
 public class MammaAnnotatieAfbeelding extends AbstractHibernateObject
 {

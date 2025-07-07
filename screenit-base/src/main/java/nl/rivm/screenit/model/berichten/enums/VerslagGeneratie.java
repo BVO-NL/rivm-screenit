@@ -21,8 +21,11 @@ package nl.rivm.screenit.model.berichten.enums;
  * =========================LICENSE_END==================================
  */
 
+import lombok.Getter;
+
 import nl.rivm.screenit.model.berichten.VerslagProjectVersionMapping;
 
+@Getter
 public enum VerslagGeneratie
 {
 	V1,
@@ -34,11 +37,8 @@ public enum VerslagGeneratie
 	V7,
 	V8,
 	V10,
-	V11;
-
-	VerslagGeneratie()
-	{
-	}
+	V11,
+	V12;
 
 	public boolean isHuidigeGeneratie(VerslagType verslagType)
 	{

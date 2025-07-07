@@ -23,7 +23,6 @@ package nl.rivm.screenit.mamma.se.config;
 
 import nl.rivm.screenit.mamma.se.security.SERealm;
 
-import org.apache.shiro.cache.jcache.JCacheManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
@@ -39,11 +38,10 @@ public class ShiroConfig
 
 	@Bean
 	@Profile("!test")
-	public DefaultWebSecurityManager shiroSecurityManager(SERealm realm, JCacheManager jCacheManager)
+	public DefaultWebSecurityManager shiroSecurityManager(SERealm realm)
 	{
 		var securityManager = new DefaultWebSecurityManager();
 		securityManager.setRealm(realm);
-		securityManager.setCacheManager(jCacheManager);
 		return securityManager;
 	}
 

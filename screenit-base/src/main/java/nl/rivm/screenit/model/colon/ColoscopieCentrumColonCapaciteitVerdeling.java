@@ -31,14 +31,10 @@ import lombok.Setter;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(schema = "colon")
 @Setter
 @Getter
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 public class ColoscopieCentrumColonCapaciteitVerdeling extends AbstractHibernateObject
 {
 	@ManyToOne

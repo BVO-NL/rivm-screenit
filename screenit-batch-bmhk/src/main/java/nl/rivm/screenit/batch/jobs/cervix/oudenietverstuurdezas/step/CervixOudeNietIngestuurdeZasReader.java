@@ -22,7 +22,6 @@ package nl.rivm.screenit.batch.jobs.cervix.oudenietverstuurdezas.step;
  */
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.charset.Charset;
 
 import lombok.RequiredArgsConstructor;
@@ -34,7 +33,6 @@ import nl.rivm.screenit.service.OrganisatieParameterService;
 
 import org.apache.commons.io.IOUtils;
 import org.hibernate.HibernateException;
-import org.hibernate.ScrollableResults;
 import org.hibernate.query.NativeQuery;
 import org.springframework.stereotype.Component;
 
@@ -79,11 +77,5 @@ public class CervixOudeNietIngestuurdeZasReader extends BaseSqlScrollableResultR
 		{
 			throw new RuntimeException(e);
 		}
-	}
-
-	@Override
-	protected Long getScrollableResult(ScrollableResults scrollableResults)
-	{
-		return ((BigInteger) scrollableResults.get()[0]).longValue();
 	}
 }

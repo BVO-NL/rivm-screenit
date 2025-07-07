@@ -24,12 +24,12 @@ package nl.rivm.screenit.specification.cervix;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixRegioBrief;
 import nl.rivm.screenit.model.cervix.CervixRegioBrief_;
 import nl.rivm.screenit.model.cervix.CervixRegioMergedBrieven;
 import nl.rivm.screenit.specification.ExtendedSpecification;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -58,7 +58,7 @@ public class CervixRegioBriefSpecification
 		return (r, q, cb) ->
 		{
 			var organisatieJoin = join(r, CervixRegioBrief_.regio);
-			return cb.equal(organisatieJoin.get(SingleTableHibernateObject_.id), soId);
+			return cb.equal(organisatieJoin.get(AbstractHibernateObject_.id), soId);
 		};
 	}
 }

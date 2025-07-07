@@ -33,19 +33,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.model.IActief;
-import nl.rivm.screenit.model.SingleTableHibernateObject;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "cervix", name = "tarief")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Audited
 @Getter
 @Setter
-public abstract class CervixTarief extends SingleTableHibernateObject implements IActief
+public abstract class CervixTarief extends AbstractHibernateObject implements IActief
 {
 
 	@Column(nullable = false)

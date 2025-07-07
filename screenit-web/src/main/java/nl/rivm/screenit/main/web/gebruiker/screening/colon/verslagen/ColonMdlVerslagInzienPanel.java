@@ -21,28 +21,40 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon.verslagen;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.Constants;
+import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
+
+import nl.rivm.screenit.main.web.gebruiker.screening.gedeeld.verslagen.VerslagInzienPanel;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.GenericPanel;
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
-import org.wicketstuff.datetime.markup.html.basic.DateLabel;
+import org.jetbrains.annotations.NotNull;
 
-public class ColonMdlVerslagInzienPanel extends GenericPanel<MdlVerslag>
+import static nl.rivm.screenit.model.colon.MdlVerslag_.VERSLAG_CONTENT;
+import static nl.rivm.screenit.model.colon.verslag.mdl.MdlColoscopieMedischeObservatie_.DEFINITIEF_VERVOLGBELEID_VOOR_BEVOLKINGSONDERZOEKG;
+import static nl.rivm.screenit.model.colon.verslag.mdl.MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg_.DEFINITIEF_VERVOLGBELEID_VOOR_BEVOLKINGSONDERZOEK;
+import static nl.rivm.screenit.model.colon.verslag.mdl.MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg_.PERIODE_VERVOLG_SCOPIE;
+import static nl.rivm.screenit.model.colon.verslag.mdl.MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg_.PERIODE_VERVOLG_SURVEILLANCE;
+import static nl.rivm.screenit.model.colon.verslag.mdl.MdlVerrichting_.AANVANG_VERRICHTING;
+import static nl.rivm.screenit.model.colon.verslag.mdl.MdlVerslagContent_.COLOSCOPIE_MEDISCHE_OBSERVATIE;
+import static nl.rivm.screenit.model.colon.verslag.mdl.MdlVerslagContent_.VERRICHTING;
+import static nl.rivm.screenit.util.StringUtil.propertyChain;
+
+@Slf4j
+public class ColonMdlVerslagInzienPanel extends VerslagInzienPanel<MdlVerslag>
 {
+
 	public ColonMdlVerslagInzienPanel(String id, IModel<MdlVerslag> model)
 	{
-		super(id, new CompoundPropertyModel<>(model));
+		super(id, model);
 	}
 
-	@Override
-	protected void onInitialize()
+	protected @NotNull List<String> getSelectedFields()
 	{
-		super.onInitialize();
-		add(new Label("verslagContent.coloscopieMedischeObservatie.definitiefVervolgbeleidVoorBevolkingsonderzoekg.definitiefVervolgbeleidVoorBevolkingsonderzoek.displayNameNl"));
-		add(new Label("verslagContent.coloscopieMedischeObservatie.definitiefVervolgbeleidVoorBevolkingsonderzoekg.periodeVervolgSurveillancescopie.displayNameNl"));
-		add(DateLabel.forDatePattern("verslagContent.verrichting.aanvangVerrichting", Constants.DEFAULT_DATE_FORMAT));
+		return List.of(propertyChain(VERSLAG_CONTENT, VERRICHTING, AANVANG_VERRICHTING),
+			propertyChain(VERSLAG_CONTENT, COLOSCOPIE_MEDISCHE_OBSERVATIE, DEFINITIEF_VERVOLGBELEID_VOOR_BEVOLKINGSONDERZOEKG, DEFINITIEF_VERVOLGBELEID_VOOR_BEVOLKINGSONDERZOEK),
+			propertyChain(VERSLAG_CONTENT, COLOSCOPIE_MEDISCHE_OBSERVATIE, DEFINITIEF_VERVOLGBELEID_VOOR_BEVOLKINGSONDERZOEKG, PERIODE_VERVOLG_SURVEILLANCE),
+			propertyChain(VERSLAG_CONTENT, COLOSCOPIE_MEDISCHE_OBSERVATIE, DEFINITIEF_VERVOLGBELEID_VOOR_BEVOLKINGSONDERZOEKG, PERIODE_VERVOLG_SCOPIE));
 	}
 }

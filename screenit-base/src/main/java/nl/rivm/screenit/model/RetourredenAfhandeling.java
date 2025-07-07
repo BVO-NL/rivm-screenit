@@ -30,12 +30,8 @@ import jakarta.persistence.Table;
 import nl.rivm.screenit.model.enums.RetourzendingAfhandelingType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(schema = "gedeeld")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class RetourredenAfhandeling extends AbstractHibernateObject
 {
 	@Column(nullable = false, unique = true)

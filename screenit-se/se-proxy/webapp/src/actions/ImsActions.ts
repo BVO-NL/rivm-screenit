@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * se-proxy
  * %%
- * Copyright (C) 2017 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,9 +24,17 @@ export type SetStudyForImsAction = {
 	activeStudyForIms: number | undefined;
 };
 export const SET_STUDY_FOR_IMS = "SET_STUDY_FOR_IMS"
-export const createActionSetStudyForIms = (uitnodigingsNummer?: number): SetStudyForImsAction => {
+
+export const createActionSetStudyForIms = (uitnodigingsNummer: number): SetStudyForImsAction => {
 	return {
 		type: SET_STUDY_FOR_IMS,
 		activeStudyForIms: uitnodigingsNummer,
+	}
+}
+
+export const createActionClearStudyForIms = (): SetStudyForImsAction => {
+	return {
+		type: SET_STUDY_FOR_IMS,
+		activeStudyForIms: undefined,
 	}
 }

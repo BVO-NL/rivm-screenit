@@ -36,8 +36,6 @@ import nl.rivm.screenit.model.Brief_;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Dossier_;
 import nl.rivm.screenit.model.GbaPersoon_;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.Uitnodiging_;
 import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.cervix.CervixCytologieVerslag_;
@@ -66,6 +64,7 @@ import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.algemeen.ClientSpecification;
 import nl.rivm.screenit.util.DateUtil;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -218,7 +217,7 @@ public class CervixMonsterSpecification
 
 	public static Specification<CervixMonster> isNietHetzelfdeMonster(CervixMonster andersDan)
 	{
-		return (r, q, cb) -> cb.notEqual(r.get(SingleTableHibernateObject_.id), andersDan.getId());
+		return (r, q, cb) -> cb.notEqual(r.get(AbstractHibernateObject_.id), andersDan.getId());
 	}
 
 	public static <T extends CervixMonster> Specification<CervixMonster> isMonsterType(Class<T> type)
@@ -352,7 +351,7 @@ public class CervixMonsterSpecification
 
 	public static ExtendedSpecification<CervixUitstrijkje> heeftLaboratoriumMetId(Long id)
 	{
-		return (r, q, cb) -> cb.equal(r.get(CervixMonster_.laboratorium), id);
+		return (r, q, cb) -> cb.equal(r.get(CervixMonster_.laboratorium).get(AbstractHibernateObject_.id), id);
 	}
 
 	private static Specification<CervixMonster> heeftGeenMonsterMetUitslagBriefSubquery()
@@ -361,7 +360,7 @@ public class CervixMonsterSpecification
 		{
 			var subquery = q.subquery(Long.class);
 			var subRoot = subquery.from(CervixBrief.class);
-			subquery.select(subRoot.get(TablePerClassHibernateObject_.id))
+			subquery.select(subRoot.get(AbstractHibernateObject_.id))
 				.where(cb.and(
 					cb.equal(subRoot, r.get(CervixMonster_.brief)), 
 					heeftGegenereerdeBriefOfProjectBriefVanType(BriefType.CERVIX_UITSLAG_BRIEVEN).toPredicate(subRoot, q, cb)
@@ -379,7 +378,7 @@ public class CervixMonsterSpecification
 			var subqueryBriefJoin = subRoot.join(CervixUitnodiging_.brief);
 
 			var mainQueryScreeningRondeJoin = join(r, CervixMonster_.ontvangstScreeningRonde);
-			subquery.select(subRoot.get(TablePerClassHibernateObject_.id)).where(
+			subquery.select(subRoot.get(AbstractHibernateObject_.id)).where(
 				cb.and(
 					cb.equal(subRoot.get(CervixUitnodiging_.monsterType), CervixMonsterType.ZAS),
 					cb.equal(subRoot.get(CervixUitnodiging_.screeningRonde), mainQueryScreeningRondeJoin),
@@ -401,7 +400,7 @@ public class CervixMonsterSpecification
 			var monsterJoin = subRoot.join(CervixUitnodiging_.monster);
 			var briefJoin = monsterJoin.join(CervixMonster_.brief);
 
-			subquery.select(subRoot.get(TablePerClassHibernateObject_.id)).where(
+			subquery.select(subRoot.get(AbstractHibernateObject_.id)).where(
 				cb.and(
 					cb.equal(monsterJoin, r),
 					cb.equal(subRoot.get(CervixUitnodiging_.monsterType), CervixMonsterType.ZAS),

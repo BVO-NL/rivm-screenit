@@ -61,16 +61,17 @@ public class ColonIntakelocatieServiceImpl implements ColonIntakelocatieService
 	@Override
 	public Range<LocalDate> getSignaleringstermijnBereik()
 	{
-		var signaleringsTermijn = preferenceService.getInteger(PreferenceKey.COLON_SIGNALERINGSTERMIJN_GEEN_CAPACITEIT.name(), 8);
+		var signaleringstermijn = preferenceService.getInteger(PreferenceKey.COLON_SIGNALERINGSTERMIJN_GEEN_CAPACITEIT.name(), 8);
+		var aaneengeslotenPeriode = preferenceService.getInteger(PreferenceKey.COLON_SIGNALERINGSTERMIJN_AANEENGESLOTEN_PERIODE.name(), 3);
 
-		var start = dateSupplier.getLocalDate().plusWeeks(signaleringsTermijn);
-
+		var start = dateSupplier.getLocalDate().plusWeeks(signaleringstermijn);
 		if (!start.getDayOfWeek().equals(DayOfWeek.MONDAY))
 		{
 			start = start.with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
 		}
+		var end = start.plusWeeks(aaneengeslotenPeriode).minusDays(1);
 
-		return Range.closed(start, start.plusDays(6));
+		return Range.closed(start, end);
 	}
 
 	@Override
@@ -88,7 +89,7 @@ public class ColonIntakelocatieServiceImpl implements ColonIntakelocatieService
 	public String getSignaleringstermijnTekst()
 	{
 		var signaleringstermijn = getSignaleringstermijnBereik();
-		return signaleringstermijn.lowerEndpoint().format(DateUtil.LOCAL_DATE_FORMAT) + " - " + signaleringstermijn.upperEndpoint().format(DateUtil.LOCAL_DATE_FORMAT);
+		return signaleringstermijn.lowerEndpoint().format(DateUtil.LOCAL_DATE_FORMAT) + " - " + signaleringstermijn.lowerEndpoint().plusDays(6).format(DateUtil.LOCAL_DATE_FORMAT);
 	}
 
 	@Override

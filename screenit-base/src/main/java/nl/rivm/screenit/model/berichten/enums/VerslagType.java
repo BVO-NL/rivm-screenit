@@ -21,121 +21,57 @@ package nl.rivm.screenit.model.berichten.enums;
  * =========================LICENSE_END==================================
  */
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import nl.rivm.screenit.model.berichten.Verslag;
-import nl.rivm.screenit.model.berichten.cda.CdaOID;
 import nl.rivm.screenit.model.cervix.CervixCytologieVerslag;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.PaVerslag;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
-import nl.rivm.screenit.model.formulieren.TypeFormulier;
 import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
 
+@Getter
+@AllArgsConstructor
 public enum VerslagType
 {
 	MDL(
 		Bevolkingsonderzoek.COLON,
-		TypeFormulier.MDL,
-		VerslagGeneratie.V11,
-		CdaOID.CONCEPTS_ROOT_OID,
+		VerslagGeneratie.V12,
 		LogGebeurtenis.MDL_VERSLAG_VERWIJDERD,
-		LogGebeurtenis.MDL_VERSLAG_HEROPEND,
 		MdlVerslag.class),
 
 	PA_LAB(
 		Bevolkingsonderzoek.COLON,
-		TypeFormulier.PALGA,
-		VerslagGeneratie.V11,
-		CdaOID.CONCEPTS_ROOT_OID,
+		VerslagGeneratie.V12,
 		LogGebeurtenis.PA_VERSLAG_VERWIJDERD,
-		LogGebeurtenis.PA_VERSLAG_HEROPEND,
 		PaVerslag.class),
 
 	CERVIX_CYTOLOGIE(
 		Bevolkingsonderzoek.CERVIX,
-		TypeFormulier.CYTOLOGIE,
-		VerslagGeneratie.V11,
-		CdaOID.CONCEPTS_ROOT_OID,
-		null,
+		VerslagGeneratie.V12,
 		null,
 		CervixCytologieVerslag.class),
 
 	MAMMA_PA_FOLLOW_UP(
 		Bevolkingsonderzoek.MAMMA,
-		TypeFormulier.MAMMA_PA_FOLLOW_UP,
 		VerslagGeneratie.V2,
-		CdaOID.CONCEPTS_ROOT_OID_BK,
 		LogGebeurtenis.MAMMA_VERSLAG_FOLLOW_UP_VERWIJDERD,
-		LogGebeurtenis.MAMMA_VERSLAG_FOLLOW_UP_HEROPEND,
 		MammaFollowUpVerslag.class),
 
 	MAMMA_PA_FOLLOW_UP_MONITOR(
 		Bevolkingsonderzoek.MAMMA,
-		null,
 		VerslagGeneratie.V2,
-		CdaOID.CONCEPTS_ROOT_OID_BK,
 		LogGebeurtenis.MAMMA_VERSLAG_FOLLOW_UP_VERWIJDERD,
-		null,
 		MammaFollowUpVerslag.class);
 
 	private final Bevolkingsonderzoek bevolkingsonderzoek;
 
-	private final TypeFormulier typeFormulier;
-
 	private final VerslagGeneratie huidigeGeneratie;
-
-	private final String conceptRootOid;
-
-	private final Class<? extends Verslag<?, ?>> clazz;
 
 	private final LogGebeurtenis verwijderdVerslagLogGebeurtenis;
 
-	private final LogGebeurtenis heropendVerslagLogGebeurtenis;
+	private final Class<? extends Verslag<?, ?>> clazz;
 
-	VerslagType(Bevolkingsonderzoek bevolkingsonderzoek, TypeFormulier typeFormulier, VerslagGeneratie huidigeGeneratie, String conceptRootOid,
-		LogGebeurtenis verwijderdVerslagLogGebeurtenis, LogGebeurtenis heropendVerslagLogGebeurtenis, Class<? extends Verslag<?, ?>> clazz)
-	{
-		this.bevolkingsonderzoek = bevolkingsonderzoek;
-		this.typeFormulier = typeFormulier;
-		this.huidigeGeneratie = huidigeGeneratie;
-		this.conceptRootOid = conceptRootOid;
-		this.verwijderdVerslagLogGebeurtenis = verwijderdVerslagLogGebeurtenis;
-		this.heropendVerslagLogGebeurtenis = heropendVerslagLogGebeurtenis;
-		this.clazz = clazz;
-	}
-
-	public Bevolkingsonderzoek getBevolkingsonderzoek()
-	{
-		return bevolkingsonderzoek;
-	}
-
-	public TypeFormulier getTypeFormulier()
-	{
-		return typeFormulier;
-	}
-
-	public VerslagGeneratie getHuidigeGeneratie()
-	{
-		return huidigeGeneratie;
-	}
-
-	public String getConceptRootOid()
-	{
-		return conceptRootOid;
-	}
-
-	public Class<? extends Verslag<?, ?>> getClazz()
-	{
-		return clazz;
-	}
-
-	public LogGebeurtenis getVerwijderdVerslagLogGebeurtenis()
-	{
-		return verwijderdVerslagLogGebeurtenis;
-	}
-
-	public LogGebeurtenis getHeropendVerslagLogGebeurtenis()
-	{
-		return heropendVerslagLogGebeurtenis;
-	}
 }

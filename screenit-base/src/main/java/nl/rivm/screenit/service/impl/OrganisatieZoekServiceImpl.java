@@ -38,7 +38,6 @@ import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.Woonplaats_;
 import nl.rivm.screenit.model.ZorgInstelling;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
@@ -57,6 +56,7 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.OrganisatieZoekService;
 import nl.rivm.screenit.util.BigDecimalUtil;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.organisatie.model.Adres;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -137,7 +137,7 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 		{
 			sort = sort.and(Sort.by(direction, propertyChain(POSTADRES, STRAAT)));
 		}
-		sort = sort.and(Sort.by(direction, SingleTableHibernateObject_.ID));
+		sort = sort.and(Sort.by(direction, AbstractHibernateObject_.ID));
 		return sort;
 	}
 

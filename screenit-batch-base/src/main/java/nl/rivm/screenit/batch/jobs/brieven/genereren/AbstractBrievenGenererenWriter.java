@@ -42,7 +42,7 @@ import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.impl.IBrievenGeneratorHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5Session;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.core.JobExecution;
@@ -85,7 +85,7 @@ public abstract class AbstractBrievenGenererenWriter<T extends Brief, S extends 
 	@Override
 	public void open(ExecutionContext executionContext) throws ItemStreamException
 	{
-		OpenHibernate5Session.withCommittedTransaction().run(() ->
+		OpenHibernateSession.withCommittedTransaction().run(() ->
 		{
 
 			Map<Object, Object> resourcesMap = resources.get();
@@ -233,7 +233,7 @@ public abstract class AbstractBrievenGenererenWriter<T extends Brief, S extends 
 	@Override
 	public void close() throws ItemStreamException
 	{
-		OpenHibernate5Session.withCommittedTransaction().run(() ->
+		OpenHibernateSession.withCommittedTransaction().run(() ->
 		{
 			try
 			{

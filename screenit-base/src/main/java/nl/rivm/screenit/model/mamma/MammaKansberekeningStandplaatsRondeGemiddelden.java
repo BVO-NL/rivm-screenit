@@ -36,8 +36,6 @@ import jakarta.persistence.UniqueConstraint;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -46,7 +44,6 @@ import org.hibernate.envers.Audited;
 	name = "kansberekening_standplaats_ronde_gemiddelden",
 	uniqueConstraints = { @UniqueConstraint(columnNames = "standplaats_ronde") })
 @Audited
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 public class MammaKansberekeningStandplaatsRondeGemiddelden extends AbstractHibernateObject
 {
 	@Column(nullable = false)

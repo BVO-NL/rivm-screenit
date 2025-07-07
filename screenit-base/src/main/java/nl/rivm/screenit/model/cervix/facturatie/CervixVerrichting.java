@@ -48,8 +48,6 @@ import nl.rivm.screenit.model.cervix.CervixMonster;
 import nl.rivm.screenit.model.cervix.enums.CervixTariefType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -59,7 +57,6 @@ import org.hibernate.envers.Audited;
 	schema = "cervix",
 	name = "verrichting",
 	indexes = { @Index(name = "idx_CERVIX_VERRICHTING_VERRICHTINGS_DATUM", columnList = "verrichtingsDatum"), @Index(name = "idx_CERVIX_VERRICHTING_TYPE", columnList = "type") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Audited
 public class CervixVerrichting extends AbstractHibernateObject
 {

@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.cervix.verslag.cytologie;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +34,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.model.verslag.DSValueSet;
 import nl.rivm.screenit.model.verslag.DSValueSetValue;
@@ -45,27 +47,35 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "cervix")
+@Getter
+@Setter
 public class CervixCytologieCytologieUitslagBvoBmhk
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private CervixCytologieVerslagContent verslagContent;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "cytologieUitslagBvoBmhk", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Monster BMHK", extraTekst = "Monster BMHK", code = "2.16.840.1.113883.2.4.3.36.77.2.11.247", isReference = true)
+	@VraagElement(conceptId = "247", displayName = "Monster BMHK", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.213']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.384']]]/hl7:organizer/hl7:component/hl7:procedure/hl7:participant",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.213']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.384']]]/hl7:organizer/hl7:component/hl7:procedure/hl7:participant"
+	})
 	private CervixCytologieMonsterBmhk monsterBmhk;
 
 	@Column(length = 255)
-	@VraagElement(displayName = "C-nummer laboratorium", extraTekst = "Het rapportnummer dat is uitgereikt door het pathologie laboratorium", code = "2.16.840.1.113883.2.4.3.36.77.2.11.253", isVerplicht = true)
+	@VraagElement(conceptId = "253", displayName = "C-nummer laboratorium", xpaths = {
+		"/hl7:ClinicalDocument/hl7:setId/@extension",
+		"/hl7:ClinicalDocument/hl7:setId/@extension"
+	}, isVerplicht = true)
 	private String cnummerLaboratorium;
 
 	@Column(length = 255)
-	@VraagElement(displayName = "Versie protocol", extraTekst = "Versienummer van het gebruikte protocol m.b.v. de Palga protocolmodule", code = "2.16.840.1.113883.2.4.3.36.77.2.11.254", isVerplicht = true)
+	@VraagElement(conceptId = "254", displayName = "Versie protocol", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.212']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.430']]]/hl7:observation/hl7:value",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.212']]]/hl7:section/hl7:entry[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.430']]]/hl7:observation/hl7:value"
+	}, isVerplicht = true)
 	private String versieProtocol;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -80,7 +90,10 @@ public class CervixCytologieCytologieUitslagBvoBmhk
 		@DSValueSetValue(code = "K7", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.231"),
 		@DSValueSetValue(code = "K8", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.231")
 	})
-	@VraagElement(displayName = "KOPAC-B: Kompositie", extraTekst = "KOPAC-B: Kompositie", code = "2.16.840.1.113883.2.4.3.36.77.2.11.255", isVerplicht = true)
+	@VraagElement(conceptId = "255", displayName = "KOPAC-B: Kompositie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.432']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.432']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue kopacbKompositie;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -96,7 +109,10 @@ public class CervixCytologieCytologieUitslagBvoBmhk
 		@DSValueSetValue(code = "O8", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.232"),
 		@DSValueSetValue(code = "O9", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.232")
 	})
-	@VraagElement(displayName = "KOPAC-B: Ontstekingsverschijnselen", extraTekst = "KOPAC-B: Ontstekingsverschijnselen", code = "2.16.840.1.113883.2.4.3.36.77.2.11.256", isVerplicht = true)
+	@VraagElement(conceptId = "256", displayName = "KOPAC-B: Ontstekingsverschijnselen", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.433']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.433']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue kopacbOntstekingsverschijnselen;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -111,7 +127,10 @@ public class CervixCytologieCytologieUitslagBvoBmhk
 		@DSValueSetValue(code = "P7", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.233"),
 		@DSValueSetValue(code = "P9", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.233")
 	})
-	@VraagElement(displayName = "KOPAC-B: Plaveiselepitheel", extraTekst = "KOPAC-B: Plaveiselepitheel", code = "2.16.840.1.113883.2.4.3.36.77.2.11.257", isVerplicht = true)
+	@VraagElement(conceptId = "257", displayName = "KOPAC-B: Plaveiselepitheel", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.434']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.434']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue kopacbPlaveiselepitheel;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -127,7 +146,10 @@ public class CervixCytologieCytologieUitslagBvoBmhk
 		@DSValueSetValue(code = "A8", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.234"),
 		@DSValueSetValue(code = "A9", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.234")
 	})
-	@VraagElement(displayName = "KOPAC-B: Andere afwijkingen / endometrium", extraTekst = "KOPAC-B: Andere afwijkingen / endometrium", code = "2.16.840.1.113883.2.4.3.36.77.2.11.258", isVerplicht = true)
+	@VraagElement(conceptId = "258", displayName = "KOPAC-B: Andere afwijkingen / endometrium", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.435']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.435']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue kopacbAndereAfwijkingenEndometrium;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -142,7 +164,10 @@ public class CervixCytologieCytologieUitslagBvoBmhk
 		@DSValueSetValue(code = "C7", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.235"),
 		@DSValueSetValue(code = "C9", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.235")
 	})
-	@VraagElement(displayName = "KOPAC-B: Cilindercelepitheel", extraTekst = "KOPAC-B: Cilindercelepitheel", code = "2.16.840.1.113883.2.4.3.36.77.2.11.259", isVerplicht = true)
+	@VraagElement(conceptId = "259", displayName = "KOPAC-B: Cilindercelepitheel", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.436']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.436']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue kopacbCilindercelepitheel;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -150,7 +175,10 @@ public class CervixCytologieCytologieUitslagBvoBmhk
 		@DSValueSetValue(code = "B1", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.236"),
 		@DSValueSetValue(code = "B3", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.236")
 	})
-	@VraagElement(displayName = "KOPAC-B: Beoordeelbaarheid", extraTekst = "KOPAC-B: Beoordeelbaarheid", code = "2.16.840.1.113883.2.4.3.36.77.2.11.260", isVerplicht = true)
+	@VraagElement(conceptId = "260", displayName = "KOPAC-B: Beoordeelbaarheid", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.437']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.437']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue kopacbBeoordeelbaarheid;
 
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -163,7 +191,10 @@ public class CervixCytologieCytologieUitslagBvoBmhk
 		@DSValueSetValue(code = "E18", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.238"),
 		@DSValueSetValue(code = "E23", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.238")
 	})
-	@VraagElement(displayName = "KOPAC-B: Extra", extraTekst = "KOPAC-B: Extra", code = "2.16.840.1.113883.2.4.3.36.77.2.11.261")
+	@VraagElement(conceptId = "261", displayName = "KOPAC-B: Extra", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.438']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.438']]]/hl7:observation/hl7:value|@code"
+	})
 	private List<DSValue> kopacbExtra = new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -177,7 +208,10 @@ public class CervixCytologieCytologieUitslagBvoBmhk
 		@DSValueSetValue(code = "B3g", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.237"),
 		@DSValueSetValue(code = "B3h", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.237")
 	})
-	@VraagElement(displayName = "Reden onbeoordeelbaar B3", extraTekst = "Reden onbeoordeelbaar B3", code = "2.16.840.1.113883.2.4.3.36.77.2.11.262", isVerplicht = true)
+	@VraagElement(conceptId = "262", displayName = "Reden onbeoordeelbaar B3", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.437']]]/hl7:observation/hl7:entryRelationship/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.437']]]/hl7:observation/hl7:entryRelationship/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue redenOnbeoordeelbaarB3;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -191,7 +225,10 @@ public class CervixCytologieCytologieUitslagBvoBmhk
 		@DSValueSetValue(code = "Pap4", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.239"),
 		@DSValueSetValue(code = "Pap5", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.239")
 	})
-	@VraagElement(displayName = "PAP klasse", extraTekst = "PAP Klasse nav Cytologie op uitstrijkje", code = "2.16.840.1.113883.2.4.3.36.77.2.11.263", isVerplicht = true)
+	@VraagElement(conceptId = "263", displayName = "PAP klasse", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.439']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.439']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue papKlasse;
 
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -209,7 +246,10 @@ public class CervixCytologieCytologieUitslagBvoBmhk
 		@DSValueSetValue(code = "51642000", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "88400008", codeSystem = "2.16.840.1.113883.6.96")
 	})
-	@VraagElement(displayName = "Bethesda score", extraTekst = "Bethesda (2001) score", code = "2.16.840.1.113883.2.4.3.36.77.2.11.264", isVerplicht = true)
+	@VraagElement(conceptId = "264", displayName = "Bethesda score", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.440']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.214']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.558']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.440']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private List<DSValue> bethesdaScore = new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -222,11 +262,17 @@ public class CervixCytologieCytologieUitslagBvoBmhk
 		@DSValueSetValue(code = "6", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.101"),
 		@DSValueSetValue(code = "7", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.101")
 	})
-	@VraagElement(displayName = "Screeningsadvies / herhaling", extraTekst = "Screeningsadvies n.a.v. uitkomst cytologie onderzoek", code = "2.16.840.1.113883.2.4.3.36.77.2.11.265", isVerplicht = true)
+	@VraagElement(conceptId = "265", displayName = "Screeningsadvies / herhaling", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.215']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.385']]]/hl7:act/hl7:code|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.215']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.385']]]/hl7:act/hl7:code|@code"
+	}, isVerplicht = true)
 	private DSValue screeningsadviesHerhaling;
 
 	@Column
-	@VraagElement(displayName = "COS", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.2.11.275")
+	@VraagElement(conceptId = "275", displayName = "COS", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.212']]]/hl7:section/hl7:entry[hl7:observation[hl7:code[(@code='COS' and @codeSystem='2.16.840.1.113883.2.4.3.36.77.5.266')]]]/hl7:observation/hl7:value|@value",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.212']]]/hl7:section/hl7:entry[hl7:observation[hl7:code[(@code='COS' and @codeSystem='2.16.840.1.113883.2.4.3.36.77.5.266')]]]/hl7:observation/hl7:value|@value"
+	})
 	private Boolean cos;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -234,177 +280,10 @@ public class CervixCytologieCytologieUitslagBvoBmhk
 		@DSValueSetValue(code = "TIS", codeSystem = "2.16.840.1.113883.2.4.3.36.77.11.267"),
 		@DSValueSetValue(code = "FPGIS", codeSystem = "2.16.840.1.113883.2.4.3.36.77.11.267")
 	})
-	@VraagElement(displayName = "COS platform", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.2.11.276")
+	@VraagElement(conceptId = "276", displayName = "COS platform", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.212']]]/hl7:section/hl7:entry[hl7:observation[hl7:code[(@code='COS' and @codeSystem='2.16.840.1.113883.2.4.3.36.77.5.266')]]]/hl7:observation/hl7:entryRelationship/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.212']]]/hl7:section/hl7:entry[hl7:observation[hl7:code[(@code='COS' and @codeSystem='2.16.840.1.113883.2.4.3.36.77.5.266')]]]/hl7:observation/hl7:entryRelationship/hl7:observation/hl7:value|@code"
+	})
 	private DSValue cosPlatform;
-
-	public CervixCytologieVerslagContent getVerslagContent()
-	{
-		return verslagContent;
-	}
-
-	public void setVerslagContent(CervixCytologieVerslagContent verslagContent)
-	{
-		this.verslagContent = verslagContent;
-	}
-
-	public CervixCytologieMonsterBmhk getMonsterBmhk()
-	{
-		return monsterBmhk;
-	}
-
-	public void setMonsterBmhk(CervixCytologieMonsterBmhk monsterBmhk)
-	{
-		this.monsterBmhk = monsterBmhk;
-	}
-
-	public String getCnummerLaboratorium()
-	{
-		return cnummerLaboratorium;
-	}
-
-	public void setCnummerLaboratorium(String cnummerLaboratorium)
-	{
-		this.cnummerLaboratorium = cnummerLaboratorium;
-	}
-
-	public String getVersieProtocol()
-	{
-		return versieProtocol;
-	}
-
-	public void setVersieProtocol(String versieProtocol)
-	{
-		this.versieProtocol = versieProtocol;
-	}
-
-	public DSValue getKopacbKompositie()
-	{
-		return kopacbKompositie;
-	}
-
-	public void setKopacbKompositie(DSValue kopacbKompositie)
-	{
-		this.kopacbKompositie = kopacbKompositie;
-	}
-
-	public DSValue getKopacbOntstekingsverschijnselen()
-	{
-		return kopacbOntstekingsverschijnselen;
-	}
-
-	public void setKopacbOntstekingsverschijnselen(DSValue kopacbOntstekingsverschijnselen)
-	{
-		this.kopacbOntstekingsverschijnselen = kopacbOntstekingsverschijnselen;
-	}
-
-	public DSValue getKopacbPlaveiselepitheel()
-	{
-		return kopacbPlaveiselepitheel;
-	}
-
-	public void setKopacbPlaveiselepitheel(DSValue kopacbPlaveiselepitheel)
-	{
-		this.kopacbPlaveiselepitheel = kopacbPlaveiselepitheel;
-	}
-
-	public DSValue getKopacbAndereAfwijkingenEndometrium()
-	{
-		return kopacbAndereAfwijkingenEndometrium;
-	}
-
-	public void setKopacbAndereAfwijkingenEndometrium(DSValue kopacbAndereAfwijkingenEndometrium)
-	{
-		this.kopacbAndereAfwijkingenEndometrium = kopacbAndereAfwijkingenEndometrium;
-	}
-
-	public DSValue getKopacbCilindercelepitheel()
-	{
-		return kopacbCilindercelepitheel;
-	}
-
-	public void setKopacbCilindercelepitheel(DSValue kopacbCilindercelepitheel)
-	{
-		this.kopacbCilindercelepitheel = kopacbCilindercelepitheel;
-	}
-
-	public DSValue getKopacbBeoordeelbaarheid()
-	{
-		return kopacbBeoordeelbaarheid;
-	}
-
-	public void setKopacbBeoordeelbaarheid(DSValue kopacbBeoordeelbaarheid)
-	{
-		this.kopacbBeoordeelbaarheid = kopacbBeoordeelbaarheid;
-	}
-
-	public List<DSValue> getKopacbExtra()
-	{
-		return kopacbExtra;
-	}
-
-	public void setKopacbExtra(List<DSValue> kopacbExtra)
-	{
-		this.kopacbExtra = kopacbExtra;
-	}
-
-	public DSValue getRedenOnbeoordeelbaarB3()
-	{
-		return redenOnbeoordeelbaarB3;
-	}
-
-	public void setRedenOnbeoordeelbaarB3(DSValue redenOnbeoordeelbaarB3)
-	{
-		this.redenOnbeoordeelbaarB3 = redenOnbeoordeelbaarB3;
-	}
-
-	public DSValue getPapKlasse()
-	{
-		return papKlasse;
-	}
-
-	public void setPapKlasse(DSValue papKlasse)
-	{
-		this.papKlasse = papKlasse;
-	}
-
-	public List<DSValue> getBethesdaScore()
-	{
-		return bethesdaScore;
-	}
-
-	public void setBethesdaScore(List<DSValue> bethesdaScore)
-	{
-		this.bethesdaScore = bethesdaScore;
-	}
-
-	public DSValue getScreeningsadviesHerhaling()
-	{
-		return screeningsadviesHerhaling;
-	}
-
-	public void setScreeningsadviesHerhaling(DSValue screeningsadviesHerhaling)
-	{
-		this.screeningsadviesHerhaling = screeningsadviesHerhaling;
-	}
-
-	public Boolean getCos()
-	{
-		return cos;
-	}
-
-	public void setCos(Boolean cos)
-	{
-		this.cos = cos;
-	}
-
-	public DSValue getCosPlatform()
-	{
-		return cosPlatform;
-	}
-
-	public void setCosPlatform(DSValue cosPlatform)
-	{
-		this.cosPlatform = cosPlatform;
-	}
 
 }

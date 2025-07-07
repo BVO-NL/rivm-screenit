@@ -183,7 +183,7 @@ public enum JobType
 
 	ILM_ALGEMENE_GEGEVENS_VERWIJDEREN(BatchApplicationType.GENERALIS, new Bevolkingsonderzoek[] { COLON, CERVIX, MAMMA }),
 
-	WACHTWOORD_VERLOOPT_HERINNERING(BatchApplicationType.GENERALIS, new Bevolkingsonderzoek[] { COLON, CERVIX, MAMMA }),
+	MEDEWERKER_BEHEER(BatchApplicationType.GENERALIS, new Bevolkingsonderzoek[] { COLON, CERVIX, MAMMA }),
 
 	ENOVATION_HUISARTSEN_BATCH(BatchApplicationType.GENERALIS, new Bevolkingsonderzoek[] { COLON, MAMMA }),
 

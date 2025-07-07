@@ -109,7 +109,7 @@ public class ColonAfspraakServiceImpl implements ColonAfspraakService
 	}
 
 	@Override
-	public ColonIntakeAfspraak initNieuweAfspraak(ColonIntakeAfspraak oudeAfspraak, VrijSlotZonderKamer gekozenVrijSlotZonderKamer)
+	public ColonIntakeAfspraak initNieuweAfspraak(ColonIntakeAfspraak oudeAfspraak, ColonVrijSlotZonderKamerDto gekozenVrijSlotZonderKamer)
 	{
 
 		if (gekozenVrijSlotZonderKamer.getIntakelocatieId() != null && (gekozenVrijSlotZonderKamer.getStartTijd() != null))

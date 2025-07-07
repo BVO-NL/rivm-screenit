@@ -25,7 +25,8 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
-import nl.rivm.screenit.main.service.BerichtenZoekFilter;
+import lombok.extern.slf4j.Slf4j;
+
 import nl.rivm.screenit.main.service.OngeldigeBerichtenService;
 import nl.rivm.screenit.main.service.VerslagService;
 import nl.rivm.screenit.model.BerichtZoekFilter;
@@ -34,32 +35,23 @@ import nl.rivm.screenit.model.berichten.cda.MeldingOngeldigCdaBericht_;
 import nl.rivm.screenit.model.berichten.enums.BerichtType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.repository.algemeen.MeldingOngeldigCdaBerichtRepository;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import static nl.rivm.screenit.specification.algemeen.MeldingOngeldigCdaBerichtSpecification.filterOpBsn;
 import static nl.rivm.screenit.specification.algemeen.MeldingOngeldigCdaBerichtSpecification.filterOpMeldingContaining;
-import static nl.rivm.screenit.specification.algemeen.MeldingOngeldigCdaBerichtSpecification.filterOpScreeningOrganisatie;
+import static nl.rivm.screenit.specification.algemeen.MeldingOngeldigCdaBerichtSpecification.filterOpTopdeskTicketContaining;
 import static nl.rivm.screenit.specification.algemeen.MeldingOngeldigCdaBerichtSpecification.heeftBerichtVanType;
 import static nl.rivm.screenit.specification.algemeen.MeldingOngeldigCdaBerichtSpecification.isActief;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
+@Slf4j
 public class OngeldigeBerichtenServiceImpl implements OngeldigeBerichtenService
 {
-
-	private static final Logger LOG = LoggerFactory.getLogger(OngeldigeBerichtenServiceImpl.class);
-
-	@Autowired
-	private HibernateService hibernateService;
 
 	@Autowired
 	private VerslagService verslagService;
@@ -85,7 +77,7 @@ public class OngeldigeBerichtenServiceImpl implements OngeldigeBerichtenService
 			.and(matchedOpBerichtTypeUitFilter(filter))
 			.and(filterOpBsn(filter.getBsn()))
 			.and(filterOpMeldingContaining(filter.getText()))
-			.and(filterOpScreeningOrganisatie(filter.getScreeningOrganisatie()));
+			.and(filterOpTopdeskTicketContaining(filter.getTopdeskTicket()));
 	}
 
 	private Specification<MeldingOngeldigCdaBericht> matchedOpBerichtTypeUitFilter(BerichtZoekFilter filter)
@@ -111,7 +103,7 @@ public class OngeldigeBerichtenServiceImpl implements OngeldigeBerichtenService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void berichtOpnieuwAanbieden(MeldingOngeldigCdaBericht melding)
 	{
 		LOG.info("CDA bericht " + melding.getOntvangenCdaBericht().getId() + " in MeldingOngeldigCdaBericht " + melding.getId() + " opnieuw aangeboden aan batch");
@@ -120,17 +112,17 @@ public class OngeldigeBerichtenServiceImpl implements OngeldigeBerichtenService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void verwijderenOngeldigBericht(MeldingOngeldigCdaBericht meldingOngeldigCdaBericht)
 	{
 		meldingOngeldigCdaBericht.setActief(false);
-		hibernateService.saveOrUpdate(meldingOngeldigCdaBericht);
+		meldingOngeldigCdaBerichtRepository.save(meldingOngeldigCdaBericht);
 		LOG.info("MeldingOngeldigCdaBericht " + meldingOngeldigCdaBericht.getId() + " gedeactiveerd");
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
-	public void herverwerkAlleBerichten(BerichtenZoekFilter berichtFilter)
+	@Transactional
+	public void herverwerkAlleBerichten(BerichtZoekFilter berichtFilter)
 	{
 		var ongeldigeBerichten = zoekOngeldigeBerichten(berichtFilter, -1, -1, Sort.by(MeldingOngeldigCdaBericht_.DATUM).descending());
 
@@ -152,5 +144,12 @@ public class OngeldigeBerichtenServiceImpl implements OngeldigeBerichtenService
 		}
 
 		ongeldigeBerichtenIdsPerBvo.forEach((bvo, ids) -> verslagService.berichtenOpnieuwVerwerken(ids, bvo));
+	}
+
+	@Override
+	@Transactional
+	public void slaMeldingOp(MeldingOngeldigCdaBericht meldingOngeldigCdaBericht)
+	{
+		meldingOngeldigCdaBerichtRepository.save(meldingOngeldigCdaBericht);
 	}
 }

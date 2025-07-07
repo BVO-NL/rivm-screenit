@@ -80,8 +80,6 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 		{
 			throw new UserNotFoundException("Gebruiker niet gevonden.");
 		}
-		huisarts.setInlogCode(null);
-		huisartsRepository.save(huisarts);
 
 		return getToken(huisarts, Scope.REGISTREREN);
 	}

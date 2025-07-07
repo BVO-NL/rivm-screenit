@@ -39,14 +39,11 @@ import lombok.Setter;
 import nl.rivm.screenit.model.cervix.enums.CervixHpvBeoordelingWaarde;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 @Entity
 @Table(schema = "cervix", name = "hpv_beoordeling", indexes = { @Index(name = "idx_CERVIX_HPV_BEOORDELING_HPV_UITSLAG", columnList = "hpvUitslag") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Getter
 @Setter
 public class CervixHpvBeoordeling extends AbstractHibernateObject

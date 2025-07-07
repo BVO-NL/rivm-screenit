@@ -39,7 +39,6 @@ import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.Instelling_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -278,7 +277,7 @@ public class MammaFollowUpServiceImpl implements MammaFollowUpService
 					{
 						var instellingJoin = join(r, MammaFollowUpRadiologieVerslag_.aangemaaktIn);
 						return List.of(
-							instellingJoin.get(SingleTableHibernateObject_.id),
+							instellingJoin.get(AbstractHibernateObject_.id),
 							instellingJoin.get(Instelling_.naam),
 							cb.least(r.get(MammaFollowUpRadiologieVerslag_.laatstGebeldOverPaVerslag)),
 							instellingJoin.get(Instelling_.telefoon),
@@ -289,7 +288,7 @@ public class MammaFollowUpServiceImpl implements MammaFollowUpService
 				{
 					var instellingJoin = join(r, MammaFollowUpRadiologieVerslag_.aangemaaktIn);
 					return List.of(
-						instellingJoin.get(SingleTableHibernateObject_.id),
+						instellingJoin.get(AbstractHibernateObject_.id),
 						instellingJoin.get(Instelling_.naam),
 						instellingJoin.get(Instelling_.telefoon),
 						instellingJoin.get(Instelling_.telefoon2)
@@ -333,7 +332,7 @@ public class MammaFollowUpServiceImpl implements MammaFollowUpService
 					{
 						var instellingJoin = join(r, MammaFollowUpRadiologieVerslag_.aangemaaktIn);
 						return List.of(
-							instellingJoin.get(SingleTableHibernateObject_.id),
+							instellingJoin.get(AbstractHibernateObject_.id),
 							instellingJoin.get(Instelling_.naam),
 							instellingJoin.get(Instelling_.mammaRadiologieGebeld),
 							cb.count(r.get(AbstractHibernateObject_.id)),
@@ -345,7 +344,7 @@ public class MammaFollowUpServiceImpl implements MammaFollowUpService
 				{
 					var instellingJoin = join(r, MammaFollowUpRadiologieVerslag_.aangemaaktIn);
 					return List.of(
-						instellingJoin.get(SingleTableHibernateObject_.id),
+						instellingJoin.get(AbstractHibernateObject_.id),
 						instellingJoin.get(Instelling_.naam),
 						instellingJoin.get(Instelling_.mammaRadiologieGebeld),
 						instellingJoin.get(Instelling_.telefoon),

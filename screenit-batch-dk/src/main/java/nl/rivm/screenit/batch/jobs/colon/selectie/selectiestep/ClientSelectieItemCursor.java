@@ -55,7 +55,7 @@ public class ClientSelectieItemCursor implements ClientSelectieItemIterator
 
 	private ColonUitnodigingCategorie colonUitnodigingCategorie = ColonUitnodigingCategorie.U3;
 
-	private ScrollableResults cursor;
+	private ScrollableResults<Object[]> cursor;
 
 	private boolean cursorClosed = true;
 
@@ -202,7 +202,7 @@ public class ClientSelectieItemCursor implements ClientSelectieItemIterator
 			case U6 -> ColonUitnodigingBaseSpecification.getSpecificationU6(vandaag);
 			default -> throw new NotImplementedException("Niet bekende categorie");
 		};
-		cursor = clientRepository.findWith(specification,
+		cursor = clientRepository.findWith(specification, Object[].class,
 				q -> q.sortBy((r, cb) ->
 				{
 					var orders = new ArrayList<>(ColonUitnodigingBaseSpecification.getU1OrderByList(r, cb));

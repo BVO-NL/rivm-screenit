@@ -24,24 +24,20 @@ package nl.rivm.screenit.model.cervix.cis;
 import java.io.Serial;
 import java.util.Date;
 
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-
-import org.hibernate.annotations.Type;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
+
 @Entity
 @Table(schema = "cervix", name = "cis_historie_ongestructureerd_regel")
 public class CervixCISHistorieOngestructureerdRegel extends AbstractHibernateObject
 {
-
 	@Serial
 	private static final long serialVersionUID = 1L;
 
@@ -53,9 +49,7 @@ public class CervixCISHistorieOngestructureerdRegel extends AbstractHibernateObj
 
 	private String ronde;
 
-	@Column(nullable = false)
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
+	@Column(nullable = false, columnDefinition = "TEXT")
 	private String tekst;
 
 	public CervixCISHistorie getCisHistorie()

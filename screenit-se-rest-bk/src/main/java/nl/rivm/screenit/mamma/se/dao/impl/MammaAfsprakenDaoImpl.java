@@ -64,7 +64,7 @@ public class MammaAfsprakenDaoImpl extends AbstractAutowiredDao implements Mamma
 		Map<Long, ClientIdentificatie> result = new HashMap<>();
 		for (Object[] entry : queryResult)
 		{
-			result.put(((java.math.BigInteger) entry[0]).longValue(),
+			result.put((Long) entry[0],
 				new ClientIdentificatie(MammaIdentificatiesoort.valueOf((String) entry[1]), (String) entry[2]));
 		}
 		return result;

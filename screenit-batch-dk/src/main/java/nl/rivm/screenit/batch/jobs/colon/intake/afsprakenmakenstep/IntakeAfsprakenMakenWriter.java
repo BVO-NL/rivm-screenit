@@ -251,15 +251,14 @@ public class IntakeAfsprakenMakenWriter implements ItemWriter<ClientAfspraak>
 				}
 				else
 				{
-					LOG.trace(
-						"Client is overgeslagen omdat de afstand naar de intakelocatie te groot was. Client-ID:" + afspraakOptie.getClientId() + ", afstand:"
-							+ afspraakOptie.getDistance());
+					LOG.trace("Client is overgeslagen omdat de afstand naar de intakelocatie te groot was. ClientId:'{}', afstand:{}", afspraakOptie.getClientId(),
+						afspraakOptie.getDistance());
 					allesVerwerkt = false;
 				}
 			}
 			catch (Exception e)
 			{
-				LOG.error("Fout bij aanmaken intake afspraak voor client id " + clientId, e);
+				LOG.error("Fout bij aanmaken intake afspraak voor clientId '{}'", clientId, e);
 				String message = e.getMessage();
 				if (StringUtils.isBlank(message))
 				{

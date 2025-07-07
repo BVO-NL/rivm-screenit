@@ -34,13 +34,14 @@ import nl.rivm.screenit.model.enums.Termijn;
 import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.model.mamma.MammaLezing_;
 import nl.rivm.screenit.model.mamma.enums.MammaBIRADSWaarde;
-import nl.rivm.screenit.specification.DateSpecification;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
 
 import com.google.common.collect.Range;
 
 import static nl.rivm.screenit.specification.DateSpecification.bevatLocalDateToDate;
+import static nl.rivm.screenit.specification.SpecificationUtil.equalsOrFalseIfParamNull;
+import static nl.rivm.screenit.specification.SpecificationUtil.notEqualsOrFalseIfParamNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MammaLezingSpecification
@@ -50,7 +51,7 @@ public class MammaLezingSpecification
 	{
 		return (r, q, cb) -> cb.or(
 			r.isNull(),
-			cb.equal(r.get(MammaLezing_.beoordelaar), radioloog));
+			equalsOrFalseIfParamNull(r.get(MammaLezing_.beoordelaar), radioloog, cb));
 	}
 
 	public static ExtendedSpecification<MammaLezing> isGedaanDoor(InstellingGebruiker radioloog)
@@ -65,7 +66,7 @@ public class MammaLezingSpecification
 
 	public static ExtendedSpecification<MammaLezing> isNietGedaanDoor(InstellingGebruiker radioloog)
 	{
-		return (r, q, cb) -> cb.notEqual(r.get(MammaLezing_.beoordelaar), radioloog);
+		return (r, q, cb) -> notEqualsOrFalseIfParamNull(r.get(MammaLezing_.beoordelaar), radioloog, cb);
 	}
 
 	public static ExtendedSpecification<MammaLezing> isVerwezenDoor(InstellingGebruiker radioloog)

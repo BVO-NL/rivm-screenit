@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
+import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
 import nl.rivm.screenit.main.web.component.validator.StringIsIntegerValidator;
 import nl.rivm.screenit.model.ProjectParameter;
 import nl.rivm.screenit.model.ProjectParameterKey;
@@ -40,7 +41,6 @@ import nl.rivm.screenit.model.project.Project;
 import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.wicket.hibernate.markup.form.validation.UniqueFieldValidator;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -153,7 +153,8 @@ public class EditProjectParametersPanel extends GenericPanel<Project>
 		return onderzoeksvariantDropDown;
 	}
 
-	private void valideerValueField(ProjectParameterKey parameterKey, ProjectParameter parameter, FormComponent<String> valueField) {
+	private void valideerValueField(ProjectParameterKey parameterKey, ProjectParameter parameter, FormComponent<String> valueField)
+	{
 		if (parameterKey.isUniek())
 		{
 			addUniqueFieldValidator(parameter, parameterKey, valueField);
@@ -179,7 +180,7 @@ public class EditProjectParametersPanel extends GenericPanel<Project>
 		Map<String, Object> restrictions = new HashMap<>();
 		restrictions.put("key", parameterKey);
 
-		valueField.add(new UniqueFieldValidator<>(ProjectParameter.class, parameter.getId(), "value", hibernateService, restrictions)
+		valueField.add(new ScreenitUniqueFieldValidator<>(ProjectParameter.class, parameter.getId(), "value", restrictions)
 		{
 			@Override
 			public void validate(IValidatable<String> validatable)
@@ -190,10 +191,16 @@ public class EditProjectParametersPanel extends GenericPanel<Project>
 				{
 					ValidationError error = new ValidationError();
 
-					error.addKey("UniqueFieldValidator");
+					error.addKey("ScreenitUniqueFieldValidator");
 					error.getVariables().put("field", getString(EnumStringUtil.getPropertyString(parameterKey)));
 					validatable.error(error);
 				}
+			}
+
+			@Override
+			protected boolean existsOther(Map<String, Object> map)
+			{
+				return false;
 			}
 		});
 	}

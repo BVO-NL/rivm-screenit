@@ -36,8 +36,6 @@ import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderdeel;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderzoekStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -47,7 +45,6 @@ import org.hibernate.envers.NotAudited;
 	schema = "mamma",
 	name = "visitatie_onderzoek",
 	uniqueConstraints = { @UniqueConstraint(columnNames = { "visitatie", "onderdeel", "volgnummer" }, name = "uc_mamma_visitatie_onderdeel_volgnummer") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 public class MammaVisitatieOnderzoek extends AbstractHibernateObject
 {
 	@Serial

@@ -41,14 +41,10 @@ import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Setter
 @Getter
 @Entity
 @Table(schema = "gedeeld")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 public class Overeenkomst extends AbstractHibernateObject implements IActief
 {
 	@Enumerated(EnumType.STRING)
@@ -65,7 +61,6 @@ public class Overeenkomst extends AbstractHibernateObject implements IActief
 	private Boolean actief = Boolean.TRUE;
 
 	@OneToMany(mappedBy = "overeenkomst")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 	private List<AbstractAfgeslotenOvereenkomst> afgeslotenOvereenkomsten;
 
 	@Enumerated(EnumType.STRING)

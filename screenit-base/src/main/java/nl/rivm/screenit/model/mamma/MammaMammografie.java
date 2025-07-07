@@ -33,7 +33,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -41,11 +40,8 @@ import lombok.Setter;
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.mamma.enums.MammaDenseWaarde;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
-import nl.rivm.screenit.model.mamma.enums.MammaMassaDensiteit;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
@@ -53,11 +49,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @Getter
 @Entity
-@Table(
-	schema = "mamma",
-	name = "mammografie",
-	uniqueConstraints = { @UniqueConstraint(columnNames = "visuele_inspectie_afbeelding") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
+@Table(schema = "mamma", name = "mammografie")
 @Audited
 public class MammaMammografie extends AbstractHibernateObject
 {

@@ -39,14 +39,11 @@ import lombok.Setter;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 @Entity
 @Table(schema = "mamma", name = "standplaats_ronde_uitnodigen_rapportage")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Getter
 @Setter
 public class MammaStandplaatsRondeUitnodigenRapportage extends AbstractHibernateObject

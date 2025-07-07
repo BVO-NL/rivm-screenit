@@ -28,7 +28,7 @@ public abstract class BaseIdScrollableResultReader extends BaseTypedScrollableRe
 	@Override
 	public Long read() throws Exception
 	{
-		ScrollableResults scrollableResults = resultSet.get();
+		var scrollableResults = resultSet.get();
 		while (scrollableResults.next())
 		{
 			Long id = getScrollableResult(scrollableResults);
@@ -44,7 +44,7 @@ public abstract class BaseIdScrollableResultReader extends BaseTypedScrollableRe
 
 	protected Long getScrollableResult(ScrollableResults scrollableResults)
 	{
-		return scrollableResults.getLong(0);
+		return (Long) scrollableResults.get();
 	}
 
 }

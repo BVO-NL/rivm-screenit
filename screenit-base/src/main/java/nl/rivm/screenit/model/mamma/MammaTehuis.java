@@ -45,13 +45,10 @@ import nl.rivm.screenit.util.SkipFieldForDiff;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import nl.topicuszorg.organisatie.model.Adres;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "mamma", name = "tehuis")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 @Audited
 @Getter
 @Setter
@@ -75,12 +72,10 @@ public class MammaTehuis extends AbstractHibernateObject implements IActief
 	private List<MammaDossier> dossiers = new ArrayList<>();
 
 	@OneToOne(optional = false, fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	@SkipFieldForDiff
 	private Adres aanschrijfAdres;
 
 	@OneToMany(mappedBy = "tehuis", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 	@SkipFieldForDiff
 	private List<MammaTehuisAdres> adressen = new ArrayList<>();
 

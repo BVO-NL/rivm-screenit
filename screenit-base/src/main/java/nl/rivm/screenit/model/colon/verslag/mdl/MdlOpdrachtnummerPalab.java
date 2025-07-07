@@ -21,13 +21,14 @@ package nl.rivm.screenit.model.colon.verslag.mdl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.verslag.VraagElement;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
@@ -36,39 +37,21 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "colon")
+@Getter
+@Setter
 public class MdlOpdrachtnummerPalab
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private MdlColoscopieMedischeObservatie coloscopieMedischeObservatie;
 
 	@Column(length = 255)
-	@VraagElement(displayName = "Opdrachtnummer PA-lab", extraTekst = "Opdrachtnummer PA-lab", code = "2.16.840.1.113883.2.4.3.36.77.2.11.118")
+	@VraagElement(conceptId = "118", displayName = "Opdrachtnummer PA-lab", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.205']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.332']]]/hl7:act/hl7:id|@extension",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.205']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.332']]]/hl7:act/hl7:id|@extension"
+	})
 	private String opdrachtnummerPalab;
-
-	public MdlColoscopieMedischeObservatie getColoscopieMedischeObservatie()
-	{
-		return coloscopieMedischeObservatie;
-	}
-
-	public void setColoscopieMedischeObservatie(MdlColoscopieMedischeObservatie coloscopieMedischeObservatie)
-	{
-		this.coloscopieMedischeObservatie = coloscopieMedischeObservatie;
-	}
-
-	public String getOpdrachtnummerPalab()
-	{
-		return opdrachtnummerPalab;
-	}
-
-	public void setOpdrachtnummerPalab(String opdrachtnummerPalab)
-	{
-		this.opdrachtnummerPalab = opdrachtnummerPalab;
-	}
 
 }

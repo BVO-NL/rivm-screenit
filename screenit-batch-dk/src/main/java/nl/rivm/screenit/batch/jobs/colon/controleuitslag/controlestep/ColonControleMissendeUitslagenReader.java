@@ -21,26 +21,26 @@ package nl.rivm.screenit.batch.jobs.colon.controleuitslag.controlestep;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Root;
+
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
 import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.colon.IFOBTTest_;
 import nl.rivm.screenit.model.colon.IFOBTType;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieParameterService;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Root;
 
 import static nl.rivm.screenit.Constants.MAX_AANTAL_DAGEN_TERUGKIJKEN_CONTROLE_MISSENDE_UITSLAGEN;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
@@ -84,7 +84,7 @@ public class ColonControleMissendeUitslagenReader extends BaseSpecificationScrol
 
 	private static Path<Long> dossierAttribuut(Root<IFOBTTest> r)
 	{
-		return join(join(r, IFOBTTest_.colonScreeningRonde), ColonScreeningRonde_.dossier).get(TablePerClassHibernateObject_.id);
+		return join(join(r, IFOBTTest_.colonScreeningRonde), ColonScreeningRonde_.dossier).get(AbstractHibernateObject_.id);
 	}
 
 }

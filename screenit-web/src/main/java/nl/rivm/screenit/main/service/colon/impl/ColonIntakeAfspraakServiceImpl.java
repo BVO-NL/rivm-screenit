@@ -32,7 +32,6 @@ import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.WerklijstIntakeFilter;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
-import nl.rivm.screenit.repository.colon.ColonIntakeAfspraakNativeQueryRepository;
 import nl.rivm.screenit.repository.colon.ColonIntakeAfspraakRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification;
@@ -50,8 +49,6 @@ import com.google.common.primitives.Ints;
 public class ColonIntakeAfspraakServiceImpl implements ColonIntakeAfspraakService
 {
 	private final ColonIntakeAfspraakRepository intakeAfspraakRepository;
-
-	private final ColonIntakeAfspraakNativeQueryRepository intakeAfspraakNativeQueryRepository;
 
 	private final ICurrentDateSupplier currentDateSupplier;
 
@@ -86,14 +83,14 @@ public class ColonIntakeAfspraakServiceImpl implements ColonIntakeAfspraakServic
 	@Override
 	public long countAfsprakenOpDagVanDeWeek(DayOfWeek dagVanDeWeek)
 	{
-		var result = intakeAfspraakNativeQueryRepository.countColonIntakeAfsprakenOpDag(dagVanDeWeek.getValue());
+		var result = intakeAfspraakRepository.countColonIntakeAfsprakenOpDag(dagVanDeWeek.getValue());
 		return result.get(0);
 	}
 
 	@Override
 	public long countAfsprakenInNacht(LocalTime startTijd, LocalTime eindTijd)
 	{
-		var result = intakeAfspraakNativeQueryRepository.countColonIntakeAfsprakenInNacht(eindTijd, startTijd);
+		var result = intakeAfspraakRepository.countColonIntakeAfsprakenInNacht(eindTijd, startTijd);
 		return result.get(0);
 	}
 }

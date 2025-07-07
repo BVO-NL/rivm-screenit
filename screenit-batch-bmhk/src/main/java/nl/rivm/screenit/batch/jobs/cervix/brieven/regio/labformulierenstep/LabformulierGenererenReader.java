@@ -23,11 +23,12 @@ package nl.rivm.screenit.batch.jobs.cervix.brieven.regio.labformulierenstep;
 
 import java.util.function.Function;
 
+import jakarta.persistence.criteria.From;
+
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.huisartsenportaal.enums.CervixLocatieStatus;
 import nl.rivm.screenit.model.BagAdres_;
 import nl.rivm.screenit.model.Gemeente_;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie_;
@@ -39,8 +40,6 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-
-import jakarta.persistence.criteria.From;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.cervix.CervixHuisartsSpecification.isActief;
@@ -68,7 +67,7 @@ public class LabformulierGenererenReader extends BaseSpecificationScrollableResu
 			var screeningOrganisatieJoin = gemeenteJoin.join(Gemeente_.screeningOrganisatie);
 
 			subquery.select(subqueryRoot.get(AbstractHibernateObject_.id))
-				.where(cb.equal(screeningOrganisatieJoin.get(SingleTableHibernateObject_.id), screeningOrganisatieId));
+				.where(cb.equal(screeningOrganisatieJoin.get(AbstractHibernateObject_.id), screeningOrganisatieId));
 
 			return cb.and(
 				heeftStatus(CervixLabformulierAanvraagStatus.AANGEVRAAGD)

@@ -35,17 +35,12 @@ import jakarta.persistence.TemporalType;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(schema = "cervix", name = "herinnering_rapportage")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class CervixHerinnerenRapportage extends AbstractHibernateObject
 {
 
 	@OneToMany(mappedBy = "rapportage", cascade = CascadeType.ALL)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<CervixHerinnerenRapportageBriefType> briefTypen = new ArrayList<>();
 
 	private long totaalAantal;

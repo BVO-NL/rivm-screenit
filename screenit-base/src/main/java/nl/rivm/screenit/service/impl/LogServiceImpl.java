@@ -217,6 +217,13 @@ public class LogServiceImpl implements LogService
 
 	@Override
 	@Transactional
+	public void logGebeurtenis(LogGebeurtenis gebeurtenis, String melding, Bevolkingsonderzoek... bevolkingsonderzoeken)
+	{
+		logGebeurtenis(gebeurtenis, null, melding, bevolkingsonderzoeken);
+	}
+
+	@Override
+	@Transactional
 	public void logGebeurtenis(LogGebeurtenis gebeurtenis, Account account, String melding, Bevolkingsonderzoek... bevolkingsonderzoeken)
 	{
 		logGebeurtenis(gebeurtenis, new ArrayList<>(), account, melding, bevolkingsonderzoeken);

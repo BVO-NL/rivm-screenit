@@ -21,11 +21,8 @@ package nl.rivm.screenit.config;
  * =========================LICENSE_END==================================
  */
 
-import javax.cache.CacheManager;
-
 import nl.rivm.screenit.security.ScreenitRealm;
 
-import org.apache.shiro.cache.jcache.JCacheManager;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.springframework.context.annotation.Bean;
@@ -38,11 +35,10 @@ public class BaseShiroConfig
 
 	@Bean
 	@Profile("!test")
-	public DefaultSecurityManager securityManager(ScreenitRealm realm, JCacheManager jCacheManager)
+	public DefaultSecurityManager securityManager(ScreenitRealm realm)
 	{
 		var securityManager = new DefaultSecurityManager();
 		securityManager.setRealm(realm);
-		securityManager.setCacheManager(jCacheManager);
 		return securityManager;
 	}
 
@@ -53,15 +49,6 @@ public class BaseShiroConfig
 		var securityManager = new DefaultSecurityManager();
 		securityManager.setRealm(realm);
 		return securityManager;
-	}
-
-	@Bean
-	@Profile("!test")
-	public JCacheManager jCacheManager(CacheManager cacheManager)
-	{
-		var shiroCacheManager = new JCacheManager();
-		shiroCacheManager.setCacheManager(cacheManager);
-		return shiroCacheManager;
 	}
 
 	@Bean

@@ -22,8 +22,10 @@ package nl.rivm.screenit.batch.jobs.mamma.kansberekening.gemiddelden;
  */
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.List;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,9 +36,6 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 @Component
 @RequiredArgsConstructor
@@ -62,8 +61,8 @@ public class MammaGemiddeldenTasklet extends MammaAbstractKansberekeningTasklet
 			List<Object[]> list = sqlQuery.getResultList();
 			for (Object[] result : list)
 			{
-				context.putLong(MammaKansberekeningConstants.REGIO_DEELNAME_GEMIDDELDEN_KEY, ((BigInteger) result[0]).longValue());
-				context.putLong(MammaKansberekeningConstants.STANDPLAATS_RONDE_DEELNAME_GEMIDDELDEN_KEY, ((BigInteger) result[1]).longValue());
+				context.putLong(MammaKansberekeningConstants.REGIO_DEELNAME_GEMIDDELDEN_KEY, (Long) result[0]);
+				context.putLong(MammaKansberekeningConstants.STANDPLAATS_RONDE_DEELNAME_GEMIDDELDEN_KEY, (Long) result[1]);
 			}
 
 			sql = IOUtils.toString(MammaGemiddeldenTasklet.class.getResourceAsStream("/updateOpkomstGemiddelden.sql"));
@@ -73,8 +72,8 @@ public class MammaGemiddeldenTasklet extends MammaAbstractKansberekeningTasklet
 			list = sqlQuery.getResultList();
 			for (Object[] result : list)
 			{
-				context.putLong(MammaKansberekeningConstants.REGIO_OPKOMST_GEMIDDELDEN__KEY, ((BigInteger) result[0]).longValue());
-				context.putLong(MammaKansberekeningConstants.STANDPLAATS_RONDE_OPKOMST_GEMIDDELDEN_KEY, ((BigInteger) result[1]).longValue());
+				context.putLong(MammaKansberekeningConstants.REGIO_OPKOMST_GEMIDDELDEN__KEY, (Long) result[0]);
+				context.putLong(MammaKansberekeningConstants.STANDPLAATS_RONDE_OPKOMST_GEMIDDELDEN_KEY, (Long) result[1]);
 			}
 
 		}

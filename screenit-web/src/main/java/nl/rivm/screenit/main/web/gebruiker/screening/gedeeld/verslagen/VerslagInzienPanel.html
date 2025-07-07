@@ -1,0 +1,78 @@
+<!--
+  ========================LICENSE_START=================================
+  screenit-web
+  %%
+  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<html xmlns:wicket="http://wicket.apache.org">
+<wicket:panel>
+	<div class="row-fluid cdaVerslagSamenvatting">
+		<h2 wicket:id="type">MDL verslag</h2>
+		<div class="form-horizontal">
+			<div class="control-group value" wicket:id="list">
+				<wicket:enclosure child="value">
+					<label class="control-label" wicket:id="fieldName"></label>
+					<div class="controls">
+						<wicket:container wicket:id="value"/>
+					</div>
+				</wicket:enclosure>
+			</div>
+		</div>
+		<wicket:enclosure child="allFields">
+			<h3>
+				Volledig verslag (
+				<wicket:container wicket:id="verslagContent.versie"/>
+				, alleen zichtbaar met Recht test)
+			</h3>
+			<div class="form-horizontal">
+				<wicket:container wicket:id="allFields"/>
+			</div>
+		</wicket:enclosure>
+	</div>
+	<wicket:fragment wicket:id="fragmentClazzFields">
+		<div class="control-group value" wicket:id="clazzFields">
+			<wicket:enclosure child="value">
+				<label class="control-label" wicket:id="fieldName"></label>
+				<div class="controls">
+					<wicket:container wicket:id="value"/>
+				</div>
+			</wicket:enclosure>
+		</div>
+	</wicket:fragment>
+	<wicket:fragment wicket:id="fragmentDatum">
+		<span wicket:id="datum"/>
+	</wicket:fragment>
+	<wicket:fragment wicket:id="fragmentText">
+		<span wicket:id="text"/>
+	</wicket:fragment>
+	<wicket:fragment wicket:id="fragmentList">
+		<div wicket:id="list">
+			<wicket:container wicket:id="item"/>
+		</div>
+	</wicket:fragment>
+	<wicket:fragment wicket:id="fragmentBoolean">
+		<span wicket:id="boolean"/>
+	</wicket:fragment>
+	<wicket:fragment wicket:id="fragmentQuantity">
+		<span wicket:id="quantity"/> <span wicket:id="unit"/>
+	</wicket:fragment>
+	<wicket:fragment wicket:id="fragmentNullFlavourQuantity">
+		<wicket:enclosure child="unit"><span wicket:id="quantity"/> <span wicket:id="unit"/></wicket:enclosure>
+		<span wicket:id="nullFlavour">Niet van toepassing</span>
+	</wicket:fragment>
+</wicket:panel>
+</html>

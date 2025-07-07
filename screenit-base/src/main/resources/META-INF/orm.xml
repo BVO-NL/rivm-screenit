@@ -86,9 +86,6 @@
     <entity class="nl.topicuszorg.organisatie.model.Auteur" metadata-complete="false">
         <table schema="algemeen"/>
     </entity>
-    <entity class="nl.topicuszorg.organisatie.model.Adres" metadata-complete="false">
-        <table schema="gedeeld"/>
-    </entity>
 
     <entity class="nl.topicuszorg.yubikey.model.YubiKey" metadata-complete="false">
         <table schema="algemeen"/>

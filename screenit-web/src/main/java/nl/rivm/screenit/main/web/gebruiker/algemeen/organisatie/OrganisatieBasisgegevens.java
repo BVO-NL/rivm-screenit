@@ -36,6 +36,7 @@ import nl.rivm.screenit.main.web.component.ScreenitIndicatingAjaxSubmitLink;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
 import nl.rivm.screenit.main.web.component.validator.EmailAddressenValidator;
+import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.medewerker.MedewerkerZoeken;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
@@ -56,7 +57,6 @@ import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.organisatie.model.Adres;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
-import nl.topicuszorg.wicket.hibernate.markup.form.validation.UniqueFieldValidator;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.lang3.StringUtils;
@@ -189,7 +189,7 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 			boolean isIntakeLocatie = organisatieType.equals(OrganisatieType.INTAKELOCATIE);
 			var organisatieNaam = ComponentHelper.addTextField(this, "naam", true, 50, inzien).setLabel(Model.of("Naam"));
 
-			organisatieNaam.add(new UniqueFieldValidator<>(Instelling.class, organisatie.getId(), "naam", hibernateService, Map.of("actief", Boolean.TRUE)));
+			organisatieNaam.add(new ScreenitUniqueFieldValidator<>(Instelling.class, organisatie.getId(), "naam", Map.of("actief", Boolean.TRUE)));
 
 			ComponentHelper.addTextField(this, "adressen[0].straat", false, 43, inzien);
 			ComponentHelper.addTextField(this, "adressen[0].huisnummer", false, 10, Integer.class, inzien);
@@ -236,13 +236,13 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 			add(new Label("emailLabel", new StringResourceModel("mail.extra-label." + organisatieType.name())).setVisible(isCe));
 
 			ComponentHelper.addTextField(this, "uziAbonneenummer", true, 8, inzien)
-				.add(new UniqueFieldValidator<>(Instelling.class, organisatie.getId(), "uziAbonneenummer", hibernateService))
+				.add(new ScreenitUniqueFieldValidator<>(Instelling.class, organisatie.getId(), "uziAbonneenummer", false))
 				.add(new PatternValidator("[0-9]{8}"))
 				.setVisible(organisatieType == OrganisatieType.ZORGINSTELLING);
 
 			var rootOid = ComponentHelper.addTextField(this, "rootOid", true, 255, String.class, inzien);
 			rootOid.add(new PatternValidator(Constants.OID_EXTENSION_PATTERN));
-			rootOid.add(new UniqueFieldValidator<>(Instelling.class, organisatie.getId(), "rootOid", hibernateService));
+			rootOid.add(new ScreenitUniqueFieldValidator<>(Instelling.class, organisatie.getId(), "rootOid", false));
 			rootOid.setVisible(
 				organisatieType == OrganisatieType.COLOSCOPIELOCATIE || organisatieType == OrganisatieType.PA_LABORATORIUM || organisatieType == OrganisatieType.BMHK_LABORATORIUM);
 		}

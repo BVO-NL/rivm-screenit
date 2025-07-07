@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.mamma;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,7 +37,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -49,8 +47,6 @@ import nl.rivm.screenit.model.mamma.enums.MammaFollowUpConclusieStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaGeenHuisartsOption;
 import nl.rivm.screenit.util.SkipFieldForDiff;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
@@ -63,44 +59,32 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 	name = "screening_ronde",
 	indexes = {
 		@Index(name = "idx_MAMMA_SCREENING_RONDE_STATUS", columnList = "status"),
-		@Index(name = "idx_MAMMA_SCREENING_RONDE_CREATIE_DATUM", columnList = "creatieDatum") },
-	uniqueConstraints = {
-		@UniqueConstraint(columnNames = "laatste_afmelding"),
-		@UniqueConstraint(columnNames = "laatste_brief"),
-		@UniqueConstraint(columnNames = "laatste_uitnodiging"),
-		@UniqueConstraint(columnNames = "laatste_uitstel"),
-		@UniqueConstraint(columnNames = "screening_ronde_event") })
+		@Index(name = "idx_MAMMA_SCREENING_RONDE_CREATIE_DATUM", columnList = "creatieDatum") }
+)
 @Audited
 @Getter
 @Setter
 public class MammaScreeningRonde extends ScreeningRonde<MammaDossier, MammaBrief, MammaAfmelding, MammaUitnodiging>
 {
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	private MammaDossier dossier;
 
 	@OneToMany(mappedBy = "screeningRonde", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	private List<MammaUitnodiging> uitnodigingen = new ArrayList<>();
 
 	@OneToOne(fetch = FetchType.LAZY)
 	private MammaUitnodiging laatsteUitnodiging;
 
 	@OneToMany(mappedBy = "screeningRonde", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	private List<MammaUitstel> uitstellen = new ArrayList<>();
 
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	private MammaUitstel laatsteUitstel;
 
 	@OneToMany(mappedBy = "screeningRonde", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	private List<MammaBrief> brieven = new ArrayList<>();
 
 	@OneToMany(mappedBy = "screeningRonde", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE })
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	@Cascade(CascadeType.DELETE)
 	private List<MammaDigitaalClientBericht> berichten = new ArrayList<>();
 
@@ -108,7 +92,6 @@ public class MammaScreeningRonde extends ScreeningRonde<MammaDossier, MammaBrief
 	private MammaBrief laatsteBrief;
 
 	@OneToMany(mappedBy = "screeningRonde", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	private List<MammaAfmelding> afmeldingen = new ArrayList<>();
 
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
@@ -155,15 +138,12 @@ public class MammaScreeningRonde extends ScreeningRonde<MammaDossier, MammaBrief
 	private Date followUpConclusieStatusGewijzigdOp;
 
 	@OneToMany(mappedBy = "screeningRonde", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	private List<MammaFollowUpVerslag> followUpVerslagen = new ArrayList<>();
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "screeningRonde")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	private List<MammaFollowUpRadiologieVerslag> followUpRadiologieVerslagen = new ArrayList<>();
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "screeningRonde")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	private List<MammaUploadBeeldenVerzoek> uploadBeeldenVerzoeken = new ArrayList<>();
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -174,7 +154,6 @@ public class MammaScreeningRonde extends ScreeningRonde<MammaDossier, MammaBrief
 	private MammaOnderzoek laatsteOnderzoek;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "screeningRonde", cascade = { jakarta.persistence.CascadeType.REMOVE })
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	@Cascade(CascadeType.DELETE)
 	private List<MammaConclusieReview> conclusieReviews = new ArrayList<>();
 

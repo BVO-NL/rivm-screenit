@@ -22,7 +22,8 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon.verslagen;
  */
 
 import java.util.ArrayList;
-import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.service.BerichtenZoekFilter;
 import nl.rivm.screenit.main.service.VerslagService;
@@ -56,8 +57,6 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 import static nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht_.BERICHT_ID;
@@ -67,11 +66,11 @@ import static nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht_.PROJECT_
 import static nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht_.SET_ID;
 import static nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht_.VERSIE;
 
+@Slf4j
 @SecurityConstraint(actie = Actie.INZIEN, checkScope = false, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_VERSLAGEN, bevolkingsonderzoekScopes = {
 	Bevolkingsonderzoek.COLON })
 public class VerwerkteBerichtenOverzichtPage extends ColonScreeningBasePage
 {
-	private static final Logger LOG = LoggerFactory.getLogger(VerwerkteBerichtenOverzichtPage.class);
 
 	private final BootstrapDialog dialog;
 
@@ -84,8 +83,8 @@ public class VerwerkteBerichtenOverzichtPage extends ColonScreeningBasePage
 
 	public VerwerkteBerichtenOverzichtPage()
 	{
-		List<Bevolkingsonderzoek> onderzoeken = ScreenitSession.get().getOnderzoeken();
-		BerichtenZoekFilter berichtenZoekFilter = new BerichtenZoekFilter();
+		var onderzoeken = ScreenitSession.get().getOnderzoeken();
+		var berichtenZoekFilter = new BerichtenZoekFilter();
 		if (onderzoeken.contains(Bevolkingsonderzoek.COLON))
 		{
 			berichtenZoekFilter.setMdlBerichten(true);
@@ -96,9 +95,7 @@ public class VerwerkteBerichtenOverzichtPage extends ColonScreeningBasePage
 			berichtenZoekFilter.setMdlBerichten(false);
 			berichtenZoekFilter.setPaLabBerichten(false);
 		}
-
 		berichtenZoekFilter.setCytologieBerichten(false);
-
 		berichtZoekFilter = new Model<>(berichtenZoekFilter);
 
 		add(new FilterForm("form", berichtZoekFilter));
@@ -113,20 +110,20 @@ public class VerwerkteBerichtenOverzichtPage extends ColonScreeningBasePage
 	private void addOrReplaceTable(AjaxRequestTarget target)
 	{
 
-		List<IColumn<OntvangenCdaBericht, String>> columns = new ArrayList<>();
-		columns.add(new DateTimePropertyColumn<OntvangenCdaBericht, String>(Model.of("Datum/tijd ontvangst"), ONTVANGEN, ONTVANGEN));
-		columns.add(new PropertyColumn<OntvangenCdaBericht, String>(Model.of("DocumentID"), BERICHT_ID, BERICHT_ID));
-		columns.add(new PropertyColumn<OntvangenCdaBericht, String>(Model.of("SetID"), SET_ID, SET_ID));
-		columns.add(new PropertyColumn<OntvangenCdaBericht, String>(Model.of("Versie"), VERSIE, VERSIE));
-		columns.add(new PropertyColumn<OntvangenCdaBericht, String>(Model.of("Projectversie"), PROJECT_VERSION, PROJECT_VERSION));
-		columns.add(new PropertyColumn<OntvangenCdaBericht, String>(Model.of("Type"), BERICHT_TYPE, BERICHT_TYPE));
-		columns.add(new AbstractColumn<OntvangenCdaBericht, String>(Model.of("Bekijk bericht"))
+		var columns = new ArrayList<IColumn<OntvangenCdaBericht, String>>();
+		columns.add(new DateTimePropertyColumn<>(Model.of("Datum/tijd ontvangst"), ONTVANGEN, ONTVANGEN));
+		columns.add(new PropertyColumn<>(Model.of("DocumentID"), BERICHT_ID, BERICHT_ID));
+		columns.add(new PropertyColumn<>(Model.of("SetID"), SET_ID, SET_ID));
+		columns.add(new PropertyColumn<>(Model.of("Versie"), VERSIE, VERSIE));
+		columns.add(new PropertyColumn<>(Model.of("Projectversie"), PROJECT_VERSION, PROJECT_VERSION));
+		columns.add(new PropertyColumn<>(Model.of("Type"), BERICHT_TYPE, BERICHT_TYPE));
+		columns.add(new AbstractColumn<>(Model.of("Bekijk bericht"))
 		{
 
 			@Override
 			public void populateItem(Item<ICellPopulator<OntvangenCdaBericht>> cellItem, String componentId, IModel<OntvangenCdaBericht> rowModel)
 			{
-				cellItem.add(new AjaxImageCellPanel<OntvangenCdaBericht>(componentId, rowModel, "icon-info-sign")
+				cellItem.add(new AjaxImageCellPanel<>(componentId, rowModel, "icon-info-sign")
 				{
 					@Override
 					protected void onClick(AjaxRequestTarget target)
@@ -154,16 +151,16 @@ public class VerwerkteBerichtenOverzichtPage extends ColonScreeningBasePage
 			}
 
 		});
-		final boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_VERSLAGEN, Actie.AANPASSEN);
+		final var magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_VERSLAGEN, Actie.AANPASSEN);
 		if (magAanpassen)
 		{
-			columns.add(new AbstractColumn<OntvangenCdaBericht, String>(Model.of("Opnieuw aanbieden"))
+			columns.add(new AbstractColumn<>(Model.of("Opnieuw aanbieden"))
 			{
 
 				@Override
 				public void populateItem(Item<ICellPopulator<OntvangenCdaBericht>> cellItem, String componentId, final IModel<OntvangenCdaBericht> rowModel)
 				{
-					cellItem.add(new AjaxImageCellPanel<OntvangenCdaBericht>(componentId, rowModel, "icon-refresh")
+					cellItem.add(new AjaxImageCellPanel<>(componentId, rowModel, "icon-refresh")
 					{
 						@Override
 						protected void onClick(AjaxRequestTarget target)
@@ -182,7 +179,7 @@ public class VerwerkteBerichtenOverzichtPage extends ColonScreeningBasePage
 			});
 		}
 
-		Component newScreenitDataTable = new ScreenitDataTable<OntvangenCdaBericht, String>("tabel", columns, new VerwerkteBerichtenOverzichtDataProvider(berichtZoekFilter), 10,
+		var newScreenitDataTable = new ScreenitDataTable<>("tabel", columns, new VerwerkteBerichtenOverzichtDataProvider(berichtZoekFilter), 10,
 			Model.of("bericht(en)"));
 		newScreenitDataTable.setOutputMarkupId(true);
 		if (berichtenTabel != null)
@@ -207,16 +204,14 @@ public class VerwerkteBerichtenOverzichtPage extends ColonScreeningBasePage
 		{
 			super(id, new CompoundPropertyModel<>(model));
 
-			List<Bevolkingsonderzoek> onderzoeken = ScreenitSession.get().getOnderzoeken();
-			boolean colon = onderzoeken.contains(Bevolkingsonderzoek.COLON);
-			boolean cervix = onderzoeken.contains(Bevolkingsonderzoek.CERVIX);
+			var onderzoeken = ScreenitSession.get().getOnderzoeken();
+			var colon = onderzoeken.contains(Bevolkingsonderzoek.COLON);
 
 			CheckBox mdlBerichten = new CheckBox("mdlBerichten");
 			CheckBox paLabBerichten = new CheckBox("paLabBerichten");
 			CheckBox cytologieBerichten = new CheckBox("cytologieBerichten");
 			mdlBerichten.setVisible(colon);
 			paLabBerichten.setVisible(colon);
-
 			cytologieBerichten.setVisible(false);
 			add(mdlBerichten);
 			add(paLabBerichten);
@@ -247,7 +242,7 @@ public class VerwerkteBerichtenOverzichtPage extends ColonScreeningBasePage
 	private void berichtOpnieuwAanbieden(OntvangenCdaBericht ontvangenCdaBericht, AjaxRequestTarget target)
 	{
 		verslagService.berichtOpnieuwVerwerken(ontvangenCdaBericht);
-		LOG.info("Bericht met ID " + ontvangenCdaBericht.getId() + " wordt opnieuw aangeboden");
+		LOG.info("Bericht met ID {} wordt opnieuw aangeboden", ontvangenCdaBericht.getId());
 		if (target != null)
 		{
 			info("Ontvangen bericht is opnieuw aangeboden ter verwerking door de batch applicatie.");

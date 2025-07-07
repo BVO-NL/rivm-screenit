@@ -21,7 +21,6 @@ package nl.rivm.screenit.dao.mamma.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -291,12 +290,12 @@ public class MammaBaseTehuisClientenDaoImpl extends AbstractAutowiredDao impleme
 	@Override
 	public long countClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres)
 	{
-		NativeQuery<BigInteger> query = createQuery(tehuis, tehuisSelectie, zoekAdres, true, null, null);
+		NativeQuery<Long> query = createQuery(tehuis, tehuisSelectie, zoekAdres, true, null, null);
 		if (query == null)
 		{
 			return 0;
 		}
-		return query.getSingleResult().longValue();
+		return query.getSingleResult();
 	}
 
 	@Override

@@ -32,7 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.BriefDefinitie;
 import nl.rivm.screenit.model.ProjectParameterKey;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.UitnodigingCohort;
 import nl.rivm.screenit.model.colon.UitnodigingCohortGeboortejaren;
@@ -49,6 +48,7 @@ import nl.rivm.screenit.specification.algemeen.UitnodigingCohortSpecification;
 import nl.rivm.screenit.specification.colon.ColonUitnodigingSpecification;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ProjectUtil;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -194,7 +194,7 @@ public class ColonUitnodigingServiceImpl implements ColonUitnodigingService
 			.and(ColonUitnodigingSpecification.heeftGeenBriefTypes(List.of(BriefType.COLON_UITNODIGING_INTAKE, BriefType.COLON_GUNSTIGE_UITSLAG)));
 
 		return uitnodigingRepository.findWith(specification, Long.class, q -> q
-			.projection((cb, r) -> r.get(TablePerClassHibernateObject_.id))
+			.projection((cb, r) -> r.get(AbstractHibernateObject_.id))
 			.all());
 	}
 

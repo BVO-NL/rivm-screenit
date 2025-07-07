@@ -28,7 +28,6 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
-import nl.rivm.screenit.model.colon.MdlVerslag;
 
 public interface VerwerkVerslagService
 {
@@ -38,7 +37,4 @@ public interface VerwerkVerslagService
 	void onAfterVerwerkVerslagContent(Verslag verslag);
 
 	ScreeningRonde getValideScreeningsRonde(VerslagType type, Client client, Verslag olderVerslag, Date onderzoeksdatum);
-
-	void ontkoppelOfVerwijderComplicaties(MdlVerslag mdlVerslag);
-
 }

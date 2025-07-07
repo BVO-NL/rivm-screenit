@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.verwerkingverslag.cervix;
 
 /*-
@@ -29,12 +28,8 @@ import jakarta.persistence.Table;
 import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(schema = "cervix")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class CervixZasVersturenRapportageProjectEntry extends AbstractHibernateObject
 {
 	@ManyToOne

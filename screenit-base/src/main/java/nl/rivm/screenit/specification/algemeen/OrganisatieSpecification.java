@@ -53,7 +53,6 @@ import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.RadiologieAfdeling;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.Woonplaats;
 import nl.rivm.screenit.model.ZorgInstelling;
 import nl.rivm.screenit.model.ZorgInstelling_;
@@ -72,6 +71,7 @@ import nl.rivm.screenit.model.overeenkomsten.AfgeslotenInstellingOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenInstellingOvereenkomst_;
 import nl.rivm.screenit.model.overeenkomsten.Overeenkomst;
 import nl.rivm.screenit.specification.ExtendedSpecification;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.organisatie.model.Adres;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -125,7 +125,7 @@ public class OrganisatieSpecification
 
 	public static ExtendedSpecification<Instelling> filterId(Long id)
 	{
-		return skipWhenNullExtended(id, (r, q, cb) -> cb.equal(r.get(SingleTableHibernateObject_.id), id));
+		return skipWhenNullExtended(id, (r, q, cb) -> cb.equal(r.get(AbstractHibernateObject_.id), id));
 	}
 
 	public static Specification<Instelling> heeftNietOrganisatieTypes(List<OrganisatieType> excludeOrganisatieTypes)
@@ -187,13 +187,13 @@ public class OrganisatieSpecification
 				predicates.add(AbstractAfgeslotenOvereenkomstSpecification.bevatPeildatum(peildatum).toPredicate(subqueryRoot, q, cb));
 			}
 
-			subquery.select(instellingJoin.get(SingleTableHibernateObject_.id));
+			subquery.select(instellingJoin.get(AbstractHibernateObject_.id));
 			if (!predicates.isEmpty())
 			{
 				subquery.where(composePredicates(cb, predicates));
 			}
 
-			return r.get(SingleTableHibernateObject_.id).in(subquery);
+			return r.get(AbstractHibernateObject_.id).in(subquery);
 		};
 	}
 
@@ -217,8 +217,8 @@ public class OrganisatieSpecification
 			{
 				var spec = AdresSpecification.filterPlaatsContaining(plaats)
 					.and(AdresSpecification.filterPostcodeContaining(postcode)).with(root -> adressenJoin);
-				subquery.select(subRoot.get(SingleTableHibernateObject_.id)).where(spec.toPredicate(subRoot, q, cb));
-				return r.get(SingleTableHibernateObject_.id).in(subquery);
+				subquery.select(subRoot.get(AbstractHibernateObject_.id)).where(spec.toPredicate(subRoot, q, cb));
+				return r.get(AbstractHibernateObject_.id).in(subquery);
 			}
 			else
 			{
@@ -334,7 +334,7 @@ public class OrganisatieSpecification
 		if (CollectionUtils.isNotEmpty(organisatiesVoorToegangslevel))
 		{
 			var organisatieTypeToegangslevel = organisatiesVoorToegangslevel.get(0).getOrganisatieType();
-			var idPath = root.get(SingleTableHibernateObject_.id);
+			var idPath = root.get(AbstractHibernateObject_.id);
 			var isScreeningorganisatieToegangslevel = organisatieTypeToegangslevel == OrganisatieType.SCREENINGSORGANISATIE;
 			switch (organisatieType)
 			{
@@ -427,7 +427,7 @@ public class OrganisatieSpecification
 		{
 			var root = treat(r, PaLaboratorium.class, cb);
 			var coloscopielocatieJoin = join(root, PaLaboratorium_.coloscopielocaties);
-			return cb.equal(coloscopielocatieJoin.get(SingleTableHibernateObject_.id), locatieId);
+			return cb.equal(coloscopielocatieJoin.get(AbstractHibernateObject_.id), locatieId);
 		};
 	}
 
@@ -437,7 +437,7 @@ public class OrganisatieSpecification
 		{
 			var root = treat(r, PaLaboratorium.class, cb);
 			var coloscopielocatieJoin = join(root, PaLaboratorium_.coloscopielocaties);
-			return cb.equal(coloscopielocatieJoin.get(Instelling_.parent), locatieId);
+			return cb.equal(coloscopielocatieJoin.get(Instelling_.parent).get(AbstractHibernateObject_.id), locatieId);
 		};
 	}
 

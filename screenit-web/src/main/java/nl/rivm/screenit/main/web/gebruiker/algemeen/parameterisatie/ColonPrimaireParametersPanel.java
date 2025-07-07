@@ -80,7 +80,9 @@ public class ColonPrimaireParametersPanel extends BasePrimaireParametersPanel
 		form.add(new TextField<>("wachttijdVerzendenPakketTweeOpEenAdres", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
 		form.add(new TextField<>("colonAantalRondesUitnodigingsbriefZonderFit", Integer.class).add(RangeValidator.minimum(1)).setRequired(true));
 		form.add(new TextField<>("colonSignaleringstermijnGeenCapaciteit", Integer.class).add(RangeValidator.minimum(1)).setRequired(true));
+		form.add(new TextField<>("colonSignaleringstermijnAaneengeslotenPeriode", Integer.class).add(RangeValidator.minimum(1)).setRequired(true));
 		form.add(new TextField<>("colonHandmatigMdlVerslagTermijn", Integer.class).add(RangeValidator.minimum(1)).setRequired(true));
+		form.add(new TextField<>("colonBetrouwbareLimietFit", Integer.class).add(RangeValidator.minimum(1)).setRequired(true));
 
 		addTextAreaField(form, "colonEenmaligHeraanmeldenTekst");
 		addTextAreaField(form, "colonTijdelijkHeraanmeldenTekst");

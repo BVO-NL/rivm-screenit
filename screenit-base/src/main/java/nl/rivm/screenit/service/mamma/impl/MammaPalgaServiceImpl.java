@@ -37,11 +37,11 @@ import nl.rivm.screenit.dto.mamma.MammaPalgaCsvImportDto;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.UploadDocument_;
 import nl.rivm.screenit.model.batch.popupconfig.MammaPalgaExportConfig;
 import nl.rivm.screenit.model.batch.popupconfig.MammaPalgaGrondslag;
+import nl.rivm.screenit.model.berichten.cda.CdaConstants;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BezwaarType;
@@ -73,6 +73,7 @@ import nl.rivm.screenit.specification.mamma.MammaPalgaSpecification;
 import nl.rivm.screenit.util.BezwaarUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ZipUtil;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -122,7 +123,7 @@ public class MammaPalgaServiceImpl implements MammaPalgaService
 		return dossierRepository.findWith(
 			heeftGeenClientGbaStatusAfgevoerdOfBezwaar().and(heeftGeenActieveBezwaarVoorPalga()).and(voldoetAanPalgaExportConfig(exportConfig, vandaag)),
 			Long.class,
-			q -> q.projection((cb, r) -> r.get(MammaDossier_.client).get(SingleTableHibernateObject_.id))
+			q -> q.projection((cb, r) -> r.get(MammaDossier_.client).get(AbstractHibernateObject_.id))
 				.distinct().all());
 	}
 
@@ -367,7 +368,7 @@ public class MammaPalgaServiceImpl implements MammaPalgaService
 		}
 		else if ("UNK".equals(code) && ("zijdigheid".equals(varName) || "bclassificatieOpMammabiopt".equals(varName)))
 		{
-			return verslagService.getDsValue(code, "2.16.840.1.113883.5.1008", Constants.CDA_NULL_FLAVOR_VALUESET_NAME);
+			return verslagService.getDsValue(code, "2.16.840.1.113883.5.1008", CdaConstants.CDA_NULL_FLAVOR_VALUESET_NAME);
 		}
 		var dsValueSet = clazz.getDeclaredField(varName).getAnnotation(DSValueSet.class);
 		for (var dsValue : dsValueSet.values())

@@ -34,7 +34,7 @@ const BuildInfoComponent = () => {
 		}
 	}, [dispatch, buildInfo])
 
-	return buildInfo && <div className={styles.style}>
+	return buildInfo && <div className={styles.style} data-testid={"build-info"}>
 		<span>ScreenIT - Huisartsenportaal {buildInfo.version} | {formatDateTime(new Date(buildInfo.timestamp))}<br/>Instance: {buildInfo.instance}</span>
 	</div>
 }

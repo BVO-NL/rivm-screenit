@@ -30,26 +30,23 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Index;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
 @Entity
-@Table(schema = "gedeeld", indexes = { @Index(name = "IDX_MERGEDBRIEVENVERSTUURD", columnList = "geprint"), @Index(name = "IDX_MERGEDBRIEVENCONTROLE", columnList = "controle"),
-	@Index(name = "IDX_MERGEDBRIEVENVERWIJDERD", columnList = "verwijderd") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Audited
-public abstract class MergedBrieven<B extends Brief> extends TablePerClassHibernateObject implements IActief
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class MergedBrieven<B extends Brief> extends AbstractHibernateObject implements IActief
 {
 
 	@Serial

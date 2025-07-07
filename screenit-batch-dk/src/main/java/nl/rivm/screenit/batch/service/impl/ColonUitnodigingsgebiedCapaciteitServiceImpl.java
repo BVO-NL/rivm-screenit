@@ -354,7 +354,7 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 					{
 						if (uitnodigingscapaciteitOverIL.compareTo(BigDecimal.ZERO) != 0)
 						{
-							logService.logGebeurtenis(LogGebeurtenis.SELECTIERONDE_CAPACITEIT_VAN_LEEG_GEBIED_GAAT_VERLOREN, null,
+							logService.logGebeurtenis(LogGebeurtenis.SELECTIERONDE_CAPACITEIT_VAN_LEEG_GEBIED_GAAT_VERLOREN,
 								"Gebied " + leeglopendUitnodigingsgebied.getNaam() + ", IL " + intakelocatie.getNaam() + ", uitnodigingscapaciteit over (#) "
 									+ BigDecimalUtil.decimalToString(uitnodigingscapaciteitOverIL),
 								Bevolkingsonderzoek.COLON);
@@ -395,7 +395,7 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 							}
 							if (uitnodigingscapaciteitOverIL.compareTo(BigDecimal.ZERO) != 0)
 							{
-								logService.logGebeurtenis(LogGebeurtenis.SELECTIERONDE_CAPACITEIT_VAN_LEEG_GEBIED_GAAT_VERLOREN, null,
+								logService.logGebeurtenis(LogGebeurtenis.SELECTIERONDE_CAPACITEIT_VAN_LEEG_GEBIED_GAAT_VERLOREN,
 									"Gebied " + leeglopendUitnodigingsgebied.getNaam() + ", IL " + intakelocatie.getNaam() + ", uitnodigingscapaciteit over (#) "
 										+ BigDecimalUtil.decimalToString(uitnodigingscapaciteitOverIL) + ", doelgebied(en) " + StringUtils.join(gebieden, ',')
 										+ " geen percentage capaciteit toegekend",

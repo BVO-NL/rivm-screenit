@@ -21,14 +21,27 @@ package nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.contro
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.service.cervix.CervixLabformulierService;
+
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class CervixLabformulierPanel extends Panel
 {
+	@SpringBean
+	private CervixLabformulierService labformulierService;
+
 	public CervixLabformulierPanel(String id, String objid)
 	{
 		super(id);
-		add(new SpherionViewerContainer("labformulier", objid));
-
+		if (labformulierService.betreftEenS3Labformulier(objid))
+		{
+			add(new S3LabformulierViewerContainer("labformulier", objid));
+		}
+		else
+		{
+			add(new SpherionViewerContainer("labformulier", objid));
+		}
 	}
+
 }

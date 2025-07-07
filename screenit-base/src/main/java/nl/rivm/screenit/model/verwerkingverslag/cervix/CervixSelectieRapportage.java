@@ -34,14 +34,10 @@ import lombok.Setter;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Getter
 @Setter
 @Entity
 @Table(schema = "cervix", name = "selectie_rapportage")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class CervixSelectieRapportage extends AbstractHibernateObject
 {
 	private long aantal;

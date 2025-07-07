@@ -21,11 +21,11 @@ package nl.rivm.screenit.main.service.colon.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.math.BigInteger;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -48,7 +48,7 @@ import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
 import nl.rivm.screenit.model.colon.planning.ColonTijdslot;
 import nl.rivm.screenit.model.colon.planning.ColonTijdslot_;
 import nl.rivm.screenit.repository.colon.ColonAfspraakslotRepository;
-import nl.rivm.screenit.repository.colon.ColonTijdslotNativeQueryRepository;
+import nl.rivm.screenit.repository.colon.ColonTijdslotRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.colon.ColonTijdslotSpecification;
 import nl.rivm.screenit.util.DateUtil;
@@ -77,7 +77,7 @@ public class RoosterServiceImpl implements RoosterService
 	private ColonAfspraakslotRepository afspraakslotRepository;
 
 	@Autowired
-	private ColonTijdslotNativeQueryRepository tijdslotRepository;
+	private ColonTijdslotRepository tijdslotRepository;
 
 	@Override
 	@Transactional
@@ -95,9 +95,9 @@ public class RoosterServiceImpl implements RoosterService
 		return tijdslotRepository.searchTijdslots(intakelocatieId, DateUtil.toLocalDateTime(filter.getStartDatum()), DateUtil.toLocalDateTime(filter.getEindDatum()),
 				filter.getStartTijd(), filter.getEindTijd(), filter.getKamerId(),
 				filter.getSqlDagen(), typeTijdslot.name()).stream()
-			.map(tuple -> new ColonTijdslotDto(((BigInteger) tuple.get("tijdslotId")).longValue(), DateUtil.toLocalDateTime((Date) tuple.get("startDatum")),
-				DateUtil.toLocalDateTime((Date) tuple.get("eindDatum")), (String) tuple.get("kamer"),
-				((BigInteger) tuple.get("kamerId")).longValue(), null))
+			.map(tuple -> new ColonTijdslotDto(((Long) tuple.get("tijdslotId")), DateUtil.toLocalDateTime((Temporal) tuple.get("startDatum")),
+				DateUtil.toLocalDateTime((Temporal) tuple.get("eindDatum")), (String) tuple.get("kamer"),
+				((Long) tuple.get("kamerId")), null))
 			.collect(Collectors.toList());
 	}
 

@@ -35,7 +35,6 @@ import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.service.ZorgIdSessieService;
 import nl.rivm.screenit.main.web.ScreenitSession.ScreenitSessionRevisionInformationResolverDelegate;
 import nl.rivm.screenit.main.web.base.BasePage;
-import nl.rivm.screenit.main.web.component.LocalTimeConverter;
 import nl.rivm.screenit.main.web.component.MultiDateConverter;
 import nl.rivm.screenit.main.web.component.PollingAbstractAjaxTimerBehavior;
 import nl.rivm.screenit.main.web.component.TimeLocalDateConverter;
@@ -95,16 +94,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.jennybrown8.wicketsource.WicketSource;
 import com.googlecode.wicket.jquery.ui.settings.JQueryUILibrarySettings;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.function.Supplier;
 
 @org.springframework.stereotype.Component
 public class ScreenitApplication extends WebApplication
@@ -321,7 +310,6 @@ public class ScreenitApplication extends WebApplication
 		converterLocator.set(java.sql.Date.class, datumConverter);
 		converterLocator.set(java.sql.Timestamp.class, datumConverter);
 		converterLocator.set(java.util.Calendar.class, datumConverter);
-		converterLocator.set(org.joda.time.LocalTime.class, new LocalTimeConverter());
 		converterLocator.set(java.time.LocalDate.class, new TimeLocalDateConverter());
 		converterLocator.set(java.time.LocalTime.class, new TimeLocalTimeConverter());
 		converterLocator.set(Double.TYPE, new DoubleConverter());

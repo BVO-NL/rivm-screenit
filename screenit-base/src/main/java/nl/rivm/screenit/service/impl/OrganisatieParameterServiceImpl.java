@@ -105,7 +105,7 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 		}
 		if (organisatie != null)
 		{
-			queryParams.put("organisatie", organisatie.getId());
+			queryParams.put("organisatie", organisatie);
 		}
 
 		return hibernateService.getUniqueByParameters(OrganisatieParameter.class, queryParams);

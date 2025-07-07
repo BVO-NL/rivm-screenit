@@ -31,9 +31,11 @@ import nl.rivm.screenit.model.InstellingGebruikerRol;
 import nl.rivm.screenit.model.Rol;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 
+import org.springframework.data.domain.Sort;
+
 public interface RolService
 {
-	void setRechtActiefOfInactief(Rol rol, Account loggedInAccount);
+	void setRolActiefOfInactief(Rol rol, Account loggedInAccount);
 
 	List<Rol> getToeTeVoegenRollen(InstellingGebruiker organisatieMedewerkerRolToevoegen, InstellingGebruiker ingelogdeOrganisatieMedewerker);
 
@@ -49,4 +51,8 @@ public interface RolService
 		InstellingGebruiker ingelogdeInstellingGebruiker);
 
 	boolean zijnErRechtenDieVerwijderdWorden(Rol rol);
+
+	List<Rol> getRollen(Rol filter, Sort sortParam, long first, long count);
+
+	long getRollenCount(Rol filter);
 }

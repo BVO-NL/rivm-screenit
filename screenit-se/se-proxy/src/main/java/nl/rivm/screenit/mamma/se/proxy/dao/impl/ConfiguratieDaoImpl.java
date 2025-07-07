@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.se.proxy.dao.impl;
  * ========================LICENSE_START=================================
  * se-proxy
  * %%
- * Copyright (C) 2017 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -36,29 +36,29 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class ConfiguratieDaoImpl extends BaseDaoImpl implements ConfiguratieDao
 {
-    private static final Logger LOG = LoggerFactory.getLogger(ConfiguratieDaoImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ConfiguratieDaoImpl.class);
 
-    @Override
-    public String getConfiguratieValue(SeConfiguratieKey key)
-    {
-        String sql = "SELECT VALUE FROM CONFIGURATIE WHERE key = ?;";
+	@Override
+	public String getConfiguratieValue(SeConfiguratieKey key)
+	{
+		String sql = "SELECT VALUE FROM CONFIGURATIE WHERE key = ?;";
 
-        try (Connection dbConnection = getConnection();
-             PreparedStatement statement = dbConnection.prepareStatement(sql))
-        {
-            statement.setString(1, key.name());
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next())
-            {
-                return resultSet.getString("value");
-            }
-        }
-        catch (SQLException e)
-        {
-            LOG.warn("Er is een probleem met het ophalen van een configuratie met key {}:  {}", key, e.getMessage());
-        }
-        return null;
-    }
+		try (Connection dbConnection = getConnection();
+			PreparedStatement statement = dbConnection.prepareStatement(sql))
+		{
+			statement.setString(1, key.name());
+			ResultSet resultSet = statement.executeQuery();
+			if (resultSet.next())
+			{
+				return resultSet.getString("value");
+			}
+		}
+		catch (SQLException e)
+		{
+			LOG.warn("Er is een probleem met het ophalen van een configuratie met key {}:  {}", key, e.getMessage());
+		}
+		return null;
+	}
 
 	@Override
 	public Integer getConfiguratieIntegerValue(SeConfiguratieKey key)
@@ -75,9 +75,10 @@ public class ConfiguratieDaoImpl extends BaseDaoImpl implements ConfiguratieDao
 	}
 
 	@Override
-	public boolean getConfiguratieBooleanValue(SeConfiguratieKey key)
+	public boolean getConfiguratieBooleanValue(SeConfiguratieKey key, boolean defaultValue)
 	{
-		return Boolean.parseBoolean(getConfiguratieValue(key));
+		var configuratieValue = getConfiguratieValue(key);
+		return configuratieValue == null ? defaultValue : Boolean.parseBoolean(configuratieValue);
 	}
 
 	@Override

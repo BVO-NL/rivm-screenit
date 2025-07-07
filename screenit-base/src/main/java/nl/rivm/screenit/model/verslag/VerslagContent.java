@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.verslag;
 
 /*-
@@ -22,12 +21,6 @@ package nl.rivm.screenit.model.verslag;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
-import nl.rivm.screenit.model.berichten.Verslag;
-import nl.rivm.screenit.model.berichten.enums.VerslagGeneratie;
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -35,29 +28,31 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import nl.rivm.screenit.model.berichten.Verslag;
+import nl.rivm.screenit.model.berichten.enums.VerslagGeneratie;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
+
+@Getter
+@Setter
 @Entity
 @Table(schema = "gedeeld")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class VerslagContent<T extends Verslag> extends AbstractHibernateObject
 {
 
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@Enumerated(EnumType.STRING)
 	private VerslagGeneratie versie;
 
-	public VerslagGeneratie getVersie()
+	public T getVerslag()
 	{
-		return versie;
+		return null;
 	}
 
-	public void setVersie(VerslagGeneratie versie)
+	public void setVerslag(T verslag)
 	{
-		this.versie = versie;
+
 	}
-
-	public abstract T getVerslag();
-
-	public abstract void setVerslag(T colonVerslag);
 }

@@ -36,8 +36,6 @@ import lombok.Setter;
 import nl.rivm.screenit.model.mamma.enums.MammaUitnodigingsintervalType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -45,7 +43,6 @@ import org.hibernate.envers.NotAudited;
 @Table(
 	schema = "mamma", name = "uitnodigingsinterval",
 	uniqueConstraints = { @UniqueConstraint(columnNames = "type") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 @Audited
 @Getter
 @Setter

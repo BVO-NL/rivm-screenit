@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon.intake;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
@@ -33,12 +32,10 @@ import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.ScreenitIndicatingAjaxSubmitLink;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.model.colon.MdlVerslag;
-import nl.rivm.screenit.model.colon.MdlVerslag_;
 import nl.rivm.screenit.model.colon.enums.MdlVervolgbeleid;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlColoscopieMedischeObservatie;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlColoscopieMedischeObservatie_;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg;
-import nl.rivm.screenit.model.colon.verslag.mdl.MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg_;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerrichting_;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerslagContent_;
 import nl.rivm.screenit.model.verslag.DSValue;
@@ -60,6 +57,12 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.DateValidator;
 
+import static nl.rivm.screenit.model.colon.MdlVerslag_.VERSLAG_CONTENT;
+import static nl.rivm.screenit.model.colon.verslag.mdl.MdlColoscopieMedischeObservatie_.DEFINITIEF_VERVOLGBELEID_VOOR_BEVOLKINGSONDERZOEKG;
+import static nl.rivm.screenit.model.colon.verslag.mdl.MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg_.DEFINITIEF_VERVOLGBELEID_VOOR_BEVOLKINGSONDERZOEK;
+import static nl.rivm.screenit.model.colon.verslag.mdl.MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg_.PERIODE_VERVOLG_SCOPIE;
+import static nl.rivm.screenit.model.colon.verslag.mdl.MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg_.PERIODE_VERVOLG_SURVEILLANCE;
+import static nl.rivm.screenit.model.colon.verslag.mdl.MdlVerslagContent_.COLOSCOPIE_MEDISCHE_OBSERVATIE;
 import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
 @Slf4j
@@ -86,7 +89,7 @@ public abstract class ColonHandmatigVervolgbeleidVastleggenPanel extends Generic
 		form.setOutputMarkupId(true);
 		add(form);
 
-		var aanvangVerrichting = ComponentHelper.addTextField(form, propertyChain(MdlVerslag_.VERSLAG_CONTENT, MdlVerslagContent_.VERRICHTING, MdlVerrichting_.AANVANG_VERRICHTING),
+		var aanvangVerrichting = ComponentHelper.addTextField(form, propertyChain(VERSLAG_CONTENT, MdlVerslagContent_.VERRICHTING, MdlVerrichting_.AANVANG_VERRICHTING),
 			true, 10, Date.class,
 			false);
 		aanvangVerrichting.add(DateValidator.maximum(currentDateSupplier.getDate()));
@@ -94,23 +97,25 @@ public abstract class ColonHandmatigVervolgbeleidVastleggenPanel extends Generic
 		var eindconclusieOpties = getDsValueSet(MdlColoscopieMedischeObservatie_.EINDCONCLUSIE, MdlColoscopieMedischeObservatie.class,
 			getModelObject().getVerslagContent().getColoscopieMedischeObservatie().getEindconclusie());
 		var eindConclusie = ComponentHelper.newDropDownChoice(
-			propertyChain(MdlVerslag_.VERSLAG_CONTENT, MdlVerslagContent_.COLOSCOPIE_MEDISCHE_OBSERVATIE, MdlColoscopieMedischeObservatie_.EINDCONCLUSIE),
+			propertyChain(VERSLAG_CONTENT, COLOSCOPIE_MEDISCHE_OBSERVATIE, MdlColoscopieMedischeObservatie_.EINDCONCLUSIE),
 			ModelUtil.listRModel(eindconclusieOpties, false),
 			new ChoiceRenderer<>(DSValue_.DISPLAY_NAME_NL), true);
 		eindConclusie.setOutputMarkupId(true);
 		form.add(eindConclusie);
 
-		var definitiefVervolgbeleidOpties = Arrays.stream(MdlVervolgbeleid.values()).map(value -> getDsValue(value.getCode(), value.getCodeSystem(), "vs_vervolgbeleid")).toList();
+		var definitiefVervolgbeleidOpties = getDsValueSet(DEFINITIEF_VERVOLGBELEID_VOOR_BEVOLKINGSONDERZOEK,
+			MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg.class,
+			getModelObject().getVerslagContent().getColoscopieMedischeObservatie().getDefinitiefVervolgbeleidVoorBevolkingsonderzoekg()
+				.getDefinitiefVervolgbeleidVoorBevolkingsonderzoek());
 		definitiefVervolgbeleid = ComponentHelper.newDropDownChoice(
-			propertyChain(MdlVerslag_.VERSLAG_CONTENT, MdlVerslagContent_.COLOSCOPIE_MEDISCHE_OBSERVATIE,
-				MdlColoscopieMedischeObservatie_.DEFINITIEF_VERVOLGBELEID_VOOR_BEVOLKINGSONDERZOEKG,
-				MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg_.DEFINITIEF_VERVOLGBELEID_VOOR_BEVOLKINGSONDERZOEK),
+			propertyChain(VERSLAG_CONTENT, COLOSCOPIE_MEDISCHE_OBSERVATIE, DEFINITIEF_VERVOLGBELEID_VOOR_BEVOLKINGSONDERZOEKG, DEFINITIEF_VERVOLGBELEID_VOOR_BEVOLKINGSONDERZOEK),
 			ModelUtil.listRModel(definitiefVervolgbeleidOpties, false), new ChoiceRenderer<>(DSValue_.DISPLAY_NAME_NL), true);
 		definitiefVervolgbeleid.setOutputMarkupId(true);
 
 		form.add(definitiefVervolgbeleid);
 
 		addOrReplacePeriodeVervolgSurveillance(null);
+		addOrReplacePeriodeVervolgScopie(null);
 
 		definitiefVervolgbeleid.add(new AjaxFormComponentUpdatingBehavior("change")
 		{
@@ -118,6 +123,7 @@ public abstract class ColonHandmatigVervolgbeleidVastleggenPanel extends Generic
 			protected void onUpdate(AjaxRequestTarget target)
 			{
 				addOrReplacePeriodeVervolgSurveillance(target);
+				addOrReplacePeriodeVervolgScopie(target);
 			}
 		});
 
@@ -139,7 +145,7 @@ public abstract class ColonHandmatigVervolgbeleidVastleggenPanel extends Generic
 
 	private void addOrReplacePeriodeVervolgSurveillance(AjaxRequestTarget target)
 	{
-		var container = new WebMarkupContainer("periodeVervolgSurveillancescopie");
+		var container = new WebMarkupContainer("periodeVervolgSurveillance");
 		container.setOutputMarkupId(true);
 		container.setOutputMarkupPlaceholderTag(true);
 		form.addOrReplace(container);
@@ -153,34 +159,57 @@ public abstract class ColonHandmatigVervolgbeleidVastleggenPanel extends Generic
 		final var selectedVervolgBeleidFinal = selectedVervolgbeleid;
 		getModelObject().setVervolgbeleid(selectedVervolgBeleidFinal);
 
-		var periodeVervolgSurveillanceOpties = getDsValueSet(MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg_.PERIODE_VERVOLG_SURVEILLANCESCOPIE,
+		var periodeVervolgSurveillanceOpties = getDsValueSet(PERIODE_VERVOLG_SURVEILLANCE,
 			MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg.class,
-			getModelObject().getVerslagContent().getColoscopieMedischeObservatie().getDefinitiefVervolgbeleidVoorBevolkingsonderzoekg().getPeriodeVervolgSurveillancescopie())
-			.stream()
-			.filter(dsValue ->
-			{
-				var isDrieJaarOptie = dsValue.getCode().equals("14");
-				if (selectedVervolgBeleidFinal == MdlVervolgbeleid.SURVEILLANCE)
-				{
-					return isDrieJaarOptie;
-				}
-				return !isDrieJaarOptie;
-			})
-			.toList();
+			getModelObject().getVerslagContent().getColoscopieMedischeObservatie().getDefinitiefVervolgbeleidVoorBevolkingsonderzoekg().getPeriodeVervolgSurveillance());
 
 		var periodeVervolgSurveillance = ComponentHelper.newDropDownChoice(
-			propertyChain(MdlVerslag_.VERSLAG_CONTENT, MdlVerslagContent_.COLOSCOPIE_MEDISCHE_OBSERVATIE,
-				MdlColoscopieMedischeObservatie_.DEFINITIEF_VERVOLGBELEID_VOOR_BEVOLKINGSONDERZOEKG,
-				MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg_.PERIODE_VERVOLG_SURVEILLANCESCOPIE),
+			propertyChain(VERSLAG_CONTENT, COLOSCOPIE_MEDISCHE_OBSERVATIE, DEFINITIEF_VERVOLGBELEID_VOOR_BEVOLKINGSONDERZOEKG, PERIODE_VERVOLG_SURVEILLANCE),
 			ModelUtil.listRModel(periodeVervolgSurveillanceOpties, false),
 			new ChoiceRenderer<>(DSValue_.DISPLAY_NAME_NL), true);
 		periodeVervolgSurveillance.setOutputMarkupId(true);
 
-		var vervolgbeleidOptiesMetSurveillance = List.of(MdlVervolgbeleid.POLIEPECTOMIE, MdlVervolgbeleid.SURVEILLANCE, MdlVervolgbeleid.COLONOSCOPY,
-			MdlVervolgbeleid.COLONOSCOPY_NEW);
+		var vervolgbeleidOptiesMetSurveillance = List.of(MdlVervolgbeleid.SURVEILLANCE);
 
 		container.add(periodeVervolgSurveillance);
 		container.setVisible(selectedVervolgbeleid != null && vervolgbeleidOptiesMetSurveillance.contains(selectedVervolgbeleid));
+
+		if (target != null)
+		{
+			target.add(container);
+		}
+	}
+
+	private void addOrReplacePeriodeVervolgScopie(AjaxRequestTarget target)
+	{
+		var container = new WebMarkupContainer("periodeVervolgScopie");
+		container.setOutputMarkupId(true);
+		container.setOutputMarkupPlaceholderTag(true);
+		form.addOrReplace(container);
+
+		var selectedValue = (DSValue) definitiefVervolgbeleid.getDefaultModelObject();
+		MdlVervolgbeleid selectedVervolgbeleid = null;
+		if (selectedValue != null)
+		{
+			selectedVervolgbeleid = MdlVervolgbeleid.fromCode(selectedValue.getCode());
+		}
+		final var selectedVervolgBeleidFinal = selectedVervolgbeleid;
+		getModelObject().setVervolgbeleid(selectedVervolgBeleidFinal);
+
+		var periodeVervolgScopieOpties = getDsValueSet(PERIODE_VERVOLG_SCOPIE,
+			MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg.class,
+			getModelObject().getVerslagContent().getColoscopieMedischeObservatie().getDefinitiefVervolgbeleidVoorBevolkingsonderzoekg().getPeriodeVervolgSurveillance());
+
+		var periodeVervolgScopie = ComponentHelper.newDropDownChoice(
+			propertyChain(VERSLAG_CONTENT, COLOSCOPIE_MEDISCHE_OBSERVATIE, DEFINITIEF_VERVOLGBELEID_VOOR_BEVOLKINGSONDERZOEKG, PERIODE_VERVOLG_SCOPIE),
+			ModelUtil.listRModel(periodeVervolgScopieOpties, false),
+			new ChoiceRenderer<>(DSValue_.DISPLAY_NAME_NL), true);
+		periodeVervolgScopie.setOutputMarkupId(true);
+
+		var vervolgbeleidOptiesMetScopie = List.of(MdlVervolgbeleid.POLIEPECTOMIE, MdlVervolgbeleid.COLONOSCOPY, MdlVervolgbeleid.COLONOSCOPY_NEW);
+
+		container.add(periodeVervolgScopie);
+		container.setVisible(selectedVervolgbeleid != null && vervolgbeleidOptiesMetScopie.contains(selectedVervolgbeleid));
 
 		if (target != null)
 		{

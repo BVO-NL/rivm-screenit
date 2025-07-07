@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.service.MammaCStoreService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5Session;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.activemq.command.ActiveMQTextMessage;
@@ -55,7 +55,7 @@ public class JMSUploadBeeldenBerichtListener implements SessionAwareMessageListe
 		LOG.info("Uploaden van beelden is getriggerd.");
 
 		AtomicReference<String> sopClasses = new AtomicReference<>();
-		OpenHibernate5Session.withoutTransaction().run(() ->
+		OpenHibernateSession.withoutTransaction().run(() ->
 			sopClasses.set(preferenceService.getString(PreferenceKey.MAMMA_DICOM_SOP_CONFIG.name()))
 		);
 

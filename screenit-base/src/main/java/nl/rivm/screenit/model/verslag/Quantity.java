@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.verslag;
 
 /*-
@@ -22,43 +21,23 @@ package nl.rivm.screenit.model.verslag;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.io.Serializable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 @Embeddable
 public class Quantity implements Serializable
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@Column
 	private String value;
 
 	@Column
 	private String unit;
-
-	public String getValue()
-	{
-		return value;
-	}
-
-	public void setValue(String value)
-	{
-		this.value = value;
-	}
-
-	public String getUnit()
-	{
-		return unit;
-	}
-
-	public void setUnit(String unit)
-	{
-		this.unit = unit;
-	}
 
 }

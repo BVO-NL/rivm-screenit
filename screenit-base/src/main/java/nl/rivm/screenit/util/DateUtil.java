@@ -22,9 +22,11 @@ package nl.rivm.screenit.util;
  */
 
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -317,19 +319,7 @@ public final class DateUtil
 			return null;
 		}
 
-		LocalDateTime localDateTime;
-		if (temporal instanceof LocalDate date)
-		{
-			localDateTime = date.atStartOfDay();
-		}
-		else if (temporal instanceof LocalDateTime time)
-		{
-			localDateTime = time;
-		}
-		else
-		{
-			throw new IllegalArgumentException("Unsupported Temporal type: " + temporal.getClass());
-		}
+		var localDateTime = toLocalDateTime(temporal);
 
 		var atZone = localDateTime.atZone(SCREENIT_DEFAULT_ZONE);
 		var instant = atZone.toInstant();
@@ -339,8 +329,8 @@ public final class DateUtil
 			var atZoneSD = localDateTime.atZone(ZoneId.systemDefault());
 			var instantSD = atZoneSD.toInstant();
 			var dateSD = Date.from(instantSD);
-			LOG.trace("Input localDateTime: " + localDateTime + " ZonedDateTime: " + atZone + " Instant: " + instant + " Date: " + date + " ZonedDateTimeSD: " + atZoneSD
-				+ " InstantSD: " + instantSD + " DateSD: " + dateSD + " SD: " + ZoneId.systemDefault());
+			LOG.trace("Input localDateTime: {} ZonedDateTime: {} Instant: {} Date: {} ZonedDateTimeSD: {} InstantSD: {} DateSD: {} SD: {}", localDateTime, atZone, instant, date,
+				atZoneSD, instantSD, dateSD, ZoneId.systemDefault());
 		}
 
 		return date;
@@ -716,4 +706,45 @@ public final class DateUtil
 		return range(onderGrens, onderGrensType, bovenGrens, bovenGrensType);
 	}
 
+	public static LocalDateTime toLocalDateTime(Temporal temporal)
+	{
+		if (temporal instanceof LocalDateTime localDateTime)
+		{
+			return localDateTime;
+		}
+		else if (temporal instanceof LocalDate localDate)
+		{
+			return localDate.atStartOfDay();
+		}
+		else if (temporal instanceof ZonedDateTime zonedDateTime)
+		{
+			return zonedDateTime.toLocalDateTime();
+		}
+		else if (temporal instanceof OffsetDateTime offsetDateTime)
+		{
+			return offsetDateTime.toLocalDateTime();
+		}
+		else if (temporal instanceof Instant instant)
+		{
+			return LocalDateTime.ofInstant(instant, SCREENIT_DEFAULT_ZONE);
+		}
+		else if (temporal == null)
+		{
+			return null;
+		}
+		else
+		{
+			throw new IllegalArgumentException("Unsupported Temporal type: " + temporal.getClass());
+		}
+	}
+
+	public static LocalDate toLocalDate(Temporal temporal)
+	{
+		var localDateTime = toLocalDateTime(temporal);
+		if (localDateTime == null)
+		{
+			return null;
+		}
+		return localDateTime.toLocalDate();
+	}
 }

@@ -28,6 +28,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
@@ -39,19 +42,19 @@ import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.mamma.MammaDossier;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
 @Entity
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
+@Table
 @Audited
 @Getter
 @Setter
-public abstract class Dossier<SR extends ScreeningRonde<?, ?, ?, ?>, AF extends Afmelding<?, ?, ?>> extends TablePerClassHibernateObject
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class Dossier<SR extends ScreeningRonde<?, ?, ?, ?>, AF extends Afmelding<?, ?, ?>> extends AbstractHibernateObject
 {
 	@Enumerated(EnumType.STRING)
 	private DossierStatus status;

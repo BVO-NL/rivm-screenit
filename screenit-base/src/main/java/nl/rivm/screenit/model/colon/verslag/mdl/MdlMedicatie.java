@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.colon.verslag.mdl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +32,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.model.verslag.DSValueSet;
 import nl.rivm.screenit.model.verslag.DSValueSetValue;
@@ -43,23 +45,28 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "colon")
+@Getter
+@Setter
 public class MdlMedicatie
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private MdlColoscopieMedischeObservatie coloscopieMedischeObservatie;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "medicatie", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Medicatiemiddel", extraTekst = "Medicatiemiddel", code = "2.16.840.1.113883.2.4.3.36.77.2.11.91", isReference = true)
+	@VraagElement(conceptId = "91", displayName = "Medicatiemiddel", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.203']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.502']]]/hl7:organizer/hl7:component[hl7:substanceAdministration[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.503']]]/hl7:substanceAdministration",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.203']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.502']]]/hl7:organizer/hl7:component[hl7:substanceAdministration[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.503']]]/hl7:substanceAdministration"
+	})
 	private List<MdlMedicatiemiddel> medicatiemiddel = new ArrayList<>();
 
 	@Column
-	@VraagElement(displayName = "Sedatie ja/nee", extraTekst = "Sedatie ja/nee", code = "2.16.840.1.113883.2.4.3.36.77.2.11.95", isVerplicht = true)
+	@VraagElement(conceptId = "95", displayName = "Sedatie ja/nee", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.203']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.502']]]/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.507']]]/hl7:observation/hl7:value|@value",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.203']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.502']]]/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.507']]]/hl7:observation/hl7:value|@value"
+	}, isVerplicht = true)
 	private Boolean sedatieJanee;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -71,47 +78,10 @@ public class MdlMedicatie
 		@DSValueSetValue(code = "5", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.90"),
 		@DSValueSetValue(code = "NA", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Mate van sedatie", extraTekst = "Mate waarin sedatie gelukt is volgens de Leeds score", code = "2.16.840.1.113883.2.4.3.36.77.2.11.96", isVerplicht = true)
+	@VraagElement(conceptId = "96", displayName = "Mate van sedatie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.203']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.502']]]/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.504']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.203']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.502']]]/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.504']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue mateVanSedatie;
-
-	public MdlColoscopieMedischeObservatie getColoscopieMedischeObservatie()
-	{
-		return coloscopieMedischeObservatie;
-	}
-
-	public void setColoscopieMedischeObservatie(MdlColoscopieMedischeObservatie coloscopieMedischeObservatie)
-	{
-		this.coloscopieMedischeObservatie = coloscopieMedischeObservatie;
-	}
-
-	public List<MdlMedicatiemiddel> getMedicatiemiddel()
-	{
-		return medicatiemiddel;
-	}
-
-	public void setMedicatiemiddel(List<MdlMedicatiemiddel> medicatiemiddel)
-	{
-		this.medicatiemiddel = medicatiemiddel;
-	}
-
-	public Boolean getSedatieJanee()
-	{
-		return sedatieJanee;
-	}
-
-	public void setSedatieJanee(Boolean sedatieJanee)
-	{
-		this.sedatieJanee = sedatieJanee;
-	}
-
-	public DSValue getMateVanSedatie()
-	{
-		return mateVanSedatie;
-	}
-
-	public void setMateVanSedatie(DSValue mateVanSedatie)
-	{
-		this.mateVanSedatie = mateVanSedatie;
-	}
 
 }

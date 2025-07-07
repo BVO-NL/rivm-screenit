@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.hl7v3.cda.helper;
 
 /*-
@@ -23,17 +22,12 @@ package nl.rivm.screenit.hl7v3.cda.helper;
  */
 
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
 
-import javax.xml.XMLConstants;
 import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 import jakarta.xml.bind.ValidationEvent;
 import jakarta.xml.bind.util.ValidationEventCollector;
-import javax.xml.namespace.QName;
+
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.sax.SAXSource;
@@ -96,7 +90,7 @@ public class ExtractCDA
 
 	public static ClinicalDocument getCDADocument(String cda)
 	{
-		ClinicalDocument object = null;
+		ClinicalDocument object;
 		try
 		{
 			setSystemPropertiesForParserEnTransformer();
@@ -122,28 +116,6 @@ public class ExtractCDA
 			throw new IllegalStateException(e.getMessage(), e);
 		}
 		return object;
-	}
-
-	public static <T> String getJAXBToXMLString(T jaxbObject, QName qName, Class<T> clazz)
-	{
-		Writer writer = new StringWriter();
-		try
-		{
-			setSystemPropertiesForParserEnTransformer();
-
-			Marshaller marshaller = jaxbContext.createMarshaller();
-			ValidationEventCollector vec = new ValidationEventCollector();
-			marshaller.setEventHandler(vec);
-			marshaller.setProperty("com.sun.xml.bind.xmlDeclaration", Boolean.FALSE);
-
-			marshaller.marshal(new JAXBElement<T>(qName, clazz, jaxbObject), writer);
-		}
-		catch (Exception e)
-		{
-			LOG.error(e.getMessage(), e);
-			throw new IllegalStateException(e.getMessage(), e);
-		}
-		return writer.toString();
 	}
 
 	public static SAXSource getSource(String cda)
@@ -199,8 +171,7 @@ public class ExtractCDA
 					LOG.error("SAX parsing", exception);
 				}
 			});
-			SAXSource source = new SAXSource(xmlReader, new InputSource(new StringReader(cda)));
-			return source;
+			return new SAXSource(xmlReader, new InputSource(new StringReader(cda)));
 		}
 		catch (Exception e)
 		{

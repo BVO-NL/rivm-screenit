@@ -21,12 +21,9 @@ package nl.rivm.screenit.model.mamma;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.UploadDocument;
-import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.envers.Audited;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,14 +37,16 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+
+import nl.rivm.screenit.model.UploadDocument;
+import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
+
+import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
 @Table(schema = "mamma", name = "upload_beelden_poging")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 public class MammaUploadBeeldenPoging extends AbstractHibernateObject
 {
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -71,7 +70,6 @@ public class MammaUploadBeeldenPoging extends AbstractHibernateObject
 	private String statusMelding;
 
 	@OneToMany(fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 	@JoinTable(schema = "mamma", name = "upload_beelden_poging_documents", joinColumns = { @JoinColumn(name = "upload_beelden_poging") })
 	private List<UploadDocument> bestanden = new ArrayList<>();
 

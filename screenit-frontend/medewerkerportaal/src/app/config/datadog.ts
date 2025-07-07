@@ -33,7 +33,7 @@ export default function setupDatadog() {
     applicationId,
     clientToken,
     site: 'datadoghq.eu',
-    service: 'medewerkerportaal',
+    service: 'medewerkerportaal-angular',
     sessionReplaySampleRate: 0,
     trackUserInteractions: false,
     defaultPrivacyLevel: 'mask-user-input',

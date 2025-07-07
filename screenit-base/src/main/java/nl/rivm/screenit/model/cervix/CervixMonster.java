@@ -39,21 +39,18 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.SingleTableHibernateObject;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.enums.CervixNietAnalyseerbaarReden;
 import nl.rivm.screenit.model.cervix.enums.signaleringen.CervixMonsterSignalering;
 import nl.rivm.screenit.model.cervix.facturatie.CervixVerrichting;
 import nl.rivm.screenit.util.SkipFieldForDiff;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -63,24 +60,16 @@ import org.hibernate.envers.NotAudited;
 @Table(
 	schema = "cervix",
 	name = "monster",
-	uniqueConstraints = {
-		@UniqueConstraint(columnNames = "brief"),
-		@UniqueConstraint(columnNames = "laatste_hpv_beoordeling"),
-		@UniqueConstraint(columnNames = "labformulier"),
-		@UniqueConstraint(columnNames = "cytologie_order"),
-		@UniqueConstraint(columnNames = "cytologie_verslag"),
-		@UniqueConstraint(columnNames = "huisarts_bericht") },
 	indexes = {
 		@Index(name = "idx_CERVIX_MONSTER_STATUS_DATUM", columnList = "statusDatum"),
 		@Index(name = "idx_CERVIX_MONSTER_ONTVANGSTDATUM", columnList = "ontvangstdatum"),
 		@Index(name = "idx_CERVIX_MONSTER_DATUM_ORU_VERSTUURD", columnList = "datumOruVerstuurd"),
 		@Index(name = "idx_CERVIX_ZAS_ZAS_STATUS", columnList = "zasStatus") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Audited
-public abstract class CervixMonster extends SingleTableHibernateObject
+public abstract class CervixMonster extends AbstractHibernateObject
 {
 	@OneToMany(mappedBy = "monster", fetch = FetchType.LAZY)
-	private List<CervixVerrichting> verrichtingen;
+	private List<CervixVerrichting> verrichtingen = new ArrayList<>();
 
 	@OneToOne(mappedBy = "monster", optional = false, fetch = FetchType.LAZY)
 	private CervixUitnodiging uitnodiging;
@@ -139,5 +128,4 @@ public abstract class CervixMonster extends SingleTableHibernateObject
 
 	@Column
 	private String overigeSignalering;
-
 }

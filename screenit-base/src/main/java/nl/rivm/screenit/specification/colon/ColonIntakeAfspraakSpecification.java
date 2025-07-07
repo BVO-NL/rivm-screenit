@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 
@@ -55,7 +56,6 @@ import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer_;
 import nl.rivm.screenit.model.colon.planning.ColonTijdslot_;
-import nl.rivm.screenit.specification.DateSpecification;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
@@ -63,6 +63,7 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
+import static nl.rivm.screenit.specification.DateSpecification.intervalInDagen;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -196,7 +197,7 @@ public class ColonIntakeAfspraakSpecification
 		return (r, q, cb) -> cb.or(
 			cb.isNull(r.get(AbstractHibernateObject_.id)),
 			cb.notEqual(r.get(ColonIntakeAfspraak_.status), ColonAfspraakStatus.GEPLAND),
-			cb.lessThanOrEqualTo(r.get(ColonTijdslot_.vanaf), DateUtil.minusWerkdagen(peildatum, 5).atStartOfDay())
+			cb.lessThanOrEqualTo(join(r, ColonIntakeAfspraak_.parent, JoinType.LEFT).get(ColonTijdslot_.vanaf), DateUtil.minusWerkdagen(peildatum, 5).atStartOfDay())
 		);
 	}
 
@@ -216,7 +217,7 @@ public class ColonIntakeAfspraakSpecification
 		return (r, q, cb) -> cb.and(
 			cb.isNull(r.get(ColonIntakeAfspraak_.conclusie)),
 			cb.equal(r.get(ColonIntakeAfspraak_.status), ColonAfspraakStatus.GEPLAND),
-			cb.lessThan(r.get(ColonTijdslot_.vanaf), wachttijdNaAfspraakDatum)
+			cb.lessThan(join(r, ColonIntakeAfspraak_.parent, JoinType.LEFT).get(ColonTijdslot_.vanaf), wachttijdNaAfspraakDatum)
 		);
 	}
 
@@ -238,7 +239,7 @@ public class ColonIntakeAfspraakSpecification
 	public static ExtendedSpecification<ColonIntakeAfspraak> heeftAfspraakXDagenVoorStartRonde(Path<ColonScreeningRonde> rondePath, int dagen)
 	{
 		return (r, q, cb) -> cb.lessThan(r.get(ColonTijdslot_.vanaf),
-			DateSpecification.intervalInDagen(cb, rondePath.get(ScreeningRonde_.creatieDatum), dagen).as(LocalDateTime.class));
+			intervalInDagen(cb, rondePath.get(ScreeningRonde_.creatieDatum), dagen).as(LocalDateTime.class));
 	}
 
 	public static ExtendedSpecification<ColonIntakeAfspraak> onderdeelVanLaatsteScreeningRonde()

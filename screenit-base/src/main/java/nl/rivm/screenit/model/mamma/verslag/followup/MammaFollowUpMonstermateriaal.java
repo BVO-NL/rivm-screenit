@@ -21,12 +21,13 @@ package nl.rivm.screenit.model.mamma.verslag.followup;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.model.verslag.DSValueSet;
@@ -38,12 +39,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "mamma")
+@Getter
+@Setter
 public class MammaFollowUpMonstermateriaal
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -55,7 +55,9 @@ public class MammaFollowUpMonstermateriaal
 		@DSValueSetValue(code = "129300006", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "65801008", codeSystem = "2.16.840.1.113883.6.96")
 	})
-	@VraagElement(displayName = "Verkrijgingswijze", extraTekst = "Histologie / cytologie", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.300010", isVerplicht = true)
+	@VraagElement(conceptId = "300010", displayName = "Verkrijgingswijze", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act/hl7:specimen/hl7:specimenRole/hl7:specimenPlayingEntity/lab:productOf/lab:specimenCollectionProcess/lab:code|@code"
+	}, isVerplicht = true)
 	private DSValue verkrijgingswijze;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -75,7 +77,9 @@ public class MammaFollowUpMonstermateriaal
 		@DSValueSetValue(code = "UNK", codeSystem = "2.16.840.1.113883.5.1008"),
 		@DSValueSetValue(code = "NAV", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Locatie (topologie)", extraTekst = "Locatie (topologie)", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.300120", isVerplicht = false)
+	@VraagElement(conceptId = "300120", displayName = "Locatie (topologie)", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act/hl7:specimen/hl7:specimenRole/hl7:specimenPlayingEntity/lab:productOf/lab:specimenCollectionProcess/lab:targetSiteCode"
+	}, isVerplicht = false)
 	private DSValue locatietopologie;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -93,7 +97,9 @@ public class MammaFollowUpMonstermateriaal
 		@DSValueSetValue(code = "260324005", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "260326007", codeSystem = "2.16.840.1.113883.6.96")
 	})
-	@VraagElement(displayName = "Locatie (uren)", extraTekst = "Locatie (uren)", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.300130", isVerplicht = false)
+	@VraagElement(conceptId = "300130", displayName = "Locatie (uren)", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act/hl7:specimen/hl7:specimenRole/hl7:specimenPlayingEntity/lab:productOf/lab:specimenCollectionProcess/lab:targetSiteCode"
+	}, isVerplicht = false)
 	private DSValue locatieuren;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -101,57 +107,9 @@ public class MammaFollowUpMonstermateriaal
 		@DSValueSetValue(code = "7771000", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "24028007", codeSystem = "2.16.840.1.113883.6.96")
 	})
-	@VraagElement(displayName = "Zijdigheid", extraTekst = "Zijdigheid", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.300110", isVerplicht = true)
+	@VraagElement(conceptId = "300110", displayName = "Zijdigheid", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act/hl7:specimen/hl7:specimenRole/hl7:specimenPlayingEntity/lab:productOf/lab:specimenCollectionProcess/lab:targetSiteCode/hl7:qualifier[hl7:name/@code='20228-3']/hl7:value"
+	}, isVerplicht = true)
 	private DSValue zijdigheid;
-
-	public MammaFollowUpFollowupPa getFollowupPa()
-	{
-		return followupPa;
-	}
-
-	public void setFollowupPa(MammaFollowUpFollowupPa followupPa)
-	{
-		this.followupPa = followupPa;
-	}
-
-	public DSValue getVerkrijgingswijze()
-	{
-		return verkrijgingswijze;
-	}
-
-	public void setVerkrijgingswijze(DSValue verkrijgingswijze)
-	{
-		this.verkrijgingswijze = verkrijgingswijze;
-	}
-
-	public DSValue getLocatietopologie()
-	{
-		return locatietopologie;
-	}
-
-	public void setLocatietopologie(DSValue locatietopologie)
-	{
-		this.locatietopologie = locatietopologie;
-	}
-
-	public DSValue getLocatieuren()
-	{
-		return locatieuren;
-	}
-
-	public void setLocatieuren(DSValue locatieuren)
-	{
-		this.locatieuren = locatieuren;
-	}
-
-	public DSValue getZijdigheid()
-	{
-		return zijdigheid;
-	}
-
-	public void setZijdigheid(DSValue zijdigheid)
-	{
-		this.zijdigheid = zijdigheid;
-	}
 
 }

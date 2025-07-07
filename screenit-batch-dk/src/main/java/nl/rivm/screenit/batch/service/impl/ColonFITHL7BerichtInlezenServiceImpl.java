@@ -177,7 +177,7 @@ public class ColonFITHL7BerichtInlezenServiceImpl implements ColonFITHL7BerichtI
 						var isVerwijderdeBarcode = fitService.isVerwijderdeBarcode(barcode);
 						var melding = String.format("FIT of controle buis met barcode %s in bestand %s bestaat niet%s.", barcode, result.getBestandsNaam(),
 							isVerwijderdeBarcode ? " meer" : "");
-						logService.logGebeurtenis(LogGebeurtenis.IFOBT_ONBEKENDE_BARCODE, null, melding, Bevolkingsonderzoek.COLON);
+						logService.logGebeurtenis(LogGebeurtenis.IFOBT_ONBEKENDE_BARCODE, melding, Bevolkingsonderzoek.COLON);
 						LOG.warn(melding);
 
 						onbekendeBarcode = true;

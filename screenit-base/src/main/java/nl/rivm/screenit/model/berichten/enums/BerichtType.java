@@ -21,13 +21,19 @@ package nl.rivm.screenit.model.berichten.enums;
  * =========================LICENSE_END==================================
  */
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 
+@Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum BerichtType
 {
 	MDL_VERSLAG(
-		"MDL-bericht",
+		"DK MDL-bericht",
 		Bevolkingsonderzoek.COLON,
 		VerslagType.MDL,
 		LogGebeurtenis.BERICHT_ONTVANGEN,
@@ -40,7 +46,7 @@ public enum BerichtType
 		LogGebeurtenis.BERICHT_ONDANKS_BEZWAAR),
 
 	PA_LAB_VERSLAG(
-		"Pathologie-bericht",
+		"DK pathologie-bericht",
 		Bevolkingsonderzoek.COLON,
 		VerslagType.PA_LAB,
 		LogGebeurtenis.BERICHT_ONTVANGEN,
@@ -99,83 +105,5 @@ public enum BerichtType
 	private final LogGebeurtenis lbOnbekendeBsn;
 
 	private final LogGebeurtenis lbOndanksBezwaar;
-
-	private BerichtType(String naam, Bevolkingsonderzoek bevolkingsonderzoek, VerslagType verslagType, LogGebeurtenis lbBerichtOntvangen, LogGebeurtenis lbBerichtVerwerkt,
-		LogGebeurtenis lbBerichtVerwerktMetError, LogGebeurtenis lbBerichtVerwerktMetMelding, LogGebeurtenis lbBerichtZelfdeId, LogGebeurtenis lbBerichtZelfdeSetIdEnVersie,
-		LogGebeurtenis lbOnbekendeBsn, LogGebeurtenis lbOndanksBezwaar)
-	{
-		this.naam = naam;
-		this.bevolkingsonderzoek = bevolkingsonderzoek;
-		this.verslagType = verslagType;
-		this.lbBerichtOntvangen = lbBerichtOntvangen;
-		this.lbBerichtVerwerkt = lbBerichtVerwerkt;
-		this.lbBerichtVerwerktMetError = lbBerichtVerwerktMetError;
-		this.lbBerichtVerwerktMetMelding = lbBerichtVerwerktMetMelding;
-		this.lbBerichtZelfdeId = lbBerichtZelfdeId;
-		this.lbBerichtZelfdeSetIdEnVersie = lbBerichtZelfdeSetIdEnVersie;
-		this.lbOnbekendeBsn = lbOnbekendeBsn;
-		this.lbOndanksBezwaar = lbOndanksBezwaar;
-	}
-
-	public String getNaam()
-	{
-		return this.naam;
-	}
-
-	public Bevolkingsonderzoek getBevolkingsonderzoek()
-	{
-		return bevolkingsonderzoek;
-	}
-
-	public VerslagType getVerslagType()
-	{
-		return verslagType;
-	}
-
-	public LogGebeurtenis getLbBerichtOntvangen()
-	{
-		return lbBerichtOntvangen;
-	}
-
-	public LogGebeurtenis getLbBerichtVerwerkt()
-	{
-		return lbBerichtVerwerkt;
-	}
-
-	public LogGebeurtenis getLbBerichtVerwerktMetError()
-	{
-		return lbBerichtVerwerktMetError;
-	}
-
-	public LogGebeurtenis getLbBerichtVerwerktMetMelding()
-	{
-		return lbBerichtVerwerktMetMelding;
-	}
-
-	public LogGebeurtenis getLbBerichtZelfdeId()
-	{
-		return lbBerichtZelfdeId;
-	}
-
-	public LogGebeurtenis getLbBerichtZelfdeSetIdEnVersie()
-	{
-		return lbBerichtZelfdeSetIdEnVersie;
-	}
-
-	public LogGebeurtenis getLbOnbekendeBsn()
-	{
-		return lbOnbekendeBsn;
-	}
-
-	public LogGebeurtenis getLbOndanksBezwaar()
-	{
-		return lbOndanksBezwaar;
-	}
-
-	@Override
-	public String toString()
-	{
-		return this.naam;
-	}
 
 }

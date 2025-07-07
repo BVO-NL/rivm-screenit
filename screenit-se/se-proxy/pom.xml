@@ -59,11 +59,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
         </dependency>
@@ -79,13 +74,13 @@
         </dependency>
 
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
+            <groupId>nl.rivm.screenit</groupId>
+            <artifactId>screenit-web-commons</artifactId>
         </dependency>
 
         <dependency>
             <groupId>nl.rivm.screenit</groupId>
-            <artifactId>screenit-web-commons</artifactId>
+            <artifactId>screenit-ims-api</artifactId>
         </dependency>
 
     </dependencies>

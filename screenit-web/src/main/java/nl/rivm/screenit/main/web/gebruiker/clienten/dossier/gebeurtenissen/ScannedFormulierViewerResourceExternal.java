@@ -37,18 +37,18 @@ public class ScannedFormulierViewerResourceExternal extends AbstractResource
 {
 	private final boolean alsAttachement;
 
-	private Duration cacheDuration;
+	private final Duration cacheDuration;
 
-	private final String spec;
+	private final String bestandReferentie;
 
-	public ScannedFormulierViewerResourceExternal(String spec, boolean alsAttachement)
+	public ScannedFormulierViewerResourceExternal(String bestandReferentie, boolean alsAttachement)
 	{
-		this(spec, alsAttachement, null);
+		this(bestandReferentie, alsAttachement, null);
 	}
 
-	public ScannedFormulierViewerResourceExternal(String spec, boolean alsAttachement, Duration cacheDuration)
+	public ScannedFormulierViewerResourceExternal(String bestandReferentie, boolean alsAttachement, Duration cacheDuration)
 	{
-		this.spec = spec;
+		this.bestandReferentie = bestandReferentie;
 		this.alsAttachement = alsAttachement;
 		this.cacheDuration = cacheDuration;
 	}
@@ -56,7 +56,7 @@ public class ScannedFormulierViewerResourceExternal extends AbstractResource
 	@Override
 	protected ResourceResponse newResourceResponse(Attributes attributes)
 	{
-		ResourceResponse response = new ResourceResponse();
+		var response = new ResourceResponse();
 
 		if (alsAttachement)
 		{
@@ -78,8 +78,7 @@ public class ScannedFormulierViewerResourceExternal extends AbstractResource
 			{
 				try
 				{
-					URLConnection c = getUrlConnection();
-					try (InputStream inputStream = c.getInputStream())
+					try (var inputStream = getInputStream())
 					{
 						writeStream(attributes, inputStream);
 					}
@@ -96,7 +95,17 @@ public class ScannedFormulierViewerResourceExternal extends AbstractResource
 
 	protected URLConnection getUrlConnection() throws IOException
 	{
-		URL url = new URL(spec);
+		var url = new URL(bestandReferentie);
 		return url.openConnection();
+	}
+
+	protected InputStream getInputStream() throws IOException
+	{
+		return getUrlConnection().getInputStream();
+	}
+
+	protected String getBestandReferentie()
+	{
+		return bestandReferentie;
 	}
 }

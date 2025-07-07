@@ -36,8 +36,6 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -56,11 +54,9 @@ public class BMHKLaboratorium extends Instelling
 	private List<String> instrumentNames = new ArrayList<>();
 
 	@OneToMany(mappedBy = "bmhkLaboratorium", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 	private List<Gemeente> gemeentes = new ArrayList<>();
 
 	@OneToMany(mappedBy = "laboratorium", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 	private List<ZASRetouradres> retouradressen = new ArrayList<>();
 
 	@Column(length = 255)

@@ -30,10 +30,10 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -45,8 +45,6 @@ import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
 import nl.rivm.screenit.model.colon.planning.ColonTijdslot;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
@@ -55,20 +53,21 @@ import org.hibernate.envers.Audited;
 @Setter
 @Entity
 @Table(schema = "colon", name = "intakeafspraak",
-	indexes = { @Index(name = "idx_colon_afspraak_bezwaar", columnList = "bezwaar") },
-	uniqueConstraints = {
-		@UniqueConstraint(columnNames = { "afspraakslot" }),
-		@UniqueConstraint(columnNames = { "nieuwe_Afspraak" })
+	indexes = { @Index(name = "idx_colon_afspraak_bezwaar", columnList = "bezwaar") }
 
-	})
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "colon.cache")
+)
 @Audited
 public class ColonIntakeAfspraak extends ColonTijdslot
 {
+
 	public ColonIntakeAfspraak()
 	{
 		setType(ColonTijdslotType.INTAKEAFSPRAAK);
 	}
+
+	@ManyToOne
+	@JoinColumn(name = "id", insertable = false, updatable = false)
+	private ColonTijdslot parent;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE }, optional = false)
 	@Cascade({ CascadeType.SAVE_UPDATE })
@@ -98,7 +97,7 @@ public class ColonIntakeAfspraak extends ColonTijdslot
 	@OneToOne(fetch = FetchType.LAZY)
 	private ColonIntakeAfspraak nieuweAfspraak;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	private ColonIntakeAfspraak oudeAfspraak;
 
 	@ManyToOne(cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE }, optional = false)

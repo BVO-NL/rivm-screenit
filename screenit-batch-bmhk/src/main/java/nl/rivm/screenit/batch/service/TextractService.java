@@ -21,11 +21,9 @@ package nl.rivm.screenit.batch.service;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Optional;
-
 import software.amazon.awssdk.services.textract.model.AnalyzeDocumentResponse;
 
 public interface TextractService
 {
-	Optional<AnalyzeDocumentResponse> analyseerFormDocument(String bucketName, String bestandsnaam);
+	AnalyzeDocumentResponse analyseerFormDocument(String bestandsnaam, String bucketName);
 }

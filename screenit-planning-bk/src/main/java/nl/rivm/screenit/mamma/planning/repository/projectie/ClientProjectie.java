@@ -24,22 +24,22 @@ package nl.rivm.screenit.mamma.planning.repository.projectie;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.model.mamma.enums.MammaUitnodigingsintervalType;
 import nl.rivm.screenit.model.mamma.enums.MammaUitstelReden;
+import nl.rivm.screenit.util.DateUtil;
 
 @Getter
-@AllArgsConstructor
 public class ClientProjectie
 {
 	private Long id;
 
-	private LocalDate geboortedatum;
+	private Date geboortedatum;
 
 	private String postcode;
 
@@ -55,11 +55,11 @@ public class ClientProjectie
 
 	private Boolean eersteOnderzoek;
 
-	private LocalDateTime laatsteMammografieAfgerondOp;
+	private Date laatsteMammografieAfgerondOp;
 
 	private BigDecimal deelnamekans;
 
-	private LocalDateTime screeningRondeCreatieDatum;
+	private Date screeningRondeCreatieDatum;
 
 	private Long oorspronkelijkeStandplaatsRondeId;
 
@@ -67,7 +67,7 @@ public class ClientProjectie
 
 	private Long uitstelStandplaatsId;
 
-	private LocalDate uitstelStreefDatum;
+	private Date uitstelStreefDatum;
 
 	private MammaUitstelReden uitstelReden;
 
@@ -77,16 +77,50 @@ public class ClientProjectie
 
 	private Long afspraakStandplaatsRondeId;
 
-	private LocalDateTime afspraakAfgezegdOp;
+	private Date afspraakAfgezegdOp;
 
 	private Integer voorgaandeScreeningRondes;
 
-	private LocalDateTime laatsteUitnodigingDatum;
+	private Date laatsteUitnodigingDatum;
 
 	private MammaAfspraakStatus afspraakStatus;
 
-	private LocalDateTime afspraakMoment;
+	private Date afspraakMoment;
 
 	private MammaUitnodigingsintervalType uitnodigingsIntervalType;
 
+	public LocalDate getGeboortedatum()
+	{
+		return DateUtil.toLocalDate(geboortedatum);
+	}
+
+	public LocalDateTime getLaatsteMammografieAfgerondOp()
+	{
+		return DateUtil.toLocalDateTime(laatsteMammografieAfgerondOp);
+	}
+
+	public LocalDateTime getScreeningRondeCreatieDatum()
+	{
+		return DateUtil.toLocalDateTime(screeningRondeCreatieDatum);
+	}
+
+	public LocalDate getUitstelStreefDatum()
+	{
+		return DateUtil.toLocalDate(uitstelStreefDatum);
+	}
+
+	public LocalDateTime getAfspraakAfgezegdOp()
+	{
+		return DateUtil.toLocalDateTime(afspraakAfgezegdOp);
+	}
+
+	public LocalDateTime getLaatsteUitnodigingDatum()
+	{
+		return DateUtil.toLocalDateTime(laatsteUitnodigingDatum);
+	}
+
+	public LocalDateTime getAfspraakMoment()
+	{
+		return DateUtil.toLocalDateTime(afspraakMoment);
+	}
 }

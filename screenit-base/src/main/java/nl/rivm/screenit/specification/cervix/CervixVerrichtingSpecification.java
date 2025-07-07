@@ -31,7 +31,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.ScreeningOrganisatie;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
 import nl.rivm.screenit.model.cervix.enums.CervixTariefType;
 import nl.rivm.screenit.model.cervix.facturatie.CervixBoekRegel;
@@ -39,6 +38,7 @@ import nl.rivm.screenit.model.cervix.facturatie.CervixVerrichting;
 import nl.rivm.screenit.model.cervix.facturatie.CervixVerrichting_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -113,7 +113,7 @@ public class CervixVerrichtingSpecification
 		return skipWhenNull(screeningOrganisatieId, (r, q, cb) ->
 		{
 			var screeningOrganisatieJoin = join(r, CervixVerrichting_.regio);
-			return cb.equal(screeningOrganisatieJoin.get(SingleTableHibernateObject_.id), screeningOrganisatieId);
+			return cb.equal(screeningOrganisatieJoin.get(AbstractHibernateObject_.id), screeningOrganisatieId);
 		});
 	}
 

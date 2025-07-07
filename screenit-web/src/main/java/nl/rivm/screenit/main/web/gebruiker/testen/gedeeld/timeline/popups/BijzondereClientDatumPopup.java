@@ -26,7 +26,6 @@ import java.util.List;
 
 import nl.rivm.screenit.main.web.component.NaamChoiceRenderer;
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.components.TestEnumRadioChoice;
-import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
@@ -110,9 +109,9 @@ public abstract class BijzondereClientDatumPopup extends GenericPanel<List<Clien
 				List<Client> clienten = getModelObject();
 				for (Client client : clienten)
 				{
-					GbaPersoon persoon = client.getPersoon();
-					GbaPersoonDatum persoonDatum = persoonDatumModel.getObject();
-					BagAdres adres = persoon.getGbaAdres();
+					var persoon = client.getPersoon();
+					var persoonDatum = persoonDatumModel.getObject();
+					var adres = persoon.getGbaAdres();
 					switch (persoonDatum)
 					{
 					case DATUM_OVERLIJDEN:
@@ -129,7 +128,7 @@ public abstract class BijzondereClientDatumPopup extends GenericPanel<List<Clien
 						break;
 					case DATUM_VESTIGING_NEDERLAND:
 						persoon.setDatumVestigingNederland(currentDateSupplier.getDate());
-						Gemeente gemeente = testService.getEersteGemeenteMetScreeningOrganisatie();
+						var gemeente = testService.getEersteGemeenteMetScreeningOrganisatie();
 						adres.setPostcode("1234AA");
 						adres.setHuisnummer(9);
 						adres.setStraat("Teststraat");

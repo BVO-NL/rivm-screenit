@@ -36,12 +36,8 @@ import jakarta.persistence.TemporalType;
 import nl.rivm.screenit.model.Client;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(schema = "colon")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class ColonVooraankondiging extends AbstractHibernateObject
 {
 

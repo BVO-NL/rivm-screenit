@@ -26,20 +26,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import javax.cache.CacheManager;
 import javax.sql.DataSource;
 
-import nl.rivm.screenit.util.query.ExtractYearMetadataBuilderContributor;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.dao.impl.HibernateSearchServiceImpl;
 import nl.topicuszorg.hibernate.spring.dao.impl.HibernateServiceImpl;
 import nl.topicuszorg.hibernate.spring.util.naming.ImplicitHibernate4LegacyNamingStrategy;
 import nl.topicuszorg.hibernate.spring.util.naming.PhysicalHibernate4LegacyNamingStrategy;
 import nl.topicuszorg.hibernate.spring.util.sessionfactory.TopicusPostConfigurationSessionFactoryBean;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.boot.spi.MetadataBuilderContributor;
-import org.hibernate.cache.jcache.ConfigSettings;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization;
 import org.springframework.context.annotation.Bean;
@@ -70,15 +65,15 @@ public class BaseHibernateConfig
 
 	@Bean(name = { "entityManagerFactory", "hibernateSessionFactory" })
 	@Profile("!test & !cucumber")
-	public TopicusPostConfigurationSessionFactoryBean hibernateSessionFactory(DataSource dataSource, Optional<List<Resource>> additionalHibernateConfigLocations,
-		CacheManager cacheManager)
+	public TopicusPostConfigurationSessionFactoryBean hibernateSessionFactory(DataSource dataSource, Optional<List<Resource>> additionalHibernateConfigLocations)
 	{
 		var hibernateSessionFactory = new TopicusPostConfigurationSessionFactoryBean()
 		{
 			@Override
 			protected SessionFactory buildSessionFactory(LocalSessionFactoryBuilder sfb)
 			{
-				sfb.getProperties().put(ConfigSettings.CACHE_MANAGER, cacheManager);
+				sfb.setImplicitNamingStrategy(new ImplicitHibernate4LegacyNamingStrategy());
+				sfb.setPhysicalNamingStrategy(new PhysicalHibernate4LegacyNamingStrategy());
 				return super.buildSessionFactory(sfb);
 			}
 		};
@@ -95,28 +90,14 @@ public class BaseHibernateConfig
 
 		hibernateSessionFactory.setDataSource(dataSource);
 
-		hibernateSessionFactory.setPhysicalNamingStrategy(new PhysicalHibernate4LegacyNamingStrategy());
-		hibernateSessionFactory.setImplicitNamingStrategy(new ImplicitHibernate4LegacyNamingStrategy());
-
 		return hibernateSessionFactory;
 	}
 
 	@Bean
 	@Profile("!test")
-	HibernateService hibernateService(TopicusPostConfigurationSessionFactoryBean hibernateSessionFactory)
+	HibernateService hibernateService()
 	{
-		var hibernateService = new HibernateServiceImpl();
-		hibernateService.setSessionFactory(hibernateSessionFactory.getObject());
-		return hibernateService;
-	}
-
-	@Bean
-	@Profile("!test")
-	public HibernateSearchServiceImpl hibernateSearchService(TopicusPostConfigurationSessionFactoryBean hibernateSessionFactory)
-	{
-		var hibernateSearchService = new HibernateSearchServiceImpl();
-		hibernateSearchService.setSessionFactory(hibernateSessionFactory.getObject());
-		return hibernateSearchService;
+		return new HibernateServiceImpl();
 	}
 
 	@Bean
@@ -135,11 +116,5 @@ public class BaseHibernateConfig
 		var sharedEntityManager = new SharedEntityManagerBean();
 		sharedEntityManager.setEntityManagerFactory(hibernateSessionFactory.getObject());
 		return sharedEntityManager;
-	}
-
-	@Bean
-	MetadataBuilderContributor extractYearFunctionContributor()
-	{
-		return new ExtractYearMetadataBuilderContributor();
 	}
 }

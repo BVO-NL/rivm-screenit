@@ -27,12 +27,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import nl.rivm.screenit.mamma.se.dto.AfspraakSeDto;
 import nl.rivm.screenit.mamma.se.service.DaglijstService;
 import nl.rivm.screenit.mamma.se.service.MammaScreeningsEenheidService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5SessionInThread;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +42,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/daglijst")
@@ -88,7 +88,7 @@ public class DaglijstController extends AuthorizedController
 		}
 	}
 
-	private class DaglijstOphaler extends OpenHibernate5SessionInThread
+	private class DaglijstOphaler extends OpenHibernateSessionInThread
 	{
 		private final LocalDate opTeHalenDatum;
 

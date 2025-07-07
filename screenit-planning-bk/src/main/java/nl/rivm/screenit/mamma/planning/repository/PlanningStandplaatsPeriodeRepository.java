@@ -34,7 +34,6 @@ import jakarta.persistence.criteria.Root;
 import nl.rivm.screenit.mamma.planning.repository.projectie.StandplaatsPeriodeProjectie;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.ScreeningOrganisatie_;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
@@ -93,10 +92,10 @@ public interface PlanningStandplaatsPeriodeRepository extends BaseJpaRepository<
 				List.of(
 					r.get(AbstractHibernateObject_.id),
 					r.get(MammaStandplaatsPeriode_.standplaatsRonde).get(AbstractHibernateObject_.id),
-					screeningOrganisatieJoin(r).get(SingleTableHibernateObject_.id),
+					screeningOrganisatieJoin(r).get(AbstractHibernateObject_.id),
 					screeningOrganisatieJoin(r).get(ScreeningOrganisatie_.wekenVanTevorenUitnodigen),
-					r.get(MammaStandplaatsPeriode_.vanaf).as(LocalDate.class),
-					r.get(MammaStandplaatsPeriode_.totEnMet).as(LocalDate.class)
+					r.get(MammaStandplaatsPeriode_.vanaf),
+					r.get(MammaStandplaatsPeriode_.totEnMet)
 				)
 			).all()
 		);

@@ -24,6 +24,11 @@ package nl.rivm.screenit.main.service.cervix.impl;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
+
 import nl.rivm.screenit.dto.cervix.facturatie.CervixVerrichtingenZoekObject;
 import nl.rivm.screenit.main.service.RepositoryDataProviderService;
 import nl.rivm.screenit.model.Client_;
@@ -42,11 +47,6 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Root;
-
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.filterBsn;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.filterGeboortedatum;
 import static nl.rivm.screenit.specification.cervix.CervixBetaalopdrachtSpecification.filterOpBetalingskenmerkContaining;
@@ -58,23 +58,24 @@ import static nl.rivm.screenit.specification.cervix.CervixMonsterSpecification.f
 import static nl.rivm.screenit.specification.cervix.CervixVerrichtingSpecification.filterScreeningOrganisatie;
 import static nl.rivm.screenit.specification.cervix.CervixVerrichtingSpecification.filterVerrichtingType;
 import static nl.rivm.screenit.specification.cervix.CervixVerrichtingSpecification.verrichtingsdatumValtTussenVoorBoekRegel;
+import static nl.rivm.screenit.util.StringUtil.propertyChain;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 
 public abstract class AbstractCervixBoekregelsDataProviderServiceImpl
 	extends RepositoryDataProviderService<CervixBoekRegel, CervixBoekRegelRepository, CervixVerrichtingenZoekObject>
 {
-	public static final String PERSOON_PROPERTY = CervixBoekRegel_.VERRICHTING + "." + CervixVerrichting_.CLIENT + "." + Client_.PERSOON;
+	public static final String PERSOON_PROPERTY = propertyChain(CervixBoekRegel_.VERRICHTING, CervixVerrichting_.CLIENT, Client_.PERSOON);
 
-	public static final String REGIO_PROPERTY = CervixBoekRegel_.VERRICHTING + "." + CervixVerrichting_.REGIO;
+	public static final String REGIO_PROPERTY = propertyChain(CervixBoekRegel_.VERRICHTING, CervixVerrichting_.REGIO);
 
-	public static final String MONSTER_PROPERTY = CervixBoekRegel_.VERRICHTING + "." + CervixVerrichting_.MONSTER;
+	public static final String MONSTER_PROPERTY = propertyChain(CervixBoekRegel_.VERRICHTING, CervixVerrichting_.MONSTER);
 
 	public static final String BETAALOPDRACHT_PROPERTY =
-		CervixBoekRegel_.SPECIFICATIE + "." + CervixBetaalopdrachtRegelSpecificatie_.BETAALOPDRACHT_REGEL + "." + CervixBetaalopdrachtRegel_.BETAALOPDRACHT;
+		propertyChain(CervixBoekRegel_.SPECIFICATIE, CervixBetaalopdrachtRegelSpecificatie_.BETAALOPDRACHT_REGEL, CervixBetaalopdrachtRegel_.BETAALOPDRACHT);
 
-	public static final String LABFORMULIER_PROPERTY = MONSTER_PROPERTY + "." + CervixUitstrijkje_.LABFORMULIER;
+	public static final String LABFORMULIER_PROPERTY = propertyChain(MONSTER_PROPERTY, CervixUitstrijkje_.LABFORMULIER);
 
-	public static final String HUISARTS_LOCATIE_PROPERTY = CervixBoekRegel_.VERRICHTING + "." + CervixVerrichting_.HUISARTS_LOCATIE;
+	public static final String HUISARTS_LOCATIE_PROPERTY = propertyChain(CervixBoekRegel_.VERRICHTING, CervixVerrichting_.HUISARTS_LOCATIE);
 
 	@Override
 	protected Specification<CervixBoekRegel> getSpecification(CervixVerrichtingenZoekObject filter, Sort sortParam)
@@ -95,7 +96,7 @@ public abstract class AbstractCervixBoekregelsDataProviderServiceImpl
 	protected Sort getSort(Sort sort)
 	{
 		return sort
-			.and(Sort.by(ASC, MONSTER_PROPERTY + "." + CervixMonster_.MONSTER_ID))
+			.and(Sort.by(ASC, propertyChain(MONSTER_PROPERTY, CervixMonster_.MONSTER_ID)))
 			.and(Sort.by(ASC, AbstractHibernateObject_.ID));
 	}
 

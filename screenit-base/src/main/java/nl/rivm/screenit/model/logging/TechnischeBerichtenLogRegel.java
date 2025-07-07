@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.logging;
 
 /*-
@@ -24,15 +23,6 @@ package nl.rivm.screenit.model.logging;
 
 import java.util.Date;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import nl.topicuszorg.hibernate.object.model.HibernateObject;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
-
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
@@ -40,15 +30,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import nl.topicuszorg.hibernate.object.model.HibernateObject;
+
 @Entity
 @Table(schema = "gedeeld")
 @Inheritance(strategy = InheritanceType.JOINED)
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Getter
 @Setter
 public class TechnischeBerichtenLogRegel implements HibernateObject
@@ -63,17 +56,14 @@ public class TechnischeBerichtenLogRegel implements HibernateObject
 	@Column(nullable = false)
 	private String applicationInstance;
 
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
-	@Column(nullable = false)
+	@Column(nullable = false, columnDefinition = "TEXT")
 	private String request;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false)
 	private Date requestMoment;
 
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
+	@Column(columnDefinition = "TEXT")
 	private String response;
 
 	@Temporal(TemporalType.TIMESTAMP)

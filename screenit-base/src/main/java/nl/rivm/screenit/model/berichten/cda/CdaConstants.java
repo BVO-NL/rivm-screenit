@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.berichten.cda;
 
 /*-
@@ -22,6 +21,10 @@ package nl.rivm.screenit.model.berichten.cda;
  * =========================LICENSE_END==================================
  */
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CdaConstants
 {
 
@@ -33,11 +36,10 @@ public final class CdaConstants
 
 	public static final String AANVANG_VERRICHTING_DATUM_PA_PATH = "effectiveTime:value";
 
-	public static final String CYTOLOGIE_VERSLAG_MONSTER_IDENTIFICATIE_IDS = "component:structuredBody:components:section[2.16.840.1.113883.2.4.3.36.10.213]:entries:organizer:components:procedure[1.3.6.1.4.1.19376.1.3.1.2]:participants:participantRole:ids";
+	public static final String CYTOLOGIE_VERSLAG_MONSTER_IDENTIFICATIE_IDS = "component:structuredBody:components:section[2.16.840.1.113883.2.4.3.36.10.213|2.16.840.1.113883.2.4.3.11.60.142.10.213]:entries:organizer:components:procedure[1.3.6.1.4.1.19376.1.3.1.2]:participants:participantRole:ids";
 
-	private CdaConstants()
-	{
+	public static final String ROOT_OID_PROJECT_ID = "2.16.840.1.113883.2.4.3.36.77.0.1";
 
-	}
+	public static final String CDA_NULL_FLAVOR_VALUESET_NAME = "vs_null_flavor";
 
 }

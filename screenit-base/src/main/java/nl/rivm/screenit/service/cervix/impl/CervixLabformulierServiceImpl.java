@@ -194,6 +194,13 @@ public class CervixLabformulierServiceImpl implements CervixLabformulierService
 		}
 	}
 
+	@Override
+	public boolean betreftEenS3Labformulier(String objid)
+	{
+
+		return objid.contains("/");
+	}
+
 	private CervixUitstrijkje valideerLabformulierKoppeling(CervixLabformulier labformulier)
 	{
 		CervixUitstrijkje uitstrijkje;

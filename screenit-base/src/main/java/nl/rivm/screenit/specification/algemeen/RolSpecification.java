@@ -46,7 +46,7 @@ public class RolSpecification
 
 	public static Specification<Rol> filterIsActief(Boolean actief)
 	{
-		return skipWhenNull(actief, isActief(actief));
+		return skipWhenNull(actief, (r, q, cb) -> isActief(actief).toPredicate(r, q, cb));
 	}
 
 	public static Specification<Rol> filterBevolkingsonderzoek(Collection<Bevolkingsonderzoek> bevolkingsonderzoeken)

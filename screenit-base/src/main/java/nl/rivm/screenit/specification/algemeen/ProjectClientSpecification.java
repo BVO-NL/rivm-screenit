@@ -41,8 +41,6 @@ import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.Dossier_;
 import nl.rivm.screenit.model.ProjectParameterKey;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.colon.ColonDossier_;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.project.Project;
@@ -100,7 +98,7 @@ public class ProjectClientSpecification
 		SingularAttribute<Client, ? extends Dossier<?, ?>> dossier)
 	{
 		var dossierJoin = join(clientJoin, dossier, JoinType.LEFT);
-		return cb.or(dossierJoin.get(TablePerClassHibernateObject_.id).isNull(), cb.isTrue(dossierJoin.get(Dossier_.aangemeld)));
+		return cb.or(dossierJoin.get(AbstractHibernateObject_.id).isNull(), cb.isTrue(dossierJoin.get(Dossier_.aangemeld)));
 	}
 
 	public static Specification<ProjectClient> isNietInProjectBrief(ProjectBriefActie definitie)
@@ -188,7 +186,7 @@ public class ProjectClientSpecification
 		subquery.select(subRoot.get(AbstractHibernateObject_.id))
 			.where(cb.and(
 				heeftType(ProjectType.PROJECT).with(ProjectClient_.project).toPredicate(subRoot, q, cb),
-				cb.equal(clientJoin.get(SingleTableHibernateObject_.id), r.get(ProjectClient_.client)),
+				cb.equal(clientJoin, r.get(ProjectClient_.client)),
 				isProjectClientActief(true).toPredicate(subRoot, q, cb),
 				heeftActieveProjectGroep().toPredicate(subRoot, q, cb),
 				isActiefOpDatum(peildatum).with(ProjectClient_.project).toPredicate(subRoot, q, cb)
@@ -199,7 +197,7 @@ public class ProjectClientSpecification
 	public static ExtendedSpecification<ProjectClient> heeftActieveProjectClient(Long projectGroupId)
 	{
 		return (r, q, cb) -> cb.and(
-			cb.equal(r.get(ProjectClient_.groep), projectGroupId),
+			cb.equal(r.get(ProjectClient_.groep).get(AbstractHibernateObject_.id), projectGroupId),
 			cb.isTrue(r.get(ProjectClient_.actief)));
 	}
 

@@ -25,6 +25,10 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+
 import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.main.service.algemeen.MedewerkerZoekService;
@@ -38,7 +42,6 @@ import nl.rivm.screenit.model.InstellingGebruikerRol_;
 import nl.rivm.screenit.model.InstellingGebruiker_;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.Rol;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
@@ -51,6 +54,7 @@ import nl.rivm.screenit.specification.HibernateObjectSpecification;
 import nl.rivm.screenit.specification.algemeen.OrganisatieMedewerkerSpecification;
 import nl.rivm.screenit.specification.algemeen.OrganisatieSpecification;
 import nl.rivm.screenit.specification.algemeen.RolSpecification;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -60,10 +64,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.google.common.primitives.Ints;
-
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
 
 import static jakarta.persistence.criteria.JoinType.INNER;
 import static jakarta.persistence.criteria.JoinType.LEFT;
@@ -153,8 +153,8 @@ public class MedewerkerZoekServiceImpl implements MedewerkerZoekService
 			subquery.where(organisatieSpecification.<Gebruiker> with(s -> getOrganisatiesJoin(s, LEFT))
 				.toPredicate(medewerkerRoot, q, cb));
 
-			subquery.select(medewerkerRoot.get(SingleTableHibernateObject_.id));
-			return r.in(subquery);
+			subquery.select(medewerkerRoot.get(AbstractHibernateObject_.id));
+			return r.get(AbstractHibernateObject_.id).in(subquery);
 		};
 	}
 
@@ -192,8 +192,8 @@ public class MedewerkerZoekServiceImpl implements MedewerkerZoekService
 				.and(filterHierarchie(ingelogdeOrganisatieMedewerker))
 				.toPredicate(organisatieMedewerkerRoot, q, cb));
 
-			subquery.select(organisatieMedewerkerRoot.get(InstellingGebruiker_.medewerker).get(SingleTableHibernateObject_.id));
-			return r.in(subquery);
+			subquery.select(organisatieMedewerkerRoot.get(InstellingGebruiker_.medewerker).get(AbstractHibernateObject_.id));
+			return r.get(AbstractHibernateObject_.id).in(subquery);
 		};
 	}
 
@@ -275,8 +275,8 @@ public class MedewerkerZoekServiceImpl implements MedewerkerZoekService
 					.or(heeftOrganisatieType(HUISARTS).with(s -> getOrganisatiesJoin(s, INNER)))
 					.toPredicate(medewerkerRoot, q, cb));
 
-			subquery.select(medewerkerRoot.get(SingleTableHibernateObject_.id)).distinct(true);
-			return cb.not(r.in(subquery));
+			subquery.select(medewerkerRoot.get(AbstractHibernateObject_.id)).distinct(true);
+			return cb.not(r.get(AbstractHibernateObject_.id).in(subquery));
 		});
 	}
 

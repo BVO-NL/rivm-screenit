@@ -81,7 +81,7 @@ import nl.rivm.screenit.service.mamma.MammaDigitaalContactService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5SessionInThread;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
@@ -94,6 +94,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.Range;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static nl.rivm.screenit.specification.SpecificationUtil.cast;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.mamma.MammaAfspraakSpecification.heeftStatusIn;
 import static nl.rivm.screenit.specification.mamma.MammaAfspraakSpecification.isLaatsteAfspraakVanUitnodiging;
@@ -151,10 +152,10 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 			q -> q.projections((cb, r) ->
 					List.of(
 						join(r, MammaAfspraak_.standplaatsPeriode).get(MammaStandplaatsPeriode_.screeningsEenheid),
-						r.get(MammaAfspraak_.vanaf).as(LocalDate.class)
+						cast(r.get(MammaAfspraak_.vanaf), LocalDate.class, cb)
 					))
 				.distinct()
-				.sortBy(Sort.by(MammaAfspraak_.VANAF), (o, r, cb) -> cb.asc(r.get(MammaAfspraak_.vanaf).as(LocalDate.class)))
+				.sortBy(Sort.by(MammaAfspraak_.VANAF), (o, r, cb) -> cb.asc(cast(r.get(MammaAfspraak_.vanaf), LocalDate.class, cb)))
 				.all());
 		Map<MammaScreeningsEenheid, List<LocalDate>> screeningsEenheidAfspraakDatumsMap = new HashMap<>();
 		afspraakDatums.forEach(afspraakDatum ->
@@ -441,7 +442,7 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 		return preferenceService.getBoolean(PreferenceKey.MAMMA_BULK_VERZETTEN_ALLEEN_BRIEF.name(), false);
 	}
 
-	private class AfsprakenVerplaatsenThread extends OpenHibernate5SessionInThread
+	private class AfsprakenVerplaatsenThread extends OpenHibernateSessionInThread
 	{
 
 		private final Long standplaatsPeriodeId;

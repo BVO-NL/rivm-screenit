@@ -34,7 +34,6 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.service.LogService;
-import nl.rivm.screenit.SafeStringUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -116,9 +115,18 @@ public class SELogServiceImpl implements SELogService
 
 	private String createLogMessage(Account account, LogGebeurtenis logGebeurtenis, MammaScreeningsEenheid se, String message)
 	{
-		var messageSafe = SafeStringUtil.maakMetUserInputStringVeiligVoorLogging(message);
+		var messageSafe = maakMetUserInputStringVeiligVoorLogging(message);
 		String result = String.format("%s; %s; %s", logGebeurtenis.name(), se == null ? "SE-???" : se.getCode(), messageSafe != null ? messageSafe : "");
 		return account == null ? result : String.format("%s %s", SELogin.accountIdLogTekst(account), result);
+	}
+
+	private static String maakMetUserInputStringVeiligVoorLogging(String input)
+	{
+		if (input != null)
+		{
+			return input.replaceAll("[\n\r\t]", "_");
+		}
+		return null;
 	}
 
 }

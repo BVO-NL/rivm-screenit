@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.verslag;
 
 /*-
@@ -28,22 +27,13 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface VraagElement
 {
+	String conceptId();
 
-	String code() default "";
+	String[] xpaths() default {};
 
-	String displayName();
-
-	String expression() default "";
+	String displayName() default "";
 
 	boolean isVerplicht() default false;
 
-	VraagElementUnit[]unit() default {};
-
-	String extraTekst() default "";
-
-	boolean isReference() default false;
-
 	boolean useInCda() default true;
-
-	boolean useInFormulier() default true;
 }

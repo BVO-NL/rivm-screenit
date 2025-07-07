@@ -25,12 +25,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.Dossier_;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonDossier_;
 import nl.rivm.screenit.model.colon.ColonUitnodigingsinterval_;
 import nl.rivm.screenit.model.colon.ColonVolgendeUitnodiging_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
@@ -40,7 +40,7 @@ public class ColonDossierSpecification
 	public static ExtendedSpecification<ColonDossier> heeftGeenGevuldDossier()
 	{
 		return (r, q, cb) ->
-			cb.or(cb.isNull(r.get(TablePerClassHibernateObject_.id)), cb.and(cb.isNull(r.get(ColonDossier_.laatsteScreeningRonde)), cb.isTrue(r.get(Dossier_.aangemeld))));
+			cb.or(cb.isNull(r.get(AbstractHibernateObject_.id)), cb.and(cb.isNull(r.get(ColonDossier_.laatsteScreeningRonde)), cb.isTrue(r.get(Dossier_.aangemeld))));
 	}
 
 	public static ExtendedSpecification<ColonDossier> heeftVolgendeUitnodigingNaInterval()

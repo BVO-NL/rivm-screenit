@@ -23,6 +23,12 @@ package nl.rivm.screenit.batch.jobs.colon.selectie.uitnodingingpushstep;
 
 import java.util.List;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
+
 import nl.rivm.screenit.batch.jobs.colon.selectie.AbstractUitnodigingPushReader;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.BagAdres_;
@@ -31,7 +37,6 @@ import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Gemeente_;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectClient_;
@@ -39,12 +44,6 @@ import nl.rivm.screenit.specification.algemeen.ProjectGroepSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Selection;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.ProjectClientSpecification.heeftIsUitgenodigdInProjectPeriode;
@@ -72,10 +71,10 @@ abstract class AbstractUitnodigingPushProjectReader extends AbstractUitnodigingP
 	protected List<Selection<?>> createProjections(Root<ProjectClient> r, CriteriaBuilder cb)
 	{
 		return List.of(
-			clientJoin(r).get(SingleTableHibernateObject_.id),
+			clientJoin(r).get(AbstractHibernateObject_.id),
 			join(r, ProjectClient_.groep).get(AbstractHibernateObject_.id),
 			gemeenteJoin(r).get(AbstractHibernateObject_.id),
-			join(gemeenteJoin(r), Gemeente_.screeningOrganisatie, JoinType.LEFT).get(SingleTableHibernateObject_.id));
+			join(gemeenteJoin(r), Gemeente_.screeningOrganisatie, JoinType.LEFT).get(AbstractHibernateObject_.id));
 	}
 
 	private static Join<BagAdres, Gemeente> gemeenteJoin(Root<ProjectClient> r)

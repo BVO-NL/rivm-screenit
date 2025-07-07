@@ -24,6 +24,12 @@ package nl.rivm.screenit.batch.jobs.colon.selectie.maxleeftijdpushuitnodigingste
 import java.time.LocalDate;
 import java.util.List;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -36,7 +42,6 @@ import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Gemeente_;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
 import nl.rivm.screenit.specification.algemeen.PersoonSpecification;
 import nl.rivm.screenit.util.DateUtil;
@@ -45,12 +50,6 @@ import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Selection;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
@@ -81,10 +80,10 @@ public abstract class AbstractUitnodigingPushMaxLeeftijdReader extends AbstractU
 	protected List<Selection<?>> createProjections(Root<Client> r, CriteriaBuilder cb)
 	{
 		return List.of(
-			r.get(SingleTableHibernateObject_.id),
+			r.get(AbstractHibernateObject_.id),
 			cb.nullLiteral(Long.class),
 			gemeenteJoin(r).get(AbstractHibernateObject_.id),
-			join(gemeenteJoin(r), Gemeente_.screeningOrganisatie, JoinType.LEFT).get(SingleTableHibernateObject_.id));
+			join(gemeenteJoin(r), Gemeente_.screeningOrganisatie, JoinType.LEFT).get(AbstractHibernateObject_.id));
 	}
 
 	@Override

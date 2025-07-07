@@ -34,6 +34,7 @@ import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.validator.AantalBestandenUploadenValidator;
 import nl.rivm.screenit.main.web.component.validator.FileValidator;
+import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.FileType;
@@ -43,8 +44,6 @@ import nl.rivm.screenit.model.mamma.MammaFotobespreking;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.enums.MammaFotobesprekingType;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.wicket.hibernate.markup.form.validation.UniqueFieldValidator;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -76,9 +75,6 @@ public abstract class MammaFotobesprekingEditPopupPanel extends GenericPanel<Mam
 	@SpringBean
 	private MammaBeoordelingsEenheidService beoordelingsEenheidService;
 
-	@SpringBean
-	private HibernateService hibernateService;
-
 	private IModel<List<FileUpload>> filesUploaded = new ListModel<>();
 
 	public MammaFotobesprekingEditPopupPanel(String id, IModel<MammaFotobespreking> model)
@@ -92,7 +88,7 @@ public abstract class MammaFotobesprekingEditPopupPanel extends GenericPanel<Mam
 		List<BeoordelingsEenheid> beoordelingsEenheden = beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getInstelling());
 		List<MammaScreeningsEenheid> screeningsEenheden = screeningsEenheidService.getActieveScreeningsEenhedenVoorBeoordelingsEenheden(beoordelingsEenheden);
 		ComponentHelper.addTextField(form, "omschrijving", true, HibernateMagicNumber.L256, String.class, false)
-			.add(new UniqueFieldValidator<>(MammaFotobespreking.class, getModelObject().getId(), "omschrijving", hibernateService));
+			.add(new ScreenitUniqueFieldValidator<>(MammaFotobespreking.class, getModelObject().getId(), "omschrijving", false));
 		WebMarkupContainer beContainer = new WebMarkupContainer("beoordelingsEenheidContainer");
 		form.add(beContainer);
 		ScreenitDropdown<BeoordelingsEenheid> beDropdown = new ScreenitDropdown<>("beoordelingsEenheid", ModelUtil.listRModel(beoordelingsEenheden, false),

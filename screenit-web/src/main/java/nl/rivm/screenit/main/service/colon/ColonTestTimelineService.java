@@ -66,7 +66,7 @@ public interface ColonTestTimelineService
 
 	void verzetDossierAchteruitInTijd(Client client, int aantaldagen);
 
-	void maaktIntakeAfspraakVoorClient(Client client, ColonIntakelocatie intakelocatie);
+	void maaktIntakeAfspraakVoorClient(Client client, ColonIntakelocatie intakelocatie, boolean binnenRooster);
 
 	void maakIntakeAfspraakConclusieVoorClient(Client client, ColonConclusieType type);
 

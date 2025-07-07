@@ -36,7 +36,6 @@
 		<mapping class="nl.rivm.screenit.model.colon.verslag.mdl.MdlBostonBowelPreparation"/>
 		<mapping class="nl.rivm.screenit.model.colon.verslag.mdl.MdlColoscopieMedischeObservatie"/>
 		<mapping class="nl.rivm.screenit.model.colon.verslag.mdl.MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg"/>
-		<mapping class="nl.rivm.screenit.model.colon.verslag.mdl.MdlIncidentcomplicatie"/>
 		<mapping class="nl.rivm.screenit.model.colon.verslag.mdl.MdlLaesiecoloscopiecentrum"/>
 		<mapping class="nl.rivm.screenit.model.colon.verslag.mdl.MdlMedicatie"/>
 		<mapping class="nl.rivm.screenit.model.colon.verslag.mdl.MdlMedicatiemiddel"/>

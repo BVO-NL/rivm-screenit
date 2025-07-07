@@ -33,7 +33,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.cervix.facturatie.CervixBoekRegel;
 import nl.rivm.screenit.model.cervix.facturatie.CervixBoekRegel_;
 import nl.rivm.screenit.model.cervix.facturatie.CervixHuisartsTarief;
@@ -45,6 +44,7 @@ import nl.rivm.screenit.model.cervix.facturatie.CervixVerrichting;
 import nl.rivm.screenit.model.cervix.facturatie.CervixVerrichting_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -120,7 +120,7 @@ public class CervixTariefSpecification
 
 	public static Specification<CervixVerrichting> isTariefVoorVerrichting(Long oudTariefId)
 	{
-		return (r, q, cb) -> cb.equal(join(join(r, CervixVerrichting_.laatsteBoekRegel), CervixBoekRegel_.tarief).get(SingleTableHibernateObject_.id), oudTariefId);
+		return (r, q, cb) -> cb.equal(join(join(r, CervixVerrichting_.laatsteBoekRegel), CervixBoekRegel_.tarief).get(AbstractHibernateObject_.id), oudTariefId);
 	}
 
 	private static ExtendedSpecification<CervixLabTarief> heeftBmhkLaboratorium(BMHKLaboratorium bmhkLaboratorium)

@@ -47,8 +47,6 @@ import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.cervix.cis.CervixCISHistorie;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -74,14 +72,12 @@ public class CervixDossier extends Dossier<CervixScreeningRonde, CervixAfmelding
 	private CervixCISHistorie cisHistorie;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "dossier")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<CervixScreeningRonde> screeningRondes = new ArrayList<>();
 
 	@OneToOne(optional = true, fetch = FetchType.EAGER)
 	private CervixScreeningRonde laatsteScreeningRonde;
 
 	@OneToMany(mappedBy = "dossier", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<CervixAfmelding> afmeldingen = new ArrayList<>();
 
 	@OneToOne(optional = true, fetch = FetchType.EAGER)

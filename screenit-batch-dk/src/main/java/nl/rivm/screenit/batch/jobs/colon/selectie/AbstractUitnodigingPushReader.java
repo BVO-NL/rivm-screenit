@@ -27,6 +27,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
+
 import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -46,11 +51,6 @@ import nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification;
 import org.hibernate.ScrollableResults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Selection;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
@@ -90,8 +90,8 @@ public abstract class AbstractUitnodigingPushReader<T> extends BaseTypedScrollab
 		var scrollableResults = resultSet.get();
 		while (scrollableResults.next())
 		{
-			var result = (ClientTePushenDto) scrollableResults.get()[0];
-			Long clientId = result.clientId;
+			var result = (ClientTePushenDto) scrollableResults.get();
+			var clientId = result.clientId;
 			if (!processedIds.contains(clientId))
 			{
 				processedIds.add(clientId);

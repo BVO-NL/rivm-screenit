@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.component.form;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import nl.rivm.screenit.main.web.component.AjaxDateTimeField;
@@ -45,12 +44,6 @@ public abstract class ScreenITDateTimeField extends AjaxDateTimeField
 	public ScreenITDateTimeField(String id)
 	{
 		super(id);
-	}
-
-	public ScreenITDateTimeField(String id, boolean magDatumWijzigen)
-	{
-		super(id);
-		this.magDatumWijzigen = magDatumWijzigen;
 	}
 
 	public abstract String getDatePickerLabel();
@@ -92,46 +85,6 @@ public abstract class ScreenITDateTimeField extends AjaxDateTimeField
 		datePicker.setLabel(Model.of(getDatePickerLabel()));
 		datePicker.add(ComponentHelper.newDbRangeValidator());
 		return datePicker;
-	}
-
-	@Override
-	public void convertInput()
-	{
-		if (getDatePicker().getConvertedInput() == null && getDatePicker().getModelObject() == null && getTimeField().getConvertedInput() == null
-			&& getTimeField().getModelObject() == null)
-		{
-			invalid();
-		}
-		else
-		{
-
-			LocalDateTime datum;
-			if (getDatePicker().getConvertedInput() != null)
-			{
-				datum = DateUtil.toLocalDateTime(getDatePicker().getConvertedInput());
-			}
-			else
-			{
-				datum = DateUtil.toLocalDateTime(getDatePicker().getModelObject());
-			}
-
-			LocalDateTime tijd;
-			if (getTimeField().getConvertedInput() != null)
-			{
-				tijd = DateUtil.toLocalDateTime(getTimeField().getConvertedInput());
-			}
-			else
-			{
-				tijd = DateUtil.toLocalDateTime(getTimeField().getModelObject());
-			}
-
-			setConvertedInput(DateUtil.toUtilDate(datum
-				.withHour(tijd.getHour())
-				.withMinute(tijd.getMinute())
-				.withSecond(0)
-				.withNano(0)
-			));
-		}
 	}
 
 }

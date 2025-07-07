@@ -21,12 +21,13 @@ package nl.rivm.screenit.model.colon.verslag.mdl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.model.verslag.DSValueSet;
@@ -38,12 +39,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "colon")
+@Getter
+@Setter
 public class MdlBostonBowelPreparation
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -63,7 +63,10 @@ public class MdlBostonBowelPreparation
 		@DSValueSetValue(code = "9", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.103"),
 		@DSValueSetValue(code = "ASKU", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Boston Bowel Preparation Scale Sum Score", extraTekst = "Boston Bowel Preparation Scale Sum Score", code = "2.16.840.1.113883.2.4.3.36.77.2.11.85", isVerplicht = true)
+	@VraagElement(conceptId = "85", displayName = "Boston Bowel Preparation Scale Sum Score", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.307']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.310']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.307']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.310']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue bostonBowelPreparationScaleSumScore;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -74,7 +77,10 @@ public class MdlBostonBowelPreparation
 		@DSValueSetValue(code = "3", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.102"),
 		@DSValueSetValue(code = "ASKU", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "BBPS Score Colon ascendens", extraTekst = "Boston Bowel Preparation Scale (score: 0-3) Colon ascendens", code = "2.16.840.1.113883.2.4.3.36.77.2.11.86", isVerplicht = true)
+	@VraagElement(conceptId = "86", displayName = "BBPS Score Colon ascendens", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.307']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.310']]]/hl7:observation/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.311']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.307']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.310']]]/hl7:observation/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.311']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue bbpsScoreColonAscendens;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -85,7 +91,10 @@ public class MdlBostonBowelPreparation
 		@DSValueSetValue(code = "3", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.102"),
 		@DSValueSetValue(code = "ASKU", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "BBPS Score Colon transversum", extraTekst = "Boston Bowel Preparation Scale (score: 0-3) Colon transversum", code = "2.16.840.1.113883.2.4.3.36.77.2.11.87", isVerplicht = true)
+	@VraagElement(conceptId = "87", displayName = "BBPS Score Colon transversum", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.307']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.310']]]/hl7:observation/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.312']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.307']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.310']]]/hl7:observation/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.312']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue bbpsScoreColonTransversum;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -96,57 +105,10 @@ public class MdlBostonBowelPreparation
 		@DSValueSetValue(code = "3", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.102"),
 		@DSValueSetValue(code = "ASKU", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "BBPS Score Colon descendens", extraTekst = "Boston Bowel Preparation Scale (score: 0-3) Colon descendens", code = "2.16.840.1.113883.2.4.3.36.77.2.11.88", isVerplicht = true)
+	@VraagElement(conceptId = "88", displayName = "BBPS Score Colon descendens", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.307']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.310']]]/hl7:observation/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.313']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.204']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.307']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.310']]]/hl7:observation/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.313']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue bbpsScoreColonDescendens;
-
-	public MdlVoorbereidingColoscopie getVoorbereidingColoscopie()
-	{
-		return voorbereidingColoscopie;
-	}
-
-	public void setVoorbereidingColoscopie(MdlVoorbereidingColoscopie voorbereidingColoscopie)
-	{
-		this.voorbereidingColoscopie = voorbereidingColoscopie;
-	}
-
-	public DSValue getBostonBowelPreparationScaleSumScore()
-	{
-		return bostonBowelPreparationScaleSumScore;
-	}
-
-	public void setBostonBowelPreparationScaleSumScore(DSValue bostonBowelPreparationScaleSumScore)
-	{
-		this.bostonBowelPreparationScaleSumScore = bostonBowelPreparationScaleSumScore;
-	}
-
-	public DSValue getBbpsScoreColonAscendens()
-	{
-		return bbpsScoreColonAscendens;
-	}
-
-	public void setBbpsScoreColonAscendens(DSValue bbpsScoreColonAscendens)
-	{
-		this.bbpsScoreColonAscendens = bbpsScoreColonAscendens;
-	}
-
-	public DSValue getBbpsScoreColonTransversum()
-	{
-		return bbpsScoreColonTransversum;
-	}
-
-	public void setBbpsScoreColonTransversum(DSValue bbpsScoreColonTransversum)
-	{
-		this.bbpsScoreColonTransversum = bbpsScoreColonTransversum;
-	}
-
-	public DSValue getBbpsScoreColonDescendens()
-	{
-		return bbpsScoreColonDescendens;
-	}
-
-	public void setBbpsScoreColonDescendens(DSValue bbpsScoreColonDescendens)
-	{
-		this.bbpsScoreColonDescendens = bbpsScoreColonDescendens;
-	}
 
 }

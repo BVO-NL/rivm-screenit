@@ -43,8 +43,6 @@ import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.BestandStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
@@ -53,7 +51,6 @@ import org.hibernate.envers.NotAudited;
 @Entity
 @Audited
 @Table(schema = "mamma", name = "download_onderzoeken_verzoek")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 public class MammaDownloadOnderzoekenVerzoek extends AbstractHibernateObject
 {
 

@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.se.proxy.services.impl;
  * ========================LICENSE_START=================================
  * se-proxy
  * %%
- * Copyright (C) 2017 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,18 +23,19 @@ package nl.rivm.screenit.mamma.se.proxy.services.impl;
 
 import java.util.Map;
 
+import lombok.RequiredArgsConstructor;
+
 import nl.rivm.screenit.mamma.se.proxy.dao.ConfiguratieDao;
 import nl.rivm.screenit.mamma.se.proxy.model.SeConfiguratieKey;
 import nl.rivm.screenit.mamma.se.proxy.services.ConfiguratieService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ConfiguratieServiceImpl implements ConfiguratieService
 {
-	@Autowired
-	private ConfiguratieDao configuratieDao;
+	private final ConfiguratieDao configuratieDao;
 
 	@Override
 	public String getConfiguratieValue(SeConfiguratieKey key)
@@ -49,9 +50,9 @@ public class ConfiguratieServiceImpl implements ConfiguratieService
 	}
 
 	@Override
-	public Boolean getConfiguratieBooleanValue(SeConfiguratieKey key)
+	public Boolean getConfiguratieBooleanValue(SeConfiguratieKey key, boolean defaultValue)
 	{
-		return configuratieDao.getConfiguratieBooleanValue(key);
+		return configuratieDao.getConfiguratieBooleanValue(key, defaultValue);
 	}
 
 	@Override

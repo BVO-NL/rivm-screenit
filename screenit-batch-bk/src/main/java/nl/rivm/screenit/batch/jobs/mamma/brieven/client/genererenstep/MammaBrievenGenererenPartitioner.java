@@ -38,7 +38,7 @@ import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5Session;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.batch.item.ExecutionContext;
@@ -119,7 +119,7 @@ public class MammaBrievenGenererenPartitioner extends AbstractBrievenGenererenPa
 	private Boolean isEersteRondeBrief(BriefType briefType)
 	{
 		var annoteerEersteRonde = new AtomicBoolean();
-		OpenHibernate5Session.withoutTransaction().run(() ->
+		OpenHibernateSession.withoutTransaction().run(() ->
 		{
 			annoteerEersteRonde.set(preferenceService.getBoolean(PreferenceKey.MAMMA_ANNOTEER_EERSTE_RONDE.name(), Boolean.FALSE));
 		});

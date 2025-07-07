@@ -22,7 +22,7 @@ package nl.rivm.screenit.dto.mamma.afspraken;
  */
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.temporal.Temporal;
 
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 
@@ -30,7 +30,7 @@ public interface MammaAfspraakReserveringView
 {
 	Long getCapaciteitBlokId();
 
-	LocalDateTime getVanaf();
+	Temporal getVanaf();
 
 	BigDecimal getOpkomstkans();
 

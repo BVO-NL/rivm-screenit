@@ -30,14 +30,16 @@ import nl.rivm.screenit.model.gba.GbaVraag_;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import static nl.rivm.screenit.specification.SpecificationUtil.equalsOrFalseIfParamNull;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GbaVraagSpecification
 {
 	public static Specification<GbaVraag> heeftBsnOfClient(String bsn, Client client)
 	{
 		return (r, q, cb) -> cb.or(
-			cb.equal(r.get(GbaVraag_.bsn), bsn),
-			cb.equal(r.get(GbaVraag_.client), client));
+			equalsOrFalseIfParamNull(r.get(GbaVraag_.bsn), bsn, cb),
+			equalsOrFalseIfParamNull(r.get(GbaVraag_.client), client, cb));
 	}
 
 	public static Specification<GbaVraag> isVerstuurd(boolean verstuurd)

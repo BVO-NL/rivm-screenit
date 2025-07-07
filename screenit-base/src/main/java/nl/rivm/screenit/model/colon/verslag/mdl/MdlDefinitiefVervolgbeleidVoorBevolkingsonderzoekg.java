@@ -21,9 +21,6 @@ package nl.rivm.screenit.model.colon.verslag.mdl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -33,24 +30,25 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.model.verslag.DSValueSet;
 import nl.rivm.screenit.model.verslag.DSValueSetValue;
 import nl.rivm.screenit.model.verslag.Quantity;
 import nl.rivm.screenit.model.verslag.VraagElement;
-import nl.rivm.screenit.model.verslag.VraagElementUnit;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "colon")
+@Getter
+@Setter
 public class MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -70,7 +68,10 @@ public class MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg
 		@DSValueSetValue(code = "73761001:408730004=64695001", codeSystem = "2.16.840.1.113883.6.96", deprecated = true),
 		@DSValueSetValue(code = "410410006:408730004=428119001", codeSystem = "2.16.840.1.113883.6.96", deprecated = true)
 	})
-	@VraagElement(displayName = "Definitief vervolgbeleid voor bevolkingsonderzoek", extraTekst = "Definitief te voeren vervolgbeleid vanuit het perspectief van het bevolkingsonderzoek.\u00a0\u00a0De waarde in dit veld moet consistent zijn met de eindconclusie.", code = "2.16.840.1.113883.2.4.3.36.77.2.11.110", isVerplicht = true)
+	@VraagElement(conceptId = "110", displayName = "Definitief vervolgbeleid voor bevolkingsonderzoek", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.207']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.372']]]/hl7:act/hl7:code|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.207']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.372']]]/hl7:act/hl7:code|@code"
+	}, isVerplicht = true)
 	private DSValue definitiefVervolgbeleidVoorBevolkingsonderzoek;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -87,95 +88,43 @@ public class MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg
 		@DSValueSetValue(code = "10", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.226"),
 		@DSValueSetValue(code = "11", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.226"),
 		@DSValueSetValue(code = "12", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.226"),
-		@DSValueSetValue(code = "13", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.226", deprecated = true),
-		@DSValueSetValue(code = "14", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.226"),
-		@DSValueSetValue(code = "15", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.226", deprecated = true)
+		@DSValueSetValue(code = "14", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.226")
 	})
-	@VraagElement(displayName = "Periode vervolg surveillance/scopie", extraTekst = "Periode waarna pati\u00ebnt weer terugkomt terug voor surveillance/vervolgcoloscopie. Bij screening wordt het interval elders bepaald en mag niet ingevuld worden.", code = "2.16.840.1.113883.2.4.3.36.77.2.11.111", useInCda = false)
-	private DSValue periodeVervolgSurveillancescopie;
+	@VraagElement(conceptId = "15", displayName = "Periode vervolg scopie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.207']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.372']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:code/@code = 'SCOPEPERIOD']]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.207']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.372']]]/hl7:act/hl7:effectiveTime/hl7:width|@value"
+	})
+	private DSValue periodeVervolgScopie;
 
-	@VraagElement(code = "2.16.840.1.113883.2.4.3.36.77.2.11.111", displayName = "", useInFormulier = false)
-	@Embedded
-	@Nonnull
-	@AttributeOverrides({
-		@AttributeOverride(name = "value", column = @Column(name = "periodeVervolgSurveillancecoloscopieCdaValue")),
-		@AttributeOverride(name = "unit", column = @Column(name = "periodeVervolgSurveillancecoloscopieCdaUnit"))
+	@ManyToOne(fetch = FetchType.LAZY)
+	@DSValueSet(name = "vs_periode_vervolg_surveillance", values = {
+		@DSValueSetValue(code = "6", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.226"),
+		@DSValueSetValue(code = "12", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.226"),
+		@DSValueSetValue(code = "13", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.226"),
+		@DSValueSetValue(code = "14", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.226"),
+		@DSValueSetValue(code = "15", codeSystem = "2.16.840.1.113883.2.4.3.36.77.5.226")
 	})
-	private Quantity periodeVervolgSurveillancecoloscopieCda;
+	@VraagElement(conceptId = "14", displayName = "Periode vervolg surveillance", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.207']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.372']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:code/@code = 'SCOPESURV']]/hl7:observation/hl7:value|@code"
+	})
+	private DSValue periodeVervolgSurveillance;
 
 	@Column(length = 4096)
-	@VraagElement(displayName = "Locatie vervolgscopie", extraTekst = "Aanduiding naar welk centrum de pati\u00ebnt is/wordt verwezen", code = "2.16.840.1.113883.2.4.3.36.77.2.11.112")
+	@VraagElement(conceptId = "112", displayName = "Locatie vervolgscopie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.207']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.372']]]/hl7:act/hl7:performer/hl7:assignedEntity/hl7:representedOrganization/hl7:name",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.207']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.372']]]/hl7:act/hl7:performer/hl7:assignedEntity/hl7:representedOrganization/hl7:name"
+	})
 	private String locatieVervolgscopie;
 
 	@Embedded
-	@Nonnull
 	@AttributeOverrides({
 		@AttributeOverride(name = "value", column = @Column(name = "adenoomRiskScoretotalValue")),
 		@AttributeOverride(name = "unit", column = @Column(name = "adenoomRiskScoretotalUnit"))
 	})
-	@VraagElement(displayName = "Adenoom risk score (total)", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.2.11.113", unit = {
-		@VraagElementUnit(unit = "", min = "0.0", max = "5.0")
+	@VraagElement(conceptId = "113", displayName = "Adenoom risk score (total)", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.207']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.136.10.372']]]/hl7:act/hl7:entryRelationship/hl7:observation/hl7:value|@value",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.207']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.372']]]/hl7:act/hl7:entryRelationship/hl7:observation/hl7:value|@value"
 	})
 	private Quantity adenoomRiskScoretotal;
-
-	public MdlColoscopieMedischeObservatie getColoscopieMedischeObservatie()
-	{
-		return coloscopieMedischeObservatie;
-	}
-
-	public void setColoscopieMedischeObservatie(MdlColoscopieMedischeObservatie coloscopieMedischeObservatie)
-	{
-		this.coloscopieMedischeObservatie = coloscopieMedischeObservatie;
-	}
-
-	public DSValue getDefinitiefVervolgbeleidVoorBevolkingsonderzoek()
-	{
-		return definitiefVervolgbeleidVoorBevolkingsonderzoek;
-	}
-
-	public void setDefinitiefVervolgbeleidVoorBevolkingsonderzoek(DSValue definitiefVervolgbeleidVoorBevolkingsonderzoek)
-	{
-		this.definitiefVervolgbeleidVoorBevolkingsonderzoek = definitiefVervolgbeleidVoorBevolkingsonderzoek;
-	}
-
-	public Quantity getPeriodeVervolgSurveillancecoloscopieCda()
-	{
-		return periodeVervolgSurveillancecoloscopieCda;
-	}
-
-	public void setPeriodeVervolgSurveillancecoloscopieCda(Quantity periodeVervolgSurveillancecoloscopieCda)
-	{
-		this.periodeVervolgSurveillancecoloscopieCda = periodeVervolgSurveillancecoloscopieCda;
-	}
-
-	public DSValue getPeriodeVervolgSurveillancescopie()
-	{
-		return periodeVervolgSurveillancescopie;
-	}
-
-	public void setPeriodeVervolgSurveillancescopie(DSValue periodeVervolgSurveillancescopie)
-	{
-		this.periodeVervolgSurveillancescopie = periodeVervolgSurveillancescopie;
-	}
-
-	public String getLocatieVervolgscopie()
-	{
-		return locatieVervolgscopie;
-	}
-
-	public void setLocatieVervolgscopie(String locatieVervolgscopie)
-	{
-		this.locatieVervolgscopie = locatieVervolgscopie;
-	}
-
-	public Quantity getAdenoomRiskScoretotal()
-	{
-		return adenoomRiskScoretotal;
-	}
-
-	public void setAdenoomRiskScoretotal(Quantity adenoomRiskScoretotal)
-	{
-		this.adenoomRiskScoretotal = adenoomRiskScoretotal;
-	}
 
 }

@@ -21,34 +21,46 @@ package nl.rivm.screenit.main.web.gebruiker.screening.cervix.cytologie;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.Constants;
+import java.util.List;
+
+import nl.rivm.screenit.main.web.gebruiker.screening.gedeeld.verslagen.VerslagInzienPanel;
 import nl.rivm.screenit.model.cervix.CervixCytologieVerslag;
-import nl.topicuszorg.wicket.input.BooleanLabel;
 
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.GenericPanel;
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
-import org.wicketstuff.datetime.markup.html.basic.DateLabel;
+import org.jetbrains.annotations.NotNull;
 
-public class CervixCytologieVerslagInzienPanel extends GenericPanel<CervixCytologieVerslag>
+import static nl.rivm.screenit.model.cervix.CervixCytologieVerslag_.VERSLAG_CONTENT;
+import static nl.rivm.screenit.model.cervix.verslag.cytologie.CervixCytologieCytologieUitslagBvoBmhkTbvHuisarts_.CONCLUSIE;
+import static nl.rivm.screenit.model.cervix.verslag.cytologie.CervixCytologieCytologieUitslagBvoBmhkTbvHuisarts_.PROTOCOLLAIR_VERSLAG;
+import static nl.rivm.screenit.model.cervix.verslag.cytologie.CervixCytologieCytologieUitslagBvoBmhk_.CNUMMER_LABORATORIUM;
+import static nl.rivm.screenit.model.cervix.verslag.cytologie.CervixCytologieCytologieUitslagBvoBmhk_.COS;
+import static nl.rivm.screenit.model.cervix.verslag.cytologie.CervixCytologieCytologieUitslagBvoBmhk_.COS_PLATFORM;
+import static nl.rivm.screenit.model.cervix.verslag.cytologie.CervixCytologieCytologieUitslagBvoBmhk_.MONSTER_BMHK;
+import static nl.rivm.screenit.model.cervix.verslag.cytologie.CervixCytologieCytologieUitslagBvoBmhk_.SCREENINGSADVIES_HERHALING;
+import static nl.rivm.screenit.model.cervix.verslag.cytologie.CervixCytologieMonsterBmhk_.MONSTER_IDENTIFICATIE;
+import static nl.rivm.screenit.model.cervix.verslag.cytologie.CervixCytologieVerrichting_.EINDE_VERRICHTING;
+import static nl.rivm.screenit.model.cervix.verslag.cytologie.CervixCytologieVerslagContent_.CYTOLOGIE_UITSLAG_BVO_BMHK;
+import static nl.rivm.screenit.model.cervix.verslag.cytologie.CervixCytologieVerslagContent_.CYTOLOGIE_UITSLAG_BVO_BMHK_TBV_HUISARTS;
+import static nl.rivm.screenit.model.cervix.verslag.cytologie.CervixCytologieVerslagContent_.VERRICHTING;
+import static nl.rivm.screenit.util.StringUtil.propertyChain;
+
+public class CervixCytologieVerslagInzienPanel extends VerslagInzienPanel<CervixCytologieVerslag>
 {
 	public CervixCytologieVerslagInzienPanel(String id, IModel<CervixCytologieVerslag> model)
 	{
-		super(id, new CompoundPropertyModel<>(model));
+		super(id, model);
 	}
 
 	@Override
-	protected void onInitialize()
+	protected @NotNull List<String> getSelectedFields()
 	{
-		super.onInitialize();
-		add(new Label("verslagContent.cytologieUitslagBvoBmhk.monsterBmhk.monsterIdentificatie"));
-		add(new Label("verslagContent.cytologieUitslagBvoBmhkTbvHuisarts.protocollairVerslag"));
-		add(new Label("verslagContent.cytologieUitslagBvoBmhkTbvHuisarts.conclusie"));
-		add(new BooleanLabel("verslagContent.cytologieUitslagBvoBmhk.cos"));
-		add(new Label("verslagContent.cytologieUitslagBvoBmhk.cosPlatform.displayNameNl"));
-		add(new Label("verslagContent.cytologieUitslagBvoBmhk.cnummerLaboratorium"));
-		add(new Label("verslagContent.cytologieUitslagBvoBmhk.screeningsadviesHerhaling.displayNameNl"));
-		add(DateLabel.forDatePattern("verslagContent.verrichting.eindeVerrichting", Constants.DEFAULT_DATE_FORMAT));
+		return List.of(propertyChain(VERSLAG_CONTENT, CYTOLOGIE_UITSLAG_BVO_BMHK, MONSTER_BMHK, MONSTER_IDENTIFICATIE),
+			propertyChain(VERSLAG_CONTENT, CYTOLOGIE_UITSLAG_BVO_BMHK_TBV_HUISARTS, PROTOCOLLAIR_VERSLAG),
+			propertyChain(VERSLAG_CONTENT, CYTOLOGIE_UITSLAG_BVO_BMHK_TBV_HUISARTS, CONCLUSIE),
+			propertyChain(VERSLAG_CONTENT, CYTOLOGIE_UITSLAG_BVO_BMHK, COS),
+			propertyChain(VERSLAG_CONTENT, CYTOLOGIE_UITSLAG_BVO_BMHK, COS_PLATFORM),
+			propertyChain(VERSLAG_CONTENT, CYTOLOGIE_UITSLAG_BVO_BMHK, CNUMMER_LABORATORIUM),
+			propertyChain(VERSLAG_CONTENT, CYTOLOGIE_UITSLAG_BVO_BMHK, SCREENINGSADVIES_HERHALING),
+			propertyChain(VERSLAG_CONTENT, VERRICHTING, EINDE_VERRICHTING));
 	}
 }

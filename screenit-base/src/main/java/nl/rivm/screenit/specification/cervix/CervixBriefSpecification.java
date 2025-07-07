@@ -28,8 +28,8 @@ import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.cervix.CervixBrief_;
-import nl.rivm.screenit.model.cervix.CervixUitnodiging_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CervixBriefSpecification
@@ -40,7 +40,7 @@ public class CervixBriefSpecification
 		return (r, q, cb) ->
 		{
 			var uitnodigingJoin = r.join(CervixBrief_.uitnodiging, JoinType.LEFT);
-			return cb.isNull(uitnodigingJoin.get(CervixUitnodiging_.id));
+			return cb.isNull(uitnodigingJoin.get(AbstractHibernateObject_.id));
 		};
 	}
 }

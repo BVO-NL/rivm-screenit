@@ -34,14 +34,11 @@ import jakarta.persistence.Table;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
 @Table(schema = "algemeen")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class UitnodigingCohort extends AbstractHibernateObject
 {
 
@@ -52,7 +49,6 @@ public class UitnodigingCohort extends AbstractHibernateObject
 	private Integer jaar;
 
 	@OneToMany(mappedBy = "uitnodigingCohort", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<UitnodigingCohortGeboortejaren> geboortejaren = new ArrayList<>();
 
 	public Integer getJaar()

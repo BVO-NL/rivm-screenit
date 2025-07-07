@@ -28,6 +28,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -45,13 +46,10 @@ import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
 import nl.rivm.screenit.model.enums.RedenNietTeBeoordelen;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "colon", indexes = { @Index(name = "IFOBTEST_STATUS", columnList = "status"), @Index(name = "idx_ifobttest_barcode", columnList = "barcode", unique = true) })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Audited
 @Getter
 @Setter
@@ -98,6 +96,8 @@ public class IFOBTTest extends AbstractHibernateObject
 
 	private BigDecimal normWaarde;
 
+	private String flag;
+
 	@Enumerated(EnumType.STRING)
 	private ColonGeinterpreteerdeUitslag geinterpreteerdeUitslag;
 
@@ -111,7 +111,7 @@ public class IFOBTTest extends AbstractHibernateObject
 	@Enumerated(EnumType.STRING)
 	private IFOBTType type;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private UploadDocument verwijderbrief;
 
 	@Enumerated(EnumType.STRING)

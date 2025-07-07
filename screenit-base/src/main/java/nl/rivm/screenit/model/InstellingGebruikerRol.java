@@ -44,14 +44,11 @@ import lombok.Setter;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "algemeen")
 @Audited
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 @Getter
 @Setter
 public class InstellingGebruikerRol extends AbstractHibernateObject implements IActief, IBevolkingsonderzoek
@@ -67,7 +64,6 @@ public class InstellingGebruikerRol extends AbstractHibernateObject implements I
 	@ElementCollection(targetClass = Bevolkingsonderzoek.class, fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "organisatie.cache")
 	@CollectionTable(schema = "algemeen", name = "instelling_gebruiker_rol_bevolkingsonderzoeken")
 	private List<Bevolkingsonderzoek> bevolkingsonderzoeken = new ArrayList<>();
 

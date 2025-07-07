@@ -29,6 +29,8 @@ import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
 import nl.rivm.screenit.model.cervix.facturatie.CervixBoekRegel;
+import nl.rivm.screenit.model.cervix.facturatie.CervixBoekRegel_;
+import nl.rivm.screenit.model.cervix.facturatie.CervixVerrichting_;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
@@ -37,6 +39,8 @@ import org.apache.wicket.injection.Injector;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.data.domain.Sort;
+
+import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
 public class CervixHuisartsVerrichtingenDataProvider extends SortableDataProvider<CervixBoekRegel, String>
 {
@@ -56,7 +60,7 @@ public class CervixHuisartsVerrichtingenDataProvider extends SortableDataProvide
 		IModel<CervixHuisarts> geselecteerdeHuisarts, IModel<CervixHuisartsLocatie> huisartsLocatieModel)
 	{
 		Injector.get().inject(this);
-		setSort("verrichting.verrichtingsDatum", SortOrder.DESCENDING);
+		setSort(propertyChain(CervixBoekRegel_.VERRICHTING, CervixVerrichting_.VERRICHTINGS_DATUM), SortOrder.DESCENDING);
 		this.verrichtingenZoekObjectModel = verrichtingenZoekObjectModel;
 		this.geselecteerdeHuisarts = geselecteerdeHuisarts;
 		this.huisartsLocatieModel = huisartsLocatieModel;

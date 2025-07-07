@@ -33,29 +33,25 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.UniqueConstraint;
 
 import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.SingleTableHibernateObject;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.verslag.VerslagContent;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
 @Entity
-@Table(schema = "mamma", name = "cda_verslag", uniqueConstraints = { @UniqueConstraint(columnNames = "ontvangen_cda_bericht") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "verslag.cache")
+@Table(schema = "mamma", name = "cda_verslag")
 @Audited
-public abstract class MammaVerslag<T extends VerslagContent<?>> extends SingleTableHibernateObject implements Verslag<T, MammaScreeningRonde>
+public abstract class MammaVerslag<T extends VerslagContent<?>> extends AbstractHibernateObject implements Verslag<T, MammaScreeningRonde>
 {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private MammaScreeningRonde screeningRonde;

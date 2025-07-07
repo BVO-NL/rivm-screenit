@@ -20,27 +20,27 @@
   -->
 <html xmlns:wicket="http://wicket.apache.org">
 <wicket:panel>
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h3>Bijzonderen Client Datums</h3>
-    </div>
-    <div class="modal-body">
-        <form wicket:id="form">
-            <div class="control-group">
-                <label class="control-label">GbaBericht ontvangen van gebeurtenis:</label>
-                <div class="controls" wicket:id="bericht">
-                    <label class="radio"> <input type="radio" name="reden_afmelden" id=""> Dag van vooraankondiging</label>
-                    <label class="radio"> <input type="radio" name="reden_afmelden" id=""> Dag van uitnodiging voor versturen</label>
-                    <label class="radio"> <input type="radio" name="reden_afmelden" id=""> Dag van uitnodiging na versturen</label>
-                    <label class="radio"> <input type="radio" name="reden_afmelden" id=""> Dag van herinnering voor de batch</label>
-                    <label class="radio"> <input type="radio" name="reden_afmelden" id=""> Dag van herinnering na de batch</label>
-                </div>
-            </div>
-        </form>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" wicket:id="opslaan">Opslaan</button>
-        <button class="btn btn-primary" data-dismiss="modal">Sluiten</button>
-    </div>
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		<h3>Bijzonderen Client Datums</h3>
+	</div>
+	<div class="modal-body">
+		<form wicket:id="form">
+			<div class="control-group">
+				<label class="control-label">GbaBericht ontvangen van gebeurtenis:</label>
+				<div class="controls" wicket:id="bericht">
+					<label class="radio"> <input type="radio" name="reden_afmelden" id=""> Dag van vooraankondiging</label>
+					<label class="radio"> <input type="radio" name="reden_afmelden" id=""> Dag van uitnodiging voor versturen</label>
+					<label class="radio"> <input type="radio" name="reden_afmelden" id=""> Dag van uitnodiging na versturen</label>
+					<label class="radio"> <input type="radio" name="reden_afmelden" id=""> Dag van herinnering voor de batch</label>
+					<label class="radio"> <input type="radio" name="reden_afmelden" id=""> Dag van herinnering na de batch</label>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal">Afbreken</button>
+		<button class="btn btn-primary" wicket:id="opslaan">Opslaan</button>
+	</div>
 </wicket:panel>
 </html>

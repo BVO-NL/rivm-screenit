@@ -33,8 +33,6 @@ import lombok.NoArgsConstructor;
 import nl.rivm.screenit.model.Brief_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.InpakbareUitnodiging_;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.Uitnodiging_;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonBrief_;
@@ -101,7 +99,7 @@ public class ColonUitnodigingSpecification
 			var briefScreeningRonde = subqueryRoot.get(ColonBrief_.screeningRonde);
 			var uitnodigingScreeningRonde = r.get(ColonUitnodiging_.screeningRonde);
 
-			subquery.select(subqueryRoot.get(TablePerClassHibernateObject_.id))
+			subquery.select(subqueryRoot.get(AbstractHibernateObject_.id))
 				.where(cb.and(cb.equal(briefScreeningRonde, uitnodigingScreeningRonde), subqueryRoot.get(Brief_.briefType).in(briefTypes)));
 
 			return cb.not(cb.exists(subquery));
@@ -121,7 +119,7 @@ public class ColonUitnodigingSpecification
 			var ronde = join(r, ColonUitnodiging_.screeningRonde);
 			var dossier = join(ronde, ColonScreeningRonde_.dossier);
 			var clientJoin = join(dossier, ColonDossier_.client);
-			return cb.equal(clientJoin.get(SingleTableHibernateObject_.id), client.getId());
+			return cb.equal(clientJoin.get(AbstractHibernateObject_.id), client.getId());
 		};
 	}
 

@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.mamma.verslag.followup;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +33,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.model.verslag.DSValueSet;
 import nl.rivm.screenit.model.verslag.DSValueSetValue;
@@ -44,19 +46,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "mamma")
+@Getter
+@Setter
 public class MammaFollowUpFollowupPa
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private MammaFollowUpVerslagContent verslagContent;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "followupPa", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "Monster/materiaal", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.320632", isReference = true)
+	@VraagElement(conceptId = "320632", displayName = "Monster/materiaal", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act/hl7:specimen"
+	})
 	private MammaFollowUpMonstermateriaal monstermateriaal;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -67,7 +70,9 @@ public class MammaFollowUpFollowupPa
 		@DSValueSetValue(code = "44085002", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "68453008", codeSystem = "2.16.840.1.113883.6.96")
 	})
-	@VraagElement(displayName = "C-classificatie punctie", extraTekst = "Diagnose na beoordeling cytologische punctie", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.300015", isVerplicht = true)
+	@VraagElement(conceptId = "300015", displayName = "C-classificatie punctie", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.596']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue cclassificatiePunctie;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -77,7 +82,9 @@ public class MammaFollowUpFollowupPa
 		@DSValueSetValue(code = "416053008", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "441117001", codeSystem = "2.16.840.1.113883.6.96")
 	})
-	@VraagElement(displayName = "Oestrogeen receptor status", extraTekst = "Oestrogeen receptor status", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.300020")
+	@VraagElement(conceptId = "300020", displayName = "Oestrogeen receptor status", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.593']]]/hl7:observation/hl7:value|@code"
+	})
 	private DSValue oestrogeenReceptorStatus;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -87,7 +94,9 @@ public class MammaFollowUpFollowupPa
 		@DSValueSetValue(code = "416561008", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "441118006", codeSystem = "2.16.840.1.113883.6.96")
 	})
-	@VraagElement(displayName = "Progesteron receptor status", extraTekst = "Progesteron receptor status", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.300030")
+	@VraagElement(conceptId = "300030", displayName = "Progesteron receptor status", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.594']]]/hl7:observation/hl7:value|@code"
+	})
 	private DSValue progesteronReceptorStatus;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -98,7 +107,9 @@ public class MammaFollowUpFollowupPa
 		@DSValueSetValue(code = "427685000", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "OHT-8", codeSystem = "2.16.840.1.113883.2.4.3.36.77.0.2.5.1")
 	})
-	@VraagElement(displayName = "HER2 status", extraTekst = "HER2 (human epidermal growth factor receptor 2) status", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.300040")
+	@VraagElement(conceptId = "300040", displayName = "HER2 status", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.595']]]/hl7:observation/hl7:value|@code"
+	})
 	private DSValue her2Status;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -113,7 +124,9 @@ public class MammaFollowUpFollowupPa
 		@DSValueSetValue(code = "49611000146109", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "86049000", codeSystem = "2.16.840.1.113883.6.96")
 	})
-	@VraagElement(displayName = "B-classificatie op mammabiopt", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.300050", isVerplicht = true)
+	@VraagElement(conceptId = "300050", displayName = "B-classificatie op mammabiopt", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.596']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue bclassificatieOpMammabiopt;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -123,11 +136,15 @@ public class MammaFollowUpFollowupPa
 		@DSValueSetValue(code = "369792005", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "384668003", codeSystem = "2.16.840.1.113883.6.96")
 	})
-	@VraagElement(displayName = "Maligniteitsgraad", extraTekst = "Maligniteitsgraad", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.300060")
+	@VraagElement(conceptId = "300060", displayName = "Maligniteitsgraad", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.597']]]/hl7:observation/hl7:value|@code"
+	})
 	private DSValue maligniteitsgraad;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "followupPa", cascade = CascadeType.ALL)
-	@VraagElement(displayName = "pTNM en gradering", extraTekst = "pTNM en gradering", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.300070", isReference = true)
+	@VraagElement(conceptId = "300070", displayName = "pTNM en gradering", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.598']]]/hl7:observation"
+	})
 	private MammaFollowUpPtnmEnGradering ptnmEnGradering;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -157,7 +174,9 @@ public class MammaFollowUpFollowupPa
 		@DSValueSetValue(code = "UNK", codeSystem = "2.16.840.1.113883.5.1008"),
 		@DSValueSetValue(code = "OTH", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Type invasieve tumor (WHO) + overige", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.320637")
+	@VraagElement(conceptId = "320637", displayName = "Type invasieve tumor (WHO) + overige", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.77.0.2.10.5']]]/hl7:observation/hl7:value|@code"
+	})
 	private DSValue typeInvasieveTumorwhoOverige;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -167,7 +186,9 @@ public class MammaFollowUpFollowupPa
 		@DSValueSetValue(code = "190061000146105", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "384741006", codeSystem = "2.16.840.1.113883.6.96")
 	})
-	@VraagElement(displayName = "Gradering DCIS", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.320636")
+	@VraagElement(conceptId = "320636", displayName = "Gradering DCIS", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.77.0.2.10.4']]]/hl7:observation/hl7:value|@code"
+	})
 	private DSValue graderingDcis;
 
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -183,7 +204,9 @@ public class MammaFollowUpFollowupPa
 		@DSValueSetValue(code = "1156873009*16566002*282292002", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "OTH", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Type niet eenduidig benigne laesie(s)", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.320635")
+	@VraagElement(conceptId = "320635", displayName = "Type niet eenduidig benigne laesie(s)", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.77.0.2.10.3']]]/hl7:observation/hl7:value|@code"
+	})
 	private List<DSValue> typeNietEenduidigBenigneLaesies = new ArrayList<>();
 
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -204,7 +227,9 @@ public class MammaFollowUpFollowupPa
 		@DSValueSetValue(code = "112674009", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "OTH", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Type eenduidig benigne laesie(s)", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.320634")
+	@VraagElement(conceptId = "320634", displayName = "Type eenduidig benigne laesie(s)", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.77.0.2.10.2']]]/hl7:observation/hl7:value|@code"
+	})
 	private List<DSValue> typeEenduidigBenigneLaesies = new ArrayList<>();
 
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -219,147 +244,9 @@ public class MammaFollowUpFollowupPa
 		@DSValueSetValue(code = "703546002", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "OTH", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Type CIS", extraTekst = "", code = "2.16.840.1.113883.2.4.3.36.77.0.2.2.320633")
+	@VraagElement(conceptId = "320633", displayName = "Type CIS", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.216']]]/hl7:section/hl7:entry[hl7:act[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.592']]]/hl7:act/hl7:entryRelationship[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.77.0.2.10.1']]]/hl7:observation/hl7:value|@code"
+	})
 	private List<DSValue> typeCis = new ArrayList<>();
-
-	public MammaFollowUpVerslagContent getVerslagContent()
-	{
-		return verslagContent;
-	}
-
-	public void setVerslagContent(MammaFollowUpVerslagContent verslagContent)
-	{
-		this.verslagContent = verslagContent;
-	}
-
-	public MammaFollowUpMonstermateriaal getMonstermateriaal()
-	{
-		return monstermateriaal;
-	}
-
-	public void setMonstermateriaal(MammaFollowUpMonstermateriaal monstermateriaal)
-	{
-		this.monstermateriaal = monstermateriaal;
-	}
-
-	public DSValue getCclassificatiePunctie()
-	{
-		return cclassificatiePunctie;
-	}
-
-	public void setCclassificatiePunctie(DSValue cclassificatiePunctie)
-	{
-		this.cclassificatiePunctie = cclassificatiePunctie;
-	}
-
-	public DSValue getOestrogeenReceptorStatus()
-	{
-		return oestrogeenReceptorStatus;
-	}
-
-	public void setOestrogeenReceptorStatus(DSValue oestrogeenReceptorStatus)
-	{
-		this.oestrogeenReceptorStatus = oestrogeenReceptorStatus;
-	}
-
-	public DSValue getProgesteronReceptorStatus()
-	{
-		return progesteronReceptorStatus;
-	}
-
-	public void setProgesteronReceptorStatus(DSValue progesteronReceptorStatus)
-	{
-		this.progesteronReceptorStatus = progesteronReceptorStatus;
-	}
-
-	public DSValue getHer2Status()
-	{
-		return her2Status;
-	}
-
-	public void setHer2Status(DSValue her2Status)
-	{
-		this.her2Status = her2Status;
-	}
-
-	public DSValue getBclassificatieOpMammabiopt()
-	{
-		return bclassificatieOpMammabiopt;
-	}
-
-	public void setBclassificatieOpMammabiopt(DSValue bclassificatieOpMammabiopt)
-	{
-		this.bclassificatieOpMammabiopt = bclassificatieOpMammabiopt;
-	}
-
-	public DSValue getMaligniteitsgraad()
-	{
-		return maligniteitsgraad;
-	}
-
-	public void setMaligniteitsgraad(DSValue maligniteitsgraad)
-	{
-		this.maligniteitsgraad = maligniteitsgraad;
-	}
-
-	public MammaFollowUpPtnmEnGradering getPtnmEnGradering()
-	{
-		return ptnmEnGradering;
-	}
-
-	public void setPtnmEnGradering(MammaFollowUpPtnmEnGradering ptnmEnGradering)
-	{
-		this.ptnmEnGradering = ptnmEnGradering;
-	}
-
-	public DSValue getTypeInvasieveTumorwhoOverige()
-	{
-		return typeInvasieveTumorwhoOverige;
-	}
-
-	public void setTypeInvasieveTumorwhoOverige(DSValue typeInvasieveTumorwhoOverige)
-	{
-		this.typeInvasieveTumorwhoOverige = typeInvasieveTumorwhoOverige;
-	}
-
-	public DSValue getGraderingDcis()
-	{
-		return graderingDcis;
-	}
-
-	public void setGraderingDcis(DSValue graderingDcis)
-	{
-		this.graderingDcis = graderingDcis;
-	}
-
-	public List<DSValue> getTypeNietEenduidigBenigneLaesies()
-	{
-		return typeNietEenduidigBenigneLaesies;
-	}
-
-	public void setTypeNietEenduidigBenigneLaesies(List<DSValue> typeNietEenduidigBenigneLaesies)
-	{
-		this.typeNietEenduidigBenigneLaesies = typeNietEenduidigBenigneLaesies;
-	}
-
-	public List<DSValue> getTypeEenduidigBenigneLaesies()
-	{
-		return typeEenduidigBenigneLaesies;
-	}
-
-	public void setTypeEenduidigBenigneLaesies(List<DSValue> typeEenduidigBenigneLaesies)
-	{
-		this.typeEenduidigBenigneLaesies = typeEenduidigBenigneLaesies;
-	}
-
-	public List<DSValue> getTypeCis()
-	{
-		return typeCis;
-	}
-
-	public void setTypeCis(List<DSValue> typeCis)
-	{
-		this.typeCis = typeCis;
-	}
 
 }

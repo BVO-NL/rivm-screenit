@@ -22,11 +22,13 @@ package nl.rivm.screenit.model.colon.dto;
  */
 
 import java.io.Serializable;
-import java.math.BigInteger;
+import java.time.temporal.Temporal;
 import java.util.Date;
 
 import lombok.Getter;
 import lombok.Setter;
+
+import nl.rivm.screenit.util.DateUtil;
 
 @Setter
 @Getter
@@ -42,18 +44,6 @@ public class VrijSlotZonderKamer implements Serializable
 
 	private Double afstand;
 
-	public void setIntakelocatieId(BigInteger intakelocatieId)
-	{
-		if (intakelocatieId != null)
-		{
-			this.intakelocatieId = intakelocatieId.longValue();
-		}
-		else
-		{
-			this.intakelocatieId = null;
-		}
-	}
-
 	public void setNaam(String naam)
 	{
 	}
@@ -61,5 +51,15 @@ public class VrijSlotZonderKamer implements Serializable
 	public String getNaam()
 	{
 		return null;
+	}
+
+	public void setStartTijd(Temporal startTijd)
+	{
+		this.startTijd = DateUtil.toUtilDate(startTijd);
+	}
+
+	public void setEindTijd(Temporal eindTijd)
+	{
+		this.eindTijd = DateUtil.toUtilDate(eindTijd);
 	}
 }

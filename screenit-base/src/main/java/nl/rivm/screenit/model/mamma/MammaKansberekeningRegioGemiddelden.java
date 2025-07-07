@@ -37,8 +37,6 @@ import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.mamma.enums.MammaRegioType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -47,7 +45,6 @@ import org.hibernate.envers.Audited;
 	name = "kansberekening_regio_gemiddelden",
 	uniqueConstraints = { @UniqueConstraint(columnNames = "regio") })
 @Audited
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 public class MammaKansberekeningRegioGemiddelden extends AbstractHibernateObject
 {
 	@Column(nullable = false)

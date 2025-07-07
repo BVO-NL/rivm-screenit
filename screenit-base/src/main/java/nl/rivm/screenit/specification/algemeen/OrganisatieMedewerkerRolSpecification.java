@@ -34,6 +34,8 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
 
+import org.springframework.data.jpa.domain.Specification;
+
 import com.google.common.collect.Range;
 
 import static nl.rivm.screenit.specification.DateSpecification.overlaptLocalDateToDate;
@@ -52,6 +54,15 @@ public class OrganisatieMedewerkerRolSpecification
 			return isActief(true)
 				.and(overlaptLocalDateToDate(vandaagRange, ri -> beginExpression, ri -> eindExpression))
 				.toPredicate(r, q, cb);
+		};
+	}
+
+	public static Specification<InstellingGebruikerRol> heeftEindDatumVoor(LocalDate peilDatum)
+	{
+		return (r, q, cb) ->
+		{
+			var eindDatumExpression = cb.coalesce(r.get(InstellingGebruikerRol_.eindDatum), DateUtil.END_OF_TIME);
+			return cb.lessThan(eindDatumExpression, DateUtil.toUtilDate(peilDatum));
 		};
 	}
 

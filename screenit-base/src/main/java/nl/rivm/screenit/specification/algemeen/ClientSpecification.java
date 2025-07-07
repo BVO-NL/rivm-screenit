@@ -30,13 +30,13 @@ import lombok.NoArgsConstructor;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.GbaPersoon_;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectClient_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -180,8 +180,8 @@ public class ClientSpecification
 			subquery.select(cb.literal(1L))
 				.where(cb.and(
 					cb.isTrue(subRoot.get(ProjectClient_.actief)),
-					subRoot.get(ProjectClient_.groep).in(exclusieGroepIds),
-					cb.equal(clientJoin.get(SingleTableHibernateObject_.id), r)
+					subRoot.get(ProjectClient_.groep).get(AbstractHibernateObject_.id).in(exclusieGroepIds),
+					cb.equal(clientJoin, r)
 				));
 
 			return cb.not(cb.exists(subquery));

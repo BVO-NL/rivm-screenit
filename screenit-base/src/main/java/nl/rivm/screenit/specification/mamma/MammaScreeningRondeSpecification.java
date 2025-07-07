@@ -31,7 +31,6 @@ import jakarta.persistence.criteria.Root;
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling_;
@@ -48,6 +47,7 @@ import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
 import nl.rivm.screenit.specification.ExtendedSpecification;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -66,7 +66,7 @@ public class MammaScreeningRondeSpecification
 		{
 			var dossierJoin = join(r, MammaScreeningRonde_.dossier);
 			var clientJoin = join(dossierJoin, MammaDossier_.client); 
-			return cb.equal(clientJoin.get(SingleTableHibernateObject_.id), client.getId());
+			return cb.equal(clientJoin.get(AbstractHibernateObject_.id), client.getId());
 		};
 	}
 

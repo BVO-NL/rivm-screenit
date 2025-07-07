@@ -27,7 +27,6 @@ import java.util.Collection;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.SingleTableHibernateObject_;
 import nl.rivm.screenit.model.mamma.MammaFotobespreking;
 import nl.rivm.screenit.model.mamma.MammaFotobespreking_;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
@@ -35,6 +34,7 @@ import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid_;
 import nl.rivm.screenit.model.mamma.enums.MammaFotobesprekingType;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -59,12 +59,12 @@ public class MammaFotobesprekingSpecification
 			var subqueryRoot = subquery.from(MammaScreeningsEenheid.class);
 			var screeningsEenheidIds = screeningsEenheden.stream().map(AbstractHibernateObject::getId).toList();
 
-			subquery.select(subqueryRoot.get(MammaScreeningsEenheid_.beoordelingsEenheid).get(SingleTableHibernateObject_.id)).distinct(true)
+			subquery.select(subqueryRoot.get(MammaScreeningsEenheid_.beoordelingsEenheid).get(AbstractHibernateObject_.id)).distinct(true)
 				.where(heeftIdIn(screeningsEenheidIds).toPredicate(subqueryRoot, q, cb));
 
 			return cb.or(
-				r.get(MammaFotobespreking_.screeningsEenheid).in(screeningsEenheidIds),
-				r.get(MammaFotobespreking_.beoordelingsEenheid).in(subquery));
+				r.get(MammaFotobespreking_.screeningsEenheid).get(AbstractHibernateObject_.id).in(screeningsEenheidIds),
+				r.get(MammaFotobespreking_.beoordelingsEenheid).get(AbstractHibernateObject_.id).in(subquery));
 		});
 	}
 

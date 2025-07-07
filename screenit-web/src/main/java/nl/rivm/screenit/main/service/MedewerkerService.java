@@ -48,11 +48,11 @@ public interface MedewerkerService
 
 	boolean saveOrUpdateGebruiker(Gebruiker medewerker, boolean isBestaande, boolean wordGeblokkeerd);
 
-	void inActiveerGebruiker(Gebruiker medewerker);
-
 	boolean resetWachtwoord(Gebruiker medewerker);
 
 	InstellingGebruiker getOrganisatieMedewerker(Instelling organisatie, Gebruiker medewerker);
+
+	List<InstellingGebruikerRol> getOrganisatieMedewerkersMetRol(Rol rol);
 
 	boolean zijnErInstellingGebruikersMetRol(Rol rol);
 

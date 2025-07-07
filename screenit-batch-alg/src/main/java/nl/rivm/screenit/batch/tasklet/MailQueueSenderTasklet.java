@@ -21,6 +21,8 @@ package nl.rivm.screenit.batch.tasklet;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.mail.MessagingException;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.service.MailSenderService;
@@ -28,7 +30,7 @@ import nl.rivm.screenit.model.Mail;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.repository.algemeen.MailRepository;
 import nl.rivm.screenit.service.LogService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5Session;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -37,8 +39,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.mail.MailException;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-
-import jakarta.mail.MessagingException;
 
 @Slf4j
 @Configuration
@@ -75,7 +75,7 @@ public class MailQueueSenderTasklet
 		try
 		{
 			wachtBijProblemen();
-			OpenHibernate5Session.withoutTransaction().run(() -> verwerkMailQueue());
+			OpenHibernateSession.withoutTransaction().run(() -> verwerkMailQueue());
 		}
 		catch (Exception e)
 		{
@@ -114,12 +114,12 @@ public class MailQueueSenderTasklet
 			if (queueSizeWarning)
 			{
 				LOG.warn("Queue size wordt te groot!");
-				logService.logGebeurtenis(LogGebeurtenis.MAIL_QUEUE_ERG_GROOT, null, String.format("Er staan meer dan %d berichten in de queue", QUEUE_WARNING_THRESHOLD));
+				logService.logGebeurtenis(LogGebeurtenis.MAIL_QUEUE_ERG_GROOT, String.format("Er staan meer dan %d berichten in de queue", QUEUE_WARNING_THRESHOLD));
 			}
 			else
 			{
 				LOG.info("Queue size wordt weer klein genoeg");
-				logService.logGebeurtenis(LogGebeurtenis.MAIL_QUEUE_NORMAAL, null, "Het aantal berichten in de queue is weer normaal.");
+				logService.logGebeurtenis(LogGebeurtenis.MAIL_QUEUE_NORMAAL, "Het aantal berichten in de queue is weer normaal.");
 			}
 		}
 	}
@@ -128,7 +128,7 @@ public class MailQueueSenderTasklet
 	{
 		if (verstuurproblemenCount > 0)
 		{
-			logService.logGebeurtenis(LogGebeurtenis.MAIL_QUEUE_VERBINDING_HERSTELD, null, "Mailberichten worden weer succesvol verstuurd.");
+			logService.logGebeurtenis(LogGebeurtenis.MAIL_QUEUE_VERBINDING_HERSTELD, "Mailberichten worden weer succesvol verstuurd.");
 		}
 		verstuurproblemen = false;
 		verstuurproblemenCount = 0;
@@ -139,7 +139,7 @@ public class MailQueueSenderTasklet
 		LOG.error("Runtime exceptie tijdens het versturen van mailberichten.", exception);
 		if (!verstuurproblemen)
 		{
-			logService.logGebeurtenis(LogGebeurtenis.MAIL_QUEUE_VERSTUREN_MISLUKT, null,
+			logService.logGebeurtenis(LogGebeurtenis.MAIL_QUEUE_VERSTUREN_MISLUKT,
 				"Er is een onbekende fout opgetreden tijdens het versturen van mailberichten, neem contact op met Topicus.");
 		}
 		verstuurproblemen = true;

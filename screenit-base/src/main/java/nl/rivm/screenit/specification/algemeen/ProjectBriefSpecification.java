@@ -25,8 +25,6 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 
-import jakarta.persistence.criteria.JoinType;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -42,6 +40,7 @@ import nl.rivm.screenit.model.project.Project_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.SpecificationUtil;
 import nl.rivm.screenit.util.DateUtil;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -84,7 +83,7 @@ public class ProjectBriefSpecification
 
 	public static ExtendedSpecification<ProjectBrief> heeftDefinitieId(Long actieId)
 	{
-		return (r, q, cb) -> cb.equal(r.get(ProjectBrief_.definitie), actieId);
+		return (r, q, cb) -> cb.equal(r.get(ProjectBrief_.definitie).get(AbstractHibernateObject_.id), actieId);
 	}
 
 	public static Specification<ProjectBrief> heeftGeenVerstuurdeBrief(ProjectBriefActie actie)

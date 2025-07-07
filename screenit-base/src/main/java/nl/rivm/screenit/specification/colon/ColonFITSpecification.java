@@ -33,7 +33,6 @@ import lombok.NoArgsConstructor;
 import nl.rivm.screenit.model.Brief_;
 import nl.rivm.screenit.model.ClientBrief_;
 import nl.rivm.screenit.model.Dossier_;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.Uitnodiging_;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonBrief_;
@@ -53,7 +52,6 @@ import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.algemeen.ClientSpecification;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -123,16 +121,16 @@ public class ColonFITSpecification
 
 			subquery.select(briefRoot);
 			subquery.where(
-				cb.equal(briefRoot.get(ColonBrief_.ifobtTest), r.get(AbstractHibernateObject_.id)),
+				cb.equal(briefRoot.get(ColonBrief_.ifobtTest), r),
 				cb.or(
 					cb.and(
 						cb.isFalse(briefRoot.get(ClientBrief_.vervangendeProjectBrief)),
-						briefRoot.get(Brief_.briefType).in(List.of(BriefType.COLON_UITSLAG_BRIEVEN)),
+						briefRoot.get(Brief_.briefType).in(BriefType.COLON_UITSLAG_BRIEVEN),
 						cb.isTrue(briefRoot.get(Brief_.gegenereerd))
 					),
 					cb.and(
 						cb.isTrue(briefRoot.get(ClientBrief_.vervangendeProjectBrief)),
-						projectBriefJoin.get(Brief_.briefType).in(List.of(BriefType.COLON_UITSLAG_BRIEVEN)),
+						projectBriefJoin.get(Brief_.briefType).in(BriefType.COLON_UITSLAG_BRIEVEN),
 						cb.isTrue(projectBriefJoin.get(Brief_.gegenereerd))
 					)
 				)
@@ -153,7 +151,7 @@ public class ColonFITSpecification
 			subquery
 				.select(uitnodigingRoot)
 				.where(cb.equal(join(uitnodigingRoot, ColonUitnodiging_.screeningRonde).get(ColonScreeningRonde_.dossier),
-						dossierJoin.get(TablePerClassHibernateObject_.id)),
+						dossierJoin),
 					cb.equal(truncate("day", uitnodigingRoot.get(Uitnodiging_.creatieDatum), cb),
 						truncate("day", r.get(IFOBTTest_.statusDatum), cb)));
 			return cb.not(cb.exists(subquery));
@@ -171,7 +169,7 @@ public class ColonFITSpecification
 			subquery
 				.select(uitnodigingZonderFitRoot)
 				.where(
-					cb.equal(uitnodigingZonderFitRoot.get(ColonUitnodiging_.screeningRonde).get(ColonScreeningRonde_.dossier), dossierJoin.get(TablePerClassHibernateObject_.id)),
+					cb.equal(uitnodigingZonderFitRoot.get(ColonUitnodiging_.screeningRonde).get(ColonScreeningRonde_.dossier), dossierJoin),
 					cb.equal(truncate("day", uitnodigingZonderFitRoot.get(Uitnodiging_.creatieDatum), cb),
 						truncate("day", r.get(IFOBTTest_.statusDatum), cb)),
 					cb.isNull(uitnodigingZonderFitRoot.get(ColonUitnodiging_.gekoppeldeTest)));

@@ -316,6 +316,7 @@ public enum BriefType
 			}
 		},
 
+	@Deprecated
 	COLON_OPEN_UITNODIGING(OrganisatieType.SCREENINGSORGANISATIE, true, "1_20_801 - Brief open uitnodiging", Bevolkingsonderzoek.COLON),
 
 	COLON_BEVESTIGING_INTAKE_AFSRPAAK_NA_OPEN_UITNODIGING(OrganisatieType.SCREENINGSORGANISATIE, true, "1_50_103 - Brief bevestiging afspraak na open uitnodiging",

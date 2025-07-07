@@ -28,6 +28,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -42,6 +43,8 @@ import lombok.NoArgsConstructor;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.util.CollectionUtils;
+import org.hibernate.query.criteria.HibernateCriteriaBuilder;
+import org.hibernate.query.criteria.JpaExpression;
 import org.springframework.data.jpa.domain.Specification;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -115,6 +118,16 @@ public class SpecificationUtil
 	public static Predicate skipWhenBlankPredicate(String keyword, Predicate predicate)
 	{
 		return StringUtils.isBlank(keyword) ? null : predicate;
+	}
+
+	public static <T> Predicate equalsOrFalseIfParamNull(Path<T> path, T object, CriteriaBuilder cb)
+	{
+		return object == null ? cb.disjunction() : cb.equal(path, object);
+	}
+
+	public static <T> Predicate notEqualsOrFalseIfParamNull(Path<T> path, T object, CriteriaBuilder cb)
+	{
+		return object == null ? cb.disjunction() : cb.notEqual(path, object);
 	}
 
 	public static <X, Y, Z> Join<X, Y> join(From<Z, X> from, ListAttribute<? super X, Y> attribute)
@@ -207,5 +220,10 @@ public class SpecificationUtil
 				return cb.isNull(r.get(attribuut));
 			}
 		};
+	}
+
+	public static <F, T> JpaExpression<T> cast(Expression<F> expression, Class<T> castNaarType, CriteriaBuilder cb)
+	{
+		return ((HibernateCriteriaBuilder) cb).cast((JpaExpression<F>) expression, castNaarType);
 	}
 }

@@ -33,18 +33,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
+
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "algemeen")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Audited
 @Getter
 @Setter
 @NoArgsConstructor
-public class ClientContactActie extends SingleTableHibernateObject
+public class ClientContactActie extends AbstractHibernateObject
 {
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private ClientContact contact;

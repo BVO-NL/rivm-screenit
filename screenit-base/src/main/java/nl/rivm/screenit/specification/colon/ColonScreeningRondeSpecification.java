@@ -35,7 +35,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.ScreeningRonde_;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.colon.ColonAfmelding;
 import nl.rivm.screenit.model.colon.ColonBrief;
@@ -88,12 +87,12 @@ public class ColonScreeningRondeSpecification
 			var conclusieJoin = join(afspraakJoin, ColonIntakeAfspraak_.conclusie, JoinType.LEFT);
 			var afmeldingJoin = join(subRoot, ColonScreeningRonde_.laatsteAfmelding, JoinType.LEFT);
 
-			subquery.select((subRoot.get(TablePerClassHibernateObject_.id)))
+			subquery.select(subRoot.get(AbstractHibernateObject_.id))
 				.where(
-					isEersteOngunstigeUitslagUitLaatsteRonde(testenJoin.get(IFOBTTest_.statusDatum), subRoot.get(TablePerClassHibernateObject_.id), peilDatum)
+					isEersteOngunstigeUitslagUitLaatsteRonde(testenJoin.get(IFOBTTest_.statusDatum), subRoot.get(AbstractHibernateObject_.id), peilDatum)
 						.and(heefGeenVervolg(afspraakJoin, conclusieJoin, afmeldingJoin)).toPredicate(r, q, cb)
 				);
-			return cb.not(r.in(subquery));
+			return cb.not(r.get(AbstractHibernateObject_.id).in(subquery));
 		};
 	}
 
@@ -105,10 +104,10 @@ public class ColonScreeningRondeSpecification
 			var subRoot = subquery.from(ColonScreeningRonde.class);
 			var testenJoin = join(subRoot, ColonScreeningRonde_.ifobtTesten);
 
-			subquery.select(subRoot.get(TablePerClassHibernateObject_.id))
-				.where(isEersteOngunstigeUitslagUitLaatsteRonde(testenJoin.get(IFOBTTest_.statusDatum), subRoot.get(TablePerClassHibernateObject_.id), peilDatum).toPredicate(r, q,
+			subquery.select(subRoot.get(AbstractHibernateObject_.id))
+				.where(isEersteOngunstigeUitslagUitLaatsteRonde(testenJoin.get(IFOBTTest_.statusDatum), subRoot.get(AbstractHibernateObject_.id), peilDatum).toPredicate(r, q,
 					cb));
-			return cb.not(r.in(subquery));
+			return cb.not(r.get(AbstractHibernateObject_.id).in(subquery));
 		};
 	}
 
@@ -125,8 +124,8 @@ public class ColonScreeningRondeSpecification
 			subquery.select(cb.literal(1));
 			subquery.where(cb.and(
 				heeftOngunstigeReguliereOfStudieUitslag().with(root -> testenJoin).toPredicate(r, q, cb),
-				cb.equal(subRoot.get(ColonDossier_.laatsteScreeningRonde), screeningRondeId)));
-			subquery.groupBy(laatsteScreeningRondeJoin.get(TablePerClassHibernateObject_.id));
+				cb.equal(subRoot.get(ColonDossier_.laatsteScreeningRonde).get(AbstractHibernateObject_.id), screeningRondeId)));
+			subquery.groupBy(laatsteScreeningRondeJoin.get(AbstractHibernateObject_.id));
 			subquery.having(cb.equal(cb.least(testenJoin.get(IFOBTTest_.statusDatum)), fitStatusDatum));
 			return cb.and(cb.exists(subquery), cb.lessThanOrEqualTo(fitStatusDatum, DateUtil.toUtilDate(maxLengteRondeDatum)));
 		};
@@ -142,7 +141,7 @@ public class ColonScreeningRondeSpecification
 
 			subquery.select(cb.literal(1L));
 			subquery.where(cb.and(
-				cb.equal(subqueryRoot, r.get(TablePerClassHibernateObject_.id)),
+				cb.equal(subqueryRoot.get(AbstractHibernateObject_.id), r.get(AbstractHibernateObject_.id)),
 				BriefSpecification.heeftBriefTypeIn(briefTypes).toPredicate(subRoot, q, cb)
 			));
 
@@ -217,7 +216,7 @@ public class ColonScreeningRondeSpecification
 			var laatsteAfmeldingVanRondeJoin = join(rondeJoin, ColonScreeningRonde_.laatsteAfmelding, JoinType.LEFT);
 			var conclusieLaatsteAfspraakVanRondeJoin = join(laatsteAfspraakVanRondeJoin, ColonIntakeAfspraak_.conclusie, JoinType.LEFT);
 
-			subquery.select(join(subRoot, OpenUitnodiging_.ronde).get(TablePerClassHibernateObject_.id))
+			subquery.select(join(subRoot, OpenUitnodiging_.ronde).get(AbstractHibernateObject_.id))
 				.where(
 					heeftCreatieDatumVoorOfOp(peilmoment).with(subroot -> rondeJoin)
 						.and(ColonIntakeAfspraakSpecification.heeftStatus(ColonAfspraakStatus.GEPLAND)
@@ -229,7 +228,7 @@ public class ColonScreeningRondeSpecification
 						).toPredicate(subRoot, q, cb)
 				);
 
-			return cb.not(r.in(subquery));
+			return cb.not(r.get(AbstractHibernateObject_.id).in(subquery));
 		};
 	}
 

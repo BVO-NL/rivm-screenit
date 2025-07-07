@@ -30,16 +30,18 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.project.Project;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
+@Getter
+@Setter
 @Entity
 @Table(schema = "algemeen", uniqueConstraints = @UniqueConstraint(columnNames = { "project", "key" }))
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Audited
 public class ProjectParameter extends AbstractHibernateObject
 {
@@ -52,34 +54,4 @@ public class ProjectParameter extends AbstractHibernateObject
 
 	@Column
 	private String value;
-
-	public Project getProject()
-	{
-		return project;
-	}
-
-	public void setProject(Project project)
-	{
-		this.project = project;
-	}
-
-	public ProjectParameterKey getKey()
-	{
-		return key;
-	}
-
-	public void setKey(ProjectParameterKey key)
-	{
-		this.key = key;
-	}
-
-	public String getValue()
-	{
-		return value;
-	}
-
-	public void setValue(String value)
-	{
-		this.value = value;
-	}
 }

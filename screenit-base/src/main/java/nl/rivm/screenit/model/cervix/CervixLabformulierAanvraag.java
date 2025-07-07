@@ -33,7 +33,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -42,13 +41,10 @@ import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.cervix.enums.CervixLabformulierAanvraagStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
-@Table(schema = "cervix", name = "labformulier_aanvraag", uniqueConstraints = { @UniqueConstraint(columnNames = "brief"), @UniqueConstraint(columnNames = "voorblad_brief") })
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
+@Table(schema = "cervix", name = "labformulier_aanvraag")
 @Audited
 @Getter
 @Setter

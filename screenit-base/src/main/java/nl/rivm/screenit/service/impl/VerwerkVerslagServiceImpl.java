@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.service.impl;
 
 /*-
@@ -22,7 +21,10 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.util.Arrays;
 import java.util.Date;
+
+import jakarta.annotation.PostConstruct;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ScreeningRonde;
@@ -46,8 +48,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.annotation.PostConstruct;
-
 @Service
 @Transactional(propagation = Propagation.SUPPORTS)
 public class VerwerkVerslagServiceImpl implements VerwerkVerslagService
@@ -70,24 +70,15 @@ public class VerwerkVerslagServiceImpl implements VerwerkVerslagService
 	{
 		if (StringUtils.isNotBlank(versionMapping))
 		{
-			String[] splittedVersionMapping = versionMapping.trim().split(";");
-			for (String versionMap : splittedVersionMapping)
+			var splittedVersionMapping = versionMapping.trim().split(";");
+			for (var versionMap : splittedVersionMapping)
 			{
-				String[] splittedVersionMap = versionMap.split("\\|");
+				var splittedVersionMap = versionMap.split("\\|");
 
-				VerslagGeneratie generatie = VerslagGeneratie.valueOf(splittedVersionMap[0]);
-				String[] projectVersions = splittedVersionMap[1].split(",");
-				if (projectVersions.length == 0)
-				{
-					VerslagProjectVersionMapping.get().addProjectVersion("", generatie);
-				}
-				else
-				{
-					for (String projectVersion : projectVersions)
-					{
-						VerslagProjectVersionMapping.get().addProjectVersion(projectVersion, generatie, VerslagType.MDL, VerslagType.PA_LAB, VerslagType.CERVIX_CYTOLOGIE);
-					}
-				}
+				var generatie = VerslagGeneratie.valueOf(splittedVersionMap[0]);
+				var projectVersions = splittedVersionMap[1].split(",");
+				Arrays.stream(projectVersions).forEach(projectVersion -> VerslagProjectVersionMapping.get()
+					.addProjectVersion(projectVersion, generatie, VerslagType.MDL, VerslagType.PA_LAB, VerslagType.CERVIX_CYTOLOGIE));
 			}
 		}
 	}
@@ -150,12 +141,6 @@ public class VerwerkVerslagServiceImpl implements VerwerkVerslagService
 			return mammaVerwerkVerslagService.getValideScreeningsRonde(client, onderzoeksdatum);
 		}
 		return null;
-	}
-
-	@Override
-	public void ontkoppelOfVerwijderComplicaties(MdlVerslag mdlVerslag)
-	{
-		colonVerwerkVerslagService.ontkoppelOfVerwijderComplicaties(mdlVerslag);
 	}
 
 }

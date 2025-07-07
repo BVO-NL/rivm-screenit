@@ -119,9 +119,9 @@ public class TechnischeParametersPanel extends BaseTechnischBeheerParametersPane
 		Form<Parameterisatie> form = new Form<>("form");
 		form.add(ComponentHelper.newDatePicker("startdatumBmhk", magAanpassen()).setRequired(true));
 		form.add(ComponentHelper.newDatePicker("cervixStartBmhk2023", magAanpassen()).setRequired(true));
+		form.add(ComponentHelper.newDatePicker("colonStartDk2026", magAanpassen()).setRequired(true));
 		form.add(new TextField<>("internalZorgmailBestandUrl", String.class).setRequired(true));
 		form.add(new TextField<>("internalWsbSchematronVersionpathmapping", String.class).setRequired(true));
-		form.add(ComponentHelper.newDatePicker("internalColonComplicatieVerwerkingStop", magAanpassen()).setRequired(true));
 		int maxKiloBytesZip = 129000;
 		form.add(new TextField<>("internalMaxGrootteZip", Integer.class).setRequired(true).add(RangeValidator.range(1, maxKiloBytesZip)));
 		form.add(new TextField<>("internalMammaUploadlimietUploadportaal", Integer.class).setRequired(true).add(RangeValidator.minimum(1)));

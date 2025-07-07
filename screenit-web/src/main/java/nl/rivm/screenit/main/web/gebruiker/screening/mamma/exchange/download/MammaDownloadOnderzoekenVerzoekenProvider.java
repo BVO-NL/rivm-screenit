@@ -48,13 +48,11 @@ public class MammaDownloadOnderzoekenVerzoekenProvider extends SortableDataProvi
 		setSort("aangemaaktOp", SortOrder.DESCENDING);
 	}
 
-	@Override
 	public Iterator<MammaDownloadOnderzoekenVerzoek> iterator(long first, long count)
 	{
 		return downloadOnderzoekenVerzoekenDataProviderService.findPage(first, count, ModelUtil.nullSafeGet(filter), getSort()).iterator();
 	}
 
-	@Override
 	public long size()
 	{
 		return downloadOnderzoekenVerzoekenDataProviderService.size(ModelUtil.nullSafeGet(filter));
@@ -69,6 +67,7 @@ public class MammaDownloadOnderzoekenVerzoekenProvider extends SortableDataProvi
 	@Override
 	public void detach()
 	{
+		super.detach();
 		ModelUtil.nullSafeDetach(filter);
 	}
 }

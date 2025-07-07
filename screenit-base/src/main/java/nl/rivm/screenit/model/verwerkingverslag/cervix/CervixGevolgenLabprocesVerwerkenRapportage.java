@@ -35,20 +35,14 @@ import jakarta.persistence.TemporalType;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(schema = "cervix", name = "gevolgen_labproces_verwerken_rapportage")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 public class CervixGevolgenLabprocesVerwerkenRapportage extends AbstractHibernateObject
 {
 	@OneToMany(mappedBy = "rapportage", cascade = CascadeType.ALL)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<CervixGevolgenLabprocesVerwerkenRapportageBriefType> briefTypen = new ArrayList<>();
 
 	@OneToMany(mappedBy = "rapportage", cascade = CascadeType.ALL)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<CervixGevolgenLabprocesVerwerkenRapportageHuisartsberichtType> huisartsberichtTypen = new ArrayList<>();
 
 	@Temporal(TemporalType.TIMESTAMP)

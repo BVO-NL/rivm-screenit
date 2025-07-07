@@ -42,8 +42,6 @@ import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.ScannedFormulier_;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.ScreeningRonde_;
-import nl.rivm.screenit.model.TablePerClassHibernateObject_;
-import nl.rivm.screenit.model.cervix.CervixBrief_;
 import nl.rivm.screenit.model.cervix.CervixDossier_;
 import nl.rivm.screenit.model.cervix.CervixLabformulier_;
 import nl.rivm.screenit.model.cervix.CervixMonster;
@@ -58,6 +56,7 @@ import nl.rivm.screenit.model.cervix.enums.CervixMonsterType;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.SpecificationUtil;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -110,16 +109,12 @@ public class CervixScreeningRondeSpecification
 		return ((r, cq, cb) ->
 		{
 			var uitnodigingJoin = r.join(CervixScreeningRonde_.uitnodigingen);
-			var uitnodiging = uitnodigingJoin.on(
-				cb.equal(uitnodigingJoin.get(CervixUitnodiging_.screeningRonde), r));
-
-			var briefJoin = uitnodiging.join(CervixUitnodiging_.brief);
-			var brief = briefJoin.on(cb.equal(briefJoin.get(CervixBrief_.uitnodiging), uitnodiging.get(CervixUitnodiging_.brief)));
+			var briefJoin = uitnodigingJoin.join(CervixUitnodiging_.brief);
 
 			var juisteRonde = cb.equal(r, ronde);
-			var monsterTypeZAS = cb.equal(uitnodiging.get(CervixUitnodiging_.monsterType), CervixMonsterType.ZAS);
-			var zasAangevraagdDoorClient = cb.equal(uitnodiging.get(CervixUitnodiging_.zasAangevraagdDoorClient), aangevraagdDoorClient);
-			var filterOpBriefType = cb.not(brief.get(Brief_.briefType).in(BriefType.getCervixZasUitnodigingNietDirectHerzendbaarBrieven()));
+			var monsterTypeZAS = cb.equal(uitnodigingJoin.get(CervixUitnodiging_.monsterType), CervixMonsterType.ZAS);
+			var zasAangevraagdDoorClient = cb.equal(uitnodigingJoin.get(CervixUitnodiging_.zasAangevraagdDoorClient), aangevraagdDoorClient);
+			var filterOpBriefType = cb.not(briefJoin.get(Brief_.briefType).in(BriefType.getCervixZasUitnodigingNietDirectHerzendbaarBrieven()));
 
 			return cb.and(juisteRonde, monsterTypeZAS, zasAangevraagdDoorClient, filterOpBriefType);
 		});
@@ -180,7 +175,7 @@ public class CervixScreeningRondeSpecification
 			.on(subRoot.get(CervixUitstrijkje_.labformulier).get(CervixLabformulier_.status)
 				.in(List.of(GECONTROLEERD, GECONTROLEERD_CYTOLOGIE, HUISARTS_ONBEKEND)));
 
-		subquery.select(screeningRondeJoin.get(TablePerClassHibernateObject_.id)).distinct(true)
+		subquery.select(screeningRondeJoin.get(AbstractHibernateObject_.id)).distinct(true)
 			.where(
 				heeftInVervolgonderzoekDatum().with(screeningRondeJoin())
 					.and(

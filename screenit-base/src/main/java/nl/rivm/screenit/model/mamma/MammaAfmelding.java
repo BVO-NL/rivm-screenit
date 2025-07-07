@@ -36,8 +36,6 @@ import jakarta.persistence.Table;
 import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.mamma.enums.MammaAfmeldingReden;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
@@ -74,7 +72,6 @@ public class MammaAfmelding extends Afmelding<MammaScreeningRonde, MammaDossier,
 	private MammaBrief heraanmeldBevestiging;
 
 	@OneToMany(mappedBy = "afmelding", fetch = FetchType.LAZY)
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 	private List<MammaBrief> brieven = new ArrayList<>();
 
 	@Enumerated(EnumType.STRING)

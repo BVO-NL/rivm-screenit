@@ -44,14 +44,11 @@ import nl.rivm.screenit.model.mamma.enums.MammaFollowUpBIRADSWaarde;
 import nl.rivm.screenit.model.mamma.enums.MammaUploadBeeldenVerzoekType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
 @Table(schema = "mamma", name = "upload_beelden_verzoek")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 public class MammaUploadBeeldenVerzoek extends AbstractHibernateObject
 {
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)

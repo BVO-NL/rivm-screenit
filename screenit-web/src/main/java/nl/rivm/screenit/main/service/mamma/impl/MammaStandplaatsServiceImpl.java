@@ -69,7 +69,7 @@ import nl.rivm.screenit.util.EntityAuditUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5SessionInThread;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -309,7 +309,7 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 		return afspraken;
 	}
 
-	private class GewijzigdeLocatieBrievenThread extends OpenHibernate5SessionInThread
+	private class GewijzigdeLocatieBrievenThread extends OpenHibernateSessionInThread
 	{
 
 		private final Long standplaatsId;

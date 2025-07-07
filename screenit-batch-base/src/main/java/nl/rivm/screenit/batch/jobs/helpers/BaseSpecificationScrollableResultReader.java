@@ -27,6 +27,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
+
 import nl.rivm.screenit.repository.impl.FluentJpaQueryImpl;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
@@ -35,17 +41,11 @@ import org.hibernate.ScrollableResults;
 import org.hibernate.internal.EmptyScrollableResults;
 import org.springframework.data.jpa.domain.Specification;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Selection;
-
 public abstract class BaseSpecificationScrollableResultReader<T extends HibernateObject> extends BaseIdScrollableResultReader
 {
 
 	@Override
-	protected ScrollableResults createScrollableResults()
+	protected ScrollableResults<Long> createScrollableResults()
 	{
 		var maxResults = getMaxResults();
 		if (maxResults == 0)
@@ -71,8 +71,8 @@ public abstract class BaseSpecificationScrollableResultReader<T extends Hibernat
 	@Override
 	protected Long getScrollableResult(ScrollableResults scrollableResults)
 	{
-		var scrollableResult = scrollableResults.get(0);
-		return scrollableResult instanceof Long ? (Long) scrollableResult : (Long) ((Object[]) scrollableResults.get()[0])[0];
+		var scrollableResult = scrollableResults.get();
+		return scrollableResult instanceof Long ? (Long) scrollableResult : (Long) ((Object[]) scrollableResult)[0];
 	}
 
 	protected abstract Specification<T> createSpecification();

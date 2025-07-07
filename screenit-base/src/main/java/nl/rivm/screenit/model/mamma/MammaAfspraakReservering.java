@@ -24,50 +24,25 @@ package nl.rivm.screenit.model.mamma;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakReserveringDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.ColumnResult;
-import jakarta.persistence.ConstructorResult;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.SqlResultSetMapping;
-import jakarta.persistence.Table;
-
 @Entity
 @Table(schema = "mamma", name = "afspraakReservering")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "mamma.cache")
 @Getter
 @Setter
-
-@SqlResultSetMapping(
-	name = "MammaAfspraakReserveringDtoMapping",
-	classes = {
-		@ConstructorResult(
-			columns = {
-				@ColumnResult(name = "capaciteitBlokId", type = Long.class),
-				@ColumnResult(name = "vanaf", type = LocalDateTime.class),
-				@ColumnResult(name = "opkomstkans", type = BigDecimal.class),
-				@ColumnResult(name = "doelgroep", type = String.class),
-				@ColumnResult(name = "eersteOnderzoek", type = boolean.class),
-				@ColumnResult(name = "tehuisId", type = Long.class)
-			},
-			targetClass = MammaAfspraakReserveringDto.class
-		)
-	}
-)
 public class MammaAfspraakReservering extends AbstractHibernateObject
 {
 	@OneToOne(optional = false, fetch = FetchType.LAZY)

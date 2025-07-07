@@ -73,6 +73,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import static nl.rivm.screenit.specification.SpecificationUtil.cast;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.ProjectBriefActieSpecification.heeftActieveClientInProjectVoorProjectBriefActie;
 import static nl.rivm.screenit.specification.algemeen.ProjectBriefActieSpecification.heeftClient;
@@ -278,7 +279,7 @@ public class BaseProjectServiceImpl implements BaseProjectService
 		{
 			var project = join(r, ProjectGroep_.project);
 			var parameters = join(project, Project_.parameters);
-			var value = parameters.get(ProjectParameter_.value).as(Integer.class);
+			var value = cast(parameters.get(ProjectParameter_.value), Integer.class, cb);
 			return order.isAscending() ? cb.asc(value) : cb.desc(value);
 		}
 		return null;

@@ -21,12 +21,13 @@ package nl.rivm.screenit.model.colon.verslag.pa;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.model.verslag.DSValueSet;
@@ -38,12 +39,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(schema = "colon")
+@Getter
+@Setter
 public class PaGegevensBijMaligniteit
 	extends AbstractHibernateObject
 {
-
-	@Serial
-	private final static long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -70,27 +70,10 @@ public class PaGegevensBijMaligniteit
 		@DSValueSetValue(code = "31396002", codeSystem = "2.16.840.1.113883.6.96"),
 		@DSValueSetValue(code = "OTH", codeSystem = "2.16.840.1.113883.5.1008")
 	})
-	@VraagElement(displayName = "Type tumor", extraTekst = "Vastgestelde laesie per poliep", code = "2.16.840.1.113883.2.4.3.36.77.2.11.188", isVerplicht = true)
+	@VraagElement(conceptId = "188", displayName = "Type tumor", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.211']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.551']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.413']]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.211']]]/hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.551']]]/hl7:organizer/hl7:component/hl7:organizer/hl7:component[hl7:observation[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.413']]]/hl7:observation/hl7:value|@code"
+	}, isVerplicht = true)
 	private DSValue typeTumor;
-
-	public PaPathologieProtocolColonbioptperPoliep getPathologieProtocolColonbioptperPoliep()
-	{
-		return pathologieProtocolColonbioptperPoliep;
-	}
-
-	public void setPathologieProtocolColonbioptperPoliep(PaPathologieProtocolColonbioptperPoliep pathologieProtocolColonbioptperPoliep)
-	{
-		this.pathologieProtocolColonbioptperPoliep = pathologieProtocolColonbioptperPoliep;
-	}
-
-	public DSValue getTypeTumor()
-	{
-		return typeTumor;
-	}
-
-	public void setTypeTumor(DSValue typeTumor)
-	{
-		this.typeTumor = typeTumor;
-	}
 
 }

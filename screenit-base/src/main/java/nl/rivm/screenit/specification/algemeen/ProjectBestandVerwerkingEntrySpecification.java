@@ -30,11 +30,14 @@ import nl.rivm.screenit.model.project.ProjectBestandVerwerkingEntry_;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import static nl.rivm.screenit.specification.SpecificationUtil.equalsOrFalseIfParamNull;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProjectBestandVerwerkingEntrySpecification
 {
 	public static Specification<ProjectBestandVerwerkingEntry> heeftVerwerking(ProjectBestandVerwerking verwerking)
 	{
-		return (r, q, cb) -> cb.equal(r.get(ProjectBestandVerwerkingEntry_.verwerking), verwerking);
+		return (r, q, cb) -> equalsOrFalseIfParamNull(r.get(ProjectBestandVerwerkingEntry_.verwerking), verwerking, cb);
 	}
+
 }

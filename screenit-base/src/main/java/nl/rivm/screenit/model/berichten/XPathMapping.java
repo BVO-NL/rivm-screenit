@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.berichten;
 
 /*-
@@ -22,9 +21,6 @@ package nl.rivm.screenit.model.berichten;
  * =========================LICENSE_END==================================
  */
 
-public class XPathMapping
+public record XPathMapping(String value, String extension)
 {
-	public String value = null;
-
-	public String extension = "";
 }

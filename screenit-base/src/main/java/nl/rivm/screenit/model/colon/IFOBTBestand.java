@@ -40,12 +40,8 @@ import lombok.Setter;
 import nl.rivm.screenit.model.colon.enums.IFOBTBestandStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(schema = "colon")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 @Setter
 @Getter
 public class IFOBTBestand extends AbstractHibernateObject
@@ -60,7 +56,6 @@ public class IFOBTBestand extends AbstractHibernateObject
 	private IFobtLaboratorium laboratorium;
 
 	@OneToMany(mappedBy = "bestand")
-	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "screenit.cache")
 	private List<IFOBTUitslag> uitslagen = new ArrayList<>();
 
 	private String instumentId;

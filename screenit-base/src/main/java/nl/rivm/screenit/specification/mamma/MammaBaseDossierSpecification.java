@@ -33,7 +33,6 @@ import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaDossier_;
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.specification.ExtendedSpecification;
-import nl.rivm.screenit.specification.StringLiteral;
 import nl.rivm.screenit.util.DateUtil;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -66,8 +65,7 @@ public class MammaBaseDossierSpecification
 
 	public static ExtendedSpecification<MammaDossier> heeftStatusNullOfActief()
 	{
-		return (r, q, cb) -> cb.equal(cb.coalesce(r.get(Dossier_.status), new StringLiteral(cb, DossierStatus.ACTIEF.name())),
-			DossierStatus.ACTIEF);
+		return (r, q, cb) -> cb.equal(cb.coalesce(r.get(Dossier_.status), DossierStatus.ACTIEF), DossierStatus.ACTIEF);
 	}
 
 	public static ExtendedSpecification<MammaDossier> heeftNooitMammografieGehad()

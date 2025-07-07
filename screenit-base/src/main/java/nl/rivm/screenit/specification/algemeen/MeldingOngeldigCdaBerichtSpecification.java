@@ -26,7 +26,6 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.berichten.cda.MeldingOngeldigCdaBericht;
 import nl.rivm.screenit.model.berichten.cda.MeldingOngeldigCdaBericht_;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht_;
@@ -38,7 +37,6 @@ import org.springframework.data.jpa.domain.Specification;
 import static nl.rivm.screenit.specification.SpecificationUtil.containsCaseInsensitive;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenEmpty;
-import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MeldingOngeldigCdaBerichtSpecification
@@ -63,8 +61,13 @@ public class MeldingOngeldigCdaBerichtSpecification
 		return skipWhenEmpty(melding, (r, q, cb) -> containsCaseInsensitive(cb, r.get(MeldingOngeldigCdaBericht_.melding), melding));
 	}
 
-	public static Specification<MeldingOngeldigCdaBericht> filterOpScreeningOrganisatie(ScreeningOrganisatie screeningOrganisatie)
+	public static Specification<MeldingOngeldigCdaBericht> heeftMelding(String melding)
 	{
-		return skipWhenNull(screeningOrganisatie, (r, q, cb) -> cb.equal(r.get(MeldingOngeldigCdaBericht_.screeningOrganisatie), screeningOrganisatie));
+		return (r, q, cb) -> cb.equal(r.get(MeldingOngeldigCdaBericht_.melding), melding);
+	}
+
+	public static Specification<MeldingOngeldigCdaBericht> filterOpTopdeskTicketContaining(String ticket)
+	{
+		return skipWhenEmpty(ticket, (r, q, cb) -> containsCaseInsensitive(cb, r.get(MeldingOngeldigCdaBericht_.topdeskTicket), ticket));
 	}
 }

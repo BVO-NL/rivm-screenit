@@ -30,7 +30,7 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernate5Session;
+import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +56,7 @@ public class FQDNProvider
 	@Scheduled(cron = "0 */5 * * * ?")
 	public void removeVerlopenSessies()
 	{
-		OpenHibernate5Session.withoutTransaction().run(() ->
+		OpenHibernateSession.withoutTransaction().run(() ->
 		{
 			LOG.debug("Start: " + JOB_OMSCHRIJVING);
 			String validFQDNstring = simplePreferenceService.getString(PreferenceKey.INTERNAL_CERVIX_LAB_FORMULIER_VALID_FQDNS.name());

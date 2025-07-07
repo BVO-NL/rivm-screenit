@@ -115,8 +115,7 @@ public class ClientSelectieMetCapaciteitPerGebiedItemCursor implements Iterator<
 
 		if (!cursorClosed)
 		{
-			var data = cursor.get();
-			var client = (Client) data[0];
+			var client = (Client) cursor.get();
 
 			var gemeente = client.getPersoon().getGbaAdres().getGbaGemeente();
 
