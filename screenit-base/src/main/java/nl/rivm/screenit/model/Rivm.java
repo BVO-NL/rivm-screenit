@@ -30,7 +30,7 @@ import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
-public class Rivm extends Instelling
+public class Rivm extends Organisatie
 {
 
 	@Serial

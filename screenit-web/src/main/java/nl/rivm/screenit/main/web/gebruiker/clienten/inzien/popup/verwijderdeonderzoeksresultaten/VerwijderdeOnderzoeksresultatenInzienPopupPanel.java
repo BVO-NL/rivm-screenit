@@ -114,7 +114,7 @@ public abstract class VerwijderdeOnderzoeksresultatenInzienPopupPanel extends Ge
 		upload = ModelUtil.sModel(getModelObject().getGetekendeBrief());
 		var magNogmaalsVersturen = upload != null;
 		var magDocumentVervangen = ScreenitSession.get().checkPermission(Recht.VERVANGEN_DOCUMENTEN, Actie.AANPASSEN);
-		var account = ScreenitSession.get().getLoggedInAccount();
+		var account = ScreenitSession.get().getIngelogdAccount();
 
 		if (magNogmaalsVersturen)
 		{
@@ -167,7 +167,8 @@ public abstract class VerwijderdeOnderzoeksresultatenInzienPopupPanel extends Ge
 			@Override
 			protected void vervangDocument(UploadDocument uploadDocument, AjaxRequestTarget target)
 			{
-				if (bezwaarService.ondertekendeOnderzoeksresultatenBriefVervangen(uploadDocument, getModelObject(), upload.getObject(), ScreenitSession.get().getLoggedInAccount()))
+				if (bezwaarService.ondertekendeOnderzoeksresultatenBriefVervangen(uploadDocument, getModelObject(), upload.getObject(),
+					ScreenitSession.get().getIngelogdAccount()))
 				{
 					info(getString("info.vervangendocument"));
 					close(target);

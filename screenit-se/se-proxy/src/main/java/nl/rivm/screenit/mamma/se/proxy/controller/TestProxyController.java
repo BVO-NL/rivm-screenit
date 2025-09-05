@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,41 +21,37 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.mamma.se.proxy.SeProxyApplication;
-import nl.rivm.screenit.mamma.se.proxy.services.ProxyService;
+import jakarta.servlet.http.HttpSession;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import nl.rivm.screenit.mamma.se.proxy.services.EnvironmentInfoService;
 import nl.rivm.screenit.mamma.se.proxy.services.SeRestSocketService;
 import nl.rivm.screenit.mamma.se.proxy.services.SeStatusService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.servlet.http.HttpSession;
-
 @RestController
 @RequestMapping("/api/test")
+@Slf4j
+@RequiredArgsConstructor
 public class TestProxyController
 {
-	@Autowired
-	private SeRestSocketService socketService;
+	private final SeRestSocketService socketService;
 
-	@Autowired
-	private SeStatusService statusService;
+	private final SeStatusService statusService;
 
-	private static final Logger LOG = LoggerFactory.getLogger(TestProxyController.class);
-
-	@Autowired
-	private ProxyService proxyService;
+	private final EnvironmentInfoService environmentInfoService;
 
 	@RequestMapping(value = "/offline", method = RequestMethod.POST)
 	public ResponseEntity<String> gaOffline(HttpSession httpSession)
 	{
-		if (!SeProxyApplication.getEnvironmentInfo().getEnvironment().equals("Test"))
+		if (!environmentInfoService.isTestEnvironment())
 		{
 			LOG.warn("Omgeving is niet Test en er is een request uitgevoerd om de SE offline te halen.");
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -69,7 +65,7 @@ public class TestProxyController
 	@RequestMapping(value = "/online", method = RequestMethod.POST)
 	public ResponseEntity<String> gaOnline(HttpSession httpSession)
 	{
-		if (!SeProxyApplication.getEnvironmentInfo().getEnvironment().equals("Test"))
+		if (!environmentInfoService.isTestEnvironment())
 		{
 			LOG.warn("Omgeving is niet Test en er is een request uitgevoerd om de SE online te zetten.");
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();

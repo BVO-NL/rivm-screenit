@@ -44,7 +44,7 @@ public abstract class MammaLogoutConfirmationDialog extends GenericPanel<Boolean
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				beWerklijstService.bevestig1eEn2eLezingen(ScreenitSession.get().getLoggedInInstellingGebruiker());
+				beWerklijstService.bevestig1eEn2eLezingen(ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				close(target, !heeftOnderzoekenInWerklijst);
 			}
 		};

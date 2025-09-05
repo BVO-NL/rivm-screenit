@@ -26,7 +26,7 @@ import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.MammaConclusieReviewFilterOptie;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -37,9 +37,9 @@ import org.apache.wicket.model.IModel;
 @Setter
 public class MammaConclusieReviewZoekObject implements IDetachable
 {
-	private IModel<InstellingGebruiker> radioloog;
+	private IModel<OrganisatieMedewerker> radioloog;
 
-	private IModel<InstellingGebruiker> ingelogdeGebruiker;
+	private IModel<OrganisatieMedewerker> ingelogdeOrganisatieMedewerker;
 
 	private MammaConclusieReviewFilterOptie filterOptie = MammaConclusieReviewFilterOptie.ALLES;
 
@@ -51,35 +51,35 @@ public class MammaConclusieReviewZoekObject implements IDetachable
 
 	private Date zoekenVanafEindconclusieDatum;
 
-	public InstellingGebruiker getRadioloog()
+	public OrganisatieMedewerker getRadioloog()
 	{
 		return ModelUtil.nullSafeGet(radioloog);
 	}
 
-	public void setRadioloog(InstellingGebruiker radioloog)
+	public void setRadioloog(OrganisatieMedewerker radioloog)
 	{
 		this.radioloog = ModelUtil.sModel(radioloog);
 	}
 
-	public InstellingGebruiker getIngelogdeGebruiker()
+	public OrganisatieMedewerker getIngelogdeOrganisatieMedewerker()
 	{
-		return ModelUtil.nullSafeGet(ingelogdeGebruiker);
+		return ModelUtil.nullSafeGet(ingelogdeOrganisatieMedewerker);
 	}
 
-	public void setIngelogdeGebruiker(InstellingGebruiker ingelogdeGebruiker)
+	public void setIngelogdeOrganisatieMedewerker(OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		this.ingelogdeGebruiker = ModelUtil.sModel(ingelogdeGebruiker);
+		this.ingelogdeOrganisatieMedewerker = ModelUtil.sModel(ingelogdeOrganisatieMedewerker);
 	}
 
 	public boolean getCoordinerendRadioloogKijktBijAndereRadioloog()
 	{
-		return !ingelogdeGebruiker.equals(radioloog);
+		return !ingelogdeOrganisatieMedewerker.equals(radioloog);
 	}
 
 	@Override
 	public void detach()
 	{
 		ModelUtil.nullSafeDetach(radioloog);
-		ModelUtil.nullSafeDetach(ingelogdeGebruiker);
+		ModelUtil.nullSafeDetach(ingelogdeOrganisatieMedewerker);
 	}
 }

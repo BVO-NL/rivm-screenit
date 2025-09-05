@@ -25,7 +25,7 @@ package nl.rivm.screenit.main.service;
 import java.util.Date;
 import java.util.List;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.batch.BatchServerStatus;
 import nl.rivm.screenit.model.batch.Trigger;
 import nl.rivm.screenit.model.enums.JobType;
@@ -39,9 +39,9 @@ public interface BatchService
 
 	List<Trigger> getScheduledTriggers() throws UncategorizedJmsException;
 
-	Date addTrigger(Trigger trigger, InstellingGebruiker instellingGebruiker);
+	Date addTrigger(Trigger trigger, OrganisatieMedewerker organisatieMedewerker);
 
-	Boolean removeTrigger(final String triggerNaam, InstellingGebruiker instellingGebruiker);
+	Boolean removeTrigger(final String triggerNaam, OrganisatieMedewerker organisatieMedewerker);
 
 	List<JobType> getBatchQueue();
 

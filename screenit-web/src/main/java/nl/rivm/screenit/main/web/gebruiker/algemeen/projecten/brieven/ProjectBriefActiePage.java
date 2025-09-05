@@ -83,7 +83,7 @@ import static nl.rivm.screenit.model.project.ProjectBriefActie_.TYPE;
 	actie = Actie.TOEVOEGEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_PROJECT_BRIEVEN, Recht.GEBRUIKER_BRIEFPROJECT_BRIEVEN },
+	recht = { Recht.MEDEWERKER_PROJECT_BRIEVEN, Recht.MEDEWERKER_BRIEFPROJECT_BRIEVEN },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.MAMMA })
 public class ProjectBriefActiePage extends ProjectBasePage
 {
@@ -201,11 +201,11 @@ public class ProjectBriefActiePage extends ProjectBasePage
 
 					if (ProjectType.BRIEFPROJECT.equals(object.getProject().getType()))
 					{
-						logService.logGebeurtenis(LogGebeurtenis.BRIEFPROJECT_BRIEF_ACTIE_GEWIJZIGD, ScreenitSession.get().getLoggedInAccount(), melding);
+						logService.logGebeurtenis(LogGebeurtenis.BRIEFPROJECT_BRIEF_ACTIE_GEWIJZIGD, ScreenitSession.get().getIngelogdAccount(), melding);
 					}
 					else
 					{
-						logService.logGebeurtenis(LogGebeurtenis.PROJECT_BRIEF_ACTIE_GEWIJZIGD, ScreenitSession.get().getLoggedInAccount(), melding);
+						logService.logGebeurtenis(LogGebeurtenis.PROJECT_BRIEF_ACTIE_GEWIJZIGD, ScreenitSession.get().getIngelogdAccount(), melding);
 					}
 				}
 				catch (IOException e)
@@ -271,12 +271,12 @@ public class ProjectBriefActiePage extends ProjectBasePage
 				if (projectBriefActie.getProject().getType().equals(ProjectType.BRIEFPROJECT))
 				{
 					String melding = typebrief + " geinactiveerd van Briefproject: " + project.getNaam();
-					logService.logGebeurtenis(LogGebeurtenis.BRIEFPROJECT_BRIEF_ACTIE_GEINACTIVEERD, ScreenitSession.get().getLoggedInAccount(), melding);
+					logService.logGebeurtenis(LogGebeurtenis.BRIEFPROJECT_BRIEF_ACTIE_GEINACTIVEERD, ScreenitSession.get().getIngelogdAccount(), melding);
 				}
 				else
 				{
 					String melding = typebrief + " geinactiveerd van Project: " + project.getNaam();
-					logService.logGebeurtenis(LogGebeurtenis.PROJECT_BRIEF_ACTIE_GEINACTIVEERD, ScreenitSession.get().getLoggedInAccount(), melding);
+					logService.logGebeurtenis(LogGebeurtenis.PROJECT_BRIEF_ACTIE_GEINACTIVEERD, ScreenitSession.get().getIngelogdAccount(), melding);
 				}
 
 				info("Projectbrief succesvol geinactiveerd!");

@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.nieuws.NieuwsItem;
 import nl.rivm.screenit.repository.algemeen.NieuwsRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -65,12 +65,12 @@ public class NieuwsServiceImpl implements NieuwsService
 	}
 
 	@Override
-	public List<Long> getNieuwsItemIdsGebruiker(Gebruiker gebruiker)
+	public List<Long> getNieuwsItemIdsMedewerker(Medewerker medewerker)
 	{
 		return nieuwsRepository.findAll(baseSpecification()
-			.and(isOngelezen(gebruiker))
-			.and(publicerenVanaf(dateSupplier.getDate())),
-			Sort.by(Sort.Order.desc("publicerenVanaf")))
+					.and(isOngelezen(medewerker))
+					.and(publicerenVanaf(dateSupplier.getDate())),
+				Sort.by(Sort.Order.desc("publicerenVanaf")))
 			.stream().map(AbstractHibernateObject::getId).collect(Collectors.toList());
 	}
 

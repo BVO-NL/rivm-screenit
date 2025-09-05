@@ -253,7 +253,7 @@ public class MammaDigitaalContactServiceImpl implements MammaDigitaalContactServ
 	}
 
 	@Override
-	public void herzendBevestigAfspraakMail(MammaDigitaalClientBericht clientMail, String ontvangendeEmailAdres, Account ingelogdeGebruiker)
+	public void herzendBevestigAfspraakMail(MammaDigitaalClientBericht clientMail, String ontvangendeEmailAdres, Account ingelogdeOrganisatieMedewerker)
 	{
 		var afspraak = clientMail.getScreeningRonde().getLaatsteUitnodiging().getLaatsteAfspraak();
 		var emailBericht = templateService.maakDigitaalBericht(DigitaalBerichtTemplateType.MAMMA_AFSPRAAK_BEVESTIGING, afspraak.getUitnodiging().getBrief().getClient());
@@ -264,7 +264,7 @@ public class MammaDigitaalContactServiceImpl implements MammaDigitaalContactServ
 
 		stuurMail(client, emailBericht.getSubject(), emailBericht.getBody(), emailBericht.getAttachments());
 		clientDigitaalBerichtService.saveOrUpdate(nieuweClientMail);
-		clientService.saveContactGegevens(client, ingelogdeGebruiker);
+		clientService.saveContactGegevens(client, ingelogdeOrganisatieMedewerker);
 	}
 
 	private void stuurMail(Client client, String mailSubject, String mailContent, List<MailAttachmentDto> mailAttachments)

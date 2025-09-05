@@ -32,7 +32,7 @@ import nl.rivm.screenit.main.service.mamma.MammaBeWerklijstService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.PollingAbstractAjaxTimerBehavior;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaScreeningBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dashboard.MammaRadioloogDashboardPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.popup.MammaLogoutConfirmationDialog;
@@ -42,7 +42,7 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.werklijst.MammaBeo
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.werklijst.MammaDiscrepantieWerklijstPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.werklijst.MammaVerslagenWerklijstPage;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.enums.Recht;
@@ -78,7 +78,7 @@ public abstract class AbstractMammaBePage extends MammaScreeningBasePage
 
 	protected AbstractMammaBePage()
 	{
-		heeftToegangTotOnderzoektypeFilter = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_BE_ONDERZOEKTYPE_FILTER, Actie.INZIEN);
+		heeftToegangTotOnderzoektypeFilter = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_BE_ONDERZOEKTYPE_FILTER, Actie.INZIEN);
 		PollingAbstractAjaxTimerBehavior timer = new PollingAbstractAjaxTimerBehavior(Duration.ofSeconds(5))
 		{
 			@Override
@@ -100,12 +100,12 @@ public abstract class AbstractMammaBePage extends MammaScreeningBasePage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.beoordeling.dashboard", MammaRadioloogDashboardPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.beoordeling.review", MammaReviewWerklijstPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.beoordeling.beoordelen", MammaBeoordelingenWerklijstPage.class)
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.beoordeling.dashboard", MammaRadioloogDashboardPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.beoordeling.review", MammaReviewWerklijstPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.beoordeling.beoordelen", MammaBeoordelingenWerklijstPage.class)
 		{
 			@Override
 			public Component getPostfix(String id)
@@ -114,7 +114,7 @@ public abstract class AbstractMammaBePage extends MammaScreeningBasePage
 			}
 		});
 
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.beoordeling.discrepantie", MammaDiscrepantieWerklijstPage.class)
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.beoordeling.discrepantie", MammaDiscrepantieWerklijstPage.class)
 		{
 			@Override
 			public Component getPostfix(String id)
@@ -122,7 +122,7 @@ public abstract class AbstractMammaBePage extends MammaScreeningBasePage
 				return getAantalPostfixLabel(id, Collections.singletonList(MammaBeoordelingStatus.DISCREPANTIE));
 			}
 		});
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.beoordeling.arbitrage", MammaArbitrageWerklijstPage.class)
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.beoordeling.arbitrage", MammaArbitrageWerklijstPage.class)
 		{
 			@Override
 			public Component getPostfix(String id)
@@ -130,7 +130,7 @@ public abstract class AbstractMammaBePage extends MammaScreeningBasePage
 				return getAantalPostfixLabel(id, Collections.singletonList(MammaBeoordelingStatus.ARBITRAGE));
 			}
 		});
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.beoordeling.verslagen", MammaVerslagenWerklijstPage.class)
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.beoordeling.verslagen", MammaVerslagenWerklijstPage.class)
 		{
 			@Override
 			public Component getPostfix(String id)
@@ -151,14 +151,14 @@ public abstract class AbstractMammaBePage extends MammaScreeningBasePage
 			{
 				MammaBeWerklijstZoekObject zoekObject = new MammaBeWerklijstZoekObject();
 				zoekObject.setBeoordelingStatussen(beoordelingStatussen);
-				zoekObject.setBeoordelingsEenheid((BeoordelingsEenheid) ScreenitSession.get().getInstelling());
+				zoekObject.setBeoordelingsEenheid((BeoordelingsEenheid) ScreenitSession.get().getOrganisatie());
 
 				if (!heeftToegangTotOnderzoektypeFilter)
 				{
 					zoekObject.setOnderzoekType(MammaOnderzoekType.MAMMOGRAFIE);
 				}
 
-				zoekObject.setInstellingGebruiker(ScreenitSession.get().getLoggedInInstellingGebruiker());
+				zoekObject.setOrganisatieMedewerker(getIngelogdeOrganisatieMedewerker());
 
 				var aantalOnderzoeken = beWerklijstService.countBeoordelingen(zoekObject);
 
@@ -199,18 +199,18 @@ public abstract class AbstractMammaBePage extends MammaScreeningBasePage
 	public boolean heeftOnderzoekenInWerklijst()
 	{
 		ScreenitSession screenitSession = ScreenitSession.get();
-		InstellingGebruiker instellingGebruiker = screenitSession.getLoggedInInstellingGebruiker();
-		BeoordelingsEenheid beoordelingsEenheid = (BeoordelingsEenheid) screenitSession.getInstelling();
+		OrganisatieMedewerker organisatieMedewerker = screenitSession.getIngelogdeOrganisatieMedewerker();
+		BeoordelingsEenheid beoordelingsEenheid = (BeoordelingsEenheid) screenitSession.getOrganisatie();
 
-		return beWerklijstService.heeftOnderzoekenInWerklijst(instellingGebruiker, beoordelingsEenheid);
+		return beWerklijstService.heeftOnderzoekenInWerklijst(organisatieMedewerker, beoordelingsEenheid);
 	}
 
 	public boolean heeftVerslagenTeBevestigen()
 	{
 		ScreenitSession screenitSession = ScreenitSession.get();
-		InstellingGebruiker instellingGebruiker = screenitSession.getLoggedInInstellingGebruiker();
+		OrganisatieMedewerker organisatieMedewerker = screenitSession.getIngelogdeOrganisatieMedewerker();
 
-		return beWerklijstService.is1eOf2eLezingenTeBevestigen(instellingGebruiker);
+		return beWerklijstService.is1eOf2eLezingenTeBevestigen(organisatieMedewerker);
 	}
 
 	private MammaLogoutConfirmationDialog maakMammaLogoutConfimationDialoog(boolean heeftOnderzoekenInWerklijst, boolean heeftVerslagenTeBevestigen)

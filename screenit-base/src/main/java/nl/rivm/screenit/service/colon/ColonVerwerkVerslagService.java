@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
@@ -51,5 +51,5 @@ public interface ColonVerwerkVerslagService
 
 	MdlVerslag maakMdlVerslagVoorAfspraak(ColonIntakeAfspraak afspraak);
 
-	void handmatigMdlVerslagOpslaan(MdlVerslag verslag, InstellingGebruiker ingelogdeGebruiker);
+	void handmatigMdlVerslagOpslaan(MdlVerslag verslag, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 }

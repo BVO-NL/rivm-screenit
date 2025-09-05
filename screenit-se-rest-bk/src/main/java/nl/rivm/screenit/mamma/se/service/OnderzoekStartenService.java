@@ -22,7 +22,7 @@ package nl.rivm.screenit.mamma.se.service;
  */
 
 import nl.rivm.screenit.mamma.se.dto.actions.OnderzoekStartenDto;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 
 import java.time.LocalDateTime;
@@ -30,5 +30,5 @@ import java.time.LocalDateTime;
 public interface OnderzoekStartenService
 {
 
-	void starten(OnderzoekStartenDto action, MammaScreeningsEenheid screeningsEenheid, LocalDateTime transactieDatumTijd, InstellingGebruiker gebruiker);
+	void starten(OnderzoekStartenDto action, MammaScreeningsEenheid screeningsEenheid, LocalDateTime transactieDatumTijd, OrganisatieMedewerker organisatieMedewerker);
 }

@@ -115,7 +115,7 @@ public class ClientContactBezwaarPanel extends AbstractClientContactActiePanel<C
 		modelObject.setClient(clientModel.getObject());
 
 		var clientContactManieren = new ArrayList<>(List.of(ClientContactManier.values()));
-		if (!heeftRechtVoor(Recht.CLIENT_DOSSIER_VERWIJDEREN, Recht.GEBRUIKER_BEZWAAR_BRP))
+		if (!heeftRechtVoor(Recht.CLIENT_DOSSIER_VERWIJDEREN, Recht.MEDEWERKER_BEZWAAR_BRP))
 		{
 			clientContactManieren.remove(ClientContactManier.GEGEVENS_VERWIJDEREN);
 		}
@@ -219,7 +219,7 @@ public class ClientContactBezwaarPanel extends AbstractClientContactActiePanel<C
 		{
 			bezwaarTypes.add(BezwaarType.VERZOEK_TOT_VERWIJDERING_DOSSIER);
 		}
-		if (heeftRechtVoor(Recht.GEBRUIKER_BEZWAAR_BRP))
+		if (heeftRechtVoor(Recht.MEDEWERKER_BEZWAAR_BRP))
 		{
 			bezwaarTypes.add(BezwaarType.GEEN_OPNAME_UIT_BPR);
 		}
@@ -325,8 +325,8 @@ public class ClientContactBezwaarPanel extends AbstractClientContactActiePanel<C
 
 	private boolean heeftRechtVoor(Recht... rechten)
 	{
-		var ingelogdeGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
-		return autorisatieService.getActieVoorMedewerker(ingelogdeGebruiker, null, rechten) != null;
+		var ingelogdeOrganisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
+		return autorisatieService.getActieVoorMedewerker(ingelogdeOrganisatieMedewerker, null, rechten) != null;
 	}
 
 	@Override

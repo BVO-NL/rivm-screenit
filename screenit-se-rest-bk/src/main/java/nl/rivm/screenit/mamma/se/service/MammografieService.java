@@ -25,13 +25,13 @@ import java.time.LocalDateTime;
 
 import nl.rivm.screenit.mamma.se.dto.actions.DensiteitMetingActionDto;
 import nl.rivm.screenit.mamma.se.dto.actions.MammografieOpslaanDto;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 
 public interface MammografieService
 {
-	void opslaanEnStatusovergang(MammografieOpslaanDto action, InstellingGebruiker instellingGebruiker, LocalDateTime transactieDatumTijd);
+	void opslaanEnStatusovergang(MammografieOpslaanDto action, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd);
 
-	void opslaan(MammografieOpslaanDto action, InstellingGebruiker instellingGebruiker);
+	void opslaan(MammografieOpslaanDto action, OrganisatieMedewerker organisatieMedewerker);
 
 	void densiteitMetingOpslaan(DensiteitMetingActionDto action);
 }

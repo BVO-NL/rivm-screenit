@@ -22,6 +22,7 @@ package nl.rivm.screenit.main.web.gebruiker.gedeeld;
  */
 
 import nl.rivm.screenit.main.web.ScreenitSession;
+import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
 import nl.rivm.screenit.model.DigitaalClientBericht;
 import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.enums.Actie;
@@ -40,7 +41,6 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
 import org.apache.wicket.validation.validator.StringValidator;
 
 public class MailOpnieuwVerzendenPanel extends GenericPanel<DigitaalClientBericht<?>>
@@ -69,7 +69,7 @@ public class MailOpnieuwVerzendenPanel extends GenericPanel<DigitaalClientBerich
 	{
 		var container = new WebMarkupContainer("herzendContainer");
 		container.add(getEmailFormulier());
-		var gebruikerMagMailsHerzenden = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_MAILS_OPNIEUW_VERZENDEN, Actie.AANPASSEN);
+		var gebruikerMagMailsHerzenden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_MAILS_OPNIEUW_VERZENDEN, Actie.AANPASSEN);
 		container.setVisible(
 			gebruikerMagMailsHerzenden && digitaalClientBerichtService.digitaalClientBerichtMagOpnieuwVerzondenWorden(getModel().getObject()));
 
@@ -98,7 +98,7 @@ public class MailOpnieuwVerzendenPanel extends GenericPanel<DigitaalClientBerich
 		if (Bevolkingsonderzoek.MAMMA == bepaalBevolkingsonderzoek())
 		{
 			mammaDigitaalContactService.herzendBevestigAfspraakMail((MammaDigitaalClientBericht) getModel().getObject(), nieuwEmailadresModel.getObject(),
-				ScreenitSession.get().getLoggedInAccount());
+				ScreenitSession.get().getIngelogdAccount());
 		}
 		else
 		{

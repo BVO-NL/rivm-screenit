@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.verslag;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaBeoordelenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.panel.MammaBeoordelingPdfTonenPanel;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.model.mamma.enums.MammaAmputatie;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
@@ -64,7 +64,7 @@ class MammaVerwijsVerslagPanel extends GenericPanel<MammaLezing>
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				InstellingGebruiker beoordelaar = ScreenitSession.get().getLoggedInInstellingGebruiker();
+				OrganisatieMedewerker beoordelaar = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 				verslagPanel.getModelObject().getVerslagLezing().setBeoordelaar(beoordelaar);
 				baseBeoordelingService.setStatusNaarVerslagGereed(verslagPanel.getModelObject());
 				((AbstractMammaBeoordelenPage) getPage()).volgendeBeoordeling(target);

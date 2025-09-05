@@ -52,7 +52,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
 
-@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_CLIENT_DOCUMENTEN, bevolkingsonderzoekScopes = {
+@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_DOCUMENTEN, bevolkingsonderzoekScopes = {
 	Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class ClientDocumentenPage extends ClientPage
 {
@@ -106,7 +106,7 @@ public class ClientDocumentenPage extends ClientPage
 
 					}
 				};
-				verwijderen.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_DOCUMENTEN, Actie.VERWIJDEREN));
+				verwijderen.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_DOCUMENTEN, Actie.VERWIJDEREN));
 				item.add(verwijderen);
 			}
 
@@ -132,7 +132,7 @@ public class ClientDocumentenPage extends ClientPage
 			}
 
 		};
-		toevoegen.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_DOCUMENTEN, Actie.TOEVOEGEN));
+		toevoegen.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_DOCUMENTEN, Actie.TOEVOEGEN));
 		add(toevoegen);
 
 		documentenContainer.add(new Label("aantalDocumenten", new PropertyModel<>(selectedClientModel, "documents.size")));

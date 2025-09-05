@@ -29,26 +29,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.huisartsenportaal.dto.HuisartsDto;
-import nl.rivm.screenit.huisartsenportaal.dto.LocatieDto;
 import nl.rivm.screenit.main.service.cervix.CervixBulkHuisartsenService;
 import nl.rivm.screenit.main.service.cervix.CervixHuisartsService;
 import nl.rivm.screenit.model.Aanhef;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.Woonplaats;
 import nl.rivm.screenit.model.cervix.CervixBulkUpload;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsAdres;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
-import nl.rivm.screenit.model.cervix.CervixRegioBrief;
 import nl.rivm.screenit.model.cervix.enums.CervixHuisartsAanmeldStatus;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -130,24 +126,24 @@ public class CervixBulkHuisartsenServiceImpl implements CervixBulkHuisartsenServ
 	{
 		try
 		{
-			UploadDocument document = bulkUpload.getDocument();
-			File file = uploadDocumentService.load(document);
-			try (FileInputStream fileInputStream = new FileInputStream(file))
+			var document = bulkUpload.getDocument();
+			var file = uploadDocumentService.load(document);
+			try (var fileInputStream = new FileInputStream(file))
 			{
 				logging(LogGebeurtenis.BULK_HUISARTSEN_VERWERKING_GESTART, null);
 
 				char character = getMostUsefullReader(file);
-				try (CSVReader reader = new CSVReader(new InputStreamReader(fileInputStream), character))
+				try (var reader = new CSVReader(new InputStreamReader(fileInputStream), character))
 				{
-					int regel = 0;
-					for (String[] line : reader.readAll())
+					var regel = 0;
+					for (var line : reader.readAll())
 					{
 						regel++;
-						String informatie = "Bulk huisartsen(" + bulkUpload.getId() + ") - Regel " + regel + " - ";
+						var informatie = "Bulk huisartsen(" + bulkUpload.getId() + ") - Regel " + regel + " - ";
 						try
 						{
 							LOG.info(informatie + "Bezig met verwerking.");
-							boolean isRegelGoedVerwerkt = verwerkRegel(line, informatie);
+							var isRegelGoedVerwerkt = verwerkRegel(line, informatie);
 							if (isRegelGoedVerwerkt)
 							{
 								LOG.info(informatie + "Regel verwerkt.");
@@ -180,26 +176,26 @@ public class CervixBulkHuisartsenServiceImpl implements CervixBulkHuisartsenServ
 
 	private boolean verwerkRegel(String[] row, String informatie)
 	{
-		String agbCode = row[3];
+		var agbCode = row[3];
 		if (StringUtils.isAlpha(agbCode) && !StringUtils.isBlank(agbCode))
 		{
 			LOG.info(informatie + "Headers van file ontdekt.");
 			return false;
 		}
 
-		String zorgmail = row[0];
-		String aanhef = row[4];
-		String achternaam = row[5];
-		String voorletter = row[6];
-		String tussenvoegsel = row[7];
-		String straat = row[12];
-		String postcode = row[14].replaceAll(" ", "");
-		String huisnummer = row[13].replaceAll("\\D+", "");
-		String huisnummertoevoeging = row[13].replaceAll("\\d", "");
-		String plaats = StringUtils.lowerCase(row[15]);
-		String gemeente = StringUtils.lowerCase(row[16]);
-		String locatieNaam = row[11];
-		String telefoon = row[18];
+		var zorgmail = row[0];
+		var aanhef = row[4];
+		var achternaam = row[5];
+		var voorletter = row[6];
+		var tussenvoegsel = row[7];
+		var straat = row[12];
+		var postcode = row[14].replaceAll(" ", "");
+		var huisnummer = row[13].replaceAll("\\D+", "");
+		var huisnummertoevoeging = row[13].replaceAll("\\d", "");
+		var plaats = StringUtils.lowerCase(row[15]);
+		var gemeente = StringUtils.lowerCase(row[16]);
+		var locatieNaam = row[11];
+		var telefoon = row[18];
 
 		if (StringUtils.isEmpty(agbCode) || StringUtils.isEmpty(achternaam) || StringUtils.isEmpty(straat) || StringUtils.isEmpty(postcode) || StringUtils.isEmpty(huisnummer)
 			|| StringUtils.isEmpty(plaats))
@@ -241,34 +237,32 @@ public class CervixBulkHuisartsenServiceImpl implements CervixBulkHuisartsenServ
 				+ ") en screeningsorganisatie.");
 			return false;
 		}
-		CervixHuisarts arts = huisartsService.getHuisartsMetAgbCode(agbCode);
+		var arts = huisartsService.getHuisartsMetAgbCode(agbCode);
 		if (arts != null)
 		{
 			melding(informatie + "Huisarts overgeslagen vanwege dat deze huisarts al bestaat.");
 			return false;
 		}
-		if (arts == null)
-		{
-			arts = new CervixHuisarts();
-			arts.setAanmeldStatus(CervixHuisartsAanmeldStatus.AANGEMAAKT);
-			arts.setAgbcode(agbCode);
-			arts.setOrganisatieMedewerkers(new ArrayList<>());
-			arts.setAanmeldStatus(CervixHuisartsAanmeldStatus.REGISTRATIE_KLAARGEZET);
-			arts.setMutatiedatum(currentDateSupplier.getDate());
-			arts.setActief(true);
-			if (StringUtils.isEmpty(locatieNaam))
-			{
-				arts.setNaam(locatieNaam);
-			}
-			else
-			{
-				arts.setNaam("Praktijk van " + achternaam);
-			}
-			arts.setTelefoon(telefoon);
 
-			InstellingGebruiker instellingGebruiker = new InstellingGebruiker();
-			arts.getOrganisatieMedewerkers().add(instellingGebruiker);
-			Gebruiker medewerker = new Gebruiker();
+		arts = new CervixHuisarts();
+		arts.setAgbcode(agbCode);
+		arts.setOrganisatieMedewerkers(new ArrayList<>());
+		arts.setAanmeldStatus(CervixHuisartsAanmeldStatus.AANGEMAAKT);
+		arts.setMutatiedatum(currentDateSupplier.getDate());
+		arts.setActief(true);
+		if (StringUtils.isEmpty(locatieNaam))
+		{
+			arts.setNaam(locatieNaam);
+		}
+		else
+		{
+			arts.setNaam("Praktijk van " + achternaam);
+		}
+		arts.setTelefoon(telefoon);
+
+			var organisatieMedewerker = new OrganisatieMedewerker();
+			arts.getOrganisatieMedewerkers().add(organisatieMedewerker);
+			var medewerker = new Medewerker();
 			medewerker.setAanhef(getAanhef(aanhef));
 			medewerker.setInlogMethode(InlogMethode.GEBRUIKERSNAAM_WACHTWOORD);
 			medewerker.setTussenvoegsel(tussenvoegsel);
@@ -276,29 +270,28 @@ public class CervixBulkHuisartsenServiceImpl implements CervixBulkHuisartsenServ
 			medewerker.setVoorletters(voorletter);
 			medewerker.setActief(true);
 			medewerker.setOrganisatieMedewerkers(new ArrayList<>());
-			medewerker.getOrganisatieMedewerkers().add(instellingGebruiker);
+			medewerker.getOrganisatieMedewerkers().add(organisatieMedewerker);
 			medewerker.setGebruikersnaam("ua-" + agbCode);
-			instellingGebruiker.setMedewerker(medewerker);
-			instellingGebruiker.setOrganisatie(arts);
-			instellingGebruiker.setActief(true);
+			organisatieMedewerker.setMedewerker(medewerker);
+			organisatieMedewerker.setOrganisatie(arts);
+			organisatieMedewerker.setActief(true);
 
-			String codeB = CodeGenerator.genereerCode(3, 3);
-			medewerker.setDatumWachtwoordAanvraag(currentDateSupplier.getDate());
-			medewerker.setWachtwoordChangeCode(codeB);
+		var codeB = CodeGenerator.genereerCode(3, 3);
+		medewerker.setDatumWachtwoordAanvraag(currentDateSupplier.getDate());
+		medewerker.setWachtwoordChangeCode(codeB);
 
-			CervixHuisartsAdres adres = new CervixHuisartsAdres();
+			var adres = new CervixHuisartsAdres();
 			adres.setStraat(straat);
 			adres.setPostcode(postcode);
 			adres.setHuisnummer(Integer.valueOf(huisnummer));
 			adres.setHuisnummerToevoeging(huisnummertoevoeging);
 			adres.setWoonplaats(woonplaats);
 			arts.setPostadres(adres);
-			hibernateService.saveOrUpdateAll(medewerker, arts, instellingGebruiker, adres);
+			hibernateService.saveOrUpdateAll(medewerker, arts, organisatieMedewerker, adres);
 
-			sendBriefNaarHuisarts(arts);
-			synchroniseerHuisarts(arts);
+		sendBriefNaarHuisarts(arts);
+		synchroniseerHuisarts(arts);
 
-		}
 		return true;
 	}
 
@@ -317,9 +310,9 @@ public class CervixBulkHuisartsenServiceImpl implements CervixBulkHuisartsenServ
 
 	private void sendBriefNaarHuisarts(CervixHuisarts huisarts)
 	{
-		Date date = currentDateSupplier.getDate();
-		Woonplaats woonplaats = huisarts.getPostadres().getWoonplaats();
-		CervixRegioBrief cervixRegioBrief = briefService.maakRegioBrief(woonplaats.getGemeente().getScreeningOrganisatie(), BriefType.REGIO_REGISTRATIE_UITSTRIJKEND_HUISARTS,
+		var date = currentDateSupplier.getDate();
+		var woonplaats = huisarts.getPostadres().getWoonplaats();
+		var cervixRegioBrief = briefService.maakRegioBrief(woonplaats.getGemeente().getScreeningOrganisatie(), BriefType.REGIO_REGISTRATIE_UITSTRIJKEND_HUISARTS,
 			date, huisarts);
 		cervixRegioBrief.setHuisarts(huisarts);
 		hibernateService.saveOrUpdateAll(cervixRegioBrief);
@@ -327,13 +320,13 @@ public class CervixBulkHuisartsenServiceImpl implements CervixBulkHuisartsenServ
 
 	private void synchroniseerHuisarts(CervixHuisarts huisarts)
 	{
-		HuisartsDto dto = CervixHuisartsToDtoUtil.getHuisartsDto(huisarts);
+		var dto = CervixHuisartsToDtoUtil.getHuisartsDto(huisarts);
 		huisartsenportaalSyncService.sendJmsBericht(dto);
 	}
 
 	private void synchroniseerLocatie(CervixHuisartsLocatie locatie)
 	{
-		LocatieDto dto = CervixHuisartsToDtoUtil.getLocatieDto(locatie);
+		var dto = CervixHuisartsToDtoUtil.getLocatieDto(locatie);
 		huisartsenportaalSyncService.sendJmsBericht(dto);
 	}
 
@@ -345,7 +338,7 @@ public class CervixBulkHuisartsenServiceImpl implements CervixBulkHuisartsenServ
 
 	private void logging(LogGebeurtenis gebeurtenis, String melding)
 	{
-		LogEvent logEvent = new LogEvent();
+		var logEvent = new LogEvent();
 		logEvent.setMelding(melding);
 		logService.logGebeurtenis(gebeurtenis, logEvent, Bevolkingsonderzoek.CERVIX);
 	}
@@ -401,17 +394,17 @@ public class CervixBulkHuisartsenServiceImpl implements CervixBulkHuisartsenServ
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS)
-	public CervixBulkUpload saveExcelBestand(File file, String contentType, String filename, InstellingGebruiker gebruiker) throws IOException
+	public CervixBulkUpload saveExcelBestand(File file, String contentType, String filename, OrganisatieMedewerker organisatieMedewerker) throws IOException
 	{
-		UploadDocument document = new UploadDocument();
+		var document = new UploadDocument();
 		document.setNaam(filename);
 		document.setActief(true);
 		document.setContentType(contentType);
 		document.setFile(file);
 		uploadDocumentService.saveOrUpdate(document, FileStoreLocation.CERVIX_BULK_HUISARTSEN);
 
-		CervixBulkUpload upload = new CervixBulkUpload();
-		upload.setGebruiker(gebruiker);
+		var upload = new CervixBulkUpload();
+		upload.setOrganisatieMedewerker(organisatieMedewerker);
 		upload.setDocument(document);
 		upload.setUploadDatum(currentDateSupplier.getDate());
 		hibernateService.saveOrUpdate(upload);

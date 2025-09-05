@@ -26,7 +26,6 @@ import java.util.List;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.service.mamma.MammaFotobesprekingService;
-import nl.rivm.screenit.main.service.mamma.MammaKwaliteitscontroleService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.table.ClientColumn;
 import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
@@ -68,7 +67,7 @@ public class MammaFotobesprekingMiniWerklijstPanel extends Panel
 		List<IColumn<MammaFotobesprekingOnderzoek, String>> columns = new ArrayList<>();
 		columns.add(new DateTimePropertyColumn<>(Model.of("Onderzoeksdatum"), "beoordeling.onderzoek.creatieDatum", Constants.getDateTimeFormat()));
 		if (MammobridgeRole.anoniemeRollen().contains(ScreenitSession.get().getMammaHuidigeIDS7Role())
-			&& ScreenitSession.get().getInstelling().getOrganisatieType() == OrganisatieType.BEOORDELINGSEENHEID)
+			&& ScreenitSession.get().getOrganisatie().getOrganisatieType() == OrganisatieType.BEOORDELINGSEENHEID)
 		{
 			columns.add(new PropertyColumn<>(Model.of("Volgnummer"), "volgnummer"));
 		}

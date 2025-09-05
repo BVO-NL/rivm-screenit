@@ -25,13 +25,13 @@ import java.util.List;
 
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.overeenkomstenzoeken.OvereenkomstZoekFilter;
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.overeenkomsten.AbstractAfgeslotenOvereenkomst;
-import nl.rivm.screenit.model.overeenkomsten.AfgeslotenInstellingOvereenkomst;
+import nl.rivm.screenit.model.overeenkomsten.AfgeslotenOrganisatieOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.Overeenkomst;
 import nl.rivm.screenit.model.overeenkomsten.OvereenkomstType;
@@ -50,27 +50,27 @@ public interface OvereenkomstService
 
 	void updateOvereenkomst(Overeenkomst overeenkomst, Account account);
 
-	List<AfgeslotenInstellingOvereenkomst> getAfgeslotenOrganisatieOvereenkomsten(Instelling zoekObject, Boolean actief, Long first, Long size, Sort sort);
+	List<AfgeslotenOrganisatieOvereenkomst> getAfgeslotenOrganisatieOvereenkomsten(Organisatie zoekObject, Boolean actief, Long first, Long size, Sort sort);
 
-	long countAfgeslotenOrganisatieOvereenkomsten(Instelling zoekObject, Boolean actief);
+	long countAfgeslotenOrganisatieOvereenkomsten(Organisatie zoekObject, Boolean actief);
 
-	List<AfgeslotenMedewerkerOvereenkomst> getAfgeslotenMedewerkerOvereenkomsten(Gebruiker zoekObject, Boolean actief, Long first, Long size, Sort sort);
+	List<AfgeslotenMedewerkerOvereenkomst> getAfgeslotenMedewerkerOvereenkomsten(Medewerker zoekObject, Boolean actief, Long first, Long size, Sort sort);
 
-	long countAfgeslotenMedewerkerOvereenkomsten(Gebruiker zoekObject, Boolean actief);
+	long countAfgeslotenMedewerkerOvereenkomsten(Medewerker zoekObject, Boolean actief);
 
 	List<Overeenkomst> getOvereenkomsten(OrganisatieType organisatieType, OvereenkomstType... overeenkomstTypes);
 
-	List<AbstractAfgeslotenOvereenkomst> getTeAccoderenOvereenkomsten(InstellingGebruiker inTeLoggenInstellingGebruiker);
+	List<AbstractAfgeslotenOvereenkomst> getTeAccoderenOvereenkomsten(OrganisatieMedewerker inTeLoggenOrganisatieMedewerker);
 
-	long countTeAccoderenOvereenkomsten(InstellingGebruiker inTeLoggenInstellingGebruiker);
+	long countTeAccoderenOvereenkomsten(OrganisatieMedewerker inTeLoggenOrganisatieMedewerker);
 
-	void accodeerOvereenkomsten(InstellingGebruiker instellingGebruiker, Account account);
+	void accodeerOvereenkomsten(OrganisatieMedewerker organisatieMedewerker, Account account);
 
-	List<Instelling> getAfgeslotenOvereenkomsten(OvereenkomstZoekFilter filter, Sort sort, int first, int count);
+	List<Organisatie> getAfgeslotenOvereenkomsten(OvereenkomstZoekFilter filter, Sort sort, int first, int count);
 
 	long countAfgeslotenOvereenkomsten(OvereenkomstZoekFilter filter);
 
-	List<AfgeslotenInstellingOvereenkomst> getAfgeslotenOvereenkomstenVanOrganisatie(OvereenkomstZoekFilter filter, Instelling instelling);
+	List<AfgeslotenOrganisatieOvereenkomst> getAfgeslotenOvereenkomstenVanOrganisatie(OvereenkomstZoekFilter filter, Organisatie organisatie);
 
 	List<Overeenkomst> getAlleOvereenkomstenVanTypeOvereenkomst();
 

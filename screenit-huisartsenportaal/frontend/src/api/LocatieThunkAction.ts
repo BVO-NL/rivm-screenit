@@ -19,30 +19,27 @@
  * =========================LICENSE_END==================================
  */
 import {AppThunkDispatch, store} from "../index"
-import ScreenitBackend, {validatingRequest} from "../util/Backend"
-import {AxiosResponse} from "axios"
+import ScreenitBackend from "../util/Backend"
 import {LocatieDto, LocatieStatus} from "../state/datatypes/dto/LocatieDto"
 import {LocatieVerificatieDto} from "../state/datatypes/dto/LocatieVerificatieDto"
 import {createActionSetLocatieVerificatie} from "../state/LocatieVerificatieState"
 import {LocatieVerificatieResponseDto} from "../state/datatypes/dto/LocatieVerificatieResponseDto"
-import {createActionSetLocaties} from "../state/LocatiesState"
+import {createActionSetLocaties, LocatiesResponse} from "../state/LocatiesState"
 import {fetchHuisarts} from "./HuisartsThunkAction"
 
 export const fetchLocatieVerificatie = () => async (dispatch: AppThunkDispatch) => {
-	const response: AxiosResponse<LocatieVerificatieDto[]> = await ScreenitBackend.get("/verificatie/locaties")
-	const locatieDtos = response.data
+	const locatieDtos: LocatieVerificatieDto[] = await ScreenitBackend.get<LocatieVerificatieDto[]>("verificatie/locaties").json()
 	dispatch(createActionSetLocatieVerificatie(locatieDtos))
 }
 
 export const fetchLocaties = (status: LocatieStatus) => async (dispatch: AppThunkDispatch) => {
-	const response = await ScreenitBackend.post("/locaties", {resultOptions: {first: 0, count: 10, sortOptions: {}}, status: status})
-	const locaties = response.data
+	const locaties = await ScreenitBackend.post<LocatiesResponse>("locaties", {json: {resultOptions: {first: 0, count: 10, sortOptions: {}}, status: status}}).json()
 	dispatch(createActionSetLocaties({values: locaties, filter: status}))
 }
 
 export const verifieerLocatie = (locatie: LocatieVerificatieDto) => async (dispatch: AppThunkDispatch) => {
-	const response: AxiosResponse<LocatieVerificatieResponseDto> = await ScreenitBackend.post("/verificatie/verifieerLocatie", locatie)
-	if (response.data.succes) {
+	const response: LocatieVerificatieResponseDto = await ScreenitBackend.post<LocatieVerificatieResponseDto>("verificatie/verifieerLocatie", {json: locatie}).json()
+	if (response.succes) {
 		await dispatch(fetchLocatieVerificatie())
 		await dispatch(fetchLocaties(store.getState().locaties.filter))
 		await dispatch(fetchHuisarts())
@@ -50,11 +47,11 @@ export const verifieerLocatie = (locatie: LocatieVerificatieDto) => async (dispa
 }
 
 export const herzendVerificatieCode = (locatie: LocatieVerificatieDto) => () => {
-	return ScreenitBackend.post("/verificatie/herzendVerificatieCode", locatie)
+	return ScreenitBackend.post("verificatie/herzendVerificatieCode", {json: locatie}).json()
 }
 
 export const putLocatie = (locatie: LocatieDto) => async (dispatch: AppThunkDispatch): Promise<LocatieDto> => {
-	const response: LocatieDto = await dispatch(validatingRequest<LocatieDto>("/locatie", "PUT", locatie))
+	const response: LocatieDto = await ScreenitBackend.put<LocatieDto>("locatie", {json: locatie}).json()
 	await dispatch(fetchLocatieVerificatie())
 	await dispatch(fetchLocaties(store.getState().locaties.filter))
 	return response

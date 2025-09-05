@@ -29,7 +29,7 @@ import jakarta.persistence.criteria.Path;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Termijn;
 import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.model.mamma.MammaLezing_;
@@ -47,29 +47,29 @@ import static nl.rivm.screenit.specification.SpecificationUtil.notEqualsOrFalseI
 public class MammaLezingSpecification
 {
 
-	public static ExtendedSpecification<MammaLezing> isAfwezigOfGedaanDoor(InstellingGebruiker radioloog)
+	public static ExtendedSpecification<MammaLezing> isAfwezigOfGedaanDoor(OrganisatieMedewerker radioloog)
 	{
 		return (r, q, cb) -> cb.or(
 			r.isNull(),
 			equalsOrFalseIfParamNull(r.get(MammaLezing_.beoordelaar), radioloog, cb));
 	}
 
-	public static ExtendedSpecification<MammaLezing> isGedaanDoor(InstellingGebruiker radioloog)
+	public static ExtendedSpecification<MammaLezing> isGedaanDoor(OrganisatieMedewerker radioloog)
 	{
 		return (r, q, cb) -> cb.equal(r.get(MammaLezing_.beoordelaar), radioloog);
 	}
 
-	public static ExtendedSpecification<MammaLezing> isGedaanDoor(Path<InstellingGebruiker> radioloog)
+	public static ExtendedSpecification<MammaLezing> isGedaanDoor(Path<OrganisatieMedewerker> radioloog)
 	{
 		return (r, q, cb) -> cb.equal(r.get(MammaLezing_.beoordelaar), radioloog);
 	}
 
-	public static ExtendedSpecification<MammaLezing> isNietGedaanDoor(InstellingGebruiker radioloog)
+	public static ExtendedSpecification<MammaLezing> isNietGedaanDoor(OrganisatieMedewerker radioloog)
 	{
 		return (r, q, cb) -> notEqualsOrFalseIfParamNull(r.get(MammaLezing_.beoordelaar), radioloog, cb);
 	}
 
-	public static ExtendedSpecification<MammaLezing> isVerwezenDoor(InstellingGebruiker radioloog)
+	public static ExtendedSpecification<MammaLezing> isVerwezenDoor(OrganisatieMedewerker radioloog)
 	{
 		return isGedaanDoor(radioloog).and(isVerwezen());
 	}
@@ -86,7 +86,7 @@ public class MammaLezingSpecification
 		return bevatLocalDateToDate(periode, r -> r.get(MammaLezing_.beoordelingDatum));
 	}
 
-	public static ExtendedSpecification<MammaLezing> isGedaanBinnenTermijnDoor(InstellingGebruiker radioloog, LocalDate peildatum, Termijn termijn)
+	public static ExtendedSpecification<MammaLezing> isGedaanBinnenTermijnDoor(OrganisatieMedewerker radioloog, LocalDate peildatum, Termijn termijn)
 	{
 		return isGedaanDoor(radioloog).and(isGedaanInPeriode(termijn.getPeriode(peildatum)));
 	}

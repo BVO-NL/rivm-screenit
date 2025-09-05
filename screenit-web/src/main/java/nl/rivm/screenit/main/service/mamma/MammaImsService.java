@@ -24,9 +24,9 @@ package nl.rivm.screenit.main.service.mamma;
 import java.io.IOException;
 import java.util.List;
 
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.mamma.imsapi.model.FhirUserSession;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeFocusMode;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
@@ -34,19 +34,19 @@ import nl.rivm.screenit.util.functionalinterfaces.StringResolver;
 
 public interface MammaImsService
 {
-	String createAllImagesSeenMessage(Gebruiker gebruiker, MammobridgeRole mammobridgeRole, MammaOnderzoek onderzoek, MammobridgeFocusMode mammobridgeFocusMode);
+	String createAllImagesSeenMessage(Medewerker medewerker, MammobridgeRole mammobridgeRole, MammaOnderzoek onderzoek, MammobridgeFocusMode mammobridgeFocusMode);
 
 	FhirUserSession parseFhirMessage(String json) throws IOException;
 
-	String createLogonMessage(Gebruiker gebruiker, MammobridgeRole mammobridgeRole);
+	String createLogonMessage(Medewerker medewerker, MammobridgeRole mammobridgeRole);
 
-	String createLogoffMessage(Gebruiker gebruiker, MammobridgeRole mammobridgeRole);
+	String createLogoffMessage(Medewerker medewerker, MammobridgeRole mammobridgeRole);
 
-	String createDesktopSyncMessage(Gebruiker gebruiker, MammobridgeRole mammobridgeRole, Long huidigeOnderzoekId, List<Long> komendeBeoordelingIds,
+	String createDesktopSyncMessage(Medewerker medewerker, MammobridgeRole mammobridgeRole, Long huidigeOnderzoekId, List<Long> komendeBeoordelingIds,
 		MammobridgeFocusMode focusMode);
 
-	String createEmptyDesktopSyncMessage(Gebruiker gebruiker, MammobridgeRole mammobridgeRole);
+	String createEmptyDesktopSyncMessage(Medewerker medewerker, MammobridgeRole mammobridgeRole);
 
-	String handleError(String error, InstellingGebruiker gebruiker, StringResolver stringResolver, Long onderzoekId);
+	String handleError(String error, OrganisatieMedewerker organisatieMedewerker, StringResolver stringResolver, Long onderzoekId);
 
 }

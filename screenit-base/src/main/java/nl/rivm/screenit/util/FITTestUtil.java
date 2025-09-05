@@ -32,6 +32,7 @@ import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonGeinterpreteerdeUitslag;
+import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.colon.IFOBTType;
@@ -44,6 +45,8 @@ import org.slf4j.LoggerFactory;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FITTestUtil
 {
+	public static final String UITSLAG_FLAG_PRO = "PRO";
+
 	private static final Logger LOG = LoggerFactory.getLogger(FITTestUtil.class);
 
 	public static boolean isOngunstig(IFOBTTest test)
@@ -52,12 +55,13 @@ public final class FITTestUtil
 		{
 			return test.getGeinterpreteerdeUitslag().equals(ColonGeinterpreteerdeUitslag.ONGUNSTIG);
 		}
-		if (test == null || test.getUitslag() == null || test.getNormWaarde() == null)
+		if (test == null || (test.getUitslag() == null && !UITSLAG_FLAG_PRO.equals(test.getFlag())) || test.getNormWaarde() == null)
 		{
 			LOG.trace("test, uitslag, normwaarde of geinterpreteerde uitslag (studietest) is null");
 			return false;
 		}
-		return test.getUitslag().compareTo(test.getNormWaarde()) >= 0;
+
+		return UITSLAG_FLAG_PRO.equals(test.getFlag()) || test.getUitslag().compareTo(test.getNormWaarde()) >= 0;
 	}
 
 	public static boolean isGunstig(IFOBTTest test)
@@ -136,13 +140,12 @@ public final class FITTestUtil
 
 	public static boolean isEnigeUitgevoerdeFITInZelfdeRonde(IFOBTTest buis)
 	{
-		return buis.getColonScreeningRonde().getIfobtTesten().stream().filter(t -> t.getStatus() == IFOBTTestStatus.UITGEVOERD && t.getType() == IFOBTType.GOLD)
-			.collect(Collectors.toList()).size() == 1;
+		return buis.getColonScreeningRonde().getIfobtTesten().stream().filter(t -> t.getStatus() == IFOBTTestStatus.UITGEVOERD && t.getType() == IFOBTType.GOLD).count() == 1;
 	}
 
 	public static boolean heeftMeerdereOngunstigeUitslagenInZelfdeRonde(IFOBTTest buis)
 	{
-		return buis.getColonScreeningRonde().getIfobtTesten().stream().filter(FITTestUtil::isOngunstig).collect(Collectors.toList()).size() > 1;
+		return buis.getColonScreeningRonde().getIfobtTesten().stream().filter(FITTestUtil::isOngunstig).count() > 1;
 	}
 
 	public static boolean isLaatsteUitslagVanLaatsteRonde(ColonDossier dossier, Date statusDatumAangeklikteUitslag)
@@ -164,6 +167,12 @@ public final class FITTestUtil
 		return uitgevoerdeIfobtTesten.stream().map(IFOBTTest::getStatusDatum).filter(Objects::nonNull).max(Date::compareTo).orElse(null);
 	}
 
+	public static boolean heeftUitslag(ColonScreeningRonde ronde)
+	{
+		return ronde.getIfobtTesten().stream().filter(fit -> !List.of(IFOBTTestStatus.NIETTEBEOORDELEN, IFOBTTestStatus.VERVALDATUMVERLOPEN).contains(fit.getStatus()))
+			.anyMatch(FITTestUtil::heeftUitslag);
+	}
+
 	public static boolean heeftUitslag(IFOBTTest buis)
 	{
 		return buis.getUitslag() != null || buis.getGeinterpreteerdeUitslag() != null;
@@ -178,4 +187,31 @@ public final class FITTestUtil
 	{
 		return getAlleUitgevoerdeFITTestenInLaatsteRonde(dossier).stream().anyMatch(FITTestUtil::isGunstig);
 	}
+
+	public static String getInterpretatie(IFOBTTest fit, IFOBTTestStatus status, boolean geenUitslag)
+	{
+		String interpretatie = "";
+		if (IFOBTTestStatus.VERWIJDERD.equals(status))
+		{
+			interpretatie = "Verwijderd";
+		}
+		else if (isGunstig(fit))
+		{
+			interpretatie = "Gunstig";
+		}
+		else if (isOngunstig(fit))
+		{
+			interpretatie = "Ongunstig";
+		}
+		else if (fit.getUitslag() != null && fit.getNormWaarde() == null)
+		{
+			interpretatie = "";
+		}
+		else if (geenUitslag)
+		{
+			interpretatie = "Geen uitslag";
+		}
+		return interpretatie;
+	}
+
 }

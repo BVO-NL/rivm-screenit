@@ -129,7 +129,7 @@ public abstract class MammaDagKopierenPopup extends GenericPanel<MammaScreenings
 				var openDoel = doelOpenen.getModelObject();
 
 				baseConceptPlanningsApplicatie.kopieerDag(bronSe, doelSe, bronDag, bronVanTijd, bronTotTijd, doelDag,
-					ScreenitSession.get().getLoggedInInstellingGebruiker());
+					ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 
 				var melding = String.format(getString("kopieren.afgerond"), bronDag.format(DateUtil.LOCAL_DATE_FORMAT), doelDag.format(DateUtil.LOCAL_DATE_FORMAT));
 

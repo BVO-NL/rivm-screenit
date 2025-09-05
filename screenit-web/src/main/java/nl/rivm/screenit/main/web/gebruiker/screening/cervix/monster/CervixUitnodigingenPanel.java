@@ -131,7 +131,7 @@ public abstract class CervixUitnodigingenPanel extends Panel
 			public void onClick(AjaxRequestTarget target, IModel<CervixUitnodiging> uitnodigingModel)
 			{
 				var uitnodiging = uitnodigingModel.getObject();
-				var ingelogdNamensOrganisatie = ScreenitSession.get().getInstelling();
+				var ingelogdNamensOrganisatie = ScreenitSession.get().getOrganisatie();
 				if (uitnodigingService.magMonsterVerwerktWordenDoorLab(ingelogdNamensOrganisatie, uitnodiging))
 				{
 					setUitnodiging(target, uitnodiging);

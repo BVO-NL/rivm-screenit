@@ -23,7 +23,6 @@ package nl.rivm.screenit.util.cervix.hpv_berichtgenerator;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.concurrent.Executors;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -35,11 +34,10 @@ import nl.rivm.screenit.model.cervix.enums.CervixHpvResultaatBerichtBron;
 
 import org.apache.commons.io.IOUtils;
 
-import ca.uhn.hl7v2.DefaultHapiContext;
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.HapiContext;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v251.message.OUL_R22;
+
+import static nl.rivm.screenit.util.Hl7v2BerichtUtil.createMessage;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -104,20 +102,6 @@ public class CervixHpvBerichtGenerator
 		}
 
 		return outputText;
-	}
-
-	public static OUL_R22 createMessage(String bericht)
-	{
-		try (HapiContext context = new DefaultHapiContext())
-		{
-			context.setExecutorService(Executors.newSingleThreadExecutor()); 
-			var parser = context.getPipeParser();
-			return (OUL_R22) parser.parse(bericht);
-		}
-		catch (HL7Exception | IOException e)
-		{
-			throw new IllegalStateException("Er ging iets mis met parsen van het bericht", e);
-		}
 	}
 
 	public static String geefHL7BerichtTekst(CervixHpvBerichtGeneratorWrapper wrapper)

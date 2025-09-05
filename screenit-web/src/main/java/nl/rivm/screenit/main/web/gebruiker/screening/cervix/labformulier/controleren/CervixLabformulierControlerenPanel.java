@@ -76,7 +76,7 @@ public class CervixLabformulierControlerenPanel extends CervixLabformulierBasePa
 	@Override
 	protected Recht getRecht()
 	{
-		return Recht.GEBRUIKER_CERVIX_LABFORMULIEREN_CONTROLEREN;
+		return Recht.MEDEWERKER_CERVIX_LABFORMULIEREN_CONTROLEREN;
 	}
 
 	@Override

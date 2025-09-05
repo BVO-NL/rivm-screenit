@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.model.DossierStatus;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
@@ -113,7 +113,7 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-	public void verwijderVerslag(Verslag<?, ?> verslag, InstellingGebruiker instellingGebruiker, boolean heropenRondeEnDossier)
+	public void verwijderVerslag(Verslag<?, ?> verslag, OrganisatieMedewerker organisatieMedewerker, boolean heropenRondeEnDossier)
 	{
 		var type = verslag.getType();
 		var verslagClazz = type.getClazz();
@@ -128,9 +128,9 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 		var screeningRonde = verslag.getScreeningRonde();
 		var client = screeningRonde.getDossier().getClient();
 
-		if (instellingGebruiker != null)
+		if (organisatieMedewerker != null)
 		{
-			logService.logGebeurtenis(type.getVerwijderdVerslagLogGebeurtenis(), instellingGebruiker, client, melding, type.getBevolkingsonderzoek());
+			logService.logGebeurtenis(type.getVerwijderdVerslagLogGebeurtenis(), organisatieMedewerker, client, melding, type.getBevolkingsonderzoek());
 		}
 		else
 		{

@@ -47,7 +47,7 @@ const ColonAfspraakAfzeggenPage = () => {
 		<ActieBasePage bvoName={BevolkingsonderzoekNaam[Bevolkingsonderzoek.COLON]}
 					   title={getString(properties.page.title)}
 					   description={getString(properties.page.description)}
-					   hintBegin={getString(properties.huidige_afspraak, [huidigeIntakeAfspraak.weergaveAfspraakmoment, huidigeIntakeAfspraak.naamInstelling, splitAdresString(huidigeIntakeAfspraak.adresString)])}>
+					   hintBegin={getString(properties.huidige_afspraak, [huidigeIntakeAfspraak.weergaveAfspraakmoment, huidigeIntakeAfspraak.naamIntakelocatie, splitAdresString(huidigeIntakeAfspraak.adresString)])}>
 
 			<ColonAfspraakAfzeggenForm/>
 

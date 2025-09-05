@@ -23,12 +23,12 @@ import { ApiService } from '@shared/services/api/api.service'
 import { BaseService } from '@shared/services/base/base.service'
 import { Observable, take, tap } from 'rxjs'
 import { SecurityConstraint } from '@shared/types/autorisatie/security-constraint'
-import { Gebruiker } from '@shared/types/autorisatie/gebruiker'
+import { Medewerker } from '@shared/types/autorisatie/medewerker'
 import { Actie } from '@shared/types/autorisatie/actie'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 
 interface AutorisatieState {
-  gebruiker: Gebruiker
+  medewerker: Medewerker
 }
 
 @Injectable({
@@ -37,28 +37,28 @@ interface AutorisatieState {
 export class AutorisatieService extends BaseService<AutorisatieState> {
   private api: ApiService = inject(ApiService)
   private actieOrder = [Actie.INZIEN, Actie.AANPASSEN, Actie.TOEVOEGEN, Actie.VERWIJDEREN]
-  private levelOrder = [ToegangLevel.EIGEN, ToegangLevel.INSTELLING, ToegangLevel.REGIO, ToegangLevel.LANDELIJK]
+  private levelOrder = [ToegangLevel.EIGEN, ToegangLevel.ORGANISATIE, ToegangLevel.REGIO, ToegangLevel.LANDELIJK]
 
-  getGebruiker(): Observable<Gebruiker> {
-    return this.api.get<Gebruiker>('/api/autorisatie/gebruiker').pipe(
+  getMedewerker(): Observable<Medewerker> {
+    return this.api.get<Medewerker>('/api/autorisatie/medewerker').pipe(
       take(1),
       tap((res) => {
-        this.set('gebruiker', res)
+        this.set('medewerker', res)
       }),
     )
   }
 
   isToegestaan(constraint: SecurityConstraint): boolean {
-    const gebruiker = this.select('gebruiker')
-    const inScope = this.inScope(gebruiker(), constraint)
-    const heeftRecht = this.heeftRecht(gebruiker(), constraint)
+    const medewerker = this.select('medewerker')
+    const inScope = this.inScope(medewerker(), constraint)
+    const heeftRecht = this.heeftRecht(medewerker(), constraint)
 
     return inScope && heeftRecht
   }
 
-  private heeftRecht(gebruiker: Gebruiker, constraint: SecurityConstraint): boolean {
-    const rollenBinnenOnderzoeken = gebruiker.rollen
-      .map((gebruikerRol) => gebruikerRol.rol)
+  private heeftRecht(medewerker: Medewerker, constraint: SecurityConstraint): boolean {
+    const rollenBinnenOnderzoeken = medewerker.rollen
+      .map((medewerkerRol) => medewerkerRol.rol)
       .filter((rol) => rol.bevolkingsonderzoeken.some((onderzoek) => constraint.bevolkingsonderzoekScopes.includes(onderzoek)) && rol.actief)
     const permissiesBinnenRollen = rollenBinnenOnderzoeken.map((rol) => rol.permissies).flat()
     return permissiesBinnenRollen.some(
@@ -69,11 +69,11 @@ export class AutorisatieService extends BaseService<AutorisatieState> {
     )
   }
 
-  private inScope(gebruiker: Gebruiker, constraint: SecurityConstraint): boolean {
+  private inScope(medewerker: Medewerker, constraint: SecurityConstraint): boolean {
     if (constraint.bevolkingsonderzoekScopes) {
       let valtBinnenOrganisatieTypeScopes = false
       for (const type of constraint.organisatieTypeScopes) {
-        if (gebruiker.organisatie.organisatieType === type) {
+        if (medewerker.organisatie.organisatieType === type) {
           valtBinnenOrganisatieTypeScopes = true
           break
         }

@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon.overeenkomstenzoeken
 import java.util.Iterator;
 
 import nl.rivm.screenit.main.service.OvereenkomstService;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
@@ -35,7 +35,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import static nl.rivm.screenit.main.util.WicketSpringDataUtil.toSpringSort;
 
-public class OvereenkomstZoekenDataProvider extends SortableDataProvider<Instelling, String>
+public class OvereenkomstZoekenDataProvider extends SortableDataProvider<Organisatie, String>
 {
 	private final IModel<OvereenkomstZoekFilter> zoekModel;
 
@@ -50,7 +50,7 @@ public class OvereenkomstZoekenDataProvider extends SortableDataProvider<Instell
 	}
 
 	@Override
-	public Iterator<? extends Instelling> iterator(long first, long count)
+	public Iterator<? extends Organisatie> iterator(long first, long count)
 	{
 		return overeenkomstService.getAfgeslotenOvereenkomsten(ModelUtil.nullSafeGet(zoekModel), toSpringSort(getSort()), (int) first, (int) count)
 			.iterator();
@@ -63,7 +63,7 @@ public class OvereenkomstZoekenDataProvider extends SortableDataProvider<Instell
 	}
 
 	@Override
-	public IModel<Instelling> model(Instelling object)
+	public IModel<Organisatie> model(Organisatie object)
 	{
 		return ModelUtil.nullSafeSet(object);
 	}

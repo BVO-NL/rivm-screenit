@@ -21,7 +21,7 @@ package nl.rivm.screenit.main.service.colon;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
@@ -35,17 +35,18 @@ public interface ColonDossierService
 
 	void monsterNietBeoordeelbaar(IFOBTTest ifobtTest);
 
-	void conclusieOpslaan(ColonIntakeAfspraak afspraak, ColonVervolgonderzoekKeuzesDto keuzes, InstellingGebruiker ingelogdeGebruiker, ColonConclusieType voorgaandeConclusie);
+	void conclusieOpslaan(ColonIntakeAfspraak afspraak, ColonVervolgonderzoekKeuzesDto keuzes, OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
+		ColonConclusieType voorgaandeConclusie);
 
-	void verwijderScannedAntwoordFormulier(ColonUitnodiging uitnodiging, InstellingGebruiker ingelogdeGebruiker);
+	void verwijderScannedAntwoordFormulier(ColonUitnodiging uitnodiging, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	boolean magConclusieAanpassenVerwijderen(ColonIntakeAfspraak afspraak, ColonConclusieType origConclusie);
 
-	void conclusieVerwijderen(ColonIntakeAfspraak afspraak, InstellingGebruiker loggedInInstellingGebruiker, ColonConclusieType origConclusie);
+	void conclusieVerwijderen(ColonIntakeAfspraak afspraak, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, ColonConclusieType origConclusie);
 
-	void verwijderIfobtUitslag(IFOBTTest buis, UploadDocument uploadDocument, InstellingGebruiker loggedInInstellingGebruiker);
+	void verwijderIfobtUitslag(IFOBTTest buis, UploadDocument uploadDocument, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	void vervangUitslagVerwijderenDocument(IFOBTTest buis, UploadDocument uploadDocument);
 
-	boolean setUitslagenGecontroleerdEnUpdateDashboard(LogRegel logRegel, InstellingGebruiker medewerker, DashboardStatus dashboardStatus);
+	boolean setUitslagenGecontroleerdEnUpdateDashboard(LogRegel logRegel, OrganisatieMedewerker medewerker, DashboardStatus dashboardStatus);
 }

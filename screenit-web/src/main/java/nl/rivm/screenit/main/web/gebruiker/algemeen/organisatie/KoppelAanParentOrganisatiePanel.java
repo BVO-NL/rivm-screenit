@@ -25,8 +25,8 @@ import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.service.OrganisatieZoekService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -34,11 +34,8 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-public class KoppelAanParentOrganisatiePanel<T extends Instelling> extends GenericPanel<T>
+public class KoppelAanParentOrganisatiePanel<T extends Organisatie> extends GenericPanel<T>
 {
-
-	private static final long serialVersionUID = 1L;
-
 	@SpringBean
 	private OrganisatieZoekService organisatieZoekService;
 
@@ -52,15 +49,15 @@ public class KoppelAanParentOrganisatiePanel<T extends Instelling> extends Gener
 	{
 		super.onInitialize();
 
-		InstellingGebruiker loggedInInstellingGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 
-		List<Instelling> mogelijkeParents = organisatieZoekService.getMogelijkeParents(getModelObject(), loggedInInstellingGebruiker);
-		Instelling parent = getModelObject().getParent();
+		List<Organisatie> mogelijkeParents = organisatieZoekService.getMogelijkeParents(getModelObject(), ingelogdeOrganisatieMedewerker);
+		Organisatie parent = getModelObject().getParent();
 		if (parent != null && !mogelijkeParents.contains(parent))
 		{
 			mogelijkeParents.add(parent);
 		}
-		add(new ScreenitDropdown<>("parent", ModelUtil.listRModel(mogelijkeParents)).setRequired(true));
+		add(new ScreenitDropdown<>("parent", ModelUtil.listRModel(mogelijkeParents), Organisatie::getNaam).setRequired(true));
 	}
 
 }

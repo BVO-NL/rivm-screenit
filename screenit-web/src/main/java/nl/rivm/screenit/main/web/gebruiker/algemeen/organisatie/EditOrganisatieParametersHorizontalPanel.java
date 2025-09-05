@@ -28,11 +28,11 @@ import java.util.stream.Collectors;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieParameter;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.OrganisatieType;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -62,7 +62,7 @@ public abstract class EditOrganisatieParametersHorizontalPanel extends GenericPa
 {
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	private IModel<List<OrganisatieParameter>> allParametersModel = ModelUtil.listModel(new ArrayList<>(), false);
 
@@ -83,8 +83,8 @@ public abstract class EditOrganisatieParametersHorizontalPanel extends GenericPa
 				List<OrganisatieParameterKey> keys = parameterKeys.stream().filter(pk -> pk.getOrganisatieType() == item.getModelObject()).collect(Collectors.toList());
 				addTabelHeader(item, keys);
 
-				List<Instelling> instellingen = instellingService.getInstellingByOrganisatieTypes(List.of(keys.get(0).getOrganisatieType()));
-				addOrganisatieLijst(item, instellingen, keys, valueFieldEnabled);
+				List<Organisatie> organisaties = organisatieService.getOrganisatieByOrganisatieTypes(List.of(keys.get(0).getOrganisatieType()));
+				addOrganisatieLijst(item, organisaties, keys, valueFieldEnabled);
 			}
 		});
 
@@ -122,25 +122,25 @@ public abstract class EditOrganisatieParametersHorizontalPanel extends GenericPa
 		container.add(parameters);
 	}
 
-	private void addOrganisatieLijst(MarkupContainer container, List<Instelling> instellingByOrganisatieTypes, List<OrganisatieParameterKey> parameterKeys,
+	private void addOrganisatieLijst(MarkupContainer container, List<Organisatie> organisatieByOrganisatieTypes, List<OrganisatieParameterKey> parameterKeys,
 		boolean valueFieldEnabled)
 	{
-		container.add(new ListView<>("organisaties", ModelUtil.listRModel(instellingByOrganisatieTypes, false))
+		container.add(new ListView<>("organisaties", ModelUtil.listRModel(organisatieByOrganisatieTypes, false))
 		{
 
 			@Override
-			protected void populateItem(ListItem<Instelling> itemInstelling)
+			protected void populateItem(ListItem<Organisatie> itemOrganisatie)
 			{
-				Instelling instelling = itemInstelling.getModelObject();
-				itemInstelling.add(new Label("naam", instelling.getNaam()));
+				Organisatie organisatie = itemOrganisatie.getModelObject();
+				itemOrganisatie.add(new Label("naam", organisatie.getNaam()));
 
-				itemInstelling.add(new ListView<>("parameterValues", parameterKeys)
+				itemOrganisatie.add(new ListView<>("parameterValues", parameterKeys)
 				{
 					@Override
 					protected void populateItem(ListItem<OrganisatieParameterKey> item)
 					{
 						OrganisatieParameterKey parameterKey = item.getModelObject();
-						voegOrganisatieParameterToeAanModel(parameterKey, itemInstelling);
+						voegOrganisatieParameterToeAanModel(parameterKey, itemOrganisatie);
 
 						addNumberField(item, parameterKey);
 
@@ -150,14 +150,14 @@ public abstract class EditOrganisatieParametersHorizontalPanel extends GenericPa
 
 					}
 
-					private void voegOrganisatieParameterToeAanModel(OrganisatieParameterKey parameterKey, ListItem<Instelling> itemInstelling)
+					private void voegOrganisatieParameterToeAanModel(OrganisatieParameterKey parameterKey, ListItem<Organisatie> itemOrganisatie)
 					{
-						Instelling instelling = itemInstelling.getModelObject();
+						Organisatie organisatie = itemOrganisatie.getModelObject();
 						List<OrganisatieParameter> allParams = allParametersModel.getObject();
-						allParams.add(itemInstelling.getModelObject().getParameters().stream().filter(p -> p.getKey() == parameterKey).findFirst().orElseGet(() ->
+						allParams.add(itemOrganisatie.getModelObject().getParameters().stream().filter(p -> p.getKey() == parameterKey).findFirst().orElseGet(() ->
 						{
 							OrganisatieParameter nieuwParameter = new OrganisatieParameter();
-							nieuwParameter.setOrganisatie(instelling);
+							nieuwParameter.setOrganisatie(organisatie);
 							nieuwParameter.setKey(parameterKey);
 							return nieuwParameter;
 						}));

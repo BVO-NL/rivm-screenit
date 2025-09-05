@@ -62,7 +62,7 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_CENTRALE_EENHEID_OPSCHORTEN_BEOORDELINGEN },
+	recht = { Recht.MEDEWERKER_CENTRALE_EENHEID_OPSCHORTEN_BEOORDELINGEN },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaCeOpgeschorteBeoordelingenWerklijstPage extends AbstractMammaCeWerklijst
 {

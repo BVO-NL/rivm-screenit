@@ -103,8 +103,8 @@ public abstract class HeraanmeldingInzienPopupPanel<A extends Afmelding<?, ?, ?>
 	protected HeraanmeldingInzienPopupPanel(String id, IModel<A> model)
 	{
 		super(id, model);
-		actie = autorisatieService.getActieVoorMedewerker(ScreenitSession.get().getLoggedInInstellingGebruiker(), ScreenitSession.get().getCurrentSelectedMedewerker(),
-			Recht.GEBRUIKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN);
+		actie = autorisatieService.getActieVoorMedewerker(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), ScreenitSession.get().getCurrentSelectedMedewerker(),
+			Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN);
 	}
 
 	@Override
@@ -165,7 +165,7 @@ public abstract class HeraanmeldingInzienPopupPanel<A extends Afmelding<?, ?, ?>
 			public void onClick(AjaxRequestTarget target)
 			{
 				ClientBrief brief = getLaatsteBrief();
-				briefHerdrukkenService.opnieuwAanmaken(brief, ScreenitSession.get().getLoggedInAccount());
+				briefHerdrukkenService.opnieuwAanmaken(brief, ScreenitSession.get().getIngelogdAccount());
 
 				info(getString("info.heraanmeldingnogmaalsverstuurd"));
 				close(target);
@@ -179,7 +179,7 @@ public abstract class HeraanmeldingInzienPopupPanel<A extends Afmelding<?, ?, ?>
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				baseBriefService.briefTegenhouden(getLaatsteBrief(), ScreenitSession.get().getLoggedInAccount());
+				baseBriefService.briefTegenhouden(getLaatsteBrief(), ScreenitSession.get().getIngelogdAccount());
 				info(getString("info.brieftegenhouden"));
 				close(target);
 			}
@@ -189,7 +189,7 @@ public abstract class HeraanmeldingInzienPopupPanel<A extends Afmelding<?, ?, ?>
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				baseBriefService.briefNietMeerTegenhouden(getLaatsteBrief(), ScreenitSession.get().getLoggedInAccount());
+				baseBriefService.briefNietMeerTegenhouden(getLaatsteBrief(), ScreenitSession.get().getIngelogdAccount());
 				info(getString("info.briefactiveren"));
 				close(target);
 			}
@@ -213,7 +213,7 @@ public abstract class HeraanmeldingInzienPopupPanel<A extends Afmelding<?, ?, ?>
 			protected void vervangDocument(UploadDocument uploadDocument, AjaxRequestTarget target)
 			{
 				if (baseAfmeldService.vervangHeraanmeldingDocument(uploadDocument, getModelObject(), uploadDocumentModel.getObject(), getLaatsteBrief(),
-					ScreenitSession.get().getLoggedInAccount()))
+					ScreenitSession.get().getIngelogdAccount()))
 				{
 					info(getString("info.vervangendocument"));
 					close(target);

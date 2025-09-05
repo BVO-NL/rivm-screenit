@@ -31,7 +31,7 @@ import nl.rivm.screenit.main.model.testen.TestTimelineRonde;
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.TestVervolgKeuzeOptie;
 import nl.rivm.screenit.main.web.gebruiker.testen.mamma.timeline.ImportPocOpties;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
@@ -48,16 +48,16 @@ public interface MammaTestTimelineService
 
 	List<TestVervolgKeuzeOptie> getSnelKeuzeOpties(Client client);
 
-	MammaOnderzoek maakOnderzoekVoorBe(MammaAfspraak afspraak, InstellingGebruiker instellingGebruiker, MammaScreeningsEenheid se);
+	MammaOnderzoek maakOnderzoekVoorBe(MammaAfspraak afspraak, OrganisatieMedewerker organisatieMedewerker, MammaScreeningsEenheid se);
 
-	void rondOnderzoekAf(MammaAfspraak afspraak, InstellingGebruiker instellingGebruiker, boolean verstuurHl7Berichten, OnvolledigOnderzoekOption onvolledigOnderzoekOption,
+	void rondOnderzoekAf(MammaAfspraak afspraak, OrganisatieMedewerker organisatieMedewerker, boolean verstuurHl7Berichten, OnvolledigOnderzoekOption onvolledigOnderzoekOption,
 		OnderbrokenOnderzoekOption onderbrokenOnderzoekOption, MammaOnderzoekType onderzoeksType, boolean afwijkingGesignaleerd, MammaDenseWaarde densiteit);
 
-	void voegLezingToe(MammaBeoordeling beoordeling, MammaLezing lezing, InstellingGebruiker gebruiker);
+	void voegLezingToe(MammaBeoordeling beoordeling, MammaLezing lezing, OrganisatieMedewerker organisatieMedewerker);
 
-	void voegLezingToe(MammaBeoordeling beoordeling, MammaLezing lezing, InstellingGebruiker gebruiker, boolean verstuurHl7Berichten);
+	void voegLezingToe(MammaBeoordeling beoordeling, MammaLezing lezing, OrganisatieMedewerker organisatieMedewerker, boolean verstuurHl7Berichten);
 
-	void voegEersteTweeLezingenToe(MammaBeoordeling beoordeling, MammaLezing lezing1, MammaLezing lezing2, InstellingGebruiker instellingGebruiker,
+	void voegEersteTweeLezingenToe(MammaBeoordeling beoordeling, MammaLezing lezing1, MammaLezing lezing2, OrganisatieMedewerker organisatieMedewerker,
 		boolean verstuurHl7Berichten);
 
 	List<Client> maakOfVindClienten(TestTimelineModel timelineModel);
@@ -68,23 +68,23 @@ public interface MammaTestTimelineService
 
 	String setDeelnamekansen(InputStream inputStream);
 
-	void verslagGoedkeurenDoorCE(MammaBeoordeling beoordeling, InstellingGebruiker ingelogdeGebruiker);
+	void verslagGoedkeurenDoorCE(MammaBeoordeling beoordeling, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	void doorvoerenOnderzoek(MammaAfspraak afspraak);
 
 	void beeldenBeschikbaarBe(MammaAfspraak afspraak);
 
-	int importPocClienten(File file, InstellingGebruiker instellingGebruiker, MammaScreeningsEenheid screeningsEenheid, ImportPocOpties importPocOpties);
+	int importPocClienten(File file, OrganisatieMedewerker organisatieMedewerker, MammaScreeningsEenheid screeningsEenheid, ImportPocOpties importPocOpties);
 
 	void doorvoerenAdhocMeekijkverzoek(MammaOnderzoek onderzoek);
 
-	void doorvoerenOnderzoekStarten(MammaAfspraak afspraak, InstellingGebruiker ingelogdeInstellingGebruiker, boolean verstuurHl7Berichten);
+	void doorvoerenOnderzoekStarten(MammaAfspraak afspraak, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, boolean verstuurHl7Berichten);
 
 	boolean isSnelkeuzeKnopMammaBeschikbaar(Client client, TestTimelineRonde timeLineRonde);
 
 	void registreerDeelnamewens(Client client);
 
-	void sluitAlleDagenTotEnMetGisteren(MammaScreeningsEenheid screeningsEenheid, InstellingGebruiker ingelogdeGebruiker) throws IllegalStateException;
+	void sluitAlleDagenTotEnMetGisteren(MammaScreeningsEenheid screeningsEenheid, OrganisatieMedewerker ingelogdeOrganisatieMedewerker) throws IllegalStateException;
 
 	String getBsnsMetBeeldenBeschikbaar();
 

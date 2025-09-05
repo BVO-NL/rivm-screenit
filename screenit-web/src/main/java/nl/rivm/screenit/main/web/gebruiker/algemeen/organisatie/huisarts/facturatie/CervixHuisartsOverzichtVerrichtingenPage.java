@@ -42,7 +42,7 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.CervixHuisartsPa
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieBeheer;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.GbaPersoon_;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.ScannedFormulier_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
@@ -61,7 +61,7 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
@@ -103,7 +103,7 @@ import static nl.rivm.screenit.main.service.cervix.impl.AbstractCervixBoekregels
 import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
 @SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = {
-	Recht.GEBRUIKER_BMHK_HUISARTS_OVERZICHT_VERRICHTINGEN }, checkScope = true, level = ToegangLevel.INSTELLING, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX })
+	Recht.MEDEWERKER_BMHK_HUISARTS_OVERZICHT_VERRICHTINGEN }, checkScope = true, level = ToegangLevel.ORGANISATIE, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX })
 public class CervixHuisartsOverzichtVerrichtingenPage extends OrganisatieBeheer
 {
 	private final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy");
@@ -116,7 +116,7 @@ public class CervixHuisartsOverzichtVerrichtingenPage extends OrganisatieBeheer
 	private CervixVerrichtingService verrichtingService;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private ICurrentDateSupplier currentDateSupplier;
@@ -240,14 +240,14 @@ public class CervixHuisartsOverzichtVerrichtingenPage extends OrganisatieBeheer
 	private void bepaalSoDropdown(Form<?> form)
 	{
 		var toonSOdropdown = true;
-		var toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.GEBRUIKER_BMHK_HUISARTS_OVERZICHT_VERRICHTINGEN);
+		var toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_BMHK_HUISARTS_OVERZICHT_VERRICHTINGEN);
 		if (ScreenitSession.get().getScreeningOrganisatie() != null && ToegangLevel.REGIO.equals(toegangLevel))
 		{
 			screeningOrganisatieModel.setObject(ScreenitSession.get().getScreeningOrganisatie());
 			toonSOdropdown = false;
 		}
 
-		List<ScreeningOrganisatie> screeningOrganisaties = instellingService.getAllActiefScreeningOrganisaties();
+		List<ScreeningOrganisatie> screeningOrganisaties = organisatieService.getAllActiefScreeningOrganisaties();
 		DropDownChoice<ScreeningOrganisatie> screeningOrganisatieDropDownChoice = ComponentHelper.newDropDownChoice("screeningOrganisatie",
 			ModelUtil.listRModel(screeningOrganisaties), new ChoiceRenderer<>("naam"), false);
 		screeningOrganisatieDropDownChoice.setOutputMarkupId(true);
@@ -322,7 +322,7 @@ public class CervixHuisartsOverzichtVerrichtingenPage extends OrganisatieBeheer
 	private List<IColumn<CervixBoekRegel, String>> getColumns()
 	{
 		List<IColumn<CervixBoekRegel, String>> columns = new ArrayList<>();
-		columns.add(new PropertyColumn<>(Model.of("Screeningsorganisatie"), propertyChain(REGIO_PROPERTY, Instelling_.NAAM), propertyChain(REGIO_PROPERTY, Instelling_.NAAM)));
+		columns.add(new PropertyColumn<>(Model.of("Screeningsorganisatie"), propertyChain(REGIO_PROPERTY, Organisatie_.NAAM), propertyChain(REGIO_PROPERTY, Organisatie_.NAAM)));
 		columns.add(new PropertyColumn<>(Model.of("Locatie"), propertyChain(HUISARTS_LOCATIE_PROPERTY, CervixHuisartsLocatie_.NAAM),
 			propertyChain(HUISARTS_LOCATIE_PROPERTY, CervixHuisartsLocatie_.NAAM)));
 		columns.add(new ClientColumn<>(propertyChain(PERSOON_PROPERTY, GbaPersoon_.ACHTERNAAM), propertyChain(CervixBoekRegel_.VERRICHTING, CervixVerrichting_.CLIENT)));

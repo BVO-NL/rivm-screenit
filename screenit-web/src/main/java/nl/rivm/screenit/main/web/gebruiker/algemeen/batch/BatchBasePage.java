@@ -26,7 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -36,8 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wicketstuff.shiro.ShiroConstraint;
 
-@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_BATCH_STATUS, bevolkingsonderzoekScopes = {
-		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
+@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_BATCH_STATUS, bevolkingsonderzoekScopes = {
+	Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public abstract class BatchBasePage extends AlgemeenPage
 {
 
@@ -46,12 +47,12 @@ public abstract class BatchBasePage extends AlgemeenPage
 	private static final Logger LOG = LoggerFactory.getLogger(BatchBasePage.class);
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.beheer.batch.start", BatchStartPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.beheer.batch.trigger", BatchTriggerPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.beheer.batch.status", BatchStatusPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.beheer.batch.start", BatchStartPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.beheer.batch.trigger", BatchTriggerPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.beheer.batch.status", BatchStatusPage.class));
 		return contextMenuItems;
 	}
 

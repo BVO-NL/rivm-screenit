@@ -26,8 +26,12 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+
 @Getter
 @Setter
+
+@JsonFilter("autorisatieFilter")
 public class SeAutorisatieDto
 {
 	private String displayName;
@@ -40,7 +44,10 @@ public class SeAutorisatieDto
 
 	private String seNaam;
 
-	private long instellingGebruikerId;
+	@Deprecated(forRemoval = true, since = "25.6.0")
+	private Long instellingGebruikerId;
+
+	private Long organisatieMedewerkerId;
 
 	private SERechtDto inschrijvenRecht;
 
@@ -55,4 +62,17 @@ public class SeAutorisatieDto
 	private String navigatie;
 
 	private Map<SeConfiguratieKey, String> seParameters;
+
+	@Deprecated(forRemoval = true, since = "25.6.0")
+	public void setOrganisatieMedewerkerId(long organisatieMedewerkerId)
+	{
+		this.organisatieMedewerkerId = organisatieMedewerkerId;
+		this.instellingGebruikerId = organisatieMedewerkerId;
+	}
+
+	@Deprecated(forRemoval = true, since = "25.6.0")
+	public long getOrganisatieMedewerkerId()
+	{
+		return organisatieMedewerkerId != null ? organisatieMedewerkerId : instellingGebruikerId;
+	}
 }

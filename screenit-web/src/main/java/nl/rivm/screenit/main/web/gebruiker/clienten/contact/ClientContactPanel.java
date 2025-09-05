@@ -102,10 +102,10 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.StringValidator;
 
 import static nl.rivm.screenit.model.ClientContact_.DATUM;
-import static nl.rivm.screenit.model.ClientContact_.INSTELLING_GEBRUIKER;
 import static nl.rivm.screenit.model.ClientContact_.OPMERKING;
-import static nl.rivm.screenit.model.Gebruiker_.ACHTERNAAM;
-import static nl.rivm.screenit.model.InstellingGebruiker_.MEDEWERKER;
+import static nl.rivm.screenit.model.ClientContact_.ORGANISATIE_MEDEWERKER;
+import static nl.rivm.screenit.model.Medewerker_.ACHTERNAAM;
+import static nl.rivm.screenit.model.OrganisatieMedewerker_.MEDEWERKER;
 import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
 @Slf4j
@@ -171,7 +171,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 
 		if (!ScreenitSession.get().isZoekObjectGezetForComponent(ClientPage.class))
 		{
-			List<Bevolkingsonderzoek> bevolkingsonderzoeken = ScreenitSession.get().getLoggedInInstellingGebruiker().getBevolkingsonderzoeken();
+			List<Bevolkingsonderzoek> bevolkingsonderzoeken = ScreenitSession.get().getIngelogdeOrganisatieMedewerker().getBevolkingsonderzoeken();
 			zoekObjectModel = Model.of(new ClientDossierFilter(new ArrayList<>(bevolkingsonderzoeken), Boolean.TRUE));
 			ScreenitSession.get().setZoekObject(ClientPage.class, zoekObjectModel);
 		}
@@ -228,8 +228,8 @@ public class ClientContactPanel extends GenericPanel<Client>
 
 		List<IColumn<ClientContact, String>> columns = new ArrayList<>();
 		columns.add(new DateTimePropertyColumn<>(Model.of("Datum / tijd"), DATUM, DATUM));
-		columns.add(new PropertyColumn<>(Model.of("Medewerker"), propertyChain(INSTELLING_GEBRUIKER, MEDEWERKER,
-			ACHTERNAAM), "instellingGebruiker.medewerker.naamVolledig"));
+		columns.add(new PropertyColumn<>(Model.of("Medewerker"), propertyChain(ORGANISATIE_MEDEWERKER, MEDEWERKER,
+			ACHTERNAAM), "organisatieMedewerker.medewerker.naamVolledig"));
 		columns.add(new PropertyColumn<>(Model.of("Opmerking"), OPMERKING));
 		columns.add(new AbstractColumn<>(Model.of("Vervolgstap(pen)"))
 		{
@@ -259,7 +259,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 
 		});
 
-		if (ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_CONTACT, Actie.AANPASSEN, getModelObject()))
+		if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_CONTACT, Actie.AANPASSEN, getModelObject()))
 		{
 			columns.add(new AbstractColumn<>(Model.of(""))
 			{
@@ -579,7 +579,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 			}
 			if (!medewerkerMagReserveringenBehouden())
 			{
-				mammaAfspraakReserveringService.verwijderReserveringenVanMedewerker(ScreenitSession.get().getLoggedInInstellingGebruiker());
+				mammaAfspraakReserveringService.verwijderReserveringenVanMedewerker(ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 			}
 		}
 
@@ -727,7 +727,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 				}
 				else
 				{
-					clientContactService.saveClientContact(ModelProxyHelper.deproxy(contact), extraOpslaanObjecten, ScreenitSession.get().getLoggedInInstellingGebruiker());
+					clientContactService.saveClientContact(ModelProxyHelper.deproxy(contact), extraOpslaanObjecten, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 					BasePage.markeerFormulierenOpgeslagen(target);
 
 					if (acties.stream().anyMatch(a -> a.getType().equals(ClientContactActieType.MAMMA_RONDE_FORCEREN))
@@ -757,17 +757,17 @@ public class ClientContactPanel extends GenericPanel<Client>
 			}
 			catch (RuntimeException e)
 			{
-				ScreenitSession.get().error(getString("contact.afronden.niet.gelukt") + ExceptionConverter.getGebruikerMeldingUitTriggerMessage(e));
+				ScreenitSession.get().error(getString("contact.afronden.niet.gelukt") + ExceptionConverter.getMedewerkerMeldingUitTriggerMessage(e));
 				handleContactAfrondenFout(target, contact);
 			}
 		}
 
 		private void handleContactAfrondenFout(AjaxRequestTarget target, ClientContact contact)
 		{
-			hibernateService.reload(ScreenitSession.get().getLoggedInInstellingGebruiker());
+			hibernateService.reload(ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 			BasePage.markeerFormulierenOpgeslagen(target);
 			IModel<Client> clientIModel = ClientContactPanel.this.getModel();
-			contact.setInstellingGebruiker(null);
+			contact.setOrganisatieMedewerker(null);
 			Client client1 = hibernateService.load(Client.class, clientIModel.getObject().getId());
 			contactNietAfgerond(client1);
 		}

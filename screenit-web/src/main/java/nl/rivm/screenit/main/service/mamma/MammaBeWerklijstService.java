@@ -25,7 +25,7 @@ import java.util.List;
 
 import nl.rivm.screenit.main.model.mamma.beoordeling.MammaBeWerklijstZoekObject;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
@@ -34,7 +34,7 @@ import org.springframework.data.domain.Sort;
 
 public interface MammaBeWerklijstService
 {
-	boolean heeftOnderzoekenInWerklijst(InstellingGebruiker loggedInInstellingGebruiker, BeoordelingsEenheid beoordelingsEenheid);
+	boolean heeftOnderzoekenInWerklijst(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, BeoordelingsEenheid beoordelingsEenheid);
 
 	List<MammaBeoordeling> zoekBeoordelingen(MammaBeWerklijstZoekObject zoekObject, long first, long count, Sort sort);
 
@@ -42,15 +42,15 @@ public interface MammaBeWerklijstService
 
 	List<Long> zoekBeoordelingenNummers(MammaBeWerklijstZoekObject zoekObject, Sort sort);
 
-	List<MammaScreeningsEenheid> zoekScreeningsEenhedenMetBeWerklijstBeoordeling(InstellingGebruiker loggedInInstellingGebruiker,
+	List<MammaScreeningsEenheid> zoekScreeningsEenhedenMetBeWerklijstBeoordeling(OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
 		List<MammaBeoordelingStatus> beschikbarePaginaStatussen);
 
 	int getAantalBeoordeeld(MammaBeWerklijstZoekObject zoekObject);
 
 	int getAantalBeoordeeldInList(List<Long> beoordelingenIds);
 
-	boolean is1eOf2eLezingenTeBevestigen(InstellingGebruiker instellingGebruiker);
+	boolean is1eOf2eLezingenTeBevestigen(OrganisatieMedewerker organisatieMedewerker);
 
-	void bevestig1eEn2eLezingen(InstellingGebruiker instellingGebruiker);
+	void bevestig1eEn2eLezingen(OrganisatieMedewerker organisatieMedewerker);
 
 }

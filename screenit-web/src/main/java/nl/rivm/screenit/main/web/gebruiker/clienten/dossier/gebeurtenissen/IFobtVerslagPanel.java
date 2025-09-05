@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen;
  */
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +47,7 @@ import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.FileType;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.UploadDocumentService;
+import nl.rivm.screenit.service.colon.ColonBaseFITService;
 import nl.rivm.screenit.util.FITTestUtil;
 import nl.topicuszorg.documentupload.wicket.UploadDocumentLink;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
@@ -74,7 +74,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_CLIENT_SR_UITSLAGIFOBTONTVANGEN,
+	recht = Recht.MEDEWERKER_CLIENT_SR_UITSLAGIFOBTONTVANGEN,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class IFobtVerslagPanel extends AbstractGebeurtenisDetailPanel
 {
@@ -83,6 +83,9 @@ public class IFobtVerslagPanel extends AbstractGebeurtenisDetailPanel
 
 	@SpringBean
 	private UploadDocumentService uploadDocumentService;
+
+	@SpringBean
+	private ColonBaseFITService fitService;
 
 	private BootstrapDialog confirmDialog;
 
@@ -118,16 +121,16 @@ public class IFobtVerslagPanel extends AbstractGebeurtenisDetailPanel
 		uploadForm.add(new EnumLabel<IFOBTType>("buis.type"));
 
 		IFOBTTest buis = getModelObject().getBuis();
-		BigDecimal uitslag = null;
+		String uitslag = null;
 		IFOBTTestStatus status = null;
 
 		if (buis != null)
 		{
 			status = buis.getStatus();
-			uitslag = buis.getUitslag();
+			uitslag = fitService.getToonbareWaarde(buis);
 			if (uitslag != null)
 			{
-				uploadForm.add(new Label("uitslag", uitslag + ""));
+				uploadForm.add(new Label("uitslag", uitslag));
 			}
 		}
 		if (uitslag == null)
@@ -135,7 +138,7 @@ public class IFobtVerslagPanel extends AbstractGebeurtenisDetailPanel
 			uploadForm.add(new Label("uitslag", ""));
 		}
 
-		String interpretatie = getInterpretatie(buis, status);
+		var interpretatie = FITTestUtil.getInterpretatie(buis, status, true);
 		uploadForm.add(new Label("interpretatie", interpretatie));
 		if (status != null)
 		{
@@ -147,7 +150,7 @@ public class IFobtVerslagPanel extends AbstractGebeurtenisDetailPanel
 		}
 		uploadForm.add(new Label("buis.barcode"));
 
-		createUploadField(status);
+		createUploadField();
 		createVervangenUploadSubmitBtn();
 
 		confirmDialog = new BootstrapDialog("confirmDialog");
@@ -191,7 +194,7 @@ public class IFobtVerslagPanel extends AbstractGebeurtenisDetailPanel
 		uploadForm.add(formUploadBtn);
 	}
 
-	private void createUploadField(IFOBTTestStatus status)
+	private void createUploadField()
 	{
 		uploadField = new FileUploadField("fileUpload", file);
 		uploadField.add(new FileValidator(FileType.PDF));
@@ -248,7 +251,7 @@ public class IFobtVerslagPanel extends AbstractGebeurtenisDetailPanel
 					LOG.error("Fout bij uploaden van een bezwaar formulier: ", e);
 					error(getString("error.onbekend"));
 				}
-				colonDossierService.verwijderIfobtUitslag(buis, uploadDocument, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				colonDossierService.verwijderIfobtUitslag(buis, uploadDocument, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				ScreenitSession.get().info(IFobtVerslagPanel.this.getString("ifobtuitslag.verwijderd"));
 
 				setResponsePage(new ClientDossierPage(ModelUtil.sModel(uitnodiging.getScreeningRonde().getDossier().getClient())));
@@ -262,7 +265,7 @@ public class IFobtVerslagPanel extends AbstractGebeurtenisDetailPanel
 
 	private boolean magVerwijderen()
 	{
-		boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_UITSLAGIFOBTONTVANGEN, Actie.VERWIJDEREN);
+		boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_UITSLAGIFOBTONTVANGEN, Actie.VERWIJDEREN);
 		ScreeningRondeGebeurtenis screeningRondeGebeurtenis = getModelObject();
 		ColonUitnodiging uitnodiging = (ColonUitnodiging) screeningRondeGebeurtenis.getUitnodiging();
 		if (uitnodiging != null)
@@ -294,32 +297,6 @@ public class IFobtVerslagPanel extends AbstractGebeurtenisDetailPanel
 	private void maakUploadDocument(FileUpload fileUpload) throws Exception
 	{
 		uploadDocument = ScreenitSession.get().fileUploadToUploadDocument(fileUpload);
-	}
-
-	private String getInterpretatie(IFOBTTest buis, IFOBTTestStatus status)
-	{
-		String interpretatie;
-		if (IFOBTTestStatus.VERWIJDERD.equals(status))
-		{
-			interpretatie = "Verwijderd";
-		}
-		else if (FITTestUtil.isGunstig(buis))
-		{
-			interpretatie = "Gunstig";
-		}
-		else if (FITTestUtil.isOngunstig(buis))
-		{
-			interpretatie = "Ongunstig";
-		}
-		else if (buis.getUitslag() != null && buis.getNormWaarde() == null)
-		{
-			interpretatie = "";
-		}
-		else
-		{
-			interpretatie = "Geen uitslag";
-		}
-		return interpretatie;
 	}
 
 	@Override

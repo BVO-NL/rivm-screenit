@@ -38,9 +38,9 @@ import nl.rivm.screenit.model.project.ProjectGroep;
 
 public interface BaseProjectService
 {
-	List<Project> getProjecten(Project zoekObject, List<Long> instellingIdsProject, List<Long> instellingIdsBriefproject, long first, long count, SortState<String> sortState);
+	List<Project> getProjecten(Project zoekObject, List<Long> organisatieIdsProject, List<Long> organisatieIdsBriefproject, long first, long count, SortState<String> sortState);
 
-	long getCountProjecten(Project zoekObject, List<Long> instellingIdsProject, List<Long> instellingIdsBriefproject);
+	long getCountProjecten(Project zoekObject, List<Long> organisatieIdsProject, List<Long> organisatieIdsBriefproject);
 
 	void updateWachtOpStartProject(Bevolkingsonderzoek bvo);
 

@@ -27,7 +27,7 @@ import java.util.Map;
 
 import nl.rivm.screenit.main.service.mamma.MammaImsService;
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaClientPaspoortPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaScreeningBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaBeoordelenPage;
@@ -94,7 +94,7 @@ public class MammaFotobesprekingOnderzoekBesprekenPage extends AbstractMammaBeoo
 	@Override
 	protected void handleImsError(AjaxRequestTarget target, String errorMessage, Long onderzoekId)
 	{
-		error(imsService.handleError(errorMessage, ScreenitSession.get().getLoggedInInstellingGebruiker(), (b) -> getString((String) b), onderzoekId));
+		error(imsService.handleError(errorMessage, getIngelogdeOrganisatieMedewerker(), (b) -> getString((String) b), onderzoekId));
 		huidigeRondePanel.blokeerButtons(target);
 	}
 
@@ -113,12 +113,12 @@ public class MammaFotobesprekingOnderzoekBesprekenPage extends AbstractMammaBeoo
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.fotobespreking.overzicht",
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.fotobespreking.overzicht",
 			MammaFotobesprekingOverzichtPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.fotobespreking.onderzoeken", true,
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.fotobespreking.onderzoeken", true,
 			MammaFotobesprekingOnderzoekenWerklijstPage.class));
 
 		return contextMenuItems;

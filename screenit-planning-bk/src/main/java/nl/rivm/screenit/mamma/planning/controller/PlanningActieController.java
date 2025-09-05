@@ -165,10 +165,10 @@ public class PlanningActieController
 		}
 	}
 
-	@PostMapping(value = "/conceptGewijzigdDoor/{instellingGebruikerId}/{screeningOrganisatieId}")
-	public void conceptGewijzigdDoor(@PathVariable Long instellingGebruikerId, @PathVariable Long screeningOrganisatieId)
+	@PostMapping(value = "/conceptGewijzigdDoor/{organisatieMedewerkerId}/{screeningOrganisatieId}")
+	public void conceptGewijzigdDoor(@PathVariable Long organisatieMedewerkerId, @PathVariable Long screeningOrganisatieId)
 	{
-		PlanningScreeningsOrganisatieIndex.get(screeningOrganisatieId).conceptGewijzigdDoor(instellingGebruikerId);
+		PlanningScreeningsOrganisatieIndex.get(screeningOrganisatieId).conceptGewijzigdDoor(organisatieMedewerkerId);
 	}
 
 	@GetMapping(value = "/conceptGewijzigdDoor/{screeningOrganisatieId}")

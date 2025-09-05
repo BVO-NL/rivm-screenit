@@ -28,6 +28,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
+
+import lombok.extern.slf4j.Slf4j;
+
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.batch.service.BarcodeValiderenService;
 import nl.rivm.screenit.batch.service.WebserviceInpakcentrumOpzettenService;
@@ -38,8 +44,6 @@ import nl.rivm.screenit.model.logging.LogEvent;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ExecutionContext;
@@ -52,14 +56,11 @@ import org.tempuri.IUpload;
 import org.tempuri.UploadRequest;
 
 import generated.KOPPELDATA;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
 
+@Slf4j
+@Deprecated(forRemoval = true, since = "nieuwe endpoint wordt gebruikt in PROD")
 public abstract class BaseKoppelReader implements ItemStream
 {
-	private static final Logger LOG = LoggerFactory.getLogger(BaseKoppelReader.class);
-
 	@Autowired
 	protected SessionFactory sessionFactory;
 
@@ -165,9 +166,9 @@ public abstract class BaseKoppelReader implements ItemStream
 			LogEvent eindEvent = new LogEvent();
 			eindEvent.setLevel(Level.INFO);
 
-			if (semantischeFoutmeldingen.size() > 0)
+			if (!semantischeFoutmeldingen.isEmpty())
 			{
-				LOG.warn("Fouten gevonden: #" + semantischeFoutmeldingen.size());
+				LOG.warn("Fouten gevonden: #{}", semantischeFoutmeldingen.size());
 				eindEvent.setLevel(Level.ERROR);
 				eindEvent.setMelding("De validatie heeft fouten gevonden en teruggekoppeld, Aantal fouten: #" + semantischeFoutmeldingen.size());
 			}
@@ -206,7 +207,7 @@ public abstract class BaseKoppelReader implements ItemStream
 		}
 		KoppelData koppelData = getKoppelData();
 
-		return ((KOPPELDATA) unmarshaller.unmarshal(new StringReader(koppelData.getXmlBericht()))).getVERZONDENUITNODIGING();
+		return ((KOPPELDATA) unmarshaller.unmarshal(new StringReader(koppelData.getKoppelData()))).getVERZONDENUITNODIGING();
 	}
 
 	private KoppelData getKoppelData()

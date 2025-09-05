@@ -25,20 +25,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaAfspraakReservering;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
 
 public interface MammaAfspraakReserveringService
 {
-	MammaAfspraakReservering maakAfspraakReservering(MammaAfspraak afspraak, InstellingGebruiker gebruiker);
+	MammaAfspraakReservering maakAfspraakReservering(MammaAfspraak afspraak, OrganisatieMedewerker organisatieMedewerker);
 
 	List<MammaAfspraakReservering> getActieveReserveringenVoorCapaciteitBlok(MammaCapaciteitBlok blok);
 
 	void verwijderReserveringenVoorClient(Client client);
 
-	void verwijderReserveringenVanMedewerker(InstellingGebruiker medewerker);
+	void verwijderReserveringenVanMedewerker(OrganisatieMedewerker medewerker);
 
 	void verwijderAfspraakReserveringenDieGemaaktZijnVoor(LocalDateTime moment);
 }

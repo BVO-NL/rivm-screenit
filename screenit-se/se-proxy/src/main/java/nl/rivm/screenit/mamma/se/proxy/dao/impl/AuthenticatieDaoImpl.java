@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.dao.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -30,7 +30,7 @@ import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.mamma.se.proxy.dao.AuthenticatieDao;
-import nl.rivm.screenit.mamma.se.proxy.model.IngelogdeGebruikerDto;
+import nl.rivm.screenit.mamma.se.proxy.model.IngelogdeMedewerkerDto;
 import nl.rivm.screenit.mamma.se.proxy.model.LoginContext;
 import nl.rivm.screenit.mamma.se.proxy.model.SeConfiguratieKey;
 import nl.rivm.screenit.mamma.se.proxy.services.ConfiguratieService;
@@ -47,13 +47,13 @@ public class AuthenticatieDaoImpl extends BaseDaoImpl implements AuthenticatieDa
 	private ConfiguratieService configuratieService;
 
 	@Override
-	public IngelogdeGebruikerDto getIngelogdeGebruiker(LoginContext loginContext)
+	public IngelogdeMedewerkerDto getIngelogdeMedewerker(LoginContext loginContext)
 	{
-		var query = "SELECT IG.gebruikersnaam, IG.wachtwoord, IG.laatste_inlog, IG.yubikey_public, IG.login_response, IG.account_id " +
-			"FROM INGELOGDE_GEBRUIKER IG " +
-			"WHERE IG.gebruikersnaam=? " +
-			"AND IG.wachtwoord=? " +
-			"AND IG.yubikey_public=?;";
+		var query = "SELECT IM.gebruikersnaam, IM.wachtwoord, IM.laatste_inlog, IM.yubikey_public, IM.login_response, IMaccount_id " +
+			"FROM INGELOGDE_MEDEWERKER IM " +
+			"WHERE IM.gebruikersnaam=? " +
+			"AND IM.wachtwoord=? " +
+			"AND IM.yubikey_public=?;";
 
 		try (Connection dbConnection = getConnection();
 			PreparedStatement statement = dbConnection.prepareStatement(query))
@@ -64,81 +64,81 @@ public class AuthenticatieDaoImpl extends BaseDaoImpl implements AuthenticatieDa
 			ResultSet resultSet = statement.executeQuery();
 			if (resultSet.next())
 			{
-				return getIngelogdeGebruikerFromResultSet(resultSet);
+				return getIngelogdeMedewerkerFromResultSet(resultSet);
 			}
 		}
 		catch (SQLException e)
 		{
-			LOG.warn("Er is een probleem met het ophalen van een ingelogde gebruiker met id {}: {}", loginContext.getAccountId(), e.getMessage());
-			throw new IllegalStateException("Ophalen van ingelogde gebruiker ging fout.");
+			LOG.warn("Er is een probleem met het ophalen van een ingelogde medewerker met id {}: {}", loginContext.getAccountId(), e.getMessage());
+			throw new IllegalStateException("Ophalen van ingelogde medewerker ging fout.");
 		}
 		return null;
 	}
 
 	@Override
-	public void insertOrUpdateIngelogdeGebruiker(IngelogdeGebruikerDto ingelogdeGebruikerDto)
+	public void insertOrUpdateIngelogdeMedewerker(IngelogdeMedewerkerDto ingelogdeMedewerkerDto)
 	{
-		var sql = "INSERT INTO INGELOGDE_GEBRUIKER(gebruikersnaam, wachtwoord, laatste_inlog, yubikey_public, login_response, account_id)" +
+		var sql = "INSERT INTO INGELOGDE_MEDEWERKER(gebruikersnaam, wachtwoord, laatste_inlog, yubikey_public, login_response, account_id)" +
 			" VALUES (?, ?, ?, ? ,?, ?)" +
 			" ON CONFLICT(account_id)" +
 			" DO UPDATE SET gebruikersnaam = ?, wachtwoord = ?, laatste_inlog = ?, yubikey_public = ?, login_response = ?, account_id = ?;";
 		try (Connection connection = getConnection();
 			PreparedStatement insertStatement = connection.prepareStatement(sql))
 		{
-			insertStatement.setString(1, ingelogdeGebruikerDto.getGebruikersnaam());
-			insertStatement.setString(2, ingelogdeGebruikerDto.getWachtwoord());
-			insertStatement.setString(3, ingelogdeGebruikerDto.getLaatsteInlog().toString());
-			insertStatement.setString(4, ingelogdeGebruikerDto.getYubikeyIdentificatie());
-			insertStatement.setString(5, ingelogdeGebruikerDto.getLoginResponse());
-			insertStatement.setLong(6, ingelogdeGebruikerDto.getAccountId());
+			insertStatement.setString(1, ingelogdeMedewerkerDto.getGebruikersnaam());
+			insertStatement.setString(2, ingelogdeMedewerkerDto.getWachtwoord());
+			insertStatement.setString(3, ingelogdeMedewerkerDto.getLaatsteInlog().toString());
+			insertStatement.setString(4, ingelogdeMedewerkerDto.getYubikeyIdentificatie());
+			insertStatement.setString(5, ingelogdeMedewerkerDto.getLoginResponse());
+			insertStatement.setLong(6, ingelogdeMedewerkerDto.getAccountId());
 
-			insertStatement.setString(7, ingelogdeGebruikerDto.getGebruikersnaam());
-			insertStatement.setString(8, ingelogdeGebruikerDto.getWachtwoord());
-			insertStatement.setString(9, ingelogdeGebruikerDto.getLaatsteInlog().toString());
-			insertStatement.setString(10, ingelogdeGebruikerDto.getYubikeyIdentificatie());
-			insertStatement.setString(11, ingelogdeGebruikerDto.getLoginResponse());
-			insertStatement.setLong(12, ingelogdeGebruikerDto.getAccountId());
+			insertStatement.setString(7, ingelogdeMedewerkerDto.getGebruikersnaam());
+			insertStatement.setString(8, ingelogdeMedewerkerDto.getWachtwoord());
+			insertStatement.setString(9, ingelogdeMedewerkerDto.getLaatsteInlog().toString());
+			insertStatement.setString(10, ingelogdeMedewerkerDto.getYubikeyIdentificatie());
+			insertStatement.setString(11, ingelogdeMedewerkerDto.getLoginResponse());
+			insertStatement.setLong(12, ingelogdeMedewerkerDto.getAccountId());
 			insertStatement.execute();
 		}
 		catch (SQLException e)
 		{
-			LOG.warn("Er ging iets fout bij toevoegen van een ingelogde gebruiker met id {}: {}, na het draaien van de lokale filler moet je handmatig de"
-				+ " tabel ingelogde_gebruiker legen in de SE database in bestand se-proxy/db/screenit-se.db", ingelogdeGebruikerDto.getAccountId(), e.getMessage());
-			throw new IllegalStateException("Toevoegen van ingelogde gebruiker ging fout.");
+			LOG.warn("Er ging iets fout bij toevoegen van een ingelogde medewerker met id {}: {}, na het draaien van de lokale filler moet je handmatig de"
+				+ " tabel ingelogde_medewerker legen in de SE database in bestand se-proxy/db/screenit-se.db", ingelogdeMedewerkerDto.getAccountId(), e.getMessage());
+			throw new IllegalStateException("Toevoegen van ingelogde medewerker ging fout.");
 		}
 	}
 
 	@Override
-	public void updateIngelogdeGebruiker(IngelogdeGebruikerDto ingelogdeGebruikerDto)
+	public void updateIngelogdeMedewerker(IngelogdeMedewerkerDto ingelogdeMedewerkerDto)
 	{
-		var sql = "UPDATE INGELOGDE_GEBRUIKER " +
+		var sql = "UPDATE INGELOGDE_MEDEWERKER " +
 			"SET gebruikersnaam = ?, wachtwoord = ?, laatste_inlog = ?, yubikey_public = ?, login_response = ?, account_id = ? " +
 			"WHERE gebruikersnaam = ? ;";
 		try (Connection connection = getConnection();
 			PreparedStatement insertStatement = connection.prepareStatement(sql))
 		{
-			insertStatement.setString(1, ingelogdeGebruikerDto.getGebruikersnaam());
-			insertStatement.setString(2, ingelogdeGebruikerDto.getWachtwoord());
-			insertStatement.setString(3, ingelogdeGebruikerDto.getLaatsteInlog().toString());
-			insertStatement.setString(4, ingelogdeGebruikerDto.getYubikeyIdentificatie());
-			insertStatement.setString(5, ingelogdeGebruikerDto.getLoginResponse());
-			insertStatement.setLong(6, ingelogdeGebruikerDto.getAccountId());
-			insertStatement.setString(7, ingelogdeGebruikerDto.getGebruikersnaam());
+			insertStatement.setString(1, ingelogdeMedewerkerDto.getGebruikersnaam());
+			insertStatement.setString(2, ingelogdeMedewerkerDto.getWachtwoord());
+			insertStatement.setString(3, ingelogdeMedewerkerDto.getLaatsteInlog().toString());
+			insertStatement.setString(4, ingelogdeMedewerkerDto.getYubikeyIdentificatie());
+			insertStatement.setString(5, ingelogdeMedewerkerDto.getLoginResponse());
+			insertStatement.setLong(6, ingelogdeMedewerkerDto.getAccountId());
+			insertStatement.setString(7, ingelogdeMedewerkerDto.getGebruikersnaam());
 			insertStatement.execute();
 		}
 		catch (SQLException e)
 		{
-			LOG.warn("Er ging iets fout bij updaten van een ingelogde gebruiker met id {}: {}", ingelogdeGebruikerDto.getAccountId(), e.getMessage());
-			throw new IllegalStateException("Updaten van ingelogde gebruiker ging fout.");
+			LOG.warn("Er ging iets fout bij updaten van een ingelogde medewerker met id {}: {}", ingelogdeMedewerkerDto.getAccountId(), e.getMessage());
+			throw new IllegalStateException("Updaten van ingelogde medewerker ging fout.");
 		}
 	}
 
 	@Override
 	public Long getAccountIdFromUsername(String gebruikersnaam)
 	{
-		var query = "SELECT IG.account_id " +
-			"FROM INGELOGDE_GEBRUIKER IG " +
-			"WHERE IG.gebruikersnaam=?;";
+		var query = "SELECT IM.account_id " +
+			"FROM INGELOGDE_MEDEWERKER IM " +
+			"WHERE IM.gebruikersnaam=?;";
 
 		try (Connection dbConnection = getConnection();
 			PreparedStatement statement = dbConnection.prepareStatement(query))
@@ -152,17 +152,17 @@ public class AuthenticatieDaoImpl extends BaseDaoImpl implements AuthenticatieDa
 		}
 		catch (SQLException e)
 		{
-			throw new IllegalStateException("Ophalen van ingelogde gebruiker ging fout.");
+			throw new IllegalStateException("Ophalen van ingelogde medewerker ging fout.");
 		}
 		return null;
 	}
 
 	@Override
-	public void verwijderOudeIngelogdeGebruikers()
+	public void verwijderOudeIngelogdeMedewerkers()
 	{
 		int termijn = configuratieService.getConfiguratieIntegerValue(SeConfiguratieKey.SE_MAX_OFFLINE_INLOG_PERIODE);
 
-		String sql = "DELETE FROM INGELOGDE_GEBRUIKER WHERE laatste_inlog < ?;";
+		String sql = "DELETE FROM INGELOGDE_MEDEWERKER WHERE laatste_inlog < ?;";
 		try (Connection connection = getConnection();
 			PreparedStatement removeTransactie = connection.prepareStatement(sql))
 		{
@@ -171,13 +171,13 @@ public class AuthenticatieDaoImpl extends BaseDaoImpl implements AuthenticatieDa
 		}
 		catch (SQLException e)
 		{
-			LOG.error("Er is een probleem met het verwijderen van de oude ingelogde gebruikers: {}", e.getMessage());
+			LOG.error("Er is een probleem met het verwijderen van de oude ingelogde medewerkers: {}", e.getMessage());
 		}
 	}
 
-	private IngelogdeGebruikerDto getIngelogdeGebruikerFromResultSet(ResultSet resultSet) throws SQLException
+	private IngelogdeMedewerkerDto getIngelogdeMedewerkerFromResultSet(ResultSet resultSet) throws SQLException
 	{
-		return new IngelogdeGebruikerDto(resultSet.getString(1), resultSet.getString(2), LocalDate.parse(resultSet.getString(3)),
+		return new IngelogdeMedewerkerDto(resultSet.getString(1), resultSet.getString(2), LocalDate.parse(resultSet.getString(3)),
 			resultSet.getString(4), resultSet.getString(5), resultSet.getLong(6));
 	}
 }

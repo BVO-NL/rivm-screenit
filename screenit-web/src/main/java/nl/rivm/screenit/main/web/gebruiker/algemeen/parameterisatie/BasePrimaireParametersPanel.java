@@ -73,12 +73,12 @@ public abstract class BasePrimaireParametersPanel extends GenericPanel<Parameter
 
 	protected ToegangLevel getToegangsLevel()
 	{
-		return ScreenitSession.get().getToegangsLevel(Actie.AANPASSEN, Recht.GEBRUIKER_BEHEER_PARAMETERISATIE);
+		return ScreenitSession.get().getToegangsLevel(Actie.AANPASSEN, Recht.MEDEWERKER_BEHEER_PARAMETERISATIE);
 	}
 
 	protected boolean magAanpassen()
 	{
-		return ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_PARAMETERISATIE, Actie.AANPASSEN);
+		return ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_PARAMETERISATIE, Actie.AANPASSEN);
 	}
 
 	protected abstract Form<Parameterisatie> createAndGetForm();
@@ -109,7 +109,7 @@ public abstract class BasePrimaireParametersPanel extends GenericPanel<Parameter
 	protected void opslaan(AjaxRequestTarget target, Bevolkingsonderzoek... bvo)
 	{
 		Parameterisatie parameterisatie = getModelObject();
-		parameterisatieService.saveParameters(ScreenitSession.get().getLoggedInAccount(), parameterisatie, oudParameterObject, bvo);
+		parameterisatieService.saveParameters(ScreenitSession.get().getIngelogdAccount(), parameterisatie, oudParameterObject, bvo);
 		setOudParametersObject(parameterisatie);
 		markeerFormulierenOpgeslagen(target);
 	}

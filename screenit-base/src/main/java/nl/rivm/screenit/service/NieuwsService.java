@@ -23,7 +23,7 @@ package nl.rivm.screenit.service;
 
 import java.util.List;
 
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.nieuws.NieuwsItem;
 
 public interface NieuwsService
@@ -31,5 +31,5 @@ public interface NieuwsService
 
 	List<NieuwsItem> getNieuwsItems(boolean inclusiefVerlopenNieuwsItems);
 
-	List<Long> getNieuwsItemIdsGebruiker(Gebruiker gebruiker);
+	List<Long> getNieuwsItemIdsMedewerker(Medewerker medewerker);
 }

@@ -132,10 +132,10 @@ public abstract class ColonHandmatigVervolgbeleidVastleggenPanel extends Generic
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				var loggedInInstellingGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
+				var ingelogdeOrganisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 				var verslag = ModelProxyHelper.deproxy(getModelObject());
 
-				verwerkVerslagService.handmatigMdlVerslagOpslaan(verslag, loggedInInstellingGebruiker);
+				verwerkVerslagService.handmatigMdlVerslagOpslaan(verslag, ingelogdeOrganisatieMedewerker);
 				close(target);
 			}
 		});

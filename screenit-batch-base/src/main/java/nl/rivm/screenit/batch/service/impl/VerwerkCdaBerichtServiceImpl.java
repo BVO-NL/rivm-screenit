@@ -41,9 +41,9 @@ import nl.rivm.screenit.hl7v3.cda.POCDMT000040AssignedEntity;
 import nl.rivm.screenit.hl7v3.cda.helper.CDAHelper;
 import nl.rivm.screenit.hl7v3.cda.helper.CommonCdaConstants;
 import nl.rivm.screenit.hl7v3.cda.helper.ExtractCDA;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.ZorgInstelling;
@@ -78,12 +78,12 @@ import nl.rivm.screenit.repository.algemeen.MeldingOngeldigCdaBerichtRepository;
 import nl.rivm.screenit.repository.algemeen.VerslagRepository;
 import nl.rivm.screenit.repository.cervix.CervixCytologieOrderRepository;
 import nl.rivm.screenit.service.BaseCdaVerslagService;
+import nl.rivm.screenit.service.BaseMedewerkerService;
 import nl.rivm.screenit.service.ClientService;
-import nl.rivm.screenit.service.GebruikersService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.KwaliteitsovereenkomstService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.VerwerkVerslagService;
 import nl.rivm.screenit.util.MedewerkerUtil;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
@@ -114,10 +114,10 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 	private ClientService clientService;
 
 	@Autowired
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@Autowired
-	private GebruikersService gebruikersService;
+	private BaseMedewerkerService medewerkerService;
 
 	@Autowired
 	private LogService logService;
@@ -206,8 +206,8 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 
 	private void verwerkBericht(OntvangenCdaBericht ontvangenCdaBericht, ClinicalDocument cdaDocument) throws OngeldigCdaException
 	{
-		List<Instelling> instellingen = new ArrayList<>();
-		instellingen.add(hibernateService.loadAll(Rivm.class).get(0));
+		List<Organisatie> organisaties = new ArrayList<>();
+		organisaties.add(hibernateService.loadAll(Rivm.class).get(0));
 		Verslag verslag = null;
 		var berichtType = ontvangenCdaBericht.getBerichtType();
 		switch (berichtType)
@@ -237,19 +237,19 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 		verwerkVerslagService.verwerkInDossier(verslag);
 		verwerkVerslagService.onAfterVerwerkVerslagContent(verslag);
 
-		var uitvoerendeInstelling = verslag.getUitvoerderOrganisatie();
+		var uitvoerendeOrganisatie = verslag.getUitvoerderOrganisatie();
 		var melding = "CDA met berichtId " + ontvangenCdaBericht.getBerichtId() + ", setId " + ontvangenCdaBericht.getSetId() + " en versie "
 			+ ontvangenCdaBericht.getVersie() + " is verwerkt. Uitvoerder: "
-			+ (uitvoerendeInstelling != null ? uitvoerendeInstelling.getNaam() : ((MammaVerslag) verslag).getLabCode());
+			+ (uitvoerendeOrganisatie != null ? uitvoerendeOrganisatie.getNaam() : ((MammaVerslag) verslag).getLabCode());
 		var logEvent = new BerichtOntvangenLogEvent();
 		logEvent.setBericht(ontvangenCdaBericht);
 		logEvent.setMelding(melding);
 
-		if (uitvoerendeInstelling != null)
+		if (uitvoerendeOrganisatie != null)
 		{
-			instellingen.add(uitvoerendeInstelling);
+			organisaties.add(uitvoerendeOrganisatie);
 		}
-		logService.logGebeurtenis(berichtType.getLbBerichtVerwerkt(), instellingen, logEvent, null, verslag.getScreeningRonde().getDossier().getClient(),
+		logService.logGebeurtenis(berichtType.getLbBerichtVerwerkt(), organisaties, logEvent, null, verslag.getScreeningRonde().getDossier().getClient(),
 			verslag.getType().getBevolkingsonderzoek());
 		LOG.info("Bericht {}: verwerkt.", ontvangenCdaBericht.getId());
 
@@ -528,23 +528,23 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 	{
 		var melding = new MeldingOngeldigCdaBericht();
 		melding.setOntvangenCdaBericht(ontvangenCdaBericht);
-		Instelling instelling = null;
+		Organisatie organisatie = null;
 		if (verslagType.equals(VerslagType.MDL))
 		{
-			instelling = getInstellingFromCda(cdaDocument, OrganisatieType.COLOSCOPIELOCATIE, OrganisatieType.ZORGINSTELLING);
+			organisatie = getOrganisatieFromCda(cdaDocument, OrganisatieType.COLOSCOPIELOCATIE, OrganisatieType.ZORGINSTELLING);
 		}
 		else if (verslagType.equals(VerslagType.PA_LAB))
 		{
-			instelling = getInstellingFromCda(cdaDocument, OrganisatieType.PA_LABORATORIUM);
+			organisatie = getOrganisatieFromCda(cdaDocument, OrganisatieType.PA_LABORATORIUM);
 		}
 		else if (verslagType.equals(VerslagType.CERVIX_CYTOLOGIE))
 		{
-			instelling = getInstellingFromCda(cdaDocument, OrganisatieType.BMHK_LABORATORIUM);
+			organisatie = getOrganisatieFromCda(cdaDocument, OrganisatieType.BMHK_LABORATORIUM);
 		}
-		melding.setUitvoerder(getMedewerkerFromCda(cdaDocument, verslagType, instelling));
+		melding.setUitvoerder(getMedewerkerFromCda(cdaDocument, verslagType, organisatie));
 		melding.setHerstelbaar(herstelbaar);
 
-		melding.setUitvoerendeOrganisatie(instelling);
+		melding.setUitvoerendeOrganisatie(organisatie);
 		melding.setActief(true);
 		melding.setDatum(currentDateSupplier.getDate());
 		melding.setBsn(getBsnFromDocument(cdaDocument));
@@ -646,11 +646,11 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 	{
 		var assignedAuthor = CDAHelper.getAssigendEntity(cdaDocument);
 
-		Instelling instelling = null;
+		Organisatie organisatie = null;
 		var organisationId = new StringBuilder();
-		instelling = getOrganisatie(assignedAuthor, organisationId, OrganisatieType.PA_LABORATORIUM);
+		organisatie = getOrganisatie(assignedAuthor, organisationId, OrganisatieType.PA_LABORATORIUM);
 
-		if (instelling == null)
+		if (organisatie == null)
 		{
 			var message = "verslag ";
 			if (organisationId.length() > 0)
@@ -665,14 +665,14 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 			createOngeldigBerichtMelding(cdaDocument, verslag, message, true);
 		}
 
-		if (!isPabLabGekoppeldAanZorginstelling(instelling))
+		if (!isPabLabGekoppeldAanZorginstelling(organisatie))
 		{
 			var message = "verslag waarbij een PA lab gevonden met een van de identificatie(s) " + organisationId + " niet gekoppeld is aan een zorginstelling";
 			message += " (" + CDAHelper.getFirstValueNotNull(assignedAuthor, CommonCdaConstants.ORGANIZATION_NAME_SUBPATH) + ")";
 			createOngeldigBerichtMelding(cdaDocument, verslag, message, true);
 		}
 
-		InstellingGebruiker instellingMedewerker = null;
+		OrganisatieMedewerker organisatieMedewerker = null;
 
 		var patholoogId = getPatholoogId(cdaDocument);
 		if (StringUtils.isBlank(patholoogId))
@@ -681,22 +681,22 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 			message += " (" + CDAHelper.getFirstValueNotNull(assignedAuthor, CommonCdaConstants.ORGANIZATION_NAME_SUBPATH) + ")";
 			createOngeldigBerichtMelding(cdaDocument, verslag, message, false);
 		}
-		if (CollectionUtils.isNotEmpty(instelling.getOrganisatieMedewerkers()) && patholoogId != null)
+		if (CollectionUtils.isNotEmpty(organisatie.getOrganisatieMedewerkers()) && patholoogId != null)
 		{
-			for (var ig : instelling.getOrganisatieMedewerkers())
+			for (var om : organisatie.getOrganisatieMedewerkers())
 			{
-				if (Boolean.TRUE.equals(ig.getActief()))
+				if (Boolean.TRUE.equals(om.getActief()))
 				{
-					var medewerker = ig.getMedewerker();
+					var medewerker = om.getMedewerker();
 					if (MedewerkerUtil.isMedewerkerActief(medewerker, currentDateSupplier.getDate()) && patholoogId != null && patholoogId.equals(medewerker.getPatholoogId()))
 					{
-						instellingMedewerker = ig;
+						organisatieMedewerker = om;
 						break;
 					}
 				}
 			}
 		}
-		if (instellingMedewerker == null)
+		if (organisatieMedewerker == null)
 		{
 			var melding = "verslag ";
 			if (StringUtils.isNotBlank(patholoogId))
@@ -727,15 +727,15 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 			var vervanging = getOlderVerslag(verslag, cdaDocument) != null;
 
 			var overeenkomstPeildatum = getReferentieDatum(cdaDocument, CdaConstants.AANVANG_VERRICHTING_DATUM_PA_PATH);
-			var hasActiveKwaliteitsovereenkomst = kwaliteitsovereenkomstService.hasActiveKwaliteitsovereenkomst(instellingMedewerker.getMedewerker(), overeenkomstPeildatum);
+			var hasActiveKwaliteitsovereenkomst = kwaliteitsovereenkomstService.hasActiveKwaliteitsovereenkomst(organisatieMedewerker.getMedewerker(), overeenkomstPeildatum);
 			if (vervanging || hasActiveKwaliteitsovereenkomst)
 			{
-				verslag.setUitvoerderOrganisatie(instellingMedewerker.getOrganisatie());
-				verslag.setUitvoerderMedewerker(instellingMedewerker.getMedewerker());
+				verslag.setUitvoerderOrganisatie(organisatieMedewerker.getOrganisatie());
+				verslag.setUitvoerderMedewerker(organisatieMedewerker.getMedewerker());
 			}
 			else
 			{
-				var melding = "Patholoog " + instellingMedewerker.getMedewerker().getNaamVolledig() + " (" + instellingMedewerker.getOrganisatie().getNaam()
+				var melding = "Patholoog " + organisatieMedewerker.getMedewerker().getNaamVolledig() + " (" + organisatieMedewerker.getOrganisatie().getNaam()
 					+ ") met identificatie '" + patholoogId + "' heeft geen (actieve) overeenkomst";
 				createOngeldigBerichtMelding(cdaDocument, verslag, melding, true);
 			}
@@ -747,9 +747,9 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 		var assignedAuthor = CDAHelper.getAssigendEntity(cdaDocument);
 
 		var organisationId = new StringBuilder();
-		var instelling = getOrganisatie(assignedAuthor, organisationId, OrganisatieType.COLOSCOPIELOCATIE, OrganisatieType.ZORGINSTELLING);
+		var organisatie = getOrganisatie(assignedAuthor, organisationId, OrganisatieType.COLOSCOPIELOCATIE, OrganisatieType.ZORGINSTELLING);
 
-		if (instelling == null)
+		if (organisatie == null)
 		{
 			var message = "verslag ";
 			if (organisationId.length() > 0)
@@ -763,32 +763,32 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 			message += " (" + CDAHelper.getFirstValueNotNull(assignedAuthor, CommonCdaConstants.ORGANIZATION_NAME_SUBPATH) + ")";
 			createOngeldigBerichtMelding(cdaDocument, verslag, message, true);
 		}
-		Gebruiker instellingMedewerker = null;
+		Medewerker medewerker = null;
 
 		var uzinummer = CDAHelper.getUzinummer(cdaDocument);
 		if (StringUtils.isNotBlank(uzinummer))
 		{
-			if (OrganisatieType.ZORGINSTELLING.equals(instelling.getOrganisatieType()))
+			if (OrganisatieType.ZORGINSTELLING.equals(organisatie.getOrganisatieType()))
 			{
-				for (var child : instelling.getChildren())
+				for (var child : organisatie.getChildren())
 				{
 					if (!Boolean.FALSE.equals(child.getActief()) && OrganisatieType.COLOSCOPIELOCATIE.equals(child.getOrganisatieType()))
 					{
-						instellingMedewerker = findMedewerker(child, uzinummer);
-						if (instellingMedewerker != null)
+						medewerker = findMedewerker(child, uzinummer);
+						if (medewerker != null)
 						{
 							break;
 						}
 					}
 				}
 			}
-			else if (OrganisatieType.COLOSCOPIELOCATIE.equals(instelling.getOrganisatieType()))
+			else if (OrganisatieType.COLOSCOPIELOCATIE.equals(organisatie.getOrganisatieType()))
 			{
-				instellingMedewerker = findMedewerker(instelling, uzinummer);
+				medewerker = findMedewerker(organisatie, uzinummer);
 			}
 
 		}
-		if (instellingMedewerker == null)
+		if (medewerker == null)
 		{
 			var message = "verslag ";
 			if (StringUtils.isNotBlank(uzinummer))
@@ -823,15 +823,15 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 			var vervanging = getOlderVerslag(verslag, cdaDocument) != null;
 
 			var overeenkomstPeildatum = getReferentieDatum(cdaDocument, CdaConstants.AANVANG_VERRICHTING_DATUM_MDL_PATH);
-			var hasActiveKwaliteitsovereenkomst = kwaliteitsovereenkomstService.hasActiveKwaliteitsovereenkomst(instellingMedewerker, overeenkomstPeildatum);
+			var hasActiveKwaliteitsovereenkomst = kwaliteitsovereenkomstService.hasActiveKwaliteitsovereenkomst(medewerker, overeenkomstPeildatum);
 			if (vervanging || hasActiveKwaliteitsovereenkomst)
 			{
-				verslag.setUitvoerderOrganisatie(instelling);
-				verslag.setUitvoerderMedewerker(instellingMedewerker);
+				verslag.setUitvoerderOrganisatie(organisatie);
+				verslag.setUitvoerderMedewerker(medewerker);
 			}
 			else
 			{
-				var melding = "Medewerker " + instellingMedewerker.getNaamVolledig() + " (" + instelling.getNaam() + ") met uzinummer " + uzinummer
+				var melding = "Medewerker " + medewerker.getNaamVolledig() + " (" + organisatie.getNaam() + ") met uzinummer " + uzinummer
 					+ " heeft geen (actieve) overeenkomst";
 				createOngeldigBerichtMelding(cdaDocument, verslag, melding, true);
 			}
@@ -843,8 +843,8 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 		var assignedAuthor = CDAHelper.getAssigendEntity(cdaDocument);
 		var organisationId = new StringBuilder();
 
-		var instelling = getOrganisatie(assignedAuthor, organisationId, OrganisatieType.BMHK_LABORATORIUM);
-		if (instelling == null)
+		var organisatie = getOrganisatie(assignedAuthor, organisationId, OrganisatieType.BMHK_LABORATORIUM);
+		if (organisatie == null)
 		{
 			var message = "verslag ";
 			boolean herstelbaar;
@@ -877,23 +877,23 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 			createOngeldigBerichtMelding(cdaDocument, verslag, message, false);
 		}
 
-		InstellingGebruiker instellingGebruiker = null;
-		if (CollectionUtils.isNotEmpty(instelling.getOrganisatieMedewerkers()) && patholoogId != null)
+		OrganisatieMedewerker organisatieMedewerker = null;
+		if (CollectionUtils.isNotEmpty(organisatie.getOrganisatieMedewerkers()) && patholoogId != null)
 		{
-			for (var ig : instelling.getOrganisatieMedewerkers())
+			for (var om : organisatie.getOrganisatieMedewerkers())
 			{
-				if (Boolean.TRUE.equals(ig.getActief()))
+				if (Boolean.TRUE.equals(om.getActief()))
 				{
-					var medewerker = ig.getMedewerker();
+					var medewerker = om.getMedewerker();
 					if (Boolean.TRUE.equals(medewerker.getActief()) && patholoogId.equals(medewerker.getPatholoogId()))
 					{
-						instellingGebruiker = ig;
+						organisatieMedewerker = om;
 						break;
 					}
 				}
 			}
 		}
-		if (instellingGebruiker == null)
+		if (organisatieMedewerker == null)
 		{
 			var melding = "verslag ";
 			if (StringUtils.isNotBlank(patholoogId))
@@ -922,8 +922,8 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 		else
 		{
 			verslag.setPatholoogNaam(patholoogNaam);
-			verslag.setUitvoerderOrganisatie(instellingGebruiker.getOrganisatie());
-			verslag.setUitvoerderMedewerker(instellingGebruiker.getMedewerker());
+			verslag.setUitvoerderOrganisatie(organisatieMedewerker.getOrganisatie());
+			verslag.setUitvoerderMedewerker(organisatieMedewerker.getMedewerker());
 		}
 	}
 
@@ -951,13 +951,13 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 		return onderzoekDatum;
 	}
 
-	private boolean isPabLabGekoppeldAanZorginstelling(Instelling instelling)
+	private boolean isPabLabGekoppeldAanZorginstelling(Organisatie organisatie)
 	{
 		PaLaboratorium pa = null;
 		var gekoppeld = false;
-		if (OrganisatieType.PA_LABORATORIUM.equals(instelling.getOrganisatieType()))
+		if (OrganisatieType.PA_LABORATORIUM.equals(organisatie.getOrganisatieType()))
 		{
-			pa = (PaLaboratorium) instelling;
+			pa = (PaLaboratorium) organisatie;
 		}
 		if (pa != null && pa.getColoscopielocaties().size() > 0)
 		{
@@ -973,30 +973,28 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 		return gekoppeld;
 	}
 
-	private Gebruiker findMedewerker(Instelling instelling, String uzinummer)
+	private Medewerker findMedewerker(Organisatie organisatie, String uzinummer)
 	{
-		Gebruiker instellingMedewerker = null;
-		if (CollectionUtils.isNotEmpty(instelling.getOrganisatieMedewerkers()))
+		if (CollectionUtils.isNotEmpty(organisatie.getOrganisatieMedewerkers()))
 		{
-			for (var ig : instelling.getOrganisatieMedewerkers())
+			for (var om : organisatie.getOrganisatieMedewerkers())
 			{
-				var medewerker = ig.getMedewerker();
-				if (Boolean.TRUE.equals(ig.getActief()) && 
+				var medewerker = om.getMedewerker();
+				if (Boolean.TRUE.equals(om.getActief()) && 
 					Boolean.TRUE.equals(medewerker.getActief()) && 
 					uzinummer.equals(medewerker.getUzinummer()) 
 				)
 				{
-					instellingMedewerker = medewerker;
-					break;
+					return medewerker;
 				}
 			}
 		}
-		return instellingMedewerker;
+		return null;
 	}
 
-	private Instelling getOrganisatie(POCDMT000040AssignedEntity assignedAuthor, StringBuilder organisationId, OrganisatieType... types)
+	private Organisatie getOrganisatie(POCDMT000040AssignedEntity assignedAuthor, StringBuilder organisationId, OrganisatieType... types)
 	{
-		Instelling instelling = null;
+		Organisatie organisatie = null;
 
 		if (assignedAuthor != null)
 		{
@@ -1005,7 +1003,7 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 			{
 				for (var ii : representedOrganization.getIds())
 				{
-					Instelling foundInstelling = null;
+					Organisatie foundOrganisatie = null;
 					if (ii.getRoot() != null)
 					{
 						var root = ii.getRoot();
@@ -1014,7 +1012,7 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 						{
 							if (StringUtils.isNotBlank(extension))
 							{
-								foundInstelling = instellingService.getOrganisatieByUzinummer(StringUtils.leftPad(extension.trim(), 8, '0'));
+								foundOrganisatie = organisatieService.getOrganisatieByUzinummer(StringUtils.leftPad(extension.trim(), 8, '0'));
 
 								if (organisationId.length() > 0)
 								{
@@ -1037,7 +1035,7 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 							}
 							if (organisationId != null)
 							{
-								foundInstelling = instellingService.getOrganisatieByRootOid(organisationOid);
+								foundOrganisatie = organisatieService.getOrganisatieByRootOid(organisationOid);
 								if (organisationId.length() > 0)
 								{
 									organisationId.append(", ");
@@ -1046,12 +1044,12 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 							}
 						}
 					}
-					if (foundInstelling != null && Arrays.asList(types).contains(foundInstelling.getOrganisatieType()))
+					if (foundOrganisatie != null && Arrays.asList(types).contains(foundOrganisatie.getOrganisatieType()))
 					{
-						instelling = foundInstelling;
+						organisatie = foundOrganisatie;
 					}
 
-					if (instelling != null && !OrganisatieType.ZORGINSTELLING.equals(instelling.getOrganisatieType()))
+					if (organisatie != null && !OrganisatieType.ZORGINSTELLING.equals(organisatie.getOrganisatieType()))
 					{
 						break;
 					}
@@ -1059,9 +1057,9 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 			}
 		}
 
-		if (instelling != null && OrganisatieType.ZORGINSTELLING.equals(instelling.getOrganisatieType()))
+		if (organisatie != null && OrganisatieType.ZORGINSTELLING.equals(organisatie.getOrganisatieType()))
 		{
-			var zorgInstelling = (ZorgInstelling) instelling;
+			var zorgInstelling = (ZorgInstelling) organisatie;
 			ColoscopieLocatie locatie = null;
 			for (var child : zorgInstelling.getChildren())
 			{
@@ -1071,21 +1069,21 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 					if (locatie == null)
 					{
 						locatie = (ColoscopieLocatie) child;
-						instelling = child;
+						organisatie = child;
 					}
 					else
 					{
 
-						instelling = null;
+						organisatie = null;
 						break;
 					}
 				}
 			}
 		}
-		return instelling;
+		return organisatie;
 	}
 
-	private Instelling getInstellingFromCda(ClinicalDocument cda, OrganisatieType... types)
+	private Organisatie getOrganisatieFromCda(ClinicalDocument cda, OrganisatieType... types)
 	{
 		var assignedAuthor = CDAHelper.getAssigendEntity(cda);
 		var organisationId = new StringBuilder();
@@ -1117,9 +1115,9 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 		return paLabId;
 	}
 
-	private Gebruiker getMedewerkerFromCda(ClinicalDocument cda, VerslagType verslagType, Instelling instelling)
+	private Medewerker getMedewerkerFromCda(ClinicalDocument cda, VerslagType verslagType, Organisatie organisatie)
 	{
-		Gebruiker medewerker = null;
+		Medewerker medewerker = null;
 		switch (verslagType)
 		{
 		case MDL:
@@ -1127,7 +1125,7 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 
 			if (StringUtils.isNotBlank(uzinummer))
 			{
-				medewerker = gebruikersService.getGebruikerByUzinummer(uzinummer).orElse(null);
+				medewerker = medewerkerService.getMedewerkerByUzinummer(uzinummer).orElse(null);
 			}
 			break;
 		case PA_LAB:
@@ -1136,7 +1134,7 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 
 			if (StringUtils.isNotBlank(patholoogId))
 			{
-				medewerker = gebruikersService.getPatholoog(patholoogId, instelling);
+				medewerker = medewerkerService.getPatholoog(patholoogId, organisatie);
 			}
 			break;
 		}

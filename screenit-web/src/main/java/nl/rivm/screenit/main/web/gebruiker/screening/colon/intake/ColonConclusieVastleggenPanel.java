@@ -37,7 +37,7 @@ import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxLink;
 import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxSubmitLink;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonConclusie;
@@ -174,9 +174,9 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 		{
 			conclusie.setDatum(dateSupplier.getDate());
 		}
-		if (conclusie.getInstellingGebruiker() == null)
+		if (conclusie.getOrganisatieMedewerker() == null)
 		{
-			conclusie.setInstellingGebruiker(ScreenitSession.get().getLoggedInInstellingGebruiker());
+			conclusie.setOrganisatieMedewerker(ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 		}
 		Form<ColonIntakeAfspraak> form = new ConclusieForm("form", model);
 		add(form);
@@ -223,7 +223,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 
 			Client client = intakeAfspraak.getColonScreeningRonde().getDossier().getClient();
 			add(new Label("client.persoon.achternaam", NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client)));
-			add(new Label("conclusie.instellingGebruiker.medewerker.naamVolledig"));
+			add(new Label("conclusie.organisatieMedewerker.medewerker.naamVolledig"));
 			addOudeAfspraak();
 
 			List<Integer> choices = new ArrayList<>();
@@ -249,9 +249,9 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 						ColonIntakeAfspraak afspraak = ConclusieForm.this.getModelObject();
 						ColonConclusie conclusie = afspraak.getConclusie();
 
-						InstellingGebruiker loggedInInstellingGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
-						conclusie.setInstellingGebruiker(loggedInInstellingGebruiker);
-						dossierService.conclusieOpslaan(ModelProxyHelper.deproxy(afspraak), vervolgonderzoekDto, loggedInInstellingGebruiker,
+						OrganisatieMedewerker ingelogdeOrganisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
+						conclusie.setOrganisatieMedewerker(ingelogdeOrganisatieMedewerker);
+						dossierService.conclusieOpslaan(ModelProxyHelper.deproxy(afspraak), vervolgonderzoekDto, ingelogdeOrganisatieMedewerker,
 							origConclusie);
 
 						laatMeldingenZien(afspraak);
@@ -338,7 +338,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 				{
 					ColonIntakeAfspraak afspraak = ConclusieForm.this.getModelObject();
 
-					dossierService.conclusieVerwijderen(afspraak, ScreenitSession.get().getLoggedInInstellingGebruiker(), origConclusie);
+					dossierService.conclusieVerwijderen(afspraak, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), origConclusie);
 
 					close(target);
 				}
@@ -357,7 +357,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 
 			};
 			verwijderen.setVisible(dossierService.magConclusieAanpassenVerwijderen(intakeAfspraak, origConclusie)
-				&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_INTAKE_WERKLIJST, Actie.VERWIJDEREN));
+				&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_INTAKE_WERKLIJST, Actie.VERWIJDEREN));
 			verwijderen.setEnabled(true);
 			add(verwijderen);
 

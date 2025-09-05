@@ -81,14 +81,14 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 
 	@Override
 	@Transactional
-	public void opnieuwAanmaken(List<? extends ClientBrief<?, ?, ?>> brieven, Account gebruiker)
+	public void opnieuwAanmaken(List<? extends ClientBrief<?, ?, ?>> brieven, Account account)
 	{
-		brieven.forEach(brief -> opnieuwAanmaken(brief, gebruiker));
+		brieven.forEach(brief -> opnieuwAanmaken(brief, account));
 	}
 
 	@Override
 	@Transactional
-	public void opnieuwAanmaken(ClientBrief<?, ?, ?> brief, Account gebruiker)
+	public void opnieuwAanmaken(ClientBrief<?, ?, ?> brief, Account account)
 	{
 		brief = (ClientBrief<?, ?, ?>) HibernateHelper.deproxy(brief);
 		Class<? extends ClientBrief> briefClass = brief.getClass();
@@ -122,11 +122,11 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 		if (type == null)
 		{
 			LOG.warn("Geen brieftype bekend, betreft een projectbrief? briefID: {}", brief.getId());
-			logService.logGebeurtenis(LogGebeurtenis.BRIEF_HERDRUK, gebruiker, brief.getClient(), "Projectbrief");
+			logService.logGebeurtenis(LogGebeurtenis.BRIEF_HERDRUK, account, brief.getClient(), "Projectbrief");
 		}
 		else
 		{
-			logService.logGebeurtenis(LogGebeurtenis.BRIEF_HERDRUK, gebruiker, brief.getClient(), EnumStringUtil.getPropertyString(type), type.getOnderzoeken());
+			logService.logGebeurtenis(LogGebeurtenis.BRIEF_HERDRUK, account, brief.getClient(), EnumStringUtil.getPropertyString(type), type.getOnderzoeken());
 		}
 	}
 

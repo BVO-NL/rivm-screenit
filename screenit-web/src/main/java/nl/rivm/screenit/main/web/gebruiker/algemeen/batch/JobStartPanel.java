@@ -78,7 +78,7 @@ public class JobStartPanel extends BatchBvoFilterPanel
 		addOrReplace(jobsContainer);
 
 		List<JobType> jobs = teTonenJobTypes();
-		boolean magToevoegen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BATCH_STATUS, Actie.TOEVOEGEN);
+		boolean magToevoegen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BATCH_STATUS, Actie.TOEVOEGEN);
 		jobsContainer.add(new WebMarkupContainer("startHeader").setVisible(magToevoegen));
 		jobsContainer.add(new WebMarkupContainer("configHeader").setVisible(magToevoegen));
 		jobsContainer.add(maakJobsListView(jobs, magToevoegen));
@@ -163,7 +163,7 @@ public class JobStartPanel extends BatchBvoFilterPanel
 				BatchJob batchJob = new BatchJob();
 				batchJob.setJobType(getModelObject());
 				customPopupPanel.vulJobParameters(batchJob.getJobParameters());
-				jobService.startJob(batchJob, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				jobService.startJob(batchJob, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 			}
 		};
 	}

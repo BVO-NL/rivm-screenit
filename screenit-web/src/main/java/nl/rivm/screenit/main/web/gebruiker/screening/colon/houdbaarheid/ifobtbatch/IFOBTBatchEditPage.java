@@ -26,8 +26,8 @@ import java.util.Arrays;
 
 import nl.rivm.screenit.main.service.HoudbaarheidService;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.gedeeld.houdbaarheid.HoudbaarheidEditPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.colon.IFOBTType;
@@ -49,7 +49,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_SCREENING_IFOBT_BATCH,
+	recht = Recht.MEDEWERKER_SCREENING_IFOBT_BATCH,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class IFOBTBatchEditPage extends HoudbaarheidEditPage<IFOBTVervaldatum>
 {
@@ -109,14 +109,14 @@ public class IFOBTBatchEditPage extends HoudbaarheidEditPage<IFOBTVervaldatum>
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveSubMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveSubMenuClass()
 	{
 		return IFOBTBatchOverzichtPage.class;
 	}
 
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.COLON;
+		return MedewerkerHoofdMenuItem.COLON;
 	}
 }

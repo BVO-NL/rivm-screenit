@@ -33,9 +33,9 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dto.alg.client.contact.MailAttachmentDto;
 import nl.rivm.screenit.mappers.MailAttachmentMapper;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.Mail;
 import nl.rivm.screenit.model.MailVerzenden;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.enums.MailPriority;
 import nl.rivm.screenit.model.enums.MailServerKeuze;
@@ -155,19 +155,19 @@ public class MailServiceImpl implements MailService
 	}
 
 	@Override
-	public void sendWachwoordVerlooptHerinneringMail(Gebruiker gebruiker)
+	public void sendWachwoordVerlooptHerinneringMail(Medewerker medewerker)
 	{
 		try
 		{
-			queueProfessionalMailWithConfig(MedewerkerMailTemplateConfig.WACHTWOORD_VERLOOPT_HERINNERNIG, gebruiker, gebruiker.getEmailextra());
+			queueProfessionalMailWithConfig(MedewerkerMailTemplateConfig.WACHTWOORD_VERLOOPT_HERINNERNIG, medewerker, medewerker.getEmailextra());
 		}
 		catch (Exception e)
 		{
-			LOG.error("Niet mogelijk om een herinneringsmail te sturen naar gebruiker ('{}')", gebruiker.getId(), e);
+			LOG.error("Niet mogelijk om een herinneringsmail te sturen naar medewerker ('{}')", medewerker.getId(), e);
 		}
 	}
 
-	private void queueProfessionalMailWithConfig(MedewerkerMailTemplateConfig config, Gebruiker medewerker, String emailAdres)
+	private void queueProfessionalMailWithConfig(MedewerkerMailTemplateConfig config, Medewerker medewerker, String emailAdres)
 	{
 		if (StringUtils.isNotBlank(emailAdres))
 		{
@@ -181,7 +181,7 @@ public class MailServiceImpl implements MailService
 	}
 
 	@NotNull
-	private String mergeMedewerkerMail(Gebruiker medewerker, String mailContentTemplate, MedewerkerMailTemplateConfig config)
+	private String mergeMedewerkerMail(Medewerker medewerker, String mailContentTemplate, MedewerkerMailTemplateConfig config)
 	{
 		var aanhef = "";
 		if (medewerker.getAanhef() != null)

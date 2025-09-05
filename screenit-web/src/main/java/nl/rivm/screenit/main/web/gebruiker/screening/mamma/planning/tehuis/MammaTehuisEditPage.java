@@ -48,12 +48,12 @@ import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.component.table.ScreenitDateTimePropertyColumn;
 import nl.rivm.screenit.main.web.component.table.VerwijderPropertyColumn;
 import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.gedeeld.MammaDoelgroepIndicatorPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaPlanningBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.TijdelijkGbaAdres;
 import nl.rivm.screenit.model.enums.Actie;
@@ -101,7 +101,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_TEHUIS },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_TEHUIS },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaTehuisEditPage extends MammaPlanningBasePage
 {
@@ -132,9 +132,9 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 
 	private IndicatingAjaxLink<Void> adresToevoegenBtn;
 
-	private AjaxLink<Gebruiker> inActiverenBtn;
+	private AjaxLink<Medewerker> inActiverenBtn;
 
-	private AjaxLink<Gebruiker> uitnodigenBtn;
+	private AjaxLink<Medewerker> uitnodigenBtn;
 
 	private MammaTehuisOpmerkingenPanel opmerkingenPanel;
 
@@ -164,7 +164,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 
 		standplaatsModel = model.getObject().getStandplaats() != null ? ModelUtil.sModel(model.getObject().getStandplaats()) : new SimpleHibernateModel<>();
 
-		magTehuisAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_TEHUIS, Actie.AANPASSEN) && ingelogdNamensRegio;
+		magTehuisAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_TEHUIS, Actie.AANPASSEN) && ingelogdNamensRegio;
 
 		Form<MammaTehuis> tehuisWijzigenForm = new ScreenitForm<>("tehuisWijzigenForm", model);
 		createOrReplaceNaamComponent(tehuisWijzigenForm, null);
@@ -208,7 +208,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 				tehuis.setStandplaats(nieuweStandplaats);
 				nieuweStandplaats.getTehuizen().add(tehuis);
 
-				boolean succes = baseTehuisService.saveOrUpdateTehuis(tehuis, origineleStandplaats, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				boolean succes = baseTehuisService.saveOrUpdateTehuis(tehuis, origineleStandplaats, getIngelogdeOrganisatieMedewerker());
 				if (succes)
 				{
 					success(getString("message.gegevensopgeslagen"));
@@ -284,7 +284,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 					else
 					{
 						getTehuis().getAdressen().remove(adres);
-						tehuisAdresService.adresVerwijderen(adres, ScreenitSession.get().getLoggedInInstellingGebruiker());
+						tehuisAdresService.adresVerwijderen(adres, getIngelogdeOrganisatieMedewerker());
 						target.add(tehuisAdressenContainer);
 						target.add(tehuisClientenContainer);
 					}
@@ -562,7 +562,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 			protected void onConfigure()
 			{
 				super.onConfigure();
-				boolean magInActiveren = getTehuis().getId() != null && ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_TEHUIS, Actie.VERWIJDEREN)
+				boolean magInActiveren = getTehuis().getId() != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_TEHUIS, Actie.VERWIJDEREN)
 					&& ingelogdNamensRegio;
 				boolean isEnabled = getTehuis().getDossiers().isEmpty() || !getTehuis().getActief();
 				inActiverenBtn.setEnabled(isEnabled);
@@ -584,11 +584,11 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 				tehuis.setActief(Boolean.FALSE.equals(tehuis.getActief()));
 				if (Boolean.FALSE.equals(tehuis.getActief()))
 				{
-					tehuisService.deactiveerTehuis(tehuis, ScreenitSession.get().getLoggedInInstellingGebruiker());
+					tehuisService.deactiveerTehuis(tehuis, getIngelogdeOrganisatieMedewerker());
 				}
 				else
 				{
-					baseTehuisService.saveOrUpdateTehuis(tehuis, ScreenitSession.get().getLoggedInInstellingGebruiker());
+					baseTehuisService.saveOrUpdateTehuis(tehuis, getIngelogdeOrganisatieMedewerker());
 				}
 				setResponsePage(MammaTehuisZoekenPage.class);
 			}
@@ -628,7 +628,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 				MammaTehuis tehuis = getTehuis();
 				if (tehuis.getId() != null)
 				{
-					uitnodigenVisible = ingelogdNamensRegio && ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_TEHUIS, Actie.AANPASSEN);
+					uitnodigenVisible = ingelogdNamensRegio && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_TEHUIS, Actie.AANPASSEN);
 					uitnodigenEnabled = baseTehuisClientenDao.countClienten(tehuis, MammaTehuisSelectie.UIT_TE_NODIGEN, null) > 0;
 				}
 
@@ -643,7 +643,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 				AtomicInteger aantalClientenMetBrief = new AtomicInteger(0);
 				AtomicInteger aantalClientenMetSuspectBrief = new AtomicInteger(0);
 				tehuisService.uitnodigen(getTehuis(), aantalClientenMetProjectBrief, aantalClientenMetBrief, aantalClientenMetSuspectBrief,
-					ScreenitSession.get().getLoggedInInstellingGebruiker());
+					getIngelogdeOrganisatieMedewerker());
 
 				if (aantalClientenMetBrief.get() > 0 || aantalClientenMetProjectBrief.get() > 0 || aantalClientenMetSuspectBrief.get() > 0)
 				{
@@ -682,7 +682,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveContextMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveContextMenuClass()
 	{
 		return MammaTehuisZoekenPage.class;
 	}

@@ -67,7 +67,7 @@ public class BriefOpnieuwAanmakenPanel extends GenericPanel<ClientBrief<?, ?, ?>
 	{
 		WebMarkupContainer opnieuwContainer = new WebMarkupContainer("opnieuwContainer");
 		opnieuwContainer.setOutputMarkupId(true);
-		opnieuwContainer.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_BRIEVEN_OPNIEUW_KLAARZETTEN, Actie.AANPASSEN));
+		opnieuwContainer.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_OPNIEUW_KLAARZETTEN, Actie.AANPASSEN));
 		WebMarkupContainer opnieuwMogelijkContainer = new WebMarkupContainer("opnieuwMogelijk");
 
 		GebeurtenisUtil.voegBriefTypeOfNaamBriefToe(opnieuwMogelijkContainer, brief);
@@ -88,7 +88,7 @@ public class BriefOpnieuwAanmakenPanel extends GenericPanel<ClientBrief<?, ?, ?>
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				briefHerdrukkenService.opnieuwAanmaken(BriefOpnieuwAanmakenPanel.this.getModelObject(), ScreenitSession.get().getLoggedInAccount());
+				briefHerdrukkenService.opnieuwAanmaken(BriefOpnieuwAanmakenPanel.this.getModelObject(), ScreenitSession.get().getIngelogdAccount());
 				info(getString("info.briefaangemaakt"));
 				opnieuwMogelijkContainer.setVisible(false);
 				nietOpnieuw.setVisible(true);

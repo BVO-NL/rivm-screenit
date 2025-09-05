@@ -32,7 +32,7 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.validator.FileValidator;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.ProjectBasePage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.ProjectPaspoortPanel;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.FileType;
@@ -182,7 +182,7 @@ public class BriefActieEditPage extends ProjectBasePage
 						uploadDocument = ScreenitSession.get().fileUploadToUploadDocument(filesUploaded.get(0));
 						uploadDocumentService.saveOrUpdate(uploadDocument, FileStoreLocation.PROJECT_BRIEF_TEMPLATES, actie.getProject().getId());
 						actie.setDocument(uploadDocument);
-						actie.setUploader(ScreenitSession.get().getLoggedInInstellingGebruiker());
+						actie.setUploader(getIngelogdeOrganisatieMedewerker());
 						actie.setLaatstGewijzigd(nu);
 						hibernateService.saveOrUpdate(actie);
 
@@ -191,7 +191,7 @@ public class BriefActieEditPage extends ProjectBasePage
 							herinnerActie = briefHerinnerenVragenlijstModel.getObject();
 							herinneringsDocument = ScreenitSession.get().fileUploadToUploadDocument(herinneringFilesUpload.get(0));
 							uploadDocumentService.saveOrUpdate(herinneringsDocument, FileStoreLocation.PROJECT_BRIEF_TEMPLATES, actie.getProject().getId());
-							herinnerActie.setUploader(ScreenitSession.get().getLoggedInInstellingGebruiker());
+							herinnerActie.setUploader(getIngelogdeOrganisatieMedewerker());
 							herinnerActie.setDocument(herinneringsDocument);
 							herinnerActie.setLaatstGewijzigd(nu);
 							herinnerActie.setType(ProjectBriefActieType.HERINNERING);
@@ -211,11 +211,11 @@ public class BriefActieEditPage extends ProjectBasePage
 
 						if (ProjectType.BRIEFPROJECT.equals(project.getType()))
 						{
-							logService.logGebeurtenis(LogGebeurtenis.BRIEFPROJECT_BRIEF_ACTIE_TOEGEVOEGD, ScreenitSession.get().getLoggedInAccount(), melding);
+							logService.logGebeurtenis(LogGebeurtenis.BRIEFPROJECT_BRIEF_ACTIE_TOEGEVOEGD, ScreenitSession.get().getIngelogdAccount(), melding);
 						}
 						else
 						{
-							logService.logGebeurtenis(LogGebeurtenis.PROJECT_BRIEF_ACTIE_TOEGEVOEGD, ScreenitSession.get().getLoggedInAccount(), melding);
+							logService.logGebeurtenis(LogGebeurtenis.PROJECT_BRIEF_ACTIE_TOEGEVOEGD, ScreenitSession.get().getIngelogdAccount(), melding);
 						}
 
 						setResponsePage(new ProjectBriefActiePage(ModelUtil.sModel(project)));
@@ -318,7 +318,7 @@ public class BriefActieEditPage extends ProjectBasePage
 	private String getBestandsNaam(ProjectBriefActie actie)
 	{
 		String naam = "2017-01-01_12.00-";
-		Instelling organisatie = ScreenitSession.get().getLoggedInInstellingGebruiker().getOrganisatie();
+		Organisatie organisatie = getIngelogdeOrganisatieMedewerker().getOrganisatie();
 		if (organisatie != null)
 		{
 			String soNaam = organisatie.getNaam();

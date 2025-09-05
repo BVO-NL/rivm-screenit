@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.services.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -26,8 +26,8 @@ import java.util.Base64;
 
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.mamma.se.proxy.SeProxyApplication;
 import nl.rivm.screenit.mamma.se.proxy.model.WebsocketBerichtType;
+import nl.rivm.screenit.mamma.se.proxy.services.EnvironmentInfoService;
 import nl.rivm.screenit.mamma.se.proxy.services.WebSocketProxyService;
 import nl.rivm.screenit.mamma.se.proxy.util.DateUtil;
 
@@ -48,6 +48,9 @@ public class WebSocketProxyServiceImpl implements WebSocketProxyService
 	@Autowired
 	private SimpMessagingTemplate simp;
 
+	@Autowired
+	private EnvironmentInfoService environmentInfoService;
+
 	@Value("${MAMMOGRAAF_STUB_URL}")
 	private String mammograafStubUrl;
 
@@ -65,7 +68,7 @@ public class WebSocketProxyServiceImpl implements WebSocketProxyService
 	@Override
 	public void broadCastTijdUpdateNaarWerkstations(String logPrefix)
 	{
-		if (SeProxyApplication.getEnvironmentInfo().getEnvironment().equals("Test"))
+		if (environmentInfoService.isTestEnvironment())
 		{
 			String offset = DateUtil.getOffset().toString();
 			LOG.info("{}: Broadcast tijdupdate naar werkstations voor offset: {} (nieuwe tijd: {})", logPrefix, offset, DateUtil.getCurrentDateTime());

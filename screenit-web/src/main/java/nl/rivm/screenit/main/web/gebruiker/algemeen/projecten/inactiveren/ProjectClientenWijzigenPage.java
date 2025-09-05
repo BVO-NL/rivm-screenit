@@ -70,7 +70,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.VERWIJDEREN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_PROJECT_SELECTIE,
+	recht = Recht.MEDEWERKER_PROJECT_SELECTIE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.MAMMA })
 public class ProjectClientenWijzigenPage extends ProjectBasePage
 {
@@ -155,7 +155,7 @@ public class ProjectClientenWijzigenPage extends ProjectBasePage
 
 								projectService.queueProjectBestandVoorClientWijzigingen(project, projectBestand, uploadDocument, uploadDocument.getContentType(),
 									uploadDocument.getNaam(),
-									uploadDocument.getFile(), ScreenitSession.get().getLoggedInAccount());
+									uploadDocument.getFile(), ScreenitSession.get().getIngelogdAccount());
 
 								setResponsePage(new ProjectBestandenOverzicht(getProjectModel()));
 							}

@@ -24,24 +24,24 @@ package nl.rivm.screenit.main.web.gebruiker.colon.beperkingen;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.base.angular.AngularBasePage;
 
 public abstract class ColonBeperkingenBasePage extends AngularBasePage
 {
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.COLON;
+		return MedewerkerHoofdMenuItem.COLON;
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		var contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.colonscreening.feestdagen", ColonFeestdagenPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.colonscreening.tijd.weekend", ColonWeekendWerkDagBeperkingenPage.class));
+		var contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.feestdagen", ColonFeestdagenPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.tijd.weekend", ColonWeekendWerkDagBeperkingenPage.class));
 		return contextMenuItems;
 	}
 }

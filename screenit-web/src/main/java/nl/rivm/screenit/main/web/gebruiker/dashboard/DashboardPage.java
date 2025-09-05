@@ -29,8 +29,8 @@ import nl.rivm.screenit.main.web.component.bootstrap.BootstrapCollapsePanel;
 import nl.rivm.screenit.main.web.component.bootstrap.BootstrapCollapsePanel.PanelCreator;
 import nl.rivm.screenit.main.web.component.form.FilterBvoFormPanel;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.batch.BvoZoekCriteria;
 import nl.rivm.screenit.model.dashboard.DashboardStatus;
@@ -49,9 +49,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
 
-@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_BEHEER_DASHBOARD, bevolkingsonderzoekScopes = {
+@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_BEHEER_DASHBOARD, bevolkingsonderzoekScopes = {
 	Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
-public class DashboardPage extends GebruikerBasePage
+public class DashboardPage extends MedewerkerBasePage
 {
 
 	private static final long serialVersionUID = 1L;
@@ -107,7 +107,7 @@ public class DashboardPage extends GebruikerBasePage
 
 		});
 		var loggingLevels = dashboardZoekCriteria.getObject().getLoggingLevels();
-		List<DashboardStatus> statussen = dashboardService.getListOfDashboardStatussen(ScreenitSession.get().getInstelling(),
+		List<DashboardStatus> statussen = dashboardService.getListOfDashboardStatussen(ScreenitSession.get().getOrganisatie(),
 			dashboardZoekCriteria.getObject().getBevolkingsonderzoeken(), loggingLevels);
 
 		List<PanelCreator> panels = new ArrayList<>();
@@ -124,8 +124,8 @@ public class DashboardPage extends GebruikerBasePage
 	}
 
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.DASHBOARD;
+		return MedewerkerHoofdMenuItem.DASHBOARD;
 	}
 }

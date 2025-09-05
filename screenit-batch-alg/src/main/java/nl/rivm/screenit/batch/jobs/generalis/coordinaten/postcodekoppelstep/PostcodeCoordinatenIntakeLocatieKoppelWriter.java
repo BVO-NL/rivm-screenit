@@ -25,11 +25,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
-import nl.rivm.screenit.model.PostcodeCoordinaten;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.service.CoordinatenService;
 import nl.rivm.screenit.util.AdresUtil;
-import nl.topicuszorg.organisatie.model.Adres;
 
 import org.springframework.stereotype.Component;
 
@@ -44,21 +42,10 @@ public class PostcodeCoordinatenIntakeLocatieKoppelWriter extends BaseWriter<Col
 	@Override
 	public void write(ColonIntakelocatie item)
 	{
-		PostcodeCoordinaten coordinaten = null;
-		for (Adres adres : item.getAdressen())
+		var coordinaten = coordinatenService.getCoordinaten(item);
+		if (coordinaten == null)
 		{
-			if (coordinaten == null)
-			{
-				coordinaten = coordinatenService.getCoordinaten(adres);
-				if (coordinaten != null)
-				{
-					break;
-				}
-				else
-				{
-					LOG.warn("Geen coordinaten gevonden voor IL " + item.getNaam() + " " + AdresUtil.getVolledigeAdresString(adres));
-				}
-			}
+			LOG.warn("Geen coordinaten gevonden voor IL " + item.getNaam() + " " + AdresUtil.getVolledigeAdresString(item.getAdres()));
 		}
 		item.setPostcodeCoordinaten(coordinaten);
 		if (coordinaten != null)

@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.dao;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,18 +21,18 @@ package nl.rivm.screenit.mamma.se.proxy.dao;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.mamma.se.proxy.model.IngelogdeGebruikerDto;
+import nl.rivm.screenit.mamma.se.proxy.model.IngelogdeMedewerkerDto;
 import nl.rivm.screenit.mamma.se.proxy.model.LoginContext;
 
 public interface AuthenticatieDao
 {
-	IngelogdeGebruikerDto getIngelogdeGebruiker(LoginContext loginContext);
+	IngelogdeMedewerkerDto getIngelogdeMedewerker(LoginContext loginContext);
 
-	void insertOrUpdateIngelogdeGebruiker(IngelogdeGebruikerDto ingelogdeGebruikerDto);
+	void insertOrUpdateIngelogdeMedewerker(IngelogdeMedewerkerDto ingelogdeMedewerkerDto);
 
-	void updateIngelogdeGebruiker(IngelogdeGebruikerDto ingelogdeGebruikerDto);
+	void updateIngelogdeMedewerker(IngelogdeMedewerkerDto ingelogdeMedewerkerDto);
 
 	Long getAccountIdFromUsername(String gebruikersnaam);
 
-	void verwijderOudeIngelogdeGebruikers();
+	void verwijderOudeIngelogdeMedewerkers();
 }

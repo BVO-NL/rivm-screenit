@@ -73,7 +73,7 @@ public class TechnischeParametersPanel extends BaseTechnischBeheerParametersPane
 					protected void onSubmit(AjaxRequestTarget target)
 					{
 						super.onSubmit(target);
-						organisatieParameterService.saveOrUpdateOrganisatieParameters(getAllParameters(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+						organisatieParameterService.saveOrUpdateOrganisatieParameters(getAllParameters(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 						info("Parameters zijn opgeslagen");
 					}
 				};
@@ -102,7 +102,7 @@ public class TechnischeParametersPanel extends BaseTechnischBeheerParametersPane
 					protected void onSubmit(AjaxRequestTarget target)
 					{
 						super.onSubmit(target);
-						organisatieParameterService.saveOrUpdateOrganisatieParameters(getAllParameters(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+						organisatieParameterService.saveOrUpdateOrganisatieParameters(getAllParameters(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 						info("Parameters zijn opgeslagen");
 					}
 				};
@@ -120,6 +120,7 @@ public class TechnischeParametersPanel extends BaseTechnischBeheerParametersPane
 		form.add(ComponentHelper.newDatePicker("startdatumBmhk", magAanpassen()).setRequired(true));
 		form.add(ComponentHelper.newDatePicker("cervixStartBmhk2023", magAanpassen()).setRequired(true));
 		form.add(ComponentHelper.newDatePicker("colonStartDk2026", magAanpassen()).setRequired(true));
+		form.add(ComponentHelper.newDatePicker("startNieuweInpakcentrumKoppeling", magAanpassen()).setRequired(true));
 		form.add(new TextField<>("internalZorgmailBestandUrl", String.class).setRequired(true));
 		form.add(new TextField<>("internalWsbSchematronVersionpathmapping", String.class).setRequired(true));
 		int maxKiloBytesZip = 129000;

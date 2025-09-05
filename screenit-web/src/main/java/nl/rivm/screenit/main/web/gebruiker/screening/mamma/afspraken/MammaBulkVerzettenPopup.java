@@ -265,7 +265,8 @@ public abstract class MammaBulkVerzettenPopup extends GenericPanel<MammaBulkVerz
 				MammaBulkVerzettenFilter verzettenFilter = MammaBulkVerzettenPopup.this.getModelObject();
 				if (bulkVerzettenMogelijk)
 				{
-					afspraakService.bulkVerzetten(verzettenFilter, afsprakenModel.getObject(), ScreenitSession.get().getLoggedInAccount(), DateUtil.toLocalDate(datum.getObject()));
+					afspraakService.bulkVerzetten(verzettenFilter, afsprakenModel.getObject(), ScreenitSession.get().getIngelogdAccount(),
+						DateUtil.toLocalDate(datum.getObject()));
 					verzettenAfgerond(target);
 				}
 			}

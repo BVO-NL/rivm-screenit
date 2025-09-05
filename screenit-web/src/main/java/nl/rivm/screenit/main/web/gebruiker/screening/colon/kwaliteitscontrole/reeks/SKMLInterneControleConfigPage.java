@@ -51,7 +51,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_BEHEER_SKML_INTERNE_CONTROLE,
+	recht = Recht.MEDEWERKER_BEHEER_SKML_INTERNE_CONTROLE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class SKMLInterneControleConfigPage extends KwaliteitscontroleBasePage
 {
@@ -66,7 +66,7 @@ public class SKMLInterneControleConfigPage extends KwaliteitscontroleBasePage
 
 	public SKMLInterneControleConfigPage()
 	{
-		add(new SentineelcontrolesForm("form").setEnabled(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_SKML_INTERNE_CONTROLE, Actie.AANPASSEN)));
+		add(new SentineelcontrolesForm("form").setEnabled(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_SKML_INTERNE_CONTROLE, Actie.AANPASSEN)));
 	}
 
 	private class SentineelcontrolesForm extends ScreenitForm<SKMLSentineelControleBarcode>
@@ -102,7 +102,7 @@ public class SKMLInterneControleConfigPage extends KwaliteitscontroleBasePage
 				{
 					try
 					{
-						kwaliteitscontroleService.saveOrUpdateInterneIdSets(allSkmlInterneModels.getObject(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+						kwaliteitscontroleService.saveOrUpdateInterneIdSets(allSkmlInterneModels.getObject(), getIngelogdeOrganisatieMedewerker());
 						info("Set's zijn opgeslagen.");
 					}
 					catch (IllegalArgumentException e)
@@ -110,7 +110,7 @@ public class SKMLInterneControleConfigPage extends KwaliteitscontroleBasePage
 						error("Of 'Controle tekst' EN 'QBase ID' of geen van beiden moeten gevuld zijn. Niets opgeslagen.");
 					}
 				}
-			}.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_SKML_INTERNE_CONTROLE, Actie.AANPASSEN)));
+			}.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_SKML_INTERNE_CONTROLE, Actie.AANPASSEN)));
 		}
 
 		private TextField<SKMLSentineelControleBarcode> addTextField(String id, SKMLSentineelControleType typeCup)

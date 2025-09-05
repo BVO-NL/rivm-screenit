@@ -75,7 +75,8 @@ public abstract class ColonIntakekamersEditPanel extends GenericPanel<ColonIntak
 		add(dialog);
 
 		var intakelocatie = getModelObject();
-		final Actie actie = autorisatieService.getActieVoorOrganisatie(ScreenitSession.get().getLoggedInInstellingGebruiker(), intakelocatie, Recht.GEBRUIKER_BEHEER_CC_LOCATIES);
+		final Actie actie = autorisatieService.getActieVoorOrganisatie(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), intakelocatie,
+			Recht.MEDEWERKER_BEHEER_CC_LOCATIES);
 
 		ScreenitForm<ColonIntakelocatie> form = new ScreenitForm<>("form");
 		add(form);

@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.nieuws;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 import java.util.List;
 
@@ -35,7 +34,10 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import lombok.Getter;
+import lombok.Setter;
+
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
@@ -44,14 +46,13 @@ import org.hibernate.envers.Audited;
 @Entity
 @Table(schema = "algemeen")
 @Audited
+@Getter
+@Setter
 public class NieuwsItem extends AbstractHibernateObject
 {
 
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nieuwsItem", cascade = CascadeType.ALL)
-	private List<GebruikerNieuwsItem> gebruikerNieuwsItems;
+	private List<MedewerkerNieuwsItem> medewerkerNieuwsItems;
 
 	@Column(nullable = false)
 	private String titel;
@@ -68,106 +69,17 @@ public class NieuwsItem extends AbstractHibernateObject
 	private Date publicerenTot;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	private InstellingGebruiker gemaaktDoor;
+	private OrganisatieMedewerker gemaaktDoor;
 
 	@Column(nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date gemaakt;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	private InstellingGebruiker gewijzigdDoor;
+	private OrganisatieMedewerker gewijzigdDoor;
 
 	@Column
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date gewijzigd;
 
-	public String getTitel()
-	{
-		return titel;
-	}
-
-	public void setTitel(String titel)
-	{
-		this.titel = titel;
-	}
-
-	public String getTekst()
-	{
-		return tekst;
-	}
-
-	public void setTekst(String tekst)
-	{
-		this.tekst = tekst;
-	}
-
-	public Date getPublicerenVanaf()
-	{
-		return publicerenVanaf;
-	}
-
-	public void setPublicerenVanaf(Date publicerenVanaf)
-	{
-		this.publicerenVanaf = publicerenVanaf;
-	}
-
-	public Date getPublicerenTot()
-	{
-		return publicerenTot;
-	}
-
-	public void setPublicerenTot(Date publicerenTot)
-	{
-		this.publicerenTot = publicerenTot;
-	}
-
-	public Date getGewijzigd()
-	{
-		return gewijzigd;
-	}
-
-	public void setGewijzigd(Date gewijzigd)
-	{
-		this.gewijzigd = gewijzigd;
-	}
-
-	public InstellingGebruiker getGemaaktDoor()
-	{
-		return gemaaktDoor;
-	}
-
-	public void setGemaaktDoor(InstellingGebruiker gemaaktDoor)
-	{
-		this.gemaaktDoor = gemaaktDoor;
-	}
-
-	public Date getGemaakt()
-	{
-		return gemaakt;
-	}
-
-	public void setGemaakt(Date gemaakt)
-	{
-		this.gemaakt = gemaakt;
-	}
-
-	public InstellingGebruiker getGewijzigdDoor()
-	{
-		return gewijzigdDoor;
-	}
-
-	public void setGewijzigdDoor(InstellingGebruiker gewijzigdDoor)
-	{
-		this.gewijzigdDoor = gewijzigdDoor;
-	}
-
-	public List<GebruikerNieuwsItem> getGebruikerNieuwsItems()
-	{
-		return gebruikerNieuwsItems;
-	}
-
-	public void setGebruikerNieuwsItems(List<GebruikerNieuwsItem> gebruikerNieuwsItems)
-	{
-		this.gebruikerNieuwsItems = gebruikerNieuwsItems;
-	}
 }

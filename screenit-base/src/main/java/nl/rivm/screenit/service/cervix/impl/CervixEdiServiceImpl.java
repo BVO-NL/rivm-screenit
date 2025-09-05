@@ -29,11 +29,11 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.edi.model.MedVryOut;
 import nl.rivm.screenit.edi.model.OutboundMessageData;
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.MailVerzenden;
 import nl.rivm.screenit.model.MedVryOntvanger;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.cervix.CervixHuisartsBericht;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
@@ -64,7 +64,7 @@ public class CervixEdiServiceImpl extends EdiServiceBaseImpl implements CervixEd
 	private String ediAfleverAdres;
 
 	@Override
-	public void verstuurMedVry(CervixHuisartsBericht huisartsBericht, Account loggedInAccount)
+	public void verstuurMedVry(CervixHuisartsBericht huisartsBericht, Account ingelogdAccount)
 	{
 		CervixHuisartsLocatie locatie = huisartsBericht.getHuisartsLocatie();
 		if (CervixLocatieUtil.klantnummerNietGeverifieerd(locatie))
@@ -80,7 +80,7 @@ public class CervixEdiServiceImpl extends EdiServiceBaseImpl implements CervixEd
 
 		MedVryOut medVry = maakMedVry(huisartsBericht);
 		zetPatient(huisartsBericht, medVry);
-		InstellingGebruiker sender = zetZender(huisartsBericht, medVry);
+		OrganisatieMedewerker sender = zetZender(huisartsBericht, medVry);
 		zetInhoud(berichtInhoud, huisartsBericht.getBerichtType(), medVry, transactionId);
 		zetOntvanger(medVry, locatie);
 
@@ -91,11 +91,11 @@ public class CervixEdiServiceImpl extends EdiServiceBaseImpl implements CervixEd
 		LogGebeurtenis logGebeurtenis = bepaalLoggebeurtenisVoorHuisartsBericht(huisartsBericht);
 		String melding = getLoggingTekst(huisartsBericht.getHuisartsLocatie(), huisartsBericht.getBerichtType(), foutmelding,
 			huisartsBericht.getScreeningsOrganisatie().getEnovationEdiAdres(), medVry.getReceiverId());
-		schrijfLogGebeurtenis(logGebeurtenis, huisartsBericht, melding, loggedInAccount);
+		schrijfLogGebeurtenis(logGebeurtenis, huisartsBericht, melding, ingelogdAccount);
 	}
 
 	@Override
-	public CervixEdiVerstuurStatus verstuurMedVryNaarExtraHuisartsLocatie(CervixHuisartsBericht huisartsBericht, CervixHuisartsLocatie extraLocatie, Account loggedInAccount)
+	public CervixEdiVerstuurStatus verstuurMedVryNaarExtraHuisartsLocatie(CervixHuisartsBericht huisartsBericht, CervixHuisartsLocatie extraLocatie, Account ingelogdAccount)
 	{
 		if (CervixLocatieUtil.klantnummerNietGeverifieerd(extraLocatie))
 		{
@@ -106,7 +106,7 @@ public class CervixEdiServiceImpl extends EdiServiceBaseImpl implements CervixEd
 
 		MedVryOut medVry = maakMedVry(huisartsBericht);
 		zetPatient(huisartsBericht, medVry);
-		InstellingGebruiker sender = zetZender(huisartsBericht, medVry);
+		OrganisatieMedewerker sender = zetZender(huisartsBericht, medVry);
 		zetInhoud(maakBerichtInhoud(huisartsBericht), huisartsBericht.getBerichtType(), medVry, transactionId);
 		zetOntvanger(medVry, extraLocatie);
 
@@ -118,7 +118,7 @@ public class CervixEdiServiceImpl extends EdiServiceBaseImpl implements CervixEd
 		LogGebeurtenis logGebeurtenis = succesvol ? LogGebeurtenis.HUISARTSBERICHT_OPNIEUW_VERSTUURD : LogGebeurtenis.HUISARTS_BERICHT_NIET_VERZONDEN;
 		String melding = getLoggingTekst(extraLocatie, huisartsBericht.getBerichtType(), foutmelding,
 			huisartsBericht.getScreeningsOrganisatie().getEnovationEdiAdres(), medVry.getReceiverId());
-		schrijfLogGebeurtenis(logGebeurtenis, huisartsBericht, melding, loggedInAccount);
+		schrijfLogGebeurtenis(logGebeurtenis, huisartsBericht, melding, ingelogdAccount);
 
 		return succesvol ? CervixEdiVerstuurStatus.VERSTUURD : CervixEdiVerstuurStatus.VERSTUREN_MISLUKT;
 	}
@@ -136,7 +136,7 @@ public class CervixEdiServiceImpl extends EdiServiceBaseImpl implements CervixEd
 		MedVryOut medVry = maakMedVry(huisartsBericht);
 		zetOntvanger(medVry, huisartsBericht.getHuisartsLocatie());
 		zetInhoud(huisartsBericht.getBerichtInhoud(), huisartsBericht.getBerichtType(), medVry, transactionId);
-		InstellingGebruiker sender = zetZender(huisartsBericht, medVry);
+		OrganisatieMedewerker sender = zetZender(huisartsBericht, medVry);
 		String foutmelding = verstuur(huisartsBericht, transactionId, medVry, sender);
 
 		LogGebeurtenis logGebeurtenis = StringUtils.isBlank(foutmelding) ? LogGebeurtenis.CERVIX_ZORGMAIL_VERIFICATIE_HUISARTSBERICHT_VERSTUURD
@@ -168,7 +168,7 @@ public class CervixEdiServiceImpl extends EdiServiceBaseImpl implements CervixEd
 		return merge(context, huisartsBericht.getBerichtType());
 	}
 
-	private String verstuur(CervixHuisartsBericht huisartsBericht, String transactionId, MedVryOut medVry, InstellingGebruiker sender)
+	private String verstuur(CervixHuisartsBericht huisartsBericht, String transactionId, MedVryOut medVry, OrganisatieMedewerker sender)
 	{
 		OutboundMessageData<MedVryOut> outboundMessageData = new OutboundMessageData<>(medVry);
 		outboundMessageData.setSubject(medVry.getSubject());
@@ -181,7 +181,7 @@ public class CervixEdiServiceImpl extends EdiServiceBaseImpl implements CervixEd
 			MailVerzenden mailVerzenden = manipulateEmailadressen(sender, outboundMessageData);
 
 			if (StringUtils.isBlank(foutmelding) && !MailVerzenden.UIT.equals(mailVerzenden)
-				&& !ediMessageService.sendMedVry(sender, sender.getEmail(), outboundMessageData, transactionId))
+				&& !ediMessageService.sendMedVry(sender, sender.getMedewerker().getEmailextra(), outboundMessageData, transactionId))
 			{
 				foutmelding = "Probleem met versturen MedVry";
 			}
@@ -280,11 +280,11 @@ public class CervixEdiServiceImpl extends EdiServiceBaseImpl implements CervixEd
 		}
 	}
 
-	private void schrijfLogGebeurtenis(LogGebeurtenis logGebeurtenis, CervixHuisartsBericht huisartsBericht, String melding, Account loggedInAccount)
+	private void schrijfLogGebeurtenis(LogGebeurtenis logGebeurtenis, CervixHuisartsBericht huisartsBericht, String melding, Account ingelogdAccount)
 	{
-		List<Instelling> dashboardOrganisaties = addRivmInstelling(new ArrayList<>());
+		List<Organisatie> dashboardOrganisaties = addLandelijkeBeheerOrganisatie(new ArrayList<>());
 		dashboardOrganisaties.add(huisartsBericht.getScreeningsOrganisatie());
-		logService.logGebeurtenis(logGebeurtenis, dashboardOrganisaties, loggedInAccount, huisartsBericht.getClient(), melding, Bevolkingsonderzoek.CERVIX);
+		logService.logGebeurtenis(logGebeurtenis, dashboardOrganisaties, ingelogdAccount, huisartsBericht.getClient(), melding, Bevolkingsonderzoek.CERVIX);
 	}
 
 	private String getLoggingTekst(CervixHuisartsLocatie huisartsLocatie, HuisartsBerichtType berichtType, String foutmelding, String afzender, String ontvanger)

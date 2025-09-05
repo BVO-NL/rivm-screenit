@@ -31,15 +31,15 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatiePaspo
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieZoeken;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.service.AutorisatieService;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -54,16 +54,16 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @SecurityConstraint(
 	actie = Actie.INZIEN,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_BEOORDELINGSEENHEID_ORG_BEHEER },
+	recht = { Recht.MEDEWERKER_BEOORDELINGSEENHEID_ORG_BEHEER },
 	checkScope = true,
-	level = ToegangLevel.INSTELLING,
+	level = ToegangLevel.ORGANISATIE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class AanvullendeBeGegevensPage extends OrganisatieBeheer
 {
 	private static final long serialVersionUID = 1L;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private AutorisatieService autorisatieService;
@@ -95,10 +95,10 @@ public class AanvullendeBeGegevensPage extends OrganisatieBeheer
 		addAnnulerenButton(form, inzien);
 	}
 
-	private boolean isAlleenInzien(Instelling organisatie)
+	private boolean isAlleenInzien(Organisatie organisatie)
 	{
-		Actie actie = autorisatieService.getActieVoorOrganisatie(ScreenitSession.get().getLoggedInInstellingGebruiker(), organisatie,
-			Recht.GEBRUIKER_BEOORDELINGSEENHEID_ORG_BEHEER);
+		Actie actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie,
+			Recht.MEDEWERKER_BEOORDELINGSEENHEID_ORG_BEHEER);
 		return !isMinimumActie(actie, Actie.AANPASSEN);
 	}
 
@@ -129,7 +129,7 @@ public class AanvullendeBeGegevensPage extends OrganisatieBeheer
 			{
 				BasePage.markeerFormulierenOpgeslagen(target);
 				BeoordelingsEenheid beoordelingsEenheid = model.getObject();
-				instellingService.saveOrUpdate(beoordelingsEenheid);
+				organisatieService.saveOrUpdate(beoordelingsEenheid);
 				logAction(beoordelingsEenheid);
 				this.info("Gegevens zijn succesvol opgeslagen");
 			}
@@ -141,7 +141,7 @@ public class AanvullendeBeGegevensPage extends OrganisatieBeheer
 
 	private void logAction(BeoordelingsEenheid beoordelingsEenheid)
 	{
-		logService.logGebeurtenis(LogGebeurtenis.ORGANISATIE_WIJZIG, ScreenitSession.get().getLoggedInAccount(),
+		logService.logGebeurtenis(LogGebeurtenis.ORGANISATIE_WIJZIG, ScreenitSession.get().getIngelogdAccount(),
 			"Organisatie: " + beoordelingsEenheid.getNaam() + " ;CE = " + beoordelingsEenheid.getParent().getNaam());
 	}
 }

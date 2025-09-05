@@ -25,12 +25,14 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.service.ColonFITHL7BerichtInlezenService;
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
 import nl.rivm.screenit.model.colon.IFOBTBestand;
@@ -46,21 +48,28 @@ import nl.rivm.screenit.model.colon.enums.IFOBTUitslagType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.model.enums.RedenNietTeBeoordelen;
 import nl.rivm.screenit.model.logging.IfobtVerwerkingBeeindigdLogEvent;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.verwerkingverslag.IfobtVerwerkingRapportage;
 import nl.rivm.screenit.model.verwerkingverslag.IfobtVerwerkingRapportageEntry;
+import nl.rivm.screenit.repository.colon.ColonFITBestandRepository;
 import nl.rivm.screenit.repository.colon.ColonFITLaboratoriumRepository;
 import nl.rivm.screenit.repository.colon.ColonFITUitslagBerichtRepository;
+import nl.rivm.screenit.repository.colon.ColonFITUitslagRepository;
+import nl.rivm.screenit.repository.colon.ColonFITVerwerkingBeeindigdLogEventRepository;
+import nl.rivm.screenit.repository.colon.ColonFITVerwerkingRapportageEntryRepository;
+import nl.rivm.screenit.repository.colon.ColonFITVerwerkingRapportageRepository;
 import nl.rivm.screenit.repository.colon.ColonSKMLControleBarcodeRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.colon.ColonBaseFITService;
 import nl.rivm.screenit.util.FITTestUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,30 +80,36 @@ import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v251.message.OUL_R22;
 import ca.uhn.hl7v2.parser.Parser;
 
-@Service
 @Slf4j
+@Service
+@RequiredArgsConstructor
 public class ColonFITHL7BerichtInlezenServiceImpl implements ColonFITHL7BerichtInlezenService
 {
-	@Autowired
-	private HibernateService hibernateService;
+	private static final String QC_BARCODE_PREFIX = "QC";
 
-	@Autowired
-	private ICurrentDateSupplier currentDateSupplier;
+	private final ICurrentDateSupplier currentDateSupplier;
 
-	@Autowired
-	private ColonFITLaboratoriumRepository fitLaboratoriumRepository;
+	private final ColonFITLaboratoriumRepository fitLaboratoriumRepository;
 
-	@Autowired
-	private ColonFITUitslagBerichtRepository fitUitslagBerichtRepository;
+	private final ColonFITUitslagBerichtRepository fitUitslagBerichtRepository;
 
-	@Autowired
-	private LogService logService;
+	private final ColonSKMLControleBarcodeRepository skmlControleBarcodeRepository;
 
-	@Autowired
-	private ColonBaseFITService fitService;
+	private final ColonFITVerwerkingBeeindigdLogEventRepository fitVerwerkingBeeindigdLogEventRepository;
 
-	@Autowired
-	private ColonSKMLControleBarcodeRepository skmlControleBarcodeRepository;
+	private final ColonFITVerwerkingRapportageRepository fitVerwerkingRapportageRepository;
+
+	private final ColonFITVerwerkingRapportageEntryRepository fitVerwerkingRapportageEntryRepository;
+
+	private final ColonFITUitslagRepository fitUitslagRepository;
+
+	private final ColonFITBestandRepository fitBestandRepository;
+
+	private final OrganisatieService organisatieService;
+
+	private final LogService logService;
+
+	private final ColonBaseFITService fitService;
 
 	@Override
 	public List<ColonIFobtUitslagBericht> getAlleNietVerwerkteFitBerichten()
@@ -109,8 +124,8 @@ public class ColonFITHL7BerichtInlezenServiceImpl implements ColonFITHL7BerichtI
 		var verwerkingLogEvent = new IfobtVerwerkingBeeindigdLogEvent();
 		var rapportage = new IfobtVerwerkingRapportage();
 		verwerkingLogEvent.setRapportage(rapportage);
-		hibernateService.saveOrUpdate(rapportage);
-		hibernateService.saveOrUpdate(verwerkingLogEvent);
+		fitVerwerkingRapportageRepository.save(rapportage);
+		fitVerwerkingBeeindigdLogEventRepository.save(verwerkingLogEvent);
 
 		try
 		{
@@ -132,17 +147,14 @@ public class ColonFITHL7BerichtInlezenServiceImpl implements ColonFITHL7BerichtI
 			bericht.setStatusDatum(currentDateSupplier.getDate());
 			bericht.setStatus(BerichtStatus.VERWERKT);
 
-			hibernateService.saveOrUpdate(rapportage);
-			hibernateService.saveOrUpdate(bericht);
-			hibernateService.saveOrUpdate(verwerkingLogEvent);
+			fitVerwerkingRapportageRepository.save(rapportage);
+			fitUitslagBerichtRepository.save(bericht);
+			fitVerwerkingBeeindigdLogEventRepository.save(verwerkingLogEvent);
 			logService.logGebeurtenis(LogGebeurtenis.IFOBT_INLEZEN_AFGEROND, verwerkingLogEvent, Bevolkingsonderzoek.COLON);
 		}
 		catch (Exception e)
 		{
 			LOG.warn("Fout bij verwerking van HL7 bericht", e);
-			bericht.setStatus(BerichtStatus.FOUT);
-			bericht.setStatusDatum(currentDateSupplier.getDate());
-			hibernateService.saveOrUpdate(bericht);
 			logError(bericht, e.getMessage(), verwerkingLogEvent);
 		}
 	}
@@ -152,77 +164,44 @@ public class ColonFITHL7BerichtInlezenServiceImpl implements ColonFITHL7BerichtI
 	{
 		IFOBTBestand bestand = null;
 
-		var sentinelTestOntvangen = false;
-		var interneTestOntvangen = false;
-		var externeTestOntvangen = false;
-
 		for (var result : wrapper.getResults())
 		{
 			try
 			{
-				var onbekendeBarcode = false;
 				var barcode = result.getSid();
-				LOG.info("Barcode verwerken: {}", barcode);
-				var fit = fitService.getFit(barcode).orElse(null);
+				LOG.info("Uitslag voor barcode verwerken: {}", barcode);
+				var uitslagType = bepaalUitslagType(barcode);
+				bestand = createOrGetBestand(result);
+				verslagEntry.setIfobtBestandId(bestand.getId());
 
-				var uitslag = new IFOBTUitslag();
-				uitslag.setAnalyseDatum(result.getDateTimeResult());
-				uitslag.setBarcode(barcode);
-				if (fit == null || fit.getType().equals(IFOBTType.STUDIE))
+				if (uitslagType != null)
 				{
-					var skmlBarcode = skmlControleBarcodeRepository.findByBarcode(barcode);
+					var uitslag = new IFOBTUitslag();
+					uitslag.setAnalyseDatum(result.getDateTimeResult());
+					uitslag.setBarcode(barcode);
+					uitslag.setType(uitslagType);
+					fitUitslagVerwerking(result, uitslag);
+					uitslag.setBestand(bestand);
+					fitUitslagRepository.save(uitslag);
 
-					if (skmlBarcode.isEmpty())
+					if (IFOBTUitslagType.CLIENT != uitslagType)
 					{
-						var isVerwijderdeBarcode = fitService.isVerwijderdeBarcode(barcode);
-						var melding = String.format("FIT of controle buis met barcode %s in bestand %s bestaat niet%s.", barcode, result.getBestandsNaam(),
-							isVerwijderdeBarcode ? " meer" : "");
-						logService.logGebeurtenis(LogGebeurtenis.IFOBT_ONBEKENDE_BARCODE, melding, Bevolkingsonderzoek.COLON);
-						LOG.warn(melding);
-
-						onbekendeBarcode = true;
-					}
-					else
-					{
-						uitslag.setType(skmlBarcode.get().getType());
-						switch (uitslag.getType())
-						{
-						case SENTINEEL:
-							sentinelTestOntvangen = true;
-							break;
-						case INTERN:
-							interneTestOntvangen = true;
-							break;
-						case EXTERN:
-							externeTestOntvangen = true;
-							break;
-						default:
-							break;
-						}
+						bestand.setAantalControleUitslagen(bestand.getAantalControleUitslagen() + 1);
+						logQCTestOntvangen(uitslagType);
 					}
 				}
 				else
 				{
-					uitslag.setType(IFOBTUitslagType.CLIENT);
-					logAction(fit);
-				}
-				bestand = createOrGetBestand(result);
-				verslagEntry.setIfobtBestandId(bestand.getId());
-
-				if (!onbekendeBarcode)
-				{
-					uitslag.setBestand(bestand);
-					uitslag.setUitslag(new BigDecimal(result.getResultValue()));
-					hibernateService.saveOrUpdate(uitslag);
-
-					if (!IFOBTUitslagType.CLIENT.equals(uitslag.getType()))
-					{
-						bestand.setAantalControleUitslagen(bestand.getAantalControleUitslagen() + 1);
-					}
+					var isVerwijderdeBarcode = fitService.isVerwijderdeBarcode(barcode);
+					var melding = String.format("FIT of controle buis met barcode %s in bericht %s bestaat niet%s.", barcode, result.getBestandsNaam(),
+						isVerwijderdeBarcode ? " meer" : "");
+					logService.logGebeurtenis(LogGebeurtenis.IFOBT_ONBEKENDE_BARCODE, melding, Bevolkingsonderzoek.COLON);
+					LOG.warn(melding);
 				}
 				verslagEntry.setAantalVerwerkingen(verslagEntry.getAantalVerwerkingen() + 1);
-				hibernateService.saveOrUpdate(verslagEntry);
-				hibernateService.saveOrUpdate(bestand);
+				fitVerwerkingRapportageEntryRepository.save(verslagEntry);
+				fitBestandRepository.save(bestand);
+
 			}
 			catch (Exception e)
 			{
@@ -235,9 +214,63 @@ public class ColonFITHL7BerichtInlezenServiceImpl implements ColonFITHL7BerichtI
 		}
 		if (bestand != null)
 		{
-			bestand.setStatus(IFOBTBestandStatus.INGELEZEN);
+			bestand.setStatus(bepaalBestandStatus());
 		}
-		logSkmlTestOntvangen(sentinelTestOntvangen, interneTestOntvangen, externeTestOntvangen);
+
+	}
+
+	private @Nullable IFOBTUitslagType bepaalUitslagType(String barcode)
+	{
+		var fit = fitService.getFit(barcode).orElse(null);
+		IFOBTUitslagType uitslagType = null;
+		if (fit == null || fit.getType() == IFOBTType.STUDIE)
+		{
+			if (fitService.isDk2026Actief())
+			{
+				if (barcode.startsWith(QC_BARCODE_PREFIX))
+				{
+					uitslagType = IFOBTUitslagType.QC;
+				}
+			}
+			else
+			{
+				var skmlBarcode = skmlControleBarcodeRepository.findByBarcode(barcode);
+				if (skmlBarcode.isPresent())
+				{
+					uitslagType = skmlBarcode.get().getType();
+				}
+			}
+		}
+		else
+		{
+			uitslagType = IFOBTUitslagType.CLIENT;
+			logAction(fit);
+		}
+		return uitslagType;
+	}
+
+	private void fitUitslagVerwerking(IFOBTResult result, IFOBTUitslag uitslag)
+	{
+		uitslag.setFlag(result.getFlag());
+
+		if (Objects.equals(result.getFlag(), FITTestUtil.UITSLAG_FLAG_PRO))
+		{
+
+			uitslag.setUitslag(null);
+		}
+		else if (result.getFlag() != null || result.getOnbeoordeelbaarReden() != null)
+		{
+
+			uitslag.setAnalyseDatum(currentDateSupplier.getDate());
+
+			var reden = RedenNietTeBeoordelen.bepaalReden(result.getOnbeoordeelbaarReden());
+			uitslag.setOnbeoordeelbaarReden(reden);
+		}
+		else
+		{
+
+			uitslag.setUitslag(new BigDecimal(result.getResultValue()));
+		}
 	}
 
 	private Message transformToMessage(String bericht) throws HL7Exception, IOException
@@ -251,19 +284,12 @@ public class ColonFITHL7BerichtInlezenServiceImpl implements ColonFITHL7BerichtI
 		}
 	}
 
-	private void logSkmlTestOntvangen(boolean sentinelTestOntvangen, boolean interneTestOntvangen, boolean externeTestOntvangen)
+	private void logQCTestOntvangen(IFOBTUitslagType uitslagType)
 	{
-		if (sentinelTestOntvangen)
+		var logGebeurtenis = uitslagType.getLogGebeurtenis();
+		if (logGebeurtenis != null)
 		{
-			logService.logGebeurtenis(LogGebeurtenis.SENTINEL_ONTVANGEN, (Account) null, Bevolkingsonderzoek.COLON);
-		}
-		if (interneTestOntvangen)
-		{
-			logService.logGebeurtenis(LogGebeurtenis.INTERNE_TEST_ONTVANGEN, (Account) null, Bevolkingsonderzoek.COLON);
-		}
-		if (externeTestOntvangen)
-		{
-			logService.logGebeurtenis(LogGebeurtenis.EXTERNE_TEST_ONTVANGEN, (Account) null, Bevolkingsonderzoek.COLON);
+			logService.logGebeurtenis(logGebeurtenis, (Account) null, Bevolkingsonderzoek.COLON);
 		}
 	}
 
@@ -287,10 +313,15 @@ public class ColonFITHL7BerichtInlezenServiceImpl implements ColonFITHL7BerichtI
 			bestand.setNaamBestand(result.getBestandsNaam());
 			bestand.setPathBestand("");
 
-			hibernateService.saveOrUpdate(bestand);
+			fitBestandRepository.save(bestand);
 
 			return bestand;
 		});
+	}
+
+	private @NotNull IFOBTBestandStatus bepaalBestandStatus()
+	{
+		return fitService.isDk2026Actief() ? IFOBTBestandStatus.GEAUTORISEERD : IFOBTBestandStatus.INGELEZEN;
 	}
 
 	private void logAction(IFOBTTest fit)
@@ -305,7 +336,7 @@ public class ColonFITHL7BerichtInlezenServiceImpl implements ColonFITHL7BerichtI
 		{
 			ontvangenBericht.setStatus(BerichtStatus.WAARSCHUWING);
 		}
-		hibernateService.saveOrUpdate(ontvangenBericht);
+		fitUitslagBerichtRepository.save(ontvangenBericht);
 		var melding = "Uitslag in FIT HL7 bericht (messageID: " + ontvangenBericht.getMessageId() + ") kon niet worden verwerkt. (" + message + ")";
 		addMelding(verwerkingLogEvent, melding);
 	}
@@ -333,11 +364,11 @@ public class ColonFITHL7BerichtInlezenServiceImpl implements ColonFITHL7BerichtI
 	public void logError(ColonIFobtUitslagBericht ontvangenBericht, String message, IfobtVerwerkingBeeindigdLogEvent verwerkingLogEvent)
 	{
 		ontvangenBericht.setStatus(BerichtStatus.FOUT);
-		hibernateService.saveOrUpdate(ontvangenBericht);
+		ontvangenBericht.setStatusDatum(currentDateSupplier.getDate());
+		fitUitslagBerichtRepository.save(ontvangenBericht);
 		var laboratorium = ontvangenBericht.getLaboratorium();
 		var melding = "FIT HL7 Bericht (messageID: " + ontvangenBericht.getMessageId() + ") kon niet worden verwerkt. (" + message + ")";
-		logging(LogGebeurtenis.IFOBT_INLEZEN_AFGEROND, laboratorium, Level.ERROR,
-			melding);
+		logging(LogGebeurtenis.IFOBT_INLEZEN_AFGEROND, laboratorium, Level.ERROR, melding);
 		if (verwerkingLogEvent != null)
 		{
 			addMelding(verwerkingLogEvent, melding);
@@ -349,21 +380,12 @@ public class ColonFITHL7BerichtInlezenServiceImpl implements ColonFITHL7BerichtI
 		var event = new LogEvent();
 		event.setLevel(level);
 		event.setMelding(melding);
-		var instellingen = addRivmInstelling(new ArrayList<>());
+		List<Organisatie> organisaties = new ArrayList<>(organisatieService.getActieveOrganisaties(Rivm.class));
 		if (laboratorium != null)
 		{
 			melding += " Laboratorium: " + laboratorium.getNaam();
 		}
-		logService.logGebeurtenis(gebeurtenis, instellingen, event, Bevolkingsonderzoek.COLON);
+		logService.logGebeurtenis(gebeurtenis, organisaties, event, Bevolkingsonderzoek.COLON);
 		return melding;
 	}
-
-	private List<Instelling> addRivmInstelling(List<Instelling> instellingen)
-	{
-		var rivm = hibernateService.loadAll(Rivm.class);
-		List<Instelling> rivmInstellingen = new ArrayList<>(rivm);
-		instellingen.addAll(rivmInstellingen);
-		return instellingen;
-	}
-
 }

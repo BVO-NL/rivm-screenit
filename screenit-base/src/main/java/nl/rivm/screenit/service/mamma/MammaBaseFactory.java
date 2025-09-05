@@ -23,7 +23,7 @@ package nl.rivm.screenit.service.mamma;
 
 import java.util.Date;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.SmsStatus;
 import nl.rivm.screenit.model.mamma.MammaAdhocMeekijkverzoek;
@@ -60,5 +60,5 @@ public interface MammaBaseFactory
 
 	MammaAdhocMeekijkverzoek maakAdhocMeekijkverzoek(MammaOnderzoek onderzoek, String reden);
 
-	MammaMammografie maakMammografie(MammaOnderzoek onderzoek, InstellingGebruiker instellingGebruiker, MammaAnnotatieAfbeelding afbeelding);
+	MammaMammografie maakMammografie(MammaOnderzoek onderzoek, OrganisatieMedewerker organisatieMedewerker, MammaAnnotatieAfbeelding afbeelding);
 }

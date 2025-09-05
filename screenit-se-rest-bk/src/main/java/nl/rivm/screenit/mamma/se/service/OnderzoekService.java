@@ -32,27 +32,27 @@ import nl.rivm.screenit.mamma.se.dto.actions.MaakDubbeleTijdDto;
 import nl.rivm.screenit.mamma.se.dto.actions.MaakDubbeleTijdRedenDto;
 import nl.rivm.screenit.mamma.se.dto.actions.OnderzoekOpslaanDto;
 import nl.rivm.screenit.mamma.se.dto.actions.SignalerenOpslaanDto;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 
 public interface OnderzoekService
 {
-	void opslaan(OnderzoekOpslaanDto action, InstellingGebruiker gebruiker);
+	void opslaan(OnderzoekOpslaanDto action, OrganisatieMedewerker organisatieMedewerker);
 
-	void signalerenOpslaan(SignalerenOpslaanDto action, InstellingGebruiker account, LocalDateTime transactieDatumTijd);
+	void signalerenOpslaan(SignalerenOpslaanDto action, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd);
 
-	void maakDubbeleTijd(MaakDubbeleTijdDto action, InstellingGebruiker account, LocalDateTime transactieDatumTijd);
+	void maakDubbeleTijd(MaakDubbeleTijdDto action, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd);
 
-	void maakDubbeleTijdReden(MaakDubbeleTijdRedenDto action, InstellingGebruiker account);
+	void maakDubbeleTijdReden(MaakDubbeleTijdRedenDto action, OrganisatieMedewerker organisatieMedewerker);
 
-	Map<Long, Integer> getOnderzochtByGebruikerOpDatumVoorSe(Date datum, String seCode);
+	Map<Long, Integer> getOnderzochtByMedewerkerOpDatumVoorSe(Date datum, String seCode);
 
-	Map<Long, Integer> getAfgerondByGebruikerOpDatumVoorSe(Date datum, String seCode);
+	Map<Long, Integer> getAfgerondByMedewerkerOpDatumVoorSe(Date datum, String seCode);
 
-	Map<Long, Integer> getOnderbrokenByGebruikerOpDatumVoorSe(Date datum, String seCode);
+	Map<Long, Integer> getOnderbrokenByMedewerkerOpDatumVoorSe(Date datum, String seCode);
 
-	Map<Long, Integer> getOnvolledigByGebruikerOpDatumVoorSe(Date datum, String seCode);
+	Map<Long, Integer> getOnvolledigByMedewerkerOpDatumVoorSe(Date datum, String seCode);
 
-	Map<Long, Integer> getAfwijkingenByGebruikerOpDatumVoorSe(Date datum, String seCode);
+	Map<Long, Integer> getAfwijkingenByMedewerkerOpDatumVoorSe(Date datum, String seCode);
 
 	int getAantalOnderzoekenMetBeelden(LocalDate datum, String seCode);
 

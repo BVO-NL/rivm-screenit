@@ -33,7 +33,7 @@ import nl.rivm.screenit.model.ClientContact;
 import nl.rivm.screenit.model.ClientContactActie;
 import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.model.Dossier;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
@@ -43,7 +43,7 @@ import nl.rivm.screenit.model.mamma.MammaAfspraak;
 public interface ClientContactService
 {
 
-	void saveClientContact(ClientContact contact, Map<ClientContactActieType, Map<ExtraOpslaanKey, Object>> extraOpslaanObjecten, Account ingelogdeGebruiker);
+	void saveClientContact(ClientContact contact, Map<ClientContactActieType, Map<ExtraOpslaanKey, Object>> extraOpslaanObjecten, Account ingelogdeOrganisatieMedewerker);
 
 	ClientContactActie mammaAfspraakMakenWijzigen(ClientContactActie actie, Client client, Map<ExtraOpslaanKey, Object> extraOpslaanParams, Account account,
 		boolean isNieuweAfspraak, boolean isGeforceerdeAfspraak);
@@ -76,9 +76,9 @@ public interface ClientContactService
 
 	boolean heeftOpenIntakeAfspraak(Client client);
 
-	void updateContact(ClientContact contact, InstellingGebruiker loggedInInstellingGebruiker);
+	void updateContact(ClientContact contact, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	void verwijderContact(ClientContact contact, InstellingGebruiker loggedInInstellingGebruiker);
+	void verwijderContact(ClientContact contact, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	boolean heeftOpenMammaAfspraak(Client client);
 

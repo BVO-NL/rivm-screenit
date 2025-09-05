@@ -25,8 +25,8 @@ import java.util.List;
 
 import nl.rivm.screenit.dto.mamma.MammaUploadBeeldenVerzoekDto;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.mamma.MammaUploadBeeldenVerzoek;
@@ -35,17 +35,17 @@ import org.springframework.data.domain.Sort;
 
 public interface MammaUploadBeeldenService
 {
-	List<MammaUploadBeeldenVerzoek> zoekOpenstaandeUploadBeeldenVerzoeken(Instelling instelling, ScreeningOrganisatie regio, long first, long count, Sort sort);
+	List<MammaUploadBeeldenVerzoek> zoekOpenstaandeUploadBeeldenVerzoeken(Organisatie organisatie, ScreeningOrganisatie regio, long first, long count, Sort sort);
 
-	long countOpenstaandeUploadBeeldenVerzoeken(Instelling instelling, ScreeningOrganisatie regio);
+	long countOpenstaandeUploadBeeldenVerzoeken(Organisatie organisatie, ScreeningOrganisatie regio);
 
-	List<MammaUploadBeeldenVerzoekDto> zoekInstellingenMetOpenstaandeUploadVerzoeken(ScreeningOrganisatie regio);
+	List<MammaUploadBeeldenVerzoekDto> zoekOrganisatiesMetOpenstaandeUploadVerzoeken(ScreeningOrganisatie regio);
 
-	void maakUploadVerzoek(MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, Client client, InstellingGebruiker instellingGebruiker);
+	void maakUploadVerzoek(MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, Client client, OrganisatieMedewerker organisatieMedewerker);
 
-	String uploadBeelden(MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, List<UploadDocument> uploadDocumenten, InstellingGebruiker loggedInInstellingGebruiker);
+	String uploadBeelden(MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, List<UploadDocument> uploadDocumenten, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	void setGeenBeeldenBeschikbaar(MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, InstellingGebruiker instellingGebruiker);
+	void setGeenBeeldenBeschikbaar(MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, OrganisatieMedewerker organisatieMedewerker);
 
-	void annuleerVerzoek(MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, InstellingGebruiker instellingGebruiker);
+	void annuleerVerzoek(MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, OrganisatieMedewerker organisatieMedewerker);
 }

@@ -27,7 +27,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 
 @Entity
 @Getter
@@ -35,5 +35,5 @@ import nl.rivm.screenit.model.Gebruiker;
 public class AfgeslotenMedewerkerOvereenkomst extends AbstractAfgeslotenOvereenkomst
 {
 	@ManyToOne
-	private Gebruiker gebruiker;
+	private Medewerker medewerker;
 }

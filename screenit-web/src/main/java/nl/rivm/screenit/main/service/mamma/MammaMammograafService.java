@@ -21,11 +21,10 @@ package nl.rivm.screenit.main.service.mamma;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaMammograaf;
-import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 
 public interface MammaMammograafService {
 
-	boolean saveOrUpdateMammograaf(MammaMammograaf mammograaf, InstellingGebruiker instellingGebruiker);
+	boolean saveOrUpdateMammograaf(MammaMammograaf mammograaf, OrganisatieMedewerker organisatieMedewerker);
 }

@@ -26,14 +26,14 @@ import java.time.LocalDateTime;
 import nl.rivm.screenit.mamma.se.dto.actions.AfrondenDto;
 import nl.rivm.screenit.mamma.se.dto.actions.OnderzoekAfrondenDto;
 import nl.rivm.screenit.mamma.se.dto.onderzoek.SignalerenSeDto;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 
 public interface OnderzoekAfrondenService
 {
-	void beeindigen(AfrondenDto action, InstellingGebruiker instellingGebruiker, LocalDateTime transactieDatumTijd);
+	void beeindigen(AfrondenDto action, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd);
 
-	void onderzoekAfronden(OnderzoekAfrondenDto action, InstellingGebruiker instellingGebruiker, LocalDateTime transactieDatumTijd);
+	void onderzoekAfronden(OnderzoekAfrondenDto action, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd);
 
-	void maakSignalering(InstellingGebruiker instellingGebruiker, MammaOnderzoek onderzoek, SignalerenSeDto signaleringDto, LocalDateTime transactieDatumTijd);
+	void maakSignalering(OrganisatieMedewerker organisatieMedewerker, MammaOnderzoek onderzoek, SignalerenSeDto signaleringDto, LocalDateTime transactieDatumTijd);
 }

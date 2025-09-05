@@ -37,7 +37,6 @@ import AdvancedSearchLinkComponent from "../AdvancedSearchLinkComponent"
 import ScreenitBackend from "../../../utils/Backend"
 import {CircularProgress} from "@mui/material"
 import SearchForm from "../SearchForm"
-import {AxiosResponse} from "axios"
 import {lijstBevatMeegegevenDatum} from "../../../utils/DateUtil"
 import {isValid} from "date-fns"
 
@@ -98,16 +97,17 @@ const MammaAfspraakMakenForm = (props: MammaAfspraakMakenFormProps) => {
 	useEffect(() => {
 		if (dossierVerverst) {
 			setBeschikbaarheidOpgehaald(false)
-			const url = "/mamma/afspraak/beschikbaarheid" + (gekozenPlaats ? `/plaats` : `/afstand/${gekozenAfstand}`)
+			const url = "mamma/afspraak/beschikbaarheid" + (gekozenPlaats ? `/plaats` : `/afstand/${gekozenAfstand}`)
 
-			ScreenitBackend.request({
-				url: url,
+			ScreenitBackend<Date[]>(url, {
 				method: gekozenPlaats ? "POST" : "GET",
-				data: gekozenPlaats && {plaats: gekozenPlaats},
-			}).then((response: AxiosResponse<Date[]>) => {
-				setBeschikbareDagen(response.data)
-				setBeschikbaarheidOpgehaald(true)
+				json: gekozenPlaats && {plaats: gekozenPlaats},
 			})
+				.json()
+				.then((response: Date[]) => {
+					setBeschikbareDagen(response)
+					setBeschikbaarheidOpgehaald(true)
+				})
 		}
 	}, [dossierVerverst, gekozenPlaats, gekozenAfstand])
 

@@ -22,22 +22,22 @@ package nl.rivm.screenit.mamma.se.security;
  */
 
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.envers.RevisionInformationResolver;
 
 public class SEAccountResolverDelegate implements RevisionInformationResolver.RevisionInformationResolverDelegate
 {
-	private static ThreadLocal<InstellingGebruiker> instellingGebruiker = new ThreadLocal<>();
+	private static final ThreadLocal<OrganisatieMedewerker> ORGANISATIE_MEDEWERKER = new ThreadLocal<>();
 
 	@Override
 	public Account getAccount()
 	{
-		return instellingGebruiker.get();
+		return ORGANISATIE_MEDEWERKER.get();
 	}
 
-	public static void setInstellingGebruiker(InstellingGebruiker gebruiker)
+	public static void setOrganisatieMedewerker(OrganisatieMedewerker organisatieMedewerker)
 	{
-		instellingGebruiker.set(gebruiker);
+		ORGANISATIE_MEDEWERKER.set(organisatieMedewerker);
 	}
 
 }

@@ -36,7 +36,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.cervix.enums.CervixHuisartsAanmeldStatus;
 
@@ -44,7 +44,7 @@ import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
-public class CervixHuisarts extends Instelling implements ICervixHuisartsportaalObject
+public class CervixHuisarts extends Organisatie implements ICervixHuisartsportaalObject
 {
 
 	@Serial

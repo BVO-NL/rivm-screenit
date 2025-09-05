@@ -34,7 +34,7 @@ import jakarta.persistence.criteria.Root;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaBlokkade;
@@ -93,8 +93,8 @@ public class MammaAfspraakSpecification
 			case SCREENINGS_ORGANISATIE:
 				screeningsEenheidJoin = join(standplaatsPeriodeJoin, MammaStandplaatsPeriode_.screeningsEenheid);
 				var beoordelingsEenheidJoin = join(screeningsEenheidJoin, MammaScreeningsEenheid_.beoordelingsEenheid);
-				var centraleEenheidJoin = join(beoordelingsEenheidJoin, Instelling_.parent);
-				var regioJoin = join(centraleEenheidJoin, Instelling_.regio);
+				var centraleEenheidJoin = join(beoordelingsEenheidJoin, Organisatie_.parent);
+				var regioJoin = join(centraleEenheidJoin, Organisatie_.regio);
 				return cb.equal(regioJoin, blokkade.getRegio());
 			case SCREENINGS_EENHEID:
 				screeningsEenheidJoin = join(standplaatsPeriodeJoin, MammaStandplaatsPeriode_.screeningsEenheid);

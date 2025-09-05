@@ -43,8 +43,9 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.mammaAfdeling.Aa
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.palab.AanvullendePaLabGegevensPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.screeningorganisatie.AanvullendeSOGegevensPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.zorginstelling.AanvullendeZiGegevensPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 
 public abstract class OrganisatieBeheer extends AlgemeenPage
@@ -53,7 +54,7 @@ public abstract class OrganisatieBeheer extends AlgemeenPage
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 		return createContextMenu();
 	}
@@ -64,68 +65,68 @@ public abstract class OrganisatieBeheer extends AlgemeenPage
 		return Boolean.TRUE;
 	}
 
-	public static List<GebruikerMenuItem> createContextMenu()
+	public static List<MedewerkerMenuItem> createContextMenu()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		Instelling currentSelectedOrganisatie = ScreenitSession.get().getCurrentSelectedOrganisatie();
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.zoeken", OrganisatieZoeken.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		Organisatie currentSelectedOrganisatie = ScreenitSession.get().getCurrentSelectedOrganisatie();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.zoeken", OrganisatieZoeken.class));
 		if (currentSelectedOrganisatie != null && OrganisatieType.HUISARTS != currentSelectedOrganisatie.getOrganisatieType())
 		{
-			contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.gegevens", OrganisatieBasisgegevens.class));
+			contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.gegevens", OrganisatieBasisgegevens.class));
 
 			switch (currentSelectedOrganisatie.getOrganisatieType())
 			{
 			case ZORGINSTELLING:
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.zi.aanvullend", AanvullendeZiGegevensPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.zi.aanvullend", AanvullendeZiGegevensPage.class));
 				break;
 			case COLOSCOPIELOCATIE:
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.cl.aanvullend", AanvullendeClGegevensPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.cl.aanvullend", AanvullendeClGegevensPage.class));
 				break;
 			case INTAKELOCATIE:
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.cc.aanvullend", ColonIntakekamerBeheer.class));
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.cc.gebieden", IntakelocatieGebiedenBeheer.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.cc.aanvullend", ColonIntakekamerBeheer.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.cc.gebieden", IntakelocatieGebiedenBeheer.class));
 				break;
 			case MAMMAPOLI:
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.mm.aanvullend", AanvullendeMammapoliGegevensPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.mm.aanvullend", AanvullendeMammapoliGegevensPage.class));
 				break;
 			case RADIOLOGIEAFDELING:
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.rad.aanvullend", AanvullendeRadiologieGegevensPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.rad.aanvullend", AanvullendeRadiologieGegevensPage.class));
 				break;
 			case SCREENINGSORGANISATIE:
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.so.aanvullend", AanvullendeSOGegevensPage.class));
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.uitstrijkendartsen", GekoppeldeUitstrijkendArtsenPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.so.aanvullend", AanvullendeSOGegevensPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.uitstrijkendartsen", GekoppeldeUitstrijkendArtsenPage.class));
 				break;
 			case PA_LABORATORIUM:
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.palab.aanvullend", AanvullendePaLabGegevensPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.palab.aanvullend", AanvullendePaLabGegevensPage.class));
 				break;
 			case LABORATORIUM:
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.lab.aanvullend", AanvullendeLabGegevensPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.lab.aanvullend", AanvullendeLabGegevensPage.class));
 				break;
 			case BMHK_LABORATORIUM:
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.bmhklaboratorium.aanvullend", AanvullendeGegevensBMHKLaboratoriumPage.class));
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.uitstrijkendartsen", GekoppeldeUitstrijkendArtsenPage.class));
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.bmhklaboratorium.verrichtingen", CervixBmhkLaboratoriumOverzichtVerrichtingenPage.class));
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.bmhklaboratorium.tarief", CervixLaboratoriumTarievenPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.bmhklaboratorium.aanvullend", AanvullendeGegevensBMHKLaboratoriumPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.uitstrijkendartsen", GekoppeldeUitstrijkendArtsenPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.bmhklaboratorium.verrichtingen", CervixBmhkLaboratoriumOverzichtVerrichtingenPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.bmhklaboratorium.tarief", CervixLaboratoriumTarievenPage.class));
 				break;
 			case CENTRALE_EENHEID:
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.ce.aanvullend", AanvullendeCeGegevensPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.ce.aanvullend", AanvullendeCeGegevensPage.class));
 				break;
 			case BEOORDELINGSEENHEID:
-				contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.be.aanvullend", AanvullendeBeGegevensPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.be.aanvullend", AanvullendeBeGegevensPage.class));
 				break;
 			default:
 				break;
 			}
-			contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.overeenkomsten", OrganisatieOvereenkomstenPage.class));
+			contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.overeenkomsten", OrganisatieOvereenkomstenPage.class));
 
-			contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.documenten", OrganisatieDocumentenPage.class));
+			contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.documenten", OrganisatieDocumentenPage.class));
 
-			contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisaties.medewerkers", OrganisatieKoppelPage.class));
+			contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.medewerkers", OrganisatieKoppelPage.class));
 		}
 		else if (currentSelectedOrganisatie != null && OrganisatieType.HUISARTS == currentSelectedOrganisatie.getOrganisatieType())
 		{
-			contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisatie.huisarts", AanvullendeHaGegevensPage.class));
-			contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.organisatie.huisarts.verrichtingen", CervixHuisartsOverzichtVerrichtingenPage.class));
+			contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisatie.huisarts", AanvullendeHaGegevensPage.class));
+			contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisatie.huisarts.verrichtingen", CervixHuisartsOverzichtVerrichtingenPage.class));
 		}
 
 		return contextMenuItems;

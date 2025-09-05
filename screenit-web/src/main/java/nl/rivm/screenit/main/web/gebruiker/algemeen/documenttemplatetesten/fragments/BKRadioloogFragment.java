@@ -30,10 +30,10 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.BaseD
 import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.DocumentTemplateTestenFieldsPanel;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.behavior.EnableBehavior;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.behavior.VisibleBehavior;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Gebruiker_;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker_;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Medewerker_;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.util.NaamUtil;
@@ -51,7 +51,7 @@ import org.springframework.data.domain.Sort;
 
 import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
-public class BKRadioloogFragment extends DocumentTemplateTestenFieldsPanelComponentFragment<Gebruiker>
+public class BKRadioloogFragment extends DocumentTemplateTestenFieldsPanelComponentFragment<Medewerker>
 {
 
 	private static final String MARKUP_ID = "fragmentBKRadioloogOndertekenaar";
@@ -61,7 +61,7 @@ public class BKRadioloogFragment extends DocumentTemplateTestenFieldsPanelCompon
 
 	public BKRadioloogFragment(final String componentId,
 		final MarkupContainer markupProvider,
-		final IModel<Gebruiker> model,
+		final IModel<Medewerker> model,
 		final IModel<Boolean> enabled)
 	{
 		super(componentId, MARKUP_ID, markupProvider, model, enabled);
@@ -75,7 +75,7 @@ public class BKRadioloogFragment extends DocumentTemplateTestenFieldsPanelCompon
 		add(getFormComponentDropDown());
 	}
 
-	private List<Gebruiker> getActieveRadiologen()
+	private List<Medewerker> getActieveRadiologen()
 	{
 		Page page = getPage();
 		ScreeningOrganisatie so = null;
@@ -84,13 +84,13 @@ public class BKRadioloogFragment extends DocumentTemplateTestenFieldsPanelCompon
 			so = ((BaseDocumentTemplateTestenPage) page).getSelectedRegio();
 		}
 		final ScreeningOrganisatie regio = so;
-		var sort = Sort.by(Sort.Order.asc(propertyChain(InstellingGebruiker_.MEDEWERKER, Gebruiker_.ACHTERNAAM)));
-		return medewerkerService.getActieveRadiologen(new InstellingGebruiker(), Collections.emptyList(), sort).stream()
-			.filter(ig -> ig.getOrganisatie().getOrganisatieType() == OrganisatieType.BEOORDELINGSEENHEID
-				&& ig.getOrganisatie().getParent() != null
-				&& ig.getOrganisatie().getParent().getRegio() != null
-				&& ig.getOrganisatie().getParent().getRegio().equals(regio))
-			.map(instellingGebruiker -> instellingGebruiker.getMedewerker())
+		var sort = Sort.by(Sort.Order.asc(propertyChain(OrganisatieMedewerker_.MEDEWERKER, Medewerker_.ACHTERNAAM)));
+		return medewerkerService.getActieveRadiologen(new OrganisatieMedewerker(), Collections.emptyList(), sort).stream()
+			.filter(om -> om.getOrganisatie().getOrganisatieType() == OrganisatieType.BEOORDELINGSEENHEID
+				&& om.getOrganisatie().getParent() != null
+				&& om.getOrganisatie().getParent().getRegio() != null
+				&& om.getOrganisatie().getParent().getRegio().equals(regio))
+			.map(organisatieMedewerker -> organisatieMedewerker.getMedewerker())
 			.distinct()
 			.collect(Collectors.toList());
 	}
@@ -105,20 +105,20 @@ public class BKRadioloogFragment extends DocumentTemplateTestenFieldsPanelCompon
 	private WebMarkupContainer getFormComponentDropDown()
 	{
 		return (WebMarkupContainer) DocumentTemplateTestenFieldsPanel
-			.getScreenitDropdown("formComponent", getModel(), new ListModel<Gebruiker>()
+			.getScreenitDropdown("formComponent", getModel(), new ListModel<Medewerker>()
 			{
 				@Override
-				public List<Gebruiker> getObject()
+				public List<Medewerker> getObject()
 				{
 					return getActieveRadiologen();
 				}
-			}, new ChoiceRenderer<Gebruiker>()
+			}, new ChoiceRenderer<Medewerker>()
 			{
 
 				@Override
-				public Object getDisplayValue(Gebruiker object)
+				public Object getDisplayValue(Medewerker object)
 				{
-					return NaamUtil.getNaamGebruiker(object);
+					return NaamUtil.getNaamMedewerker(object);
 				}
 			}, true).add(new VisibleBehavior(true)).add(new EnableBehavior(true));
 	}

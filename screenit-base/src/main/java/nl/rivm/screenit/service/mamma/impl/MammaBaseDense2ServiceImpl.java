@@ -45,7 +45,7 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dto.mamma.MammaDense2ConfiguratieDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieParameter;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -174,7 +174,7 @@ public class MammaBaseDense2ServiceImpl implements MammaBaseDense2Service
 
 	@Override
 	@Transactional
-	public void updateConfiguratie(MammaDense2ConfiguratieDto configuratie, InstellingGebruiker instellingGebruiker)
+	public void updateConfiguratie(MammaDense2ConfiguratieDto configuratie, OrganisatieMedewerker organisatieMedewerker)
 	{
 		var parameters = new ArrayList<OrganisatieParameter>();
 		parameters.add(organisatieParameterService.maakOfUpdateOrganisatieParameter(OrganisatieParameterKey.MAMMA_DENSE2_CEM_PROJECT, configuratie.getCem(), null));
@@ -192,7 +192,7 @@ public class MammaBaseDense2ServiceImpl implements MammaBaseDense2Service
 			organisatieParameterService.maakOfUpdateOrganisatieParameter(OrganisatieParameterKey.MAMMA_DENSE2_EXCLUDE_PROJECTEN,
 				StringUtils.join(configuratie.getExcludeProjecten(), ","), null));
 
-		organisatieParameterService.saveOrUpdateOrganisatieParameters(parameters, instellingGebruiker);
+		organisatieParameterService.saveOrUpdateOrganisatieParameters(parameters, organisatieMedewerker);
 	}
 
 	@Override

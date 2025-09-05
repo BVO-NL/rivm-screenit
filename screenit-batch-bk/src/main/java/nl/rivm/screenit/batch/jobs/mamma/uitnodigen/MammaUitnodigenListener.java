@@ -31,7 +31,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseLogListener;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -44,8 +44,8 @@ import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsPeriodeUit
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsRondeRapportageStatus;
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsRondeUitnodigenRapportage;
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaUitnodigenRapportage;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.batch.core.JobExecution;
@@ -66,7 +66,7 @@ public class MammaUitnodigenListener extends BaseLogListener
 
 	private final LogService logService;
 
-	private final InstellingService instellingService;
+	private final OrganisatieService organisatieService;
 
 	@Override
 	protected void beforeStarting(JobExecution jobExecution)
@@ -210,7 +210,7 @@ public class MammaUitnodigenListener extends BaseLogListener
 	@Override
 	protected void saveEindLogGebeurtenis(LogEvent logEvent)
 	{
-		final List<Instelling> dashboardOrganisaties = new ArrayList<>(instellingService.getActieveInstellingen(Rivm.class));
+		final List<Organisatie> dashboardOrganisaties = new ArrayList<>(organisatieService.getActieveOrganisaties(Rivm.class));
 
 		var rapportage = ((MammaUitnodigenLogEvent) logEvent).getRapportage();
 		if (rapportage != null)

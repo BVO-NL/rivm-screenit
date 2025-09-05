@@ -21,6 +21,6 @@
 import {AuthenticationScope} from "../enums/AuthenticationScope"
 
 export interface TokenDto {
-	token: string;
+	token?: string;
 	scope: AuthenticationScope;
 }

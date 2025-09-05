@@ -25,7 +25,7 @@ import nl.rivm.screenit.main.service.VerslagService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxLink;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.ClientPage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.ClientPaspoortPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.cytologie.CervixCytologieVerslagInzienPanel;
@@ -91,23 +91,23 @@ public class ClientVerslagPage extends ClientPage
 		var isOpenstaand = verslag.getStatus().equals(VerslagStatus.IN_BEWERKING);
 		var isNieuw = verslag.getId() == null;
 		var client = verslag.getScreeningRonde().getDossier().getClient();
-		var magVerslagDownloaden = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_VERSLAGEN, Actie.AANPASSEN, client);
+		var magVerslagDownloaden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VERSLAGEN, Actie.AANPASSEN, client);
 		boolean magVerslagVerwijderen;
 
 		switch (verslag.getType())
 		{
 		case MDL:
-			magVerslagVerwijderen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN, Actie.VERWIJDEREN, client);
+			magVerslagVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN, Actie.VERWIJDEREN, client);
 			break;
 		case PA_LAB:
-			magVerslagVerwijderen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_UITSLAGPATHOLOGIEONTVANGEN, Actie.VERWIJDEREN, client);
+			magVerslagVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_UITSLAGPATHOLOGIEONTVANGEN, Actie.VERWIJDEREN, client);
 			break;
 		case CERVIX_CYTOLOGIE:
 			magVerslagVerwijderen = false;
 			magVerslagDownloaden = false;
 			break;
 		case MAMMA_PA_FOLLOW_UP:
-			magVerslagVerwijderen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_MAMMA_FOLLOW_UP_VERSLAG, Actie.VERWIJDEREN, client);
+			magVerslagVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_MAMMA_FOLLOW_UP_VERSLAG, Actie.VERWIJDEREN, client);
 			magVerslagDownloaden = false;
 			break;
 		default:
@@ -219,7 +219,7 @@ public class ClientVerslagPage extends ClientPage
 				if (verslag.getType().getBevolkingsonderzoek() != Bevolkingsonderzoek.CERVIX)
 				{
 					ScreenitSession.get().info("Verslag verwijderd");
-					baseVerslagService.verwijderVerslag(verslag, ScreenitSession.get().getLoggedInInstellingGebruiker(), true);
+					baseVerslagService.verwijderVerslag(verslag, getIngelogdeOrganisatieMedewerker(), true);
 					markeerFormulierenOpgeslagen(target);
 
 					setResponsePage(new ClientVerslagenPage(ModelUtil.sModel((Client) ClientVerslagPage.this.getDefaultModelObject())));
@@ -255,13 +255,13 @@ public class ClientVerslagPage extends ClientPage
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveSubMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveSubMenuClass()
 	{
 		return ClientVerslagenPage.class;
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveContextMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveContextMenuClass()
 	{
 		return ClientVerslagenPage.class;
 	}

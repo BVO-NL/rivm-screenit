@@ -46,7 +46,7 @@ public class SEResetAccountRequestFilter implements Filter
 	{
 		if (request instanceof HttpServletRequest)
 		{
-			SEAccountResolverDelegate.setInstellingGebruiker(null);
+			SEAccountResolverDelegate.setOrganisatieMedewerker(null);
 		}
 		filterChain.doFilter(request, response);
 	}

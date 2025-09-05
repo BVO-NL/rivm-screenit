@@ -82,7 +82,7 @@ public abstract class MammaRouteConceptAnnulerenMeldingenDialogPanel extends Gen
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				baseConceptPlanningsApplicatie.conceptAnnuleren(ScreenitSession.get().getLoggedInInstellingGebruiker());
+				baseConceptPlanningsApplicatie.conceptAnnuleren(ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				ScreenitSession.get().success(getString("concept.geannuleerd"));
 				close(target);
 			}

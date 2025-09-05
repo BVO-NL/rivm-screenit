@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.util;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -29,32 +29,29 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DateUtil
 {
-	private static final Logger LOG = LoggerFactory.getLogger(DateUtil.class);
-
-	private static final ZoneId SCREENIT_DEFAULT = ZoneId.of("Europe/Amsterdam");
+	public static final ZoneId SCREENIT_DEFAULT_ZONE = ZoneId.of("Europe/Amsterdam");
 
 	private static Duration offset = Duration.ZERO;
 
 	private static final DateTimeFormatter DEFAULT_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
-	private DateUtil()
-	{
-	}
-
 	public static void setOffset(Duration newOffset)
 	{
-		LOG.info("De tijd is gewijzigd van {} naar {}", getCurrentDateTime(), ZonedDateTime.now(SCREENIT_DEFAULT).plus(newOffset));
+		LOG.info("De tijd is gewijzigd van {} naar {}", getCurrentDateTime(), ZonedDateTime.now(SCREENIT_DEFAULT_ZONE).plus(newOffset));
 		DateUtil.offset = newOffset;
 	}
 
 	public static LocalDateTime getCurrentDateTime()
 	{
-		return LocalDateTime.now(SCREENIT_DEFAULT).plus(DateUtil.offset);
+		return LocalDateTime.now(SCREENIT_DEFAULT_ZONE).plus(DateUtil.offset);
 	}
 
 	public static LocalDate getCurrentDate()
@@ -84,11 +81,11 @@ public class DateUtil
 
 	public static Date toUtilDate(LocalDate localDate)
 	{
-		return Date.from(localDate.atStartOfDay(SCREENIT_DEFAULT).toInstant());
+		return Date.from(localDate.atStartOfDay(SCREENIT_DEFAULT_ZONE).toInstant());
 	}
 
 	public static Date toUtilDate(LocalDateTime localDateTime)
 	{
-		return Date.from(localDateTime.atZone(SCREENIT_DEFAULT).toInstant());
+		return Date.from(localDateTime.atZone(SCREENIT_DEFAULT_ZONE).toInstant());
 	}
 }

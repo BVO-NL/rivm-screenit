@@ -44,7 +44,7 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ZorgInstelling;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.mamma.enums.ExtraFotosReden;
@@ -171,7 +171,7 @@ public class MammaOnderzoek extends AbstractHibernateObject
 	private Date afgerondOp;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	private InstellingGebruiker extraMedewerker;
+	private OrganisatieMedewerker extraMedewerker;
 
 	@Column(nullable = false)
 	private boolean isDoorgevoerd;

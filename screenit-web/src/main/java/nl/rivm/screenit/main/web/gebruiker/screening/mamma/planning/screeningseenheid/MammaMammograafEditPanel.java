@@ -73,7 +73,7 @@ abstract class MammaMammograafEditPanel extends GenericPanel<MammaMammograaf>
 				{
 					error("De eerste drie blokken van de IP-adressen mammograaf en server screeningseenheid komen niet overeen, controleer welke correct is.");
 				}
-				mammaMammograafService.saveOrUpdateMammograaf(MammaMammograafEditPanel.this.getModelObject(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+				mammaMammograafService.saveOrUpdateMammograaf(MammaMammograafEditPanel.this.getModelObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				hibernateService.reload(getScreeningsEenheid());
 				opslaan(target);
 			}

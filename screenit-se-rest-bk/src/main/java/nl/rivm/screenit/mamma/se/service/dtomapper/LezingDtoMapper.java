@@ -103,7 +103,7 @@ public class LezingDtoMapper
 		LezingSeDto lezing = new LezingSeDto();
 		if (mammaLezing.getBeoordelaar() != null)
 		{
-			lezing.setRadioloogNaam(NaamUtil.getNaamGebruiker(mammaLezing.getBeoordelaar().getMedewerker()));
+			lezing.setRadioloogNaam(NaamUtil.getNaamMedewerker(mammaLezing.getBeoordelaar().getMedewerker()));
 		}
 		lezing.setLezingType(mammaLezing.getLezingType().getNaam());
 		lezing.setBiradsRechts(mammaLezing.getBiradsRechts().getNaam());

@@ -57,7 +57,7 @@ public class ColonIntakelocatieController
 	private final ColonAfspraakslotService afspraakslotService;
 
 	@GetMapping()
-	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
+	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
 	public ResponseEntity<ColonIntakelocatieDto> getIntakelocatie()
 	{
@@ -74,7 +74,7 @@ public class ColonIntakelocatieController
 	}
 
 	@GetMapping("/signaleringstermijn")
-	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
+	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
 	public ResponseEntity<ColonSignaleringstermijnDto> getSignaleringstermijn()
 	{

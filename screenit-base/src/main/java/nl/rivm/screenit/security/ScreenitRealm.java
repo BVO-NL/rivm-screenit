@@ -24,19 +24,21 @@ package nl.rivm.screenit.security;
 import java.util.Arrays;
 import java.util.Collection;
 
+import jakarta.annotation.PostConstruct;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruikerRol;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.model.Permissie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
-import nl.rivm.screenit.service.GebruikersService;
+import nl.rivm.screenit.service.BaseMedewerkerService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.ScopeService;
@@ -64,8 +66,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
-
 import static nl.rivm.screenit.security.UserAgentUtil.getParsedUserAgentInfo;
 
 @Slf4j
@@ -73,7 +73,7 @@ import static nl.rivm.screenit.security.UserAgentUtil.getParsedUserAgentInfo;
 public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 {
 	@Autowired
-	private GebruikersService gebruikersService;
+	private BaseMedewerkerService medewerkerService;
 
 	@Autowired
 	private LogService logService;
@@ -105,31 +105,32 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 		ScreenitPrincipal screenitPrincipal = (ScreenitPrincipal) principals.fromRealm(getName()).iterator().next();
 		boolean checkBvo = screenitPrincipal.getCheckBvo();
 
-		if (InstellingGebruiker.class.isAssignableFrom(screenitPrincipal.getAccountClass()))
+		if (OrganisatieMedewerker.class.isAssignableFrom(screenitPrincipal.getAccountClass()))
 		{
-			InstellingGebruiker gebruiker = hibernateService.load(InstellingGebruiker.class,
+			OrganisatieMedewerker organisatieMedewerker = hibernateService.load(OrganisatieMedewerker.class,
 				screenitPrincipal.getAccountId());
-			final Gebruiker medewerker = gebruiker.getMedewerker();
-			if (Boolean.TRUE.equals(gebruiker.getActief()) && MedewerkerUtil.isMedewerkerActief(medewerker, currentDateSupplier.getDate()))
+			final Medewerker medewerker = organisatieMedewerker.getMedewerker();
+			if (Boolean.TRUE.equals(organisatieMedewerker.getActief()) && MedewerkerUtil.isMedewerkerActief(medewerker, currentDateSupplier.getDate()))
 			{
 				if (LOG.isTraceEnabled())
 				{
 					LOG.trace("AuthorizationInfo voor " + medewerker.getGebruikersnaam());
 				}
 
-				for (InstellingGebruikerRol rol : gebruiker.getRollen())
+				for (OrganisatieMedewerkerRol rol : organisatieMedewerker.getRollen())
 				{
-					if (rol.isRolActief() && (CollectionUtils.containsAny(rol.getBevolkingsonderzoeken(), gebruiker.getBevolkingsonderzoeken()) || !checkBvo))
+					if (rol.isRolActief() && (CollectionUtils.containsAny(rol.getBevolkingsonderzoeken(), organisatieMedewerker.getBevolkingsonderzoeken()) || !checkBvo))
 					{
 						for (Permissie permissie : rol.getRol().getPermissies())
 						{
 							if (!Boolean.FALSE.equals(permissie.getActief())
 								&& (CollectionUtils.containsAny(rol.getBevolkingsonderzoeken(), Arrays.asList(permissie.getRecht().getBevolkingsonderzoeken()))
-								&& CollectionUtils.containsAny(Arrays.asList(permissie.getRecht().getBevolkingsonderzoeken()), gebruiker.getBevolkingsonderzoeken())
+								&& CollectionUtils.containsAny(Arrays.asList(permissie.getRecht().getBevolkingsonderzoeken()), organisatieMedewerker.getBevolkingsonderzoeken())
 								|| !checkBvo))
 							{
 								Recht recht = permissie.getRecht();
-								if (CollectionUtils.isEmpty(recht.getOrganisatieTypes()) || recht.getOrganisatieTypes().contains(gebruiker.getOrganisatie().getOrganisatieType()))
+								if (CollectionUtils.isEmpty(recht.getOrganisatieTypes()) || recht.getOrganisatieTypes()
+									.contains(organisatieMedewerker.getOrganisatie().getOrganisatieType()))
 								{
 									if (Boolean.TRUE.equals(testModus) || !Recht.TESTEN.equals(recht))
 									{
@@ -180,56 +181,56 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 	{
 		if (authcToken instanceof UsernamePasswordToken token)
 		{
-			Gebruiker gebruiker = gebruikersService.getGebruikerByGebruikersnaam(token.getUsername()).orElse(null);
-			if (gebruiker == null)
+			Medewerker medewerker = medewerkerService.getMedewerkerByGebruikersnaam(token.getUsername()).orElse(null);
+			if (medewerker == null)
 			{
 				return null;
 			}
-			if (BooleanUtils.isNotFalse(gebruiker.getActief()) && StringUtils.isNotBlank(gebruiker.getWachtwoord()))
+			if (BooleanUtils.isNotFalse(medewerker.getActief()) && StringUtils.isNotBlank(medewerker.getWachtwoord()))
 			{
 				if (authcToken instanceof YubikeyToken)
 				{
-					return new YubikeyAuthenticationInfo(new ScreenitPrincipal(Gebruiker.class, gebruiker.getId()), gebruiker.getWachtwoord(),
-						new SimpleByteSource(gebruiker.getId().toString()), this.getName(), gebruiker.getYubiKey());
+					return new YubikeyAuthenticationInfo(new ScreenitPrincipal(Medewerker.class, medewerker.getId()), medewerker.getWachtwoord(),
+						new SimpleByteSource(medewerker.getId().toString()), this.getName(), medewerker.getYubiKey());
 				}
-				return new SimpleAuthenticationInfo(new ScreenitPrincipal(Gebruiker.class, gebruiker.getId()), gebruiker.getWachtwoord(),
-					new SimpleByteSource(gebruiker.getId().toString()), this.getName());
+				return new SimpleAuthenticationInfo(new ScreenitPrincipal(Medewerker.class, medewerker.getId()), medewerker.getWachtwoord(),
+					new SimpleByteSource(medewerker.getId().toString()), this.getName());
 			}
 		}
-		else if (authcToken instanceof InstellingGebruikerToken igToken)
+		else if (authcToken instanceof OrganisatieMedewerkerToken igToken)
 		{
-			InstellingGebruiker instellingGebruiker = hibernateService.load(InstellingGebruiker.class, igToken.getId());
-			String melding = getParsedUserAgentInfo(igToken.getUserAgent()) + ", Organisatie: " + instellingGebruiker.getOrganisatie().getNaam();
+			OrganisatieMedewerker organisatieMedewerker = hibernateService.load(OrganisatieMedewerker.class, igToken.getId());
+			String melding = getParsedUserAgentInfo(igToken.getUserAgent()) + ", Organisatie: " + organisatieMedewerker.getOrganisatie().getNaam();
 			if (StringUtils.isNotBlank(igToken.getUzipasInlogMethode()))
 			{
 				melding += ". " + igToken.getUzipasInlogMethode();
 			}
-			logService.logGebeurtenis(LogGebeurtenis.INLOGGEN, instellingGebruiker.getMedewerker(), melding);
-			return new SimpleAuthenticationInfo(new ScreenitPrincipal(InstellingGebruiker.class, igToken.getId()), null, this.getName());
+			logService.logGebeurtenis(LogGebeurtenis.INLOGGEN, organisatieMedewerker.getMedewerker(), melding);
+			return new SimpleAuthenticationInfo(new ScreenitPrincipal(OrganisatieMedewerker.class, igToken.getId()), null, this.getName());
 		}
 		else if (authcToken instanceof UziToken uziToken)
 		{
-			Gebruiker gebruiker = gebruikersService.getGebruikerByUzinummer((String) uziToken.getPrincipal()).orElse(null);
-			if (gebruiker == null || !Boolean.TRUE.equals(gebruiker.getActief()))
+			Medewerker medewerker = medewerkerService.getMedewerkerByUzinummer((String) uziToken.getPrincipal()).orElse(null);
+			if (medewerker == null || !Boolean.TRUE.equals(medewerker.getActief()))
 			{
 				return null;
 			}
-			return new SimpleAuthenticationInfo(new ScreenitPrincipal(Gebruiker.class, gebruiker.getId()), null, this.getName());
+			return new SimpleAuthenticationInfo(new ScreenitPrincipal(Medewerker.class, medewerker.getId()), null, this.getName());
 		}
 
 		return null;
 	}
 
 	@Override
-	public void clearCachedAuthorizationInfo(InstellingGebruiker instellingGebruiker)
+	public void clearCachedAuthorizationInfo(OrganisatieMedewerker organisatieMedewerker)
 	{
-		PrincipalCollection principalCollection = createPrincipalCollection(instellingGebruiker, true);
+		PrincipalCollection principalCollection = createPrincipalCollection(organisatieMedewerker, true);
 		super.clearCachedAuthorizationInfo(principalCollection);
 	}
 
-	private PrincipalCollection createPrincipalCollection(InstellingGebruiker instellingGebruiker, boolean checkBvo)
+	private PrincipalCollection createPrincipalCollection(OrganisatieMedewerker organisatieMedewerker, boolean checkBvo)
 	{
-		return new SimplePrincipalCollection(new ScreenitPrincipal(InstellingGebruiker.class, instellingGebruiker.getId(), checkBvo), this.getName());
+		return new SimplePrincipalCollection(new ScreenitPrincipal(OrganisatieMedewerker.class, organisatieMedewerker.getId(), checkBvo), this.getName());
 	}
 
 	@Override
@@ -279,14 +280,14 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 		{
 			ScreenitPrincipal principal = (ScreenitPrincipal) principals.getPrimaryPrincipal();
 			Account account = hibernateService.load(principal.getAccountClass(), principal.getAccountId());
-			if (account instanceof InstellingGebruiker instgeb)
+			if (account instanceof OrganisatieMedewerker instgeb)
 			{
 				permissionResult = false;
 				if (!CollectionUtils.isNotEmpty(constraint.getBevolkingsonderzoek()))
 				{
 					LOG.error("GEEN BVO IN CONSTRAINT!!!!!!!!!"); 
 				}
-				for (InstellingGebruikerRol rol : instgeb.getRollen())
+				for (OrganisatieMedewerkerRol rol : instgeb.getRollen())
 				{
 					if (rol.isRolActief() && CollectionUtils.containsAny(rol.getBevolkingsonderzoeken(), instgeb.getBevolkingsonderzoeken()))
 					{
@@ -321,9 +322,9 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 		return (Collection) authorizationInfo.getObjectPermissions();
 	}
 
-	public Collection<Permissie> getPermissies(InstellingGebruiker instellingGebruiker, boolean checkBvo)
+	public Collection<Permissie> getPermissies(OrganisatieMedewerker organisatieMedewerker, boolean checkBvo)
 	{
-		AuthorizationInfo authorizationInfo = getAuthorizationInfo(createPrincipalCollection(instellingGebruiker, checkBvo));
+		AuthorizationInfo authorizationInfo = getAuthorizationInfo(createPrincipalCollection(organisatieMedewerker, checkBvo));
 		return (Collection) authorizationInfo.getObjectPermissions();
 	}
 }

@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -26,6 +26,6 @@ export type AutorisatieDto = {
 	medewerkercode: string;
 	seCode: string;
 	seNaam: string;
-	instellingGebruikerId: number;
+	organisatieMedewerkerId: number;
 	navigatie: string;
 } & RechtMetGeldigheid

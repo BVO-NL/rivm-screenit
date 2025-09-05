@@ -21,5 +21,5 @@
 import ScreenitBackend from "../utils/Backend"
 
 export const saveNieuwHerdrukAanvraag = () => () => {
-    return ScreenitBackend.put("/cervix/herdrukken/aanvragen")
+	return ScreenitBackend.put("cervix/herdrukken/aanvragen")
 }

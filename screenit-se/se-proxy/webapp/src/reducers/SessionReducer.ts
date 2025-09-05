@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -34,7 +34,7 @@ const SessionReducer: Reducer<Session | null, SessionActions | ClearCacheActions
 				seCode: action.seCode,
 				seNaam: action.seNaam,
 				yubikeyIdentificatie: action.yubikeyIdentificatie,
-				instellingGebruikerId: action.instellingGebruikerId,
+				organisatieMedewerkerId: action.organisatieMedewerkerId,
 			}
 		case CLEAR_SESSION:
 			return null

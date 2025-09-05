@@ -30,7 +30,7 @@ import nl.rivm.screenit.main.service.mamma.MammaFollowUpService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.AjaxButtonGroup;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.inzien.ClientPaspoortHorizontaal;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup.AbstractMammaFollowUpPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup.followuppathologie.MammaFollowUpPathologieVerslagInzienPanel;
@@ -76,7 +76,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @SecurityConstraint(
 	constraint = ShiroConstraint.HasPermission,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA },
-	recht = { Recht.GEBRUIKER_MAMMA_FOLLOW_UP_CONCLUSIE_WERKLIJST })
+	recht = { Recht.MEDEWERKER_MAMMA_FOLLOW_UP_CONCLUSIE_WERKLIJST })
 public class MammaFollowUpConclusiePage extends AbstractMammaFollowUpPage
 {
 	@SpringBean
@@ -179,7 +179,7 @@ public class MammaFollowUpConclusiePage extends AbstractMammaFollowUpPage
 					MammaFollowUpConclusieStatus conclusieStatus = followUpService.bepaalFollowUpConclusie(screeningRonde, conclusieEnumModel.getObject());
 					if (conclusieStatus != null)
 					{
-						followUpService.saveFollowUpConclusieStatus(screeningRonde, conclusieStatus, ScreenitSession.get().getLoggedInAccount());
+						followUpService.saveFollowUpConclusieStatus(screeningRonde, conclusieStatus, ScreenitSession.get().getIngelogdAccount());
 					}
 					setResponsePage(MammaFollowUpConclusieWerklijst.class);
 				}
@@ -272,7 +272,7 @@ public class MammaFollowUpConclusiePage extends AbstractMammaFollowUpPage
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveContextMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveContextMenuClass()
 	{
 		return MammaFollowUpConclusieWerklijst.class;
 	}

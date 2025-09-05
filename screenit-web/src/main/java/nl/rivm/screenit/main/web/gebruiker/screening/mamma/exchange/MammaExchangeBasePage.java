@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.exchange;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaClientZoekenBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.exchange.download.MammaExchangeDownloadPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.exchange.followup.MammaFollowUpRadiologieVerslagPage;
@@ -44,19 +44,19 @@ public abstract class MammaExchangeBasePage extends MammaClientZoekenBasePage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 		return getContextMenuItemsList();
 	}
 
-	public static List<GebruikerMenuItem> getContextMenuItemsList()
+	public static List<MedewerkerMenuItem> getContextMenuItemsList()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.exchange.download",
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.exchange.download",
 			MammaExchangeDownloadPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.exchange.upload",
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.exchange.upload",
 			MammaExchangeUploadPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.mammascreening.radiologie", MammaFollowUpRadiologieVerslagPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.mammascreening.radiologie", MammaFollowUpRadiologieVerslagPage.class));
 
 		return contextMenuItems;
 	}

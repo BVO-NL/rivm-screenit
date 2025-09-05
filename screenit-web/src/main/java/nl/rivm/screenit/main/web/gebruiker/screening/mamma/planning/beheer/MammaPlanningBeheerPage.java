@@ -31,7 +31,7 @@ import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -47,12 +47,12 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaPlanningBeheerPage extends MammaPlanningBasePage
 {
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	private ScreenitDropdown<ScreeningOrganisatie> screeningOrganisatieDropdown;
 
@@ -69,7 +69,7 @@ public class MammaPlanningBeheerPage extends MammaPlanningBasePage
 	private void addSoDropdown()
 	{
 		ScreeningOrganisatie sessionSo = ScreenitSession.get().getScreeningOrganisatie();
-		List<ScreeningOrganisatie> actieveScreeningOrganisaties = instellingService.getActieveInstellingen(ScreeningOrganisatie.class);
+		List<ScreeningOrganisatie> actieveScreeningOrganisaties = organisatieService.getActieveOrganisaties(ScreeningOrganisatie.class);
 
 		screeningOrganisatieModel = ModelUtil.csModel(sessionSo != null ? sessionSo : actieveScreeningOrganisaties.get(0));
 		IModel<List<ScreeningOrganisatie>> screeningOrganisatiesModel = ModelUtil.listRModel(actieveScreeningOrganisaties, false);

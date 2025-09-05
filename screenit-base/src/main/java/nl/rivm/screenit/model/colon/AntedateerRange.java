@@ -34,7 +34,7 @@ import jakarta.persistence.TemporalType;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.hibernate.annotations.Cascade;
@@ -59,10 +59,10 @@ public class AntedateerRange extends AbstractHibernateObject
 	private Date vervangendeDate;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	private InstellingGebruiker gestartDoor;
+	private OrganisatieMedewerker gestartDoor;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	private InstellingGebruiker gestoptDoor;
+	private OrganisatieMedewerker gestoptDoor;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade(CascadeType.SAVE_UPDATE)

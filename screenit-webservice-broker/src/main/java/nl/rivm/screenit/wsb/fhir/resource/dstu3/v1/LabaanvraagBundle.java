@@ -36,7 +36,7 @@ import java.util.stream.Stream;
 import nl.rivm.screenit.huisartsenportaal.enums.CervixLocatieStatus;
 import nl.rivm.screenit.huisartsenportaal.util.CervixLocatieUtil;
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
@@ -137,7 +137,7 @@ public class LabaanvraagBundle extends Bundle implements LabaanvraagResource
 			.min(Comparator.comparing(CervixHuisartsLocatie::getId))
 			.orElseThrow(
 				() -> new NoSuchElementException(
-					String.format("Voor huisarts met AGB code %s is geen actieve locatie gevonden.", huisarts.map(Instelling::getAgbcode).orElse(""))));
+					String.format("Voor huisarts met AGB code %s is geen actieve locatie gevonden.", huisarts.map(Organisatie::getAgbcode).orElse(""))));
 	}
 
 	private Optional<CervixHuisarts> getActieveHuisartsMetEenActieveLocatie()

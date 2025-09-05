@@ -129,12 +129,12 @@ public class MammaPalgaServiceImpl implements MammaPalgaService
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void deleteExports(String naam, Account loggedInAccount)
+	public void deleteExports(String naam, Account ingelogdAccount)
 	{
-		if (naam != null && loggedInAccount != null)
+		if (naam != null && ingelogdAccount != null)
 		{
 			var logRegel = "Verwijderd: %s".formatted(naam);
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_PALGA_CSV_EXPORT, loggedInAccount, logRegel);
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_PALGA_CSV_EXPORT, ingelogdAccount, logRegel);
 		}
 		var exports = getExports();
 		for (var export : exports)
@@ -160,7 +160,7 @@ public class MammaPalgaServiceImpl implements MammaPalgaService
 		return heeftContentType("application/zip")
 			.and(UploadDocumentSpecification.heeftNaamDieStartMet("CHTRDS"))
 			.and(heeftNaamDieEindigtOp(".zip"))
-			.and(heeftPathDieStartMet(FileStoreLocation.MAMMA_PALGA_CSV_EXPORT.getPath().replaceAll("\\\\", "\\\\\\\\")));
+			.and(heeftPathDieStartMet(FileStoreLocation.MAMMA_PALGA_CSV_EXPORT.getPath()));
 	}
 
 	@Override
@@ -173,7 +173,7 @@ public class MammaPalgaServiceImpl implements MammaPalgaService
 	{
 		return heeftContentTypeIn(List.of("application/octet-stream", "application/vnd.ms-excel", "text/csv"))
 			.and(heeftNaamDieEindigtOp(".csv"))
-			.and(heeftPathDieStartMet(FileStoreLocation.MAMMA_PALGA_CSV_IMPORT.getPath().replaceAll("\\\\", "\\\\\\\\")));
+			.and(heeftPathDieStartMet(FileStoreLocation.MAMMA_PALGA_CSV_IMPORT.getPath()));
 	}
 
 	@Override

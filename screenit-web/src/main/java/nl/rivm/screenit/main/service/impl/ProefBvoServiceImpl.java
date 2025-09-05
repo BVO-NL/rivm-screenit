@@ -32,7 +32,6 @@ import java.util.List;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.service.ProefBvoService;
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.AanvraagBriefStatus;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.AfmeldingType;
@@ -80,9 +79,9 @@ public class ProefBvoServiceImpl implements ProefBvoService
 	private ICurrentDateSupplier currentDateSupplier;
 
 	@Override
-	public List<String> afmelden(Account ingelogdeGebruiker, File fileAfmeldingBrief, String contentType, String fileName, File fileClientenBestand) throws IOException
+	public List<String> afmelden(Account ingelogdAccount, File fileAfmeldingBrief, String contentType, String fileName, File fileClientenBestand) throws IOException
 	{
-		logService.logGebeurtenis(LogGebeurtenis.PROOF_ONDERZOEK_AFMELDING_START, ingelogdeGebruiker, Bevolkingsonderzoek.COLON);
+		logService.logGebeurtenis(LogGebeurtenis.PROOF_ONDERZOEK_AFMELDING_START, ingelogdAccount, Bevolkingsonderzoek.COLON);
 
 		List<String> meldingen = new ArrayList<>();
 		int aantalAfgemeld = 0;
@@ -122,8 +121,8 @@ public class ProefBvoServiceImpl implements ProefBvoService
 							document.setNaam(fileName);
 							afmelding.setHandtekeningDocumentAfmelding(document);
 
-							baseAfmeldService.afmelden(afmelding.getDossier().getClient(), afmelding, ScreenitSession.get().getLoggedInInstellingGebruiker());
-							logService.logGebeurtenis(LogGebeurtenis.AFMELDEN, ScreenitSession.get().getLoggedInAccount(), afmelding.getDossier().getClient(),
+							baseAfmeldService.afmelden(afmelding.getDossier().getClient(), afmelding, ingelogdAccount);
+							logService.logGebeurtenis(LogGebeurtenis.AFMELDEN, ingelogdAccount, afmelding.getDossier().getClient(),
 								"Type: " + afmelding.getType().name().toLowerCase(), afmelding.getBevolkingsonderzoek());
 
 							aantalAfgemeld++;
@@ -154,14 +153,15 @@ public class ProefBvoServiceImpl implements ProefBvoService
 
 		String melding = maakMeldingVoorLogEvent(meldingen);
 
-		logService.logGebeurtenis(LogGebeurtenis.PROOF_ONDERZOEK_AFMELDING_AFGEROND, ingelogdeGebruiker, melding, Bevolkingsonderzoek.COLON);
+		logService.logGebeurtenis(LogGebeurtenis.PROOF_ONDERZOEK_AFMELDING_AFGEROND, ingelogdAccount, melding, Bevolkingsonderzoek.COLON);
 		return meldingen;
 	}
 
 	@Override
-	public List<String> heraanmelden(Account ingelogdeGebruiker, File fileAfmeldingBrief, String contentType, String fileName, File fileClientenBestand) throws IOException
+	public List<String> heraanmelden(Account ingelogdeOrganisatieMedewerker, File fileAfmeldingBrief, String contentType, String fileName, File fileClientenBestand)
+		throws IOException
 	{
-		logService.logGebeurtenis(LogGebeurtenis.PROOF_ONDERZOEK_HERAANMELDING_START, ingelogdeGebruiker, Bevolkingsonderzoek.COLON);
+		logService.logGebeurtenis(LogGebeurtenis.PROOF_ONDERZOEK_HERAANMELDING_START, ingelogdeOrganisatieMedewerker, Bevolkingsonderzoek.COLON);
 		long start = System.currentTimeMillis();
 
 		ArrayList<String> meldingen = new ArrayList<>();
@@ -200,7 +200,7 @@ public class ProefBvoServiceImpl implements ProefBvoService
 								handtekeningDoc.setNaam(fileName);
 							}
 							afmelding.setHandtekeningDocumentHeraanmelding(handtekeningDoc);
-							baseAfmeldService.heraanmelden(afmelding, ingelogdeGebruiker);
+							baseAfmeldService.heraanmelden(afmelding, ingelogdeOrganisatieMedewerker);
 							aantalHeraangemeld++;
 						}
 						else
@@ -229,7 +229,7 @@ public class ProefBvoServiceImpl implements ProefBvoService
 
 		String melding = maakMeldingVoorLogEvent(meldingen);
 
-		logService.logGebeurtenis(LogGebeurtenis.PROOF_ONDERZOEK_HERAANMELDING_AFGEROND, ingelogdeGebruiker, melding, Bevolkingsonderzoek.COLON);
+		logService.logGebeurtenis(LogGebeurtenis.PROOF_ONDERZOEK_HERAANMELDING_AFGEROND, ingelogdeOrganisatieMedewerker, melding, Bevolkingsonderzoek.COLON);
 
 		return meldingen;
 	}

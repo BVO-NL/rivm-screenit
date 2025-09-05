@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslage
 
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.LoggingInzienPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -39,7 +39,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_IFOBT_VERWERKING_VERSLAG,
+	recht = Recht.MEDEWERKER_IFOBT_VERWERKING_VERSLAG,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class IfobtVerwerkingVerslagPage extends AlgemeenPage
 {
@@ -52,7 +52,7 @@ public class IfobtVerwerkingVerslagPage extends AlgemeenPage
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveSubMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveSubMenuClass()
 	{
 		return LoggingInzienPage.class;
 	}

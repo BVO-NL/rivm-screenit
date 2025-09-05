@@ -33,16 +33,16 @@ import nl.rivm.screenit.main.web.component.form.PostcodeField;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.ColonScreeningBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
-import nl.rivm.screenit.model.overeenkomsten.AfgeslotenInstellingOvereenkomst;
+import nl.rivm.screenit.model.overeenkomsten.AfgeslotenOrganisatieOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.Overeenkomst;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.OrganisatieZoekService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -69,7 +69,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
 	level = ToegangLevel.LANDELIJK,
-	recht = Recht.GEBRUIKER_OVEREENKOMSTEN_ZOEKEN,
+	recht = Recht.MEDEWERKER_OVEREENKOMSTEN_ZOEKEN,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class OvereenkomstZoekenBeheerPage extends ColonScreeningBasePage
 {
@@ -77,7 +77,7 @@ public class OvereenkomstZoekenBeheerPage extends ColonScreeningBasePage
 	private OvereenkomstService overeenkomstService;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private OrganisatieZoekService organisatieZoekService;
@@ -93,29 +93,29 @@ public class OvereenkomstZoekenBeheerPage extends ColonScreeningBasePage
 		resultcontainer = new WebMarkupContainer("resultContainer");
 		resultcontainer.setOutputMarkupId(true);
 
-		List<IColumn<Instelling, String>> columns = new ArrayList<>();
-		columns.add(new PropertyColumn<>(Model.of("Naam organisatie"), Instelling_.NAAM, Instelling_.NAAM));
-		columns.add(new PropertyColumn<>(Model.of("Adres"), "adressen[0].adres"));
-		columns.add(new PropertyColumn<>(Model.of("Plaats"), "adressen[0].plaats"));
+		List<IColumn<Organisatie, String>> columns = new ArrayList<>();
+		columns.add(new PropertyColumn<>(Model.of("Naam organisatie"), Organisatie_.NAAM, Organisatie_.NAAM));
+		columns.add(new PropertyColumn<>(Model.of("Adres"), "adres.adres"));
+		columns.add(new PropertyColumn<>(Model.of("Plaats"), "adres.plaats"));
 		columns.add(new AbstractColumn<>(Model.of("Regio"))
 		{
 			@Override
-			public void populateItem(Item<ICellPopulator<Instelling>> cellItem, String componentId, IModel<Instelling> rowModel)
+			public void populateItem(Item<ICellPopulator<Organisatie>> cellItem, String componentId, IModel<Organisatie> rowModel)
 			{
-				List<Instelling> lijst = organisatieZoekService.screeningsorganisatiesWaarOrganisatieOndervalt(rowModel.getObject());
+				List<Organisatie> lijst = organisatieZoekService.screeningsorganisatiesWaarOrganisatieOndervalt(rowModel.getObject());
 				StringBuilder sb = new StringBuilder();
-				for (Instelling instelling : lijst)
+				for (Organisatie organisatie : lijst)
 				{
-					sb.append(instelling.getNaam());
+					sb.append(organisatie.getNaam());
 					sb.append(", ");
 				}
 				cellItem.add(new Label(componentId, StringUtils.removeEnd(sb.toString(), ", ")));
 			}
 		});
-		columns.add(new PropertyColumn<>(Model.of("Unieke code"), Instelling_.UZI_ABONNEENUMMER)
+		columns.add(new PropertyColumn<>(Model.of("Unieke code"), Organisatie_.UZI_ABONNEENUMMER)
 		{
 			@Override
-			public void populateItem(Item<ICellPopulator<Instelling>> item, String componentId, IModel<Instelling> rowModel)
+			public void populateItem(Item<ICellPopulator<Organisatie>> item, String componentId, IModel<Organisatie> rowModel)
 			{
 				IModel<?> data = getDataModel(rowModel);
 				if (data != null && data.getObject() != null)
@@ -131,9 +131,9 @@ public class OvereenkomstZoekenBeheerPage extends ColonScreeningBasePage
 		columns.add(new AbstractColumn<>(Model.of("Overeenkomsten"))
 		{
 			@Override
-			public void populateItem(Item<ICellPopulator<Instelling>> cellItem, String componentId, IModel<Instelling> rowModel)
+			public void populateItem(Item<ICellPopulator<Organisatie>> cellItem, String componentId, IModel<Organisatie> rowModel)
 			{
-				List<AfgeslotenInstellingOvereenkomst> overeenkomsten = overeenkomstService.getAfgeslotenOvereenkomstenVanOrganisatie(filter.getObject(), rowModel.getObject());
+				List<AfgeslotenOrganisatieOvereenkomst> overeenkomsten = overeenkomstService.getAfgeslotenOvereenkomstenVanOrganisatie(filter.getObject(), rowModel.getObject());
 				if (CollectionUtils.isNotEmpty(overeenkomsten))
 				{
 					cellItem.add(new AfgeslotenOvereenkomstenLijstPanel(componentId, ModelUtil.listRModel(overeenkomsten)));
@@ -145,9 +145,9 @@ public class OvereenkomstZoekenBeheerPage extends ColonScreeningBasePage
 			}
 		});
 
-		ScreenitDataTable<Instelling, String> instellingenDataTable = new ScreenitDataTable<>("instellingenDataTable", columns,
-			new OvereenkomstZoekenDataProvider(filter, Instelling_.NAAM), 10, new Model<>("organisaties"));
-		resultcontainer.add(instellingenDataTable);
+		ScreenitDataTable<Organisatie, String> organisatiesDataTable = new ScreenitDataTable<>("organisatiesDataTable", columns,
+			new OvereenkomstZoekenDataProvider(filter, Organisatie_.NAAM), 10, new Model<>("organisaties"));
+		resultcontainer.add(organisatiesDataTable);
 		add(resultcontainer);
 
 		ScreenitForm<OvereenkomstZoekFilter> overeenkomstForm = new ScreenitForm<>("zoekForm", filter);
@@ -156,14 +156,15 @@ public class OvereenkomstZoekenBeheerPage extends ColonScreeningBasePage
 		ComponentHelper.addTextField(overeenkomstForm, "organisatieUra", false, 255, String.class, false);
 		overeenkomstForm.add(ComponentHelper.newDatePicker("lopendeDatum"));
 		overeenkomstForm.add(new PostcodeField("organisatiePostcode").setAlleenCijfersToegestaan(true));
-		overeenkomstForm.add(new ScreenitDropdown<Instelling>("regio", ModelUtil.listRModel(instellingService.getAllActiefScreeningOrganisaties()), new ChoiceRenderer<Instelling>()
-		{
-			@Override
-			public Object getDisplayValue(Instelling object)
+		overeenkomstForm.add(
+			new ScreenitDropdown<Organisatie>("regio", ModelUtil.listRModel(organisatieService.getAllActiefScreeningOrganisaties()), new ChoiceRenderer<Organisatie>()
 			{
-				return object.getNaam();
-			}
-		}).setNullValid(true));
+				@Override
+				public Object getDisplayValue(Organisatie object)
+				{
+					return object.getNaam();
+				}
+			}).setNullValid(true));
 		ComponentHelper.addDropDownChoice(overeenkomstForm, "organisatieType", false, Arrays.asList(OrganisatieType.values()), false).setNullValid(true);
 		overeenkomstForm.add(new ScreenitDropdown<>("overeenkomst", ModelUtil.listRModel(overeenkomstService.getAlleOvereenkomstenVanTypeOvereenkomst()),
 			new ChoiceRenderer<>()

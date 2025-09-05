@@ -51,10 +51,8 @@ const AfmeldenPage = () => {
 	const [afmeldOpties, setAfmeldOpties] = useState<AfmeldOptiesDto>(geenAfmeldOpties)
 
 	useEffect(() => {
-		ScreenitBackend.get(`/afmelden/${selectedBvo}`)
-			.then((response) => {
-				setAfmeldOpties(response.data)
-			})
+		ScreenitBackend.get<AfmeldOptiesDto>(`afmelden/${selectedBvo}`).json()
+			.then((response) => setAfmeldOpties(response))
 	}, [setAfmeldOpties, selectedBvo])
 
 	const magEenmaligAfmelden = afmeldOpties.afmeldOpties.includes(AfmeldType.EENMALIG)

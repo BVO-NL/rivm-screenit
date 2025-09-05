@@ -48,7 +48,7 @@ public class FilterBvoPanel<T extends IBevolkingsonderzoek> extends GenericPanel
 
 		ScreenitSession screenitSession = ScreenitSession.get();
 		List<Bevolkingsonderzoek> bvosGeselecteerdInGeneriekBvoFilter = screenitSession.getOnderzoeken();
-		boolean heeftRechtenVoorMeerDan1Bvo = autorisatieService.getBevolkingsonderzoeken(screenitSession.getLoggedInInstellingGebruiker()).size() > 1;
+		boolean heeftRechtenVoorMeerDan1Bvo = autorisatieService.getBevolkingsonderzoeken(screenitSession.getIngelogdeOrganisatieMedewerker()).size() > 1;
 
 		add(new ScreenitListMultipleChoice<Bevolkingsonderzoek>("bevolkingsonderzoeken", new PropertyModel<List<Bevolkingsonderzoek>>(model, "bevolkingsonderzoeken"),
 			bvosGeselecteerdInGeneriekBvoFilter, new EnumChoiceRenderer<Bevolkingsonderzoek>()));

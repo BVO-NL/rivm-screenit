@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -46,13 +46,13 @@ const mapStateToProps = (state: RootState, ownProps: MbbSignalerenContainerProps
 	const disabled = ownProps.disabled
 	const onderzoek = getIfExists(state.onderzoekByAfspraakId, state.navigation.afspraakId)
 	const afspraak = getMandatory(state.afsprakenById, state.navigation.afspraakId)
-	const seGebruikers = store.getState().seGebruikers
+	const seMedewerkers = store.getState().seMedewerkers
 	return {
 		suboptimaleInsteltechniek: onderzoek?.suboptimaleInsteltechniek,
 		redenFotobespreking: onderzoek?.redenFotobespreking,
 		extraMedewerkerId: onderzoek?.extraMedewerkerId,
-		seGebruikers: seGebruikers,
-		ingelogdeGebruikerId: store.getState().session?.instellingGebruikerId,
+		seMedewerkers: seMedewerkers,
+		ingelogdeOrganisatieMedewerkerId: store.getState().session?.organisatieMedewerkerId,
 		opmerkingMbber: onderzoek?.opmerkingMbber,
 		opmerkingVoorRadioloog: onderzoek?.opmerkingVoorRadioloog,
 		operatieRechts: onderzoek?.operatieRechts,

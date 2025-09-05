@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.base.BasePage;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.pingpong.PingPongInput;
@@ -35,20 +34,20 @@ import nl.rivm.screenit.main.web.component.validator.ScreenITIBANValidator;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieBeheer;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatiePaspoortPanel;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieZoeken;
-import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.UploadInstellingImageFormComponent;
-import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.UploadInstellingImageType;
+import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.UploadOrganisatieImageFormComponent;
+import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.UploadOrganisatieImageType;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.Gemeente;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.GemeenteService;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.cervix.CervixBMHKLaboratoriumService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
@@ -77,9 +76,9 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @SecurityConstraint(
 	actie = Actie.INZIEN,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_BMHK_LABORATORIA_BEHEER },
+	recht = { Recht.MEDEWERKER_BMHK_LABORATORIA_BEHEER },
 	checkScope = true,
-	level = ToegangLevel.INSTELLING,
+	level = ToegangLevel.ORGANISATIE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX })
 public class AanvullendeGegevensBMHKLaboratoriumPage extends OrganisatieBeheer
 {
@@ -90,7 +89,7 @@ public class AanvullendeGegevensBMHKLaboratoriumPage extends OrganisatieBeheer
 	private GemeenteService gemeenteService;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private HibernateService hibernateService;
@@ -103,16 +102,16 @@ public class AanvullendeGegevensBMHKLaboratoriumPage extends OrganisatieBeheer
 
 	public AanvullendeGegevensBMHKLaboratoriumPage()
 	{
-		Instelling organisatie = getCurrentSelectedOrganisatie();
-		Actie actie = autorisatieService.getActieVoorOrganisatie(ScreenitSession.get().getLoggedInInstellingGebruiker(), organisatie, Recht.GEBRUIKER_BMHK_LABORATORIA_BEHEER);
+		Organisatie organisatie = getCurrentSelectedOrganisatie();
+		Actie actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie, Recht.MEDEWERKER_BMHK_LABORATORIA_BEHEER);
 		final boolean inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 
 		add(new OrganisatiePaspoortPanel("paspoort", ModelUtil.sModel(super.getCurrentSelectedOrganisatie())));
 
-		final IModel<Instelling> model = ModelUtil.cModel(super.getCurrentSelectedOrganisatie());
+		final IModel<Organisatie> model = ModelUtil.cModel(super.getCurrentSelectedOrganisatie());
 		setDefaultModel(model);
 
-		Form<Instelling> form = new Form<>("form", model);
+		Form<Organisatie> form = new Form<>("form", model);
 		add(form);
 
 		FormComponent<List<String>> instrumentNames = new TextField<List<String>>("instrumentNames")
@@ -218,11 +217,12 @@ public class AanvullendeGegevensBMHKLaboratoriumPage extends OrganisatieBeheer
 		medischMircobioloog.setEnabled(!inzien);
 		form.add(medischMircobioloog);
 		form.add(
-			new UploadInstellingImageFormComponent("handtekeningMedischMircobioloog", model, UploadInstellingImageType.BMHK_HANDTEKENING_MEDISCH_MICROBIOLOOG).setEnabled(!inzien));
+			new UploadOrganisatieImageFormComponent("handtekeningMedischMircobioloog", model, UploadOrganisatieImageType.BMHK_HANDTEKENING_MEDISCH_MICROBIOLOOG).setEnabled(
+				!inzien));
 		Component patholoog = new TextArea<>("patholoog").add(StringValidator.maximumLength(255));
 		patholoog.setEnabled(!inzien);
 		form.add(patholoog);
-		form.add(new UploadInstellingImageFormComponent("handtekeningPatholoog", model, UploadInstellingImageType.BMHK_HANDTEKENING_PATHOLOOG).setEnabled(!inzien));
+		form.add(new UploadOrganisatieImageFormComponent("handtekeningPatholoog", model, UploadOrganisatieImageType.BMHK_HANDTEKENING_PATHOLOOG).setEnabled(!inzien));
 
 		ComponentHelper.addTextField(form, "bmhkLabWarnMail", true, 100, inzien).add(EmailAddressValidator.getInstance());
 
@@ -297,7 +297,7 @@ public class AanvullendeGegevensBMHKLaboratoriumPage extends OrganisatieBeheer
 
 		});
 
-		AjaxLink<Gebruiker> annuleren = new AjaxLink<Gebruiker>("annuleren")
+		AjaxLink<Medewerker> annuleren = new AjaxLink<Medewerker>("annuleren")
 		{
 
 			private static final long serialVersionUID = 1L;

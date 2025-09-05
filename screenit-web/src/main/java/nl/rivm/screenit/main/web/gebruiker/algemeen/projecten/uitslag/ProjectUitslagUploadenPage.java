@@ -56,7 +56,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_UITSLAG_PROJECT_UPLOADEN,
+	recht = Recht.MEDEWERKER_UITSLAG_PROJECT_UPLOADEN,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class ProjectUitslagUploadenPage extends ProjectBasePage
@@ -105,7 +105,7 @@ public class ProjectUitslagUploadenPage extends ProjectBasePage
 						projectService.queueProjectBestandVoorUitslagen(project, uitslag,
 							uitslagenBestand.getContentType(),
 							uitslagenBestand.getClientFileName(),
-							uitslagenBestand.writeToTempFile(), ScreenitSession.get().getLoggedInAccount());
+							uitslagenBestand.writeToTempFile(), ScreenitSession.get().getIngelogdAccount());
 
 						setResponsePage(new ProjectBestandenOverzicht(getProjectModel()));
 					}

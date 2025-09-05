@@ -29,7 +29,7 @@ import nl.rivm.screenit.dao.mamma.MammaBaseTehuisClientenDao;
 import nl.rivm.screenit.main.service.mamma.MammaTehuisAdresService;
 import nl.rivm.screenit.main.service.mamma.MammaTehuisService;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaDossier;
@@ -70,23 +70,23 @@ public class MammaTehuisAdresServiceImpl implements MammaTehuisAdresService
 
 	@Transactional(propagation = Propagation.REQUIRED)
 	@Override
-	public void adresToevoegen(MammaTehuisAdres adres, InstellingGebruiker instellingGebruiker)
+	public void adresToevoegen(MammaTehuisAdres adres, OrganisatieMedewerker organisatieMedewerker)
 	{
 		MammaTehuis tehuis = adres.getTehuis();
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_TEHUIS_BEHEER, instellingGebruiker, String.format("Adres voor tehuis '%s' aangemaakt.", tehuis.getNaam()),
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_TEHUIS_BEHEER, organisatieMedewerker, String.format("Adres voor tehuis '%s' aangemaakt.", tehuis.getNaam()),
 			Bevolkingsonderzoek.MAMMA);
 		hibernateService.saveOrUpdate(adres);
 		tehuis.getAdressen().add(adres);
-		baseTehuisService.saveOrUpdateTehuis(tehuis, instellingGebruiker);
+		baseTehuisService.saveOrUpdateTehuis(tehuis, organisatieMedewerker);
 	}
 
 	@Override
-	public void adresVerwijderen(MammaTehuisAdres adres, InstellingGebruiker instellingGebruiker)
+	public void adresVerwijderen(MammaTehuisAdres adres, OrganisatieMedewerker organisatieMedewerker)
 	{
 		MammaTehuis tehuis = adres.getTehuis();
 		tehuis.getAdressen().remove(adres);
-		baseTehuisService.saveOrUpdateTehuis(tehuis, instellingGebruiker);
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_TEHUIS_BEHEER, instellingGebruiker,
+		baseTehuisService.saveOrUpdateTehuis(tehuis, organisatieMedewerker);
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_TEHUIS_BEHEER, organisatieMedewerker,
 			String.format("Adres voor tehuis '%s' verwijderd: '%s'", tehuis.getNaam(), AdresUtil.getVolledigeAdresString(adres)), Bevolkingsonderzoek.MAMMA);
 		hibernateService.delete(adres);
 	}

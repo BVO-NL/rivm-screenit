@@ -38,7 +38,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_CLIENT_SR_MAILS_OPNIEUW_VERZENDEN, Recht.GEBRUIKER_CLIENT_SCREENINGSRONDE },
+	recht = { Recht.MEDEWERKER_CLIENT_SR_MAILS_OPNIEUW_VERZENDEN, Recht.MEDEWERKER_CLIENT_SCREENINGSRONDE },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class DigitaalClientBerichtVerzondenPanel extends AbstractGebeurtenisDetailPanel
 {

@@ -39,7 +39,7 @@ import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
 import nl.rivm.screenit.main.web.component.table.ExportToXslLink;
 import nl.rivm.screenit.main.web.component.table.GeboortedatumColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaScreeningBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaBeTabelCounterPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
@@ -79,7 +79,7 @@ import static nl.rivm.screenit.main.util.WicketSpringDataUtil.toSpringSort;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_AD_HOC_MEEMKIJKVERZOEK_WERKLIJST },
+	recht = { Recht.MEDEWERKER_AD_HOC_MEEMKIJKVERZOEK_WERKLIJST },
 	organisatieTypeScopes = { OrganisatieType.KWALITEITSPLATFORM, OrganisatieType.SCREENINGSORGANISATIE },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaAdhocMeekijkverzoekOnderzoekenWerklijstPage extends MammaScreeningBasePage
@@ -149,7 +149,7 @@ public class MammaAdhocMeekijkverzoekOnderzoekenWerklijstPage extends MammaScree
 		columns.add(new DateTimePropertyColumn<>(Model.of("Onderzoeksdatum"), "onderzoek.creatieDatum", "onderzoek.creatieDatum",
 			Constants.getDateTimeSecondsFormat()));
 		columns.add(new PropertyColumn<>(Model.of("Volgnummer"), "volgnummer"));
-		if (ScreenitSession.get().getInstelling().getOrganisatieType() != OrganisatieType.KWALITEITSPLATFORM)
+		if (ScreenitSession.get().getOrganisatie().getOrganisatieType() != OrganisatieType.KWALITEITSPLATFORM)
 		{
 			columns.add(new ClientColumn<>("persoon.achternaam", "onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client"));
 			columns.add(new GeboortedatumColumn<>("persoon.geboortedatum", "onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client.persoon"));
@@ -167,7 +167,7 @@ public class MammaAdhocMeekijkverzoekOnderzoekenWerklijstPage extends MammaScree
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<MammaAdhocMeekijkverzoek> model)
 			{
-				if (ScreenitSession.get().getInstelling().getOrganisatieType() == OrganisatieType.KWALITEITSPLATFORM)
+				if (ScreenitSession.get().getOrganisatie().getOrganisatieType() == OrganisatieType.KWALITEITSPLATFORM)
 				{
 					openBesprekenScherm(target, model, onderzoekDataProvider.getSort());
 				}
@@ -232,10 +232,10 @@ public class MammaAdhocMeekijkverzoekOnderzoekenWerklijstPage extends MammaScree
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.adhockwaliteitscontrole.onderzoeken",
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.adhockwaliteitscontrole.onderzoeken",
 			MammaAdhocMeekijkverzoekOnderzoekenWerklijstPage.class));
 
 		return contextMenuItems;

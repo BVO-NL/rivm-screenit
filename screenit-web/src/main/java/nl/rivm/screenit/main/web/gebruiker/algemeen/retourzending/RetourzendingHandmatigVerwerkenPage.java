@@ -68,7 +68,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.AANPASSEN,
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_SCREENING_RETOURZENDINGEN,
+	recht = Recht.MEDEWERKER_SCREENING_RETOURZENDINGEN,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX })
 public class RetourzendingHandmatigVerwerkenPage extends RetourzendingBasePage
@@ -253,7 +253,7 @@ public class RetourzendingHandmatigVerwerkenPage extends RetourzendingBasePage
 				protected void onSubmit(AjaxRequestTarget target)
 				{
 					U uitnodiging = uitnodingModel.getObject();
-					retourzendingService.verwerkRetourzendingHandmatig(ScreenitSession.get().getLoggedInInstellingGebruiker(), uitnodiging, uitnodiging.getRetourzendingReden());
+					retourzendingService.verwerkRetourzendingHandmatig(getIngelogdeOrganisatieMedewerker(), uitnodiging, uitnodiging.getRetourzendingReden());
 
 					info(getString("message.gegevensopgeslagen"));
 					reset(target);

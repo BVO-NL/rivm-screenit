@@ -36,9 +36,9 @@ import javax.crypto.spec.SecretKeySpec;
 
 import nl.rivm.screenit.main.model.testen.TestTimelineModel;
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.clienten.inzien.ClientInzienPage;
 import nl.rivm.screenit.main.web.gebruiker.testen.barcode.TestBarcodePage;
 import nl.rivm.screenit.main.web.gebruiker.testen.cervix.timeline.CervixTestTimelinePage;
@@ -77,7 +77,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TestenBasePage extends GebruikerBasePage
+public class TestenBasePage extends MedewerkerBasePage
 {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TestenBasePage.class);
@@ -200,7 +200,7 @@ public class TestenBasePage extends GebruikerBasePage
 
 	private WebMarkupContainer getClientDossierButton(Form form, IModel<TestTimelineModel> model)
 	{
-		if (ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_GEGEVENS, Actie.INZIEN))
+		if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_GEGEVENS, Actie.INZIEN))
 		{
 			return new AjaxButton("directNaarClientDossier", form)
 			{
@@ -328,31 +328,31 @@ public class TestenBasePage extends GebruikerBasePage
 	}
 
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.TESTEN;
+		return MedewerkerHoofdMenuItem.TESTEN;
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 		return createContextMenu();
 	}
 
-	private List<GebruikerMenuItem> createContextMenu()
+	private List<MedewerkerMenuItem> createContextMenu()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.testen.bmhk.hpvbericht", TestHpvBerichtPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.testen.colon.ifobtbericht", TestHL7BerichtPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.postcode.testen.tools", TestPostcodePage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.barcode.testen.tools", TestBarcodePage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.testen.preferences", TestPreferencesPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.testen.timeline.bmhk", CervixTestTimelinePage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.testen.timeline.bk", MammaTestTimelinePage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.testen.timeline", ColonTestTimelinePage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.testen.colon", ColonTestProcesPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.testen.colon.testen", ColonTestPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.testen.clienten.verwijderen", ClientenVerwijderenPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.testen.bmhk.hpvbericht", TestHpvBerichtPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.testen.colon.ifobtbericht", TestHL7BerichtPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.postcode.testen.tools", TestPostcodePage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.barcode.testen.tools", TestBarcodePage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.testen.preferences", TestPreferencesPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.testen.timeline.bmhk", CervixTestTimelinePage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.testen.timeline.bk", MammaTestTimelinePage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.testen.timeline", ColonTestTimelinePage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.testen.colon", ColonTestProcesPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.testen.colon.testen", ColonTestPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.testen.clienten.verwijderen", ClientenVerwijderenPage.class));
 		return contextMenuItems;
 	}
 }

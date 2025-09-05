@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.contro
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.werklijst.CervixLabformulierenHuisartsOnbekendPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
@@ -34,7 +34,7 @@ import nl.rivm.screenit.model.enums.Recht;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(constraint = ShiroConstraint.HasPermission, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX }, recht = {
-	Recht.GEBRUIKER_CERVIX_LABFORMULIEREN_HUISARTS_ONBEKEND })
+	Recht.MEDEWERKER_CERVIX_LABFORMULIEREN_HUISARTS_ONBEKEND })
 public class CervixLabformulierHuisartsOnbekendPage extends CervixLabformulierBasePage
 {
 
@@ -46,11 +46,11 @@ public class CervixLabformulierHuisartsOnbekendPage extends CervixLabformulierBa
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.cervixscreening.labformulieren-huisarts-onbekend", CervixLabformulierenHuisartsOnbekendPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.cervixscreening.labformulier-huisarts-onbekend", false, CervixLabformulierHuisartsOnbekendPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.cervixscreening.labformulieren-huisarts-onbekend", CervixLabformulierenHuisartsOnbekendPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.cervixscreening.labformulier-huisarts-onbekend", false, CervixLabformulierHuisartsOnbekendPage.class));
 		return contextMenuItems;
 	}
 }

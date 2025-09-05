@@ -23,6 +23,7 @@ import ScreenitBackend from "../utils/Backend"
 import {SetRegioReduxAction, setRegioReduxAction} from "../actions/RegioReduxAction"
 
 export const getRegio = () => async (dispatch: Dispatch<SetRegioReduxAction>) => {
-    return ScreenitBackend.get("/regio")
-        .then(response => dispatch(setRegioReduxAction(response.data)))
+	return ScreenitBackend.get<string>("regio")
+		.json()
+		.then(response => dispatch(setRegioReduxAction(response)))
 }

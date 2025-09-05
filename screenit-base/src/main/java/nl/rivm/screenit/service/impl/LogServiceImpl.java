@@ -21,14 +21,11 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.Column;
 
 import lombok.extern.slf4j.Slf4j;
@@ -36,9 +33,9 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.dao.LogDao;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.SortState;
 import nl.rivm.screenit.model.dashboard.DashboardLogRegel;
 import nl.rivm.screenit.model.dashboard.DashboardLogRegel_;
@@ -110,24 +107,6 @@ public class LogServiceImpl implements LogService
 	@Autowired
 	private DashboardLogRegelRepository dashboardLogRegelRepository;
 
-	@PostConstruct
-	private void init()
-	{
-		var applicationProperties = new Properties();
-		try (var resourceAsStream = getClass().getResourceAsStream("/build-info.properties"))
-		{
-			applicationProperties.load(resourceAsStream);
-			String version = applicationProperties.getProperty("build.version");
-			String timestamp = applicationProperties.getProperty("build.time");
-			String buildnumber = applicationProperties.getProperty("build.number");
-			LOG.info("ScreenIT versie: {} ({}, {})", version, buildnumber, timestamp);
-		}
-		catch (IOException e)
-		{
-			LOG.error("Fout bij laden van build-info.properties (voor versienummer)");
-		}
-	}
-
 	@Override
 	public List<LogRegel> getLogRegelsVanDashboard(DashboardStatus item, long first, long count, Sort sort)
 	{
@@ -191,7 +170,7 @@ public class LogServiceImpl implements LogService
 
 	@Override
 	@Transactional
-	public void createAndSaveLogInformatie(InstellingGebruiker ingelogd, LogGebeurtenis logGebeurtenis, String omschrijving)
+	public void createAndSaveLogInformatie(OrganisatieMedewerker ingelogd, LogGebeurtenis logGebeurtenis, String omschrijving)
 	{
 		if (logGebeurtenis != null)
 		{
@@ -209,7 +188,7 @@ public class LogServiceImpl implements LogService
 
 	@Override
 	@Transactional
-	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Instelling> dashboardOrganisaties, Account account, Bevolkingsonderzoek... bevolkingsonderzoeken)
+	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, Account account, Bevolkingsonderzoek... bevolkingsonderzoeken)
 	{
 		LogEvent logEvent = getLogEvent(gebeurtenis.getDefaultLevel(), null);
 		logGebeurtenis(gebeurtenis, dashboardOrganisaties, logEvent, account, null, bevolkingsonderzoeken);
@@ -231,7 +210,7 @@ public class LogServiceImpl implements LogService
 
 	@Override
 	@Transactional
-	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Instelling> dashboardOrganisaties, Account account, String melding, Bevolkingsonderzoek... bevolkingsonderzoeken)
+	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, Account account, String melding, Bevolkingsonderzoek... bevolkingsonderzoeken)
 	{
 		LogEvent logEvent = getLogEvent(gebeurtenis.getDefaultLevel(), melding);
 		logGebeurtenis(gebeurtenis, dashboardOrganisaties, logEvent, account, null, bevolkingsonderzoeken);
@@ -246,7 +225,7 @@ public class LogServiceImpl implements LogService
 
 	@Override
 	@Transactional
-	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Instelling> dashboardOrganisaties, Account account, Client client, Bevolkingsonderzoek... bevolkingsonderzoeken)
+	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, Account account, Client client, Bevolkingsonderzoek... bevolkingsonderzoeken)
 	{
 		LogEvent logEvent = getLogEvent(gebeurtenis.getDefaultLevel(), null);
 		logGebeurtenis(gebeurtenis, dashboardOrganisaties, logEvent, account, client, bevolkingsonderzoeken);
@@ -261,7 +240,7 @@ public class LogServiceImpl implements LogService
 
 	@Override
 	@Transactional
-	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Instelling> dashboardOrganisaties, Account account, Client client, String melding,
+	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, Account account, Client client, String melding,
 		Bevolkingsonderzoek... bevolkingsonderzoeken)
 	{
 		LogEvent logEvent = getLogEvent(gebeurtenis.getDefaultLevel(), melding);
@@ -277,14 +256,14 @@ public class LogServiceImpl implements LogService
 
 	@Override
 	@Transactional
-	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Instelling> dashboardOrganisaties, LogEvent logEvent, Bevolkingsonderzoek... bevolkingsonderzoeken)
+	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, LogEvent logEvent, Bevolkingsonderzoek... bevolkingsonderzoeken)
 	{
 		logGebeurtenis(gebeurtenis, dashboardOrganisaties, logEvent, null, bevolkingsonderzoeken);
 	}
 
 	@Override
 	@Transactional
-	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Instelling> dashboardOrganisaties, LogEvent logEvent, Account account, Client client,
+	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, LogEvent logEvent, Account account, Client client,
 		Bevolkingsonderzoek... bevolkingsonderzoeken)
 	{
 		logGebeurtenis(gebeurtenis, null, dashboardOrganisaties, logEvent, account, client, null, bevolkingsonderzoeken);
@@ -299,7 +278,8 @@ public class LogServiceImpl implements LogService
 
 	@Override
 	@Transactional
-	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Instelling> dashboardOrganisaties, LogEvent logEvent, Account account, Bevolkingsonderzoek... bevolkingsonderzoeken)
+	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, LogEvent logEvent, Account account,
+		Bevolkingsonderzoek... bevolkingsonderzoeken)
 	{
 		logGebeurtenis(gebeurtenis, dashboardOrganisaties, logEvent, account, null, bevolkingsonderzoeken);
 	}
@@ -313,14 +293,14 @@ public class LogServiceImpl implements LogService
 
 	@Override
 	@Transactional
-	public void logGebeurtenis(LogGebeurtenis gebeurtenis, MammaScreeningsEenheid screeningsEenheid, List<Instelling> dashboardOrganisaties, Client client, String melding)
+	public void logGebeurtenis(LogGebeurtenis gebeurtenis, MammaScreeningsEenheid screeningsEenheid, List<Organisatie> dashboardOrganisaties, Client client, String melding)
 	{
 		logGebeurtenis(gebeurtenis, screeningsEenheid, dashboardOrganisaties, null, client, melding, null);
 	}
 
 	@Override
 	@Transactional
-	public void logGebeurtenis(LogGebeurtenis gebeurtenis, MammaScreeningsEenheid screeningsEenheid, List<Instelling> dashboardOrganisaties, Account account, Client client,
+	public void logGebeurtenis(LogGebeurtenis gebeurtenis, MammaScreeningsEenheid screeningsEenheid, List<Organisatie> dashboardOrganisaties, Account account, Client client,
 		String melding, LocalDateTime datumTijd)
 	{
 		LogEvent logEvent = getLogEvent(gebeurtenis.getDefaultLevel(), melding);
@@ -338,7 +318,7 @@ public class LogServiceImpl implements LogService
 
 	@Override
 	@Transactional
-	public void logGebeurtenis(LogGebeurtenis logGebeurtenis, MammaScreeningsEenheid mammaScreeningsEenheid, List<Instelling> dashboardOrganisaties, LogEvent logEvent,
+	public void logGebeurtenis(LogGebeurtenis logGebeurtenis, MammaScreeningsEenheid mammaScreeningsEenheid, List<Organisatie> dashboardOrganisaties, LogEvent logEvent,
 		Account account, Client client, LocalDateTime datumTijd, Bevolkingsonderzoek... bevolkingsonderzoeken)
 	{
 		LogRegel logRegel = new LogRegel();
@@ -352,8 +332,8 @@ public class LogServiceImpl implements LogService
 			logRegel.setGebeurtenisDatum(currentDateSupplier.getDate());
 		}
 		logRegel.setScreeningsEenheid(mammaScreeningsEenheid);
-		logRegel.setGebruiker(getGebruiker(account));
-		logRegel.setIngelogdeGebruiker(getIngelogdeGebruiker(account));
+		logRegel.setMedewerker(getMedewerker(account));
+		logRegel.setIngelogdeOrganisatieMedewerker(getIngelogdeOrganisatieMedewerker(account));
 		if (logEvent.getLevel().compareTo(logGebeurtenis.getDefaultLevel()) < 0)
 		{
 			logEvent.setLevel(logGebeurtenis.getDefaultLevel());
@@ -404,12 +384,13 @@ public class LogServiceImpl implements LogService
 
 	@Override
 	@Transactional
-	public boolean verwijderLogRegelsVanDashboards(List<LogRegel> logRegels, InstellingGebruiker ingelogdeGebruiker, LogGebeurtenis logGebeurtenisVoorVerwijderActie)
+	public boolean verwijderLogRegelsVanDashboards(List<LogRegel> logRegels, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, LogGebeurtenis logGebeurtenisVoorVerwijderActie)
 	{
 		if (!logRegels.isEmpty())
 		{
 			LogRegel logRegel = logRegels.get(0);
-			logGebeurtenis(logGebeurtenisVoorVerwijderActie, ingelogdeGebruiker, logRegel.getClient(), logRegel.getBevolkingsonderzoeken().toArray(Bevolkingsonderzoek[]::new));
+			logGebeurtenis(logGebeurtenisVoorVerwijderActie, ingelogdeOrganisatieMedewerker, logRegel.getClient(),
+				logRegel.getBevolkingsonderzoeken().toArray(Bevolkingsonderzoek[]::new));
 		}
 		return dashboardService.verwijderLogRegelsVanDashboards(logRegels);
 	}
@@ -457,15 +438,15 @@ public class LogServiceImpl implements LogService
 		}
 	}
 
-	private Gebruiker getGebruiker(Account account)
+	private Medewerker getMedewerker(Account account)
 	{
-		if (account instanceof InstellingGebruiker gebruiker)
+		if (account instanceof OrganisatieMedewerker organisatieMedewerker)
 		{
-			return gebruiker.getMedewerker();
+			return organisatieMedewerker.getMedewerker();
 		}
-		else if (account instanceof Gebruiker gebruiker)
+		else if (account instanceof Medewerker medewerker)
 		{
-			return gebruiker;
+			return medewerker;
 		}
 		else
 		{
@@ -473,11 +454,11 @@ public class LogServiceImpl implements LogService
 		}
 	}
 
-	private InstellingGebruiker getIngelogdeGebruiker(Account account)
+	private OrganisatieMedewerker getIngelogdeOrganisatieMedewerker(Account account)
 	{
-		if (account instanceof InstellingGebruiker gebruiker)
+		if (account instanceof OrganisatieMedewerker organisatieMedewerker)
 		{
-			return gebruiker;
+			return organisatieMedewerker;
 		}
 		else
 		{

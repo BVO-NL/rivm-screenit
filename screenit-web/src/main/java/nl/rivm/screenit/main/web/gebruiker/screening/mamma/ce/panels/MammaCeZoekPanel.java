@@ -35,7 +35,7 @@ import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.CentraleEenheid;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -53,7 +53,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 public abstract class MammaCeZoekPanel extends GenericPanel<MammaCeWerklijstZoekObject>
 {
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private MammaCeWerklijstService ceWerklijstService;
@@ -87,7 +87,7 @@ public abstract class MammaCeZoekPanel extends GenericPanel<MammaCeWerklijstZoek
 	{
 		List<MammaCeFilter> teTonenCeFilters = getTeTonenCeFilters();
 		toonSeFilter = teTonenCeFilters.contains(MammaCeFilter.SE);
-		List<CentraleEenheid> mogelijkeCentraleEenheden = instellingService.getMogelijkeCentraleEenheden(ScreenitSession.get().getInstelling());
+		List<CentraleEenheid> mogelijkeCentraleEenheden = organisatieService.getMogelijkeCentraleEenheden(ScreenitSession.get().getOrganisatie());
 		List<BeoordelingsEenheid> mogelijkeBeoordelingsEenheden = getMogelijkeBeoordelingsEenheden(mogelijkeCentraleEenheden);
 
 		WebMarkupContainer centraleEenhedenContainer = new WebMarkupContainer("centraleEenhedenContainer");
@@ -212,8 +212,8 @@ public abstract class MammaCeZoekPanel extends GenericPanel<MammaCeWerklijstZoek
 
 	private List<BeoordelingsEenheid> getMogelijkeBeoordelingsEenheden(List<CentraleEenheid> gekozenCEs)
 	{
-		return gekozenCEs == null || gekozenCEs.isEmpty() ? beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getInstelling())
-			: beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getInstelling(), gekozenCEs);
+		return gekozenCEs == null || gekozenCEs.isEmpty() ? beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getOrganisatie())
+			: beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getOrganisatie(), gekozenCEs);
 	}
 
 	private ScreenitListMultipleChoice<BeoordelingsEenheid> createBeoordelingseenhedenSelector(List<BeoordelingsEenheid> mogelijkeBeoordelingsEenheden)
@@ -245,6 +245,6 @@ public abstract class MammaCeZoekPanel extends GenericPanel<MammaCeWerklijstZoek
 
 	private List<BeoordelingsEenheid> getMogelijkeBeoordelingsEenheden()
 	{
-		return beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getInstelling());
+		return beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getOrganisatie());
 	}
 }

@@ -20,7 +20,7 @@
  */
 export type ColonIntakeAfspraakDto = {
 	weergaveAfspraakmoment: string
-	naamInstelling: string
+	naamIntakelocatie: string
 	adresString: string
 	afspraakAfgezegd: boolean
 	andereIntakelocatieOpVerzoekClient: boolean

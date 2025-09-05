@@ -40,7 +40,7 @@ import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.SmsStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaIdentificatiesoort;
@@ -91,7 +91,7 @@ public class MammaAfspraak extends AbstractHibernateObject
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@SkipFieldForDiff
-	private InstellingGebruiker ingeschrevenDoor;
+	private OrganisatieMedewerker ingeschrevenDoor;
 
 	@Column
 	@Enumerated(EnumType.STRING)

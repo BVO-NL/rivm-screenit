@@ -29,7 +29,7 @@ import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
-public class RadiologieAfdeling extends Instelling
+public class RadiologieAfdeling extends Organisatie
 {
 	@Serial
 	private static final long serialVersionUID = 1L;

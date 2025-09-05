@@ -313,7 +313,7 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 				clientNaamModel.setObject(NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(getClient()));
 			}
 		});
-		logService.logGebeurtenis(LogGebeurtenis.CERVIX_LABFORMULIER_INGEZIEN, ScreenitSession.get().getLoggedInAccount(), client,
+		logService.logGebeurtenis(LogGebeurtenis.CERVIX_LABFORMULIER_INGEZIEN, ScreenitSession.get().getIngelogdAccount(), client,
 			getString("titel") + " - " + getString(EnumStringUtil.getPropertyString(getModelObject().getStatus())), Bevolkingsonderzoek.CERVIX);
 	}
 
@@ -449,7 +449,7 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 					String diff = labformulierService.koppelEnBewaarLabformulier(labformulier);
 					setModel(ModelUtil.ccModel(labformulier));
 
-					logService.logGebeurtenis(LogGebeurtenis.CERVIX_LABFORMULIER_OPGESLAGEN, ScreenitSession.get().getLoggedInAccount(), getClient(),
+					logService.logGebeurtenis(LogGebeurtenis.CERVIX_LABFORMULIER_OPGESLAGEN, ScreenitSession.get().getIngelogdAccount(), getClient(),
 						String.format("%s - %s %s %s", getString("titel"), getString(EnumStringUtil.getPropertyString(labformulier.getStatus())), getSignaleringen(), diff),
 						Bevolkingsonderzoek.CERVIX);
 					success(getString("labformulier.opgeslagen"));
@@ -466,7 +466,7 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 					try
 					{
 						String diff = labformulierService.koppelEnBewaarLabformulier(labformulier);
-						logService.logGebeurtenis(LogGebeurtenis.CERVIX_LABFORMULIER_OPGESLAGEN, ScreenitSession.get().getLoggedInAccount(), getClient(),
+						logService.logGebeurtenis(LogGebeurtenis.CERVIX_LABFORMULIER_OPGESLAGEN, ScreenitSession.get().getIngelogdAccount(), getClient(),
 							String.format("%s - %s %s %s", getString("titel"), getString(EnumStringUtil.getPropertyString(labformulier.getStatus())), getSignaleringen(), diff),
 							Bevolkingsonderzoek.CERVIX);
 					}

@@ -21,13 +21,11 @@
 import {AppThunkDispatch} from "../index"
 import {UserDto} from "../state/datatypes/dto/UserDto"
 import ScreenitBackend from "../util/Backend"
-import {AxiosResponse} from "axios"
 import {createActionSetUser} from "../state/UserState"
 
 export const fetchCurrentUser = () => async (dispatch: AppThunkDispatch) => {
 	try {
-		const response: AxiosResponse<UserDto> = await ScreenitBackend.get("/huisarts/currentuser")
-		const user = response.data
+		const user: UserDto = await ScreenitBackend.get("huisarts/currentuser").json()
 		if (user) {
 			dispatch(createActionSetUser(user))
 		}

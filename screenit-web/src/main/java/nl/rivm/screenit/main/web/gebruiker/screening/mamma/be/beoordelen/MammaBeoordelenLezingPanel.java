@@ -215,7 +215,7 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 						&& MammaBeoordelingOpschortenReden.NIET_OPSCHORTEN.equals(beoordeling.getOpschortReden()))
 					{
 						Client client = baseBeoordelingService.getClientVanBeoordeling(ModelProxyHelper.deproxy(beoordelingPanel.getModelObject()));
-						lezingService.logPopupPreBirads(client, ScreenitSession.get().getLoggedInInstellingGebruiker(), ModelProxyHelper.deproxy(lezing),
+						lezingService.logPopupPreBirads(client, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), ModelProxyHelper.deproxy(lezing),
 							prePopupBiradsWaardeLinks, prePopupBiradsWaardeRechts);
 					}
 					beoordelingPanel.lezingOpslaan(MammaBeoordelenLezingPanel.this.getModel(), target, laesieDtos.getObject());
@@ -224,7 +224,7 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 
 		};
 		formSubmitBtn.setOutputMarkupId(true);
-		formSubmitBtn.setVisible(!lezingParameters.isInzien() && ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_IMS_KOPPELING, Actie.INZIEN));
+		formSubmitBtn.setVisible(!lezingParameters.isInzien() && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_IMS_KOPPELING, Actie.INZIEN));
 		form.add(formSubmitBtn);
 
 	}
@@ -380,7 +380,7 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 						else
 						{
 							LOG.warn("IMS geeft geen boolean voor all images seen request, response was {}", reply);
-							error(imsService.handleError(reply, ScreenitSession.get().getLoggedInInstellingGebruiker(), b -> getString((String) b),
+							error(imsService.handleError(reply, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), b -> getString((String) b),
 								beoordelingPanel.getModelObject().getOnderzoek().getId()));
 							beoordelingPanel.blokeerOpslaan(target);
 						}
@@ -415,7 +415,7 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 			String error = String.format(
 				"IMS all images seen onderzoek of client is niet gelijk aan openstaande onderzoek of client in Screenit. IMS gaf client %s met onderzoek %s, ScreenIT heeft client met onderzoek %s open.",
 				userSessionBsn, userSessionStudyId, accessionNumber);
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_BE_IMS_HTTP_FOUT, ScreenitSession.get().getLoggedInInstellingGebruiker(), client, error, Bevolkingsonderzoek.MAMMA);
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_BE_IMS_HTTP_FOUT, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), client, error, Bevolkingsonderzoek.MAMMA);
 		}
 		return clientEnOnderzoekGelijk;
 	}

@@ -22,6 +22,7 @@ package nl.rivm.screenit.service;
  */
 
 import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.PostcodeCoordinaten;
 import nl.rivm.screenit.service.impl.PersoonCoordinaten;
 import nl.topicuszorg.organisatie.model.Adres;
@@ -31,6 +32,8 @@ public interface CoordinatenService
 	PersoonCoordinaten getCoordinatenVanPersoon(GbaPersoon persoon);
 
 	PostcodeCoordinaten getCoordinaten(Adres adres);
+
+	PostcodeCoordinaten getCoordinaten(Organisatie organisatie);
 
 	PostcodeCoordinaten getCoordinaten(String postcode, Integer huisnummer, String huisnummerToevoeging, String huisletter);
 

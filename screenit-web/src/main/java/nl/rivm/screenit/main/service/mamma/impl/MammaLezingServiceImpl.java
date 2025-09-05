@@ -23,10 +23,13 @@ package nl.rivm.screenit.main.service.mamma.impl;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+
 import nl.rivm.screenit.dto.mamma.MammaLezingRapportageDto;
 import nl.rivm.screenit.main.service.mamma.MammaLezingService;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Termijn;
@@ -50,9 +53,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
-
 import static nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus.UITSLAG_ONGUNSTIG;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.mamma.MammaBeoordelingSpecification.heeftEersteOfTweedeLezingGedaanBinnenTermijn;
@@ -73,49 +73,49 @@ public class MammaLezingServiceImpl implements MammaLezingService
 	private MammaBeoordelingRepository beoordelingRepository;
 
 	@Override
-	public MammaLezingRapportageDto getLezingRapportage(InstellingGebruiker instellingGebruiker, LocalDate date, Termijn termijn)
+	public MammaLezingRapportageDto getLezingRapportage(OrganisatieMedewerker organisatieMedewerker, LocalDate date, Termijn termijn)
 	{
 		MammaLezingRapportageDto lezingDto = new MammaLezingRapportageDto();
-		lezingDto.setAantalEersteLezingen(getEersteLezingenCount(instellingGebruiker, date, termijn));
-		lezingDto.setAantalTweedeLezingen(getTweedeLezingenCount(instellingGebruiker, date, termijn));
+		lezingDto.setAantalEersteLezingen(getEersteLezingenCount(organisatieMedewerker, date, termijn));
+		lezingDto.setAantalTweedeLezingen(getTweedeLezingenCount(organisatieMedewerker, date, termijn));
 		lezingDto.setTotaalAantalLezingen(lezingDto.getAantalEersteLezingen() + lezingDto.getAantalTweedeLezingen());
-		lezingDto.setAantalDiscrepantieLezingen(getDiscrepantieLezingenCount(instellingGebruiker, date, termijn));
+		lezingDto.setAantalDiscrepantieLezingen(getDiscrepantieLezingenCount(organisatieMedewerker, date, termijn));
 		if (Termijn.KALENDERJAAR.equals(termijn))
 		{
 			lezingDto.setPercentageVerwijzingenEersteRonde(
-				getPercentageRondeVerwijzend(eersteOf2deLezerOngunstigeUitslagEersteRondesCount(instellingGebruiker, date, termijn), lezingDto.getTotaalAantalLezingen()));
+				getPercentageRondeVerwijzend(eersteOf2deLezerOngunstigeUitslagEersteRondesCount(organisatieMedewerker, date, termijn), lezingDto.getTotaalAantalLezingen()));
 			lezingDto.setPercentageVerwijzingenMeerdereRondes(
-				getPercentageRondeVerwijzend(eersteOf2deLezerOngunstigeUitslagVervolgRondesCount(instellingGebruiker, date, termijn), lezingDto.getTotaalAantalLezingen()));
+				getPercentageRondeVerwijzend(eersteOf2deLezerOngunstigeUitslagVervolgRondesCount(organisatieMedewerker, date, termijn), lezingDto.getTotaalAantalLezingen()));
 		}
 		return lezingDto;
 	}
 
-	private long getEersteLezingenCount(InstellingGebruiker radioloog, LocalDate datum, Termijn termijn)
+	private long getEersteLezingenCount(OrganisatieMedewerker radioloog, LocalDate datum, Termijn termijn)
 	{
 		return beoordelingRepository.count(isGedaanBinnenTermijnDoor(radioloog, datum, termijn).with(MammaBeoordeling_.eersteLezing));
 	}
 
-	private long getTweedeLezingenCount(InstellingGebruiker radioloog, LocalDate datum, Termijn termijn)
+	private long getTweedeLezingenCount(OrganisatieMedewerker radioloog, LocalDate datum, Termijn termijn)
 	{
 		return beoordelingRepository.count(isGedaanBinnenTermijnDoor(radioloog, datum, termijn).with(MammaBeoordeling_.tweedeLezing));
 	}
 
-	private long getDiscrepantieLezingenCount(InstellingGebruiker instellingGebruiker, LocalDate date, Termijn termijn)
+	private long getDiscrepantieLezingenCount(OrganisatieMedewerker organisatieMedewerker, LocalDate date, Termijn termijn)
 	{
-		return beoordelingRepository.count(heeftEersteOfTweedeLezingGedaanBinnenTermijn(instellingGebruiker, date, termijn).and(heeftTotDiscrepantieGeleid()));
+		return beoordelingRepository.count(heeftEersteOfTweedeLezingGedaanBinnenTermijn(organisatieMedewerker, date, termijn).and(heeftTotDiscrepantieGeleid()));
 	}
 
-	private long eersteOf2deLezerOngunstigeUitslagEersteRondesCount(InstellingGebruiker instellingGebruiker, LocalDate date, Termijn termijn)
+	private long eersteOf2deLezerOngunstigeUitslagEersteRondesCount(OrganisatieMedewerker organisatieMedewerker, LocalDate date, Termijn termijn)
 	{
-		return beoordelingRepository.count(heeftEersteOfTweedeLezingGedaanBinnenTermijn(instellingGebruiker, date, termijn)
+		return beoordelingRepository.count(heeftEersteOfTweedeLezingGedaanBinnenTermijn(organisatieMedewerker, date, termijn)
 			.and(heeftStatus(UITSLAG_ONGUNSTIG))
 			.and(heeftPreciesEenRonde().with(r -> dossierJoin(r)))
 		);
 	}
 
-	private long eersteOf2deLezerOngunstigeUitslagVervolgRondesCount(InstellingGebruiker instellingGebruiker, LocalDate date, Termijn termijn)
+	private long eersteOf2deLezerOngunstigeUitslagVervolgRondesCount(OrganisatieMedewerker organisatieMedewerker, LocalDate date, Termijn termijn)
 	{
-		return beoordelingRepository.count(heeftEersteOfTweedeLezingGedaanBinnenTermijn(instellingGebruiker, date, termijn)
+		return beoordelingRepository.count(heeftEersteOfTweedeLezingGedaanBinnenTermijn(organisatieMedewerker, date, termijn)
 			.and(heeftStatus(UITSLAG_ONGUNSTIG))
 			.and(not(heeftPreciesEenRonde().with(r -> dossierJoin(r)))));
 	}
@@ -140,7 +140,7 @@ public class MammaLezingServiceImpl implements MammaLezingService
 	}
 
 	@Override
-	public void logPopupPreBirads(Client client, InstellingGebruiker gebruiker, MammaLezing lezing, MammaBIRADSWaarde prePopupBiradsWaardeLinks,
+	public void logPopupPreBirads(Client client, OrganisatieMedewerker organisatieMedewerker, MammaLezing lezing, MammaBIRADSWaarde prePopupBiradsWaardeLinks,
 		MammaBIRADSWaarde prePopupBiradsWaardeRechts)
 	{
 		String melding = String.format("Lezing BI-RADS waardes voor popup: BI-RADS: %s%s. BI-RADS waardes na popup: %s%s",
@@ -148,6 +148,6 @@ public class MammaLezingServiceImpl implements MammaLezingService
 			MammaScreeningRondeUtil.bepaalNaamBiradsWaarde(MammaZijde.LINKER_BORST, prePopupBiradsWaardeLinks),
 			MammaScreeningRondeUtil.bepaalNaamBiradsWaarde(MammaZijde.RECHTER_BORST, lezing.getBiradsRechts()),
 			MammaScreeningRondeUtil.bepaalNaamBiradsWaarde(MammaZijde.LINKER_BORST, lezing.getBiradsLinks()));
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_BEOORDELING_SIGNALERING_GETOOND, gebruiker, client, melding, Bevolkingsonderzoek.MAMMA);
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_BEOORDELING_SIGNALERING_GETOOND, organisatieMedewerker, client, melding, Bevolkingsonderzoek.MAMMA);
 	}
 }

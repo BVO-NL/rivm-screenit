@@ -67,7 +67,7 @@ import com.google.common.primitives.Ints;
 	actie = Actie.AANPASSEN,
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_SCREENING_RETOURREDENKOPPELEN,
+	recht = Recht.MEDEWERKER_SCREENING_RETOURREDENKOPPELEN,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX })
 public class RetourzendingRedenBeheerPage extends RetourzendingBasePage

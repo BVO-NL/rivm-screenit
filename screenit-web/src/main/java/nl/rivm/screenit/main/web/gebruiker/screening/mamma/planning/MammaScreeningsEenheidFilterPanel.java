@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -42,7 +42,7 @@ public abstract class MammaScreeningsEenheidFilterPanel extends GenericPanel<Mam
 {
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	public MammaScreeningsEenheidFilterPanel(String id)
 	{
@@ -68,7 +68,7 @@ public abstract class MammaScreeningsEenheidFilterPanel extends GenericPanel<Mam
 		form.add(new TextField<>("screeningsEenheid.naam"));
 
 		ScreenitDropdown<ScreeningOrganisatie> regio = new ScreenitDropdown<>("regio",
-			ModelUtil.listRModel(instellingService.getActieveInstellingen(ScreeningOrganisatie.class), true), new ChoiceRenderer<>("naam"));
+			ModelUtil.listRModel(organisatieService.getActieveOrganisaties(ScreeningOrganisatie.class), true), new ChoiceRenderer<>("naam"));
 		regio.setVisible(sessionSO == null);
 		regio.setNullValid(true);
 		form.add(regio);

@@ -26,6 +26,16 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import jakarta.jws.WebMethod;
+import jakarta.jws.WebParam;
+import jakarta.jws.WebResult;
+import jakarta.jws.WebService;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.ws.RequestWrapper;
+import jakarta.xml.ws.ResponseWrapper;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,15 +62,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import generated.KOPPELDATA;
 import generated.KOPPELDATA.VERZONDENUITNODIGING;
-import jakarta.jws.WebMethod;
-import jakarta.jws.WebParam;
-import jakarta.jws.WebResult;
-import jakarta.jws.WebService;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
-import jakarta.xml.ws.RequestWrapper;
-import jakarta.xml.ws.ResponseWrapper;
 
 @Service
 @Transactional(propagation = Propagation.SUPPORTS)
@@ -122,7 +123,7 @@ public class InpakcentrumKoppelServiceImpl implements InpakcentrumKoppelService
 		}
 
 		nl.rivm.screenit.model.algemeen.KoppelData koppelData2 = new KoppelData();
-		koppelData2.setXmlBericht(new String(koppelData.getData(), Charset.forName("UTF8")));
+		koppelData2.setKoppelData(new String(koppelData.getData(), Charset.forName("UTF8")));
 		koppelData2.setFilename(koppelData.getFilename());
 		koppelData2.setOntvangen(currentDateSupplier.getDate());
 		hibernateService.saveOrUpdate(koppelData2);
@@ -147,7 +148,7 @@ public class InpakcentrumKoppelServiceImpl implements InpakcentrumKoppelService
 		{
 			JAXBContext jaxbContext = JAXBContext.newInstance(KOPPELDATA.class);
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-			String xmlString = koppelData2.getXmlBericht();
+			String xmlString = koppelData2.getKoppelData();
 			List<VERZONDENUITNODIGING> koppeldata = ((KOPPELDATA) unmarshaller.unmarshal(new StringReader(xmlString))).getVERZONDENUITNODIGING();
 
 			if (koppeldata.size() > 0)

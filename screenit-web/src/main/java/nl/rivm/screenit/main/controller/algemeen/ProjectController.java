@@ -56,8 +56,8 @@ public class ProjectController
 	private final ProjectMapper projectMapper;
 
 	@GetMapping()
-	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = { Recht.GEBRUIKER_PROJECT_OVERZICHT,
-		Recht.GEBRUIKER_BRIEFPROJECT_OVERZICHT }, bevolkingsonderzoekScopes = {
+	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = { Recht.MEDEWERKER_PROJECT_OVERZICHT,
+		Recht.MEDEWERKER_BRIEFPROJECT_OVERZICHT }, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA }, organisatieTypeScopes = { OrganisatieType.RIVM })
 	public ResponseEntity<List<ProjectDto>> getProjecten(@RequestParam(required = false) ProjectType type)
 	{

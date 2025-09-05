@@ -1,0 +1,61 @@
+openapi: 3.1.0
+info:
+  title: Idp authenticatie
+  description: Idp authenticatie
+  version: 1.0.0
+servers:
+  - url: 'https://test.login.topicuszorg.nl/auth/realms/Apps/protocol/openid-connect/token'
+    description: Test
+  - url: 'https://idp-acc.topicuszorg.nl/auth/realms/Apps/protocol/openid-connect/token'
+    description: Acceptatie
+  - url: 'https://login.topicuszorg.nl//auth/realms/Apps/protocol/openid-connect/token'
+    description: Productie
+paths:
+  /token:
+    post:
+      summary: "Idp authenticatie"
+      operationId: getToken
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                client_assertion_type:
+                  type: string
+                  description: "Client assertion type"
+                client_assertion:
+                  type: string
+                  description: "JWT"
+                grant_type:
+                  type: string
+                  description: "Grant type"
+                scope:
+                  type: string
+                  description: "Scope"
+            example:
+              client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+              client_assertion: "eyJraWQiOiJ0ZXN0Iiwia2lkIjoiY2xpZW50X2lkIiwic3ViIjoiY2xpZW50X3N1YiIsImF1ZCI6ImF1ZCIsImV4cCI6MTYwMDAwMDAwMCwiaWF0IjoxNjAwMDAwMDAwLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW4udG9waWN1c3pvcmcubmwvYXV0aC9yZWFsbXMvQXBwcyJ9"
+              grant_type: "client_credentials"
+              scope: "openid profile email"
+      responses:
+        '200':
+          description: "Succesvolle authenticatie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: "Access token"
+        '400':
+          description: "Ongeldig verzoek"
+        '401':
+          description: "De token is verlopen"
+        '403':
+          description: "De gebruiker heeft geen toegang tot deze bron"
+        '500':
+          description: "Interne serverfout"
+

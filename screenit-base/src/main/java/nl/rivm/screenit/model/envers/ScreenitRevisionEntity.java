@@ -34,8 +34,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 
@@ -60,10 +60,10 @@ public class ScreenitRevisionEntity implements HibernateObject
 	private long timestamp;
 
 	@ManyToOne
-	private Gebruiker gebruiker;
+	private Medewerker medewerker;
 
 	@ManyToOne
-	private InstellingGebruiker instellingGebruiker;
+	private OrganisatieMedewerker organisatieMedewerker;
 
 	@ManyToOne
 	private Client client;

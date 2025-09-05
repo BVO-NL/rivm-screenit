@@ -28,7 +28,7 @@ import java.util.List;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaCapaciteitBlokDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
@@ -37,9 +37,9 @@ import nl.rivm.screenit.service.mamma.impl.MammaCapaciteit;
 
 public interface MammaBaseCapaciteitsBlokService
 {
-	String saveOrUpdate(PlanningCapaciteitBlokDto blok, InstellingGebruiker ingelogdeGebruiker);
+	String saveOrUpdate(PlanningCapaciteitBlokDto blok, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	String delete(PlanningCapaciteitBlokDto blok, InstellingGebruiker loggedInInstellingGebruiker);
+	String delete(PlanningCapaciteitBlokDto blok, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	int getAantalAfsprakenOpBlok(PlanningCapaciteitBlokDto blokDto, boolean toDelete);
 

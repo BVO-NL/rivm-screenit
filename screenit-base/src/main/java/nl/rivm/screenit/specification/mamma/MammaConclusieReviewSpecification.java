@@ -32,7 +32,7 @@ import jakarta.persistence.criteria.Predicate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling_;
@@ -77,7 +77,7 @@ public class MammaConclusieReviewSpecification
 			});
 	}
 
-	public static Specification<MammaConclusieReview> heeftRadioloog(InstellingGebruiker radioloog)
+	public static Specification<MammaConclusieReview> heeftRadioloog(OrganisatieMedewerker radioloog)
 	{
 		return (r, q, cb) -> cb.equal(r.get(MammaConclusieReview_.radioloog), radioloog);
 	}
@@ -109,7 +109,7 @@ public class MammaConclusieReviewSpecification
 		};
 	}
 
-	public static Specification<MammaConclusieReview> heeftRadioloogEnNietVerwijzendeLezing(InstellingGebruiker radioloog)
+	public static Specification<MammaConclusieReview> heeftRadioloogEnNietVerwijzendeLezing(OrganisatieMedewerker radioloog)
 	{
 		return (r, q, cb) ->
 		{
@@ -129,7 +129,7 @@ public class MammaConclusieReviewSpecification
 		};
 	}
 
-	private static Predicate heeftRadioloogEnNietVerwijzendeLezingPredicate(InstellingGebruiker radioloog, CriteriaBuilder cb, From<MammaBeoordeling, MammaLezing> from)
+	private static Predicate heeftRadioloogEnNietVerwijzendeLezingPredicate(OrganisatieMedewerker radioloog, CriteriaBuilder cb, From<MammaBeoordeling, MammaLezing> from)
 	{
 		return cb.and(
 			from.get(MammaLezing_.biradsLinks).in(MammaBIRADSWaarde.getNietVerwijzendBIRADSWaarden()),
@@ -138,7 +138,7 @@ public class MammaConclusieReviewSpecification
 		);
 	}
 
-	public static Specification<MammaConclusieReview> heeftRondeGereviewedAlsCoordinerendRadioloog(InstellingGebruiker coordinerendRadioloog)
+	public static Specification<MammaConclusieReview> heeftRondeGereviewedAlsCoordinerendRadioloog(OrganisatieMedewerker coordinerendRadioloog)
 	{
 		return (r, q, cb) ->
 		{

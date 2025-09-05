@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.controleren.CervixLabformulierControlerenPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.OrganisatieType;
@@ -42,7 +42,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	constraint = ShiroConstraint.HasPermission,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX },
 	recht = {
-		Recht.GEBRUIKER_CERVIX_LABFORMULIEREN_CONTROLEREN },
+		Recht.MEDEWERKER_CERVIX_LABFORMULIEREN_CONTROLEREN },
 	organisatieTypeScopes = { OrganisatieType.BMHK_LABORATORIUM })
 public class CervixLabformulierenControlerenPage extends CervixLabformulierenBasePage
 {
@@ -52,7 +52,7 @@ public class CervixLabformulierenControlerenPage extends CervixLabformulierenBas
 		super(
 			new CervixLabformulierStatus[] { CervixLabformulierStatus.GESCAND, CervixLabformulierStatus.HUISARTS_ONBEKEND, CervixLabformulierStatus.GECONTROLEERD,
 				CervixLabformulierStatus.AFGEKEURD },
-			new CervixLabformulierenFilter(ScreenitSession.get().getInstelling().getId(), ScreenitSession.get().getInstelling().getOrganisatieType(),
+			new CervixLabformulierenFilter(ScreenitSession.get().getOrganisatie().getId(), ScreenitSession.get().getOrganisatie().getOrganisatieType(),
 				CervixLabformulierenFilter.LabprocesStap.CONTROLEREN, null,
 				Arrays.asList(new CervixLabformulierStatus[] { CervixLabformulierStatus.GESCAND }), null, null, null, null, null),
 			true, true, false, true, false, false, false);
@@ -65,10 +65,10 @@ public class CervixLabformulierenControlerenPage extends CervixLabformulierenBas
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.cervixscreening.labformulieren-controleren", CervixLabformulierenControlerenPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.cervixscreening.labformulieren-controleren", CervixLabformulierenControlerenPage.class));
 		return contextMenuItems;
 	}
 

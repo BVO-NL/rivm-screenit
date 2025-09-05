@@ -26,7 +26,7 @@ import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie_;
 import nl.rivm.screenit.model.colon.enums.ColonTijdslotType;
@@ -48,7 +48,7 @@ public class ColonIntakelocatieSpecification
 {
 	public static Specification<ColonIntakelocatie> isActief()
 	{
-		return (r, q, cb) -> cb.isTrue(r.get(Instelling_.actief));
+		return (r, q, cb) -> cb.isTrue(r.get(Organisatie_.actief));
 	}
 
 	public static Specification<ColonIntakelocatie> heeftGeenCapaciteitBinnenDatum(Range<LocalDate> bereik)

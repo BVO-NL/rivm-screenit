@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -110,7 +110,7 @@ function getYubikeyIdentificatie(): string | undefined {
 }
 
 function getAccountId(): number | undefined {
-	return store.getState().session?.instellingGebruikerId
+	return store.getState().session?.organisatieMedewerkerId
 }
 
 export const createClientHeaders = (): Headers => {

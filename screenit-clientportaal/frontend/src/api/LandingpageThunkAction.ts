@@ -21,8 +21,9 @@
 import {Dispatch} from "redux"
 import ScreenitBackend from "../utils/Backend"
 import {createLandingOverzichtAction, LandingOverzichtAction} from "../actions/LandingOverzichtAction"
+import {LandingOverzicht} from "../datatypes/landing/LandingOverzicht"
 
 export const getLandingOverzicht = () => async (dispatch: Dispatch<LandingOverzichtAction>) => {
-    return ScreenitBackend.get("/landing-overzicht")
-        .then(response => dispatch(createLandingOverzichtAction(response.data)))
+	return ScreenitBackend.get<LandingOverzicht>("landing-overzicht").json()
+		.then(response => dispatch(createLandingOverzichtAction(response)))
 }

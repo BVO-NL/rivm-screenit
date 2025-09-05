@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.util;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -101,9 +101,10 @@ public class TransactionParser
 		return getLongOfPath("clientId");
 	}
 
-	public Long getInstellingGebruikerId()
+	public Long getOrganisatieMedewerkerId()
 	{
-		return getLongOfPath("instellingGebruikerId");
+		var organisatieMedewerkerId = getLongOfPath("organisatieMedewerkerId");
+		return organisatieMedewerkerId != null ? organisatieMedewerkerId : getLongOfPath("instellingGebruikerId");
 	}
 
 	private Long getLongOfPath(String path)

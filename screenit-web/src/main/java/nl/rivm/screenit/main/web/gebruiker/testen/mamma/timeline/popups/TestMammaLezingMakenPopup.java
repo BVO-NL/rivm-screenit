@@ -34,7 +34,7 @@ import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.gebruiker.testen.mamma.timeline.MammaTestTimelinePage;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaLezing;
@@ -70,7 +70,7 @@ public class TestMammaLezingMakenPopup extends TestMammaAbstractPopupPanel
 
 	private IModel<MammaLezing> lezingModel;
 
-	private IModel<List<InstellingGebruiker>> instellingGebruikersListModel;
+	private IModel<List<OrganisatieMedewerker>> organisatieMedewerkersListModel;
 
 	private MammaBeoordelingStatus huidigeOnderzoeksStatus;
 
@@ -122,37 +122,37 @@ public class TestMammaLezingMakenPopup extends TestMammaAbstractPopupPanel
 
 		if (MammaBeoordelingStatus.VERSLAG_MAKEN.equals(huidigeOnderzoeksStatus))
 		{
-			instellingGebruikersListModel = ModelUtil
+			organisatieMedewerkersListModel = ModelUtil
 				.listRModel(Arrays.asList(beoordelingService.getLezingenVoorVerslag(beoordeling)).stream().map(l -> l.getBeoordelaar())
 					.collect(Collectors.toList()));
 		}
 		else if (MammaBeoordelingStatus.DISCREPANTIE.equals(huidigeOnderzoeksStatus))
 		{
-			instellingGebruikersListModel = ModelUtil
+			organisatieMedewerkersListModel = ModelUtil
 				.listRModel(Arrays.asList(beoordeling.getEersteLezing(), beoordeling.getTweedeLezing()).stream().filter(l -> !l.isOnervarenRadioloog()).map(l -> l.getBeoordelaar())
 					.collect(Collectors.toList()));
 		}
 		else
 		{
-			InstellingGebruiker zoekInstellingGebruiker = new InstellingGebruiker();
-			zoekInstellingGebruiker.setOrganisatie(beoordeling.getBeoordelingsEenheid());
+			OrganisatieMedewerker zoekOrganisatieMedewerker = new OrganisatieMedewerker();
+			zoekOrganisatieMedewerker.setOrganisatie(beoordeling.getBeoordelingsEenheid());
 			var sort = Sort.by(Sort.Order.asc(AbstractHibernateObject_.ID));
-			instellingGebruikersListModel = ModelUtil.listRModel(medewerkerService.getActieveRadiologen(zoekInstellingGebruiker, exclIds, sort)
+			organisatieMedewerkersListModel = ModelUtil.listRModel(medewerkerService.getActieveRadiologen(zoekOrganisatieMedewerker, exclIds, sort)
 				.stream()
 				.filter(m -> huidigeOnderzoeksStatus != MammaBeoordelingStatus.ARBITRAGE ||
 					beoordelingService.isBevoegdVoorArbitrage(m))
 				.collect(Collectors.toList()));
 		}
 
-		ScreenitDropdown<InstellingGebruiker> dropDownChoice = new ScreenitDropdown<>("beoordelaar", new PropertyModel<>(lezingModel, "beoordelaar"),
-			instellingGebruikersListModel);
+		ScreenitDropdown<OrganisatieMedewerker> dropDownChoice = new ScreenitDropdown<>("beoordelaar", new PropertyModel<>(lezingModel, "beoordelaar"),
+			organisatieMedewerkersListModel);
 		dropDownChoice.setChoiceRenderer(new ChoiceRenderer<>("", "id")
 		{
 
 			@Override
-			public Object getDisplayValue(InstellingGebruiker instellingGebruiker)
+			public Object getDisplayValue(OrganisatieMedewerker organisatieMedewerker)
 			{
-				return NaamUtil.getNaamGebruiker(instellingGebruiker.getMedewerker()) + " - " + instellingGebruiker.getOrganisatie().getNaam();
+				return NaamUtil.getNaamMedewerker(organisatieMedewerker.getMedewerker()) + " - " + organisatieMedewerker.getOrganisatie().getNaam();
 			}
 
 		});
@@ -162,7 +162,7 @@ public class TestMammaLezingMakenPopup extends TestMammaAbstractPopupPanel
 
 	private IModel<MammaLezing> maakLezingModel(MammaBeoordeling beoordeling)
 	{
-		InstellingGebruiker beoordelaar = ScreenitSession.get().getLoggedInInstellingGebruiker();
+		OrganisatieMedewerker beoordelaar = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 
 		if (MammaBeoordelingStatus.EERSTE_LEZING_OPGESLAGEN.equals(huidigeOnderzoeksStatus))
 		{
@@ -215,7 +215,7 @@ public class TestMammaLezingMakenPopup extends TestMammaAbstractPopupPanel
 		{
 			MammaBeoordeling beoordeling = MammaScreeningRondeUtil.getLaatsteBeoordeling(client.getMammaDossier().getLaatsteScreeningRonde());
 			testTimelineService.voegLezingToe(beoordeling,
-				cloneLezing(lezingModel.getObject(), beoordeling), ScreenitSession.get().getLoggedInInstellingGebruiker(), verstuurHl7Berichten);
+				cloneLezing(lezingModel.getObject(), beoordeling), ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), verstuurHl7Berichten);
 		}
 	}
 
@@ -249,14 +249,14 @@ public class TestMammaLezingMakenPopup extends TestMammaAbstractPopupPanel
 		return lezingType;
 	}
 
-	public InstellingGebruiker getInstellingGebruiker()
+	public OrganisatieMedewerker getOrganisatieMedewerker()
 	{
 		return lezingModel.getObject().getBeoordelaar();
 	}
 
-	public void setInstellingGebruiker(InstellingGebruiker instellingGebruiker)
+	public void setOrganisatieMedewerker(OrganisatieMedewerker organisatieMedewerker)
 	{
-		lezingModel.getObject().setBeoordelaar(instellingGebruiker);
+		lezingModel.getObject().setBeoordelaar(organisatieMedewerker);
 	}
 
 	private MammaLezing cloneLezing(MammaLezing lezing, MammaBeoordeling beoordeling)
@@ -287,6 +287,6 @@ public class TestMammaLezingMakenPopup extends TestMammaAbstractPopupPanel
 	{
 		super.onDetach();
 		ModelUtil.nullSafeDetach(lezingModel);
-		ModelUtil.nullSafeDetach(instellingGebruikersListModel);
+		ModelUtil.nullSafeDetach(organisatieMedewerkersListModel);
 	}
 }

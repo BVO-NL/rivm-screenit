@@ -27,7 +27,7 @@ import jakarta.annotation.Nonnull;
 
 import nl.rivm.screenit.dto.alg.client.contact.MailAttachmentDto;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.MailVerzenden;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.enums.MailPriority;
@@ -46,5 +46,5 @@ public interface MailService
 
 	void sendPasswordResetMail(CervixHuisarts huisarts);
 
-	void sendWachwoordVerlooptHerinneringMail(Gebruiker gebruiker);
+	void sendWachwoordVerlooptHerinneringMail(Medewerker medewerker);
 }

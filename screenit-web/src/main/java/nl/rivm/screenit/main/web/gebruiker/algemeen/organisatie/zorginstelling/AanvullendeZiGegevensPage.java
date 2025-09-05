@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.zorginstelling;
 
 import java.util.List;
 
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.base.BasePage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.FqdnPanel;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.KoppelAanParentOrganisatiePanel;
@@ -32,15 +31,15 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieBehee
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatiePaspoortPanel;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieZoeken;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ZorgInstelling;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.service.AutorisatieService;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -55,24 +54,21 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	constraint = ShiroConstraint.HasPermission,
 	recht = {
-		Recht.GEBRUIKER_ZORGINSTELLING_ORG_BEHEER },
+		Recht.MEDEWERKER_ZORGINSTELLING_ORG_BEHEER },
 	checkScope = true,
-	level = ToegangLevel.INSTELLING,
+	level = ToegangLevel.ORGANISATIE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.MAMMA })
 public class AanvullendeZiGegevensPage extends OrganisatieBeheer
 {
-
-	private static final long serialVersionUID = 1L;
-
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private AutorisatieService autorisatieService;
 
 	public AanvullendeZiGegevensPage()
 	{
-		Instelling organisatie = getCurrentSelectedOrganisatie();
+		Organisatie organisatie = getCurrentSelectedOrganisatie();
 		add(new OrganisatiePaspoortPanel("paspoort", ModelUtil.sModel(organisatie)));
 
 		final IModel<ZorgInstelling> model = ModelUtil.cModel((ZorgInstelling) organisatie);
@@ -81,37 +77,34 @@ public class AanvullendeZiGegevensPage extends OrganisatieBeheer
 		Form<Void> form = new Form<>("form");
 		add(form);
 
-		InstellingGebruiker gebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
-		Actie actie = autorisatieService.getActieVoorOrganisatie(gebruiker, organisatie, Recht.GEBRUIKER_ZORGINSTELLING_ORG_BEHEER);
-		List<Bevolkingsonderzoek> bevolkingsonderzoeken = autorisatieService.getBevolkingsonderzoeken(gebruiker);
+		OrganisatieMedewerker organisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		Actie actie = autorisatieService.getActieVoorOrganisatie(organisatieMedewerker, organisatie, Recht.MEDEWERKER_ZORGINSTELLING_ORG_BEHEER);
+		List<Bevolkingsonderzoek> bevolkingsonderzoeken = autorisatieService.getBevolkingsonderzoeken(organisatieMedewerker);
 		boolean inzien = !isMinimumActie(actie, Actie.AANPASSEN);
-		boolean gebruikerMagColonZien = bevolkingsonderzoeken.contains(Bevolkingsonderzoek.COLON) && gebruiker.getBevolkingsonderzoeken().contains(Bevolkingsonderzoek.COLON);
-		boolean gebruikerMagMammaZien = bevolkingsonderzoeken.contains(Bevolkingsonderzoek.MAMMA) && gebruiker.getBevolkingsonderzoeken().contains(Bevolkingsonderzoek.MAMMA);
+		boolean gebruikerMagColonZien =
+			bevolkingsonderzoeken.contains(Bevolkingsonderzoek.COLON) && organisatieMedewerker.getBevolkingsonderzoeken().contains(Bevolkingsonderzoek.COLON);
+		boolean gebruikerMagMammaZien =
+			bevolkingsonderzoeken.contains(Bevolkingsonderzoek.MAMMA) && organisatieMedewerker.getBevolkingsonderzoeken().contains(Bevolkingsonderzoek.MAMMA);
 
-		form.add(new KoppelAanParentOrganisatiePanel<ZorgInstelling>("parent", model).setEnabled(!inzien || organisatie.getParent() == null));
-		form.add(new GekoppeldePaLabsPanel<ZorgInstelling>("paLabs", model).setVisible(gebruikerMagColonZien));
-		form.add(new GekoppeldeColoscopiePanel<ZorgInstelling>("coloscopiesCentrums", model).setVisible(gebruikerMagColonZien));
+		form.add(new KoppelAanParentOrganisatiePanel<>("parent", model).setEnabled(!inzien || organisatie.getParent() == null));
+		form.add(new GekoppeldePaLabsPanel<>("paLabs", model).setVisible(gebruikerMagColonZien));
+		form.add(new GekoppeldeColoscopiePanel<>("coloscopiesCentrums", model).setVisible(gebruikerMagColonZien));
 		form.add(new GekoppeldeMammapoliRadiologiePanel("mammapolisRadiologieAfdelingen", model).setVisible(gebruikerMagMammaZien));
-		form.add(new FqdnPanel<ZorgInstelling>("fqdn", model).setVisible(gebruikerMagColonZien));
+		form.add(new FqdnPanel<>("fqdn", model).setVisible(gebruikerMagColonZien));
 		form.add(new AjaxSubmitLink("submit")
 		{
-
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				BasePage.markeerFormulierenOpgeslagen(target);
-				instellingService.saveOrUpdate(model.getObject());
+				organisatieService.saveOrUpdate(model.getObject());
 				this.info("Gegevens zijn succesvol opgeslagen");
 			}
 		});
 
 		AjaxLink<Void> annuleren = new AjaxLink<Void>("annuleren")
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{

@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
@@ -41,7 +41,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	constraint = ShiroConstraint.HasPermission,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX },
 	recht = {
-		Recht.GEBRUIKER_BMHK_LABORATORIUM_ORDER_VERWERKEN },
+		Recht.MEDEWERKER_BMHK_LABORATORIUM_ORDER_VERWERKEN },
 	organisatieTypeScopes = { OrganisatieType.BMHK_LABORATORIUM })
 public class CervixOrdersVerwerkenPage extends CervixLabformulierenBasePage
 {
@@ -51,7 +51,7 @@ public class CervixOrdersVerwerkenPage extends CervixLabformulierenBasePage
 	public CervixOrdersVerwerkenPage()
 	{
 		super(new CervixLabformulierStatus[] { CervixLabformulierStatus.GECONTROLEERD_CYTOLOGIE },
-			new CervixLabformulierenFilter(ScreenitSession.get().getInstelling().getId(), ScreenitSession.get().getInstelling().getOrganisatieType(),
+			new CervixLabformulierenFilter(ScreenitSession.get().getOrganisatie().getId(), ScreenitSession.get().getOrganisatie().getOrganisatieType(),
 				CervixLabformulierenFilter.LabprocesStap.CONTROLEREN_VOOR_CYTOLOGIE, null,
 				Arrays.asList(new CervixLabformulierStatus[] { CervixLabformulierStatus.GECONTROLEERD_CYTOLOGIE }), null, null, null, null, null),
 			false, false, true, true, false, false, false);
@@ -70,10 +70,10 @@ public class CervixOrdersVerwerkenPage extends CervixLabformulierenBasePage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.cervixscreening.orders-verwerken", CervixOrdersVerwerkenPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.cervixscreening.orders-verwerken", CervixOrdersVerwerkenPage.class));
 		return contextMenuItems;
 	}
 

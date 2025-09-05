@@ -31,7 +31,7 @@ import nl.rivm.screenit.main.service.SKMLExternSchemaService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.colon.IFobtLaboratorium;
 import nl.rivm.screenit.model.colon.SKMLExternSchema;
 import nl.rivm.screenit.model.colon.SKMLExterneControleBarcode;
@@ -53,7 +53,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
@@ -68,7 +67,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.AANPASSEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_BEHEER_REGISTRATIE_KWALITEITSCONTROLE,
+	recht = Recht.MEDEWERKER_BEHEER_REGISTRATIE_KWALITEITSCONTROLE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class KwaliteitscontroleLabAanmakenPage extends KwaliteitscontroleLabBasePage
 {
@@ -145,7 +144,7 @@ public class KwaliteitscontroleLabAanmakenPage extends KwaliteitscontroleLabBase
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				Instelling organisatie = ((ScreenitSession) getSession()).getLoggedInInstellingGebruiker().getOrganisatie();
+				Organisatie organisatie = ((ScreenitSession) getSession()).getIngelogdeOrganisatieMedewerker().getOrganisatie();
 				IFobtLaboratorium laboratorium = null;
 
 				if (organisatie instanceof IFobtLaboratorium)
@@ -171,7 +170,7 @@ public class KwaliteitscontroleLabAanmakenPage extends KwaliteitscontroleLabBase
 							barcode.setDatum(dateSupplier.getDate());
 							barcode.setLaboratorium(laboratorium);
 							hibernateService.saveOrUpdate(barcode);
-							logService.logGebeurtenis(LogGebeurtenis.INVOERGEN_INTERNE_TEST, ScreenitSession.get().getLoggedInAccount(), Bevolkingsonderzoek.COLON);
+							logService.logGebeurtenis(LogGebeurtenis.INVOERGEN_INTERNE_TEST, ScreenitSession.get().getIngelogdAccount(), Bevolkingsonderzoek.COLON);
 							getSession().info("Barcode is opgeslagen.");
 							setResponsePage(new KwaliteitscontroleLabAanmakenPage());
 						}
@@ -193,7 +192,7 @@ public class KwaliteitscontroleLabAanmakenPage extends KwaliteitscontroleLabBase
 								barcode.setSchema(schema.getObject());
 								barcode.setLaboratorium(laboratorium);
 								hibernateService.saveOrUpdate(barcode);
-								logService.logGebeurtenis(LogGebeurtenis.INVOERGEN_EXTERNE_TEST, ScreenitSession.get().getLoggedInAccount(), Bevolkingsonderzoek.COLON);
+								logService.logGebeurtenis(LogGebeurtenis.INVOERGEN_EXTERNE_TEST, ScreenitSession.get().getIngelogdAccount(), Bevolkingsonderzoek.COLON);
 								getSession().info("Barcode is opgeslagen.");
 								setResponsePage(new KwaliteitscontroleLabAanmakenPage());
 							}
@@ -240,7 +239,7 @@ public class KwaliteitscontroleLabAanmakenPage extends KwaliteitscontroleLabBase
 		{
 			if (IFOBTUitslagType.INTERN.equals(barcodeTypeModel.getObject().getType()))
 			{
-				controleType = new Model<SKMLInterneControleSet>(kwaliteitService.laagOfHoogSample(ScreenitSession.get().getInstelling()));
+				controleType = new Model<SKMLInterneControleSet>(kwaliteitService.laagOfHoogSample(ScreenitSession.get().getOrganisatie()));
 				container.add(new Label("controleTekst", "Controle: " + controleType.getObject().getControleTekst()));
 			}
 			else

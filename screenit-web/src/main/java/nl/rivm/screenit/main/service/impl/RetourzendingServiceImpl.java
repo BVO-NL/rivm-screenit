@@ -35,7 +35,7 @@ import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.service.RetourzendingService;
 import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.InpakbareUitnodiging;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.RetourredenAfhandeling;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
@@ -127,7 +127,8 @@ public class RetourzendingServiceImpl implements RetourzendingService
 
 	@Override
 	@Transactional
-	public RetourzendingLogEvent verwerkBestandMetRetourzendingen(InstellingGebruiker ingelogdeGebruiker, String contentType, File file, String fileName) throws IOException
+	public RetourzendingLogEvent verwerkBestandMetRetourzendingen(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, String contentType, File file, String fileName)
+		throws IOException
 	{
 		RetourzendingLogEvent logEvent = new RetourzendingLogEvent();
 		UploadDocument uploadDocument = new UploadDocument();
@@ -245,7 +246,7 @@ public class RetourzendingServiceImpl implements RetourzendingService
 			logEvent.setLevel(Level.ERROR);
 			LOG.error("Fout bij lezen van bestand", e);
 		}
-		logService.logGebeurtenis(LogGebeurtenis.RETOURZENDINGEN_VERWERKT, logEvent, ingelogdeGebruiker, Bevolkingsonderzoek.COLON);
+		logService.logGebeurtenis(LogGebeurtenis.RETOURZENDINGEN_VERWERKT, logEvent, ingelogdeOrganisatieMedewerker, Bevolkingsonderzoek.COLON);
 		return logEvent;
 	}
 
@@ -292,7 +293,8 @@ public class RetourzendingServiceImpl implements RetourzendingService
 
 	@Override
 	@Transactional
-	public <U extends InpakbareUitnodiging<S>, S extends ScreeningRonde<?, ?, ?, ?>> void verwerkRetourzendingHandmatig(InstellingGebruiker ingelogdeGebruiker, U uitnodiging,
+	public <U extends InpakbareUitnodiging<S>, S extends ScreeningRonde<?, ?, ?, ?>> void verwerkRetourzendingHandmatig(OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
+		U uitnodiging,
 		String retourzendingReden)
 	{
 		RetourzendingLogEvent logEvent = new RetourzendingLogEvent();
@@ -304,7 +306,7 @@ public class RetourzendingServiceImpl implements RetourzendingService
 		verwerkRetourzending(logEvent, uitnodiging, retourredenAfhandeling, RetourzendingWijze.HANDMATIG);
 
 		Bevolkingsonderzoek bvo = uitnodiging instanceof ColonUitnodiging ? Bevolkingsonderzoek.COLON : Bevolkingsonderzoek.CERVIX;
-		logService.logGebeurtenis(LogGebeurtenis.RETOURZENDINGEN_VERWERKT, logEvent, ingelogdeGebruiker, uitnodiging.getScreeningRonde().getDossier().getClient(), bvo);
+		logService.logGebeurtenis(LogGebeurtenis.RETOURZENDINGEN_VERWERKT, logEvent, ingelogdeOrganisatieMedewerker, uitnodiging.getScreeningRonde().getDossier().getClient(), bvo);
 	}
 
 	private <U extends InpakbareUitnodiging<S>, S extends ScreeningRonde<?, ?, ?, ?>> void verwerkRetourzending(RetourzendingLogEvent logEvent, U uitnodiging,

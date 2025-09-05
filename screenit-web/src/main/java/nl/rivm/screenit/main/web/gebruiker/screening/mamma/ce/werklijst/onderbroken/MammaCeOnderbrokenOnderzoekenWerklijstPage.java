@@ -44,7 +44,7 @@ import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.CentraleEenheid;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -61,7 +61,7 @@ import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid_;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
@@ -88,12 +88,12 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_CENTRALE_EENHEID_ONDERBROKEN_ONDERZOEKEN },
+	recht = { Recht.MEDEWERKER_CENTRALE_EENHEID_ONDERBROKEN_ONDERZOEKEN },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeWerklijst
 {
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private MammaScreeningsEenheidService screeningsEenheidService;
@@ -120,7 +120,7 @@ public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeW
 
 	private List<CentraleEenheid> getAlleMogelijkeCentraleEenheden()
 	{
-		return instellingService.getMogelijkeCentraleEenheden(ScreenitSession.get().getScreeningOrganisatie());
+		return organisatieService.getMogelijkeCentraleEenheden(ScreenitSession.get().getScreeningOrganisatie());
 	}
 
 	private List<MammaScreeningsEenheid> getAlleMogelijkeScreeningsEenheden()
@@ -128,7 +128,7 @@ public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeW
 		List<MammaScreeningsEenheid> mogelijkeScreeningsEenheden = new ArrayList<>();
 		for (CentraleEenheid ce : zoekObjectModel.getObject().getCentraleEenheden())
 		{
-			for (BeoordelingsEenheid be : instellingService.getChildrenOrganisaties(ce, BeoordelingsEenheid.class))
+			for (BeoordelingsEenheid be : organisatieService.getChildrenOrganisaties(ce, BeoordelingsEenheid.class))
 			{
 				mogelijkeScreeningsEenheden.addAll(screeningsEenheidService.getActieveScreeningsEenhedenVoorBeoordelingsEenheid(be));
 			}
@@ -243,7 +243,7 @@ public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeW
 		columns.add(new PropertyColumn<>(Model.of("SE"), propertyChain(MammaOnderzoek_.SCREENINGS_EENHEID, MammaScreeningsEenheid_.NAAM), "screeningsEenheid.code"));
 		columns.add(
 			new PropertyColumn<>(Model.of("CE"),
-				propertyChain(MammaOnderzoek_.SCREENINGS_EENHEID, MammaScreeningsEenheid_.BEOORDELINGS_EENHEID, Instelling_.PARENT, Instelling_.NAAM),
+				propertyChain(MammaOnderzoek_.SCREENINGS_EENHEID, MammaScreeningsEenheid_.BEOORDELINGS_EENHEID, Organisatie_.PARENT, Organisatie_.NAAM),
 				"screeningsEenheid.beoordelingsEenheid.parent.naam"));
 		columns.add(new PropertyColumn<>(Model.of("Datum brief oproep"), "afspraak.uitnodiging.screeningRonde")
 		{

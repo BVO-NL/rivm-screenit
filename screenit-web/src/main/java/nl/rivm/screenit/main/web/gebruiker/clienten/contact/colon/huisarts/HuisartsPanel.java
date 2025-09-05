@@ -74,9 +74,9 @@ public class HuisartsPanel extends GenericPanel<ColonScreeningRonde>
 		setZoekModel(ModelUtil.cModel(new EnovationHuisarts()));
 		setDialog(dialog);
 
-		boolean magWijzigen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_WIJZIGEN_HUISARTS, Actie.AANPASSEN);
-		boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_WIJZIGEN_HUISARTS, Actie.VERWIJDEREN);
-		boolean magVerzenden = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_HUISARTSBERICHT_OPNIEUW_VERZENDEN, Actie.AANPASSEN, getModelObject());
+		boolean magWijzigen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_WIJZIGEN_HUISARTS, Actie.AANPASSEN);
+		boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_WIJZIGEN_HUISARTS, Actie.VERWIJDEREN);
+		boolean magVerzenden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_HUISARTSBERICHT_OPNIEUW_VERZENDEN, Actie.AANPASSEN, getModelObject());
 
 		setHuisartsWijzigenPanel(huisartsWijzigenPanel);
 
@@ -86,7 +86,7 @@ public class HuisartsPanel extends GenericPanel<ColonScreeningRonde>
 			protected void onConfigure()
 			{
 				super.onConfigure();
-				ToegangLevel toegangsLevel = ScreenitSession.get().getToegangsLevel(Actie.AANPASSEN, Recht.GEBRUIKER_WIJZIGEN_HUISARTS);
+				ToegangLevel toegangsLevel = ScreenitSession.get().getToegangsLevel(Actie.AANPASSEN, Recht.MEDEWERKER_WIJZIGEN_HUISARTS);
 				setVisible(toegangsLevel != null && ToegangLevel.REGIO.getNiveau() <= toegangsLevel.getNiveau());
 			}
 

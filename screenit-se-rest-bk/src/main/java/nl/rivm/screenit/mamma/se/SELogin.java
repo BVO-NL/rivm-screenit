@@ -33,17 +33,17 @@ import nl.rivm.screenit.mamma.se.service.SELogService;
 import nl.rivm.screenit.mamma.se.service.SeAutorisatieService;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
-import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.InlogStatus;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.InlogMethode;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
-import nl.rivm.screenit.security.InstellingGebruikerToken;
+import nl.rivm.screenit.security.OrganisatieMedewerkerToken;
 import nl.rivm.screenit.service.AuthenticatieService;
-import nl.rivm.screenit.service.GebruikersService;
+import nl.rivm.screenit.service.BaseMedewerkerService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.MedewerkerUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
@@ -78,7 +78,7 @@ public class SELogin
 
 	private final HibernateService hibernateService;
 
-	private final GebruikersService gebruikerService;
+	private final BaseMedewerkerService medewerkerService;
 
 	private final SELogService logService;
 
@@ -97,7 +97,7 @@ public class SELogin
 		seAutorisatieService = ApplicationContextProvider.getApplicationContext().getBean(SeAutorisatieService.class);
 		screeningseenhedenService = ApplicationContextProvider.getApplicationContext().getBean(MammaScreeningsEenheidService.class);
 		hibernateService = ApplicationContextProvider.getApplicationContext().getBean(HibernateService.class);
-		gebruikerService = ApplicationContextProvider.getApplicationContext().getBean(GebruikersService.class);
+		medewerkerService = ApplicationContextProvider.getApplicationContext().getBean(BaseMedewerkerService.class);
 		logService = ApplicationContextProvider.getApplicationContext().getBean(SELogService.class);
 		applicationEnvironment = ApplicationContextProvider.getApplicationContext().getBean("applicationEnvironment", String.class);
 		currentDateSupplier = ApplicationContextProvider.getApplicationContext().getBean(ICurrentDateSupplier.class);
@@ -118,55 +118,55 @@ public class SELogin
 			return result;
 		}
 		screeningsEenheidId = screeningsEenheid.getId();
-		Gebruiker gebruiker = null;
+		Medewerker medewerker = null;
 
 		UsernamePasswordToken token = yubikey.equals(GEEN_OTP) ? new UsernamePasswordToken(gebruikersnaam, plainWachtwoord)
 			: new YubikeyToken(gebruikersnaam, plainWachtwoord, yubikey);
 
 		try
 		{
-			gebruiker = gebruikerService.getGebruikerByGebruikersnaam(token.getUsername()).orElse(null);
+			medewerker = medewerkerService.getMedewerkerByGebruikersnaam(token.getUsername()).orElse(null);
 
-			if (gebruiker == null)
+			if (medewerker == null)
 			{
 				logService.logError(LogGebeurtenis.INLOGGEN_MISLUKT, null, screeningsEenheid, proxyDatumTijd, "Onbekende gebruikersnaam");
 				result.setMessage(DEFAULT_MESSAGE);
 			}
-			else if (token instanceof YubikeyToken && gebruiker.getInlogMethode() != InlogMethode.YUBIKEY)
+			else if (token instanceof YubikeyToken && medewerker.getInlogMethode() != InlogMethode.YUBIKEY)
 			{
-				LOG.error("Gebruiker probeert in te loggen met Yubikey, maar inlogmethode is: {}", gebruiker.getInlogMethode());
+				LOG.error("Medewerker probeert in te loggen met Yubikey, maar inlogmethode is: {}", medewerker.getInlogMethode());
 				result.setMessage(DEFAULT_MESSAGE);
 			}
-			else if (!(token instanceof YubikeyToken) && gebruiker.getInlogMethode() != InlogMethode.GEBRUIKERSNAAM_WACHTWOORD)
+			else if (!(token instanceof YubikeyToken) && medewerker.getInlogMethode() != InlogMethode.GEBRUIKERSNAAM_WACHTWOORD)
 			{
-				LOG.error("Gebruiker probeert in te loggen met Gebruikersnaam/ww, maar inlogmethode is: {}", gebruiker.getInlogMethode());
+				LOG.error("Medewerker probeert in te loggen met Gebruikersnaam/ww, maar inlogmethode is: {}", medewerker.getInlogMethode());
 				result.setMessage(DEFAULT_MESSAGE);
 			}
 			else if (!(token instanceof YubikeyToken) && applicationEnvironment.equalsIgnoreCase("PRODUCTIE"))
 			{
-				LOG.error("Gebruiker probeert in te loggen met Gebruikersnaam/ww in productie, inlogmethode bij gebruiker: {}", gebruiker.getInlogMethode());
+				LOG.error("Medewerker probeert in te loggen met Gebruikersnaam/ww in productie, inlogmethode bij medewerker: {}", medewerker.getInlogMethode());
 				result.setMessage(DEFAULT_MESSAGE);
 			}
 			else
 			{
 				securityManager.authenticate(token);
-				String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(gebruiker, currentDateSupplier.getDate());
+				String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDate());
 				if (meldingNavActiefVanafEnTotEnMet != null)
 				{
 					result.setMessage(meldingNavActiefVanafEnTotEnMet);
 				}
 				else
 				{
-					result = login(screeningsEenheid, proxyDatumTijd, gebruiker, versie, nfcServerVersie, genereerLoggebeurtenis);
+					result = login(screeningsEenheid, proxyDatumTijd, medewerker, versie, nfcServerVersie, genereerLoggebeurtenis);
 				}
 			}
 		}
 		catch (UnknownAccountException | IncorrectCredentialsException ice)
 		{
-			authenticatieService.foutieveInlogpoging(gebruiker);
-			logService.logError(LogGebeurtenis.INLOGGEN_MISLUKT, gebruiker, screeningsEenheid, proxyDatumTijd,
+			authenticatieService.foutieveInlogpoging(medewerker);
+			logService.logError(LogGebeurtenis.INLOGGEN_MISLUKT, medewerker, screeningsEenheid, proxyDatumTijd,
 				"Verkeerde credentials of herhalend gebruik van dezelfde Yubikey code");
-			result.setMessage(getError(gebruiker, screeningsEenheid, proxyDatumTijd));
+			result.setMessage(getError(medewerker, screeningsEenheid, proxyDatumTijd));
 		}
 		catch (AuthenticationException authExcept)
 		{
@@ -176,51 +176,51 @@ public class SELogin
 		return result;
 	}
 
-	private LoginDto login(MammaScreeningsEenheid screeningsEenheid, LocalDateTime proxyDatumTijd, Gebruiker gebruiker, String versie, String nfcServerVersie,
+	private LoginDto login(MammaScreeningsEenheid screeningsEenheid, LocalDateTime proxyDatumTijd, Medewerker medewerker, String versie, String nfcServerVersie,
 		boolean genereerLoggebeurtenis)
 	{
 		LoginDto result = new LoginDto(false);
 
-		if (!authenticatieService.isAccountLocked(gebruiker))
+		if (!authenticatieService.isAccountLocked(medewerker))
 		{
-			authenticatieService.unlockAccount(gebruiker);
+			authenticatieService.unlockAccount(medewerker);
 
-			List<InstellingGebruiker> instellingGebruikers = authenticatieService.getActieveInstellingGebruikers(gebruiker);
-			if (instellingGebruikers.size() == 0)
+			List<OrganisatieMedewerker> organisatieMedewerkers = authenticatieService.getActieveOrganisatieMedewerkers(medewerker);
+			if (organisatieMedewerkers.size() == 0)
 			{
 
-				logGeenActieveInstelling(gebruiker, screeningsEenheid, proxyDatumTijd);
-				result.setMessage("Er zijn geen actieve instellingen gekoppeld aan deze gebruiker.");
+				logGeenActieveOrganisatie(medewerker, screeningsEenheid, proxyDatumTijd);
+				result.setMessage("Er zijn geen actieve organisaties gekoppeld aan deze medewerker.");
 				LOG.error(result.getMessage());
 			}
 			else
 			{
-				InstellingGebruiker inlogInstellingGebruiker = getInstellingGebruiker(instellingGebruikers, screeningsEenheid);
-				if (inlogInstellingGebruiker != null)
+				OrganisatieMedewerker inlogOrganisatieMedewerker = getOrganisatieMedewerker(organisatieMedewerkers, screeningsEenheid);
+				if (inlogOrganisatieMedewerker != null)
 				{
 
-					InstellingGebruikerToken token = new InstellingGebruikerToken(inlogInstellingGebruiker.getId());
+					OrganisatieMedewerkerToken token = new OrganisatieMedewerkerToken(inlogOrganisatieMedewerker.getId());
 					SecurityUtils.getSubject().login(token);
-					if (seAutorisatieService.isGeautoriseerdVoorInloggen(inlogInstellingGebruiker.getId()))
+					if (seAutorisatieService.isGeautoriseerdVoorInloggen(inlogOrganisatieMedewerker.getId()))
 					{
-						accountId = inlogInstellingGebruiker.getId();
+						accountId = inlogOrganisatieMedewerker.getId();
 						result.setSuccess(true);
 						String seVersie = versie == null ? "onbekend" : versie;
 						String nfcVersie = nfcServerVersie == null || nfcServerVersie.equals("undefined") ? "onbekend" : nfcServerVersie;
 						String logBericht = String.format("SE-Proxy versie: %s, Nfc webserver versie: %s", seVersie, nfcVersie);
 						if (genereerLoggebeurtenis)
 						{
-							logService.logInfo(LogGebeurtenis.INLOGGEN, inlogInstellingGebruiker, screeningsEenheid, proxyDatumTijd, logBericht);
+							logService.logInfo(LogGebeurtenis.INLOGGEN, inlogOrganisatieMedewerker, screeningsEenheid, proxyDatumTijd, logBericht);
 						}
 						else
 						{
-							LOG.info("Sessie meenemen {} {} {}", seLogCode(screeningsEenheid), accountIdLogTekst(inlogInstellingGebruiker), logBericht);
+							LOG.info("Sessie meenemen {} {} {}", seLogCode(screeningsEenheid), accountIdLogTekst(inlogOrganisatieMedewerker), logBericht);
 						}
 					}
 					else
 					{
-						logService.logError(LogGebeurtenis.INLOGGEN_MISLUKT, inlogInstellingGebruiker, screeningsEenheid, proxyDatumTijd,
-							"Gebruiker heeft niet het Inschrijven op SE recht om in te loggen.");
+						logService.logError(LogGebeurtenis.INLOGGEN_MISLUKT, inlogOrganisatieMedewerker, screeningsEenheid, proxyDatumTijd,
+							"Medewerker heeft niet het Inschrijven op SE recht om in te loggen.");
 						SecurityUtils.getSubject().logout();
 						result.setSuccess(false);
 						result.setMessage("Inloggen is mislukt. Het recht Inschrijven op SE ontbreekt.");
@@ -228,15 +228,15 @@ public class SELogin
 				}
 				else
 				{
-					logGeenActieveInstelling(gebruiker, screeningsEenheid, proxyDatumTijd);
-					result.setMessage("Inloggen mislukt. Gebruiker is niet gekoppeld aan de Screeningsorganisatie "
+					logGeenActieveOrganisatie(medewerker, screeningsEenheid, proxyDatumTijd);
+					result.setMessage("Inloggen mislukt. Medewerker is niet gekoppeld aan de Screeningsorganisatie "
 						+ screeningsEenheid.getBeoordelingsEenheid().getParent().getRegio().getNaam());
 				}
 			}
 		}
 		else
 		{
-			result.setMessage(getError(gebruiker, screeningsEenheid, proxyDatumTijd));
+			result.setMessage(getError(medewerker, screeningsEenheid, proxyDatumTijd));
 		}
 		return result;
 	}
@@ -246,35 +246,35 @@ public class SELogin
 		return screeningsEenheid == null ? "SE-???" : screeningsEenheid.getCode();
 	}
 
-	private void logGeenActieveInstelling(Gebruiker gebruiker, MammaScreeningsEenheid screeningsEenheid, LocalDateTime proxyDatumTijd)
+	private void logGeenActieveOrganisatie(Medewerker medewerker, MammaScreeningsEenheid screeningsEenheid, LocalDateTime proxyDatumTijd)
 	{
-		logService.logError(LogGebeurtenis.INLOGGEN_MISLUKT, gebruiker, screeningsEenheid, proxyDatumTijd,
-			"Gebruikersnaam: " + gebruiker.getGebruikersnaam()
-				+ ", geen actieve instelling gekoppeld aan medewerker of niet voldoende rechten voor gekoppelde instelling(en).");
+		logService.logError(LogGebeurtenis.INLOGGEN_MISLUKT, medewerker, screeningsEenheid, proxyDatumTijd,
+			"Gebruikersnaam: " + medewerker.getGebruikersnaam()
+				+ ", geen actieve organisatie gekoppeld aan medewerker of niet voldoende rechten voor gekoppelde organisatie(s).");
 	}
 
-	private InstellingGebruiker getInstellingGebruiker(List<InstellingGebruiker> instellingGebruikers, MammaScreeningsEenheid inlogScreeningsEenheid)
+	private OrganisatieMedewerker getOrganisatieMedewerker(List<OrganisatieMedewerker> organisatieMedewerkers, MammaScreeningsEenheid inlogScreeningsEenheid)
 	{
-		InstellingGebruiker inlogInstellingGebruiker = null;
-		for (InstellingGebruiker instellingGebruiker : instellingGebruikers)
+		OrganisatieMedewerker inlogOrganisatieMedewerker = null;
+		for (OrganisatieMedewerker organisatieMedewerker : organisatieMedewerkers)
 		{
 
-			Instelling organisatie = instellingGebruiker.getOrganisatie(); 
+			Organisatie organisatie = organisatieMedewerker.getOrganisatie(); 
 			if (organisatie instanceof ScreeningOrganisatie)
 			{
 				BeoordelingsEenheid be = inlogScreeningsEenheid.getBeoordelingsEenheid();
-				Instelling ce = be.getParent();
-				Instelling so = ce.getRegio();
+				Organisatie ce = be.getParent();
+				Organisatie so = ce.getRegio();
 				if (so.equals(organisatie))
 				{
-					inlogInstellingGebruiker = instellingGebruiker;
+					inlogOrganisatieMedewerker = organisatieMedewerker;
 				}
 			}
 		}
-		return inlogInstellingGebruiker;
+		return inlogOrganisatieMedewerker;
 	}
 
-	private String getError(Gebruiker inTeLoggenMedewerker, MammaScreeningsEenheid screeningsEenheid, LocalDateTime proxyDatumTijd)
+	private String getError(Medewerker inTeLoggenMedewerker, MammaScreeningsEenheid screeningsEenheid, LocalDateTime proxyDatumTijd)
 	{
 		Integer foutieveAanmeldpogingenTimeout = preferenceService.getInteger(PreferenceKey.FOUTIEVE_AANMELDPOGINGEN_TIMEOUT.name());
 		String resultMessage = "";
@@ -327,10 +327,10 @@ public class SELogin
 		return resultMessage;
 	}
 
-	public InstellingGebruiker getIngelogdeGebruiker()
+	public OrganisatieMedewerker getIngelogdeOrganisatieMedewerker()
 	{
-		Long accountId = getLoggedInAccountId();
-		return accountId != null ? hibernateService.load(InstellingGebruiker.class, accountId) : null;
+		Long accountId = getIngelogdeAccountId();
+		return accountId != null ? hibernateService.load(OrganisatieMedewerker.class, accountId) : null;
 	}
 
 	public MammaScreeningsEenheid getIngelogdeScreeningsEenheid()
@@ -338,22 +338,22 @@ public class SELogin
 		return hibernateService.load(MammaScreeningsEenheid.class, screeningsEenheidId);
 	}
 
-	public Long getLoggedInAccountId()
+	public Long getIngelogdeAccountId()
 	{
 		return accountId;
 	}
 
 	public static String accountIdLogTekst(Account account)
 	{
-		if (account instanceof InstellingGebruiker)
+		if (account instanceof OrganisatieMedewerker)
 		{
-			Integer medewerkercode = ((InstellingGebruiker) account).getMedewerker().getMedewerkercode();
-			return String.format("IG:%s MC:%s", account.getId(), medewerkercode);
+			Integer medewerkercode = ((OrganisatieMedewerker) account).getMedewerker().getMedewerkercode();
+			return String.format("OM:%s MC:%s", account.getId(), medewerkercode);
 		}
-		else if (account instanceof Gebruiker)
+		else if (account instanceof Medewerker)
 		{
-			Integer medewerkercode = ((Gebruiker) account).getMedewerkercode();
-			return String.format("G:%s MC:%s", account.getId(), medewerkercode);
+			Integer medewerkercode = ((Medewerker) account).getMedewerkercode();
+			return String.format("M:%s MC:%s", account.getId(), medewerkercode);
 		}
 		return "?";
 	}

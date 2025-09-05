@@ -21,23 +21,52 @@ package nl.rivm.screenit.model.enums;
  * =========================LICENSE_END==================================
  */
 
+import java.util.Optional;
+
+import lombok.Getter;
+
+@Getter
 public enum RedenNietTeBeoordelen
 {
-	GEEN_MONSTER,
+	GEEN_MONSTER(Optional.empty()),
 
-	BARCODE_ONLEESBAAR,
+	BARCODE_ONLEESBAAR(Optional.empty()),
 
-	BUIS_KAPOT,
+	BUIS_KAPOT(Optional.of("2")),
 
-	GEEN_VLOEISTOF,
+	GEEN_VLOEISTOF(Optional.of("3")),
 
-	TE_WEINIG_ONTLASTING,
+	TE_WEINIG_ONTLASTING(Optional.empty()),
 
-	TE_VEEL_ONTLASTING,
+	TE_VEEL_ONTLASTING(Optional.empty()),
 
-	TECHNISCH_ONMOGELIJK,
+	TECHNISCH_ONMOGELIJK(Optional.of("1")),
 
-	MANUELE_FOUT,
+	MANUELE_FOUT(Optional.empty()),
 
-	TECHNISCHE_FOUT
+	AFWIJKENDE_MONSTERHOEVEELHEID(Optional.of("4"));
+
+	private final Optional<String> code;
+
+	RedenNietTeBeoordelen(Optional<String> code)
+	{
+		this.code = code;
+	}
+
+	public static RedenNietTeBeoordelen bepaalReden(String onbeoordeelbaarReden)
+	{
+		if (onbeoordeelbaarReden == null)
+		{
+			return RedenNietTeBeoordelen.TECHNISCH_ONMOGELIJK;
+		}
+
+		return switch (onbeoordeelbaarReden)
+		{
+			case "2" -> RedenNietTeBeoordelen.BUIS_KAPOT;
+			case "3" -> RedenNietTeBeoordelen.GEEN_VLOEISTOF;
+			case "4" -> RedenNietTeBeoordelen.AFWIJKENDE_MONSTERHOEVEELHEID;
+			default -> RedenNietTeBeoordelen.TECHNISCH_ONMOGELIJK;
+		};
+	}
+
 }

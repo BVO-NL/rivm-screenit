@@ -37,7 +37,7 @@ import jakarta.persistence.TemporalType;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.cervix.enums.CervixLabformulierAanvraagStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
@@ -77,7 +77,7 @@ public class CervixLabformulierAanvraag extends AbstractHibernateObject implemen
 	private CervixHuisartsLocatie huisartsLocatie;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	private InstellingGebruiker instellingGebruiker;
+	private OrganisatieMedewerker organisatieMedewerker;
 
 	@Column(nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)

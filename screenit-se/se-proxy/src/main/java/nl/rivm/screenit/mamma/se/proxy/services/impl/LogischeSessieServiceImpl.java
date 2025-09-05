@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.services.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -34,6 +34,7 @@ import nl.rivm.screenit.mamma.se.proxy.model.NavigatieDto;
 import nl.rivm.screenit.mamma.se.proxy.services.LogischeSessieService;
 import nl.rivm.screenit.mamma.se.proxy.util.DateUtil;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,8 @@ public class LogischeSessieServiceImpl implements LogischeSessieService
 
 	private static final int HALF_UUR = 30 * 60 * 1000;
 
-	private final ObjectMapper objectMapper = new ObjectMapper();
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@Value("${DISABLE_NFC_AUTHENTICATION:#{false}}")
 	private boolean disableNFCAuthentication;

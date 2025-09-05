@@ -29,8 +29,8 @@ import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.CentraleEenheid;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.SpecificationUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
@@ -45,31 +45,31 @@ public class BeoordelingsEenheidSpecification
 {
 	public static Specification<BeoordelingsEenheid> isActief(boolean actief)
 	{
-		return (r, q, cb) -> cb.equal(r.get(Instelling_.actief), actief);
+		return (r, q, cb) -> cb.equal(r.get(Organisatie_.actief), actief);
 	}
 
-	public static ExtendedSpecification<BeoordelingsEenheid> heeftScreeningOrganisatie(Instelling screeningOrganisatie)
+	public static ExtendedSpecification<BeoordelingsEenheid> heeftScreeningOrganisatie(Organisatie screeningOrganisatie)
 	{
-		return heeftScreeningOrganisatieId(Optional.ofNullable(screeningOrganisatie).map(Instelling::getId).orElse(null));
+		return heeftScreeningOrganisatieId(Optional.ofNullable(screeningOrganisatie).map(Organisatie::getId).orElse(null));
 	}
 
 	public static ExtendedSpecification<BeoordelingsEenheid> heeftScreeningOrganisatieId(Long screeningOrganisatieId)
 	{
 		return (r, q, cb) ->
 		{
-			var centraleEenheidJoin = join(r, Instelling_.parent);
-			return cb.equal(centraleEenheidJoin.get(Instelling_.regio).get(AbstractHibernateObject_.id), screeningOrganisatieId);
+			var centraleEenheidJoin = join(r, Organisatie_.parent);
+			return cb.equal(centraleEenheidJoin.get(Organisatie_.regio).get(AbstractHibernateObject_.id), screeningOrganisatieId);
 		};
 	}
 
-	public static ExtendedSpecification<BeoordelingsEenheid> filterOpScreeningOrganisatie(Instelling screeningOrganisatie)
+	public static ExtendedSpecification<BeoordelingsEenheid> filterOpScreeningOrganisatie(Organisatie screeningOrganisatie)
 	{
 		return SpecificationUtil.skipWhenNullExtended(screeningOrganisatie, heeftScreeningOrganisatie(screeningOrganisatie));
 	}
 
 	public static ExtendedSpecification<BeoordelingsEenheid> heeftCentraleEenheidIn(Collection<CentraleEenheid> centraleEenheden)
 	{
-		return (r, q, cb) -> r.get(Instelling_.parent).in(centraleEenheden);
+		return (r, q, cb) -> r.get(Organisatie_.parent).in(centraleEenheden);
 	}
 
 	public static ExtendedSpecification<BeoordelingsEenheid> filterCentraleEenheid(Collection<CentraleEenheid> centraleEenheden)

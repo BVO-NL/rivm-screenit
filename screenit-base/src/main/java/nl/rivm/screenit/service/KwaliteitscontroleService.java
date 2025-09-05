@@ -24,7 +24,7 @@ package nl.rivm.screenit.service;
 
 import java.util.List;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.colon.SKMLInterneControleSet;
 import nl.rivm.screenit.model.colon.SKMLSentineelControleBarcode;
 
@@ -35,6 +35,6 @@ public interface KwaliteitscontroleService
 
 	List<SKMLInterneControleSet> createOrGetAllInterneControleSets();
 
-	void saveOrUpdateInterneIdSets(List<SKMLInterneControleSet> list, InstellingGebruiker instellingGebruiker);
+	void saveOrUpdateInterneIdSets(List<SKMLInterneControleSet> list, OrganisatieMedewerker organisatieMedewerker);
 
 }

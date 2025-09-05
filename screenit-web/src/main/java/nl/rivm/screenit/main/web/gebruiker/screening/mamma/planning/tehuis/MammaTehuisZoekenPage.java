@@ -33,7 +33,7 @@ import nl.rivm.screenit.main.web.component.table.ActiefPropertyColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaPlanningBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -44,7 +44,7 @@ import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.model.mamma.MammaStandplaats_;
 import nl.rivm.screenit.model.mamma.MammaTehuis;
 import nl.rivm.screenit.model.mamma.MammaTehuis_;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.service.mamma.MammaBaseTehuisService;
 import nl.rivm.screenit.service.mamma.enums.MammaTehuisSelectie;
@@ -71,14 +71,14 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_TEHUIS },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_TEHUIS },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaTehuisZoekenPage extends MammaPlanningBasePage
 {
 	private final Form<MammaTehuisFilter> zoekForm;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private MammaBaseStandplaatsService standplaatsService;
@@ -91,7 +91,7 @@ public class MammaTehuisZoekenPage extends MammaPlanningBasePage
 
 	private final boolean magSoAanpassen;
 
-	private static final String SCREENINGORGANISATIE_PROPERTY = "tehuis." + MammaTehuis_.STANDPLAATS + "." + MammaStandplaats_.REGIO + "." + Instelling_.NAAM;
+	private static final String SCREENINGORGANISATIE_PROPERTY = "tehuis." + MammaTehuis_.STANDPLAATS + "." + MammaStandplaats_.REGIO + "." + Organisatie_.NAAM;
 
 	private static final String TEHUIS_NAAM_PROPERTY = "tehuis." + MammaTehuis_.NAAM;
 
@@ -105,7 +105,7 @@ public class MammaTehuisZoekenPage extends MammaPlanningBasePage
 
 	public MammaTehuisZoekenPage()
 	{
-		magSoAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_TEHUIS, Actie.AANPASSEN) && !ingelogdNamensRegio;
+		magSoAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_TEHUIS, Actie.AANPASSEN) && !ingelogdNamensRegio;
 
 		ScreeningOrganisatie ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
 		IModel<MammaTehuisFilter> criteriaModel;
@@ -206,7 +206,7 @@ public class MammaTehuisZoekenPage extends MammaPlanningBasePage
 			}
 		};
 
-		toevoegen.setVisible(ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_TEHUIS, Actie.TOEVOEGEN));
+		toevoegen.setVisible(ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_TEHUIS, Actie.TOEVOEGEN));
 		add(toevoegen);
 		setDefaultModel(new CompoundPropertyModel<>(criteriaModel));
 		zoekForm = new Form<>("zoekForm", (IModel<MammaTehuisFilter>) getDefaultModel());
@@ -214,7 +214,7 @@ public class MammaTehuisZoekenPage extends MammaPlanningBasePage
 
 		zoekForm.add(new TextField<>("tehuis.naam"));
 		ScreenitDropdown<ScreeningOrganisatie> regioComponent = new ScreenitDropdown<>("regio",
-			ModelUtil.listRModel(instellingService.getActieveInstellingen(ScreeningOrganisatie.class), false), new ChoiceRenderer<ScreeningOrganisatie>("naam"));
+			ModelUtil.listRModel(organisatieService.getActieveOrganisaties(ScreeningOrganisatie.class), false), new ChoiceRenderer<ScreeningOrganisatie>("naam"));
 		regioComponent.setVisible(ingelogdNamensRegio == null);
 		regioComponent.setNullValid(true);
 		zoekForm.add(regioComponent);

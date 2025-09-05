@@ -42,7 +42,7 @@ public class CervixLabformulierenFilter implements Serializable
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private Long instellingId;
+	private Long organisatieId;
 
 	private OrganisatieType organisatieType;
 
@@ -70,11 +70,11 @@ public class CervixLabformulierenFilter implements Serializable
 
 	private Boolean digitaal;
 
-	public CervixLabformulierenFilter(Long instellingId, OrganisatieType organisatieType, LabprocesStap labprocesStap, String bsn,
+	public CervixLabformulierenFilter(Long organisatieId, OrganisatieType organisatieType, LabprocesStap labprocesStap, String bsn,
 		List<CervixLabformulierStatus> labformulierStatussen,
 		Date scanDatumVanaf, Date scanDatumTotEnMet, String monsterId, Date geboortedatum, Boolean digitaal)
 	{
-		this.instellingId = instellingId;
+		this.organisatieId = organisatieId;
 		this.organisatieType = organisatieType;
 		this.labprocesStap = labprocesStap;
 		this.monsterId = monsterId;

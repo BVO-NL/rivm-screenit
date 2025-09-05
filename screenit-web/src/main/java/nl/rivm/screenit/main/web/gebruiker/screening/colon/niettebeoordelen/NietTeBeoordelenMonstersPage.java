@@ -31,7 +31,7 @@ import nl.rivm.screenit.main.web.gebruiker.screening.colon.ColonScreeningBasePag
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.colon.IFOBTType;
@@ -42,8 +42,8 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.RedenNietTeBeoordelen;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.colon.ColonBaseFITService;
 import nl.topicuszorg.wicket.hibernate.CglibHibernateModel;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
@@ -66,7 +66,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.AANPASSEN,
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_SCREENING_NIETTEBEOORDELEN,
+	recht = Recht.MEDEWERKER_SCREENING_NIETTEBEOORDELEN,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class NietTeBeoordelenMonstersPage extends ColonScreeningBasePage
 {
@@ -78,7 +78,7 @@ public class NietTeBeoordelenMonstersPage extends ColonScreeningBasePage
 	private LogService logService;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private ColonBaseFITService fitService;
@@ -103,10 +103,10 @@ public class NietTeBeoordelenMonstersPage extends ColonScreeningBasePage
 					if (ifobtTest.getUitslag() == null && ifobtTest.getStatus().magWijzigenNaarStatus(IFOBTTestStatus.NIETTEBEOORDELEN, ifobtTest)
 						&& ifobtTest.getType() == IFOBTType.GOLD)
 					{
-						Instelling ingelogdVoorInstelling = ScreenitSession.get().getInstelling();
-						if (ingelogdVoorInstelling.getOrganisatieType().equals(OrganisatieType.LABORATORIUM))
+						Organisatie ingelogdVoorOrganisatie = ScreenitSession.get().getOrganisatie();
+						if (ingelogdVoorOrganisatie.getOrganisatieType().equals(OrganisatieType.LABORATORIUM))
 						{
-							ifobtTest.setIfobtLaboratorium((IFobtLaboratorium) ingelogdVoorInstelling);
+							ifobtTest.setIfobtLaboratorium((IFobtLaboratorium) ingelogdVoorOrganisatie);
 						}
 						ifobtTestModel.setObject(ifobtTest);
 						target.add(uitnodigingContainer);
@@ -161,19 +161,19 @@ public class NietTeBeoordelenMonstersPage extends ColonScreeningBasePage
 		statusForm.add(
 			new ScreenitDropdown<>("redenNietTeBeoordelen",
 				Arrays.stream(RedenNietTeBeoordelen.values())
-					.filter(value -> value != RedenNietTeBeoordelen.MANUELE_FOUT && value != RedenNietTeBeoordelen.TECHNISCHE_FOUT)
+					.filter(value -> value != RedenNietTeBeoordelen.MANUELE_FOUT && value != RedenNietTeBeoordelen.AFWIJKENDE_MONSTERHOEVEELHEID)
 					.toList(),
 				new EnumChoiceRenderer<>())
 				.setNullValid(true)
 				.setRequired(true));
 
-		Instelling ingelogdVoorInstelling = ScreenitSession.get().getInstelling();
+		Organisatie ingelogdVoorOrganisatie = ScreenitSession.get().getOrganisatie();
 		statusForm.add(new ScreenitDropdown<>( 
 			"ifobtLaboratorium", 
-			new SimpleListHibernateModel<>(instellingService.getActieveInstellingen(IFobtLaboratorium.class)), 
+			new SimpleListHibernateModel<>(organisatieService.getActieveOrganisaties(IFobtLaboratorium.class)), 
 			new ChoiceRenderer<>("naam", "id") 
 		) 
-			.setNullValid(false).setRequired(true).setEnabled(!ingelogdVoorInstelling.getOrganisatieType().equals(OrganisatieType.LABORATORIUM)));
+			.setNullValid(false).setRequired(true).setEnabled(!ingelogdVoorOrganisatie.getOrganisatieType().equals(OrganisatieType.LABORATORIUM)));
 
 		statusForm.add(new AjaxSubmitLink("opslaan")
 		{
@@ -207,7 +207,7 @@ public class NietTeBeoordelenMonstersPage extends ColonScreeningBasePage
 
 	private void logaction(LogGebeurtenis gebeurtenis, IFOBTTest ifobt)
 	{
-		Account account = ScreenitSession.get().getLoggedInAccount();
+		Account account = ScreenitSession.get().getIngelogdAccount();
 		Client client = ifobt.getColonScreeningRonde().getDossier().getClient();
 		logService.logGebeurtenis(gebeurtenis, account, client, Bevolkingsonderzoek.COLON);
 	}

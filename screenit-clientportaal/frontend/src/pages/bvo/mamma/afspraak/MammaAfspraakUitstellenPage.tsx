@@ -65,10 +65,10 @@ const MammaAfspraakUitstellenPage = () => {
 	})
 
 	const zoekStandplaatsPeriodes = useCallback((filter: UitstelZoekFilter) => {
-		return ScreenitBackend.post(`mamma/uitstel/zoeken`, filter)
+		return ScreenitBackend.post<KandidaatStandplaatsPeriode[]>(`mamma/uitstel/zoeken`, {json: filter}).json()
 			.then(response => {
-				setGeenResultaten(response.data.length === 0)
-				setZoekResultaten(response.data)
+				setGeenResultaten(response.length === 0)
+				setZoekResultaten(response)
 			})
 	}, [setZoekResultaten])
 

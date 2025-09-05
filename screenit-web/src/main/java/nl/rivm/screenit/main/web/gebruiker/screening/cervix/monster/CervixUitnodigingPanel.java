@@ -147,9 +147,9 @@ public abstract class CervixUitnodigingPanel<M extends CervixMonster> extends Ge
 
 		CervixUitnodiging uitnodiging = getModelObject().getUitnodiging();
 		Client client = uitnodiging.getScreeningRonde().getDossier().getClient();
-		BMHKLaboratorium ingelogdNamensLaboratorium = (BMHKLaboratorium) HibernateHelper.deproxy(ScreenitSession.get().getInstelling());
+		BMHKLaboratorium ingelogdNamensLaboratorium = (BMHKLaboratorium) HibernateHelper.deproxy(ScreenitSession.get().getOrganisatie());
 
-		logService.logGebeurtenis(LogGebeurtenis.CERVIX_UITNODIGING_INGEZIEN, ScreenitSession.get().getLoggedInAccount(), client, getString("titel") + " - " + getStatus(),
+		logService.logGebeurtenis(LogGebeurtenis.CERVIX_UITNODIGING_INGEZIEN, ScreenitSession.get().getIngelogdAccount(), client, getString("titel") + " - " + getStatus(),
 			Bevolkingsonderzoek.CERVIX);
 
 		ScreenitForm<M> form = new ScreenitForm<>("form");

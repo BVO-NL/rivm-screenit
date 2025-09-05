@@ -31,12 +31,11 @@ import nl.rivm.screenit.main.model.mamma.beoordeling.MammaBeWerklijstZoekObject;
 import nl.rivm.screenit.main.service.mamma.MammaBeoordelingService;
 import nl.rivm.screenit.main.service.mamma.MammaImsService;
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaClientPaspoortPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaScreeningBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.werklijst.MiniWerklijstPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -65,7 +64,8 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_BEOORDELING_WERKLIJST, Recht.GEBRUIKER_FOTOBESPREKING, Recht.GEBRUIKER_VISITATIE, Recht.GEBRUIKER_AD_HOC_MEEMKIJKVERZOEK_WERKLIJST },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_BEOORDELING_WERKLIJST, Recht.MEDEWERKER_FOTOBESPREKING, Recht.MEDEWERKER_VISITATIE,
+		Recht.MEDEWERKER_AD_HOC_MEEMKIJKVERZOEK_WERKLIJST },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 @Slf4j
 public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
@@ -118,9 +118,10 @@ public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
 		super.onConfigure();
 
 		var huidigeBeoordeling = getModelObject();
-		if (huidigeBeoordeling != null && !beoordelingReserveringService.gereserveerdVoorGebruiker(huidigeBeoordeling.getId(), getIngelogdeGebruiker(), getLezerSoort()))
+		if (huidigeBeoordeling != null && !beoordelingReserveringService.gereserveerdVoorMedewerker(huidigeBeoordeling.getId(), getIngelogdeOrganisatieMedewerker(),
+			getLezerSoort()))
 		{
-			LOG.info("beoordelingId: '{}' niet gereserveerd voor ingelogde gebruiker (waarschijnlijk terugknop browser gebruikt)", huidigeBeoordeling.getId());
+			LOG.info("beoordelingId: '{}' niet gereserveerd voor ingelogde medewerker (waarschijnlijk terugknop browser gebruikt)", huidigeBeoordeling.getId());
 			ScreenitSession.get().warn("Onderzoek kan niet meer geopend worden via terugknop");
 			throw new RestartResponseException(werklijstPageClass);
 		}
@@ -128,7 +129,8 @@ public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
 
 	protected void openInitieleBeoordeling(Long initieleBeoordelingId)
 	{
-		BeoordelingenReserveringResult reserveringResult = beoordelingService.openBeschikbareBeoordeling(initieleBeoordelingId, beoordelingenIds, getIngelogdeGebruiker(),
+		BeoordelingenReserveringResult reserveringResult = beoordelingService.openBeschikbareBeoordeling(initieleBeoordelingId, beoordelingenIds,
+			getIngelogdeOrganisatieMedewerker(),
 			getLezerSoort());
 
 		if (reserveringResult.getInfoMessage() != null)
@@ -160,7 +162,7 @@ public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
 
 	protected void logBeoordelingIngezien()
 	{
-		beoordelingService.logBeoordelingIngezien(beoordelingModel.getObject(), getIngelogdeGebruiker(), false);
+		beoordelingService.logBeoordelingIngezien(beoordelingModel.getObject(), getIngelogdeOrganisatieMedewerker(), false);
 	}
 
 	@Override
@@ -267,19 +269,15 @@ public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveContextMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveContextMenuClass()
 	{
 		return werklijstPageClass;
 	}
 
-	protected InstellingGebruiker getIngelogdeGebruiker()
-	{
-		return ScreenitSession.get().getLoggedInInstellingGebruiker();
-	}
-
 	public void gaNaarBeoordeling(Long beoordelingId, AjaxRequestTarget target)
 	{
-		BeoordelingenReserveringResult reserveringResult = beoordelingService.openBeschikbareBeoordeling(beoordelingId, beoordelingenIds, getIngelogdeGebruiker(), getLezerSoort());
+		BeoordelingenReserveringResult reserveringResult = beoordelingService.openBeschikbareBeoordeling(beoordelingId, beoordelingenIds, getIngelogdeOrganisatieMedewerker(),
+			getLezerSoort());
 
 		if (reserveringResult.getInfoMessage() != null)
 		{
@@ -339,7 +337,7 @@ public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
 
 	protected String createImsDesktopSyncCommand()
 	{
-		String imsDesktopSyncMessage = imsService.createDesktopSyncMessage(getIngelogdeGebruiker().getMedewerker(), ScreenitSession.get().getMammaHuidigeIDS7Role(),
+		String imsDesktopSyncMessage = imsService.createDesktopSyncMessage(getIngelogdeOrganisatieMedewerker().getMedewerker(), ScreenitSession.get().getMammaHuidigeIDS7Role(),
 			huidigeOnderzoekId(), getVolgendeGereserveerdeBeoordelingenIds(), getMammobridgeFocusMode());
 		return createUserSessionToImsBridgeSendCommand(MammaImsUserSessionType.ClientDesktopSync, imsDesktopSyncMessage, huidigeOnderzoekId());
 	}
@@ -356,7 +354,7 @@ public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
 
 	private String createImsOpenWebsocketCommand()
 	{
-		String gebruikersnaam = getIngelogdeGebruiker().getMedewerker().getGebruikersnaam();
+		String gebruikersnaam = getIngelogdeOrganisatieMedewerker().getMedewerker().getGebruikersnaam();
 		return "openWebsocketToImsBridge('" + gebruikersnaam + "');";
 	}
 
@@ -368,7 +366,8 @@ public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
 
 	private String createImsEmptyDesktopSyncCommand()
 	{
-		String imsDesktopSyncMessage = imsService.createEmptyDesktopSyncMessage(getIngelogdeGebruiker().getMedewerker(), ScreenitSession.get().getMammaHuidigeIDS7Role());
+		String imsDesktopSyncMessage = imsService.createEmptyDesktopSyncMessage(getIngelogdeOrganisatieMedewerker().getMedewerker(),
+			ScreenitSession.get().getMammaHuidigeIDS7Role());
 		return String.format("console.log('IMS: unload event'); if(!window.imsLogOffSent) {%s};",
 			createUserSessionToImsBridgeSendCommand(MammaImsUserSessionType.EmptyDesktopSync, imsDesktopSyncMessage));
 	}
@@ -380,7 +379,7 @@ public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
 
 	protected String createImsAllImagesSeenCommand()
 	{
-		String allImagesSeenObject = imsService.createAllImagesSeenMessage(getIngelogdeGebruiker().getMedewerker(), ScreenitSession.get().getMammaHuidigeIDS7Role(),
+		String allImagesSeenObject = imsService.createAllImagesSeenMessage(getIngelogdeOrganisatieMedewerker().getMedewerker(), ScreenitSession.get().getMammaHuidigeIDS7Role(),
 			getOnderzoek(), getMammobridgeFocusMode());
 		return "allImagesSeenRequestBody = " + allImagesSeenObject + ";";
 	}

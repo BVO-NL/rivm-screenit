@@ -29,6 +29,6 @@ import nl.rivm.screenit.model.colon.IFOBTBestand;
 public interface QbaseService
 {
 
-	String maakQbaseBestand(List<IFOBTBestand> bestanden, Account ingelogdeAccount);
+	String maakQbaseBestand(List<IFOBTBestand> bestanden, Account ingelogdAccount);
 
 }

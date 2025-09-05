@@ -21,7 +21,7 @@ package nl.rivm.screenit.main.web.gebruiker.mamma.dense2;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.base.angular.AngularBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
@@ -44,9 +44,9 @@ public class Dense2UitwisselingPage extends AngularBasePage
 	}
 
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.MAMMA;
+		return MedewerkerHoofdMenuItem.MAMMA;
 	}
 
 }

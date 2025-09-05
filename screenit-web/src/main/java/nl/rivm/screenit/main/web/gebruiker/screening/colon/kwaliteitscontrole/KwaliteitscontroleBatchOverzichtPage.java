@@ -45,9 +45,9 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.colon.IFOBTBestand;
 import nl.rivm.screenit.model.colon.IFOBTBestand_;
 import nl.rivm.screenit.model.colon.IFOBTUitslag;
@@ -58,7 +58,7 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.input.radiochoice.BooleanRadioChoice;
@@ -101,8 +101,8 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_BEOORDELING_IFOBT,
-		Recht.GEBRUIKER_SCREENING_AUTORISATIE_IFOBT, Recht.GEBRUIKER_SCREENING_VERWIJDEREN_BATCHES_IFOBT },
+	recht = { Recht.MEDEWERKER_SCREENING_BEOORDELING_IFOBT,
+		Recht.MEDEWERKER_SCREENING_AUTORISATIE_IFOBT, Recht.MEDEWERKER_SCREENING_VERWIJDEREN_BATCHES_IFOBT },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON },
 	organisatieTypeScopes = { OrganisatieType.LABORATORIUM, OrganisatieType.KWALITEITSPLATFORM, OrganisatieType.RIVM })
 public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabBasePage
@@ -110,7 +110,7 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 	private final ScreenitDataTable<IFOBTBestand, String> table;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private ColonFITBestandService fitBestandService;
@@ -223,11 +223,11 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 
 		});
 
-		Instelling instelling = ScreenitSession.get().getInstelling();
-		final boolean isLabMedewerker = instelling.getOrganisatieType().equals(OrganisatieType.LABORATORIUM);
+		Organisatie organisatie = ScreenitSession.get().getOrganisatie();
+		final boolean isLabMedewerker = organisatie.getOrganisatieType().equals(OrganisatieType.LABORATORIUM);
 		if (isLabMedewerker)
 		{
-			filter.setLab((IFobtLaboratorium) instelling);
+			filter.setLab((IFobtLaboratorium) organisatie);
 		}
 
 		BootstrapDialog dialog = new BootstrapDialog("dialog");
@@ -249,7 +249,8 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 
 	protected void maakLabDropDown(Form<IFobtBatchFilter> form, final boolean isLabMedewerker, final WebMarkupContainer beoordelenContainer)
 	{
-		Component labDropDown = new ScreenitDropdown<>("lab", ModelUtil.listRModel(instellingService.getActieveInstellingen(IFobtLaboratorium.class)), new ChoiceRenderer<>("naam"))
+		Component labDropDown = new ScreenitDropdown<>("lab", ModelUtil.listRModel(organisatieService.getActieveOrganisaties(IFobtLaboratorium.class)),
+			new ChoiceRenderer<>("naam"))
 			.setNullValid(true).setVisible(!isLabMedewerker);
 		labDropDown.add(new AjaxFormComponentUpdatingBehavior("change")
 		{
@@ -289,7 +290,7 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 							{
 								lijst.add(iterator.next());
 							}
-							try (InputStream writer = IOUtils.toInputStream(qbaseService.maakQbaseBestand(lijst, ScreenitSession.get().getLoggedInAccount()));
+							try (InputStream writer = IOUtils.toInputStream(qbaseService.maakQbaseBestand(lijst, ScreenitSession.get().getIngelogdAccount()));
 								OutputStream outputStream = attributes.getResponse().getOutputStream())
 							{
 								IOUtils.copy(writer, outputStream);
@@ -309,7 +310,7 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 			protected void onConfigure()
 			{
 				super.onConfigure();
-				setVisible(zoekModel.getObject().getLab() != null && ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_BEOORDELING_IFOBT, Actie.INZIEN));
+				setVisible(zoekModel.getObject().getLab() != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_BEOORDELING_IFOBT, Actie.INZIEN));
 			}
 
 		};
@@ -329,14 +330,14 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				List<IFOBTBestand> list = checkBoxListContainer.getObject().getList();
-				fitBestandService.verwijderBestanden(list, ScreenitSession.get().getLoggedInAccount());
+				fitBestandService.verwijderBestanden(list, ScreenitSession.get().getIngelogdAccount());
 				success("Bestanden zijn verwijderd.");
 				target.add(table);
 			}
 
 		};
 		buttonForm.add(verwijderen);
-		verwijderen.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_VERWIJDEREN_BATCHES_IFOBT, Actie.INZIEN));
+		verwijderen.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_VERWIJDEREN_BATCHES_IFOBT, Actie.INZIEN));
 		verwijderen.setOutputMarkupId(true);
 	}
 
@@ -348,14 +349,14 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 			public void onClick(AjaxRequestTarget target)
 			{
 				List<IFOBTBestand> list = IteratorUtils.toList(fitBestandenDataProvider.iterator(-1L, -1L));
-				fitBestandService.autoriseerBestanden(list, ScreenitSession.get().getLoggedInAccount());
+				fitBestandService.autoriseerBestanden(list, ScreenitSession.get().getIngelogdAccount());
 				success("Bestanden zijn geautoriseerd.");
 				target.add(table);
 			}
 
 		};
 		buttonForm.add(autoriseer);
-		autoriseer.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_AUTORISATIE_IFOBT, Actie.INZIEN));
+		autoriseer.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_AUTORISATIE_IFOBT, Actie.INZIEN));
 		autoriseer.setOutputMarkupId(true);
 	}
 
@@ -363,7 +364,7 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 	{
 		List<IColumn<IFOBTBestand, String>> columns = new ArrayList<>();
 		ScreenitSession screenitSession = ScreenitSession.get();
-		if (screenitSession.checkPermission(Recht.GEBRUIKER_SCREENING_VERWIJDEREN_BATCHES_IFOBT, Actie.INZIEN))
+		if (screenitSession.checkPermission(Recht.MEDEWERKER_SCREENING_VERWIJDEREN_BATCHES_IFOBT, Actie.INZIEN))
 		{
 			columns.add(new HibernateObjectCheckBoxUpdatingColumn<>(Model.of(""), "", checkBoxListContainer.getObject(), true, false)
 			{
@@ -477,7 +478,7 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 		});
 		columns.add(
 			new ClickablePropertyColumn<IFOBTBestand, String>(Model.of("Aantal controle uitslagen"), IFOBTBestand_.AANTAL_CONTROLE_UITSLAGEN).setCssClass("table-col-aantal"));
-		columns.add(new ClickablePropertyColumn<>(Model.of("Lab"), propertyChain(IFOBTBestand_.LABORATORIUM, Instelling_.NAAM),
+		columns.add(new ClickablePropertyColumn<>(Model.of("Lab"), propertyChain(IFOBTBestand_.LABORATORIUM, Organisatie_.NAAM),
 			propertyChain(IFOBTBestand_.LABORATORIUM, IFobtLaboratorium_.NAAM)));
 		columns.add(new ClickablePropertyColumn<>(Model.of("Bestand"), IFOBTBestand_.NAAM_BESTAND, IFOBTBestand_.NAAM_BESTAND));
 		columns.add(new ClickablePropertyColumn<>(Model.of("Geautoriseerd"), IFOBTBestand_.STATUS, IFOBTBestand_.STATUS)

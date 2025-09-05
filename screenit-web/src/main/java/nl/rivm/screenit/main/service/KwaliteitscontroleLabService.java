@@ -21,7 +21,7 @@ package nl.rivm.screenit.main.service;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.colon.SKMLExterneControleBarcode;
 import nl.rivm.screenit.model.colon.SKMLInterneControleBarcode;
 import nl.rivm.screenit.model.colon.SKMLInterneControleSet;
@@ -30,7 +30,7 @@ import nl.rivm.screenit.model.colon.SKMLSentineelControleBarcode;
 public interface KwaliteitscontroleLabService
 {
 
-	SKMLInterneControleSet laagOfHoogSample(Instelling instelling);
+	SKMLInterneControleSet laagOfHoogSample(Organisatie organisatie);
 
 	SKMLInterneControleBarcode getInterneControleBarcode(String barcode);
 

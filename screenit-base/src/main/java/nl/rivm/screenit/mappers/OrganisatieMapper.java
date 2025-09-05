@@ -23,12 +23,12 @@ package nl.rivm.screenit.mappers;
 
 import nl.rivm.screenit.dto.OrganisatieDto;
 import nl.rivm.screenit.mappers.config.ScreenitMapperConfig;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 
 import org.mapstruct.Mapper;
 
 @Mapper(config = ScreenitMapperConfig.class)
 public interface OrganisatieMapper
 {
-	OrganisatieDto organisatieToDto(Instelling instelling);
+	OrganisatieDto organisatieToDto(Organisatie organisatie);
 }

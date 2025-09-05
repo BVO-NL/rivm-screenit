@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
 import nl.rivm.screenit.util.NaamUtil;
@@ -58,30 +58,30 @@ public class MammaPlanningTabExtensiePanel extends Panel
 		if (screeningOrganisatie != null)
 		{
 			List<Long> conceptGewijzigdDoor = new ArrayList<>(Arrays.asList(conceptPlanningsApplicatie.getConceptGewijzigdDoor(screeningOrganisatie)));
-			if (conceptGewijzigdDoor.remove(ScreenitSession.get().getLoggedInInstellingGebruiker().getId()))
+			if (conceptGewijzigdDoor.remove(ScreenitSession.get().getIngelogdeOrganisatieMedewerker().getId()))
 			{
-				conceptGewijzigdDoor.add(ScreenitSession.get().getLoggedInInstellingGebruiker().getId());
+				conceptGewijzigdDoor.add(ScreenitSession.get().getIngelogdeOrganisatieMedewerker().getId());
 			}
-			List<InstellingGebruiker> conceptGewijzigdDoorInstellingGebruikers = new ArrayList<>();
+			List<OrganisatieMedewerker> conceptGewijzigdDoorOrganisatieMedewerkers = new ArrayList<>();
 			for (Long conceptGewijzigdDoorId : conceptGewijzigdDoor)
 			{
-				conceptGewijzigdDoorInstellingGebruikers.add(hibernateService.load(InstellingGebruiker.class, conceptGewijzigdDoorId));
+				conceptGewijzigdDoorOrganisatieMedewerkers.add(hibernateService.load(OrganisatieMedewerker.class, conceptGewijzigdDoorId));
 			}
-			if (!conceptGewijzigdDoorInstellingGebruikers.isEmpty())
+			if (!conceptGewijzigdDoorOrganisatieMedewerkers.isEmpty())
 			{
-				InstellingGebruiker eersteInstellingGebruiker = conceptGewijzigdDoorInstellingGebruikers.get(0);
-				String naamGebruiker = NaamUtil.getNaamGebruiker(eersteInstellingGebruiker.getMedewerker());
-				if (conceptGewijzigdDoorInstellingGebruikers.size() > 1)
+				OrganisatieMedewerker eersteOrganisatieMedewerker = conceptGewijzigdDoorOrganisatieMedewerkers.get(0);
+				String naamMedewerker = NaamUtil.getNaamMedewerker(eersteOrganisatieMedewerker.getMedewerker());
+				if (conceptGewijzigdDoorOrganisatieMedewerkers.size() > 1)
 				{
-					naamGebruiker += " ...";
+					naamMedewerker += " ...";
 				}
-				Label label = new Label("gewijzigdDoor", naamGebruiker);
+				Label label = new Label("gewijzigdDoor", naamMedewerker);
 				add(label);
-				conceptGewijzigdDoorInstellingGebruikers.remove(eersteInstellingGebruiker);
-				if (!conceptGewijzigdDoorInstellingGebruikers.isEmpty())
+				conceptGewijzigdDoorOrganisatieMedewerkers.remove(eersteOrganisatieMedewerker);
+				if (!conceptGewijzigdDoorOrganisatieMedewerkers.isEmpty())
 				{
-					label.add(new AttributeAppender("title", "... " + conceptGewijzigdDoorInstellingGebruikers.stream()
-						.map(ig -> NaamUtil.getNaamGebruiker(ig.getMedewerker())).collect(Collectors.joining(", "))));
+					label.add(new AttributeAppender("title", "... " + conceptGewijzigdDoorOrganisatieMedewerkers.stream()
+						.map(om -> NaamUtil.getNaamMedewerker(om.getMedewerker())).collect(Collectors.joining(", "))));
 				}
 				return;
 			}

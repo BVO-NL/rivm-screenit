@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.PostcodeGebied;
 import nl.rivm.screenit.model.colon.CapaciteitsPercWijziging;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
@@ -44,14 +44,15 @@ public interface ColonUitnodigingsgebiedService
 	BigDecimal getFitFactorVoorGebied(UitnodigingsGebied uitnodigingsGebied);
 
 	void wijzigingenDoorvoeren(UitnodigingsGebied uitnodiginsgebied, Map<String, Integer> newAdherentiePercentages,
-		List<ColoscopieCentrumColonCapaciteitVerdeling> verwijderdeItems, List<CapaciteitsPercWijziging> capaciteitsPercWijzigingen, InstellingGebruiker ingelogdeGebruiker);
+		List<ColoscopieCentrumColonCapaciteitVerdeling> verwijderdeItems, List<CapaciteitsPercWijziging> capaciteitsPercWijzigingen,
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	List<UitnodigingsGebied> getAllUitnodigingsgebieden();
 
 	String valideerAdherentieVanGewijzigdeGebieden(Set<UitnodigingsGebied> gewijzigdeGebieden);
 
 	void wijzigingenDoorvoeren(ColonIntakelocatie intakelocatie, List<ColoscopieCentrumColonCapaciteitVerdeling> verwijderdeItems,
-		List<CapaciteitsPercWijziging> capaciteitsPercWijzigingen, InstellingGebruiker loggedInInstellingGebruiker);
+		List<CapaciteitsPercWijziging> capaciteitsPercWijzigingen, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	List<CapaciteitsPercWijziging> bepaalCapaciteitsWijzigingen(ColonIntakelocatie intakelocatie, Map<String, Integer> newAdherentiePercentages,
 		List<ColoscopieCentrumColonCapaciteitVerdeling> verwijderdeItems);

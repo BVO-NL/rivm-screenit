@@ -73,7 +73,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_CERVIX_CYTOLOGIE_VERSLAG,
+	recht = Recht.MEDEWERKER_CERVIX_CYTOLOGIE_VERSLAG,
 	bevolkingsonderzoekScopes = Bevolkingsonderzoek.CERVIX)
 public class CervixCytologieVerslagInzienPanel extends AbstractGebeurtenisDetailPanel implements IDetachable
 {
@@ -211,7 +211,7 @@ public class CervixCytologieVerslagInzienPanel extends AbstractGebeurtenisDetail
 					LOG.error("Fout bij uploaden van een bezwaar formulier: ", e);
 					error(getString("error.onbekend"));
 				}
-				cervixUitnodigingService.verwijderResultatenMonster(uitnodiging.getMonster(), uploadDocument, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				cervixUitnodigingService.verwijderResultatenMonster(uitnodiging.getMonster(), uploadDocument, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				ScreenitSession.get().info(CervixCytologieVerslagInzienPanel.this.getString("uitslagen.verwijderd"));
 				setResponsePage(new ClientDossierPage(ModelUtil.sModel(uitnodiging.getScreeningRonde().getDossier().getClient())));
 			}
@@ -227,7 +227,7 @@ public class CervixCytologieVerslagInzienPanel extends AbstractGebeurtenisDetail
 	{
 		CervixMonster monster = getVerslag().getUitstrijkje();
 		CervixScreeningRonde ontvangstRonde = monster.getOntvangstScreeningRonde();
-		return ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_VERWIJDEREN_RESULTATEN_MONSTER, Actie.VERWIJDEREN, getClientVanVerslag())
+		return ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_VERWIJDEREN_RESULTATEN_MONSTER, Actie.VERWIJDEREN, getClientVanVerslag())
 			&& monster.equals(cervixUitnodigingService.getUitnodigingMagVerwijderdWorden(ontvangstRonde));
 	}
 
@@ -245,12 +245,12 @@ public class CervixCytologieVerslagInzienPanel extends AbstractGebeurtenisDetail
 			public void onClick(AjaxRequestTarget target)
 			{
 				uploadField.setVisible(true);
-				formUploadBtn.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_VERWIJDEREN_RESULTATEN_MONSTER, Actie.VERWIJDEREN, getClientVanVerslag())
+				formUploadBtn.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_VERWIJDEREN_RESULTATEN_MONSTER, Actie.VERWIJDEREN, getClientVanVerslag())
 					&& getVerslag().getUitstrijkje().getVerwijderdBrief() != null);
 				target.add(uploadForm);
 			}
 		};
-		btn.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_VERWIJDEREN_RESULTATEN_MONSTER, Actie.VERWIJDEREN, getClientVanVerslag())
+		btn.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_VERWIJDEREN_RESULTATEN_MONSTER, Actie.VERWIJDEREN, getClientVanVerslag())
 			&& getVerslag().getUitstrijkje().getVerwijderdBrief() != null);
 		parent.add(btn);
 	}

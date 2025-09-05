@@ -44,4 +44,9 @@ public class InpakbareUitnodigingSpecification
 	{
 		return (r, q, cb) -> cb.isNull(r.get(InpakbareUitnodiging_.verstuurdDatum));
 	}
+
+	public static <T extends InpakbareUitnodiging<?>> Specification<T> heeftUitnodigingId(Long uitnodigingId)
+	{
+		return (r, q, cb) -> cb.equal(r.get(InpakbareUitnodiging_.uitnodigingsId), uitnodigingId);
+	}
 }

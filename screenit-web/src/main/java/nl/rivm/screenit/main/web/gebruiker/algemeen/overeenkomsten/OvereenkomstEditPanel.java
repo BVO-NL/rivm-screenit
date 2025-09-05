@@ -112,7 +112,7 @@ public abstract class OvereenkomstEditPanel extends Panel
 					try
 					{
 						overeenkomstService.saveOrUpdateOvereenkomst(overeenkomst, ScreenitSession.get().fileUploadToUploadDocument(fileUpload),
-							ScreenitSession.get().getLoggedInAccount());
+							ScreenitSession.get().getIngelogdAccount());
 						info(getString("message.succes"));
 					}
 					catch (Exception e)

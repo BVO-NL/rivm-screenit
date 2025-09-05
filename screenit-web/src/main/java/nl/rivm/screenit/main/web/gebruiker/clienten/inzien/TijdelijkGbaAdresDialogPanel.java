@@ -37,7 +37,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
@@ -76,10 +75,10 @@ public abstract class TijdelijkGbaAdresDialogPanel extends GenericPanel<Client>
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				clientService.verwijderTijdelijkGbaAdres(TijdelijkGbaAdresDialogPanel.this.getModelObject(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+				clientService.verwijderTijdelijkGbaAdres(TijdelijkGbaAdresDialogPanel.this.getModelObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				close(target);
 			}
-		}.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_GBA_TIJDELIJK_ADRES, Actie.VERWIJDEREN)));
+		}.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_GBA_TIJDELIJK_ADRES, Actie.VERWIJDEREN)));
 
 		add(new AjaxSubmitLink("opslaan", form)
 		{
@@ -89,7 +88,7 @@ public abstract class TijdelijkGbaAdresDialogPanel extends GenericPanel<Client>
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				clientService.saveOrUpdateTijdelijkGbaAdres(TijdelijkGbaAdresDialogPanel.this.getModelObject(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+				clientService.saveOrUpdateTijdelijkGbaAdres(TijdelijkGbaAdresDialogPanel.this.getModelObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				close(target);
 			}
 		});

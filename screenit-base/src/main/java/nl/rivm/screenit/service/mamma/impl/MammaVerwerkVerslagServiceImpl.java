@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Objects;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
@@ -197,7 +197,7 @@ public class MammaVerwerkVerslagServiceImpl implements MammaVerwerkVerslagServic
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public void valideerVerslagVoorAfronden(MammaFollowUpVerslag verslag, InstellingGebruiker instellingGebruiker)
+	public void valideerVerslagVoorAfronden(MammaFollowUpVerslag verslag, OrganisatieMedewerker organisatieMedewerker)
 	{
 		for (MammaFollowUpFollowupPa followupPa : verslag.getVerslagContent().getFollowupPa())
 		{

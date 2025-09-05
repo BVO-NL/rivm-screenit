@@ -45,7 +45,7 @@ public class CervixLabformulierHuisartsOnbekendPanel extends CervixLabformulierB
 	@Override
 	protected Recht getRecht()
 	{
-		return Recht.GEBRUIKER_CERVIX_LABFORMULIEREN_HUISARTS_ONBEKEND;
+		return Recht.MEDEWERKER_CERVIX_LABFORMULIEREN_HUISARTS_ONBEKEND;
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class CervixLabformulierHuisartsOnbekendPanel extends CervixLabformulierB
 	protected boolean magHuisartsWijzigen()
 	{
 		return !getModelObject()
-				.getDigitaal();
+			.getDigitaal();
 	}
 
 	@Override

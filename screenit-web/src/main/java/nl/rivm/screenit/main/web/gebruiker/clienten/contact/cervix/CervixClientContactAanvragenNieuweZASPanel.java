@@ -149,7 +149,7 @@ public class CervixClientContactAanvragenNieuweZASPanel extends AbstractClientCo
 		var redenChoice = ComponentHelper.addRadioChoice(this, "reden", new PropertyModel<>(this, "reden"), CervixRedenUitnodiging.class);
 
 		boolean magRedenUitnodigingKiezen = uitnodigingService.magRedenUitnodigingKiezen(laatsteScreeningRonde) &&
-			ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CERVIX_CLIENT_ZAS_AANVRAGEN_NA_OUDE_ZAS, Actie.TOEVOEGEN);
+			ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CERVIX_CLIENT_ZAS_AANVRAGEN_NA_OUDE_ZAS, Actie.TOEVOEGEN);
 		if (magRedenUitnodigingKiezen)
 		{
 			reden = CervixRedenUitnodiging.NIEUWE_ZAS_NA_OUDE_INGESTUURDE_ZAS;

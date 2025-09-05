@@ -24,14 +24,14 @@ package nl.rivm.screenit.service;
 import java.util.List;
 
 import nl.rivm.screenit.model.Functie;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.Titel;
 
 public interface StamtabellenService
 {
 
-	List<Titel> getTitels(Gebruiker medewerker);
+	List<Titel> getTitels(Medewerker medewerker);
 
-	List<Functie> getFuncties(Gebruiker medewerker);
+	List<Functie> getFuncties(Medewerker medewerker);
 
 }

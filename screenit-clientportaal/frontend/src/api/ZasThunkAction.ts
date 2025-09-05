@@ -23,25 +23,26 @@ import ScreenitBackend from "../utils/Backend"
 import {createShowToastAction} from "../actions/ToastAction"
 import {getString} from "../utils/TekstPropertyUtil"
 import properties from "../pages/bvo/cervix/ZasAanvragenPage.json"
-import {AxiosResponse} from "axios"
 import {ToastMessageType} from "../datatypes/toast/ToastMessage"
 import HttpStatusCode from "../datatypes/HttpStatus"
 import {ResetZasStatusAction, setHuidigeZasStatusAction} from "../actions/CervixDossierAction"
 import {formatDateText} from "../utils/DateUtil"
 import {showToast} from "../utils/ToastUtil"
+import {ZasStatus} from "../datatypes/cervix/ZasStatus"
+import {KyResponse} from "ky"
 
 export const getHuidigeZasStatus = () => async (dispatch: Dispatch<ResetZasStatusAction>) => {
-	return ScreenitBackend.get("/cervix/zas/status")
-		.then(response => dispatch(setHuidigeZasStatusAction(response.data)))
+	return ScreenitBackend.get<ZasStatus>("cervix/zas/status").json()
+		.then(response => dispatch(setHuidigeZasStatusAction(response)))
 }
 
 export const saveZasAanvraag = () => (dispatch: Dispatch) => {
 	const verzendenUitstellen = false
-	return ScreenitBackend.post(`/cervix/zas/aanvragen/${verzendenUitstellen}`)
+	return ScreenitBackend.post(`cervix/zas/aanvragen/${verzendenUitstellen}`)
 		.then(() => {
 			showToast(getString(properties.toast.title), getString(properties.toast.description.regulier))
 		})
-		.catch((error: AxiosResponse) => {
+		.catch((error: KyResponse) => {
 			if (error.status === HttpStatusCode.CONFLICT) {
 				dispatch(createShowToastAction({description: getString(properties.error.zas_request), type: ToastMessageType.ERROR, alGetoond: false}))
 			}
@@ -49,13 +50,13 @@ export const saveZasAanvraag = () => (dispatch: Dispatch) => {
 }
 
 export const saveZasAanvraagMetUitstel = (verzendenUitstellen: boolean, uitstellenTotDatum: Date | null) => (dispatch: Dispatch) => {
-	return ScreenitBackend.post(`/cervix/zas/aanvragen/${verzendenUitstellen}`)
+	return ScreenitBackend.post(`cervix/zas/aanvragen/${verzendenUitstellen}`)
 		.then(() => {
 			showToast(getString(properties.toast.title),
 				verzendenUitstellen ? getString(properties.toast.description.uitstel, [formatDateText(uitstellenTotDatum)]) :
 					getString(properties.toast.description.regulier))
 		})
-		.catch((error: AxiosResponse) => {
+		.catch((error: KyResponse) => {
 			if (error.status === HttpStatusCode.CONFLICT) {
 				dispatch(createShowToastAction({description: getString(properties.error.zas_request), type: ToastMessageType.ERROR, alGetoond: false}))
 			}

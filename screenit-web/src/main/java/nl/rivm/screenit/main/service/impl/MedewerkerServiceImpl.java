@@ -33,16 +33,16 @@ import jakarta.persistence.criteria.From;
 
 import lombok.AllArgsConstructor;
 
-import nl.rivm.screenit.dto.InstellingGebruikerRolDto;
+import nl.rivm.screenit.dto.OrganisatieMedewerkerRolDto;
 import nl.rivm.screenit.main.dao.MedewerkerDao;
 import nl.rivm.screenit.main.service.MedewerkerService;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Gebruiker_;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruikerRol;
-import nl.rivm.screenit.model.InstellingGebruikerRol_;
-import nl.rivm.screenit.model.InstellingGebruiker_;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Medewerker_;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol_;
+import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.model.Permissie;
 import nl.rivm.screenit.model.Rol;
 import nl.rivm.screenit.model.Rol_;
@@ -51,9 +51,9 @@ import nl.rivm.screenit.model.enums.InlogMethode;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.repository.FluentJpaQuery;
-import nl.rivm.screenit.repository.algemeen.GebruikerRepository;
-import nl.rivm.screenit.repository.algemeen.InstellingGebruikerRepository;
-import nl.rivm.screenit.repository.algemeen.InstellingGebruikerRolRepository;
+import nl.rivm.screenit.repository.algemeen.MedewerkerRepository;
+import nl.rivm.screenit.repository.algemeen.OrganisatieMedewerkerRepository;
+import nl.rivm.screenit.repository.algemeen.OrganisatieMedewerkerRolRepository;
 import nl.rivm.screenit.service.AuthenticatieService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
@@ -87,29 +87,29 @@ public class MedewerkerServiceImpl implements MedewerkerService
 
 	private final UploadDocumentService uploadDocumentService;
 
-	private final InstellingGebruikerRepository organisatieMedewerkerRepository;
+	private final OrganisatieMedewerkerRepository organisatieMedewerkerRepository;
 
-	private final InstellingGebruikerRolRepository organisatieMedewerkerRolRepository;
+	private final OrganisatieMedewerkerRolRepository organisatieMedewerkerRolRepository;
 
-	private final GebruikerRepository medewerkerRepository;
+	private final MedewerkerRepository medewerkerRepository;
 
 	private final LogService logService;
 
 	@Override
-	public List<InstellingGebruiker> zoekOrganisatieMedewerker(InstellingGebruiker zoekInstellingGebruiker, long first, long count, Sort sort)
+	public List<OrganisatieMedewerker> zoekOrganisatieMedewerkers(OrganisatieMedewerker zoekOrganisatieMedewerker, long first, long count, Sort sort)
 	{
-		var spec = getSpecificationVoorOrganisatieMedewerker(zoekInstellingGebruiker);
-		return organisatieMedewerkerRepository.findWith(spec, InstellingGebruiker.class, q -> q.sortBy(sort))
+		var spec = getSpecificationVoorOrganisatieMedewerker(zoekOrganisatieMedewerker);
+		return organisatieMedewerkerRepository.findWith(spec, OrganisatieMedewerker.class, q -> q.sortBy(sort))
 			.fetch(g ->
 			{
-				g.addSubgraph(InstellingGebruiker_.medewerker);
-				g.addSubgraph(InstellingGebruiker_.organisatie);
+				g.addSubgraph(OrganisatieMedewerker_.medewerker);
+				g.addSubgraph(OrganisatieMedewerker_.organisatie);
 			})
 			.all(first, count); 
 	}
 
 	@Override
-	public List<InstellingGebruiker> getActieveRadiologen(InstellingGebruiker zoekOrganisatieMedewerker, List<Long> exclIds, Sort sort)
+	public List<OrganisatieMedewerker> getActieveRadiologen(OrganisatieMedewerker zoekOrganisatieMedewerker, List<Long> exclIds, Sort sort)
 	{
 		var spec = getSpecificationVoorOrganisatieMedewerker(zoekOrganisatieMedewerker);
 
@@ -119,23 +119,23 @@ public class MedewerkerServiceImpl implements MedewerkerService
 		}
 
 		spec = spec
-			.and(heeftHandtekening().with(InstellingGebruiker_.medewerker))
-			.and(heeftRecht(Recht.GEBRUIKER_SCREENING_MAMMA_BEOORDELING_WERKLIJST).with(permissieJoin()));
+			.and(heeftHandtekening().with(OrganisatieMedewerker_.medewerker))
+			.and(heeftRecht(Recht.MEDEWERKER_SCREENING_MAMMA_BEOORDELING_WERKLIJST).with(permissieJoin()));
 
-		return organisatieMedewerkerRepository.findWith(spec, InstellingGebruiker.class, q -> q.sortBy(sort))
-			.fetch(g -> g.addSubgraph(InstellingGebruiker_.MEDEWERKER))
+		return organisatieMedewerkerRepository.findWith(spec, OrganisatieMedewerker.class, q -> q.sortBy(sort))
+			.fetch(g -> g.addSubgraph(OrganisatieMedewerker_.MEDEWERKER))
 			.all();  
 	}
 
 	@Override
-	public long countInstellingGebruiker(InstellingGebruiker zoekOrganisatieMedewerker)
+	public long countOrganisatieMedewerkers(OrganisatieMedewerker zoekOrganisatieMedewerker)
 	{
 		var spec = getSpecificationVoorOrganisatieMedewerker(zoekOrganisatieMedewerker);
 		return organisatieMedewerkerRepository.countDistinct(spec);
 	}
 
 	@Override
-	public void addOrganisatieMedewerker(Instelling organisatie, Gebruiker medewerker)
+	public void addOrganisatieMedewerker(Organisatie organisatie, Medewerker medewerker)
 	{
 
 		var organisatieMedewerker = getOrganisatieMedewerker(organisatie, medewerker);
@@ -146,47 +146,49 @@ public class MedewerkerServiceImpl implements MedewerkerService
 			if (Boolean.FALSE.equals(organisatieMedewerker.getActief()))
 			{
 				organisatieMedewerker.setActief(Boolean.TRUE);
-				medewerkerDao.saveOrUpdateInstellingGebruiker(organisatieMedewerker);
+				medewerkerDao.saveOrUpdateOrganisatieMedewerker(organisatieMedewerker);
 			}
 		}
 		else
 		{
 
-			organisatieMedewerker = new InstellingGebruiker();
+			organisatieMedewerker = new OrganisatieMedewerker();
 			organisatieMedewerker.setActief(Boolean.TRUE);
 			organisatieMedewerker.setOrganisatie(organisatie);
 			organisatieMedewerker.setMedewerker(medewerker);
-			organisatieMedewerker.setRollen(new ArrayList<InstellingGebruikerRol>());
+			organisatieMedewerker.setRollen(new ArrayList<OrganisatieMedewerkerRol>());
 			if (medewerker.getOrganisatieMedewerkers() == null)
 			{
-				medewerker.setOrganisatieMedewerkers(new ArrayList<InstellingGebruiker>());
+				medewerker.setOrganisatieMedewerkers(new ArrayList<OrganisatieMedewerker>());
 			}
 			medewerker.getOrganisatieMedewerkers().add(organisatieMedewerker);
 			if (organisatie.getOrganisatieMedewerkers() == null)
 			{
-				organisatie.setOrganisatieMedewerkers(new ArrayList<InstellingGebruiker>());
+				organisatie.setOrganisatieMedewerkers(new ArrayList<OrganisatieMedewerker>());
 			}
 			organisatie.getOrganisatieMedewerkers().add(organisatieMedewerker);
-			medewerkerDao.saveOrUpdateInstellingGebruiker(organisatieMedewerker);
+			medewerkerDao.saveOrUpdateOrganisatieMedewerker(organisatieMedewerker);
 		}
 	}
 
 	@Override
 	@Transactional
-	public void saveOrUpdateRollen(InstellingGebruiker ingelogdeInstellingGebruiker, List<InstellingGebruikerRolDto> initieleRollen, InstellingGebruiker instellingGebruiker)
+	public void saveOrUpdateRollen(
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker, List<OrganisatieMedewerkerRolDto> initieleRollen, OrganisatieMedewerker organisatieMedewerker)
 	{
-		medewerkerDao.saveOrUpdateInstellingGebruiker(instellingGebruiker);
-		instellingGebruiker.getRollen().forEach(rol -> saveLogInformatieVoorGewijzigdeRol(ingelogdeInstellingGebruiker, initieleRollen, rol, instellingGebruiker));
-		hibernateService.saveOrUpdateAll(instellingGebruiker.getRollen());
+		medewerkerDao.saveOrUpdateOrganisatieMedewerker(organisatieMedewerker);
+		organisatieMedewerker.getRollen().forEach(rol -> saveLogInformatieVoorGewijzigdeRol(ingelogdeOrganisatieMedewerker, initieleRollen, rol, organisatieMedewerker));
+		hibernateService.saveOrUpdateAll(organisatieMedewerker.getRollen());
 	}
 
-	private void saveLogInformatieVoorGewijzigdeRol(InstellingGebruiker ingelogdeInstellingGebruiker, List<InstellingGebruikerRolDto> initieleRollen, InstellingGebruikerRol rol,
-		InstellingGebruiker instellingGebruiker)
+	private void saveLogInformatieVoorGewijzigdeRol(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, List<OrganisatieMedewerkerRolDto> initieleRollen,
+		OrganisatieMedewerkerRol rol,
+		OrganisatieMedewerker organisatieMedewerker)
 	{
 		var huidigeBevolkingsonderzoeken = Bevolkingsonderzoek.getAfkortingen(rol.getBevolkingsonderzoeken());
 
 		var melding = String.format("Medewerker: %s. Organisatie: %s. Rol '%s' met BVO('s) %s, beginDatum %s, eindDatum %s en status %s ",
-			instellingGebruiker.getMedewerker().getNaamVolledig(), instellingGebruiker.getOrganisatie().getNaam(), rol.getRol().getNaam(), huidigeBevolkingsonderzoeken,
+			organisatieMedewerker.getMedewerker().getNaamVolledig(), organisatieMedewerker.getOrganisatie().getNaam(), rol.getRol().getNaam(), huidigeBevolkingsonderzoeken,
 			maakRolDatumString(rol.getBeginDatum()), maakRolDatumString(rol.getEindDatum()), rol.getActief() ? "actief" : "inactief");
 
 		var initieleRolOptional = initieleRollen.stream().filter(r -> Objects.equals(r.getId(), rol.getId())).findFirst();
@@ -194,7 +196,7 @@ public class MedewerkerServiceImpl implements MedewerkerService
 		if (initieleRolOptional.isEmpty())
 		{
 			melding += "toegevoegd";
-			logService.logGebeurtenis(LogGebeurtenis.MEDEWERKER_WIJZIG, ingelogdeInstellingGebruiker, melding);
+			logService.logGebeurtenis(LogGebeurtenis.MEDEWERKER_WIJZIG, ingelogdeOrganisatieMedewerker, melding);
 			return;
 		}
 
@@ -225,10 +227,10 @@ public class MedewerkerServiceImpl implements MedewerkerService
 			wijzigingen.add(String.format("Status: %s -> %s", initieleRol.getActief() ? "actief" : "inactief", rol.getActief() ? "actief" : "inactief"));
 		}
 		melding += wijzigingen.toString();
-		logService.logGebeurtenis(LogGebeurtenis.MEDEWERKER_WIJZIG, ingelogdeInstellingGebruiker, melding);
+		logService.logGebeurtenis(LogGebeurtenis.MEDEWERKER_WIJZIG, ingelogdeOrganisatieMedewerker, melding);
 	}
 
-	private boolean isRolGewijzigd(InstellingGebruikerRolDto initieleRol, String initieleBevolkingsonderzoeken, InstellingGebruikerRol rol, String huidigeBevolkingsonderzoeken)
+	private boolean isRolGewijzigd(OrganisatieMedewerkerRolDto initieleRol, String initieleBevolkingsonderzoeken, OrganisatieMedewerkerRol rol, String huidigeBevolkingsonderzoeken)
 	{
 		return !huidigeBevolkingsonderzoeken.equals(initieleBevolkingsonderzoeken) || !Objects.equals(rol.getBeginDatum(), initieleRol.getBeginDatum())
 			|| !Objects.equals(rol.getEindDatum(), initieleRol.getEindDatum()) || rol.getActief() != initieleRol.getActief();
@@ -241,7 +243,7 @@ public class MedewerkerServiceImpl implements MedewerkerService
 
 	@Override
 	@Transactional
-	public boolean saveOrUpdateGebruiker(Gebruiker medewerker, boolean isBestaande, boolean wordGeblokkeerd)
+	public boolean saveOrUpdateMedewerker(Medewerker medewerker, boolean isBestaande, boolean wordGeblokkeerd)
 	{
 		var gelukt = true;
 		var handtekening = medewerker.getHandtekening();
@@ -282,29 +284,29 @@ public class MedewerkerServiceImpl implements MedewerkerService
 
 	@Override
 	@Transactional
-	public boolean resetWachtwoord(Gebruiker gebruiker)
+	public boolean resetWachtwoord(Medewerker medewerker)
 	{
-		gebruiker.setWachtwoord(null);
-		hibernateService.saveOrUpdate(gebruiker);
+		medewerker.setWachtwoord(null);
+		hibernateService.saveOrUpdate(medewerker);
 
-		var geresetGebruiker = authenticatieService.requestNewPassword(gebruiker.getGebruikersnaam(), gebruiker.getEmailextra());
+		var geresetMedewerker = authenticatieService.requestNewPassword(medewerker.getGebruikersnaam(), medewerker.getEmailextra());
 
-		return geresetGebruiker != null;
+		return geresetMedewerker != null;
 	}
 
 	@Override
-	public List<Gebruiker> getActieveGebruikersMetRecht(Recht recht)
+	public List<Medewerker> getActieveMedewerkersMetRecht(Recht recht)
 	{
 		var spec = MedewerkerSpecification.isActief()
 			.and(PermissieSpecification.heeftRecht(recht).with(permissieJoin())
 				.and(OrganisatieMedewerkerSpecification.filterActief(true)).with(organisatieMedewerkerJoin()));
-		return medewerkerRepository.findWith(spec, FluentJpaQuery::distinct).fetch(g -> g.addSubgraph(Gebruiker_.yubiKey)).all();
+		return medewerkerRepository.findWith(spec, FluentJpaQuery::distinct).fetch(g -> g.addSubgraph(Medewerker_.yubiKey)).all();
 	}
 
 	@Override
-	public List<InstellingGebruikerRol> getInstellingGebruikersMetRolEnBvos(Rol rol, List<Bevolkingsonderzoek> onderzoeken)
+	public List<OrganisatieMedewerkerRol> getOrganisatieMedewerkersMetRolEnBvos(Rol rol, List<Bevolkingsonderzoek> onderzoeken)
 	{
-		var rollen = new ArrayList<InstellingGebruikerRol>();
+		var rollen = new ArrayList<OrganisatieMedewerkerRol>();
 		var organisatieMedewerkersRollen = getOrganisatieMedewerkersMetRol(rol);
 		if (onderzoeken == null)
 		{
@@ -313,38 +315,38 @@ public class MedewerkerServiceImpl implements MedewerkerService
 		else
 		{
 			rollen = organisatieMedewerkersRollen.stream()
-				.filter(igRol -> onderzoeken.stream().anyMatch(verwijderdeOnderzoek -> igRol.getBevolkingsonderzoeken().contains(verwijderdeOnderzoek)))
+				.filter(omRol -> onderzoeken.stream().anyMatch(verwijderdeOnderzoek -> omRol.getBevolkingsonderzoeken().contains(verwijderdeOnderzoek)))
 				.collect(Collectors.toCollection(ArrayList::new));
 		}
 		return rollen;
 	}
 
 	@Override
-	public InstellingGebruiker getOrganisatieMedewerker(Instelling organisatie, Gebruiker medewerker)
+	public OrganisatieMedewerker getOrganisatieMedewerker(Organisatie organisatie, Medewerker medewerker)
 	{
-		var spec = HibernateObjectSpecification.heeftId(organisatie.getId()).with(InstellingGebruiker_.organisatie)
-			.and(HibernateObjectSpecification.heeftId(medewerker.getId()).with(InstellingGebruiker_.medewerker));
+		var spec = HibernateObjectSpecification.heeftId(organisatie.getId()).with(OrganisatieMedewerker_.organisatie)
+			.and(HibernateObjectSpecification.heeftId(medewerker.getId()).with(OrganisatieMedewerker_.medewerker));
 		return organisatieMedewerkerRepository.findOne(spec).orElse(null);
 	}
 
 	@Override
-	public List<InstellingGebruikerRol> getOrganisatieMedewerkersMetRol(Rol rol)
+	public List<OrganisatieMedewerkerRol> getOrganisatieMedewerkersMetRol(Rol rol)
 	{
 		var spec = OrganisatieMedewerkerRolSpecification.isActief(Boolean.TRUE)
 			.and(OrganisatieMedewerkerRolSpecification.heeftRol(rol));
 
 		return organisatieMedewerkerRolRepository.findWith(spec, q -> q)
-			.fetch(g -> g.addAttributeNodes(InstellingGebruikerRol_.BEVOLKINGSONDERZOEKEN))
+			.fetch(g -> g.addAttributeNodes(OrganisatieMedewerkerRol_.BEVOLKINGSONDERZOEKEN))
 			.all();
 	}
 
 	@Override
-	public boolean zijnErInstellingGebruikersMetRol(Rol rol)
+	public boolean zijnErOrganisatieMedewerkersMetRol(Rol rol)
 	{
-		return !getInstellingGebruikersMetRolEnBvos(rol, null).isEmpty();
+		return !getOrganisatieMedewerkersMetRolEnBvos(rol, null).isEmpty();
 	}
 
-	public Specification<InstellingGebruiker> getSpecificationVoorOrganisatieMedewerker(InstellingGebruiker zoekOrganisatieMedewerker)
+	public Specification<OrganisatieMedewerker> getSpecificationVoorOrganisatieMedewerker(OrganisatieMedewerker zoekOrganisatieMedewerker)
 	{
 		var spec = filterActief(zoekOrganisatieMedewerker.getActief());
 
@@ -352,11 +354,11 @@ public class MedewerkerServiceImpl implements MedewerkerService
 		{
 			if (zoekOrganisatieMedewerker.getOrganisatie().getId() != null)
 			{
-				spec = spec.and(HibernateObjectSpecification.heeftId(zoekOrganisatieMedewerker.getOrganisatie().getId()).with(InstellingGebruiker_.organisatie));
+				spec = spec.and(HibernateObjectSpecification.heeftId(zoekOrganisatieMedewerker.getOrganisatie().getId()).with(OrganisatieMedewerker_.organisatie));
 			}
 			else
 			{
-				spec = spec.and(HibernateObjectSpecification.heeftGeenId().with(InstellingGebruiker_.organisatie));
+				spec = spec.and(HibernateObjectSpecification.heeftGeenId().with(OrganisatieMedewerker_.organisatie));
 			}
 		}
 
@@ -367,26 +369,26 @@ public class MedewerkerServiceImpl implements MedewerkerService
 			spec = spec.and(MedewerkerSpecification.filterActief(medewerker.getActief())
 				.and(MedewerkerSpecification.filterActiefVanaf(medewerker.getActiefVanaf())
 					.and(MedewerkerSpecification.filterActiefTotEnMet(medewerker.getActiefTotEnMet())
-						.and(HibernateObjectSpecification.filterId(medewerker.getId())))).with(InstellingGebruiker_.medewerker));
+						.and(HibernateObjectSpecification.filterId(medewerker.getId())))).with(OrganisatieMedewerker_.medewerker));
 		}
 
 		return spec;
 	}
 
-	private Function<From<?, ? extends InstellingGebruiker>, From<?, ? extends Permissie>> permissieJoin()
+	private Function<From<?, ? extends OrganisatieMedewerker>, From<?, ? extends Permissie>> permissieJoin()
 	{
 		return r ->
 		{
-			var rollenJoin = join(r, InstellingGebruiker_.rollen);
-			var rolJoin = join(rollenJoin, InstellingGebruikerRol_.rol);
+			var rollenJoin = join(r, OrganisatieMedewerker_.rollen);
+			var rolJoin = join(rollenJoin, OrganisatieMedewerkerRol_.rol);
 			return join(rolJoin, Rol_.permissies);
 		};
 	}
 
-	private Function<From<?, ? extends Gebruiker>, From<?, ? extends InstellingGebruiker>> organisatieMedewerkerJoin()
+	private Function<From<?, ? extends Medewerker>, From<?, ? extends OrganisatieMedewerker>> organisatieMedewerkerJoin()
 	{
 		return r ->
-			join(r, Gebruiker_.organisatieMedewerkers);
+			join(r, Medewerker_.organisatieMedewerkers);
 	}
 
 }

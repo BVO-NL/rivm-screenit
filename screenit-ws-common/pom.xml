@@ -13,6 +13,37 @@
     <name>screenit-ws-common</name>
     <description>Screenit WebService common</description>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>xjc</id>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <xjbSources>
+                        <xjbSource>${basedir}/src/main/resources/bindings.xjb</xjbSource>
+                    </xjbSources>
+
+                    <sources>
+                        <source>${basedir}/src/main/resources/CDA/CDA.XSD</source>
+                    </sources>
+
+                    <packageName>nl.rivm.screenit.hl7v3.cda</packageName>
+                    <encoding>UTF-8</encoding>
+                    <extension>true</extension>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>xerces</groupId>
@@ -54,34 +85,4 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>xjc</id>
-                        <goals>
-                            <goal>xjc</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <xjbSources>
-                        <xjbSource>${basedir}/src/main/resources/bindings.xjb</xjbSource>
-                    </xjbSources>
-
-                    <sources>
-                        <source>${basedir}/src/main/resources/CDA/CDA.XSD</source>
-                    </sources>
-
-                    <packageName>nl.rivm.screenit.hl7v3.cda</packageName>
-                    <encoding>UTF-8</encoding>
-                    <extension>true</extension>
-                </configuration>
-            </plugin>
-
-        </plugins>
-    </build>
 </project>

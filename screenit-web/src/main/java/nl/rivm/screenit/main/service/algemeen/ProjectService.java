@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.List;
 
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -44,7 +44,7 @@ import org.springframework.data.domain.Sort;
 
 public interface ProjectService
 {
-	void saveOrUpdateProject(Project project, InstellingGebruiker loggedInInstellingGebruiker);
+	void saveOrUpdateProject(Project project, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	List<Project> getProjectenVanType(ProjectType type);
 
@@ -63,19 +63,19 @@ public interface ProjectService
 	long getCountProjectBriefActies(ProjectBriefActie zoekObject);
 
 	void queueProjectBestandVoorAttributen(Project project, ProjectGroep groep, ProjectBestand projectBestand, String contentType, String filenaam, File file,
-		Account loggedInAccount) throws IOException;
+		Account ingelogdAccount) throws IOException;
 
 	void queueProjectBestandVoorUitslagen(Project project, ProjectBestand projectBestand, String contentType, String filenaam, File file,
-		Account loggedInAccount) throws IOException;
+		Account ingelogdAccount) throws IOException;
 
 	void queueProjectBestandVoorClientWijzigingen(Project project, ProjectBestand projectBestand, UploadDocument bestand, String contentType, String clientFileName, File file,
-		Account loggedInAccount) throws IOException;
+		Account ingelogdAccount) throws IOException;
 
-	void queueProjectBestandVoorPopulatie(ProjectGroep groep, String contentType, String filenaam, File file, Account loggedInAccount) throws IOException;
+	void queueProjectBestandVoorPopulatie(ProjectGroep groep, String contentType, String filenaam, File file, Account ingelogdAccount) throws IOException;
 
 	List<Project> getAllProjectenWhereProjectBriefActieHasBriefType(BriefType type);
 
-	List<ProjectType> getProjectTypes(InstellingGebruiker instellingGebruiker, Actie minimumActie, boolean checkBvo);
+	List<ProjectType> getProjectTypes(OrganisatieMedewerker organisatieMedewerker, Actie minimumActie, boolean checkBvo);
 
 	Long getAantalProjectClientenVanProject(Project project);
 
@@ -89,9 +89,9 @@ public interface ProjectService
 
 	void projectAttribuutOpslaan(ProjectAttribuut attribuut);
 
-	void verwijderProjectGroep(ProjectGroep groep, Account loggedInAccount);
+	void verwijderProjectGroep(ProjectGroep groep, Account ingelogdAccount);
 
-	String updateProjectGroepActiefStatus(ProjectGroep groep, Account loggedInAccount);
+	String updateProjectGroepActiefStatus(ProjectGroep groep, Account ingelogdAccount);
 
 	List<ProjectClientAttribuut> getAttributenVoorProjectClient(ProjectClient zoekObject, long first, long count, Sort sort);
 

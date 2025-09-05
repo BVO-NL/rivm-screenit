@@ -66,7 +66,7 @@ public class BezwaarController
 	private final ClientMapper clientMapper;
 
 	@PostMapping(value = "/herstellen", consumes = "multipart/form-data")
-	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_BEZWAAR_BRP, bevolkingsonderzoekScopes = {
+	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_BEZWAAR_BRP, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 	public ResponseEntity herstellen(@ModelAttribute BezwaarHerstellenDto herstellenDto) throws IOException
 	{
@@ -97,18 +97,18 @@ public class BezwaarController
 			throw new IllegalStateException("error.bestandtype.niet.toegestaan");
 		}
 
-		bezwaarService.bezwaarBRPIntrekken(ScreenitSession.get().getLoggedInAccount(), client, briefBestand);
+		bezwaarService.bezwaarBRPIntrekken(ScreenitSession.get().getIngelogdAccount(), client, briefBestand);
 
 		LOG.info("Bezwaar BRP ingetrokken");
 		return ResponseEntity.ok().build();
 	}
 
 	@GetMapping("/clienten")
-	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_BEZWAAR_BRP, bevolkingsonderzoekScopes = {
+	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_BEZWAAR_BRP, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 	public ResponseEntity getClienten(@RequestParam String bsn, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate geboortedatum)
 	{
-		var account = ScreenitSession.get().getLoggedInInstellingGebruiker();
+		var account = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 		var clienten = bezwaarService.getClientenMetBezwaarBrp(bsn, geboortedatum, account);
 		var clientDtos = clienten.stream().map(clientMapper::clientToBezwaarDto).toList();
 		return ResponseEntity.ok(clientDtos);

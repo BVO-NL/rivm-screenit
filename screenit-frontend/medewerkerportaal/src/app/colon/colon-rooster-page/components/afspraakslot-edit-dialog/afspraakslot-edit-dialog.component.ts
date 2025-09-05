@@ -143,10 +143,10 @@ export class AfspraakslotEditDialogComponent {
     this.verwijderenToegestaan =
       !this.isNieuw &&
       this.autorisatieService.isToegestaan({
-        recht: [Recht.GEBRUIKER_LOCATIE_ROOSTER],
+        recht: [Recht.MEDEWERKER_LOCATIE_ROOSTER],
         actie: Actie.VERWIJDEREN,
         bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON],
-        level: ToegangLevel.INSTELLING,
+        level: ToegangLevel.ORGANISATIE,
         organisatieTypeScopes: [OrganisatieType.INTAKELOCATIE],
         required: Required.ANY,
       }) &&
@@ -154,10 +154,10 @@ export class AfspraakslotEditDialogComponent {
 
     this.bewerkenToegestaan =
       this.autorisatieService.isToegestaan({
-        recht: [Recht.GEBRUIKER_LOCATIE_ROOSTER],
+        recht: [Recht.MEDEWERKER_LOCATIE_ROOSTER],
         actie: Actie.AANPASSEN,
         bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON],
-        level: ToegangLevel.INSTELLING,
+        level: ToegangLevel.ORGANISATIE,
         organisatieTypeScopes: [OrganisatieType.INTAKELOCATIE],
         required: Required.ANY,
       }) &&

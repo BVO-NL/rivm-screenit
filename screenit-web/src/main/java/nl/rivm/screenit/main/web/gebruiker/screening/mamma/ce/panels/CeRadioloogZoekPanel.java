@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.service.mamma.MammaBeoordelingService;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
@@ -56,7 +56,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 public abstract class CeRadioloogZoekPanel extends GenericPanel<MammaBeoordeling>
 {
 
-	private IModel<InstellingGebruiker> selectedGebruikerModel;
+	private IModel<OrganisatieMedewerker> selectedOrganisatieMedewerkerModel;
 
 	private WebMarkupContainer medewerkerLijstWrapper;
 
@@ -92,17 +92,17 @@ public abstract class CeRadioloogZoekPanel extends GenericPanel<MammaBeoordeling
 			{
 				repeatingView.add(
 					new Label(repeatingView.newChildId(), "Orginele radioloog van verslaglezing: " +
-						NaamUtil.getNaamGebruiker(verslagLezing.getBeoordelaar().getMedewerker())));
+						NaamUtil.getNaamMedewerker(verslagLezing.getBeoordelaar().getMedewerker())));
 			}
 		}
 		List<Object[]> beoordelingen = beoordelingService.beoordelingGeschiedenis(getModelObject());
 		repeatingView.setVisible(false);
 		beoordelingen.stream()
 			.map(beoordelingRev -> (MammaBeoordeling) EntityAuditUtil.getRevisionEntity(beoordelingRev))
-			.filter(beoordeling -> beoordeling.getToegewezenOp() != null && beoordeling.getToegewezenGebruiker() != null)
+			.filter(beoordeling -> beoordeling.getToegewezenOp() != null && beoordeling.getToegewezenOrganisatieMedewerker() != null)
 			.filter(distinctByKey(MammaBeoordeling::getToegewezenOp))
 			.map(beoordelingRev -> new Label(repeatingView.newChildId(), String.format("Lezing toegewezen aan %s, op %s",
-				NaamUtil.getNaamGebruiker((Gebruiker) HibernateHelper.deproxy(beoordelingRev.getToegewezenGebruiker().getMedewerker())),
+				NaamUtil.getNaamMedewerker((Medewerker) HibernateHelper.deproxy(beoordelingRev.getToegewezenOrganisatieMedewerker().getMedewerker())),
 				Constants.getDateTimeFormat().format(beoordelingRev.getToegewezenOp()))))
 			.peek(x -> repeatingView.setVisible(true))
 			.forEachOrdered(repeatingView::add);
@@ -113,21 +113,23 @@ public abstract class CeRadioloogZoekPanel extends GenericPanel<MammaBeoordeling
 	{
 		medewerkerLijstWrapper = new WebMarkupContainer("medewerkerLijstWrapper");
 		RepeatingView medewerkerLijst = new RepeatingView("medewerkerlijst");
-		for (InstellingGebruiker gebruiker : getRadiologen())
+		for (OrganisatieMedewerker organisatieMedewerker : getRadiologen())
 		{
 			WebMarkupContainer row = new WebMarkupContainer(medewerkerLijst.newChildId());
-			if (selectedGebruikerModel == null && getModelObject().getToegewezenGebruiker() != null && getModelObject().getToegewezenGebruiker().getId().equals(gebruiker.getId())
-				|| selectedGebruikerModel != null && selectedGebruikerModel.getObject().getId().equals(gebruiker.getId()))
+			if (selectedOrganisatieMedewerkerModel == null && getModelObject().getToegewezenOrganisatieMedewerker() != null && getModelObject().getToegewezenOrganisatieMedewerker()
+				.getId()
+				.equals(organisatieMedewerker.getId())
+				|| selectedOrganisatieMedewerkerModel != null && selectedOrganisatieMedewerkerModel.getObject().getId().equals(organisatieMedewerker.getId()))
 			{
 				row.add(new AttributeAppender("class", "selected"));
 			}
-			row.add(new Label("naam", NaamUtil.getNaamGebruiker(gebruiker.getMedewerker())));
-			row.add(new IndicatingAjaxLink<InstellingGebruiker>("opslaan", ModelUtil.sModel(gebruiker))
+			row.add(new Label("naam", NaamUtil.getNaamMedewerker(organisatieMedewerker.getMedewerker())));
+			row.add(new IndicatingAjaxLink<OrganisatieMedewerker>("opslaan", ModelUtil.sModel(organisatieMedewerker))
 			{
 				@Override
 				public void onClick(AjaxRequestTarget target)
 				{
-					CeRadioloogZoekPanel.this.selectedGebruikerModel = getModel();
+					CeRadioloogZoekPanel.this.selectedOrganisatieMedewerkerModel = getModel();
 					callback(target, getModel());
 				}
 			});
@@ -140,19 +142,19 @@ public abstract class CeRadioloogZoekPanel extends GenericPanel<MammaBeoordeling
 		addOrReplace(medewerkerLijstWrapper);
 	}
 
-	public abstract void callback(AjaxRequestTarget target, IModel<InstellingGebruiker> radioloog);
+	public abstract void callback(AjaxRequestTarget target, IModel<OrganisatieMedewerker> radioloog);
 
-	private List<InstellingGebruiker> getRadiologen()
+	private List<OrganisatieMedewerker> getRadiologen()
 	{
 		return getModelObject()
 			.getBeoordelingsEenheid()
 			.getOrganisatieMedewerkers().stream()
-			.filter(gebruiker -> getModelObject().getArbitrageLezing() != null
-				? autorisatieService.getToegangLevel(gebruiker, Actie.INZIEN, true, Recht.GEBRUIKER_SCREENING_MAMMA_ARBITRAGE_WERKLIJST) != null
-				: autorisatieService.getToegangLevel(gebruiker, Actie.INZIEN, true, Recht.GEBRUIKER_SCREENING_MAMMA_BEOORDELING_WERKLIJST) != null)
-			.filter(gebruiker -> getModelObject().getVerslagLezing() == null
-				|| !gebruiker.getId().equals(getModelObject().getVerslagLezing().getBeoordelaar().getId())
-					&& gebruiker.getMedewerker().getActief())
+			.filter(organisatieMedewerker -> getModelObject().getArbitrageLezing() != null
+				? autorisatieService.getToegangLevel(organisatieMedewerker, Actie.INZIEN, true, Recht.MEDEWERKER_SCREENING_MAMMA_ARBITRAGE_WERKLIJST) != null
+				: autorisatieService.getToegangLevel(organisatieMedewerker, Actie.INZIEN, true, Recht.MEDEWERKER_SCREENING_MAMMA_BEOORDELING_WERKLIJST) != null)
+			.filter(organisatieMedewerker -> getModelObject().getVerslagLezing() == null
+				|| !organisatieMedewerker.getId().equals(getModelObject().getVerslagLezing().getBeoordelaar().getId())
+				&& organisatieMedewerker.getMedewerker().getActief())
 			.collect(Collectors.toList());
 	}
 
@@ -161,15 +163,15 @@ public abstract class CeRadioloogZoekPanel extends GenericPanel<MammaBeoordeling
 		return medewerkerLijstWrapper;
 	}
 
-	public IModel<InstellingGebruiker> getSelectedGebruikerModel()
+	public IModel<OrganisatieMedewerker> getSelectedOrganisatieMedewerkerModel()
 	{
-		return selectedGebruikerModel;
+		return selectedOrganisatieMedewerkerModel;
 	}
 
 	@Override
 	protected void onDetach()
 	{
 		super.onDetach();
-		ModelUtil.nullSafeDetach(selectedGebruikerModel);
+		ModelUtil.nullSafeDetach(selectedOrganisatieMedewerkerModel);
 	}
 }

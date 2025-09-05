@@ -41,7 +41,7 @@ import nl.rivm.screenit.main.model.mamma.beoordeling.MammaCeWerklijstZoekObject;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningRonde_;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -167,27 +167,27 @@ public class MammaBeoordelingWerklijstSpecification
 			|| zoekObject.getBeoordelingStatussen().contains(VERSLAG_GEREED)
 			|| zoekObject.getBeoordelingStatussen().contains(VERSLAG_AFGEKEURD))
 		{
-			return verslagWerklijstSpecification(zoekObject.getInstellingGebruiker()).with(beoordelingAttribute());
+			return verslagWerklijstSpecification(zoekObject.getOrganisatieMedewerker()).with(beoordelingAttribute());
 		}
 		else if (zoekObject.getBeoordelingStatussen().contains(ARBITRAGE))
 		{
-			return arbitrageWerklijstSpecification(zoekObject.getInstellingGebruiker()).with(beoordelingAttribute());
+			return arbitrageWerklijstSpecification(zoekObject.getOrganisatieMedewerker()).with(beoordelingAttribute());
 		}
 		else if (zoekObject.getBeoordelingStatussen().contains(DISCREPANTIE))
 		{
-			return discrepantieWerklijstSpecification(zoekObject.getInstellingGebruiker()).with(beoordelingAttribute());
+			return discrepantieWerklijstSpecification(zoekObject.getOrganisatieMedewerker()).with(beoordelingAttribute());
 		}
-		return beoordelenWerklijstSpecification(zoekObject.getInstellingGebruiker());
+		return beoordelenWerklijstSpecification(zoekObject.getOrganisatieMedewerker());
 	}
 
-	private static Specification<MammaOnderzoek> beoordelenWerklijstSpecification(InstellingGebruiker radioloog)
+	private static Specification<MammaOnderzoek> beoordelenWerklijstSpecification(OrganisatieMedewerker radioloog)
 	{
 		return MammaOnderzoekSpecification.heeftBeeldenBeschikbaar()
 			.and(MammaOnderzoekSpecification.isDoorgevoerd(true))
 			.and(beoordelenEersteEnTweedeLezerSpecification(radioloog).with(beoordelingAttribute()));
 	}
 
-	private static ExtendedSpecification<MammaBeoordeling> beoordelenEersteEnTweedeLezerSpecification(InstellingGebruiker radioloog)
+	private static ExtendedSpecification<MammaBeoordeling> beoordelenEersteEnTweedeLezerSpecification(OrganisatieMedewerker radioloog)
 	{
 		var beschikbaarVoorEersteLezing = filterStatusIn(List.of(EERSTE_LEZING, EERSTE_LEZING_OPGESLAGEN))
 			.and(isAfwezigOfGedaanDoor(radioloog).with(MammaBeoordeling_.eersteLezing, LEFT));
@@ -199,19 +199,19 @@ public class MammaBeoordelingWerklijstSpecification
 		return beschikbaarVoorEersteLezing.or(beschikbaarVoorTweedeLezing);
 	}
 
-	private static ExtendedSpecification<MammaBeoordeling> discrepantieWerklijstSpecification(InstellingGebruiker radioloog)
+	private static ExtendedSpecification<MammaBeoordeling> discrepantieWerklijstSpecification(OrganisatieMedewerker radioloog)
 	{
 		return isGedaanDoor(radioloog).with(MammaBeoordeling_.eersteLezing)
 			.or(isGedaanDoor(radioloog).with(MammaBeoordeling_.tweedeLezing));
 	}
 
-	private static ExtendedSpecification<MammaBeoordeling> arbitrageWerklijstSpecification(InstellingGebruiker radioloog)
+	private static ExtendedSpecification<MammaBeoordeling> arbitrageWerklijstSpecification(OrganisatieMedewerker radioloog)
 	{
 		return isNietGedaanDoor(radioloog).with(MammaBeoordeling_.eersteLezing)
 			.and(isNietGedaanDoor(radioloog).with(MammaBeoordeling_.tweedeLezing));
 	}
 
-	private static ExtendedSpecification<MammaBeoordeling> verslagWerklijstSpecification(InstellingGebruiker radioloog)
+	private static ExtendedSpecification<MammaBeoordeling> verslagWerklijstSpecification(OrganisatieMedewerker radioloog)
 	{
 		return verslagGereedSpecification(radioloog)
 			.or(verslagToegewezenSpecification(radioloog))
@@ -219,27 +219,27 @@ public class MammaBeoordelingWerklijstSpecification
 			.or(verslagMakenSpecification(radioloog));
 	}
 
-	private static ExtendedSpecification<MammaBeoordeling> verslagGereedSpecification(InstellingGebruiker radioloog)
+	private static ExtendedSpecification<MammaBeoordeling> verslagGereedSpecification(OrganisatieMedewerker radioloog)
 	{
 		return heeftStatus(VERSLAG_GEREED)
 			.and(isNietToegewezenAanSpecifiekeRadioloog())
 			.and(isGedaanDoor(radioloog).with(MammaBeoordeling_.verslagLezing, LEFT));
 	}
 
-	private static ExtendedSpecification<MammaBeoordeling> verslagToegewezenSpecification(InstellingGebruiker radioloog)
+	private static ExtendedSpecification<MammaBeoordeling> verslagToegewezenSpecification(OrganisatieMedewerker radioloog)
 	{
 		return filterStatusIn(List.of(VERSLAG_GEREED, VERSLAG_AFGEKEURD, VERSLAG_MAKEN))
 			.and(isToegewezenAan(radioloog));
 	}
 
-	private static ExtendedSpecification<MammaBeoordeling> verslagMakenSpecification(InstellingGebruiker radioloog)
+	private static ExtendedSpecification<MammaBeoordeling> verslagMakenSpecification(OrganisatieMedewerker radioloog)
 	{
 		return heeftStatus(VERSLAG_MAKEN)
 			.and(isNietToegewezenAanSpecifiekeRadioloog())
 			.and(magVerslagMaken(radioloog));
 	}
 
-	private static ExtendedSpecification<MammaBeoordeling> magVerslagMaken(InstellingGebruiker radioloog)
+	private static ExtendedSpecification<MammaBeoordeling> magVerslagMaken(OrganisatieMedewerker radioloog)
 	{
 		var metArbitrage = MammaBeoordelingSpecification.heeftArbitrageLezing()
 			.and(isVerwezenDoor(radioloog).with(MammaBeoordeling_.eersteLezing)
@@ -253,12 +253,12 @@ public class MammaBeoordelingWerklijstSpecification
 		return metArbitrage.or(zonderArbitrage);
 	}
 
-	private static ExtendedSpecification<MammaBeoordeling> verslagAfgekeurdSpecification(InstellingGebruiker radioloog)
+	private static ExtendedSpecification<MammaBeoordeling> verslagAfgekeurdSpecification(OrganisatieMedewerker radioloog)
 	{
 		return (r, q, cb) -> cb.and(
 			cb.equal(r.get(MammaBeoordeling_.status), VERSLAG_AFGEKEURD),
 			cb.equal(join(r, MammaBeoordeling_.verslagLezing, LEFT).get(MammaLezing_.beoordelaar), radioloog),
-			r.get(MammaBeoordeling_.toegewezenGebruiker).isNull());
+			r.get(MammaBeoordeling_.toegewezenOrganisatieMedewerker).isNull());
 	}
 
 	private static Join<Client, GbaPersoon> persoonJoin(From<?, ? extends MammaOnderzoek> onderzoekRoot)

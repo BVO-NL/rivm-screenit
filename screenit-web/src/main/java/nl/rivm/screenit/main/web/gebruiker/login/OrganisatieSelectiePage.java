@@ -25,9 +25,9 @@ import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.service.AuthenticatieService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -52,19 +52,20 @@ public class OrganisatieSelectiePage extends LoginBasePage
 
 	private static final long serialVersionUID = 1L;
 
-	private IModel<InstellingGebruiker> gekozenInstellingGebruiker;
+	private IModel<OrganisatieMedewerker> gekozenOrganisatieMedewerker;
 
 	@SpringBean
 	private AuthenticatieService authenticatieService;
 
 	private IndicatingAjaxSubmitLink selecteer;
 
-	public OrganisatieSelectiePage(Gebruiker medewerker)
+	public OrganisatieSelectiePage(Medewerker medewerker)
 	{
-		Form<Instelling> selectOrganisatieForm = new Form<Instelling>("selectOrganisatieForm");
+		Form<Organisatie> selectOrganisatieForm = new Form<Organisatie>("selectOrganisatieForm");
 
-		List<InstellingGebruiker> organisatieMedewerkers = this.authenticatieService.getActieveInstellingGebruikers(medewerker);
-		final ScreenitDropdown<InstellingGebruiker> organisatie = new ScreenitDropdown<InstellingGebruiker>("organisatie", new PropertyModel<>(this, "gekozenInstellingGebruiker"),
+		List<OrganisatieMedewerker> organisatieMedewerkers = this.authenticatieService.getActieveOrganisatieMedewerkers(medewerker);
+		final ScreenitDropdown<OrganisatieMedewerker> organisatie = new ScreenitDropdown<>("organisatie",
+			new PropertyModel<>(this, "gekozenOrganisatieMedewerker"),
 			ModelUtil.listRModel(organisatieMedewerkers), new ChoiceRenderer<>("organisatie.naam"));
 
 		organisatie.setOpenOnEnter(false);
@@ -72,22 +73,19 @@ public class OrganisatieSelectiePage extends LoginBasePage
 		selectOrganisatieForm.add(organisatie);
 		if (organisatieMedewerkers.size() > 0)
 		{
-			setGekozenInstellingGebruiker(organisatieMedewerkers.get(0));
+			setGekozenOrganisatieMedewerker(organisatieMedewerkers.get(0));
 		}
 
 		selecteer = new IndicatingAjaxSubmitLink("selecteer")
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				InstellingGebruiker gebruiker = getGekozenInstellingGebruiker();
-				Component pageForInstellingGebruiker = ScreenitSession.get().getPageForInstellingGebruiker(gebruiker);
-				if (pageForInstellingGebruiker != null)
+				OrganisatieMedewerker organisatieMedewerker = getGekozenOrganisatieMedewerker();
+				Component pageForOrganisatieMedewerker = ScreenitSession.get().getPageForOrganisatieMedewerker(organisatieMedewerker);
+				if (pageForOrganisatieMedewerker != null)
 				{
-					setResponsePage((WebPage) pageForInstellingGebruiker);
+					setResponsePage((WebPage) pageForOrganisatieMedewerker);
 				}
 				else
 				{
@@ -102,21 +100,21 @@ public class OrganisatieSelectiePage extends LoginBasePage
 		add(selectOrganisatieForm);
 	}
 
-	public InstellingGebruiker getGekozenInstellingGebruiker()
+	public OrganisatieMedewerker getGekozenOrganisatieMedewerker()
 	{
-		return ModelUtil.nullSafeGet(gekozenInstellingGebruiker);
+		return ModelUtil.nullSafeGet(gekozenOrganisatieMedewerker);
 	}
 
-	public void setGekozenInstellingGebruiker(InstellingGebruiker gekozenInstellingGebruiker)
+	public void setGekozenOrganisatieMedewerker(OrganisatieMedewerker gekozenOrganisatieMedewerker)
 	{
-		this.gekozenInstellingGebruiker = ModelUtil.sModel(gekozenInstellingGebruiker);
+		this.gekozenOrganisatieMedewerker = ModelUtil.sModel(gekozenOrganisatieMedewerker);
 	}
 
 	@Override
 	protected void onDetach()
 	{
 		super.onDetach();
-		ModelUtil.nullSafeDetach(gekozenInstellingGebruiker);
+		ModelUtil.nullSafeDetach(gekozenOrganisatieMedewerker);
 	}
 
 	@Override

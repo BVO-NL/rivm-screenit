@@ -21,16 +21,16 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 
-public abstract class ColonScreeningBasePage extends GebruikerBasePage
+public abstract class ColonScreeningBasePage extends MedewerkerBasePage
 {
 
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.COLON;
+		return MedewerkerHoofdMenuItem.COLON;
 	}
 
 }

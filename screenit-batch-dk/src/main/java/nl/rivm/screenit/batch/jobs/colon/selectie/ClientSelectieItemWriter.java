@@ -33,7 +33,7 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dao.UitnodigingsDao;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DossierStatus;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.ProjectParameterKey;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.colon.ClientCategorieEntry;
@@ -361,7 +361,7 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 		List<ColonUitnodiging> uitnodigingen = laatsteScreeningRonde.getUitnodigingen();
 		int totaalAantalVerstuurdeUitnodigingen = uitnodigingen.size();
 
-		List<Instelling> dashboardOrganisaties = List.of(client.getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie());
+		List<Organisatie> dashboardOrganisaties = List.of(client.getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie());
 		if (totaalAantalVerstuurdeUitnodigingen >= waarschuwingAantalIfobts && totaalAantalVerstuurdeUitnodigingen < maximaalAantalIfobts)
 		{
 			LogEvent logEvent = new LogEvent();

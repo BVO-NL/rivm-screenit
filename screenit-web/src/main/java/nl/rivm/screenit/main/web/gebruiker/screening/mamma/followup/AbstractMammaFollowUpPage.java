@@ -21,7 +21,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaScreeningBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup.followup.MammaFollowUpNietGedownloadWerklijst;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup.followupconclusie.MammaFollowUpConclusieWerklijst;
@@ -34,19 +34,19 @@ import java.util.List;
 public class AbstractMammaFollowUpPage extends MammaScreeningBasePage
 {
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 		return getContextMenuItemsList();
 	}
 
-	public static List<GebruikerMenuItem> getContextMenuItemsList()
+	public static List<MedewerkerMenuItem> getContextMenuItemsList()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.followup-niet-gedownload-werklijst",
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.followup-niet-gedownload-werklijst",
 			MammaFollowUpNietGedownloadWerklijst.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.followup-radiologie-werklijst", MammaFollowUpRadiologieRegioWerklijstPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.followup-pathologie-werklijst", MammaFollowUpPathologieRegioWerklijstPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.followup-conclusie-werklijst", MammaFollowUpConclusieWerklijst.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.followup-radiologie-werklijst", MammaFollowUpRadiologieRegioWerklijstPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.followup-pathologie-werklijst", MammaFollowUpPathologieRegioWerklijstPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.followup-conclusie-werklijst", MammaFollowUpConclusieWerklijst.class));
 
 		return contextMenuItems;
 	}

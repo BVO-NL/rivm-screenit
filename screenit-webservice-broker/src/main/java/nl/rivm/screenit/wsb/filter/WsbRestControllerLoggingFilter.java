@@ -36,15 +36,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import nl.rivm.screenit.service.TechnischeBerichtenLoggingSaverService;
-import nl.rivm.screenit.util.StringUtil;
-
-import org.apache.commons.io.output.TeeOutputStream;
-import org.springframework.stereotype.Component;
-
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ReadListener;
@@ -59,12 +50,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 
-@Component
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import nl.rivm.screenit.service.TechnischeBerichtenLoggingSaverService;
+import nl.rivm.screenit.util.StringUtil;
+
+import org.apache.commons.io.output.TeeOutputStream;
+import org.springframework.stereotype.Component;
+
 @Slf4j
-@AllArgsConstructor
+@Component
+@RequiredArgsConstructor
 public class WsbRestControllerLoggingFilter implements Filter
 {
-
 	private final TechnischeBerichtenLoggingSaverService technischeBerichtenLoggingSaverService;
 
 	@Override
@@ -73,26 +72,26 @@ public class WsbRestControllerLoggingFilter implements Filter
 	{
 		if (LOG.isDebugEnabled())
 		{
-			HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-			HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+			var httpServletRequest = (HttpServletRequest) request;
+			var httpServletResponse = (HttpServletResponse) response;
 
-			Map<String, String> requestMap = getTypesafeRequestMap(httpServletRequest);
-			BufferedRequestWrapper bufferedRequest = new BufferedRequestWrapper(httpServletRequest);
-			BufferedResponseWrapper bufferedResponse = new BufferedResponseWrapper(httpServletResponse);
+			var requestMap = getTypesafeRequestMap(httpServletRequest);
+			var bufferedRequest = new BufferedRequestWrapper(httpServletRequest);
+			var bufferedResponse = new BufferedResponseWrapper(httpServletResponse);
 
 			Long exchangeId = null;
 			try
 			{
-				exchangeId = technischeBerichtenLoggingSaverService.logRequest("FHIR_REQ_IN",
-					"Method:" + httpServletRequest.getMethod() + "|URI:" + httpServletRequest.getPathInfo() + "/" + requestMap,
+				exchangeId = technischeBerichtenLoggingSaverService.logRequest("REST_REQ_IN",
+					"Method:" + httpServletRequest.getMethod() + "|URI:" + httpServletRequest.getRequestURI() + "/" + requestMap,
 					payloadText(bufferedRequest.getRequestBody()) + "|RemoteAddr:" + httpServletRequest.getRemoteAddr());
 				chain.doFilter(bufferedRequest, bufferedResponse);
-				technischeBerichtenLoggingSaverService.logResponse("FHIR_RESP_OUT", exchangeId,
+				technischeBerichtenLoggingSaverService.logResponse("REST_RESP_OUT", exchangeId,
 					payloadText(bufferedResponse.getContent()) + "|Status:" + bufferedResponse.getStatus());
 			}
 			catch (Exception e)
 			{
-				technischeBerichtenLoggingSaverService.logResponse("FHIR_FAULT_OUT", exchangeId, e.getMessage());
+				technischeBerichtenLoggingSaverService.logResponse("REST_FAULT_OUT", exchangeId, e.getMessage());
 				LOG.error("Error in request: ", e);
 				throw e;
 			}
@@ -103,7 +102,7 @@ public class WsbRestControllerLoggingFilter implements Filter
 		}
 	}
 
-	private String payloadText(String payload)
+	protected String payloadText(String payload)
 	{
 		if (StringUtil.containsControlCharacter(payload))
 		{
@@ -119,14 +118,14 @@ public class WsbRestControllerLoggingFilter implements Filter
 		}
 	}
 
-	private Map<String, String> getTypesafeRequestMap(HttpServletRequest request)
+	protected Map<String, String> getTypesafeRequestMap(HttpServletRequest request)
 	{
 		Map<String, String> typesafeRequestMap = new HashMap<String, String>();
 		Enumeration<?> requestParamNames = request.getParameterNames();
 		while (requestParamNames.hasMoreElements())
 		{
-			String requestParamName = (String) requestParamNames.nextElement();
-			String requestParamValue = request.getParameter(requestParamName);
+			var requestParamName = (String) requestParamNames.nextElement();
+			var requestParamValue = request.getParameter(requestParamName);
 			typesafeRequestMap.put(requestParamName, requestParamValue);
 		}
 		return typesafeRequestMap;
@@ -173,9 +172,9 @@ public class WsbRestControllerLoggingFilter implements Filter
 
 		String getRequestBody() throws IOException
 		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(this.getInputStream()));
+			var reader = new BufferedReader(new InputStreamReader(this.getInputStream()));
 			String line = null;
-			StringBuilder inputBuffer = new StringBuilder();
+			var inputBuffer = new StringBuilder();
 			do
 			{
 				line = reader.readLine();

@@ -22,25 +22,25 @@ package nl.rivm.screenit.main.model.mamma.beoordeling;
  */
 
 import nl.rivm.screenit.model.BeoordelingsEenheid;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.model.IModel;
 
 public class MammaBeWerklijstZoekObject extends MammaBaseWerklijstZoekObject
 {
-	private IModel<InstellingGebruiker> instellingGebruiker;
+	private IModel<OrganisatieMedewerker> organisatieMedewerker;
 
 	private IModel<BeoordelingsEenheid> beoordelingsEenheid;
 
-	public InstellingGebruiker getInstellingGebruiker()
+	public OrganisatieMedewerker getOrganisatieMedewerker()
 	{
-		return ModelUtil.nullSafeGet(instellingGebruiker);
+		return ModelUtil.nullSafeGet(organisatieMedewerker);
 	}
 
-	public void setInstellingGebruiker(InstellingGebruiker instellingGebruiker)
+	public void setOrganisatieMedewerker(OrganisatieMedewerker organisatieMedewerker)
 	{
-		this.instellingGebruiker = ModelUtil.sModel(instellingGebruiker);
+		this.organisatieMedewerker = ModelUtil.sModel(organisatieMedewerker);
 	}
 
 	public BeoordelingsEenheid getBeoordelingsEenheid()
@@ -56,7 +56,7 @@ public class MammaBeWerklijstZoekObject extends MammaBaseWerklijstZoekObject
 	@Override
 	public void detach()
 	{
-		ModelUtil.nullSafeDetach(instellingGebruiker);
+		ModelUtil.nullSafeDetach(organisatieMedewerker);
 		ModelUtil.nullSafeDetach(beoordelingsEenheid);
 		super.detach();
 	}

@@ -23,21 +23,21 @@ package nl.rivm.screenit.service;
 
 import java.util.List;
 
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieParameter;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 
 public interface OrganisatieParameterService
 {
-	<T> T getOrganisatieParameter(Instelling organisatie, OrganisatieParameterKey parameterKey);
+	<T> T getOrganisatieParameter(Organisatie organisatie, OrganisatieParameterKey parameterKey);
 
-	<T> T getOrganisatieParameter(Instelling organisatie, OrganisatieParameterKey parameterKey, T defaultValue);
+	<T> T getOrganisatieParameter(Organisatie organisatie, OrganisatieParameterKey parameterKey, T defaultValue);
 
-	void saveOrUpdateOrganisatieParameters(List<OrganisatieParameter> parameters, InstellingGebruiker loggedInInstellingGebruiker);
+	void saveOrUpdateOrganisatieParameters(List<OrganisatieParameter> parameters, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	OrganisatieParameter getParameter(Instelling organisatie, OrganisatieParameterKey parameterKey);
+	OrganisatieParameter getParameter(Organisatie organisatie, OrganisatieParameterKey parameterKey);
 
-	OrganisatieParameter maakOfUpdateOrganisatieParameter(OrganisatieParameterKey key, String value, Instelling organisatie);
+	OrganisatieParameter maakOfUpdateOrganisatieParameter(OrganisatieParameterKey key, String value, Organisatie organisatie);
 
 }

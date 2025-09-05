@@ -22,9 +22,8 @@ package nl.rivm.screenit.main.web.gebruiker.rapportage;
  */
 
 import nl.rivm.screenit.main.service.IdpSingleSignOnService;
-import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -40,9 +39,9 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	constraint = ShiroConstraint.HasPermission,
 	level = ToegangLevel.EIGEN,
-	recht = { Recht.GEBRUIKER_RAPPORTAGE_WEBFOCUS },
+	recht = { Recht.MEDEWERKER_RAPPORTAGE_WEBFOCUS },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
-public class RapportagePage extends GebruikerBasePage
+public class RapportagePage extends MedewerkerBasePage
 {
 	@SpringBean
 	private IdpSingleSignOnService idpService;
@@ -54,7 +53,7 @@ public class RapportagePage extends GebruikerBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				final String ssoUrl = idpService.createWebFocusSsoUrl(ScreenitSession.get().getLoggedInInstellingGebruiker());
+				final String ssoUrl = idpService.createWebFocusSsoUrl(getIngelogdeOrganisatieMedewerker());
 				final String javaScriptString = String.format("window.open('%s', '_blank')", ssoUrl);
 				target.appendJavaScript(javaScriptString);
 			}
@@ -65,8 +64,8 @@ public class RapportagePage extends GebruikerBasePage
 	}
 
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.RAPPORTAGE;
+		return MedewerkerHoofdMenuItem.RAPPORTAGE;
 	}
 }

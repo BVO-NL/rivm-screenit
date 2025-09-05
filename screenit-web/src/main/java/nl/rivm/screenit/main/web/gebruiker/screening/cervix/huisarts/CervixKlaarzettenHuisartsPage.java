@@ -32,7 +32,8 @@ import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.wicketstuff.shiro.ShiroConstraint;
 
-@SecurityConstraint(constraint = ShiroConstraint.HasPermission, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX }, recht = { Recht.GEBRUIKER_KLAARZETTEN_CERVIX_HUISARTS })
+@SecurityConstraint(constraint = ShiroConstraint.HasPermission, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX }, recht = {
+	Recht.MEDEWERKER_KLAARZETTEN_CERVIX_HUISARTS })
 public class CervixKlaarzettenHuisartsPage extends CervixScreeningBasePage
 {
 	private CervixHuisartsOpvraagPanel huisartsZoekPanel;

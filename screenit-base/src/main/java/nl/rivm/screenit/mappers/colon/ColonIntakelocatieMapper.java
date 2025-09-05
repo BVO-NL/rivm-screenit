@@ -35,5 +35,5 @@ public interface ColonIntakelocatieMapper
 	@Mapping(source = "naam", target = "naam")
 	@Mapping(source = "aantalGeprognostiseerdeRoosterblokken", target = "aantalGeprognosticeerdeAfspraakslots")
 	@Mapping(target = "huidigAantalAfspraakslots", ignore = true)
-	ColonIntakelocatieDto intakelocatieToDto(ColonIntakelocatie instelling);
+	ColonIntakelocatieDto intakelocatieToDto(ColonIntakelocatie intakelocatie);
 }

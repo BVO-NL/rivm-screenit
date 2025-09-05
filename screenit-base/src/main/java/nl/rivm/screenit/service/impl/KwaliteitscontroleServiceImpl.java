@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.colon.SKMLInterneControleSet;
 import nl.rivm.screenit.model.colon.SKMLSentineelControleBarcode;
 import nl.rivm.screenit.model.colon.enums.SKMLSentineelControleType;
@@ -118,7 +118,7 @@ public class KwaliteitscontroleServiceImpl implements KwaliteitscontroleService
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void saveOrUpdateInterneIdSets(List<SKMLInterneControleSet> list, InstellingGebruiker instellingGebruiker)
+	public void saveOrUpdateInterneIdSets(List<SKMLInterneControleSet> list, OrganisatieMedewerker organisatieMedewerker)
 	{
 		boolean succes = true;
 		for (SKMLInterneControleSet set : list)
@@ -138,7 +138,7 @@ public class KwaliteitscontroleServiceImpl implements KwaliteitscontroleService
 		}
 		if (succes)
 		{
-			logService.logGebeurtenis(LogGebeurtenis.SKML_INTERN_CONTROLE_SET_GEWIJZIGD, instellingGebruiker, Bevolkingsonderzoek.COLON);
+			logService.logGebeurtenis(LogGebeurtenis.SKML_INTERN_CONTROLE_SET_GEWIJZIGD, organisatieMedewerker, Bevolkingsonderzoek.COLON);
 		}
 		else
 		{

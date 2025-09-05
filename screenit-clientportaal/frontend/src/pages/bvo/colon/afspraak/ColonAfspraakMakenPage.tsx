@@ -35,7 +35,6 @@ import {getString} from "../../../../utils/TekstPropertyUtil"
 import {getHuidigeIntakeAfspraak} from "../../../../api/ColonAfspraakAfzeggenThunkAction"
 import {useSelector} from "react-redux"
 import {State} from "../../../../datatypes/State"
-import {AxiosResponse} from "axios"
 import {Formik} from "formik"
 import bvoStyle from "../../../../components/BvoStyle.module.scss"
 import ScreenitBackend from "../../../../utils/Backend"
@@ -144,12 +143,8 @@ const ColonAfspraakMakenPage = () => {
 
 	const zoekAfspraken = useCallback((filter: VrijSlotZonderKamerFilter) => {
 		setZoekFilter(filter)
-		return ScreenitBackend.post("/colon/afspraak/zoeken", filter)
-			.then(
-				(response: AxiosResponse<VrijSlotZonderKamer[]>) => {
-					setVrijeSloten(response.data)
-				},
-			)
+		return ScreenitBackend.post<VrijSlotZonderKamer[]>("colon/afspraak/zoeken", {json: filter}).json()
+			.then((response: VrijSlotZonderKamer[]) => setVrijeSloten(response))
 			.catch(() => {
 				dispatch(createShowToastAction({
 					title: getString(properties.toast.errors.zoeken.title),
@@ -174,7 +169,7 @@ const ColonAfspraakMakenPage = () => {
 						  properties.page.description.maken)}
 				  blobTitle={!isNieuweAfspraak ? getString(properties.blob.title) : ""}
 				  blobText={!isNieuweAfspraak && huidigeIntakeAfspraak ? getString(properties.blob.afspraak.moment, [huidigeIntakeAfspraak.weergaveAfspraakmoment]) : ""}
-				  blobAdresLocatie={!isNieuweAfspraak && huidigeIntakeAfspraak ? getString(properties.blob.afspraak.locatie, [huidigeIntakeAfspraak.naamInstelling, splitAdresString(huidigeIntakeAfspraak.adresString)]) : ""}>
+				  blobAdresLocatie={!isNieuweAfspraak && huidigeIntakeAfspraak ? getString(properties.blob.afspraak.locatie, [huidigeIntakeAfspraak.naamIntakelocatie, splitAdresString(huidigeIntakeAfspraak.adresString)]) : ""}>
 
 			<Row className={styles.style}>
 				<Col md={5}>

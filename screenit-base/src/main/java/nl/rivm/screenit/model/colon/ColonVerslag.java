@@ -37,9 +37,9 @@ import jakarta.persistence.TemporalType;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
@@ -67,10 +67,10 @@ public class ColonVerslag<T extends VerslagContent<?>> extends AbstractHibernate
 	private OntvangenCdaBericht ontvangenCdaBericht;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	private Instelling uitvoerderOrganisatie;
+	private Organisatie uitvoerderOrganisatie;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	private Gebruiker uitvoerderMedewerker;
+	private Medewerker uitvoerderMedewerker;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date datumVerwerkt;
@@ -79,7 +79,7 @@ public class ColonVerslag<T extends VerslagContent<?>> extends AbstractHibernate
 	private Date datumOnderzoek;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	private InstellingGebruiker invoerder;
+	private OrganisatieMedewerker invoerder;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)

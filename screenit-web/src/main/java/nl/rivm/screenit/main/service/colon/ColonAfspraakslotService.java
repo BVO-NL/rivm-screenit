@@ -30,7 +30,7 @@ import nl.rivm.screenit.main.exception.BeperkingException;
 import nl.rivm.screenit.main.exception.BulkAanmakenException;
 import nl.rivm.screenit.main.exception.BulkVerwijderenException;
 import nl.rivm.screenit.main.exception.ValidatieException;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.RoosterListViewFilter;
 import nl.rivm.screenit.model.colon.dto.ColonAfspraakslotDto;
@@ -44,20 +44,20 @@ import com.google.common.collect.Range;
 
 public interface ColonAfspraakslotService
 {
-	void createAfspraakslot(ColonAfspraakslotDto afspraakslotDto, InstellingGebruiker instellingGebruiker)
+	void createAfspraakslot(ColonAfspraakslotDto afspraakslotDto, OrganisatieMedewerker organisatieMedewerker)
 		throws ValidatieException, OpslaanVerwijderenTijdBlokException, BeperkingException, BulkAanmakenException;
 
 	void checkEindTijdOpZelfdeDag(LocalDateTime startDateTime, LocalDateTime endDateTime, ColonIntakelocatie intakelocatie) throws ValidatieException;
 
 	void checkCapaciteitBerekening(ColonAfspraakslot afspraakslot, ColonIntakelocatie intakelocatie) throws ValidatieException;
 
-	void updateAfspraakslot(Long id, ColonAfspraakslotDto afspraakslotDto, InstellingGebruiker instellingGebruiker)
+	void updateAfspraakslot(Long id, ColonAfspraakslotDto afspraakslotDto, OrganisatieMedewerker organisatieMedewerker)
 		throws ValidatieException, OpslaanVerwijderenTijdBlokException, BeperkingException;
 
-	void deleteAfspraakslot(Long id, InstellingGebruiker instellingGebruiker)
+	void deleteAfspraakslot(Long id, OrganisatieMedewerker organisatieMedewerker)
 		throws ValidatieException, OpslaanVerwijderenTijdBlokException;
 
-	void bulkDeleteAfspraakslots(List<Long> id, InstellingGebruiker instellingGebruiker, boolean alleenValidatie)
+	void bulkDeleteAfspraakslots(List<Long> id, OrganisatieMedewerker organisatieMedewerker, boolean alleenValidatie)
 		throws BulkVerwijderenException;
 
 	List<ColonAfspraakslotDto> getAfspraakslots(LocalDate startDate, LocalDate endDate, ColonIntakelocatie intakeLocatie);

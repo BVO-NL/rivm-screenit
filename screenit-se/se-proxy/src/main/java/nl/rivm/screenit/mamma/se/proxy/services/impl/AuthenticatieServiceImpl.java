@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.services.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -22,7 +22,7 @@ package nl.rivm.screenit.mamma.se.proxy.services.impl;
  */
 
 import nl.rivm.screenit.mamma.se.proxy.dao.AuthenticatieDao;
-import nl.rivm.screenit.mamma.se.proxy.model.IngelogdeGebruikerDto;
+import nl.rivm.screenit.mamma.se.proxy.model.IngelogdeMedewerkerDto;
 import nl.rivm.screenit.mamma.se.proxy.model.LoginContext;
 import nl.rivm.screenit.mamma.se.proxy.services.AuthenticatieService;
 import nl.rivm.screenit.mamma.se.proxy.util.DateUtil;
@@ -40,21 +40,21 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 	private AuthenticatieDao authenticatieDao;
 
 	@Override
-	public IngelogdeGebruikerDto getIngelogdeGebruiker(LoginContext loginContext)
+	public IngelogdeMedewerkerDto getIngelogdeMedewerker(LoginContext loginContext)
 	{
-		return authenticatieDao.getIngelogdeGebruiker(loginContext);
+		return authenticatieDao.getIngelogdeMedewerker(loginContext);
 	}
 
 	@Override
-	public void insertOrUpdateIngelogdeGebruiker(IngelogdeGebruikerDto ingelogdeGebruikerDto)
+	public void insertOrUpdateIngelogdeMedewerker(IngelogdeMedewerkerDto ingelogdeOrganisatieMedewerkerDto)
 	{
-		authenticatieDao.insertOrUpdateIngelogdeGebruiker(ingelogdeGebruikerDto);
+		authenticatieDao.insertOrUpdateIngelogdeMedewerker(ingelogdeOrganisatieMedewerkerDto);
 	}
 
 	@Override
-	public void updateIngelogdeGebruiker(IngelogdeGebruikerDto ingelogdeGebruikerDto)
+	public void updateIngelogdeMedewerker(IngelogdeMedewerkerDto ingelogdeOrganisatieMedewerkerDto)
 	{
-		authenticatieDao.updateIngelogdeGebruiker(ingelogdeGebruikerDto);
+		authenticatieDao.updateIngelogdeMedewerker(ingelogdeOrganisatieMedewerkerDto);
 	}
 
 	@Override
@@ -64,9 +64,9 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 	}
 
 	@Override
-	public void verwijderOudeIngelogdeGebruikers()
+	public void verwijderOudeIngelogdeMedewerkers()
 	{
-		authenticatieDao.verwijderOudeIngelogdeGebruikers();
+		authenticatieDao.verwijderOudeIngelogdeMedewerkers();
 	}
 
 	@Override
@@ -79,8 +79,8 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 	@Override
 	public void administreerOnlineInlog(LoginContext loginContext, String loginResponse)
 	{
-		IngelogdeGebruikerDto ingelogdeGebruikerDto = new IngelogdeGebruikerDto(loginContext.getGebruikersnaam(), loginContext.getEncryptedWachtwoord(),
+		IngelogdeMedewerkerDto ingelogdeOrganisatieMedewerkerDto = new IngelogdeMedewerkerDto(loginContext.getGebruikersnaam(), loginContext.getEncryptedWachtwoord(),
 			DateUtil.getCurrentDateTime().toLocalDate(), loginContext.getYubikeyIdentificatie(), loginResponse, loginContext.getAccountId());
-		insertOrUpdateIngelogdeGebruiker(ingelogdeGebruikerDto);
+		insertOrUpdateIngelogdeMedewerker(ingelogdeOrganisatieMedewerkerDto);
 	}
 }

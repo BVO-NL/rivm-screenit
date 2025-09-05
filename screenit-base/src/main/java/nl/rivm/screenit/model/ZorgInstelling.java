@@ -33,7 +33,7 @@ import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
-public class ZorgInstelling extends Instelling
+public class ZorgInstelling extends Organisatie
 {
 
 	@Serial

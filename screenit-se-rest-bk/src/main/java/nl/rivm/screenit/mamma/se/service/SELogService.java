@@ -26,14 +26,14 @@ import java.util.List;
 
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 
 public interface SELogService
 {
-	void logError(LogGebeurtenis logGebeurtenis, Account account, Client client, MammaScreeningsEenheid screeningsEenheid, List<Instelling> instellingen,
-				  LocalDateTime datumTijd, String melding);
+	void logError(LogGebeurtenis logGebeurtenis, Account account, Client client, MammaScreeningsEenheid screeningsEenheid, List<Organisatie> organisaties,
+		LocalDateTime datumTijd, String melding);
 
 	void logInfo(LogGebeurtenis logGebeurtenis, Account account, String seCode, LocalDateTime datumTijd, String message);
 

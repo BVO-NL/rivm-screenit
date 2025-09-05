@@ -65,6 +65,6 @@ public class MammaClientVerslagenOverzichtPanel extends ClientVerslagenOverzicht
 		List<Bevolkingsonderzoek> bevolkingsonderzoeken = ScreenitSession.get().getOnderzoeken();
 		IModel<Client> clientModel = getModel();
 		return bevolkingsonderzoeken.contains(Bevolkingsonderzoek.MAMMA)
-			&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_MAMMA_FOLLOW_UP_VERSLAG, Actie.INZIEN, clientModel.getObject());
+			&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_MAMMA_FOLLOW_UP_VERSLAG, Actie.INZIEN, clientModel.getObject());
 	}
 }

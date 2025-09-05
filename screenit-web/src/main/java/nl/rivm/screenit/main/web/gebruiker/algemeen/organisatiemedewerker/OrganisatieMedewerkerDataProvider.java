@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatiemedewerker;
 import java.util.Iterator;
 
 import nl.rivm.screenit.main.service.MedewerkerService;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
@@ -35,7 +35,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import static nl.rivm.screenit.main.util.WicketSpringDataUtil.toSpringSort;
 
-public class OrganisatieMedewerkerDataProvider extends SortableDataProvider<InstellingGebruiker, String>
+public class OrganisatieMedewerkerDataProvider extends SortableDataProvider<OrganisatieMedewerker, String>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -43,9 +43,9 @@ public class OrganisatieMedewerkerDataProvider extends SortableDataProvider<Inst
 	@SpringBean
 	private MedewerkerService medewerkerService;
 
-	private IModel<InstellingGebruiker> searchObjectModel;
+	private IModel<OrganisatieMedewerker> searchObjectModel;
 
-	public OrganisatieMedewerkerDataProvider(IModel<InstellingGebruiker> searchObjectModel, String defaultSortProperty)
+	public OrganisatieMedewerkerDataProvider(IModel<OrganisatieMedewerker> searchObjectModel, String defaultSortProperty)
 	{
 		setSort(new SortParam<String>(defaultSortProperty, true));
 		this.searchObjectModel = searchObjectModel;
@@ -55,17 +55,17 @@ public class OrganisatieMedewerkerDataProvider extends SortableDataProvider<Inst
 	@Override
 	public long size()
 	{
-		return medewerkerService.countInstellingGebruiker(ModelUtil.nullSafeGet(searchObjectModel));
+		return medewerkerService.countOrganisatieMedewerkers(ModelUtil.nullSafeGet(searchObjectModel));
 	}
 
 	@Override
-	public Iterator<? extends InstellingGebruiker> iterator(long first, long count)
+	public Iterator<? extends OrganisatieMedewerker> iterator(long first, long count)
 	{
-		return medewerkerService.zoekOrganisatieMedewerker(ModelUtil.nullSafeGet(searchObjectModel), first, count, toSpringSort(getSort())).iterator();
+		return medewerkerService.zoekOrganisatieMedewerkers(ModelUtil.nullSafeGet(searchObjectModel), first, count, toSpringSort(getSort())).iterator();
 	}
 
 	@Override
-	public IModel<InstellingGebruiker> model(InstellingGebruiker object)
+	public IModel<OrganisatieMedewerker> model(OrganisatieMedewerker object)
 	{
 		return ModelUtil.sModel(object);
 	}

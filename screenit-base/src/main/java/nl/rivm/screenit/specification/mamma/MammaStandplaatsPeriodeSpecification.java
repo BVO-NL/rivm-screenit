@@ -33,7 +33,7 @@ import jakarta.persistence.criteria.JoinType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid_;
@@ -70,12 +70,12 @@ public class MammaStandplaatsPeriodeSpecification
 			var standplaatsJoin = standplaatsJoin(r);
 			var screeningsEenheidJoin = join(r, MammaStandplaatsPeriode_.screeningsEenheid);
 			var beoordelingsEenheidJoin = join(screeningsEenheidJoin, MammaScreeningsEenheid_.beoordelingsEenheid);
-			var centraleEenheidJoin = join(beoordelingsEenheidJoin, Instelling_.parent);
+			var centraleEenheidJoin = join(beoordelingsEenheidJoin, Organisatie_.parent);
 
 			return cb.and(
 				cb.equal(standplaatsJoin, standplaats),
 				cb.isTrue(standplaatsJoin.get(MammaStandplaats_.actief)),
-				cb.isTrue(centraleEenheidJoin.get(Instelling_.actief)),
+				cb.isTrue(centraleEenheidJoin.get(Organisatie_.actief)),
 				cb.greaterThanOrEqualTo(r.get(MammaStandplaatsPeriode_.totEnMet), peilDatumTijd)
 			);
 		};

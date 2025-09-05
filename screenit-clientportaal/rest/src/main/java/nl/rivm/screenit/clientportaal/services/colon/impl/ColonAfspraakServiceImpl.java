@@ -87,8 +87,8 @@ public class ColonAfspraakServiceImpl implements ColonAfspraakService
 		ColonVrijSlotZonderKamerDto vrijColonSlot = colonVrijSlotZonderKamerMapper.vrijSlotToColonVrijSlotZonderKamerDto(vrijSlot);
 
 		ColonIntakelocatie intakelocatie = hibernateService.load(ColonIntakelocatie.class, vrijColonSlot.getIntakelocatieId());
-		vrijColonSlot.setAdres(intakelocatie.getEersteAdres().getAdres());
-		vrijColonSlot.setPostcode(intakelocatie.getEersteAdres().getPostcode());
+		vrijColonSlot.setAdres(intakelocatie.getAdres().getAdres());
+		vrijColonSlot.setPostcode(intakelocatie.getAdres().getPostcode());
 		vrijColonSlot.setZiekenhuis(intakelocatie.getNaam());
 		return vrijColonSlot;
 	}

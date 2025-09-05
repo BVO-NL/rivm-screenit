@@ -37,7 +37,7 @@ public class MammaCentraleEenheidServiceImpl implements MammaCentraleEenheidServ
 	@Override
 	public String magWordenGeinactiveerd(CentraleEenheid centraleEenheid)
 	{
-		if (centraleEenheid.getChildren().stream().anyMatch(childInstelling -> childInstelling instanceof BeoordelingsEenheid && childInstelling.getActief()))
+		if (centraleEenheid.getChildren().stream().anyMatch(childOrganisatie -> childOrganisatie instanceof BeoordelingsEenheid && childOrganisatie.getActief()))
 		{
 			return "centraleEenheid.inactiveren.actieveBE";
 		}

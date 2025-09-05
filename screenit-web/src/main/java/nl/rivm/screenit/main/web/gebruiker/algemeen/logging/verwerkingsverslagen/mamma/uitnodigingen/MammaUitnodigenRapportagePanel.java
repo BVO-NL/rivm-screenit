@@ -54,7 +54,7 @@ public class MammaUitnodigenRapportagePanel extends GenericPanel<MammaUitnodigen
 		add(DateLabel.forDatePattern("datumVerwerking", new Model<>(uitnodigenRapportage.getDatumVerwerking()), "dd-MM-yyyy HH:mm:ss"));
 
 		RepeatingView repeatingView = new RepeatingView("soTables");
-		ToegangLevel toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.GEBRUIKER_MAMMA_UITNODIGEN_VERWERKING_VERSLAG);
+		ToegangLevel toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_MAMMA_UITNODIGEN_VERWERKING_VERSLAG);
 
 		if (toegangLevel == ToegangLevel.LANDELIJK)
 		{

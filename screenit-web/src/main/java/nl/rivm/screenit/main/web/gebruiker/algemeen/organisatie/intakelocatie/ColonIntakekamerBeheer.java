@@ -41,8 +41,8 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.service.AutorisatieService;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.colon.ColonIntakelocatieService;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
@@ -59,14 +59,14 @@ import org.apache.wicket.validation.validator.StringValidator;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = {
-	Recht.GEBRUIKER_BEHEER_CC_LOCATIES }, level = ToegangLevel.INSTELLING, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
+	Recht.MEDEWERKER_BEHEER_CC_LOCATIES }, level = ToegangLevel.ORGANISATIE, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class ColonIntakekamerBeheer extends OrganisatieBeheer
 {
 	@SpringBean
 	private HibernateService hibernateService;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private ColonIntakelocatieService intakelocatieService;
@@ -82,7 +82,7 @@ public class ColonIntakekamerBeheer extends OrganisatieBeheer
 	public ColonIntakekamerBeheer()
 	{
 		var organisatie = getCurrentSelectedOrganisatie();
-		var actie = autorisatieService.getActieVoorOrganisatie(ScreenitSession.get().getLoggedInInstellingGebruiker(), organisatie, Recht.GEBRUIKER_BEHEER_CC_LOCATIES);
+		var actie = autorisatieService.getActieVoorOrganisatie(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), organisatie, Recht.MEDEWERKER_BEHEER_CC_LOCATIES);
 		inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 
 		add(new OrganisatiePaspoortPanel("paspoort", ModelUtil.cRModel(organisatie)));
@@ -92,7 +92,7 @@ public class ColonIntakekamerBeheer extends OrganisatieBeheer
 			protected void onSaveOrUpdateKamers(AjaxRequestTarget target, ColonIntakelocatie intakelocatie)
 			{
 				BasePage.markeerFormulierenOpgeslagen(target);
-				instellingService.saveOrUpdateColoscopieCentrum(intakelocatie);
+				organisatieService.saveOrUpdateColoscopieCentrum(intakelocatie);
 				info("Kamergegevens zijn opgeslagen");
 			}
 		});
@@ -122,7 +122,7 @@ public class ColonIntakekamerBeheer extends OrganisatieBeheer
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				intakelocatieService.saveIntakelocatieBeschrijving((ColonIntakelocatie) getForm().getDefaultModelObject(), locatieBeschrijvingModel.getObject(),
-					ScreenitSession.get().getLoggedInInstellingGebruiker());
+					ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				info("Locatiebeschrijving en/of koppeling met zorginstelling zijn opgeslagen");
 				BasePage.markeerFormulierenOpgeslagen(target);
 			}
@@ -145,7 +145,7 @@ public class ColonIntakekamerBeheer extends OrganisatieBeheer
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				intakelocatieService.saveIntakelocatieDigitaleIntake((ColonIntakelocatie) getForm().getDefaultModelObject(), digitaleIntakeTekstModel.getObject(),
-					ScreenitSession.get().getLoggedInInstellingGebruiker());
+					ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				info("Digitale intake informatie is opgeslagen");
 				BasePage.markeerFormulierenOpgeslagen(target);
 			}
@@ -173,7 +173,7 @@ public class ColonIntakekamerBeheer extends OrganisatieBeheer
 				info("De tijdsduur afspraak is aangepast");
 				var parameter = organisatieParameterService.maakOfUpdateOrganisatieParameter(OrganisatieParameterKey.COLON_DUUR_AFSPRAAK_IN_MINUTEN, model.getObject().toString(),
 					getCurrentSelectedOrganisatie());
-				organisatieParameterService.saveOrUpdateOrganisatieParameters(List.of(parameter), ScreenitSession.get().getLoggedInInstellingGebruiker());
+				organisatieParameterService.saveOrUpdateOrganisatieParameters(List.of(parameter), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 			}
 		};
 		form.add(opslaan);

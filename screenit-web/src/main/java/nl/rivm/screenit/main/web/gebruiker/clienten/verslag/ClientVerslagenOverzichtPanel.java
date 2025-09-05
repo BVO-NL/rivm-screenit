@@ -121,16 +121,16 @@ public abstract class ClientVerslagenOverzichtPanel<V extends Verslag<?, ?>> ext
 				switch (model.getObject().getType())
 				{
 				case MDL:
-					inzien = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN, Actie.INZIEN, clientModel.getObject());
+					inzien = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN, Actie.INZIEN, clientModel.getObject());
 					break;
 				case PA_LAB:
-					inzien = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_UITSLAGPATHOLOGIEONTVANGEN, Actie.INZIEN, clientModel.getObject());
+					inzien = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_UITSLAGPATHOLOGIEONTVANGEN, Actie.INZIEN, clientModel.getObject());
 					break;
 				case CERVIX_CYTOLOGIE:
-					inzien = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CERVIX_CYTOLOGIE_VERSLAG, Actie.INZIEN, clientModel.getObject());
+					inzien = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CERVIX_CYTOLOGIE_VERSLAG, Actie.INZIEN, clientModel.getObject());
 					break;
 				case MAMMA_PA_FOLLOW_UP:
-					inzien = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_MAMMA_FOLLOW_UP_VERSLAG, Actie.INZIEN, clientModel.getObject());
+					inzien = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_MAMMA_FOLLOW_UP_VERSLAG, Actie.INZIEN, clientModel.getObject());
 					break;
 				default:
 					throw new IllegalStateException("Unexpected value: " + model.getObject().getType());

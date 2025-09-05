@@ -47,7 +47,7 @@ public class CervixLabformulierVoorCytologiePanel extends CervixLabformulierBase
 	@Override
 	protected Recht getRecht()
 	{
-		return Recht.GEBRUIKER_CERVIX_LABFORMULIEREN_ZOEKEN_VOOR_CYTOLOGIE;
+		return Recht.MEDEWERKER_CERVIX_LABFORMULIEREN_ZOEKEN_VOOR_CYTOLOGIE;
 	}
 
 	@Override

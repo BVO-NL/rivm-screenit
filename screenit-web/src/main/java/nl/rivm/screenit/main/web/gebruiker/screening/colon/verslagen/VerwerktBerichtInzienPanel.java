@@ -50,7 +50,7 @@ public abstract class VerwerktBerichtInzienPanel extends GenericPanel<OntvangenC
 		add(new Label("berichtType"));
 		add(new MultiLineLabel("content", CdaTransformerHelper.cdaToHtml(model.getObject())).setEscapeModelStrings(false));
 
-		final boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_VERSLAGEN, Actie.AANPASSEN);
+		final boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VERSLAGEN, Actie.AANPASSEN);
 
 		add(new IndicatingAjaxLink<OntvangenCdaBericht>("opnieuwAanbieden")
 		{

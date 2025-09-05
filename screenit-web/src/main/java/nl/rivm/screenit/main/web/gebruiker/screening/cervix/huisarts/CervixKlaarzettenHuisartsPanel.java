@@ -38,10 +38,8 @@ import nl.rivm.screenit.model.Aanhef;
 import nl.rivm.screenit.model.Woonplaats;
 import nl.rivm.screenit.model.Woonplaats_;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
-import nl.rivm.screenit.model.cervix.CervixRegioBrief;
 import nl.rivm.screenit.repository.algemeen.WoonplaatsRepository;
 import nl.rivm.screenit.service.MailService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -52,7 +50,6 @@ import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
@@ -79,11 +76,6 @@ public abstract class CervixKlaarzettenHuisartsPanel extends GenericPanel<Cervix
 	@SpringBean
 	private WoonplaatsRepository woonplaatsRepository;
 
-	@SpringBean
-	private HibernateService hibernateService;
-
-	private final Form<CervixHuisarts> form;
-
 	private final IModel<List<Woonplaats>> alleWoonplaatsen;
 
 	public CervixKlaarzettenHuisartsPanel(String id, CervixHuisarts arts)
@@ -92,21 +84,21 @@ public abstract class CervixKlaarzettenHuisartsPanel extends GenericPanel<Cervix
 
 		alleWoonplaatsen = ModelUtil.listRModel(woonplaatsRepository.findAll(Sort.by(Woonplaats_.NAAM)));
 
-		form = new ScreenitForm<>("form", getModel());
+		var form = new ScreenitForm<>("form", getModel());
 		add(form);
 
 		form.add(new Label("agbcode"));
 
-		String laatsteBrief = "";
+		var laatsteBrief = "";
 		if (arts.getId() != null)
 		{
-			CervixRegioBrief brief = huisartsService.getLaatsteRegistratieBrief(arts);
+			var brief = huisartsService.getLaatsteRegistratieBrief(arts);
 			if (brief != null)
 			{
 				laatsteBrief = "; laatste uitnodiging klaargezet op " + Constants.getDateFormat().format(brief.getCreatieDatum());
 			}
 		}
-		boolean uitEnovation = !CollectionUtils.isEmpty(arts.getHuisartsLocaties());
+		var uitEnovation = !CollectionUtils.isEmpty(arts.getHuisartsLocaties());
 		form.add(new Label("agbStatus", arts.getId() != null ? "AGB is al geregistreerd" + laatsteBrief : uitEnovation ? "Informatie overgenomen van E-novation lijst" : "Nieuw"));
 		ComponentHelper.addTextField(form, "email", true, 100, String.class, false).add(EmailAddressValidator.getInstance());
 		ComponentHelper.addTextField(form, "postadres.straat", true, 43, String.class, false);
@@ -151,11 +143,11 @@ public abstract class CervixKlaarzettenHuisartsPanel extends GenericPanel<Cervix
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				CervixHuisarts arts = getModelObject();
-				String woonplaatsControleMelding = controleerWoonplaats(arts);
+				var arts = getModelObject();
+				var woonplaatsControleMelding = controleerWoonplaats(arts);
 				if (StringUtils.isBlank(woonplaatsControleMelding))
 				{
-					arts = huisartsService.maakOfWijzigUitstrijkendArts(arts, ScreenitSession.get().getLoggedInInstellingGebruiker());
+					arts = huisartsService.maakOfWijzigUitstrijkendArts(arts, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 					mailService.sendRegistratieMail(arts);
 					huisartsSyncService.sendData(arts);
 					if (!CollectionUtils.isEmpty(arts.getHuisartsLocaties()))
@@ -189,7 +181,7 @@ public abstract class CervixKlaarzettenHuisartsPanel extends GenericPanel<Cervix
 
 	private String controleerWoonplaats(CervixHuisarts huisarts)
 	{
-		Woonplaats woonplaats = huisarts.getPostadres().getWoonplaats();
+		var woonplaats = huisarts.getPostadres().getWoonplaats();
 		if (woonplaats.getGemeente() == null)
 		{
 			return "Er is geen gemeente gekoppeld aan woonplaats: " + woonplaats.getNaam() + ". Neem contact op met de helpdesk.";

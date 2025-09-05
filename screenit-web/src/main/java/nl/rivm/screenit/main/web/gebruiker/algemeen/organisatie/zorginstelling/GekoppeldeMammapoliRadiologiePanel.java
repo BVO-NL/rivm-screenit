@@ -24,11 +24,11 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.zorginstelling;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.Mammapoli;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.RadiologieAfdeling;
 import nl.rivm.screenit.model.ZorgInstelling;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
@@ -38,21 +38,21 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 public class GekoppeldeMammapoliRadiologiePanel extends GenericPanel<ZorgInstelling>
 {
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	public GekoppeldeMammapoliRadiologiePanel(String id, IModel<ZorgInstelling> model)
 	{
 		super(id, model);
 
-		var radiologieAfdelingen = instellingService.getChildrenOrganisaties(getModelObject(), RadiologieAfdeling.class);
-		var mammapolis = instellingService.getChildrenOrganisaties(getModelObject(), Mammapoli.class);
+		var radiologieAfdelingen = organisatieService.getChildrenOrganisaties(getModelObject(), RadiologieAfdeling.class);
+		var mammapolis = organisatieService.getChildrenOrganisaties(getModelObject(), Mammapoli.class);
 		add(new Label("mammapoliLijst", stringLocaties(mammapolis)));
 		add(new Label("radiologieAfdelingLijst", stringLocaties(radiologieAfdelingen)));
 	}
 
-	protected String stringLocaties(List<? extends Instelling> instellingLijst)
+	protected String stringLocaties(List<? extends Organisatie> organisaties)
 	{
-		var instellingNamen = instellingLijst.stream().map(Instelling::getNaam).collect(Collectors.toList());
-		return !instellingNamen.isEmpty() ? String.join(", ", instellingNamen) : "Er zijn geen afdelingen gekoppeld";
+		var organisatieNamen = organisaties.stream().map(Organisatie::getNaam).collect(Collectors.toList());
+		return !organisatieNamen.isEmpty() ? String.join(", ", organisatieNamen) : "Er zijn geen afdelingen gekoppeld";
 	}
 }

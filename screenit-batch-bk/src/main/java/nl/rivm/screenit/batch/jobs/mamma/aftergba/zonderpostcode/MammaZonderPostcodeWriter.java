@@ -27,7 +27,7 @@ import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.service.LogService;
@@ -44,8 +44,8 @@ public class MammaZonderPostcodeWriter extends BaseWriter<Client>
 	@Override
 	protected void write(Client client)
 	{
-		List<Instelling> dashboardInstellingen = List.of(client.getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie());
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_CLIENT_ZONDER_POSTCODE, dashboardInstellingen, null, client, "", Bevolkingsonderzoek.MAMMA);
+		List<Organisatie> dashboardOrganisaties = List.of(client.getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie());
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_CLIENT_ZONDER_POSTCODE, dashboardOrganisaties, null, client, "", Bevolkingsonderzoek.MAMMA);
 	}
 
 }

@@ -29,7 +29,7 @@ import properties from "../pages/bvo/mamma/afspraak/MammaAfspraakUitstellenPage.
 import {showToast} from "../utils/ToastUtil"
 
 export const maakUitstel = (standplaatsPeriode: KandidaatStandplaatsPeriode) => (dispatch: Dispatch) => {
-	return ScreenitBackend.post("/mamma/uitstel", standplaatsPeriode)
+	return ScreenitBackend.post("mamma/uitstel", {json: standplaatsPeriode})
 		.then(() => {
 			showToast(getString(properties.toast.title, [formatDateText(standplaatsPeriode.filter.vanaf)]),
 				getString(properties.toast.description))

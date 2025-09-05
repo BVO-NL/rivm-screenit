@@ -25,12 +25,12 @@ import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.base.BasePage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieBeheer;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieZoeken;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.AutorisatieService;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -44,7 +44,7 @@ public class AanvullendeMammaAfdelingGegevensPage extends OrganisatieBeheer
 	private static final long serialVersionUID = 1L;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private AutorisatieService autorisatieService;
@@ -60,8 +60,8 @@ public class AanvullendeMammaAfdelingGegevensPage extends OrganisatieBeheer
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				Instelling instelling = (Instelling) model.getObject();
-				instellingService.saveOrUpdate(instelling);
+				Organisatie organisatie = (Organisatie) model.getObject();
+				organisatieService.saveOrUpdate(organisatie);
 				BasePage.markeerFormulierenOpgeslagen(target);
 				this.info("Gegevens zijn succesvol opgeslagen");
 			}
@@ -70,7 +70,7 @@ public class AanvullendeMammaAfdelingGegevensPage extends OrganisatieBeheer
 
 	protected void createAnnuleren(Form form)
 	{
-		AjaxLink<Gebruiker> annuleren = new AjaxLink<Gebruiker>("annuleren")
+		AjaxLink<Medewerker> annuleren = new AjaxLink<Medewerker>("annuleren")
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -90,9 +90,9 @@ public class AanvullendeMammaAfdelingGegevensPage extends OrganisatieBeheer
 		form.add(annuleren);
 	}
 
-	protected void setAlleenInzien(Instelling organisatie, Recht recht)
+	protected void setAlleenInzien(Organisatie organisatie, Recht recht)
 	{
-		Actie actie = autorisatieService.getActieVoorOrganisatie(ScreenitSession.get().getLoggedInInstellingGebruiker(), organisatie,
+		Actie actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie,
 			recht);
 		inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 	}

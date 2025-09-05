@@ -226,7 +226,7 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 			public void onClick(AjaxRequestTarget target)
 			{
 				ClientBrief brief = AfmeldformulierInzienPopupPanel.this.getModelObject().getAfmeldingBevestiging();
-				briefHerdrukkenService.opnieuwAanmaken(brief, ScreenitSession.get().getLoggedInAccount());
+				briefHerdrukkenService.opnieuwAanmaken(brief, ScreenitSession.get().getIngelogdAccount());
 
 				info(getString("info.afmeldingnogmaalsverstuurd"));
 				close(target);
@@ -234,13 +234,13 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 
 		}.setVisible(DossierStatus.INACTIEF.equals(dossier.getStatus()) && !isAfmeldingUitCISHistorie(getModelObject())));
 
-		boolean magTegenhouden = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
+		boolean magTegenhouden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
 		add(new AjaxLink<Void>("tegenhouden")
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				baseBriefService.briefTegenhouden(getLaatsteBrief(), ScreenitSession.get().getLoggedInAccount());
+				baseBriefService.briefTegenhouden(getLaatsteBrief(), ScreenitSession.get().getIngelogdAccount());
 				info(getString("info.brieftegenhouden"));
 				close(target);
 			}
@@ -250,7 +250,7 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				baseBriefService.briefNietMeerTegenhouden(getLaatsteBrief(), ScreenitSession.get().getLoggedInAccount());
+				baseBriefService.briefNietMeerTegenhouden(getLaatsteBrief(), ScreenitSession.get().getIngelogdAccount());
 				info(getString("info.briefactiveren"));
 				close(target);
 			}
@@ -281,7 +281,7 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 			protected void vervangDocument(UploadDocument uploadDocument, AjaxRequestTarget target)
 			{
 				if (baseAfmeldService.vervangAfmeldingDocument(uploadDocument, getModelObject(), document.getObject(), getLaatsteBrief(),
-					ScreenitSession.get().getLoggedInAccount()))
+					ScreenitSession.get().getIngelogdAccount()))
 				{
 					info(getString("info.vervangendocument"));
 					close(target);

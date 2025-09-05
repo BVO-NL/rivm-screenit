@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.generalis.medewerkerbeheer.MedewerkerBeheerListener;
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.service.WachtwoordService;
 
 import org.springframework.stereotype.Component;
@@ -34,15 +34,15 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class WachtwoordVerlooptHerinneringWriter extends BaseWriter<Gebruiker>
+public class WachtwoordVerlooptHerinneringWriter extends BaseWriter<Medewerker>
 {
 	private final WachtwoordService wachtwoordService;
 
 	@Override
-	protected void write(Gebruiker gebruiker) throws Exception
+	protected void write(Medewerker medewerker) throws Exception
 	{
-		LOG.info("Queue herinnering mail voor gebruiker ('{}')", gebruiker.getId());
-		wachtwoordService.verstuurWachtwoordVerlooptHerinneringMail(gebruiker);
+		LOG.info("Queue herinnering mail voor medewerker ('{}')", medewerker.getId());
+		wachtwoordService.verstuurWachtwoordVerlooptHerinneringMail(medewerker);
 
 		aantalContextOphogen(MedewerkerBeheerListener.TOTAAL_AANTAL_MAILS_KEY);
 	}

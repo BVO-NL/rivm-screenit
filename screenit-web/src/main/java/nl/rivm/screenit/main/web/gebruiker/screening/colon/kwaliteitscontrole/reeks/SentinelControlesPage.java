@@ -48,7 +48,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_BEHEER_SENTINELCONTROLES,
+	recht = Recht.MEDEWERKER_BEHEER_SENTINELCONTROLES,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class SentinelControlesPage extends KwaliteitscontroleBasePage
 {
@@ -71,7 +71,7 @@ public class SentinelControlesPage extends KwaliteitscontroleBasePage
 
 	public SentinelControlesPage()
 	{
-		add(new SentineelcontrolesForm("form").setEnabled(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_SENTINELCONTROLES, Actie.AANPASSEN)));
+		add(new SentineelcontrolesForm("form").setEnabled(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_SENTINELCONTROLES, Actie.AANPASSEN)));
 	}
 
 	private class SentineelcontrolesForm extends ScreenitForm<SKMLSentineelControleBarcode>
@@ -105,10 +105,10 @@ public class SentinelControlesPage extends KwaliteitscontroleBasePage
 						cup.setDatum(currentDateSupplier.getDate());
 						hibernateService.saveOrUpdate(cup);
 					}
-					logService.logGebeurtenis(LogGebeurtenis.SENTINEL_BARCODES_GEWIJZIGD, ScreenitSession.get().getLoggedInAccount(), Bevolkingsonderzoek.COLON);
+					logService.logGebeurtenis(LogGebeurtenis.SENTINEL_BARCODES_GEWIJZIGD, ScreenitSession.get().getIngelogdAccount(), Bevolkingsonderzoek.COLON);
 					info("ID's zijn opgeslagen.");
 				}
-			}.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_SENTINELCONTROLES, Actie.AANPASSEN)));
+			}.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_SENTINELCONTROLES, Actie.AANPASSEN)));
 		}
 
 		private List<SKMLSentineelControleBarcode> filterSentineelControleBarcodes(List<SKMLSentineelControleBarcode> allSentineels, int setNr)

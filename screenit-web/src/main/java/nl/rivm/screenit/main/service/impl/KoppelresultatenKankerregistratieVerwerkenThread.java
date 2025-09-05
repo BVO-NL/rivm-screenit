@@ -28,7 +28,7 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.service.IntervalcarcinoomProcessdataVerwerkingService;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -67,14 +67,14 @@ public class KoppelresultatenKankerregistratieVerwerkenThread extends OpenHibern
 
 	private final String fileName;
 
-	public KoppelresultatenKankerregistratieVerwerkenThread(File file, String contentType, String fileName, InstellingGebruiker ingelogdeGebruiker,
+	public KoppelresultatenKankerregistratieVerwerkenThread(File file, String contentType, String fileName, OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
 		Bevolkingsonderzoek bevolkingsonderzoek)
 	{
 		this.file = file;
 		this.contentType = contentType;
 		this.fileName = fileName;
 		this.bevolkingsonderzoek = bevolkingsonderzoek;
-		this.igId = ingelogdeGebruiker.getId();
+		this.igId = ingelogdeOrganisatieMedewerker.getId();
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class KoppelresultatenKankerregistratieVerwerkenThread extends OpenHibern
 			LOG.error("Er is een onbekende fout opgetreden.", e);
 		}
 		String melding = StringUtils.join(meldingen, "<br>");
-		logService.logGebeurtenis(LogGebeurtenis.UPLOAD_KOPPELRESULTATEN_KANKERREGISTRATIE, hibernateService.get(InstellingGebruiker.class, igId), melding, bevolkingsonderzoek);
+		logService.logGebeurtenis(LogGebeurtenis.UPLOAD_KOPPELRESULTATEN_KANKERREGISTRATIE, hibernateService.get(OrganisatieMedewerker.class, igId), melding, bevolkingsonderzoek);
 	}
 
 }

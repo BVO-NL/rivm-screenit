@@ -105,7 +105,7 @@ public class ProefBVOHeraanmeldenPage extends ProefBVOPage
 						{
 
 							meldingenModel.setObject(StringUtils.join(
-								proefBvoService.heraanmelden(ScreenitSession.get().getLoggedInAccount(), heraanmeldBriefFileUpload.writeToTempFile(),
+								proefBvoService.heraanmelden(ScreenitSession.get().getIngelogdAccount(), heraanmeldBriefFileUpload.writeToTempFile(),
 									heraanmeldBriefFileUpload.getContentType(), heraanmeldBriefFileUpload.getClientFileName(), clientenBestandFileUpload.writeToTempFile()),
 								"<br>"));
 							target.add(meldingen);

@@ -30,7 +30,7 @@ public interface BriefHerdrukkenService
 {
 	void opnieuwAanmaken(ClientBrief<?, ?, ?> brief, Account account);
 
-	void opnieuwAanmaken(List<? extends ClientBrief<?, ?, ?>> brieven, Account gebruiker);
+	void opnieuwAanmaken(List<? extends ClientBrief<?, ?, ?>> brieven, Account account);
 
 	boolean magHerdrukken(ClientBrief<?, ?, ?> brief);
 }

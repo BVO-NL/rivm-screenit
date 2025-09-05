@@ -21,13 +21,15 @@ package nl.rivm.screenit.mamma.se.security;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.annotation.PostConstruct;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruikerRol;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.model.Permissie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
@@ -35,10 +37,10 @@ import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.model.envers.RevisionInformationResolver;
 import nl.rivm.screenit.security.Constraint;
 import nl.rivm.screenit.security.IScreenitRealm;
-import nl.rivm.screenit.security.InstellingGebruikerToken;
 import nl.rivm.screenit.security.MultipleAuthenticationSourceCredentialsMatcher;
+import nl.rivm.screenit.security.OrganisatieMedewerkerToken;
 import nl.rivm.screenit.security.ScreenitPrincipal;
-import nl.rivm.screenit.service.GebruikersService;
+import nl.rivm.screenit.service.BaseMedewerkerService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.ScopeService;
 import nl.rivm.screenit.util.MedewerkerUtil;
@@ -65,8 +67,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
-
 @Component
 @Slf4j
 public class SERealm extends AuthorizingRealm implements IScreenitRealm
@@ -76,7 +76,7 @@ public class SERealm extends AuthorizingRealm implements IScreenitRealm
 	private static final int YUBIKEY_MAX_SESSION_COUNTER_INCREASE = 1000; 
 
 	@Autowired
-	private GebruikersService gebruikersService;
+	private BaseMedewerkerService medewerkerService;
 
 	@Autowired
 	private HibernateService hibernateService;
@@ -106,19 +106,19 @@ public class SERealm extends AuthorizingRealm implements IScreenitRealm
 		SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 		ScreenitPrincipal screenitPrincipal = (ScreenitPrincipal) principals.fromRealm(getName()).iterator().next();
 
-		if (InstellingGebruiker.class.isAssignableFrom(screenitPrincipal.getAccountClass()))
+		if (OrganisatieMedewerker.class.isAssignableFrom(screenitPrincipal.getAccountClass()))
 		{
-			InstellingGebruiker gebruiker = hibernateService.load(InstellingGebruiker.class, 
+			OrganisatieMedewerker organisatieMedewerker = hibernateService.load(OrganisatieMedewerker.class, 
 				screenitPrincipal.getAccountId());
-			final Gebruiker medewerker = gebruiker.getMedewerker();
-			if (Boolean.TRUE.equals(gebruiker.getActief()) && MedewerkerUtil.isMedewerkerActief(medewerker, currentDateSupplier.getDate()))
+			final Medewerker medewerker = organisatieMedewerker.getMedewerker();
+			if (Boolean.TRUE.equals(organisatieMedewerker.getActief()) && MedewerkerUtil.isMedewerkerActief(medewerker, currentDateSupplier.getDate()))
 			{
 				if (LOG.isTraceEnabled())
 				{
 					LOG.trace("AuthorizationInfo voor " + medewerker.getGebruikersnaam());
 				}
 
-				for (InstellingGebruikerRol rol : gebruiker.getRollen())
+				for (OrganisatieMedewerkerRol rol : organisatieMedewerker.getRollen())
 				{
 					if (rol.isRolActief())
 					{
@@ -127,7 +127,8 @@ public class SERealm extends AuthorizingRealm implements IScreenitRealm
 							if (!Boolean.FALSE.equals(permissie.getActief()))
 							{
 								Recht recht = permissie.getRecht();
-								if (CollectionUtils.isEmpty(recht.getOrganisatieTypes()) || recht.getOrganisatieTypes().contains(gebruiker.getOrganisatie().getOrganisatieType()))
+								if (CollectionUtils.isEmpty(recht.getOrganisatieTypes()) || recht.getOrganisatieTypes()
+									.contains(organisatieMedewerker.getOrganisatie().getOrganisatieType()))
 								{
 									if (Boolean.TRUE.equals(testModus) || !Recht.TESTEN.equals(recht))
 									{
@@ -178,40 +179,40 @@ public class SERealm extends AuthorizingRealm implements IScreenitRealm
 	{
 		if (authcToken instanceof UsernamePasswordToken token)
 		{
-			Gebruiker gebruiker = gebruikersService.getGebruikerByGebruikersnaam(token.getUsername()).orElse(null);
-			if (gebruiker == null)
+			Medewerker medewerker = medewerkerService.getMedewerkerByGebruikersnaam(token.getUsername()).orElse(null);
+			if (medewerker == null)
 			{
 				return null;
 			}
-			if (BooleanUtils.isNotFalse(gebruiker.getActief()) && StringUtils.isNotBlank(gebruiker.getWachtwoord()))
+			if (BooleanUtils.isNotFalse(medewerker.getActief()) && StringUtils.isNotBlank(medewerker.getWachtwoord()))
 			{
 				if (authcToken instanceof YubikeyToken)
 				{
-					return new YubikeyAuthenticationInfo(new ScreenitPrincipal(Gebruiker.class, gebruiker.getId()), gebruiker.getWachtwoord(),
-						new SimpleByteSource(gebruiker.getId().toString()), this.getName(), gebruiker.getYubiKey());
+					return new YubikeyAuthenticationInfo(new ScreenitPrincipal(Medewerker.class, medewerker.getId()), medewerker.getWachtwoord(),
+						new SimpleByteSource(medewerker.getId().toString()), this.getName(), medewerker.getYubiKey());
 				}
-				return new SimpleAuthenticationInfo(new ScreenitPrincipal(Gebruiker.class, gebruiker.getId()), gebruiker.getWachtwoord(),
-					new SimpleByteSource(gebruiker.getId().toString()), this.getName());
+				return new SimpleAuthenticationInfo(new ScreenitPrincipal(Medewerker.class, medewerker.getId()), medewerker.getWachtwoord(),
+					new SimpleByteSource(medewerker.getId().toString()), this.getName());
 			}
 		}
-		else if (authcToken instanceof InstellingGebruikerToken igToken)
+		else if (authcToken instanceof OrganisatieMedewerkerToken igToken)
 		{
-			return new SimpleAuthenticationInfo(new ScreenitPrincipal(InstellingGebruiker.class, igToken.getId()), null, this.getName());
+			return new SimpleAuthenticationInfo(new ScreenitPrincipal(OrganisatieMedewerker.class, igToken.getId()), null, this.getName());
 		}
 
 		return null;
 	}
 
 	@Override
-	public void clearCachedAuthorizationInfo(InstellingGebruiker instellingGebruiker)
+	public void clearCachedAuthorizationInfo(OrganisatieMedewerker organisatieMedewerker)
 	{
-		PrincipalCollection principalCollection = createPrincipalCollection(instellingGebruiker, false);
+		PrincipalCollection principalCollection = createPrincipalCollection(organisatieMedewerker, false);
 		super.clearCachedAuthorizationInfo(principalCollection);
 	}
 
-	private PrincipalCollection createPrincipalCollection(InstellingGebruiker instellingGebruiker, boolean checkBvo)
+	private PrincipalCollection createPrincipalCollection(OrganisatieMedewerker organisatieMedewerker, boolean checkBvo)
 	{
-		return new SimplePrincipalCollection(new ScreenitPrincipal(InstellingGebruiker.class, instellingGebruiker.getId(), checkBvo), this.getName());
+		return new SimplePrincipalCollection(new ScreenitPrincipal(OrganisatieMedewerker.class, organisatieMedewerker.getId(), checkBvo), this.getName());
 	}
 
 	@Override
@@ -268,10 +269,10 @@ public class SERealm extends AuthorizingRealm implements IScreenitRealm
 		{
 			ScreenitPrincipal principal = (ScreenitPrincipal) principals.getPrimaryPrincipal();
 			Account account = hibernateService.load(principal.getAccountClass(), principal.getAccountId());
-			if (account instanceof InstellingGebruiker instgeb)
+			if (account instanceof OrganisatieMedewerker instgeb)
 			{
 				permissionResult = false;
-				for (InstellingGebruikerRol rol : instgeb.getRollen())
+				for (OrganisatieMedewerkerRol rol : instgeb.getRollen())
 				{
 					if (rol.getActief())
 					{

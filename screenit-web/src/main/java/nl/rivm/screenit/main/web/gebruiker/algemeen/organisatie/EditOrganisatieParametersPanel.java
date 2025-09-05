@@ -28,10 +28,10 @@ import java.util.List;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieParameter;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -59,7 +59,7 @@ public abstract class EditOrganisatieParametersPanel extends GenericPanel<List<O
 {
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	private IModel<List<OrganisatieParameter>> allParametersModel = ModelUtil.listModel(new ArrayList<>(), false);
 
@@ -76,10 +76,10 @@ public abstract class EditOrganisatieParametersPanel extends GenericPanel<List<O
 			protected void populateItem(ListItem<OrganisatieParameterKey> item)
 			{
 				OrganisatieParameterKey parameterKey = item.getModelObject();
-				List<Instelling> instellingByOrganisatieTypes = instellingService.getInstellingByOrganisatieTypes(Collections.singletonList(parameterKey.getOrganisatieType()));
+				List<Organisatie> organisatieByOrganisatieTypes = organisatieService.getOrganisatieByOrganisatieTypes(Collections.singletonList(parameterKey.getOrganisatieType()));
 
 				addTabelHeader(item, parameterKey);
-				addOrganisatieLijst(item, parameterKey, instellingByOrganisatieTypes);
+				addOrganisatieLijst(item, parameterKey, organisatieByOrganisatieTypes);
 
 			}
 
@@ -93,13 +93,13 @@ public abstract class EditOrganisatieParametersPanel extends GenericPanel<List<O
 				item.add(new Label("maxValue", maxValueTekst).setVisible(parameterKeyNeedsMax));
 			}
 
-			private void addOrganisatieLijst(ListItem<OrganisatieParameterKey> item, OrganisatieParameterKey parameterKey, List<Instelling> instellingByOrganisatieTypes)
+			private void addOrganisatieLijst(ListItem<OrganisatieParameterKey> item, OrganisatieParameterKey parameterKey, List<Organisatie> organisatieByOrganisatieTypes)
 			{
-				item.add(new ListView<>("organisaties", ModelUtil.listRModel(instellingByOrganisatieTypes))
+				item.add(new ListView<>("organisaties", ModelUtil.listRModel(organisatieByOrganisatieTypes))
 				{
 
 					@Override
-					protected void populateItem(ListItem<Instelling> item)
+					protected void populateItem(ListItem<Organisatie> item)
 					{
 						OrganisatieParameter foundParameter = null;
 						for (OrganisatieParameter parameter : item.getModelObject().getParameters())

@@ -83,7 +83,7 @@ public class MammaIntervalParameters extends GenericPanel<List<MammaUitnodigings
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				List<MammaUitnodigingsinterval> nieuweParameters = model.getObject();
-				parameterisatieService.saveMammaIntervalParameters(nieuweParameters, oudeParameters, ScreenitSession.get().getLoggedInAccount());
+				parameterisatieService.saveMammaIntervalParameters(nieuweParameters, oudeParameters, ScreenitSession.get().getIngelogdAccount());
 				volgendeUitnodigingService.updateIntervalReferentieDatums();
 				setOudeParameters();
 				markeerFormulierenOpgeslagen(target);
@@ -101,6 +101,6 @@ public class MammaIntervalParameters extends GenericPanel<List<MammaUitnodigings
 
 	protected boolean magAanpassen()
 	{
-		return ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_PARAMETERISATIE, Actie.AANPASSEN);
+		return ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_PARAMETERISATIE, Actie.AANPASSEN);
 	}
 }

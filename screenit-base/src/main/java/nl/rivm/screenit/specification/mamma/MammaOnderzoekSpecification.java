@@ -44,7 +44,7 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Dossier_;
 import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
@@ -321,7 +321,7 @@ public class MammaOnderzoekSpecification
 		return (r, q, cb) -> cb.equal(join(r, MammaOnderzoek_.mammografie).get(MammaMammografie_.ilmStatus), MammaMammografieIlmStatus.BESCHIKBAAR);
 	}
 
-	public static Specification<Client> heeftOnderzoekMetBeeldenGemaaktDoor(List<InstellingGebruiker> instellingGebruikers, Range<LocalDate> periode)
+	public static Specification<Client> heeftOnderzoekMetBeeldenGemaaktDoor(List<OrganisatieMedewerker> organisatieMedewerkers, Range<LocalDate> periode)
 	{
 		return (r, q, cb) ->
 		{
@@ -333,7 +333,7 @@ public class MammaOnderzoekSpecification
 
 			subquery.select(dossierJoin).where(
 				cb.and(
-					subqueryRoot.get(MammaMammografie_.afgerondDoor).in(instellingGebruikers),
+					subqueryRoot.get(MammaMammografie_.afgerondDoor).in(organisatieMedewerkers),
 					cb.equal(subqueryRoot.get(MammaMammografie_.ilmStatus), MammaMammografieIlmStatus.BESCHIKBAAR),
 					valtInPeriode(periode).toPredicate(onderzoekJoin, q, cb)
 				)

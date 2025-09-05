@@ -23,8 +23,8 @@ package nl.rivm.screenit.service.mamma.impl;
 
 import java.util.Optional;
 
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
@@ -50,7 +50,7 @@ public class MammaMergeFieldServiceImpl implements MammaMergeFieldService
 		return beoordeling.getVerslagLezing() != null && beoordeling.getVerslagLezing().getBeoordelaar() != null;
 	}
 
-	public Gebruiker bepaalRadioloog1(MammaBeoordeling beoordeling)
+	public Medewerker bepaalRadioloog1(MammaBeoordeling beoordeling)
 	{
 		if (beoordeling != null)
 		{
@@ -66,7 +66,7 @@ public class MammaMergeFieldServiceImpl implements MammaMergeFieldService
 		return null;
 	}
 
-	public Gebruiker bepaalRadioloog2(MammaBeoordeling beoordeling)
+	public Medewerker bepaalRadioloog2(MammaBeoordeling beoordeling)
 	{
 		if (beoordeling != null)
 		{
@@ -82,15 +82,15 @@ public class MammaMergeFieldServiceImpl implements MammaMergeFieldService
 		return null;
 	}
 
-	private Gebruiker bepaalTweedeVerwijzendeRadioloog(MammaBeoordeling beoordeling)
+	private Medewerker bepaalTweedeVerwijzendeRadioloog(MammaBeoordeling beoordeling)
 	{
-		Gebruiker verslagMaker = beoordeling.getVerslagLezing().getBeoordelaar().getMedewerker();
-		Gebruiker beoordelaarEersteLezing = beoordeling.getEersteLezing().getBeoordelaar().getMedewerker();
-		Gebruiker beoordelaarTweedeLezing = beoordeling.getTweedeLezing().getBeoordelaar().getMedewerker();
-		Optional<Gebruiker> beoordelaarDiscrepantie = Optional.of(beoordeling).map(MammaBeoordeling::getDiscrepantieLezing).map(MammaLezing::getBeoordelaar)
-			.map(InstellingGebruiker::getMedewerker);
-		Optional<Gebruiker> beoordelaarArbitrage = Optional.of(beoordeling).map(MammaBeoordeling::getArbitrageLezing).map(MammaLezing::getBeoordelaar)
-			.map(InstellingGebruiker::getMedewerker);
+		Medewerker verslagMaker = beoordeling.getVerslagLezing().getBeoordelaar().getMedewerker();
+		Medewerker beoordelaarEersteLezing = beoordeling.getEersteLezing().getBeoordelaar().getMedewerker();
+		Medewerker beoordelaarTweedeLezing = beoordeling.getTweedeLezing().getBeoordelaar().getMedewerker();
+		Optional<Medewerker> beoordelaarDiscrepantie = Optional.of(beoordeling).map(MammaBeoordeling::getDiscrepantieLezing).map(MammaLezing::getBeoordelaar)
+			.map(OrganisatieMedewerker::getMedewerker);
+		Optional<Medewerker> beoordelaarArbitrage = Optional.of(beoordeling).map(MammaBeoordeling::getArbitrageLezing).map(MammaLezing::getBeoordelaar)
+			.map(OrganisatieMedewerker::getMedewerker);
 
 		if (beoordelaarArbitrage.isPresent())
 		{
@@ -112,7 +112,7 @@ public class MammaMergeFieldServiceImpl implements MammaMergeFieldService
 		throw new IllegalStateException("Er is geen geldige tweede beoordelaar");
 	}
 
-	private Gebruiker bepaalVerwijzendeRadioloog(MammaBeoordeling beoordeling, Gebruiker beoordelaarEersteLezing, Gebruiker beoordelaarTweedeLezing)
+	private Medewerker bepaalVerwijzendeRadioloog(MammaBeoordeling beoordeling, Medewerker beoordelaarEersteLezing, Medewerker beoordelaarTweedeLezing)
 	{
 		MammaBaseBeoordelingService beoordelingService = ApplicationContextProvider.getApplicationContext().getBean(MammaBaseBeoordelingService.class);
 
@@ -127,19 +127,19 @@ public class MammaMergeFieldServiceImpl implements MammaMergeFieldService
 		throw new IllegalStateException("Er is geen verwijzende lezing");
 	}
 
-	private Gebruiker bepaalEersteNietVerwijzendeRadioloog(MammaBeoordeling beoordeling)
+	private Medewerker bepaalEersteNietVerwijzendeRadioloog(MammaBeoordeling beoordeling)
 	{
 		MammaLezing eersteLezing = beoordeling.getEersteLezing();
 
 		return beoordeling.getArbitrageLezing() != null ? beoordeling.getArbitrageLezing().getBeoordelaar().getMedewerker() : eersteLezing.getBeoordelaar().getMedewerker();
 	}
 
-	private Gebruiker bepaalTweedeNietVerwijzendeRadioloog(MammaBeoordeling beoordeling)
+	private Medewerker bepaalTweedeNietVerwijzendeRadioloog(MammaBeoordeling beoordeling)
 	{
 		return beoordeling.getArbitrageLezing() != null ? bepaalAndereGunstigeLezing(beoordeling) : beoordeling.getTweedeLezing().getBeoordelaar().getMedewerker();
 	}
 
-	private Gebruiker bepaalAndereGunstigeLezing(MammaBeoordeling beoordeling)
+	private Medewerker bepaalAndereGunstigeLezing(MammaBeoordeling beoordeling)
 	{
 		MammaBaseBeoordelingService beoordelingService = ApplicationContextProvider.getApplicationContext().getBean(MammaBaseBeoordelingService.class);
 		MammaLezing eersteLezing = beoordeling.getEersteLezing();

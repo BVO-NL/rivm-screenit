@@ -26,7 +26,7 @@ import java.util.List;
 import nl.rivm.screenit.main.service.mamma.MammaScreeningsEenheidService;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.CentraleEenheid;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.markup.html.basic.Label;
@@ -39,7 +39,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 public class GekoppeldeBeEnSePanel extends GenericPanel<CentraleEenheid>
 {
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private MammaScreeningsEenheidService screeningsEenheidService;
@@ -50,7 +50,7 @@ public class GekoppeldeBeEnSePanel extends GenericPanel<CentraleEenheid>
 	{
 		super(id, model);
 
-		beoordelingseenheden = ModelUtil.listRModel(instellingService.getChildrenOrganisaties(getModelObject(), BeoordelingsEenheid.class));
+		beoordelingseenheden = ModelUtil.listRModel(organisatieService.getChildrenOrganisaties(getModelObject(), BeoordelingsEenheid.class));
 
 		add(new ListView<>("beLijst", beoordelingseenheden)
 		{

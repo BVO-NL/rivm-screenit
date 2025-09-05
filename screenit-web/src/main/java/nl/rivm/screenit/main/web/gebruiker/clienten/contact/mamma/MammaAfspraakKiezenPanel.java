@@ -101,7 +101,7 @@ public class MammaAfspraakKiezenPanel extends AbstractClientContactActiePanel<Cl
 				}
 				else
 				{
-					afspraakReserveringService.maakAfspraakReservering(dummyAfspraak, ScreenitSession.get().getLoggedInInstellingGebruiker());
+					afspraakReserveringService.maakAfspraakReservering(dummyAfspraak, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				}
 
 				var afspraakPanel = new MammaAfspraakPanel("nieuweAfspraakPanel", dummyAfspraak, true)

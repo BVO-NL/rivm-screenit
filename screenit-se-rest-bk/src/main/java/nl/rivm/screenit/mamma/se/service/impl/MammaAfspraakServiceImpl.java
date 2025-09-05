@@ -36,7 +36,7 @@ import nl.rivm.screenit.mamma.se.service.MammaAfspraakService;
 import nl.rivm.screenit.mamma.se.service.PassantInschrijvenValidatorService;
 import nl.rivm.screenit.mamma.se.service.PassantValidatorResult;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.dashboard.DashboardType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
@@ -116,15 +116,15 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 	private MailService mailService;
 
 	@Override
-	public void setAfspraakStatus(AfspraakSignalerenDto actionDto, MammaAfspraakStatus nieuweStatus, InstellingGebruiker gebruiker)
+	public void setAfspraakStatus(AfspraakSignalerenDto actionDto, MammaAfspraakStatus nieuweStatus, OrganisatieMedewerker organisatieMedewerker)
 	{
-		final var afspraak = getOfMaakLaatsteAfspraakVanVandaag(actionDto.getAfspraakId(), gebruiker);
+		final var afspraak = getOfMaakLaatsteAfspraakVanVandaag(actionDto.getAfspraakId(), organisatieMedewerker);
 		afspraak.setStatus(nieuweStatus);
 		hibernateService.saveOrUpdate(afspraak);
 	}
 
 	@Override
-	public Map<Long, Integer> getIngeschrevenByGebruikerOpDatumVoorSe(Date beginDatum, String seCode)
+	public Map<Long, Integer> getIngeschrevenByMedewerkerOpDatumVoorSe(Date beginDatum, String seCode)
 	{
 		var eindDatum = DateUtil.eindDag(beginDatum);
 
@@ -146,7 +146,7 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 	}
 
 	@Override
-	public void afspraakMakenPassant(AfspraakMakenPassantDto actionDto, InstellingGebruiker gebruiker, MammaScreeningsEenheid screeningsEenheid)
+	public void afspraakMakenPassant(AfspraakMakenPassantDto actionDto, OrganisatieMedewerker organisatieMedewerker, MammaScreeningsEenheid screeningsEenheid)
 	{
 		var client = clientService.getClientByBsn(actionDto.getBsn());
 		if (client != null && DateUtil.isGeboortedatumGelijk(actionDto.getGeboortedatum(), client))
@@ -155,8 +155,8 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 			if (validatorResult == PassantValidatorResult.OK)
 			{
 				var laatsteUitnodiging = client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging();
-				heraanmeldenIndienNodig(gebruiker, client);
-				maakAfspraak(gebruiker, screeningsEenheid, client, laatsteUitnodiging);
+				heraanmeldenIndienNodig(organisatieMedewerker, client);
+				maakAfspraak(organisatieMedewerker, screeningsEenheid, client, laatsteUitnodiging);
 			}
 			else if (validatorResult == PassantValidatorResult.ONGELDIG_ZELFDE_DAG)
 			{
@@ -174,7 +174,7 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 	}
 
 	@Override
-	public MammaAfspraak getOfMaakLaatsteAfspraakVanVandaag(Long afspraakId, InstellingGebruiker gebruiker)
+	public MammaAfspraak getOfMaakLaatsteAfspraakVanVandaag(Long afspraakId, OrganisatieMedewerker organisatieMedewerker)
 	{
 		var afspraak = hibernateService.get(MammaAfspraak.class, afspraakId);
 		if (afspraak == null)
@@ -195,8 +195,8 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 			{
 
 				var client = afspraak.getUitnodiging().getScreeningRonde().getDossier().getClient();
-				heraanmeldenIndienNodig(gebruiker, client);
-				var nieuweAfspraak = maakAfspraak(gebruiker, afspraak.getStandplaatsPeriode().getScreeningsEenheid(), client, laatsteAfspraak.getUitnodiging());
+				heraanmeldenIndienNodig(organisatieMedewerker, client);
+				var nieuweAfspraak = maakAfspraak(organisatieMedewerker, afspraak.getStandplaatsPeriode().getScreeningsEenheid(), client, laatsteAfspraak.getUitnodiging());
 
 				logService.logGebeurtenis(LogGebeurtenis.MAMMA_AFSPRAAK_AFGEMELD_SE_OFFLINE, laatsteAfspraak.getStandplaatsPeriode().getScreeningsEenheid(),
 					Collections.singletonList(laatsteAfspraak.getStandplaatsPeriode().getScreeningsEenheid().getBeoordelingsEenheid().getParent().getRegio()), client,
@@ -232,7 +232,7 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 		}
 	}
 
-	private MammaAfspraak maakAfspraak(InstellingGebruiker gebruiker, MammaScreeningsEenheid screeningsEenheid, Client client, MammaUitnodiging laatsteUitnodiging)
+	private MammaAfspraak maakAfspraak(OrganisatieMedewerker organisatieMedewerker, MammaScreeningsEenheid screeningsEenheid, Client client, MammaUitnodiging laatsteUitnodiging)
 	{
 		var nu = currentDateSupplier.getDate();
 		var standplaatsPeriode = baseStandplaatsPeriodeService.getStandplaatsPeriodeOpDatum(screeningsEenheid, nu);
@@ -249,14 +249,14 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 		baseKansberekeningService.resetPreferences();
 		return baseAfspraakService.maakAfspraak(laatsteUitnodiging.getScreeningRonde(),
 			baseCapaciteitsBlokService.getCapaciteitsBlokOpTijdstipVoorSe(client, screeningsEenheid, nu), nu,
-			standplaatsPeriode, MammaVerzettenReden.PASSANT, annuleerVorigeAfspraak, true, false, true, true, gebruiker, false);
+			standplaatsPeriode, MammaVerzettenReden.PASSANT, annuleerVorigeAfspraak, true, false, true, true, organisatieMedewerker, false);
 	}
 
-	private void heraanmeldenIndienNodig(InstellingGebruiker gebruiker, Client client)
+	private void heraanmeldenIndienNodig(OrganisatieMedewerker organisatieMedewerker, Client client)
 	{
 		if (!client.getMammaDossier().getLaatsteScreeningRonde().getAangemeld())
 		{
-			baseAfmeldService.heraanmelden(client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteAfmelding(), gebruiker);
+			baseAfmeldService.heraanmelden(client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteAfmelding(), organisatieMedewerker);
 		}
 	}
 

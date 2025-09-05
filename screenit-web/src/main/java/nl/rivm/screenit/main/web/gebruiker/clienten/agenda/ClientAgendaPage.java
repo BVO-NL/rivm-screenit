@@ -36,7 +36,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_CLIENT_SR_INTAKEAFSPRAAKGEMAAKT, Recht.GEBRUIKER_CLIENT_MAMMA_AFSPRAKEN },
+	recht = { Recht.MEDEWERKER_CLIENT_SR_INTAKEAFSPRAAKGEMAAKT, Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAKEN },
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.MAMMA })
 public class ClientAgendaPage extends ClientPage

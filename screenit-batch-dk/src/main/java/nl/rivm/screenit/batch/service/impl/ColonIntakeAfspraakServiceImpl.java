@@ -57,8 +57,8 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.LoggingZoekCriteria;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.colon.PlanningService;
 import nl.rivm.screenit.specification.algemeen.DossierSpecification;
 import nl.rivm.screenit.specification.algemeen.ScreeningRondeSpecification;
@@ -89,7 +89,7 @@ public class ColonIntakeAfspraakServiceImpl implements ColonIntakeAfspraakServic
 	private SimplePreferenceService preferenceService;
 
 	@Autowired
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@Autowired
 	private LogService logService;
@@ -267,7 +267,7 @@ public class ColonIntakeAfspraakServiceImpl implements ColonIntakeAfspraakServic
 	{
 		var vrijeSloten = new ArrayList<VrijSlot>();
 
-		var intakeLocaties = instellingService.getActieveIntakelocaties();
+		var intakeLocaties = organisatieService.getActieveIntakelocaties();
 
 		LOG.info("Aantal geselecteerde clienten {}", aantalGeselecteerdeClienten);
 

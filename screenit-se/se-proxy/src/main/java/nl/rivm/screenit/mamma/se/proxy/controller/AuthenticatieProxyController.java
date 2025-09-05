@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -27,7 +27,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import lombok.RequiredArgsConstructor;
 
-import nl.rivm.screenit.mamma.se.proxy.SeProxyApplication;
 import nl.rivm.screenit.mamma.se.proxy.model.AutorisatieDto;
 import nl.rivm.screenit.mamma.se.proxy.model.LoginContext;
 import nl.rivm.screenit.mamma.se.proxy.model.LogischeSessie;
@@ -36,8 +35,9 @@ import nl.rivm.screenit.mamma.se.proxy.services.AchtergrondRequestService;
 import nl.rivm.screenit.mamma.se.proxy.services.AuthenticatieService;
 import nl.rivm.screenit.mamma.se.proxy.services.AutorisatieService;
 import nl.rivm.screenit.mamma.se.proxy.services.ConfiguratieService;
-import nl.rivm.screenit.mamma.se.proxy.services.GebruikerStoreService;
+import nl.rivm.screenit.mamma.se.proxy.services.EnvironmentInfoService;
 import nl.rivm.screenit.mamma.se.proxy.services.LogischeSessieService;
+import nl.rivm.screenit.mamma.se.proxy.services.MedewerkerStoreService;
 import nl.rivm.screenit.mamma.se.proxy.services.NfcOtpAdministratieService;
 import nl.rivm.screenit.mamma.se.proxy.services.ProxyService;
 import nl.rivm.screenit.mamma.se.proxy.services.SeRestSocketService;
@@ -51,7 +51,6 @@ import nl.rivm.screenit.mamma.se.proxy.util.SafeStringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -72,19 +71,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RequiredArgsConstructor
 public class AuthenticatieProxyController
 {
-	private final ObjectMapper objectMapper = new ObjectMapper();
-
 	private static final Logger LOG = LoggerFactory.getLogger(AuthenticatieProxyController.class);
 
 	private static final boolean GENEREER_LOGGING = true;
 
 	private static final boolean GENEREER_GEEN_LOGGING = false;
 
+	private final ObjectMapper objectMapper;
+
 	private final ProxyService proxyService;
 
 	private final LogischeSessieService logischeSessieService;
 
-	private final GebruikerStoreService gebruikerStoreService;
+	private final MedewerkerStoreService medewerkerStoreService;
 
 	private final NfcOtpAdministratieService nfcOtpAdministratieService;
 
@@ -104,8 +103,7 @@ public class AuthenticatieProxyController
 
 	private final AutorisatieService autorisatieService;
 
-	@Value("${DISABLE_NFC_AUTHENTICATION:#{false}}")
-	private final boolean disableNFCAuthentication;
+	private final EnvironmentInfoService environmentInfoService;
 
 	@PostMapping("/inloggen")
 	public ResponseEntity<String> login(@RequestHeader(value = "Authorization") String credentials, @RequestHeader String yubikeyIdentificatie,
@@ -114,7 +112,7 @@ public class AuthenticatieProxyController
 	{
 		seStatusService.setProxyIpFromClientIpIfSeCodeIsMissing(request.getRemoteAddr());
 		ResponseEntity<String> response;
-		if (disableNFCAuthentication)
+		if (!environmentInfoService.isNfcEnabled())
 		{
 			var logischeSessie = new LogischeSessie(credentials, Constants.GEEN_IDENTIFICATIE);
 			response = login(logischeSessie, Constants.GEEN_OTP, null, GENEREER_LOGGING, nfcServerVersie);
@@ -153,7 +151,7 @@ public class AuthenticatieProxyController
 		var logischeSessie = logischeSessieService.getLogischeSessieMetIdentificatie(yubikeyIdentificatie);
 		if (logischeSessie == null)
 		{
-			LOG.warn("INLOGGEN (sessie meenemen) met identificatie: {} -> Logische sessie niet gevonden, gebruiker niet geautoriseerd.", yubikeyIdentificatie);
+			LOG.warn("INLOGGEN (sessie meenemen) met identificatie: {} -> Logische sessie niet gevonden, medewerker niet geautoriseerd.", yubikeyIdentificatie);
 			response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 		else if (!seStatusService.isOnline())
@@ -223,18 +221,18 @@ public class AuthenticatieProxyController
 		var loginContext = createLoginContext(logischeSessie, authenticatieService.getAccountIdFromUsername(logischeSessie.getGebruikersnaam()));
 		if (loginContext.getAccountId() != null)
 		{
-			var ingelogdeGebruikerDto = authenticatieService.getIngelogdeGebruiker(loginContext);
+			var ingelogdeOrganisatieMedewerkerDto = authenticatieService.getIngelogdeMedewerker(loginContext);
 
-			if (ingelogdeGebruikerDto != null)
+			if (ingelogdeOrganisatieMedewerkerDto != null)
 			{
 				try
 				{
-					if (autorisatieService.isGeautoriseerdVoorInloggen(ingelogdeGebruikerDto))
+					if (autorisatieService.isGeautoriseerdVoorInloggen(ingelogdeOrganisatieMedewerkerDto))
 					{
 						logischeSessie.setLaatsteUpdate(DateUtil.getCurrentDateTime());
-						ingelogdeGebruikerDto.setLaatsteInlog(DateUtil.getCurrentDateTime().toLocalDate());
-						authenticatieService.updateIngelogdeGebruiker(ingelogdeGebruikerDto);
-						var responseEntity = ResponseEntity.ok(ingelogdeGebruikerDto.getLoginResponse());
+						ingelogdeOrganisatieMedewerkerDto.setLaatsteInlog(DateUtil.getCurrentDateTime().toLocalDate());
+						authenticatieService.updateIngelogdeMedewerker(ingelogdeOrganisatieMedewerkerDto);
+						var responseEntity = ResponseEntity.ok(ingelogdeOrganisatieMedewerkerDto.getLoginResponse());
 						logischeSessie.setLoginAntwoord(responseEntity);
 						return verwerkLoginResponse(false, logischeSessie);
 					}
@@ -276,7 +274,7 @@ public class AuthenticatieProxyController
 			try
 			{
 				var autorisatieDto = objectMapper.readValue(response.getBody(), AutorisatieDto.class);
-				var instellingGebruikerId = autorisatieDto.getInstellingGebruikerId();
+				var organisatieMedewerkerId = autorisatieDto.getOrganisatieMedewerkerId();
 				var displayName = autorisatieDto.getDisplayName();
 				var seCode = autorisatieDto.getSeCode();
 
@@ -288,11 +286,11 @@ public class AuthenticatieProxyController
 				if (vanCentraal)
 				{
 					response = verwerkParametersVanCentraal(autorisatieDto);
-					var loginContext = createLoginContext(logischeSessie, instellingGebruikerId);
+					var loginContext = createLoginContext(logischeSessie, organisatieMedewerkerId);
 					authenticatieService.administreerOnlineInlog(loginContext, response.getBody());
 				}
 				broadcastOnlineStatus();
-				webSocketProxyService.broadcast(gebruikerStoreService.addGebruiker(instellingGebruikerId, displayName));
+				webSocketProxyService.broadcast(medewerkerStoreService.addOrganisatieMedewerker(organisatieMedewerkerId, displayName));
 			}
 			catch (IOException e)
 			{
@@ -352,7 +350,7 @@ public class AuthenticatieProxyController
 	@GetMapping("/isNfcEnabled")
 	public ResponseEntity<String> isNfcEnabled()
 	{
-		return ResponseEntity.status(HttpStatus.OK).header("NFC_ENABLED", SeProxyApplication.getEnvironmentInfo().isNfcEnabled().toString()).build();
+		return ResponseEntity.status(HttpStatus.OK).header("NFC_ENABLED", String.valueOf(environmentInfoService.isNfcEnabled())).build();
 	}
 
 	@PostMapping("/uitloggen")

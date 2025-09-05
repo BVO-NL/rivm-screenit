@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -35,8 +35,8 @@ export type MbbSignaleringViewStateProps = {
 	suboptimaleInsteltechniek?: SuboptimaleInsteltechniek;
 	redenFotobespreking?: RedenFotobespreking;
 	extraMedewerkerId?: number;
-	seGebruikers: Map<string, string>;
-	ingelogdeGebruikerId?: number;
+	seMedewerkers: Map<string, string>;
+	ingelogdeOrganisatieMedewerkerId?: number;
 	opmerkingMbber?: string;
 	opmerkingVoorRadioloog?: string;
 	operatieRechts?: boolean;
@@ -73,7 +73,7 @@ export default class MbbSignaleringView extends Component<MbbSignaleringViewStat
 		this.operatieRechtsDidChange.bind(this)
 		this.operatieLinksDidChange.bind(this)
 		this.aanvullendeInformatieOperatieDidChange.bind(this)
-		this.zonderIngelogdeGebruikerFilterFunction.bind(this)
+		this.zonderIngelogdeMedewerkerFilterFunction.bind(this)
 		this.huidscheuringDidChange.bind(this)
 	}
 
@@ -127,8 +127,8 @@ export default class MbbSignaleringView extends Component<MbbSignaleringViewStat
 		this.props.verwerkHuidscheuringChanged(this.props.afspraakId, !this.props.huidscheuring)
 	}
 
-	zonderIngelogdeGebruikerFilterFunction = (gebruiker: [string, string]): boolean => {
-		return gebruiker[0] !== String(this.props.ingelogdeGebruikerId)
+	zonderIngelogdeMedewerkerFilterFunction = (medewerker: [string, string]): boolean => {
+		return medewerker[0] !== String(this.props.ingelogdeOrganisatieMedewerkerId)
 	}
 
 	render(): JSX.Element {
@@ -151,10 +151,10 @@ export default class MbbSignaleringView extends Component<MbbSignaleringViewStat
 				<div className={"mbb-signalering-row"}>
 					<h6>Extra MBB&apos;er</h6>
 					<DropdownValue id={"extraMedewerkerId"}
-								   value={!this.props.extraMedewerkerId || !this.props.seGebruikers.has(String(this.props.extraMedewerkerId)) ? undefined : ["none", getMandatory(this.props.seGebruikers, String(this.props.extraMedewerkerId))]}
+								   value={!this.props.extraMedewerkerId || !this.props.seMedewerkers.has(String(this.props.extraMedewerkerId)) ? undefined : ["none", getMandatory(this.props.seMedewerkers, String(this.props.extraMedewerkerId))]}
 								   disabled={this.props.disabled}
-								   options={Array.from(this.props.seGebruikers).filter(this.zonderIngelogdeGebruikerFilterFunction).sort((a, b) => String(a[1]) > String(b[1]) ? 1 : -1)}
-								   valueToLabel={(seGebruiker): string => seGebruiker[1] ?? ""}
+								   options={Array.from(this.props.seMedewerkers).filter(this.zonderIngelogdeMedewerkerFilterFunction).sort((a, b) => String(a[1]) > String(b[1]) ? 1 : -1)}
+								   valueToLabel={(seMedewerker): string => seMedewerker[1] ?? ""}
 								   lavendel={true} handleChange={this.extraMedewerkerDidChange}/>
 				</div>
 

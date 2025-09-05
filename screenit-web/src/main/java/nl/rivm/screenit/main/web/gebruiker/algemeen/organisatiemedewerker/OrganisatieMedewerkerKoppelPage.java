@@ -36,16 +36,16 @@ import nl.rivm.screenit.main.web.component.table.NavigeerNaarCellPanel;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruikerRol;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.model.helper.InstellingGebruikerRolComparator;
+import nl.rivm.screenit.model.helper.OrganisatieMedewerkerRolComparator;
 import nl.rivm.screenit.security.IScreenitRealm;
 import nl.rivm.screenit.service.LogService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
@@ -72,7 +72,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_MEDEWERKER_ORGANISATIES_BEHEER,
+	recht = Recht.MEDEWERKER_ORGANISATIE_KOPPELING_BEHEER,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
@@ -95,7 +95,7 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 
 	public OrganisatieMedewerkerKoppelPage(final boolean showMedewerkers)
 	{
-		Actie actie = getActie(Recht.GEBRUIKER_MEDEWERKER_ORGANISATIES_BEHEER);
+		Actie actie = getActie(Recht.MEDEWERKER_ORGANISATIE_KOPPELING_BEHEER);
 
 		if (actie == null)
 		{
@@ -121,26 +121,26 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 			organisatieMedewerkerProperty = "organisatie.naam";
 		}
 
-		List<IColumn<InstellingGebruiker, String>> columns = new ArrayList<IColumn<InstellingGebruiker, String>>();
-		columns.add(new PropertyColumn<InstellingGebruiker, String>(Model.of("Naam"), organisatieMedewerkerSort, organisatieMedewerkerProperty));
-		columns.add(new PropertyColumn<InstellingGebruiker, String>(Model.of("Rollen"), "rollen.naam", "rollen.naam")
+		List<IColumn<OrganisatieMedewerker, String>> columns = new ArrayList<IColumn<OrganisatieMedewerker, String>>();
+		columns.add(new PropertyColumn<OrganisatieMedewerker, String>(Model.of("Naam"), organisatieMedewerkerSort, organisatieMedewerkerProperty));
+		columns.add(new PropertyColumn<OrganisatieMedewerker, String>(Model.of("Rollen"), "rollen.naam", "rollen.naam")
 		{
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void populateItem(Item<ICellPopulator<InstellingGebruiker>> item, String componentId, IModel<InstellingGebruiker> rowModel)
+			public void populateItem(Item<ICellPopulator<OrganisatieMedewerker>> item, String componentId, IModel<OrganisatieMedewerker> rowModel)
 			{
 
-				InstellingGebruiker organisatieMedewerker = rowModel.getObject();
+				OrganisatieMedewerker organisatieMedewerker = rowModel.getObject();
 
 				String rollen = "";
 				boolean first = true;
 
 				var rollenLijst = organisatieMedewerker.getRollen();
-				InstellingGebruikerRolComparator comparator = new InstellingGebruikerRolComparator();
+				OrganisatieMedewerkerRolComparator comparator = new OrganisatieMedewerkerRolComparator();
 				Collections.sort(rollenLijst, comparator);
 
-				for (InstellingGebruikerRol organisatieMedewerkerRol : rollenLijst)
+				for (OrganisatieMedewerkerRol organisatieMedewerkerRol : rollenLijst)
 				{
 					if (isRolActief(organisatieMedewerkerRol))
 					{
@@ -159,7 +159,7 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 				item.add(new Label(componentId, rollen));
 			}
 
-			private boolean isRolActief(InstellingGebruikerRol organisatieMedewerkerRol)
+			private boolean isRolActief(OrganisatieMedewerkerRol organisatieMedewerkerRol)
 			{
 				Calendar today = Calendar.getInstance();
 				today.add(Calendar.DATE, -1);
@@ -174,18 +174,18 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 			}
 
 		});
-		columns.add(new PropertyColumn<InstellingGebruiker, String>(Model.of("Begindatum"), organisatieMedewerkerProperty)
+		columns.add(new PropertyColumn<OrganisatieMedewerker, String>(Model.of("Begindatum"), organisatieMedewerkerProperty)
 		{
 
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void populateItem(Item<ICellPopulator<InstellingGebruiker>> item, String componentId, IModel<InstellingGebruiker> rowModel)
+			public void populateItem(Item<ICellPopulator<OrganisatieMedewerker>> item, String componentId, IModel<OrganisatieMedewerker> rowModel)
 			{
-				InstellingGebruiker organisatieMedewerker = rowModel.getObject();
+				OrganisatieMedewerker organisatieMedewerker = rowModel.getObject();
 
 				Date inDienst = null;
-				for (InstellingGebruikerRol organisatieMedewerkerRol : organisatieMedewerker.getRollen())
+				for (OrganisatieMedewerkerRol organisatieMedewerkerRol : organisatieMedewerker.getRollen())
 				{
 					if (!Boolean.FALSE.equals(organisatieMedewerkerRol.getActief()))
 					{
@@ -208,19 +208,19 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 			}
 
 		});
-		columns.add(new PropertyColumn<InstellingGebruiker, String>(Model.of("Einddatum"), organisatieMedewerkerProperty)
+		columns.add(new PropertyColumn<OrganisatieMedewerker, String>(Model.of("Einddatum"), organisatieMedewerkerProperty)
 		{
 
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void populateItem(Item<ICellPopulator<InstellingGebruiker>> item, String componentId, IModel<InstellingGebruiker> rowModel)
+			public void populateItem(Item<ICellPopulator<OrganisatieMedewerker>> item, String componentId, IModel<OrganisatieMedewerker> rowModel)
 			{
-				InstellingGebruiker organisatieMedewerker = rowModel.getObject();
+				OrganisatieMedewerker organisatieMedewerker = rowModel.getObject();
 
 				Date uitDienst = null;
 				boolean isNull = false;
-				for (InstellingGebruikerRol organisatieMedewerkerRol : organisatieMedewerker.getRollen())
+				for (OrganisatieMedewerkerRol organisatieMedewerkerRol : organisatieMedewerker.getRollen())
 				{
 					if (!Boolean.FALSE.equals(organisatieMedewerkerRol.getActief()))
 					{
@@ -250,27 +250,27 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 
 		});
 
-		columns.add(new PropertyColumn<InstellingGebruiker, String>(Model.of(""), null)
+		columns.add(new PropertyColumn<OrganisatieMedewerker, String>(Model.of(""), null)
 		{
 
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void populateItem(Item<ICellPopulator<InstellingGebruiker>> item, String componentId, IModel<InstellingGebruiker> rowModel)
+			public void populateItem(Item<ICellPopulator<OrganisatieMedewerker>> item, String componentId, IModel<OrganisatieMedewerker> rowModel)
 			{
-				item.add(new NavigeerNaarCellPanel<InstellingGebruiker>(componentId, rowModel)
+				item.add(new NavigeerNaarCellPanel<OrganisatieMedewerker>(componentId, rowModel)
 				{
 
 					private static final long serialVersionUID = 1L;
 
 					@Override
-					protected boolean magNavigerenNaar(IModel<InstellingGebruiker> rowModel)
+					protected boolean magNavigerenNaar(IModel<OrganisatieMedewerker> rowModel)
 					{
 						return OrganisatieMedewerkerKoppelPage.this.magNavigerenNaar(rowModel);
 					}
 
 					@Override
-					protected void onNavigeerNaar(AjaxRequestTarget target, IModel<InstellingGebruiker> rowModel)
+					protected void onNavigeerNaar(AjaxRequestTarget target, IModel<OrganisatieMedewerker> rowModel)
 					{
 						OrganisatieMedewerkerKoppelPage.this.onNavigeerNaar(rowModel, target);
 					}
@@ -278,20 +278,20 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 			}
 		});
 
-		InstellingGebruiker instellingGebruiker = createSearchObject();
+		OrganisatieMedewerker organisatieMedewerker = createSearchObject();
 		OrganisatieType type = null;
-		if (instellingGebruiker.getOrganisatie() != null)
+		if (organisatieMedewerker.getOrganisatie() != null)
 		{
-			type = instellingGebruiker.getOrganisatie().getOrganisatieType();
+			type = organisatieMedewerker.getOrganisatie().getOrganisatieType();
 		}
-		if (type == null && instellingGebruiker.getMedewerker() != null && instellingGebruiker.getMedewerker().getOrganisatieMedewerkers() != null
-			&& instellingGebruiker.getMedewerker().getOrganisatieMedewerkers().size() > 0)
+		if (type == null && organisatieMedewerker.getMedewerker() != null && organisatieMedewerker.getMedewerker().getOrganisatieMedewerkers() != null
+			&& organisatieMedewerker.getMedewerker().getOrganisatieMedewerkers().size() > 0)
 		{
-			type = instellingGebruiker.getMedewerker().getOrganisatieMedewerkers().get(0).getOrganisatie().getOrganisatieType();
+			type = organisatieMedewerker.getMedewerker().getOrganisatieMedewerkers().get(0).getOrganisatie().getOrganisatieType();
 		}
 		magKoppelingenBeheren &= !OrganisatieType.HUISARTS.equals(type);
-		IModel<InstellingGebruiker> searchObjectModel = new CglibHibernateModel<>(instellingGebruiker);
-		columns.add(new ActiefPropertyColumn<InstellingGebruiker, InstellingGebruiker>(Model.of("actief"), "actief", medewerkerContainer, searchObjectModel,
+		IModel<OrganisatieMedewerker> searchObjectModel = new CglibHibernateModel<>(organisatieMedewerker);
+		columns.add(new ActiefPropertyColumn<OrganisatieMedewerker, OrganisatieMedewerker>(Model.of("actief"), "actief", medewerkerContainer, searchObjectModel,
 			magKoppelingenBeheren, dialog, "question.remove.organisatiemedewerker")
 		{
 
@@ -305,33 +305,33 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 			}
 
 			@Override
-			protected void onAfterToggleActief(AjaxRequestTarget target, InstellingGebruiker instellingGebruiker)
+			protected void onAfterToggleActief(AjaxRequestTarget target, OrganisatieMedewerker organisatieMedewerker)
 			{
-				super.onAfterToggleActief(target, instellingGebruiker);
-				Gebruiker gebruiker = instellingGebruiker.getMedewerker();
-				Instelling instelling = instellingGebruiker.getOrganisatie();
-				if (instellingGebruiker.getId() == null)
+				super.onAfterToggleActief(target, organisatieMedewerker);
+				Medewerker medewerker = organisatieMedewerker.getMedewerker();
+				Organisatie organisatie = organisatieMedewerker.getOrganisatie();
+				if (organisatieMedewerker.getId() == null)
 				{
-					gebruiker.getOrganisatieMedewerkers().remove(instellingGebruiker);
-					instellingGebruiker.setMedewerker(null);
-					instelling.getOrganisatieMedewerkers().remove(instellingGebruiker);
-					instellingGebruiker.setOrganisatie(null);
+					medewerker.getOrganisatieMedewerkers().remove(organisatieMedewerker);
+					organisatieMedewerker.setMedewerker(null);
+					organisatie.getOrganisatieMedewerkers().remove(organisatieMedewerker);
+					organisatieMedewerker.setOrganisatie(null);
 					target.add(medewerkerContainer);
 				}
 				else
 				{
-					hibernateService.saveOrUpdate(instellingGebruiker);
-					if (Boolean.FALSE.equals(instellingGebruiker.getActief()))
+					hibernateService.saveOrUpdate(organisatieMedewerker);
+					if (Boolean.FALSE.equals(organisatieMedewerker.getActief()))
 					{
-						logService.logGebeurtenis(LogGebeurtenis.ORGANISATIE_MEDEWERKER_ONTKOPPEL, ScreenitSession.get().getLoggedInAccount(),
-							String.format("Medewerker %1$s ontkoppeld van organisatie %2$s", gebruiker.getNaamVolledigMetVoornaam(), instelling.getNaam()));
+						logService.logGebeurtenis(LogGebeurtenis.ORGANISATIE_MEDEWERKER_ONTKOPPEL, ScreenitSession.get().getIngelogdAccount(),
+							String.format("Medewerker %1$s ontkoppeld van organisatie %2$s", medewerker.getNaamVolledigMetVoornaam(), organisatie.getNaam()));
 					}
 					else
 					{
-						logService.logGebeurtenis(LogGebeurtenis.ORGANISATIE_MEDEWERKER_KOPPEL, ScreenitSession.get().getLoggedInInstellingGebruiker(),
-							String.format("Medewerker %1$s gekoppeld aan organisatie %2$s", gebruiker.getNaamVolledigMetVoornaam(), instelling.getNaam()));
+						logService.logGebeurtenis(LogGebeurtenis.ORGANISATIE_MEDEWERKER_KOPPEL, getIngelogdeOrganisatieMedewerker(),
+							String.format("Medewerker %1$s gekoppeld aan organisatie %2$s", medewerker.getNaamVolledigMetVoornaam(), organisatie.getNaam()));
 					}
-					clearCachedAuthorizationInfo(instellingGebruiker);
+					clearCachedAuthorizationInfo(organisatieMedewerker);
 				}
 
 			}
@@ -344,14 +344,14 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 			totaalLabel = new Model<>("medewerkers");
 		}
 
-		ScreenitDataTable<InstellingGebruiker, String> dataTable = new ScreenitDataTable<InstellingGebruiker, String>("organisaties", columns,
+		ScreenitDataTable<OrganisatieMedewerker, String> dataTable = new ScreenitDataTable<OrganisatieMedewerker, String>("organisaties", columns,
 			new OrganisatieMedewerkerDataProvider(searchObjectModel, organisatieMedewerkerSort), totaalLabel)
 		{
 
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void onClick(AjaxRequestTarget target, IModel<InstellingGebruiker> model)
+			public void onClick(AjaxRequestTarget target, IModel<OrganisatieMedewerker> model)
 			{
 				if (magKoppelingenBeheren)
 				{
@@ -384,27 +384,27 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 
 	protected abstract Panel getPaspoortPanel(String id);
 
-	protected abstract void onNavigeerNaar(IModel<InstellingGebruiker> rowModel, AjaxRequestTarget target);
+	protected abstract void onNavigeerNaar(IModel<OrganisatieMedewerker> rowModel, AjaxRequestTarget target);
 
-	protected abstract boolean magNavigerenNaar(IModel<InstellingGebruiker> rowModel);
+	protected abstract boolean magNavigerenNaar(IModel<OrganisatieMedewerker> rowModel);
 
-	protected InstellingGebruiker createSearchObject()
+	protected OrganisatieMedewerker createSearchObject()
 	{
-		InstellingGebruiker instellingGebruiker = new InstellingGebruiker();
-		instellingGebruiker.setActief(Boolean.TRUE);
-		InstellingGebruikerRol rol = new InstellingGebruikerRol();
+		OrganisatieMedewerker organisatieMedewerker = new OrganisatieMedewerker();
+		organisatieMedewerker.setActief(Boolean.TRUE);
+		OrganisatieMedewerkerRol rol = new OrganisatieMedewerkerRol();
 		Calendar today = Calendar.getInstance();
 		today.add(Calendar.DATE, -1);
 		rol.setEindDatum(today.getTime());
 
-		return instellingGebruiker;
+		return organisatieMedewerker;
 	}
 
 	protected abstract void onToevoegen(IDialog dialog, AjaxRequestTarget target, WebMarkupContainer medewerkerContainer);
 
-	protected void clearCachedAuthorizationInfo(InstellingGebruiker instellingGebruiker)
+	protected void clearCachedAuthorizationInfo(OrganisatieMedewerker organisatieMedewerker)
 	{
-		realm.clearCachedAuthorizationInfo(instellingGebruiker);
+		realm.clearCachedAuthorizationInfo(organisatieMedewerker);
 	}
 
 }

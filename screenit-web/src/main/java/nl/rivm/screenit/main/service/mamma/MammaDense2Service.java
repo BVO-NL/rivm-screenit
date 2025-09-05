@@ -21,11 +21,11 @@ package nl.rivm.screenit.main.service.mamma;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 
 import org.springframework.web.multipart.MultipartFile;
 
 public interface MammaDense2Service
 {
-	String importClienten(MultipartFile importBestand, InstellingGebruiker instellingGebruiker);
+	String importClienten(MultipartFile importBestand, OrganisatieMedewerker organisatieMedewerker);
 }

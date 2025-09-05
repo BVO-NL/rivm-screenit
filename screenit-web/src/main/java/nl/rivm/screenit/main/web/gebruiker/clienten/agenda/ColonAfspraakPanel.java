@@ -60,7 +60,6 @@ public abstract class ColonAfspraakPanel extends GenericPanel<Client>
 	{
 		super(id, model);
 
-		hibernateService.reload(model.getObject());
 		var container = new WebMarkupContainer("headerWijzigen");
 		add(container);
 
@@ -72,10 +71,10 @@ public abstract class ColonAfspraakPanel extends GenericPanel<Client>
 				item.setDefaultModel(new CompoundPropertyModel<>(item.getModel()));
 				item.add(new Label("vanaf", DateUtil.formatLongDateTime(item.getModelObject().getVanaf())));
 				item.add(new Label("kamer.intakelocatie.naam"));
-				item.add(new Label("kamer.intakelocatie.adressen[0].straat"));
-				item.add(new Label("kamer.intakelocatie.adressen[0].huisnummer"));
-				item.add(new Label("kamer.intakelocatie.adressen[0].postcode"));
-				item.add(new Label("kamer.intakelocatie.adressen[0].plaats"));
+				item.add(new Label("kamer.intakelocatie.adres.straat"));
+				item.add(new Label("kamer.intakelocatie.adres.huisnummer"));
+				item.add(new Label("kamer.intakelocatie.adres.postcode"));
+				item.add(new Label("kamer.intakelocatie.adres.plaats"));
 				var afspraak = item.getModelObject();
 				String locatieBeschrijving = organisatieParameterService.getOrganisatieParameter(afspraak.getKamer().getIntakelocatie(),
 					OrganisatieParameterKey.COLON_INTAKELOCATIE_BESCHRIJVING);
@@ -123,7 +122,7 @@ public abstract class ColonAfspraakPanel extends GenericPanel<Client>
 			}
 		};
 		add(afspraken);
-		setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_INTAKEAFSPRAAKGEMAAKT, Actie.INZIEN));
+		setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_INTAKEAFSPRAAKGEMAAKT, Actie.INZIEN));
 	}
 
 	public abstract void afspraakWijzigen(AjaxRequestTarget target, ColonIntakeAfspraak afspraak, boolean locatieWijzigen);

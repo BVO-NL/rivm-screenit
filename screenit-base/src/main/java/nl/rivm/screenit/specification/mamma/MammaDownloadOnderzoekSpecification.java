@@ -21,11 +21,14 @@ package nl.rivm.screenit.specification.mamma;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker_;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.enums.BestandStatus;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaDossier;
@@ -38,9 +41,6 @@ import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 
 import org.springframework.data.jpa.domain.Specification;
-
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
@@ -58,13 +58,13 @@ public class MammaDownloadOnderzoekSpecification
 		});
 	}
 
-	public static Specification<MammaDownloadOnderzoek> isGemaaktDoorActieveInstelling()
+	public static Specification<MammaDownloadOnderzoek> isGemaaktDoorActieveOrganisatie()
 	{
 		return (r, q, cb) ->
 		{
 			var verzoekJoin = join(r, MammaDownloadOnderzoek_.verzoek);
 			var aangemaaktDoorJoin = join(verzoekJoin, MammaDownloadOnderzoekenVerzoek_.aangemaaktDoor);
-			return cb.isTrue(cb.treat(aangemaaktDoorJoin.get(InstellingGebruiker_.organisatie), Instelling.class).get(Instelling_.actief));
+			return cb.isTrue(cb.treat(aangemaaktDoorJoin.get(OrganisatieMedewerker_.organisatie), Organisatie.class).get(Organisatie_.actief));
 		};
 	}
 

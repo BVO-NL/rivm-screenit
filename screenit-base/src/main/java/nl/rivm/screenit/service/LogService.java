@@ -26,8 +26,8 @@ import java.util.List;
 
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.SortState;
 import nl.rivm.screenit.model.dashboard.DashboardStatus;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -42,7 +42,7 @@ import org.springframework.data.domain.Sort;
 
 public interface LogService
 {
-	void createAndSaveLogInformatie(InstellingGebruiker ingelogd, LogGebeurtenis gebeurtenis, String omschrijving);
+	void createAndSaveLogInformatie(OrganisatieMedewerker ingelogd, LogGebeurtenis gebeurtenis, String omschrijving);
 
 	void logGebeurtenis(LogGebeurtenis gebeurtenis, String melding, Bevolkingsonderzoek... bevolkingsonderzoeken);
 
@@ -54,13 +54,13 @@ public interface LogService
 
 	void logGebeurtenis(LogGebeurtenis gebeurtenis, Account account, Client client, String melding, Bevolkingsonderzoek... bevolkingsonderzoeken);
 
-	void logGebeurtenis(LogGebeurtenis gebeurtenis, MammaScreeningsEenheid screeningsEenheid, List<Instelling> dashboardOrganisaties, Account account, Client client,
+	void logGebeurtenis(LogGebeurtenis gebeurtenis, MammaScreeningsEenheid screeningsEenheid, List<Organisatie> dashboardOrganisaties, Account account, Client client,
 		String melding, LocalDateTime datumTijd);
 
 	void logGebeurtenis(LogGebeurtenis gebeurtenis, MammaScreeningsEenheid screeningsEenheid, Account account, Client client, String melding, LocalDateTime datumTijd,
 		Bevolkingsonderzoek... bevolkingsonderzoeken);
 
-	void logGebeurtenis(LogGebeurtenis logGebeurtenis, MammaScreeningsEenheid screeningsEenheid, List<Instelling> dashboardOrganisaties, Client client, String melding);
+	void logGebeurtenis(LogGebeurtenis logGebeurtenis, MammaScreeningsEenheid screeningsEenheid, List<Organisatie> dashboardOrganisaties, Client client, String melding);
 
 	void logGebeurtenis(LogGebeurtenis gebeurtenis, LogEvent logEvent, Bevolkingsonderzoek... bevolkingsonderzoeken);
 
@@ -68,24 +68,24 @@ public interface LogService
 
 	void logGebeurtenis(LogGebeurtenis gebeurtenis, LogEvent logEvent, Account account, Bevolkingsonderzoek... bevolkingsonderzoeken);
 
-	void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Instelling> dashboardOrganisaties, Account account, Bevolkingsonderzoek... bevolkingsonderzoeken);
+	void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, Account account, Bevolkingsonderzoek... bevolkingsonderzoeken);
 
-	void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Instelling> dashboardOrganisaties, Account account, String melding, Bevolkingsonderzoek... bevolkingsonderzoeken);
+	void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, Account account, String melding, Bevolkingsonderzoek... bevolkingsonderzoeken);
 
-	void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Instelling> dashboardOrganisaties, Account account, Client client, Bevolkingsonderzoek... bevolkingsonderzoeken);
+	void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, Account account, Client client, Bevolkingsonderzoek... bevolkingsonderzoeken);
 
-	void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Instelling> dashboardOrganisaties, Account account, Client client, String melding,
+	void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, Account account, Client client, String melding,
 		Bevolkingsonderzoek... bevolkingsonderzoeken);
 
-	void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Instelling> dashboardOrganisaties, LogEvent logEvent, Bevolkingsonderzoek... bevolkingsonderzoeken);
+	void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, LogEvent logEvent, Bevolkingsonderzoek... bevolkingsonderzoeken);
 
-	void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Instelling> dashboardOrganisaties, LogEvent logEvent, Account account, Client client,
+	void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, LogEvent logEvent, Account account, Client client,
 		Bevolkingsonderzoek... bevolkingsonderzoeken);
 
-	void logGebeurtenis(LogGebeurtenis gebeurtenis, MammaScreeningsEenheid screeningsEenheid, List<Instelling> dashboardOrganisaties, LogEvent logEvent, Account account,
+	void logGebeurtenis(LogGebeurtenis gebeurtenis, MammaScreeningsEenheid screeningsEenheid, List<Organisatie> dashboardOrganisaties, LogEvent logEvent, Account account,
 		Client client, LocalDateTime datumTijd, Bevolkingsonderzoek... bevolkingsonderzoeken);
 
-	void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Instelling> dashboardOrganisaties, LogEvent logEvent, Account account, Bevolkingsonderzoek... bevolkingsonderzoeken);
+	void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, LogEvent logEvent, Account account, Bevolkingsonderzoek... bevolkingsonderzoeken);
 
 	List<LogRegel> getLogRegels(LoggingZoekCriteria loggingZoekCriteria, int first, int count, SortState<String> sortState);
 
@@ -101,7 +101,7 @@ public interface LogService
 
 	boolean heeftGeenBestaandeLogregelBinnenPeriode(List<LogGebeurtenis> gebeurtenissen, String bsn, List<Level> levels, String melding, int dagen);
 
-	boolean verwijderLogRegelsVanDashboards(List<LogRegel> logRegels, InstellingGebruiker ingelogdeGebruiker, LogGebeurtenis logGebeurtenis);
+	boolean verwijderLogRegelsVanDashboards(List<LogRegel> logRegels, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, LogGebeurtenis logGebeurtenis);
 
 	void verwijderLogRegelsVanClient(Client client);
 }

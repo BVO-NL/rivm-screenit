@@ -55,7 +55,7 @@ public class ColonClientAfspraakAfzeggenPanel extends GenericPanel<ColonIntakeAf
 
 	private void briefTegenhoudenContainer()
 	{
-		var rechtVoorBriefTegenhouden = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
+		var rechtVoorBriefTegenhouden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
 		var briefTegenhoudenCheckBox = ComponentHelper.newCheckBox("briefTegenhouden", briefTegenhouden);
 		briefTegenhoudenCheckBox.setVisible(rechtVoorBriefTegenhouden);
 		briefTegenhoudenCheckBox.setOutputMarkupPlaceholderTag(true);

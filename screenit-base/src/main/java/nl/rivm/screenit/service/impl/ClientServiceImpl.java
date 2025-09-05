@@ -46,8 +46,8 @@ import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.GbaPersoon_;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.TijdelijkGbaAdres;
 import nl.rivm.screenit.model.UploadDocument;
@@ -522,7 +522,7 @@ public class ClientServiceImpl implements ClientService
 	}
 
 	@Override
-	public List<Instelling> getScreeningOrganisatieVan(Client client)
+	public List<Organisatie> getScreeningOrganisatieVan(Client client)
 	{
 		if (client != null && client.getPersoon().getGbaAdres() != null && client.getPersoon().getGbaAdres().getGbaGemeente() != null
 			&& client.getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie() != null)
@@ -540,7 +540,7 @@ public class ClientServiceImpl implements ClientService
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void saveOrUpdateTijdelijkGbaAdres(Client client, InstellingGebruiker ingelogdeGebruiker)
+	public void saveOrUpdateTijdelijkGbaAdres(Client client, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		String melding = "Gewijzigd.";
 		GbaPersoon persoon = client.getPersoon();
@@ -549,20 +549,20 @@ public class ClientServiceImpl implements ClientService
 		{
 			melding = "Aangemaakt.";
 		}
-		logService.logGebeurtenis(LogGebeurtenis.GBA_TIJDELIJK_ADRES, ingelogdeGebruiker, client, melding);
+		logService.logGebeurtenis(LogGebeurtenis.GBA_TIJDELIJK_ADRES, ingelogdeOrganisatieMedewerker, client, melding);
 		hibernateService.saveOrUpdate(persoon);
 	}
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void verwijderTijdelijkGbaAdres(Client client, InstellingGebruiker ingelogdeGebruiker)
+	public void verwijderTijdelijkGbaAdres(Client client, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		String melding = "Handmatig verwijderd.";
 		GbaPersoon persoon = client.getPersoon();
 		TijdelijkGbaAdres tijdelijkGbaAdres = persoon.getTijdelijkGbaAdres();
 		persoon.setTijdelijkGbaAdres(null);
 		hibernateService.delete(tijdelijkGbaAdres);
-		logService.logGebeurtenis(LogGebeurtenis.GBA_TIJDELIJK_ADRES, ingelogdeGebruiker, client, melding);
+		logService.logGebeurtenis(LogGebeurtenis.GBA_TIJDELIJK_ADRES, ingelogdeOrganisatieMedewerker, client, melding);
 		hibernateService.saveOrUpdate(persoon);
 	}
 

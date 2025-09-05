@@ -67,7 +67,7 @@ public class MammaVerslagPage extends AbstractMammaBeoordelenPage
 	@Override
 	protected void handleImsError(AjaxRequestTarget target, String errorMessage, Long onderzoekId)
 	{
-		error(imsService.handleError(errorMessage, ScreenitSession.get().getLoggedInInstellingGebruiker(), (b) -> getString((String) b), onderzoekId));
+		error(imsService.handleError(errorMessage, getIngelogdeOrganisatieMedewerker(), (b) -> getString((String) b), onderzoekId));
 		huidigeRondePanel.blokeerOpslaan();
 	}
 

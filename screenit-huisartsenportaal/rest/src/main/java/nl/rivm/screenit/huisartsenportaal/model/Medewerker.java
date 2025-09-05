@@ -28,17 +28,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import nl.rivm.screenit.huisartsenportaal.model.enums.InlogMethode;
-import nl.rivm.screenit.huisartsenportaal.model.enums.Recht;
-import nl.rivm.screenit.huisartsenportaal.util.DateUtil;
-
-import org.hibernate.envers.Audited;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.CollectionTable;
@@ -56,9 +45,20 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import nl.rivm.screenit.huisartsenportaal.model.enums.InlogMethode;
+import nl.rivm.screenit.huisartsenportaal.model.enums.Recht;
+import nl.rivm.screenit.huisartsenportaal.util.DateUtil;
+
+import org.hibernate.envers.Audited;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 @Entity
 @Audited
-@Table(name = "org_medewerker")
+@Table(name = "medewerker")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Getter
 @Setter
@@ -96,7 +96,7 @@ public abstract class Medewerker implements UserDetails, Serializable
 
 	@ElementCollection(targetClass = Recht.class, fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)
-	@CollectionTable(name = "org_medewerker_rol")
+	@CollectionTable(name = "medewerker_rol")
 	private List<Recht> rollen = new ArrayList<>();
 
 	@Override

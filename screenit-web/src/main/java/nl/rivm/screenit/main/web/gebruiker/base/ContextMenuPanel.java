@@ -46,18 +46,18 @@ public abstract class ContextMenuPanel extends Panel
 	{
 		super(id);
 
-		List<GebruikerMenuItem> allowedContextMenuItems = getAllowedContextMenuItems();
-		final Class<? extends GebruikerBasePage> activeContextMenuClass = getActiveContextMenuClass();
-		ListView<GebruikerMenuItem> contextMenu = new ListView<GebruikerMenuItem>("contextMenu", allowedContextMenuItems)
+		List<MedewerkerMenuItem> allowedContextMenuItems = getAllowedContextMenuItems();
+		final Class<? extends MedewerkerBasePage> activeContextMenuClass = getActiveContextMenuClass();
+		ListView<MedewerkerMenuItem> contextMenu = new ListView<MedewerkerMenuItem>("contextMenu", allowedContextMenuItems)
 		{
 
 			@Override
-			protected void populateItem(ListItem<GebruikerMenuItem> item)
+			protected void populateItem(ListItem<MedewerkerMenuItem> item)
 			{
 				WebMarkupContainer container = new WebMarkupContainer("container");
 
-				GebruikerMenuItem menuTab = item.getModelObject();
-				Class<? extends GebruikerBasePage> targetPageClass = menuTab.getTargetPageClass();
+				MedewerkerMenuItem menuTab = item.getModelObject();
+				Class<? extends MedewerkerBasePage> targetPageClass = menuTab.getTargetPageClass();
 				boolean isZoekPage = targetPageClass.getAnnotation(ZoekenContextMenuItem.class) != null;
 				boolean isActive = targetPageClass.equals(activeContextMenuClass);
 				if (isActive)
@@ -93,7 +93,7 @@ public abstract class ContextMenuPanel extends Panel
 		add(contextMenu);
 	}
 
-	protected abstract List<GebruikerMenuItem> getAllowedContextMenuItems();
+	protected abstract List<MedewerkerMenuItem> getAllowedContextMenuItems();
 
-	protected abstract Class<? extends GebruikerBasePage> getActiveContextMenuClass();
+	protected abstract Class<? extends MedewerkerBasePage> getActiveContextMenuClass();
 }

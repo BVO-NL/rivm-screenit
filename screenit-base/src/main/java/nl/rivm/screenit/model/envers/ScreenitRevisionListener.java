@@ -23,8 +23,8 @@ package nl.rivm.screenit.model.envers;
 
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 
 import org.hibernate.envers.RevisionListener;
 
@@ -37,13 +37,13 @@ public class ScreenitRevisionListener implements RevisionListener
 		Account account = RevisionInformationResolver.getAccount();
 		if (account != null)
 		{
-			if (account instanceof Gebruiker gebruiker)
+			if (account instanceof Medewerker medewerker)
 			{
-				screenitRevisionEntity.setGebruiker(gebruiker);
+				screenitRevisionEntity.setMedewerker(medewerker);
 			}
-			if (account instanceof InstellingGebruiker instellingGebruiker)
+			if (account instanceof OrganisatieMedewerker organisatieMedewerker)
 			{
-				screenitRevisionEntity.setInstellingGebruiker(instellingGebruiker);
+				screenitRevisionEntity.setOrganisatieMedewerker(organisatieMedewerker);
 			}
 			else if (account instanceof Client client)
 			{

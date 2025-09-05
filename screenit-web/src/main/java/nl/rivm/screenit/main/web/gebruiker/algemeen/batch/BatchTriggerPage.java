@@ -59,7 +59,7 @@ public class BatchTriggerPage extends BatchBasePage
 			{
 				dialog.openWith(target, new AddTriggerPanel(BootstrapDialog.CONTENT_ID));
 			}
-		}.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BATCH_STATUS, Actie.TOEVOEGEN)));
+		}.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BATCH_STATUS, Actie.TOEVOEGEN)));
 
 		try
 		{

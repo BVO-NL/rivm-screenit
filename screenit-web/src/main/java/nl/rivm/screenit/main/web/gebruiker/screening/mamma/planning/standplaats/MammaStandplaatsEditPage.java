@@ -31,20 +31,20 @@ import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaPlanningBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaPostcodeReeksEditPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaPostcodeReeksenPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaStandplaatsOpmerkingenPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaPostcodeReeks;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -69,7 +69,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 {
@@ -80,7 +80,7 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 	private MammaScreeningsEenheidService screeningsEenheidService;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	private WebMarkupContainer persistentContainer;
 
@@ -101,7 +101,7 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 		dialog = new BootstrapDialog("dialog");
 		add(dialog);
 
-		magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
+		magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
 		ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie() != null;
 		initieleScreeningOrganisatieModel = ModelUtil.sModel(model.getObject().getRegio());
 
@@ -143,7 +143,7 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 
 		mainForm.add(new Label("gekoppeldeSEs", screeningsEenheidService.getGekoppeldeScreeningsEenhedenTekst(getStandplaats())));
 
-		mainForm.add(new ScreenitDropdown<>("regio", ModelUtil.listRModel(instellingService.getActieveInstellingen(ScreeningOrganisatie.class), false),
+		mainForm.add(new ScreenitDropdown<>("regio", ModelUtil.listRModel(organisatieService.getActieveOrganisaties(ScreeningOrganisatie.class), false),
 			new ChoiceRenderer<>("naam")).setVisible(!ingelogdNamensRegio).setEnabled(magAanpassen && !ingelogdNamensRegio));
 
 		addOpslaanStandplaats(mainForm);
@@ -177,7 +177,7 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 					return;
 				}
 
-				boolean changed = standplaatsService.saveOrUpdateStandplaats(standplaats, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				boolean changed = standplaatsService.saveOrUpdateStandplaats(standplaats, getIngelogdeOrganisatieMedewerker());
 				if (changed)
 				{
 					if (!persistentContainer.isVisible())
@@ -198,7 +198,7 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 
 	private void addInActiverenButton(ScreenitForm<MammaStandplaats> mainForm)
 	{
-		AjaxLink<Gebruiker> inActiveren = new ConfirmingIndicatingAjaxLink<Gebruiker>("inActiveren", dialog, "question.remove.standplaats")
+		AjaxLink<Medewerker> inActiveren = new ConfirmingIndicatingAjaxLink<Medewerker>("inActiveren", dialog, "question.remove.standplaats")
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target)
@@ -216,7 +216,7 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 				}
 
 				standplaats.setActief(activeren);
-				standplaatsService.saveOrUpdateStandplaats(standplaats, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				standplaatsService.saveOrUpdateStandplaats(standplaats, getIngelogdeOrganisatieMedewerker());
 
 				setResponsePage(MammaStandplaatsZoekenPage.class);
 				if (standplaats.getActief())
@@ -255,7 +255,7 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 				inActiveren.add(new AttributeAppender("title", Model.of(getString(inactiverenProperty))));
 			}
 		}
-		boolean magInActiveren = standplaats.getId() != null && ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.VERWIJDEREN)
+		boolean magInActiveren = standplaats.getId() != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.VERWIJDEREN)
 			&& ingelogdNamensRegio;
 		inActiveren.setVisible(magInActiveren);
 
@@ -296,7 +296,7 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 				});
 			}
 		};
-		toevoegen.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.TOEVOEGEN) && ingelogdNamensRegio);
+		toevoegen.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.TOEVOEGEN) && ingelogdNamensRegio);
 		persistentContainer.add(toevoegen);
 
 		MammaPostcodeReeks zoekObject = new MammaPostcodeReeks();
@@ -321,7 +321,7 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveContextMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveContextMenuClass()
 	{
 		return MammaStandplaatsZoekenPage.class;
 	}

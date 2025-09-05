@@ -27,7 +27,7 @@ import java.util.function.Function;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.INaam;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaDossier;
@@ -59,15 +59,15 @@ public interface MammaBaseBeoordelingService
 
 	MammaBIRADSWaarde defaultBiradsWaarde(MammaBeoordeling modelObject, MammaZijde zijde);
 
-	void slaLezingOpEnVerwerkStatus(MammaBeoordeling beoordeling, MammaLezing lezing, InstellingGebruiker loggedInInstellingGebruiker, StringResolver resolver);
+	void slaLezingOpEnVerwerkStatus(MammaBeoordeling beoordeling, MammaLezing lezing, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, StringResolver resolver);
 
 	void verwerkBeoordelingStatusGunstigMetNevenbevindingen(MammaBeoordeling beoordeling);
 
 	void slaLezingOp(MammaBeoordeling beoordeling, MammaLezing lezing);
 
-	void wijsBeoordelingAanRadioloogToe(MammaBeoordeling beoordeling, InstellingGebruiker gebruiker);
+	void wijsBeoordelingAanRadioloogToe(MammaBeoordeling beoordeling, OrganisatieMedewerker organisatieMedewerker);
 
-	MammaLezing maakVerslagLezing(MammaLezing uitgangsituatieLezing, InstellingGebruiker beoordelaar, boolean onervarenRadioloog);
+	MammaLezing maakVerslagLezing(MammaLezing uitgangsituatieLezing, OrganisatieMedewerker beoordelaar, boolean onervarenRadioloog);
 
 	Boolean isUitslagGunstig(MammaBeoordeling beoordeling);
 
@@ -105,7 +105,7 @@ public interface MammaBaseBeoordelingService
 
 	void annuleerBeoordeling(MammaBeoordeling beoordeling);
 
-	void valideerEnHerbeoordeelBeoordeling(MammaBeoordeling beoordeling, InstellingGebruiker ingelogdeGebruiker);
+	void valideerEnHerbeoordeelBeoordeling(MammaBeoordeling beoordeling, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	boolean beoordelingZitInActieveFotobespreking(MammaBeoordeling beoordeling);
 

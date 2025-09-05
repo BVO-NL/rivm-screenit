@@ -26,6 +26,8 @@ import java.time.LocalDateTime;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import lombok.RequiredArgsConstructor;
+
 import nl.rivm.screenit.mamma.se.SELogin;
 import nl.rivm.screenit.mamma.se.SERequestHeader;
 import nl.rivm.screenit.mamma.se.dto.LoginDto;
@@ -33,8 +35,8 @@ import nl.rivm.screenit.mamma.se.dto.SeAutorisatieDto;
 import nl.rivm.screenit.mamma.se.security.SERealm;
 import nl.rivm.screenit.mamma.se.service.ConfiguratieService;
 import nl.rivm.screenit.mamma.se.service.MammaScreeningsEenheidService;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
@@ -44,7 +46,7 @@ import nl.rivm.screenit.util.NaamUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.lang.codec.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Version;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,31 +56,38 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+
 @RestController
 @RequestMapping("/api/authenticatie")
+@RequiredArgsConstructor
 public class AuthenticatieController extends AuthorizedController
 {
-	@Autowired
-	private MammaScreeningsEenheidService screeningsEenheidService;
-
-	@Autowired
-	private LogService logService;
-
-	@Autowired
-	private SERealm seRealm;
-
-	@Autowired
-	private ConfiguratieService configuratieService;
-
 	private static final String LOGGING = "logging";
 
-	private static final CustomObjectMapper objectMapper = new CustomObjectMapper();
+	private static final SimpleBeanPropertyFilter FILTER_JSON_VELDEN_OUDE_VERSIE = SimpleBeanPropertyFilter.serializeAllExcept("organisatieMedewerkerId");
+
+	private static final SimpleBeanPropertyFilter FILTER_JSON_VELDEN_NIEUWE_VERSIE = SimpleBeanPropertyFilter.serializeAllExcept("instellingGebruikerId");
+
+	private static final String NIEUWE_VERSIE = "25.5.26";
+
+	private final MammaScreeningsEenheidService screeningsEenheidService;
+
+	private final LogService logService;
+
+	private final SERealm seRealm;
+
+	private final ConfiguratieService configuratieService;
+
+	private final ObjectMapper objectMapper;
 
 	@RequestMapping(value = "/inloggen/{genereerLogging}", method = RequestMethod.POST)
 	public ResponseEntity login(@RequestHeader(value = "Authorization") String credentials,
 		@PathVariable String genereerLogging,
 		@RequestHeader(value = SERequestHeader.SE_PROXY_DATUMTIJD) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime proxyDatumTijd,
-		@RequestHeader(value = "versie", required = false) String versie,
+		@RequestHeader(value = "versie", required = false) String seVersie,
 		@RequestHeader(value = "nfcServerVersie", required = false) String nfcServerVersie,
 		@RequestHeader(value = "Yubikey") String yubikey, @RequestHeader(value = "navigatie") String navigatie, HttpServletRequest request) throws IOException
 	{
@@ -105,38 +114,51 @@ public class AuthenticatieController extends AuthorizedController
 				return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).build();
 			}
 		}
-		loginDto = login.doLogin(seCode, proxyDatumTijd, credentialArray[0], credentialArray[1], yubikey, versie, nfcServerVersie, genereerLogging.equals(LOGGING));
+		loginDto = login.doLogin(seCode, proxyDatumTijd, credentialArray[0], credentialArray[1], yubikey, seVersie, nfcServerVersie, genereerLogging.equals(LOGGING));
 
 		if (loginDto.isSuccess())
 		{
-			InstellingGebruiker ingelogdeGebruiker = login.getIngelogdeGebruiker();
-			SeAutorisatieDto result = getSeRechtenGebruiker(ingelogdeGebruiker.getId());
+			OrganisatieMedewerker ingelogdeOrganisatieMedewerker = login.getIngelogdeOrganisatieMedewerker();
+			SeAutorisatieDto result = getSeRechtenOrganisatieMedewerker(ingelogdeOrganisatieMedewerker.getId());
 			MammaScreeningsEenheid ingelogdeScreeningsEenheid = login.getIngelogdeScreeningsEenheid();
-			Gebruiker medewerker = ingelogdeGebruiker.getMedewerker();
+			Medewerker medewerker = ingelogdeOrganisatieMedewerker.getMedewerker();
 
-			result.setDisplayName(NaamUtil.getNaamGebruiker(medewerker));
-			result.setInstellingGebruikerId(ingelogdeGebruiker.getId());
+			result.setDisplayName(NaamUtil.getNaamMedewerker(medewerker));
+			result.setOrganisatieMedewerkerId(ingelogdeOrganisatieMedewerker.getId());
 			result.setSeCode(ingelogdeScreeningsEenheid.getCode());
 			result.setSeNaam(ingelogdeScreeningsEenheid.getNaam());
 			result.setUsername(medewerker.getGebruikersnaam());
 			result.setMedewerkercode(medewerker.getMedewerkercode().toString());
 			result.setNavigatie(navigatie);
 
-			configuratieService.voegParametersToe(result, versie, ingelogdeScreeningsEenheid);
+			configuratieService.voegParametersToe(result, seVersie, ingelogdeScreeningsEenheid);
 
-			return ResponseEntity.ok(objectMapper.readTree(objectMapper.writeValueAsString(result)));
+			var filterProvider = new SimpleFilterProvider();
+			filterProvider.addFilter("autorisatieFilter", isNieuweSEVersie(seVersie) ? FILTER_JSON_VELDEN_NIEUWE_VERSIE : FILTER_JSON_VELDEN_OUDE_VERSIE);
+
+			return ResponseEntity.ok(objectMapper.readTree(objectMapper.writer(filterProvider).writeValueAsString(result)));
 		}
 
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(loginDto);
 	}
 
+	private static boolean isNieuweSEVersie(String seVersie)
+	{
+		var startDash = seVersie.indexOf('-');
+		if (startDash > 0)
+		{
+			seVersie = seVersie.substring(0, startDash);
+		}
+		return seVersie.startsWith("0") || Version.parse(seVersie).isGreaterThanOrEqualTo(Version.parse(NIEUWE_VERSIE));
+	}
+
 	@RequestMapping(value = "/uitloggen", method = RequestMethod.POST)
 	public ResponseEntity logout(HttpServletRequest request)
 	{
-		InstellingGebruiker instellingGebruiker = getInstellingGebruiker(request);
-		if (instellingGebruiker != null)
+		OrganisatieMedewerker organisatieMedewerker = getOrganisatieMedewerker(request);
+		if (organisatieMedewerker != null)
 		{
-			seRealm.clearCachedAuthorizationInfo(instellingGebruiker);
+			seRealm.clearCachedAuthorizationInfo(organisatieMedewerker);
 		}
 		SecurityUtils.getSubject().logout();
 		return ResponseEntity.ok(true);

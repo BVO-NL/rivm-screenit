@@ -47,10 +47,9 @@ public class SubMenuPanel extends Panel
 		while (gebruikerMenuItemIterator.hasNext())
 		{
 			IMenuItem menuItem = gebruikerMenuItemIterator.next();
-			if (menuItem instanceof GebruikerMenuItem)
+			if (menuItem instanceof MedewerkerMenuItem medewerkerMenuItem)
 			{
-				GebruikerMenuItem gebruikerMenuItem = (GebruikerMenuItem) menuItem;
-				Class<? extends GebruikerBasePage> targetPageClass = GebruikerMenuItem.getTargetPageClass(gebruikerMenuItem);
+				Class<? extends MedewerkerBasePage> targetPageClass = MedewerkerMenuItem.getTargetPageClass(medewerkerMenuItem);
 				if (targetPageClass == null || !Session.get().getAuthorizationStrategy().isInstantiationAuthorized(targetPageClass))
 				{
 					gebruikerMenuItemIterator.remove();
@@ -63,21 +62,20 @@ public class SubMenuPanel extends Panel
 			@Override
 			protected void populateItem(ListItem<IMenuItem> item)
 			{
-				if (item.getModelObject() instanceof GebruikerMenuItem)
+				if (item.getModelObject() instanceof MedewerkerMenuItem medewerkerMenuItem)
 				{
-					final GebruikerMenuItem gebruikerMenuItem = (GebruikerMenuItem) item.getModelObject();
 					Link<Object> link = new Link<Object>("subMenuLink")
 					{
 						@Override
 						public void onClick()
 						{
 							ScreenitSession.get().resetZoekStatus();
-							setResponsePage(GebruikerMenuItem.getTargetPageClass(gebruikerMenuItem));
+							setResponsePage(MedewerkerMenuItem.getTargetPageClass(medewerkerMenuItem));
 						}
 
 					};
 					item.add(link);
-					link.add(new Label("subMenuNaam", new SimpleStringResourceModel(gebruikerMenuItem.getResourceTag())));
+					link.add(new Label("subMenuNaam", new SimpleStringResourceModel(medewerkerMenuItem.getResourceTag())));
 				}
 				else if (item.getModelObject() instanceof MenuDivider)
 				{

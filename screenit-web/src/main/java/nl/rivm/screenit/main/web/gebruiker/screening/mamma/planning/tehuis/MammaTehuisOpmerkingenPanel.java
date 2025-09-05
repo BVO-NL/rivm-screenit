@@ -70,7 +70,7 @@ public class MammaTehuisOpmerkingenPanel extends GenericPanel<MammaTehuis>
 	{
 		super(id, model);
 
-		magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_TEHUIS, Actie.AANPASSEN);
+		magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_TEHUIS, Actie.AANPASSEN);
 		ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie() != null;
 
 		opmerkingen = new WebMarkupContainer("opmerkingen");
@@ -142,7 +142,7 @@ public class MammaTehuisOpmerkingenPanel extends GenericPanel<MammaTehuis>
 					{
 						super.onAfterToggleActief(target, actiefObject);
 						target.add(opmerkingen);
-						tehuisService.saveOrUpdateTehuisOpmerking(actiefObject, null, ScreenitSession.get().getLoggedInInstellingGebruiker());
+						tehuisService.saveOrUpdateTehuisOpmerking(actiefObject, null, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 					}
 
 					@Override
@@ -168,7 +168,7 @@ public class MammaTehuisOpmerkingenPanel extends GenericPanel<MammaTehuis>
 				editOpmerking(target, nieuweOpmerking);
 			}
 		};
-		nieuweOpmerking.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.TOEVOEGEN) && ingelogdNamensRegio);
+		nieuweOpmerking.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.TOEVOEGEN) && ingelogdNamensRegio);
 		add(nieuweOpmerking);
 
 		editOpmerkingContainer = new WebMarkupContainer("editOpmerkingContainer");
@@ -200,7 +200,7 @@ public class MammaTehuisOpmerkingenPanel extends GenericPanel<MammaTehuis>
 			{
 				MammaTehuis Tehuis = (MammaTehuis) MammaTehuisOpmerkingenPanel.this.getDefaultModelObject();
 				MammaTehuisOpmerking opmerking = (MammaTehuisOpmerking) opmerkingForm.getModelObject();
-				boolean changed = tehuisService.saveOrUpdateTehuisOpmerking(opmerking, Tehuis, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				boolean changed = tehuisService.saveOrUpdateTehuisOpmerking(opmerking, Tehuis, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				if (changed)
 				{
 					success(getString("message.gegevensopgeslagen"));

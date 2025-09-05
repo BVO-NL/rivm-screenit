@@ -30,7 +30,6 @@ import {getString} from "../../utils/TekstPropertyUtil"
 import {assertUnreachable} from "../../utils/EnumUtil"
 import ScreenitBackend from "../../utils/Backend"
 import {ColonVolgendeUitnodigingTekstDto, ColonVolgendeUitnodigingTekstType} from "../../datatypes/colon/ColonVolgendeUitnodigingTekstDto"
-import {AxiosResponse} from "axios"
 
 const BvoInleidingComponent = () => {
 
@@ -48,10 +47,8 @@ const BvoInleidingComponent = () => {
 
 	useEffect(() => {
 		if (bvo === Bevolkingsonderzoek.COLON) {
-			ScreenitBackend.get("/dossier/colon/volgendeuitnodiging")
-				.then((response: AxiosResponse<ColonVolgendeUitnodigingTekstDto>) => {
-					setVolgendeUitnodigingtekstColon(bepaalTekstVolgendeUitnodiging(response.data))
-				})
+			ScreenitBackend.get<ColonVolgendeUitnodigingTekstDto>("dossier/colon/volgendeuitnodiging").json()
+				.then((response: ColonVolgendeUitnodigingTekstDto) => setVolgendeUitnodigingtekstColon(bepaalTekstVolgendeUitnodiging(response)))
 		}
 	}, [bvo, setVolgendeUitnodigingtekstColon])
 

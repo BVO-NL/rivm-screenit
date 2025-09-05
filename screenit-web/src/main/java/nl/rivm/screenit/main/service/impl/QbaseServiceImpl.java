@@ -84,23 +84,23 @@ public class QbaseServiceImpl implements QbaseService
 	private LogService logService;
 
 	@Override
-	public String maakQbaseBestand(List<IFOBTBestand> bestanden, Account ingelogdeAccount)
+	public String maakQbaseBestand(List<IFOBTBestand> bestanden, Account ingelogdAccount)
 	{
 		StringBuilder qsb = new StringBuilder();
-		maakQbaseHeader(qsb, getLabcode(bestanden, ingelogdeAccount));
+		maakQbaseHeader(qsb, getLabcode(bestanden, ingelogdAccount));
 		maakM1(qsb);
 		verwerkBestanden(bestanden, qsb);
 		return qsb.toString();
 	}
 
-	private String getLabcode(List<IFOBTBestand> bestanden, Account ingelogdeAccount)
+	private String getLabcode(List<IFOBTBestand> bestanden, Account ingelogdAccount)
 	{
 		if (CollectionUtils.isNotEmpty(bestanden))
 		{
 			IFOBTBestand bestand = bestanden.get(0);
 			IFobtLaboratorium laboratorium = bestand.getLaboratorium();
 			String qbasenummer = laboratorium.getQbasenummer();
-			logService.logGebeurtenis(LogGebeurtenis.QBASE_BESTAND_GEMAAKT, ingelogdeAccount, "Labid voor QBASE " + qbasenummer, Bevolkingsonderzoek.COLON);
+			logService.logGebeurtenis(LogGebeurtenis.QBASE_BESTAND_GEMAAKT, ingelogdAccount, "Labid voor QBASE " + qbasenummer, Bevolkingsonderzoek.COLON);
 			return qbasenummer;
 		}
 		else

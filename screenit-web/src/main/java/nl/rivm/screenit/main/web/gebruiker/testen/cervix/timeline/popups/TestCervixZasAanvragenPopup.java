@@ -23,15 +23,17 @@ package nl.rivm.screenit.main.web.gebruiker.testen.cervix.timeline.popups;
 
 import java.util.List;
 
-import nl.rivm.screenit.main.service.cervix.CervixUitnodigingService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.components.TestEnumRadioChoice;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieParameterKey;
+import nl.rivm.screenit.service.OrganisatieParameterService;
+import nl.rivm.screenit.service.cervix.Cervix2023StartBepalingService;
 import nl.rivm.screenit.service.cervix.enums.CervixTestTimeLineDossierTijdstip;
 import nl.topicuszorg.wicket.input.radiochoice.BooleanRadioChoice;
 
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
-import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -40,7 +42,10 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 public class TestCervixZasAanvragenPopup extends TestCervixAbstractPopupPanel
 {
 	@SpringBean
-	private CervixUitnodigingService uitnodigingService;
+	private OrganisatieParameterService organisatieParameterService;
+
+	@SpringBean
+	private Cervix2023StartBepalingService bmkh2023StartBepalingService;
 
 	private IModel<CervixTestTimeLineDossierTijdstip> dossierTijdStipModel;
 
@@ -50,7 +55,7 @@ public class TestCervixZasAanvragenPopup extends TestCervixAbstractPopupPanel
 	{
 		super(id, clientModel);
 
-		nieuweZas = uitnodigingService.getVerwachteEersteZASMonsterIdLetter(ScreenitSession.get().getInstelling()) == 'C';
+		nieuweZas = gebruikNieuweZas(ScreenitSession.get().getOrganisatie());
 		var acties = testTimelineService.getZasSnelKeuzeOpties(clientModel.getObject().get(0));
 		dossierTijdStipModel = new CompoundPropertyModel<>(acties.get(acties.size() - 1));
 
@@ -60,10 +65,17 @@ public class TestCervixZasAanvragenPopup extends TestCervixAbstractPopupPanel
 		reden.setOutputMarkupId(true);
 		add(reden);
 
-		RadioChoice<Boolean> nieuweZasRadio = new BooleanRadioChoice("nieuweZas", new PropertyModel<>(this, "nieuweZas"));
+		var nieuweZasRadio = new BooleanRadioChoice("nieuweZas", new PropertyModel<>(this, "nieuweZas"));
 		nieuweZasRadio.setPrefix("<label class=\"radio\">");
 		nieuweZasRadio.setSuffix("</label>");
 		add(nieuweZasRadio);
+	}
+
+	public boolean gebruikNieuweZas(Organisatie ingelogdNamensOrganisatie)
+	{
+		boolean nieuweBMHKLabs = organisatieParameterService.getOrganisatieParameter(ingelogdNamensOrganisatie,
+			OrganisatieParameterKey.CERVIX_HPV_ORDER_NIEUW, Boolean.TRUE);
+		return nieuweBMHKLabs && bmkh2023StartBepalingService.isBmhk2023Actief();
 	}
 
 	@Override
@@ -72,7 +84,7 @@ public class TestCervixZasAanvragenPopup extends TestCervixAbstractPopupPanel
 		CervixTestTimeLineDossierTijdstip tijdStip = dossierTijdStipModel.getObject();
 		for (Client client : getModelObject())
 		{
-			baseTestTimelineService.maakZasMonster(client, ScreenitSession.get().getLoggedInInstellingGebruiker(), tijdStip, nieuweZas);
+			baseTestTimelineService.maakZasMonster(client, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), tijdStip, nieuweZas);
 		}
 	}
 

@@ -44,7 +44,7 @@ public abstract class MammaFotobesprekingVerwijderenPopupPanel extends GenericPa
 	{
 		super(id, fotobesprekingModel);
 		add(new Label("omschrijving"));
-		add(new Label("aangemaaktDoor.medewerker.achternaam", NaamUtil.getNaamGebruiker(getModelObject().getAangemaaktDoor().getMedewerker())));
+		add(new Label("aangemaaktDoor.medewerker.achternaam", NaamUtil.getNaamMedewerker(getModelObject().getAangemaaktDoor().getMedewerker())));
 		add(createLink());
 	}
 

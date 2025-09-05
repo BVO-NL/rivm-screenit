@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.generalis.medewerkerbeheer.MedewerkerBeheerListener;
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.service.BaseMedewerkerService;
 
 import org.springframework.stereotype.Component;
@@ -34,12 +34,12 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class MedewerkerInactiverenWriter extends BaseWriter<Gebruiker>
+public class MedewerkerInactiverenWriter extends BaseWriter<Medewerker>
 {
 	private final BaseMedewerkerService medewerkerService;
 
 	@Override
-	protected void write(Gebruiker medewerker) throws Exception
+	protected void write(Medewerker medewerker) throws Exception
 	{
 		LOG.info("Medewerker ('{}') wordt ge&iuml;nactiveerd", medewerker.getId());
 		medewerkerService.inActiveerMedewerker(medewerker);

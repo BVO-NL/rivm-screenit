@@ -62,7 +62,7 @@ public abstract class EditBatchJobParametersPopup extends GenericPanel<JobType>
 					protected void onSubmit(AjaxRequestTarget target)
 					{
 						super.onSubmit(target);
-						organisatieParameterService.saveOrUpdateOrganisatieParameters(getAllParameters(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+						organisatieParameterService.saveOrUpdateOrganisatieParameters(getAllParameters(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 						info("Parameters zijn opgeslagen");
 						EditBatchJobParametersPopup.this.close(target);
 					}

@@ -27,7 +27,7 @@ import java.util.List;
 import nl.rivm.screenit.dto.mamma.afspraken.IMammaAfspraakWijzigenFilter;
 import nl.rivm.screenit.dto.mamma.planning.PlanningStandplaatsPeriodeDto;
 import nl.rivm.screenit.main.exception.MagOpslaanException;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
@@ -41,11 +41,11 @@ public interface MammaStandplaatsPeriodeService
 
 	List<MammaStandplaatsPeriode> getStandplaatsPeriodesVoorBulkVerzetten(ScreeningOrganisatie regio);
 
-	void splitsStandplaatsPeriode(PlanningStandplaatsPeriodeDto standplaatsPeriode, InstellingGebruiker ingelogdeInstellingGebruiker);
+	void splitsStandplaatsPeriode(PlanningStandplaatsPeriodeDto standplaatsPeriode, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	void updateSortList(int nieuwVolgnummer, PlanningStandplaatsPeriodeDto item, MammaScreeningsEenheid screeningsEenheid, InstellingGebruiker ingelogdeInstellingGebruiker);
+	void updateSortList(int nieuwVolgnummer, PlanningStandplaatsPeriodeDto item, MammaScreeningsEenheid screeningsEenheid, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	boolean saveOrUpdateStandplaatsPeriode(PlanningStandplaatsPeriodeDto standplaatsPeriode, InstellingGebruiker ingelogdeInstellingGebruiker);
+	boolean saveOrUpdateStandplaatsPeriode(PlanningStandplaatsPeriodeDto standplaatsPeriode, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	MammaStandplaatsRondeUitnodigenRapportage getStandplaatsRondeUitnodigenRapportage(MammaStandplaatsRonde standplaatsRonde);
 

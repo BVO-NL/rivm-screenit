@@ -27,20 +27,20 @@ import java.util.Map;
 
 import nl.rivm.screenit.mamma.se.dto.actions.AfspraakMakenPassantDto;
 import nl.rivm.screenit.mamma.se.dto.actions.AfspraakSignalerenDto;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 
 public interface MammaAfspraakService
 {
-	void setAfspraakStatus(AfspraakSignalerenDto actionDto, MammaAfspraakStatus nieuweStatus, InstellingGebruiker gebruiker);
+	void setAfspraakStatus(AfspraakSignalerenDto actionDto, MammaAfspraakStatus nieuweStatus, OrganisatieMedewerker organisatieMedewerker);
 
-	Map<Long, Integer> getIngeschrevenByGebruikerOpDatumVoorSe(Date datum, String seCode);
+	Map<Long, Integer> getIngeschrevenByMedewerkerOpDatumVoorSe(Date datum, String seCode);
 
 	LocalDate getDatumVanOudsteNietAfgeslotenOnderzoek(String seCode);
 
-	void afspraakMakenPassant(AfspraakMakenPassantDto actionDto, InstellingGebruiker gebruiker, MammaScreeningsEenheid screeningsEenheid);
+	void afspraakMakenPassant(AfspraakMakenPassantDto actionDto, OrganisatieMedewerker organisatieMedewerker, MammaScreeningsEenheid screeningsEenheid);
 
-    MammaAfspraak getOfMaakLaatsteAfspraakVanVandaag(Long afspraakId, InstellingGebruiker gebruiker);
+	MammaAfspraak getOfMaakLaatsteAfspraakVanVandaag(Long afspraakId, OrganisatieMedewerker organisatieMedewerker);
 }

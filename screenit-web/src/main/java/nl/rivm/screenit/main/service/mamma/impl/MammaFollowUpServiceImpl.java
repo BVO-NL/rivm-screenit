@@ -28,15 +28,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.dto.mamma.MammaFollowUpInstellingDto;
-import nl.rivm.screenit.dto.mamma.MammaFollowUpInstellingRadiologieDto;
+import nl.rivm.screenit.dto.mamma.MammaFollowUpOrganisatieDto;
+import nl.rivm.screenit.dto.mamma.MammaFollowUpOrganisatieRadiologieDto;
 import nl.rivm.screenit.main.model.mamma.MammaFollowUpConclusieChoice;
 import nl.rivm.screenit.main.service.mamma.MammaConclusieReviewService;
 import nl.rivm.screenit.main.service.mamma.MammaFollowUpService;
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
@@ -132,24 +132,24 @@ public class MammaFollowUpServiceImpl implements MammaFollowUpService
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void saveOrUpdateRadiologie(MammaFollowUpRadiologieVerslag verslag, InstellingGebruiker loggedInInstellingGebruiker)
+	public void saveOrUpdateRadiologie(MammaFollowUpRadiologieVerslag verslag, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		MammaScreeningRonde screeningRonde = verslag.getScreeningRonde();
-		verslag.setIngevoerdDoor(loggedInInstellingGebruiker);
+		verslag.setIngevoerdDoor(ingelogdeOrganisatieMedewerker);
 		verslag.setIngevoerdOp(dateSupplier.getDate());
 		verslag.setScreeningRonde(screeningRonde);
 		screeningRonde.getFollowUpRadiologieVerslagen().add(verslag);
 		hibernateService.saveOrUpdateAll(verslag, screeningRonde);
 		baseFollowUpService.refreshUpdateFollowUpConclusie(screeningRonde.getDossier());
 
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_RADIOLOGIE_VERSLAG_OPGESLAGEN, loggedInInstellingGebruiker, screeningRonde.getDossier().getClient(),
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_RADIOLOGIE_VERSLAG_OPGESLAGEN, ingelogdeOrganisatieMedewerker, screeningRonde.getDossier().getClient(),
 			Bevolkingsonderzoek.MAMMA);
 	}
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void saveFollowUpConclusieStatus(MammaScreeningRonde screeningRonde, MammaFollowUpConclusieStatus followUpConclusieStatus,
-		Account loggedInInstellingGebruiker)
+		Account ingelogdeOrganisatieMedewerker)
 	{
 		Date nu = dateSupplier.getDate();
 
@@ -166,18 +166,18 @@ public class MammaFollowUpServiceImpl implements MammaFollowUpService
 
 		verwijderElectronischePalgaVerslagen(screeningRonde);
 
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_FOLLOW_UP_CONCLUSIE, loggedInInstellingGebruiker, screeningRonde.getDossier().getClient(),
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_FOLLOW_UP_CONCLUSIE, ingelogdeOrganisatieMedewerker, screeningRonde.getDossier().getClient(),
 			"Conclusie: " + followUpConclusieStatus, Bevolkingsonderzoek.MAMMA);
 	}
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void savePaVerslagNietTeVerwachten(MammaFollowUpRadiologieVerslag followUpRadiologieVerslag, Account loggedInInstellingGebruiker)
+	public void savePaVerslagNietTeVerwachten(MammaFollowUpRadiologieVerslag followUpRadiologieVerslag, Account ingelogdeOrganisatieMedewerker)
 	{
 		followUpRadiologieVerslag.setPaVerslagNietTeVerwachten(dateSupplier.getDate());
 		hibernateService.saveOrUpdate(followUpRadiologieVerslag);
 		baseFollowUpService.refreshUpdateFollowUpConclusie(followUpRadiologieVerslag.getScreeningRonde().getDossier());
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_FOLLOW_UP_PA_NIET_TE_VERWACHTEN, loggedInInstellingGebruiker,
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_FOLLOW_UP_PA_NIET_TE_VERWACHTEN, ingelogdeOrganisatieMedewerker,
 			followUpRadiologieVerslag.getScreeningRonde().getDossier().getClient(), Bevolkingsonderzoek.MAMMA);
 	}
 
@@ -256,42 +256,42 @@ public class MammaFollowUpServiceImpl implements MammaFollowUpService
 	}
 
 	@Override
-	public List<MammaFollowUpRadiologieVerslag> zoekDossiersMetOpenstaandePaVerslagen(Instelling instelling, long first, long count, Sort sort)
+	public List<MammaFollowUpRadiologieVerslag> zoekDossiersMetOpenstaandePaVerslagen(Organisatie organisatie, long first, long count, Sort sort)
 	{
-		return followUpRepository.findWith(openstaandePaVerslagenVoorZiekenhuisafdeling(instelling), q -> q.sortBy(sort).all(first, count));
+		return followUpRepository.findWith(openstaandePaVerslagenVoorZiekenhuisafdeling(organisatie), q -> q.sortBy(sort).all(first, count));
 	}
 
 	@Override
-	public long countDossiersMetOpenstaandePaVerslagen(Instelling instelling)
+	public long countDossiersMetOpenstaandePaVerslagen(Organisatie organisatie)
 	{
-		return followUpRepository.count(openstaandePaVerslagenVoorZiekenhuisafdeling(instelling));
+		return followUpRepository.count(openstaandePaVerslagenVoorZiekenhuisafdeling(organisatie));
 	}
 
 	@Override
-	public List<MammaFollowUpInstellingDto> zoekInstellingenMetOpenstaandePaVerslagen(ScreeningOrganisatie regio)
+	public List<MammaFollowUpOrganisatieDto> zoekOrganisatiesMetOpenstaandePaVerslagen(ScreeningOrganisatie regio)
 	{
 		return followUpRepository.findWith(openstaandePaVerslagenVoorScreeningsorganisatie(regio),
-			MammaFollowUpInstellingDto.class,
+			MammaFollowUpOrganisatieDto.class,
 			q ->
 				q.projections((cb, r) ->
 					{
-						var instellingJoin = join(r, MammaFollowUpRadiologieVerslag_.aangemaaktIn);
+						var organisatieJoin = join(r, MammaFollowUpRadiologieVerslag_.aangemaaktIn);
 						return List.of(
-							instellingJoin.get(AbstractHibernateObject_.id),
-							instellingJoin.get(Instelling_.naam),
+							organisatieJoin.get(AbstractHibernateObject_.id),
+							organisatieJoin.get(Organisatie_.naam),
 							cb.least(r.get(MammaFollowUpRadiologieVerslag_.laatstGebeldOverPaVerslag)),
-							instellingJoin.get(Instelling_.telefoon),
-							instellingJoin.get(Instelling_.telefoon2)
+							organisatieJoin.get(Organisatie_.telefoon),
+							organisatieJoin.get(Organisatie_.telefoon2)
 						);
 					}
 				).groupBy((cb, r) ->
 				{
-					var instellingJoin = join(r, MammaFollowUpRadiologieVerslag_.aangemaaktIn);
+					var organisatieJoin = join(r, MammaFollowUpRadiologieVerslag_.aangemaaktIn);
 					return List.of(
-						instellingJoin.get(AbstractHibernateObject_.id),
-						instellingJoin.get(Instelling_.naam),
-						instellingJoin.get(Instelling_.telefoon),
-						instellingJoin.get(Instelling_.telefoon2)
+						organisatieJoin.get(AbstractHibernateObject_.id),
+						organisatieJoin.get(Organisatie_.naam),
+						organisatieJoin.get(Organisatie_.telefoon),
+						organisatieJoin.get(Organisatie_.telefoon2)
 					);
 				}).all());
 	}
@@ -301,7 +301,7 @@ public class MammaFollowUpServiceImpl implements MammaFollowUpService
 		return openstaandePaVerslagen().and(filterOpScreeningOrganisatie(screeningOrganisatie));
 	}
 
-	private static Specification<MammaFollowUpRadiologieVerslag> openstaandePaVerslagenVoorZiekenhuisafdeling(Instelling afdeling)
+	private static Specification<MammaFollowUpRadiologieVerslag> openstaandePaVerslagenVoorZiekenhuisafdeling(Organisatie afdeling)
 	{
 		return openstaandePaVerslagen().and(isAangemaaktInAfdeling(afdeling));
 	}
@@ -315,7 +315,7 @@ public class MammaFollowUpServiceImpl implements MammaFollowUpService
 	}
 
 	@Override
-	public List<MammaFollowUpInstellingRadiologieDto> zoekOpenstaandeRadiologieVerslagenPerOrganisatie(ScreeningOrganisatie regio,
+	public List<MammaFollowUpOrganisatieRadiologieDto> zoekOpenstaandeRadiologieVerslagenPerOrganisatie(ScreeningOrganisatie regio,
 		MammaFollowUpDoorverwezenFilterOptie doorverwezenFilterOptie, Integer jaar)
 	{
 		var aangemaaktOp = DateUtil.toUtilDate(
@@ -326,29 +326,29 @@ public class MammaFollowUpServiceImpl implements MammaFollowUpService
 				.and(heeftAangemaaktOpOfVoor(aangemaaktOp))
 				.and(filterOpScreeningOrganisatie(regio))
 				.and(onderZoekDatum(jaar)),
-			MammaFollowUpInstellingRadiologieDto.class,
+			MammaFollowUpOrganisatieRadiologieDto.class,
 			q ->
 				q.projections((cb, r) ->
 					{
-						var instellingJoin = join(r, MammaFollowUpRadiologieVerslag_.aangemaaktIn);
+						var organisatieJoin = join(r, MammaFollowUpRadiologieVerslag_.aangemaaktIn);
 						return List.of(
-							instellingJoin.get(AbstractHibernateObject_.id),
-							instellingJoin.get(Instelling_.naam),
-							instellingJoin.get(Instelling_.mammaRadiologieGebeld),
+							organisatieJoin.get(AbstractHibernateObject_.id),
+							organisatieJoin.get(Organisatie_.naam),
+							organisatieJoin.get(Organisatie_.mammaRadiologieGebeld),
 							cb.count(r.get(AbstractHibernateObject_.id)),
-							instellingJoin.get(Instelling_.telefoon),
-							instellingJoin.get(Instelling_.telefoon2)
+							organisatieJoin.get(Organisatie_.telefoon),
+							organisatieJoin.get(Organisatie_.telefoon2)
 						);
 					}
 				).groupBy((cb, r) ->
 				{
-					var instellingJoin = join(r, MammaFollowUpRadiologieVerslag_.aangemaaktIn);
+					var organisatieJoin = join(r, MammaFollowUpRadiologieVerslag_.aangemaaktIn);
 					return List.of(
-						instellingJoin.get(AbstractHibernateObject_.id),
-						instellingJoin.get(Instelling_.naam),
-						instellingJoin.get(Instelling_.mammaRadiologieGebeld),
-						instellingJoin.get(Instelling_.telefoon),
-						instellingJoin.get(Instelling_.telefoon2)
+						organisatieJoin.get(AbstractHibernateObject_.id),
+						organisatieJoin.get(Organisatie_.naam),
+						organisatieJoin.get(Organisatie_.mammaRadiologieGebeld),
+						organisatieJoin.get(Organisatie_.telefoon),
+						organisatieJoin.get(Organisatie_.telefoon2)
 					);
 				}).all());
 	}

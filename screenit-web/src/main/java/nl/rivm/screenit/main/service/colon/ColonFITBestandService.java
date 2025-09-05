@@ -35,8 +35,8 @@ public interface ColonFITBestandService
 
 	long countBestanden(IFobtBatchFilter filter);
 
-	void verwijderBestanden(List<IFOBTBestand> ifobtBestanden, Account ingelogdeAccount);
+	void verwijderBestanden(List<IFOBTBestand> ifobtBestanden, Account ingelogdAccount);
 
-	void autoriseerBestanden(List<IFOBTBestand> ifobtBestanden, Account ingelogdeAccount);
+	void autoriseerBestanden(List<IFOBTBestand> ifobtBestanden, Account ingelogdAccount);
 
 }

@@ -32,7 +32,7 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.jobs.cervix.order.CervixOrderConstants;
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.batch.service.CervixOrderBerichtService;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.enums.CervixCytologieReden;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -132,9 +132,9 @@ public class CervixOrderAanmaakWriter extends BaseWriter<CervixUitstrijkje>
 
 	private void logging(CervixUitstrijkje uitstrijkje, String melding)
 	{
-		List<Instelling> instellingen = new ArrayList<>();
-		instellingen.add(uitstrijkje.getLaboratorium());
+		List<Organisatie> organisaties = new ArrayList<>();
+		organisaties.add(uitstrijkje.getLaboratorium());
 		var client = uitstrijkje.getOntvangstScreeningRonde().getDossier().getClient();
-		logService.logGebeurtenis(LogGebeurtenis.CERVIX_ORDER_AANMAKEN_MISLUKT, instellingen, client, melding, Bevolkingsonderzoek.CERVIX);
+		logService.logGebeurtenis(LogGebeurtenis.CERVIX_ORDER_AANMAKEN_MISLUKT, organisaties, client, melding, Bevolkingsonderzoek.CERVIX);
 	}
 }

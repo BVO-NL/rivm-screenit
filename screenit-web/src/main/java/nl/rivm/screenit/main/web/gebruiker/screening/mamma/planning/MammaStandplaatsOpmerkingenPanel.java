@@ -70,7 +70,7 @@ public class MammaStandplaatsOpmerkingenPanel extends GenericPanel<MammaStandpla
 	{
 		super(id, model);
 
-		magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
+		magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
 		ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie() != null;
 
 		opmerkingen = new WebMarkupContainer("opmerkingen");
@@ -141,7 +141,7 @@ public class MammaStandplaatsOpmerkingenPanel extends GenericPanel<MammaStandpla
 					{
 						super.onAfterToggleActief(target, actiefObject);
 						target.add(opmerkingen);
-						standplaatsService.saveOrUpdateStandplaatsOpmerking(actiefObject, null, ScreenitSession.get().getLoggedInInstellingGebruiker());
+						standplaatsService.saveOrUpdateStandplaatsOpmerking(actiefObject, null, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 					}
 
 					@Override
@@ -167,7 +167,7 @@ public class MammaStandplaatsOpmerkingenPanel extends GenericPanel<MammaStandpla
 				editOpmerking(target, nieuweOpmerking);
 			}
 		};
-		nieuweOpmerking.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.TOEVOEGEN) && ingelogdNamensRegio);
+		nieuweOpmerking.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.TOEVOEGEN) && ingelogdNamensRegio);
 		add(nieuweOpmerking);
 
 		editOpmerkingContainer = new WebMarkupContainer("editOpmerkingContainer");
@@ -199,7 +199,7 @@ public class MammaStandplaatsOpmerkingenPanel extends GenericPanel<MammaStandpla
 			{
 				MammaStandplaats standplaats = (MammaStandplaats) MammaStandplaatsOpmerkingenPanel.this.getDefaultModelObject();
 				MammaStandplaatsOpmerking opmerking = (MammaStandplaatsOpmerking) opmerkingForm.getModelObject();
-				boolean changed = standplaatsService.saveOrUpdateStandplaatsOpmerking(opmerking, standplaats, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				boolean changed = standplaatsService.saveOrUpdateStandplaatsOpmerking(opmerking, standplaats, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				if (changed)
 				{
 					success(getString("message.gegevensopgeslagen"));

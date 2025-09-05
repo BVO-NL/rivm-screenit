@@ -24,23 +24,20 @@ package nl.rivm.screenit.batch.jobs.colon.ifobtkoppelen.koppelstep;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+
+import jakarta.persistence.NonUniqueResultException;
 
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.KoppelConstants;
 import nl.rivm.screenit.batch.jobs.colon.ifobtkoppelen.IfobtKoppelenConstants;
 import nl.rivm.screenit.model.colon.ColonOnderzoeksVariant;
-import nl.rivm.screenit.model.colon.ColonScreeningRonde;
-import nl.rivm.screenit.model.colon.ColonUitnodiging;
-import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.colon.IFOBTType;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.logging.IfobtKoppelingBeeindigdLogEvent;
+import nl.rivm.screenit.repository.colon.ColonScreeningRondeRepository;
+import nl.rivm.screenit.repository.colon.ColonUitnodigingRepository;
 import nl.rivm.screenit.service.colon.ColonBaseFITService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.batch.core.StepExecution;
@@ -52,17 +49,22 @@ import org.springframework.stereotype.Component;
 
 import generated.KOPPELDATA.VERZONDENUITNODIGING;
 import generated.KOPPELDATA.VERZONDENUITNODIGING.MATCHINGFIELDS.MATCHINGFIELD;
-import jakarta.persistence.NonUniqueResultException;
+
+import static nl.rivm.screenit.specification.algemeen.InpakbareUitnodigingSpecification.heeftUitnodigingId;
 
 @Component
 @Slf4j
+@Deprecated(forRemoval = true, since = "nieuwe endpoint wordt gebruikt in PROD")
 public class IFobtKoppelWriter implements ItemWriter<VERZONDENUITNODIGING>
 {
 	@Autowired
-	private HibernateService hibernateService;
+	private ColonBaseFITService fitService;
 
 	@Autowired
-	private ColonBaseFITService fitService;
+	private ColonUitnodigingRepository uitnodigingRepository;
+
+	@Autowired
+	private ColonScreeningRondeRepository screeningRondeRepository;
 
 	private StepExecution stepExecution;
 
@@ -81,9 +83,7 @@ public class IFobtKoppelWriter implements ItemWriter<VERZONDENUITNODIGING>
 			String trackTraceId = null;
 			try
 			{
-				Map<String, Long> parameters = new HashMap<String, Long>();
-				parameters.put("uitnodigingsId", verzondenUitnodiging.getID());
-				ColonUitnodiging uitnodiging = hibernateService.getUniqueByParameters(ColonUitnodiging.class, parameters);
+				var uitnodiging = uitnodigingRepository.findOne(heeftUitnodigingId(verzondenUitnodiging.getID())).orElse(null);
 
 				ColonOnderzoeksVariant onderzoeksVariant = null;
 				if (uitnodiging != null)
@@ -95,7 +95,6 @@ public class IFobtKoppelWriter implements ItemWriter<VERZONDENUITNODIGING>
 
 				ifobtBarcodeGold = getMatchingFieldValue(verzondenUitnodiging, KoppelConstants.COLON_KOPPEL_BARCODE_GOLD, barcodeGoldVerplicht);
 				ifobtBarcodeExtra = getMatchingFieldValue(verzondenUitnodiging, KoppelConstants.COLON_KOPPEL_BARCODE_EXTRA, barcodeExtraVerplicht);
-				trackTraceId = getMatchingFieldValue(verzondenUitnodiging, KoppelConstants.KOPPEL_TRACK_ID, false);
 
 				uitnodiging.setVerstuurdDoorInpakcentrum(true);
 				uitnodiging.setTrackTraceId(trackTraceId);
@@ -103,87 +102,24 @@ public class IFobtKoppelWriter implements ItemWriter<VERZONDENUITNODIGING>
 
 				var screeningRonde = uitnodiging.getScreeningRonde();
 
-				koppelTestIndienMogelijk(ifobtBarcodeGold, IFOBTType.GOLD, uitnodiging, datumVerstuurd, screeningRonde);
-				koppelTestIndienMogelijk(ifobtBarcodeExtra, IFOBTType.STUDIE, uitnodiging, datumVerstuurd, screeningRonde);
+				fitService.koppelTestIndienMogelijk(ifobtBarcodeGold, IFOBTType.GOLD, uitnodiging, datumVerstuurd, screeningRonde);
+				fitService.koppelTestIndienMogelijk(ifobtBarcodeExtra, IFOBTType.STUDIE, uitnodiging, datumVerstuurd, screeningRonde);
 
-				hibernateService.saveOrUpdate(uitnodiging);
-				hibernateService.saveOrUpdate(screeningRonde);
+				uitnodigingRepository.save(uitnodiging);
+				screeningRondeRepository.save(screeningRonde);
 
 				logEvent.setAantalIfobtenVerwerkt(logEvent.getAantalIfobtenVerwerkt() + 1);
 			}
 			catch (ParseException | NonUniqueResultException e)
 			{
 				LOG.error("Fout bij verwerken van koppel data regel ", e);
-				var melding = String.format(KoppelConstants.COLON_ONBEKENDE_FOUT, verzondenUitnodiging.getID(), StringUtils.defaultIfBlank(ifobtBarcodeGold, "<geen>"),
-					StringUtils.defaultIfBlank(ifobtBarcodeExtra, "<geen>"), StringUtils.defaultIfBlank(trackTraceId, "<geen>"), e.getMessage());
+				var melding = String.format(KoppelConstants.COLON_ONBEKENDE_FOUT, verzondenUitnodiging.getID(),
+					StringUtils.defaultIfBlank(ifobtBarcodeGold, KoppelConstants.DEFAULT_STRING),
+					StringUtils.defaultIfBlank(ifobtBarcodeExtra, KoppelConstants.DEFAULT_STRING), e.getMessage());
 				logEvent.setLevel(Level.ERROR);
 				logEvent.setMelding(melding);
 				throw new IllegalStateException(melding);
 			}
-		}
-	}
-
-	private void koppelTestIndienMogelijk(String ifobtBarcode, IFOBTType ifobtType, ColonUitnodiging uitnodiging, Date datumVerstuurd, ColonScreeningRonde screeningRonde)
-	{
-		if (StringUtils.isNotBlank(ifobtBarcode))
-		{
-			IFOBTTest test;
-			if (ifobtType.equals(IFOBTType.GOLD))
-			{
-				test = uitnodiging.getGekoppeldeTest();
-			}
-			else
-			{
-				test = uitnodiging.getGekoppeldeExtraTest();
-			}
-
-			if (test != null && !test.getBarcode().equals(ifobtBarcode))
-			{
-				test = null;
-			}
-			if (test == null)
-			{
-				test = new IFOBTTest();
-				test.setType(ifobtType);
-				test.setBarcode(ifobtBarcode);
-			}
-			test.setColonScreeningRonde(screeningRonde);
-			test.setColonUitnodiging(uitnodiging);
-			test.setDatumVerstuurd(datumVerstuurd);
-
-			if (test.getStatus() == null)
-			{
-				if (uitnodiging.equals(screeningRonde.getLaatsteUitnodiging()))
-				{
-					fitService.setStatus(test, IFOBTTestStatus.ACTIEF);
-					if (ifobtType.equals(IFOBTType.GOLD))
-					{
-						screeningRonde.setLaatsteIFOBTTest(test);
-					}
-					else
-					{
-						screeningRonde.setLaatsteIFOBTTestExtra(test);
-					}
-				}
-				else
-				{
-					fitService.setStatus(test, IFOBTTestStatus.VERLOREN);
-				}
-				if (ifobtType.equals(IFOBTType.GOLD))
-				{
-					screeningRonde.setLaatsteIFOBTTestExtra(null);
-				}
-			}
-
-			if (ifobtType.equals(IFOBTType.GOLD))
-			{
-				uitnodiging.setGekoppeldeTest(test);
-			}
-			else
-			{
-				uitnodiging.setGekoppeldeExtraTest(test);
-			}
-			hibernateService.saveOrUpdate(test);
 		}
 	}
 
@@ -210,15 +146,5 @@ public class IFobtKoppelWriter implements ItemWriter<VERZONDENUITNODIGING>
 	public void saveStepExecution(StepExecution stepExecution)
 	{
 		this.stepExecution = stepExecution;
-	}
-
-	public void setHibernateService(HibernateService hibernateService)
-	{
-		this.hibernateService = hibernateService;
-	}
-
-	public void setIfobtService(ColonBaseFITService fitService)
-	{
-		this.fitService = fitService;
 	}
 }

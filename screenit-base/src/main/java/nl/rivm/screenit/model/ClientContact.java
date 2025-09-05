@@ -35,6 +35,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
@@ -43,6 +46,8 @@ import org.hibernate.envers.Audited;
 @Entity
 @Table(schema = "algemeen")
 @Audited
+@Getter
+@Setter
 public class ClientContact extends AbstractHibernateObject
 {
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
@@ -53,7 +58,7 @@ public class ClientContact extends AbstractHibernateObject
 	private Date datum;
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	private InstellingGebruiker instellingGebruiker;
+	private OrganisatieMedewerker organisatieMedewerker;
 
 	@Column(length = HibernateMagicNumber.L2048)
 	private String opmerking;
@@ -61,53 +66,4 @@ public class ClientContact extends AbstractHibernateObject
 	@OneToMany(mappedBy = "contact", cascade = CascadeType.ALL)
 	private List<ClientContactActie> acties = new ArrayList<>();
 
-	public Client getClient()
-	{
-		return client;
-	}
-
-	public void setClient(Client client)
-	{
-		this.client = client;
-	}
-
-	public Date getDatum()
-	{
-		return datum;
-	}
-
-	public void setDatum(Date datum)
-	{
-		this.datum = datum;
-	}
-
-	public InstellingGebruiker getInstellingGebruiker()
-	{
-		return instellingGebruiker;
-	}
-
-	public void setInstellingGebruiker(InstellingGebruiker instellingGebruiker)
-	{
-		this.instellingGebruiker = instellingGebruiker;
-	}
-
-	public String getOpmerking()
-	{
-		return opmerking;
-	}
-
-	public void setOpmerking(String opmerking)
-	{
-		this.opmerking = opmerking;
-	}
-
-	public List<ClientContactActie> getActies()
-	{
-		return acties;
-	}
-
-	public void setActies(List<ClientContactActie> acties)
-	{
-		this.acties = acties;
-	}
 }

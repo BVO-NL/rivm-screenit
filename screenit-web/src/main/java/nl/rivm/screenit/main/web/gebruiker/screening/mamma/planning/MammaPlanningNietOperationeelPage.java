@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.rivm.screenit.dto.mamma.planning.PlanningStatusDto;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaScreeningBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
@@ -41,7 +41,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaPlanningNietOperationeelPage extends MammaScreeningBasePage
 {
@@ -61,15 +61,15 @@ public class MammaPlanningNietOperationeelPage extends MammaScreeningBasePage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.planning.niet.operationeel", MammaPlanningNietOperationeelPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.planning.niet.operationeel", MammaPlanningNietOperationeelPage.class));
 		return contextMenuItems;
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveContextMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveContextMenuClass()
 	{
 		return MammaPlanningNietOperationeelPage.class;
 	}

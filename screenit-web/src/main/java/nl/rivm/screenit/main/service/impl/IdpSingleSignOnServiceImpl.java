@@ -31,13 +31,15 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import jakarta.inject.Inject;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.service.IdpSingleSignOnService;
-import nl.rivm.screenit.main.service.KeyStoreService;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.service.KeyStoreService;
 import nl.rivm.screenit.util.NaamUtil;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
@@ -46,8 +48,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import jakarta.inject.Inject;
 
 @Slf4j
 @Configuration
@@ -66,30 +66,30 @@ public class IdpSingleSignOnServiceImpl implements IdpSingleSignOnService
 	private Key key;
 
 	@Override
-	public String createWebFocusSsoUrl(InstellingGebruiker loggedInInstellingGebruiker)
+	public String createWebFocusSsoUrl(OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		Map<String, Object> context = createContextMap(loggedInInstellingGebruiker);
+		Map<String, Object> context = createContextMap(ingelogdeOrganisatieMedewerker);
 
-		return createJwtSsoUrl(loggedInInstellingGebruiker, context);
+		return createJwtSsoUrl(ingelogdeOrganisatieMedewerker, context);
 	}
 
-	private String createJwtSsoUrl(InstellingGebruiker loggedInInstellingGebruiker, Map<String, Object> context)
+	private String createJwtSsoUrl(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, Map<String, Object> context)
 	{
 		Instant now = Instant.now();
 
-		Gebruiker medewerker = loggedInInstellingGebruiker.getMedewerker();
+		Medewerker medewerker = ingelogdeOrganisatieMedewerker.getMedewerker();
 		String jwt = Jwts.builder()
-			.setIssuer(getIdpIssuer())
-			.setIssuedAt(Date.from(now))
-			.setNotBefore(Date.from(now))
-			.setExpiration(Date.from(now.plusSeconds(getIdpExpiration()))) 
-			.setSubject(medewerker.getId().toString())
+			.issuer(getIdpIssuer())
+			.issuedAt(Date.from(now))
+			.notBefore(Date.from(now))
+			.expiration(Date.from(now.plusSeconds(getIdpExpiration()))) 
+			.subject(medewerker.getId().toString())
 			.claim("given_name", medewerker.getVoornaam())
 			.claim("family_name", NaamUtil.getTussenvoegselEnAchternaam(medewerker))
 			.claim("ctx", context)
 			.claim("jti", UUID.randomUUID().toString())
 			.claim("email_transient", medewerker.getEmailextra())
-			.signWith(SignatureAlgorithm.RS512, getKey())
+			.signWith(getKey())
 			.compact();
 
 		LOG.trace("Token: " + jwt);
@@ -106,12 +106,12 @@ public class IdpSingleSignOnServiceImpl implements IdpSingleSignOnService
 		return key;
 	}
 
-	private Map<String, Object> createContextMap(InstellingGebruiker loggedInInstellingGebruiker)
+	private Map<String, Object> createContextMap(OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		return Collections.singletonMap("org",
 			Stream.of(new Object[][] {
-				{ "sub", loggedInInstellingGebruiker.getOrganisatie().getId() },
-				{ "type", loggedInInstellingGebruiker.getOrganisatie().getOrganisatieType() },
+				{ "sub", ingelogdeOrganisatieMedewerker.getOrganisatie().getId() },
+				{ "type", ingelogdeOrganisatieMedewerker.getOrganisatie().getOrganisatieType() },
 			}).collect(Collectors.toMap(data -> (String) data[0], data -> data[1])));
 
 	}

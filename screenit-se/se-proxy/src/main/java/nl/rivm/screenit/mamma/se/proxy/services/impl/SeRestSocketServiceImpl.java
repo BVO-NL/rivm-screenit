@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.services.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -33,14 +33,21 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import jakarta.websocket.ClientEndpoint;
+import jakarta.websocket.ContainerProvider;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.Session;
+
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.mamma.se.proxy.SeProxyApplication;
 import nl.rivm.screenit.mamma.se.proxy.dao.PersistableTransactionDao;
 import nl.rivm.screenit.mamma.se.proxy.model.SeConfiguratieKey;
 import nl.rivm.screenit.mamma.se.proxy.model.WebsocketBerichtType;
 import nl.rivm.screenit.mamma.se.proxy.services.CleanUpService;
 import nl.rivm.screenit.mamma.se.proxy.services.ConfiguratieService;
+import nl.rivm.screenit.mamma.se.proxy.services.EnvironmentInfoService;
 import nl.rivm.screenit.mamma.se.proxy.services.MammaScreeningsEenheidStatusService;
 import nl.rivm.screenit.mamma.se.proxy.services.ProxyService;
 import nl.rivm.screenit.mamma.se.proxy.services.SeDaglijstService;
@@ -51,19 +58,10 @@ import nl.rivm.screenit.mamma.se.proxy.services.WebSocketProxyService;
 import nl.rivm.screenit.mamma.se.proxy.util.DateUtil;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
-
-import jakarta.websocket.ClientEndpoint;
-import jakarta.websocket.ContainerProvider;
-import jakarta.websocket.OnClose;
-import jakarta.websocket.OnError;
-import jakarta.websocket.OnMessage;
-import jakarta.websocket.Session;
-import jakarta.websocket.WebSocketContainer;
 
 @Service
 @ClientEndpoint
@@ -108,12 +106,13 @@ public class SeRestSocketServiceImpl implements SeRestSocketService, Application
 
 	private ProxyService proxyService;
 
-	@Autowired
 	private ConfiguratieService configuratieService;
+
+	private EnvironmentInfoService environmentInfoService;
 
 	private TransactionQueueService transactionQueueService;
 
-	private static ApplicationContext applicationContext;
+	private static ApplicationContext applicationContext; 
 
 	private static volatile LocalDateTime laatstePong;
 
@@ -135,14 +134,14 @@ public class SeRestSocketServiceImpl implements SeRestSocketService, Application
 			{
 				verversPingEnPongConfig();
 				laatstePong = null;
-				String seRestEndpoint = seRestUrl.replace("http", "ws") + "/ws/proxySocket";
+				var seRestEndpoint = seRestUrl.replace("http", "ws") + "/ws/proxySocket";
 				LOG.info("Maak verbinding met: " + seRestEndpoint);
-				WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-				if (!getStatusService().isTestOnline() && SeProxyApplication.getEnvironmentInfo().getEnvironment().equals("Test"))
+				var webSocketContainer = ContainerProvider.getWebSocketContainer();
+				if (!getStatusService().isTestOnline() && getEnvironmentInfoService().isTestEnvironment())
 				{
 					throw new ConnectException("Test situatie in geforceerd offline. Websocket verbinding niet toegestaan.");
 				}
-				socketSession = container.connectToServer(SeRestSocketServiceImpl.class, URI.create(seRestEndpoint));
+				socketSession = webSocketContainer.connectToServer(SeRestSocketServiceImpl.class, URI.create(seRestEndpoint));
 				LOG.info("Websocket verbonden, registreer SE code: {}", seCode);
 				socketSession.getBasicRemote().sendText(WebsocketBerichtType.REGISTREER_SE.name() + seCode);
 				LOG.info("SE geregistreerd, start ping task");
@@ -164,7 +163,7 @@ public class SeRestSocketServiceImpl implements SeRestSocketService, Application
 	@Override
 	public void verversPingEnPongConfig()
 	{
-		var intervalUitConfig = configuratieService.getConfiguratieIntegerValue(SeConfiguratieKey.SE_PING_INTERVAL);
+		var intervalUitConfig = getConfiguratieService().getConfiguratieIntegerValue(SeConfiguratieKey.SE_PING_INTERVAL);
 		if (intervalUitConfig > 0)
 		{
 			var nieuwInterval = pingInterval != intervalUitConfig;
@@ -174,7 +173,7 @@ public class SeRestSocketServiceImpl implements SeRestSocketService, Application
 				scheduleNewPingTask();
 			}
 		}
-		var timeoutUitConfig = configuratieService.getConfiguratieIntegerValue(SeConfiguratieKey.SE_PONG_TIMEOUT);
+		var timeoutUitConfig = getConfiguratieService().getConfiguratieIntegerValue(SeConfiguratieKey.SE_PONG_TIMEOUT);
 		if (timeoutUitConfig > 0)
 		{
 			var nieuweTimeout = pongTimeout != timeoutUitConfig;
@@ -211,7 +210,7 @@ public class SeRestSocketServiceImpl implements SeRestSocketService, Application
 	@OnMessage
 	public void onMessage(String message)
 	{
-		String messageSoort = message.split(":")[0];
+		var messageSoort = message.split(":")[0];
 		switch (WebsocketBerichtType.valueOf(messageSoort))
 		{
 		case PONG:
@@ -228,21 +227,21 @@ public class SeRestSocketServiceImpl implements SeRestSocketService, Application
 			break;
 		case DAGLIJST_UPDATE:
 			LOG.info("Update daglijst verzoek ontvangen van SE-REST-BK");
-			String[] params = message.split(":");
-			LocalDate datum = getDaglijstUpdateDatum(params);
+			var params = message.split(":");
+			var datum = getDaglijstUpdateDatum(params);
 			getDaglijstService().queueDaglijstOphalenVanDag(datum);
 			break;
 		case TIJD_UPDATE:
-			if (SeProxyApplication.getEnvironmentInfo().getEnvironment().equals("Test"))
+			if (getEnvironmentInfoService().isTestEnvironment())
 			{
-				String offset = message.split(":")[1];
+				var offset = message.split(":")[1];
 				LOG.info("Update tijd ontvangen van SE-REST-BK, offset: " + offset);
 				DateUtil.setOffset(Duration.parse(offset));
 				getWebSocketProxyService().broadCastTijdUpdateNaarWerkstations("SE-REST-BK");
 			}
 			break;
 		case DB_CLEANUP:
-			if (SeProxyApplication.getEnvironmentInfo().getEnvironment().equals("Test"))
+			if (getEnvironmentInfoService().isTestEnvironment())
 			{
 				LOG.info("Cleanup DB ontvangen van SE-REST-BK");
 				getPersistableTransactionDao().clearDb();
@@ -264,7 +263,7 @@ public class SeRestSocketServiceImpl implements SeRestSocketService, Application
 		LocalDate datum;
 		if (params.length >= 3)
 		{
-			String paramDatum = params[2];
+			var paramDatum = params[2];
 			try
 			{
 				datum = LocalDate.from(DateTimeFormatter.ISO_DATE.parse(paramDatum));
@@ -365,8 +364,8 @@ public class SeRestSocketServiceImpl implements SeRestSocketService, Application
 	@Override
 	public void sluitSocketEnSetRandomRetry()
 	{
-		Random random = new Random();
-		int randomDelay = random.nextInt(MAXIMALE_RETRY_TIMEOUT_IN_SECONDEN - MINIMALE_RETRY_TIMEOUT_IN_SECONDEN) + MINIMALE_RETRY_TIMEOUT_IN_SECONDEN;
+		var random = new Random();
+		var randomDelay = random.nextInt(MAXIMALE_RETRY_TIMEOUT_IN_SECONDEN - MINIMALE_RETRY_TIMEOUT_IN_SECONDEN) + MINIMALE_RETRY_TIMEOUT_IN_SECONDEN;
 		minimaleRetryMoment = LocalDateTime.now().plusSeconds(randomDelay);
 		LOG.info("Socket wordt gesloten door een timeout. Volgende retry na: " + DateUtil.format(minimaleRetryMoment));
 		closeSocket();
@@ -398,7 +397,7 @@ public class SeRestSocketServiceImpl implements SeRestSocketService, Application
 	@Override
 	public void setSeVerbindingStatus(boolean nieuweIsOnline)
 	{
-		boolean huidigeIsOnline = getStatusService().isOnline();
+		var huidigeIsOnline = getStatusService().isOnline();
 		if (huidigeIsOnline != nieuweIsOnline)
 		{
 			getWebSocketProxyService().broadcast(nieuweIsOnline ? WebsocketBerichtType.ONLINE.name() : WebsocketBerichtType.OFFLINE.name());
@@ -483,6 +482,24 @@ public class SeRestSocketServiceImpl implements SeRestSocketService, Application
 			proxyService = applicationContext.getBean(ProxyService.class);
 		}
 		return proxyService;
+	}
+
+	private ConfiguratieService getConfiguratieService()
+	{
+		if (configuratieService == null)
+		{
+			configuratieService = applicationContext.getBean(ConfiguratieService.class);
+		}
+		return configuratieService;
+	}
+
+	private EnvironmentInfoService getEnvironmentInfoService()
+	{
+		if (environmentInfoService == null)
+		{
+			environmentInfoService = applicationContext.getBean(EnvironmentInfoService.class);
+		}
+		return environmentInfoService;
 	}
 
 	private Timer getTimer()

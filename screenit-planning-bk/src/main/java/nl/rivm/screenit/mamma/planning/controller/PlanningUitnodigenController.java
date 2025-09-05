@@ -37,6 +37,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import jakarta.persistence.FlushModeType;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,7 +64,7 @@ import nl.rivm.screenit.mamma.planning.service.PlanningConceptmodelService;
 import nl.rivm.screenit.mamma.planning.service.PlanningUitnodigenService;
 import nl.rivm.screenit.mamma.planning.service.PlanningUitnodigingContext;
 import nl.rivm.screenit.mamma.planning.service.impl.UitnodigenCapaciteitCalculator;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -79,8 +81,8 @@ import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsRondeRappo
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsRondeUitnodigenRapportage;
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaUitnodigenRapportage;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
@@ -88,8 +90,6 @@ import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.persistence.FlushModeType;
 
 @Slf4j
 @RestController
@@ -115,7 +115,7 @@ public class PlanningUitnodigenController
 
 	private final LogService logService;
 
-	private final InstellingService instellingService;
+	private final OrganisatieService organisatieService;
 
 	private static boolean teSelecteren(PlanningClient client, PlanningUitnodigingContext context, int uitnodigenTotEnMetJaar, PlanningPostcodeReeksRegio postcodeReeksRegio)
 	{
@@ -259,10 +259,10 @@ public class PlanningUitnodigenController
 		catch (Exception e)
 		{
 			LOG.error("Error tijdens uitnodigen", e);
-			List<Instelling> instellingList = new ArrayList<>(instellingService.getAllActiefScreeningOrganisaties());
-			Instelling rivm = instellingService.getActieveInstellingen(Rivm.class).get(0);
-			instellingList.add(rivm);
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_UITNODIGEN_FOUT, instellingList, new LogEvent("Technische fout bij uitnodigen"),
+			List<Organisatie> organisatieList = new ArrayList<>(organisatieService.getAllActiefScreeningOrganisaties());
+			Organisatie rivm = organisatieService.getActieveOrganisaties(Rivm.class).get(0);
+			organisatieList.add(rivm);
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_UITNODIGEN_FOUT, organisatieList, new LogEvent("Technische fout bij uitnodigen"),
 				Bevolkingsonderzoek.MAMMA);
 			PlanningStatusIndex.set(MammaPlanningStatus.ERROR);
 			return null;
@@ -563,7 +563,7 @@ public class PlanningUitnodigenController
 
 	private void rapportageDtoToEntity(PlanningUitnodigenRapportageDto rapportageDto, MammaUitnodigenRapportage rapportage)
 	{
-		Instelling rivm = instellingService.getActieveInstellingen(Rivm.class).get(0);
+		Organisatie rivm = organisatieService.getActieveOrganisaties(Rivm.class).get(0);
 		rapportageDto.getStandplaatsRondeUitnodigenRapportages().forEach(standplaatsRondeUitnodigingRapportageDto ->
 		{
 			MammaStandplaatsRondeUitnodigenRapportage standplaatsRondeUitnodigenRapportage = new MammaStandplaatsRondeUitnodigenRapportage();

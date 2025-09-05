@@ -27,7 +27,7 @@ import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
 import nl.rivm.screenit.model.cervix.CervixMonster;
@@ -56,7 +56,7 @@ public abstract class TestCervixUitnodigingenLaboratoriaPopup extends TestCervix
 	public TestCervixUitnodigingenLaboratoriaPopup(String id, IModel<List<Client>> clientModel)
 	{
 		super(id, clientModel);
-		Instelling instelling = ScreenitSession.get().getInstelling();
+		Organisatie organisatie = ScreenitSession.get().getOrganisatie();
 
 		laboratoriaModel = ModelUtil.listModel(hiberateService.loadAll(BMHKLaboratorium.class, "naam", true));
 
@@ -83,9 +83,9 @@ public abstract class TestCervixUitnodigingenLaboratoriaPopup extends TestCervix
 
 		if (laboratorium == null)
 		{
-			if (instelling.getOrganisatieType() == OrganisatieType.BMHK_LABORATORIUM)
+			if (organisatie.getOrganisatieType() == OrganisatieType.BMHK_LABORATORIUM)
 			{
-				laboratorium = (BMHKLaboratorium) instelling;
+				laboratorium = (BMHKLaboratorium) organisatie;
 			}
 			else
 			{

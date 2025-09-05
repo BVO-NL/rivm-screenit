@@ -21,13 +21,10 @@ package nl.rivm.screenit.main.web;
  * =========================LICENSE_END==================================
  */
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -104,8 +101,6 @@ public class ScreenitApplication extends WebApplication
 
 	private static String sessionAttributePrefix;
 
-	private String versionString;
-
 	private RedisConfig redisConfig;
 
 	@Override
@@ -116,7 +111,6 @@ public class ScreenitApplication extends WebApplication
 		RevisionInformationResolver.registerDelegate(new ScreenitSessionRevisionInformationResolverDelegate());
 		sessionAttributePrefix = getSessionAttributePrefix(null, null);
 
-		readVersie();
 		initSpring();
 
 		getMarkupSettings().setStripWicketTags(true);
@@ -226,52 +220,12 @@ public class ScreenitApplication extends WebApplication
 		getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 	}
 
-	protected void readVersie()
-	{
-		StringBuilder versieBuilder = new StringBuilder();
-		Properties applicationProperties = new Properties();
-		try (InputStream resourceAsStream = this.getClass().getResourceAsStream("/build-info.properties"))
-		{
-			applicationProperties.load(resourceAsStream);
-			String version = applicationProperties.getProperty("build.version");
-			String timestamp = applicationProperties.getProperty("build.time");
-			versieBuilder.append(version);
-			if ("SNAPSHOT".equals(version))
-			{
-				String buildnumber = applicationProperties.getProperty("build.number");
-
-				if (!"${BUILD_NUMBER}".equals(buildnumber))
-				{
-					versieBuilder.append("-").append(buildnumber);
-				}
-
-				LOG.info("ScreenIT build #{}", buildnumber);
-			}
-			else
-			{
-				LOG.info("ScreenIT versie {}", version);
-			}
-			LOG.info("Build datum: {}", timestamp);
-
-		}
-		catch (IOException e)
-		{
-			LOG.error("Fout bij laden van build-info.properties (voor versienummer)");
-		}
-		versionString = versieBuilder.toString();
-	}
-
 	private void initRequestLogger()
 	{
 		RequestLoggerSettings reqLogger = getRequestLoggerSettings();
 		reqLogger.setRequestLoggerEnabled(true);
 		reqLogger.setRecordSessionSize(false);
 		reqLogger.setRequestsWindowSize(0);
-	}
-
-	public String getVersionString()
-	{
-		return versionString;
 	}
 
 	@Override

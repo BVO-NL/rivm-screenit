@@ -39,7 +39,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
 
-@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_CLIENT_CONTACT, bevolkingsonderzoekScopes = {
+@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_CONTACT, bevolkingsonderzoekScopes = {
 	Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class ClientContactPage extends ClientPage
 {
@@ -57,7 +57,6 @@ public class ClientContactPage extends ClientPage
 	public ClientContactPage(IModel<Client> client, List<Object> extraParameters, ClientContactActieTypeWrapper... defaultSelectedActies)
 	{
 		super(client);
-		hibernateService.reload(client.getObject());
 		add(new ClientContactPanel("panel", client, extraParameters, defaultSelectedActies));
 	}
 

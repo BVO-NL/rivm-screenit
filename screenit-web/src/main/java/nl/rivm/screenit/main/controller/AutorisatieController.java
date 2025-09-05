@@ -44,12 +44,12 @@ public class AutorisatieController
 	@Autowired
 	private OrganisatieMedewerkerMapper organisatieMedewerkerMapper;
 
-	@GetMapping("/gebruiker")
+	@GetMapping("/medewerker")
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = {}, altijdToegestaan = true, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
-	public OrganisatieMedewerkerDto getGebruiker()
+	public OrganisatieMedewerkerDto getOrganisatieMedewerker()
 	{
-		return organisatieMedewerkerMapper.instellingGebruikerToOrganisatieMedewerkerDto(ScreenitSession.get().getLoggedInInstellingGebruiker());
+		return organisatieMedewerkerMapper.organisatieMedewerkerToOrganisatieMedewerkerDto(ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 	}
 
 }

@@ -55,11 +55,11 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.EnovationHuisarts;
 import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.Gebruiker_;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Huisarts_;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker_;
+import nl.rivm.screenit.model.Medewerker_;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.model.Permissie;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.enums.Actie;
@@ -454,12 +454,12 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 
 	@Override
 	@Transactional
-	public MammaOnderzoek maakOnderzoekVoorBe(MammaAfspraak afspraak, InstellingGebruiker instellingGebruiker, MammaScreeningsEenheid se)
+	public MammaOnderzoek maakOnderzoekVoorBe(MammaAfspraak afspraak, OrganisatieMedewerker organisatieMedewerker, MammaScreeningsEenheid se)
 	{
-		return maakOnderzoekVoorBe(afspraak, instellingGebruiker, se, true);
+		return maakOnderzoekVoorBe(afspraak, organisatieMedewerker, se, true);
 	}
 
-	private MammaOnderzoek maakOnderzoekVoorBe(MammaAfspraak afspraak, InstellingGebruiker instellingGebruiker, MammaScreeningsEenheid se, boolean verstuurHl7Berichten)
+	private MammaOnderzoek maakOnderzoekVoorBe(MammaAfspraak afspraak, OrganisatieMedewerker organisatieMedewerker, MammaScreeningsEenheid se, boolean verstuurHl7Berichten)
 	{
 		var onderzoek = afspraak.getOnderzoek();
 		var screeningRonde = afspraak.getUitnodiging().getScreeningRonde();
@@ -474,7 +474,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 			{
 				berichtToBatchService.queueMammaHL7v24BerichtUitgaand(client, MammaHL7v24ORMBerichtStatus.STARTED);
 			}
-			var mammografie = maakMammaMammografie(onderzoek, instellingGebruiker);
+			var mammografie = maakMammaMammografie(onderzoek, organisatieMedewerker);
 			onderzoek.setMammografie(mammografie);
 			screeningRonde.setLaatsteOnderzoek(onderzoek);
 			hibernateService.saveOrUpdateAll(afspraak, mammografie.getVisueleInspectieAfbeelding(), mammografie,
@@ -488,7 +488,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		dossier.setLaatsteMammografieAfgerond(mammografie.getAfgerondOp());
 
 		var beoordeling = onderzoekService.voegInitieleBeoordelingToe(onderzoek);
-		setSignalerenVoorOnderzoek(instellingGebruiker, onderzoek, false);
+		setSignalerenVoorOnderzoek(organisatieMedewerker, onderzoek, false);
 
 		if (afspraak.getStatus() != MammaAfspraakStatus.BEEINDIGD)
 		{
@@ -506,7 +506,8 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 
 	@Override
 	@Transactional
-	public void rondOnderzoekAf(MammaAfspraak afspraak, InstellingGebruiker instellingGebruiker, boolean verstuurHl7Berichten, OnvolledigOnderzoekOption onvolledigOnderzoekOption,
+	public void rondOnderzoekAf(MammaAfspraak afspraak, OrganisatieMedewerker organisatieMedewerker, boolean verstuurHl7Berichten,
+		OnvolledigOnderzoekOption onvolledigOnderzoekOption,
 		OnderbrokenOnderzoekOption onderbrokenOnderzoekOption, MammaOnderzoekType onderzoeksType, boolean afwijkingGesignaleerd, MammaDenseWaarde densiteit)
 	{
 		var onderzoek = afspraak.getOnderzoek();
@@ -515,10 +516,10 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		var dossier = ronde.getDossier();
 		if (onderzoek == null)
 		{
-			onderzoek = onderzoekStarten(afspraak, instellingGebruiker, verstuurHl7Berichten);
+			onderzoek = onderzoekStarten(afspraak, organisatieMedewerker, verstuurHl7Berichten);
 		}
 		onderzoekAfronden(onderzoek);
-		var mammografie = maakMammaMammografie(onderzoek, instellingGebruiker);
+		var mammografie = maakMammaMammografie(onderzoek, organisatieMedewerker);
 		mammografie.setDensiteit(densiteit);
 		onderzoek.setMammografie(mammografie);
 		hibernateService.saveOrUpdateAll(mammografie.getVisueleInspectieAfbeelding(), mammografie, dossier);
@@ -527,7 +528,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		ronde.setDatumVastleggenHuisarts(currentDateSupplier.getDate());
 		verwerkOnvolledigOfOnderbrokenOnderzoek(onvolledigOnderzoekOption, onderbrokenOnderzoekOption, onderzoek);
 		onderzoek.setOnderzoekType(onderzoeksType);
-		setSignalerenVoorOnderzoek(instellingGebruiker, onderzoek, afwijkingGesignaleerd);
+		setSignalerenVoorOnderzoek(organisatieMedewerker, onderzoek, afwijkingGesignaleerd);
 
 		if (afspraak.getStatus() != MammaAfspraakStatus.BEEINDIGD)
 		{
@@ -561,13 +562,13 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		}
 	}
 
-	private MammaOnderzoek onderzoekStarten(MammaAfspraak afspraak, InstellingGebruiker instellingGebruiker, boolean verstuurHl7Berichten)
+	private MammaOnderzoek onderzoekStarten(MammaAfspraak afspraak, OrganisatieMedewerker organisatieMedewerker, boolean verstuurHl7Berichten)
 	{
 		var screeningRonde = afspraak.getUitnodiging().getScreeningRonde();
 		var dossier = screeningRonde.getDossier();
 		baseTestTimelineTimeService.rekenDossierTerug(dossier, MammaTestTimeLineDossierTijdstip.ONDERZOEK_ONTVANGEN);
 		var onderzoek = maakOnderzoek(afspraak, afspraak.getStandplaatsPeriode().getScreeningsEenheid());
-		afspraak.setIngeschrevenDoor(instellingGebruiker);
+		afspraak.setIngeschrevenDoor(organisatieMedewerker);
 		afspraak.setIngeschrevenOp(currentDateSupplier.getDate());
 		afspraak.setStatus(MammaAfspraakStatus.ONDERZOEK);
 		onderzoek.setDoorgevoerd(false);
@@ -581,7 +582,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		return onderzoek;
 	}
 
-	private void setSignalerenVoorOnderzoek(InstellingGebruiker mbber, MammaOnderzoek onderzoek, boolean afwijking)
+	private void setSignalerenVoorOnderzoek(OrganisatieMedewerker mbber, MammaOnderzoek onderzoek, boolean afwijking)
 	{
 		if (onderzoek.getSignaleren() == null)
 		{
@@ -623,25 +624,25 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		onderzoek.setAfgerondOp(currentDateSupplier.getDate());
 	}
 
-	private MammaMammografie maakMammaMammografie(MammaOnderzoek onderzoek, InstellingGebruiker instellingGebruiker)
+	private MammaMammografie maakMammaMammografie(MammaOnderzoek onderzoek, OrganisatieMedewerker organisatieMedewerker)
 	{
-		return baseFactory.maakMammografie(onderzoek, instellingGebruiker, new MammaAnnotatieAfbeelding());
+		return baseFactory.maakMammografie(onderzoek, organisatieMedewerker, new MammaAnnotatieAfbeelding());
 	}
 
 	@Override
 	@Transactional
-	public void voegLezingToe(MammaBeoordeling beoordeling, MammaLezing lezing, InstellingGebruiker gebruiker)
+	public void voegLezingToe(MammaBeoordeling beoordeling, MammaLezing lezing, OrganisatieMedewerker organisatieMedewerker)
 	{
-		voegLezingToe(beoordeling, lezing, gebruiker, true);
+		voegLezingToe(beoordeling, lezing, organisatieMedewerker, true);
 	}
 
 	@Override
 	@Transactional
-	public void voegLezingToe(MammaBeoordeling beoordeling, MammaLezing lezing, InstellingGebruiker gebruiker, boolean verstuurHl7Berichten)
+	public void voegLezingToe(MammaBeoordeling beoordeling, MammaLezing lezing, OrganisatieMedewerker organisatieMedewerker, boolean verstuurHl7Berichten)
 	{
 		if (MammaBeoordelingStatus.VERSLAG_MAKEN != beoordeling.getStatus())
 		{
-			baseBeoordelingService.slaLezingOpEnVerwerkStatus(beoordeling, lezing, gebruiker, b -> "Niet opgeschort");
+			baseBeoordelingService.slaLezingOpEnVerwerkStatus(beoordeling, lezing, organisatieMedewerker, b -> "Niet opgeschort");
 		}
 		else
 		{
@@ -654,11 +655,11 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 
 	@Override
 	@Transactional
-	public void voegEersteTweeLezingenToe(MammaBeoordeling beoordeling, MammaLezing lezing1, MammaLezing lezing2, InstellingGebruiker instellingGebruiker,
+	public void voegEersteTweeLezingenToe(MammaBeoordeling beoordeling, MammaLezing lezing1, MammaLezing lezing2, OrganisatieMedewerker organisatieMedewerker,
 		boolean verstuurHl7Berichten)
 	{
-		voegLezingToe(beoordeling, lezing1, instellingGebruiker, verstuurHl7Berichten);
-		voegLezingToe(beoordeling, lezing2, instellingGebruiker, verstuurHl7Berichten);
+		voegLezingToe(beoordeling, lezing1, organisatieMedewerker, verstuurHl7Berichten);
+		voegLezingToe(beoordeling, lezing2, organisatieMedewerker, verstuurHl7Berichten);
 	}
 
 	@Override
@@ -776,7 +777,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 
 	@Override
 	@Transactional
-	public int importPocClienten(File file, InstellingGebruiker instellingGebruiker, MammaScreeningsEenheid screeningsEenheid, ImportPocOpties importPocOpties)
+	public int importPocClienten(File file, OrganisatieMedewerker organisatieMedewerker, MammaScreeningsEenheid screeningsEenheid, ImportPocOpties importPocOpties)
 	{
 		var klaarzettenPlanning = importPocOpties.equals(ImportPocOpties.KLAARZETTEN_VOOR_PLANNING);
 		var aantal = 0;
@@ -825,8 +826,8 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 				if (dossier.getLaatsteScreeningRonde() != null && vorigeLine != null && vorigeLine[0].equals(bsn))
 				{
 
-					var onderzoek = voegPocOnderzoekToe(dossier, screeningsEenheid, instellingGebruiker);
-					voegPocBeoordelingToe(onderzoek, instellingGebruiker, vorigeLine[13]);
+					var onderzoek = voegPocOnderzoekToe(dossier, screeningsEenheid, organisatieMedewerker);
+					voegPocBeoordelingToe(onderzoek, organisatieMedewerker, vorigeLine[13]);
 				}
 
 				MammaStandplaatsRonde standplaatsRonde = null;
@@ -846,11 +847,11 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 
 				if (!importPocOpties.equals(ImportPocOpties.KLAARZETTEN_VOOR_SE))
 				{
-					var onderzoek = voegPocOnderzoekToe(dossier, screeningsEenheid, instellingGebruiker);
+					var onderzoek = voegPocOnderzoekToe(dossier, screeningsEenheid, organisatieMedewerker);
 
 					if (klaarzettenPlanning)
 					{
-						voegPocBeoordelingToe(onderzoek, instellingGebruiker, beoordeling);
+						voegPocBeoordelingToe(onderzoek, organisatieMedewerker, beoordeling);
 					}
 				}
 				else
@@ -875,17 +876,17 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		return aantal;
 	}
 
-	private MammaOnderzoek voegPocOnderzoekToe(MammaDossier dossier, MammaScreeningsEenheid screeningsEenheid, InstellingGebruiker instellingGebruiker)
+	private MammaOnderzoek voegPocOnderzoekToe(MammaDossier dossier, MammaScreeningsEenheid screeningsEenheid, OrganisatieMedewerker organisatieMedewerker)
 	{
 		var onderzoek = MammaScreeningRondeUtil.getLaatsteOnderzoek(dossier.getLaatsteScreeningRonde());
 		if (onderzoek == null)
 		{
-			onderzoek = maakOnderzoekVoorBe(dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging().getLaatsteAfspraak(), instellingGebruiker, screeningsEenheid);
+			onderzoek = maakOnderzoekVoorBe(dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging().getLaatsteAfspraak(), organisatieMedewerker, screeningsEenheid);
 		}
 		return onderzoek;
 	}
 
-	private void voegPocBeoordelingToe(MammaOnderzoek onderzoek, InstellingGebruiker instellingGebruiker, String beoordelingStatus)
+	private void voegPocBeoordelingToe(MammaOnderzoek onderzoek, OrganisatieMedewerker organisatieMedewerker, String beoordelingStatus)
 	{
 		var mammaBeoordeling = MammaScreeningRondeUtil.getLaatsteBeoordeling(onderzoek);
 
@@ -902,11 +903,11 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 
 			if (beoordelingStatus.equals("ONGUNSTIG"))
 			{
-				var verslaglezing = baseBeoordelingService.maakVerslagLezing(tweedeLezing, instellingGebruiker, false);
+				var verslaglezing = baseBeoordelingService.maakVerslagLezing(tweedeLezing, organisatieMedewerker, false);
 				verslaglezing.setBiradsLinks(MammaBIRADSWaarde.VIJF);
 				verslaglezing.setBiradsRechts(MammaBIRADSWaarde.VIER);
-				voegLezingToe(mammaBeoordeling, verslaglezing, instellingGebruiker);
-				verslagGoedkeurenDoorCE(mammaBeoordeling, instellingGebruiker);
+				voegLezingToe(mammaBeoordeling, verslaglezing, organisatieMedewerker);
+				verslagGoedkeurenDoorCE(mammaBeoordeling, organisatieMedewerker);
 			}
 			var screeningRonde = mammaBeoordeling.getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde();
 			screeningRonde.setStatus(ScreeningRondeStatus.AFGEROND);
@@ -915,7 +916,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		}
 	}
 
-	private MammaLezing voegPocLezingToe(MammaBeoordeling mammaBeoordeling, String beoordelingStatus, InstellingGebruiker beoordelaar)
+	private MammaLezing voegPocLezingToe(MammaBeoordeling mammaBeoordeling, String beoordelingStatus, OrganisatieMedewerker beoordelaar)
 	{
 		var lezing = beoordelingService.getOrCreate1eOf2eLezing(mammaBeoordeling, beoordelaar, true);
 
@@ -930,9 +931,9 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 
 	@Override
 	@Transactional
-	public void verslagGoedkeurenDoorCE(MammaBeoordeling beoordeling, InstellingGebruiker ingelogdeGebruiker)
+	public void verslagGoedkeurenDoorCE(MammaBeoordeling beoordeling, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		beoordelingService.verslagGoedkeurenDoorCE(beoordeling, false, null, ingelogdeGebruiker);
+		beoordelingService.verslagGoedkeurenDoorCE(beoordeling, false, null, ingelogdeOrganisatieMedewerker);
 	}
 
 	@Override
@@ -957,18 +958,18 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		}
 	}
 
-	private InstellingGebruiker[] getTweeVerschillendeActieveErvanenRadioloog(BeoordelingsEenheid beoordelingsEenheid)
+	private OrganisatieMedewerker[] getTweeVerschillendeActieveErvanenRadioloog(BeoordelingsEenheid beoordelingsEenheid)
 	{
-		var zoekInstellingGebruiker = new InstellingGebruiker();
-		zoekInstellingGebruiker.setOrganisatie(beoordelingsEenheid);
-		var sort = Sort.by(Sort.Order.asc(propertyChain(InstellingGebruiker_.MEDEWERKER, Gebruiker_.GEBRUIKERSNAAM)));
-		var instellingGebruikers = medewerkerService.getActieveRadiologen(zoekInstellingGebruiker, new ArrayList<>(), sort)
+		var zoekOrganisatieMedewerker = new OrganisatieMedewerker();
+		zoekOrganisatieMedewerker.setOrganisatie(beoordelingsEenheid);
+		var sort = Sort.by(Sort.Order.asc(propertyChain(OrganisatieMedewerker_.MEDEWERKER, Medewerker_.GEBRUIKERSNAAM)));
+		var organisatieMedewerkers = medewerkerService.getActieveRadiologen(zoekOrganisatieMedewerker, new ArrayList<>(), sort)
 			.stream()
 			.filter(this::isBevoegdVoorArbitrage)
 			.toList();
-		var iterator = instellingGebruikers.iterator();
+		var iterator = organisatieMedewerkers.iterator();
 
-		var radiologen = new InstellingGebruiker[2];
+		var radiologen = new OrganisatieMedewerker[2];
 		radiologen[0] = iterator.next();
 
 		while (iterator.hasNext())
@@ -983,14 +984,14 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		return radiologen;
 	}
 
-	private boolean isBevoegdVoorArbitrage(InstellingGebruiker organisatieMedewerker)
+	private boolean isBevoegdVoorArbitrage(OrganisatieMedewerker organisatieMedewerker)
 	{
 
 		return organisatieMedewerker.getRollen().stream()
 			.filter(organisatieRol -> organisatieRol.getActief() && organisatieRol.getRol().getActief())
 			.flatMap(organisatieRol -> organisatieRol.getRol().getPermissies().stream())
 			.filter(Permissie::getActief)
-			.anyMatch(permissie -> permissie.getRecht() == Recht.GEBRUIKER_SCREENING_MAMMA_ARBITRAGE_WERKLIJST &&
+			.anyMatch(permissie -> permissie.getRecht() == Recht.MEDEWERKER_SCREENING_MAMMA_ARBITRAGE_WERKLIJST &&
 				AutorisatieUtil.isMinimumActie(permissie.getActie(), Actie.TOEVOEGEN));
 	}
 
@@ -1003,9 +1004,9 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 
 	@Override
 	@Transactional
-	public void doorvoerenOnderzoekStarten(MammaAfspraak afspraak, InstellingGebruiker ingelogdeInstellingGebruiker, boolean verstuurHl7Berichten)
+	public void doorvoerenOnderzoekStarten(MammaAfspraak afspraak, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, boolean verstuurHl7Berichten)
 	{
-		onderzoekStarten(afspraak, ingelogdeInstellingGebruiker, verstuurHl7Berichten);
+		onderzoekStarten(afspraak, ingelogdeOrganisatieMedewerker, verstuurHl7Berichten);
 	}
 
 	@Override
@@ -1042,7 +1043,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 
 	@Override
 	@Transactional
-	public void sluitAlleDagenTotEnMetGisteren(MammaScreeningsEenheid screeningsEenheid, InstellingGebruiker ingelogdeGebruiker) throws IllegalStateException
+	public void sluitAlleDagenTotEnMetGisteren(MammaScreeningsEenheid screeningsEenheid, OrganisatieMedewerker ingelogdeOrganisatieMedewerker) throws IllegalStateException
 	{
 		var afspraken = readAfsprakenWaarvanOnderzoekNietIsDoorgevoerd(currentDateSupplier.getLocalDate(), screeningsEenheid.getCode());
 
@@ -1051,7 +1052,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		{
 			try
 			{
-				setMammaAfspraakStatusGeplandOfVoerOnderzoekDoor(afspraak, ingelogdeGebruiker);
+				setMammaAfspraakStatusGeplandOfVoerOnderzoekDoor(afspraak, ingelogdeOrganisatieMedewerker);
 			}
 			catch (Exception e)
 			{
@@ -1067,7 +1068,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		}
 	}
 
-	private void setMammaAfspraakStatusGeplandOfVoerOnderzoekDoor(MammaAfspraak afspraak, InstellingGebruiker ingelogdeGebruiker)
+	private void setMammaAfspraakStatusGeplandOfVoerOnderzoekDoor(MammaAfspraak afspraak, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		var onderzoek = afspraak.getOnderzoek();
 
@@ -1081,7 +1082,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 			if (onderzoek.getStatus() == MammaOnderzoekStatus.ACTIEF || afspraak.getStatus() != MammaAfspraakStatus.BEEINDIGD)
 			{
 				var afwijkingGesignaleerd = isAfwijkingGesignaleerd(onderzoek);
-				var onderzoeker = bepaalOnderzoeker(afspraak, ingelogdeGebruiker);
+				var onderzoeker = bepaalOnderzoeker(afspraak, ingelogdeOrganisatieMedewerker);
 				rondOnderzoekAf(afspraak, onderzoeker, false, onderzoek.getOnvolledigOnderzoek(), onderzoek.getOnderbrokenOnderzoek(), onderzoek.getOnderzoekType(),
 					afwijkingGesignaleerd, null);
 			}
@@ -1095,7 +1096,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		return onderzoek.getSignaleren() != null && onderzoek.getSignaleren().isHeeftAfwijkingen();
 	}
 
-	private static InstellingGebruiker bepaalOnderzoeker(MammaAfspraak afspraak, InstellingGebruiker ingelogdeGebruiker)
+	private static OrganisatieMedewerker bepaalOnderzoeker(MammaAfspraak afspraak, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		var mammografie = afspraak.getOnderzoek().getMammografie();
 		if (mammografie != null && mammografie.getAfgerondDoor() != null)
@@ -1106,7 +1107,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		{
 			return afspraak.getIngeschrevenDoor();
 		}
-		return ingelogdeGebruiker;
+		return ingelogdeOrganisatieMedewerker;
 	}
 
 	@Override

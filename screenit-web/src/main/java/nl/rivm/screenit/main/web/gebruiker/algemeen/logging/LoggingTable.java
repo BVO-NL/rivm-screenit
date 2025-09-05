@@ -41,7 +41,7 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen
 import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen.retourzendingen.RetourzendingenVerwerkingsVerslagPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen.selectie.SelectieVerslagPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen.uitnodigingversturen.UitnodigingVersturenVerslagPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.inzien.ClientInzienPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.hl7v2berichten.CervixVerwerkHL7v2FoutBerichtenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.palga.MammaPalgaUitwisselingPage;
@@ -178,13 +178,13 @@ public class LoggingTable extends ScreenitDataTable<LogRegel, String>
 			{
 				if (GbaStatus.AFGEVOERD.equals(client.getGbaStatus()))
 				{
-					logService.logGebeurtenis(LogGebeurtenis.INACTIEVE_CLIENT_INGEZIEN, ScreenitSession.get().getLoggedInAccount(), client);
+					logService.logGebeurtenis(LogGebeurtenis.INACTIEVE_CLIENT_INGEZIEN, ScreenitSession.get().getIngelogdAccount(), client);
 				}
 				setResponsePage(new ClientInzienPage(ModelUtil.sModel(client)));
 			}
 			else
 			{
-				((GebruikerBasePage) getPage()).getDialog().openWith(target, new ShowVolledigeLoggingMeldingPopupPanel(BootstrapDialog.CONTENT_ID, logEvent.getVolledigeMelding()));
+				((MedewerkerBasePage) getPage()).getDialog().openWith(target, new ShowVolledigeLoggingMeldingPopupPanel(BootstrapDialog.CONTENT_ID, logEvent.getVolledigeMelding()));
 			}
 			break;
 		}
@@ -265,7 +265,7 @@ public class LoggingTable extends ScreenitDataTable<LogRegel, String>
 	private boolean magClientIngezienWorden(Client client)
 	{
 		return client != null && client.getGbaStatus() != GbaStatus.BEZWAAR && (clientService.isClientActief(client) || ScreenitSession.get()
-			.checkPermission(Recht.GEBRUIKER_INACTIEVE_CLIENT_INZIEN, Actie.INZIEN));
+			.checkPermission(Recht.MEDEWERKER_INACTIEVE_CLIENT_INZIEN, Actie.INZIEN));
 	}
 
 	@Override

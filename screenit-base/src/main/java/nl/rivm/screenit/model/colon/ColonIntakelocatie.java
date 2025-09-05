@@ -34,10 +34,9 @@ import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.PostcodeCoordinaten;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
-import nl.topicuszorg.organisatie.model.Adres;
 
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -46,7 +45,7 @@ import org.hibernate.envers.NotAudited;
 @Audited
 @Getter
 @Setter
-public class ColonIntakelocatie extends Instelling
+public class ColonIntakelocatie extends Organisatie
 {
 
 	@OneToMany(mappedBy = "intakelocatie")
@@ -66,28 +65,5 @@ public class ColonIntakelocatie extends Instelling
 	private Integer aantalGeprognostiseerdeRoosterblokken;
 
 	private Integer aantalGeprognostiseerdeRoosterblokkenVolgendJaar;
-
-	public Adres getEersteAdres()
-	{
-		Adres adres = null;
-		List<Adres> adressen = getAdressen();
-		if (adressen != null && !adressen.isEmpty())
-		{
-			adres = adressen.get(0);
-		}
-		return adres;
-	}
-
-	public String getEerstePlaats()
-	{
-		Adres adres = getEersteAdres();
-
-		String plaats = null;
-		if (adres != null)
-		{
-			plaats = adres.getPlaats();
-		}
-		return plaats;
-	}
 
 }

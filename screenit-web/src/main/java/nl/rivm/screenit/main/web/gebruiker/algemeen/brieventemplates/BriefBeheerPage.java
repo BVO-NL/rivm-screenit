@@ -83,7 +83,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	constraint = ShiroConstraint.HasPermission,
 	checkScope = false,
 	level = ToegangLevel.LANDELIJK,
-	recht = Recht.GEBRUIKER_BEHEER_BRIEVEN,
+	recht = Recht.MEDEWERKER_BEHEER_BRIEVEN,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class BriefBeheerPage extends AlgemeenPage
@@ -103,7 +103,7 @@ public class BriefBeheerPage extends AlgemeenPage
 
 	private IModel<List<BriefDefinitie>> briefDefinities = null;
 
-	private final boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_BRIEVEN, Actie.AANPASSEN);
+	private final boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_BRIEVEN, Actie.AANPASSEN);
 
 	public BriefBeheerPage()
 	{
@@ -292,7 +292,7 @@ public class BriefBeheerPage extends AlgemeenPage
 			var nieuweBriefDefinitie = new BriefDefinitie();
 			nieuweBriefDefinitie.setBriefType(definitie.getBriefType());
 			nieuweBriefDefinitie.setFormulierNummer(definitie.getFormulierNummer());
-			nieuweBriefDefinitie.setUploader(ScreenitSession.get().getLoggedInInstellingGebruiker());
+			nieuweBriefDefinitie.setUploader(getIngelogdeOrganisatieMedewerker());
 			briefService.saveBriefDefinitie(nieuweBriefDefinitie, uploadDocument.getFile(), uploadDocument.getContentType(), uploadDocument.getNaam());
 		}
 		catch (Exception e)

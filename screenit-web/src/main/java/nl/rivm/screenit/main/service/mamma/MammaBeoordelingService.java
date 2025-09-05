@@ -27,8 +27,8 @@ import java.util.List;
 import nl.rivm.screenit.main.model.mamma.beoordeling.BeoordelingenReserveringResult;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDto;
 import nl.rivm.screenit.model.EnovationHuisarts;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.model.mamma.enums.MammaBeLezerSoort;
@@ -41,38 +41,38 @@ public interface MammaBeoordelingService
 
 	List<MammaBeoordeling> getVorigeTweeTeTonenBeoordelingen(MammaBeoordeling beoordeling);
 
-	MammaLezing getOrCreate1eOf2eLezing(MammaBeoordeling beoordeling, InstellingGebruiker beoordelaar, boolean onervarenRadioloog);
+	MammaLezing getOrCreate1eOf2eLezing(MammaBeoordeling beoordeling, OrganisatieMedewerker beoordelaar, boolean onervarenRadioloog);
 
-	MammaLezing getOrCreateDiscrepantieOfArbitrageLezing(MammaBeoordeling beoordeling, MammaLezingType huidigeLezingType, InstellingGebruiker gebruiker);
+	MammaLezing getOrCreateDiscrepantieOfArbitrageLezing(MammaBeoordeling beoordeling, MammaLezingType huidigeLezingType, OrganisatieMedewerker organisatieMedewerker);
 
 	Long getVolgendeBeoordelingId(Long huidigeBeoordelingId, List<Long> beoordelingenIds);
 
-	BeoordelingenReserveringResult openBeschikbareBeoordeling(Long startBeoordelingId, List<Long> beoordelingenIds, InstellingGebruiker ingelogdeGebruiker,
+	BeoordelingenReserveringResult openBeschikbareBeoordeling(Long startBeoordelingId, List<Long> beoordelingenIds, OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
 		MammaBeLezerSoort lezerSoort);
 
-	void radioloogHeeftGeenHandtekening(Gebruiker medewerker);
+	void radioloogHeeftGeenHandtekening(Medewerker medewerker);
 
 	MammaLezing[] getLezingenVoorVerslag(MammaBeoordeling beoordeling);
 
-	File verslagGoedkeurenDoorCE(MammaBeoordeling beoordeling, boolean directPrinten, EnovationHuisarts alternatieveHuisarts, InstellingGebruiker ingelogdeGebruiker);
+	File verslagGoedkeurenDoorCE(MammaBeoordeling beoordeling, boolean directPrinten, EnovationHuisarts alternatieveHuisarts, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	void onbeoordeelbaarAfgehandeld(MammaBeoordeling beoordeling, InstellingGebruiker ingelogdeGebruiker);
+	void onbeoordeelbaarAfgehandeld(MammaBeoordeling beoordeling, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	File genereerPdfVoorOngunstigeUitslagBrief(MammaBeoordeling beoordeling);
 
-	void verslagAfkeurenDoorCE(MammaBeoordeling beoordeling, InstellingGebruiker toegewezenRadioloog, InstellingGebruiker ingelogdeGebruiker);
+	void verslagAfkeurenDoorCE(MammaBeoordeling beoordeling, OrganisatieMedewerker toegewezenRadioloog, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	void verslagLaterGoedkeurenDoorCE(MammaBeoordeling beoordeling, InstellingGebruiker ingelogdeGebruiker);
+	void verslagLaterGoedkeurenDoorCE(MammaBeoordeling beoordeling, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	boolean isLezingValide(MammaLezing lezing, List<LaesieDto> laesieDtos);
 
 	List<Object[]> beoordelingGeschiedenis(MammaBeoordeling beoordeling);
 
-	void gunstigeUitslagMetNevenbevindingAfronden(MammaBeoordeling beoordeling, EnovationHuisarts huisarts, InstellingGebruiker loggedInInstellingGebruiker);
+	void gunstigeUitslagMetNevenbevindingAfronden(MammaBeoordeling beoordeling, EnovationHuisarts huisarts, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	boolean isBevoegdVoorArbitrage(InstellingGebruiker gebruiker);
+	boolean isBevoegdVoorArbitrage(OrganisatieMedewerker organisatieMedewerker);
 
 	List<MammaBeoordelingOpschortenReden> getMogelijkeOpschortRedenen(MammaBeoordeling beoordeling, MammaLezingType lezingType);
 
-	void logBeoordelingIngezien(MammaBeoordeling beoordeling, InstellingGebruiker ingelogdeGebruiker, boolean isCoordinerendRadioloog);
+	void logBeoordelingIngezien(MammaBeoordeling beoordeling, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, boolean isCoordinerendRadioloog);
 }

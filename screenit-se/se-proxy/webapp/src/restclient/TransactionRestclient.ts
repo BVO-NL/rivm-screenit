@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -34,7 +34,7 @@ export const putTransactionToScreenItCentraalPromiseZonderAfspraak = (clientId: 
 		type: type,
 		clientId: clientId,
 		medewerkercode: session?.medewerkercode,
-		instellingGebruikerId: session?.instellingGebruikerId,
+		organisatieMedewerkerId: session?.organisatieMedewerkerId,
 		afspraakVanafDatum: store.getState().daglijstDatum,
 		uitnodigingsNr: uitnodigingsNr,
 		actions: actions,
@@ -48,7 +48,7 @@ const createTransactionWithActionArray = (afspraak: Afspraak | undefined, type: 
 		type: type,
 		clientId: afspraak && afspraak.clientId,
 		medewerkercode: session?.medewerkercode,
-		instellingGebruikerId: session?.instellingGebruikerId,
+		organisatieMedewerkerId: session?.organisatieMedewerkerId,
 		afspraakVanafDatum: afspraak ? afspraak.vanafDatum : store.getState().daglijstDatum,
 		uitnodigingsNr: afspraak && afspraak.uitnodigingsNr,
 		actions: actions,

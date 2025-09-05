@@ -45,7 +45,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_CLIENT_SR_CONCLUSIE,
+	recht = Recht.MEDEWERKER_CLIENT_SR_CONCLUSIE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class ConclusieInzienPanel extends AbstractGebeurtenisDetailPanel
 {
@@ -63,7 +63,7 @@ public class ConclusieInzienPanel extends AbstractGebeurtenisDetailPanel
 
 		add(new EnumLabel<ColonConclusieType>("afspraak.conclusie.type"));
 		add(DateLabel.forDatePattern("afspraak.conclusie.datum", "dd-MM-yyyy HH:mm"));
-		add(new Label("afspraak.conclusie.instellingGebruiker.medewerker.naamVolledig"));
+		add(new Label("afspraak.conclusie.organisatieMedewerker.medewerker.naamVolledig"));
 		add(new BooleanLabel("afspraak.bezwaar").setVisible(afspraak.isBezwaar()));
 
 		WebMarkupContainer newContainer = new EmptyPanel("container");

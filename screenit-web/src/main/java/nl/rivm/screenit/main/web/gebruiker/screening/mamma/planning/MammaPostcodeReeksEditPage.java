@@ -29,14 +29,14 @@ import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxLink;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaPostcodeReeks;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -57,7 +57,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaPostcodeReeksEditPage extends MammaPlanningBasePage
 {
@@ -76,7 +76,7 @@ public class MammaPostcodeReeksEditPage extends MammaPlanningBasePage
 	private HibernateService hibernateService;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	private BootstrapDialog dialog;
 
@@ -163,7 +163,7 @@ public class MammaPostcodeReeksEditPage extends MammaPlanningBasePage
 					}
 					if (!hasErrorMessage())
 					{
-						boolean changed = postcodeReeksService.saveOrUpdatePostcodeReeks(postcodeReeks, ScreenitSession.get().getLoggedInInstellingGebruiker());
+						boolean changed = postcodeReeksService.saveOrUpdatePostcodeReeks(postcodeReeks, getIngelogdeOrganisatieMedewerker());
 						if (changed)
 						{
 							success(getString("message.gegevensopgeslagen"));
@@ -187,7 +187,7 @@ public class MammaPostcodeReeksEditPage extends MammaPlanningBasePage
 			public void onClick(AjaxRequestTarget target)
 			{
 				MammaPostcodeReeks postcodeReeks = mainForm.getModelObject();
-				postcodeReeksService.deletePostcodeReeks(postcodeReeks, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				postcodeReeksService.deletePostcodeReeks(postcodeReeks, getIngelogdeOrganisatieMedewerker());
 				ScreenitSession.get().success(getString("postcodeReeks.verwijderd"));
 				setResponsePage(MammaPostcodeReeksZoekenPage.class);
 			}
@@ -196,7 +196,7 @@ public class MammaPostcodeReeksEditPage extends MammaPlanningBasePage
 			protected void onConfigure()
 			{
 				super.onConfigure();
-				setVisible(ingelogdNamensRegio && ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.VERWIJDEREN)
+				setVisible(ingelogdNamensRegio && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.VERWIJDEREN)
 					&& mainForm.getModelObject().getId() != null);
 			}
 
@@ -204,7 +204,7 @@ public class MammaPostcodeReeksEditPage extends MammaPlanningBasePage
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveContextMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveContextMenuClass()
 	{
 		return MammaPostcodeReeksZoekenPage.class;
 	}

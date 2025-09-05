@@ -72,7 +72,7 @@ public abstract class MammaTehuisAdresToevoegenPanel extends GenericPanel<MammaT
 				}
 				else
 				{
-					tehuisAdresService.adresToevoegen(adres, ScreenitSession.get().getLoggedInInstellingGebruiker());
+					tehuisAdresService.adresToevoegen(adres, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 					onClickOpslaan(target);
 				}
 

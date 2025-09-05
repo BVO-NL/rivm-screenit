@@ -66,12 +66,12 @@ public abstract class ClientContactEditPanel extends GenericPanel<ClientContact>
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				success(getString("message.gegevensopgeslagen"));
-				clientContactService.updateContact(ClientContactEditPanel.this.getModelObject(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+				clientContactService.updateContact(ClientContactEditPanel.this.getModelObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				ClientContactEditPanel.this.close(target);
 			}
 		});
 
-		boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_CONTACT, Actie.VERWIJDEREN, getModelObject().getClient())
+		boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_CONTACT, Actie.VERWIJDEREN, getModelObject().getClient())
 			&& getModelObject().getActies().size() == 1 && getModelObject().getActies().get(0).getType() == ClientContactActieType.GEEN;
 		form.add(new IndicatingAjaxButton("verwijderen")
 		{
@@ -82,7 +82,7 @@ public abstract class ClientContactEditPanel extends GenericPanel<ClientContact>
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				success(getString("contact.is.verwijderd"));
-				clientContactService.verwijderContact(ClientContactEditPanel.this.getModelObject(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+				clientContactService.verwijderContact(ClientContactEditPanel.this.getModelObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				ClientContactEditPanel.this.close(target);
 			}
 		}.setVisible(magVerwijderen));

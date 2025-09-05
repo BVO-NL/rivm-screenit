@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.controleren.CervixLabformulierHuisartsOnbekendPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
@@ -41,7 +41,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	constraint = ShiroConstraint.HasPermission,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX },
 	recht = {
-		Recht.GEBRUIKER_CERVIX_LABFORMULIEREN_HUISARTS_ONBEKEND })
+		Recht.MEDEWERKER_CERVIX_LABFORMULIEREN_HUISARTS_ONBEKEND })
 public class CervixLabformulierenHuisartsOnbekendPage extends CervixLabformulierenBasePage
 {
 
@@ -50,7 +50,7 @@ public class CervixLabformulierenHuisartsOnbekendPage extends CervixLabformulier
 	public CervixLabformulierenHuisartsOnbekendPage()
 	{
 		super(new CervixLabformulierStatus[] { CervixLabformulierStatus.HUISARTS_ONBEKEND, CervixLabformulierStatus.GECONTROLEERD },
-			new CervixLabformulierenFilter(ScreenitSession.get().getInstelling().getId(), ScreenitSession.get().getInstelling().getOrganisatieType(),
+			new CervixLabformulierenFilter(ScreenitSession.get().getOrganisatie().getId(), ScreenitSession.get().getOrganisatie().getOrganisatieType(),
 				CervixLabformulierenFilter.LabprocesStap.HUISARTS_ONBEKEND, null,
 				Arrays.asList(new CervixLabformulierStatus[] { CervixLabformulierStatus.HUISARTS_ONBEKEND }), null, null, null, null, null),
 			true, true, false, true, false, false, false);
@@ -63,10 +63,10 @@ public class CervixLabformulierenHuisartsOnbekendPage extends CervixLabformulier
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.cervixscreening.labformulieren-huisarts-onbekend", CervixLabformulierenHuisartsOnbekendPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.cervixscreening.labformulieren-huisarts-onbekend", CervixLabformulierenHuisartsOnbekendPage.class));
 		return contextMenuItems;
 	}
 

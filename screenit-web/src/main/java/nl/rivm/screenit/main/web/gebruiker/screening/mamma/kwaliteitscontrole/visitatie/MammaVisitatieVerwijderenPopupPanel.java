@@ -44,7 +44,7 @@ public abstract class MammaVisitatieVerwijderenPopupPanel extends GenericPanel<M
 	{
 		super(id, visitatieModel);
 		add(new Label("omschrijving"));
-		add(new Label("aangemaaktDoor.medewerker.achternaam", NaamUtil.getNaamGebruiker(getModelObject().getAangemaaktDoor().getMedewerker())));
+		add(new Label("aangemaaktDoor.medewerker.achternaam", NaamUtil.getNaamMedewerker(getModelObject().getAangemaaktDoor().getMedewerker())));
 		add(createLink());
 	}
 

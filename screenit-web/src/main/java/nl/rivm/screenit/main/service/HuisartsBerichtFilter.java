@@ -23,7 +23,7 @@ package nl.rivm.screenit.main.service;
 
 import java.io.Serializable;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.model.IModel;
@@ -33,14 +33,14 @@ public class HuisartsBerichtFilter implements Serializable
 
 	private static final long serialVersionUID = 1L;
 
-	private IModel<Instelling> regio;
+	private IModel<Organisatie> regio;
 
-	public Instelling getRegio()
+	public Organisatie getRegio()
 	{
 		return ModelUtil.nullSafeGet(regio);
 	}
 
-	public void setRegio(Instelling regio)
+	public void setRegio(Organisatie regio)
 	{
 		this.regio = ModelUtil.sModel(regio);
 	}

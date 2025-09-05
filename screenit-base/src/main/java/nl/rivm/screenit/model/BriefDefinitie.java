@@ -64,7 +64,7 @@ public class BriefDefinitie extends AbstractHibernateObject implements IDocument
 	private Date geldigTot = null;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	private InstellingGebruiker uploader;
+	private OrganisatieMedewerker uploader;
 
 	private String formulierNummer;
 
@@ -105,12 +105,12 @@ public class BriefDefinitie extends AbstractHibernateObject implements IDocument
 		this.laatstGewijzigd = laatstGewijzigd;
 	}
 
-	public InstellingGebruiker getUploader()
+	public OrganisatieMedewerker getUploader()
 	{
 		return uploader;
 	}
 
-	public void setUploader(InstellingGebruiker uploader)
+	public void setUploader(OrganisatieMedewerker uploader)
 	{
 		this.uploader = uploader;
 	}

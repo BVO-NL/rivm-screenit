@@ -340,7 +340,7 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 				.and(begintTussenTotEnMet(vanaf, totEnMet))
 				.and(filterStatus(Arrays.asList(afspraakStatussen))), q ->
 				q.fetch(g -> g.addSubgraph(MammaAfspraak_.uitnodiging).addSubgraph(MammaUitnodiging_.screeningRonde)
-						.addSubgraph(MammaScreeningRonde_.dossier).addSubgraph(MammaDossier_.client).addSubgraph(Client_.persoon), 5)
+						.addSubgraph(MammaScreeningRonde_.dossier).addSubgraph(MammaDossier_.client).addSubgraph(Client_.persoon))
 					.all());
 
 		bepaalBenodigdeCapaciteit(afspraken, screeningsEenheid);

@@ -21,7 +21,6 @@
 import {AppThunkDispatch} from "../index"
 import ScreenitBackend from "../util/Backend"
 import {createActionSetAuth} from "../state/AuthState"
-import {AxiosResponse} from "axios"
 import {fetchCurrentUser} from "./CurrentUserThunkAction"
 import {fetchHuisarts} from "./HuisartsThunkAction"
 import {fetchLocaties, fetchLocatieVerificatie} from "./LocatieThunkAction"
@@ -31,8 +30,7 @@ import {TokenDto} from "../state/datatypes/dto/TokenDto"
 import {CredentialsDto} from "../state/datatypes/dto/CredentialsDto"
 
 export const aanmelden = (loginDto: CredentialsDto) => async (dispatch: AppThunkDispatch) => {
-	const response: AxiosResponse<TokenDto> = await ScreenitBackend.post("/auth/inloggen", loginDto)
-	const token = response.data
+	const token: TokenDto = await ScreenitBackend.post("auth/inloggen", {json: loginDto}).json()
 	dispatch(createActionSetAuthenticationLoading(true))
 	dispatch(createActionSetAuth(token))
 	await dispatch(fetchCurrentUser())

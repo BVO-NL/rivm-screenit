@@ -72,9 +72,9 @@ public class HuisartsBerichtTemplateEditPanel extends GenericPanel<HuisartsBeric
 	{
 		super(id, model);
 
-		var actie = autorisatieService.getActieVoorMedewerker(ScreenitSession.get().getLoggedInInstellingGebruiker(), ScreenitSession.get().getCurrentSelectedMedewerker(),
-			Recht.GEBRUIKER_BEHEER_PARAMETERISATIE);
-		var level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.GEBRUIKER_BEHEER_PARAMETERISATIE);
+		var actie = autorisatieService.getActieVoorMedewerker(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), ScreenitSession.get().getCurrentSelectedMedewerker(),
+			Recht.MEDEWERKER_BEHEER_PARAMETERISATIE);
+		var level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_BEHEER_PARAMETERISATIE);
 		var inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 
 		var form = new ScreenitForm<HuisartsBerichtTemplate>("templateForm", getModel());
@@ -121,7 +121,7 @@ public class HuisartsBerichtTemplateEditPanel extends GenericPanel<HuisartsBeric
 				var template = form.getModelObject();
 				template.setAangepast(currentDateSupplier.getDate());
 				templateRepository.save(template);
-				logService.logGebeurtenis(LogGebeurtenis.PARAMETERISATIE_WIJZIG, ScreenitSession.get().getLoggedInAccount(),
+				logService.logGebeurtenis(LogGebeurtenis.PARAMETERISATIE_WIJZIG, ScreenitSession.get().getIngelogdAccount(),
 					"Huisartsbericht template: '" + template.getBerichtType().getNaam() + "' aangepast.", Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX);
 				info("Template is opgeslagen");
 			}

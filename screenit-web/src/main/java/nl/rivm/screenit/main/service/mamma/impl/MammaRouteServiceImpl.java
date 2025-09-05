@@ -32,7 +32,7 @@ import nl.rivm.screenit.main.service.mamma.MammaRouteService;
 import nl.rivm.screenit.main.service.mamma.MammaStandplaatsPeriodeService;
 import nl.rivm.screenit.main.util.ExportToXslUtil;
 import nl.rivm.screenit.main.util.StandplaatsPeriodeUtil;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
@@ -61,13 +61,13 @@ public class MammaRouteServiceImpl implements MammaRouteService
 	private MammaBaseConceptPlanningsApplicatie baseConceptPlanningsApplicatie;
 
 	@Override
-	public void standplaatsenToevoegenRoute(MammaScreeningsEenheid screeningsEenheid, List<MammaStandplaats> standplaatsen, InstellingGebruiker ingelogdeInstellingGebruiker)
+	public void standplaatsenToevoegenRoute(MammaScreeningsEenheid screeningsEenheid, List<MammaStandplaats> standplaatsen, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		for (MammaStandplaats standplaats : standplaatsen)
 		{
 			PlanningStandplaatsPeriodeDto item = new PlanningStandplaatsPeriodeDto();
 			item.standplaatsId = standplaats.getId();
-			baseConceptPlanningsApplicatie.changeRoute(item, screeningsEenheid, ingelogdeInstellingGebruiker);
+			baseConceptPlanningsApplicatie.changeRoute(item, screeningsEenheid, ingelogdeOrganisatieMedewerker);
 		}
 	}
 

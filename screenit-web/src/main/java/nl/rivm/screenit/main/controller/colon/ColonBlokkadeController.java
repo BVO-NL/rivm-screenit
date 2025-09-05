@@ -73,7 +73,7 @@ public class ColonBlokkadeController
 	private final ColonBlokkadeService blokkadeService;
 
 	@GetMapping
-	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
+	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
 	public List<ColonBlokkadeDto> getBlokkades(@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 		@RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate)
@@ -93,26 +93,26 @@ public class ColonBlokkadeController
 	}
 
 	@PostMapping
-	@SecurityConstraint(actie = Actie.TOEVOEGEN, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
+	@SecurityConstraint(actie = Actie.TOEVOEGEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
 	public ResponseEntity<Void> createBlokkade(@RequestBody ColonBlokkadeDto blokkadeDto) throws ValidatieException, OpslaanVerwijderenTijdBlokException, BulkAanmakenException
 	{
-		blokkadeService.createBlokkade(blokkadeDto, ScreenitSession.get().getLoggedInInstellingGebruiker());
+		blokkadeService.createBlokkade(blokkadeDto, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@PutMapping("{id}")
-	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
+	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
 	public ResponseEntity<Void> updateBlokkade(@RequestBody ColonBlokkadeDto blokkadeDto)
 		throws ValidatieException, OpslaanVerwijderenTijdBlokException
 	{
-		blokkadeService.updateBlokkade(blokkadeDto, ScreenitSession.get().getLoggedInInstellingGebruiker());
+		blokkadeService.updateBlokkade(blokkadeDto, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 	@GetMapping("/search")
-	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
+	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
 	public List<ColonTijdslotDto> searchBlokkades(
 		@RequestParam() @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDatum,
@@ -126,7 +126,7 @@ public class ColonBlokkadeController
 
 		if (intakelocatie == null)
 		{
-			throw new IllegalStateException("Gebruiker heeft geen intakelocatie.");
+			throw new IllegalStateException("Medewerker heeft geen intakelocatie.");
 		}
 
 		var filter = new RoosterListViewFilter();
@@ -144,7 +144,7 @@ public class ColonBlokkadeController
 	}
 
 	@DeleteMapping("{ids}")
-	@SecurityConstraint(actie = Actie.VERWIJDEREN, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
+	@SecurityConstraint(actie = Actie.VERWIJDEREN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
 	public ResponseEntity<Void> deleteBlokkades(@PathVariable("ids") String ids, @RequestParam(required = false) Boolean alleenValidatie,
 		@RequestParam(required = false) Boolean bulk)
@@ -157,11 +157,11 @@ public class ColonBlokkadeController
 
 		if (Boolean.TRUE.equals(bulk))
 		{
-			blokkadeService.bulkDeleteBlokkades(blokkadeIds, ScreenitSession.get().getLoggedInInstellingGebruiker(), alleenValidatie);
+			blokkadeService.bulkDeleteBlokkades(blokkadeIds, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), alleenValidatie);
 		}
 		else
 		{
-			blokkadeService.deleteBlokkade(blokkadeIds.get(0), ScreenitSession.get().getLoggedInInstellingGebruiker());
+			blokkadeService.deleteBlokkade(blokkadeIds.get(0), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 		}
 
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

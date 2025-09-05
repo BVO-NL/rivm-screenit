@@ -125,7 +125,7 @@ public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment
 		upload = ModelUtil.sModel(getModelObject().getBezwaarBrief());
 		var magNogmaalsVersturen = upload != null;
 		var magDocumentVervangen = ScreenitSession.get().checkPermission(Recht.VERVANGEN_DOCUMENTEN, Actie.AANPASSEN);
-		var heeftTegenhoudenRecht = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
+		var heeftTegenhoudenRecht = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
 		var magTegenhouden = heeftTegenhoudenRecht && laatsteBrief != null && !BriefUtil.isTegengehouden(laatsteBrief) && BriefUtil.getMergedBrieven(laatsteBrief) == null;
 		var magDoorvoeren = heeftTegenhoudenRecht && BriefUtil.isTegengehouden(laatsteBrief);
 
@@ -152,7 +152,7 @@ public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				baseBriefService.briefTegenhouden(getLaatsteBrief(), ScreenitSession.get().getLoggedInAccount());
+				baseBriefService.briefTegenhouden(getLaatsteBrief(), ScreenitSession.get().getIngelogdAccount());
 				info(getString("info.brieftegenhouden"));
 				close(target);
 			}
@@ -163,7 +163,7 @@ public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				baseBriefService.briefNietMeerTegenhouden(getLaatsteBrief(), ScreenitSession.get().getLoggedInAccount());
+				baseBriefService.briefNietMeerTegenhouden(getLaatsteBrief(), ScreenitSession.get().getIngelogdAccount());
 				info(getString("info.briefactiveren"));
 				close(target);
 			}
@@ -175,7 +175,7 @@ public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment
 			public void onClick(AjaxRequestTarget target)
 			{
 				List<BezwaarBrief> bevestigingsbrieven = briefService.getOorspronkelijkeBevestigingsbrieven(BezwaarInzienPopupPanel.this.getModelObject());
-				briefHerdrukkenService.opnieuwAanmaken(bevestigingsbrieven, ScreenitSession.get().getLoggedInAccount());
+				briefHerdrukkenService.opnieuwAanmaken(bevestigingsbrieven, ScreenitSession.get().getIngelogdAccount());
 				info(getString(
 					bevestigingsbrieven.size() > 1 ? "info.bezwaar.meerdere.bevestigingsbrieven.nogmaals.verstuurd" : "info.bezwaar.enkele.bevestigingsbrief.nogmaals.verstuurd"));
 				close(target);
@@ -200,7 +200,7 @@ public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment
 			@Override
 			protected void vervangDocument(UploadDocument uploadDocument, AjaxRequestTarget target)
 			{
-				if (bezwaarService.ondertekendeBezwaarBriefVervangen(uploadDocument, getModelObject(), upload.getObject(), ScreenitSession.get().getLoggedInAccount()))
+				if (bezwaarService.ondertekendeBezwaarBriefVervangen(uploadDocument, getModelObject(), upload.getObject(), ScreenitSession.get().getIngelogdAccount()))
 				{
 					info(getString("info.vervangendocument"));
 					close(target);

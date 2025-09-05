@@ -60,7 +60,7 @@ public class MammaBeoordelingenWerklijstPage extends AbstractMammaBeWerklijstPag
 	@Override
 	public boolean bevestigenButtonEnabled()
 	{
-		return beWerklijstService.is1eOf2eLezingenTeBevestigen(ScreenitSession.get().getLoggedInInstellingGebruiker());
+		return beWerklijstService.is1eOf2eLezingenTeBevestigen(getIngelogdeOrganisatieMedewerker());
 	}
 
 	@Override
@@ -88,6 +88,6 @@ public class MammaBeoordelingenWerklijstPage extends AbstractMammaBeWerklijstPag
 	@Override
 	protected void handleImsError(AjaxRequestTarget target, String errorMessage, Long onderzoekId)
 	{
-		error(imsService.handleError(errorMessage, ScreenitSession.get().getLoggedInInstellingGebruiker(), b -> getString((String) b), onderzoekId));
+		error(imsService.handleError(errorMessage, getIngelogdeOrganisatieMedewerker(), b -> getString((String) b), onderzoekId));
 	}
 }

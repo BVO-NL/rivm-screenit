@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.rivm.screenit.main.service.cervix.CervixHuisartsService;
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
@@ -35,11 +34,11 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.CervixHuisartsPa
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.CervixScreeningBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.huisarts.CervixHuisartsOpvraagPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker_;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie_;
@@ -71,7 +70,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
 @SecurityConstraint(constraint = ShiroConstraint.HasPermission, checkScope = true, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX }, recht = { Recht.UITSTRIJKEND_ARTS,
-	Recht.GERBRUIKER_CERVIX_LABFORMULIEREN_AANVRAGEN })
+	Recht.MEDEWERKER_CERVIX_LABFORMULIEREN_AANVRAGEN })
 public class CervixLabformulierAanvraagPage extends CervixScreeningBasePage
 {
 	@SpringBean
@@ -93,20 +92,20 @@ public class CervixLabformulierAanvraagPage extends CervixScreeningBasePage
 
 	public CervixLabformulierAanvraagPage()
 	{
-		InstellingGebruiker ingelogdeGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
-		Instelling ingelogdeInstelling = ingelogdeGebruiker.getOrganisatie();
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		Organisatie ingelogdeVoorOrganisatie = ingelogdeOrganisatieMedewerker.getOrganisatie();
 
-		addFilterOptiesVoorScreeningOrganisatie(ingelogdeInstelling);
-		if (OrganisatieType.HUISARTS == ingelogdeInstelling.getOrganisatieType())
+		addFilterOptiesVoorScreeningOrganisatie(ingelogdeVoorOrganisatie);
+		if (OrganisatieType.HUISARTS == ingelogdeVoorOrganisatie.getOrganisatieType())
 		{
-			huisartsModel = ModelUtil.sModel(hibernateService.load(CervixHuisarts.class, ingelogdeInstelling.getId()));
+			huisartsModel = ModelUtil.sModel(hibernateService.load(CervixHuisarts.class, ingelogdeVoorOrganisatie.getId()));
 		}
 
 		uitstrijkendArtsContainer = addUistrijkendArtsContainer();
 		add(uitstrijkendArtsContainer);
 	}
 
-	private void addFilterOptiesVoorScreeningOrganisatie(Instelling instelling)
+	private void addFilterOptiesVoorScreeningOrganisatie(Organisatie organisatie)
 	{
 		add(new CervixHuisartsOpvraagPanel("huisartsOpvraagPanel", false)
 		{
@@ -196,9 +195,9 @@ public class CervixLabformulierAanvraagPage extends CervixScreeningBasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				InstellingGebruiker igebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
+				var organisatieMedewerker = getIngelogdeOrganisatieMedewerker();
 
-				huisartsService.aanvraagLabformulieren(aanvraagModel.getObject(), aanvraagModel.getObject().getHuisartsLocatie(), igebruiker);
+				huisartsService.aanvraagLabformulieren(aanvraagModel.getObject(), aanvraagModel.getObject().getHuisartsLocatie(), organisatieMedewerker);
 
 				WebMarkupContainer container = addLabformulierenAanvraagDataTableContainer();
 				orderContainer.replaceWith(container);
@@ -231,8 +230,8 @@ public class CervixLabformulierAanvraagPage extends CervixScreeningBasePage
 				new SimpleDateFormat("dd-MM-yyyy HH:mm")));
 		columns.add(
 			new PropertyColumn<>(Model.of("Aangevraagd door"),
-				propertyChain(CervixLabformulierAanvraag_.INSTELLING_GEBRUIKER, InstellingGebruiker_.ORGANISATIE, Instelling_.NAAM),
-				propertyChain(CervixLabformulierAanvraag_.INSTELLING_GEBRUIKER, InstellingGebruiker_.ORGANISATIE, Instelling_.NAAM)));
+				propertyChain(CervixLabformulierAanvraag_.ORGANISATIE_MEDEWERKER, OrganisatieMedewerker_.ORGANISATIE, Organisatie_.NAAM),
+				propertyChain(CervixLabformulierAanvraag_.ORGANISATIE_MEDEWERKER, OrganisatieMedewerker_.ORGANISATIE, Organisatie_.NAAM)));
 		columns.add(new PropertyColumn<>(Model.of("Locatie"), propertyChain(CervixLabformulierAanvraag_.HUISARTS_LOCATIE, CervixHuisartsLocatie_.NAAM),
 			propertyChain(CervixLabformulierAanvraag_.HUISARTS_LOCATIE, CervixHuisartsLocatie_.NAAM)));
 

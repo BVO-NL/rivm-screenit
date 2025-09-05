@@ -37,6 +37,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import jakarta.annotation.PostConstruct;
+
 import javax.imageio.ImageIO;
 
 import lombok.Setter;
@@ -68,8 +70,6 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-
-import jakarta.annotation.PostConstruct;
 
 @Slf4j
 @Service
@@ -281,7 +281,8 @@ public class AsposeServiceImpl implements AsposeService
 
 				if (mergeFieldValue == null || mergeFieldValue instanceof String stringMergeFieldValue && StringUtils.isBlank(stringMergeFieldValue))
 				{
-					throw new IllegalStateException("MergeField " + mergeField + " heeft geen waarde");
+					LOG.warn("MergeField " + mergeField + " heeft geen waarde");
+					return;
 				}
 				if (mergeField.isBarcode())
 				{

@@ -22,11 +22,15 @@ package nl.rivm.screenit.batch.jobs.cervix.zaskoppelen;
  */
 
 import nl.rivm.screenit.batch.jobs.AbstractJobConfiguration;
+import nl.rivm.screenit.batch.jobs.cervix.zaskoppelen.koppelmetreststep.ZasKoppelMetRestReader;
+import nl.rivm.screenit.batch.jobs.cervix.zaskoppelen.koppelmetreststep.ZasKoppelMetRestWriter;
 import nl.rivm.screenit.batch.jobs.cervix.zaskoppelen.koppelstep.ZasKoppelReader;
 import nl.rivm.screenit.batch.jobs.cervix.zaskoppelen.koppelstep.ZasKoppelWriter;
+import nl.rivm.screenit.batch.jobs.helpers.BaseKoppelenDecider;
 import nl.rivm.screenit.batch.service.WebserviceInpakcentrumOpzettenService;
 import nl.rivm.screenit.batch.service.impl.WebserviceInpakcentrumOpzettenServiceImpl;
 import nl.rivm.screenit.model.enums.JobType;
+import nl.rivm.screenit.model.inpakcentrum.vaninpakcentrum.InpakcentrumKoppelDataDto;
 import nl.rivm.screenit.util.logging.cxf.ScreenITLoggingSaver;
 
 import org.springframework.batch.core.ExitStatus;
@@ -45,12 +49,17 @@ public class ZasKoppelenJobConfiguration extends AbstractJobConfiguration
 {
 
 	@Bean
-	public Job zasKoppelenJob(ZasKoppelenListener listener, ExecutionContextPromotionListener koppelPromotionListener, Step koppelenStep)
+	public Job zasKoppelenJob(ZasKoppelenListener listener, ExecutionContextPromotionListener koppelPromotionListener, Step koppelenStep, Step dummyStep,
+		BaseKoppelenDecider koppelDecider, Step koppelenMetRestStep)
 	{
 		return new JobBuilder(JobType.CERVIX_KOPPELDATA_VERWERKING.name(), repository)
 			.listener(listener)
 			.listener(koppelPromotionListener)
-			.start(koppelenStep)
+			.start(dummyStep)
+			.next(koppelDecider)
+			.on(ExitStatus.COMPLETED.getExitCode()).to(koppelenMetRestStep)
+			.from(koppelDecider)
+			.on(ExitStatus.FAILED.getExitCode()).to(koppelenStep).end()
 			.build();
 	}
 
@@ -71,6 +80,22 @@ public class ZasKoppelenJobConfiguration extends AbstractJobConfiguration
 			.reader(reader)
 			.writer(writer)
 			.build();
+	}
+
+	@Bean
+	public Step koppelenMetRestStep(ZasKoppelMetRestReader reader, ZasKoppelMetRestWriter writer)
+	{
+		return new StepBuilder("koppelenMetRestStep", repository)
+			.<InpakcentrumKoppelDataDto, InpakcentrumKoppelDataDto> chunk(250, transactionManager)
+			.reader(reader)
+			.writer(writer)
+			.build();
+	}
+
+	@Bean
+	public BaseKoppelenDecider koppelDecider()
+	{
+		return new BaseKoppelenDecider();
 	}
 
 	@Bean

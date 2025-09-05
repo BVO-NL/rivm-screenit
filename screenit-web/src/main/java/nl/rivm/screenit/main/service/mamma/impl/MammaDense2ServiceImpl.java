@@ -27,7 +27,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.service.mamma.MammaDense2Service;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.FileType;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -48,7 +48,7 @@ public class MammaDense2ServiceImpl implements MammaDense2Service
 	private final ProjectBestandVerwerkingService projectBestandVerwerkingService;
 
 	@Override
-	public String importClienten(MultipartFile importBestand, InstellingGebruiker instellingGebruiker)
+	public String importClienten(MultipartFile importBestand, OrganisatieMedewerker organisatieMedewerker)
 	{
 		var convFile = Path.of(System.getProperty("java.io.tmpdir"), importBestand.getOriginalFilename());
 		try
@@ -65,19 +65,19 @@ public class MammaDense2ServiceImpl implements MammaDense2Service
 				{
 					projectBestandVerwerkingService.verwerkRegel(context);
 				}
-				logGebeurtenis(context.heeftMislukt() ? Level.ERROR : Level.INFO, context.getRapportage() + "<br>" + context.getMeldingen(), instellingGebruiker);
+				logGebeurtenis(context.heeftMislukt() ? Level.ERROR : Level.INFO, context.getRapportage() + "<br>" + context.getMeldingen(), organisatieMedewerker);
 				return "Resultaat verwerking: " + context.getRapportage();
 			}
 		}
 		catch (IllegalStateException e)
 		{
 			LOG.error("Er is een fout opgetreden", e);
-			logGebeurtenis(Level.ERROR, e.getMessage(), instellingGebruiker);
+			logGebeurtenis(Level.ERROR, e.getMessage(), organisatieMedewerker);
 		}
 		catch (Exception e)
 		{
 			LOG.error("Er is een onbekende fout opgetreden.", e);
-			logGebeurtenis(Level.ERROR, e.getMessage(), instellingGebruiker);
+			logGebeurtenis(Level.ERROR, e.getMessage(), organisatieMedewerker);
 		}
 		finally
 		{
@@ -86,12 +86,12 @@ public class MammaDense2ServiceImpl implements MammaDense2Service
 		return "Fout bij verwerking bestand.";
 	}
 
-	private void logGebeurtenis(Level level, String verslag, InstellingGebruiker instellingGebruiker)
+	private void logGebeurtenis(Level level, String verslag, OrganisatieMedewerker organisatieMedewerker)
 	{
 		var event = new LogEvent();
 		event.setLevel(level);
 		event.setMelding(verslag);
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_DENSE2_IMPORT, event, instellingGebruiker);
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_DENSE2_IMPORT, event, organisatieMedewerker);
 	}
 
 }

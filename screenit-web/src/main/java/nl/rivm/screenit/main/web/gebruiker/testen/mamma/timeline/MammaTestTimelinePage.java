@@ -225,7 +225,7 @@ public class MammaTestTimelinePage extends TestenBasePage
 				{
 					var upload = pocfilesUploaded.getObject().get(0);
 					file = upload.writeToTempFile();
-					aantal = testTimelineService.importPocClienten(file, ScreenitSession.get().getLoggedInInstellingGebruiker(), getScreeningsEenheid(),
+					aantal = testTimelineService.importPocClienten(file, getIngelogdeOrganisatieMedewerker(), getScreeningsEenheid(),
 						importPocOptiesIModel.getObject());
 				}
 				catch (Exception e)

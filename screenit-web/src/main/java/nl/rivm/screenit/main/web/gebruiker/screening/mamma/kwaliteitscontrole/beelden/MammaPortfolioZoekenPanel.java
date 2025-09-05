@@ -38,7 +38,7 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaScreeningBasePag
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.GbaPersoon_;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaDossier_;
@@ -114,15 +114,15 @@ public class MammaPortfolioZoekenPanel extends Panel
 		{
 			super(id, model);
 
-			List<Gebruiker> gebruikers = medewerkerService.getActieveGebruikersMetRecht(Recht.GEBRUIKER_SCREENING_MAMMA_SE_ONDERZOEK);
+			List<Medewerker> medewerkers = medewerkerService.getActieveMedewerkersMetRecht(Recht.MEDEWERKER_SCREENING_MAMMA_SE_ONDERZOEK);
 
-			add(new ScreenitListMultipleChoice<>("gebruikers", ModelUtil.listRModel(gebruikers, false),
+			add(new ScreenitListMultipleChoice<>("medewerkers", ModelUtil.listRModel(medewerkers, false),
 				new ChoiceRenderer<>()
 				{
 					@Override
-					public Object getDisplayValue(Gebruiker gebruiker)
+					public Object getDisplayValue(Medewerker medewerker)
 					{
-						return NaamUtil.getNaamGebruiker(gebruiker);
+						return NaamUtil.getNaamMedewerker(medewerker);
 					}
 				}).setRequired(true));
 			add(new DropDownChoice<>("mammobridgeRol", Arrays.asList(MammobridgeRole.values()),
@@ -138,7 +138,7 @@ public class MammaPortfolioZoekenPanel extends Panel
 				@Override
 				protected void onSubmit(AjaxRequestTarget target)
 				{
-					List<String> namen = NaamUtil.getNamenGebruikers(zoekObjectModel.getObject().getGebruikers());
+					List<String> namen = NaamUtil.getNamenMedewerkers(zoekObjectModel.getObject().getMedewerkers());
 
 					String logRegel = String.format("Gezocht op medewerker(s): %s van %s t/m %s als %s",
 						String.join(", ", namen),
@@ -146,7 +146,7 @@ public class MammaPortfolioZoekenPanel extends Panel
 						DateUtil.LOCAL_DATE_FORMAT.format(DateUtil.toLocalDate(zoekObjectModel.getObject().getTotEnMet())),
 						zoekObjectModel.getObject().getMammobridgeRol().toString());
 
-					logService.logGebeurtenis(LogGebeurtenis.ZOEKEN_BEELDEN_PORTFOLIO, ScreenitSession.get().getLoggedInAccount(), logRegel);
+					logService.logGebeurtenis(LogGebeurtenis.ZOEKEN_BEELDEN_PORTFOLIO, ScreenitSession.get().getIngelogdAccount(), logRegel);
 
 					tabelContainer.setVisible(true);
 					replaceTabel(target);
@@ -194,7 +194,7 @@ public class MammaPortfolioZoekenPanel extends Panel
 						WicketSpringDataUtil.toSpringSort(mammaPortfolioDataProvider.getSort()));
 					clientenIds.subList(0, clientenIds.indexOf(model.getObject().getId())).clear();
 					setResponsePage(new MammaBeeldenInzienPage(clientenIds, onderzoekenMetBeelden, MammaPortfolioZoekenPage.class));
-					logService.logGebeurtenis(LogGebeurtenis.INZIEN_BEELDEN_PORTFOLIO, ScreenitSession.get().getLoggedInAccount(), model.getObject());
+					logService.logGebeurtenis(LogGebeurtenis.INZIEN_BEELDEN_PORTFOLIO, ScreenitSession.get().getIngelogdAccount(), model.getObject());
 					((MammaScreeningBasePage) getPage()).wijzigIDS7Role(zoekObjectModel.getObject().getMammobridgeRol());
 				}
 			};

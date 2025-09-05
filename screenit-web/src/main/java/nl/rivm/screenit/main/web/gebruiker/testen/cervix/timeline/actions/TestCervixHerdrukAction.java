@@ -21,13 +21,13 @@ package nl.rivm.screenit.main.web.gebruiker.testen.cervix.timeline.actions;
  * =========================LICENSE_END==================================
  */
 
+import java.util.List;
+
 import nl.rivm.screenit.main.service.cervix.CervixTestTimelineService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.TestCervixVervolgKeuzeAction;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.service.cervix.CervixBaseTestTimelineService;
-
-import java.util.List;
 
 public class TestCervixHerdrukAction extends TestCervixVervolgKeuzeAction
 {
@@ -42,7 +42,7 @@ public class TestCervixHerdrukAction extends TestCervixVervolgKeuzeAction
 	{
 		for (Client client : clienten)
 		{
-			cervixTestTimelineService.herdruk(client.getCervixDossier().getLaatsteScreeningRonde(), ScreenitSession.get().getLoggedInAccount());
+			cervixTestTimelineService.herdruk(client.getCervixDossier().getLaatsteScreeningRonde(), ScreenitSession.get().getIngelogdAccount());
 		}
 	}
 }

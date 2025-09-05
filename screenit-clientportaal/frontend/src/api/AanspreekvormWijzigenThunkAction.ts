@@ -22,10 +22,11 @@ import {Dispatch} from "redux"
 import ScreenitBackend from "../utils/Backend"
 import {createPersoonAction} from "../actions/PersoonAction"
 import {AanhefDto} from "../datatypes/aanhef/AanhefDto"
+import {Persoon} from "../datatypes/Persoon"
 
 export const saveAanhef = (aanhef: AanhefDto) => (dispatch: Dispatch) => {
-	return ScreenitBackend.put("/persoon/aanhef", aanhef)
+	return ScreenitBackend.put<Persoon>("persoon/aanhef", {json: aanhef}).json()
 		.then(response => {
-			dispatch(createPersoonAction(response.data))
+			dispatch(createPersoonAction(response))
 		})
 }

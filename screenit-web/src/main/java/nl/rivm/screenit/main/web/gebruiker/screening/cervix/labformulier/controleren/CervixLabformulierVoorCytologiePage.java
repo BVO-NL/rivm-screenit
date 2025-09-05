@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.contro
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.werklijst.CervixLabformulierenZoekenVoorCytologiePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
@@ -34,7 +34,7 @@ import nl.rivm.screenit.model.enums.Recht;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(constraint = ShiroConstraint.HasPermission, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX }, recht = {
-	Recht.GEBRUIKER_CERVIX_LABFORMULIEREN_ZOEKEN_VOOR_CYTOLOGIE })
+	Recht.MEDEWERKER_CERVIX_LABFORMULIEREN_ZOEKEN_VOOR_CYTOLOGIE })
 public class CervixLabformulierVoorCytologiePage extends CervixLabformulierBasePage
 {
 
@@ -46,11 +46,11 @@ public class CervixLabformulierVoorCytologiePage extends CervixLabformulierBaseP
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.cervixscreening.labformulieren-zoeken-voor-cytologie", CervixLabformulierenZoekenVoorCytologiePage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.cervixscreening.labformulier", false, CervixLabformulierVoorCytologiePage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.cervixscreening.labformulieren-zoeken-voor-cytologie", CervixLabformulierenZoekenVoorCytologiePage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.cervixscreening.labformulier", false, CervixLabformulierVoorCytologiePage.class));
 		return contextMenuItems;
 	}
 }

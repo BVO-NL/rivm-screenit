@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 import static nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek_.AANGEMAAKT_OP;
 import static nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek_.GEDOWNLOAD_OP;
 import static nl.rivm.screenit.specification.HibernateObjectSpecification.filterId;
-import static nl.rivm.screenit.specification.mamma.MammaDownloadOnderzoekenVerzoekSpecification.filterOpAangemaaktDoorGebruikerVanInstelling;
+import static nl.rivm.screenit.specification.mamma.MammaDownloadOnderzoekenVerzoekSpecification.filterOpAangemaaktDoorMedewerkerVanOrganisatie;
 import static nl.rivm.screenit.specification.mamma.MammaDownloadOnderzoekenVerzoekSpecification.heeftGeenStatusIn;
 import static org.springframework.data.domain.Sort.Direction;
 import static org.springframework.data.domain.Sort.by;
@@ -52,7 +52,7 @@ public class MammaDownloadOnderzoekenVerzoekenDataProviderServiceImpl
 			List.of(BestandStatus.CRASH, BestandStatus.VERWERKT, BestandStatus.VERWIJDERD) :
 			List.of(BestandStatus.VERWIJDERD);
 
-		return filterOpAangemaaktDoorGebruikerVanInstelling(aangemaaktDoor != null ? aangemaaktDoor.getOrganisatie() : null).and(heeftGeenStatusIn(bestandStatussen))
+		return filterOpAangemaaktDoorMedewerkerVanOrganisatie(aangemaaktDoor != null ? aangemaaktDoor.getOrganisatie() : null).and(heeftGeenStatusIn(bestandStatussen))
 			.and(filterId(filter.getId()));
 	}
 

@@ -23,6 +23,7 @@ package nl.rivm.screenit.service.colon;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +34,7 @@ import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.IFOBTBestand;
 import nl.rivm.screenit.model.colon.IFOBTTest;
+import nl.rivm.screenit.model.colon.IFOBTType;
 import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
 
 public interface ColonBaseFITService
@@ -66,4 +68,10 @@ public interface ColonBaseFITService
 	Optional<IFOBTTest> getLaatsteFitMetMissendeUitslagVanDossier(ColonDossier dossier, LocalDate signalerenVanaf, LocalDate minimaleSignaleringsDatum);
 
 	boolean isVerwijderdeBarcode(String barcode);
+
+	String getToonbareWaarde(IFOBTTest fit);
+
+	boolean isDk2026Actief();
+
+	void koppelTestIndienMogelijk(String fitBarcode, IFOBTType ifobtType, ColonUitnodiging uitnodiging, Date datumVerstuurd, ColonScreeningRonde screeningRonde);
 }

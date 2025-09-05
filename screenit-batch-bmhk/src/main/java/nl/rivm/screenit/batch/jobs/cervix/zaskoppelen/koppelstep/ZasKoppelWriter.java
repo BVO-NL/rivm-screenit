@@ -27,6 +27,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import jakarta.persistence.NonUniqueResultException;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.KoppelConstants;
@@ -49,7 +51,6 @@ import org.springframework.stereotype.Component;
 
 import generated.KOPPELDATA.VERZONDENUITNODIGING;
 import generated.KOPPELDATA.VERZONDENUITNODIGING.MATCHINGFIELDS.MATCHINGFIELD;
-import jakarta.persistence.NonUniqueResultException;
 
 @Component
 @Slf4j
@@ -76,20 +77,17 @@ public class ZasKoppelWriter implements ItemWriter<VERZONDENUITNODIGING>
 		{
 
 			String zasBarcode = null;
-			String trackTraceId = null;
 
 			try
 			{
 
 				zasBarcode = getMatchingFieldValue(verzondenUitnodiging, KoppelConstants.CERVIX_KOPPEL_BARCODE_ZAS, true);
-				trackTraceId = getMatchingFieldValue(verzondenUitnodiging, KoppelConstants.KOPPEL_TRACK_ID, false);
 
 				Map<String, Long> parameters = new HashMap<String, Long>();
 				parameters.put("uitnodigingsId", verzondenUitnodiging.getID());
 				var cervixUitnodiging = hibernateService.getUniqueByParameters(CervixUitnodiging.class, parameters);
 
 				cervixUitnodiging.setVerstuurdDoorInpakcentrum(true);
-				cervixUitnodiging.setTrackTraceId(trackTraceId);
 
 				if (StringUtils.isNotBlank(zasBarcode))
 				{
@@ -115,8 +113,8 @@ public class ZasKoppelWriter implements ItemWriter<VERZONDENUITNODIGING>
 			catch (ParseException | NonUniqueResultException e)
 			{
 				LOG.error("Fout bij verwerken van koppel data regel ", e);
-				var melding = String.format(KoppelConstants.CERVIX_ONBEKENDE_FOUT, verzondenUitnodiging.getID(), StringUtils.defaultIfBlank(zasBarcode, "<geen>"),
-					StringUtils.defaultIfBlank(trackTraceId, "<geen>"), e.getMessage());
+				var melding = String.format(KoppelConstants.CERVIX_ONBEKENDE_FOUT, verzondenUitnodiging.getID(),
+					StringUtils.defaultIfBlank(zasBarcode, KoppelConstants.DEFAULT_STRING), e.getMessage());
 
 				logEvent.setLevel(Level.ERROR);
 				logEvent.setMelding(melding);

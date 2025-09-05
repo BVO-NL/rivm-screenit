@@ -24,20 +24,20 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.zorginstelling;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.service.OrganisatieService;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-public class GekoppeldePaLabsPanel<T extends Instelling> extends GenericPanel<T>
+public class GekoppeldePaLabsPanel<T extends Organisatie> extends GenericPanel<T>
 {
 	private static final long serialVersionUID = 1L;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	public GekoppeldePaLabsPanel(String id, IModel<T> model)
 	{
@@ -49,9 +49,9 @@ public class GekoppeldePaLabsPanel<T extends Instelling> extends GenericPanel<T>
 	{
 		super.onInitialize();
 
-		List<Instelling> paLabs = instellingService.getPathologieLabs(getModelObject());
-		List<String> instellingsNamen = paLabs.stream().map(Instelling::getNaam).collect(Collectors.toList());
-		String paLabsString = !instellingsNamen.isEmpty() ? String.join(", ", instellingsNamen) : "Er zijn geen labs gekoppeld";
+		List<Organisatie> paLabs = organisatieService.getPathologieLabs(getModelObject());
+		List<String> organisatieNamen = paLabs.stream().map(Organisatie::getNaam).collect(Collectors.toList());
+		String paLabsString = !organisatieNamen.isEmpty() ? String.join(", ", organisatieNamen) : "Er zijn geen labs gekoppeld";
 		add(new Label("paLabs", paLabsString));
 	}
 }

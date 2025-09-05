@@ -21,10 +21,14 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.werklijst.uploadb
  * =========================LICENSE_END==================================
  */
 
+import java.util.Iterator;
+import java.util.List;
+
 import nl.rivm.screenit.dto.mamma.MammaUploadBeeldenVerzoekDto;
 import nl.rivm.screenit.main.service.mamma.MammaUploadBeeldenService;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
+
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.injection.Injector;
@@ -33,22 +37,19 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.beans.support.PropertyComparator;
 
-import java.util.Iterator;
-import java.util.List;
-
 public class MammaCeUploadBeeldenVerzoekDataProvider extends SortableDataProvider<MammaUploadBeeldenVerzoekDto, String>
 {
 	@SpringBean
 	private MammaUploadBeeldenService uploadBeeldenService;
 
-	private List<MammaUploadBeeldenVerzoekDto> instellingList;
+	private List<MammaUploadBeeldenVerzoekDto> organisatieList;
 
 	private IModel<ScreeningOrganisatie> regioModel;
 
 	public MammaCeUploadBeeldenVerzoekDataProvider(IModel<ScreeningOrganisatie> regio)
 	{
 		Injector.get().inject(this);
-		setSort("instellingNaam", SortOrder.ASCENDING);
+		setSort("organisatieNaam", SortOrder.ASCENDING);
 		this.regioModel = regio;
 	}
 
@@ -56,7 +57,7 @@ public class MammaCeUploadBeeldenVerzoekDataProvider extends SortableDataProvide
 	public Iterator<? extends MammaUploadBeeldenVerzoekDto> iterator(long first, long count)
 	{
 		setList();
-		return instellingList.stream().sorted(new PropertyComparator<>(getSort().getProperty(), true, getSort().isAscending())).skip(first).limit(count)
+		return organisatieList.stream().sorted(new PropertyComparator<>(getSort().getProperty(), true, getSort().isAscending())).skip(first).limit(count)
 			.iterator();
 	}
 
@@ -64,20 +65,20 @@ public class MammaCeUploadBeeldenVerzoekDataProvider extends SortableDataProvide
 	public long size()
 	{
 		setList();
-		return instellingList.size();
+		return organisatieList.size();
 	}
 
 	private void setList()
 	{
-		if (instellingList == null)
+		if (organisatieList == null)
 		{
-			instellingList = uploadBeeldenService.zoekInstellingenMetOpenstaandeUploadVerzoeken(ModelUtil.nullSafeGet(regioModel));
+			organisatieList = uploadBeeldenService.zoekOrganisatiesMetOpenstaandeUploadVerzoeken(ModelUtil.nullSafeGet(regioModel));
 		}
 	}
 
 	public void resetList()
 	{
-		instellingList = null;
+		organisatieList = null;
 	}
 
 	@Override

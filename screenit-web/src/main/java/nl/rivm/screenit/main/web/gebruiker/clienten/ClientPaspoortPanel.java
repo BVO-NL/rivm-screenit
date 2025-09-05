@@ -95,9 +95,9 @@ public class ClientPaspoortPanel extends GenericPanel<Client>
 				super.onConfigure();
 				MammaDossier mammaDossier = ClientPaspoortPanel.this.getModelObject().getMammaDossier();
 				setVisible(mammaDossier != null && mammaDossier.getDubbeleTijdReden() != null &&
-					(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_DOSSIERGEGEVENS, Actie.INZIEN)
-						|| ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_AFSPRAKEN_BEHEER, Actie.INZIEN)
-						|| ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_TEHUIS, Actie.INZIEN)));
+					(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_DOSSIERGEGEVENS, Actie.INZIEN)
+						|| ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_AFSPRAKEN_BEHEER, Actie.INZIEN)
+						|| ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_TEHUIS, Actie.INZIEN)));
 			}
 		});
 		add(new MammaDoelgroepIndicatorPanel("doelgroep", getModelObject().getMammaDossier(), true));

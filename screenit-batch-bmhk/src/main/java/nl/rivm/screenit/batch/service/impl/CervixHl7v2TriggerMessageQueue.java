@@ -54,10 +54,10 @@ import nl.rivm.screenit.model.messagequeue.MessageType;
 import nl.rivm.screenit.model.messagequeue.dto.CervixHL7v24HpvOrderTriggerDto;
 import nl.rivm.screenit.repository.cervix.CervixFoutHL7v2BerichtRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.MessageService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
@@ -105,7 +105,7 @@ public class CervixHl7v2TriggerMessageQueue
 	private CervixHL7BaseService hl7BaseService;
 
 	@Autowired
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@Autowired
 	private OrganisatieParameterService organisatieParameterService;
@@ -159,7 +159,7 @@ public class CervixHl7v2TriggerMessageQueue
 		teVerwijderenQueues.forEach(queueMap::remove);
 
 		bindSession();
-		var labs = instellingService.getActieveInstellingen(BMHKLaboratorium.class);
+		var labs = organisatieService.getActieveOrganisaties(BMHKLaboratorium.class);
 
 		labs.stream()
 			.filter(lab -> !queueMap.keySet().contains(lab.getId()))

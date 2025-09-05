@@ -28,7 +28,7 @@ import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.gebruiker.testen.mamma.timeline.MammaTestTimelinePage;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.mamma.enums.MammaDenseWaarde;
 import nl.rivm.screenit.model.mamma.enums.OnderbrokenOnderzoekOption;
@@ -70,9 +70,9 @@ public class TestMammaOnderzoekAfrondenPopup extends TestMammaAbstractPopupPanel
 		}
 		for (Client client : getModelObject())
 		{
-			InstellingGebruiker instellingGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
+			OrganisatieMedewerker organisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 			boolean versturenHl7Berichten = ((MammaTestTimelinePage) getPage()).getVerstuurHl7Berichten().getObject();
-			testTimelineService.rondOnderzoekAf(MammaScreeningRondeUtil.getLaatsteAfspraak(client.getMammaDossier().getLaatsteScreeningRonde()), instellingGebruiker,
+			testTimelineService.rondOnderzoekAf(MammaScreeningRondeUtil.getLaatsteAfspraak(client.getMammaDossier().getLaatsteScreeningRonde()), organisatieMedewerker,
 				versturenHl7Berichten, onvolledigModel.getObject(), onderbrokenModel.getObject(), onderzoeksTypeModel.getObject(), afwijkingModel.getObject(),
 				densiteitModel.getObject());
 		}

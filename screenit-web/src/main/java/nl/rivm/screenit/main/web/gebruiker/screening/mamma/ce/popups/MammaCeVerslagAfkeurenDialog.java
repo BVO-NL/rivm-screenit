@@ -25,14 +25,14 @@ import nl.rivm.screenit.main.service.mamma.MammaBeoordelingService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.panels.CeRadioloogZoekPanel;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
+import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
@@ -64,7 +64,7 @@ public abstract class MammaCeVerslagAfkeurenDialog extends GenericPanel<MammaBeo
 		radioloogZoekPanel = new CeRadioloogZoekPanel("zoekPanel", getModel())
 		{
 			@Override
-			public void callback(AjaxRequestTarget target, IModel<InstellingGebruiker> radioloog)
+			public void callback(AjaxRequestTarget target, IModel<OrganisatieMedewerker> radioloog)
 			{
 				createMedewerkerLijst();
 				target.add(getMedewerkerLijstWrapper());
@@ -78,8 +78,8 @@ public abstract class MammaCeVerslagAfkeurenDialog extends GenericPanel<MammaBeo
 			{
 				MammaBeoordeling beoordeling = ModelProxyHelper.deproxy(MammaCeVerslagAfkeurenDialog.this.getModelObject());
 				beoordelingService.verslagAfkeurenDoorCE(beoordeling,
-					radioloogZoekPanel.getSelectedGebruikerModel() != null ? radioloogZoekPanel.getSelectedGebruikerModel().getObject() : null,
-					ScreenitSession.get().getLoggedInInstellingGebruiker());
+					ModelUtil.nullSafeGet(radioloogZoekPanel.getSelectedOrganisatieMedewerkerModel()),
+					ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				close(target);
 			}
 		});

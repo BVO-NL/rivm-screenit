@@ -36,9 +36,9 @@ import nl.rivm.screenit.main.model.mamma.beoordeling.BeoordelingenReserveringRes
 import nl.rivm.screenit.main.service.mamma.MammaBeoordelingService;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDto;
 import nl.rivm.screenit.model.EnovationHuisarts;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.MailMergeContext;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -212,7 +212,7 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 	}
 
 	@Override
-	public MammaLezing getOrCreate1eOf2eLezing(MammaBeoordeling beoordeling, InstellingGebruiker beoordelaar, boolean onervarenRadioloog)
+	public MammaLezing getOrCreate1eOf2eLezing(MammaBeoordeling beoordeling, OrganisatieMedewerker beoordelaar, boolean onervarenRadioloog)
 	{
 		MammaLezing lezing;
 
@@ -254,7 +254,7 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 	}
 
 	@Override
-	public MammaLezing getOrCreateDiscrepantieOfArbitrageLezing(MammaBeoordeling beoordeling, MammaLezingType huidigeLezingType, InstellingGebruiker gebruiker)
+	public MammaLezing getOrCreateDiscrepantieOfArbitrageLezing(MammaBeoordeling beoordeling, MammaLezingType huidigeLezingType, OrganisatieMedewerker organisatieMedewerker)
 	{
 		MammaLezing lezing;
 		if (MammaLezingType.DISCREPANTIE_LEZING.equals(huidigeLezingType))
@@ -274,8 +274,8 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 		{
 			lezing = new MammaLezing();
 			lezing.setLezingType(huidigeLezingType);
-			lezing.setBeoordelaar(gebruiker);
-			lezing.setOnervarenRadioloog(!isBevoegdVoorArbitrage(gebruiker));
+			lezing.setBeoordelaar(organisatieMedewerker);
+			lezing.setOnervarenRadioloog(!isBevoegdVoorArbitrage(organisatieMedewerker));
 			lezing.setBiradsLinks(baseBeoordelingService.defaultBiradsWaarde(beoordeling, MammaZijde.LINKER_BORST));
 			lezing.setBiradsRechts(baseBeoordelingService.defaultBiradsWaarde(beoordeling, MammaZijde.RECHTER_BORST));
 			if (MammaOnderzoekType.TOMOSYNTHESE == beoordeling.getOnderzoek().getOnderzoekType() && lezing.getTomosyntheseRelevantVoorBeoordeling() == null)
@@ -295,7 +295,7 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 
 	@Transactional(propagation = Propagation.REQUIRED)
 	@Override
-	public BeoordelingenReserveringResult openBeschikbareBeoordeling(Long startBeoordelingId, List<Long> beoordelingenIds, InstellingGebruiker ingelogdeGebruiker,
+	public BeoordelingenReserveringResult openBeschikbareBeoordeling(Long startBeoordelingId, List<Long> beoordelingenIds, OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
 		MammaBeLezerSoort lezerSoort)
 	{
 		if (startBeoordelingId == null)
@@ -308,7 +308,7 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 		}
 		else
 		{
-			var komendeGereserveerdeBeoordelingen = reserveerBeoordelingenBinnenLock(startBeoordelingId, beoordelingenIds, ingelogdeGebruiker, lezerSoort);
+			var komendeGereserveerdeBeoordelingen = reserveerBeoordelingenBinnenLock(startBeoordelingId, beoordelingenIds, ingelogdeOrganisatieMedewerker, lezerSoort);
 
 			var reserveringResult = new BeoordelingenReserveringResult(komendeGereserveerdeBeoordelingen);
 
@@ -324,23 +324,24 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 		}
 	}
 
-	private List<Long> reserveerBeoordelingenBinnenLock(Long startBeoordelingId, List<Long> beoordelingenIds, InstellingGebruiker ingelogdeGebruiker, MammaBeLezerSoort lezerSoort)
+	private List<Long> reserveerBeoordelingenBinnenLock(Long startBeoordelingId, List<Long> beoordelingenIds, OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
+		MammaBeLezerSoort lezerSoort)
 	{
-		var locknaam = "BeoordelingenVoorBe/" + ingelogdeGebruiker.getOrganisatie().getId();
+		var locknaam = "BeoordelingenVoorBe/" + ingelogdeOrganisatieMedewerker.getOrganisatie().getId();
 		try
 		{
 
-			distributedLockService.lockAndWait(locknaam, ingelogdeGebruiker);
-			return reserveringService.reserveerBeoordelingen(startBeoordelingId, beoordelingenIds, ingelogdeGebruiker, lezerSoort);
+			distributedLockService.lockAndWait(locknaam, ingelogdeOrganisatieMedewerker);
+			return reserveringService.reserveerBeoordelingen(startBeoordelingId, beoordelingenIds, ingelogdeOrganisatieMedewerker, lezerSoort);
 		}
 		finally
 		{
-			distributedLockService.unlock(locknaam, ingelogdeGebruiker);
+			distributedLockService.unlock(locknaam, ingelogdeOrganisatieMedewerker);
 		}
 	}
 
 	@Override
-	public void radioloogHeeftGeenHandtekening(Gebruiker medewerker)
+	public void radioloogHeeftGeenHandtekening(Medewerker medewerker)
 	{
 		var email = preferenceService.getString(PreferenceKey.DASHBOARDEMAIL.name());
 		mailService.queueMailAanProfessional(email,
@@ -383,7 +384,7 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void gunstigeUitslagMetNevenbevindingAfronden(MammaBeoordeling beoordeling, EnovationHuisarts alternativeHuisarts, InstellingGebruiker loggedInInstellingGebruiker)
+	public void gunstigeUitslagMetNevenbevindingAfronden(MammaBeoordeling beoordeling, EnovationHuisarts alternativeHuisarts, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		baseBeoordelingService.verwerkBeoordelingStatusGunstigMetNevenbevindingen(beoordeling);
 		verstuurHuisartsbericht(beoordeling, alternativeHuisarts, HuisartsBerichtType.MAMMA_UITSLAG_GUNSTIG_MET_NEVENBEVINDINGEN);
@@ -405,9 +406,11 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public File verslagGoedkeurenDoorCE(MammaBeoordeling beoordeling, boolean directPrinten, EnovationHuisarts alternatieveHuisarts, InstellingGebruiker ingelogdeGebruiker)
+	public File verslagGoedkeurenDoorCE(MammaBeoordeling beoordeling, boolean directPrinten, EnovationHuisarts alternatieveHuisarts,
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		verslagVerwerkenDoorCE(beoordeling, ingelogdeGebruiker, MammaBeoordelingStatus.UITSLAG_ONGUNSTIG, LogGebeurtenis.MAMMA_CE_VERSLAG_GOEDKEUREN, "", "worden goedgekeurd");
+		verslagVerwerkenDoorCE(beoordeling, ingelogdeOrganisatieMedewerker, MammaBeoordelingStatus.UITSLAG_ONGUNSTIG, LogGebeurtenis.MAMMA_CE_VERSLAG_GOEDKEUREN, "",
+			"worden goedgekeurd");
 		try
 		{
 			verslagService.verslagNaarFileStoreSchrijven(beoordeling);
@@ -442,37 +445,40 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 	}
 
 	@Override
-	public void verslagAfkeurenDoorCE(MammaBeoordeling beoordeling, InstellingGebruiker toegewezenRadioloog, InstellingGebruiker ingelogdeGebruiker)
+	public void verslagAfkeurenDoorCE(MammaBeoordeling beoordeling, OrganisatieMedewerker toegewezenRadioloog, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		if (toegewezenRadioloog != null)
 		{
 			baseBeoordelingService.wijsBeoordelingAanRadioloogToe(beoordeling, toegewezenRadioloog);
 		}
-		verslagVerwerkenDoorCE(beoordeling, ingelogdeGebruiker, MammaBeoordelingStatus.VERSLAG_AFGEKEURD, LogGebeurtenis.MAMMA_CE_VERSLAG_AFKEUREN,
+		verslagVerwerkenDoorCE(beoordeling, ingelogdeOrganisatieMedewerker, MammaBeoordelingStatus.VERSLAG_AFGEKEURD, LogGebeurtenis.MAMMA_CE_VERSLAG_AFKEUREN,
 			String.format("Verslag afgekeurd met reden: %s", beoordeling.getAfkeurreden()), "worden afgekeurd");
 	}
 
 	@Override
-	public void verslagLaterGoedkeurenDoorCE(MammaBeoordeling beoordeling, InstellingGebruiker ingelogdeGebruiker)
+	public void verslagLaterGoedkeurenDoorCE(MammaBeoordeling beoordeling, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		verslagVerwerkenDoorCE(beoordeling, ingelogdeGebruiker, MammaBeoordelingStatus.VERSLAG_GOEDKEURING_OPGESCHORT, LogGebeurtenis.MAMMA_CE_VERSLAG_GOEDKEURING_OPGESCHORT, "",
+		verslagVerwerkenDoorCE(beoordeling, ingelogdeOrganisatieMedewerker, MammaBeoordelingStatus.VERSLAG_GOEDKEURING_OPGESCHORT,
+			LogGebeurtenis.MAMMA_CE_VERSLAG_GOEDKEURING_OPGESCHORT, "",
 			"later worden goedgekeurd");
 	}
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void onbeoordeelbaarAfgehandeld(MammaBeoordeling beoordeling, InstellingGebruiker ingelogdeGebruiker)
+	public void onbeoordeelbaarAfgehandeld(MammaBeoordeling beoordeling, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		baseBeoordelingService.setStatus(beoordeling, MammaBeoordelingStatus.ONBEOORDEELBAAR);
 		hibernateService.saveOrUpdate(beoordeling);
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_CE_ONBEOORDEELBAAR_AFGEHANDELD, ingelogdeGebruiker, baseBeoordelingService.getClientVanBeoordeling(beoordeling), "",
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_CE_ONBEOORDEELBAAR_AFGEHANDELD, ingelogdeOrganisatieMedewerker, baseBeoordelingService.getClientVanBeoordeling(beoordeling),
+			"",
 			Bevolkingsonderzoek.MAMMA);
 		kansberekeningService.dossierEventHerzien(baseBeoordelingService.getScreeningRonde(beoordeling).getDossier());
 		var ronde = beoordeling.getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde();
 		baseScreeningRondeService.screeningRondeAfronden(ronde);
 	}
 
-	private void verslagVerwerkenDoorCE(MammaBeoordeling beoordeling, InstellingGebruiker ingelogdeGebruiker, MammaBeoordelingStatus nieuweStatus, LogGebeurtenis logGebeurtenis,
+	private void verslagVerwerkenDoorCE(MammaBeoordeling beoordeling, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, MammaBeoordelingStatus nieuweStatus,
+		LogGebeurtenis logGebeurtenis,
 		String logGebeurtenisMelding, String exceptionExtension)
 	{
 		if (!MammaBeoordelingStatus.VERSLAG_GEREED.equals(beoordeling.getStatus()) && !MammaBeoordelingStatus.VERSLAG_GOEDKEURING_OPGESCHORT.equals(beoordeling.getStatus()))
@@ -482,14 +488,14 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 		}
 
 		var screeningRonde = baseBeoordelingService.getScreeningRonde(beoordeling);
-		huisartsService.koppelHuisarts(screeningRonde.getHuisarts(), screeningRonde, ingelogdeGebruiker);
+		huisartsService.koppelHuisarts(screeningRonde.getHuisarts(), screeningRonde, ingelogdeOrganisatieMedewerker);
 		if (MammaBeoordelingStatus.UITSLAG_ONGUNSTIG == nieuweStatus)
 		{
 			kansberekeningService.dossierEventHerzien(screeningRonde.getDossier());
 		}
 		baseBeoordelingService.setStatus(beoordeling, nieuweStatus);
 		hibernateService.saveOrUpdate(beoordeling);
-		logService.logGebeurtenis(logGebeurtenis, ingelogdeGebruiker, baseBeoordelingService.getClientVanBeoordeling(beoordeling), logGebeurtenisMelding,
+		logService.logGebeurtenis(logGebeurtenis, ingelogdeOrganisatieMedewerker, baseBeoordelingService.getClientVanBeoordeling(beoordeling), logGebeurtenisMelding,
 			Bevolkingsonderzoek.MAMMA);
 	}
 
@@ -605,9 +611,9 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public boolean isBevoegdVoorArbitrage(InstellingGebruiker organisatieMedewerker)
+	public boolean isBevoegdVoorArbitrage(OrganisatieMedewerker organisatieMedewerker)
 	{
-		return autorisatieService.getToegangLevel(organisatieMedewerker, Actie.TOEVOEGEN, true, Recht.GEBRUIKER_SCREENING_MAMMA_ARBITRAGE_WERKLIJST) != null;
+		return autorisatieService.getToegangLevel(organisatieMedewerker, Actie.TOEVOEGEN, true, Recht.MEDEWERKER_SCREENING_MAMMA_ARBITRAGE_WERKLIJST) != null;
 	}
 
 	@Override
@@ -630,17 +636,17 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void logBeoordelingIngezien(MammaBeoordeling beoordeling, InstellingGebruiker ingelogdeGebruiker, boolean isCoordinerendRadioloog)
+	public void logBeoordelingIngezien(MammaBeoordeling beoordeling, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, boolean isCoordinerendRadioloog)
 	{
 		if (isCoordinerendRadioloog)
 		{
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_BEOORDELING_INGEZIEN, ingelogdeGebruiker,
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_BEOORDELING_INGEZIEN, ingelogdeOrganisatieMedewerker,
 				baseBeoordelingService.getClientVanBeoordeling(beoordeling), "Co\u00F6rdinerend radioloog: inzage ronde review",
 				Bevolkingsonderzoek.MAMMA);
 		}
 		else
 		{
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_BEOORDELING_INGEZIEN, ingelogdeGebruiker,
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_BEOORDELING_INGEZIEN, ingelogdeOrganisatieMedewerker,
 				baseBeoordelingService.getClientVanBeoordeling(beoordeling),
 				Bevolkingsonderzoek.MAMMA);
 		}

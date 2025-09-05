@@ -29,7 +29,7 @@ import nl.rivm.screenit.mamma.se.service.MammaScreeningsEenheidService;
 import nl.rivm.screenit.mamma.se.service.SELogService;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
@@ -75,11 +75,11 @@ public class SELogServiceImpl implements SELogService
 	}
 
 	@Override
-	public void logError(LogGebeurtenis logGebeurtenis, Account account, Client client, MammaScreeningsEenheid screeningsEenheid, List<Instelling> instellingen,
+	public void logError(LogGebeurtenis logGebeurtenis, Account account, Client client, MammaScreeningsEenheid screeningsEenheid, List<Organisatie> organisaties,
 		LocalDateTime datumTijd, String melding)
 	{
 		LOG.error(createLogMessage(account, logGebeurtenis, screeningsEenheid, melding));
-		logService.logGebeurtenis(logGebeurtenis, screeningsEenheid, instellingen, account, client, melding, datumTijd);
+		logService.logGebeurtenis(logGebeurtenis, screeningsEenheid, organisaties, account, client, melding, datumTijd);
 	}
 
 	@Override

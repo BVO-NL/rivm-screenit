@@ -21,9 +21,9 @@ package nl.rivm.screenit.main.service;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 
 public interface IdpSingleSignOnService
 {
-	String createWebFocusSsoUrl(InstellingGebruiker loggedInInstellingGebruiker);
+	String createWebFocusSsoUrl(OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 }

@@ -48,6 +48,7 @@ import {postcodeValidatie, wachtwoordValidatie} from "../../util/ValidatieUtil"
 import {Recht} from "../../state/datatypes/enums/Recht"
 import {fetchCurrentUser} from "../../api/CurrentUserThunkAction"
 import {useNavigate} from "react-router"
+import {createActionSetAuth} from "../../state/AuthState"
 
 const GegevensWijzigenFormComponent = () => {
 	const auth = useAppSelector((state => state.auth))
@@ -107,22 +108,20 @@ const GegevensWijzigenFormComponent = () => {
 		})
 
 	const openOvereenkomst = useCallback(() => {
-		ScreenitBackend.request({
-			url: "/overeenkomst",
-			method: "GET",
-			responseType: "arraybuffer",
-		}).then((response => {
-			const downloadUrl = URL.createObjectURL(new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), response.data], {type: "octet/stream;charset=UTF-8"}))
-			const downloadElement = document.createElement("a")
-			if (typeof downloadElement.download === "undefined") {
-				window.location.href = downloadUrl
-			} else {
-				downloadElement.href = downloadUrl
-				downloadElement.download = "Zakelijke voorwaarden huisartsen.pdf"
-				document.body.appendChild(downloadElement)
-				downloadElement.click()
-			}
-		}))
+		ScreenitBackend.get("overeenkomst")
+			.arrayBuffer()
+			.then((response: ArrayBuffer) => {
+				const downloadUrl = URL.createObjectURL(new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), response], {type: "octet/stream;charset=UTF-8"}))
+				const downloadElement = document.createElement("a")
+				if (typeof downloadElement.download === "undefined") {
+					window.location.href = downloadUrl
+				} else {
+					downloadElement.href = downloadUrl
+					downloadElement.download = "Zakelijke voorwaarden huisartsen.pdf"
+					document.body.appendChild(downloadElement)
+					downloadElement.click()
+				}
+			})
 	}, [])
 
 	return <div className={styles.style}>
@@ -166,18 +165,14 @@ const GegevensWijzigenFormComponent = () => {
 					window.scrollTo(0, 0)
 				} else {
 					dispatch(loadingThunkAction(saveHuisarts(values))).then(() => {
-						if (isRegistreren) {
-							if (locaties?.locaties && !!locaties?.locaties.find(locatie => locatie.status === LocatieStatus.KLANTNUMMER_NIET_GEVERIFIEERD)) {
-								dispatch(afmelden()).then(() => {
-									dispatch(createActionPushToast({type: ToastType.INFO, message: getString(properties.message.zorgmailVerificatie)}))
-								})
-							}
-						} else {
-							dispatch(createActionPushToast({type: ToastType.SUCCESS, message: getString(properties.message.opgeslagen)}))
-							if (user && user.rollen.includes(Recht.ROLE_OVEREENKOMST)) {
-								dispatch(loadingThunkAction(fetchCurrentUser())).then(() => navigate("/"))
-							}
+						if (isRegistreren && locaties?.locaties && !!locaties?.locaties.find(locatie => locatie.status === LocatieStatus.KLANTNUMMER_NIET_GEVERIFIEERD)) {
+							return dispatch(afmelden()).then(() => {
+								dispatch(createActionPushToast({type: ToastType.INFO, message: getString(properties.message.zorgmailVerificatie)}))
+							})
 						}
+						dispatch(createActionPushToast({type: ToastType.SUCCESS, message: getString(properties.message.opgeslagen)}))
+						dispatch(createActionSetAuth({scope: AuthenticationScope.LOGIN, token: auth?.token}))
+						dispatch(loadingThunkAction(fetchCurrentUser())).then(() => navigate("/"))
 					})
 				}
 			}}

@@ -77,7 +77,7 @@ public abstract class MergedBrieven<B extends Brief> extends AbstractHibernateOb
 	private Date printDatum;
 
 	@ManyToOne
-	private Gebruiker afgedruktDoor;
+	private Medewerker afgedruktDoor;
 
 	@ManyToOne
 	private ScreeningOrganisatie screeningOrganisatie;
@@ -172,12 +172,12 @@ public abstract class MergedBrieven<B extends Brief> extends AbstractHibernateOb
 		setGeprint(actief);
 	}
 
-	public Gebruiker getAfgedruktDoor()
+	public Medewerker getAfgedruktDoor()
 	{
 		return afgedruktDoor;
 	}
 
-	public void setAfgedruktDoor(Gebruiker afgedruktDoor)
+	public void setAfgedruktDoor(Medewerker afgedruktDoor)
 	{
 		this.afgedruktDoor = afgedruktDoor;
 	}

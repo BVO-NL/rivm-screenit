@@ -43,9 +43,9 @@ import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.component.table.ScreenitDateTimePropertyColumn;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaBePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Gebruiker_;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker_;
+import nl.rivm.screenit.model.Medewerker_;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -80,7 +80,7 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	actie = Actie.AANPASSEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_REVIEW_WERKLIJST },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_REVIEW_WERKLIJST },
 	organisatieTypeScopes = { OrganisatieType.BEOORDELINGSEENHEID },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaReviewWerklijstPage extends AbstractMammaBePage
@@ -105,7 +105,7 @@ public class MammaReviewWerklijstPage extends AbstractMammaBePage
 
 	private WebMarkupContainer coordinerendRadioloogFilterContainer;
 
-	private final boolean gebruikerIsCoordinerendRadioloog;
+	private final boolean medewerkerIsCoordinerendRadioloog;
 
 	private RadioChoice<MammaConclusieReviewFilterOptie> conclusieOptieFilter;
 
@@ -113,7 +113,7 @@ public class MammaReviewWerklijstPage extends AbstractMammaBePage
 
 	public MammaReviewWerklijstPage()
 	{
-		gebruikerIsCoordinerendRadioloog = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEOORDELINGSEENHEID_COORDINEREND_RADIOLOOG, Actie.INZIEN);
+		medewerkerIsCoordinerendRadioloog = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEOORDELINGSEENHEID_COORDINEREND_RADIOLOOG, Actie.INZIEN);
 
 		tabelContainer = new WebMarkupContainer("refreshContainer");
 		tabelContainer.setOutputMarkupId(Boolean.TRUE);
@@ -141,9 +141,9 @@ public class MammaReviewWerklijstPage extends AbstractMammaBePage
 	private void maakCoordinerendRadioloogContainer()
 	{
 		coordinerendRadioloogContainer = new WebMarkupContainer("coordinerendRadioloogContainer", zoekObjectModel);
-		coordinerendRadioloogContainer.setVisible(gebruikerIsCoordinerendRadioloog);
+		coordinerendRadioloogContainer.setVisible(medewerkerIsCoordinerendRadioloog);
 
-		if (gebruikerIsCoordinerendRadioloog)
+		if (medewerkerIsCoordinerendRadioloog)
 		{
 			maakRadioloogKeuzeDropdown();
 			maakCoordinerendRadioloogFilterContainer();
@@ -193,7 +193,7 @@ public class MammaReviewWerklijstPage extends AbstractMammaBePage
 			{
 				wijzigIDS7Role(conclusieReviewService.getMammobridgeRoleBijConclusieReviewFilter(zoekObjectModel.getObject().getFilterOptie()));
 
-				if (ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_REVIEW_WERKLIJST, Actie.AANPASSEN) && isHeeftImsKoppelingRecht())
+				if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_REVIEW_WERKLIJST, Actie.AANPASSEN) && isHeeftImsKoppelingRecht())
 				{
 					var beoordelingIds = conclusieReviewDataProviderService.zoekBeoordelingIdsMetConclusie(zoekObjectModel.getObject(), Sort.by(Sort.Direction.ASC,
 						"screeningRonde.laatsteOnderzoek.creatieDatum"));
@@ -211,7 +211,7 @@ public class MammaReviewWerklijstPage extends AbstractMammaBePage
 	private Model<String> reviewMomentCoordinerendRadioloog(IModel<MammaConclusieReview> conclusieReviewModel)
 	{
 		var screeningRonde = conclusieReviewModel.getObject().getScreeningRonde();
-		var coordinerendRadioloog = ScreenitSession.get().getLoggedInInstellingGebruiker();
+		var coordinerendRadioloog = getIngelogdeOrganisatieMedewerker();
 		var reviewMomentCoordinerendRadioloog = conclusieReviewService.getReviewAfgerondDoorCoordinerendRadioloog(coordinerendRadioloog, screeningRonde)
 			.map(MammaConclusieReview::getReviewMoment)
 			.map(c -> c.format(DateTimeFormatter.ofPattern(Constants.DEFAULT_DATE_TIME_SECONDS_FORMAT)))
@@ -242,7 +242,7 @@ public class MammaReviewWerklijstPage extends AbstractMammaBePage
 					nieuwZoekObjectVoorFilterKnoppen.setZoekenVanafEindconclusieDatum(zoekObject.getZoekenVanafEindconclusieDatum());
 					nieuwZoekObjectVoorFilterKnoppen.setFilterOptie(filterOptie);
 					nieuwZoekObjectVoorFilterKnoppen.setRadioloog(zoekObject.getRadioloog());
-					nieuwZoekObjectVoorFilterKnoppen.setIngelogdeGebruiker(zoekObject.getIngelogdeGebruiker());
+					nieuwZoekObjectVoorFilterKnoppen.setIngelogdeOrganisatieMedewerker(zoekObject.getIngelogdeOrganisatieMedewerker());
 
 					var aantalResultaten = conclusieReviewDataProviderService.size(nieuwZoekObjectVoorFilterKnoppen);
 					return displayValue.toString() + " (" + aantalResultaten + ")";
@@ -302,19 +302,19 @@ public class MammaReviewWerklijstPage extends AbstractMammaBePage
 		zoekObjectModel = new CompoundPropertyModel<>(new MammaConclusieReviewZoekObject());
 		var zoekObject = zoekObjectModel.getObject();
 		zoekObject.setGezienTonen(false);
-		zoekObject.setRadioloog(ScreenitSession.get().getLoggedInInstellingGebruiker());
-		zoekObject.setIngelogdeGebruiker(ScreenitSession.get().getLoggedInInstellingGebruiker());
+		zoekObject.setRadioloog(getIngelogdeOrganisatieMedewerker());
+		zoekObject.setIngelogdeOrganisatieMedewerker(getIngelogdeOrganisatieMedewerker());
 	}
 
 	private void maakRadioloogKeuzeDropdown()
 	{
-		var instellingGebruikerZoekObject = new InstellingGebruiker();
-		instellingGebruikerZoekObject.setOrganisatie(ScreenitSession.get().getLoggedInInstellingGebruiker().getOrganisatie());
+		var organisatieMedewerkerZoekObject = new OrganisatieMedewerker();
+		organisatieMedewerkerZoekObject.setOrganisatie(getIngelogdeOrganisatieMedewerker().getOrganisatie());
 
-		var sort = Sort.by(Sort.Order.asc(propertyChain(InstellingGebruiker_.MEDEWERKER, Gebruiker_.ACHTERNAAM)));
+		var sort = Sort.by(Sort.Order.asc(propertyChain(OrganisatieMedewerker_.MEDEWERKER, Medewerker_.ACHTERNAAM)));
 		var radiologenDropdown = new ScreenitDropdown<>("radioloog",
 			ModelUtil.listModel(
-				medewerkerService.getActieveRadiologen(instellingGebruikerZoekObject, new ArrayList<>(), sort)),
+				medewerkerService.getActieveRadiologen(organisatieMedewerkerZoekObject, new ArrayList<>(), sort)),
 			new ChoiceRenderer<>("medewerker.gebruikersnaam"));
 
 		radiologenDropdown.add(new AjaxFormComponentUpdatingBehavior("change")
@@ -365,7 +365,7 @@ public class MammaReviewWerklijstPage extends AbstractMammaBePage
 
 	private void refreshCoordinerendRadioloogFilter(AjaxRequestTarget target)
 	{
-		if (gebruikerIsCoordinerendRadioloog)
+		if (medewerkerIsCoordinerendRadioloog)
 		{
 			var coordinerendRadioloogKijktBijAndereRadioloog = coordinerendRadioloogKijkBijAndereRadioloog();
 

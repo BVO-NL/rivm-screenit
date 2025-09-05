@@ -24,20 +24,20 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.zorginstelling;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.ColoscopieLocatie;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-public class GekoppeldeColoscopiePanel<T extends Instelling> extends GenericPanel<T>
+public class GekoppeldeColoscopiePanel<T extends Organisatie> extends GenericPanel<T>
 {
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	public GekoppeldeColoscopiePanel(String id, IModel<T> model)
 	{
@@ -49,15 +49,15 @@ public class GekoppeldeColoscopiePanel<T extends Instelling> extends GenericPane
 	{
 		super.onInitialize();
 
-		List<ColonIntakelocatie> coloscopiesCentrums = instellingService.getChildrenOrganisaties(getModelObject(), ColonIntakelocatie.class);
-		List<ColoscopieLocatie> coloscopiesLocaties = instellingService.getChildrenOrganisaties(getModelObject(), ColoscopieLocatie.class);
+		List<ColonIntakelocatie> coloscopiesCentrums = organisatieService.getChildrenOrganisaties(getModelObject(), ColonIntakelocatie.class);
+		List<ColoscopieLocatie> coloscopiesLocaties = organisatieService.getChildrenOrganisaties(getModelObject(), ColoscopieLocatie.class);
 		add(new Label("coloscopieLocaties", stringLocaties(coloscopiesLocaties)));
 		add(new Label("intakeLocaties", stringLocaties(coloscopiesCentrums)));
 	}
 
-	protected String stringLocaties(List<? extends Instelling> instellingLijst)
+	protected String stringLocaties(List<? extends Organisatie> organisaties)
 	{
-		List<String> instellingsNamen = instellingLijst.stream().map(Instelling::getNaam).collect(Collectors.toList());
-		return !instellingsNamen.isEmpty() ? String.join(", ", instellingsNamen) : "Er zijn geen locaties gekoppeld";
+		List<String> organisatieNamen = organisaties.stream().map(Organisatie::getNaam).collect(Collectors.toList());
+		return !organisatieNamen.isEmpty() ? String.join(", ", organisatieNamen) : "Er zijn geen locaties gekoppeld";
 	}
 }

@@ -58,6 +58,8 @@ public class TechnischeParametersPage extends TechnischBeheerPage
 
 		add(new TechnischBeheerSeParametersPanel("seSocketParameters", new Model<>(parameterisatie)));
 
+		add(new TechnischBeheerMammaMindervalideTogglePanel("mammaMindervalideToggle", new Model<>(parameterisatie)));
+
 		List<ColonUitnodigingsinterval> colonIntervalParameters = new ArrayList<>(parameterisatieService.getColonIntervalParameters());
 		colonIntervalParameters.sort(Comparator.comparing(o -> o.getType().ordinal()));
 		add(new TechnischeColonIntervalParameters("colonInterval", ModelUtil.listModel(colonIntervalParameters, false)));

@@ -59,7 +59,7 @@ public class BaseDossierAuditServiceImpl implements BaseDossierAuditService
         {
             bron = GebeurtenisBron.CLIENT;
         }
-        else if (revisionEntity.getGebruiker() != null || revisionEntity.getInstellingGebruiker() != null)
+        else if (revisionEntity.getMedewerker() != null || revisionEntity.getOrganisatieMedewerker() != null)
         {
             bron = GebeurtenisBron.MEDEWERKER;
         }

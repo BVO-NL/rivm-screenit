@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dao.LogDao;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.SortState;
@@ -105,7 +105,7 @@ public class DashboardServiceImpl implements DashboardService
 
 	@Override
 	@Transactional
-	public void updateDashboard(LogRegel logRegel, List<Instelling> dashboardOrganisaties)
+	public void updateDashboard(LogRegel logRegel, List<Organisatie> dashboardOrganisaties)
 	{
 		var logEvent = logRegel.getLogEvent();
 		if (logEvent == null)
@@ -139,10 +139,10 @@ public class DashboardServiceImpl implements DashboardService
 		}
 
 		var dashboardStatussen = getDashboardStatussen(dashboardType);
-		var instellingenNogGeenDashboardStatus = new ArrayList<>(dashboardOrganisaties);
+		var organisatiesNogGeenDashboardStatus = new ArrayList<>(dashboardOrganisaties);
 		if (dashboardOrganisaties.isEmpty())
 		{
-			instellingenNogGeenDashboardStatus.add(hibernateService.loadAll(Rivm.class).get(0));
+			organisatiesNogGeenDashboardStatus.add(hibernateService.loadAll(Rivm.class).get(0));
 		}
 
 		for (var dashboardStatus : dashboardStatussen)
@@ -155,14 +155,14 @@ public class DashboardServiceImpl implements DashboardService
 			if (dashboardOrganisaties.contains(dashboardVanOrganisatie)
 				|| dashboardOrganisaties.isEmpty() && dashboardVanOrganisatie.getOrganisatieType().equals(OrganisatieType.RIVM))
 			{
-				instellingenNogGeenDashboardStatus.remove(dashboardVanOrganisatie);
+				organisatiesNogGeenDashboardStatus.remove(dashboardVanOrganisatie);
 				maakDashboardLogRegel(logRegel, logEvent, dashboardStatus);
 			}
 		}
 
-		for (var instellingNogGeenDashboardStatus : instellingenNogGeenDashboardStatus)
+		for (var organisatieNogGeenDashboardStatus : organisatiesNogGeenDashboardStatus)
 		{
-			var nieuwDashboardStatus = maakDashboardStatus(dashboardType, instellingNogGeenDashboardStatus);
+			var nieuwDashboardStatus = maakDashboardStatus(dashboardType, organisatieNogGeenDashboardStatus);
 			maakDashboardLogRegel(logRegel, logEvent, nieuwDashboardStatus);
 		}
 	}
@@ -219,7 +219,7 @@ public class DashboardServiceImpl implements DashboardService
 	public boolean updateLogRegelMetDashboardStatus(LogRegel logregel, String gebruikersnaam, DashboardStatus dashboardStatus)
 	{
 		logregel.getLogEvent().setLevel(Level.INFO);
-		LOG.info("Gebruiker heeft aangemerkt logregel {} te hebben gezien.", logregel.getId());
+		LOG.info("Medewerker heeft aangemerkt logregel {} te hebben gezien.", logregel.getId());
 		hibernateService.saveOrUpdate(logregel);
 		var isGedowngrade = downgradeDashboardStatussenLevelNaarBenedenAlsMogelijk(dashboardStatus);
 		downgradeDashboardStatussenLevelNaarBenedenAlsMogelijk(getDashboardStatussen(dashboardStatus.getType()));
@@ -272,11 +272,11 @@ public class DashboardServiceImpl implements DashboardService
 		return downgraded.get();
 	}
 
-	private DashboardStatus maakDashboardStatus(DashboardType dashboardType, Instelling instellingNogGeenDashboardStatus)
+	private DashboardStatus maakDashboardStatus(DashboardType dashboardType, Organisatie organisatieNogGeenDashboardStatus)
 	{
 		var nieuwDashboardStatus = new DashboardStatus();
 		nieuwDashboardStatus.setType(dashboardType);
-		nieuwDashboardStatus.setOrganisatie(instellingNogGeenDashboardStatus);
+		nieuwDashboardStatus.setOrganisatie(organisatieNogGeenDashboardStatus);
 		nieuwDashboardStatus.setLevel(Level.INFO);
 		return nieuwDashboardStatus;
 	}
@@ -323,7 +323,7 @@ public class DashboardServiceImpl implements DashboardService
 
 	@Override
 	@Transactional
-	public Level getHoogsteLevelDashboardItems(Instelling ingelogdVoorOrganisatie, List<Bevolkingsonderzoek> bevolkingsOnderzoeken)
+	public Level getHoogsteLevelDashboardItems(Organisatie ingelogdVoorOrganisatie, List<Bevolkingsonderzoek> bevolkingsOnderzoeken)
 	{
 		var highestLevel = Level.INFO;
 		var levels = List.of(Level.WARNING, Level.ERROR);
@@ -340,7 +340,7 @@ public class DashboardServiceImpl implements DashboardService
 
 	@Override
 	@Transactional
-	public List<DashboardStatus> getListOfDashboardStatussen(Instelling ingelogdVoorOrganisatie, List<Bevolkingsonderzoek> bevolkingsonderzoeken, List<Level> loggingLevels)
+	public List<DashboardStatus> getListOfDashboardStatussen(Organisatie ingelogdVoorOrganisatie, List<Bevolkingsonderzoek> bevolkingsonderzoeken, List<Level> loggingLevels)
 	{
 		var listOfDashboardStatussen = getDashboardStatussenVoorOrganisatie(ingelogdVoorOrganisatie);
 		List<DashboardStatus> listOfDashboardStatussenPerBVO = new ArrayList<>();
@@ -391,7 +391,7 @@ public class DashboardServiceImpl implements DashboardService
 		return listOfDashboardStatussenPerBVO;
 	}
 
-	private List<DashboardStatus> getDashboardStatussenVoorOrganisatie(Instelling organisatie)
+	private List<DashboardStatus> getDashboardStatussenVoorOrganisatie(Organisatie organisatie)
 	{
 		return dashboardStatusRepository.findByOrganisatie(organisatie);
 	}

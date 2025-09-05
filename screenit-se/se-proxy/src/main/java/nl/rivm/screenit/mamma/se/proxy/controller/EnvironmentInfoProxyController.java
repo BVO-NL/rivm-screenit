@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -24,17 +24,17 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
-import nl.rivm.screenit.mamma.se.proxy.SeProxyApplication;
+import lombok.RequiredArgsConstructor;
+
 import nl.rivm.screenit.mamma.se.proxy.model.EnvironmentInfoDto;
 import nl.rivm.screenit.mamma.se.proxy.model.SeConfiguratieKey;
 import nl.rivm.screenit.mamma.se.proxy.services.ConfiguratieService;
+import nl.rivm.screenit.mamma.se.proxy.services.EnvironmentInfoService;
 import nl.rivm.screenit.mamma.se.proxy.services.LogischeSessieService;
 import nl.rivm.screenit.mamma.se.proxy.services.PersistableTransactionService;
 import nl.rivm.screenit.mamma.se.proxy.services.ProxyService;
 import nl.rivm.screenit.mamma.se.proxy.services.SeDaglijstService;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -42,31 +42,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/environmentInfo")
+@RequiredArgsConstructor
 public class EnvironmentInfoProxyController
 {
-	@Value("${DISABLE_NFC_AUTHENTICATION:#{false}}")
-	private boolean disableNFCAuthentication;
+	private final EnvironmentInfoService environmentInfoService;
 
-	@Autowired
-	private LogischeSessieService logischeSessieService;
+	private final LogischeSessieService logischeSessieService;
 
-	@Autowired
-	private PersistableTransactionService persistableTransactionService;
+	private final PersistableTransactionService persistableTransactionService;
 
-	@Autowired
-	private SeDaglijstService seDaglijstService;
+	private final SeDaglijstService seDaglijstService;
 
-	@Autowired
-	private ProxyService proxyService;
+	private final ProxyService proxyService;
 
-	@Autowired
-	private ConfiguratieService configuratieService;
+	private final ConfiguratieService configuratieService;
 
 	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<EnvironmentInfoDto> readBuildinfo(HttpSession httpSession, HttpServletRequest request)
+	public ResponseEntity<EnvironmentInfoDto> readBuildInfo(HttpSession httpSession, HttpServletRequest request)
 	{
-		EnvironmentInfoDto environmentInfo = new EnvironmentInfoDto(SeProxyApplication.getEnvironmentInfo());
-		environmentInfo.setNfcEnabled(String.valueOf(!disableNFCAuthentication));
+		var environmentInfo = new EnvironmentInfoDto();
+		environmentInfo.setVersion(environmentInfoService.getVersion());
+		environmentInfo.setTimestamp(environmentInfoService.getBuildTime());
+		environmentInfo.setEnvironment(environmentInfoService.getEnvironmentName());
+		environmentInfo.setNfcEnabled(String.valueOf(environmentInfoService.isNfcEnabled()));
 		environmentInfo.setHuidigWerkstationIpAdres(request.getRemoteAddr());
 		environmentInfo.setMagUpdaten(!logischeSessieService.zijnErNietVerlopenSessies() && !persistableTransactionService.zijnErWachtendeTransacties());
 		environmentInfo.setDagenInDaglijstCache(seDaglijstService.dagenInCache());

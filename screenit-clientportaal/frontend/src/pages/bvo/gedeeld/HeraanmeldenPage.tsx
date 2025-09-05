@@ -47,9 +47,9 @@ const HeraanmeldenPage = () => {
 	const [optiesZijnOpgehaald, setOptiesZijnOpgehaald] = useState<boolean>(false)
 
 	useEffect(() => {
-		ScreenitBackend.get(`/heraanmelden/${selectedBvo}`)
-			.then((response) => {
-				setHeraanmeldenOpties(response.data)
+		ScreenitBackend.get<HeraanmeldenOptiesDto>(`heraanmelden/${selectedBvo}`).json()
+			.then((response: HeraanmeldenOptiesDto) => {
+				setHeraanmeldenOpties(response)
 				setOptiesZijnOpgehaald(true)
 			})
 	}, [selectedBvo])
@@ -83,7 +83,7 @@ const HeraanmeldenPage = () => {
 			{optiesZijnOpgehaald && !heraanmeldenOpties.magColonIntakAfspraakInplannen && !heraanmeldenOpties.magColonUitnodigingAanvragen &&
 				<SubmitButton className={bvoStyle.baseBackgroundColor} label={getString(properties.form.button)} displayArrow={ArrowType.ARROW_RIGHT} onClick={() => {
 					dispatch(saveHeraanmeldVerzoekEnGeefBeschikbareActies(selectedBvo, false, dispatch)).then((beschikbareActies) => {
-						const kanDirectMammaAfspraakMaken = selectedBvo === Bevolkingsonderzoek.MAMMA && beschikbareActies.beschikbareActies.includes(ClientContactActieType.MAMMA_AFSPRAAK_MAKEN)
+						const kanDirectMammaAfspraakMaken = selectedBvo === Bevolkingsonderzoek.MAMMA && beschikbareActies && beschikbareActies.beschikbareActies.includes(ClientContactActieType.MAMMA_AFSPRAAK_MAKEN)
 						showToast(undefined, kanDirectMammaAfspraakMaken ? getString(properties.toast.MAMMA.afspraak) : getString(properties["toast"][selectedBvo]["algemeen"]))
 						navigate(kanDirectMammaAfspraakMaken ? "/mamma/afspraak" : getBvoBaseUrl(selectedBvo))
 					})

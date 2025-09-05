@@ -38,8 +38,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.enums.MammaFollowUpBIRADSWaarde;
 import nl.rivm.screenit.model.mamma.enums.MammaUploadBeeldenVerzoekType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
@@ -58,10 +58,10 @@ public class MammaUploadBeeldenVerzoek extends AbstractHibernateObject
 	private Date creatieDatum;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	private InstellingGebruiker gemaaktDoor;
+	private OrganisatieMedewerker gemaaktDoor;
 
 	@ManyToOne(optional = false)
-	private Instelling ziekenhuis;
+	private Organisatie ziekenhuis;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -107,22 +107,22 @@ public class MammaUploadBeeldenVerzoek extends AbstractHibernateObject
 		this.creatieDatum = creatieDatum;
 	}
 
-	public InstellingGebruiker getGemaaktDoor()
+	public OrganisatieMedewerker getGemaaktDoor()
 	{
 		return gemaaktDoor;
 	}
 
-	public void setGemaaktDoor(InstellingGebruiker gemaaktDoor)
+	public void setGemaaktDoor(OrganisatieMedewerker gemaaktDoor)
 	{
 		this.gemaaktDoor = gemaaktDoor;
 	}
 
-	public Instelling getZiekenhuis()
+	public Organisatie getZiekenhuis()
 	{
 		return ziekenhuis;
 	}
 
-	public void setZiekenhuis(Instelling ziekenhuis)
+	public void setZiekenhuis(Organisatie ziekenhuis)
 	{
 		this.ziekenhuis = ziekenhuis;
 	}

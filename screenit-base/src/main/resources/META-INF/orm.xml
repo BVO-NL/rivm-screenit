@@ -43,50 +43,6 @@
         <table schema="algemeen"/>
     </entity>
 
-    <entity class="nl.rivm.screenit.model.Instelling"
-            metadata-complete="false">
-        <attributes>
-            <basic name="agbcode"></basic>
-            <basic name="naam">
-                <column length="100" nullable="false"/>
-            </basic>
-            <basic name="telefoon">
-                <column length="25"/>
-            </basic>
-            <basic name="uziAbonneenummer"></basic>
-            <basic name="uziNummerServerCertificaat"></basic>
-            <many-to-many name="adressen" target-entity="nl.topicuszorg.organisatie.model.Adres" fetch="LAZY">
-                <order-by>id</order-by>
-                <join-table schema="algemeen" name="org_organisatie_adressen">
-                    <join-column name="org_organisatie"/>
-                    <inverse-join-column name="adressen"/>
-                </join-table>
-            </many-to-many>
-        </attributes>
-    </entity>
-    <entity class="nl.rivm.screenit.model.Gebruiker"
-            metadata-complete="false">
-        <attributes>
-            <basic name="uzinummer"></basic>
-            <basic name="agbcode"></basic>
-            <basic name="achternaam">
-                <column length="100" nullable="false"/>
-            </basic>
-            <basic name="pasnummer"></basic>
-            <basic name="uziPasSerial"></basic>
-            <many-to-many name="adressen" target-entity="nl.topicuszorg.organisatie.model.Adres" fetch="LAZY">
-                <order-by>id</order-by>
-                <join-table schema="algemeen" name="org_medewerker_adressen">
-                    <join-column name="org_medewerker"/>
-                    <inverse-join-column name="adressen"/>
-                </join-table>
-            </many-to-many>
-        </attributes>
-    </entity>
-    <entity class="nl.topicuszorg.organisatie.model.Auteur" metadata-complete="false">
-        <table schema="algemeen"/>
-    </entity>
-
     <entity class="nl.topicuszorg.yubikey.model.YubiKey" metadata-complete="false">
         <table schema="algemeen"/>
     </entity>

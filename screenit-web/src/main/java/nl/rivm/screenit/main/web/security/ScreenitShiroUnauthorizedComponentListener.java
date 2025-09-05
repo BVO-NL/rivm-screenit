@@ -70,7 +70,7 @@ public class ScreenitShiroUnauthorizedComponentListener implements IUnauthorized
 			if (component.getPage() instanceof BasePage)
 			{
 				BasePage basePage = (BasePage) component.getPage();
-				if (basePage.getContext() == ScreenitContext.GEBRUIKER)
+				if (basePage.getContext() == ScreenitContext.MEDEWERKER)
 				{
 					page = Application.get().getHomePage();
 				}

@@ -43,7 +43,7 @@ import nl.rivm.screenit.mamma.se.service.DagverslagService;
 import nl.rivm.screenit.mamma.se.service.MammaAfspraakService;
 import nl.rivm.screenit.mamma.se.service.MammaScreeningsEenheidService;
 import nl.rivm.screenit.mamma.se.service.OnderzoekService;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
@@ -88,47 +88,47 @@ public class DagverslagServiceImpl implements DagverslagService
 	{
 		Map<String, DagProductieDto> result = new HashMap<>();
 
-		mammaAfspraakService.getIngeschrevenByGebruikerOpDatumVoorSe(datum, seCode).entrySet().stream()
+		mammaAfspraakService.getIngeschrevenByMedewerkerOpDatumVoorSe(datum, seCode).entrySet().stream()
 			.filter(entry -> entry.getKey() != null)
 			.forEach(entry -> getOrCreateDagproductieDto(entry.getKey(), result).setIngeschrevenCount(entry.getValue()));
 
-		mammaOnderzoekService.getOnderzochtByGebruikerOpDatumVoorSe(datum, seCode).entrySet().stream()
+		mammaOnderzoekService.getOnderzochtByMedewerkerOpDatumVoorSe(datum, seCode).entrySet().stream()
 			.filter(entry -> entry.getKey() != null)
 			.forEach(entry -> getOrCreateDagproductieDto(entry.getKey(), result).setOnderzochtCount(entry.getValue()));
 
-		mammaOnderzoekService.getAfgerondByGebruikerOpDatumVoorSe(datum, seCode).entrySet().stream()
+		mammaOnderzoekService.getAfgerondByMedewerkerOpDatumVoorSe(datum, seCode).entrySet().stream()
 			.filter(entry -> entry.getKey() != null)
 			.forEach(entry -> getOrCreateDagproductieDto(entry.getKey(), result).setAfgerondCount(entry.getValue()));
 
-		mammaOnderzoekService.getOnderbrokenByGebruikerOpDatumVoorSe(datum, seCode).entrySet().stream()
+		mammaOnderzoekService.getOnderbrokenByMedewerkerOpDatumVoorSe(datum, seCode).entrySet().stream()
 			.filter(entry -> entry.getKey() != null)
 			.forEach(entry -> getOrCreateDagproductieDto(entry.getKey(), result).setOnderbrokenCount(entry.getValue()));
 
-		mammaOnderzoekService.getOnvolledigByGebruikerOpDatumVoorSe(datum, seCode).entrySet().stream()
+		mammaOnderzoekService.getOnvolledigByMedewerkerOpDatumVoorSe(datum, seCode).entrySet().stream()
 			.filter(entry -> entry.getKey() != null)
 			.forEach(entry -> getOrCreateDagproductieDto(entry.getKey(), result).setOnvolledigCount(entry.getValue()));
 
-		mammaOnderzoekService.getAfwijkingenByGebruikerOpDatumVoorSe(datum, seCode).entrySet().stream()
+		mammaOnderzoekService.getAfwijkingenByMedewerkerOpDatumVoorSe(datum, seCode).entrySet().stream()
 			.filter(entry -> entry.getKey() != null)
 			.forEach(entry -> getOrCreateDagproductieDto(entry.getKey(), result).setAfwijkingenCount(entry.getValue()));
 		return result;
 	}
 
-	private DagProductieDto getOrCreateDagproductieDto(Long instellingGebruikerId, Map<String, DagProductieDto> result)
+	private DagProductieDto getOrCreateDagproductieDto(Long organisatieMedewerkerId, Map<String, DagProductieDto> result)
 	{
-		var dagproductieDto = result.get(getDisplayName(instellingGebruikerId));
+		var dagproductieDto = result.get(getDisplayName(organisatieMedewerkerId));
 		if (dagproductieDto == null)
 		{
 			dagproductieDto = new DagProductieDto();
-			result.put(getDisplayName(instellingGebruikerId), dagproductieDto);
+			result.put(getDisplayName(organisatieMedewerkerId), dagproductieDto);
 		}
 		return dagproductieDto;
 	}
 
-	private String getDisplayName(long instellingGebruikerId)
+	private String getDisplayName(long organisatieMedewerkerId)
 	{
-		var instellingGebruiker = hibernateService.get(InstellingGebruiker.class, instellingGebruikerId);
-		return NaamUtil.getNaamGebruiker(instellingGebruiker.getMedewerker());
+		var organisatieMedewerker = hibernateService.get(OrganisatieMedewerker.class, organisatieMedewerkerId);
+		return NaamUtil.getNaamMedewerker(organisatieMedewerker.getMedewerker());
 	}
 
 	@Override

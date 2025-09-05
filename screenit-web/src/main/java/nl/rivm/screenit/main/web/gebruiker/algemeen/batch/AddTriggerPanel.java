@@ -114,7 +114,7 @@ public class AddTriggerPanel extends Panel
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				Date firstScheduldedDate = batchService.addTrigger((Trigger) form.getModelObject(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+				Date firstScheduldedDate = batchService.addTrigger((Trigger) form.getModelObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				if (firstScheduldedDate == null)
 				{
 					error("Toevoegen van trigger mislukt");

@@ -38,10 +38,10 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitListMultipleChoice;
 import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.ProjectParameter;
 import nl.rivm.screenit.model.ProjectParameterKey;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
@@ -88,7 +88,7 @@ import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 	actie = Actie.TOEVOEGEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_PROJECT_OVERZICHT, Recht.GEBRUIKER_BRIEFPROJECT_OVERZICHT },
+	recht = { Recht.MEDEWERKER_PROJECT_OVERZICHT, Recht.MEDEWERKER_BRIEFPROJECT_OVERZICHT },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class ProjectEditPage extends AlgemeenPage
 {
@@ -111,7 +111,7 @@ public class ProjectEditPage extends AlgemeenPage
 	@SpringBean
 	private LogService logService;
 
-	private final ScreenitDropdown<Instelling> organisatieDropdown;
+	private final ScreenitDropdown<Organisatie> organisatieDropdown;
 
 	private WebMarkupContainer medewerkersContainer;
 
@@ -145,13 +145,13 @@ public class ProjectEditPage extends AlgemeenPage
 		ComponentHelper.addTextField(form, "naam", true, 255, false)
 			.add(new ScreenitUniqueFieldValidator<>(Project.class, project.getId(), "naam", false));
 
-		ScreenitListMultipleChoice<Instelling> soDropDown = new ScreenitListMultipleChoice<Instelling>("screeningOrganisaties",
-			new SimpleListHibernateModel<>(organisatieZoekService.getAllActieveOrganisatiesWithType(ScreeningOrganisatie.class)), new ChoiceRenderer<Instelling>("naam"));
+		ScreenitListMultipleChoice<Organisatie> soDropDown = new ScreenitListMultipleChoice<Organisatie>("screeningOrganisaties",
+			new SimpleListHibernateModel<>(organisatieZoekService.getAllActieveOrganisatiesWithType(ScreeningOrganisatie.class)), new ChoiceRenderer<Organisatie>("naam"));
 		soDropDown.setRequired(true);
 		form.add(soDropDown);
 
-		organisatieDropdown = new ScreenitDropdown<Instelling>("organisatie", new SimpleListHibernateModel<>(hibernateService.loadAll(Instelling.class)),
-			new ChoiceRenderer<Instelling>("naam"));
+		organisatieDropdown = new ScreenitDropdown<Organisatie>("organisatie", new SimpleListHibernateModel<>(hibernateService.loadAll(Organisatie.class)),
+			new ChoiceRenderer<Organisatie>("naam"));
 		organisatieDropdown.add(new AjaxFormComponentUpdatingBehavior("change")
 		{
 
@@ -160,8 +160,8 @@ public class ProjectEditPage extends AlgemeenPage
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				Instelling instelling = organisatieDropdown.getConvertedInput();
-				WebMarkupContainer container = getMedewerkersContainer(instelling);
+				Organisatie organisatie = organisatieDropdown.getConvertedInput();
+				WebMarkupContainer container = getMedewerkersContainer(organisatie);
 				medewerkersContainer.replaceWith(container);
 				medewerkersContainer = container;
 				target.add(medewerkersContainer);
@@ -316,7 +316,7 @@ public class ProjectEditPage extends AlgemeenPage
 
 					if (!heeftWarningsOfErrors)
 					{
-						projectService.saveOrUpdateProject(project, ScreenitSession.get().getLoggedInInstellingGebruiker());
+						projectService.saveOrUpdateProject(project, getIngelogdeOrganisatieMedewerker());
 						ScreenitSession.get().info(getString("project.succesvol.opgeslagen"));
 						setResponsePage(new ProjectStatusPage(ModelUtil.sModel(project)));
 					}
@@ -353,34 +353,34 @@ public class ProjectEditPage extends AlgemeenPage
 		parametersPanel = nieuwParametersPanel;
 	}
 
-	private WebMarkupContainer getMedewerkersContainer(Instelling instelling)
+	private WebMarkupContainer getMedewerkersContainer(Organisatie organisatie)
 	{
 		WebMarkupContainer medewerkersContainer = new WebMarkupContainer("medewerkersContainer");
 		medewerkersContainer.setOutputMarkupId(true);
 
-		List<InstellingGebruiker> lijstMetMogelijkeMedewerkers = new ArrayList<InstellingGebruiker>();
-		if (instelling != null && instelling.getOrganisatieMedewerkers() != null && !instelling.getOrganisatieMedewerkers().isEmpty())
+		List<OrganisatieMedewerker> lijstMetMogelijkeMedewerkers = new ArrayList<OrganisatieMedewerker>();
+		if (organisatie != null && organisatie.getOrganisatieMedewerkers() != null && !organisatie.getOrganisatieMedewerkers().isEmpty())
 		{
-			lijstMetMogelijkeMedewerkers = instelling.getOrganisatieMedewerkers();
+			lijstMetMogelijkeMedewerkers = organisatie.getOrganisatieMedewerkers();
 		}
 
-		ScreenitDropdown<InstellingGebruiker> contactPersoonDropDown = new ScreenitDropdown<InstellingGebruiker>("contactpersoon",
-			new SimpleListHibernateModel<>(lijstMetMogelijkeMedewerkers), new IChoiceRenderer<InstellingGebruiker>()
+		ScreenitDropdown<OrganisatieMedewerker> contactPersoonDropDown = new ScreenitDropdown<OrganisatieMedewerker>("contactpersoon",
+			new SimpleListHibernateModel<>(lijstMetMogelijkeMedewerkers), new IChoiceRenderer<OrganisatieMedewerker>()
 		{
 			@Override
-			public Object getDisplayValue(InstellingGebruiker object)
+			public Object getDisplayValue(OrganisatieMedewerker object)
 			{
 				return object.getMedewerker().getNaamVolledig();
 			}
 
 			@Override
-			public String getIdValue(InstellingGebruiker object, int index)
+			public String getIdValue(OrganisatieMedewerker object, int index)
 			{
 				return object.getId().toString();
 			}
 
 			@Override
-			public InstellingGebruiker getObject(String id, IModel<? extends List<? extends InstellingGebruiker>> choices)
+			public OrganisatieMedewerker getObject(String id, IModel<? extends List<? extends OrganisatieMedewerker>> choices)
 			{
 				if (id != null)
 				{
@@ -392,23 +392,23 @@ public class ProjectEditPage extends AlgemeenPage
 		});
 		contactPersoonDropDown.setRequired(true);
 		medewerkersContainer.add(contactPersoonDropDown);
-		ScreenitListMultipleChoice<InstellingGebruiker> medewerkersMulti = new ScreenitListMultipleChoice<InstellingGebruiker>("medewerkers",
-			new SimpleListHibernateModel<>(lijstMetMogelijkeMedewerkers), new IChoiceRenderer<InstellingGebruiker>()
+		ScreenitListMultipleChoice<OrganisatieMedewerker> medewerkersMulti = new ScreenitListMultipleChoice<OrganisatieMedewerker>("medewerkers",
+			new SimpleListHibernateModel<>(lijstMetMogelijkeMedewerkers), new IChoiceRenderer<OrganisatieMedewerker>()
 		{
 			@Override
-			public Object getDisplayValue(InstellingGebruiker object)
+			public Object getDisplayValue(OrganisatieMedewerker object)
 			{
 				return object.getMedewerker().getNaamVolledig();
 			}
 
 			@Override
-			public String getIdValue(InstellingGebruiker object, int index)
+			public String getIdValue(OrganisatieMedewerker object, int index)
 			{
 				return object.getId().toString();
 			}
 
 			@Override
-			public InstellingGebruiker getObject(String id, IModel<? extends List<? extends InstellingGebruiker>> choices)
+			public OrganisatieMedewerker getObject(String id, IModel<? extends List<? extends OrganisatieMedewerker>> choices)
 			{
 				if (id != null)
 				{
@@ -430,10 +430,10 @@ public class ProjectEditPage extends AlgemeenPage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.projecten.overzicht", ProjectOverzicht.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.projecten.overzicht", ProjectOverzicht.class));
 		return contextMenuItems;
 	}
 

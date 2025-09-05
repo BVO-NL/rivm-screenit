@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.services.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -172,7 +172,7 @@ public class TransactionQueueVerwerker extends Thread
 		TransactieDto transactieDto = new TransactieDto(
 			SETransactieType.LOG_GEBEURTENIS_SE,
 			transactie.getClientId(),
-			new TransactionParser(transactie.getTransactie()).getInstellingGebruikerId(),
+			new TransactionParser(transactie.getTransactie()).getOrganisatieMedewerkerId(),
 			Collections.singletonList(new LogGefaaldeTransactieGebeurtenisAction(statusService.getSeCode())),
 			DateUtil.getCurrentDateTime().toLocalDate());
 

@@ -56,7 +56,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_BEHEER_SCHEMA_EXTERNE_CONTROLE,
+	recht = Recht.MEDEWERKER_BEHEER_SCHEMA_EXTERNE_CONTROLE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class SKMLExterneControleSchemaPage extends KwaliteitscontroleBasePage
 {
@@ -81,7 +81,7 @@ public class SKMLExterneControleSchemaPage extends KwaliteitscontroleBasePage
 			{
 				setResponsePage(new SKMLExterneControleSchemaToevoegenPage(ModelUtil.ccModel(new SKMLExternSchema())));
 			}
-		}.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_SCHEMA_EXTERNE_CONTROLE, Actie.TOEVOEGEN)));
+		}.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_SCHEMA_EXTERNE_CONTROLE, Actie.TOEVOEGEN)));
 		add(new Link<Void>("toevoegenXls")
 		{
 			@Override
@@ -89,7 +89,7 @@ public class SKMLExterneControleSchemaPage extends KwaliteitscontroleBasePage
 			{
 				setResponsePage(new SKMLExterneControleSchemaXlsToevoegenPage());
 			}
-		}.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_SCHEMA_EXTERNE_CONTROLE, Actie.TOEVOEGEN)));
+		}.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_SCHEMA_EXTERNE_CONTROLE, Actie.TOEVOEGEN)));
 		overzicht = maakSchemaOverzicht();
 		add(overzicht);
 	}
@@ -125,7 +125,7 @@ public class SKMLExterneControleSchemaPage extends KwaliteitscontroleBasePage
 				linkPanel.setOutputMarkupId(true);
 				cellItem.add(linkPanel);
 				linkPanel.setVisible(
-					ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_SCHEMA_EXTERNE_CONTROLE, Actie.VERWIJDEREN) && schemaService.magSchemaVerwijderdWorden(
+					ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_SCHEMA_EXTERNE_CONTROLE, Actie.VERWIJDEREN) && schemaService.magSchemaVerwijderdWorden(
 						linkPanel.getModelObject()));
 			}
 		});

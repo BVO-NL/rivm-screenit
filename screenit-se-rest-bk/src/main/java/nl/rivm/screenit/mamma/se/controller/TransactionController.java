@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.mamma.se.dto.actions.ActionDto;
@@ -38,9 +39,8 @@ import nl.rivm.screenit.mamma.se.dto.actions.TransactionDto;
 import nl.rivm.screenit.mamma.se.service.MammaScreeningsEenheidService;
 import nl.rivm.screenit.mamma.se.service.SeTransactionService;
 import nl.rivm.screenit.mamma.se.validation.DubbeleTijdValidator;
-import nl.rivm.screenit.repository.algemeen.InstellingGebruikerRepository;
+import nl.rivm.screenit.repository.algemeen.OrganisatieMedewerkerRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -55,18 +55,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @RestController
 @RequestMapping("/api/transaction")
 @Slf4j
+@RequiredArgsConstructor
 public class TransactionController extends AuthorizedController
 {
-	@Autowired
-	private InstellingGebruikerRepository instellingGebruikerRepository;
+	private final OrganisatieMedewerkerRepository organisatieMedewerkerRepository;
 
-	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final ObjectMapper objectMapper;
 
-	@Autowired
-	private SeTransactionService transactionService;
+	private final SeTransactionService transactionService;
 
-	@Autowired
-	private MammaScreeningsEenheidService screeningsEenheidService;
+	private final MammaScreeningsEenheidService screeningsEenheidService;
 
 	private final DubbeleTijdValidator dubbeleTijdValidator = new DubbeleTijdValidator();
 
@@ -81,19 +79,19 @@ public class TransactionController extends AuthorizedController
 			var transactionDto = objectMapper.readValue(transactionString, TransactionDto.class);
 			var seCode = request.getHeader("SE_CODE");
 			var se = screeningsEenheidService.getActieveScreeningsEenheidByCode(seCode);
-			var instellingGebruikerId = transactionDto.getInstellingGebruikerId();
+			var organisatieMedewerkerId = transactionDto.getOrganisatieMedewerkerId();
 			var uitnodigingsNr = transactionDto.getUitnodigingsNr();
 			var type = transactionDto.getType();
 			var acties = getActies(transactionString);
-			LOG.info("SE[{}] Transactie ontvangen die is uitgevoerd op [{}], met type: {}, instellingGebruikerId: {}, clientid: {}, uitnodigingsNr: {} en acties: {}",
-				seCode, transactieDatumTijd.format(formatter), type, instellingGebruikerId,
+			LOG.info("SE[{}] Transactie ontvangen die is uitgevoerd op [{}], met type: {}, organisatieMedewerkerId: {}, clientid: {}, uitnodigingsNr: {} en acties: {}",
+				seCode, transactieDatumTijd.format(formatter), type, organisatieMedewerkerId,
 				transactionDto.getClientId(), uitnodigingsNr, acties.stream().map(ActionDto::getType).map(Objects::toString).collect(Collectors.joining(", ")));
 
 			dubbeleTijdValidator.validate(acties);
 
-			var instellingGebruiker = instellingGebruikerId != null ? instellingGebruikerRepository.findById(instellingGebruikerId).orElseThrow() : null;
+			var organisatieMedewerker = organisatieMedewerkerId != null ? organisatieMedewerkerRepository.findById(organisatieMedewerkerId).orElseThrow() : null;
 
-			return transactionService.executeAsTransactionIfAuthorised(acties, transactionDto, transactieDatumTijd, instellingGebruiker, se);
+			return transactionService.executeAsTransactionIfAuthorised(acties, transactionDto, transactieDatumTijd, organisatieMedewerker, se);
 		}
 		catch (Exception ex)
 		{

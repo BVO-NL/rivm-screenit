@@ -35,7 +35,7 @@ import jakarta.persistence.TemporalType;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.hibernate.annotations.Cascade;
@@ -69,7 +69,7 @@ public class MammaSignaleren extends AbstractHibernateObject
 	private MammaAnnotatieAfbeelding linksHorizontaleDoorsnede;
 
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
-	private InstellingGebruiker afgerondDoor;
+	private OrganisatieMedewerker afgerondDoor;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = true)

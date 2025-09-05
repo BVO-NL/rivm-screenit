@@ -93,7 +93,7 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 	public MammaCapaciteitBlokEditPopup(String id, IModel<PlanningCapaciteitBlokDto> model)
 	{
 		super(id, model);
-		this.magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
+		this.magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
 	}
 
 	@Override
@@ -359,7 +359,7 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 		add(deleteSubmit);
 
 		PlanningCapaciteitBlokDto blok = getModelObject();
-		deleteSubmit.setVisible(blok.conceptId != null && ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.VERWIJDEREN));
+		deleteSubmit.setVisible(blok.conceptId != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.VERWIJDEREN));
 		deleteSubmit.add(new Label("verwijderenTekst", getDeleteTekst()));
 	}
 

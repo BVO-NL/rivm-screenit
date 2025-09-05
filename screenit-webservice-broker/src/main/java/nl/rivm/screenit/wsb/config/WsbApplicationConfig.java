@@ -48,6 +48,8 @@ public class WsbApplicationConfig
 
 	private WsbEndpointConfig inpakcentrum;
 
+	private IdpValidatieConfig idpInpakcentrum;
+
 	@Bean
 	public String schematronLocation()
 	{
@@ -84,16 +86,24 @@ public class WsbApplicationConfig
 		return StringUtils.defaultIfBlank(scan.wachtwoord, "");
 	}
 
+	@Deprecated(forRemoval = true, since = "nieuwe endpoint wordt gebruikt in PROD")
 	@Bean
-	public String inpakCentrumInlognaam()
+	public String inpakcentrumInlognaam()
 	{
 		return StringUtils.defaultIfBlank(inpakcentrum.inlognaam, "");
 	}
 
+	@Deprecated(forRemoval = true, since = "nieuwe endpoint wordt gebruikt in PROD")
 	@Bean
-	public String inpakCentrumWachtwoord()
+	public String inpakcentrumWachtwoord()
 	{
 		return StringUtils.defaultIfBlank(inpakcentrum.wachtwoord, "");
+	}
+
+	@Bean
+	public String inpakcentrumIdpIssuer()
+	{
+		return StringUtils.defaultIfBlank(idpInpakcentrum.issuer, "");
 	}
 
 	@Bean
@@ -115,5 +125,11 @@ public class WsbApplicationConfig
 		private String inlognaam;
 
 		private String wachtwoord;
+	}
+
+	@Setter
+	private static class IdpValidatieConfig
+	{
+		private String issuer;
 	}
 }

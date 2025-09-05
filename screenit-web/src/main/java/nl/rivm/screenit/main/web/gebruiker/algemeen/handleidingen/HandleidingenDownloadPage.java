@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -92,10 +92,10 @@ public class HandleidingenDownloadPage extends AlgemeenPage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("label.handleidigendownload", HandleidingenDownloadPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.handleidigendownload", HandleidingenDownloadPage.class));
 		return contextMenuItems;
 	}
 

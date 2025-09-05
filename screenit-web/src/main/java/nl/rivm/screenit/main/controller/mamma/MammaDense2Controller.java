@@ -71,8 +71,8 @@ public class MammaDense2Controller
 		Bevolkingsonderzoek.MAMMA })
 	public ResponseEntity<Void> updateConfiguratie(@RequestBody MammaDense2ConfiguratieDto configuratie)
 	{
-		var instellingGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
-		baseDense2Service.updateConfiguratie(configuratie, instellingGebruiker);
+		var organisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
+		baseDense2Service.updateConfiguratie(configuratie, organisatieMedewerker);
 		return ResponseEntity.ok().build();
 	}
 
@@ -96,7 +96,7 @@ public class MammaDense2Controller
 	{
 		try
 		{
-			var melding = dense2Service.importClienten(file, ScreenitSession.get().getLoggedInInstellingGebruiker());
+			var melding = dense2Service.importClienten(file, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 			return ResponseEntity.ok().body(melding);
 		}
 		catch (Exception ex)

@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.service.OrganisatieZoekService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -33,11 +33,8 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-public class KoppelAanRegioOrganisatiePanel<T extends Instelling> extends GenericPanel<T>
+public class KoppelAanRegioOrganisatiePanel<T extends Organisatie> extends GenericPanel<T>
 {
-
-	private static final long serialVersionUID = 1L;
-
 	@SpringBean
 	private OrganisatieZoekService organisatieZoekService;
 
@@ -51,9 +48,10 @@ public class KoppelAanRegioOrganisatiePanel<T extends Instelling> extends Generi
 	{
 		super.onInitialize();
 
-		List<Instelling> screeningOrganisaties = organisatieZoekService.getAllActieveOrganisatiesWithType(ScreeningOrganisatie.class);
+		List<Organisatie> screeningOrganisaties = organisatieZoekService.getAllActieveOrganisatiesWithType(ScreeningOrganisatie.class);
 
-		add(new ScreenitDropdown<Instelling>("regio", ModelUtil.listRModel(screeningOrganisaties)));
+		add(new ScreenitDropdown<>("regio", ModelUtil.listRModel(screeningOrganisaties), Organisatie::getNaam));
+
 	}
 
 }

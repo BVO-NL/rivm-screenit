@@ -21,13 +21,13 @@
 import {Dispatch} from "redux"
 import ScreenitBackend from "../utils/Backend"
 import {setLoggedInAction, setUnauthorizedAction} from "../actions/AuthenticatieAction"
-import {AxiosError} from "axios"
 import HttpStatusCode from "../datatypes/HttpStatus"
+import {HTTPError} from "ky"
 
 export const processLogin = () => (dispatch: Dispatch) => {
-	ScreenitBackend.put("/login", {
-		userAgent: navigator.userAgent,
-	}).catch((error: AxiosError) => {
+	ScreenitBackend.put("login", {
+		json: {userAgent: navigator.userAgent},
+	}).catch((error: HTTPError) => {
 		if (error?.response?.status === HttpStatusCode.UNAUTHORIZED) {
 			dispatch(setUnauthorizedAction(true))
 		}

@@ -184,7 +184,7 @@ public abstract class MammaAfspraakWijzigenFilterPanel extends GenericPanel<Mamm
 		form.add(afstandField);
 
 		CheckBox buitenRegioField = new CheckBox("buitenRegio");
-		buitenRegioField.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_MAMMA_AFSPRAAK_BUITEN_REGIO, Actie.AANPASSEN));
+		buitenRegioField.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAAK_BUITEN_REGIO, Actie.AANPASSEN));
 		form.add(buitenRegioField);
 
 		buitenRegioField.add(maakChangeBehavior(form));

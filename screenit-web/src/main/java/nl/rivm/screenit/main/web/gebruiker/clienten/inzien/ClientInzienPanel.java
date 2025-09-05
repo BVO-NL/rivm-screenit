@@ -119,7 +119,7 @@ public class ClientInzienPanel extends GenericPanel<Client>
 
 		};
 		contactAanmaken
-			.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_CONTACT, null, client) && !clientService.isClientOverleden(client)
+			.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_CONTACT, null, client) && !clientService.isClientOverleden(client)
 				&& clientService.isClientActief(client));
 		add(contactAanmaken);
 
@@ -127,7 +127,7 @@ public class ClientInzienPanel extends GenericPanel<Client>
 		var laatsteGbaMutatie = DateLabel.forDatePattern("laatsteGbaMutatie", mutatie != null ? Model.of(mutatie.getMutatieDatum()) : null, "dd-MM-yyyy HH:mm:ss");
 		add(laatsteGbaMutatie);
 
-		laatsteGbaMutatie.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_GBA_AANVRAGEN, null));
+		laatsteGbaMutatie.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_GBA_AANVRAGEN, null));
 
 		add(new ClientPaspoortHorizontaal("paspoort", getModel()));
 		add(new DateLabel("laatstAangevraagd", (IModel<Date>) () ->
@@ -192,7 +192,7 @@ public class ClientInzienPanel extends GenericPanel<Client>
 			protected void onConfigure()
 			{
 				super.onConfigure();
-				setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_GBA_AANVRAGEN, null, ClientInzienPanel.this.getModelObject()));
+				setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_GBA_AANVRAGEN, null, ClientInzienPanel.this.getModelObject()));
 			}
 
 		});
@@ -223,7 +223,7 @@ public class ClientInzienPanel extends GenericPanel<Client>
 
 	private void addBezwaarPanel()
 	{
-		var bezwaarRecht = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_BEZWAAR, Actie.INZIEN);
+		var bezwaarRecht = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_BEZWAAR, Actie.INZIEN);
 		if (bezwaarRecht)
 		{
 			var clientInzienBezwaarPanel = new ClientInzienBezwaarPanel("clientInzienBezwaarPanel", getModel(), dialog);
@@ -238,7 +238,7 @@ public class ClientInzienPanel extends GenericPanel<Client>
 
 	private void addOnderzoekresultatenActiePanel()
 	{
-		var bezwaarRecht = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_BEZWAAR, Actie.INZIEN);
+		var bezwaarRecht = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_BEZWAAR, Actie.INZIEN);
 		if (bezwaarRecht)
 		{
 			var onderzoekresultatenActiePanel = new ClientInzienVerwijderdeOnderzoeksresultatenPanel("clientInzienOnderzoekresultatenActiePanel", getModel(), dialog);
@@ -286,7 +286,7 @@ public class ClientInzienPanel extends GenericPanel<Client>
 
 	private void addAanvraagOverdrachtGegevensPanel()
 	{
-		if (ScreenitSession.get().checkPermission(Recht.GEBRUIKER_AANVRAAG_OVERDRACHT_PERSOONSGEGEVENS, Actie.INZIEN))
+		if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_AANVRAAG_OVERDRACHT_PERSOONSGEGEVENS, Actie.INZIEN))
 		{
 			var clientInzienAanvraagOverdrachtGegevensPanel = new ClientInzienOverdrachtPersoonsgegevensPanel("clientInzienAanvraagOverdrachtGegevensPanel", getModel(), dialog);
 			clientInzienAanvraagOverdrachtGegevensPanel.setEnabled(clientService.isClientActief(getModelObject()));
@@ -389,7 +389,7 @@ public class ClientInzienPanel extends GenericPanel<Client>
 		}));
 		var client = getModelObject();
 		tijdelijkGbaAdresWijzigen.setVisible(
-			ScreenitSession.get().checkPermission(Recht.GEBRUIKER_GBA_TIJDELIJK_ADRES, Actie.AANPASSEN) && clientService.isClientActief(client));
+			ScreenitSession.get().checkPermission(Recht.MEDEWERKER_GBA_TIJDELIJK_ADRES, Actie.AANPASSEN) && clientService.isClientActief(client));
 		tijdelijkGbaAdres.add(tijdelijkGbaAdresWijzigen);
 		tijdelijkGbaAdres.add(new Label("persoon.tijdelijkGbaAdres.plaats"));
 		tijdelijkGbaAdres.add(new PostcodeLabel("persoon.tijdelijkGbaAdres.postcode", true));
@@ -406,7 +406,7 @@ public class ClientInzienPanel extends GenericPanel<Client>
 		var gbaAdres = client.getPersoon().getGbaAdres();
 		tijdelijkGbaAdres
 			.setVisible((AdresUtil.isOnvolledigAdres(gbaAdres) || AdresUtil.isVolledigAdresVoorInpakcentrum(client)) && !StringUtils.equals(gbaAdres.getStraat(), ".")
-				&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_GBA_TIJDELIJK_ADRES, Actie.INZIEN));
+				&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_GBA_TIJDELIJK_ADRES, Actie.INZIEN));
 		add(tijdelijkGbaAdres);
 	}
 

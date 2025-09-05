@@ -108,15 +108,13 @@ public class ClientDossierPanel extends GenericPanel<Client>
 	{
 		super(id, model);
 
-		hibernateService.reload(model.getObject());
-
 		var client = getModelObject();
-		var loggedInInstellingGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
+		var ingelogdeOrganisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 
 		IModel<ClientDossierFilter> zoekObjectModel;
 		if (!ScreenitSession.get().isZoekObjectGezetForComponent(ClientPage.class))
 		{
-			List<Bevolkingsonderzoek> bevolkingsonderzoeken = loggedInInstellingGebruiker.getBevolkingsonderzoeken();
+			List<Bevolkingsonderzoek> bevolkingsonderzoeken = ingelogdeOrganisatieMedewerker.getBevolkingsonderzoeken();
 			zoekObjectModel = new Model<>(new ClientDossierFilter(new ArrayList<>(bevolkingsonderzoeken), Boolean.TRUE));
 			ScreenitSession.get().setZoekObject(ClientPage.class, zoekObjectModel);
 		}
@@ -151,7 +149,7 @@ public class ClientDossierPanel extends GenericPanel<Client>
 		};
 
 		contactAanmaken
-			.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_CONTACT, null, model.getObject()) && !clientService.isClientOverleden(model.getObject())
+			.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_CONTACT, null, model.getObject()) && !clientService.isClientOverleden(model.getObject())
 				&& clientService.isClientActief(client));
 		add(contactAanmaken);
 
@@ -260,12 +258,12 @@ public class ClientDossierPanel extends GenericPanel<Client>
 					});
 				}
 				else if (gebeurtenis.equals(TypeGebeurtenis.UITSLAGCOLOSCOPIEONTVANGEN)
-					&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN, Actie.INZIEN, clientModel.getObject()))
+					&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN, Actie.INZIEN, clientModel.getObject()))
 				{
 					openVerslagPage(item);
 				}
 				else if (gebeurtenis.equals(TypeGebeurtenis.UITSLAGPATHOLOGIEONTVANGEN) &&
-					ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_UITSLAGPATHOLOGIEONTVANGEN, Actie.INZIEN, clientModel.getObject()))
+					ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_UITSLAGPATHOLOGIEONTVANGEN, Actie.INZIEN, clientModel.getObject()))
 				{
 					openVerslagPage(item);
 				}
@@ -325,7 +323,7 @@ public class ClientDossierPanel extends GenericPanel<Client>
 					&& ScreenitSession.get().getAuthorizationStrategy().isInstantiationAuthorized(gebeurtenis.getDetailPanelClass())
 					&& (!gebeurtenis.equals(TypeGebeurtenis.UITNODIGING) || item.getIndex() == 0)
 					|| gebeurtenis.equals(TypeGebeurtenis.BMHK_CYTOLOGISCHE_BEOORDELING)
-					&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CERVIX_CYTOLOGIE_VERSLAG, Actie.INZIEN, ClientDossierPanel.this.getModelObject()))
+					&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CERVIX_CYTOLOGIE_VERSLAG, Actie.INZIEN, ClientDossierPanel.this.getModelObject()))
 				{
 					item.add(new AttributeAppender("class", new Model<>("badge-clickable"), " "));
 				}
@@ -497,7 +495,7 @@ public class ClientDossierPanel extends GenericPanel<Client>
 
 	private void logAction(LogGebeurtenis gebeurtenis, Client client)
 	{
-		logService.logGebeurtenis(gebeurtenis, ScreenitSession.get().getLoggedInAccount(), client);
+		logService.logGebeurtenis(gebeurtenis, ScreenitSession.get().getIngelogdAccount(), client);
 	}
 
 	private WebMarkupContainer getProjectBadge(Client client, Bevolkingsonderzoek onderzoek)

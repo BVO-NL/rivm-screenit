@@ -23,10 +23,10 @@ package nl.rivm.screenit.service;
 
 import java.util.List;
 
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruikerRol;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -36,22 +36,22 @@ import nl.rivm.screenit.model.enums.ToegangLevel;
 public interface AutorisatieService
 {
 
-	boolean mustChangePassword(InstellingGebruiker instellingGebruiker);
+	boolean mustChangePassword(OrganisatieMedewerker organisatieMedewerker);
 
-	Actie getActieVoorMedewerker(InstellingGebruiker loggedInInstellingGebruiker, Gebruiker currentSelectedMedewerker, Recht... rechten);
+	Actie getActieVoorMedewerker(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, Medewerker currentSelectedMedewerker, Recht... rechten);
 
-	Actie getActieVoorOrganisatie(InstellingGebruiker loggedInInstellingGebruiker, Instelling currentSelectedOrganisatie, Recht... rechten);
+	Actie getActieVoorOrganisatie(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, Organisatie currentSelectedOrganisatie, Recht... rechten);
 
-	ToegangLevel getToegangLevel(InstellingGebruiker instellingGebruiker, Actie minimumActie, boolean checkBvo, Recht... rechten);
+	ToegangLevel getToegangLevel(OrganisatieMedewerker organisatieMedewerker, Actie minimumActie, boolean checkBvo, Recht... rechten);
 
-	List<OrganisatieType> getOrganisatieTypes(InstellingGebruiker instellingGebruiker, boolean checkBvo);
+	List<OrganisatieType> getOrganisatieTypes(OrganisatieMedewerker organisatieMedewerker, boolean checkBvo);
 
-	List<OrganisatieType> getOrganisatieTypes(InstellingGebruiker instellingGebruiker, Actie minimumActie, boolean checkBvo);
+	List<OrganisatieType> getOrganisatieTypes(OrganisatieMedewerker organisatieMedewerker, Actie minimumActie, boolean checkBvo);
 
-	List<Bevolkingsonderzoek> getBevolkingsonderzoeken(InstellingGebruiker instellingGebruiker);
+	List<Bevolkingsonderzoek> getBevolkingsonderzoeken(OrganisatieMedewerker organisatieMedewerker);
 
 	List<Recht> getRechtWithBevolkingsonderzoek(List<Bevolkingsonderzoek> onderzoeken);
 
-	void inactiveerRolKoppeling(InstellingGebruikerRol rolKoppeling);
+	void inactiveerRolKoppeling(OrganisatieMedewerkerRol rolKoppeling);
 
 }

@@ -27,7 +27,7 @@ import java.util.List;
 
 import nl.rivm.screenit.dto.mamma.MammaDense2ConfiguratieDto;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammaDenseWaarde;
 import nl.rivm.screenit.specification.ExtendedSpecification;
@@ -36,7 +36,7 @@ public interface MammaBaseDense2Service
 {
 	MammaDense2ConfiguratieDto getConfiguratie();
 
-	void updateConfiguratie(MammaDense2ConfiguratieDto configuratie, InstellingGebruiker instellingGebruiker);
+	void updateConfiguratie(MammaDense2ConfiguratieDto configuratie, OrganisatieMedewerker organisatieMedewerker);
 
 	File getExport();
 

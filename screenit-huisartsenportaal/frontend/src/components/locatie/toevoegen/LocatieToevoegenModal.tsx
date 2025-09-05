@@ -106,7 +106,7 @@ const LocatieVerwijderenModal = (props: LocatieToevoegenModalProps) => {
 					if (props.initialValues && locatie.status === LocatieStatus.KLANTNUMMER_NIET_GEVERIFIEERD) {
 						dispatch(createActionPushToast({type: ToastType.WARN, message: getString(properties.message.zorgmailVerificatie)}))
 					} else {
-						dispatch(createActionPushToast({type: ToastType.SUCCESS, message: "De locatie is succesvol opgelagen"}))
+						dispatch(createActionPushToast({type: ToastType.SUCCESS, message: "De locatie is succesvol opgeslagen"}))
 					}
 					locatie && props.onHide()
 				})

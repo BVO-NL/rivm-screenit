@@ -125,7 +125,7 @@ public abstract class MammaClientZoekenBasePage extends MammaScreeningBasePage
 		String zoekBsn = clientFilter.getObject().getPersoon().getBsn();
 		if (StringUtils.isNotBlank(zoekBsn))
 		{
-			logService.logGebeurtenis(LogGebeurtenis.ZOEKEN_CLIENT, ScreenitSession.get().getLoggedInAccount(), "In het uitwisselportaal is gezocht op BSN: " + zoekBsn);
+			logService.logGebeurtenis(LogGebeurtenis.ZOEKEN_CLIENT, ScreenitSession.get().getIngelogdAccount(), "In het uitwisselportaal is gezocht op BSN: " + zoekBsn);
 		}
 		List<Client> clients = clientService.zoekClienten(clientFilter.getObject());
 		if (clients.size() == 1)

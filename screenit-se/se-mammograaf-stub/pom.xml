@@ -3,13 +3,32 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>se-mammograaf-stub</artifactId>
-
     <parent>
         <groupId>nl.rivm.screenit</groupId>
         <artifactId>se-parent</artifactId>
         <relativePath>../pom.xml</relativePath>
     </parent>
+
+    <artifactId>se-mammograaf-stub</artifactId>
+    <name>screenit-se-mammograaf-stub</name>
+    <packaging>jar</packaging>
+    <description>ScreenIT SE Mammograaf stub</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
 
@@ -44,42 +63,5 @@
         </dependency>
 
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>build-info</goal>
-                            <goal>repackage</goal>
-                        </goals>
-                        <configuration>
-                            <additionalProperties>
-                                <number>${buildnumber}</number>
-                            </additionalProperties>
-                            <outputFile>target/classes/build-info.properties</outputFile>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>nl.rivm.screenit.mamma.se.stub.SeStubApplication</mainClass>
-                        </manifest>
-                    </archive>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
-            </plugin>
-
-        </plugins>
-    </build>
 
 </project>

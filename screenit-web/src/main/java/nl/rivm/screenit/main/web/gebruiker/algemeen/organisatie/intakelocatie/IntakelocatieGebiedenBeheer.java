@@ -51,7 +51,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = {
-	Recht.GEBRUIKER_BEHEER_CC_GEBIEDEN }, level = ToegangLevel.INSTELLING, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
+	Recht.MEDEWERKER_BEHEER_CC_GEBIEDEN }, level = ToegangLevel.ORGANISATIE, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class IntakelocatieGebiedenBeheer extends OrganisatieBeheer
 {
 

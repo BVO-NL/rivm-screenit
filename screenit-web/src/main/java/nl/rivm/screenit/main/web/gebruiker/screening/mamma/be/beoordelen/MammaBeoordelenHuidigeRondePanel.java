@@ -32,7 +32,7 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaOnderzoekPane
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaVisueleInspectiePanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDto;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDtoMapper;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaAnnotatieAfbeelding;
@@ -91,9 +91,9 @@ public class MammaBeoordelenHuidigeRondePanel extends AbstractMammaRondePanel
 	private void createMammaBeoordelenPanel(WebMarkupContainer panelContainer)
 	{
 		MammaLezing lezing = beoordelingService.getOrCreate1eOf2eLezing(getModelObject(),
-			ScreenitSession.get().getLoggedInInstellingGebruiker(),
+			ScreenitSession.get().getIngelogdeOrganisatieMedewerker(),
 			isOnervarenRadioloog());
-		IModel<MammaLezing> lezingModel = createModel(getModelObject(), lezing, ScreenitSession.get().getLoggedInInstellingGebruiker());
+		IModel<MammaLezing> lezingModel = createModel(getModelObject(), lezing, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 		mammaBeoordelenLezingPanel = new MammaBeoordelenLezingPanel(this, "mammaBeoordelenPanel", lezingModel);
 		panelContainer.add(mammaBeoordelenLezingPanel);
 	}
@@ -105,7 +105,7 @@ public class MammaBeoordelenHuidigeRondePanel extends AbstractMammaRondePanel
 			lezingModel.getObject().setNevenbevindingOpmerking(null);
 		}
 		koppelNieuweLaesiesAanLezing(lezingModel, laesieDtos);
-		baseBeoordelingService.slaLezingOpEnVerwerkStatus(getModelObject(), lezingModel.getObject(), ScreenitSession.get().getLoggedInInstellingGebruiker(),
+		baseBeoordelingService.slaLezingOpEnVerwerkStatus(getModelObject(), lezingModel.getObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker(),
 			b -> getString(EnumStringUtil.getPropertyString(((MammaBeoordeling) b).getOpschortReden())));
 		((AbstractMammaBeoordelenPage) getPage()).volgendeBeoordeling(target);
 	}
@@ -135,7 +135,7 @@ public class MammaBeoordelenHuidigeRondePanel extends AbstractMammaRondePanel
 			|| MammaBeoordelingStatus.ARBITRAGE.equals(beoordelingStatus);
 	}
 
-	private IModel<MammaLezing> createModel(MammaBeoordeling beoordeling, MammaLezing lezing, InstellingGebruiker beoordelaar)
+	private IModel<MammaLezing> createModel(MammaBeoordeling beoordeling, MammaLezing lezing, OrganisatieMedewerker beoordelaar)
 	{
 
 		IModel<MammaLezing> model = ModelUtil.ccModel(lezing);
@@ -176,7 +176,7 @@ public class MammaBeoordelenHuidigeRondePanel extends AbstractMammaRondePanel
 
 	private boolean isOnervarenRadioloog()
 	{
-		return !ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_ARBITRAGE_WERKLIJST, Actie.TOEVOEGEN);
+		return !ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_ARBITRAGE_WERKLIJST, Actie.TOEVOEGEN);
 	}
 
 	private void createMBBerPanel(WebMarkupContainer panelContainer)

@@ -23,7 +23,7 @@ package nl.rivm.screenit.main.service.mamma;
 
 import java.util.List;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
@@ -31,7 +31,7 @@ import nl.rivm.screenit.model.mamma.MammaStandplaats;
 public interface MammaRouteService
 {
 
-	void standplaatsenToevoegenRoute(MammaScreeningsEenheid screeningsEenheid, List<MammaStandplaats> standplaatsen, InstellingGebruiker ingelogdeInstellingGebruiker);
+	void standplaatsenToevoegenRoute(MammaScreeningsEenheid screeningsEenheid, List<MammaStandplaats> standplaatsen, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	String getCsvString(MammaScreeningsEenheid screeningsEenheid);
 

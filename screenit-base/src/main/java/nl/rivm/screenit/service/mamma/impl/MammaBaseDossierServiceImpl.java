@@ -31,7 +31,7 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.exceptions.MammaStandplaatsVanPostcodeOnbekendException;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DossierStatus;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.dashboard.DashboardStatus;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -438,14 +438,14 @@ public class MammaBaseDossierServiceImpl implements MammaBaseDossierService
 
 	@Override
 	@Transactional
-	public boolean setUitslagenGecontroleerdEnUpdateDashboard(LogRegel logRegel, InstellingGebruiker medewerker, DashboardStatus dashboardStatus)
+	public boolean setUitslagenGecontroleerdEnUpdateDashboard(LogRegel logRegel, OrganisatieMedewerker organisatieMedewerker, DashboardStatus dashboardStatus)
 	{
 		var dossier = logRegel.getClient().getMammaDossier();
 
 		var laatsteOnderzoekZonderUitslag = baseOnderzoekService.getLaatsteOnderzoekMetMissendeUitslagVanDossier(dossier);
-		var status = dashboardService.updateLogRegelMetDashboardStatus(logRegel, medewerker.getMedewerker().getGebruikersnaam(), dashboardStatus);
+		var status = dashboardService.updateLogRegelMetDashboardStatus(logRegel, organisatieMedewerker.getMedewerker().getGebruikersnaam(), dashboardStatus);
 
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_CONTROLE_MISSENDE_UITSLAGEN_MATCH_GECONTROLEERD, medewerker, dossier.getClient(), Bevolkingsonderzoek.MAMMA);
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_CONTROLE_MISSENDE_UITSLAGEN_MATCH_GECONTROLEERD, organisatieMedewerker, dossier.getClient(), Bevolkingsonderzoek.MAMMA);
 
 		if (laatsteOnderzoekZonderUitslag.isEmpty())
 		{

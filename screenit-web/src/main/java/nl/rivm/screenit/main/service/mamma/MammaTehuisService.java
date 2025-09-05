@@ -25,18 +25,18 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaTehuis;
 import nl.rivm.screenit.model.mamma.MammaTehuisOpmerking;
 
 public interface MammaTehuisService
 {
-	void deactiveerTehuis(MammaTehuis tehuis, InstellingGebruiker instellingGebruiker);
+	void deactiveerTehuis(MammaTehuis tehuis, OrganisatieMedewerker organisatieMedewerker);
 
-	boolean saveOrUpdateTehuisOpmerking(MammaTehuisOpmerking opmerking, MammaTehuis tehuis, InstellingGebruiker instellingGebruiker);
+	boolean saveOrUpdateTehuisOpmerking(MammaTehuisOpmerking opmerking, MammaTehuis tehuis, OrganisatieMedewerker organisatieMedewerker);
 
 	void uitnodigen(MammaTehuis tehuis, AtomicInteger aantalClientenMetProjectBrief, AtomicInteger aantalClientenMetBrieven,
-					AtomicInteger aantalClientenMetSuspectBrieven, InstellingGebruiker ingelogdeInstellingGebruiker);
+					AtomicInteger aantalClientenMetSuspectBrieven, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
     List<String> koppelClient(MammaTehuis tehuis, Client client);
 

@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaAfspraakReservering;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
@@ -55,12 +55,12 @@ public class MammaAfspraakReserveringServiceImpl implements MammaAfspraakReserve
 	private final SimplePreferenceService preferenceService;
 
 	@Transactional
-	public MammaAfspraakReservering maakAfspraakReservering(MammaAfspraak afspraak, InstellingGebruiker gebruiker)
+	public MammaAfspraakReservering maakAfspraakReservering(MammaAfspraak afspraak, OrganisatieMedewerker organisatieMedewerker)
 	{
 		var client = afspraak.getUitnodiging().getScreeningRonde().getDossier().getClient();
 		var reservering = afspraakReserveringRepository.findByClient(client).orElse(new MammaAfspraakReservering());
 		reservering.setClient(client);
-		reservering.setMedewerker(gebruiker);
+		reservering.setMedewerker(organisatieMedewerker);
 		reservering.setCapaciteitBlok(afspraak.getCapaciteitBlok());
 		reservering.setOpkomstkans(afspraak.getOpkomstkans().getOpkomstkans());
 		reservering.setVanaf(DateUtil.toLocalDateTime(afspraak.getVanaf()));
@@ -88,7 +88,7 @@ public class MammaAfspraakReserveringServiceImpl implements MammaAfspraakReserve
 
 	@Override
 	@Transactional
-	public void verwijderReserveringenVanMedewerker(InstellingGebruiker medewerker)
+	public void verwijderReserveringenVanMedewerker(OrganisatieMedewerker medewerker)
 	{
 		afspraakReserveringRepository.deleteAllByMedewerker(medewerker);
 	}

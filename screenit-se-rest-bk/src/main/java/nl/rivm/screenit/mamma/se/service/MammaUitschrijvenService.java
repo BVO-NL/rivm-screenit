@@ -22,9 +22,9 @@ package nl.rivm.screenit.mamma.se.service;
  */
 
 import nl.rivm.screenit.mamma.se.dto.actions.UitschrijvenDto;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 
 public interface MammaUitschrijvenService
 {
-	void uitschrijven(UitschrijvenDto action, InstellingGebruiker instellingGebruiker);
+	void uitschrijven(UitschrijvenDto action, OrganisatieMedewerker organisatieMedewerker);
 }

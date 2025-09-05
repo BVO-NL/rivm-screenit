@@ -36,10 +36,10 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN,
-		Recht.GEBRUIKER_CLIENT_SR_UITSLAGPATHOLOGIEONTVANGEN,
-		Recht.GEBRUIKER_CERVIX_CYTOLOGIE_VERSLAG,
-		Recht.GEBRUIKER_MAMMA_FOLLOW_UP_VERSLAG },
+	recht = { Recht.MEDEWERKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN,
+		Recht.MEDEWERKER_CLIENT_SR_UITSLAGPATHOLOGIEONTVANGEN,
+		Recht.MEDEWERKER_CERVIX_CYTOLOGIE_VERSLAG,
+		Recht.MEDEWERKER_MAMMA_FOLLOW_UP_VERSLAG },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class ClientVerslagenPage extends ClientPage
 {

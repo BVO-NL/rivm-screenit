@@ -46,7 +46,7 @@ import static nl.rivm.screenit.main.util.WicketSpringDataUtil.toSpringSort;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_ARBITRAGE_WERKLIJST },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_ARBITRAGE_WERKLIJST },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaArbitrageWerklijstPage extends AbstractMammaBeWerklijstPage
 {

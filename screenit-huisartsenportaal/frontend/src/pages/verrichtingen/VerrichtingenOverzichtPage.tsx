@@ -43,7 +43,7 @@ const VerrichtingenOverzichtPage = () => {
 
 	return <BasePage title={getString(properties.title)}>
 		<div className={styles.style}>
-			<BaseTabelComponent<VerrichtingenOverzichtDto> resultsPerPage={resultsPerPage} url={"/verrichting/all"} exportUrl={"/verrichting/csv"}
+			<BaseTabelComponent<VerrichtingenOverzichtDto> resultsPerPage={resultsPerPage} url={"verrichting/all"} exportUrl={"verrichting/csv"}
 														   exportFileName={"overzicht-verrichtingen.csv"}>
 				{(props) => (
 					<>

@@ -23,7 +23,7 @@ package nl.rivm.screenit.main.web.component.validator;
 
 import java.time.LocalDate;
 
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.service.WachtwoordService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.password.web.component.WachtwoordValidator;
@@ -40,12 +40,12 @@ public class ScreenITWachtwoordValidator extends WachtwoordValidator
 	@SpringBean
 	private WachtwoordService wachtwoordService;
 
-	private final IModel<Gebruiker> gebruikerIModel;
+	private final IModel<Medewerker> medewerkerIModel;
 
-	public ScreenITWachtwoordValidator(FormComponent<String> usernameField, boolean verplicht, IModel<Gebruiker> gebruikerIModel)
+	public ScreenITWachtwoordValidator(FormComponent<String> usernameField, boolean verplicht, IModel<Medewerker> medewerkerIModel)
 	{
 		super(usernameField, verplicht);
-		this.gebruikerIModel = gebruikerIModel;
+		this.medewerkerIModel = medewerkerIModel;
 	}
 
 	@Override
@@ -53,9 +53,9 @@ public class ScreenITWachtwoordValidator extends WachtwoordValidator
 	{
 		super.validate(validatable);
 
-		Gebruiker gebruiker = ModelUtil.nullSafeGet(gebruikerIModel);
-		if (gebruiker != null && wachtwoordService.isEerderGebruiktWachtwoord(gebruiker, validatable.getValue(),
-			wachtwoordService.getVorigeWachtwoorden(gebruiker, LocalDate.now().minusYears(2))))
+		Medewerker medewerker = ModelUtil.nullSafeGet(medewerkerIModel);
+		if (medewerker != null && wachtwoordService.isEerderGebruiktWachtwoord(medewerker, validatable.getValue(),
+			wachtwoordService.getVorigeWachtwoorden(medewerker, LocalDate.now().minusYears(2))))
 		{
 			ValidationError error = new ValidationError();
 			error.addKey("password_used_in_past");

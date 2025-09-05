@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import nl.rivm.screenit.util.EnumStringUtil;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderdeel;
 
 public enum MammaVisitatieOnderdeelWrapper
@@ -48,9 +48,9 @@ public enum MammaVisitatieOnderdeelWrapper
 		this.pageClass = pageClass;
 	}
 
-	public static List<GebruikerMenuItem> getContextMenuItems()
+	public static List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		return Arrays.asList(values()).stream().map(ow -> new GebruikerMenuItem(EnumStringUtil.getPropertyString(MammaVisitatieOnderdeel.valueOf(ow.name())), true,
+		return Arrays.asList(values()).stream().map(ow -> new MedewerkerMenuItem(EnumStringUtil.getPropertyString(MammaVisitatieOnderdeel.valueOf(ow.name())), true,
 			ow.pageClass)).collect(Collectors.toList());
 	}
 }

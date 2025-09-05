@@ -34,9 +34,9 @@ import nl.rivm.screenit.model.CentraleEenheid;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.Gemeente;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ZASRetouradres;
 import nl.rivm.screenit.model.ZorgInstelling;
 import nl.rivm.screenit.model.cervix.CervixDossier;
@@ -88,7 +88,7 @@ public class DocumentTemplateTestUtil
 
 	public static Client getDefaultFilledClient()
 	{
-		GbaPersoon persoon = new GbaPersoon();
+		var persoon = new GbaPersoon();
 
 		persoon.setBsn("999999999");
 		persoon.setGeslacht(Geslacht.VROUW);
@@ -110,10 +110,10 @@ public class DocumentTemplateTestUtil
 
 		persoon.setGbaAdres(getDefaultFilledAdres());
 
-		Client client = new Client();
+		var client = new Client();
 		client.setPersoon(persoon);
 
-		BezwaarMoment bezwaar = new BezwaarMoment();
+		var bezwaar = new BezwaarMoment();
 		client.getBezwaarMomenten().add(bezwaar);
 
 		colonDossier(client);
@@ -125,48 +125,48 @@ public class DocumentTemplateTestUtil
 
 	private static void mammaDossier(Client client)
 	{
-		MammaDossier dossier = new MammaDossier();
+		var dossier = new MammaDossier();
 		client.setMammaDossier(dossier);
 
-		MammaScreeningRonde screeningRonde = new MammaScreeningRonde();
+		var screeningRonde = new MammaScreeningRonde();
 		dossier.getScreeningRondes().add(screeningRonde);
 		dossier.setLaatsteScreeningRonde(screeningRonde);
 		screeningRonde.setDossier(dossier);
 
-		MammaUitnodiging uitnodiging = new MammaUitnodiging();
+		var uitnodiging = new MammaUitnodiging();
 		screeningRonde.getUitnodigingen().add(uitnodiging);
 		uitnodiging.setScreeningRonde(screeningRonde);
 		screeningRonde.setLaatsteUitnodiging(uitnodiging);
 
-		MammaAfspraak afspraak = new MammaAfspraak();
+		var afspraak = new MammaAfspraak();
 		afspraak.setUitnodiging(uitnodiging);
 		uitnodiging.getAfspraken().add(afspraak);
 		uitnodiging.setLaatsteAfspraak(afspraak);
 
-		MammaStandplaatsPeriode standplaatsPeriode = new MammaStandplaatsPeriode();
+		var standplaatsPeriode = new MammaStandplaatsPeriode();
 		afspraak.setStandplaatsPeriode(standplaatsPeriode);
 
-		CentraleEenheid ce = new CentraleEenheid();
+		var ce = new CentraleEenheid();
 		ce.setTelefoon("06-123456789");
 		ce.setEmail("info@lijn.nl");
 		ce.setClientPortaalVrijeTekst("Vrije tekst client portaal veld");
 
-		BeoordelingsEenheid be = new BeoordelingsEenheid();
+		var be = new BeoordelingsEenheid();
 		be.setParent(ce);
 
-		MammaScreeningsEenheid se = new MammaScreeningsEenheid();
+		var se = new MammaScreeningsEenheid();
 		se.setBeoordelingsEenheid(be);
 
-		MammaStandplaatsRonde standplaatsRonde = new MammaStandplaatsRonde();
+		var standplaatsRonde = new MammaStandplaatsRonde();
 		standplaatsPeriode.setStandplaatsRonde(standplaatsRonde);
 		standplaatsRonde.setAchtervangToegepast(false);
 
-		MammaStandplaats standplaats = new MammaStandplaats();
+		var standplaats = new MammaStandplaats();
 		standplaatsRonde.setStandplaats(standplaats);
 
 		standplaatsPeriode.setScreeningsEenheid(se);
 
-		MammaStandplaatsLocatie locatie = new MammaStandplaatsLocatie();
+		var locatie = new MammaStandplaatsLocatie();
 		locatie.setToonHuisnummerInBrieven(true);
 		standplaats.setLocatie(locatie);
 
@@ -175,29 +175,29 @@ public class DocumentTemplateTestUtil
 		locatie.setPlaats("Lutjebroek");
 		locatie.setPostcode("8888 WW");
 
-		MammaOnderzoek onderzoek = new MammaOnderzoek();
+		var onderzoek = new MammaOnderzoek();
 		afspraak.setOnderzoek(onderzoek);
 		onderzoek.setAfspraak(afspraak);
 
-		MammaBeoordeling beoordeling = new MammaBeoordeling();
+		var beoordeling = new MammaBeoordeling();
 		beoordeling.setStatus(MammaBeoordelingStatus.UITSLAG_GUNSTIG);
 		onderzoek.getBeoordelingen().add(beoordeling);
 		onderzoek.setLaatsteBeoordeling(beoordeling);
 
-		MammaLezing lezing1 = new MammaLezing();
+		var lezing1 = new MammaLezing();
 		beoordeling.setEersteLezing(lezing1);
 
-		MammaLezing lezing2 = new MammaLezing();
+		var lezing2 = new MammaLezing();
 		beoordeling.setTweedeLezing(lezing2);
 
-		Gebruiker radioloog1 = new Gebruiker();
+		var radioloog1 = new Medewerker();
 		radioloog1.setOndertekenaar("Radioloog1");
-		InstellingGebruiker ilRad1 = new InstellingGebruiker();
+		var ilRad1 = new OrganisatieMedewerker();
 		ilRad1.setMedewerker(radioloog1);
 		lezing1.setBeoordelaar(ilRad1);
-		Gebruiker radioloog2 = new Gebruiker();
+		var radioloog2 = new Medewerker();
 		radioloog2.setOndertekenaar("Radioloog2");
-		InstellingGebruiker ilRad2 = new InstellingGebruiker();
+		var ilRad2 = new OrganisatieMedewerker();
 		ilRad2.setMedewerker(radioloog2);
 		lezing2.setBeoordelaar(ilRad2);
 		dossier.setLaatsteBeoordelingMetUitslag(beoordeling);
@@ -207,16 +207,16 @@ public class DocumentTemplateTestUtil
 
 	private static void colonDossier(Client client)
 	{
-		ColonDossier dossier = new ColonDossier();
+		var dossier = new ColonDossier();
 		client.setColonDossier(dossier);
 		dossier.setClient(client);
 		dossier.setStatus(DossierStatus.ACTIEF);
 
-		ColonScreeningRonde ronde = new ColonScreeningRonde();
+		var ronde = new ColonScreeningRonde();
 		ronde.setDossier(dossier);
 		dossier.setLaatsteScreeningRonde(ronde);
 
-		IFOBTTest test = new IFOBTTest();
+		var test = new IFOBTTest();
 		test.setType(IFOBTType.GOLD);
 		ronde.setLaatsteIFOBTTest(test);
 
@@ -231,37 +231,36 @@ public class DocumentTemplateTestUtil
 
 	public static AfgeslotenMedewerkerOvereenkomst getDefaultFilledOvereenkomst()
 	{
-		AfgeslotenMedewerkerOvereenkomst afOvereenkomst = new AfgeslotenMedewerkerOvereenkomst();
+		var afOvereenkomst = new AfgeslotenMedewerkerOvereenkomst();
 
-		ZorgInstelling zorginstelling = new ZorgInstelling();
+		var zorginstelling = new ZorgInstelling();
 		zorginstelling.setActief(true);
 		zorginstelling.setNaam(defaultValue);
 		zorginstelling.setTelefoon("xxx-xxxxxxx");
 		zorginstelling.setFax("xxx-xxxxxxx");
 
-		Gebruiker gemachtigde = new Gebruiker();
+		var gemachtigde = new Medewerker();
 		gemachtigde.setVoorletters(defaultValue);
 		gemachtigde.setTussenvoegsel(defaultValue);
 		gemachtigde.setAchternaam(defaultValue);
 		gemachtigde.setAanhef(Aanhef.MEVR);
 		zorginstelling.setGemachtigde(gemachtigde);
 
-		Gebruiker zorgverlener = new Gebruiker();
+		var zorgverlener = new Medewerker();
 		zorgverlener.setAchternaam(defaultValue);
 		zorgverlener.setTussenvoegsel(defaultValue);
 		zorgverlener.setVoorletters(defaultValue);
 		zorgverlener.setAanhef(Aanhef.MEVR);
-		zorgverlener.add(getDefaultFilledAdres());
+		zorgverlener.setWoonplaats("Teststad-Utrecht");
 		zorgverlener.setBignummer(defaultValue);
 
-		zorginstelling.add(getDefaultFilledAdres());
-		zorginstelling.add(getDefaultFilledAdres());
-		zorgverlener.add(getDefaultFilledAdres());
-		InstellingGebruiker instellingGebruiker = new InstellingGebruiker();
-		instellingGebruiker.setMedewerker(zorgverlener);
-		zorginstelling.setOrganisatieMedewerkers(new ArrayList<InstellingGebruiker>());
-		zorginstelling.getOrganisatieMedewerkers().add(instellingGebruiker);
-		afOvereenkomst.setGebruiker(zorgverlener);
+		zorginstelling.setAdres(getDefaultFilledAdres());
+		zorginstelling.setPostbusAdres(getDefaultFilledAdres());
+		var organisatieMedewerker = new OrganisatieMedewerker();
+		organisatieMedewerker.setMedewerker(zorgverlener);
+		zorginstelling.setOrganisatieMedewerkers(new ArrayList<>());
+		zorginstelling.getOrganisatieMedewerkers().add(organisatieMedewerker);
+		afOvereenkomst.setMedewerker(zorgverlener);
 
 		try
 		{
@@ -278,18 +277,18 @@ public class DocumentTemplateTestUtil
 
 	public static ColonIntakeAfspraak getDefaultFilledColonIntakeAfspraak()
 	{
-		ColonIntakelocatie il = new ColonIntakelocatie();
+		var il = new ColonIntakelocatie();
 		il.setActief(true);
 
-		il.add(getDefaultFilledAdres());
-		il.add(getDefaultFilledAdres());
+		il.setAdres(getDefaultFilledAdres());
+		il.setPostbusAdres(getDefaultFilledAdres());
 
 		var kamer = new ColonIntakekamer();
 		kamer.setIntakelocatie(il);
 		kamer.setNaam(defaultValue);
 		kamer.setActief(true);
 
-		ColonIntakeAfspraak afspraak = new ColonIntakeAfspraak();
+		var afspraak = new ColonIntakeAfspraak();
 		afspraak.setKamer(kamer);
 
 		return afspraak;
@@ -297,7 +296,7 @@ public class DocumentTemplateTestUtil
 
 	private static BagAdres getDefaultFilledAdres()
 	{
-		BagAdres adres = new BagAdres();
+		var adres = new BagAdres();
 		adres.setStraat("Teststraat");
 		adres.setHuisnummer(28);
 		adres.setPlaats("Teststad-Utrecht");
@@ -309,27 +308,27 @@ public class DocumentTemplateTestUtil
 
 	static CervixUitnodiging getDefaultCervixUitnodiging()
 	{
-		GbaPersoon persoon = new GbaPersoon();
+		var persoon = new GbaPersoon();
 		persoon.setBsn(TestBsnGenerator.getValideBsn());
 
-		Client client = new Client();
+		var client = new Client();
 		client.setPersoon(persoon);
 
-		CervixDossier dossier = new CervixDossier();
+		var dossier = new CervixDossier();
 		dossier.setClient(client);
 
-		CervixScreeningRonde ronde = new CervixScreeningRonde();
+		var ronde = new CervixScreeningRonde();
 		dossier.getScreeningRondes().add(ronde);
 		dossier.setLaatsteScreeningRonde(ronde);
 		ronde.setDossier(dossier);
 
-		CervixUitnodiging uitnodiging = new CervixUitnodiging();
+		var uitnodiging = new CervixUitnodiging();
 		ronde.getUitnodigingen().add(uitnodiging);
 		ronde.setLaatsteUitnodiging(uitnodiging);
 		uitnodiging.setScreeningRonde(ronde);
 		uitnodiging.setMonsterType(CervixMonsterType.UITSTRIJKJE);
 
-		CervixUitstrijkje uitstrijkje = new CervixUitstrijkje();
+		var uitstrijkje = new CervixUitstrijkje();
 		uitnodiging.setMonster(uitstrijkje);
 		uitstrijkje.setMonsterId(StringUtils.leftPad("" + ThreadLocalRandom.current().nextLong(1L, 9999999999L), 10, '0'));
 		uitstrijkje.setUitnodiging(uitnodiging);
@@ -341,17 +340,17 @@ public class DocumentTemplateTestUtil
 
 	public static BMHKLaboratorium getDefaultBmhkLaboratorium()
 	{
-		BMHKLaboratorium lab = new BMHKLaboratorium();
+		var lab = new BMHKLaboratorium();
 		lab.setNaam("Testlaboratorium");
 		lab.setActief(true);
 		lab.setPatholoog("J.Dokter, medisch microbioloog");
 
-		lab.add(getDefaultFilledAdres());
-		lab.add(getDefaultFilledAdres());
+		lab.setAdres(getDefaultFilledAdres());
+		lab.setPostbusAdres(getDefaultFilledAdres());
 
-		ZASRetouradres zasRetouradres = new ZASRetouradres();
+		var zasRetouradres = new ZASRetouradres();
 		lab.getRetouradressen().add(zasRetouradres);
-		BagAdres defaultFilledAdres = getDefaultFilledAdres();
+		var defaultFilledAdres = getDefaultFilledAdres();
 		defaultFilledAdres.setHuisnummer(1000000);
 		zasRetouradres.setAdres(defaultFilledAdres);
 		return lab;

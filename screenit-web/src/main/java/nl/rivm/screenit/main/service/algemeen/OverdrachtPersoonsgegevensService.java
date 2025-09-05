@@ -36,7 +36,7 @@ public interface OverdrachtPersoonsgegevensService
 
 	void slaOntvangenFormulierOp(OverdrachtPersoonsgegevens overdracht, UploadDocument uploadDocument, Account account) throws IOException;
 
-	void verstuurGeenHandtekeningBrief(OverdrachtPersoonsgegevens overdracht, Account loggedInAccount);
+	void verstuurGeenHandtekeningBrief(OverdrachtPersoonsgegevens overdracht, Account ingelogdAccount);
 
 	void afronden(OverdrachtPersoonsgegevens overdrachtPersoonsgegevens);
 

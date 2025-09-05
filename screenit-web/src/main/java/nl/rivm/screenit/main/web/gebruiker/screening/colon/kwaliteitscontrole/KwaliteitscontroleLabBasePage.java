@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon.kwaliteitscontrole;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.ColonScreeningBasePage;
 
 public class KwaliteitscontroleLabBasePage extends ColonScreeningBasePage
@@ -38,11 +38,11 @@ public class KwaliteitscontroleLabBasePage extends ColonScreeningBasePage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.colonscreening.kwaliteitscontrole.batchoverzicht", KwaliteitscontroleBatchOverzichtPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.colonscreening.kwaliteitscontrole.kwalteitscontroleaanmaken", KwaliteitscontroleLabAanmakenPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.colonscreening.kwaliteitscontrole.batchoverzicht", KwaliteitscontroleBatchOverzichtPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.colonscreening.kwaliteitscontrole.kwalteitscontroleaanmaken", KwaliteitscontroleLabAanmakenPage.class));
 		return contextMenuItems;
 	}
 

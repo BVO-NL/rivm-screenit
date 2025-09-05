@@ -33,6 +33,8 @@ import {assertUnreachable} from "./EnumUtil"
 import {refreshCervixDossier, refreshColonDossier, refreshMammaDossier} from "../api/RefreshDossierActions"
 import {createSetEnvironmentInfoAction} from "../actions/EnvironmentInfoAction"
 import {createHideAllToastsAction} from "../actions/ToastAction"
+import {EnvironmentInfoDto} from "../datatypes/EnvironmentInfo"
+import {Persoon} from "../datatypes/Persoon"
 
 export const useSelectedBvo = (): Bevolkingsonderzoek | undefined => {
 	const location = useLocation()
@@ -54,9 +56,8 @@ export const useRefreshEnvironmentInfo = () => {
 
 	useEffect(() => {
 		if (authenticated) {
-			ScreenitBackend.get("/environment").then(result => {
-				dispatch(createSetEnvironmentInfoAction(result.data))
-			})
+			ScreenitBackend.get<EnvironmentInfoDto>("environment").json()
+				.then(result => dispatch(createSetEnvironmentInfoAction(result)))
 		}
 	}, [dispatch, authenticated])
 }
@@ -69,10 +70,12 @@ export const useRefreshClient = () => {
 
 	useEffect(() => {
 		if (authenticated && authenticatie.isLoggedIn && !authenticatie.isLoggingOut) {
-			ScreenitBackend.get("/persoon").then(result => {
-				dispatch(createPersoonAction(result.data))
-				dispatch(getBeschikbareContactActies())
-			})
+			ScreenitBackend.get<Persoon>("persoon")
+				.json()
+				.then(result => {
+					dispatch(createPersoonAction(result))
+					dispatch(getBeschikbareContactActies())
+				})
 		}
 	}, [location.pathname, authenticatie, dispatch, authenticated])
 }

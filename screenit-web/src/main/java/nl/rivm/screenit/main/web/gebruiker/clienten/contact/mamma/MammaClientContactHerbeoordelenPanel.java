@@ -28,7 +28,7 @@ import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContactActiePanel;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActie;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingReserveringService;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
@@ -62,11 +62,12 @@ public class MammaClientContactHerbeoordelenPanel extends AbstractClientContactA
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		InstellingGebruiker ingelogdeGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 		MammaBeoordeling beoordeling = ModelUtil.nullSafeGet(beoordelingModel);
 		WebMarkupContainer redenOpgevenContainer = new WebMarkupContainer("redenOpgevenContainer", beoordelingModel);
 		redenOpgevenContainer.setVisible(
-			!beoordelingService.beoordelingZitInActieveFotobespreking(beoordeling) && !beoordelingReserveringService.gereserveerdDoorIemandAnders(ingelogdeGebruiker, beoordeling));
+			!beoordelingService.beoordelingZitInActieveFotobespreking(beoordeling) && !beoordelingReserveringService.gereserveerdDoorIemandAnders(ingelogdeOrganisatieMedewerker,
+				beoordeling));
 		add(redenOpgevenContainer);
 		ComponentHelper.addTextArea(redenOpgevenContainer, "redenAnnuleren", true, 255, false);
 
@@ -76,7 +77,7 @@ public class MammaClientContactHerbeoordelenPanel extends AbstractClientContactA
 		foutmeldingFotobesprekingContainer.add(new Label("foutmeldingFotobespreking", getString("fotobespreking.aangevraagd")));
 
 		WebMarkupContainer foutmeldingBeoordelingGeopendContainer = new WebMarkupContainer("foutmeldingBezetContainer");
-		foutmeldingBeoordelingGeopendContainer.setVisible(beoordelingReserveringService.gereserveerdDoorIemandAnders(ingelogdeGebruiker, beoordeling));
+		foutmeldingBeoordelingGeopendContainer.setVisible(beoordelingReserveringService.gereserveerdDoorIemandAnders(ingelogdeOrganisatieMedewerker, beoordeling));
 		add(foutmeldingBeoordelingGeopendContainer);
 		foutmeldingBeoordelingGeopendContainer.add(new Label("foutmeldingBezet", getString("geopend.in.be")));
 	}

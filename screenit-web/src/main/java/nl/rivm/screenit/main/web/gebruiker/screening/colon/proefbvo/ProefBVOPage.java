@@ -25,7 +25,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon.proefbvo;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.ColonScreeningBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
@@ -38,7 +38,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_AFMELDEN_PROEF_BEVOLKINGSONDERZOEK,
+	recht = Recht.MEDEWERKER_AFMELDEN_PROEF_BEVOLKINGSONDERZOEK,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class ProefBVOPage extends ColonScreeningBasePage
 {
@@ -51,16 +51,16 @@ public class ProefBVOPage extends ColonScreeningBasePage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 		return createContextMenu();
 	}
 
-	private List<GebruikerMenuItem> createContextMenu()
+	private List<MedewerkerMenuItem> createContextMenu()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.proefbvo.afmelden", ProefBVOAfmeldenPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.proefbvo.heraanmelden", ProefBVOHeraanmeldenPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.proefbvo.afmelden", ProefBVOAfmeldenPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.proefbvo.heraanmelden", ProefBVOHeraanmeldenPage.class));
 		return contextMenuItems;
 	}
 

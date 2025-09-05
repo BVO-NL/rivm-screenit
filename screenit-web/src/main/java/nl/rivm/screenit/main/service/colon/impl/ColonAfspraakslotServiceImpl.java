@@ -48,7 +48,7 @@ import nl.rivm.screenit.main.service.colon.ColonFeestdagService;
 import nl.rivm.screenit.main.service.colon.ColonRoosterBeperkingService;
 import nl.rivm.screenit.main.service.colon.RoosterService;
 import nl.rivm.screenit.mappers.colon.ColonAfspraakslotMapper;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.colon.ColonHerhalingsfrequentie;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
@@ -120,25 +120,25 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 
 	@Override
 	@Transactional
-	public void createAfspraakslot(ColonAfspraakslotDto afspraakslotDto, InstellingGebruiker instellingGebruiker)
+	public void createAfspraakslot(ColonAfspraakslotDto afspraakslotDto, OrganisatieMedewerker organisatieMedewerker)
 		throws ValidatieException, OpslaanVerwijderenTijdBlokException, BeperkingException, BulkAanmakenException
 	{
-		var intakelocatie = roosterService.getIntakelocatieVanInstellingGebruiker(instellingGebruiker);
+		var intakelocatie = roosterService.getIntakelocatieVanOrganisatieMedewerker(organisatieMedewerker);
 		var dbAfspraakslot = new ColonAfspraakslot();
 		var afspraakslot = converteerAfspraakslot(afspraakslotDto, intakelocatie, dbAfspraakslot);
 		var alleenValidatie = afspraakslotDto.isAlleenValidatie();
 
 		if (afspraakslotDto.getHerhaling().getFrequentie() != ColonHerhalingsfrequentie.GEEN_HERHALING)
 		{
-			createBulkAfspraakslots(afspraakslot, afspraakslotDto, instellingGebruiker, intakelocatie, alleenValidatie);
+			createBulkAfspraakslots(afspraakslot, afspraakslotDto, organisatieMedewerker, intakelocatie, alleenValidatie);
 		}
 		else
 		{
-			createEnkelAfspraakslot(afspraakslot, afspraakslotDto, instellingGebruiker, intakelocatie, alleenValidatie);
+			createEnkelAfspraakslot(afspraakslot, afspraakslotDto, organisatieMedewerker, intakelocatie, alleenValidatie);
 		}
 	}
 
-	private void createEnkelAfspraakslot(ColonAfspraakslot afspraakslot, ColonAfspraakslotDto afspraakslotDto, InstellingGebruiker instellingGebruiker,
+	private void createEnkelAfspraakslot(ColonAfspraakslot afspraakslot, ColonAfspraakslotDto afspraakslotDto, OrganisatieMedewerker organisatieMedewerker,
 		ColonIntakelocatie intakelocatie,
 		boolean alleenValidatie)
 		throws ValidatieException, OpslaanVerwijderenTijdBlokException, BeperkingException
@@ -149,7 +149,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 		valideerAfspraakslot(afspraakslot, intakelocatie, !alleenValidatie, false);
 		if (!alleenValidatie)
 		{
-			logAction(afspraakslot, afspraakslotDto.getAantalBlokken(), instellingGebruiker, intakelocatie, null, LogGebeurtenis.AFSPRAAKSLOT_NIEUW,
+			logAction(afspraakslot, afspraakslotDto.getAantalBlokken(), organisatieMedewerker, intakelocatie, null, LogGebeurtenis.AFSPRAAKSLOT_NIEUW,
 				afspraakslotDto.getHerhaling());
 
 			var transformedAfspraakslots = splitAfspraakslots(aanTeMakenAfspraakslots, afspraakslotDto.getAantalBlokken(), intakelocatie);
@@ -157,7 +157,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 		}
 	}
 
-	private void createBulkAfspraakslots(ColonAfspraakslot afspraakslot, ColonAfspraakslotDto afspraakslotDto, InstellingGebruiker instellingGebruiker,
+	private void createBulkAfspraakslots(ColonAfspraakslot afspraakslot, ColonAfspraakslotDto afspraakslotDto, OrganisatieMedewerker organisatieMedewerker,
 		ColonIntakelocatie intakelocatie,
 		boolean alleenValidatie)
 		throws BulkAanmakenException
@@ -172,7 +172,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 
 			if (!alleenValidatie)
 			{
-				logAction(afspraakslot, afspraakslotDto.getAantalBlokken(), instellingGebruiker, intakelocatie, null, LogGebeurtenis.AFSPRAAKSLOT_NIEUW,
+				logAction(afspraakslot, afspraakslotDto.getAantalBlokken(), organisatieMedewerker, intakelocatie, null, LogGebeurtenis.AFSPRAAKSLOT_NIEUW,
 					afspraakslotDto.getHerhaling());
 
 				afspraakslotRepository.saveAll(aanTeMakenAfspraakslots);
@@ -191,7 +191,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 				var melding = genereerLogMessage(aanTeMakenAfspraakslots.get(0), null, LogGebeurtenis.AFSPRAAKSLOT_NIEUW, afspraakslotDto.getAantalBlokken(),
 					afspraakslotDto.getHerhaling());
 				melding += ". " + ex.getSamenvatting();
-				logService.logGebeurtenis(LogGebeurtenis.AFSPRAAKSLOT_NIEUW, instellingGebruiker, melding, Bevolkingsonderzoek.COLON);
+				logService.logGebeurtenis(LogGebeurtenis.AFSPRAAKSLOT_NIEUW, organisatieMedewerker, melding, Bevolkingsonderzoek.COLON);
 
 				afspraakslotRepository.saveAll(aanTeMakenAfspraakslots);
 			}
@@ -200,10 +200,10 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 
 	@Override
 	@Transactional
-	public void updateAfspraakslot(Long id, ColonAfspraakslotDto afspraakslotDto, InstellingGebruiker instellingGebruiker)
+	public void updateAfspraakslot(Long id, ColonAfspraakslotDto afspraakslotDto, OrganisatieMedewerker organisatieMedewerker)
 		throws ValidatieException, OpslaanVerwijderenTijdBlokException, IllegalStateException, BeperkingException
 	{
-		var intakelocatie = roosterService.getIntakelocatieVanInstellingGebruiker(instellingGebruiker);
+		var intakelocatie = roosterService.getIntakelocatieVanOrganisatieMedewerker(organisatieMedewerker);
 		var dbAfspraakslot = roosterService.getAfspraakslot(id).orElseThrow(() -> new IllegalStateException("Afspraakslot kan niet worden gevonden"));
 
 		var originalAfspraakslot = dbAfspraakslot.transientClone();
@@ -218,17 +218,17 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 		if (!alleenValidatie)
 		{
 			converteerAfspraakslot(afspraakslotDto, intakelocatie, dbAfspraakslot);
-			logAction(dbAfspraakslot, afspraakslotDto.getAantalBlokken(), instellingGebruiker, intakelocatie, originalAfspraakslot, LogGebeurtenis.AFSPRAAKSLOT_WIJZIG, null);
+			logAction(dbAfspraakslot, afspraakslotDto.getAantalBlokken(), organisatieMedewerker, intakelocatie, originalAfspraakslot, LogGebeurtenis.AFSPRAAKSLOT_WIJZIG, null);
 			afspraakslotRepository.save(dbAfspraakslot);
 		}
 	}
 
 	@Override
 	@Transactional
-	public void deleteAfspraakslot(Long id, InstellingGebruiker instellingGebruiker)
+	public void deleteAfspraakslot(Long id, OrganisatieMedewerker organisatieMedewerker)
 		throws OpslaanVerwijderenTijdBlokException, ValidatieException
 	{
-		var intakelocatie = roosterService.getIntakelocatieVanInstellingGebruiker(instellingGebruiker);
+		var intakelocatie = roosterService.getIntakelocatieVanOrganisatieMedewerker(organisatieMedewerker);
 		var dbAfspraakslot = roosterService.getAfspraakslot(id).orElseThrow(() -> new ValidatieException("error.afspraakslot.niet.gevonden"));
 		var afspraakslotStatus = getAfspraakslotStatus(dbAfspraakslot);
 		magAfsrpaakslotOpslaanVerwijderen(dbAfspraakslot, false);
@@ -239,12 +239,12 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 		}
 
 		afspraakslotRepository.delete(dbAfspraakslot);
-		logAction(dbAfspraakslot, 1, instellingGebruiker, intakelocatie, dbAfspraakslot, LogGebeurtenis.AFSPRAAKSLOT_VERWIJDEREN, null);
+		logAction(dbAfspraakslot, 1, organisatieMedewerker, intakelocatie, dbAfspraakslot, LogGebeurtenis.AFSPRAAKSLOT_VERWIJDEREN, null);
 	}
 
 	@Override
 	@Transactional
-	public void bulkDeleteAfspraakslots(List<Long> ids, InstellingGebruiker instellingGebruiker, boolean alleenValidatie)
+	public void bulkDeleteAfspraakslots(List<Long> ids, OrganisatieMedewerker organisatieMedewerker, boolean alleenValidatie)
 		throws BulkVerwijderenException
 	{
 		var exception = new BulkVerwijderenException(ColonTijdslotType.AFSPRAAKSLOT);
@@ -284,7 +284,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 		else
 		{
 			afspraakslotRepository.deleteAll(teVerwijderenSlots);
-			logService.logGebeurtenis(LogGebeurtenis.AFSPRAAKSLOT_VERWIJDEREN, instellingGebruiker, exception.getMessage(), Bevolkingsonderzoek.COLON);
+			logService.logGebeurtenis(LogGebeurtenis.AFSPRAAKSLOT_VERWIJDEREN, organisatieMedewerker, exception.getMessage(), Bevolkingsonderzoek.COLON);
 		}
 	}
 
@@ -670,11 +670,11 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 		return afspraakslots;
 	}
 
-	public void logAction(ColonAfspraakslot unsavedObject, int aantalBlokken, InstellingGebruiker instellingGebruiker, ColonIntakelocatie intakelocatie,
+	public void logAction(ColonAfspraakslot unsavedObject, int aantalBlokken, OrganisatieMedewerker organisatieMedewerker, ColonIntakelocatie intakelocatie,
 		@Nullable ColonAfspraakslot origineleAfspraakslot, LogGebeurtenis gebeurtenis, ColonHerhalingDto herhalingDto)
 	{
 		var melding = genereerLogMessage(unsavedObject, origineleAfspraakslot, gebeurtenis, aantalBlokken, herhalingDto);
-		logService.logGebeurtenis(gebeurtenis, instellingGebruiker, melding, Bevolkingsonderzoek.COLON);
+		logService.logGebeurtenis(gebeurtenis, organisatieMedewerker, melding, Bevolkingsonderzoek.COLON);
 	}
 
 	private String genereerLogMessage(ColonAfspraakslot unsavedAfspraakslot, @Nullable ColonAfspraakslot originalAfspraakslot,

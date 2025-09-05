@@ -41,7 +41,7 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.route.MammaR
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.route.MammaRouteConceptWijzigingMeldingenDialogPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.screeningseenheid.MammaSEDataProvider;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -71,7 +71,7 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaPlanningDashboardPage extends MammaPlanningBasePage
 {
@@ -111,7 +111,7 @@ public class MammaPlanningDashboardPage extends MammaPlanningBasePage
 		if (ScreenitSession.get().getScreeningOrganisatie() == null)
 		{
 			columns.add(new NotClickablePropertyColumn<>(Model.of("Screeningsorganisatie"),
-				propertyChain(MammaScreeningsEenheid_.BEOORDELINGS_EENHEID, Instelling_.PARENT, Instelling_.REGIO, Instelling_.NAAM), "beoordelingsEenheid.parent.regio.naam"));
+				propertyChain(MammaScreeningsEenheid_.BEOORDELINGS_EENHEID, Organisatie_.PARENT, Organisatie_.REGIO, Organisatie_.NAAM), "beoordelingsEenheid.parent.regio.naam"));
 		}
 		columns.add(new NotClickablePropertyColumn<>(Model.of("Screeningseenheid"), MammaScreeningsEenheid_.NAAM, "naam"));
 		columns.add(new NotClickablePropertyColumn<>(Model.of(""), "")
@@ -179,7 +179,7 @@ public class MammaPlanningDashboardPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				PlanningConceptMeldingenDto meldingenDto = baseConceptPlanningsApplicatie.saveConcept(ScreenitSession.get().getLoggedInInstellingGebruiker(), true);
+				PlanningConceptMeldingenDto meldingenDto = baseConceptPlanningsApplicatie.saveConcept(getIngelogdeOrganisatieMedewerker(), true);
 				dialog.openWith(target, new MammaRouteConceptWijzigingMeldingenDialogPanel(IDialog.CONTENT_ID, Model.of(meldingenDto))
 				{
 					@Override
@@ -198,7 +198,7 @@ public class MammaPlanningDashboardPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				PlanningConceptMeldingenDto meldingenDto = baseConceptPlanningsApplicatie.saveConcept(ScreenitSession.get().getLoggedInInstellingGebruiker(), true);
+				PlanningConceptMeldingenDto meldingenDto = baseConceptPlanningsApplicatie.saveConcept(getIngelogdeOrganisatieMedewerker(), true);
 				dialog.openWith(target, new MammaRouteConceptAnnulerenMeldingenDialogPanel(IDialog.CONTENT_ID, Model.of(meldingenDto))
 				{
 					@Override

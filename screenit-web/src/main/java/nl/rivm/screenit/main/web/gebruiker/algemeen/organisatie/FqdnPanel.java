@@ -21,14 +21,14 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.validation.validator.StringValidator;
 
-public class FqdnPanel<T extends Instelling> extends GenericPanel<T>
+public class FqdnPanel<T extends Organisatie> extends GenericPanel<T>
 {
 	private static final long serialVersionUID = 1L;
 

@@ -28,8 +28,8 @@ import java.util.Collection;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Gemeente;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.Permissie;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.colon.UitnodigingsGebied;
@@ -77,9 +77,9 @@ public class ScopeServiceImpl implements ScopeService
 				Client client = hibernateService.load(Client.class, constraintToCheck.getScopeObjectId());
 
 				ScreeningOrganisatie screeningOrganisatie = client.getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie();
-				InstellingGebruiker gebruiker = (InstellingGebruiker) account;
+				OrganisatieMedewerker organisatieMedewerker = (OrganisatieMedewerker) account;
 
-				result = gebruiker.getOrganisatie().equals(screeningOrganisatie);
+				result = organisatieMedewerker.getOrganisatie().equals(screeningOrganisatie);
 			}
 			else
 			{
@@ -87,18 +87,18 @@ public class ScopeServiceImpl implements ScopeService
 			}
 
 		}
-		else if (Instelling.class.isAssignableFrom(constraintToCheck.getScopeObjectClass()))
+		else if (Organisatie.class.isAssignableFrom(constraintToCheck.getScopeObjectClass()))
 		{
 
-			if (account instanceof InstellingGebruiker instellingGebruiker)
+			if (account instanceof OrganisatieMedewerker organisatieMedewerker)
 			{
 				if (scope == ToegangLevel.LANDELIJK)
 				{
 					result = true;
 				}
-				else if (scope == ToegangLevel.INSTELLING || scope == ToegangLevel.REGIO)
+				else if (scope == ToegangLevel.ORGANISATIE || scope == ToegangLevel.REGIO)
 				{
-					result = instellingGebruiker.getOrganisatie().getId().equals(constraintToCheck.getScopeObjectId());
+					result = organisatieMedewerker.getOrganisatie().getId().equals(constraintToCheck.getScopeObjectId());
 				}
 				else
 				{
@@ -112,7 +112,8 @@ public class ScopeServiceImpl implements ScopeService
 			{
 				result = true;
 			}
-			else if (scope == ToegangLevel.REGIO && account instanceof InstellingGebruiker gebruiker && ((InstellingGebruiker) account).getOrganisatie() instanceof ScreeningOrganisatie)
+			else if (scope == ToegangLevel.REGIO && account instanceof OrganisatieMedewerker organisatieMedewerker
+				&& ((OrganisatieMedewerker) account).getOrganisatie() instanceof ScreeningOrganisatie)
 			{
 				Gemeente gemeente = null;
 				if (Gemeente.class.isAssignableFrom(constraintToCheck.getScopeObjectClass()))
@@ -124,7 +125,7 @@ public class ScopeServiceImpl implements ScopeService
 					gemeente = hibernateService.load(UitnodigingsGebied.class, constraintToCheck.getScopeObjectId()).getGemeente();
 				}
 
-				result = ((ScreeningOrganisatie) gebruiker.getOrganisatie()).getGemeentes().contains(gemeente);
+				result = ((ScreeningOrganisatie) organisatieMedewerker.getOrganisatie()).getGemeentes().contains(gemeente);
 			}
 			else
 			{
@@ -169,7 +170,7 @@ public class ScopeServiceImpl implements ScopeService
 	}
 
 	@Override
-	public ToegangLevel getHoogsteToegangLevel(InstellingGebruiker instellingGebruiker, Constraint constraintToCheck, boolean checkBvo)
+	public ToegangLevel getHoogsteToegangLevel(OrganisatieMedewerker organisatieMedewerker, Constraint constraintToCheck, boolean checkBvo)
 	{
 		Permissie permissie = new Permissie();
 		permissie.setActie(constraintToCheck.getActie());
@@ -177,7 +178,7 @@ public class ScopeServiceImpl implements ScopeService
 
 		ToegangLevel toegangLevel = null;
 
-		Collection<Permissie> perms = ApplicationContextProvider.getApplicationContext().getBean(ScreenitRealm.class).getPermissies(instellingGebruiker, checkBvo);
+		Collection<Permissie> perms = ApplicationContextProvider.getApplicationContext().getBean(ScreenitRealm.class).getPermissies(organisatieMedewerker, checkBvo);
 		if (perms != null && !perms.isEmpty())
 		{
 			for (Permissie perm : perms)

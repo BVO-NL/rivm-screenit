@@ -36,7 +36,7 @@ import nl.rivm.screenit.main.web.gebruiker.base.ZoekenContextMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.CervixScreeningBasePage;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.GbaPersoon_;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.batch.BatchJob;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
@@ -100,16 +100,16 @@ public abstract class CervixLabformulierenBasePage extends CervixScreeningBasePa
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				Instelling instelling = ScreenitSession.get().getInstelling();
+				Organisatie organisatie = ScreenitSession.get().getOrganisatie();
 				BatchJob batchJob = new BatchJob();
 				batchJob.setJobType(JobType.CERVIX_ORDER);
-				batchJob.getJobParameters().put(JobStartParameter.CERVIX_ORDER_LABORATORIUM.name(), instelling.getId());
-				jobService.startJob(batchJob, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				batchJob.getJobParameters().put(JobStartParameter.CERVIX_ORDER_LABORATORIUM.name(), organisatie.getId());
+				jobService.startJob(batchJob, getIngelogdeOrganisatieMedewerker());
 				info("De opdracht om orders te verwerken is ontvangen, deze zal z.s.m. worden uitgevoerd");
 			}
 		};
-		ordersVerwerkenKnop.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BMHK_LABORATORIUM_ORDER_VERWERKEN, Actie.AANPASSEN)
-			&& OrganisatieType.BMHK_LABORATORIUM.equals(ScreenitSession.get().getInstelling().getOrganisatieType()) && ordersVerwerkenKnopVisible);
+		ordersVerwerkenKnop.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BMHK_LABORATORIUM_ORDER_VERWERKEN, Actie.AANPASSEN)
+			&& OrganisatieType.BMHK_LABORATORIUM.equals(ScreenitSession.get().getOrganisatie().getOrganisatieType()) && ordersVerwerkenKnopVisible);
 		add(ordersVerwerkenKnop);
 
 		MarkupContainer labformulierenFilter = new CervixLabformulierenFilterPanel("filter", mogelijkeCervixLabformulierStatussen, filter, labformulierStatussenVisible,
@@ -130,14 +130,14 @@ public abstract class CervixLabformulierenBasePage extends CervixScreeningBasePa
 		columns.add(
 			new PropertyColumn<>(Model.of("Cliënt"), PERSOON_PROPERTY + "." + GbaPersoon_.ACHTERNAAM,
 				CLIENT_PROPERTY)
-		{
-			@Override
-			public IModel<Object> getDataModel(IModel<CervixLabformulier> labformulierModel)
 			{
-				Client client = new PropertyModel<Client>(labformulierModel, getPropertyExpression()).getObject();
-				return new Model(client != null ? NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client) : "");
-			}
-		});
+				@Override
+				public IModel<Object> getDataModel(IModel<CervixLabformulier> labformulierModel)
+				{
+					Client client = new PropertyModel<Client>(labformulierModel, getPropertyExpression()).getObject();
+					return new Model(client != null ? NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client) : "");
+				}
+			});
 		columns.add(new GeboortedatumColumn<>(PERSOON_PROPERTY + "." + GbaPersoon_.GEBOORTEDATUM,
 			PERSOON_PROPERTY));
 		columns.add(new PropertyColumn<>(Model.of("BSN"), PERSOON_PROPERTY + "." + GbaPersoon_.BSN,
@@ -197,7 +197,7 @@ public abstract class CervixLabformulierenBasePage extends CervixScreeningBasePa
 			};
 			addOrReplace(labformulieren);
 
-			logService.logGebeurtenis(LogGebeurtenis.CERVIX_LABFORMULIEREN_INGEZIEN, ScreenitSession.get().getLoggedInAccount(), getString("titel") + " - " + filter.toString(),
+			logService.logGebeurtenis(LogGebeurtenis.CERVIX_LABFORMULIEREN_INGEZIEN, ScreenitSession.get().getIngelogdAccount(), getString("titel") + " - " + filter.toString(),
 				Bevolkingsonderzoek.CERVIX);
 
 			return labformulieren;

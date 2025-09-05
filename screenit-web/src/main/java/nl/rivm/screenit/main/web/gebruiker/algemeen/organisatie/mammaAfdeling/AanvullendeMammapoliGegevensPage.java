@@ -39,9 +39,9 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @SecurityConstraint(
 	actie = Actie.INZIEN,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_MAMMA_MAMMAPOLI_ORG_BEHEER },
+	recht = { Recht.MEDEWERKER_MAMMA_MAMMAPOLI_ORG_BEHEER },
 	checkScope = true,
-	level = ToegangLevel.INSTELLING,
+	level = ToegangLevel.ORGANISATIE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class AanvullendeMammapoliGegevensPage extends AanvullendeMammaAfdelingGegevensPage
 {
@@ -58,7 +58,7 @@ public class AanvullendeMammapoliGegevensPage extends AanvullendeMammaAfdelingGe
 		Form<Void> form = new ScreenitForm<>("form");
 		add(form);
 
-		setAlleenInzien(getCurrentSelectedOrganisatie(), Recht.GEBRUIKER_MAMMA_MAMMAPOLI_ORG_BEHEER);
+		setAlleenInzien(getCurrentSelectedOrganisatie(), Recht.MEDEWERKER_MAMMA_MAMMAPOLI_ORG_BEHEER);
 
 		form.add(new KoppelAanParentOrganisatiePanel<>("parent", model)).setEnabled(!inzien);
 		createSubmit(form, model);

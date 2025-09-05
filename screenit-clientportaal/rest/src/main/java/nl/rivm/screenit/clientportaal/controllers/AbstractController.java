@@ -50,7 +50,7 @@ public abstract class AbstractController
 
 	protected <T> ResponseEntity<T> createForbiddenResponse()
 	{
-		LOG.error("Gebruiker is niet geautoriseerd om de actie uit te voeren");
+		LOG.error("Medewerker is niet geautoriseerd om de actie uit te voeren");
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 	}
 }

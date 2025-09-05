@@ -31,9 +31,9 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.dto.mamma.MammaUploadBeeldenVerzoekDto;
 import nl.rivm.screenit.main.service.mamma.MammaUploadBeeldenService;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -83,13 +83,13 @@ public class MammaUploadBeeldenServiceImpl implements MammaUploadBeeldenService
 	private final LogService logService;
 
 	@Override
-	public List<MammaUploadBeeldenVerzoek> zoekOpenstaandeUploadBeeldenVerzoeken(Instelling ziekenhuis, ScreeningOrganisatie regio, long first, long count, Sort sort)
+	public List<MammaUploadBeeldenVerzoek> zoekOpenstaandeUploadBeeldenVerzoeken(Organisatie ziekenhuis, ScreeningOrganisatie regio, long first, long count, Sort sort)
 	{
 		return uploadBeeldenVerzoekRepository.findWith(zoekOpenstaandeUploadBeeldenVerzoekenSpecification(ziekenhuis, regio),
 			q -> q.sortBy(sort).all(first, count));
 	}
 
-	private Specification<MammaUploadBeeldenVerzoek> zoekOpenstaandeUploadBeeldenVerzoekenSpecification(Instelling ziekenhuis, ScreeningOrganisatie regio)
+	private Specification<MammaUploadBeeldenVerzoek> zoekOpenstaandeUploadBeeldenVerzoekenSpecification(Organisatie ziekenhuis, ScreeningOrganisatie regio)
 	{
 		return heeftSatusIn(List.of(WACHTEN_OP_UPLOAD, ERROR))
 			.and(filterOpZiekenhuis(ziekenhuis))
@@ -97,13 +97,13 @@ public class MammaUploadBeeldenServiceImpl implements MammaUploadBeeldenService
 	}
 
 	@Override
-	public long countOpenstaandeUploadBeeldenVerzoeken(Instelling instelling, ScreeningOrganisatie regio)
+	public long countOpenstaandeUploadBeeldenVerzoeken(Organisatie organisatie, ScreeningOrganisatie regio)
 	{
-		return uploadBeeldenVerzoekRepository.count(zoekOpenstaandeUploadBeeldenVerzoekenSpecification(instelling, regio));
+		return uploadBeeldenVerzoekRepository.count(zoekOpenstaandeUploadBeeldenVerzoekenSpecification(organisatie, regio));
 	}
 
 	@Override
-	public List<MammaUploadBeeldenVerzoekDto> zoekInstellingenMetOpenstaandeUploadVerzoeken(ScreeningOrganisatie regio)
+	public List<MammaUploadBeeldenVerzoekDto> zoekOrganisatiesMetOpenstaandeUploadVerzoeken(ScreeningOrganisatie regio)
 	{
 		return uploadBeeldenVerzoekRepository.findWith(
 			heeftSatusIn(List.of(WACHTEN_OP_UPLOAD, ERROR))
@@ -115,10 +115,10 @@ public class MammaUploadBeeldenServiceImpl implements MammaUploadBeeldenService
 						var ziekenhuisJoin = join(r, MammaUploadBeeldenVerzoek_.ziekenhuis);
 						return List.of(
 							ziekenhuisJoin.get(AbstractHibernateObject_.id),
-							ziekenhuisJoin.get(Instelling_.naam),
+							ziekenhuisJoin.get(Organisatie_.naam),
 							cb.count(r.get(AbstractHibernateObject_.id)),
-							ziekenhuisJoin.get(Instelling_.telefoon),
-							ziekenhuisJoin.get(Instelling_.telefoon2)
+							ziekenhuisJoin.get(Organisatie_.telefoon),
+							ziekenhuisJoin.get(Organisatie_.telefoon2)
 						);
 					})
 					.groupBy((cb, r) ->
@@ -126,15 +126,15 @@ public class MammaUploadBeeldenServiceImpl implements MammaUploadBeeldenService
 						var ziekenhuisJoin = join(r, MammaUploadBeeldenVerzoek_.ziekenhuis);
 						return List.of(
 							ziekenhuisJoin.get(AbstractHibernateObject_.id),
-							ziekenhuisJoin.get(Instelling_.naam),
-							ziekenhuisJoin.get(Instelling_.telefoon),
-							ziekenhuisJoin.get(Instelling_.telefoon2)
+							ziekenhuisJoin.get(Organisatie_.naam),
+							ziekenhuisJoin.get(Organisatie_.telefoon),
+							ziekenhuisJoin.get(Organisatie_.telefoon2)
 						);
 					}).all());
 	}
 
 	@Override
-	public void maakUploadVerzoek(MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, Client client, InstellingGebruiker gemaaktDoor)
+	public void maakUploadVerzoek(MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, Client client, OrganisatieMedewerker gemaaktDoor)
 	{
 		uploadBeeldenVerzoek.setGemaaktDoor(gemaaktDoor);
 		MammaScreeningRonde screeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
@@ -146,7 +146,7 @@ public class MammaUploadBeeldenServiceImpl implements MammaUploadBeeldenService
 		uploadBeeldenVerzoek.setCreatieDatum(nu);
 		uploadBeeldenVerzoek.setStatus(MammaUploadBeeldenVerzoekStatus.WACHTEN_OP_UPLOAD);
 		uploadBeeldenVerzoek.setStatusDatum(nu);
-		uploadBeeldenVerzoek.setZiekenhuis((Instelling) HibernateHelper.deproxy(uploadBeeldenVerzoek.getZiekenhuis()));
+		uploadBeeldenVerzoek.setZiekenhuis((Organisatie) HibernateHelper.deproxy(uploadBeeldenVerzoek.getZiekenhuis()));
 
 		hibernateService.saveOrUpdateAll(uploadBeeldenVerzoek, screeningRonde);
 		logService.logGebeurtenis(LogGebeurtenis.MAMMA_UPLOAD_VERZOEK, gemaaktDoor, uploadBeeldenVerzoek.getScreeningRonde().getDossier().getClient(), "Uploadverzoek aangemaakt",
@@ -155,7 +155,7 @@ public class MammaUploadBeeldenServiceImpl implements MammaUploadBeeldenService
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public String uploadBeelden(MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, List<UploadDocument> uploadDocumenten, InstellingGebruiker loggedInInstellingGebruiker)
+	public String uploadBeelden(MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, List<UploadDocument> uploadDocumenten, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		if (uploadDocumenten.size() != uploadDocumenten.stream().map(UploadDocument::getNaam).distinct().count())
 		{
@@ -174,13 +174,13 @@ public class MammaUploadBeeldenServiceImpl implements MammaUploadBeeldenService
 
 			uploadBeeldenPoging.setBestanden(teUploadenBeelden);
 			hibernateService.saveOrUpdate(uploadBeeldenPoging);
-			logUploadVerzoekGebeurtenis(loggedInInstellingGebruiker, uploadBeeldenVerzoek, "Beelden geupload");
+			logUploadVerzoekGebeurtenis(ingelogdeOrganisatieMedewerker, uploadBeeldenVerzoek, "Beelden geupload");
 			return "";
 		}
 		catch (Exception e)
 		{
 			LOG.error("Er is een technische fout opgetreden", e);
-			logUploadVerzoekGebeurtenis(loggedInInstellingGebruiker, uploadBeeldenVerzoek, "Er is een technische fout opgetreden bij het uploaden");
+			logUploadVerzoekGebeurtenis(ingelogdeOrganisatieMedewerker, uploadBeeldenVerzoek, "Er is een technische fout opgetreden bij het uploaden");
 			return "fout.opgetreden";
 		}
 	}
@@ -205,7 +205,7 @@ public class MammaUploadBeeldenServiceImpl implements MammaUploadBeeldenService
 	}
 
 	@Override
-	public void setGeenBeeldenBeschikbaar(MammaUploadBeeldenVerzoek verzoek, InstellingGebruiker instellingGebruiker) throws IllegalStateException
+	public void setGeenBeeldenBeschikbaar(MammaUploadBeeldenVerzoek verzoek, OrganisatieMedewerker organisatieMedewerker) throws IllegalStateException
 	{
 		hibernateService.reload(verzoek);
 		if (MammaUploadBeeldenVerzoekStatus.BEELDEN_GEUPLOAD == verzoek.getStatus()
@@ -220,11 +220,11 @@ public class MammaUploadBeeldenServiceImpl implements MammaUploadBeeldenService
 		verzoek.setStatus(MammaUploadBeeldenVerzoekStatus.GEEN_BEELDEN_BESCHIKBAAR);
 		verzoek.setStatusDatum(dateSupplier.getDate());
 		hibernateService.saveOrUpdate(verzoek);
-		logUploadVerzoekGebeurtenis(instellingGebruiker, verzoek, "Geen beelden beschikbaar");
+		logUploadVerzoekGebeurtenis(organisatieMedewerker, verzoek, "Geen beelden beschikbaar");
 	}
 
 	@Override
-	public void annuleerVerzoek(MammaUploadBeeldenVerzoek verzoek, InstellingGebruiker instellingGebruiker) throws IllegalStateException
+	public void annuleerVerzoek(MammaUploadBeeldenVerzoek verzoek, OrganisatieMedewerker organisatieMedewerker) throws IllegalStateException
 	{
 		hibernateService.reload(verzoek);
 		if (MammaUploadBeeldenVerzoekStatus.BEELDEN_GEUPLOAD == verzoek.getStatus()
@@ -239,12 +239,12 @@ public class MammaUploadBeeldenServiceImpl implements MammaUploadBeeldenService
 		verzoek.setStatus(MammaUploadBeeldenVerzoekStatus.GEANNULEERD);
 		verzoek.setStatusDatum(dateSupplier.getDate());
 		hibernateService.saveOrUpdate(verzoek);
-		logUploadVerzoekGebeurtenis(instellingGebruiker, verzoek, "Uploadverzoek geannuleerd");
+		logUploadVerzoekGebeurtenis(organisatieMedewerker, verzoek, "Uploadverzoek geannuleerd");
 	}
 
-	private void logUploadVerzoekGebeurtenis(InstellingGebruiker instellingGebruiker, MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, String melding)
+	private void logUploadVerzoekGebeurtenis(OrganisatieMedewerker organisatieMedewerker, MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, String melding)
 	{
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_UPLOAD_VERZOEK, instellingGebruiker, uploadBeeldenVerzoek.getScreeningRonde().getDossier().getClient(), melding,
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_UPLOAD_VERZOEK, organisatieMedewerker, uploadBeeldenVerzoek.getScreeningRonde().getDossier().getClient(), melding,
 			Bevolkingsonderzoek.MAMMA);
 	}
 }

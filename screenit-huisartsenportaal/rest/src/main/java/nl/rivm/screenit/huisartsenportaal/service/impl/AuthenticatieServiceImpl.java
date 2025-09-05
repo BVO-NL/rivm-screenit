@@ -78,7 +78,7 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 		var huisarts = huisartsRepository.findByAgbcodeAndInlogCodeAndInlogMethode(registrerenDto.getAgbCode(), registrerenDto.getRegistratieCode(), InlogMethode.INLOGCODE);
 		if (huisarts == null)
 		{
-			throw new UserNotFoundException("Gebruiker niet gevonden.");
+			throw new UserNotFoundException("Medewerker niet gevonden.");
 		}
 
 		return getToken(huisarts, Scope.REGISTREREN);
@@ -98,7 +98,7 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 		}
 		if (huisarts == null)
 		{
-			throw new BadCredentialsException("Gebruiker niet gevonden.");
+			throw new BadCredentialsException("Medewerker niet gevonden.");
 		}
 		huisarts.setAanmeldStatus(AanmeldStatus.WACHTWOORD_RESET);
 		huisartsRepository.save(huisarts);
@@ -145,7 +145,7 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 				var attempts = incrementAttempts(huisarts);
 				throw new BadCredentialsException("Uw ingevoerde wachtwoord is ongeldig. U heeft nog " + attempts + " pogingen.");
 			}
-			throw new BadCredentialsException("Inloggen mislukt. Gebruiker niet gevonden.");
+			throw new BadCredentialsException("Inloggen mislukt. Medewerker niet gevonden.");
 		}
 	}
 

@@ -82,7 +82,7 @@ public class ApplicationConfiguration
 
 			if (huisarts == null || !huisarts.isAccountNonExpired())
 			{
-				throw new UserNotFoundException("Inloggen mislukt. Gebruiker niet gevonden.");
+				throw new UserNotFoundException("Inloggen mislukt. Medewerker niet gevonden.");
 			}
 
 			if (huisarts.getInlogCode() != null)
@@ -91,7 +91,7 @@ public class ApplicationConfiguration
 				{
 					throw new CredentialsExpiredException("U moet zich eerst opnieuw registreren voor u weer kunt inloggen. Volg de instructies die u per brief heeft ontvangen.");
 				}
-				if (!List.of(AanmeldStatus.WACHTWOORD_RESET, AanmeldStatus.AANGEMAAKT).contains(huisarts.getAanmeldStatus()))
+				if (!List.of(AanmeldStatus.WACHTWOORD_RESET, AanmeldStatus.AANGEMAAKT, AanmeldStatus.REGISTRATIE_KLAARGEZET).contains(huisarts.getAanmeldStatus()))
 				{
 					throw new CredentialsExpiredException("U heeft een nieuw wachtwoord aangevraagd. Volg de instructies die u per e-mail heeft ontvangen.");
 				}

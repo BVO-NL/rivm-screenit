@@ -28,8 +28,8 @@ import jakarta.persistence.criteria.JoinType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
@@ -58,12 +58,12 @@ import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNull;
 public class MammaFollowUpRadiologieVerslagSpecification
 {
 
-	public static Specification<MammaFollowUpRadiologieVerslag> heeftOpenstaandeRadioVerslagenVanInstelling(Instelling instelling)
+	public static Specification<MammaFollowUpRadiologieVerslag> heeftOpenstaandeRadioVerslagenVanOrganisatie(Organisatie organisatie)
 	{
 		return (r, q, cb) ->
 			cb.and(
 				cb.isNull(r.get(MammaFollowUpRadiologieVerslag_.ingevoerdDoor)),
-				cb.equal(r.get(MammaFollowUpRadiologieVerslag_.aangemaaktIn), instelling));
+				cb.equal(r.get(MammaFollowUpRadiologieVerslag_.aangemaaktIn), organisatie));
 	}
 
 	public static Specification<MammaFollowUpRadiologieVerslag> filterLaatsteRadioVerslagenOpBeoordelingStatus(MammaBeoordelingStatus beoordelingStatus)
@@ -122,17 +122,17 @@ public class MammaFollowUpRadiologieVerslagSpecification
 		return skipWhenNull(screeningOrganisatie, (r, q, cb) ->
 		{
 			var organisatieJoin = r.join(MammaFollowUpRadiologieVerslag_.aangemaaktIn);
-			var parentJoin = join(organisatieJoin, Instelling_.parent, JoinType.LEFT);
+			var parentJoin = join(organisatieJoin, Organisatie_.parent, JoinType.LEFT);
 
 			return cb.or(
-				cb.equal(organisatieJoin.get(Instelling_.parent).get(AbstractHibernateObject_.id), screeningOrganisatie.getId()),
-				cb.equal(parentJoin.get(Instelling_.parent).get(AbstractHibernateObject_.id), screeningOrganisatie.getId())
+				cb.equal(organisatieJoin.get(Organisatie_.parent).get(AbstractHibernateObject_.id), screeningOrganisatie.getId()),
+				cb.equal(parentJoin.get(Organisatie_.parent).get(AbstractHibernateObject_.id), screeningOrganisatie.getId())
 			);
 		});
 
 	}
 
-	public static Specification<MammaFollowUpRadiologieVerslag> isAangemaaktInAfdeling(Instelling afdeling)
+	public static Specification<MammaFollowUpRadiologieVerslag> isAangemaaktInAfdeling(Organisatie afdeling)
 	{
 		return (r, q, cb) -> cb.equal(r.get(MammaFollowUpRadiologieVerslag_.aangemaaktIn), afdeling);
 	}

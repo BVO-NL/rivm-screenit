@@ -21,8 +21,8 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.extrabeveiligdeomgeving;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.base.angular.AngularBasePage;
 
 import java.util.ArrayList;
@@ -31,17 +31,17 @@ import java.util.List;
 public abstract class ExtraBeveiligdeOmgevingBasePage extends AngularBasePage
 {
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.ALGEMEEN;
+		return MedewerkerHoofdMenuItem.ALGEMEEN;
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		var contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.extra.beveiligde.omgeving.keuze.herstellen", ExtraBeveiligdeOmgevingKeuzeHerstellenPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.extra.beveiligde.omgeving.client.zoeken", ExtraBeveiligdeOmgevingClientZoekenPage.class));
+		var contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.extra.beveiligde.omgeving.keuze.herstellen", ExtraBeveiligdeOmgevingKeuzeHerstellenPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.extra.beveiligde.omgeving.client.zoeken", ExtraBeveiligdeOmgevingClientZoekenPage.class));
 		return contextMenuItems;
 	}
 }

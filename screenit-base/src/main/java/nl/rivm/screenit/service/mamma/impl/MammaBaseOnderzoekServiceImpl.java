@@ -444,7 +444,7 @@ public class MammaBaseOnderzoekServiceImpl implements MammaBaseOnderzoekService
 	private String naamExtraMedewerker(MammaOnderzoek onderzoek)
 	{
 		var extraMedewerker = onderzoek.getExtraMedewerker();
-		return extraMedewerker != null ? NaamUtil.getNaamGebruiker(extraMedewerker.getMedewerker()) : null;
+		return extraMedewerker != null ? NaamUtil.getNaamMedewerker(extraMedewerker.getMedewerker()) : null;
 	}
 
 	private String operatiesTekst(MammaOnderzoek onderzoek)

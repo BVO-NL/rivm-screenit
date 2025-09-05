@@ -21,12 +21,13 @@
 import {Dispatch} from "redux"
 import ScreenitBackend from "../utils/Backend"
 import {ColonIntakeAfspraakAction, setColonIntakeAfspraakAction} from "../actions/ColonDossierAction"
+import {ColonIntakeAfspraakDto} from "../datatypes/colon/ColonIntakeAfspraakDto"
 
 export const getHuidigeIntakeAfspraak = () => async (dispatch: Dispatch<ColonIntakeAfspraakAction>) => {
-	return ScreenitBackend.get("/colon/afspraak/huidig")
-		.then(response => dispatch(setColonIntakeAfspraakAction(response.data)))
+	return ScreenitBackend.get<ColonIntakeAfspraakDto>("colon/afspraak/huidig").json()
+		.then(response => dispatch(setColonIntakeAfspraakAction(response)))
 }
 
 export const saveAfspraakAfzeggen = () => {
-	return ScreenitBackend.put(`/colon/afspraak/afzeggen`)
+	return ScreenitBackend.put(`colon/afspraak/afzeggen`)
 }

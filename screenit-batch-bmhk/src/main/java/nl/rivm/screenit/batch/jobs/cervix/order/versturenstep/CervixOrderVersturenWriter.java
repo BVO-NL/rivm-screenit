@@ -31,7 +31,7 @@ import nl.rivm.screenit.batch.jobs.cervix.order.CervixOrderConstants;
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.batch.service.CervixHL7BaseService;
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.cervix.CervixCytologieOrder;
@@ -95,9 +95,9 @@ public class CervixOrderVersturenWriter extends BaseWriter<CervixCytologieOrder>
 		cytologieOrder.setStatusDatum(dateSupplier.getDate());
 		hibernateService.saveOrUpdate(cytologieOrder);
 
-		List<Instelling> instellingen = new ArrayList<>();
-		instellingen.add(hibernateService.loadAll(Rivm.class).get(0));
+		List<Organisatie> organisaties = new ArrayList<>();
+		organisaties.add(hibernateService.loadAll(Rivm.class).get(0));
 		var client = cytologieOrder.getUitstrijkje().getOntvangstScreeningRonde().getDossier().getClient();
-		logService.logGebeurtenis(LogGebeurtenis.CERVIX_ORDER_VERSTUREN_MISLUKT, instellingen, client, melding, Bevolkingsonderzoek.CERVIX);
+		logService.logGebeurtenis(LogGebeurtenis.CERVIX_ORDER_VERSTUREN_MISLUKT, organisaties, client, melding, Bevolkingsonderzoek.CERVIX);
 	}
 }

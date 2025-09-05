@@ -124,7 +124,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 	private ColonBaseAfspraakService afspraakService;
 
 	private final boolean magAfspraakBinnenIntakeNietWijzigPeriodePlaatsen = ScreenitSession.get()
-		.checkPermission(Recht.GEBRUIKER_CLIENT_SR_INTAKE_VERPLAATS_BINNEN_INTAKE_NIET_WIJZIGBAAR_PERIODE, Actie.AANPASSEN);
+		.checkPermission(Recht.MEDEWERKER_CLIENT_SR_INTAKE_VERPLAATS_BINNEN_INTAKE_NIET_WIJZIGBAAR_PERIODE, Actie.AANPASSEN);
 
 	private final boolean locatieWijzigen;
 
@@ -195,7 +195,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 		}
 		var briefTypeDropDown = new ScreenitDropdown<>("briefType", briefType, choices, new ChoiceRenderer<>("weergaveNaam"));
 		briefTypeDropDown.setVisible(
-			ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_INTAKE_WIJZIGEN_ANDER_BRIEF, Actie.AANPASSEN) && !isDoorverwezen);
+			ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_INTAKE_WIJZIGEN_ANDER_BRIEF, Actie.AANPASSEN) && !isDoorverwezen);
 		briefTypeDropDown.setRequired(true);
 		add(briefTypeDropDown);
 	}
@@ -231,7 +231,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 		add(new Label("kamer.intakelocatie.naam").setVisible(toonHuidigeAfspraak));
 
 		add(new Label("ccAdres", (IModel<String>) () -> Strings
-			.escapeMarkup(AdresUtil.getVolledigeAdresString(getModelObject().getKamer().getIntakelocatie().getAdressen().get(0))).toString()).setEscapeModelStrings(false));
+			.escapeMarkup(AdresUtil.getVolledigeAdresString(getModelObject().getKamer().getIntakelocatie().getAdres())).toString()).setEscapeModelStrings(false));
 		add(new Label("vanaf", DateTimeFormatter.ofPattern("EEEE dd-MM-yyyy HH:mm").format(afspraak.getVanaf())));
 	}
 
@@ -269,7 +269,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 
 	private void addOrReplaceTegenhoudenContainer(AjaxRequestTarget target)
 	{
-		var rechtVoorBriefTegenhouden = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
+		var rechtVoorBriefTegenhouden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
 		var briefTegenhoudenContainer = new WebMarkupContainer("briefTegenhoudenContainer");
 		briefTegenhoudenContainer.setVisible(Boolean.TRUE.equals(binnenNietWijzigbaarPeriode.getObject()) ||
 			rechtVoorBriefTegenhouden);
@@ -362,7 +362,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 			var intakelocatie = hibernateService.get(ColonIntakelocatie.class, gekozenVrijSlotZonderKamer.getIntakelocatieId());
 			String locatieBeschrijving = organisatieParameterService.getOrganisatieParameter(intakelocatie, OrganisatieParameterKey.COLON_INTAKELOCATIE_BESCHRIJVING);
 			afspraakDetails.add(new Label("naam", intakelocatie.getNaam()));
-			afspraakDetails.add(new Label("adres", AdresUtil.getVolledigeAdresString(intakelocatie.getAdressen().get(0))));
+			afspraakDetails.add(new Label("adres", AdresUtil.getVolledigeAdresString(intakelocatie.getAdres())));
 			afspraakDetails.add(new Label("locatieBeschrijving", locatieBeschrijving).setVisible(StringUtils.isNotBlank(locatieBeschrijving)));
 		}
 
@@ -655,7 +655,9 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 
 			var oudeAfspraak = getModelObject();
 			nieuweAfspraak.setColonScreeningRonde(oudeAfspraak.getColonScreeningRonde());
-			nieuweAfspraak.setClient(oudeAfspraak.getClient());
+			var client = oudeAfspraak.getClient();
+			nieuweAfspraak.setClient(client);
+			client.getAfspraken().add(nieuweAfspraak);
 
 			if (Boolean.FALSE.equals(buitenRooster.getObject()))
 			{
@@ -691,14 +693,14 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 
 	public Map<ExtraOpslaanKey, Object> getOpslaanObjecten()
 	{
-		var rechtVoorBriefTegenhouden = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
+		var rechtVoorBriefTegenhouden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
 		var opslaanObjecten = new EnumMap<>(ExtraOpslaanKey.class);
 		if (nieuweAfspraakModel != null)
 		{
 			ColonIntakeAfspraak nieuweAfspraak = nieuweAfspraakModel.getObject();
 			if (nieuweAfspraak != null)
 			{
-				if (ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_INTAKE_WIJZIGEN_ANDER_BRIEF, Actie.AANPASSEN))
+				if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_INTAKE_WIJZIGEN_ANDER_BRIEF, Actie.AANPASSEN))
 				{
 					opslaanObjecten.put(ExtraOpslaanKey.AFSPRAAK_BRIEF, briefType.getObject());
 				}

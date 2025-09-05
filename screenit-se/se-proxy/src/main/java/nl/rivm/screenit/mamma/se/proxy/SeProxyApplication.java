@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,23 +21,15 @@ package nl.rivm.screenit.mamma.se.proxy;
  * =========================LICENSE_END==================================
  */
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Properties;
-import java.util.TimeZone;
+import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.mamma.se.proxy.model.EnvironmentInfoDto;
 import nl.rivm.screenit.mamma.se.proxy.services.AchtergrondRequestService;
 import nl.rivm.screenit.mamma.se.proxy.services.MammaScreeningsEenheidStatusService;
 import nl.rivm.screenit.mamma.se.proxy.services.ProxyService;
 import nl.rivm.screenit.mamma.se.proxy.services.SeRestSocketService;
 import nl.rivm.screenit.mamma.se.proxy.services.SeStatusService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -49,14 +41,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 
 @SpringBootApplication
 @ComponentScan(basePackages = { "nl.rivm.screenit" })
+@Slf4j
 public class SeProxyApplication implements ApplicationListener<ContextRefreshedEvent>
 {
-	private static final Logger LOG = LoggerFactory.getLogger(SeProxyApplication.class);
-
-	private static EnvironmentInfoDto environmentInfo = null; 
-
-	private static String environmentName;
-
 	@Autowired
 	private SeRestSocketService seRestSocketService;
 
@@ -87,47 +74,8 @@ public class SeProxyApplication implements ApplicationListener<ContextRefreshedE
 		return path;
 	}
 
-	public static EnvironmentInfoDto getEnvironmentInfo()
-	{
-		if (environmentInfo == null)
-		{
-			environmentInfo = new EnvironmentInfoDto();
-			var applicationProperties = new Properties();
-			try (InputStream resourceAsStream = SeProxyApplication.class.getResourceAsStream("/build-info.properties"))
-			{
-				applicationProperties.load(resourceAsStream);
-				environmentInfo.setVersion(applicationProperties.getProperty("build.version"));
-				LOG.info("SE-Proxy versie: " + environmentInfo.getVersion());
-				environmentInfo.setEnvironment(environmentName);
-				environmentInfo.setMagUpdaten(false);
-				String timestampString = applicationProperties.getProperty("build.time").replace('T', ' ').replace('Z', ' ').trim();
-				SimpleDateFormat inputformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				inputformat.setTimeZone(TimeZone.getTimeZone("UTC"));
-				Date timestamp = inputformat.parse(timestampString, new ParsePosition(0));
-				if (timestamp == null)
-				{
-					timestamp = new Date();
-				}
-				SimpleDateFormat outputformat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-				outputformat.setTimeZone(TimeZone.getTimeZone("CET"));
-				environmentInfo.setTimestamp(outputformat.format(timestamp));
-			}
-			catch (IOException e)
-			{
-				LOG.error("Fout bij laden van build-info.properties (voor environmentInfo)");
-			}
-		}
-		return environmentInfo;
-	}
-
-	@Value("${ENVIRONMENT:Productie}")
-	public void setEnvironmentName(String environment)
-	{
-		environmentName = environment;
-	}
-
 	@Override
-	public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent)
+	public void onApplicationEvent(@NotNull ContextRefreshedEvent contextRefreshedEvent)
 	{
 		if (!initPerformed)
 		{

@@ -31,8 +31,8 @@ import nl.rivm.screenit.model.CentraleEenheid;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
@@ -97,11 +97,11 @@ public interface ClientService
 
 	boolean isTijdelijkeAdresNuActueel(GbaPersoon persoon);
 
-	void saveOrUpdateTijdelijkGbaAdres(Client client, InstellingGebruiker ingelogdeGebruiker);
+	void saveOrUpdateTijdelijkGbaAdres(Client client, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	void verwijderTijdelijkGbaAdres(Client client, InstellingGebruiker loggedInInstellingGebruiker);
+	void verwijderTijdelijkGbaAdres(Client client, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	List<Instelling> getScreeningOrganisatieVan(Client client);
+	List<Organisatie> getScreeningOrganisatieVan(Client client);
 
 	CervixUitnodiging getLaatstVerstuurdeUitnodiging(CervixScreeningRonde ronde, boolean inclusiefZas);
 

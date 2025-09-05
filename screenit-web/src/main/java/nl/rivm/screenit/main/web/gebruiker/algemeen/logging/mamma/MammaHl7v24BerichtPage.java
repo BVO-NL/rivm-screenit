@@ -23,7 +23,7 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.logging.mamma;
 
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.LoggingInzienPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.inzien.ClientInzienPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client;
@@ -48,7 +48,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_INZIEN_LOGGING,
+	recht = Recht.MEDEWERKER_INZIEN_LOGGING,
 	bevolkingsonderzoekScopes = Bevolkingsonderzoek.MAMMA)
 public class MammaHl7v24BerichtPage extends AlgemeenPage implements IDetachable
 {
@@ -104,7 +104,7 @@ public class MammaHl7v24BerichtPage extends AlgemeenPage implements IDetachable
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveSubMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveSubMenuClass()
 	{
 		return LoggingInzienPage.class;
 	}

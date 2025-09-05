@@ -24,10 +24,10 @@ package nl.rivm.screenit.main.web.gebruiker.base.angular;
 import java.io.IOException;
 import java.util.List;
 
-import nl.rivm.screenit.main.web.ScreenitApplication;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.filter.SecurityHeadersFilter;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.service.EnvironmentInfoService;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
@@ -47,7 +47,7 @@ import org.wicketstuff.wiquery.core.javascript.JsStatement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public abstract class AngularBasePage extends GebruikerBasePage
+public abstract class AngularBasePage extends MedewerkerBasePage
 {
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -67,6 +67,9 @@ public abstract class AngularBasePage extends GebruikerBasePage
 
 	@SpringBean(name = "applicationEnvironment")
 	private String applicationEnvironment;
+
+	@SpringBean
+	private EnvironmentInfoService environmentInfoService;
 
 	@Override
 	public void onInitialize()
@@ -119,7 +122,7 @@ public abstract class AngularBasePage extends GebruikerBasePage
 					super.onComponentTag(tag);
 
 					tag.getAttributes().put(JavaScriptUtils.ATTR_CSP_NONCE, WebApplication.get().getCspSettings().getNonce(RequestCycle.get()));
-					tag.getAttributes().put(JavaScriptUtils.ATTR_SCRIPT_SRC, medewerkerPortaalResourceUrl + script + "?version=" + ScreenitApplication.get().getVersionString());
+					tag.getAttributes().put(JavaScriptUtils.ATTR_SCRIPT_SRC, medewerkerPortaalResourceUrl + script + "?version=" + environmentInfoService.getVersion());
 					tag.getAttributes().put(JavaScriptUtils.ATTR_TYPE, "module");
 				}
 			};
@@ -153,7 +156,7 @@ public abstract class AngularBasePage extends GebruikerBasePage
 		for (var style : styles)
 		{
 			response.render(
-				new CssUrlReferenceHeaderItem(medewerkerPortaalResourceUrl + style + "?version=" + ScreenitApplication.get().getVersionString(), "screen", "stylesheet"));
+				new CssUrlReferenceHeaderItem(medewerkerPortaalResourceUrl + style + "?version=" + environmentInfoService.getVersion(), "screen", "stylesheet"));
 		}
 		if (Boolean.TRUE.equals(testModus))
 		{

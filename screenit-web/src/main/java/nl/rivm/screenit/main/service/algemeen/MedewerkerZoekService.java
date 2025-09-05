@@ -24,17 +24,17 @@ package nl.rivm.screenit.main.service.algemeen;
 import java.util.List;
 
 import nl.rivm.screenit.model.Functie;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.Rol;
 
 import org.springframework.data.domain.Sort;
 
 public interface MedewerkerZoekService
 {
-	List<Gebruiker> searchMedewerkers(Gebruiker zoekObject, List<Functie> selectedFuncties, List<Rol> selectedRollen, InstellingGebruiker ingelogdeOrganisatieMedewerker,
+	List<Medewerker> searchMedewerkers(Medewerker zoekObject, List<Functie> selectedFuncties, List<Rol> selectedRollen, OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
 		boolean voorOrganisatieKoppelen, long first, long count, Sort sort);
 
-	long countMedewerkers(Gebruiker zoekObject, List<Functie> selectedFuncties, List<Rol> selectedRollen, InstellingGebruiker ingelogdeOrganisatieMedewerker,
+	long countMedewerkers(Medewerker zoekObject, List<Functie> selectedFuncties, List<Rol> selectedRollen, OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
 		boolean voorOrganisatieKoppelen);
 }

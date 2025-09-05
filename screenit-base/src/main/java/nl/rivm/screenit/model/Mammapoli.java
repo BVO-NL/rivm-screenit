@@ -29,7 +29,7 @@ import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
-public class Mammapoli extends Instelling
+public class Mammapoli extends Organisatie
 {
 	@Serial
 	private static final long serialVersionUID = 1L;

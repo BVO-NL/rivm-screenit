@@ -93,7 +93,7 @@ public abstract class MammaStandplaatsEditLocatieAdresPanel extends GenericPanel
 		add(locatieForm);
 
 		locatieForm.add(new Label("titel", titel));
-		boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
+		boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
 		ComponentHelper.addTextField(locatieForm, "straat", true, 43, !magAanpassen);
 		ComponentHelper.addTextField(locatieForm, "huisnummer", true, 10, Integer.class, !magAanpassen);
 		ComponentHelper.addTextField(locatieForm, "huisnummerToevoeging", false, 2, !magAanpassen);
@@ -170,7 +170,7 @@ public abstract class MammaStandplaatsEditLocatieAdresPanel extends GenericPanel
 						locatie.setBrievenApartPrinten(true);
 					}
 					boolean changed = standplaatsService.saveOrUpdateStandplaatsLocatie(locatie, documentFromSelectedFile, standplaats,
-						ScreenitSession.get().getLoggedInInstellingGebruiker(), oudeAdres, oudePeriode);
+						ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), oudeAdres, oudePeriode);
 					if (changed)
 					{
 						if (StringUtils.isNotBlank(waarschuwing))

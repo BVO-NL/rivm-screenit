@@ -65,11 +65,11 @@ public class PassantZoekenController extends AuthorizedController
 	public ResponseEntity zoekPassantVoorBsnEnGeboortedatum(@RequestParam("bsn") String bsn,
 		@RequestParam("geboortedatum") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate geboortedatum, HttpServletRequest request)
 	{
-		if (!isAuthorized(request, Recht.GEBRUIKER_SCREENING_MAMMA_SE_INSCHRIJVEN))
+		if (!isAuthorized(request, Recht.MEDEWERKER_SCREENING_MAMMA_SE_INSCHRIJVEN))
 		{
 			return createUnauthorizedResponse();
 		}
-		SEAccountResolverDelegate.setInstellingGebruiker(getInstellingGebruiker(request));
+		SEAccountResolverDelegate.setOrganisatieMedewerker(getOrganisatieMedewerker(request));
 
 		Client client = clientService.getClientByBsn(bsn);
 		if (client != null && client.getMammaDossier() != null && DateUtil.isGeboortedatumGelijk(geboortedatum, client))

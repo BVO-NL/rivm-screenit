@@ -51,7 +51,7 @@ public class MammaAfspraakDrempelOverzichtRestController
 		actie = Actie.INZIEN,
 		checkScope = true,
 		constraint = ShiroConstraint.HasPermission,
-		recht = { Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING },
+		recht = { Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING },
 		bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 	public ResponseEntity<String> getAfspraakDrempelOverzichtStandplaats(@RequestParam(value = "standplaatsId") long standplaatsId)
 	{
@@ -63,7 +63,7 @@ public class MammaAfspraakDrempelOverzichtRestController
 		actie = Actie.INZIEN,
 		checkScope = true,
 		constraint = ShiroConstraint.HasPermission,
-		recht = { Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING },
+		recht = { Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING },
 		bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 	public ResponseEntity<String> getAfspraakDrempelOverzichtScreeningsOrganisatie(@RequestParam(value = "screeningsOrganisatieId") long screeningsOrganisatieId)
 	{

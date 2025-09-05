@@ -21,9 +21,9 @@ package nl.rivm.screenit.main.dao;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 
 public interface MedewerkerDao
 {
-	void saveOrUpdateInstellingGebruiker(InstellingGebruiker organisatieMedewerker);
+	void saveOrUpdateOrganisatieMedewerker(OrganisatieMedewerker organisatieMedewerker);
 }

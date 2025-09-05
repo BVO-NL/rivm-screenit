@@ -25,7 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.service.cervix.CervixDossierService;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.dashboard.DashboardStatus;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -64,7 +64,7 @@ public class CervixDossierServiceImpl implements CervixDossierService
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public boolean setUitslagenGecontroleerdEnUpdateDashboard(LogRegel logRegel, InstellingGebruiker medewerker, DashboardStatus dashboardStatus)
+	public boolean setUitslagenGecontroleerdEnUpdateDashboard(LogRegel logRegel, OrganisatieMedewerker organisatieMedewerker, DashboardStatus dashboardStatus)
 	{
 		var dossier = logRegel.getClient().getCervixDossier();
 		var nu = currentDateSupplier.getLocalDate();
@@ -72,9 +72,9 @@ public class CervixDossierServiceImpl implements CervixDossierService
 		var minimaleSignaleringsDatum = nu.minusDays(
 			organisatieParameterService.getOrganisatieParameter(null, OrganisatieParameterKey.CERVIX_SIGNALERINGSTERMIJN_MISSENDE_UITSLAGEN, 30));
 		var laatsteMonsterZonderUitslag = monsterService.getLaatsteMonsterMetMissendeUitslagVanDossier(dossier, signalerenVanaf, minimaleSignaleringsDatum).orElse(null);
-		var status = dashboardService.updateLogRegelMetDashboardStatus(logRegel, medewerker.getMedewerker().getGebruikersnaam(), dashboardStatus);
+		var status = dashboardService.updateLogRegelMetDashboardStatus(logRegel, organisatieMedewerker.getMedewerker().getGebruikersnaam(), dashboardStatus);
 
-		logService.logGebeurtenis(LogGebeurtenis.CERVIX_CONTROLE_MISSENDE_UITSLAGEN_MATCH_GECONTROLEERD, medewerker, dossier.getClient(), Bevolkingsonderzoek.CERVIX);
+		logService.logGebeurtenis(LogGebeurtenis.CERVIX_CONTROLE_MISSENDE_UITSLAGEN_MATCH_GECONTROLEERD, organisatieMedewerker, dossier.getClient(), Bevolkingsonderzoek.CERVIX);
 
 		if (laatsteMonsterZonderUitslag == null)
 		{

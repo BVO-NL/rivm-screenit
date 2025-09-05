@@ -67,9 +67,9 @@ public class MammaDoelgroepIndicatorPanel extends Panel
 		add(new WebMarkupContainer("tehuis").setVisible(isTehuisClient && toonTehuis));
 		add(new WebMarkupContainer("suspectOfHoogRisico").setVisible(isSuspectOfHoogRisico));
 
-		setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_DOSSIERGEGEVENS, Actie.INZIEN)
-			|| ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_AFSPRAKEN_BEHEER, Actie.INZIEN)
-			|| ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_TEHUIS, Actie.INZIEN));
+		setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_DOSSIERGEGEVENS, Actie.INZIEN)
+			|| ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_AFSPRAKEN_BEHEER, Actie.INZIEN)
+			|| ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_TEHUIS, Actie.INZIEN));
 	}
 
 }

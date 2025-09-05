@@ -40,7 +40,7 @@ import nl.rivm.screenit.main.web.component.validator.EmailAddressenValidator;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.LoggingTable;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.GbaPersoon_;
-import nl.rivm.screenit.model.Gebruiker_;
+import nl.rivm.screenit.model.Medewerker_;
 import nl.rivm.screenit.model.dashboard.DashboardLogRegel_;
 import nl.rivm.screenit.model.dashboard.DashboardStatus;
 import nl.rivm.screenit.model.enums.Actie;
@@ -117,7 +117,7 @@ public class DashboardStatusPanel extends GenericPanel<DashboardStatus>
 			propertyChain(DashboardLogRegel_.LOG_REGEL, LogRegel_.LOG_GEBEURTENIS), LogRegel_.LOG_GEBEURTENIS));
 		columns.add(new DateTimePropertyColumn<>(new SimpleStringResourceModel("label.datumtijd"), LogRegel_.GEBEURTENIS_DATUM,
 			propertyChain(DashboardLogRegel_.LOG_REGEL, LogRegel_.GEBEURTENIS_DATUM), Constants.getDateTimeSecondsFormat()));
-		columns.add(new PropertyColumn<>(new SimpleStringResourceModel("label.gebruiker"), propertyChain(LogRegel_.GEBRUIKER, Gebruiker_.GEBRUIKERSNAAM)));
+		columns.add(new PropertyColumn<>(new SimpleStringResourceModel("label.medewerker"), propertyChain(LogRegel_.MEDEWERKER, Medewerker_.GEBRUIKERSNAAM)));
 
 		columns.add(new PropertyColumn<>(new SimpleStringResourceModel("label.client"), propertyChain(Client_.PERSOON, GbaPersoon_.ACHTERNAAM))
 		{
@@ -142,7 +142,7 @@ public class DashboardStatusPanel extends GenericPanel<DashboardStatus>
 			}
 		});
 
-		if (ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_DASHBOARD_AFGEHANDELD_KNOP, Actie.AANPASSEN))
+		if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_DASHBOARD_AFGEHANDELD_KNOP, Actie.AANPASSEN))
 		{
 			columns.add(maakAfgehandeldKnop());
 		}
@@ -156,7 +156,7 @@ public class DashboardStatusPanel extends GenericPanel<DashboardStatus>
 		var form = new Form<>("form");
 		add(form);
 
-		var magEmailAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_DASHBOARD, Actie.AANPASSEN);
+		var magEmailAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_DASHBOARD, Actie.AANPASSEN);
 		ComponentHelper.addTextField(form, "emailadressen", false, 100, !magEmailAanpassen).add(EmailAddressenValidator.getInstance());
 		form.add(new IndicatingAjaxButton("opslaan")
 		{
@@ -199,7 +199,7 @@ public class DashboardStatusPanel extends GenericPanel<DashboardStatus>
 		};
 
 		bulkAfhandelLink.setVisible(
-			ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_DASHBOARD_AFGEHANDELD_KNOP, Actie.AANPASSEN) && !dashboardStatus.getLevel().equals(Level.INFO));
+			ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_DASHBOARD_AFGEHANDELD_KNOP, Actie.AANPASSEN) && !dashboardStatus.getLevel().equals(Level.INFO));
 
 		form.add(bulkAfhandelLink);
 	}
@@ -237,31 +237,31 @@ public class DashboardStatusPanel extends GenericPanel<DashboardStatus>
 	{
 		var dashboardStatus = getModelObject();
 		var dashboardLevelDowngraded = false;
-		var ingelogdeInstellingGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
-		var gebruikersnaam = ingelogdeInstellingGebruiker.getMedewerker().getGebruikersnaam();
+		var ingelogdeOrganisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
+		var gebruikersnaam = ingelogdeOrganisatieMedewerker.getMedewerker().getGebruikersnaam();
 
 		switch (dashboardStatus.getType())
 		{
 		case CERVIX_CONTROLE_MISSENDE_UITSLAGEN:
 			dashboardLevelDowngraded = cervixDossierService.setUitslagenGecontroleerdEnUpdateDashboard(logRegel,
-				ingelogdeInstellingGebruiker, dashboardStatus);
+				ingelogdeOrganisatieMedewerker, dashboardStatus);
 			break;
 		case COLON_CONTROLE_MISSENDE_UITSLAGEN:
 			dashboardLevelDowngraded = colonDossierService.setUitslagenGecontroleerdEnUpdateDashboard(logRegel,
-				ingelogdeInstellingGebruiker, dashboardStatus);
+				ingelogdeOrganisatieMedewerker, dashboardStatus);
 			break;
 		case MAMMA_CONTROLE_MISSENDE_UITSLAGEN:
 			dashboardLevelDowngraded = mammaDossierService.setUitslagenGecontroleerdEnUpdateDashboard(logRegel,
-				ingelogdeInstellingGebruiker, dashboardStatus);
+				ingelogdeOrganisatieMedewerker, dashboardStatus);
 			break;
 		case CERVIX_DIGITALE_LABFORMULIER_FOUT_BERICHTEN:
-			dashboardLevelDowngraded = logService.verwijderLogRegelsVanDashboards(List.of(logRegel), ingelogdeInstellingGebruiker,
+			dashboardLevelDowngraded = logService.verwijderLogRegelsVanDashboards(List.of(logRegel), ingelogdeOrganisatieMedewerker,
 				LogGebeurtenis.CERVIX_DIGITAAL_LABFORMULIER_FOUT_ONTVANGEN_GECONTROLEERD);
 			break;
 		case GBA_LANDELIJK:
 			if (logRegel.getLogGebeurtenis().equals(LogGebeurtenis.GBA_IMPORT_VERWIJDERD_VAN_PERSOONSLIJST))
 			{
-				logService.logGebeurtenis(LogGebeurtenis.GBA_DASHBOARDMELDING_AFGEHANDELD, ScreenitSession.get().getLoggedInAccount(), logRegel.getClient());
+				logService.logGebeurtenis(LogGebeurtenis.GBA_DASHBOARDMELDING_AFGEHANDELD, ScreenitSession.get().getIngelogdAccount(), logRegel.getClient());
 			}
 			dashboardLevelDowngraded = dashboardService.updateLogRegelMetDashboardStatus(logRegel,
 				gebruikersnaam, dashboardStatus);

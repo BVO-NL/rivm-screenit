@@ -23,10 +23,10 @@ package nl.rivm.screenit.service;
 
 import java.util.Date;
 
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 
 public interface KwaliteitsovereenkomstService
 {
-	boolean hasActiveKwaliteitsovereenkomst(Gebruiker gebruiker, Date overeenkomstPeildatum);
+	boolean hasActiveKwaliteitsovereenkomst(Medewerker medewerker, Date overeenkomstPeildatum);
 
 }

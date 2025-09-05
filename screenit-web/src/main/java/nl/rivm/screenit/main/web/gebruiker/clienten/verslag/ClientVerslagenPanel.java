@@ -59,9 +59,9 @@ public class ClientVerslagenPanel extends GenericPanel<Client>
 		add(new ClientPaspoortPanel("passpoort", model));
 
 		Client client = model.getObject();
-		boolean magMdlVerslagToevoegen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN, Actie.TOEVOEGEN, client);
-		boolean magPaVerslagToevoegen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_UITSLAGPATHOLOGIEONTVANGEN, Actie.TOEVOEGEN, client);
-		boolean magFollowUpPaVerslagToevoegen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_MAMMA_FOLLOW_UP_VERSLAG, Actie.TOEVOEGEN, client)
+		boolean magMdlVerslagToevoegen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN, Actie.TOEVOEGEN, client);
+		boolean magPaVerslagToevoegen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_UITSLAGPATHOLOGIEONTVANGEN, Actie.TOEVOEGEN, client);
+		boolean magFollowUpPaVerslagToevoegen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_MAMMA_FOLLOW_UP_VERSLAG, Actie.TOEVOEGEN, client)
 			&& basePaVerslagService.verwachtGegevensVoor(model.getObject().getPersoon().getBsn());
 
 		if (getLaatsteScreeningronde(VerslagType.MDL) == null)

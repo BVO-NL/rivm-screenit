@@ -35,7 +35,7 @@ import nl.rivm.screenit.batch.service.CervixHL7BaseService;
 import nl.rivm.screenit.batch.service.CervixOrderBerichtService;
 import nl.rivm.screenit.batch.service.HL7BaseSendMessageService;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.cervix.CervixHpvAnalyseresultaten;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
@@ -138,7 +138,7 @@ public class CervixOrderBerichtServiceImpl implements CervixOrderBerichtService
 	private static void vulHuisartsRedords(CervixLabformulier labformulier, XCN berichtHuisarts) throws DataTypeException
 	{
 		CervixHuisarts huisarts = labformulier.getHuisartsLocatie().getHuisarts();
-		Gebruiker arts = huisarts.getOrganisatieMedewerkers().get(0).getMedewerker();
+		Medewerker arts = huisarts.getOrganisatieMedewerkers().get(0).getMedewerker();
 		berichtHuisarts.getGivenName().setValue(arts.getVoorletters());
 		berichtHuisarts.getXcn1_IDNumber().setValue(huisarts.getAgbcode());
 		berichtHuisarts.getIdentifierCheckDigit().setValue(huisarts.getAgbcode());

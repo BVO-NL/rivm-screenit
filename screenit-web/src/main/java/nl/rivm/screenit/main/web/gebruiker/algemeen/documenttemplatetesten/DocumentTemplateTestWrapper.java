@@ -23,7 +23,7 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten;
 
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.OrganisatieParameter;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
@@ -57,9 +57,9 @@ public class DocumentTemplateTestWrapper implements IDetachable
 
 	private boolean freeTextBKRADIOLOOG = false;
 
-	private IModel<Gebruiker> radioloog1;
+	private IModel<Medewerker> radioloog1;
 
-	private IModel<Gebruiker> radioloog2;
+	private IModel<Medewerker> radioloog2;
 
 	public DocumentTemplateTestWrapper()
 	{
@@ -153,24 +153,24 @@ public class DocumentTemplateTestWrapper implements IDetachable
 		intakeLocatie.setWebsite(dbIntakeLocatie.getWebsite());
 		intakeLocatie.setTelefoon(dbIntakeLocatie.getTelefoon());
 		intakeLocatie.setFax(dbIntakeLocatie.getFax());
-		if (dbIntakeLocatie.getAdressen().size() > 0)
+		if (dbIntakeLocatie.getAdres() != null)
 		{
-			intakeLocatie.getAdressen().get(0).setStraat(dbIntakeLocatie.getAdressen().get(0).getStraat());
-			intakeLocatie.getAdressen().get(0).setHuisnummer(dbIntakeLocatie.getAdressen().get(0).getHuisnummer());
-			intakeLocatie.getAdressen().get(0).setHuisnummerToevoeging(dbIntakeLocatie.getAdressen().get(0).getHuisnummerToevoeging());
-			intakeLocatie.getAdressen().get(0).setPostcode(dbIntakeLocatie.getAdressen().get(0).getPostcode());
-			intakeLocatie.getAdressen().get(0).setPlaats(dbIntakeLocatie.getAdressen().get(0).getPlaats());
-			if (dbIntakeLocatie.getAdressen().size() > 1)
+			intakeLocatie.getAdres().setStraat(dbIntakeLocatie.getAdres().getStraat());
+			intakeLocatie.getAdres().setHuisnummer(dbIntakeLocatie.getAdres().getHuisnummer());
+			intakeLocatie.getAdres().setHuisnummerToevoeging(dbIntakeLocatie.getAdres().getHuisnummerToevoeging());
+			intakeLocatie.getAdres().setPostcode(dbIntakeLocatie.getAdres().getPostcode());
+			intakeLocatie.getAdres().setPlaats(dbIntakeLocatie.getAdres().getPlaats());
+			if (dbIntakeLocatie.getPostbusAdres() != null)
 			{
-				intakeLocatie.getAdressen().get(1).setHuisnummer(dbIntakeLocatie.getAdressen().get(1).getHuisnummer());
-				intakeLocatie.getAdressen().get(1).setPostcode(dbIntakeLocatie.getAdressen().get(1).getPostcode());
-				intakeLocatie.getAdressen().get(1).setPlaats(dbIntakeLocatie.getAdressen().get(1).getPlaats());
+				intakeLocatie.getPostbusAdres().setHuisnummer(dbIntakeLocatie.getPostbusAdres().getHuisnummer());
+				intakeLocatie.getPostbusAdres().setPostcode(dbIntakeLocatie.getPostbusAdres().getPostcode());
+				intakeLocatie.getPostbusAdres().setPlaats(dbIntakeLocatie.getPostbusAdres().getPlaats());
 			}
 			else
 			{
-				intakeLocatie.getAdressen().get(1).setHuisnummer(dbIntakeLocatie.getAdressen().get(0).getHuisnummer());
-				intakeLocatie.getAdressen().get(1).setPostcode(dbIntakeLocatie.getAdressen().get(0).getPostcode());
-				intakeLocatie.getAdressen().get(1).setPlaats(dbIntakeLocatie.getAdressen().get(0).getPlaats());
+				intakeLocatie.getPostbusAdres().setHuisnummer(dbIntakeLocatie.getAdres().getHuisnummer());
+				intakeLocatie.getPostbusAdres().setPostcode(dbIntakeLocatie.getAdres().getPostcode());
+				intakeLocatie.getPostbusAdres().setPlaats(dbIntakeLocatie.getAdres().getPlaats());
 			}
 		}
 	}
@@ -197,7 +197,7 @@ public class DocumentTemplateTestWrapper implements IDetachable
 		this.microbioloog = microbioloog;
 	}
 
-	public Gebruiker getRadioloog1()
+	public Medewerker getRadioloog1()
 	{
 		if (isFreeTextBKRADIOLOOG())
 		{
@@ -206,12 +206,12 @@ public class DocumentTemplateTestWrapper implements IDetachable
 		return ModelUtil.nullSafeGet(radioloog1);
 	}
 
-	public void setRadioloog1(Gebruiker radioloog1)
+	public void setRadioloog1(Medewerker radioloog1)
 	{
 		this.radioloog1 = ModelUtil.sModel(radioloog1);
 	}
 
-	public Gebruiker getRadioloog2()
+	public Medewerker getRadioloog2()
 	{
 		if (isFreeTextBKRADIOLOOG())
 		{
@@ -220,7 +220,7 @@ public class DocumentTemplateTestWrapper implements IDetachable
 		return ModelUtil.nullSafeGet(radioloog2);
 	}
 
-	public void setRadioloog2(Gebruiker radioloog2)
+	public void setRadioloog2(Medewerker radioloog2)
 	{
 		this.radioloog2 = ModelUtil.sModel(radioloog2);
 	}

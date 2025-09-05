@@ -57,7 +57,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsRondeRapportageStatus;
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsRondeUitnodigenRapportage;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
 import nl.rivm.screenit.service.mamma.impl.MammaCapaciteit;
 import nl.rivm.screenit.util.BigDecimalUtil;
@@ -110,7 +110,7 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 	private MammaBaseCapaciteitsBlokService baseCapaciteitsBlokService;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private ICurrentDateSupplier dateSupplier;
@@ -158,7 +158,7 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 		final PlanningStandplaatsPeriodeDto standplaatsPeriodeDto = model.getObject();
 
 		ScreeningOrganisatie ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
-		boolean magAanpassen = ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
+		boolean magAanpassen = ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
 
 		List<Long> actieveStandplaatsen = getStandplaatsen(ingelogdNamensRegio);
 
@@ -411,7 +411,8 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 					return;
 				}
 
-				standplaatsPeriodeService.splitsStandplaatsPeriode(MammaStandplaatsPeriodeEditPanel.this.getModelObject(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+				standplaatsPeriodeService.splitsStandplaatsPeriode(MammaStandplaatsPeriodeEditPanel.this.getModelObject(),
+					ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 
 				info(getString("message.gegevens.onthouden"));
 				standplaatsPeriodeGewijzigd(target);
@@ -586,7 +587,7 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 
 	private void addAfspraakcapaciteitBeschikbaarVoor(WebMarkupContainer configurationContainer, MammaStandplaats standplaats)
 	{
-		List<Long> alleScreeningorganisatieIds = instellingService.getAllActiefScreeningOrganisaties().stream().map(ScreeningOrganisatie::getId).collect(Collectors.toList());
+		List<Long> alleScreeningorganisatieIds = organisatieService.getAllActiefScreeningOrganisaties().stream().map(ScreeningOrganisatie::getId).collect(Collectors.toList());
 		alleScreeningorganisatieIds.remove(standplaats.getRegio().getId());
 		configurationContainer.add(new ScreenitListMultipleChoice<>("afspraakcapaciteitBeschikbaarVoorIds", alleScreeningorganisatieIds, new ChoiceRenderer<>()
 		{
@@ -649,7 +650,7 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 	private boolean opslaan()
 	{
 		return standplaatsPeriodeService.saveOrUpdateStandplaatsPeriode(getModelObject(),
-			ScreenitSession.get().getLoggedInInstellingGebruiker());
+			ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 	}
 
 	private void addLinkBehaviorAccordion(WebMarkupContainer accordionContainer, WebMarkupContainer teOpenenContainer, WebMarkupContainer link)

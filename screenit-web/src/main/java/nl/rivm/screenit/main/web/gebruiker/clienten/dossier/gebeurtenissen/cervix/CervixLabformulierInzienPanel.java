@@ -51,7 +51,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_CLIENT_SR_CERVIX_INZIEN_BMHK_FORMULIER,
+	recht = Recht.MEDEWERKER_CLIENT_SR_CERVIX_INZIEN_BMHK_FORMULIER,
 	bevolkingsonderzoekScopes = Bevolkingsonderzoek.CERVIX)
 public class CervixLabformulierInzienPanel extends AbstractGebeurtenisDetailPanel
 {
@@ -76,7 +76,7 @@ public class CervixLabformulierInzienPanel extends AbstractGebeurtenisDetailPane
 		add(new Label("huisarts", getHuisartsInfo(labformulier)));
 		add(new EnumLabel<>("status", labformulier.getStatus()));
 
-		boolean magHpvMinInzien = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_INZIEN_FORMULIER_NA_HPVMIN, Actie.INZIEN);
+		boolean magHpvMinInzien = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_INZIEN_FORMULIER_NA_HPVMIN, Actie.INZIEN);
 		var isFormulierDigitaal = labformulier.getDigitaal();
 		if (labformulier.getDatumGewist() == null || magHpvMinInzien)
 		{

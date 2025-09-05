@@ -152,7 +152,7 @@ public class ProjectAttributenPage extends ProjectBasePage
 				Project project = actiefObject.getProject();
 				String melding = "Project attribuut" + actiefObject.getNaam() + " ge\u00EFnactiveerd van Project " + project.getNaam();
 
-				logService.logGebeurtenis(LogGebeurtenis.PROJECT_ATTRIBUUT_VERWIJDERD, ScreenitSession.get().getLoggedInAccount(), melding);
+				logService.logGebeurtenis(LogGebeurtenis.PROJECT_ATTRIBUUT_VERWIJDERD, ScreenitSession.get().getIngelogdAccount(), melding);
 
 				info("Project attribuut succesvol ge\u00EFnactiveerd!");
 			}

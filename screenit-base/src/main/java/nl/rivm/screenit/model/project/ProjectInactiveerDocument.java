@@ -32,7 +32,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
@@ -61,7 +61,7 @@ public class ProjectInactiveerDocument extends AbstractHibernateObject
 	private List<ProjectClient> projectClienten;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	private InstellingGebruiker geuploadDoor;
+	private OrganisatieMedewerker geuploadDoor;
 
 	public UploadDocument getUploadDocument()
 	{
@@ -103,12 +103,12 @@ public class ProjectInactiveerDocument extends AbstractHibernateObject
 		this.projectClienten = projectClienten;
 	}
 
-	public InstellingGebruiker getGeuploadDoor()
+	public OrganisatieMedewerker getGeuploadDoor()
 	{
 		return geuploadDoor;
 	}
 
-	public void setGeuploadDoor(InstellingGebruiker geuploadDoor)
+	public void setGeuploadDoor(OrganisatieMedewerker geuploadDoor)
 	{
 		this.geuploadDoor = geuploadDoor;
 	}

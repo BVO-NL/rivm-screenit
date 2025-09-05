@@ -25,7 +25,7 @@ import java.util.List;
 
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.CentraleEenheid;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 
 public interface MammaBeoordelingsEenheidService
 {
@@ -40,7 +40,7 @@ public interface MammaBeoordelingsEenheidService
 
 	String magWordenGeinactiveerd(BeoordelingsEenheid beoordelingsEenheid);
 
-	List<BeoordelingsEenheid> getBeoordelingsEenheden(Instelling instelling);
+	List<BeoordelingsEenheid> getBeoordelingsEenheden(Organisatie organisatie);
 
-	List<BeoordelingsEenheid> getBeoordelingsEenheden(Instelling instelling, List<CentraleEenheid> centraleEenheden);
+	List<BeoordelingsEenheid> getBeoordelingsEenheden(Organisatie organisatie, List<CentraleEenheid> centraleEenheden);
 }

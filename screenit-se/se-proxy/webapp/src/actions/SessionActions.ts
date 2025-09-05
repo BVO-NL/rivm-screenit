@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -29,9 +29,9 @@ export type SetSessionAction = {
 	seCode: string;
 	seNaam: string;
 	yubikeyIdentificatie: string;
-	instellingGebruikerId: number;
+	organisatieMedewerkerId: number;
 };
-export const createActionSetSession = (gebruikersnaam: string, medewerkercode: string, displayName: string, seCode: string, seNaam: string, yubikeyIdentificatie: string, instellingGebruikerId: number): SetSessionAction => ({
+export const createActionSetSession = (gebruikersnaam: string, medewerkercode: string, displayName: string, seCode: string, seNaam: string, yubikeyIdentificatie: string, organisatieMedewerkerId: number): SetSessionAction => ({
 	type: SET_SESSION,
 	gebruikersnaam: gebruikersnaam,
 	medewerkercode: medewerkercode,
@@ -39,7 +39,7 @@ export const createActionSetSession = (gebruikersnaam: string, medewerkercode: s
 	seCode: seCode,
 	seNaam: seNaam,
 	yubikeyIdentificatie: yubikeyIdentificatie,
-	instellingGebruikerId: instellingGebruikerId,
+	organisatieMedewerkerId: organisatieMedewerkerId,
 })
 export const CLEAR_SESSION = "CLEAR_SESSION"
 export type ClearSessionAction = {

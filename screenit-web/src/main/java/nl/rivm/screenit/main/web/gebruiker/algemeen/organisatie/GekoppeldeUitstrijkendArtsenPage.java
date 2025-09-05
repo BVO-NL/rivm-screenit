@@ -77,8 +77,8 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.jetbrains.annotations.NotNull;
 import org.wicketstuff.shiro.ShiroConstraint;
 
-@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = { Recht.GEBRUIKER_SCREENINGS_ORG_BEHEER,
-	Recht.GEBRUIKER_BMHK_LABORATORIA_BEHEER }, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX })
+@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = { Recht.MEDEWERKER_SCREENINGS_ORG_BEHEER,
+	Recht.MEDEWERKER_BMHK_LABORATORIA_BEHEER }, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX })
 public class GekoppeldeUitstrijkendArtsenPage extends OrganisatieBeheer
 {
 
@@ -299,9 +299,9 @@ public class GekoppeldeUitstrijkendArtsenPage extends OrganisatieBeheer
 	protected boolean magNavigerenNaar(IModel<CervixHuisarts> rowModel)
 	{
 		var cervixHuisarts = rowModel.getObject();
-		var loggedInInstellingGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
-		return autorisatieService.getActieVoorOrganisatie(loggedInInstellingGebruiker, cervixHuisarts, Recht.GEBRUIKER_SCREENINGS_ORG_BEHEER,
-			Recht.GEBRUIKER_BMHK_LABORATORIA_BEHEER) != null;
+		var ingelogdeOrganisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		return autorisatieService.getActieVoorOrganisatie(ingelogdeOrganisatieMedewerker, cervixHuisarts, Recht.MEDEWERKER_SCREENINGS_ORG_BEHEER,
+			Recht.MEDEWERKER_BMHK_LABORATORIA_BEHEER) != null;
 	}
 
 	@Override

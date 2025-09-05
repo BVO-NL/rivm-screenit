@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslage
 
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.LoggingInzienPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -34,7 +34,7 @@ import nl.rivm.screenit.model.logging.CervixUitnodigingVersturenLogEvent;
 import org.apache.wicket.model.IModel;
 import org.wicketstuff.shiro.ShiroConstraint;
 
-@SecurityConstraint(actie = Actie.INZIEN, checkScope = false, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_SELECTIE_VERWERKING_VERSLAG, bevolkingsonderzoekScopes = Bevolkingsonderzoek.CERVIX)
+@SecurityConstraint(actie = Actie.INZIEN, checkScope = false, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_SELECTIE_VERWERKING_VERSLAG, bevolkingsonderzoekScopes = Bevolkingsonderzoek.CERVIX)
 public class ZasVersturenVerslagPage extends AlgemeenPage
 {
 
@@ -46,7 +46,7 @@ public class ZasVersturenVerslagPage extends AlgemeenPage
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveSubMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveSubMenuClass()
 	{
 		return LoggingInzienPage.class;
 	}

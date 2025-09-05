@@ -53,7 +53,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	constraint = ShiroConstraint.HasPermission,
 	checkScope = true,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA },
-	recht = { Recht.GEBRUIKER_MAMMA_FOLLOW_UP_CONCLUSIE_WERKLIJST },
+	recht = { Recht.MEDEWERKER_MAMMA_FOLLOW_UP_CONCLUSIE_WERKLIJST },
 	organisatieTypeScopes = { OrganisatieType.SCREENINGSORGANISATIE })
 public class MammaFollowUpConclusieWerklijst extends AbstractMammaFollowUpPage
 {

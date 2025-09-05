@@ -37,7 +37,7 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsLocatie;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -64,7 +64,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaStandplaatsZoekenPage extends MammaPlanningBasePage
 {
@@ -74,7 +74,7 @@ public class MammaStandplaatsZoekenPage extends MammaPlanningBasePage
 	private Form<MammaStandplaats> zoekForm;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private MammaScreeningsEenheidService screeningsEenheidService;
@@ -185,7 +185,7 @@ public class MammaStandplaatsZoekenPage extends MammaPlanningBasePage
 			}
 		};
 
-		toevoegen.setVisible(ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.TOEVOEGEN));
+		toevoegen.setVisible(ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.TOEVOEGEN));
 		add(toevoegen);
 		setDefaultModel(new CompoundPropertyModel<>(criteriaModel));
 		zoekForm = new Form<MammaStandplaats>("zoekForm", (IModel<MammaStandplaats>) getDefaultModel());
@@ -194,7 +194,7 @@ public class MammaStandplaatsZoekenPage extends MammaPlanningBasePage
 		zoekForm.add(new TextField<>("naam"));
 		zoekForm.add(new TextField<>("locatie.plaats"));
 		ScreenitDropdown<ScreeningOrganisatie> regioComponent = new ScreenitDropdown<>("regio",
-			ModelUtil.listRModel(instellingService.getActieveInstellingen(ScreeningOrganisatie.class), false), new ChoiceRenderer<ScreeningOrganisatie>("naam"));
+			ModelUtil.listRModel(organisatieService.getActieveOrganisaties(ScreeningOrganisatie.class), false), new ChoiceRenderer<ScreeningOrganisatie>("naam"));
 		regioComponent.setVisible(ingelogdNamensRegio == null);
 		regioComponent.setNullValid(true);
 		zoekForm.add(regioComponent);

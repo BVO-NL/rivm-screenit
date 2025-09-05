@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.web.base;
 
 /*-
@@ -25,7 +24,7 @@ package nl.rivm.screenit.main.web.base;
 public enum ScreenitContext
 {
 
-	GEBRUIKER,
+	MEDEWERKER,
 
 	CLIENT;
 }

@@ -50,7 +50,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
 	level = ToegangLevel.REGIO,
-	recht = Recht.GEBRUIKER_BEHEER_PARAMETERISATIE,
+	recht = Recht.MEDEWERKER_BEHEER_PARAMETERISATIE,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX })
 public class OvereenkomstConfiguratiePage extends ParameterisatieBasePage
@@ -85,9 +85,9 @@ public class OvereenkomstConfiguratiePage extends ParameterisatieBasePage
 		{
 			super(id, model);
 
-			level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.GEBRUIKER_BEHEER_PARAMETERISATIE);
-			Actie actie = autorisatieService.getActieVoorMedewerker(ScreenitSession.get().getLoggedInInstellingGebruiker(), ScreenitSession.get().getCurrentSelectedMedewerker(),
-				Recht.GEBRUIKER_BEHEER_PARAMETERISATIE);
+			level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_BEHEER_PARAMETERISATIE);
+			Actie actie = autorisatieService.getActieVoorMedewerker(getIngelogdeOrganisatieMedewerker(), ScreenitSession.get().getCurrentSelectedMedewerker(),
+				Recht.MEDEWERKER_BEHEER_PARAMETERISATIE);
 			inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 
 			ComponentHelper.addTextField(this, "emailSubject", true, 2000, inzien);
@@ -106,7 +106,7 @@ public class OvereenkomstConfiguratiePage extends ParameterisatieBasePage
 					BasePage.markeerFormulierenOpgeslagen(target);
 					super.onSubmit();
 					parameterisatieService.saveOrUpdateOvereenkomstConfiguratie(getModelObject());
-					logService.logGebeurtenis(LogGebeurtenis.PARAMETERISATIE_WIJZIG, ScreenitSession.get().getLoggedInAccount(), "Overeenkomst configuratie aangepast",
+					logService.logGebeurtenis(LogGebeurtenis.PARAMETERISATIE_WIJZIG, ScreenitSession.get().getIngelogdAccount(), "Overeenkomst configuratie aangepast",
 						Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX);
 					info("Overeenkomst configuratie is succesvol opgeslagen");
 				}

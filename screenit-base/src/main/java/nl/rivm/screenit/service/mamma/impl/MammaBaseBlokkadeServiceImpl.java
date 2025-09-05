@@ -24,7 +24,7 @@ package nl.rivm.screenit.service.mamma.impl;
 import java.time.LocalDate;
 import java.util.List;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -89,7 +89,7 @@ public class MammaBaseBlokkadeServiceImpl implements MammaBaseBlokkadeService
 
 	@Override
 	@Transactional
-	public void saveOrUpdate(MammaBlokkade blokkade, InstellingGebruiker ingelogdeGebruiker)
+	public void saveOrUpdate(MammaBlokkade blokkade, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		var melding = "";
 		var diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(blokkade, hibernateService.getHibernateSession());
@@ -118,7 +118,7 @@ public class MammaBaseBlokkadeServiceImpl implements MammaBaseBlokkadeService
 		}
 		if (StringUtils.isNotBlank(melding))
 		{
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_BLOKKADE, ingelogdeGebruiker, melding, Bevolkingsonderzoek.MAMMA);
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_BLOKKADE, ingelogdeOrganisatieMedewerker, melding, Bevolkingsonderzoek.MAMMA);
 			blokkadeRepository.save(blokkade);
 			conceptPlanningsApplicatie.sendBlokkade(blokkade, isNieuw);
 		}

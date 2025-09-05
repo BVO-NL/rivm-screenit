@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.model;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -38,17 +38,17 @@ public class TransactieDto
 
 	private String uitnodigingsNr;
 
-	private Long instellingGebruikerId;
+	private Long organisatieMedewerkerId;
 
 	private String afspraakVanafDatum;
 
 	private List<ActionDto> actions;
 
-	public TransactieDto(SETransactieType type, Long clientId, Long instellingGebruikerId, List<ActionDto> actions, LocalDate afspraakVanafDatum)
+	public TransactieDto(SETransactieType type, Long clientId, Long organisatieMedewerkerId, List<ActionDto> actions, LocalDate afspraakVanafDatum)
 	{
 		this.type = type;
 		this.clientId = clientId;
-		this.instellingGebruikerId = instellingGebruikerId;
+		this.organisatieMedewerkerId = organisatieMedewerkerId;
 		this.actions = actions;
 		this.afspraakVanafDatum = afspraakVanafDatum.format(DateTimeFormatter.ISO_LOCAL_DATE);
 	}

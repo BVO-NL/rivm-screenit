@@ -39,11 +39,12 @@ import nl.rivm.screenit.main.web.component.form.FilterBvoPanel;
 import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.base.ZoekenContextMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.INaam;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -85,7 +86,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_PROJECT_OVERZICHT, Recht.GEBRUIKER_BRIEFPROJECT_OVERZICHT },
+	recht = { Recht.MEDEWERKER_PROJECT_OVERZICHT, Recht.MEDEWERKER_BRIEFPROJECT_OVERZICHT },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class ProjectOverzicht extends AlgemeenPage
 {
@@ -120,8 +121,8 @@ public class ProjectOverzicht extends AlgemeenPage
 			projectZoekModel = ModelUtil.cRModel(new Project());
 		}
 
-		toegangLevelProjectOverzicht = getToegangsLevel(Actie.INZIEN, Recht.GEBRUIKER_PROJECT_OVERZICHT);
-		toegangLevelBriefprojectOverzicht = getToegangsLevel(Actie.INZIEN, Recht.GEBRUIKER_BRIEFPROJECT_OVERZICHT);
+		toegangLevelProjectOverzicht = getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_PROJECT_OVERZICHT);
+		toegangLevelBriefprojectOverzicht = getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_BRIEFPROJECT_OVERZICHT);
 
 		addNieuwProjectDropDown();
 
@@ -158,7 +159,7 @@ public class ProjectOverzicht extends AlgemeenPage
 
 	private void addNieuwProjectDropDown()
 	{
-		List<ProjectType> projectTypesMetRecht = projectService.getProjectTypes(ScreenitSession.get().getLoggedInInstellingGebruiker(), Actie.TOEVOEGEN, true);
+		List<ProjectType> projectTypesMetRecht = projectService.getProjectTypes(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), Actie.TOEVOEGEN, true);
 		ListView<ProjectType> nieuwProjectTypes = new ListView<ProjectType>("nieuwProjectTypes", projectTypesMetRecht)
 		{
 
@@ -268,9 +269,9 @@ public class ProjectOverzicht extends AlgemeenPage
 			{
 				StringBuilder soLabel = new StringBuilder();
 				rowModel.getObject().getScreeningOrganisaties();
-				for (Instelling instelling : rowModel.getObject().getScreeningOrganisaties())
+				for (Organisatie organisatie : rowModel.getObject().getScreeningOrganisaties())
 				{
-					soLabel.append(instelling.getNaam());
+					soLabel.append(organisatie.getNaam());
 					soLabel.append(",");
 				}
 				cellItem.add(new Label(componentId, StringUtils.removeEnd(soLabel.toString(), ",")));
@@ -321,14 +322,14 @@ public class ProjectOverzicht extends AlgemeenPage
 
 	private ToegangLevel getToegangsLevel(Actie actie, Recht recht)
 	{
-		return autorisatieService.getToegangLevel(ScreenitSession.get().getLoggedInInstellingGebruiker(), actie, true, recht);
+		return autorisatieService.getToegangLevel(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), actie, true, recht);
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.projecten.overzicht", ProjectOverzicht.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.projecten.overzicht", ProjectOverzicht.class));
 		return contextMenuItems;
 	}
 

@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.palga;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxLink;
 import nl.rivm.screenit.main.web.component.table.UploadDocumentDownloadLinkPanel;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.service.LogService;
@@ -61,16 +61,16 @@ public class MammaPalgaExportPanel extends GenericPanel<UploadDocument>
 			{
 				super.onBeforeDownloadClick(target);
 				String logRegel = String.format("Gedownload: %s", getModelObject().getNaam());
-				logService.logGebeurtenis(LogGebeurtenis.MAMMA_PALGA_CSV_EXPORT, ScreenitSession.get().getLoggedInAccount(), logRegel);
+				logService.logGebeurtenis(LogGebeurtenis.MAMMA_PALGA_CSV_EXPORT, ScreenitSession.get().getIngelogdAccount(), logRegel);
 			}
 		});
-		add(new ConfirmingIndicatingAjaxLink<UploadDocument>("verwijderen", getModel(), ((GebruikerBasePage) getPage()).getDialog(),
+		add(new ConfirmingIndicatingAjaxLink<UploadDocument>("verwijderen", getModel(), ((MedewerkerBasePage) getPage()).getDialog(),
 			"palga.export.verwijderen")
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				palgaService.deleteExports(getModelObject().getNaam(), ScreenitSession.get().getLoggedInAccount());
+				palgaService.deleteExports(getModelObject().getNaam(), ScreenitSession.get().getIngelogdAccount());
 				setResponsePage(new MammaPalgaUitwisselingPage());
 			}
 		}.setOutputMarkupId(true));

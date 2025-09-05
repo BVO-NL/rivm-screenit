@@ -22,13 +22,26 @@ package nl.rivm.screenit.service;
  */
 
 import java.util.List;
+import java.util.Optional;
 
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruikerRol;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
+import nl.rivm.screenit.model.ScreeningOrganisatie;
 
 public interface BaseMedewerkerService
 {
-	void inActiveerMedewerker(Gebruiker medewerker);
+	void inActiveerMedewerker(Medewerker medewerker);
 
-	void inactiveerOrganisatieMedewerkersMetRol(List<InstellingGebruikerRol> medewerkersMetRol);
+	void inactiveerOrganisatieMedewerkersMetRol(List<OrganisatieMedewerkerRol> medewerkersMetRol);
+
+	Optional<Medewerker> getMedewerkerByGebruikersnaam(String gebruikersnaam);
+
+	Optional<Medewerker> getMedewerkerByUzinummer(String uzinummer);
+
+	ScreeningOrganisatie getScreeningOrganisatie(Medewerker medewerker);
+
+	Medewerker getPatholoog(String patholoogId, Organisatie organisatie);
+
+	int getNextMedewerkercode();
 }

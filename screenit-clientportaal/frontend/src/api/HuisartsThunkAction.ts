@@ -34,7 +34,7 @@ import {getBvoBaseUrl} from "../utils/UrlUtil"
 import {assertUnreachable} from "../utils/EnumUtil"
 
 export const koppelHuisarts = (huisarts: Huisarts, bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch) => {
-	return ScreenitBackend.post(`/huisarts${getBvoBaseUrl(bvo)}?id=${huisarts.id}`)
+	return ScreenitBackend.post(`huisarts${getBvoBaseUrl(bvo)}?id=${huisarts.id}`)
 		.then(() => {
 			switch (bvo) {
 				case Bevolkingsonderzoek.MAMMA:
@@ -52,7 +52,7 @@ export const koppelHuisarts = (huisarts: Huisarts, bvo?: Bevolkingsonderzoek) =>
 }
 
 export const ontkoppelHuisarts = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch) => {
-	return ScreenitBackend.delete(`/huisarts${getBvoBaseUrl(bvo)}`)
+	return ScreenitBackend.delete(`huisarts${getBvoBaseUrl(bvo)}`)
 		.then(() => {
 			switch (bvo) {
 				case Bevolkingsonderzoek.MAMMA:
@@ -70,11 +70,11 @@ export const ontkoppelHuisarts = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispa
 }
 
 export const magHuisartsKoppelen = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch) => {
-	return ScreenitBackend.get(`/huisarts${getBvoBaseUrl(bvo)}/magverwijderen`)
+	return ScreenitBackend.get<boolean>(`huisarts${getBvoBaseUrl(bvo)}/magverwijderen`).json()
 		.then(response => {
 			switch (bvo) {
 				case Bevolkingsonderzoek.MAMMA:
-					dispatch(magMammaHuisartsOntkoppelenReduxAction(response.data))
+					dispatch(magMammaHuisartsOntkoppelenReduxAction(response))
 					break
 				case Bevolkingsonderzoek.COLON:
 				case Bevolkingsonderzoek.CERVIX:
@@ -86,14 +86,14 @@ export const magHuisartsKoppelen = (bvo?: Bevolkingsonderzoek) => (dispatch: Dis
 }
 
 export const getHuidigeHuisarts = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch) => {
-	return ScreenitBackend.get(`/huisarts${getBvoBaseUrl(bvo)}/huidige`)
+	return ScreenitBackend.get<Huisarts>(`huisarts${getBvoBaseUrl(bvo)}/huidige`).json()
 		.then(response => {
 			switch (bvo) {
 				case Bevolkingsonderzoek.MAMMA:
-					dispatch(setMammaHuisartsHuidigeRondeReduxAction(response.data))
+					dispatch(setMammaHuisartsHuidigeRondeReduxAction(response))
 					break
 				case Bevolkingsonderzoek.COLON:
-					dispatch(setColonHuisartsHuidigeRondeReduxAction(response.data))
+					dispatch(setColonHuisartsHuidigeRondeReduxAction(response))
 					break
 				case Bevolkingsonderzoek.CERVIX:
 					break
@@ -104,14 +104,14 @@ export const getHuidigeHuisarts = (bvo?: Bevolkingsonderzoek) => (dispatch: Disp
 }
 
 export const getVorigeHuisarts = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch) => {
-	return ScreenitBackend.get(`/huisarts${getBvoBaseUrl(bvo)}/vorige`)
+	return ScreenitBackend.get<Huisarts>(`huisarts${getBvoBaseUrl(bvo)}/vorige`).json()
 		.then(response => {
 			switch (bvo) {
 				case Bevolkingsonderzoek.MAMMA:
-					dispatch(setMammaHuisartsVorigeRondeReduxAction(response.data as Huisarts | undefined))
+					dispatch(setMammaHuisartsVorigeRondeReduxAction(response))
 					break
 				case Bevolkingsonderzoek.COLON:
-					dispatch(setColonHuisartsVorigeRondeReduxAction(response.data as Huisarts | undefined))
+					dispatch(setColonHuisartsVorigeRondeReduxAction(response))
 					break
 				case Bevolkingsonderzoek.CERVIX:
 					break
@@ -122,17 +122,17 @@ export const getVorigeHuisarts = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispa
 }
 
 export const getHuidigeMammaGeenHuisartsOptie = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch) => {
-	return ScreenitBackend.get(`/huisarts${getBvoBaseUrl(bvo)}/huidige/geen`)
-		.then(response => dispatch(setMammaGeenHuisartsOptieHuidigeRondeReduxAction(response.data)))
+	return ScreenitBackend.get<MammaGeenHuisartsOptie>(`huisarts${getBvoBaseUrl(bvo)}/huidige/geen`).json()
+		.then(response => dispatch(setMammaGeenHuisartsOptieHuidigeRondeReduxAction(response)))
 }
 
 export const getVorigeMammaGeenHuisartsOptie = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch) => {
-	return ScreenitBackend.get(`/huisarts${getBvoBaseUrl(bvo)}/vorige/geen`)
-		.then(response => dispatch(setMammaGeenHuisartsOptieVorigeRondeReduxAction(response.data)))
+	return ScreenitBackend.get<MammaGeenHuisartsOptie>(`huisarts${getBvoBaseUrl(bvo)}/vorige/geen`).json()
+		.then(response => dispatch(setMammaGeenHuisartsOptieVorigeRondeReduxAction(response)))
 }
 
 export const bevestigVorige = (vorigeHuisarts?: Huisarts, mammaVorigeGeenHuisartsOptie?: MammaGeenHuisartsOptie, bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch) => {
-	return ScreenitBackend.post(`/huisarts${getBvoBaseUrl(bvo)}/vorige`)
+	return ScreenitBackend.post(`huisarts${getBvoBaseUrl(bvo)}/vorige`)
 		.then(() => {
 			switch (bvo) {
 				case Bevolkingsonderzoek.MAMMA:

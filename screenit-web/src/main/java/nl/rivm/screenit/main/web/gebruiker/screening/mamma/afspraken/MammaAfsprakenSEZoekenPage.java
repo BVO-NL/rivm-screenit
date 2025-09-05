@@ -30,7 +30,7 @@ import nl.rivm.screenit.main.web.component.table.ActiefPropertyColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaScreeningsEenheidFilter;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -38,7 +38,7 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid_;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -61,14 +61,14 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_AFSPRAKEN_BEHEER },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_AFSPRAKEN_BEHEER },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaAfsprakenSEZoekenPage extends MammaAfsprakenBasePage
 {
 	private static final long serialVersionUID = 1L;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private ICurrentDateSupplier currentDateSupplier;
@@ -77,7 +77,7 @@ public class MammaAfsprakenSEZoekenPage extends MammaAfsprakenBasePage
 
 	public MammaAfsprakenSEZoekenPage()
 	{
-		magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_MAMMA_AFSPRAAK_WIJZIGEN, Actie.AANPASSEN) && ingelogdNamensRegio;
+		magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAAK_WIJZIGEN, Actie.AANPASSEN) && ingelogdNamensRegio;
 
 		IModel<MammaScreeningsEenheidFilter> criteriaModel;
 		ScreeningOrganisatie ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
@@ -101,14 +101,14 @@ public class MammaAfsprakenSEZoekenPage extends MammaAfsprakenBasePage
 
 		List<IColumn<MammaScreeningsEenheid, String>> columns = new ArrayList<>();
 		columns.add(new PropertyColumn<>(Model.of("Naam"), MammaScreeningsEenheid_.NAAM, "naam"));
-		columns.add(new PropertyColumn<>(Model.of("Beoordelingseenheid"), propertyChain(MammaScreeningsEenheid_.BEOORDELINGS_EENHEID, Instelling_.NAAM),
+		columns.add(new PropertyColumn<>(Model.of("Beoordelingseenheid"), propertyChain(MammaScreeningsEenheid_.BEOORDELINGS_EENHEID, Organisatie_.NAAM),
 			"beoordelingsEenheid.naam"));
-		columns.add(new PropertyColumn<>(Model.of("Centrale eenheid"), propertyChain(MammaScreeningsEenheid_.BEOORDELINGS_EENHEID, Instelling_.PARENT, Instelling_.NAAM),
+		columns.add(new PropertyColumn<>(Model.of("Centrale eenheid"), propertyChain(MammaScreeningsEenheid_.BEOORDELINGS_EENHEID, Organisatie_.PARENT, Organisatie_.NAAM),
 			"beoordelingsEenheid.parent.naam"));
 		if (ingelogdNamensRegio == null)
 		{
 			columns.add(new PropertyColumn<>(Model.of("Screeningsorganisatie"),
-				propertyChain(MammaScreeningsEenheid_.BEOORDELINGS_EENHEID, Instelling_.PARENT, Instelling_.REGIO, Instelling_.NAAM), "beoordelingsEenheid.parent.regio.naam"));
+				propertyChain(MammaScreeningsEenheid_.BEOORDELINGS_EENHEID, Organisatie_.PARENT, Organisatie_.REGIO, Organisatie_.NAAM), "beoordelingsEenheid.parent.regio.naam"));
 		}
 
 		columns.add(new ActiefPropertyColumn<>(Model.of(""), "actief", refreshContainer, criteriaModel));
@@ -133,7 +133,7 @@ public class MammaAfsprakenSEZoekenPage extends MammaAfsprakenBasePage
 
 		zoekForm.add(new TextField<>("screeningsEenheid.naam"));
 		ScreenitDropdown<ScreeningOrganisatie> regioComponent = new ScreenitDropdown<>("regio",
-			ModelUtil.listRModel(instellingService.getActieveInstellingen(ScreeningOrganisatie.class), false),
+			ModelUtil.listRModel(organisatieService.getActieveOrganisaties(ScreeningOrganisatie.class), false),
 			new ChoiceRenderer<>("naam"));
 		regioComponent.setVisible(ingelogdNamensRegio == null);
 		regioComponent.setNullValid(true);

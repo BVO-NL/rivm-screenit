@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.UploadDocument;
@@ -44,9 +44,9 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @SecurityConstraint(
 	constraint = ShiroConstraint.HasPermission,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA },
-	recht = { Recht.GEBRUIKER_MAMMA_PALGA_CSV_UITWISSELING },
+	recht = { Recht.MEDEWERKER_MAMMA_PALGA_CSV_UITWISSELING },
 	organisatieTypeScopes = { OrganisatieType.RIVM })
-public class MammaPalgaUitwisselingPage extends GebruikerBasePage
+public class MammaPalgaUitwisselingPage extends MedewerkerBasePage
 {
 	@SpringBean
 	private MammaPalgaService palgaService;
@@ -59,15 +59,15 @@ public class MammaPalgaUitwisselingPage extends GebruikerBasePage
 	}
 
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.MAMMA;
+		return MedewerkerHoofdMenuItem.MAMMA;
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 		return new ArrayList<>(Arrays.asList(
-			new GebruikerMenuItem("label.tab.mammascreening.palga.uitwisseling", MammaPalgaUitwisselingPage.class)));
+			new MedewerkerMenuItem("label.tab.mammascreening.palga.uitwisseling", MammaPalgaUitwisselingPage.class)));
 	}
 }

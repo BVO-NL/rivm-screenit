@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.service.DistributedLockService;
 
 import org.apache.curator.framework.CuratorFramework;
@@ -62,9 +62,9 @@ public class DistributedLockServiceImpl implements DistributedLockService
 	}
 
 	@Override
-	public void lockAndWait(String locknaam, InstellingGebruiker gebruiker)
+	public void lockAndWait(String locknaam, OrganisatieMedewerker organisatieMedewerker)
 	{
-		DistributedLockKey lockKey = new DistributedLockKey(createLocknaamVoorOmgeving(locknaam), gebruiker);
+		DistributedLockKey lockKey = new DistributedLockKey(createLocknaamVoorOmgeving(locknaam), organisatieMedewerker);
 		LOG.debug("Try to lock: '{}'", locknaam);
 		StopWatch stopWatch = startNewStopwatch();
 
@@ -123,9 +123,9 @@ public class DistributedLockServiceImpl implements DistributedLockService
 	}
 
 	@Override
-	public void unlock(String locknaam, InstellingGebruiker gebruiker)
+	public void unlock(String locknaam, OrganisatieMedewerker organisatieMedewerker)
 	{
-		unlock(new DistributedLockKey(createLocknaamVoorOmgeving(locknaam), gebruiker));
+		unlock(new DistributedLockKey(createLocknaamVoorOmgeving(locknaam), organisatieMedewerker));
 	}
 
 	private void unlock(DistributedLockKey lockKey)

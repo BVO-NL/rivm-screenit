@@ -21,8 +21,9 @@
 import {Dispatch} from "redux"
 import ScreenitBackend from "../utils/Backend"
 import {ResetBeschikbareContactActies, setBeschikbareContactActies} from "../actions/ContactActiesReduxAction"
+import {ContactActiesDto} from "../datatypes/ContactActiesDto"
 
 export const getBeschikbareContactActies = () => async (dispatch: Dispatch<ResetBeschikbareContactActies>) => {
-    return ScreenitBackend.get(`/acties/beschikbaar`)
-        .then(response => dispatch(setBeschikbareContactActies(response.data)))
+	return ScreenitBackend.get<ContactActiesDto>(`acties/beschikbaar`).json()
+		.then(response => dispatch(setBeschikbareContactActies(response)))
 }

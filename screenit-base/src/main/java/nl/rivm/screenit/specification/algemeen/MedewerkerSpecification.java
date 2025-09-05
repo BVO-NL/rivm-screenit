@@ -31,9 +31,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.Functie;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Gebruiker_;
 import nl.rivm.screenit.model.InlogStatus;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Medewerker_;
 import nl.rivm.screenit.model.enums.InlogMethode;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
@@ -56,24 +56,24 @@ import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNullExten
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MedewerkerSpecification
 {
-	public static Specification<Gebruiker> isActieveGebruiker(LocalDate vandaag, int dagenWachtwoordGeldig)
+	public static Specification<Medewerker> isActieveMedewerker(LocalDate vandaag, int dagenWachtwoordGeldig)
 	{
 		return (r, q, cb) ->
 		{
 			var peildatumLaatstGewijzigdDate = DateUtil.toUtilDate(vandaag.minusDays(dagenWachtwoordGeldig));
 
-			var vanafExpression = cb.coalesce(r.get(Gebruiker_.actiefVanaf), DateUtil.BEGIN_OF_TIME);
-			var totEnMetExpression = cb.coalesce(r.get(Gebruiker_.actiefTotEnMet), DateUtil.END_OF_TIME);
+			var vanafExpression = cb.coalesce(r.get(Medewerker_.actiefVanaf), DateUtil.BEGIN_OF_TIME);
+			var totEnMetExpression = cb.coalesce(r.get(Medewerker_.actiefTotEnMet), DateUtil.END_OF_TIME);
 			var actiefTijdensVerlopenVanWachtwoord =
 				cb.and(
-					cb.lessThanOrEqualTo(vanafExpression, intervalInDagen(cb, r.get(Gebruiker_.laatsteKeerWachtwoordGewijzigd), dagenWachtwoordGeldig)),
-					cb.greaterThanOrEqualTo(totEnMetExpression, intervalInDagen(cb, r.get(Gebruiker_.laatsteKeerWachtwoordGewijzigd), dagenWachtwoordGeldig)));
+					cb.lessThanOrEqualTo(vanafExpression, intervalInDagen(cb, r.get(Medewerker_.laatsteKeerWachtwoordGewijzigd), dagenWachtwoordGeldig)),
+					cb.greaterThanOrEqualTo(totEnMetExpression, intervalInDagen(cb, r.get(Medewerker_.laatsteKeerWachtwoordGewijzigd), dagenWachtwoordGeldig)));
 			var nuActief = isActiefOpMoment(vandaag.atStartOfDay()).toPredicate(r, q, cb);
 
-			var wachtwoordVerlooptInDeToekomst = cb.greaterThan(r.get(Gebruiker_.laatsteKeerWachtwoordGewijzigd), peildatumLaatstGewijzigdDate);
+			var wachtwoordVerlooptInDeToekomst = cb.greaterThan(r.get(Medewerker_.laatsteKeerWachtwoordGewijzigd), peildatumLaatstGewijzigdDate);
 			return
 				cb.and(
-					cb.isTrue(r.get(Gebruiker_.actief)),
+					cb.isTrue(r.get(Medewerker_.actief)),
 					cb.or(
 						cb.and(
 							wachtwoordVerlooptInDeToekomst,
@@ -85,113 +85,113 @@ public class MedewerkerSpecification
 		};
 	}
 
-	public static Specification<Gebruiker> heeftEmailAdres()
+	public static Specification<Medewerker> heeftEmailAdres()
 	{
-		return (r, q, cb) -> cb.isNotNull(r.get(Gebruiker_.emailextra));
+		return (r, q, cb) -> cb.isNotNull(r.get(Medewerker_.emailextra));
 	}
 
-	public static Specification<Gebruiker> filterEmailAdres(String emailAdres)
+	public static Specification<Medewerker> filterEmailAdres(String emailAdres)
 	{
-		return skipWhenEmpty(emailAdres, (r, q, cb) -> exactCaseInsensitive(cb, r.get(Gebruiker_.emailextra), emailAdres));
+		return skipWhenEmpty(emailAdres, (r, q, cb) -> exactCaseInsensitive(cb, r.get(Medewerker_.emailextra), emailAdres));
 	}
 
-	public static Specification<Gebruiker> heeftWachtwoordInlogMethode()
+	public static Specification<Medewerker> heeftWachtwoordInlogMethode()
 	{
-		return (r, q, cb) -> r.get(Gebruiker_.inlogMethode).in(List.of(InlogMethode.YUBIKEY, InlogMethode.GEBRUIKERSNAAM_WACHTWOORD));
+		return (r, q, cb) -> r.get(Medewerker_.inlogMethode).in(List.of(InlogMethode.YUBIKEY, InlogMethode.GEBRUIKERSNAAM_WACHTWOORD));
 	}
 
-	public static Specification<Gebruiker> moetHerinneringKrijgen(LocalDate laatsteKeerWachtwoordGewijzigdPeildatum)
+	public static Specification<Medewerker> moetHerinneringKrijgen(LocalDate laatsteKeerWachtwoordGewijzigdPeildatum)
 	{
 		return (r, q, cb) ->
 			cb.and(
-				cb.lessThan(r.get(Gebruiker_.laatsteKeerWachtwoordGewijzigd), DateUtil.toUtilDate(laatsteKeerWachtwoordGewijzigdPeildatum)),
-				cb.isFalse(r.get(Gebruiker_.wachtwoordVerlooptWaarschuwingVerzonden))
+				cb.lessThan(r.get(Medewerker_.laatsteKeerWachtwoordGewijzigd), DateUtil.toUtilDate(laatsteKeerWachtwoordGewijzigdPeildatum)),
+				cb.isFalse(r.get(Medewerker_.wachtwoordVerlooptWaarschuwingVerzonden))
 			);
 	}
 
-	public static Specification<Gebruiker> isNietGeblokkeerd()
+	public static Specification<Medewerker> isNietGeblokkeerd()
 	{
-		return (r, q, cb) -> cb.notEqual(r.get(Gebruiker_.inlogstatus), InlogStatus.GEBLOKKEERD);
+		return (r, q, cb) -> cb.notEqual(r.get(Medewerker_.inlogstatus), InlogStatus.GEBLOKKEERD);
 	}
 
-	public static ExtendedSpecification<Gebruiker> heeftHandtekening()
+	public static ExtendedSpecification<Medewerker> heeftHandtekening()
 	{
-		return (r, q, cb) -> cb.isNotNull(r.get(Gebruiker_.handtekening));
+		return (r, q, cb) -> cb.isNotNull(r.get(Medewerker_.handtekening));
 	}
 
-	public static Specification<Gebruiker> isActiefTotEnMetVoor(LocalDate peilDatum)
+	public static Specification<Medewerker> isActiefTotEnMetVoor(LocalDate peilDatum)
 	{
 		return (r, q, cb) ->
 		{
-			var totEnMetExpression = cb.coalesce(r.get(Gebruiker_.actiefTotEnMet), DateUtil.END_OF_TIME);
+			var totEnMetExpression = cb.coalesce(r.get(Medewerker_.actiefTotEnMet), DateUtil.END_OF_TIME);
 			return cb.lessThan(totEnMetExpression, DateUtil.toUtilDate(peilDatum));
 		};
 	}
 
-	public static Specification<Gebruiker> isActief(boolean waarde)
+	public static Specification<Medewerker> isActief(boolean waarde)
 	{
-		return (r, q, cb) -> cb.equal(r.get(Gebruiker_.actief), waarde);
+		return (r, q, cb) -> cb.equal(r.get(Medewerker_.actief), waarde);
 	}
 
-	public static ExtendedSpecification<Gebruiker> filterAchternaamContaining(String achternaam)
+	public static ExtendedSpecification<Medewerker> filterAchternaamContaining(String achternaam)
 	{
-		return skipWhenEmptyExtended(achternaam, (r, q, cb) -> containsCaseInsensitive(cb, r.get(Gebruiker_.achternaam), achternaam));
+		return skipWhenEmptyExtended(achternaam, (r, q, cb) -> containsCaseInsensitive(cb, r.get(Medewerker_.achternaam), achternaam));
 	}
 
-	public static ExtendedSpecification<Gebruiker> filterUzinummerContaining(String uzinummer)
+	public static ExtendedSpecification<Medewerker> filterUzinummerContaining(String uzinummer)
 	{
-		return skipWhenEmptyExtended(uzinummer, (r, q, cb) -> containsCaseInsensitive(cb, r.get(Gebruiker_.uzinummer), uzinummer));
+		return skipWhenEmptyExtended(uzinummer, (r, q, cb) -> containsCaseInsensitive(cb, r.get(Medewerker_.uzinummer), uzinummer));
 	}
 
-	public static Specification<Gebruiker> filterMedewerkercode(Integer medewerkercode)
+	public static Specification<Medewerker> filterMedewerkercode(Integer medewerkercode)
 	{
-		return skipWhenNull(medewerkercode, (r, q, cb) -> cb.equal(r.get(Gebruiker_.medewerkercode), medewerkercode));
+		return skipWhenNull(medewerkercode, (r, q, cb) -> cb.equal(r.get(Medewerker_.medewerkercode), medewerkercode));
 	}
 
-	public static ExtendedSpecification<Gebruiker> isActiefEnActiefOpMoment(LocalDateTime peilmoment)
+	public static ExtendedSpecification<Medewerker> isActiefEnActiefOpMoment(LocalDateTime peilmoment)
 	{
 		return isActief().and(isActiefOpMoment(peilmoment));
 	}
 
-	public static ExtendedSpecification<Gebruiker> isActief()
+	public static ExtendedSpecification<Medewerker> isActief()
 	{
-		return (r, q, cb) -> cb.isTrue(r.get(Gebruiker_.actief));
+		return (r, q, cb) -> cb.isTrue(r.get(Medewerker_.actief));
 	}
 
-	public static ExtendedSpecification<Gebruiker> filterActief(Boolean waarde)
+	public static ExtendedSpecification<Medewerker> filterActief(Boolean waarde)
 	{
-		return skipWhenNullExtended(waarde, (r, q, cb) -> cb.equal(r.get(Gebruiker_.actief), waarde));
+		return skipWhenNullExtended(waarde, (r, q, cb) -> cb.equal(r.get(Medewerker_.actief), waarde));
 	}
 
-	public static ExtendedSpecification<Gebruiker> filterActiefVanaf(Date waarde)
+	public static ExtendedSpecification<Medewerker> filterActiefVanaf(Date waarde)
 	{
-		return skipWhenNullExtended(waarde, (r, q, cb) -> cb.equal(r.get(Gebruiker_.actiefVanaf), waarde));
+		return skipWhenNullExtended(waarde, (r, q, cb) -> cb.equal(r.get(Medewerker_.actiefVanaf), waarde));
 	}
 
-	public static ExtendedSpecification<Gebruiker> filterActiefTotEnMet(Date waarde)
+	public static ExtendedSpecification<Medewerker> filterActiefTotEnMet(Date waarde)
 	{
-		return skipWhenNullExtended(waarde, (r, q, cb) -> cb.equal(r.get(Gebruiker_.actiefTotEnMet), waarde));
+		return skipWhenNullExtended(waarde, (r, q, cb) -> cb.equal(r.get(Medewerker_.actiefTotEnMet), waarde));
 	}
 
-	private static @NotNull ExtendedSpecification<Gebruiker> isActiefOpMoment(LocalDateTime peilmoment)
+	private static @NotNull ExtendedSpecification<Medewerker> isActiefOpMoment(LocalDateTime peilmoment)
 	{
 		return (r, q, cb) ->
 		{
-			var vanafExpression = cb.coalesce(r.get(Gebruiker_.actiefVanaf), DateUtil.BEGIN_OF_TIME);
-			var totEnMetExpression = cb.coalesce(r.get(Gebruiker_.actiefTotEnMet), DateUtil.END_OF_TIME);
+			var vanafExpression = cb.coalesce(r.get(Medewerker_.actiefVanaf), DateUtil.BEGIN_OF_TIME);
+			var totEnMetExpression = cb.coalesce(r.get(Medewerker_.actiefTotEnMet), DateUtil.END_OF_TIME);
 
 			var bevat = bevat(ri -> vanafExpression, ri -> totEnMetExpression, Pair.of(BoundType.CLOSED, BoundType.CLOSED), DateUtil.toUtilDate(peilmoment));
 			return bevat.toPredicate(r, q, cb);
 		};
 	}
 
-	public static Specification<Gebruiker> filterFunctieIn(Collection<Functie> functies)
+	public static Specification<Medewerker> filterFunctieIn(Collection<Functie> functies)
 	{
-		return skipWhenEmpty(functies, (r, q, cb) -> r.get(Gebruiker_.functie).in(functies));
+		return skipWhenEmpty(functies, (r, q, cb) -> r.get(Medewerker_.functie).in(functies));
 	}
 
-	public static Specification<Gebruiker> filterFunctie(Functie functie)
+	public static Specification<Medewerker> filterFunctie(Functie functie)
 	{
-		return skipWhenNull(functie, (r, q, cb) -> cb.equal(r.get(Gebruiker_.functie), functie));
+		return skipWhenNull(functie, (r, q, cb) -> cb.equal(r.get(Medewerker_.functie), functie));
 	}
 }

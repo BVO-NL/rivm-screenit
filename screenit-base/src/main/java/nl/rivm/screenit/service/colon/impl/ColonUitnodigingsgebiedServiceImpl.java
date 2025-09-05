@@ -45,7 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.PostcodeGebied;
 import nl.rivm.screenit.model.colon.CapaciteitsPercWijziging;
 import nl.rivm.screenit.model.colon.ColonDossier_;
@@ -251,7 +251,7 @@ public class ColonUitnodigingsgebiedServiceImpl implements ColonUitnodigingsgebi
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void wijzigingenDoorvoeren(UitnodigingsGebied uitnodigingsgebied, Map<String, Integer> nieuweAdherentiePercentages,
-		List<ColoscopieCentrumColonCapaciteitVerdeling> verwijderdeKoppelingen, List<CapaciteitsPercWijziging> wijzigingen, InstellingGebruiker ingelogdeGebruiker)
+		List<ColoscopieCentrumColonCapaciteitVerdeling> verwijderdeKoppelingen, List<CapaciteitsPercWijziging> wijzigingen, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		var melding = "Gewijzigde capaciteitspercentages:<br>";
 		var adherentieMelding = "Adherentieverdeling gewijzigd voor gebied: " + uitnodigingsgebied.getNaam() + "<br>";
@@ -277,7 +277,7 @@ public class ColonUitnodigingsgebiedServiceImpl implements ColonUitnodigingsgebi
 			hibernateService.saveOrUpdate(intakelocatie);
 		}
 
-		logService.logGebeurtenis(LogGebeurtenis.ADHERENTIE_AANEGEPAST, ingelogdeGebruiker, adherentieMelding + melding, Bevolkingsonderzoek.COLON);
+		logService.logGebeurtenis(LogGebeurtenis.ADHERENTIE_AANEGEPAST, ingelogdeOrganisatieMedewerker, adherentieMelding + melding, Bevolkingsonderzoek.COLON);
 		hibernateService.getHibernateSession().flush();
 		adherentieMelding = valideerAdherentieVanGewijzigdeGebieden(Set.of(uitnodigingsgebied));
 		if (StringUtils.isNotBlank(adherentieMelding))
@@ -350,7 +350,7 @@ public class ColonUitnodigingsgebiedServiceImpl implements ColonUitnodigingsgebi
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void wijzigingenDoorvoeren(ColonIntakelocatie intakelocatie, List<ColoscopieCentrumColonCapaciteitVerdeling> verwijderdeKoppelingen,
-		List<CapaciteitsPercWijziging> wijzigingen, InstellingGebruiker ingelogdeGebruiker)
+		List<CapaciteitsPercWijziging> wijzigingen, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		var melding = "";
 		var adherentieMelding = "Verdeling gewijzigd voor intakelocatie: " + intakelocatie.getNaam() + "<br>";
@@ -397,7 +397,7 @@ public class ColonUitnodigingsgebiedServiceImpl implements ColonUitnodigingsgebi
 			uitnodigingsGebiedenTeControlerenOpAdherentie.add(uitnodigingsGebied);
 		}
 
-		logService.logGebeurtenis(LogGebeurtenis.ADHERENTIE_AANEGEPAST, ingelogdeGebruiker, adherentieMelding + melding, Bevolkingsonderzoek.COLON);
+		logService.logGebeurtenis(LogGebeurtenis.ADHERENTIE_AANEGEPAST, ingelogdeOrganisatieMedewerker, adherentieMelding + melding, Bevolkingsonderzoek.COLON);
 		hibernateService.getHibernateSession().flush();
 		uitnodigingsGebiedenTeControlerenOpAdherentie.forEach(ug ->
 		{

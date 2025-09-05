@@ -26,7 +26,7 @@ import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -47,18 +47,18 @@ public class TechnischBeheerPage extends AlgemeenPage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 		return createContextMenu();
 	}
 
-	private List<GebruikerMenuItem> createContextMenu()
+	private List<MedewerkerMenuItem> createContextMenu()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.technischbeheer.parameters", TechnischeParametersPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.technischbeheer.parameters", TechnischeParametersPage.class));
 		if (ScreenitSession.get().checkPermission(Recht.TECHNISCH_BEHEER, Actie.AANPASSEN))
 		{
-			contextMenuItems.add(new GebruikerMenuItem("menu.technischbeheer.correcties", CorrectiesPage.class));
+			contextMenuItems.add(new MedewerkerMenuItem("menu.technischbeheer.correcties", CorrectiesPage.class));
 		}
 		return contextMenuItems;
 	}

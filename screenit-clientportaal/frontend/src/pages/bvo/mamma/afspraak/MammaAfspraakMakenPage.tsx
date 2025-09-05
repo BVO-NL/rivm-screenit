@@ -40,7 +40,6 @@ import {getContactUrl} from "../../../../utils/UrlUtil"
 import properties from "./MammaAfspraakMakenPage.json"
 import NavigationDaysComponent from "../../../../components/navigation/NavigationDaysComponent"
 import ScreenitBackend from "../../../../utils/Backend"
-import {AxiosResponse} from "axios"
 import MammaAfspraakMakenForm from "../../../../components/form/mamma/MammaAfspraakMakenForm"
 import {placeNonBreakingSpaceInDate} from "../../../../utils/StringUtil"
 import {compareAsc} from "date-fns"
@@ -74,10 +73,8 @@ const MammaAfspraakMakenPage = () => {
 	const client = useSelector((state: State) => state.client)
 
 	useEffect(() => {
-		ScreenitBackend.get(`/mamma/afspraak/standplaatsPlaatsen`)
-			.then((response) => {
-				setLaatsteStandplaatsZoekFilter(response.data)
-			})
+		ScreenitBackend.get<string[]>(`mamma/afspraak/standplaatsPlaatsen`).json()
+			.then((response) => setLaatsteStandplaatsZoekFilter(response))
 		dispatch(getHuidigeAfspraak())
 	}, [dispatch, selectedBvo])
 
@@ -87,10 +84,8 @@ const MammaAfspraakMakenPage = () => {
 	}
 
 	function zoekAfspraken(zoekFilter: AfspraakZoekFilter) {
-		ScreenitBackend.post(`/mamma/afspraak/zoeken`, zoekFilter)
-			.then((response: AxiosResponse<AfspraakZoekResultaten>) => {
-				setLaatsteAfspraakZoekResultaten(response.data)
-			})
+		ScreenitBackend.post<AfspraakZoekResultaten>(`mamma/afspraak/zoeken`, {json: zoekFilter}).json()
+			.then((response: AfspraakZoekResultaten) => setLaatsteAfspraakZoekResultaten(response))
 	}
 
 	const huidigeAfspraak = useSelector((state: State) => state.client.mammaDossier.huidigeAfspraak)

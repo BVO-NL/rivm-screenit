@@ -100,7 +100,7 @@ public class MammaDiscrepantieArbitrageRondePanel extends AbstractMammaRondePane
 	void lezingOpslaan(MammaLezing lezing, AjaxRequestTarget target, List<LaesieDto> laesieDtos)
 	{
 		koppelNieuweLaesiesAanLezing(lezing, laesieDtos);
-		baseBeoordelingService.slaLezingOpEnVerwerkStatus(getModelObject(), lezing, ScreenitSession.get().getLoggedInInstellingGebruiker(),
+		baseBeoordelingService.slaLezingOpEnVerwerkStatus(getModelObject(), lezing, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(),
 			b -> getString(EnumStringUtil.getPropertyString(((MammaBeoordeling) b).getOpschortReden())));
 		((AbstractMammaBeoordelenPage) getPage()).volgendeBeoordeling(target);
 	}

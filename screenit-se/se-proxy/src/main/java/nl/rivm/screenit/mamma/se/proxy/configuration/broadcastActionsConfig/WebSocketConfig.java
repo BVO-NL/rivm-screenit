@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.configuration.broadcastActionsConfig;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%

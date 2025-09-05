@@ -30,7 +30,7 @@ import nl.rivm.screenit.main.web.component.table.GeboortedatumColumn;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.AbstractMammaCePage;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.GbaPersoon_;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling_;
@@ -97,7 +97,7 @@ public abstract class AbstractMammaCeWerklijst extends AbstractMammaCePage
 
 	protected IColumn<MammaBeoordeling, String> getBeColumn()
 	{
-		return new PropertyColumn<>(Model.of("BE"), propertyChain(MammaOnderzoek_.LAATSTE_BEOORDELING, MammaBeoordeling_.BEOORDELINGS_EENHEID, Instelling_.NAAM),
+		return new PropertyColumn<>(Model.of("BE"), propertyChain(MammaOnderzoek_.LAATSTE_BEOORDELING, MammaBeoordeling_.BEOORDELINGS_EENHEID, Organisatie_.NAAM),
 			"beoordelingsEenheid.naam");
 	}
 

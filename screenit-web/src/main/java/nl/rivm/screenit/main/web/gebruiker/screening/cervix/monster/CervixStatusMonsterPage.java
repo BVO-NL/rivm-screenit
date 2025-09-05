@@ -24,7 +24,8 @@ package nl.rivm.screenit.main.web.gebruiker.screening.cervix.monster;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -33,17 +34,17 @@ import nl.rivm.screenit.model.enums.Recht;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(constraint = ShiroConstraint.HasPermission, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX }, recht = {
-	Recht.GEBRUIKER_CERVIX_STATUS_MONSTER }, organisatieTypeScopes = { OrganisatieType.BMHK_LABORATORIUM })
+	Recht.MEDEWERKER_CERVIX_STATUS_MONSTER }, organisatieTypeScopes = { OrganisatieType.BMHK_LABORATORIUM })
 public class CervixStatusMonsterPage extends CervixMonsterBasePage
 {
 
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.cervixscreening.statusmonster", CervixStatusMonsterPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.cervixscreening.statusmonster", CervixStatusMonsterPage.class));
 		return contextMenuItems;
 	}
 

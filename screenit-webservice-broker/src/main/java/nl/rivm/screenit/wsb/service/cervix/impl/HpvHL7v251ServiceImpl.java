@@ -41,7 +41,6 @@ import nl.rivm.screenit.service.cervix.CervixFactory;
 import nl.rivm.screenit.specification.cervix.CervixBMHKLaboratoriumSpecification;
 import nl.rivm.screenit.specification.cervix.CervixHpvBerichtSpecification;
 import nl.rivm.screenit.util.DateUtil;
-import nl.rivm.screenit.util.cervix.hpv_berichtgenerator.CervixHpvBerichtGenerator;
 import nl.rivm.screenit.wsb.service.BaseHL7v2Service;
 import nl.rivm.screenit.wsb.service.cervix.HpvHL7v251Service;
 
@@ -58,6 +57,7 @@ import ca.uhn.hl7v2.model.v251.message.ACK;
 import ca.uhn.hl7v2.model.v251.message.OUL_R22;
 
 import static ca.uhn.hl7v2.ErrorCode.MESSAGE_ACCEPTED;
+import static nl.rivm.screenit.util.Hl7v2BerichtUtil.createMessage;
 
 @Service
 @Slf4j
@@ -157,7 +157,7 @@ public class HpvHL7v251ServiceImpl extends BaseHL7v2Service<OUL_R22> implements 
 
 		if (bestaandHpvBericht.isPresent())
 		{
-			var messageBestaandHpvBericht = CervixHpvBerichtGenerator.createMessage(bestaandHpvBericht.get().getHl7Bericht());
+			var messageBestaandHpvBericht = createMessage(bestaandHpvBericht.get().getHl7Bericht());
 			var wrapperBestaandHpvBericht = new CervixHpvBerichtWrapper(messageBestaandHpvBericht);
 
 			LOG.warn("Bericht al eerder binnengekomen voor lab: {}", laboratorium.getNaam());

@@ -112,7 +112,7 @@ public abstract class CervixMonsterZoekenPanel extends Panel
 				var geboortedatum = geboortedatumModel.getObject();
 
 				var uitnodigingen = new ArrayList<CervixUitnodiging>();
-				var melding = monstersZoekenService.zoekMonsters(ScreenitSession.get().getInstelling(), monsterId, bsn, geboortedatum, uitnodigingen, this::getString);
+				var melding = monstersZoekenService.zoekMonsters(ScreenitSession.get().getOrganisatie(), monsterId, bsn, geboortedatum, uitnodigingen, this::getString);
 				if (StringUtils.isNotBlank(melding))
 				{
 					error(melding);
@@ -141,7 +141,7 @@ public abstract class CervixMonsterZoekenPanel extends Panel
 		if (!uitnodigingen.isEmpty())
 		{
 			Client client = uitnodigingen.get(0).getScreeningRonde().getDossier().getClient();
-			logService.logGebeurtenis(LogGebeurtenis.CERVIX_UITNODIGINGEN_INGEZIEN, ScreenitSession.get().getLoggedInAccount(), client, getString("titel"),
+			logService.logGebeurtenis(LogGebeurtenis.CERVIX_UITNODIGINGEN_INGEZIEN, ScreenitSession.get().getIngelogdAccount(), client, getString("titel"),
 				Bevolkingsonderzoek.CERVIX);
 		}
 	}

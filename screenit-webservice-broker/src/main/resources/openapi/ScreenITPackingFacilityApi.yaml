@@ -1,0 +1,162 @@
+openapi: 3.1.0
+info:
+  title: ScreenIT -> Packaging Facility API
+  description: ScreenIT -> Packaging Facility API
+  version: 1.0.0
+servers:
+  - url: 'https://bvo.daklapack.com/DK'
+    description: DK productie
+  - url: 'https://bvo.daklapack.com/DKACC'
+    description: DK acceptatie
+  - url: 'https://bvo.daklapack.com/DKTEST'
+    description: DK test
+  - url: 'https://bvo.daklapack.com/BMHK'
+    description: BMHK productie
+  - url: 'https://bvo.daklapack.com/BMHKACC'
+    description: BMHK acceptatie
+  - url: 'https://bvo.daklapack.com/BMHKTEST'
+    description: BMHK test
+  - url: 'https://acc-inpakcentrum-stub.test.landelijkescreening.nl/inpakcentrum/dk'
+    description: mock implementatie DK op acceptatie
+  - url: 'https://acc-inpakcentrum-stub.test.landelijkescreening.nl/inpakcentrum/bmhk'
+    description: mock implementatie BMHK op acceptatie
+  - url: 'https://ktn-inpakcentrum-stub.test.landelijkescreening.nl/inpakcentrum/dk'
+    description: mock implementatie van DK op ktn
+  - url: 'https://ktn-inpakcentrum-stub.test.landelijkescreening.nl/inpakcentrum/bmhk'
+    description: mock implementatie van BMHK op ktn
+  - url: 'https://pat-inpakcentrum-stub.test.landelijkescreening.nl/inpakcentrum/dk'
+    description: mock implementatie van DK op pat
+  - url: 'https://test1-inpakcentrum-stub.test.landelijkescreening.nl/inpakcentrum/bmhk'
+    description: mock implementatie van BMHK op test1
+  - url: 'https://test2-inpakcentrum-stub.test.landelijkescreening.nl/inpakcentrum/dk'
+    description: mock implementatie op van DK test2
+  - url: 'https://test2-inpakcentrum-stub.test.landelijkescreening.nl/inpakcentrum/bmhk'
+    description: mock implementatie op van BMHK test2
+  - url: 'https://test3-inpakcentrum-stub.test.landelijkescreening.nl/inpakcentrum/dk'
+    description: mock implementatie van DK op test3
+  - url: 'https://test3-inpakcentrum-stub.test.landelijkescreening.nl/inpakcentrum/bmhk'
+    description: mock implementatie van BMHK op test3
+  - url: 'https://testit-inpakcentrum-stub.test.landelijkescreening.nl/inpakcentrum/dk'
+    description: mock implementatie van DK op testit
+  - url: 'https://testit-inpakcentrum-stub.test.landelijkescreening.nl/inpakcentrum/bmhk'
+    description: mock implementatie van BMHK op testit
+  - url: 'https://test5-inpakcentrum-stub.test.landelijkescreening.nl/inpakcentrum/dk'
+    description: mock implementatie van DK op test5
+  - url: 'https://test5-inpakcentrum-stub.test.landelijkescreening.nl/inpakcentrum/bmhk'
+    description: mock implementatie van BMHK op test5
+paths:
+  /api/v1/status:
+    get:
+      summary: "Is Verpakker beschikbaar voor ontvangst van data"
+      operationId: getStatus
+      responses:
+        200:
+          description: "True = beschikbaar, False = niet beschikbaar"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  available:
+                    type: boolean
+        500:
+          description: "Er ging iets mis bij het ophalen van de status"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/internalServerError"
+  /api/v1/upload:
+    post:
+      summary: "Upload bestand met zip naar Inpakcentrum"
+      operationId: uploadFile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  format: byte
+                  description: "Bestand inhoud (bij ZIP en json wordt het bestandsdata Bases64 encoded)"
+                datatype:
+                  type: string
+                  description: "Extensie van bestand (bijv. json, zip, csv)"
+                filename:
+                  type: string
+                  description: "Naam van het bestand"
+      responses:
+        200:
+          description: "Het request is goed ontvangen"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uploadSucceeded:
+                    type: boolean
+                    description: "Is de upload goed ontvangen door de Verpakker?"
+        400:
+          description: "Het request bevat incorrecte data"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/badRequestError"
+        500:
+          description: "Er ging iets mis bij het afhandelen van het request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/internalServerError"
+  /api/v1/ready:
+    get:
+      summary: "Controleren of alles goed is verstuurd"
+      operationId: isReady
+      parameters:
+        - name: value
+          in: query
+          required: true
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: "Het request is goed ontvangen"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ready:
+                    type: boolean
+                    description: "Alles is goed ontvangen door Verpakker"
+        400:
+          description: "Het request bevat incorrecte data"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/badRequestError"
+        500:
+          description: "Er ging iets mis bij het afhandelen van het request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/internalServerError"
+
+
+components:
+  schemas:
+    internalServerError:
+      type: object
+      properties:
+        message:
+          type: string
+        exceptie:
+          type: string
+    badRequestError:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string

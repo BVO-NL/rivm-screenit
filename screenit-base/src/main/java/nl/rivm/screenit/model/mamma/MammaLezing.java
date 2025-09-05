@@ -42,7 +42,7 @@ import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.enums.MammaAfwijkingTeZienOp;
 import nl.rivm.screenit.model.mamma.enums.MammaBIRADSWaarde;
 import nl.rivm.screenit.model.mamma.enums.MammaBeperktBeoordeelbaarReden;
@@ -50,6 +50,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaLezingRedenenFotobesprekingMbber;
 import nl.rivm.screenit.model.mamma.enums.MammaLezingRedenenFotobesprekingRadioloog;
 import nl.rivm.screenit.model.mamma.enums.MammaLezingType;
 import nl.rivm.screenit.model.mamma.enums.MammaNevenbevindingen;
+import nl.rivm.screenit.model.mamma.enums.MammaNevenbevindingenZijde;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.hibernate.annotations.Cascade;
@@ -76,7 +77,7 @@ public class MammaLezing extends AbstractHibernateObject
 	private MammaBeoordeling beoordeling;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	private InstellingGebruiker beoordelaar;
+	private OrganisatieMedewerker beoordelaar;
 
 	private boolean onervarenRadioloog;
 
@@ -111,6 +112,10 @@ public class MammaLezing extends AbstractHibernateObject
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(schema = "mamma", name = "lezing_nevenbevindingen")
 	private List<MammaNevenbevindingen> nevenbevindingen = new ArrayList<>();
+
+	@Column
+	@Enumerated(EnumType.STRING)
+	private MammaNevenbevindingenZijde nevenbevindingZijde;
 
 	@Column
 	private String nevenbevindingOpmerking;

@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
 
 import nl.rivm.screenit.main.service.algemeen.ProjectService;
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.BestandStatus;
@@ -130,28 +130,28 @@ public class ProjectServiceImpl implements ProjectService
 
 	@Override
 	@Transactional
-	public void saveOrUpdateProject(Project project, InstellingGebruiker instellingGebruiker)
+	public void saveOrUpdateProject(Project project, OrganisatieMedewerker organisatieMedewerker)
 	{
 		if (project.getId() == null)
 		{
 			if (project.getType().equals(ProjectType.BRIEFPROJECT))
 			{
-				logService.logGebeurtenis(LogGebeurtenis.BRIEFPROJECT_AANGEMAAKT, instellingGebruiker, "Briefprojectnaam: " + project.getNaam());
+				logService.logGebeurtenis(LogGebeurtenis.BRIEFPROJECT_AANGEMAAKT, organisatieMedewerker, "Briefprojectnaam: " + project.getNaam());
 			}
 			else
 			{
-				logService.logGebeurtenis(LogGebeurtenis.PROJECT_AANGEMAAKT, instellingGebruiker, "Projectnaam: " + project.getNaam());
+				logService.logGebeurtenis(LogGebeurtenis.PROJECT_AANGEMAAKT, organisatieMedewerker, "Projectnaam: " + project.getNaam());
 			}
 		}
 		else
 		{
 			if (project.getType().equals(ProjectType.BRIEFPROJECT))
 			{
-				logService.logGebeurtenis(LogGebeurtenis.BRIEFPROJECT_GEWIJZIGD, instellingGebruiker, "Briefprojectnaam: " + project.getNaam());
+				logService.logGebeurtenis(LogGebeurtenis.BRIEFPROJECT_GEWIJZIGD, organisatieMedewerker, "Briefprojectnaam: " + project.getNaam());
 			}
 			else
 			{
-				logService.logGebeurtenis(LogGebeurtenis.PROJECT_GEWIJZIGD, instellingGebruiker, "Projectnaam: " + project.getNaam());
+				logService.logGebeurtenis(LogGebeurtenis.PROJECT_GEWIJZIGD, organisatieMedewerker, "Projectnaam: " + project.getNaam());
 			}
 		}
 
@@ -216,14 +216,14 @@ public class ProjectServiceImpl implements ProjectService
 	}
 
 	@Override
-	public List<ProjectType> getProjectTypes(InstellingGebruiker instellingGebruiker, Actie minimumActie, boolean checkBvo)
+	public List<ProjectType> getProjectTypes(OrganisatieMedewerker organisatieMedewerker, Actie minimumActie, boolean checkBvo)
 	{
 		List<ProjectType> projectTypes = new ArrayList<>();
 
 		for (var projectType : ProjectType.values())
 		{
 
-			var level = autorisatieService.getToegangLevel(instellingGebruiker, minimumActie, checkBvo, projectType.getRecht());
+			var level = autorisatieService.getToegangLevel(organisatieMedewerker, minimumActie, checkBvo, projectType.getRecht());
 			if (level != null)
 			{
 				projectTypes.add(projectType);
@@ -277,7 +277,7 @@ public class ProjectServiceImpl implements ProjectService
 
 	@Override
 	public void queueProjectBestandVoorAttributen(Project project, ProjectGroep groep, ProjectBestand bestand, String contentType, String filenaam, File file,
-		Account loggedInAccount) throws IOException
+		Account ingelogdAccount) throws IOException
 	{
 		var nu = currentDateSupplier.getDate();
 		var upload = new UploadDocument();
@@ -299,11 +299,11 @@ public class ProjectServiceImpl implements ProjectService
 
 		verwerkProjectBestand(bestand);
 
-		logService.logGebeurtenis(LogGebeurtenis.PROJECT_BESTAND_TOEGEVOEGD, loggedInAccount, getLoggingMelding(bestand));
+		logService.logGebeurtenis(LogGebeurtenis.PROJECT_BESTAND_TOEGEVOEGD, ingelogdAccount, getLoggingMelding(bestand));
 	}
 
 	@Override
-	public void queueProjectBestandVoorUitslagen(Project project, ProjectBestand uitslagenBestand, String contentType, String filenaam, File file, Account loggedInAccount)
+	public void queueProjectBestandVoorUitslagen(Project project, ProjectBestand uitslagenBestand, String contentType, String filenaam, File file, Account ingelogdAccount)
 		throws IOException
 	{
 		var nu = currentDateSupplier.getDate();
@@ -325,12 +325,12 @@ public class ProjectServiceImpl implements ProjectService
 
 		verwerkProjectUitslagen(uitslagenBestand);
 
-		logService.logGebeurtenis(LogGebeurtenis.PROJECT_UITSLAG_TOEGEVOEGD, loggedInAccount, getLoggingMelding(uitslagenBestand));
+		logService.logGebeurtenis(LogGebeurtenis.PROJECT_UITSLAG_TOEGEVOEGD, ingelogdAccount, getLoggingMelding(uitslagenBestand));
 	}
 
 	@Override
 	public void queueProjectBestandVoorClientWijzigingen(Project project, ProjectBestand projectBestand, UploadDocument uploadDocument, String contentType, String filenaam,
-		File file, Account loggedInAccount) throws IOException
+		File file, Account ingelogdAccount) throws IOException
 	{
 		var nu = currentDateSupplier.getDate();
 		uploadDocumentService.saveOrUpdate(uploadDocument, FileStoreLocation.PROJECT_INACTIVEREN, project.getId());
@@ -345,11 +345,11 @@ public class ProjectServiceImpl implements ProjectService
 
 		verwerkProjectBestand(projectBestand);
 
-		logService.logGebeurtenis(LogGebeurtenis.PROJECT_BESTAND_TOEGEVOEGD, loggedInAccount, getLoggingMelding(projectBestand));
+		logService.logGebeurtenis(LogGebeurtenis.PROJECT_BESTAND_TOEGEVOEGD, ingelogdAccount, getLoggingMelding(projectBestand));
 	}
 
 	@Override
-	public void queueProjectBestandVoorPopulatie(ProjectGroep groep, String contentType, String filenaam, File file, Account loggedInAccount) throws IOException
+	public void queueProjectBestandVoorPopulatie(ProjectGroep groep, String contentType, String filenaam, File file, Account ingelogdAccount) throws IOException
 	{
 		var nu = currentDateSupplier.getDate();
 		var upload = new UploadDocument();
@@ -375,7 +375,7 @@ public class ProjectServiceImpl implements ProjectService
 
 		verwerkProjectBestand(bestand);
 
-		logService.logGebeurtenis(LogGebeurtenis.PROJECT_BESTAND_TOEGEVOEGD, loggedInAccount, getLoggingMelding(bestand));
+		logService.logGebeurtenis(LogGebeurtenis.PROJECT_BESTAND_TOEGEVOEGD, ingelogdAccount, getLoggingMelding(bestand));
 	}
 
 	private String getLoggingMelding(ProjectBestand bestand)
@@ -415,7 +415,7 @@ public class ProjectServiceImpl implements ProjectService
 
 	@Override
 	@Transactional
-	public void verwijderProjectGroep(ProjectGroep groep, Account loggedInAccount)
+	public void verwijderProjectGroep(ProjectGroep groep, Account ingelogdAccount)
 	{
 		var project = groep.getProject();
 		project.getGroepen().remove(groep);
@@ -437,19 +437,19 @@ public class ProjectServiceImpl implements ProjectService
 
 		if (project.getType().equals(ProjectType.BRIEFPROJECT))
 		{
-			logService.logGebeurtenis(LogGebeurtenis.BRIEFPROJECT_GROEP_VERWIJDERD, loggedInAccount,
+			logService.logGebeurtenis(LogGebeurtenis.BRIEFPROJECT_GROEP_VERWIJDERD, ingelogdAccount,
 				"Briefproject: " + project.getNaam() + " Groep: " + groep.getNaam() + " Populatie: " + groep.getPopulatie());
 		}
 		else
 		{
-			logService.logGebeurtenis(LogGebeurtenis.PROJECT_GROEP_VERWIJDERD, loggedInAccount,
+			logService.logGebeurtenis(LogGebeurtenis.PROJECT_GROEP_VERWIJDERD, ingelogdAccount,
 				"Project: " + project.getNaam() + " Groep: " + groep.getNaam() + " Populatie: " + groep.getPopulatie());
 		}
 	}
 
 	@Override
 	@Transactional
-	public String updateProjectGroepActiefStatus(ProjectGroep groep, Account loggedInAccount)
+	public String updateProjectGroepActiefStatus(ProjectGroep groep, Account ingelogdAccount)
 	{
 		groep.setActiefDatum(currentDateSupplier.getDate());
 		hibernateService.saveOrUpdate(groep);
@@ -460,12 +460,12 @@ public class ProjectServiceImpl implements ProjectService
 		if (project.getType().equals(ProjectType.BRIEFPROJECT))
 		{
 			melding = "Briefproject: " + melding;
-			logService.logGebeurtenis(LogGebeurtenis.BRIEFPROJECT_GROEP_GEWIJZIGD, loggedInAccount, melding);
+			logService.logGebeurtenis(LogGebeurtenis.BRIEFPROJECT_GROEP_GEWIJZIGD, ingelogdAccount, melding);
 		}
 		else
 		{
 			melding = "Project: " + melding;
-			logService.logGebeurtenis(LogGebeurtenis.PROJECT_GROEP_GEWIJZIGD, loggedInAccount, melding);
+			logService.logGebeurtenis(LogGebeurtenis.PROJECT_GROEP_GEWIJZIGD, ingelogdAccount, melding);
 		}
 		return melding;
 	}

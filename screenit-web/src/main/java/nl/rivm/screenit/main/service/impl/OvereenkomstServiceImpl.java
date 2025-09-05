@@ -32,22 +32,22 @@ import nl.rivm.screenit.main.service.OvereenkomstService;
 import nl.rivm.screenit.main.service.cervix.CervixHuisartsSyncService;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.overeenkomstenzoeken.OvereenkomstZoekFilter;
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.overeenkomsten.AbstractAfgeslotenOvereenkomst;
-import nl.rivm.screenit.model.overeenkomsten.AfgeslotenInstellingOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst;
+import nl.rivm.screenit.model.overeenkomsten.AfgeslotenOrganisatieOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.Overeenkomst;
 import nl.rivm.screenit.model.overeenkomsten.OvereenkomstType;
 import nl.rivm.screenit.repository.algemeen.AbstractAfgeslotenOvereenkomstRepository;
 import nl.rivm.screenit.repository.algemeen.AfgeslotenMedewerkerOvereenkomstRepository;
 import nl.rivm.screenit.repository.algemeen.AfgeslotenOrganisatieOvereenkomstRepository;
-import nl.rivm.screenit.repository.algemeen.InstellingRepository;
+import nl.rivm.screenit.repository.algemeen.OrganisatieRepository;
 import nl.rivm.screenit.repository.algemeen.OvereenkomstRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
@@ -120,7 +120,7 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 	private AbstractAfgeslotenOvereenkomstRepository abstractAfgeslotenOvereenkomstRepository;
 
 	@Autowired
-	private InstellingRepository organisatieRepository;
+	private OrganisatieRepository organisatieRepository;
 
 	@Override
 	@Transactional
@@ -224,36 +224,36 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 	}
 
 	@Override
-	public List<AfgeslotenMedewerkerOvereenkomst> getAfgeslotenMedewerkerOvereenkomsten(Gebruiker zoekObject, Boolean actief, Long first, Long size, Sort sort)
+	public List<AfgeslotenMedewerkerOvereenkomst> getAfgeslotenMedewerkerOvereenkomsten(Medewerker zoekObject, Boolean actief, Long first, Long size, Sort sort)
 	{
 		return afgeslotenMedewerkerOvereenkomstRepository.findWith(
 				AbstractAfgeslotenOvereenkomstSpecification.<AfgeslotenMedewerkerOvereenkomst> filterActief(actief, currentDateSupplier.getDate())
-					.and(AfgeslotenMedewerkerOvereenkomstSpecification.heeftGebruiker(zoekObject)), q -> q.sortBy(sort))
+					.and(AfgeslotenMedewerkerOvereenkomstSpecification.heeftMedewerker(zoekObject)), q -> q.sortBy(sort))
 			.all(first, size);
 	}
 
 	@Override
-	public long countAfgeslotenMedewerkerOvereenkomsten(Gebruiker zoekObject, Boolean actief)
+	public long countAfgeslotenMedewerkerOvereenkomsten(Medewerker zoekObject, Boolean actief)
 	{
 		return afgeslotenMedewerkerOvereenkomstRepository.count(
 			AbstractAfgeslotenOvereenkomstSpecification.<AfgeslotenMedewerkerOvereenkomst> filterActief(actief, currentDateSupplier.getDate())
-				.and(AfgeslotenMedewerkerOvereenkomstSpecification.heeftGebruiker(zoekObject)));
+				.and(AfgeslotenMedewerkerOvereenkomstSpecification.heeftMedewerker(zoekObject)));
 	}
 
 	@Override
-	public List<AfgeslotenInstellingOvereenkomst> getAfgeslotenOrganisatieOvereenkomsten(Instelling zoekObject, Boolean actief, Long first, Long size, Sort sort)
+	public List<AfgeslotenOrganisatieOvereenkomst> getAfgeslotenOrganisatieOvereenkomsten(Organisatie zoekObject, Boolean actief, Long first, Long size, Sort sort)
 	{
 		return afgeslotenOrganisatieOvereenkomstRepository.findWith(
-				AbstractAfgeslotenOvereenkomstSpecification.<AfgeslotenInstellingOvereenkomst> filterActief(actief, currentDateSupplier.getDate())
+				AbstractAfgeslotenOvereenkomstSpecification.<AfgeslotenOrganisatieOvereenkomst> filterActief(actief, currentDateSupplier.getDate())
 					.and(AfgeslotenOrganisatieOvereenkomstSpecification.heeftOrganisatie(zoekObject)), q -> q.sortBy(sort))
 			.all(first, size);
 	}
 
 	@Override
-	public long countAfgeslotenOrganisatieOvereenkomsten(Instelling zoekObject, Boolean actief)
+	public long countAfgeslotenOrganisatieOvereenkomsten(Organisatie zoekObject, Boolean actief)
 	{
 		return afgeslotenOrganisatieOvereenkomstRepository.count(
-			AbstractAfgeslotenOvereenkomstSpecification.<AfgeslotenInstellingOvereenkomst> filterActief(actief, currentDateSupplier.getDate())
+			AbstractAfgeslotenOvereenkomstSpecification.<AfgeslotenOrganisatieOvereenkomst> filterActief(actief, currentDateSupplier.getDate())
 				.and(AfgeslotenOrganisatieOvereenkomstSpecification.heeftOrganisatie(zoekObject)));
 	}
 
@@ -312,11 +312,11 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 
 			if (overeenkomst instanceof AfgeslotenMedewerkerOvereenkomst afgeslotenKwaliteitsOvereenkomst)
 			{
-				code.append(afgeslotenKwaliteitsOvereenkomst.getGebruiker().getId());
+				code.append(afgeslotenKwaliteitsOvereenkomst.getMedewerker().getId());
 			}
-			else if (overeenkomst instanceof AfgeslotenInstellingOvereenkomst afgeslotenOvereenkomst)
+			else if (overeenkomst instanceof AfgeslotenOrganisatieOvereenkomst afgeslotenOvereenkomst)
 			{
-				code.append(afgeslotenOvereenkomst.getInstelling().getId());
+				code.append(afgeslotenOvereenkomst.getOrganisatie().getId());
 			}
 
 			code.append(".");
@@ -355,20 +355,20 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 
 	protected void verstuurOvereenkomstMail(AbstractAfgeslotenOvereenkomst overeenkomst)
 	{
-		Gebruiker gebruiker = null;
+		Medewerker medewerker = null;
 		String emailUA = null;
-		if (overeenkomst instanceof AfgeslotenInstellingOvereenkomst afgeslotenOvereenkomst)
+		if (overeenkomst instanceof AfgeslotenOrganisatieOvereenkomst afgeslotenOvereenkomst)
 		{
-			var instelling = afgeslotenOvereenkomst.getInstelling();
-			emailUA = instelling.getEmail();
-			gebruiker = instelling.getGemachtigde();
+			var organisatie = afgeslotenOvereenkomst.getOrganisatie();
+			emailUA = organisatie.getEmail();
+			medewerker = organisatie.getGemachtigde();
 		}
 		else if (overeenkomst instanceof AfgeslotenMedewerkerOvereenkomst afgeslotenKwaliteitsOvereenkomst)
 		{
-			gebruiker = afgeslotenKwaliteitsOvereenkomst.getGebruiker();
+			medewerker = afgeslotenKwaliteitsOvereenkomst.getMedewerker();
 		}
 
-		if (gebruiker != null)
+		if (medewerker != null)
 		{
 
 			var content = "";
@@ -383,33 +383,33 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 			}
 			var link = applicationUrl;
 			var aanhef = "";
-			if (gebruiker.getAanhef() != null)
+			if (medewerker.getAanhef() != null)
 			{
-				aanhef = " " + gebruiker.getAanhef().getNaam();
+				aanhef = " " + medewerker.getAanhef().getNaam();
 			}
 
 			var titel = "";
-			if (gebruiker.getTitel() != null)
+			if (medewerker.getTitel() != null)
 			{
-				titel = " " + gebruiker.getTitel().getNaam();
+				titel = " " + medewerker.getTitel().getNaam();
 			}
 
 			var achternaam = "";
-			if (StringUtils.isNotBlank(gebruiker.getAchternaam()))
+			if (StringUtils.isNotBlank(medewerker.getAchternaam()))
 			{
-				achternaam = " " + gebruiker.getAchternaam();
+				achternaam = " " + medewerker.getAchternaam();
 			}
 
 			var tussenvoegsel = "";
-			if (StringUtils.isNotBlank(gebruiker.getTussenvoegsel()))
+			if (StringUtils.isNotBlank(medewerker.getTussenvoegsel()))
 			{
-				tussenvoegsel = " " + gebruiker.getTussenvoegsel();
+				tussenvoegsel = " " + medewerker.getTussenvoegsel();
 			}
 
 			var voorletters = "";
-			if (StringUtils.isNotBlank(gebruiker.getVoorletters()))
+			if (StringUtils.isNotBlank(medewerker.getVoorletters()))
 			{
-				voorletters = " " + gebruiker.getVoorletters();
+				voorletters = " " + medewerker.getVoorletters();
 			}
 
 			content = content.replaceAll("\\{link\\}", link);
@@ -419,10 +419,10 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 			content = content.replaceAll("\\{tussenvoegsel\\}", tussenvoegsel);
 			content = content.replaceAll("\\{voorletters\\}", voorletters);
 
-			var emailAdres = gebruiker.getEmailwerk();
-			if (StringUtils.isNotBlank(gebruiker.getEmailextra()))
+			var emailAdres = medewerker.getEmailwerk();
+			if (StringUtils.isNotBlank(medewerker.getEmailextra()))
 			{
-				emailAdres = gebruiker.getEmailextra();
+				emailAdres = medewerker.getEmailextra();
 			}
 			else if (isUitstrijkendArts)
 			{
@@ -446,33 +446,33 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 	}
 
 	@Override
-	public List<AbstractAfgeslotenOvereenkomst> getTeAccoderenOvereenkomsten(InstellingGebruiker instellingGebruiker)
+	public List<AbstractAfgeslotenOvereenkomst> getTeAccoderenOvereenkomsten(OrganisatieMedewerker organisatieMedewerker)
 	{
-		return abstractAfgeslotenOvereenkomstRepository.findAll(getTeAccoderenOvereenkomstenSpecification(instellingGebruiker));
+		return abstractAfgeslotenOvereenkomstRepository.findAll(getTeAccoderenOvereenkomstenSpecification(organisatieMedewerker));
 	}
 
 	@Override
-	public long countTeAccoderenOvereenkomsten(InstellingGebruiker instellingGebruiker)
+	public long countTeAccoderenOvereenkomsten(OrganisatieMedewerker organisatieMedewerker)
 	{
-		return abstractAfgeslotenOvereenkomstRepository.count(getTeAccoderenOvereenkomstenSpecification(instellingGebruiker));
+		return abstractAfgeslotenOvereenkomstRepository.count(getTeAccoderenOvereenkomstenSpecification(organisatieMedewerker));
 	}
 
-	private Specification<AbstractAfgeslotenOvereenkomst> getTeAccoderenOvereenkomstenSpecification(InstellingGebruiker instellingGebruiker)
+	private Specification<AbstractAfgeslotenOvereenkomst> getTeAccoderenOvereenkomstenSpecification(OrganisatieMedewerker organisatieMedewerker)
 	{
 		return AbstractAfgeslotenOvereenkomstSpecification.isNietGeaccodeerd()
 			.and(AbstractAfgeslotenOvereenkomstSpecification.heeftEinddatumVanaf(currentDateSupplier.getDate()))
-			.and(AfgeslotenMedewerkerOvereenkomstSpecification.heeftGebruiker(instellingGebruiker.getMedewerker())
-				.or(AfgeslotenOrganisatieOvereenkomstSpecification.heeftOrganisatie(instellingGebruiker.getOrganisatie())
-					.and(AfgeslotenOrganisatieOvereenkomstSpecification.heeftGemachtigde(instellingGebruiker.getMedewerker()))
+			.and(AfgeslotenMedewerkerOvereenkomstSpecification.heeftMedewerker(organisatieMedewerker.getMedewerker())
+				.or(AfgeslotenOrganisatieOvereenkomstSpecification.heeftOrganisatie(organisatieMedewerker.getOrganisatie())
+					.and(AfgeslotenOrganisatieOvereenkomstSpecification.heeftGemachtigde(organisatieMedewerker.getMedewerker()))
 				)
 			);
 	}
 
 	@Override
 	@Transactional
-	public void accodeerOvereenkomsten(InstellingGebruiker instellingGebruiker, Account account)
+	public void accodeerOvereenkomsten(OrganisatieMedewerker organisatieMedewerker, Account account)
 	{
-		for (var afgeslotenOvereenkomst : getTeAccoderenOvereenkomsten(instellingGebruiker))
+		for (var afgeslotenOvereenkomst : getTeAccoderenOvereenkomsten(organisatieMedewerker))
 		{
 			afgeslotenOvereenkomst.setAkkoordDatum(currentDateSupplier.getDate());
 			hibernateService.saveOrUpdate(afgeslotenOvereenkomst);
@@ -481,7 +481,7 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 	}
 
 	@Override
-	public List<Instelling> getAfgeslotenOvereenkomsten(OvereenkomstZoekFilter filter, Sort sort, int first, int count)
+	public List<Organisatie> getAfgeslotenOvereenkomsten(OvereenkomstZoekFilter filter, Sort sort, int first, int count)
 	{
 		var specification = getSpecificationVoorZoekenAfgeslotenOvereenkomsten(filter);
 		return organisatieRepository.findWith(specification, q -> q.sortBy(sort)).all(first, count);
@@ -493,7 +493,7 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 		return organisatieRepository.count(getSpecificationVoorZoekenAfgeslotenOvereenkomsten(filter));
 	}
 
-	private Specification<Instelling> getSpecificationVoorZoekenAfgeslotenOvereenkomsten(OvereenkomstZoekFilter filter)
+	private Specification<Organisatie> getSpecificationVoorZoekenAfgeslotenOvereenkomsten(OvereenkomstZoekFilter filter)
 	{
 		return OrganisatieSpecification.filterNaamContaining(filter.getOrganisatieNaam())
 			.and(OrganisatieSpecification.filterOrganisatieType(filter.getOrganisatieType()))
@@ -504,9 +504,9 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 	}
 
 	@Override
-	public List<AfgeslotenInstellingOvereenkomst> getAfgeslotenOvereenkomstenVanOrganisatie(OvereenkomstZoekFilter filter, Instelling instelling)
+	public List<AfgeslotenOrganisatieOvereenkomst> getAfgeslotenOvereenkomstenVanOrganisatie(OvereenkomstZoekFilter filter, Organisatie organisatie)
 	{
-		ExtendedSpecification<AfgeslotenInstellingOvereenkomst> specification = AfgeslotenOrganisatieOvereenkomstSpecification.heeftOrganisatie(instelling);
+		ExtendedSpecification<AfgeslotenOrganisatieOvereenkomst> specification = AfgeslotenOrganisatieOvereenkomstSpecification.heeftOrganisatie(organisatie);
 		if (filter.getLopendeDatum() != null)
 		{
 			specification = specification.and(AbstractAfgeslotenOvereenkomstSpecification.bevatPeildatum(filter.getLopendeDatum()));

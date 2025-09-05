@@ -29,7 +29,7 @@ import nl.rivm.screenit.main.service.SKMLExterneSchemaXlsService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.validator.AantalBestandenUploadenValidator;
 import nl.rivm.screenit.main.web.component.validator.FileValidator;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.colon.SKMLExternSchema;
 import nl.rivm.screenit.model.enums.Actie;
@@ -61,7 +61,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.AANPASSEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_BEHEER_SCHEMA_EXTERNE_CONTROLE,
+	recht = Recht.MEDEWERKER_BEHEER_SCHEMA_EXTERNE_CONTROLE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class SKMLExterneControleSchemaXlsToevoegenPage extends KwaliteitscontroleBasePage
 {
@@ -125,7 +125,7 @@ public class SKMLExterneControleSchemaXlsToevoegenPage extends Kwaliteitscontrol
 						try
 						{
 							LOG.info("Er wordt een SKML XLS schema geupload, alles overschrijven: " + allesOverschrijven.getObject());
-							logService.logGebeurtenis(LogGebeurtenis.SKML_SCHEMA_IMPORT_GESTART, ScreenitSession.get().getLoggedInAccount(), Bevolkingsonderzoek.COLON);
+							logService.logGebeurtenis(LogGebeurtenis.SKML_SCHEMA_IMPORT_GESTART, ScreenitSession.get().getIngelogdAccount(), Bevolkingsonderzoek.COLON);
 							SKMLImportVoortgang voortgang = xlsService.importSchemaXls(excelfile.getInputStream(), allesOverschrijven.getObject());
 							if (CollectionUtils.isEmpty(voortgang.getFoutmeldingen()))
 							{
@@ -140,7 +140,7 @@ public class SKMLExterneControleSchemaXlsToevoegenPage extends Kwaliteitscontrol
 								error("SKML externe controle schema is niet succesvol verwerkt.");
 							}
 							String melding = voortgang.toString();
-							logService.logGebeurtenis(LogGebeurtenis.SKML_SCHEMA_IMPORT_AFGEROND, ScreenitSession.get().getLoggedInAccount(), melding, Bevolkingsonderzoek.COLON);
+							logService.logGebeurtenis(LogGebeurtenis.SKML_SCHEMA_IMPORT_AFGEROND, ScreenitSession.get().getIngelogdAccount(), melding, Bevolkingsonderzoek.COLON);
 						}
 						catch (IOException e)
 						{
@@ -158,7 +158,7 @@ public class SKMLExterneControleSchemaXlsToevoegenPage extends Kwaliteitscontrol
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveContextMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveContextMenuClass()
 	{
 		return SKMLExterneControleSchemaPage.class;
 	}

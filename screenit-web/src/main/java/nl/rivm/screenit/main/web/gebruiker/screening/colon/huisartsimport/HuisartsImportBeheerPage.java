@@ -32,7 +32,7 @@ import nl.rivm.screenit.main.web.component.validator.AantalBestandenUploadenVali
 import nl.rivm.screenit.main.web.component.validator.FileValidator;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.ColonScreeningBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.cervix.CervixBulkUpload;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -68,7 +68,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @SecurityConstraint(
 	actie = Actie.AANPASSEN,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_BEHEER_HUISARTSIMPORT,
+	recht = Recht.MEDEWERKER_BEHEER_HUISARTSIMPORT,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
 public class HuisartsImportBeheerPage extends ColonScreeningBasePage
@@ -149,7 +149,7 @@ public class HuisartsImportBeheerPage extends ColonScreeningBasePage
 							}
 							else
 							{
-								InstellingGebruiker ingelogdeMedewerker = ScreenitSession.get().getLoggedInInstellingGebruiker();
+								OrganisatieMedewerker ingelogdeMedewerker = getIngelogdeOrganisatieMedewerker();
 								importExecService.startImport(excelfile.writeToTempFile(), ediAdresOverschrijven.getModelObject());
 
 								logService.logGebeurtenis(LogGebeurtenis.HUISARTS_IMPORT_GESTART, ingelogdeMedewerker,
@@ -171,7 +171,7 @@ public class HuisartsImportBeheerPage extends ColonScreeningBasePage
 			}
 		});
 		container.add(uploadForm);
-		container.setVisible(magContainerZichtbaarZijnVoor(Recht.GEBRUIKER_BEHEER_HUISARTSIMPORT, Bevolkingsonderzoek.COLON));
+		container.setVisible(magContainerZichtbaarZijnVoor(Recht.MEDEWERKER_BEHEER_HUISARTSIMPORT, Bevolkingsonderzoek.COLON));
 		return container;
 	}
 
@@ -201,7 +201,7 @@ public class HuisartsImportBeheerPage extends ColonScreeningBasePage
 							error(getString("error.huisartsimport.mislukt.herkenning"));
 						}
 
-						InstellingGebruiker ingelogdeMedewerker = ScreenitSession.get().getLoggedInInstellingGebruiker();
+						OrganisatieMedewerker ingelogdeMedewerker = getIngelogdeOrganisatieMedewerker();
 						CervixBulkUpload upload = cervixBulkHuisartsenService.saveExcelBestand(excelfile.writeToTempFile(), excelfile.getContentType(),
 							excelfile.getClientFileName(), ingelogdeMedewerker);
 						info("Bulk huisarts bestand is opgeslagen en zal worden verwerkt.");
@@ -219,7 +219,7 @@ public class HuisartsImportBeheerPage extends ColonScreeningBasePage
 			}
 		});
 		container.add(cervixUploadBulkForm);
-		container.setVisible(magContainerZichtbaarZijnVoor(Recht.GEBRUIKER_BEHEER_HUISARTSIMPORT, Bevolkingsonderzoek.CERVIX));
+		container.setVisible(magContainerZichtbaarZijnVoor(Recht.MEDEWERKER_BEHEER_HUISARTSIMPORT, Bevolkingsonderzoek.CERVIX));
 		return container;
 	}
 

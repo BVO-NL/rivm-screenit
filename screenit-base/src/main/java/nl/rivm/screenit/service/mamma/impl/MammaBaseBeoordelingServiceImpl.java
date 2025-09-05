@@ -37,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.INaam;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.HuisartsBerichtType;
@@ -63,6 +63,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaBeperktBeoordeelbaarReden;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaLaesieType;
 import nl.rivm.screenit.model.mamma.enums.MammaLezingType;
+import nl.rivm.screenit.model.mamma.enums.MammaNevenbevindingenZijde;
 import nl.rivm.screenit.model.mamma.enums.MammaZijde;
 import nl.rivm.screenit.repository.mamma.MammaBeoordelingRepository;
 import nl.rivm.screenit.service.BaseBriefService;
@@ -235,7 +236,7 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 	@Transactional
 	public void opgeschortOnderzoekTerugNaarWerklijst(MammaBeoordeling beoordeling)
 	{
-		beoordeling.setOpschortGebruiker(null);
+		beoordeling.setOpschortOrganisatieMedewerker(null);
 		beoordeling.setOpschortReden(MammaBeoordelingOpschortenReden.NIET_OPSCHORTEN);
 		beoordeling.setOpschortRedenTekst(null);
 		setStatus(beoordeling, beoordeling.getEersteLezing() != null ? MammaBeoordelingStatus.TWEEDE_LEZING : MammaBeoordelingStatus.EERSTE_LEZING);
@@ -272,7 +273,7 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 			beoordelingReserveringService.geefBeoordelingVrij(beoordeling);
 			beoordeling.setAfkeurreden(null);
 			beoordeling.setToegewezenOp(null);
-			beoordeling.setToegewezenGebruiker(null);
+			beoordeling.setToegewezenOrganisatieMedewerker(null);
 		}
 		hibernateService.saveOrUpdate(beoordeling);
 	}
@@ -316,7 +317,7 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 
 	@Override
 	@Transactional
-	public void slaLezingOpEnVerwerkStatus(MammaBeoordeling beoordeling, MammaLezing lezing, InstellingGebruiker gebruiker, StringResolver stringResolverMethod)
+	public void slaLezingOpEnVerwerkStatus(MammaBeoordeling beoordeling, MammaLezing lezing, OrganisatieMedewerker organisatieMedewerker, StringResolver stringResolverMethod)
 	{
 		wisBiradsBijOnbeoordeelbaar(lezing);
 
@@ -338,7 +339,7 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 				beoordeling.setTweedeLezing(null);
 			}
 			hibernateService.saveOrUpdate(beoordeling);
-			verwerkOpschortingBeoordeling(beoordeling, gebruiker, stringResolverMethod);
+			verwerkOpschortingBeoordeling(beoordeling, organisatieMedewerker, stringResolverMethod);
 		}
 	}
 
@@ -358,12 +359,12 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 		bepaalVervolgStapEnZetStatus(beoordeling, true);
 	}
 
-	private void verwerkOpschortingBeoordeling(MammaBeoordeling beoordeling, InstellingGebruiker gebruiker, StringResolver stringResolverMethod)
+	private void verwerkOpschortingBeoordeling(MammaBeoordeling beoordeling, OrganisatieMedewerker organisatieMedewerker, StringResolver stringResolverMethod)
 	{
 		setStatus(beoordeling, MammaBeoordelingStatus.OPGESCHORT);
-		beoordeling.setOpschortGebruiker(gebruiker);
+		beoordeling.setOpschortOrganisatieMedewerker(organisatieMedewerker);
 
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_BEOORDELING_OPGESCHORT, gebruiker,
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_BEOORDELING_OPGESCHORT, organisatieMedewerker,
 			getClientVanBeoordeling(beoordeling), "Beoordeling opgeschort met reden: " + stringResolverMethod.resolveString(beoordeling), Bevolkingsonderzoek.MAMMA);
 		hibernateService.saveOrUpdate(beoordeling);
 	}
@@ -480,32 +481,32 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 	}
 
 	@Override
-	public void wijsBeoordelingAanRadioloogToe(MammaBeoordeling beoordeling, InstellingGebruiker gebruiker)
+	public void wijsBeoordelingAanRadioloogToe(MammaBeoordeling beoordeling, OrganisatieMedewerker organisatieMedewerker)
 	{
-		beoordeling.setToegewezenGebruiker(gebruiker);
+		beoordeling.setToegewezenOrganisatieMedewerker(organisatieMedewerker);
 		beoordeling.setToegewezenOp(currentDateSupplier.getDate());
 		String melding;
 		var vorigeBeoordeling = EntityAuditUtil.getLastVersionOfEntity(beoordeling, hibernateService.getHibernateSession());
 		if (beoordeling.getVerslagLezing() != null && vorigeBeoordeling != null)
 		{
-			if (vorigeBeoordeling.getToegewezenGebruiker() != null && vorigeBeoordeling.getToegewezenOp() != null)
+			if (vorigeBeoordeling.getToegewezenOrganisatieMedewerker() != null && vorigeBeoordeling.getToegewezenOp() != null)
 			{
 				melding = String.format("Verslaglezing van radioloog %s, toegewezen aan radioloog: %s. Op %s",
-					NaamUtil.getNaamGebruiker(vorigeBeoordeling.getToegewezenGebruiker().getMedewerker()),
-					NaamUtil.getNaamGebruiker(gebruiker.getMedewerker()),
+					NaamUtil.getNaamMedewerker(vorigeBeoordeling.getToegewezenOrganisatieMedewerker().getMedewerker()),
+					NaamUtil.getNaamMedewerker(organisatieMedewerker.getMedewerker()),
 					Constants.getDateTimeFormat().format(beoordeling.getToegewezenOp()));
 			}
 			else
 			{
 				melding = String.format("Verslaglezing van originele radioloog %s, toegewezen aan radioloog: %s. Op %s",
-					NaamUtil.getNaamGebruiker(vorigeBeoordeling.getVerslagLezing().getBeoordelaar().getMedewerker()),
-					NaamUtil.getNaamGebruiker(gebruiker.getMedewerker()),
+					NaamUtil.getNaamMedewerker(vorigeBeoordeling.getVerslagLezing().getBeoordelaar().getMedewerker()),
+					NaamUtil.getNaamMedewerker(organisatieMedewerker.getMedewerker()),
 					Constants.getDateTimeFormat().format(beoordeling.getToegewezenOp()));
 			}
 		}
 		else
 		{
-			melding = String.format("Verslaglezing van beoordeling toegewezen aan radioloog %s, op %s", NaamUtil.getNaamGebruiker(gebruiker.getMedewerker()),
+			melding = String.format("Verslaglezing van beoordeling toegewezen aan radioloog %s, op %s", NaamUtil.getNaamMedewerker(organisatieMedewerker.getMedewerker()),
 				Constants.getDateTimeFormat().format(beoordeling.getToegewezenOp()));
 		}
 		logService.logGebeurtenis(LogGebeurtenis.MAMMA_CE_RADIOLOOG_TOEGEWEZEN_AAN_VERSLAGLEZING, new LogEvent(melding),
@@ -655,7 +656,7 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 	}
 
 	@Override
-	public MammaLezing maakVerslagLezing(MammaLezing uitgangsituatieLezing, InstellingGebruiker beoordelaar, boolean onervarenRadioloog)
+	public MammaLezing maakVerslagLezing(MammaLezing uitgangsituatieLezing, OrganisatieMedewerker beoordelaar, boolean onervarenRadioloog)
 	{
 		var verslagLezing = new MammaLezing();
 		verslagLezing.setLezingType(MammaLezingType.VERSLAG_LEZING);
@@ -797,7 +798,7 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 		for (var i = entityHistory.size(); i > 0; i--)
 		{
 			MammaBeoordeling beoordelingRev = EntityAuditUtil.getRevisionEntity(entityHistory.get(i - 1));
-			if (beoordelingRev.getToegewezenGebruiker() != null && beoordelingRev.getToegewezenOp() != null)
+			if (beoordelingRev.getToegewezenOrganisatieMedewerker() != null && beoordelingRev.getToegewezenOp() != null)
 			{
 				return null;
 			}
@@ -831,19 +832,14 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 	@Override
 	public List<String> getNevenBevindingenOpmerkingenAsList(MammaBeoordeling beoordeling)
 	{
-		var opmerkingen = new ArrayList<String>();
 		if (beoordeling != null && beoordeling.getEersteLezing() != null && beoordeling.getTweedeLezing() != null)
 		{
-			if (beoordeling.getEersteLezing().getNevenbevindingOpmerking() != null)
-			{
-				opmerkingen.add(beoordeling.getEersteLezing().getNevenbevindingOpmerking());
-			}
-			if (beoordeling.getTweedeLezing().getNevenbevindingOpmerking() != null)
-			{
-				opmerkingen.add(beoordeling.getTweedeLezing().getNevenbevindingOpmerking());
-			}
+			var lezingen = List.of(beoordeling.getEersteLezing(), beoordeling.getTweedeLezing());
+
+			return getNevenbevindingZijdeOpmerkingVanLezingen(lezingen)
+				.collect(Collectors.toList());
 		}
-		return opmerkingen;
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -858,14 +854,32 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 	{
 		if (lezingen != null && lezingen.length > 0)
 		{
-			var opmerkingen = Arrays.stream(lezingen)
-				.filter(Objects::nonNull)
-				.map(MammaLezing::getNevenbevindingOpmerking)
-				.filter(StringUtils::isNotBlank)
+			var lezingenLijst = Arrays.asList(lezingen);
+
+			return getNevenbevindingZijdeOpmerkingVanLezingen(lezingenLijst)
 				.collect(Collectors.joining(lineBreak));
-			return StringUtils.isBlank(opmerkingen) ? null : opmerkingen;
 		}
 		return null;
+	}
+
+	private Stream<String> getNevenbevindingZijdeOpmerkingVanLezingen(List<MammaLezing> lezingen)
+	{
+		return lezingen.stream()
+			.filter(Objects::nonNull)
+			.filter(
+				lezing -> lezing.getNevenbevindingZijde() != null || StringUtils.isNotBlank(lezing.getNevenbevindingOpmerking()))
+			.sorted(Comparator.comparing(MammaLezing::getNevenbevindingZijde, Comparator.nullsLast(Comparator.naturalOrder())))
+			.map(lezing -> getNevenbevindingZijdeMetOpmerkingTekst(lezing.getNevenbevindingZijde(), lezing.getNevenbevindingOpmerking()))
+			.filter(StringUtils::isNotBlank)
+			.distinct();
+	}
+
+	private String getNevenbevindingZijdeMetOpmerkingTekst(MammaNevenbevindingenZijde zijde, String opmerking)
+	{
+		var zijdeLabel = zijde != null ? zijde.getLabel() : "";
+		return Stream.of(zijdeLabel, opmerking)
+			.filter(StringUtils::isNotBlank)
+			.collect(Collectors.joining(": "));
 	}
 
 	@Override
@@ -939,9 +953,9 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 
 	@Override
 	@Transactional
-	public void valideerEnHerbeoordeelBeoordeling(MammaBeoordeling laatsteBeoordeling, InstellingGebruiker ingelogdeGebruiker)
+	public void valideerEnHerbeoordeelBeoordeling(MammaBeoordeling laatsteBeoordeling, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		if (beoordelingReserveringService.gereserveerdDoorIemandAnders(ingelogdeGebruiker, laatsteBeoordeling))
+		if (beoordelingReserveringService.gereserveerdDoorIemandAnders(ingelogdeOrganisatieMedewerker, laatsteBeoordeling))
 		{
 			throw new IllegalStateException("Een radioloog is bezig met een lezing voor deze beoordeling, wacht met annuleren tot de lezing is opgeslagen.");
 		}

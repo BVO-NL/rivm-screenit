@@ -43,6 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tempuri.DaklapackWebService;
 import org.tempuri.IUpload;
 
+@Deprecated(forRemoval = true, since = "nieuwe endpoint wordt gebruikt in PROD")
 public class WebserviceInpakcentrumOpzettenServiceImpl implements WebserviceInpakcentrumOpzettenService
 {
 	@Autowired

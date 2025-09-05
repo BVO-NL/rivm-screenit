@@ -40,7 +40,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(
-	recht = Recht.GEBRUIKER_BEHEER_PARAMETERISATIE,
+	recht = Recht.MEDEWERKER_BEHEER_PARAMETERISATIE,
 	actie = Actie.INZIEN,
 	level = ToegangLevel.REGIO,
 	bevolkingsonderzoekScopes = Bevolkingsonderzoek.MAMMA,

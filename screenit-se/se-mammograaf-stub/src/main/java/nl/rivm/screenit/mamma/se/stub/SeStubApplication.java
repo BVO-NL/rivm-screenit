@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.stub;
 
 /*-
  * ========================LICENSE_START=================================
- * se-mammograaf-stub
+ * screenit-se-mammograaf-stub
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,47 +21,16 @@ package nl.rivm.screenit.mamma.se.stub;
  * =========================LICENSE_END==================================
  */
 
-import java.io.IOException;
-import java.util.Properties;
-
-import lombok.extern.slf4j.Slf4j;
-
-import nl.rivm.screenit.mamma.se.stub.model.BuildinfoDto;
-
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
-@Slf4j
 public class SeStubApplication
 {
-
-	private static BuildinfoDto buildinfo = null; 
-
 	public static void main(String[] args)
 	{
 		new SpringApplicationBuilder()
 			.sources(SeStubApplication.class)
 			.run(args);
-		LOG.info("Screenit versie {}", getBuildinfo().getVersion());
-	}
-
-	public static BuildinfoDto getBuildinfo()
-	{
-		if (buildinfo == null)
-		{
-			buildinfo = new BuildinfoDto();
-			var applicationProperties = new Properties();
-			try (var resourceAsStream = SeStubApplication.class.getResourceAsStream("/build-info.properties"))
-			{
-				applicationProperties.load(resourceAsStream);
-				buildinfo.setVersion(applicationProperties.getProperty("build.version"));
-			}
-			catch (IOException e)
-			{
-				LOG.error("Fout bij laden van build-info.properties (voor versienummer)");
-			}
-		}
-		return buildinfo;
 	}
 }

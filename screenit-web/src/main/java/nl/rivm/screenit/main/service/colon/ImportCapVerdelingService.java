@@ -23,11 +23,11 @@ package nl.rivm.screenit.main.service.colon;
 
 import java.io.File;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Level;
 
 public interface ImportCapVerdelingService
 {
-	Level verwerkBestand(InstellingGebruiker loggedInInstellingGebruiker, File writeToTempFile);
+	Level verwerkBestand(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, File writeToTempFile);
 
 }

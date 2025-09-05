@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import nl.rivm.screenit.model.BeoordelingsEenheid;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaMammograaf;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
@@ -43,13 +43,13 @@ public interface MammaScreeningsEenheidService
 
 	long countScreeningsEenheden(MammaScreeningsEenheid screeningsEenheid, ScreeningOrganisatie regio);
 
-	List<MammaScreeningsEenheid> getActieveScreeningsEenhedenVoorBeoordelingsEenheid(BeoordelingsEenheid instelling);
+	List<MammaScreeningsEenheid> getActieveScreeningsEenhedenVoorBeoordelingsEenheid(BeoordelingsEenheid beoordelingsEenheid);
 
 	String getScreeningsEenhedenNamen(BeoordelingsEenheid beoordelingsEenheid);
 
 	String getGekoppeldeScreeningsEenhedenTekst(MammaStandplaats standplaats);
 
-	boolean saveOrUpdateSE(MammaScreeningsEenheid screeningsEenheid, InstellingGebruiker instellingGebruiker);
+	boolean saveOrUpdateSE(MammaScreeningsEenheid screeningsEenheid, OrganisatieMedewerker organisatieMedewerker);
 
 	void deleteMammograaf(MammaMammograaf mammograaf, MammaScreeningsEenheid screeningsEenheid);
 

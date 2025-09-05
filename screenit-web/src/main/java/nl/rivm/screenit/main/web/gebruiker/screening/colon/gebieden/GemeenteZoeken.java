@@ -28,12 +28,12 @@ import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.base.ZoekenContextMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Gemeente;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.enums.Actie;
@@ -73,7 +73,7 @@ import static nl.rivm.screenit.model.Gemeente_.NAAM;
 	constraint = ShiroConstraint.HasPermission,
 	checkScope = false,
 	level = ToegangLevel.REGIO,
-	recht = Recht.GEBRUIKER_BEHEER_GEBIEDEN,
+	recht = Recht.MEDEWERKER_BEHEER_GEBIEDEN,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX })
 @ZoekenContextMenuItem
 public class GemeenteZoeken extends GebiedenBeheerPage
@@ -103,7 +103,7 @@ public class GemeenteZoeken extends GebiedenBeheerPage
 		else
 		{
 			Gemeente zoekObject = new Gemeente();
-			ToegangLevel toeganglevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.GEBRUIKER_BEHEER_GEBIEDEN);
+			ToegangLevel toeganglevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_BEHEER_GEBIEDEN);
 			if (toeganglevel == ToegangLevel.REGIO)
 			{
 				zoekObject.setScreeningOrganisatie(ScreenitSession.get().getScreeningOrganisatie());
@@ -169,8 +169,8 @@ public class GemeenteZoeken extends GebiedenBeheerPage
 	{
 		Form<ColonIntakelocatie> form = new ScreenitForm<>("intakelocatieForm");
 		add(form);
-		var organisaties = organisatieZoekService.zoekOrganisaties(new Instelling(), List.of(OrganisatieType.INTAKELOCATIE), null,
-			ScreenitSession.get().getLoggedInInstellingGebruiker(), -1, -1, Instelling_.NAAM, true);
+		var organisaties = organisatieZoekService.zoekOrganisaties(new Organisatie(), List.of(OrganisatieType.INTAKELOCATIE), null,
+			ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), -1, -1, Organisatie_.NAAM, true);
 		var intakelocaties = new ArrayList<ColonIntakelocatie>();
 		organisaties.forEach(org -> intakelocaties.add((ColonIntakelocatie) HibernateHelper.deproxy(org)));
 		IModel<List<ColonIntakelocatie>> values = ModelUtil.listRModel(intakelocaties, false);
@@ -211,10 +211,10 @@ public class GemeenteZoeken extends GebiedenBeheerPage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.beheer.gemeente.zoeken", GemeenteZoeken.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.beheer.gemeente.zoeken", GemeenteZoeken.class));
 		return contextMenuItems;
 	}
 }

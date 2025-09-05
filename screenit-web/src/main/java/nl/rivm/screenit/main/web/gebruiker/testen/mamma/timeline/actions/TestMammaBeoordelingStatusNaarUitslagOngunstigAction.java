@@ -51,7 +51,7 @@ public class TestMammaBeoordelingStatusNaarUitslagOngunstigAction extends TestMa
 			MammaBeoordeling beoordeling = MammaScreeningRondeUtil.getLaatsteBeoordeling(client.getMammaDossier().getLaatsteScreeningRonde());
 			if (MammaBeoordelingStatus.VERSLAG_GEREED.equals(beoordeling.getStatus()))
 			{
-				mammaTestTimelineService.verslagGoedkeurenDoorCE(beoordeling, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				mammaTestTimelineService.verslagGoedkeurenDoorCE(beoordeling, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 			}
 		}
 	}

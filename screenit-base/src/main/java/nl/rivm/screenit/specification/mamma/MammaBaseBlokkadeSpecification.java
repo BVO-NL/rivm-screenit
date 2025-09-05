@@ -31,7 +31,7 @@ import jakarta.persistence.criteria.Root;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaBlokkade;
 import nl.rivm.screenit.model.mamma.MammaBlokkade_;
@@ -68,7 +68,7 @@ public class MammaBaseBlokkadeSpecification
 			return cb.or(
 				cb.isTrue(screeningsEenheidJoin.get(MammaScreeningsEenheid_.actief)),
 				cb.isTrue(standPlaatsJoin.get(MammaStandplaats_.actief)),
-				cb.isTrue(regioJoin.get(Instelling_.actief))
+				cb.isTrue(regioJoin.get(Organisatie_.actief))
 			);
 		};
 	}
@@ -141,12 +141,12 @@ public class MammaBaseBlokkadeSpecification
 		{
 			var screeningsEenheidJoin = joinBlokkadeNaarScreeningsEenheid(r);
 			var beoordelingsEenheidJoin = join(screeningsEenheidJoin, MammaScreeningsEenheid_.beoordelingsEenheid, JoinType.LEFT);
-			var parentJoin = join(beoordelingsEenheidJoin, Instelling_.parent, JoinType.LEFT);
+			var parentJoin = join(beoordelingsEenheidJoin, Organisatie_.parent, JoinType.LEFT);
 			var standPlaatsJoin = join(r, MammaBlokkade_.standplaats, JoinType.LEFT);
 
 			return cb.or(
 				cb.equal(r.get(MammaBlokkade_.regio), organisatie),
-				cb.equal(parentJoin.get(Instelling_.regio), organisatie),
+				cb.equal(parentJoin.get(Organisatie_.regio), organisatie),
 				cb.equal(standPlaatsJoin.get(MammaStandplaats_.regio), organisatie)
 			);
 		});

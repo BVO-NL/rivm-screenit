@@ -23,17 +23,17 @@ package nl.rivm.screenit.repository.algemeen;
 
 import java.util.Date;
 
-import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.nieuws.GebruikerNieuwsItem;
-import nl.rivm.screenit.model.nieuws.GebruikerNieuwsItem_;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.nieuws.MedewerkerNieuwsItem_;
 import nl.rivm.screenit.model.nieuws.NieuwsItem;
 import nl.rivm.screenit.model.nieuws.NieuwsItem_;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 
 import org.springframework.data.jpa.domain.Specification;
+
+import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
 public interface NieuwsRepository extends BaseJpaRepository<NieuwsItem>
 {
@@ -53,20 +53,23 @@ public interface NieuwsRepository extends BaseJpaRepository<NieuwsItem>
 		return ((r, q, cb) -> cb.or(cb.isNull(r.get(NieuwsItem_.publicerenVanaf)), cb.lessThanOrEqualTo(r.get(NieuwsItem_.publicerenVanaf), date)));
 	}
 
-	static Specification<NieuwsItem> isOngelezen(Gebruiker gebruiker)
+	static Specification<NieuwsItem> isOngelezen(Medewerker medewerker)
 	{
 		return ((nieuwsItem, q, cb) ->
 		{
-			Join<GebruikerNieuwsItem, NieuwsItem> join = nieuwsItem.join(NieuwsItem_.GEBRUIKER_NIEUWS_ITEMS, JoinType.LEFT);
-			Join<GebruikerNieuwsItem, NieuwsItem> gebruikerNieuwsItem = join.on(cb.equal(join.get(GebruikerNieuwsItem_.GEBRUIKER), gebruiker));
+			var join = join(nieuwsItem, NieuwsItem_.medewerkerNieuwsItems, JoinType.LEFT);
+			var medewerkerNieuwsItem = join.on(cb.equal(join.get(MedewerkerNieuwsItem_.medewerker), medewerker));
 
-			return cb.or(gebruikerNieuwsItem.isNull(),
-				cb.and(cb.equal(gebruikerNieuwsItem.get(GebruikerNieuwsItem_.GEBRUIKER), gebruiker),
-					cb.or(cb.isNull(gebruikerNieuwsItem.get(GebruikerNieuwsItem_.NIET_ZICHTBAAR_VANAF)),
+			var gemaakt = nieuwsItem.get(NieuwsItem_.gemaakt);
+			var nietZichtbaarVanaf = medewerkerNieuwsItem.get(MedewerkerNieuwsItem_.nietZichtbaarVanaf);
+			var gewijzigd = nieuwsItem.get(NieuwsItem_.gewijzigd);
+			return cb.or(medewerkerNieuwsItem.isNull(),
+				cb.and(cb.equal(medewerkerNieuwsItem.get(MedewerkerNieuwsItem_.medewerker), medewerker),
+					cb.or(cb.isNull(nietZichtbaarVanaf),
 						cb.or(
-							cb.and(cb.isNull(nieuwsItem.get(NieuwsItem_.GEWIJZIGD)),
-								cb.gt(nieuwsItem.get(NieuwsItem_.GEMAAKT), gebruikerNieuwsItem.get(GebruikerNieuwsItem_.NIET_ZICHTBAAR_VANAF))),
-							cb.gt(nieuwsItem.get(NieuwsItem_.GEWIJZIGD), gebruikerNieuwsItem.get(GebruikerNieuwsItem_.NIET_ZICHTBAAR_VANAF))))));
+							cb.and(cb.isNull(gewijzigd),
+								cb.greaterThan(gemaakt, nietZichtbaarVanaf)),
+							cb.greaterThan(gewijzigd, nietZichtbaarVanaf)))));
 		});
 	}
 

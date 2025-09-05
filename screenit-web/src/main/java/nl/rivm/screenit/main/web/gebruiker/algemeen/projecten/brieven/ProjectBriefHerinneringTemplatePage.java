@@ -25,8 +25,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -109,7 +109,7 @@ public class ProjectBriefHerinneringTemplatePage extends ProjectTemplateTestenBa
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveContextMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveContextMenuClass()
 	{
 		return ProjectBriefActiePage.class;
 	}
@@ -120,9 +120,9 @@ public class ProjectBriefHerinneringTemplatePage extends ProjectTemplateTestenBa
 		List<ScreeningOrganisatie> soLijst = new ArrayList<>();
 		if (getHerinneringsActie().getProject() != null && getHerinneringsActie().getProject().getScreeningOrganisaties() != null)
 		{
-			for (Instelling instelling : getHerinneringsActie().getProject().getScreeningOrganisaties())
+			for (Organisatie organisatie : getHerinneringsActie().getProject().getScreeningOrganisaties())
 			{
-				soLijst.add((ScreeningOrganisatie) instelling);
+				soLijst.add((ScreeningOrganisatie) organisatie);
 			}
 		}
 		return soLijst;

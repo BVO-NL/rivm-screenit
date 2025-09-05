@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.cervix.monster;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -36,15 +36,15 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	constraint = ShiroConstraint.HasPermission,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX },
 	recht = {
-		Recht.GEBRUIKER_CERVIX_ONTVANGST_MONSTER },
+		Recht.MEDEWERKER_CERVIX_ONTVANGST_MONSTER },
 	organisatieTypeScopes = { OrganisatieType.BMHK_LABORATORIUM })
 public class CervixOntvangstMonsterPage extends CervixMonsterBasePage
 {
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.cervixscreening.ontvangstmonster", CervixOntvangstMonsterPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.cervixscreening.ontvangstmonster", CervixOntvangstMonsterPage.class));
 		return contextMenuItems;
 	}
 

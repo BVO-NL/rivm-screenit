@@ -29,6 +29,7 @@ import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaNevenbevindingen;
+import nl.rivm.screenit.model.mamma.enums.MammaNevenbevindingenZijde;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -38,6 +39,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
+import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IDetachable;
@@ -49,9 +51,9 @@ public class NevenbevindingenBeoordelingPanel extends GenericPanel<MammaLezing> 
 {
 	private final IModel<MammaBeoordeling> beoordeling;
 
-	private WebMarkupContainer nevenbevindingOpmerkingContainer;
-
 	private WebMarkupContainer eersteLezingNevenBevindingenContainer;
+
+	private final WebMarkupContainer nevenbevindingContainer;
 
 	@SpringBean
 	private MammaBaseBeoordelingService baseBeoordelingService;
@@ -64,23 +66,52 @@ public class NevenbevindingenBeoordelingPanel extends GenericPanel<MammaLezing> 
 		createNevenbevindingenMultiselect(alleenLezen);
 		createEersteLezingResultaat(beoordeling.getObject());
 
-		nevenbevindingOpmerkingContainer = new WebMarkupContainer("nevenbevindingOpmerkingContainer");
-		nevenbevindingOpmerkingContainer.setOutputMarkupId(true);
-		nevenbevindingOpmerkingContainer.setOutputMarkupPlaceholderTag(true);
-		nevenbevindingOpmerkingContainer.setVisible(!getModelObject().getNevenbevindingen().isEmpty());
-		add(nevenbevindingOpmerkingContainer);
+		nevenbevindingContainer = initNevenbevindingContainer();
+		add(nevenbevindingContainer);
 
-		TextArea nevenbevindingOpmerking = new TextArea("nevenbevindingOpmerking");
+		var nevenbevindingOpmerking = new TextArea("nevenbevindingOpmerking");
 		nevenbevindingOpmerking.add(StringValidator.maximumLength(HibernateMagicNumber.L255));
 		nevenbevindingOpmerking.setOutputMarkupId(true);
-		nevenbevindingOpmerkingContainer.add(nevenbevindingOpmerking);
+		nevenbevindingContainer.add(nevenbevindingOpmerking);
 
 		nevenbevindingOpmerking.setEnabled(!alleenLezen);
+
+		var zijdeGroup = getZijdeRadioChoiceGroup();
+		zijdeGroup.setRequired(true);
+
+		nevenbevindingContainer.add(zijdeGroup);
+	}
+
+	private static RadioChoice<MammaNevenbevindingenZijde> getZijdeRadioChoiceGroup()
+	{
+		return new RadioChoice<>("nevenbevindingZijde", Arrays.asList(MammaNevenbevindingenZijde.RECHTS, MammaNevenbevindingenZijde.LINKS, MammaNevenbevindingenZijde.BEIDE),
+			new EnumChoiceRenderer<>())
+		{
+			@Override
+			protected String getPrefix(int index, MammaNevenbevindingenZijde choice)
+			{
+				return "<label>";
+			}
+
+			@Override
+			public String getSuffix()
+			{
+				return "<span></span></label>";
+			}
+		};
+	}
+
+	private WebMarkupContainer initNevenbevindingContainer()
+	{
+		var nevenbevindingContainer = new WebMarkupContainer("nevenbevindingContainer");
+		nevenbevindingContainer.setOutputMarkupId(true);
+		nevenbevindingContainer.setOutputMarkupPlaceholderTag(true);
+		nevenbevindingContainer.setVisible(!getModelObject().getNevenbevindingen().isEmpty());
+		return nevenbevindingContainer;
 	}
 
 	private void createEersteLezingResultaat(MammaBeoordeling beoordeling)
 	{
-
 		eersteLezingNevenBevindingenContainer = new WebMarkupContainer("eersteLezingNevenBevindingenContainer");
 		eersteLezingNevenBevindingenContainer.setOutputMarkupPlaceholderTag(true);
 		eersteLezingNevenBevindingenContainer.setOutputMarkupId(true);
@@ -89,18 +120,19 @@ public class NevenbevindingenBeoordelingPanel extends GenericPanel<MammaLezing> 
 
 		if (isTweedeLezingEnHeeftEersteLezingNevenbevinding(beoordeling))
 		{
-			MammaLezing eersteLezing = beoordeling.getEersteLezing();
-			String nevenbevindingen = baseBeoordelingService.getMammaLezingEnumsTekst(MammaLezing::getNevenbevindingen, eersteLezing);
-			String nevenbevindingenOpmerking = StringUtils.defaultIfBlank(eersteLezing.getNevenbevindingOpmerking(), "");
+			var eersteLezing = beoordeling.getEersteLezing();
+			var nevenbevindingen = baseBeoordelingService.getMammaLezingEnumsTekst(MammaLezing::getNevenbevindingen, eersteLezing);
+			var nevenbevindingenZijdeMetOpmerking = baseBeoordelingService.getNevenbevindingOpmerkingTekst("\n", eersteLezing);
+
 			eersteLezingNevenBevindingenContainer.add(new Label("eersteLezingNevenbevindingen", nevenbevindingen));
-			eersteLezingNevenBevindingenContainer.add(new Label("eersteLezingNevenbevindingenOpmerking", nevenbevindingenOpmerking)
-				.setVisible(StringUtils.isNotBlank(nevenbevindingenOpmerking)));
+			eersteLezingNevenBevindingenContainer.add(new Label("eersteLezingNevenbevindingenOpmerking", nevenbevindingenZijdeMetOpmerking)
+				.setVisible(StringUtils.isNotBlank(nevenbevindingenZijdeMetOpmerking)));
 		}
 	}
 
 	private boolean isTweedeLezingEnHeeftEersteLezingNevenbevinding(MammaBeoordeling beoordeling)
 	{
-		MammaLezing eersteLezing = beoordeling.getEersteLezing();
+		var eersteLezing = beoordeling.getEersteLezing();
 		return (MammaBeoordelingStatus.TWEEDE_LEZING.equals(beoordeling.getStatus())
 			|| MammaBeoordelingStatus.TWEEDE_LEZING_OPGESLAGEN.equals(beoordeling.getStatus()))
 			&& eersteLezing != null &&
@@ -109,17 +141,19 @@ public class NevenbevindingenBeoordelingPanel extends GenericPanel<MammaLezing> 
 
 	private void createNevenbevindingenMultiselect(boolean alleenLezen)
 	{
-		ScreenitListMultipleChoice<MammaNevenbevindingen> nevenbevindingenSelector = new ScreenitListMultipleChoice<>("nevenbevindingen",
+		var nevenbevindingenSelector = new ScreenitListMultipleChoice<>("nevenbevindingen",
 			alleenLezen ? Arrays.asList(MammaNevenbevindingen.values()) : MammaNevenbevindingen.getActieveNevenbevindingen(), new EnumChoiceRenderer<>());
 		nevenbevindingenSelector.add(new AjaxFormComponentUpdatingBehavior("change")
 		{
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				boolean huidigeLezingHeeftNevenBevindingen = !getModelObject().getNevenbevindingen().isEmpty();
-				nevenbevindingOpmerkingContainer.setVisible(huidigeLezingHeeftNevenBevindingen);
+				var huidigeLezingHeeftNevenBevindingen = !getModelObject().getNevenbevindingen().isEmpty();
+
 				eersteLezingNevenBevindingenContainer.setVisible(isTweedeLezingEnHeeftEersteLezingNevenbevinding(beoordeling.getObject()) && huidigeLezingHeeftNevenBevindingen);
-				target.add(nevenbevindingOpmerkingContainer, eersteLezingNevenBevindingenContainer);
+				nevenbevindingContainer.setVisible(huidigeLezingHeeftNevenBevindingen);
+
+				target.add(nevenbevindingContainer, eersteLezingNevenBevindingenContainer);
 			}
 		});
 		nevenbevindingenSelector.setEnabled(!alleenLezen);

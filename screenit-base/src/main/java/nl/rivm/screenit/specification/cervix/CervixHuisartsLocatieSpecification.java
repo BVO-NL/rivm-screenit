@@ -29,10 +29,10 @@ import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.huisartsenportaal.dto.LocatieDto;
 import nl.rivm.screenit.huisartsenportaal.enums.CervixLocatieStatus;
-import nl.rivm.screenit.model.Gebruiker_;
 import nl.rivm.screenit.model.Gemeente;
-import nl.rivm.screenit.model.InstellingGebruiker_;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Medewerker_;
+import nl.rivm.screenit.model.OrganisatieMedewerker_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.Woonplaats_;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsAdres_;
@@ -120,10 +120,10 @@ public class CervixHuisartsLocatieSpecification
 		{
 			var organisatieMedewerkerListJoin = r
 				.join(CervixHuisartsLocatie_.huisarts)
-				.join(Instelling_.organisatieMedewerkers)
-				.join(InstellingGebruiker_.medewerker);
+				.join(Organisatie_.organisatieMedewerkers)
+				.join(OrganisatieMedewerker_.medewerker);
 
-			return containsCaseInsensitive(cb, organisatieMedewerkerListJoin.get(Gebruiker_.achternaam), achternaam);
+			return containsCaseInsensitive(cb, organisatieMedewerkerListJoin.get(Medewerker_.achternaam), achternaam);
 		});
 	}
 

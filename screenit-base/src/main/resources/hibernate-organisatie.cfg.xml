@@ -28,6 +28,5 @@
 
     <session-factory>
         <mapping class="nl.topicuszorg.organisatie.model.Adres"/>
-        <mapping class="nl.topicuszorg.organisatie.model.Auteur"/>
     </session-factory>
 </hibernate-configuration>

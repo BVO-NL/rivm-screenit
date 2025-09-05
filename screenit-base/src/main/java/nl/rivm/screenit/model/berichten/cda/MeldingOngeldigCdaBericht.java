@@ -34,8 +34,8 @@ import jakarta.persistence.TemporalType;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
@@ -50,10 +50,10 @@ public class MeldingOngeldigCdaBericht extends AbstractHibernateObject
 	private OntvangenCdaBericht ontvangenCdaBericht;
 
 	@ManyToOne
-	private Instelling uitvoerendeOrganisatie;
+	private Organisatie uitvoerendeOrganisatie;
 
 	@ManyToOne
-	private Gebruiker uitvoerder;
+	private Medewerker uitvoerder;
 
 	@Column(length = HibernateMagicNumber.L512)
 	private String melding;

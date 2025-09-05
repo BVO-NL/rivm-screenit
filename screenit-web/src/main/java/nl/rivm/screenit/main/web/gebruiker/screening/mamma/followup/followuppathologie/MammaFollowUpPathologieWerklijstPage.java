@@ -32,12 +32,12 @@ import nl.rivm.screenit.main.web.component.table.ClientColumn;
 import nl.rivm.screenit.main.web.component.table.ImageIconCellPanel;
 import nl.rivm.screenit.main.web.component.table.NotClickablePropertyColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup.AbstractMammaFollowUpPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup.MammaFollowUpGebeldCellPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup.MammaFollowUpNietTeVerwachtenCellPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaFollowUpRadiologieVerslag;
@@ -66,7 +66,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @SecurityConstraint(
 	constraint = ShiroConstraint.HasPermission,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA },
-	recht = { Recht.GEBRUIKER_MAMMA_FOLLOW_UP_PATHOLOGIE_WERKLIJST })
+	recht = { Recht.MEDEWERKER_MAMMA_FOLLOW_UP_PATHOLOGIE_WERKLIJST })
 public class MammaFollowUpPathologieWerklijstPage extends AbstractMammaFollowUpPage
 {
 	private WebMarkupContainer refreshContainer;
@@ -83,9 +83,9 @@ public class MammaFollowUpPathologieWerklijstPage extends AbstractMammaFollowUpP
 	@SpringBean
 	private MammaFollowUpService followUpService;
 
-	public MammaFollowUpPathologieWerklijstPage(IModel<Instelling> instellingModel)
+	public MammaFollowUpPathologieWerklijstPage(IModel<Organisatie> organisatieModel)
 	{
-		setDefaultModel(new CompoundPropertyModel<>(instellingModel));
+		setDefaultModel(new CompoundPropertyModel<>(organisatieModel));
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class MammaFollowUpPathologieWerklijstPage extends AbstractMammaFollowUpP
 		super.onInitialize();
 		add(new Label("naam"));
 
-		MammaFollowUpPathologieProvider followUpPathologieProvider = new MammaFollowUpPathologieProvider((IModel<Instelling>) getDefaultModel());
+		MammaFollowUpPathologieProvider followUpPathologieProvider = new MammaFollowUpPathologieProvider((IModel<Organisatie>) getDefaultModel());
 
 		refreshContainer = new WebMarkupContainer("refreshContainer");
 		refreshContainer.setOutputMarkupId(Boolean.TRUE);
@@ -156,7 +156,7 @@ public class MammaFollowUpPathologieWerklijstPage extends AbstractMammaFollowUpP
 					protected void onOpslaan(AjaxRequestTarget ajaxRequestTarget)
 					{
 						super.onOpslaan(ajaxRequestTarget);
-						followUpService.savePaVerslagNietTeVerwachten(verslagModel.getObject(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+						followUpService.savePaVerslagNietTeVerwachten(verslagModel.getObject(), getIngelogdeOrganisatieMedewerker());
 						ajaxRequestTarget.add(refreshContainer);
 					}
 				});
@@ -171,7 +171,7 @@ public class MammaFollowUpPathologieWerklijstPage extends AbstractMammaFollowUpP
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveContextMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveContextMenuClass()
 	{
 		return MammaFollowUpPathologieRegioWerklijstPage.class;
 	}

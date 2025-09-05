@@ -21,7 +21,7 @@ package nl.rivm.screenit.main.web.gebruiker.gedeeld.brievenafdrukken;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.algemeen.AlgemeneMergedBrieven;
 import nl.rivm.screenit.model.enums.Actie;
@@ -34,7 +34,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_SCREENING_PRINTER_LANDELIJK,
+	recht = Recht.MEDEWERKER_SCREENING_PRINTER_LANDELIJK,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.MAMMA })
 public class AlgemeenAfdrukkenDocumentenPage extends AfdrukkenDocumentenBasePage<AlgemeneMergedBrieven>
@@ -47,8 +47,8 @@ public class AlgemeenAfdrukkenDocumentenPage extends AfdrukkenDocumentenBasePage
 	}
 
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.ALGEMEEN;
+		return MedewerkerHoofdMenuItem.ALGEMEEN;
 	}
 }

@@ -52,7 +52,7 @@ public class VerslagLezingDtoMapper
 		{
 			conclusie.setLezingAanzichten(doorsnedeAfbeeldingenDtoMapper.createDoorsnedeAfbeeldingenDtoFromLaesies(verslagLezing.getLaesies()));
 			conclusie.setLezingType(verslagLezing.getLezingType().getNaam());
-			conclusie.setRadioloogNaam(NaamUtil.getNaamGebruiker(verslagLezing.getBeoordelaar().getMedewerker()));
+			conclusie.setRadioloogNaam(NaamUtil.getNaamMedewerker(verslagLezing.getBeoordelaar().getMedewerker()));
 		}
 		return conclusie;
 	}

@@ -24,7 +24,7 @@ package nl.rivm.screenit.service.mamma;
 import java.util.Date;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 
@@ -39,6 +39,6 @@ public interface MammaVerwerkVerslagService
 
 	void onAfterVerwerkVerslagContent(MammaFollowUpVerslag verslag);
 
-	void valideerVerslagVoorAfronden(MammaFollowUpVerslag verslag, InstellingGebruiker instellingGebruiker);
+	void valideerVerslagVoorAfronden(MammaFollowUpVerslag verslag, OrganisatieMedewerker organisatieMedewerker);
 
 }

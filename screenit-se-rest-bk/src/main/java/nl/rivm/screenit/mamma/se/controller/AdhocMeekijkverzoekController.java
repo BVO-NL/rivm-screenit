@@ -21,6 +21,8 @@ package nl.rivm.screenit.mamma.se.controller;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -44,8 +46,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 @Slf4j
 @RestController
@@ -80,12 +80,12 @@ public class AdhocMeekijkverzoekController extends AuthorizedController
 	public ResponseEntity adhocIndienen(@RequestBody String reden, @PathVariable long afspraakId, HttpServletRequest request)
 	{
 		LOG.info("Meekijkverzoek LRCB aangevraagd voor afspraakId: " + afspraakId + " met reden: " + reden);
-		if (!isAuthorized(request, Recht.GEBRUIKER_SCREENING_MAMMA_SE_INSCHRIJVEN))
+		if (!isAuthorized(request, Recht.MEDEWERKER_SCREENING_MAMMA_SE_INSCHRIJVEN))
 		{
 			return createUnauthorizedResponse();
 		}
-		var account = getInstellingGebruiker(request);
-		SEAccountResolverDelegate.setInstellingGebruiker(account);
+		var account = getOrganisatieMedewerker(request);
+		SEAccountResolverDelegate.setOrganisatieMedewerker(account);
 		var se = getScreeningsEenheid(request);
 
 		var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(afspraakId, account);
@@ -123,7 +123,7 @@ public class AdhocMeekijkverzoekController extends AuthorizedController
 	@RequestMapping(value = "/controleren/{afspraakId}", method = RequestMethod.POST)
 	public ResponseEntity adhocControle(@PathVariable long afspraakId, HttpServletRequest request)
 	{
-		var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(afspraakId, getInstellingGebruiker(request));
+		var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(afspraakId, getOrganisatieMedewerker(request));
 		if (afspraak.getOnderzoek().getMeekijkverzoek() != null)
 		{
 			return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).build();

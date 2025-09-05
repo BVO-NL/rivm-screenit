@@ -115,7 +115,7 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 	{
 		super.onInitialize();
 
-		boolean magTegenhouden = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
+		boolean magTegenhouden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
 
 		var dossier = getModelObject().getDossier();
 
@@ -162,8 +162,8 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 
 						var document = ScreenitSession.get().fileUploadToUploadDocument(fileUpload);
 						afmelding.setHandtekeningDocumentAfmelding(document);
-						baseAfmeldService.afmelden(client, afmelding, ScreenitSession.get().getLoggedInInstellingGebruiker());
-						logService.logGebeurtenis(LogGebeurtenis.AFMELDEN, ScreenitSession.get().getLoggedInAccount(), client,
+						baseAfmeldService.afmelden(client, afmelding, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+						logService.logGebeurtenis(LogGebeurtenis.AFMELDEN, ScreenitSession.get().getIngelogdAccount(), client,
 							"Type: " + afmelding.getType().name().toLowerCase(), afmelding.getBevolkingsonderzoek());
 						close(target);
 
@@ -189,7 +189,7 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 			public void onClick(AjaxRequestTarget target)
 			{
 				ClientBrief brief = getOrgineleLaatsteBrief();
-				briefHerdrukkenService.opnieuwAanmaken(brief, ScreenitSession.get().getLoggedInAccount());
+				briefHerdrukkenService.opnieuwAanmaken(brief, ScreenitSession.get().getIngelogdAccount());
 
 				info(getString("info.afmeldingnogmaalsverstuurd"));
 				close(target);
@@ -203,7 +203,7 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				baseBriefService.briefTegenhouden(getLaatsteBrief(), ScreenitSession.get().getLoggedInAccount());
+				baseBriefService.briefTegenhouden(getLaatsteBrief(), ScreenitSession.get().getIngelogdAccount());
 				info(getString("info.brieftegenhouden"));
 				close(target);
 			}
@@ -213,7 +213,7 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				baseBriefService.briefNietMeerTegenhouden(getLaatsteBrief(), ScreenitSession.get().getLoggedInAccount());
+				baseBriefService.briefNietMeerTegenhouden(getLaatsteBrief(), ScreenitSession.get().getIngelogdAccount());
 				info(getString("info.briefactiveren"));
 				close(target);
 			}
@@ -236,12 +236,12 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 				var dossier = afmelding.getDossier();
 				if (dossier != null)
 				{
-					baseAfmeldService.definitieveAfmeldingAanvragen(dossier.getClient(), afmelding, true, ScreenitSession.get().getLoggedInInstellingGebruiker());
+					baseAfmeldService.definitieveAfmeldingAanvragen(dossier.getClient(), afmelding, true, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				}
 				else
 				{
 					dossier = afmelding.getScreeningRonde().getDossier();
-					baseAfmeldService.tijdelijkeAfmeldingAanvragen(dossier.getClient(), afmelding, true, ScreenitSession.get().getLoggedInInstellingGebruiker());
+					baseAfmeldService.tijdelijkeAfmeldingAanvragen(dossier.getClient(), afmelding, true, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				}
 
 				info(getString("info.afmeldinghandtekeningverstuurd"));

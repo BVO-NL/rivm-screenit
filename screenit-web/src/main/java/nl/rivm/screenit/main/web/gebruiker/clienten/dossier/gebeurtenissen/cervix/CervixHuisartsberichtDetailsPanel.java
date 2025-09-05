@@ -61,7 +61,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @SecurityConstraint(
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_CLIENT_SR_HUISARTSBERICHT_DETAILS,
+	recht = Recht.MEDEWERKER_CLIENT_SR_HUISARTSBERICHT_DETAILS,
 	bevolkingsonderzoekScopes = Bevolkingsonderzoek.CERVIX)
 public class CervixHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailPanel
 {
@@ -128,7 +128,7 @@ public class CervixHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetail
 	{
 		CervixHuisartsBericht huisartsBericht = getHuisartsBericht();
 		CervixUitstrijkje uitstrijkje = huisartsBericht.getUitstrijkje(); 
-		boolean magHuisartsKoppelen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_HUISARTS_KOPPELEN, Actie.AANPASSEN, huisartsBericht.getClient())
+		boolean magHuisartsKoppelen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_HUISARTS_KOPPELEN, Actie.AANPASSEN, huisartsBericht.getClient())
 			&& uitstrijkje != null && uitstrijkje.getUitstrijkjeStatus() != CervixUitstrijkjeStatus.NIET_ONTVANGEN;
 		boolean isHuisartsOnbekend = huisartsBericht.getStatus() == CervixHuisartsBerichtStatus.HUISARTS_ONBEKEND;
 		return huisartsBericht.getHuisartsLocatie() == null && isHuisartsOnbekend && magHuisartsKoppelen ? PanelState.KoppelHuisarts : PanelState.Normaal;
@@ -279,7 +279,7 @@ public class CervixHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetail
 
 	private boolean heeftRechtOpnieuwVersturen()
 	{
-		return ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_HUISARTSBERICHT_OPNIEUW_VERZENDEN, Actie.AANPASSEN,
+		return ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_HUISARTSBERICHT_OPNIEUW_VERZENDEN, Actie.AANPASSEN,
 			getHuisartsBericht().getClient());
 	}
 
@@ -336,7 +336,7 @@ public class CervixHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetail
 
 	private void verstuurHuisartsBericht(CervixHuisartsBericht huisartsBericht)
 	{
-		ediService.verstuurMedVry(huisartsBericht, ScreenitSession.get().getLoggedInAccount());
+		ediService.verstuurMedVry(huisartsBericht, ScreenitSession.get().getIngelogdAccount());
 
 		switch (huisartsBericht.getStatus())
 		{
@@ -412,7 +412,7 @@ public class CervixHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetail
 
 	private void verstuurHuisartsBerichtNaarExtraLocatie(CervixHuisartsBericht huisartsBericht, CervixHuisartsLocatie locatie)
 	{
-		CervixEdiVerstuurStatus status = ediService.verstuurMedVryNaarExtraHuisartsLocatie(huisartsBericht, locatie, ScreenitSession.get().getLoggedInAccount());
+		CervixEdiVerstuurStatus status = ediService.verstuurMedVryNaarExtraHuisartsLocatie(huisartsBericht, locatie, ScreenitSession.get().getIngelogdAccount());
 
 		switch (status)
 		{

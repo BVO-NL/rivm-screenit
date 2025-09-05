@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ProjectParameterKey;
@@ -75,6 +76,7 @@ import nl.rivm.screenit.util.ProjectUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.SessionFactory;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
@@ -90,6 +92,7 @@ import static nl.rivm.screenit.specification.colon.ColonFITSpecification.heeftDo
 import static nl.rivm.screenit.specification.colon.ColonFITSpecification.heeftFitType;
 import static nl.rivm.screenit.specification.colon.ColonFITSpecification.heeftStatusDatumVoorOfOp;
 import static nl.rivm.screenit.specification.colon.ColonFITSpecification.valideerFitUitslagStatus;
+import static nl.rivm.screenit.util.FITTestUtil.UITSLAG_FLAG_PRO;
 
 @Slf4j
 @Service
@@ -130,7 +133,7 @@ public class ColonBaseFITServiceImpl implements ColonBaseFITService
 	private ClientService clientService;
 
 	@Autowired
-	private ColonFITRepository fitTestRepository;
+	private ColonFITRepository fitRepository;
 
 	@Autowired
 	private ColonFITBestandRepository fitBestandRepository;
@@ -757,7 +760,7 @@ public class ColonBaseFITServiceImpl implements ColonBaseFITService
 	@Override
 	public Optional<IFOBTTest> getFit(String barcode)
 	{
-		return fitTestRepository.findByBarcode(barcode);
+		return fitRepository.findByBarcode(barcode);
 	}
 
 	@Override
@@ -768,7 +771,7 @@ public class ColonBaseFITServiceImpl implements ColonBaseFITService
 			.and(heeftStatusDatumVoorOfOp(minimaleSignaleringsDatum.atStartOfDay()))
 			.and(heeftFitType(IFOBTType.GOLD))
 			.and(heeftActieveClient());
-		return fitTestRepository.findFirst(specification, Sort.by(Sort.Direction.DESC, IFOBTTest_.ANALYSE_DATUM));
+		return fitRepository.findFirst(specification, Sort.by(Sort.Direction.DESC, IFOBTTest_.ANALYSE_DATUM));
 	}
 
 	@Override
@@ -787,5 +790,99 @@ public class ColonBaseFITServiceImpl implements ColonBaseFITService
 			.addProjection(AuditEntity.id().count());
 
 		return ((Long) auditQuery.getSingleResult()) > 0;
+	}
+
+	@Override
+	public String getToonbareWaarde(IFOBTTest fit)
+	{
+		if (fit == null)
+		{
+			return null;
+		}
+
+		var betrouwbareLimiet = simplePreferenceService.getLong(PreferenceKey.COLON_BETROUWBARE_LIMIET_FIT.name(), 80L);
+		var waardeHogerDanLimiet = fit.getUitslag() != null && fit.getUitslag().compareTo(BigDecimal.valueOf(betrouwbareLimiet)) >= 0;
+		var heeftProFlag = UITSLAG_FLAG_PRO.equals(fit.getFlag());
+		if (isDk2026Actief() && (waardeHogerDanLimiet || heeftProFlag))
+		{
+			return "> " + betrouwbareLimiet;
+		}
+
+		return fit.getUitslag() != null ? fit.getUitslag().toString() : "";
+	}
+
+	@Override
+	public boolean isDk2026Actief()
+	{
+		var peilDatum = currentDateSupplier.getLocalDate();
+		var startDk2026 = simplePreferenceService.getString(PreferenceKey.COLON_START_DK2026.name(), "20260101");
+		return !peilDatum.isBefore(DateUtil.parseLocalDateForPattern(startDk2026, Constants.DATE_FORMAT_YYYYMMDD));
+	}
+
+	@Override
+	public void koppelTestIndienMogelijk(String fitBarcode, IFOBTType fitType, ColonUitnodiging uitnodiging, Date datumVerstuurd, ColonScreeningRonde screeningRonde)
+	{
+		if (StringUtils.isBlank(fitBarcode))
+		{
+			return;
+		}
+
+		IFOBTTest fit;
+		if (fitType.equals(IFOBTType.GOLD))
+		{
+			fit = uitnodiging.getGekoppeldeTest();
+		}
+		else
+		{
+			fit = uitnodiging.getGekoppeldeExtraTest();
+		}
+
+		if (fit != null && !fitBarcode.equals(fit.getBarcode()))
+		{
+			fit = null;
+		}
+		if (fit == null)
+		{
+			fit = new IFOBTTest();
+			fit.setType(fitType);
+			fit.setBarcode(fitBarcode);
+		}
+		fit.setColonScreeningRonde(screeningRonde);
+		fit.setColonUitnodiging(uitnodiging);
+		fit.setDatumVerstuurd(datumVerstuurd);
+
+		if (fit.getStatus() == null)
+		{
+			if (uitnodiging.equals(screeningRonde.getLaatsteUitnodiging()))
+			{
+				setStatus(fit, IFOBTTestStatus.ACTIEF);
+				if (fitType.equals(IFOBTType.GOLD))
+				{
+					screeningRonde.setLaatsteIFOBTTest(fit);
+				}
+				else
+				{
+					screeningRonde.setLaatsteIFOBTTestExtra(fit);
+				}
+			}
+			else
+			{
+				setStatus(fit, IFOBTTestStatus.VERLOREN);
+			}
+			if (fitType.equals(IFOBTType.GOLD))
+			{
+				screeningRonde.setLaatsteIFOBTTestExtra(null);
+			}
+		}
+
+		if (fitType.equals(IFOBTType.GOLD))
+		{
+			uitnodiging.setGekoppeldeTest(fit);
+		}
+		else
+		{
+			uitnodiging.setGekoppeldeExtraTest(fit);
+		}
+		fitRepository.save(fit);
 	}
 }

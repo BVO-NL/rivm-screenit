@@ -23,7 +23,7 @@ package nl.rivm.screenit.service.impl;
 
 import java.util.Date;
 
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst;
 import nl.rivm.screenit.repository.algemeen.AfgeslotenMedewerkerOvereenkomstRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -42,14 +42,14 @@ public class KwaliteitsovereenkomstServiceImpl implements Kwaliteitsovereenkomst
 	@Autowired
 	private AfgeslotenMedewerkerOvereenkomstRepository afgeslotenMedewerkerOvereenkomstRepository;
 
-	public boolean hasActiveKwaliteitsovereenkomst(Gebruiker gebruiker, Date peilDatum)
+	public boolean hasActiveKwaliteitsovereenkomst(Medewerker medewerker, Date peilDatum)
 	{
 		if (peilDatum == null)
 		{
 			peilDatum = currentDateSupplier.getDate();
 		}
 
-		return afgeslotenMedewerkerOvereenkomstRepository.exists(AfgeslotenMedewerkerOvereenkomstSpecification.<AfgeslotenMedewerkerOvereenkomst> heeftGebruiker(gebruiker)
+		return afgeslotenMedewerkerOvereenkomstRepository.exists(AfgeslotenMedewerkerOvereenkomstSpecification.<AfgeslotenMedewerkerOvereenkomst> heeftMedewerker(medewerker)
 			.and(AfgeslotenMedewerkerOvereenkomstSpecification.bevatPeildatum(peilDatum)));
 	}
 }

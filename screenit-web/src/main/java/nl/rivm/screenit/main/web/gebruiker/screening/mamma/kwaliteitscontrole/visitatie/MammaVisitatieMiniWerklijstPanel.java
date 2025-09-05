@@ -80,7 +80,7 @@ public class MammaVisitatieMiniWerklijstPanel extends Panel
 			columns.add(new PropertyColumn<>(Model.of("MBBer code"), "beoordeling.onderzoek.mammografie.afgerondDoor.medewerker.medewerkercode"));
 		}
 		columns.add(new PropertyColumn<>(Model.of("Volgnummer"), "volgnummer"));
-		if (ScreenitSession.get().getInstelling().getOrganisatieType() != OrganisatieType.KWALITEITSPLATFORM)
+		if (ScreenitSession.get().getOrganisatie().getOrganisatieType() != OrganisatieType.KWALITEITSPLATFORM)
 		{
 			columns.add(new ClientColumn<>("beoordeling.onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client"));
 			columns.add(new GeboortedatumColumn<>("beoordeling.onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client.persoon"));

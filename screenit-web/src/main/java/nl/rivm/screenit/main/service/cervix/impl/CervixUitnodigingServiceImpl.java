@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.main.repository.cervix.CervixMonsterRepository;
 import nl.rivm.screenit.main.service.cervix.CervixUitnodigingService;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
@@ -64,7 +64,7 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 	private final CervixMonsterRepository monsterRepository;
 
 	@Override
-	public String zoekMonsters(Instelling ingelogdNamensOrganisatie, String monsterId, String bsn, Date geboortedatum, List<CervixUitnodiging> uitnodigingen,
+	public String zoekMonsters(Organisatie ingelogdNamensOrganisatie, String monsterId, String bsn, Date geboortedatum, List<CervixUitnodiging> uitnodigingen,
 		UnaryOperator<String> getString)
 	{
 		var aantalIngevuldeVelden = (StringUtils.isBlank(monsterId) ? 0 : 1) + (StringUtils.isBlank(bsn) ? 0 : 1) + (geboortedatum == null ? 0 : 1);
@@ -95,7 +95,7 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 	}
 
 	@Nullable
-	private String zoekOpBasisVanBsnEnGeboortedatum(Instelling ingelogdNamensOrganisatie, String bsn, Date geboortedatum, List<CervixUitnodiging> uitnodigingen,
+	private String zoekOpBasisVanBsnEnGeboortedatum(Organisatie ingelogdNamensOrganisatie, String bsn, Date geboortedatum, List<CervixUitnodiging> uitnodigingen,
 		UnaryOperator<String> getString)
 	{
 		var client = clientService.getClientByBsn(bsn);
@@ -114,7 +114,7 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 		return null;
 	}
 
-	private void verzamelUitnodigingenUitLaatsteRondeDieHetLabMagZien(Instelling ingelogdNamensOrganisatie, List<CervixUitnodiging> uitnodigingen, Client client)
+	private void verzamelUitnodigingenUitLaatsteRondeDieHetLabMagZien(Organisatie ingelogdNamensOrganisatie, List<CervixUitnodiging> uitnodigingen, Client client)
 	{
 		if (client.getCervixDossier() != null && client.getCervixDossier().getLaatsteScreeningRonde() != null
 			&& client.getCervixDossier().getLaatsteScreeningRonde().getUitnodigingen() != null)
@@ -122,7 +122,7 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 			for (var uitnodiging : client.getCervixDossier().getLaatsteScreeningRonde().getUitnodigingen())
 			{
 				var monster = uitnodiging.getMonster();
-				if (monster != null && monsterService.magInstellingMonsterInzien(ingelogdNamensOrganisatie, monster))
+				if (monster != null && monsterService.magOrganisatieMonsterInzien(ingelogdNamensOrganisatie, monster))
 				{
 					uitnodigingen.add(uitnodiging);
 				}
@@ -130,7 +130,7 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 		}
 	}
 
-	private String valideerIngevuldMonsterId(String monsterId, Instelling ingelogdNamensOrganisatie, UnaryOperator<String> getString)
+	private String valideerIngevuldMonsterId(String monsterId, Organisatie ingelogdNamensOrganisatie, UnaryOperator<String> getString)
 	{
 		if (ingelogdNamensOrganisatie.getOrganisatieType() == OrganisatieType.BMHK_LABORATORIUM)
 		{
@@ -156,7 +156,7 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 		return null;
 	}
 
-	private String zoekUitnodigingOpBasisVanMonsterId(String monsterId, String bsn, Date geboortedatum, Instelling ingelogdNamensOrganisatie,
+	private String zoekUitnodigingOpBasisVanMonsterId(String monsterId, String bsn, Date geboortedatum, Organisatie ingelogdNamensOrganisatie,
 		List<CervixUitnodiging> uitnodigingen, UnaryOperator<String> getString)
 	{
 		var monster = monsterService.getMonster(monsterId).orElse(null);
@@ -173,7 +173,7 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 		{
 			return getString.apply("geen.met.monster.id.en.geboortedatum");
 		}
-		if (!monsterService.magInstellingMonsterInzien(ingelogdNamensOrganisatie, monster))
+		if (!monsterService.magOrganisatieMonsterInzien(ingelogdNamensOrganisatie, monster))
 		{
 			return getString.apply("laboratorium.mag.monster.niet.inzien");
 		}
@@ -182,7 +182,7 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 	}
 
 	@Override
-	public char getVerwachteEersteZASMonsterIdLetter(Instelling ingelogdNamensOrganisatie)
+	public char getVerwachteEersteZASMonsterIdLetter(Organisatie ingelogdNamensOrganisatie)
 	{
 		boolean nieuweBMHKLabs = organisatieParameterService.getOrganisatieParameter(ingelogdNamensOrganisatie,
 			OrganisatieParameterKey.CERVIX_HPV_ORDER_NIEUW, Boolean.FALSE);
@@ -190,7 +190,7 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 	}
 
 	@Override
-	public boolean magMonsterVerwerktWordenDoorLab(Instelling ingelogdNamensOrganisatie, CervixUitnodiging uitnodiging)
+	public boolean magMonsterVerwerktWordenDoorLab(Organisatie ingelogdNamensOrganisatie, CervixUitnodiging uitnodiging)
 	{
 		var verwachteEersteZASMonsterIdLetter = String.valueOf(getVerwachteEersteZASMonsterIdLetter(ingelogdNamensOrganisatie));
 		return ingelogdNamensOrganisatie.getOrganisatieType() != OrganisatieType.BMHK_LABORATORIUM ||

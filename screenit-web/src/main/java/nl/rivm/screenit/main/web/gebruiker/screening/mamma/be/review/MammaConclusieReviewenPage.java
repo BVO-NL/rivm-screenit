@@ -30,7 +30,7 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaScreeningBasePag
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaBeoordelenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaRondePanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.panels.MammaKwaliteitscontroleHuidigeRondePanel;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaConclusieReview;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
@@ -49,12 +49,12 @@ public class MammaConclusieReviewenPage extends AbstractMammaBeoordelenPage
 	@SpringBean
 	private MammaConclusieReviewService conclusieReviewService;
 
-	private final IModel<InstellingGebruiker> radioloogModel;
+	private final IModel<OrganisatieMedewerker> radioloogModel;
 
 	private MammaKwaliteitscontroleHuidigeRondePanel huidigeRondePanel;
 
 	public MammaConclusieReviewenPage(Long initieleBeoordelingId, List<Long> beoordelingIds, Class<? extends MammaScreeningBasePage> werklijstPageClass,
-		IModel<InstellingGebruiker> radioloogModel)
+		IModel<OrganisatieMedewerker> radioloogModel)
 	{
 		super(initieleBeoordelingId, beoordelingIds, werklijstPageClass);
 		this.radioloogModel = radioloogModel;
@@ -96,15 +96,15 @@ public class MammaConclusieReviewenPage extends AbstractMammaBeoordelenPage
 	@Override
 	protected void handleImsError(AjaxRequestTarget target, String errorMessage, Long onderzoekId)
 	{
-		error(imsService.handleError(errorMessage, ScreenitSession.get().getLoggedInInstellingGebruiker(), b -> getString((String) b), onderzoekId));
+		error(imsService.handleError(errorMessage, getIngelogdeOrganisatieMedewerker(), b -> getString((String) b), onderzoekId));
 		huidigeRondePanel.blokeerButtons(target);
 	}
 
 	@Override
 	protected void logBeoordelingIngezien()
 	{
-		beoordelingService.logBeoordelingIngezien(getModel().getObject(), getIngelogdeGebruiker(),
-			!ScreenitSession.get().getLoggedInInstellingGebruiker().equals(radioloogModel.getObject()));
+		beoordelingService.logBeoordelingIngezien(getModel().getObject(), getIngelogdeOrganisatieMedewerker(),
+			!getIngelogdeOrganisatieMedewerker().equals(radioloogModel.getObject()));
 	}
 
 	@Override

@@ -22,6 +22,10 @@ package nl.rivm.screenit.batch.jobs.colon.ifobtverwerking;
  */
 
 import nl.rivm.screenit.batch.jobs.AbstractJobConfiguration;
+import nl.rivm.screenit.batch.jobs.colon.ifobtverwerking.bestandopruimenstep.FITBestandOpruimenReader;
+import nl.rivm.screenit.batch.jobs.colon.ifobtverwerking.bestandopruimenstep.FITBestandOpruimenWriter;
+import nl.rivm.screenit.batch.jobs.colon.ifobtverwerking.uitslagopruimenstep.FITUitslagOpruimenReader;
+import nl.rivm.screenit.batch.jobs.colon.ifobtverwerking.uitslagopruimenstep.FITUitslagOpruimenWriter;
 import nl.rivm.screenit.batch.jobs.colon.ifobtverwerking.verwerkingstep.IFOBTVerwerkingProcessor;
 import nl.rivm.screenit.batch.jobs.colon.ifobtverwerking.verwerkingstep.IFOBTVerwerkingReader;
 import nl.rivm.screenit.batch.jobs.colon.ifobtverwerking.verwerkingstep.IFOBTVerwerkingWriter;
@@ -40,21 +44,43 @@ public class IfobtVerwerkingJobConfiguration extends AbstractJobConfiguration
 {
 
 	@Bean
-	public Job ifobtVerwerkingJob(IfobtVerwerkingListener listener, Step ifobtVerwerkingStep)
+	public Job ifobtVerwerkingJob(IfobtVerwerkingListener listener, Step fitVerwerkingStep, Step fitUitslagOpruimenStep, Step fitBestandOpruimenStep)
 	{
 		return new JobBuilder(JobType.IFOBT_VERWERKING.name(), repository)
 			.listener(listener)
-			.start(ifobtVerwerkingStep)
+			.start(fitVerwerkingStep)
+			.next(fitUitslagOpruimenStep)
+			.next(fitBestandOpruimenStep)
 			.build();
 	}
 
 	@Bean
-	public Step ifobtVerwerkingStep(IFOBTVerwerkingReader reader, IFOBTVerwerkingProcessor processor, IFOBTVerwerkingWriter writer)
+	public Step fitVerwerkingStep(IFOBTVerwerkingReader reader, IFOBTVerwerkingProcessor processor, IFOBTVerwerkingWriter writer)
 	{
-		return new StepBuilder("ifobtVerwerkingStep", repository)
+		return new StepBuilder("fitVerwerkingStep", repository)
 			.<Long, IFOBTUitslag> chunk(10, transactionManager)
 			.reader(reader)
 			.processor(processor)
+			.writer(writer)
+			.build();
+	}
+
+	@Bean
+	public Step fitUitslagOpruimenStep(FITUitslagOpruimenReader reader, FITUitslagOpruimenWriter writer)
+	{
+		return new StepBuilder("fitUitslagOpruimenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
+			.reader(reader)
+			.writer(writer)
+			.build();
+	}
+
+	@Bean
+	public Step fitBestandOpruimenStep(FITBestandOpruimenReader reader, FITBestandOpruimenWriter writer)
+	{
+		return new StepBuilder("fitBestandOpruimenStep", repository)
+			.<Long, Long> chunk(250, transactionManager)
+			.reader(reader)
 			.writer(writer)
 			.build();
 	}

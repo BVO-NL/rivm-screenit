@@ -26,10 +26,10 @@ import nl.rivm.screenit.edi.model.OutboundMessageData;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.EnovationHuisarts;
 import nl.rivm.screenit.model.Gemeente;
-import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.MailVerzenden;
 import nl.rivm.screenit.model.MedVryOntvanger;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.colon.ColonHuisartsBericht;
 import nl.rivm.screenit.model.colon.ColonHuisartsBerichtStatus;
@@ -64,7 +64,7 @@ public class ColonEdiServiceImpl extends EdiServiceBaseImpl implements ColonEdiS
 			zetPatient(huisartsBericht, medVry);
 			zetOntvanger(huisartsBericht, medVry);
 			zetInhoud(huisartsBericht.getBerichtInhoud(), huisartsBericht.getBerichtType(), medVry, transactionId);
-			InstellingGebruiker sender = zetZender(huisartsBericht, medVry);
+			OrganisatieMedewerker sender = zetZender(huisartsBericht, medVry);
 			verstuur(huisartsBericht, transactionId, medVry, sender);
 		}
 	}
@@ -111,7 +111,7 @@ public class ColonEdiServiceImpl extends EdiServiceBaseImpl implements ColonEdiS
 		return haBericht;
 	}
 
-	private void verstuur(ColonHuisartsBericht huisartsBericht, String transactionId, MedVryOut medVry, InstellingGebruiker sender)
+	private void verstuur(ColonHuisartsBericht huisartsBericht, String transactionId, MedVryOut medVry, OrganisatieMedewerker sender)
 	{
 		OutboundMessageData<MedVryOut> outboundMessageData = new OutboundMessageData<>(medVry);
 		outboundMessageData.setSubject(medVry.getSubject());
@@ -126,7 +126,7 @@ public class ColonEdiServiceImpl extends EdiServiceBaseImpl implements ColonEdiS
 			MailVerzenden mailVerzenden = manipulateEmailadressen(sender, outboundMessageData);
 			if (StringUtils.isBlank(foutmelding)
 				&& (MailVerzenden.UIT.equals(mailVerzenden)
-				|| ediMessageService.sendMedVry(sender, sender.getEmail(), outboundMessageData, transactionId)))
+				|| ediMessageService.sendMedVry(sender, sender.getMedewerker().getEmailextra(), outboundMessageData, transactionId)))
 			{
 				huisartsBericht.setStatus(ColonHuisartsBerichtStatus.VERZENDEN_GELUKT);
 				huisartsBericht.setVerzendDatum(currentDateSupplier.getDate());

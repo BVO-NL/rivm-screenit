@@ -25,9 +25,13 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class IFOBTResult implements Serializable
 {
-
 	@Serial
 	private static final long serialVersionUID = 1L;
 
@@ -43,63 +47,7 @@ public class IFOBTResult implements Serializable
 
 	private String bestandsNaam;
 
-	public String getLabID()
-	{
-		return labID;
-	}
+	private String onbeoordeelbaarReden;
 
-	public void setLabID(String labID)
-	{
-		this.labID = labID;
-	}
-
-	public String getInstrumentID()
-	{
-		return instrumentID;
-	}
-
-	public void setInstrumentID(String instrumentID)
-	{
-		this.instrumentID = instrumentID;
-	}
-
-	public String getResultValue()
-	{
-		return resultValue;
-	}
-
-	public void setResultValue(String resultValue)
-	{
-		this.resultValue = resultValue;
-	}
-
-	public Date getDateTimeResult()
-	{
-		return dateTimeResult;
-	}
-
-	public void setDateTimeResult(Date dateTimeResult)
-	{
-		this.dateTimeResult = dateTimeResult;
-	}
-
-	public String getSid()
-	{
-		return sid;
-	}
-
-	public void setSid(String sid)
-	{
-		this.sid = sid;
-	}
-
-	public void setBestandsNaam(String bestandsNaam)
-	{
-		this.bestandsNaam = bestandsNaam;
-	}
-
-	public String getBestandsNaam()
-	{
-		return bestandsNaam;
-	}
+	private String flag;
 }

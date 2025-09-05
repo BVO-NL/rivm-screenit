@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.main.service.mamma.MammaPostcodeReeksService;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaPostcodeReeks;
@@ -61,7 +61,7 @@ public class MammaPostcodeReeksServiceImpl implements MammaPostcodeReeksService
 	private final MammaPostcodeReeksRepository postcodeReeksRepository;
 
 	@Override
-	public boolean saveOrUpdatePostcodeReeks(MammaPostcodeReeks postcodeReeks, InstellingGebruiker loggedInInstellingGebruiker)
+	public boolean saveOrUpdatePostcodeReeks(MammaPostcodeReeks postcodeReeks, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		String melding = "";
 		String diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(postcodeReeks, hibernateService.getHibernateSession());
@@ -80,7 +80,7 @@ public class MammaPostcodeReeksServiceImpl implements MammaPostcodeReeksService
 		{
 			MammaStandplaats standplaats = postcodeReeks.getStandplaats();
 			standplaats.getPostcodeReeksen().add(postcodeReeks);
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_POSTCODE_REEKS, loggedInInstellingGebruiker, melding, Bevolkingsonderzoek.MAMMA);
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_POSTCODE_REEKS, ingelogdeOrganisatieMedewerker, melding, Bevolkingsonderzoek.MAMMA);
 			hibernateService.saveOrUpdateAll(postcodeReeks, standplaats);
 			baseConceptPlanningsApplicatie.sendPostcodeReeks(postcodeReeks, isNieuw);
 			return true;
@@ -104,13 +104,13 @@ public class MammaPostcodeReeksServiceImpl implements MammaPostcodeReeksService
 	}
 
 	@Override
-	public void deletePostcodeReeks(MammaPostcodeReeks postcodeReeks, InstellingGebruiker ingelogdeInstellingGebruiker)
+	public void deletePostcodeReeks(MammaPostcodeReeks postcodeReeks, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		String melding = "Postcodereeks voor '" + postcodeReeks.getStandplaats().getNaam() + "' verwijderd.";
 
 		MammaStandplaats standplaats = postcodeReeks.getStandplaats();
 		standplaats.getPostcodeReeksen().remove(postcodeReeks);
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_POSTCODE_REEKS, ingelogdeInstellingGebruiker, melding, Bevolkingsonderzoek.MAMMA);
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_POSTCODE_REEKS, ingelogdeOrganisatieMedewerker, melding, Bevolkingsonderzoek.MAMMA);
 		baseConceptPlanningsApplicatie.deletePostcodeReeks(postcodeReeks);
 		hibernateService.saveOrUpdate(standplaats);
 		hibernateService.delete(postcodeReeks);

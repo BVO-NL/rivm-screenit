@@ -29,9 +29,12 @@ import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.colon.IFOBTBestand;
 import nl.rivm.screenit.model.colon.IFOBTBestand_;
+import nl.rivm.screenit.model.colon.IFOBTUitslag;
+import nl.rivm.screenit.model.colon.IFOBTUitslag_;
 import nl.rivm.screenit.model.colon.IFobtLaboratorium;
 import nl.rivm.screenit.model.colon.enums.IFOBTBestandStatus;
 import nl.rivm.screenit.specification.ExtendedSpecification;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -89,4 +92,15 @@ public class ColonFITBestandSpecification
 		return bevat(peilRange, r -> r.get(IFOBTBestand_.statusDatum));
 	}
 
+	public static ExtendedSpecification<IFOBTBestand> heeftGeenUitslagen()
+	{
+		return (r, q, cb) ->
+		{
+			var subquery = q.subquery(Long.class);
+			var subRoot = subquery.from(IFOBTUitslag.class);
+			subquery.select(cb.literal(1L))
+				.where(cb.equal(subRoot.get(IFOBTUitslag_.bestand).get(AbstractHibernateObject_.id), r.get(AbstractHibernateObject_.id)));
+			return cb.not(cb.exists(subquery));
+		};
+	}
 }

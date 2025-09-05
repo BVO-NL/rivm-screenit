@@ -87,50 +87,50 @@
 }
 
 .biradskeuze.biradsverwijzen {
-  background-color: #a94747;
+	background-color: #a94747;
 }
 
 .biradskeuze .radio.onmogelijk {
-  visibility: hidden;
+	visibility: hidden;
 }
 
 .lezing-form-container {
-  textarea[name="opschortenRedenTekst"], textarea[name="biradsOpmerking"] {
-    color: white;
-  }
+	textarea[name="opschortenRedenTekst"], textarea[name="biradsOpmerking"] {
+		color: white;
+	}
 
-  .mammaBeoordelenDropdown .select2-container .select2-chosen {
-    color: white;
-  }
+	.mammaBeoordelenDropdown .select2-container .select2-chosen {
+		color: white;
+	}
 
-  label[name="redenenFotobesprekingMbberReview"] {
-    margin-top: 5px;
-  }
+	label[name="redenenFotobesprekingMbberReview"] {
+		margin-top: 5px;
+	}
 }
 
 .beoordelingsafbeeldingContainerR {
-  text-align: left;
+	text-align: left;
 }
 
 .beoordelingsafbeeldingContainerL {
-  text-align: right;
+	text-align: right;
 }
 
 div.beoordelingsafbeelding {
-  position: relative;
-  display: inline-block;
-  zoom: 1;
+	position: relative;
+	display: inline-block;
+	zoom: 1;
 }
 
 img.beoordelingsafbeelding {
-  display: block;
-  pointer-events: none;
+	display: block;
+	pointer-events: none;
 }
 
 .beoordelingsafbeeldingRichtingaanduiding {
-  color: black;
-  font-size: large;
-  margin: 0px;
+	color: black;
+	font-size: large;
+	margin: 0px;
 }
 
 .font-weight-bolder {
@@ -171,3 +171,52 @@ img.beoordelingsafbeelding {
 .tomosynthese-slices-keuze .checkmark {
 	margin-top: 2px;
 }
+
+.nevenbevindingZijdeContainer {
+	display: flex;
+	flex-direction: column;
+	justify-self: flex-start;
+	input[type="radio"] {
+		-webkit-appearance: none;
+		appearance: none;
+		position: absolute;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	div, label {
+		position: relative;
+		cursor: pointer;
+		display: flex;
+		gap: 1rem;
+		
+		label {
+			padding-left: 12px;
+			margin: 0;
+		}
+		input[type="radio"]:checked {
+			background-color: #60347F;
+			border-radius: 50%;
+			width: 15px;
+			height: 15px;
+		}
+
+		span {
+			position: absolute;
+			left: 0;
+			top: 0;
+			height: 15px;
+			width: 15px;
+			background-color: #e5e5e5;
+			border-radius: 50%;
+		}
+
+		input:checked ~ span {
+			border: 5px solid #60347F;
+			width: 5px;
+			height: 5px;
+		}
+	}
+}
+
+

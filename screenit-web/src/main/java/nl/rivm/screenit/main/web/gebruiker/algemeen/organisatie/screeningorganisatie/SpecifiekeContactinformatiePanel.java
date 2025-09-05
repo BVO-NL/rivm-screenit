@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.component.ComponentHelper;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.RegioBvoContactGegevens;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
@@ -36,7 +36,7 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
 
-public class SpecifiekeContactinformatiePanel extends GenericPanel<Instelling>
+public class SpecifiekeContactinformatiePanel extends GenericPanel<Organisatie>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -45,7 +45,7 @@ public class SpecifiekeContactinformatiePanel extends GenericPanel<Instelling>
 
 	private boolean isSO;
 
-	public SpecifiekeContactinformatiePanel(String id, IModel<Instelling> model, boolean inzien)
+	public SpecifiekeContactinformatiePanel(String id, IModel<Organisatie> model, boolean inzien)
 	{
 		super(id, model);
 		isSO = model.getObject().getOrganisatieType().equals(OrganisatieType.SCREENINGSORGANISATIE);

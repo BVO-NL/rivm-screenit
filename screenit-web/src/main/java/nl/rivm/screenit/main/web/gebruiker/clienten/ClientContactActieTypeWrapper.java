@@ -69,7 +69,7 @@ public enum ClientContactActieTypeWrapper
 	OPNIEUW_AANVRAGEN_CLIENTGEGEVENS(
 		ClientContactActieType.OPNIEUW_AANVRAGEN_CLIENTGEGEVENS,
 		ClientContactClientGegevensAanvragenPanel.class,
-		Recht.GEBRUIKER_GBA_AANVRAGEN,
+		Recht.MEDEWERKER_GBA_AANVRAGEN,
 		"icon-refresh")
 		{
 			@Override
@@ -85,7 +85,7 @@ public enum ClientContactActieTypeWrapper
 	AANPASSEN_AANHEF(
 		ClientContactActieType.AANPASSEN_AANHEF,
 		ClientContactAanhefPanel.class,
-		Recht.GEBRUIKER_CLIENT_GEGEVENS,
+		Recht.MEDEWERKER_CLIENT_GEGEVENS,
 		"icon-refresh")
 		{
 			@Override
@@ -96,7 +96,7 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 
-	TIJDELIJK_ADRES(ClientContactActieType.TIJDELIJK_ADRES, ClientContactTijdelijkAdresPanel.class, Recht.GEBRUIKER_CLIENT_GEGEVENS, "icon-home")
+	TIJDELIJK_ADRES(ClientContactActieType.TIJDELIJK_ADRES, ClientContactTijdelijkAdresPanel.class, Recht.MEDEWERKER_CLIENT_GEGEVENS, "icon-home")
 		{
 			@Override
 			public ClientContactActieTypeWrapper[] getExclusie()
@@ -105,7 +105,7 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 
-	COLON_AFMELDEN(ClientContactActieType.COLON_AFMELDEN, ColonClientContactAfmeldenPanel.class, Recht.GEBRUIKER_CLIENT_COLON_AFMELDEN, "icon-ban-circle")
+	COLON_AFMELDEN(ClientContactActieType.COLON_AFMELDEN, ColonClientContactAfmeldenPanel.class, Recht.MEDEWERKER_CLIENT_COLON_AFMELDEN, "icon-ban-circle")
 		{
 			@Override
 			public ClientContactActieTypeWrapper[] getExclusie()
@@ -117,7 +117,7 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 
-	COLON_HERAANMELDEN(ClientContactActieType.COLON_HERAANMELDEN, ColonClientContactHeraanmeldenPanel.class, Recht.GEBRUIKER_CLIENT_COLON_HERAANMELDEN, "icon-ok-circle")
+	COLON_HERAANMELDEN(ClientContactActieType.COLON_HERAANMELDEN, ColonClientContactHeraanmeldenPanel.class, Recht.MEDEWERKER_CLIENT_COLON_HERAANMELDEN, "icon-ok-circle")
 		{
 			@Override
 			public ClientContactActieTypeWrapper[] getExclusie()
@@ -132,7 +132,7 @@ public enum ClientContactActieTypeWrapper
 	COLON_AANVRAGEN_NIEUWE_IFOBT(
 		ClientContactActieType.COLON_AANVRAGEN_NIEUWE_IFOBT,
 		ColonClientContactAanvragenNieuweIFOBTPanel.class,
-		Recht.GEBRUIKER_CLIENT_SR_NIEUWE_IFOBT_AANVRAGEN,
+		Recht.MEDEWERKER_CLIENT_SR_NIEUWE_IFOBT_AANVRAGEN,
 		"icon-repeat")
 		{
 			@Override
@@ -147,7 +147,7 @@ public enum ClientContactActieTypeWrapper
 	COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN(
 		ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN,
 		ColonClientContactAfspraakWijzigenPanel.class,
-		Recht.GEBRUIKER_CLIENT_SR_INTAKEAFSPRAAKGEMAAKT,
+		Recht.MEDEWERKER_CLIENT_SR_INTAKEAFSPRAAKGEMAAKT,
 		"icon-calendar")
 		{
 			@Override
@@ -162,7 +162,7 @@ public enum ClientContactActieTypeWrapper
 	COLON_NIEUWE_AFSPRAAK_AANMAKEN(
 		ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN,
 		ColonClientContactNieuweAfspraakAanmakenPanel.class,
-		Recht.GEBRUIKER_CLIENT_SR_NIEUWE_INTAKEAFSPRAAKGEMAAKT,
+		Recht.MEDEWERKER_CLIENT_SR_NIEUWE_INTAKEAFSPRAAKGEMAAKT,
 		"icon-nieuwe-afspraak")
 		{
 			@Override
@@ -174,7 +174,7 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 
-	COLON_HUISARTS_WIJZIGEN(ClientContactActieType.COLON_HUISARTS_WIJZIGEN, ColonHuisartsWijzigenPanel.class, Recht.GEBRUIKER_WIJZIGEN_HUISARTS, "icon-edit")
+	COLON_HUISARTS_WIJZIGEN(ClientContactActieType.COLON_HUISARTS_WIJZIGEN, ColonHuisartsWijzigenPanel.class, Recht.MEDEWERKER_WIJZIGEN_HUISARTS, "icon-edit")
 		{
 			@Override
 			public ClientContactActieTypeWrapper[] getExclusie()
@@ -196,7 +196,7 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 
-	BEZWAAR(ClientContactActieType.BEZWAAR, ClientContactBezwaarPanel.class, Recht.GEBRUIKER_CLIENT_BEZWAAR, "icon-ok-circle")
+	BEZWAAR(ClientContactActieType.BEZWAAR, ClientContactBezwaarPanel.class, Recht.MEDEWERKER_CLIENT_BEZWAAR, "icon-ok-circle")
 		{
 			@Override
 			public ClientContactActieTypeWrapper[] getExclusie()
@@ -208,7 +208,7 @@ public enum ClientContactActieTypeWrapper
 	INZAGE_PERSOONSGEGEVENS(
 		ClientContactActieType.INZAGE_PERSOONSGEGEVENS,
 		ClientContactInzagePersoonsgegevensPanel.class,
-		Recht.GEBRUIKER_AANVRAAG_OVERDRACHT_PERSOONSGEGEVENS,
+		Recht.MEDEWERKER_AANVRAAG_OVERDRACHT_PERSOONSGEGEVENS,
 		"icon-refresh")
 		{
 			@Override
@@ -218,7 +218,7 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 
-	DEELNAMEWENSEN(ClientContactActieType.DEELNAMEWENSEN, ClientContactDeelnamewensenPanel.class, Recht.GEBRUIKER_CLIENT_DEELNAMEWENS_REGISTREREN, null)
+	DEELNAMEWENSEN(ClientContactActieType.DEELNAMEWENSEN, ClientContactDeelnamewensenPanel.class, Recht.MEDEWERKER_CLIENT_DEELNAMEWENS_REGISTREREN, null)
 		{
 			@Override
 			public ClientContactActieTypeWrapper[] getExclusie()
@@ -227,7 +227,7 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 
-	CERVIX_DEELNAME_BUITEN_BVO_BMHK(ClientContactActieType.CERVIX_DEELNAME_BUITEN_BVO_BMHK, null, Recht.GEBRUIKER_CLIENT_CERVIX_AANMELDEN_DEELNAME_BUITEN_BVO_BMHK, null)
+	CERVIX_DEELNAME_BUITEN_BVO_BMHK(ClientContactActieType.CERVIX_DEELNAME_BUITEN_BVO_BMHK, null, Recht.MEDEWERKER_CLIENT_CERVIX_AANMELDEN_DEELNAME_BUITEN_BVO_BMHK, null)
 		{
 			@Override
 			public ClientContactActieTypeWrapper[] getExclusie()
@@ -236,7 +236,7 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 
-	CERVIX_AFMELDEN(ClientContactActieType.CERVIX_AFMELDEN, CervixClientContactAfmeldenPanel.class, Recht.GEBRUIKER_CLIENT_CERVIX_AFMELDEN, "icon-ban-circle")
+	CERVIX_AFMELDEN(ClientContactActieType.CERVIX_AFMELDEN, CervixClientContactAfmeldenPanel.class, Recht.MEDEWERKER_CLIENT_CERVIX_AFMELDEN, "icon-ban-circle")
 		{
 			@Override
 			public ClientContactActieTypeWrapper[] getExclusie()
@@ -261,7 +261,7 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 
-	CERVIX_HERAANMELDEN(ClientContactActieType.CERVIX_HERAANMELDEN, CervixClientContactHeraanmeldenPanel.class, Recht.GEBRUIKER_CLIENT_CERVIX_HERAANMELDEN, "icon-ok-circle")
+	CERVIX_HERAANMELDEN(ClientContactActieType.CERVIX_HERAANMELDEN, CervixClientContactHeraanmeldenPanel.class, Recht.MEDEWERKER_CLIENT_CERVIX_HERAANMELDEN, "icon-ok-circle")
 		{
 			@Override
 			public ClientContactActieTypeWrapper[] getExclusie()
@@ -271,7 +271,7 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 
-	CERVIX_UITSTEL(ClientContactActieType.CERVIX_UITSTEL, CervixClientContactUitstelPanel.class, Recht.GEBRUIKER_CLIENT_UITSTEL, "icon-calendar")
+	CERVIX_UITSTEL(ClientContactActieType.CERVIX_UITSTEL, CervixClientContactUitstelPanel.class, Recht.MEDEWERKER_CLIENT_UITSTEL, "icon-calendar")
 		{
 			@Override
 			public ClientContactActieTypeWrapper[] getExclusie()
@@ -281,7 +281,8 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 
-	CERVIX_ZAS_AANVRAGEN(ClientContactActieType.CERVIX_ZAS_AANVRAGEN, CervixClientContactAanvragenNieuweZASPanel.class, Recht.GEBRUIKER_CERVIX_CLIENT_ZAS_AANVRAGEN, "icon-refresh")
+	CERVIX_ZAS_AANVRAGEN(ClientContactActieType.CERVIX_ZAS_AANVRAGEN, CervixClientContactAanvragenNieuweZASPanel.class, Recht.MEDEWERKER_CERVIX_CLIENT_ZAS_AANVRAGEN,
+		"icon-refresh")
 		{
 			@Override
 			public ClientContactActieTypeWrapper[] getExclusie()
@@ -292,7 +293,7 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 
-	CERVIX_HERDRUK(ClientContactActieType.CERVIX_HERDRUK, CervixClientContactHerdrukPanel.class, Recht.GEBRUIKER_CERVIX_CLIENT_HERDRUK, "icon-repeat")
+	CERVIX_HERDRUK(ClientContactActieType.CERVIX_HERDRUK, CervixClientContactHerdrukPanel.class, Recht.MEDEWERKER_CERVIX_CLIENT_HERDRUK, "icon-repeat")
 		{
 			@Override
 			public ClientContactActieTypeWrapper[] getExclusie()
@@ -302,7 +303,7 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 
-	MAMMA_AFMELDEN(ClientContactActieType.MAMMA_AFMELDEN, MammaClientContactAfmeldenPanel.class, Recht.GEBRUIKER_CLIENT_MAMMA_AFMELDEN, "icon-ban-circle")
+	MAMMA_AFMELDEN(ClientContactActieType.MAMMA_AFMELDEN, MammaClientContactAfmeldenPanel.class, Recht.MEDEWERKER_CLIENT_MAMMA_AFMELDEN, "icon-ban-circle")
 		{
 			@Override
 			public ClientContactActieTypeWrapper[] getExclusie()
@@ -315,7 +316,7 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 
-	MAMMA_HERAANMELDEN(ClientContactActieType.MAMMA_HERAANMELDEN, MammaClientContactHeraanmeldenPanel.class, Recht.GEBRUIKER_CLIENT_MAMMA_AFMELDEN, "icon-ok-circle")
+	MAMMA_HERAANMELDEN(ClientContactActieType.MAMMA_HERAANMELDEN, MammaClientContactHeraanmeldenPanel.class, Recht.MEDEWERKER_CLIENT_MAMMA_AFMELDEN, "icon-ok-circle")
 		{
 			@Override
 			public ClientContactActieTypeWrapper[] getExclusie()
@@ -328,7 +329,7 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 
-	MAMMA_RONDE_FORCEREN(ClientContactActieType.MAMMA_RONDE_FORCEREN, MammaClientContactRondeForcerenPanel.class, Recht.GEBRUIKER_CLIENT_MAMMA_RONDE_FORCEREN, "icon-calendar")
+	MAMMA_RONDE_FORCEREN(ClientContactActieType.MAMMA_RONDE_FORCEREN, MammaClientContactRondeForcerenPanel.class, Recht.MEDEWERKER_CLIENT_MAMMA_RONDE_FORCEREN, "icon-calendar")
 		{
 			@Override
 			public ClientContactActieTypeWrapper[] getExclusie()
@@ -345,7 +346,7 @@ public enum ClientContactActieTypeWrapper
 	MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS(
 		ClientContactActieType.MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS,
 		null,
-		Recht.GEBRUIKER_CLIENT_MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS,
+		Recht.MEDEWERKER_CLIENT_MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS,
 		"icon-calendar")
 		{
 			@Override
@@ -362,7 +363,7 @@ public enum ClientContactActieTypeWrapper
 	MAMMA_INFOBRIEF_PROTHESEN(
 		ClientContactActieType.MAMMA_INFOBRIEF_PROTHESEN,
 		null,
-		Recht.GEBRUIKER_CLIENT_MAMMA_INFOBRIEF_PROTHESEN,
+		Recht.MEDEWERKER_CLIENT_MAMMA_INFOBRIEF_PROTHESEN,
 		"icon-calendar")
 		{
 			@Override
@@ -372,7 +373,7 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 
-	MAMMA_AFSPRAAK_MAKEN(ClientContactActieType.MAMMA_AFSPRAAK_MAKEN, MammaClientContactAfspraakMakenPanel.class, Recht.GEBRUIKER_CLIENT_MAMMA_AFSPRAAK_MAKEN, "icon-calendar")
+	MAMMA_AFSPRAAK_MAKEN(ClientContactActieType.MAMMA_AFSPRAAK_MAKEN, MammaClientContactAfspraakMakenPanel.class, Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAAK_MAKEN, "icon-calendar")
 		{
 			@Override
 			public ClientContactActieTypeWrapper[] getExclusie()
@@ -389,7 +390,7 @@ public enum ClientContactActieTypeWrapper
 	MAMMA_AFSPRAAK_WIJZIGEN(
 		ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN,
 		MammaClientContactAfspraakWijzigenPanel.class,
-		Recht.GEBRUIKER_CLIENT_MAMMA_AFSPRAAK_WIJZIGEN,
+		Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAAK_WIJZIGEN,
 		"icon-calendar")
 		{
 			@Override
@@ -407,7 +408,7 @@ public enum ClientContactActieTypeWrapper
 	MAMMA_DOELGROEP_WIJZIGEN(
 		ClientContactActieType.MAMMA_DOELGROEP_WIJZIGEN,
 		MammaClientContactDoelgroepVastleggenPanel.class,
-		Recht.GEBRUIKER_CLIENT_MAMMA_DOELGROEP_WIJZIGEN,
+		Recht.MEDEWERKER_CLIENT_MAMMA_DOELGROEP_WIJZIGEN,
 		"icon-ok-circle")
 		{
 			@Override
@@ -421,7 +422,7 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 
-	MAMMA_HUISARTS_WIJZIGEN(ClientContactActieType.MAMMA_HUISARTS_WIJZIGEN, MammaHuisartsWijzigenPanel.class, Recht.GEBRUIKER_WIJZIGEN_HUISARTS, "icon-edit")
+	MAMMA_HUISARTS_WIJZIGEN(ClientContactActieType.MAMMA_HUISARTS_WIJZIGEN, MammaHuisartsWijzigenPanel.class, Recht.MEDEWERKER_WIJZIGEN_HUISARTS, "icon-edit")
 		{
 			@Override
 			public ClientContactActieTypeWrapper[] getExclusie()
@@ -433,7 +434,7 @@ public enum ClientContactActieTypeWrapper
 	MAMMA_CLIENT_WIL_GEEN_ONDERZOEK_VERVOLG(
 		ClientContactActieType.MAMMA_CLIENT_WIL_GEEN_VERVOLG_ONDERZOEK,
 		MammaClientContactWilGeenVervolgOnderzoekPanel.class,
-		Recht.GEBRUIKER_CLIENT_WIL_GEEN_ONDERZOEK_VERVOLG,
+		Recht.MEDEWERKER_CLIENT_WIL_GEEN_ONDERZOEK_VERVOLG,
 		"icon-edit")
 		{
 			@Override
@@ -451,7 +452,7 @@ public enum ClientContactActieTypeWrapper
 	MAMMA_VERZOEK_CLIENT_CONTACT(
 		ClientContactActieType.MAMMA_VERZOEK_CLIENT_CONTACT,
 		MammaClientContactVerzoekOmContactPanel.class,
-		Recht.GEBRUIKER_CLIENT_OPROEP_NA_ONDERBROKEN_ONDERZOEK,
+		Recht.MEDEWERKER_CLIENT_OPROEP_NA_ONDERBROKEN_ONDERZOEK,
 		"icon-edit")
 		{
 			@Override
@@ -469,7 +470,7 @@ public enum ClientContactActieTypeWrapper
 	MAMMA_AFSPRAAK_MAKEN_FORCEREN(
 		ClientContactActieType.MAMMA_AFSPRAAK_MAKEN_FORCEREN,
 		MammaClientContactAfspraakMakenPanel.class,
-		Recht.GEBRUIKER_CLIENT_MAMMA_AFSPRAAK_MAKEN_FORCEREN,
+		Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAAK_MAKEN_FORCEREN,
 		"icon-calendar")
 		{
 			@Override
@@ -486,7 +487,7 @@ public enum ClientContactActieTypeWrapper
 	MAMMA_HERBEOORDELEN(
 		ClientContactActieType.MAMMA_HERBEOORDELEN,
 		MammaClientContactHerbeoordelenPanel.class,
-		Recht.GEBRUIKER_CLIENT_MAMMA_HERBEOORDELEN,
+		Recht.MEDEWERKER_CLIENT_MAMMA_HERBEOORDELEN,
 		"icon-calendar")
 		{
 			@Override
@@ -504,7 +505,7 @@ public enum ClientContactActieTypeWrapper
 	MAMMA_MINDER_VALIDE_NIET_MEER_ZIEKENHUIS(
 		ClientContactActieType.MAMMA_MINDER_VALIDE_NIET_MEER_ZIEKENHUIS,
 		null,
-		Recht.GEBRUIKER_CLIENT_MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS_TERUGDRAAIEN,
+		Recht.MEDEWERKER_CLIENT_MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS_TERUGDRAAIEN,
 		"icon-calendar")
 		{
 			@Override

@@ -38,7 +38,7 @@ import jakarta.persistence.TemporalType;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieOnHoldReden;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
 import nl.rivm.screenit.model.colon.enums.ColonGeenOnderzoekReden;
@@ -64,7 +64,7 @@ public class ColonConclusie extends AbstractHibernateObject
 	private ColonConclusieOnHoldReden onHoldReden;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	private InstellingGebruiker instellingGebruiker;
+	private OrganisatieMedewerker organisatieMedewerker;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false)

@@ -31,7 +31,7 @@ import nl.rivm.screenit.main.web.component.table.ClientColumn;
 import nl.rivm.screenit.main.web.component.table.GeboortedatumColumn;
 import nl.rivm.screenit.main.web.component.table.PostcodeColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.ClientContactPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.CervixScreeningBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.monster.CervixMonsterIdScannenPanel;
@@ -58,7 +58,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_SCREENING_ZOEKENOPBARCODE,
+	recht = Recht.MEDEWERKER_SCREENING_ZOEKENOPBARCODE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX })
 public class CervixZoekenOpBarcodePage extends CervixScreeningBasePage
 {
@@ -105,10 +105,10 @@ public class CervixZoekenOpBarcodePage extends CervixScreeningBasePage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		var contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("label.zoekenopbarcode", CervixZoekenOpBarcodePage.class));
+		var contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.zoekenopbarcode", CervixZoekenOpBarcodePage.class));
 		return contextMenuItems;
 	}
 
@@ -147,7 +147,7 @@ public class CervixZoekenOpBarcodePage extends CervixScreeningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<Client> model)
 			{
-				if (ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_CONTACT, Actie.INZIEN, model.getObject()))
+				if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_CONTACT, Actie.INZIEN, model.getObject()))
 				{
 					setResponsePage(new ClientContactPage(model));
 				}

@@ -19,7 +19,6 @@
  * =========================LICENSE_END==================================
  */
 import {AppThunkDispatch} from "../index"
-import {validatingRequest} from "../util/Backend"
 import {WachtwoordWijzigenDto} from "../state/datatypes/dto/WachtwoordWijzigenDto"
 import {WachtwoordVergetenDto} from "../state/datatypes/dto/WachtwoordVergetenDto"
 import {WachtwoordAanvragenDto} from "../state/datatypes/dto/WachtwoordAanvragenDto"
@@ -30,17 +29,18 @@ import {fetchCurrentUser} from "./CurrentUserThunkAction"
 import {fetchHuisarts} from "./HuisartsThunkAction"
 import {fetchLocaties, fetchLocatieVerificatie} from "./LocatieThunkAction"
 import {LocatieStatus} from "../state/datatypes/dto/LocatieDto"
+import ScreenitBackend from "../util/Backend"
 
 export const wachtwoordWijzigen = (wachtwoord: WachtwoordWijzigenDto) => async (dispatch: AppThunkDispatch): Promise<void> => {
-	return await dispatch(validatingRequest<void>("/huisarts/wachtwoord-wijzigen", "POST", wachtwoord))
+	return ScreenitBackend.post<void>("huisarts/wachtwoord-wijzigen", {json: wachtwoord}).json()
 }
 
 export const wachtwoordVergeten = (vergetenDto: WachtwoordVergetenDto) => async (dispatch: AppThunkDispatch): Promise<void> => {
-	return await dispatch(validatingRequest<void>("/auth/wachtwoord-vergeten", "POST", vergetenDto))
+	return ScreenitBackend.post<void>("auth/wachtwoord-vergeten", {json: vergetenDto}).json()
 }
 
 export const wachtwoordAanvragen = (wachtwoordAanvragenDto: WachtwoordAanvragenDto) => async (dispatch: AppThunkDispatch) => {
-	const token: TokenDto = await dispatch(validatingRequest<TokenDto>("/auth/wachtwoord-aanvragen", "POST", wachtwoordAanvragenDto))
+	const token: TokenDto = await ScreenitBackend.post<TokenDto>("auth/wachtwoord-aanvragen", {json: wachtwoordAanvragenDto}).json()
 	dispatch(createActionSetAuthenticationLoading(true))
 	dispatch(createActionSetAuth(token))
 	await dispatch(fetchCurrentUser())

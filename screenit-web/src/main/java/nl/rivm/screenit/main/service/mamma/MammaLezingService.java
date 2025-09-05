@@ -25,15 +25,15 @@ import java.time.LocalDate;
 
 import nl.rivm.screenit.dto.mamma.MammaLezingRapportageDto;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Termijn;
 import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.model.mamma.enums.MammaBIRADSWaarde;
 
 public interface MammaLezingService
 {
-    MammaLezingRapportageDto getLezingRapportage(InstellingGebruiker instellingGebruiker, LocalDate date, Termijn termijn);
+	MammaLezingRapportageDto getLezingRapportage(OrganisatieMedewerker organisatieMedewerker, LocalDate date, Termijn termijn);
 
-	void logPopupPreBirads(Client client, InstellingGebruiker gebruiker, MammaLezing lezing, MammaBIRADSWaarde prePopupBiradsWaardeLinks,
+	void logPopupPreBirads(Client client, OrganisatieMedewerker organisatieMedewerker, MammaLezing lezing, MammaBIRADSWaarde prePopupBiradsWaardeLinks,
 		MammaBIRADSWaarde prePopupBiradsWaardeRechts);
 }

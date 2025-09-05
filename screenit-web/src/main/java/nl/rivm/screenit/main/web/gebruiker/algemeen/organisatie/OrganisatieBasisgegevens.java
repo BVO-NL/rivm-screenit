@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie;
  * =========================LICENSE_END==================================
  */
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import nl.rivm.screenit.Constants;
@@ -41,8 +40,8 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.medewerker.MedewerkerZoeken;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.CentraleEenheid;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.enums.Actie;
@@ -51,8 +50,8 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.organisatie.model.Adres;
@@ -76,11 +75,11 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_COLOSCOPIECENTRUM_ORG_BEHEER, Recht.GEBRUIKER_MAMMA_MAMMAPOLI_ORG_BEHEER, Recht.GEBRUIKER_MAMMA_RADIOLOGIEAFDELING_ORG_BEHEER,
-		Recht.GEBRUIKER_INPAKCENTRUM_ORG_BEHEER, Recht.GEBRUIKER_LABORATORIA_BEHEER, Recht.GEBRUIKER_PA_LABORATORIA_BEHEER, Recht.GEBRUIKER_RIVM_BEHEER,
-		Recht.GEBRUIKER_SCREENINGS_ORG_BEHEER, Recht.GEBRUIKER_ZORGINSTELLING_ORG_BEHEER, Recht.GEBRUIKER_COLOSCOPIELOCATIE_ORG_BEHEER,
-		Recht.GEBRUIKER_HUISARTSENPRAKTIJKEN_BEHEER, Recht.GEBRUIKER_BMHK_LABORATORIA_BEHEER, Recht.GEBRUIKER_CENTRALE_EENHEID_ORG_BEHEER,
-		Recht.GEBRUIKER_BEOORDELINGSEENHEID_ORG_BEHEER
+	recht = { Recht.MEDEWERKER_COLOSCOPIECENTRUM_ORG_BEHEER, Recht.MEDEWERKER_MAMMA_MAMMAPOLI_ORG_BEHEER, Recht.MEDEWERKER_MAMMA_RADIOLOGIEAFDELING_ORG_BEHEER,
+		Recht.MEDEWERKER_INPAKCENTRUM_ORG_BEHEER, Recht.MEDEWERKER_LABORATORIA_BEHEER, Recht.MEDEWERKER_PA_LABORATORIA_BEHEER, Recht.MEDEWERKER_RIVM_BEHEER,
+		Recht.MEDEWERKER_SCREENINGS_ORG_BEHEER, Recht.MEDEWERKER_ZORGINSTELLING_ORG_BEHEER, Recht.MEDEWERKER_COLOSCOPIELOCATIE_ORG_BEHEER,
+		Recht.MEDEWERKER_HUISARTSENPRAKTIJKEN_BEHEER, Recht.MEDEWERKER_BMHK_LABORATORIA_BEHEER, Recht.MEDEWERKER_CENTRALE_EENHEID_ORG_BEHEER,
+		Recht.MEDEWERKER_BEOORDELINGSEENHEID_ORG_BEHEER
 	},
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class OrganisatieBasisgegevens extends OrganisatieBeheer
@@ -96,7 +95,7 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 	private AutorisatieService autorisatieService;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private ICurrentDateSupplier currentDateSupplier;
@@ -109,27 +108,27 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 
 	public OrganisatieBasisgegevens()
 	{
-		var currentSelectedOrganisatie = (Instelling) HibernateHelper.deproxy(getCurrentSelectedOrganisatie());
+		var currentSelectedOrganisatie = (Organisatie) HibernateHelper.deproxy(getCurrentSelectedOrganisatie());
 		init(ModelUtil.ccModel(currentSelectedOrganisatie));
 	}
 
-	public OrganisatieBasisgegevens(IModel<Instelling> model)
+	public OrganisatieBasisgegevens(IModel<Organisatie> model)
 	{
 		init(model);
 	}
 
-	private void init(IModel<Instelling> model)
+	private void init(IModel<Organisatie> model)
 	{
-		var instelling = model.getObject();
+		var organisatie = model.getObject();
 
 		var label = new Label("label", Model.of("Bewerk organisatie"));
 
-		if (instelling.getId() == null)
+		if (organisatie.getId() == null)
 		{
 			label = new Label("label", Model.of("Organisatie toevoegen"));
 		}
 		add(label);
-		if (model.getObject().getId() != null)
+		if (organisatie.getId() != null)
 		{
 			add(new OrganisatiePaspoortPanel("paspoort", model));
 		}
@@ -141,10 +140,10 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 
 	}
 
-	public class OrganisatieEditForm extends ScreenitForm<Instelling>
+	public class OrganisatieEditForm extends ScreenitForm<Organisatie>
 	{
 
-		public OrganisatieEditForm(String id, IModel<Instelling> model)
+		public OrganisatieEditForm(String id, IModel<Organisatie> model)
 		{
 			super(id, model);
 		}
@@ -154,29 +153,19 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 		{
 			super.onInitialize();
 			var organisatie = getModelObject();
-			var adressen = organisatie.getAdressen();
-			if (adressen == null)
+			if (organisatie.getAdres() == null)
 			{
-				organisatie.setAdressen(new ArrayList<>());
-				adressen = organisatie.getAdressen(); 
+				organisatie.setAdres(new Adres());
 			}
-			if (adressen.isEmpty())
+			if (organisatie.getPostbusAdres() == null)
 			{
-				adressen.add(new Adres());
-			}
-			if (adressen.size() == 1)
-			{
-				adressen.add(new Adres());
-			}
-			if (adressen.size() == 2)
-			{
-				adressen.add(new Adres());
+				organisatie.setPostbusAdres(new Adres());
 			}
 
 			var organisatieType = organisatie.getOrganisatieType();
 			var recht = organisatieType.getRecht();
 
-			var actie = autorisatieService.getActieVoorOrganisatie(ScreenitSession.get().getLoggedInInstellingGebruiker(), organisatie, recht);
+			var actie = autorisatieService.getActieVoorOrganisatie(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), organisatie, recht);
 
 			addOpslaanButton(actie);
 			addVerwijderenButton(organisatie, actie);
@@ -189,17 +178,22 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 			boolean isIntakeLocatie = organisatieType.equals(OrganisatieType.INTAKELOCATIE);
 			var organisatieNaam = ComponentHelper.addTextField(this, "naam", true, 50, inzien).setLabel(Model.of("Naam"));
 
-			organisatieNaam.add(new ScreenitUniqueFieldValidator<>(Instelling.class, organisatie.getId(), "naam", Map.of("actief", Boolean.TRUE)));
+			if (isSoOfCe && organisatie.getAntwoordnummerAdres() == null)
+			{
+				organisatie.setAntwoordnummerAdres(new Adres());
+			}
 
-			ComponentHelper.addTextField(this, "adressen[0].straat", false, 43, inzien);
-			ComponentHelper.addTextField(this, "adressen[0].huisnummer", false, 10, Integer.class, inzien);
-			ComponentHelper.addTextField(this, "adressen[0].huisnummerToevoeging", false, 26, inzien);
-			ComponentHelper.newPostcodeTextField(this, "adressen[0].postcode", false, inzien).setLabel(Model.of("Postcode"));
-			ComponentHelper.addTextField(this, "adressen[0].plaats", false, 200, inzien);
+			organisatieNaam.add(new ScreenitUniqueFieldValidator<>(Organisatie.class, organisatie.getId(), "naam", Map.of("actief", Boolean.TRUE)));
 
-			ComponentHelper.addTextField(this, "adressen[1].huisnummer", isSoOfCe, 10, Integer.class, inzien);
-			ComponentHelper.newPostcodeTextField(this, "adressen[1].postcode", isSoOfCe, inzien);
-			ComponentHelper.addTextField(this, "adressen[1].plaats", isSoOfCe, 200, inzien);
+			ComponentHelper.addTextField(this, "adres.straat", false, 43, inzien);
+			ComponentHelper.addTextField(this, "adres.huisnummer", false, 10, Integer.class, inzien);
+			ComponentHelper.addTextField(this, "adres.huisnummerToevoeging", false, 26, inzien);
+			ComponentHelper.newPostcodeTextField(this, "adres.postcode", false, inzien).setLabel(Model.of("Postcode"));
+			ComponentHelper.addTextField(this, "adres.plaats", false, 200, inzien);
+
+			ComponentHelper.addTextField(this, "postbusAdres.huisnummer", isSoOfCe, 10, Integer.class, inzien);
+			ComponentHelper.newPostcodeTextField(this, "postbusAdres.postcode", isSoOfCe, inzien);
+			ComponentHelper.addTextField(this, "postbusAdres.plaats", isSoOfCe, 200, inzien);
 
 			ComponentHelper.addTextField(this, "email", isSoOfCe, 100, inzien).add(EmailAddressValidator.getInstance());
 			ComponentHelper.addTextField(this, "email2", isCe, 100, inzien).add(EmailAddressValidator.getInstance()).setVisible(isCe);
@@ -213,9 +207,9 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 			ComponentHelper.addTextField(this, "telefoon4", isCe, 20, inzien).setVisible(isCe);
 			ComponentHelper.addTextField(this, "fax", false, 200, inzien);
 
-			ComponentHelper.addTextField(this, "adressen[2].huisnummer", isSoOfCe, 10, Integer.class, inzien).setVisible(isSoOfCe);
-			ComponentHelper.newPostcodeTextField(this, "adressen[2].postcode", isSoOfCe, inzien).setVisible(isSoOfCe);
-			ComponentHelper.addTextField(this, "adressen[2].plaats", isSoOfCe, 200, inzien).setVisible(isSoOfCe);
+			ComponentHelper.addTextField(this, "antwoordnummerAdres.huisnummer", isSoOfCe, 10, Integer.class, inzien).setVisible(isSoOfCe);
+			ComponentHelper.newPostcodeTextField(this, "antwoordnummerAdres.postcode", isSoOfCe, inzien).setVisible(isSoOfCe);
+			ComponentHelper.addTextField(this, "antwoordnummerAdres.plaats", isSoOfCe, 200, inzien).setVisible(isSoOfCe);
 
 			var clientPortaalVrijeTekstContainer = new WebMarkupContainer("clientPortaalVrijeTekstContainer");
 			clientPortaalVrijeTekstContainer.setOutputMarkupId(true);
@@ -223,7 +217,7 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 			ComponentHelper.addTextArea(clientPortaalVrijeTekstContainer, "clientPortaalVrijeTekst", true, 255, inzien);
 			add(clientPortaalVrijeTekstContainer);
 
-			var gemachtigden = new ScreenitDropdown<>("gemachtigde", new SimpleListHibernateModel<>(instellingService.getActieveGebruikers(getModelObject())),
+			var gemachtigden = new ScreenitDropdown<>("gemachtigde", new SimpleListHibernateModel<>(organisatieService.getActieveMedewerkers(getModelObject())),
 				new ChoiceRenderer<>("naamVolledig"));
 			gemachtigden.setNullValid(true);
 			gemachtigden.setEnabled(!inzien);
@@ -236,20 +230,20 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 			add(new Label("emailLabel", new StringResourceModel("mail.extra-label." + organisatieType.name())).setVisible(isCe));
 
 			ComponentHelper.addTextField(this, "uziAbonneenummer", true, 8, inzien)
-				.add(new ScreenitUniqueFieldValidator<>(Instelling.class, organisatie.getId(), "uziAbonneenummer", false))
+				.add(new ScreenitUniqueFieldValidator<>(Organisatie.class, organisatie.getId(), "uziAbonneenummer", false))
 				.add(new PatternValidator("[0-9]{8}"))
 				.setVisible(organisatieType == OrganisatieType.ZORGINSTELLING);
 
 			var rootOid = ComponentHelper.addTextField(this, "rootOid", true, 255, String.class, inzien);
 			rootOid.add(new PatternValidator(Constants.OID_EXTENSION_PATTERN));
-			rootOid.add(new ScreenitUniqueFieldValidator<>(Instelling.class, organisatie.getId(), "rootOid", false));
+			rootOid.add(new ScreenitUniqueFieldValidator<>(Organisatie.class, organisatie.getId(), "rootOid", false));
 			rootOid.setVisible(
 				organisatieType == OrganisatieType.COLOSCOPIELOCATIE || organisatieType == OrganisatieType.PA_LABORATORIUM || organisatieType == OrganisatieType.BMHK_LABORATORIUM);
 		}
 
 		private void addAnnulerenButton()
 		{
-			var annuleren = new AjaxLink<Gebruiker>("annuleren")
+			var annuleren = new AjaxLink<Medewerker>("annuleren")
 			{
 				@Override
 				public void onClick(AjaxRequestTarget target)
@@ -261,15 +255,15 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 			annuleren.setVisible(false);
 		}
 
-		private void addVerwijderenButton(Instelling organisatie, Actie actie)
+		private void addVerwijderenButton(Organisatie organisatie, Actie actie)
 		{
-			var inActiveren = new ConfirmingIndicatingAjaxLink<Instelling>("inActiveren", dialog, "question.remove.organisatie")
+			var inActiveren = new ConfirmingIndicatingAjaxLink<Organisatie>("inActiveren", dialog, "question.remove.organisatie")
 			{
 
 				@Override
 				public void onClick(AjaxRequestTarget target)
 				{
-					var organisatie = (Instelling) HibernateHelper.deproxy(OrganisatieEditForm.this.getModelObject());
+					var organisatie = (Organisatie) HibernateHelper.deproxy(OrganisatieEditForm.this.getModelObject());
 					String feedbackMessageId = bepaalFeedback(organisatie);
 
 					if (StringUtils.isNotBlank(feedbackMessageId))
@@ -283,7 +277,7 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 					setResponsePage(OrganisatieZoeken.class);
 				}
 
-				private void toggleActiefInactief(Instelling organisatie)
+				private void toggleActiefInactief(Organisatie organisatie)
 				{
 					organisatie.setActief(Boolean.FALSE.equals(organisatie.getActief()));
 
@@ -291,7 +285,7 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 					logAction(Boolean.FALSE.equals(organisatie.getActief()) ? LogGebeurtenis.ORGANISATIE_INACTIVEERD : LogGebeurtenis.ORGANISATIE_ACTIVEERD, organisatie);
 				}
 
-				private String bepaalFeedback(Instelling organisatie)
+				private String bepaalFeedback(Organisatie organisatie)
 				{
 					var feedbackMessageId = "";
 					if (Boolean.TRUE.equals(organisatie.getActief()))
@@ -341,7 +335,7 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 					var organisatie = getModelObject();
 
 					boolean nieuw = organisatie.getId() == null;
-					instellingService.saveOrUpdate(organisatie);
+					organisatieService.saveOrUpdate(organisatie);
 					BasePage.markeerFormulierenOpgeslagen(target);
 					if (nieuw)
 					{
@@ -378,9 +372,9 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 			add(opslaan);
 		}
 
-		private void logAction(LogGebeurtenis gebeurtenis, Instelling organisatie)
+		private void logAction(LogGebeurtenis gebeurtenis, Organisatie organisatie)
 		{
-			logService.logGebeurtenis(gebeurtenis, ScreenitSession.get().getLoggedInAccount(), "Organisatie: " + organisatie.getNaam());
+			logService.logGebeurtenis(gebeurtenis, ScreenitSession.get().getIngelogdAccount(), "Organisatie: " + organisatie.getNaam());
 		}
 
 	}

@@ -29,7 +29,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.repository.colon.ColonIntakelocatieRepository;
@@ -104,20 +104,20 @@ public class ColonIntakelocatieServiceImpl implements ColonIntakelocatieService
 
 	@Override
 	@Transactional
-	public void saveIntakelocatieBeschrijving(ColonIntakelocatie intakelocatie, String locatieBeschrijving, InstellingGebruiker instellingGebruiker)
+	public void saveIntakelocatieBeschrijving(ColonIntakelocatie intakelocatie, String locatieBeschrijving, OrganisatieMedewerker organisatieMedewerker)
 	{
 		intakelocatieRepository.save(intakelocatie);
 		var locatieBeschrijvingParameter = organisatieParameterService.maakOfUpdateOrganisatieParameter(OrganisatieParameterKey.COLON_INTAKELOCATIE_BESCHRIJVING,
 			locatieBeschrijving, intakelocatie);
 		organisatieParameterService.saveOrUpdateOrganisatieParameters(List.of(locatieBeschrijvingParameter),
-			instellingGebruiker);
+			organisatieMedewerker);
 	}
 
 	@Override
-	public void saveIntakelocatieDigitaleIntake(ColonIntakelocatie intakelocatie, String digitaleIntakeTekst, InstellingGebruiker instellingGebruiker)
+	public void saveIntakelocatieDigitaleIntake(ColonIntakelocatie intakelocatie, String digitaleIntakeTekst, OrganisatieMedewerker organisatieMedewerker)
 	{
 		var digitaleIntakeParameter = organisatieParameterService.maakOfUpdateOrganisatieParameter(OrganisatieParameterKey.COLON_DIGITALE_INTAKE,
 			digitaleIntakeTekst, intakelocatie);
-		organisatieParameterService.saveOrUpdateOrganisatieParameters(List.of(digitaleIntakeParameter), instellingGebruiker);
+		organisatieParameterService.saveOrUpdateOrganisatieParameters(List.of(digitaleIntakeParameter), organisatieMedewerker);
 	}
 }

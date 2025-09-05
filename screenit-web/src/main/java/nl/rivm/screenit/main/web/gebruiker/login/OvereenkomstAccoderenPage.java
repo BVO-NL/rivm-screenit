@@ -30,8 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.service.OvereenkomstService;
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.MailMergeContext;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.overeenkomsten.AbstractAfgeslotenOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.OvereenkomstType;
@@ -83,9 +83,9 @@ public class OvereenkomstAccoderenPage extends LoginBasePage
 
 	}
 
-	public OvereenkomstAccoderenPage(IModel<InstellingGebruiker> instellingGebruiker)
+	public OvereenkomstAccoderenPage(IModel<OrganisatieMedewerker> organisatieMedewerker)
 	{
-		List<AbstractAfgeslotenOvereenkomst> accoLijst = overeenkomstService.getTeAccoderenOvereenkomsten(instellingGebruiker.getObject());
+		List<AbstractAfgeslotenOvereenkomst> accoLijst = overeenkomstService.getTeAccoderenOvereenkomsten(organisatieMedewerker.getObject());
 		if (CollectionUtils.isNotEmpty(accoLijst) && OvereenkomstType.KWALITEITSOVEREENKOMST == accoLijst.get(0).getOvereenkomst().getOvereenkomst())
 		{
 			add(new Label("accoderenTekst", getString("label.accoderentekst.kwaliteitsovereenkomst")));
@@ -158,17 +158,17 @@ public class OvereenkomstAccoderenPage extends LoginBasePage
 				setResponsePage(homePage);
 			}
 		});
-		add(new Link<>("akkoord", instellingGebruiker)
+		add(new Link<>("akkoord", organisatieMedewerker)
 		{
 			@Override
 			public void onClick()
 			{
-				InstellingGebruiker gebruiker = getModelObject();
-				overeenkomstService.accodeerOvereenkomsten(gebruiker, ScreenitSession.get().getLoggedInAccount());
-				Component pageForInstellingGebruiker = ScreenitSession.get().getPageForInstellingGebruiker(gebruiker);
-				if (pageForInstellingGebruiker != null)
+				OrganisatieMedewerker organisatieMedewerker = getModelObject();
+				overeenkomstService.accodeerOvereenkomsten(organisatieMedewerker, ScreenitSession.get().getIngelogdAccount());
+				Component pageForOrganisatieMedewerker = ScreenitSession.get().getPageForOrganisatieMedewerker(organisatieMedewerker);
+				if (pageForOrganisatieMedewerker != null)
 				{
-					setResponsePage((WebPage) pageForInstellingGebruiker);
+					setResponsePage((WebPage) pageForOrganisatieMedewerker);
 				}
 				else
 				{

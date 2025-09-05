@@ -28,6 +28,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import jakarta.annotation.Nullable;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,7 +41,7 @@ import nl.rivm.screenit.main.exception.BulkVerwijderenException;
 import nl.rivm.screenit.main.exception.ValidatieException;
 import nl.rivm.screenit.main.service.colon.ColonBlokkadeService;
 import nl.rivm.screenit.main.service.colon.RoosterService;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.colon.ColonHerhalingsfrequentie;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.RoosterListViewFilter;
@@ -68,8 +70,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Range;
 
-import jakarta.annotation.Nullable;
-
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.colon.ColonTijdslotSpecification.heeftKamer;
 import static nl.rivm.screenit.specification.colon.ColonTijdslotSpecification.heeftKamerUitLijst;
@@ -92,31 +92,31 @@ public class ColonBlokkadeServiceImpl implements ColonBlokkadeService
 
 	@Override
 	@Transactional
-	public void createBlokkade(ColonBlokkadeDto blokkadeDto, InstellingGebruiker instellingGebruiker)
+	public void createBlokkade(ColonBlokkadeDto blokkadeDto, OrganisatieMedewerker organisatieMedewerker)
 		throws ValidatieException, OpslaanVerwijderenTijdBlokException, BulkAanmakenException
 	{
-		var intakelocatie = roosterService.getIntakelocatieVanInstellingGebruiker(instellingGebruiker);
+		var intakelocatie = roosterService.getIntakelocatieVanOrganisatieMedewerker(organisatieMedewerker);
 		var dbBlokkade = new ColonBlokkade();
 		var blokkade = converteerBlokkade(blokkadeDto, intakelocatie, dbBlokkade);
 		var alleenValidatie = blokkadeDto.isAlleenValidatie();
 		if (blokkadeDto.getHerhaling().getFrequentie() != ColonHerhalingsfrequentie.GEEN_HERHALING)
 		{
-			createBulkBlokkades(blokkade, blokkadeDto, instellingGebruiker, intakelocatie, alleenValidatie);
+			createBulkBlokkades(blokkade, blokkadeDto, organisatieMedewerker, intakelocatie, alleenValidatie);
 		}
 		else
 		{
-			createEnkeleBlokkade(blokkade, blokkadeDto, instellingGebruiker, intakelocatie, alleenValidatie);
+			createEnkeleBlokkade(blokkade, blokkadeDto, organisatieMedewerker, intakelocatie, alleenValidatie);
 		}
 	}
 
-	private void createEnkeleBlokkade(ColonBlokkade blokkade, ColonBlokkadeDto blokkadeDto, InstellingGebruiker instellingGebruiker, ColonIntakelocatie intakelocatie,
+	private void createEnkeleBlokkade(ColonBlokkade blokkade, ColonBlokkadeDto blokkadeDto, OrganisatieMedewerker organisatieMedewerker, ColonIntakelocatie intakelocatie,
 		boolean alleenValidatie) throws ValidatieException, OpslaanVerwijderenTijdBlokException
 	{
 		valideerBlokkade(blokkade, roosterService.getCurrentViewRange(blokkadeDto), getBlokkadeKamers(blokkade, blokkadeDto.getAlleKamers(), intakelocatie), false, false);
 		if (!alleenValidatie)
 		{
 			var blokkadesPerKamer = splitBlokkade(blokkade, blokkadeDto.getAlleKamers(), intakelocatie);
-			logAction(blokkade, instellingGebruiker, intakelocatie, null, LogGebeurtenis.COLON_BLOKKADES_NIEUW, null, null);
+			logAction(blokkade, organisatieMedewerker, intakelocatie, null, LogGebeurtenis.COLON_BLOKKADES_NIEUW, null, null);
 			blokkadeRepository.saveAll(blokkadesPerKamer);
 		}
 	}
@@ -126,7 +126,7 @@ public class ColonBlokkadeServiceImpl implements ColonBlokkadeService
 		return alleKamers ? getActieveKamers(intakelocatie) : List.of(blokkade.getKamer());
 	}
 
-	private void createBulkBlokkades(ColonBlokkade blokkade, ColonBlokkadeDto blokkadeDto, InstellingGebruiker instellingGebruiker, ColonIntakelocatie intakelocatie,
+	private void createBulkBlokkades(ColonBlokkade blokkade, ColonBlokkadeDto blokkadeDto, OrganisatieMedewerker organisatieMedewerker, ColonIntakelocatie intakelocatie,
 		boolean alleenValidatie)
 		throws BulkAanmakenException
 	{
@@ -143,7 +143,7 @@ public class ColonBlokkadeServiceImpl implements ColonBlokkadeService
 
 			if (!alleenValidatie)
 			{
-				logAction(blokkade, instellingGebruiker, intakelocatie, null, LogGebeurtenis.COLON_BLOKKADES_NIEUW, blokkadeDto.getHerhaling(), null);
+				logAction(blokkade, organisatieMedewerker, intakelocatie, null, LogGebeurtenis.COLON_BLOKKADES_NIEUW, blokkadeDto.getHerhaling(), null);
 
 				blokkadeRepository.saveAll(blokkadesPerKamer);
 			}
@@ -158,7 +158,7 @@ public class ColonBlokkadeServiceImpl implements ColonBlokkadeService
 
 			else if (!blokkadesPerKamer.isEmpty())
 			{
-				logAction(blokkade, instellingGebruiker, intakelocatie, null, LogGebeurtenis.COLON_BLOKKADES_NIEUW, blokkadeDto.getHerhaling(), ex);
+				logAction(blokkade, organisatieMedewerker, intakelocatie, null, LogGebeurtenis.COLON_BLOKKADES_NIEUW, blokkadeDto.getHerhaling(), ex);
 
 				blokkadeRepository.saveAll(blokkadesPerKamer);
 			}
@@ -305,11 +305,11 @@ public class ColonBlokkadeServiceImpl implements ColonBlokkadeService
 
 	@Override
 	@Transactional
-	public void updateBlokkade(ColonBlokkadeDto blokkadeDto, InstellingGebruiker loggedInInstellingGebruiker)
+	public void updateBlokkade(ColonBlokkadeDto blokkadeDto, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 		throws OpslaanVerwijderenTijdBlokException, ValidatieException
 	{
 		var blokkadeId = blokkadeDto.getId();
-		var intakelocatie = roosterService.getIntakelocatieVanInstellingGebruiker(loggedInInstellingGebruiker);
+		var intakelocatie = roosterService.getIntakelocatieVanOrganisatieMedewerker(ingelogdeOrganisatieMedewerker);
 		var blokkade = getBlokkade(blokkadeId).orElseThrow(() -> new IllegalStateException("Blokkade kan niet worden gevonden"));
 		var alleenValidatie = blokkadeDto.isAlleenValidatie();
 
@@ -322,22 +322,22 @@ public class ColonBlokkadeServiceImpl implements ColonBlokkadeService
 		if (!alleenValidatie)
 		{
 			converteerBlokkade(blokkadeDto, intakelocatie, blokkade);
-			logAction(blokkade, loggedInInstellingGebruiker, intakelocatie, originalBlokkade, LogGebeurtenis.COLON_BLOKKADES_WIJZIG, null, null);
+			logAction(blokkade, ingelogdeOrganisatieMedewerker, intakelocatie, originalBlokkade, LogGebeurtenis.COLON_BLOKKADES_WIJZIG, null, null);
 			blokkadeRepository.save(blokkade);
 		}
 	}
 
 	@Override
 	@Transactional
-	public void deleteBlokkade(Long blokkadeId, InstellingGebruiker instellingGebruiker) throws ValidatieException
+	public void deleteBlokkade(Long blokkadeId, OrganisatieMedewerker organisatieMedewerker) throws ValidatieException
 	{
 		var blokkade = getBlokkade(blokkadeId).orElse(null);
-		var intakelocatie = roosterService.getIntakelocatieVanInstellingGebruiker(instellingGebruiker);
+		var intakelocatie = roosterService.getIntakelocatieVanOrganisatieMedewerker(organisatieMedewerker);
 
 		magVerwijderen(blokkade);
 
 		blokkadeRepository.delete(blokkade);
-		logAction(blokkade, instellingGebruiker, intakelocatie, null, LogGebeurtenis.COLON_BLOKKADES_VERWIJDEREN, null, null);
+		logAction(blokkade, organisatieMedewerker, intakelocatie, null, LogGebeurtenis.COLON_BLOKKADES_VERWIJDEREN, null, null);
 	}
 
 	@Override
@@ -379,24 +379,24 @@ public class ColonBlokkadeServiceImpl implements ColonBlokkadeService
 
 	@Override
 	@Transactional
-	public void logAction(ColonBlokkade unsavedObject, InstellingGebruiker instellingGebruiker, ColonIntakelocatie intakelocatie, @Nullable ColonBlokkade origineleBlokkade,
+	public void logAction(ColonBlokkade unsavedObject, OrganisatieMedewerker organisatieMedewerker, ColonIntakelocatie intakelocatie, @Nullable ColonBlokkade origineleBlokkade,
 		LogGebeurtenis logGebeurtenis, ColonHerhalingDto herhalingDto, Exception ex)
 	{
 		var selectedKamer = unsavedObject.getKamer();
 		if (selectedKamer != null)
 		{
-			logActionKamer(unsavedObject, instellingGebruiker, selectedKamer, origineleBlokkade, logGebeurtenis, herhalingDto, ex);
+			logActionKamer(unsavedObject, organisatieMedewerker, selectedKamer, origineleBlokkade, logGebeurtenis, herhalingDto, ex);
 		}
 		else
 		{
 			for (var kamer : getActieveKamers(intakelocatie))
 			{
-				logActionKamer(unsavedObject, instellingGebruiker, kamer, origineleBlokkade, logGebeurtenis, herhalingDto, ex);
+				logActionKamer(unsavedObject, organisatieMedewerker, kamer, origineleBlokkade, logGebeurtenis, herhalingDto, ex);
 			}
 		}
 	}
 
-	private void logActionKamer(ColonBlokkade unsavedObject, InstellingGebruiker instellingGebruiker, ColonIntakekamer kamer, @Nullable ColonBlokkade origineleBlokkade,
+	private void logActionKamer(ColonBlokkade unsavedObject, OrganisatieMedewerker organisatieMedewerker, ColonIntakekamer kamer, @Nullable ColonBlokkade origineleBlokkade,
 		LogGebeurtenis logGebeurtenis, ColonHerhalingDto herhalingDto, Exception ex)
 	{
 		var melding = genereerLogMessage(unsavedObject, kamer, origineleBlokkade, logGebeurtenis, herhalingDto);
@@ -408,7 +408,7 @@ public class ColonBlokkadeServiceImpl implements ColonBlokkadeService
 		{
 			melding += ". " + ex.getMessage();
 		}
-		logService.logGebeurtenis(logGebeurtenis, instellingGebruiker, melding, Bevolkingsonderzoek.COLON);
+		logService.logGebeurtenis(logGebeurtenis, organisatieMedewerker, melding, Bevolkingsonderzoek.COLON);
 	}
 
 	private String genereerLogMessage(ColonBlokkade unsavedObject, ColonIntakekamer kamer, @Nullable ColonBlokkade origineleBlokkade,
@@ -454,7 +454,7 @@ public class ColonBlokkadeServiceImpl implements ColonBlokkadeService
 
 	@Override
 	@Transactional
-	public void bulkDeleteBlokkades(List<Long> blokkadeIds, InstellingGebruiker loggedInInstellingGebruiker, boolean alleenValidatie) throws BulkVerwijderenException
+	public void bulkDeleteBlokkades(List<Long> blokkadeIds, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, boolean alleenValidatie) throws BulkVerwijderenException
 	{
 		var exception = new BulkVerwijderenException(ColonTijdslotType.BLOKKADE);
 		var teVerwijderenBlokkades = new ArrayList<ColonBlokkade>();
@@ -480,7 +480,7 @@ public class ColonBlokkadeServiceImpl implements ColonBlokkadeService
 		else
 		{
 			blokkadeRepository.deleteAll(teVerwijderenBlokkades);
-			logService.logGebeurtenis(LogGebeurtenis.COLON_BLOKKADES_VERWIJDEREN, loggedInInstellingGebruiker, exception.getMessage(), Bevolkingsonderzoek.COLON);
+			logService.logGebeurtenis(LogGebeurtenis.COLON_BLOKKADES_VERWIJDEREN, ingelogdeOrganisatieMedewerker, exception.getMessage(), Bevolkingsonderzoek.COLON);
 		}
 	}
 

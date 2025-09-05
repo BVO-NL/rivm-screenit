@@ -30,14 +30,10 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.model.colon.IFOBTResult;
 
 import ca.uhn.hl7v2.model.DataTypeException;
-import ca.uhn.hl7v2.model.Varies;
-import ca.uhn.hl7v2.model.v251.datatype.DTM;
 import ca.uhn.hl7v2.model.v251.datatype.NM;
 import ca.uhn.hl7v2.model.v251.datatype.ST;
-import ca.uhn.hl7v2.model.v251.group.OUL_R22_SPECIMEN;
 import ca.uhn.hl7v2.model.v251.message.OUL_R22;
 import ca.uhn.hl7v2.model.v251.segment.MSH;
-import ca.uhn.hl7v2.model.v251.segment.OBX;
 
 @Slf4j
 @Getter
@@ -60,12 +56,13 @@ public class ColonIFobtHL7BerichtWrapper
 
 		for (int i = 0; i < message.getSPECIMENReps(); i++)
 		{
-			OUL_R22_SPECIMEN specimen = message.getSPECIMEN(i);
-			OBX resultOBX = specimen.getORDER().getRESULT().getOBX();
+			var specimen = message.getSPECIMEN(i);
+			var resultOBX = specimen.getORDER().getRESULT().getOBX();
+			var resultSPM = specimen.getSPM();
 
-			IFOBTResult ifobtResult = new IFOBTResult();
+			var ifobtResult = new IFOBTResult();
 
-			ST entityIdentifier = specimen.getCONTAINER().getSAC().getContainerIdentifier().getEntityIdentifier();
+			var entityIdentifier = specimen.getCONTAINER().getSAC().getContainerIdentifier().getEntityIdentifier();
 
 			if (entityIdentifier != null)
 			{
@@ -73,18 +70,31 @@ public class ColonIFobtHL7BerichtWrapper
 			}
 			ifobtResult.setLabID(labId);
 
-			Varies observationValue = resultOBX.getObx5_ObservationValue(0);
+			var specimenRejectReason = resultSPM.getSpecimenRejectReason(0);
 
-			if (observationValue.getData() instanceof NM)
+			var observationValue = resultOBX.getObx5_ObservationValue(0);
+			var flag = resultOBX.getObx8_AbnormalFlags(0);
+
+			if (observationValue.getData() instanceof NM nm)
 			{
-				ifobtResult.setResultValue(((NM) observationValue.getData()).getValue());
+				ifobtResult.setResultValue(nm.getValue());
+			}
+
+			else if (specimenRejectReason.getCwe1_Identifier().getValue() != null)
+			{
+				ifobtResult.setOnbeoordeelbaarReden(specimenRejectReason.getCwe1_Identifier().getValue());
+			}
+
+			else if (observationValue.getData() instanceof ST && flag.getValue() != null)
+			{
+				ifobtResult.setFlag(flag.getValue());
 			}
 			else
 			{
-				throw new DataTypeException("Observation value is niet numeriek. Barcode: " + ifobtResult.getSid());
+				throw new DataTypeException("Combinatie van SPM en OBX waardes klopt niet samen. Barcode: " + ifobtResult.getSid());
 			}
 
-			ST equipmentInstanceIdentifier = resultOBX.getObx18_EquipmentInstanceIdentifier(0).getEi1_EntityIdentifier();
+			var equipmentInstanceIdentifier = resultOBX.getObx18_EquipmentInstanceIdentifier(0).getEi1_EntityIdentifier();
 			if (equipmentInstanceIdentifier != null)
 			{
 				ifobtResult.setInstrumentID(equipmentInstanceIdentifier.getValue());
@@ -92,7 +102,7 @@ public class ColonIFobtHL7BerichtWrapper
 
 			try
 			{
-				DTM resultDate = resultOBX.getObx19_DateTimeOfTheAnalysis().getTime();
+				var resultDate = resultOBX.getObx19_DateTimeOfTheAnalysis().getTime();
 				if (resultDate != null)
 				{
 					ifobtResult.setDateTimeResult(resultDate.getValueAsDate());

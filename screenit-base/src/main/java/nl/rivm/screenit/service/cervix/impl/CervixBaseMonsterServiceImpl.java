@@ -26,7 +26,7 @@ import java.util.Optional;
 
 import lombok.AllArgsConstructor;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.cervix.CervixMonster;
@@ -115,7 +115,7 @@ public class CervixBaseMonsterServiceImpl implements CervixBaseMonsterService
 	}
 
 	@Override
-	public boolean magInstellingMonsterInzien(Instelling instelling, CervixMonster monster)
+	public boolean magOrganisatieMonsterInzien(Organisatie organisatie, CervixMonster monster)
 	{
 		boolean isMonsterNietOntvangen;
 		if (CervixMonsterUtil.isUitstrijkje(monster))
@@ -126,7 +126,7 @@ public class CervixBaseMonsterServiceImpl implements CervixBaseMonsterService
 		{
 			isMonsterNietOntvangen = CervixZasStatus.VERSTUURD == CervixMonsterUtil.getZAS(monster).getZasStatus();
 		}
-		return isMonsterNietOntvangen || instelling.getOrganisatieType() != OrganisatieType.BMHK_LABORATORIUM || instelling.equals(monster.getLaboratorium());
+		return isMonsterNietOntvangen || organisatie.getOrganisatieType() != OrganisatieType.BMHK_LABORATORIUM || organisatie.equals(monster.getLaboratorium());
 	}
 
 	@Override

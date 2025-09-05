@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -41,7 +41,7 @@ export type LogGebeurtenisBeeldenAnnotatieAmputatieMismatchAction = {
 export const createActionLogGebeurtenisBeeldenAnnotatieAmputatieMismatch = (): LogGebeurtenisBeeldenAnnotatieAmputatieMismatchAction => {
 	return {
 		type: LOG_GEBEURTENIS_BEELDEN_ANNOTATIE_AMPUTATIE_MISMATCH,
-		logMessage: "Verschil tussen zijde beelden en zijde amputatiekruis, gebruiker heeft geaccordeerd.",
+		logMessage: "Verschil tussen zijde beelden en zijde amputatiekruis, medewerker heeft geaccordeerd.",
 	}
 }
 export const LOG_GEBEURTENIS_BEELDEN_GEEN_MPPS_ONTVANGEN = "LOG_GEBEURTENIS_BEELDEN_GEEN_MPPS_ONTVANGEN"

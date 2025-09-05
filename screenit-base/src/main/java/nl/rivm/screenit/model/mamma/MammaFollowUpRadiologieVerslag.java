@@ -34,8 +34,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.mamma.enums.MammaFollowUpBIRADSWaarde;
 import nl.rivm.screenit.model.mamma.enums.MammaFollowUpTumorGrootteClassificatie;
@@ -56,14 +56,14 @@ public class MammaFollowUpRadiologieVerslag extends AbstractHibernateObject
 	private Date aangemaaktOp;
 
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
-	private Instelling aangemaaktIn;
+	private Organisatie aangemaaktIn;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = true)
 	private Date ingevoerdOp;
 
 	@ManyToOne(optional = true, fetch = FetchType.EAGER)
-	private InstellingGebruiker ingevoerdDoor;
+	private OrganisatieMedewerker ingevoerdDoor;
 
 	@Column(nullable = true, precision = HibernateMagicNumber.P4, scale = HibernateMagicNumber.S2)
 	private BigDecimal radioloogTumorGrootte;
@@ -113,12 +113,12 @@ public class MammaFollowUpRadiologieVerslag extends AbstractHibernateObject
 		this.aangemaaktOp = aangemaaktOp;
 	}
 
-	public Instelling getAangemaaktIn()
+	public Organisatie getAangemaaktIn()
 	{
 		return aangemaaktIn;
 	}
 
-	public void setAangemaaktIn(Instelling aangemaaktIn)
+	public void setAangemaaktIn(Organisatie aangemaaktIn)
 	{
 		this.aangemaaktIn = aangemaaktIn;
 	}
@@ -133,12 +133,12 @@ public class MammaFollowUpRadiologieVerslag extends AbstractHibernateObject
 		this.ingevoerdOp = ingevoerdOp;
 	}
 
-	public InstellingGebruiker getIngevoerdDoor()
+	public OrganisatieMedewerker getIngevoerdDoor()
 	{
 		return ingevoerdDoor;
 	}
 
-	public void setIngevoerdDoor(InstellingGebruiker ingevoerdDoor)
+	public void setIngevoerdDoor(OrganisatieMedewerker ingevoerdDoor)
 	{
 		this.ingevoerdDoor = ingevoerdDoor;
 	}

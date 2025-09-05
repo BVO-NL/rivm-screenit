@@ -21,10 +21,12 @@ package nl.rivm.screenit.main.web.gebruiker.gedeeld.brievenafdrukken;
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.topicuszorg.documentupload.wicket.UploadDocumentLink;
 import nl.topicuszorg.documentupload.wicket.UploadDocumentPdfObjectContainer;
+import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
@@ -37,6 +39,9 @@ public class MergedBrievenPrintPanel<MB extends MergedBrieven<?>> extends Generi
 	@SpringBean(name = "testModus")
 	private Boolean testModus;
 
+	@SpringBean
+	private SimplePreferenceService preferenceService;
+
 	public MergedBrievenPrintPanel(String id, IModel<MB> model)
 	{
 		super(id, model);
@@ -45,7 +50,8 @@ public class MergedBrievenPrintPanel<MB extends MergedBrieven<?>> extends Generi
 
 		var pdfObjectContainer = new UploadDocumentPdfObjectContainer("pdfObject", mergedBrievenModel);
 		add(pdfObjectContainer);
+		var toonTestUiElementen = preferenceService.getBoolean(PreferenceKey.TOON_TEST_ELEMENTEN.name(), false);
 		add(new UploadDocumentLink("downloadPdf", mergedBrievenModel, true)
-			.setVisible(testModus));
+			.setVisible(testModus && toonTestUiElementen));
 	}
 }

@@ -28,12 +28,12 @@
 
         <mapping class="nl.rivm.screenit.model.envers.ScreenitRevisionEntity"/>
 
-        <mapping class="nl.rivm.screenit.model.Gebruiker"/>
+        <mapping class="nl.rivm.screenit.model.Medewerker"/>
         <mapping class="nl.topicuszorg.yubikey.model.YubiKey"/>
-        <mapping class="nl.rivm.screenit.model.Instelling"/>
+        <mapping class="nl.rivm.screenit.model.Organisatie"/>
         <mapping class="nl.rivm.screenit.model.OrganisatieParameter"/>
         <mapping class="nl.rivm.screenit.model.ZorgInstelling"/>
-        <mapping class="nl.rivm.screenit.model.InstellingGebruiker"/>
+        <mapping class="nl.rivm.screenit.model.OrganisatieMedewerker"/>
         <mapping class="nl.rivm.screenit.model.ScreeningOrganisatie"/>
         <mapping class="nl.rivm.screenit.model.Rivm"/>
         <mapping class="nl.rivm.screenit.model.Titel"/>
@@ -75,7 +75,7 @@
         <mapping class="nl.rivm.screenit.model.gba.GbaVraag"/>
         <mapping class="nl.rivm.screenit.model.gba.GbaFile"/>
 
-        <mapping class="nl.rivm.screenit.model.InstellingGebruikerRol"/>
+        <mapping class="nl.rivm.screenit.model.OrganisatieMedewerkerRol"/>
         <mapping class="nl.rivm.screenit.model.Rol"/>
         <mapping class="nl.rivm.screenit.model.Permissie"/>
         <mapping class="nl.rivm.screenit.model.Bezwaar"/>
@@ -186,7 +186,7 @@
 
         <mapping class="nl.rivm.screenit.model.overeenkomsten.Overeenkomst"/>
         <mapping class="nl.rivm.screenit.model.overeenkomsten.AbstractAfgeslotenOvereenkomst"/>
-        <mapping class="nl.rivm.screenit.model.overeenkomsten.AfgeslotenInstellingOvereenkomst"/>
+        <mapping class="nl.rivm.screenit.model.overeenkomsten.AfgeslotenOrganisatieOvereenkomst"/>
         <mapping class="nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst"/>
 
         <mapping class="nl.rivm.screenit.model.algemeen.BezwaarBrief"/>
@@ -266,7 +266,7 @@
 
         
         <mapping class="nl.rivm.screenit.model.nieuws.NieuwsItem"/>
-        <mapping class="nl.rivm.screenit.model.nieuws.GebruikerNieuwsItem"/>
+        <mapping class="nl.rivm.screenit.model.nieuws.MedewerkerNieuwsItem"/>
 
 
         <mapping class="nl.rivm.screenit.model.RetourredenAfhandeling"/>

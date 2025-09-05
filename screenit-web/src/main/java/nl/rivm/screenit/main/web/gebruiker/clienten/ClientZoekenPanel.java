@@ -103,7 +103,7 @@ public class ClientZoekenPanel extends Panel
 
 	private void verwijderMogelijkeAfspraakReserveringenVanMedewerker()
 	{
-		afspraakReserveringService.verwijderReserveringenVanMedewerker(ScreenitSession.get().getLoggedInInstellingGebruiker());
+		afspraakReserveringService.verwijderReserveringenVanMedewerker(ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 	}
 
 	private void logAction(LogGebeurtenis gebeurtenis, Client client, String briefkenmerk)
@@ -111,23 +111,23 @@ public class ClientZoekenPanel extends Panel
 		String bsn = client.getPersoon().getBsn();
 		if (bsn != null)
 		{
-			logService.logGebeurtenis(gebeurtenis, ScreenitSession.get().getLoggedInAccount(), "Gezocht op bsn: " + bsn);
+			logService.logGebeurtenis(gebeurtenis, ScreenitSession.get().getIngelogdAccount(), "Gezocht op bsn: " + bsn);
 		}
 		else if (client.getPersoon().getGbaAdres() != null && client.getPersoon().getGbaAdres().getHuisnummer() != null)
 		{
-			logService.logGebeurtenis(gebeurtenis, ScreenitSession.get().getLoggedInAccount(),
+			logService.logGebeurtenis(gebeurtenis, ScreenitSession.get().getIngelogdAccount(),
 				"Gezocht op postcode + huisnummer: " + client.getPersoon().getGbaAdres().getPostcode() + " + " + client.getPersoon().getGbaAdres().getHuisnummer());
 		}
 		else if (briefkenmerk != null)
 		{
-			logService.logGebeurtenis(gebeurtenis, ScreenitSession.get().getLoggedInAccount(), "Gezocht op briefkenmerk: " + briefkenmerk);
+			logService.logGebeurtenis(gebeurtenis, ScreenitSession.get().getIngelogdAccount(), "Gezocht op briefkenmerk: " + briefkenmerk);
 		}
 		else
 		{
 			String melding = "Gezocht op alleen geboortedatum.";
 			LogEvent logEvent = new LogEvent(melding);
 			logEvent.setLevel(Level.ERROR);
-			logService.logGebeurtenis(gebeurtenis, logEvent, ScreenitSession.get().getLoggedInAccount(), null);
+			logService.logGebeurtenis(gebeurtenis, logEvent, ScreenitSession.get().getIngelogdAccount(), null);
 		}
 	}
 

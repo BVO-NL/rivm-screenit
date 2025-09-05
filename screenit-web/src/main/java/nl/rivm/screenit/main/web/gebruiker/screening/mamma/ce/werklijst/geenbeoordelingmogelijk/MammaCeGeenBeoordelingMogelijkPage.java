@@ -64,7 +64,7 @@ public class MammaCeGeenBeoordelingMogelijkPage extends AbstractMammaCePage
 		verslagActiesContainer = new WebMarkupContainer("verslagActies");
 		verslagActiesContainer.setOutputMarkupId(true);
 		maakAfgehandeldButton(verslagActiesContainer);
-		verslagActiesContainer.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CENTRALE_EENHEID_GEEN_BEOORDELING_MOGELIJK, Actie.AANPASSEN));
+		verslagActiesContainer.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CENTRALE_EENHEID_GEEN_BEOORDELING_MOGELIJK, Actie.AANPASSEN));
 		add(verslagActiesContainer);
 	}
 
@@ -75,7 +75,7 @@ public class MammaCeGeenBeoordelingMogelijkPage extends AbstractMammaCePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				beoordelingService.onbeoordeelbaarAfgehandeld(beoordelingModel.getObject(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+				beoordelingService.onbeoordeelbaarAfgehandeld(beoordelingModel.getObject(), getIngelogdeOrganisatieMedewerker());
 				setResponsePage(new MammaCeGeenBeoordelingMogelijkWerklijstPage());
 			}
 		});

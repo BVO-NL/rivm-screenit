@@ -23,13 +23,18 @@ package nl.rivm.screenit.batch.jobs.colon.ifobtkoppelen;
 
 import nl.rivm.screenit.batch.jobs.AbstractJobConfiguration;
 import nl.rivm.screenit.batch.jobs.colon.KoppelPromotionListener;
+import nl.rivm.screenit.batch.jobs.colon.ifobtkoppelen.koppelmetreststep.FitKoppelMetRestReader;
+import nl.rivm.screenit.batch.jobs.colon.ifobtkoppelen.koppelmetreststep.FitKoppelMetRestWriter;
 import nl.rivm.screenit.batch.jobs.colon.ifobtkoppelen.koppelstep.IFobtKoppelReader;
 import nl.rivm.screenit.batch.jobs.colon.ifobtkoppelen.koppelstep.IFobtKoppelWriter;
+import nl.rivm.screenit.batch.jobs.helpers.BaseKoppelenDecider;
 import nl.rivm.screenit.batch.service.WebserviceInpakcentrumOpzettenService;
 import nl.rivm.screenit.batch.service.impl.WebserviceInpakcentrumOpzettenServiceImpl;
 import nl.rivm.screenit.model.enums.JobType;
+import nl.rivm.screenit.model.inpakcentrum.vaninpakcentrum.InpakcentrumKoppelDataDto;
 import nl.rivm.screenit.util.logging.cxf.ScreenITLoggingSaver;
 
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -44,16 +49,22 @@ public class IfobtKoppelenJobConfiguration extends AbstractJobConfiguration
 {
 
 	@Bean
-	public Job koppeldataVerwerkingJob(IfobtKoppelenListener listener, KoppelPromotionListener koppelPromotionListener, Step koppelenStep)
+	public Job koppeldataVerwerkingJob(IfobtKoppelenListener listener, KoppelPromotionListener koppelPromotionListener, Step dummyStep, BaseKoppelenDecider koppelDecider,
+		Step koppelenMetRestStep, Step koppelenStep)
 	{
 		return new JobBuilder(JobType.KOPPELDATA_VERWERKING.name(), repository)
 			.listener(listener)
 			.listener(koppelPromotionListener)
-			.start(koppelenStep)
+			.start(dummyStep)
+			.next(koppelDecider)
+			.on(ExitStatus.COMPLETED.getExitCode()).to(koppelenMetRestStep)
+			.from(koppelDecider)
+			.on(ExitStatus.FAILED.getExitCode()).to(koppelenStep).end()
 			.build();
 	}
 
 	@Bean
+	@Deprecated(forRemoval = true, since = "nieuwe endpoint wordt gebruikt in PROD")
 	public Step koppelenStep(IFobtKoppelReader reader, IFobtKoppelWriter writer)
 	{
 		return new StepBuilder("koppelenStep", repository)
@@ -61,6 +72,22 @@ public class IfobtKoppelenJobConfiguration extends AbstractJobConfiguration
 			.reader(reader)
 			.writer(writer)
 			.build();
+	}
+
+	@Bean
+	public Step koppelenMetRestStep(FitKoppelMetRestReader reader, FitKoppelMetRestWriter writer)
+	{
+		return new StepBuilder("koppelenMetRestStep", repository)
+			.<InpakcentrumKoppelDataDto, InpakcentrumKoppelDataDto> chunk(250, transactionManager)
+			.reader(reader)
+			.writer(writer)
+			.build();
+	}
+
+	@Bean
+	public BaseKoppelenDecider koppelDecider()
+	{
+		return new BaseKoppelenDecider();
 	}
 
 	@Bean

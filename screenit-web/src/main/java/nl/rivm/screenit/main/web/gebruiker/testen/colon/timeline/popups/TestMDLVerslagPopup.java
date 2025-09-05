@@ -34,7 +34,7 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.colon.ColoscopieLocatie;
 import nl.rivm.screenit.model.colon.enums.MdlVervolgbeleid;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -52,7 +52,7 @@ public class TestMDLVerslagPopup extends AbstractTestBasePopupPanel
 	private ColonTestTimelineService colonTestTimelineService;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private ICurrentDateSupplier currentDateSupplier;
@@ -89,7 +89,7 @@ public class TestMDLVerslagPopup extends AbstractTestBasePopupPanel
 
 	private List<ColoscopieLocatie> getActiveColoscopieLocatiesMetMedewerkers()
 	{
-		List<ColoscopieLocatie> actieveColoscopieLocaties = instellingService.getActieveInstellingen(ColoscopieLocatie.class);
+		List<ColoscopieLocatie> actieveColoscopieLocaties = organisatieService.getActieveOrganisaties(ColoscopieLocatie.class);
 		List<ColoscopieLocatie> actieveColoscopieLocatiesMetMedewerkers = new ArrayList<>();
 		for (ColoscopieLocatie locatie : actieveColoscopieLocaties)
 		{

@@ -42,7 +42,7 @@ public class ColonIntakeAfspraakDto extends ClientportaalBaseDto
 
 	private String weergaveAfspraakmoment;
 
-	private String naamInstelling;
+	private String naamIntakelocatie;
 
 	private String adresString;
 
@@ -53,9 +53,9 @@ public class ColonIntakeAfspraakDto extends ClientportaalBaseDto
 	public ColonIntakeAfspraakDto(ColonIntakeAfspraak intakeAfspraak)
 	{
 		this.weergaveAfspraakmoment = DateUtil.getWeergaveDatumClientportaal(intakeAfspraak.getVanaf());
-		this.naamInstelling = intakeAfspraak.getKamer().getIntakelocatie().getNaam();
+		this.naamIntakelocatie = intakeAfspraak.getKamer().getIntakelocatie().getNaam();
 		this.afspraakAfgezegd = intakeAfspraak.getAfgezegdOp() != null;
-		this.adresString = AdresUtil.getVolledigeAdresString(intakeAfspraak.getKamer().getIntakelocatie().getEersteAdres());
+		this.adresString = AdresUtil.getVolledigeAdresString(intakeAfspraak.getKamer().getIntakelocatie().getAdres());
 		this.andereIntakelocatieOpVerzoekClient = bepaalAndereIntakeLocatieOpVerzoekClient(intakeAfspraak);
 	}
 

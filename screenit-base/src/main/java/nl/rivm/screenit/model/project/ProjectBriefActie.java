@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.project;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -41,7 +40,7 @@ import lombok.Setter;
 
 import nl.rivm.screenit.model.IActief;
 import nl.rivm.screenit.model.IDocument;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
@@ -82,7 +81,7 @@ public class ProjectBriefActie extends AbstractHibernateObject implements IActie
 	private Date laatstGewijzigd;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	private InstellingGebruiker uploader;
+	private OrganisatieMedewerker uploader;
 
 	@Column
 	private String misluktBak;

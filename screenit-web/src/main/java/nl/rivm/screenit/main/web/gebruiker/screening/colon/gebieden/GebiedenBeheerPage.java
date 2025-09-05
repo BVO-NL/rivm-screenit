@@ -26,12 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.ColonScreeningBasePage;
 import nl.rivm.screenit.model.Gemeente;
 
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.model.IModel;
@@ -41,11 +42,11 @@ public class GebiedenBeheerPage extends ColonScreeningBasePage
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.beheer.gemeente.zoeken", GemeenteZoeken.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.beheer.gemeentegegevens", GemeenteGegevens.class)
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.beheer.gemeente.zoeken", GemeenteZoeken.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.beheer.gemeentegegevens", GemeenteGegevens.class)
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -70,7 +71,7 @@ public class GebiedenBeheerPage extends ColonScreeningBasePage
 
 	protected boolean magAdherentieAanpassen()
 	{
-		return ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_GEBIEDEN_ADHERENTIE_AANPASSEN, Actie.AANPASSEN);
+		return ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_GEBIEDEN_ADHERENTIE_AANPASSEN, Actie.AANPASSEN);
 	}
 
 }

@@ -34,7 +34,7 @@ import nl.rivm.screenit.dto.mamma.planning.PlanningStandplaatsPeriodeDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningStatusDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningVerzetClientenDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningWeekDto;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaBlokkade;
 import nl.rivm.screenit.model.mamma.MammaPostcodeReeks;
@@ -61,32 +61,32 @@ public interface MammaBaseConceptPlanningsApplicatie
 
 	PlanningScreeningsEenheidMetaDataDto getScreeningsEenheidMetaData(MammaScreeningsEenheid screeningEenheid);
 
-	void sendCapaciteitBlok(PlanningCapaciteitBlokDto blok, boolean isNieuw, InstellingGebruiker ingelogdeInstellingGebruiker);
+	void sendCapaciteitBlok(PlanningCapaciteitBlokDto blok, boolean isNieuw, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	String deleteCapaciteitBlok(PlanningCapaciteitBlokDto blok, InstellingGebruiker ingelogdeInstellingGebruiker);
+	String deleteCapaciteitBlok(PlanningCapaciteitBlokDto blok, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	PlanningStandplaatsPeriodeDto[] getStandplaatsPeriodesSorted(MammaScreeningsEenheid screeningsEenheid);
 
-	void changeRoute(PlanningStandplaatsPeriodeDto item, MammaScreeningsEenheid screeningsEenheid, InstellingGebruiker ingelogdeInstellingGebruiker);
+	void changeRoute(PlanningStandplaatsPeriodeDto item, MammaScreeningsEenheid screeningsEenheid, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	void splitsStandplaatsPeriode(PlanningStandplaatsPeriodeDto standplaatsPeriodeDto, InstellingGebruiker ingelogdeInstellingGebruiker);
+	void splitsStandplaatsPeriode(PlanningStandplaatsPeriodeDto standplaatsPeriodeDto, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	void sendAfspraakDrempelStandplaatsPeriode(PlanningStandplaatsPeriodeDto standplaatsPeriode, InstellingGebruiker ingelogdeInstellingGebruiker);
+	void sendAfspraakDrempelStandplaatsPeriode(PlanningStandplaatsPeriodeDto standplaatsPeriode, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	Long[] getStandplaatsenZonderRoute(ScreeningOrganisatie screeningOrganisatie);
 
 	Long[] getStandplaatsenMetRoute(ScreeningOrganisatie screeningOrganisatie);
 
-	PlanningConceptMeldingenDto saveConcept(InstellingGebruiker ingelogdeInstellingGebruiker, boolean runDry);
+	PlanningConceptMeldingenDto saveConcept(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, boolean runDry);
 
-	void conceptAnnuleren(InstellingGebruiker ingelogdeInstellingGebruiker);
+	void conceptAnnuleren(OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	void sendBlokkade(MammaBlokkade blokkade, boolean isNieuw);
 
 	int getAantalAfsprakenOpBlok(PlanningCapaciteitBlokDto blokDto, boolean toDelete);
 
 	void herhaalWeek(MammaScreeningsEenheid screeningsEenheidVan, MammaScreeningsEenheid screeningsEenheidNaar, LocalDate teHerhalenWeek, LocalDate herhalenVanafWeek,
-		LocalDate herhalenTotEnMetWeek, InstellingGebruiker ingelogdeInstellingGebruiker);
+		LocalDate herhalenTotEnMetWeek, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	void updateScreeningsOrganisatie(PlanningScreeningsOrganisatieDto screeningsOrganisatieDto);
 
@@ -99,6 +99,6 @@ public interface MammaBaseConceptPlanningsApplicatie
 	PlanningStatusDto getStatus();
 
 	void kopieerDag(MammaScreeningsEenheid bronScreeningsEenheid, MammaScreeningsEenheid doelScreeningsEenheid, LocalDate bronDag, LocalTime bronVanTijd, LocalTime bronTotTijd,
-		LocalDate doelDag, InstellingGebruiker ingelogdeInstellingGebruiker);
+		LocalDate doelDag, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 }

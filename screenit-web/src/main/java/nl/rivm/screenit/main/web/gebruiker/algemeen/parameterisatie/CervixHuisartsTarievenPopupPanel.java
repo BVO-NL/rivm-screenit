@@ -94,7 +94,7 @@ public abstract class CervixHuisartsTarievenPopupPanel extends GenericPanel<Cerv
 				}
 				else
 				{
-					betalingService.toevoegenTarief(tarief, ScreenitSession.get().getLoggedInAccount());
+					betalingService.toevoegenTarief(tarief, ScreenitSession.get().getIngelogdAccount());
 					opslaan(target);
 				}
 			}

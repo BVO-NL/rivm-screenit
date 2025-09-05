@@ -32,9 +32,9 @@ import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.gebruiker.testen.mamma.timeline.MammaTestTimelinePage;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker_;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker_;
+import nl.rivm.screenit.model.Medewerker_;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaLezing;
@@ -69,13 +69,13 @@ public class TestMammaEersteTweeLezingenMakenPopup extends TestMammaAbstractPopu
 		super(id, clientModel);
 
 		MammaBeoordeling beoordeling = MammaScreeningRondeUtil.getLaatsteBeoordeling(clientModel.getObject().get(0).getMammaDossier().getLaatsteScreeningRonde());
-		var zoekOrganisatieMedewerker = new InstellingGebruiker();
+		var zoekOrganisatieMedewerker = new OrganisatieMedewerker();
 		zoekOrganisatieMedewerker.setOrganisatie(beoordeling.getBeoordelingsEenheid());
-		var sort = Sort.by(Sort.Order.asc(propertyChain(InstellingGebruiker_.MEDEWERKER, Gebruiker_.GEBRUIKERSNAAM)));
+		var sort = Sort.by(Sort.Order.asc(propertyChain(OrganisatieMedewerker_.MEDEWERKER, Medewerker_.GEBRUIKERSNAAM)));
 		var radiologen = medewerkerService.getActieveRadiologen(zoekOrganisatieMedewerker, new ArrayList<>(), sort);
-		Iterator<InstellingGebruiker> iterator = radiologen.iterator();
-		InstellingGebruiker eersteBeoordelaar = iterator.next();
-		InstellingGebruiker tweedeBeoordelaar = null;
+		Iterator<OrganisatieMedewerker> iterator = radiologen.iterator();
+		OrganisatieMedewerker eersteBeoordelaar = iterator.next();
+		OrganisatieMedewerker tweedeBeoordelaar = null;
 		while (iterator.hasNext())
 		{
 			tweedeBeoordelaar = iterator.next();
@@ -94,27 +94,27 @@ public class TestMammaEersteTweeLezingenMakenPopup extends TestMammaAbstractPopu
 		Form<MammaLezing> eersteLezingForm = new Form<>("eersteLezingForm", eersteLezingModel);
 		add(eersteLezingForm);
 
-		IModel<List<InstellingGebruiker>> instellingGebruikersModel = ModelUtil.listRModel(radiologen, false);
-		addLezingComponenten(instellingGebruikersModel, eersteLezingForm);
+		IModel<List<OrganisatieMedewerker>> organisatieMedewerkersModel = ModelUtil.listRModel(radiologen, false);
+		addLezingComponenten(organisatieMedewerkersModel, eersteLezingForm);
 
 		Form<MammaLezing> tweedeLezingForm = new Form<>("tweedeLezingForm", tweedeLezingModel);
 
-		addLezingComponenten(instellingGebruikersModel, tweedeLezingForm);
+		addLezingComponenten(organisatieMedewerkersModel, tweedeLezingForm);
 
 		add(tweedeLezingForm);
 	}
 
-	private void addLezingComponenten(IModel<List<InstellingGebruiker>> instellingGebruikers, Form<MammaLezing> lezingForm)
+	private void addLezingComponenten(IModel<List<OrganisatieMedewerker>> organisatieMedewerkers, Form<MammaLezing> lezingForm)
 	{
 		List<MammaBIRADSWaarde> biradsWaardes = Arrays.asList(MammaBIRADSWaarde.values());
 		ComponentHelper.addDropDownChoiceINaam(lezingForm, "biradsRechts", false, biradsWaardes, false);
 		ComponentHelper.addDropDownChoiceINaam(lezingForm, "biradsLinks", false, biradsWaardes, false);
-		lezingForm.add(ComponentHelper.newDropDownChoice("beoordelaar", instellingGebruikers, new ChoiceRenderer<InstellingGebruiker>("", "id")
+		lezingForm.add(ComponentHelper.newDropDownChoice("beoordelaar", organisatieMedewerkers, new ChoiceRenderer<OrganisatieMedewerker>("", "id")
 		{
 			@Override
-			public Object getDisplayValue(InstellingGebruiker instellingGebruiker)
+			public Object getDisplayValue(OrganisatieMedewerker organisatieMedewerker)
 			{
-				return NaamUtil.getNaamGebruiker(instellingGebruiker.getMedewerker()) + " - " + instellingGebruiker.getOrganisatie().getNaam();
+				return NaamUtil.getNaamMedewerker(organisatieMedewerker.getMedewerker()) + " - " + organisatieMedewerker.getOrganisatie().getNaam();
 			}
 		}, true));
 	}
@@ -135,7 +135,7 @@ public class TestMammaEersteTweeLezingenMakenPopup extends TestMammaAbstractPopu
 				laatsteBeoordeling,
 				cloneLezing(eersteLezingModel.getObject(), laatsteBeoordeling),
 				cloneLezing(tweedeLezingModel.getObject(), laatsteBeoordeling),
-				ScreenitSession.get().getLoggedInInstellingGebruiker(),
+				ScreenitSession.get().getIngelogdeOrganisatieMedewerker(),
 				verstuurHl7Berichten);
 		}
 	}

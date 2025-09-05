@@ -21,6 +21,7 @@ package nl.rivm.screenit.batch.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +34,9 @@ import nl.rivm.screenit.batch.service.BarcodeValiderenService;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.model.inpakcentrum.vaninpakcentrum.InpakcentrumKoppelDataDto;
 import nl.rivm.screenit.model.logging.LogEvent;
+import nl.rivm.screenit.repository.cervix.CervixUitnodigingRepository;
 import nl.rivm.screenit.service.BaseHoudbaarheidService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.cervix.CervixBaseMonsterService;
@@ -44,6 +47,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import generated.KOPPELDATA;
+
+import static nl.rivm.screenit.specification.algemeen.InpakbareUitnodigingSpecification.heeftUitnodigingId;
 
 @Service
 @AllArgsConstructor
@@ -56,6 +61,8 @@ public class BarcodeZasValiderenServiceImpl extends BaseValiderenService impleme
 	private final HibernateService hibernateService;
 
 	private final ICurrentDateSupplier currentDateSupplier;
+
+	private final CervixUitnodigingRepository uitnodigingRepository;
 
 	@Override
 	public List<String> voerSemantischeValidatieUit(List<KOPPELDATA.VERZONDENUITNODIGING> koppeldata)
@@ -70,59 +77,83 @@ public class BarcodeZasValiderenServiceImpl extends BaseValiderenService impleme
 		{
 
 			var zasBarcode = getMatchingFieldValue(verzondenUitnodiging, KoppelConstants.CERVIX_KOPPEL_BARCODE_ZAS);
-			var trackTraceId = getMatchingFieldValue(verzondenUitnodiging, KoppelConstants.KOPPEL_TRACK_ID);
-
 			var cervixUitnodiging = getCervixUitnodiging(verzondenUitnodiging);
 
-			if (cervixUitnodiging == null)
+			valideer(foutmeldingen, cervixUitnodiging, verzondenUitnodiging.getID(), zasBarcode, minstensHoudbaarTotMetCervix, barcodesUitKoppeldata);
+		}
+
+		return foutmeldingen;
+	}
+
+	@Override
+	public List<String> valideerOpSemantiek(List<InpakcentrumKoppelDataDto> koppeldata)
+	{
+		List<String> foutmeldingen = new ArrayList<>();
+		List<String> barcodesUitKoppeldata = new ArrayList<>();
+
+		var vandaag = currentDateSupplier.getLocalDate();
+		var minstensHoudbaarTotMetCervix = houdbaarheidService.getMinstensHoudbaarTotMet(vandaag, PreferenceKey.PERIODE_MINIMALE_HOUDBAARHEID_ZAS_MONSTERS_VOOR_CONTROLE);
+
+		for (var koppelDataDto : koppeldata)
+		{
+
+			var zasBarcode = koppelDataDto.getBarcode();
+			var uitnodiging = uitnodigingRepository.findOne(heeftUitnodigingId(koppelDataDto.getId())).orElse(null);
+
+			valideer(foutmeldingen, uitnodiging, koppelDataDto.getId(), zasBarcode, minstensHoudbaarTotMetCervix, barcodesUitKoppeldata);
+		}
+		return foutmeldingen;
+	}
+
+	private void valideer(List<String> foutmeldingen, CervixUitnodiging uitnodiging, Long uitnodigingId, String zasBarcode, LocalDate minstensHoudbaarTotMetCervix,
+		List<String> barcodesUitKoppeldata)
+	{
+		if (uitnodiging == null)
+		{
+			addFout(foutmeldingen, String.format(KoppelConstants.CERVIX_UITNODIGINGSID_ONBEKEND, uitnodigingId, zasBarcode));
+		}
+		else
+		{
+			if (StringUtils.isBlank(zasBarcode))
 			{
-				addFout(foutmeldingen, String.format(KoppelConstants.CERVIX_UITNODIGINGSID_ONBEKEND, verzondenUitnodiging.getID(), zasBarcode, trackTraceId));
+				addFout(foutmeldingen,
+					String.format(KoppelConstants.CERVIX_ZASID_MIST_BIJ_TYPE_UITNODIGING, uitnodigingId,
+						StringUtils.defaultIfBlank(zasBarcode, KoppelConstants.DEFAULT_STRING)));
 			}
-			else
+			if (StringUtils.isNotBlank(zasBarcode))
 			{
-				if (StringUtils.isBlank(zasBarcode))
+				var bestaandeZas = monsterService.getZas(zasBarcode).orElse(null);
+				if (bestaandeZas != null && !bestaandeZas.getUitnodiging().equals(uitnodiging))
 				{
-					addFout(foutmeldingen,
-						String.format(KoppelConstants.CERVIX_ZASID_MIST_BIJ_TYPE_UITNODIGING, verzondenUitnodiging.getID(),
-							StringUtils.defaultIfBlank(zasBarcode, "<geen>"),
-							trackTraceId, ""));
+					addFout(foutmeldingen, String.format(KoppelConstants.CERVIX_ZASID_AL_GEKOPPELD, uitnodigingId,
+						StringUtils.defaultIfBlank(zasBarcode, KoppelConstants.DEFAULT_STRING), bestaandeZas.getUitnodiging().getUitnodigingsId()));
 				}
-				if (StringUtils.isNotBlank(zasBarcode))
+				if (uitnodiging.getMonster() != null && !uitnodiging.getMonster().getMonsterId().equals(zasBarcode))
 				{
-					var bestaandeZas = monsterService.getZas(zasBarcode).orElse(null);
-					if (bestaandeZas != null && !bestaandeZas.getUitnodiging().equals(cervixUitnodiging))
-					{
-						addFout(foutmeldingen, String.format(KoppelConstants.CERVIX_ZASID_AL_GEKOPPELD, verzondenUitnodiging.getID(),
-							StringUtils.defaultIfBlank(zasBarcode, "<geen>"), trackTraceId, bestaandeZas.getUitnodiging().getUitnodigingsId()));
-					}
-					if (cervixUitnodiging.getMonster() != null && !cervixUitnodiging.getMonster().getMonsterId().equals(zasBarcode))
-					{
-						addFout(foutmeldingen, String.format(KoppelConstants.CERVIX_UITNODIGINGSID_AL_GEKOPPELD, verzondenUitnodiging.getID(), zasBarcode, trackTraceId,
-							cervixUitnodiging.getMonster().getMonsterId()));
-					}
-					var houdbaarheid = houdbaarheidService.getZasHoudbaarheidVoor(zasBarcode);
-					if (houdbaarheid == null)
-					{
-						addFout(foutmeldingen, String.format(KoppelConstants.CERVIX_HOUDBAARHEID_ONBEKEND, verzondenUitnodiging.getID(),
-							StringUtils.defaultIfBlank(zasBarcode, "<geen>"), trackTraceId));
-					}
-					else if (DateUtil.toLocalDate(houdbaarheid.getVervalDatum()).isBefore(minstensHoudbaarTotMetCervix))
-					{
-						addFout(foutmeldingen, String.format(KoppelConstants.CERVIX_HOUDBAARHEID_TE_KORT, verzondenUitnodiging.getID(),
-							StringUtils.defaultIfBlank(zasBarcode, "<geen>"), trackTraceId));
-					}
-					if (barcodeAlTeruggekoppeld(barcodesUitKoppeldata, zasBarcode))
-					{
-						addFout(foutmeldingen, String.format(KoppelConstants.CERVIX_ZASID_IS_DUBBEL, verzondenUitnodiging.getID(), zasBarcode, trackTraceId));
-					}
-					else
-					{
-						barcodesUitKoppeldata.add(zasBarcode);
-					}
+					addFout(foutmeldingen, String.format(KoppelConstants.CERVIX_UITNODIGINGSID_AL_GEKOPPELD, uitnodigingId, zasBarcode,
+						uitnodiging.getMonster().getMonsterId()));
+				}
+				var houdbaarheid = houdbaarheidService.getZasHoudbaarheidVoor(zasBarcode);
+				if (houdbaarheid == null)
+				{
+					addFout(foutmeldingen, String.format(KoppelConstants.CERVIX_HOUDBAARHEID_ONBEKEND, uitnodigingId,
+						StringUtils.defaultIfBlank(zasBarcode, KoppelConstants.DEFAULT_STRING)));
+				}
+				else if (DateUtil.toLocalDate(houdbaarheid.getVervalDatum()).isBefore(minstensHoudbaarTotMetCervix))
+				{
+					addFout(foutmeldingen, String.format(KoppelConstants.CERVIX_HOUDBAARHEID_TE_KORT, uitnodigingId,
+						StringUtils.defaultIfBlank(zasBarcode, KoppelConstants.DEFAULT_STRING)));
+				}
+				if (barcodeAlTeruggekoppeld(barcodesUitKoppeldata, zasBarcode))
+				{
+					addFout(foutmeldingen, String.format(KoppelConstants.CERVIX_ZASID_IS_DUBBEL, uitnodigingId, zasBarcode));
+				}
+				else
+				{
+					barcodesUitKoppeldata.add(zasBarcode);
 				}
 			}
 		}
-		return foutmeldingen;
 	}
 
 	private CervixUitnodiging getCervixUitnodiging(KOPPELDATA.VERZONDENUITNODIGING verzondenUitnodiging)

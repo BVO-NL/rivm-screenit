@@ -28,18 +28,18 @@ import jakarta.annotation.Nonnull;
 
 import lombok.NonNull;
 
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 
 public interface WachtwoordService
 {
 
-	String hashWachtwoord(Gebruiker gebruiker, String plainWachtwoord);
+	String hashWachtwoord(Medewerker medewerker, String plainWachtwoord);
 
-	void setWachtwoord(@Nonnull Gebruiker medewerker, String uncryptedWachtwoord);
+	void setWachtwoord(@Nonnull Medewerker medewerker, String uncryptedWachtwoord);
 
-	boolean isEerderGebruiktWachtwoord(@NonNull Gebruiker medewerker, String unecryptedWachtwoord, List<String> vorigeWachtwoorden);
+	boolean isEerderGebruiktWachtwoord(@NonNull Medewerker medewerker, String unecryptedWachtwoord, List<String> vorigeWachtwoorden);
 
-	List<String> getVorigeWachtwoorden(Gebruiker gebruiker, LocalDate vanaf);
+	List<String> getVorigeWachtwoorden(Medewerker medewerker, LocalDate vanaf);
 
-	void verstuurWachtwoordVerlooptHerinneringMail(Gebruiker gebruiker);
+	void verstuurWachtwoordVerlooptHerinneringMail(Medewerker medewerker);
 }

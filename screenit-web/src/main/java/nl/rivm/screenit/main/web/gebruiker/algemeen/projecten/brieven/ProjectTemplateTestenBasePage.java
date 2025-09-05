@@ -34,9 +34,9 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.Docum
 import nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.ProjectBasePage;
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.MailMergeContext;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.ZASRetouradres;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
@@ -54,8 +54,8 @@ import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst;
 import nl.rivm.screenit.model.project.Project;
 import nl.rivm.screenit.service.AsposeService;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -94,7 +94,7 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 	private final TemplateBron bron;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private LogService logService;
@@ -131,13 +131,13 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 		DocumentTemplateTestWrapper wrapper = wrapperModel.getObject();
 		CervixUitnodiging uitnodiging = wrapper.getCervixUitnodiging();
 		uitnodiging.setUitnodigingsId(uitnodigingsDao.getNextUitnodigingsId());
-		List<ColonIntakelocatie> actieveIntakelocaties = instellingService.getActieveIntakelocaties();
+		List<ColonIntakelocatie> actieveIntakelocaties = organisatieService.getActieveIntakelocaties();
 		if (CollectionUtils.isNotEmpty(actieveIntakelocaties))
 		{
 			wrapper.cloneIntakeLocatie(actieveIntakelocaties.get(0));
 		}
 
-		ToegangLevel level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.GEBRUIKER_BEHEER_DOCUMENTENTEMPLATES);
+		ToegangLevel level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_BEHEER_DOCUMENTENTEMPLATES);
 
 		List<ScreeningOrganisatie> screeningOrganisatieLijst = getRegios();
 
@@ -243,7 +243,7 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 			{
 				DocumentTemplateTestWrapper wrapper = wrapperModel.getObject();
 				List<Bevolkingsonderzoek> bevolkingsonderzoeken = getBevolkingsonderzoeken();
-				logService.logGebeurtenis(LogGebeurtenis.TESTEN_VAN_BRIEVEN, ScreenitSession.get().getLoggedInAccount(),
+				logService.logGebeurtenis(LogGebeurtenis.TESTEN_VAN_BRIEVEN, ScreenitSession.get().getIngelogdAccount(),
 					bevolkingsonderzoeken.toArray(new Bevolkingsonderzoek[bevolkingsonderzoeken.size()]));
 
 				ScreeningOrganisatie screeningOrganisatie = selectedRegio.getObject();
@@ -277,8 +277,8 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 
 					Document mergedDocument = null;
 					MammaBeoordeling laatsteBeoordelingMetUitslag = wrapper.getClient().getMammaDossier().getLaatsteBeoordelingMetUitslag();
-					Gebruiker handmatigeRadioloog1 = laatsteBeoordelingMetUitslag.getEersteLezing().getBeoordelaar().getMedewerker();
-					Gebruiker handmatigeRadioloog2 = laatsteBeoordelingMetUitslag.getTweedeLezing().getBeoordelaar().getMedewerker();
+					Medewerker handmatigeRadioloog1 = laatsteBeoordelingMetUitslag.getEersteLezing().getBeoordelaar().getMedewerker();
+					Medewerker handmatigeRadioloog2 = laatsteBeoordelingMetUitslag.getTweedeLezing().getBeoordelaar().getMedewerker();
 					if (!wrapper.isFreeTextBKRADIOLOOG())
 					{
 						laatsteBeoordelingMetUitslag.getEersteLezing().getBeoordelaar().setMedewerker(wrapper.getRadioloog1());
@@ -286,7 +286,7 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 					}
 					if (wrapper.isFromDBINTAKELOCATIE())
 					{
-						List<ColonIntakelocatie> intakeLocaties = instellingService.getActieveIntakelocatiesBinnenRegio(screeningOrganisatie);
+						List<ColonIntakelocatie> intakeLocaties = organisatieService.getActieveIntakelocatiesBinnenRegio(screeningOrganisatie);
 						var kamer = wrapper.getIntakeAfspraak().getKamer();
 						ColonIntakelocatie handmaktigeIntakeLocatie = kamer.getIntakelocatie();
 						for (ColonIntakelocatie intakeLocatie : intakeLocaties)
@@ -305,7 +305,7 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 					}
 					else if (wrapper.isFromDBBMHKLAB())
 					{
-						List<BMHKLaboratorium> labs = instellingService.getActieveInstellingen(BMHKLaboratorium.class);
+						List<BMHKLaboratorium> labs = organisatieService.getActieveOrganisaties(BMHKLaboratorium.class);
 
 						for (BMHKLaboratorium lab : labs)
 						{

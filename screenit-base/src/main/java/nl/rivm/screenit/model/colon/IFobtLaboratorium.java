@@ -28,7 +28,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -37,7 +37,7 @@ import org.hibernate.envers.NotAudited;
 @Audited
 @Getter
 @Setter
-public class IFobtLaboratorium extends Instelling
+public class IFobtLaboratorium extends Organisatie
 {
 	private String labId;
 

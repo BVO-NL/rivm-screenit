@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.Constants;
@@ -62,7 +63,6 @@ import nl.rivm.screenit.model.colon.ColonConclusie;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
-import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
 import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
@@ -89,6 +89,7 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.RondeNummerService;
 import nl.rivm.screenit.service.UploadDocumentService;
+import nl.rivm.screenit.service.colon.ColonBaseFITService;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.rivm.screenit.service.mamma.MammaBaseLaesieService;
 import nl.rivm.screenit.util.AdresUtil;
@@ -112,10 +113,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PropertyComparator;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -135,35 +134,29 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @Slf4j
 @Service
-@Transactional(propagation = Propagation.REQUIRED)
+@Transactional
+@AllArgsConstructor
 public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoonsgegevensService
 {
-	@Autowired
-	private HibernateService hibernateService;
+	private final HibernateService hibernateService;
 
-	@Autowired
-	private ICurrentDateSupplier currentDateSupplier;
+	private final ICurrentDateSupplier currentDateSupplier;
 
-	@Autowired
-	private BaseBriefService briefService;
+	private final BaseBriefService briefService;
 
-	@Autowired
-	private RondeNummerService rondeNummerService;
+	private final RondeNummerService rondeNummerService;
 
-	@Autowired
-	private UploadDocumentService uploadDocumentService;
+	private final UploadDocumentService uploadDocumentService;
 
-	@Autowired
-	private LogService logService;
+	private final LogService logService;
 
-	@Autowired
-	private CervixMonsterRepository monsterRepository;
+	private final CervixMonsterRepository monsterRepository;
 
-	@Autowired
-	private MammaBaseLaesieService baseLaesieService;
+	private final MammaBaseLaesieService baseLaesieService;
 
-	@Autowired
-	private MammaBaseBeoordelingService baseBeoordelingService;
+	private final MammaBaseBeoordelingService baseBeoordelingService;
+
+	private final ColonBaseFITService colonBaseFITService;
 
 	@Override
 	public boolean heeftVerzoekZonderGegenereerdeBrief(Client client)
@@ -198,7 +191,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 	}
 
 	@Override
-	public void verstuurGeenHandtekeningBrief(OverdrachtPersoonsgegevens overdracht, Account loggedInAccount)
+	public void verstuurGeenHandtekeningBrief(OverdrachtPersoonsgegevens overdracht, Account ingelogdAccount)
 	{
 		AlgemeneBrief brief = briefService.maakAlgemeneBrief(overdracht.getClient(), BriefType.CLIENT_INZAGE_PERSOONSGEGEVENS_HANDTEKENING);
 		overdracht.setGeenHandtekeningBrief(brief);
@@ -431,22 +424,13 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addFITUitslagen(CellStyle cellStyleDateTime, Sheet sheet, ColonScreeningRonde ronde)
 	{
-		for (IFOBTTest test : ronde.getIfobtTesten())
+		ronde.getIfobtTesten().stream().filter(test -> test.getStatus() == IFOBTTestStatus.UITGEVOERD && test.getUitslag() != null).forEach(test ->
 		{
-			if (test.getStatus() == IFOBTTestStatus.UITGEVOERD && test.getUitslag() != null)
-			{
-				String interpretatie = "";
-				if (FITTestUtil.isGunstig(test))
-				{
-					interpretatie = "(gunstig)";
-				}
-				else if (FITTestUtil.isOngunstig(test))
-				{
-					interpretatie = "(ongunstig)";
-				}
-				addRow(sheet, "Uitslag FIT " + interpretatie, test.getUitslag().doubleValue(), test.getStatusDatum(), cellStyleDateTime);
-			}
-		}
+			var interpretatie = FITTestUtil.getInterpretatie(test, test.getStatus(), false).toLowerCase();
+			addRow(sheet, "Uitslag FIT (" + interpretatie + ")", colonBaseFITService.getToonbareWaarde(test),
+				test.getStatusDatum(),
+				cellStyleDateTime);
+		});
 	}
 
 	private void addIntakeConclusies(CellStyle cellStyleDate, CellStyle cellStyleDateTime, Sheet sheet, ColonScreeningRonde ronde)

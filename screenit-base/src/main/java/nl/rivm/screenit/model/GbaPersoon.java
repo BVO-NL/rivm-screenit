@@ -174,7 +174,7 @@ public class GbaPersoon extends AbstractHibernateObject
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@Deprecated(forRemoval = true)
-	private InstellingGebruiker bsnOrganisatieMedewerker;
+	private OrganisatieMedewerker bsnOrganisatieMedewerker;
 
 	@Column(length = MAX_EMAIL_LENGTH)
 	private String emailadres;
@@ -266,14 +266,14 @@ public class GbaPersoon extends AbstractHibernateObject
 
 	@Deprecated(forRemoval = true)
 	@ManyToOne(fetch = FetchType.LAZY)
-	private InstellingGebruiker widOrganisatieMedewerker;
+	private OrganisatieMedewerker widOrganisatieMedewerker;
 
 	@Deprecated(forRemoval = true)
 	private Date widRegistreerDatum;
 
 	@Deprecated(forRemoval = true)
 	@ManyToOne(fetch = FetchType.LAZY)
-	private InstellingGebruiker widGeregistreerdDoor;
+	private OrganisatieMedewerker widGeregistreerdDoor;
 
 	@Deprecated(forRemoval = true)
 	@Column(length = 20)

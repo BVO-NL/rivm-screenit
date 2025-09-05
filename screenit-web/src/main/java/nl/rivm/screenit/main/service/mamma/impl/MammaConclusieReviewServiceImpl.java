@@ -32,7 +32,7 @@ import nl.rivm.screenit.main.model.mamma.beoordeling.MammaConclusieReviewZoekObj
 import nl.rivm.screenit.main.service.mamma.MammaConclusieReviewService;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.INaam;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.MammaConclusieReviewFilterOptie;
@@ -68,14 +68,14 @@ public class MammaConclusieReviewServiceImpl implements MammaConclusieReviewServ
 	private static final int DAGEN_VOOR_DATUM_CONCLUSIEREVIEW_FILTER = 30;
 
 	@Override
-	public MammaConclusieReview getConclusieReview(MammaScreeningRonde screeningRonde, InstellingGebruiker radioloog)
+	public MammaConclusieReview getConclusieReview(MammaScreeningRonde screeningRonde, OrganisatieMedewerker radioloog)
 	{
 		return conclusieReviewRepository.findByRadioloogAndScreeningRondeAndReviewAlsCoordinerendRadioloog(radioloog, screeningRonde, false)
 			.orElse(null);
 	}
 
 	@Override
-	public MammaConclusieReview getConclusieReviewCoordinerendRadioloog(MammaScreeningRonde screeningRonde, InstellingGebruiker coordinerendRadioloog)
+	public MammaConclusieReview getConclusieReviewCoordinerendRadioloog(MammaScreeningRonde screeningRonde, OrganisatieMedewerker coordinerendRadioloog)
 	{
 		return conclusieReviewRepository.findByRadioloogAndScreeningRondeAndReviewAlsCoordinerendRadioloog(coordinerendRadioloog, screeningRonde, true)
 			.orElseGet(this::maakConclusieReviewCoordinerendRadioloog);
@@ -84,7 +84,7 @@ public class MammaConclusieReviewServiceImpl implements MammaConclusieReviewServ
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void saveConclusieReviewCoordinerendRadioloog(MammaConclusieReview conclusieReview, MammaScreeningRonde screeningRonde,
-		InstellingGebruiker coordinerendRadioloog)
+		OrganisatieMedewerker coordinerendRadioloog)
 	{
 		if (conclusieReview.getId() == null)
 		{
@@ -98,7 +98,7 @@ public class MammaConclusieReviewServiceImpl implements MammaConclusieReviewServ
 		logConclusieReviewAfgerond(coordinerendRadioloog, screeningRonde.getDossier().getClient(), conclusieReview, true);
 	}
 
-	private void slaNieuweConclusieReviewOp(MammaConclusieReview conclusieReview, MammaScreeningRonde screeningRonde, InstellingGebruiker coordinerendRadioloog)
+	private void slaNieuweConclusieReviewOp(MammaConclusieReview conclusieReview, MammaScreeningRonde screeningRonde, OrganisatieMedewerker coordinerendRadioloog)
 	{
 		conclusieReview.setRadioloog(coordinerendRadioloog);
 		conclusieReview.setScreeningRonde(screeningRonde);
@@ -125,13 +125,13 @@ public class MammaConclusieReviewServiceImpl implements MammaConclusieReviewServ
 		}
 	}
 
-	private void maakConclusieReview(InstellingGebruiker gebruiker, MammaScreeningRonde screeningRonde)
+	private void maakConclusieReview(OrganisatieMedewerker organisatieMedewerker, MammaScreeningRonde screeningRonde)
 	{
-		if (getConclusieReview(screeningRonde, gebruiker) == null)
+		if (getConclusieReview(screeningRonde, organisatieMedewerker) == null)
 		{
 			var conclusieReview = new MammaConclusieReview();
 			conclusieReview.setScreeningRonde(screeningRonde);
-			conclusieReview.setRadioloog(gebruiker);
+			conclusieReview.setRadioloog(organisatieMedewerker);
 			screeningRonde.getConclusieReviews().add(conclusieReview);
 
 			hibernateService.saveOrUpdateAll(conclusieReview, screeningRonde);
@@ -180,18 +180,18 @@ public class MammaConclusieReviewServiceImpl implements MammaConclusieReviewServ
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void logConclusieReviewAfgerond(InstellingGebruiker gebruiker, Client client, MammaConclusieReview conclusieReview, boolean doorCoordinerendRadioloog)
+	public void logConclusieReviewAfgerond(OrganisatieMedewerker organisatieMedewerker, Client client, MammaConclusieReview conclusieReview, boolean doorCoordinerendRadioloog)
 	{
 		if (!doorCoordinerendRadioloog)
 		{
 			if (conclusieReview.getRetourCeReden() != null)
 			{
-				logService.logGebeurtenis(LogGebeurtenis.MAMMA_BEOORDELINGEN_REVIEW_RETOUR_CE, gebruiker,
+				logService.logGebeurtenis(LogGebeurtenis.MAMMA_BEOORDELINGEN_REVIEW_RETOUR_CE, organisatieMedewerker,
 					client, conclusieReview.getRetourCeReden().getOmschrijving(), Bevolkingsonderzoek.MAMMA);
 			}
 			else
 			{
-				logService.logGebeurtenis(LogGebeurtenis.CONCLUSIE_REVIEW_AFGEROND, gebruiker, client, Bevolkingsonderzoek.MAMMA);
+				logService.logGebeurtenis(LogGebeurtenis.CONCLUSIE_REVIEW_AFGEROND, organisatieMedewerker, client, Bevolkingsonderzoek.MAMMA);
 			}
 		}
 		else
@@ -201,13 +201,13 @@ public class MammaConclusieReviewServiceImpl implements MammaConclusieReviewServ
 
 			var logMelding = String.format("Co\u00F6rdinerend radioloog: inzage ronde review%s%s", logStringRadioloogRedenen, logStringMBBRedenen);
 
-			logService.logGebeurtenis(LogGebeurtenis.CONCLUSIE_REVIEW_AFGEROND, gebruiker,
+			logService.logGebeurtenis(LogGebeurtenis.CONCLUSIE_REVIEW_AFGEROND, organisatieMedewerker,
 				client, logMelding, Bevolkingsonderzoek.MAMMA);
 		}
 	}
 
 	@Override
-	public Optional<MammaConclusieReview> getReviewAfgerondDoorCoordinerendRadioloog(InstellingGebruiker coordinerendRadioloog, MammaScreeningRonde screeningRonde)
+	public Optional<MammaConclusieReview> getReviewAfgerondDoorCoordinerendRadioloog(OrganisatieMedewerker coordinerendRadioloog, MammaScreeningRonde screeningRonde)
 	{
 		return conclusieReviewRepository.findByRadioloogAndScreeningRondeAndReviewAlsCoordinerendRadioloog(coordinerendRadioloog, screeningRonde, true);
 	}

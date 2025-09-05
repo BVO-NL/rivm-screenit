@@ -19,105 +19,105 @@
   =========================LICENSE_END==================================
   -->
 <wicket:extend>
-    <div class="btn-top dropdown pull-right">
-        <button wicket:id="toevoegen" class="btn btn-primary" data-toggle="dropdown">
-            <i class="icon-plus-sign icon-white"></i> Organisatie toevoegen <b
-                class="caret"></b>
-        </button>
-        <ul class="dropdown-menu">
-            <li wicket:id="nieuwOrganisatieTypes">
-                <a  wicket:id="nieuwOrganisatie">
-                    <wicket:container wicket:id="label">Coloscopiecentrum</wicket:container>
-                </a>
-            </li>
-        </ul>
-    </div>
-    <h1 class="pageTitle">Organisaties zoeken</h1>
-    <div class="form-horizontal">
-        <fieldset>
-            <form wicket:id="zoekForm">
-                <div class="row-fluid">
-                    <div class="span6">
-                        <div class="control-group">
-                            <label class="control-label">Soort organisatie <span
-                                    class="label label-info">Multiselect</span></label>
-                            <div class="controls">
-                                <select multiple="multiple"
-                                        wicket:id="selectedOrganisatieTypes">
-                                    <option>Coloscopiecentrum</option>
-                                    <option>Infolijn</option>
-                                    <option>Inpakcentrum</option>
-                                    <option>Lab</option>
-                                    <option>Screeningsorganisatie</option>
-                                    <option>Zorgverzekeraar</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">Naam organisatie</label>
-                            <div class="controls">
-                                <input class="input-large" type="text" wicket:id="naam">
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">Achternaam medewerker</label>
-                            <div class="controls">
-                                <input class="input-large" type="text"
-                                       wicket:id="organisatieMedewerkers[0].medewerker.achternaam">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="span6">
-                        <div class="control-group">
-                            <label class="control-label">Plaats</label>
-                            <div class="controls">
-                                <input class="input-large" type="text"
-                                       wicket:id="adressen[0].plaats">
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">Postcode</label>
-                            <div class="controls">
-                                <input class="input-mini" type="text" placeholder="1234 AB"
-                                       wicket:id="adressen[0].postcode">
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">Unieke code organisatie</label>
-                            <div class="controls">
-                                <input class="input-small" type="text"
-                                       wicket:id="uziAbonneenummer">
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">Unieke code medewerker</label>
-                            <div class="controls">
-                                <input class="input-small" type="text" wicket:id="organisatieMedewerkers[0].medewerker.uzinummer">
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">E-mailadres</label>
-                            <div class="controls">
-                                <input class="input-large" type="text" wicket:id="email">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span12">
-                        <div class="form-actions clearfix">
-                            <button type="submit" class="btn btn-primary" wicket:id="zoeken">
-                                <i class="icon-search icon-white"></i> Zoeken
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </fieldset>
-        <div class="row-fluid show-results">
-            <div class="span12" wicket:id="refreshContainer">
-                <div wicket:id="organisaties"></div>
-            </div>
-        </div>
-    </div>
+	<div class="btn-top dropdown pull-right">
+		<button wicket:id="toevoegen" class="btn btn-primary" data-toggle="dropdown">
+			<i class="icon-plus-sign icon-white"></i> Organisatie toevoegen <b
+				class="caret"></b>
+		</button>
+		<ul class="dropdown-menu">
+			<li wicket:id="nieuwOrganisatieTypes">
+				<a wicket:id="nieuwOrganisatie">
+					<wicket:container wicket:id="label">Coloscopiecentrum</wicket:container>
+				</a>
+			</li>
+		</ul>
+	</div>
+	<h1 class="pageTitle">Organisaties zoeken</h1>
+	<div class="form-horizontal">
+		<fieldset>
+			<form wicket:id="zoekForm">
+				<div class="row-fluid">
+					<div class="span6">
+						<div class="control-group">
+							<label class="control-label">Soort organisatie <span
+									class="label label-info">Multiselect</span></label>
+							<div class="controls">
+								<select multiple="multiple"
+										wicket:id="selectedOrganisatieTypes">
+									<option>Coloscopiecentrum</option>
+									<option>Infolijn</option>
+									<option>Inpakcentrum</option>
+									<option>Lab</option>
+									<option>Screeningsorganisatie</option>
+									<option>Zorgverzekeraar</option>
+								</select>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">Naam organisatie</label>
+							<div class="controls">
+								<input class="input-large" type="text" wicket:id="naam">
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">Achternaam medewerker</label>
+							<div class="controls">
+								<input class="input-large" type="text"
+									   wicket:id="organisatieMedewerkers[0].medewerker.achternaam">
+							</div>
+						</div>
+					</div>
+					<div class="span6">
+						<div class="control-group">
+							<label class="control-label">Plaats</label>
+							<div class="controls">
+								<input class="input-large" type="text"
+									   wicket:id="adres.plaats">
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">Postcode</label>
+							<div class="controls">
+								<input class="input-mini" type="text" placeholder="1234 AB"
+									   wicket:id="adres.postcode">
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">Unieke code organisatie</label>
+							<div class="controls">
+								<input class="input-small" type="text"
+									   wicket:id="uziAbonneenummer">
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">Unieke code medewerker</label>
+							<div class="controls">
+								<input class="input-small" type="text" wicket:id="organisatieMedewerkers[0].medewerker.uzinummer">
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">E-mailadres</label>
+							<div class="controls">
+								<input class="input-large" type="text" wicket:id="email">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="form-actions clearfix">
+							<button type="submit" class="btn btn-primary" wicket:id="zoeken">
+								<i class="icon-search icon-white"></i> Zoeken
+							</button>
+						</div>
+					</div>
+				</div>
+			</form>
+		</fieldset>
+		<div class="row-fluid show-results">
+			<div class="span12" wicket:id="refreshContainer">
+				<div wicket:id="organisaties"></div>
+			</div>
+		</div>
+	</div>
 </wicket:extend>

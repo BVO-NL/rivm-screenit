@@ -103,19 +103,19 @@ export class RoosterControlsComponent {
     { label: 'Blokkades', value: 'blokkades' },
   ]
   tijdslotAanmakenConstraint: SecurityConstraint = {
-    recht: [Recht.GEBRUIKER_LOCATIE_ROOSTER],
+    recht: [Recht.MEDEWERKER_LOCATIE_ROOSTER],
     actie: Actie.TOEVOEGEN,
     bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON],
-    level: ToegangLevel.INSTELLING,
+    level: ToegangLevel.ORGANISATIE,
     organisatieTypeScopes: [OrganisatieType.INTAKELOCATIE],
     required: Required.ANY,
   }
 
   tijdslotVerwijderenConstraint: SecurityConstraint = {
-    recht: [Recht.GEBRUIKER_LOCATIE_ROOSTER],
+    recht: [Recht.MEDEWERKER_LOCATIE_ROOSTER],
     actie: Actie.VERWIJDEREN,
     bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON],
-    level: ToegangLevel.INSTELLING,
+    level: ToegangLevel.ORGANISATIE,
     organisatieTypeScopes: [OrganisatieType.INTAKELOCATIE],
     required: Required.ANY,
   }

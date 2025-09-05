@@ -58,7 +58,7 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 	@Autowired
 	private ICurrentDateSupplier currentDateSupplier;
 
-	private NativeQuery getDefaultSqlProjectQuery(Project zoekObject, List<Long> instellingIdsProject, List<Long> instellingIdsBriefproject, SortState<String> order)
+	private NativeQuery getDefaultSqlProjectQuery(Project zoekObject, List<Long> organisatieIdsProject, List<Long> organisatieIdsBriefproject, SortState<String> order)
 	{
 		var vandaag = currentDateSupplier.getDate();
 		var parameters = new HashMap<String, Object>();
@@ -98,16 +98,16 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 		var whereProject = "";
 		var whereBriefproject = "";
 
-		if (!CollectionUtils.isEmpty(instellingIdsProject) && zoekObject.getProjectTypes().contains(ProjectType.PROJECT))
+		if (!CollectionUtils.isEmpty(organisatieIdsProject) && zoekObject.getProjectTypes().contains(ProjectType.PROJECT))
 		{
-			var paramsProject = SQLQueryUtil.inExpressionParametersLong("organisatie", instellingIdsProject);
+			var paramsProject = SQLQueryUtil.inExpressionParametersLong("organisatie", organisatieIdsProject);
 			whereProject = "p.type = 'PROJECT' and p.organisatie in (:" + StringUtils.join(paramsProject.keySet(), ", :") + ")";
 			parameters.putAll(paramsProject);
 		}
 
-		if (!CollectionUtils.isEmpty(instellingIdsBriefproject) && zoekObject.getProjectTypes().contains(ProjectType.BRIEFPROJECT))
+		if (!CollectionUtils.isEmpty(organisatieIdsBriefproject) && zoekObject.getProjectTypes().contains(ProjectType.BRIEFPROJECT))
 		{
-			var paramsBriefproject = SQLQueryUtil.inExpressionParametersLong("organisatie", instellingIdsBriefproject);
+			var paramsBriefproject = SQLQueryUtil.inExpressionParametersLong("organisatie", organisatieIdsBriefproject);
 			whereBriefproject = "p.type = 'BRIEFPROJECT' and p.organisatie in (:" + StringUtils.join(paramsBriefproject.keySet(), ", :") + ")";
 			parameters.putAll(paramsBriefproject);
 		}
@@ -128,7 +128,7 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 
 		if (StringUtils.isNotEmpty(whereProject) || StringUtils.isNotEmpty(whereBriefproject))
 		{
-			from += "join algemeen.org_organisatie oop on p.organisatie = oop.id ";
+			from += "join algemeen.organisatie oop on p.organisatie = oop.id ";
 			where = SQLQueryUtil.whereOrAnd(where);
 			if (StringUtils.isNotEmpty(whereProject) && StringUtils.isNotEmpty(whereBriefproject))
 			{
@@ -164,8 +164,8 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 				orderby += "p.eind_datum ";
 				break;
 			case "contactpersoon.medewerker":
-				from += "join algemeen.org_organisatie_medewerker oom on p.contactpersoon = oom.id ";
-				from += "join algemeen.org_medewerker m on oom.medewerker = m.id ";
+				from += "join algemeen.organisatie_medewerker oom on p.contactpersoon = oom.id ";
+				from += "join algemeen.medewerker m on oom.medewerker = m.id ";
 				orderby += "m.achternaam ";
 				break;
 			default:
@@ -228,10 +228,10 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 	}
 
 	@Override
-	public List<Project> getProjecten(Project zoekObject, List<Long> instellingIdsProject, List<Long> instellingIdsBriefproject, long first, long count,
+	public List<Project> getProjecten(Project zoekObject, List<Long> organisatieIdsProject, List<Long> organisatieIdsBriefproject, long first, long count,
 		SortState<String> sortState)
 	{
-		var query = getDefaultSqlProjectQuery(zoekObject, instellingIdsProject, instellingIdsBriefproject, sortState);
+		var query = getDefaultSqlProjectQuery(zoekObject, organisatieIdsProject, organisatieIdsBriefproject, sortState);
 		query.addScalar("id", Long.class);
 		if (count > 0)
 		{
@@ -252,9 +252,9 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 	}
 
 	@Override
-	public long getCountProjecten(Project zoekObject, List<Long> instellingIdsProject, List<Long> instellingIdsBriefproject)
+	public long getCountProjecten(Project zoekObject, List<Long> organisatieIdsProject, List<Long> organisatieIdsBriefproject)
 	{
-		var query = getDefaultSqlProjectQuery(zoekObject, instellingIdsProject, instellingIdsBriefproject, null);
+		var query = getDefaultSqlProjectQuery(zoekObject, organisatieIdsProject, organisatieIdsBriefproject, null);
 		return ((Number) query.uniqueResult()).longValue();
 	}
 

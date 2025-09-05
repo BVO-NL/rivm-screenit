@@ -65,7 +65,7 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
 	level = ToegangLevel.LANDELIJK,
-	recht = Recht.GEBRUIKER_BEHEER_OVEREENKOMSTEN_MODELLEN,
+	recht = Recht.MEDEWERKER_BEHEER_OVEREENKOMSTEN_MODELLEN,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX })
 public class OvereenkomstenBeheerPage extends AlgemeenPage
@@ -135,7 +135,7 @@ public class OvereenkomstenBeheerPage extends AlgemeenPage
 				protected void onAfterToggleActief(AjaxRequestTarget target, Overeenkomst actiefObject)
 				{
 					super.onAfterToggleActief(target, actiefObject);
-					overeenkomstService.updateOvereenkomst(actiefObject, ScreenitSession.get().getLoggedInAccount());
+					overeenkomstService.updateOvereenkomst(actiefObject, ScreenitSession.get().getIngelogdAccount());
 				}
 
 			});

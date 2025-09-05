@@ -23,14 +23,14 @@ package nl.rivm.screenit.main.filter;
 
 import java.io.IOException;
 
-import nl.rivm.screenit.main.web.ScreenitSession;
-
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletResponse;
+
+import nl.rivm.screenit.main.web.ScreenitSession;
 
 public class AuthorizationFilter implements Filter
 {
@@ -52,7 +52,7 @@ public class AuthorizationFilter implements Filter
 			httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			httpResponse.setHeader("Content-Type", "application/json");
 			httpResponse.getWriter().print("{");
-			httpResponse.getWriter().print("\"message\": \"Gebruiker niet ingelogd\"");
+			httpResponse.getWriter().print("\"message\": \"Medewerker niet ingelogd\"");
 			httpResponse.getWriter().print("}");
 		}
 		else

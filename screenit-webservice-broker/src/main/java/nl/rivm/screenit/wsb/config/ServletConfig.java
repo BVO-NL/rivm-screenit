@@ -24,6 +24,7 @@ package nl.rivm.screenit.wsb.config;
 import java.util.List;
 
 import nl.rivm.screenit.wsb.fhir.servlet.dstu3.v1.RestfulServlet;
+import nl.rivm.screenit.wsb.servlet.hoh.Hl7v2OverHttpServlet;
 
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -52,6 +53,16 @@ public class ServletConfig
 		servlet.setServlet(new RestfulServlet());
 		servlet.setLoadOnStartup(1);
 		servlet.setUrlMappings(List.of("/services/rest/bmhk/huisarts/fhir/dstu3/v1/*"));
+		return servlet;
+	}
+
+	@Bean
+	public ServletRegistrationBean<Hl7v2OverHttpServlet> hl7v2Servlet()
+	{
+		var servlet = new ServletRegistrationBean<Hl7v2OverHttpServlet>();
+		servlet.setServlet(new Hl7v2OverHttpServlet());
+		servlet.setLoadOnStartup(1);
+		servlet.setUrlMappings(List.of("/services/hl7v2/dk/lab/v1/*"));
 		return servlet;
 	}
 

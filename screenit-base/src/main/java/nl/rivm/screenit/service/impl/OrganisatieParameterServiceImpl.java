@@ -35,16 +35,16 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.Constants;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieParameter;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.repository.algemeen.OrganisatieParameterRepository;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.rivm.screenit.util.EntityAuditUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
@@ -63,7 +63,7 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 {
 	private static final String GEEN_WAARDE = "(geen waarde)";
 
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	private HibernateService hibernateService;
 
@@ -74,13 +74,13 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 	private final Map<String, Long> paramKeyIds = new ConcurrentHashMap<>();
 
 	@Override
-	public <T> T getOrganisatieParameter(Instelling organisatie, OrganisatieParameterKey parameterKey)
+	public <T> T getOrganisatieParameter(Organisatie organisatie, OrganisatieParameterKey parameterKey)
 	{
 		return getOrganisatieParameter(organisatie, parameterKey, null);
 	}
 
 	@Override
-	public <T> T getOrganisatieParameter(Instelling organisatie, OrganisatieParameterKey parameterKey, T defaultValue)
+	public <T> T getOrganisatieParameter(Organisatie organisatie, OrganisatieParameterKey parameterKey, T defaultValue)
 	{
 		var key = maakParamKey(organisatie, parameterKey);
 		var keyId = paramKeyIds.get(key);
@@ -94,14 +94,14 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 	}
 
 	@Override
-	public OrganisatieParameter getParameter(Instelling organisatie, OrganisatieParameterKey parameterKey)
+	public OrganisatieParameter getParameter(Organisatie organisatie, OrganisatieParameterKey parameterKey)
 	{
 		Map<String, Object> queryParams = new HashMap<>();
 		queryParams.put("key", parameterKey);
 
 		if (organisatie == null)
 		{
-			organisatie = getInstellingByOrganisatieType(parameterKey);
+			organisatie = getOrganisatieByOrganisatieType(parameterKey);
 		}
 		if (organisatie != null)
 		{
@@ -111,9 +111,9 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 		return hibernateService.getUniqueByParameters(OrganisatieParameter.class, queryParams);
 	}
 
-	private Instelling getInstellingByOrganisatieType(OrganisatieParameterKey parameterKey)
+	private Organisatie getOrganisatieByOrganisatieType(OrganisatieParameterKey parameterKey)
 	{
-		var organisaties = instellingService.getInstellingByOrganisatieTypes(List.of(parameterKey.getOrganisatieType()));
+		var organisaties = organisatieService.getOrganisatieByOrganisatieTypes(List.of(parameterKey.getOrganisatieType()));
 		if (!organisaties.isEmpty())
 		{
 			return organisaties.get(0);
@@ -158,9 +158,9 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void saveOrUpdateOrganisatieParameters(List<OrganisatieParameter> parameters, InstellingGebruiker loggedInInstellingGebruiker)
+	public void saveOrUpdateOrganisatieParameters(List<OrganisatieParameter> parameters, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		Set<Instelling> instellingenToSave = new HashSet<>();
+		Set<Organisatie> instellingenToSave = new HashSet<>();
 		Set<Bevolkingsonderzoek> bvos = new HashSet<>();
 		List<String> nieuweValues = new ArrayList<>();
 		for (OrganisatieParameter parameter : parameters)
@@ -185,14 +185,14 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 		hibernateService.saveOrUpdateAll(instellingenToSave);
 		if (!nieuweValues.isEmpty())
 		{
-			logService.logGebeurtenis(LogGebeurtenis.PARAMETERISATIE_WIJZIG, loggedInInstellingGebruiker, "Nieuwe waarde(n): " + StringUtils.join(nieuweValues, ", "),
+			logService.logGebeurtenis(LogGebeurtenis.PARAMETERISATIE_WIJZIG, ingelogdeOrganisatieMedewerker, "Nieuwe waarde(n): " + StringUtils.join(nieuweValues, ", "),
 				bvos.toArray(new Bevolkingsonderzoek[bvos.size()]));
 		}
 	}
 
 	@Override
 	@Transactional
-	public OrganisatieParameter maakOfUpdateOrganisatieParameter(OrganisatieParameterKey key, String value, Instelling organisatie)
+	public OrganisatieParameter maakOfUpdateOrganisatieParameter(OrganisatieParameterKey key, String value, Organisatie organisatie)
 	{
 		var bestaandeParameter = getParameter(organisatie, key);
 		if (bestaandeParameter == null)
@@ -201,7 +201,7 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 			organisatieParameter.setKey(key);
 			if (organisatie == null)
 			{
-				organisatie = getInstellingByOrganisatieType(key);
+				organisatie = getOrganisatieByOrganisatieType(key);
 			}
 			if (organisatie != null)
 			{
@@ -235,7 +235,7 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 		return value;
 	}
 
-	private String nieuwValue(Set<Instelling> instellingenToSave, OrganisatieParameter parameter, String value)
+	private String nieuwValue(Set<Organisatie> instellingenToSave, OrganisatieParameter parameter, String value)
 	{
 		parameter.getOrganisatie().getParameters().add(parameter);
 		instellingenToSave.add(parameter.getOrganisatie());
@@ -246,12 +246,12 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 		return value;
 	}
 
-	private String maakParamKey(Instelling organisatie, OrganisatieParameterKey parameterKey)
+	private String maakParamKey(Organisatie organisatie, OrganisatieParameterKey parameterKey)
 	{
 		return (organisatie != null ? organisatie.getId() : "") + "_" + parameterKey;
 	}
 
-	private <T> T getParamAndCacheId(Instelling organisatie, OrganisatieParameterKey parameterKey, T defaultValue)
+	private <T> T getParamAndCacheId(Organisatie organisatie, OrganisatieParameterKey parameterKey, T defaultValue)
 	{
 		var parameter = getParameter(organisatie, parameterKey);
 		if (parameter != null && parameter.getId() != null)
@@ -261,7 +261,7 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 		return getValueFromParam(parameterKey, defaultValue, parameter);
 	}
 
-	private <T> T getParamViaCache(Instelling organisatie, OrganisatieParameterKey parameterKey, T defaultValue)
+	private <T> T getParamViaCache(Organisatie organisatie, OrganisatieParameterKey parameterKey, T defaultValue)
 	{
 		String key = maakParamKey(organisatie, parameterKey);
 		var keyId = paramKeyIds.get(key);

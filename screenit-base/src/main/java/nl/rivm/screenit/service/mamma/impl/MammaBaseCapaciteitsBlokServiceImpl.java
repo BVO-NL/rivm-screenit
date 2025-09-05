@@ -40,7 +40,7 @@ import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakReserveringView;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaCapaciteitBlokDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok_;
@@ -97,7 +97,7 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 	private ICurrentDateSupplier currentDateSupplier;
 
 	@Override
-	public String saveOrUpdate(PlanningCapaciteitBlokDto blok, InstellingGebruiker ingelogdeGebruiker)
+	public String saveOrUpdate(PlanningCapaciteitBlokDto blok, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		if (MammaCapaciteitBlokType.GEEN_SCREENING.equals(blok.blokType))
 		{
@@ -108,7 +108,7 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 		boolean isNieuw = blok.conceptId == null;
 		try
 		{
-			conceptPlanningsApplicatie.sendCapaciteitBlok(blok, isNieuw, ingelogdeGebruiker);
+			conceptPlanningsApplicatie.sendCapaciteitBlok(blok, isNieuw, ingelogdeOrganisatieMedewerker);
 		}
 		catch (HttpClientErrorException | HttpServerErrorException se)
 		{
@@ -124,9 +124,9 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 	}
 
 	@Override
-	public String delete(PlanningCapaciteitBlokDto blok, InstellingGebruiker loggedInInstellingGebruiker)
+	public String delete(PlanningCapaciteitBlokDto blok, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		return conceptPlanningsApplicatie.deleteCapaciteitBlok(blok, loggedInInstellingGebruiker);
+		return conceptPlanningsApplicatie.deleteCapaciteitBlok(blok, ingelogdeOrganisatieMedewerker);
 	}
 
 	@Override

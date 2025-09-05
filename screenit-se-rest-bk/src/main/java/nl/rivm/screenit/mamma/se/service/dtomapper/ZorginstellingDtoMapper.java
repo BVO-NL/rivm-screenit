@@ -22,20 +22,20 @@ package nl.rivm.screenit.mamma.se.service.dtomapper;
  */
 
 import nl.rivm.screenit.mamma.se.dto.ZorginstellingDto;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 
 public class ZorginstellingDtoMapper
 {
 
-	public ZorginstellingDto createZorginstellingDto(Instelling instelling)
+	public ZorginstellingDto createZorginstellingDto(Organisatie organisatie)
 	{
-		if (instelling == null)
+		if (organisatie == null)
 		{
 			return null;
 		}
 		ZorginstellingDto zorginstellingDto = new ZorginstellingDto();
-		zorginstellingDto.setNaam(instelling.getNaam());
-		zorginstellingDto.setId(instelling.getId());
+		zorginstellingDto.setNaam(organisatie.getNaam());
+		zorginstellingDto.setId(organisatie.getId());
 		return zorginstellingDto;
 	}
 }

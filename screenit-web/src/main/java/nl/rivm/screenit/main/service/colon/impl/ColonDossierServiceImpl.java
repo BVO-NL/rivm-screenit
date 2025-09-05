@@ -39,8 +39,8 @@ import nl.rivm.screenit.model.AanvraagBriefStatus;
 import nl.rivm.screenit.model.BerichtZoekFilter;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DossierStatus;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.UploadDocument;
@@ -132,7 +132,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 
 	@Override
 	@Transactional
-	public void conclusieOpslaan(ColonIntakeAfspraak afspraak, ColonVervolgonderzoekKeuzesDto keuzes, InstellingGebruiker ingelogdeGebruiker,
+	public void conclusieOpslaan(ColonIntakeAfspraak afspraak, ColonVervolgonderzoekKeuzesDto keuzes, OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
 		ColonConclusieType oudeConclusieType)
 	{
 		var conclusie = afspraak.getConclusie();
@@ -277,7 +277,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 
 		hibernateService.saveOrUpdate(afspraak);
 		dossierBaseService.setVolgendeUitnodingVoorConclusie(afspraak);
-		logService.logGebeurtenis(LogGebeurtenis.CONCLUSIE_VASTLEGGEN_WIJZIGEN, ingelogdeGebruiker, client, nieuweConclusie ? "Nieuw" : " Gewijzigd" + conclusieDiff,
+		logService.logGebeurtenis(LogGebeurtenis.CONCLUSIE_VASTLEGGEN_WIJZIGEN, ingelogdeOrganisatieMedewerker, client, nieuweConclusie ? "Nieuw" : " Gewijzigd" + conclusieDiff,
 			Bevolkingsonderzoek.COLON);
 	}
 
@@ -300,7 +300,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 
 	@Override
 	@Transactional
-	public void verwijderScannedAntwoordFormulier(ColonUitnodiging uitnodiging, InstellingGebruiker ingelogdeGebruiker)
+	public void verwijderScannedAntwoordFormulier(ColonUitnodiging uitnodiging, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		uitnodiging = (ColonUitnodiging) HibernateHelper.deproxy(ModelProxyHelper.deproxy(uitnodiging));
 
@@ -369,7 +369,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 			}
 		}
 
-		logService.logGebeurtenis(LogGebeurtenis.ANTWOORDFORMULIER_VERWIJDERD_GEZET, ingelogdeGebruiker, client, "UitnodigingsId: " + uitnodiging.getUitnodigingsId(),
+		logService.logGebeurtenis(LogGebeurtenis.ANTWOORDFORMULIER_VERWIJDERD_GEZET, ingelogdeOrganisatieMedewerker, client, "UitnodigingsId: " + uitnodiging.getUitnodigingsId(),
 			Bevolkingsonderzoek.COLON);
 	}
 
@@ -513,7 +513,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 
 	@Override
 	@Transactional
-	public void conclusieVerwijderen(ColonIntakeAfspraak afspraak, InstellingGebruiker loggedInInstellingGebruiker, ColonConclusieType origConclusie)
+	public void conclusieVerwijderen(ColonIntakeAfspraak afspraak, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, ColonConclusieType origConclusie)
 	{
 		var screeningRonde = afspraak.getColonScreeningRonde();
 		var dossier = screeningRonde.getDossier();
@@ -542,7 +542,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 		hibernateService.saveOrUpdate(afspraak);
 		dossierBaseService.setDatumVolgendeUitnodiging(dossier, ColonUitnodigingsintervalType.GEPLANDE_INTAKE_AFSPRAAK);
 
-		logService.logGebeurtenis(LogGebeurtenis.CONCLUSIE_VERWIJDEREN, loggedInInstellingGebruiker, client, melding, Bevolkingsonderzoek.COLON);
+		logService.logGebeurtenis(LogGebeurtenis.CONCLUSIE_VERWIJDEREN, ingelogdeOrganisatieMedewerker, client, melding, Bevolkingsonderzoek.COLON);
 		hibernateService.getHibernateSession().flush();
 	}
 
@@ -557,21 +557,21 @@ public class ColonDossierServiceImpl implements ColonDossierService
 		{
 			melding += " datum/tijd " + formatDT.format(conclusie.getDatum()) + ", ";
 		}
-		var instellingGebruiker = conclusie.getInstellingGebruiker();
-		if (instellingGebruiker != null)
+		var organisatieMedewerker = conclusie.getOrganisatieMedewerker();
+		if (organisatieMedewerker != null)
 		{
-			Gebruiker medewerker;
+			Medewerker medewerker;
 			try
 			{
-				medewerker = instellingGebruiker.getMedewerker();
+				medewerker = organisatieMedewerker.getMedewerker();
 			}
 			catch (ObjectNotFoundException e)
 			{
 
-				var id = (Long) HibernateHelper.getId(instellingGebruiker);
-				medewerker = hibernateService.load(InstellingGebruiker.class, id).getMedewerker();
+				var id = (Long) HibernateHelper.getId(organisatieMedewerker);
+				medewerker = hibernateService.load(OrganisatieMedewerker.class, id).getMedewerker();
 			}
-			melding += NaamUtil.getNaamGebruiker(medewerker) + ", ";
+			melding += NaamUtil.getNaamMedewerker(medewerker) + ", ";
 		}
 		if (conclusie.getDatumColoscopie() != null && origConclusie.equals(ColonConclusieType.COLOSCOPIE))
 		{
@@ -591,7 +591,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 
 	@Override
 	@Transactional
-	public void verwijderIfobtUitslag(IFOBTTest buis, UploadDocument uploadDocument, InstellingGebruiker ingelogdeGebruiker)
+	public void verwijderIfobtUitslag(IFOBTTest buis, UploadDocument uploadDocument, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		var uitnodiging = (ColonUitnodiging) HibernateHelper.deproxy(ModelProxyHelper.deproxy(FITTestUtil.getUitnodiging(buis)));
 
@@ -663,7 +663,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 		hibernateService.saveOrUpdate(client);
 		hibernateService.saveOrUpdate(screeningRonde);
 
-		logService.logGebeurtenis(LogGebeurtenis.IFOBT_UITSLAG_VERWIJDERD, ingelogdeGebruiker, client, "UitnodigingsId: " + uitnodiging.getUitnodigingsId(),
+		logService.logGebeurtenis(LogGebeurtenis.IFOBT_UITSLAG_VERWIJDERD, ingelogdeOrganisatieMedewerker, client, "UitnodigingsId: " + uitnodiging.getUitnodigingsId(),
 			Bevolkingsonderzoek.COLON);
 	}
 
@@ -696,7 +696,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 
 	@Override
 	@Transactional
-	public boolean setUitslagenGecontroleerdEnUpdateDashboard(LogRegel logRegel, InstellingGebruiker medewerker, DashboardStatus dashboardStatus)
+	public boolean setUitslagenGecontroleerdEnUpdateDashboard(LogRegel logRegel, OrganisatieMedewerker organisatieMedewerker, DashboardStatus dashboardStatus)
 	{
 		var dossier = logRegel.getClient().getColonDossier();
 		var signaleringsTermijn = organisatieParameterService.getOrganisatieParameter(null, OrganisatieParameterKey.COLON_SIGNALERINGSTERMIJN_MISSENDE_UITSLAGEN, 30);
@@ -705,9 +705,9 @@ public class ColonDossierServiceImpl implements ColonDossierService
 		var laatstGesignaleerdeIfobt = fitService.getLaatsteFitMetMissendeUitslagVanDossier(dossier,
 			nu.minusDays(MAX_AANTAL_DAGEN_TERUGKIJKEN_CONTROLE_MISSENDE_UITSLAGEN), nu.minusDays(signaleringsTermijn)).orElse(null);
 
-		var isGedowngrade = dashboardService.updateLogRegelMetDashboardStatus(logRegel, medewerker.getMedewerker().getGebruikersnaam(), dashboardStatus);
+		var isGedowngrade = dashboardService.updateLogRegelMetDashboardStatus(logRegel, organisatieMedewerker.getMedewerker().getGebruikersnaam(), dashboardStatus);
 
-		logService.logGebeurtenis(LogGebeurtenis.COLON_CONTROLE_MISSENDE_UITSLAGEN_MATCH_GECONTROLEERD, medewerker, dossier.getClient(), Bevolkingsonderzoek.COLON);
+		logService.logGebeurtenis(LogGebeurtenis.COLON_CONTROLE_MISSENDE_UITSLAGEN_MATCH_GECONTROLEERD, organisatieMedewerker, dossier.getClient(), Bevolkingsonderzoek.COLON);
 
 		if (laatstGesignaleerdeIfobt == null)
 		{

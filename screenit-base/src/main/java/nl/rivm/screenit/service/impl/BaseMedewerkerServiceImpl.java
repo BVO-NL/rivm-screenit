@@ -21,22 +21,31 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.InlogStatus;
-import nl.rivm.screenit.model.InstellingGebruikerRol;
-import nl.rivm.screenit.repository.algemeen.GebruikerRepository;
-import nl.rivm.screenit.repository.algemeen.InstellingGebruikerRolRepository;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
+import nl.rivm.screenit.model.ScreeningOrganisatie;
+import nl.rivm.screenit.repository.algemeen.MedewerkerRepository;
+import nl.rivm.screenit.repository.algemeen.OrganisatieMedewerkerRolRepository;
 import nl.rivm.screenit.service.BaseMedewerkerService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.MailService;
+import nl.rivm.screenit.util.DatabaseSequence;
+import nl.rivm.screenit.util.SequenceGenerator;
+import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,13 +59,99 @@ public class BaseMedewerkerServiceImpl implements BaseMedewerkerService
 
 	private final ICurrentDateSupplier currentDateSupplier;
 
-	private final GebruikerRepository medewerkerRepository;
+	private final MedewerkerRepository medewerkerRepository;
 
-	private final InstellingGebruikerRolRepository organisatieMedewerkerRolRepository;
+	private final OrganisatieMedewerkerRolRepository organisatieMedewerkerRolRepository;
+
+	private final HibernateService hibernateService;
+
+	@Override
+	public Optional<Medewerker> getMedewerkerByGebruikersnaam(String gebruikersnaam)
+	{
+		return medewerkerRepository.findByGebruikersnaam(gebruikersnaam);
+	}
+
+	@Override
+	public ScreeningOrganisatie getScreeningOrganisatie(Medewerker medewerker)
+	{
+		List<ScreeningOrganisatie> screeningOrganisaties = new ArrayList<>();
+		for (OrganisatieMedewerker organisatieMedewerker : medewerker.getOrganisatieMedewerkers())
+		{
+			if (ScreeningOrganisatie.class.isAssignableFrom(Hibernate.getClass(organisatieMedewerker.getOrganisatie())))
+			{
+				screeningOrganisaties.add((ScreeningOrganisatie) organisatieMedewerker.getOrganisatie());
+			}
+		}
+
+		if (screeningOrganisaties.size() == 1)
+		{
+			return screeningOrganisaties.get(0);
+		}
+
+		return null;
+	}
+
+	@Override
+	public Optional<Medewerker> getMedewerkerByUzinummer(String uzinummer)
+	{
+		return medewerkerRepository.findByUzinummer(uzinummer);
+	}
+
+	@Override
+	public Medewerker getPatholoog(String patholoogId, Organisatie organisatie)
+	{
+		var pathologen = medewerkerRepository.findByPatholoogIdAndActiefTrue(patholoogId);
+		Medewerker medewerker = null;
+		if (pathologen != null)
+		{
+			if (pathologen.size() == 1)
+			{
+				medewerker = pathologen.get(0);
+			}
+			else if (pathologen.size() > 1 && organisatie != null)
+			{
+
+				boolean gebruikerNietUniek = false;
+				for (Medewerker subMedewerker : pathologen)
+				{
+					if (subMedewerker.getOrganisatieMedewerkers() != null)
+					{
+						for (OrganisatieMedewerker organisatieMedewerker : subMedewerker.getOrganisatieMedewerkers())
+						{
+							if (Boolean.TRUE.equals(organisatieMedewerker.getActief()) && Boolean.TRUE.equals(organisatieMedewerker.getOrganisatie().getActief())
+								&& organisatieMedewerker.getOrganisatie().equals(organisatie))
+							{
+								if (medewerker == null)
+								{
+									medewerker = subMedewerker;
+								}
+								else
+								{
+									gebruikerNietUniek = true;
+								}
+							}
+						}
+					}
+				}
+				if (gebruikerNietUniek)
+				{
+					medewerker = null;
+				}
+			}
+		}
+		return medewerker;
+	}
+
+	@Override
+	public int getNextMedewerkercode()
+	{
+		return hibernateService.getHibernateSession()
+			.doReturningWork(new SequenceGenerator(DatabaseSequence.MEDEWERKERCODE, hibernateService.getHibernateSession().getSessionFactory())).intValue();
+	}
 
 	@Override
 	@Transactional
-	public void inActiveerMedewerker(Gebruiker medewerker)
+	public void inActiveerMedewerker(Medewerker medewerker)
 	{
 		medewerker.setActief(Boolean.FALSE.equals(medewerker.getActief()));
 		if (medewerker.getActief().equals(Boolean.TRUE))
@@ -69,10 +164,10 @@ public class BaseMedewerkerServiceImpl implements BaseMedewerkerService
 			medewerker.setActiefTotEnMet(currentDateSupplier.getDate());
 		}
 		medewerker.setInlogstatus(InlogStatus.GEBLOKKEERD);
-		medewerker.getOrganisatieMedewerkers().forEach(instellingGebruiker ->
+		medewerker.getOrganisatieMedewerkers().forEach(organisatieMedewerker ->
 		{
-			instellingGebruiker.setActief(Boolean.FALSE);
-			inactiveerOrganisatieMedewerkersMetRol(instellingGebruiker.getRollen());
+			organisatieMedewerker.setActief(Boolean.FALSE);
+			inactiveerOrganisatieMedewerkersMetRol(organisatieMedewerker.getRollen());
 		});
 		medewerkerRepository.save(medewerker);
 
@@ -84,7 +179,7 @@ public class BaseMedewerkerServiceImpl implements BaseMedewerkerService
 
 	@Override
 	@Transactional
-	public void inactiveerOrganisatieMedewerkersMetRol(List<InstellingGebruikerRol> medewerkersMetRol)
+	public void inactiveerOrganisatieMedewerkersMetRol(List<OrganisatieMedewerkerRol> medewerkersMetRol)
 	{
 		medewerkersMetRol.forEach(rol ->
 		{
@@ -98,10 +193,10 @@ public class BaseMedewerkerServiceImpl implements BaseMedewerkerService
 
 	}
 
-	private void verstuurInactiverenEmail(Gebruiker medewerker)
+	private void verstuurInactiverenEmail(Medewerker medewerker)
 	{
-		var inactiverenemail = preferenceService.getString(PreferenceKey.INACTIVERENEMAIL.name(), "Beste gebruiker, <br><br>"
-			+ "U gebruiker account met de gebruikersnaam '{gebruikersnaam}' is ge&iuml;nactiveerd." + " <br><br>Met vriendelijke groeten, <br>Het ScreenIT team");
+		var inactiverenemail = preferenceService.getString(PreferenceKey.INACTIVERENEMAIL.name(), "Beste medewerker, <br><br>"
+			+ "Uw account met de gebruikersnaam '{gebruikersnaam}' is ge&iuml;nactiveerd." + " <br><br>Met vriendelijke groeten, <br>Het ScreenIT team");
 		inactiverenemail = inactiverenemail.replaceAll("\\{gebruikersnaam\\}", medewerker.getGebruikersnaam());
 		var aanhef = "";
 		if (medewerker.getAanhef() != null)
@@ -137,7 +232,7 @@ public class BaseMedewerkerServiceImpl implements BaseMedewerkerService
 		inactiverenemail = inactiverenemail.replaceAll("\\{achternaam\\}", achternaam);
 		inactiverenemail = inactiverenemail.replaceAll("\\{tussenvoegsel\\}", tussenvoegsel);
 		inactiverenemail = inactiverenemail.replaceAll("\\{voorletters\\}", voorletters);
-		var inactiverenSubject = preferenceService.getString(PreferenceKey.INACTIVERENSUBJECT.name(), "ScreenIT - Gebruiker account ge\u00EFnactiveerd");
+		var inactiverenSubject = preferenceService.getString(PreferenceKey.INACTIVERENSUBJECT.name(), "ScreenIT - Account ge\u00EFnactiveerd");
 		mailService.queueMailAanProfessional(medewerker.getEmailextra(), inactiverenSubject, inactiverenemail);
 	}
 }

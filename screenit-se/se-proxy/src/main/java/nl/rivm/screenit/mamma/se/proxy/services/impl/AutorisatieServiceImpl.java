@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.services.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,35 +21,41 @@ package nl.rivm.screenit.mamma.se.proxy.services.impl;
  * =========================LICENSE_END==================================
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import nl.rivm.screenit.mamma.se.proxy.model.AutorisatieDto;
-import nl.rivm.screenit.mamma.se.proxy.model.IngelogdeGebruikerDto;
-import nl.rivm.screenit.mamma.se.proxy.model.SERechtDto;
-import nl.rivm.screenit.mamma.se.proxy.services.AutorisatieService;
-import nl.rivm.screenit.mamma.se.proxy.util.DateUtil;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.time.LocalDate;
 
+import lombok.RequiredArgsConstructor;
+
+import nl.rivm.screenit.mamma.se.proxy.model.AutorisatieDto;
+import nl.rivm.screenit.mamma.se.proxy.model.IngelogdeMedewerkerDto;
+import nl.rivm.screenit.mamma.se.proxy.model.SERechtDto;
+import nl.rivm.screenit.mamma.se.proxy.services.AutorisatieService;
+import nl.rivm.screenit.mamma.se.proxy.util.DateUtil;
+
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Service
+@RequiredArgsConstructor
 public class AutorisatieServiceImpl implements AutorisatieService
 {
-    private final ObjectMapper objectMapper = new ObjectMapper();
+	private final ObjectMapper objectMapper;
 
-    @Override
-    public boolean isGeautoriseerdVoorInloggen(IngelogdeGebruikerDto ingelogdeGebruikerDto) throws IOException
-    {
-        AutorisatieDto responseObject = objectMapper.readValue(ingelogdeGebruikerDto.getLoginResponse(), AutorisatieDto.class);
-        SERechtDto inschrijven = responseObject.getInschrijvenRecht();
-        SERechtDto connectieStatus = responseObject.getConnectiestatusRecht();
-        return isGeautoriseerd(inschrijven) || isGeautoriseerd(connectieStatus);
-    }
+	@Override
+	public boolean isGeautoriseerdVoorInloggen(IngelogdeMedewerkerDto ingelogdeOrganisatieMedewerkerDto) throws IOException
+	{
+		AutorisatieDto responseObject = objectMapper.readValue(ingelogdeOrganisatieMedewerkerDto.getLoginResponse(), AutorisatieDto.class);
+		SERechtDto inschrijven = responseObject.getInschrijvenRecht();
+		SERechtDto connectieStatus = responseObject.getConnectiestatusRecht();
+		return isGeautoriseerd(inschrijven) || isGeautoriseerd(connectieStatus);
+	}
 
-    @Override
-    public boolean isGeautoriseerd(SERechtDto seRechtDto)
-    {
-        return seRechtDto.isAuthorized() && (seRechtDto.getEindDatum() == null || DateUtil.getCurrentDateTime().toLocalDate().compareTo(LocalDate.parse(seRechtDto.getEindDatum())) <= 0);
-    }
+	@Override
+	public boolean isGeautoriseerd(SERechtDto seRechtDto)
+	{
+		return seRechtDto.isAuthorized() && (seRechtDto.getEindDatum() == null
+			|| DateUtil.getCurrentDateTime().toLocalDate().compareTo(LocalDate.parse(seRechtDto.getEindDatum())) <= 0);
+	}
 
 }

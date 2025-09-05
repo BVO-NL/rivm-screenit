@@ -27,16 +27,16 @@ import java.util.List;
 import nl.rivm.screenit.mamma.se.dto.MammaHuisartsDto;
 import nl.rivm.screenit.mamma.se.dto.actions.InschrijvenDto;
 import nl.rivm.screenit.mamma.se.dto.actions.SetEmailAdresDto;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 
 public interface InschrijvenService
 {
-	void inschrijven(InschrijvenDto action, InstellingGebruiker instellingGebruiker, LocalDateTime transactieDatumTijd, MammaScreeningsEenheid screeningsEenheid);
+	void inschrijven(InschrijvenDto action, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd, MammaScreeningsEenheid screeningsEenheid);
 
-	void inschrijvingWijzigen(InschrijvenDto action, InstellingGebruiker instellingGebruiker, LocalDateTime transactieDatumTijd, MammaScreeningsEenheid screeningsEenheid);
+	void inschrijvingWijzigen(InschrijvenDto action, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd, MammaScreeningsEenheid screeningsEenheid);
 
 	List<MammaHuisartsDto> getAllHuisartsen();
 
-	void setEmailAdres(SetEmailAdresDto setEmailAdresDto, InstellingGebruiker ingelogdeGebruiker);
+	void setEmailAdres(SetEmailAdresDto setEmailAdresDto, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 }

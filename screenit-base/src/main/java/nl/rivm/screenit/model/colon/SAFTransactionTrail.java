@@ -48,7 +48,7 @@ public class SAFTransactionTrail extends AbstractHibernateObject
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date datumTijd;
 
-	private String gebruiker;
+	private String medewerker;
 
 	private String transactionId;
 
@@ -62,14 +62,14 @@ public class SAFTransactionTrail extends AbstractHibernateObject
 		this.datumTijd = datumTijd;
 	}
 
-	public String getGebruiker()
+	public String getMedewerker()
 	{
-		return gebruiker;
+		return medewerker;
 	}
 
-	public void setGebruiker(String gebruiker)
+	public void setMedewerker(String medewerker)
 	{
-		this.gebruiker = gebruiker;
+		this.medewerker = medewerker;
 	}
 
 	public String getTransactionId()

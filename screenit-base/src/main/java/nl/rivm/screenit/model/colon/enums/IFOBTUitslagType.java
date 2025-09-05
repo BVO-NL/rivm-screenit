@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.colon.enums;
 
 /*-
@@ -22,11 +21,21 @@ package nl.rivm.screenit.model.colon.enums;
  * =========================LICENSE_END==================================
  */
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import nl.rivm.screenit.model.enums.LogGebeurtenis;
+
+@Getter
+@RequiredArgsConstructor
 public enum IFOBTUitslagType
 {
-	CLIENT,
-	INTERN,
-	EXTERN,
-	SENTINEEL,
-	CLIENT_EIKEN
+	CLIENT(null),
+	INTERN(LogGebeurtenis.INTERNE_TEST_ONTVANGEN),
+	EXTERN(LogGebeurtenis.EXTERNE_TEST_ONTVANGEN),
+	SENTINEEL(LogGebeurtenis.SENTINEL_ONTVANGEN),
+	CLIENT_EIKEN(null),
+	QC(LogGebeurtenis.QC_MONSTER_ONTVANGEN);
+
+	private final LogGebeurtenis logGebeurtenis;
 }

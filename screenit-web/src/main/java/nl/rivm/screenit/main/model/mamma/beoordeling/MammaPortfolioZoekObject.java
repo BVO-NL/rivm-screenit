@@ -27,7 +27,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -36,7 +36,7 @@ import org.apache.wicket.model.IModel;
 
 public class MammaPortfolioZoekObject implements IDetachable
 {
-	private IModel<List<Gebruiker>> gebruikers;
+	private IModel<List<Medewerker>> medewerkers;
 
 	@Getter
 	@Setter
@@ -50,19 +50,19 @@ public class MammaPortfolioZoekObject implements IDetachable
 	@Setter
 	private MammobridgeRole mammobridgeRol;
 
-	public List<Gebruiker> getGebruikers()
+	public List<Medewerker> getMedewerkers()
 	{
-		return ModelUtil.nullSafeGet(gebruikers);
+		return ModelUtil.nullSafeGet(medewerkers);
 	}
 
-	public void setGebruikers(List<Gebruiker> gebruikers)
+	public void setMedewerkers(List<Medewerker> medewerkers)
 	{
-		this.gebruikers = ModelUtil.listRModel(gebruikers);
+		this.medewerkers = ModelUtil.listRModel(medewerkers);
 	}
 
 	@Override
 	public void detach()
 	{
-		ModelUtil.nullSafeDetach(gebruikers);
+		ModelUtil.nullSafeDetach(medewerkers);
 	}
 }

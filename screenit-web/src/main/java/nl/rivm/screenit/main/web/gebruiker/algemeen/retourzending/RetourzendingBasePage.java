@@ -26,7 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 
 public abstract class RetourzendingBasePage extends AlgemeenPage
 {
@@ -34,12 +35,12 @@ public abstract class RetourzendingBasePage extends AlgemeenPage
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.algemeen.retourzending.bestand", RetourzendingenVerwerkenPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.algemeen.retourzending.handmatig", RetourzendingHandmatigVerwerkenPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.algemeen.retourzending.retourreden", RetourzendingRedenBeheerPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.algemeen.retourzending.bestand", RetourzendingenVerwerkenPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.algemeen.retourzending.handmatig", RetourzendingHandmatigVerwerkenPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.algemeen.retourzending.retourreden", RetourzendingRedenBeheerPage.class));
 
 		return contextMenuItems;
 	}

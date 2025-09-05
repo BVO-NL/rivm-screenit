@@ -230,7 +230,6 @@ public class DossierServiceImpl implements DossierService
 		{
 			ScreeningRondeGebeurtenissen rondeDossier = new ScreeningRondeGebeurtenissen(i--);
 			rondeDossier.setScreeningRonde(colonScreeningRonde);
-			hibernateService.reload(colonScreeningRonde);
 
 			if (i == 0)
 			{
@@ -340,7 +339,7 @@ public class DossierServiceImpl implements DossierService
 
 		var intakelocatie = afspraak.getKamer().getIntakelocatie();
 
-		screeningRondeGebeurtenis.setExtraOmschrijving(afspraakTime, " Intakelocatie: " + intakelocatie.getNaam() + ", " + intakelocatie.getEerstePlaats());
+		screeningRondeGebeurtenis.setExtraOmschrijving(afspraakTime, " Intakelocatie: " + intakelocatie.getNaam() + ", " + intakelocatie.getAdres().getPlaats());
 
 		rondeDossier.addGebeurtenis(screeningRondeGebeurtenis);
 
@@ -638,7 +637,7 @@ public class DossierServiceImpl implements DossierService
 		extraOmschrijving.add("Conclusie: ");
 		extraOmschrijving.add(EnumStringUtil.getPropertyString(conclusie.getType()));
 		extraOmschrijving.add("Intakelocatie: " + intakelocatie.getNaam());
-		extraOmschrijving.add(intakelocatie.getEerstePlaats());
+		extraOmschrijving.add(intakelocatie.getAdres().getPlaats());
 		screeningRondeGebeurtenis.setExtraOmschrijving(extraOmschrijving.toArray(new String[] {}));
 		screeningRondeGebeurtenis.setBron(bepaalGebeurtenisBron(conclusie));
 		screeningRondeGebeurtenis.setAfspraak(afspraak);
@@ -835,7 +834,6 @@ public class DossierServiceImpl implements DossierService
 
 				var rondeDossier = new ScreeningRondeGebeurtenissen(rondeNr);
 				rondeDossier.setScreeningRonde(cervixScreeningRonde);
-				hibernateService.reload(cervixScreeningRonde);
 
 				if (cisHistorie != null && cervixScreeningRonde.equals(cisHistorie.getScreeningRonde()) && cisHistorie.isHeeftPap0())
 				{
@@ -1459,7 +1457,7 @@ public class DossierServiceImpl implements DossierService
 
 		ScreenitRevisionEntity laatsteWijzigingHuisarts = dossierAuditService.getLastRevision(screeningRonde,
 			AuditEntity.and(AuditEntity.property("datumVastleggenHuisarts").isNotNull(),
-				AuditEntity.or(AuditEntity.revisionProperty("client").isNotNull(), AuditEntity.revisionProperty("instellingGebruiker").isNotNull())));
+				AuditEntity.or(AuditEntity.revisionProperty("client").isNotNull(), AuditEntity.revisionProperty("organisatieMedewerker").isNotNull())));
 		screeningRondeGebeurtenis.setDatum(datum);
 		GebeurtenisBron bron = dossierAuditService.getGebeurtenisBron(laatsteWijzigingHuisarts, GebeurtenisBron.AUTOMATISCH);
 		screeningRondeGebeurtenis.setBron(bron);
@@ -1609,7 +1607,7 @@ public class DossierServiceImpl implements DossierService
 			list.add(EnumStringUtil.getPropertyString(afspraak.getVerzettenReden()));
 		}
 
-		if (Boolean.TRUE.equals(afspraak.getUitnodiging().getScreeningRonde().isGeforceerd()))
+		if (afspraak.getUitnodiging().getScreeningRonde().isGeforceerd())
 		{
 			Optional<MammaAfspraak> eersteAfspraak = afspraak.getUitnodiging().getScreeningRonde().getUitnodigingen().stream().map(MammaUitnodiging::getAfspraken)
 				.flatMap(Collection::stream).min(Comparator.comparing(MammaAfspraak::getCreatiedatum));
@@ -1629,7 +1627,7 @@ public class DossierServiceImpl implements DossierService
 		gebeurtenis.setGebeurtenis(typeGebeurtenis);
 		if (lezing.getBeoordelaar() != null)
 		{
-			gebeurtenis.setExtraOmschrijving("Beoordeling door: ", NaamUtil.getNaamGebruiker(lezing.getBeoordelaar().getMedewerker()), "BI-RADS: ",
+			gebeurtenis.setExtraOmschrijving("Beoordeling door: ", NaamUtil.getNaamMedewerker(lezing.getBeoordelaar().getMedewerker()), "BI-RADS: ",
 				MammaScreeningRondeUtil.bepaalNaamBiradsWaarde(MammaZijde.RECHTER_BORST, lezing.getBiradsRechts()) +
 					MammaScreeningRondeUtil.bepaalNaamBiradsWaarde(MammaZijde.LINKER_BORST, lezing.getBiradsLinks()));
 		}
@@ -1843,18 +1841,16 @@ public class DossierServiceImpl implements DossierService
 
 	private <B extends ClientBrief<?, ?, ?>> void gebeurtenisAanvullen(B brief, ScreeningRondeGebeurtenis screeningRondeGebeurtenis, List<String> extraOmschrijvingen)
 	{
-		if (screeningRondeGebeurtenis.getGebeurtenis() == TypeGebeurtenis.BRIEF_AFGEDRUKT && brief instanceof CervixBrief)
+		if (screeningRondeGebeurtenis.getGebeurtenis() == TypeGebeurtenis.BRIEF_AFGEDRUKT && brief instanceof CervixBrief cervixBrief)
 		{
-			var cervixBrief = (CervixBrief) brief;
 			var uitnodiging = cervixBrief.getUitnodiging();
 			if (uitnodiging != null && uitnodiging.getGecombineerdeZas() != null)
 			{
 				extraOmschrijvingen.add(0, "samen met ZAS");
 			}
 		}
-		if (brief instanceof BezwaarBrief)
+		if (brief instanceof BezwaarBrief bezwaarBrief)
 		{
-			var bezwaarBrief = (BezwaarBrief) brief;
 			if (bezwaarBrief.isVragenOmHandtekening())
 			{
 				extraOmschrijvingen.add(" - handtekening vergeten");
@@ -1927,12 +1923,11 @@ public class DossierServiceImpl implements DossierService
 		else if (brief.getBevolkingsonderzoek() == Bevolkingsonderzoek.MAMMA)
 		{
 			ScreeningRonde sr = (ScreeningRonde) HibernateHelper.deproxy(screeningRonde);
-			if (sr instanceof MammaScreeningRonde)
+			if (sr instanceof MammaScreeningRonde mammaScreeningRonde)
 			{
-				MammaScreeningRonde mammaScreeningRonde = (MammaScreeningRonde) sr;
 				extraOmschrijvingen.add("uitnodigingsnummer: ");
 				extraOmschrijvingen.add(mammaScreeningRonde.getUitnodigingsNr().toString());
-				if (Boolean.TRUE.equals(mammaScreeningRonde.isGeforceerd()))
+				if (mammaScreeningRonde.isGeforceerd())
 				{
 					extraOmschrijvingen.add("Geforceerde ronde");
 				}
@@ -2103,7 +2098,7 @@ public class DossierServiceImpl implements DossierService
 			screeningRondeGebeurtenis.setUitnodiging(uitnodiging);
 			screeningRondeGebeurtenis.setExtraOmschrijving(extraOmschrijvingen.toArray(new String[] {}));
 			screeningRondeGebeurtenis
-				.setBron(revisionEntity.getGebruiker() != null || revisionEntity.getInstellingGebruiker() != null ? GebeurtenisBron.MEDEWERKER : GebeurtenisBron.AUTOMATISCH);
+				.setBron(revisionEntity.getMedewerker() != null || revisionEntity.getOrganisatieMedewerker() != null ? GebeurtenisBron.MEDEWERKER : GebeurtenisBron.AUTOMATISCH);
 			rondeDossier.addGebeurtenis(screeningRondeGebeurtenis);
 		}
 	}

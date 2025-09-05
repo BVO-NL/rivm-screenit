@@ -87,9 +87,9 @@ public class PlanningScreeningsOrganisatie extends PlanningEntiteit
 		}
 	}
 
-	public void conceptGewijzigdDoor(Long instellingGebruikerId)
+	public void conceptGewijzigdDoor(Long organisatieMedewerkerId)
 	{
-		conceptGewijzigdDoor.add(instellingGebruikerId);
+		conceptGewijzigdDoor.add(organisatieMedewerkerId);
 	}
 
 	public void resetConceptGewijzigdDoor()

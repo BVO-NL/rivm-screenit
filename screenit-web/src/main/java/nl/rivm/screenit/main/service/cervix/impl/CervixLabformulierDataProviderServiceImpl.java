@@ -85,7 +85,7 @@ public class CervixLabformulierDataProviderServiceImpl extends RepositoryDataPro
 			throw new IllegalStateException("OrganisatieType isn't compatible");
 		}
 
-		return filterHeeftOrganisatieType(filter.getOrganisatieType(), filter.getInstellingId())
+		return filterHeeftOrganisatieType(filter.getOrganisatieType(), filter.getOrganisatieId())
 			.and(filterHeeftMonsterId(filter.getMonsterId()))
 			.and(filterHeeftLabformulierStatussen(filter.getLabformulierStatussen()))
 			.and(filterHeeftScanDatumVanaf(filter.getScanDatumVanaf()))
@@ -96,7 +96,7 @@ public class CervixLabformulierDataProviderServiceImpl extends RepositoryDataPro
 			.and(filterLabProcesStapIsHuisartsOnbekend(filter.getLabprocesStap()))
 			.and(filterLabProcesStapIsControlerenVoorCytologie(filter.getLabprocesStap()))
 			.and(filterLabProcesStapIsCytopathologie(filter.getLabprocesStap()))
-			.and(filterOrganisatieTypeIsScreeningorganisatie(filter.getOrganisatieType(), filter.getInstellingId()))
+			.and(filterOrganisatieTypeIsScreeningorganisatie(filter.getOrganisatieType(), filter.getOrganisatieId()))
 			.and(filterIsDigitaal(filter.getDigitaal()))
 			.and(filterBsnCheck(filter.getLabprocesStap(), filter.getBsn()));
 	}

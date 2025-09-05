@@ -35,7 +35,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_MAMMA_ILM_VERWERKING_VERSLAG,
+	recht = Recht.MEDEWERKER_MAMMA_ILM_VERWERKING_VERSLAG,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaIlmBeeldenStatusRapportagePage extends AlgemeenPage
 {

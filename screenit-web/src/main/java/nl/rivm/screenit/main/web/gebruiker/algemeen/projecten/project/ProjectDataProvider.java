@@ -70,7 +70,7 @@ public class ProjectDataProvider extends SortableDataProvider<Project, String>
 	{
 		return projectService
 			.getProjecten(ModelUtil.nullSafeGet(zoekObject),
-				getInstellingenIds(toeganglevels.get(ProjectType.PROJECT)), getInstellingenIds(toeganglevels.get(ProjectType.BRIEFPROJECT)),
+				getOrganisatieIds(toeganglevels.get(ProjectType.PROJECT)), getOrganisatieIds(toeganglevels.get(ProjectType.BRIEFPROJECT)),
 				first, count, new SortState<String>(getSort().getProperty(), getSort().isAscending()))
 			.iterator();
 	}
@@ -78,15 +78,15 @@ public class ProjectDataProvider extends SortableDataProvider<Project, String>
 	@Override
 	public long size()
 	{
-		return projectService.getCountProjecten(ModelUtil.nullSafeGet(zoekObject), getInstellingenIds(toeganglevels.get(ProjectType.PROJECT)),
-			getInstellingenIds(toeganglevels.get(ProjectType.BRIEFPROJECT)));
+		return projectService.getCountProjecten(ModelUtil.nullSafeGet(zoekObject), getOrganisatieIds(toeganglevels.get(ProjectType.PROJECT)),
+			getOrganisatieIds(toeganglevels.get(ProjectType.BRIEFPROJECT)));
 	}
 
-	private List<Long> getInstellingenIds(ToegangLevel toegangLevel)
+	private List<Long> getOrganisatieIds(ToegangLevel toegangLevel)
 	{
 		if (toegangLevel != null)
 		{
-			return organisatieZoekService.getZichtbareInstellingenOpToegangLevel(ScreenitSession.get().getLoggedInInstellingGebruiker().getOrganisatie(), toegangLevel,
+			return organisatieZoekService.getZichtbareOrganisatiesOpToegangLevel(ScreenitSession.get().getIngelogdeOrganisatieMedewerker().getOrganisatie(), toegangLevel,
 				Arrays.asList(OrganisatieType.values()));
 		}
 		return null;

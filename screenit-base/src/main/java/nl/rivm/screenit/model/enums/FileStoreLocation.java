@@ -113,7 +113,7 @@ public enum FileStoreLocation
 
 	ALGEMEEN_MERGED_BRIEVEN(File.separator + "algemeen" + File.separator + "brieven" + File.separator + "mergedbrieven" + File.separator, true),
 
-	INSTELLING_MERGED_BRIEVEN(
+	ORGANISATIE_MERGED_BRIEVEN(
 		File.separator + "algemeen" + File.separator + "instelling" + File.separator + "{id}" + File.separator + "mergedbrieven" + File.separator,
 		true,
 		true),
@@ -125,12 +125,12 @@ public enum FileStoreLocation
 		false,
 		true),
 
-	GEBRUIKER_AFBEELDINGEN(
+	MEDEWERKER_AFBEELDINGEN(
 		File.separator + "algemeen" + File.separator + "gebruiker" + File.separator + "{id}" + File.separator + "afbeeldingen" + File.separator,
 		false,
 		true),
 
-	INSTELLING_DOCUMENTEN(File.separator + "algemeen" + File.separator + "instelling" + File.separator + "{id}" + File.separator + "documenten" + File.separator, false, true),
+	ORGANISATIE_DOCUMENTEN(File.separator + "algemeen" + File.separator + "instelling" + File.separator + "{id}" + File.separator + "documenten" + File.separator, false, true),
 
 	CLIENT_DOCUMENTEN(File.separator + "algemeen" + File.separator + "client" + File.separator + "{id}" + File.separator + "documenten" + File.separator, false, true),
 

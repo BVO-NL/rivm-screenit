@@ -50,7 +50,7 @@ public abstract class MammaVisitatieZoekPanel extends MammaKwaliteitscontroleZoe
 	{
 		WebMarkupContainer statusContainer = new WebMarkupContainer("statussenContainer");
 		List<MammaVisitatieStatus> choices = new ArrayList<>(Arrays.asList(MammaVisitatieStatus.values()));
-		if (ScreenitSession.get().getInstelling().getOrganisatieType() == OrganisatieType.KWALITEITSPLATFORM)
+		if (ScreenitSession.get().getOrganisatie().getOrganisatieType() == OrganisatieType.KWALITEITSPLATFORM)
 		{
 			choices.remove(MammaVisitatieStatus.INGEPLAND);
 		}

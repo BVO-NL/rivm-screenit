@@ -74,7 +74,7 @@ public abstract class MammaCapaciteitUitnodigenPanel extends GenericPanel<MammaS
 	{
 		super(id, screeningsEenheidModel);
 		ScreeningOrganisatie ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
-		boolean magAanpassen = ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
+		boolean magAanpassen = ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
 
 		MammaScreeningsEenheid screeningsEenheid = screeningsEenheidModel.getObject();
 		IModel<List<PlanningStandplaatsPeriodeDto>> standplaatsPeriodes = new ListModel<>(
@@ -108,7 +108,7 @@ public abstract class MammaCapaciteitUitnodigenPanel extends GenericPanel<MammaS
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				PlanningConceptMeldingenDto meldingen = baseConceptPlanningsApplicatie.saveConcept(ScreenitSession.get().getLoggedInInstellingGebruiker(), true);
+				PlanningConceptMeldingenDto meldingen = baseConceptPlanningsApplicatie.saveConcept(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), true);
 				if (meldingen.seMeldingen.size() > 0)
 				{
 					error(getString("wijzigingDatums.conceptNietOpgeslagen"));
@@ -116,7 +116,7 @@ public abstract class MammaCapaciteitUitnodigenPanel extends GenericPanel<MammaS
 				else
 				{
 					boolean isScreeningsEenheidGewijzigd = screeningsEenheidService.saveOrUpdateSE(MammaCapaciteitUitnodigenPanel.this.getModelObject(),
-						ScreenitSession.get().getLoggedInInstellingGebruiker());
+						ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 
 					close(target);
 
@@ -126,10 +126,10 @@ public abstract class MammaCapaciteitUitnodigenPanel extends GenericPanel<MammaS
 
 						boolean toonAchtervangMelding = uitnodigenTotEnMet != null
 							&& standplaatsPeriodes.getObject().stream().anyMatch(standplaatsPeriode -> !uitnodigenTotEnMet.before(DateUtil.toUtilDate(standplaatsPeriode.totEnMet))
-								&& !standplaatsPeriode.gesplitst
-								&& standplaatsPeriode.meldingenDto.meldingen.size() > 1 
-								&& (standplaatsPeriode.meldingenDto.meldingen.get(0).niveau == MammaMeldingNiveau.PROBLEEM
-									|| standplaatsPeriode.meldingenDto.meldingen.get(1).niveau == MammaMeldingNiveau.PROBLEEM));
+							&& !standplaatsPeriode.gesplitst
+							&& standplaatsPeriode.meldingenDto.meldingen.size() > 1 
+							&& (standplaatsPeriode.meldingenDto.meldingen.get(0).niveau == MammaMeldingNiveau.PROBLEEM
+							|| standplaatsPeriode.meldingenDto.meldingen.get(1).niveau == MammaMeldingNiveau.PROBLEEM));
 
 						if (toonAchtervangMelding)
 						{

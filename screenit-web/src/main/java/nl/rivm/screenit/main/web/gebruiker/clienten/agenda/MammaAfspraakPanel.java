@@ -77,7 +77,6 @@ public abstract class MammaAfspraakPanel extends GenericPanel<MammaAfspraak>
 		super(id);
 
 		Client client = model.getObject();
-		hibernateService.reload(client);
 
 		MammaDossier dossier = client.getMammaDossier();
 		MammaAfspraak afspraak = null;
@@ -96,7 +95,7 @@ public abstract class MammaAfspraakPanel extends GenericPanel<MammaAfspraak>
 
 		boolean heeftActiveAfspraak = afspraak != null && afspraak.getStatus() == MammaAfspraakStatus.GEPLAND && afspraak.getVanaf().compareTo(dateSupplier.getDate()) >= 0;
 
-		setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_MAMMA_AFSPRAKEN, Actie.INZIEN)
+		setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAKEN, Actie.INZIEN)
 			&& ((client.getMammaDossier() != null && client.getMammaDossier().getDeelnamemodus() != Deelnamemodus.SELECTIEBLOKKADE) || heeftActiveAfspraak));
 		inhoud.setVisible(heeftActiveAfspraak);
 
@@ -117,7 +116,7 @@ public abstract class MammaAfspraakPanel extends GenericPanel<MammaAfspraak>
 				}
 
 			};
-			boolean magAfspraakWijzigen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_MAMMA_AFSPRAAK_WIJZIGEN, Actie.INZIEN);
+			boolean magAfspraakWijzigen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAAK_WIJZIGEN, Actie.INZIEN);
 			verzetten.setVisible(magAfspraakWijzigen);
 			inhoud.add(verzetten);
 
@@ -130,7 +129,7 @@ public abstract class MammaAfspraakPanel extends GenericPanel<MammaAfspraak>
 				}
 
 			};
-			boolean magAfmelden = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_MAMMA_AFMELDEN, Actie.INZIEN);
+			boolean magAfmelden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_MAMMA_AFMELDEN, Actie.INZIEN);
 			afmelden.setVisible(magAfmelden);
 			inhoud.add(afmelden);
 

@@ -38,7 +38,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
 	level = ToegangLevel.REGIO,
-	recht = Recht.GEBRUIKER_BEHEER_PARAMETERISATIE,
+	recht = Recht.MEDEWERKER_BEHEER_PARAMETERISATIE,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class ClientportaalParameterisatiePage extends ParameterisatieBasePage

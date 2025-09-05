@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.stub.controller;
 
 /*-
  * ========================LICENSE_START=================================
- * se-mammograaf-stub
+ * screenit-se-mammograaf-stub
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -31,9 +31,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import jakarta.annotation.PostConstruct;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.mamma.se.stub.SeStubApplication;
 import nl.rivm.screenit.mamma.se.stub.services.DicomService;
 import nl.rivm.screenit.mamma.se.stub.services.DicomXmlLoader;
 
@@ -48,7 +50,7 @@ import org.dcm4che3.data.UID;
 import org.dcm4che3.data.VR;
 import org.dcm4che3.net.Status;
 import org.dcm4che3.util.UIDUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -60,31 +62,29 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @Slf4j
+@RequiredArgsConstructor
 public class StubController
 {
 	private static final String WERKLIJST_TEMPLATE = "werklijst";
 
-	private final Map<String, String> viewResults;
+	private final Map<String, String> viewResults = new HashMap<>();
 
-	private Attributes lastWorklistItem;
+	private final SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 
-	private final SimpleDateFormat formatter;
+	private final DicomService dicomService;
 
-	@Autowired
-	private DicomService dicomService;
+	private final DicomXmlLoader dicomXmlLoader;
 
-	@Autowired
-	private DicomXmlLoader dicomXmlLoader;
+	private final BuildProperties buildProperties;
+
+	private Attributes lastWorklistItem = new Attributes();
 
 	private Duration offset = Duration.ZERO;
 
-	public StubController()
+	@PostConstruct
+	private void init()
 	{
-		lastWorklistItem = new Attributes();
-		viewResults = new HashMap<>();
-
-		formatter = new SimpleDateFormat();
-		formatter.applyPattern("dd-MM-yyyy");
+		LOG.info("Screenit versie: {}", buildProperties.getVersion());
 	}
 
 	@PostMapping("/wijzigDatumTijd/{datumTijd}")
@@ -240,7 +240,7 @@ public class StubController
 
 	private void vulWerklijstResultaten(Attributes inTeVullenData)
 	{
-		viewResults.put("Versie", SeStubApplication.getBuildinfo().getVersion());
+		viewResults.put("Versie", buildProperties.getVersion());
 		viewResults.put("PatientName", inTeVullenData.getString(Tag.PatientName));
 		viewResults.put("PatientSex", inTeVullenData.getString(Tag.PatientSex));
 		viewResults.put("PatientID", inTeVullenData.getString(Tag.PatientID));

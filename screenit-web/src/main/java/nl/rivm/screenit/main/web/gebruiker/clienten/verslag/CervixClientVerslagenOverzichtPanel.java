@@ -63,6 +63,6 @@ public class CervixClientVerslagenOverzichtPanel extends ClientVerslagenOverzich
 		List<Bevolkingsonderzoek> bevolkingsonderzoeken = ScreenitSession.get().getOnderzoeken();
 		IModel<Client> clientModel = getModel();
 		return bevolkingsonderzoeken.contains(Bevolkingsonderzoek.CERVIX)
-			&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CERVIX_CYTOLOGIE_VERSLAG, Actie.INZIEN, clientModel.getObject());
+			&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CERVIX_CYTOLOGIE_VERSLAG, Actie.INZIEN, clientModel.getObject());
 	}
 }

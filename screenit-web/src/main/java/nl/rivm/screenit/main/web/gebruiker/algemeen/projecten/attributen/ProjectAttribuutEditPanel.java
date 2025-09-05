@@ -100,7 +100,7 @@ public abstract class ProjectAttribuutEditPanel extends GenericPanel<ProjectAttr
 					{
 						melding += " oude attribuutnaam: " + oudeNaamAttribuut;
 					}
-					logService.logGebeurtenis(logGebeurtenis, ScreenitSession.get().getLoggedInAccount(), melding);
+					logService.logGebeurtenis(logGebeurtenis, ScreenitSession.get().getIngelogdAccount(), melding);
 
 					opslaan(target);
 				}

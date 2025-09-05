@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Termijn;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
@@ -92,10 +92,10 @@ public class MammaBeoordelingSpecification
 		return heeftDiscrepantieLezing().or(heeftStatus(MammaBeoordelingStatus.DISCREPANTIE));
 	}
 
-	public static Specification<MammaBeoordeling> isVrijTeGeven(InstellingGebruiker ingelogdeGebruiker)
+	public static Specification<MammaBeoordeling> isVrijTeGeven(OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		return (r, q, cb) -> cb.and(
-			cb.equal(r.get(MammaBeoordeling_.reserveringhouder), ingelogdeGebruiker),
+			cb.equal(r.get(MammaBeoordeling_.reserveringhouder), ingelogdeOrganisatieMedewerker),
 			cb.not(r.get(MammaBeoordeling_.status).in(MammaBeoordelingStatus.EERSTE_LEZING_OPGESLAGEN, MammaBeoordelingStatus.TWEEDE_LEZING_OPGESLAGEN)
 			));
 	}
@@ -149,12 +149,12 @@ public class MammaBeoordelingSpecification
 
 	public static ExtendedSpecification<MammaBeoordeling> isNietToegewezenAanSpecifiekeRadioloog()
 	{
-		return (r, q, cb) -> r.get(MammaBeoordeling_.toegewezenGebruiker).isNull();
+		return (r, q, cb) -> r.get(MammaBeoordeling_.toegewezenOrganisatieMedewerker).isNull();
 	}
 
-	public static ExtendedSpecification<MammaBeoordeling> isToegewezenAan(InstellingGebruiker radioloog)
+	public static ExtendedSpecification<MammaBeoordeling> isToegewezenAan(OrganisatieMedewerker radioloog)
 	{
-		return (r, q, cb) -> cb.equal(r.get(MammaBeoordeling_.toegewezenGebruiker), radioloog);
+		return (r, q, cb) -> cb.equal(r.get(MammaBeoordeling_.toegewezenOrganisatieMedewerker), radioloog);
 	}
 
 	public static ExtendedSpecification<MammaBeoordeling> heeftDiscrepantieLezing()
@@ -192,7 +192,7 @@ public class MammaBeoordelingSpecification
 		return (r, q, cb) -> cb.greaterThanOrEqualTo(r.get(MammaBeoordeling_.statusDatum), DateUtil.toUtilDate(vanafDatum));
 	}
 
-	public static Specification<MammaBeoordeling> heeftEersteOfTweedeLezingGedaanBinnenTermijn(InstellingGebruiker radioloog, LocalDate peilDatum, Termijn termijn)
+	public static Specification<MammaBeoordeling> heeftEersteOfTweedeLezingGedaanBinnenTermijn(OrganisatieMedewerker radioloog, LocalDate peilDatum, Termijn termijn)
 	{
 		return (r, q, cb) ->
 		{

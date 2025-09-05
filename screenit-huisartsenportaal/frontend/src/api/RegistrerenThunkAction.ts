@@ -20,7 +20,6 @@
  */
 import {AppThunkDispatch} from "../index"
 import ScreenitBackend from "../util/Backend"
-import {AxiosResponse} from "axios"
 import {fetchCurrentUser} from "./CurrentUserThunkAction"
 import {fetchLocaties, fetchLocatieVerificatie} from "./LocatieThunkAction"
 import {LocatieStatus} from "../state/datatypes/dto/LocatieDto"
@@ -31,8 +30,7 @@ import {fetchHuisarts} from "./HuisartsThunkAction"
 import {TokenDto} from "../state/datatypes/dto/TokenDto"
 
 export const registreren = (registrationDto: RegistrationDto) => async (dispatch: AppThunkDispatch) => {
-	const response: AxiosResponse<TokenDto> = await ScreenitBackend.post("/auth/registreren", registrationDto)
-	const dto = response.data
+	const dto: TokenDto = await ScreenitBackend.post("auth/registreren", {json: registrationDto}).json()
 	dispatch(createActionSetAuthenticationLoading(true))
 	dispatch(createActionSetAuth(dto))
 	await dispatch(fetchCurrentUser())

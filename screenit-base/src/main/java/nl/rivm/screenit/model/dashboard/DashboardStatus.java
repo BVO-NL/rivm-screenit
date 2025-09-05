@@ -33,7 +33,7 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.enums.Level;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
@@ -48,7 +48,7 @@ public class DashboardStatus extends AbstractHibernateObject
 	private DashboardType type;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	private Instelling organisatie;
+	private Organisatie organisatie;
 
 	@Column(length = 100)
 	private String emailadressen;

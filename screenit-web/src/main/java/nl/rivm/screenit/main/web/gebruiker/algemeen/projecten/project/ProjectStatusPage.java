@@ -110,7 +110,7 @@ public class ProjectStatusPage extends ProjectBasePage
 				Project project = getProjectModel().getObject();
 				Date eindDatum = project.getEindDatum();
 				Date nu = currentDateSupplier.getDate();
-				boolean level = getToegangsLevel(Recht.GEBRUIKER_PROJECT_OVERZICHT, Actie.AANPASSEN) != null;
+				boolean level = getToegangsLevel(Recht.MEDEWERKER_PROJECT_OVERZICHT, Actie.AANPASSEN) != null;
 				setVisible(!eindDatum.before(nu) && level);
 			}
 

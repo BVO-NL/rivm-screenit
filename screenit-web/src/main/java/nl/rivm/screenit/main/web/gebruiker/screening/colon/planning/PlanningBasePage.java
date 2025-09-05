@@ -25,7 +25,8 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon.planning;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.ColonScreeningBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.planning.blokkadesview.BlokkadeListViewPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.planning.listview.RoosterListViewPage;
@@ -42,7 +43,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_LOCATIE_ROOSTER, Recht.GEBRUIKER_LOCATIE_ROOSTER },
+	recht = { Recht.MEDEWERKER_LOCATIE_ROOSTER, Recht.MEDEWERKER_LOCATIE_ROOSTER },
 	organisatieTypeScopes = OrganisatieType.INTAKELOCATIE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class PlanningBasePage extends ColonScreeningBasePage
@@ -56,12 +57,12 @@ public class PlanningBasePage extends ColonScreeningBasePage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("label.planning.rooster", RoosterAngularPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.planning.roosterblok.listview", RoosterListViewPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.planning.blokkade.listview", BlokkadeListViewPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.planning.rooster", RoosterAngularPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.planning.roosterblok.listview", RoosterListViewPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.planning.blokkade.listview", BlokkadeListViewPage.class));
 		return contextMenuItems;
 	}
 }

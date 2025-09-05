@@ -43,7 +43,7 @@ import nl.rivm.screenit.dto.mamma.planning.PlanningVerzetClientenDto;
 import nl.rivm.screenit.main.service.mamma.MammaAfspraakService;
 import nl.rivm.screenit.main.transformer.MammaScreeningsEenheidMetDatumDto;
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -449,14 +449,14 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 
 		private final List<Long> afsprakenIds;
 
-		private final Long ingelogdeGebruikerId;
+		private final Long ingelogdeOrganisatieMedewerkerId;
 
-		AfsprakenVerplaatsenThread(Long standplaatsPeriodeId, List<Long> afsprakenIds, Long ingelogdeGebruikerId)
+		AfsprakenVerplaatsenThread(Long standplaatsPeriodeId, List<Long> afsprakenIds, Long ingelogdeOrganisatieMedewerkerId)
 		{
 			super(true);
 			this.standplaatsPeriodeId = standplaatsPeriodeId;
 			this.afsprakenIds = afsprakenIds;
-			this.ingelogdeGebruikerId = ingelogdeGebruikerId;
+			this.ingelogdeOrganisatieMedewerkerId = ingelogdeOrganisatieMedewerkerId;
 		}
 
 		@Override
@@ -464,7 +464,7 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 		{
 			List<MammaBrief> brieven = new ArrayList<>();
 			MammaStandplaatsPeriode persistentStandplaatsPeriode = hibernateService.get(MammaStandplaatsPeriode.class, standplaatsPeriodeId);
-			InstellingGebruiker ingelogedeInstellingGebruiker = hibernateService.get(InstellingGebruiker.class, ingelogdeGebruikerId);
+			OrganisatieMedewerker ingelogdeOrganisatieMedewerker = hibernateService.get(OrganisatieMedewerker.class, ingelogdeOrganisatieMedewerkerId);
 			PlanningVerzetClientenDto verzetClientenDto = new PlanningVerzetClientenDto();
 			verzetClientenDto.verzetStandplaatsPeriodeId = persistentStandplaatsPeriode.getId();
 			Set<LocalDate> afspraakDatums = new HashSet<>();
@@ -475,7 +475,7 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 				if (afspraak.equals(MammaScreeningRondeUtil.getLaatsteAfspraak(afspraak.getUitnodiging().getScreeningRonde())))
 				{
 					baseAfspraakService.maakAfspraak(afspraak.getUitnodiging().getScreeningRonde(), afspraak.getCapaciteitBlok(), afspraak.getVanaf(),
-						persistentStandplaatsPeriode, MammaVerzettenReden.ONVOORZIENE_OMSTANDIGHEDEN, true, false, false, true, true, ingelogedeInstellingGebruiker, false);
+						persistentStandplaatsPeriode, MammaVerzettenReden.ONVOORZIENE_OMSTANDIGHEDEN, true, false, false, true, true, ingelogdeOrganisatieMedewerker, false);
 					brieven.add(baseBriefService.maakBvoBrief(afspraak.getUitnodiging().getScreeningRonde(), BriefType.MAMMA_AFSPRAAK_VERZET));
 					verzetClientenDto.clientIdSet.add(afspraak.getUitnodiging().getScreeningRonde().getDossier().getClient().getId());
 					afspraakDatums.add(DateUtil.toLocalDate(afspraak.getVanaf()));

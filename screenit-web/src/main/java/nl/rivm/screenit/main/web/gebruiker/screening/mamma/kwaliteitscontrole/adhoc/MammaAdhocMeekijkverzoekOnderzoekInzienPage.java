@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaScreeningBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractBEAccordionPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaBeoordelenPage;
@@ -136,7 +136,7 @@ public class MammaAdhocMeekijkverzoekOnderzoekInzienPage extends AbstractMammaBe
 	@Override
 	protected void handleImsError(AjaxRequestTarget target, String errorMessage, Long onderzoekId)
 	{
-		error(imsService.handleError(errorMessage, getIngelogdeGebruiker(), b -> getString((String) b), onderzoekId));
+		error(imsService.handleError(errorMessage, getIngelogdeOrganisatieMedewerker(), b -> getString((String) b), onderzoekId));
 		huidigeRondePanel.blokeerButtons(target);
 	}
 
@@ -159,10 +159,10 @@ public class MammaAdhocMeekijkverzoekOnderzoekInzienPage extends AbstractMammaBe
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.adhockwaliteitscontrole.onderzoeken",
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.adhockwaliteitscontrole.onderzoeken",
 			MammaAdhocMeekijkverzoekOnderzoekenWerklijstPage.class));
 
 		return contextMenuItems;

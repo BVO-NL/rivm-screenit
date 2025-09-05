@@ -29,10 +29,6 @@
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
             </resource>
-            <resource>
-                <directory>src/main/resources-filtered</directory>
-                <filtering>true</filtering>
-            </resource>
         </resources>
         <testResources>
             <testResource>
@@ -69,19 +65,9 @@
                     <execution>
                         <goals>
                             <goal>build-info</goal>
-                            <goal>repackage</goal>
                         </goals>
-                        <configuration>
-                            <additionalProperties>
-                                <number>${buildnumber}</number>
-                            </additionalProperties>
-                            <outputFile>target/classes/build-info.properties</outputFile>
-                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <mainClass>nl.rivm.screenit.huisartsenportaal.Application</mainClass>
-                </configuration>
             </plugin>
         </plugins>
     </build>

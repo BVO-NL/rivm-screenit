@@ -37,7 +37,7 @@ public interface MammaDigitaalContactService
 
 	void administreerSmsVerstuurd(List<Long> afspraakIds);
 
-	void herzendBevestigAfspraakMail(MammaDigitaalClientBericht mammaClientMail, String ontvangendeEmailAdres, Account ingelogdeGebruiker);
+	void herzendBevestigAfspraakMail(MammaDigitaalClientBericht mammaClientMail, String ontvangendeEmailAdres, Account ingelogdeOrganisatieMedewerker);
 
 	Optional<SmsVersturenSqsDto> maakSmsVersturenDTO(Long afspraakId);
 

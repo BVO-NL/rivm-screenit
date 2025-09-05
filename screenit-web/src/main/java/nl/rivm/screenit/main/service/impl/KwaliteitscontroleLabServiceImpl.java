@@ -22,7 +22,7 @@ package nl.rivm.screenit.main.service.impl;
  */
 
 import nl.rivm.screenit.main.service.KwaliteitscontroleLabService;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.colon.SKMLExterneControleBarcode;
 import nl.rivm.screenit.model.colon.SKMLInterneControleBarcode;
 import nl.rivm.screenit.model.colon.SKMLInterneControleSet;
@@ -62,9 +62,9 @@ public class KwaliteitscontroleLabServiceImpl implements KwaliteitscontroleLabSe
 	private ColonFITRepository fitRepository;
 
 	@Override
-	public SKMLInterneControleSet laagOfHoogSample(Instelling instelling)
+	public SKMLInterneControleSet laagOfHoogSample(Organisatie organisatie)
 	{
-		var laatsteControleBarcode = skmlInterneControleBarcodeRepository.findFirstByLaboratoriumIdOrderByIdDesc(instelling.getId());
+		var laatsteControleBarcode = skmlInterneControleBarcodeRepository.findFirstByLaboratoriumIdOrderByIdDesc(organisatie.getId());
 		var alleControleSets = skmlInterneControleSetRepository.findAll(Sort.by(SKMLInterneControleSet_.VOLGORDE));
 
 		SKMLInterneControleSet volgendeSet = null;

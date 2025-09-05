@@ -21,15 +21,15 @@ package nl.rivm.screenit.main.web.gebruiker.screening.cervix;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 
-public abstract class CervixScreeningBasePage extends GebruikerBasePage
+public abstract class CervixScreeningBasePage extends MedewerkerBasePage
 {
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.CERVIX;
+		return MedewerkerHoofdMenuItem.CERVIX;
 	}
 
 }

@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.model;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -35,7 +35,7 @@ public class AutorisatieDto
 
 	private String seNaam;
 
-	private long instellingGebruikerId;
+	private long organisatieMedewerkerId;
 
 	private SERechtDto inschrijvenRecht;
 
@@ -101,14 +101,14 @@ public class AutorisatieDto
 		this.seNaam = seNaam;
 	}
 
-	public long getInstellingGebruikerId()
+	public long getOrganisatieMedewerkerId()
 	{
-		return instellingGebruikerId;
+		return organisatieMedewerkerId;
 	}
 
-	public void setInstellingGebruikerId(long instellingGebruikerId)
+	public void setOrganisatieMedewerkerId(long organisatieMedewerkerId)
 	{
-		this.instellingGebruikerId = instellingGebruikerId;
+		this.organisatieMedewerkerId = organisatieMedewerkerId;
 	}
 
 	public String getNavigatie()
@@ -122,52 +122,52 @@ public class AutorisatieDto
 	}
 
 	public SERechtDto getInschrijvenRecht()
-    {
+	{
 		return inschrijvenRecht;
 	}
 
 	public void setInschrijvenRecht(SERechtDto inschrijvenRecht)
-    {
+	{
 		this.inschrijvenRecht = inschrijvenRecht;
 	}
 
 	public SERechtDto getOnderzoekenRecht()
-    {
+	{
 		return onderzoekenRecht;
 	}
 
 	public void setOnderzoekenRecht(SERechtDto onderzoekenRecht)
-    {
+	{
 		this.onderzoekenRecht = onderzoekenRecht;
 	}
 
 	public SERechtDto getSignalerenRecht()
-    {
+	{
 		return signalerenRecht;
 	}
 
 	public void setSignalerenRecht(SERechtDto signalerenRecht)
-    {
+	{
 		this.signalerenRecht = signalerenRecht;
 	}
 
 	public SERechtDto getKwaliteitsopnameRecht()
-    {
+	{
 		return kwaliteitsopnameRecht;
 	}
 
 	public void setKwaliteitsopnameRecht(SERechtDto kwaliteitsopnameRecht)
-    {
+	{
 		this.kwaliteitsopnameRecht = kwaliteitsopnameRecht;
 	}
 
 	public SERechtDto getConnectiestatusRecht()
-    {
+	{
 		return connectiestatusRecht;
 	}
 
 	public void setConnectiestatusRecht(SERechtDto connectiestatusRecht)
-    {
+	{
 		this.connectiestatusRecht = connectiestatusRecht;
 	}
 

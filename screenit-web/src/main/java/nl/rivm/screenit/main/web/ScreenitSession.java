@@ -38,9 +38,9 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.service.OvereenkomstService;
 import nl.rivm.screenit.main.util.crypto.UZIpasCertInfo;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.nieuws.NieuwsPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.login.BvoSelectiePage;
 import nl.rivm.screenit.main.web.gebruiker.login.OrganisatieSelectiePage;
 import nl.rivm.screenit.main.web.gebruiker.login.OvereenkomstAccoderenPage;
@@ -48,10 +48,10 @@ import nl.rivm.screenit.main.web.gebruiker.login.PasswordMustChangePage;
 import nl.rivm.screenit.main.web.gebruiker.login.uzipas.zorgid.session.ZorgIdSession;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.InlogStatus;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.UploadDocument;
@@ -67,11 +67,11 @@ import nl.rivm.screenit.model.envers.RevisionKenmerk;
 import nl.rivm.screenit.model.envers.RevisionKenmerkInThreadHolder;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
 import nl.rivm.screenit.security.Constraint;
-import nl.rivm.screenit.security.InstellingGebruikerToken;
+import nl.rivm.screenit.security.OrganisatieMedewerkerToken;
 import nl.rivm.screenit.security.UziToken;
 import nl.rivm.screenit.service.AuthenticatieService;
 import nl.rivm.screenit.service.AutorisatieService;
-import nl.rivm.screenit.service.GebruikersService;
+import nl.rivm.screenit.service.BaseMedewerkerService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.NieuwsService;
@@ -123,7 +123,7 @@ public class ScreenitSession extends WebSession
 
 	private Long currentSelectedOrganisatieId;
 
-	private Class<? extends Instelling> currentSelectedOrganisatieClass;
+	private Class<? extends Organisatie> currentSelectedOrganisatieClass;
 
 	@SpringBean
 	private AuthenticatieService authenticatieService;
@@ -138,7 +138,7 @@ public class ScreenitSession extends WebSession
 	private SimplePreferenceService preferenceService;
 
 	@SpringBean
-	private GebruikersService gebruikerService;
+	private BaseMedewerkerService medewerkerService;
 
 	@SpringBean
 	private ScopeService scopeService;
@@ -272,35 +272,35 @@ public class ScreenitSession extends WebSession
 		uziPasTokenAfgekeurd = false;
 		YubikeyToken token = new YubikeyToken(gebruikersnaam, plainWachtwoord, yubikeyOTP);
 		Page result = null;
-		Gebruiker gebruiker = null;
+		Medewerker medewerker = null;
 		try
 		{
-			gebruiker = gebruikerService.getGebruikerByGebruikersnaam(token.getUsername()).orElse(null);
-			if (gebruiker != null && gebruiker.getInlogMethode() != InlogMethode.YUBIKEY)
+			medewerker = medewerkerService.getMedewerkerByGebruikersnaam(token.getUsername()).orElse(null);
+			if (medewerker != null && medewerker.getInlogMethode() != InlogMethode.YUBIKEY)
 			{
-				error(getString(gebruiker.getInlogMethode().getLoginErrorMsg(), null));
+				error(getString(medewerker.getInlogMethode().getLoginErrorMsg(), null));
 				return null;
 			}
 
 			securityManager.authenticate(token);
 
-			String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(gebruiker, currentDateSupplier.getDate());
+			String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDate());
 			if (meldingNavActiefVanafEnTotEnMet != null)
 			{
 				error(meldingNavActiefVanafEnTotEnMet);
 			}
 			else
 			{
-				result = login(gebruikersnaam, gebruiker);
+				result = login(gebruikersnaam, medewerker);
 			}
 		}
 		catch (UnknownAccountException | IncorrectCredentialsException ice)
 		{
 			if (getFeedbackMessages().isEmpty())
 			{
-				authenticatieService.foutieveInlogpoging(gebruiker);
-				getError(gebruiker, gebruikersnaam);
-				if (gebruiker == null || Boolean.TRUE.equals(gebruiker.getActief()))
+				authenticatieService.foutieveInlogpoging(medewerker);
+				getError(medewerker, gebruikersnaam);
+				if (medewerker == null || Boolean.TRUE.equals(medewerker.getActief()))
 				{
 					error(getString("error.authentication", null));
 				}
@@ -308,7 +308,7 @@ public class ScreenitSession extends WebSession
 		}
 		catch (AuthenticationException authExcept)
 		{
-			error(getString("error.medewerker.nopassword", null));
+			error(getString("error.authentication", null));
 		}
 
 		return result;
@@ -320,36 +320,36 @@ public class ScreenitSession extends WebSession
 		uziPasTokenAfgekeurd = false;
 		UsernamePasswordToken token = new UsernamePasswordToken(gebruikersnaam, plainWachtwoord);
 		Page result = null;
-		Gebruiker gebruiker = null;
+		Medewerker medewerker = null;
 		try
 		{
-			gebruiker = gebruikerService.getGebruikerByGebruikersnaam(token.getUsername()).orElse(null);
+			medewerker = medewerkerService.getMedewerkerByGebruikersnaam(token.getUsername()).orElse(null);
 
-			if (gebruiker != null && gebruiker.getInlogMethode() != InlogMethode.GEBRUIKERSNAAM_WACHTWOORD)
+			if (medewerker != null && medewerker.getInlogMethode() != InlogMethode.GEBRUIKERSNAAM_WACHTWOORD)
 			{
-				error(getString(gebruiker.getInlogMethode().getLoginErrorMsg(), null));
+				error(getString(medewerker.getInlogMethode().getLoginErrorMsg(), null));
 				return null;
 			}
 
 			securityManager.authenticate(token);
 
-			String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(gebruiker, currentDateSupplier.getDate());
+			String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDate());
 			if (meldingNavActiefVanafEnTotEnMet != null)
 			{
 				error(meldingNavActiefVanafEnTotEnMet);
 			}
 			else
 			{
-				result = login(gebruikersnaam, gebruiker);
+				result = login(gebruikersnaam, medewerker);
 			}
 		}
 		catch (UnknownAccountException | IncorrectCredentialsException ice)
 		{
 			if (getFeedbackMessages().isEmpty())
 			{
-				authenticatieService.foutieveInlogpoging(gebruiker);
-				getError(gebruiker, gebruikersnaam);
-				if (gebruiker == null || Boolean.TRUE.equals(gebruiker.getActief()))
+				authenticatieService.foutieveInlogpoging(medewerker);
+				getError(medewerker, gebruikersnaam);
+				if (medewerker == null || Boolean.TRUE.equals(medewerker.getActief()))
 				{
 					error(getString("error.authentication", null));
 				}
@@ -357,51 +357,51 @@ public class ScreenitSession extends WebSession
 		}
 		catch (AuthenticationException authExcept)
 		{
-			error(getString("error.medewerker.nopassword", null));
+			error(getString("error.authentication", null));
 		}
 
 		return result;
 	}
 
-	private Page login(String gebruikersnaam, Gebruiker gebruiker)
+	private Page login(String gebruikersnaam, Medewerker medewerker)
 	{
 		Page result = null;
 		zoekStatussen = new HashMap<>();
 
-		setLoggedInAccount(gebruiker);
+		setIngelogdeAccount(medewerker);
 
-		if (gebruiker != null && !authenticatieService.isAccountLocked(gebruiker))
+		if (medewerker != null && !authenticatieService.isAccountLocked(medewerker))
 		{
-			authenticatieService.unlockAccount(gebruiker);
+			authenticatieService.unlockAccount(medewerker);
 
-			List<InstellingGebruiker> instellingGebruikers = authenticatieService.getActieveInstellingGebruikers(gebruiker);
-			if (instellingGebruikers.isEmpty())
+			List<OrganisatieMedewerker> organisatieMedewerkers = authenticatieService.getActieveOrganisatieMedewerkers(medewerker);
+			if (organisatieMedewerkers.isEmpty())
 			{
 
-				logService.logGebeurtenis(LogGebeurtenis.INLOGGEN_MISLUKT, gebruiker, "Gebruikersnaam: " + gebruiker.getGebruikersnaam()
-					+ ", geen actieve instelling gekoppeld aan medewerker of niet voldoende rechten voor gekoppelde instelling(en).");
+				logService.logGebeurtenis(LogGebeurtenis.INLOGGEN_MISLUKT, medewerker, "Gebruikersnaam: " + medewerker.getGebruikersnaam()
+					+ ", geen actieve organisatie gekoppeld aan medewerker of niet voldoende rechten voor gekoppelde organisatie(s).");
 
 				error(getString("error.nietvoldoende.rechten", null));
 			}
-			else if (instellingGebruikers.size() == 1)
+			else if (organisatieMedewerkers.size() == 1)
 			{
 
-				InstellingGebruiker inTeLoggenInstellingGebruiker = instellingGebruikers.get(0);
-				result = getPageForInstellingGebruiker(inTeLoggenInstellingGebruiker);
+				OrganisatieMedewerker inTeLoggenOrganisatieMedewerker = organisatieMedewerkers.get(0);
+				result = getPageForOrganisatieMedewerker(inTeLoggenOrganisatieMedewerker);
 			}
 			else
 			{
 
-				result = new OrganisatieSelectiePage(gebruiker);
+				result = new OrganisatieSelectiePage(medewerker);
 			}
 		}
 		else if (gebruikersnaam != null)
 		{
-			getError(gebruiker, gebruikersnaam);
+			getError(medewerker, gebruikersnaam);
 		}
 		else
 		{
-			if (authenticatieService.isAccountLocked(gebruiker))
+			if (authenticatieService.isAccountLocked(medewerker))
 			{
 				error("Uw account is geblokkeerd. Neem contact op met uw beheerder.");
 			}
@@ -409,10 +409,10 @@ public class ScreenitSession extends WebSession
 		return result;
 	}
 
-	public void login(InstellingGebruiker gebruiker)
+	public void login(OrganisatieMedewerker organisatieMedewerker)
 	{
 		Subject currentUser = SecurityUtils.getSubject();
-		InstellingGebruikerToken token = new InstellingGebruikerToken(gebruiker.getId());
+		OrganisatieMedewerkerToken token = new OrganisatieMedewerkerToken(organisatieMedewerker.getId());
 		token.setUserAgent(WebSession.get().getClientInfo().getUserAgent());
 		if (ingelogdMetZorgId)
 		{
@@ -421,7 +421,7 @@ public class ScreenitSession extends WebSession
 		try
 		{
 			currentUser.login(token);
-			setLoggedInAccount(gebruiker);
+			setIngelogdeAccount(organisatieMedewerker);
 			resetZoekStatus();
 		}
 		catch (UnknownAccountException | IncorrectCredentialsException ice)
@@ -433,28 +433,28 @@ public class ScreenitSession extends WebSession
 		}
 	}
 
-	public Page getPageForInstellingGebruiker(InstellingGebruiker inTeLoggenInstellingGebruiker)
+	public Page getPageForOrganisatieMedewerker(OrganisatieMedewerker inTeLoggenOrganisatieMedewerker)
 	{
 		WebPage result = null;
 
-		if (autorisatieService.mustChangePassword(inTeLoggenInstellingGebruiker))
+		if (autorisatieService.mustChangePassword(inTeLoggenOrganisatieMedewerker))
 		{
-			result = new PasswordMustChangePage(inTeLoggenInstellingGebruiker);
+			result = new PasswordMustChangePage(inTeLoggenOrganisatieMedewerker);
 		}
-		else if (overeenkomstService.countTeAccoderenOvereenkomsten(inTeLoggenInstellingGebruiker) > 0)
+		else if (overeenkomstService.countTeAccoderenOvereenkomsten(inTeLoggenOrganisatieMedewerker) > 0)
 		{
-			result = new OvereenkomstAccoderenPage(ModelUtil.sModel(inTeLoggenInstellingGebruiker));
+			result = new OvereenkomstAccoderenPage(ModelUtil.sModel(inTeLoggenOrganisatieMedewerker));
 		}
-		else if (CollectionUtils.isEmpty(inTeLoggenInstellingGebruiker.getBevolkingsonderzoeken()))
+		else if (CollectionUtils.isEmpty(inTeLoggenOrganisatieMedewerker.getBevolkingsonderzoeken()))
 		{
-			result = new BvoSelectiePage(inTeLoggenInstellingGebruiker);
+			result = new BvoSelectiePage(inTeLoggenOrganisatieMedewerker);
 		}
 		else
 		{
-			login(inTeLoggenInstellingGebruiker);
+			login(inTeLoggenOrganisatieMedewerker);
 			try
 			{
-				if (!nieuwsService.getNieuwsItemIdsGebruiker(inTeLoggenInstellingGebruiker.getMedewerker()).isEmpty())
+				if (!nieuwsService.getNieuwsItemIdsMedewerker(inTeLoggenOrganisatieMedewerker.getMedewerker()).isEmpty())
 				{
 					result = new NieuwsPage();
 				}
@@ -462,9 +462,9 @@ public class ScreenitSession extends WebSession
 				{
 					result = getHomePage().newInstance();
 				}
-				if (checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_BEOORDELING_WERKLIJST, Actie.INZIEN) && result instanceof GebruikerBasePage)
+				if (checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_BEOORDELING_WERKLIJST, Actie.INZIEN) && result instanceof MedewerkerBasePage)
 				{
-					((GebruikerBasePage) result).setLoginIms(true);
+					((MedewerkerBasePage) result).setLoginIms(true);
 				}
 			}
 			catch (InstantiationException | IllegalAccessException | NullPointerException e)
@@ -495,9 +495,9 @@ public class ScreenitSession extends WebSession
 
 	private Class<? extends WebPage> getHomePage()
 	{
-		for (GebruikerHoofdMenuItem hoofdMenuItem : GebruikerHoofdMenuItem.values())
+		for (MedewerkerHoofdMenuItem hoofdMenuItem : MedewerkerHoofdMenuItem.values())
 		{
-			Class<? extends GebruikerBasePage> targetPage = GebruikerMenuItem.getTargetPageClass(hoofdMenuItem.getMenuItem());
+			Class<? extends MedewerkerBasePage> targetPage = MedewerkerMenuItem.getTargetPageClass(hoofdMenuItem.getMenuItem());
 			if (targetPage != null && getAuthorizationStrategy().isInstantiationAuthorized(targetPage))
 			{
 				return targetPage;
@@ -508,7 +508,7 @@ public class ScreenitSession extends WebSession
 		return null;
 	}
 
-	private void getError(Gebruiker inTeLoggenMedewerker, String gebruikersnaam)
+	private void getError(Medewerker inTeLoggenMedewerker, String gebruikersnaam)
 	{
 		Integer foutieveAanmeldpogingenTimeout = preferenceService.getInteger(PreferenceKey.FOUTIEVE_AANMELDPOGINGEN_TIMEOUT.name());
 		if (foutieveAanmeldpogingenTimeout == null)
@@ -535,13 +535,6 @@ public class ScreenitSession extends WebSession
 		}
 		else if (inTeLoggenMedewerker != null && InlogStatus.OK.equals(inTeLoggenMedewerker.getInlogstatus()) && inTeLoggenMedewerker.getFoutieveInlogpogingen() != null)
 		{
-			Integer maxFoutieveAanmeldpogingen = preferenceService.getInteger(PreferenceKey.MAXIMUM_FOUTIEVE_AANMELDPOGINGEN.name());
-			if (maxFoutieveAanmeldpogingen == null)
-			{
-				maxFoutieveAanmeldpogingen = 3;
-			}
-			int aantalPogingenResterend = maxFoutieveAanmeldpogingen - inTeLoggenMedewerker.getFoutieveInlogpogingen();
-			error("Aanmelden mislukt. Aantal pogingen resterend: " + aantalPogingenResterend);
 			switch (inTeLoggenMedewerker.getInlogMethode())
 			{
 			case GEBRUIKERSNAAM_WACHTWOORD:
@@ -554,10 +547,10 @@ public class ScreenitSession extends WebSession
 		}
 		else
 		{
-
-			error(getString("error.login", null));
-			logService.logGebeurtenis(LogGebeurtenis.INLOGGEN_MISLUKT, inTeLoggenMedewerker,
-				"Medewerker niet gevonden: " + Strings.escapeMarkup(gebruikersnaam, false, false).toString());
+			var melding = gebruikersnaam == null ?
+				"Inloggen mislukt omdat er geen gebruikersnaam en wachtwoord ingevuld zijn" :
+				"Medewerker niet gevonden: " + Strings.escapeMarkup(gebruikersnaam, false, false).toString();
+			logService.logGebeurtenis(LogGebeurtenis.INLOGGEN_MISLUKT, inTeLoggenMedewerker, melding);
 		}
 	}
 
@@ -566,68 +559,69 @@ public class ScreenitSession extends WebSession
 		return getApplication().getResourceSettings().getLocalizer().getString(resourceKey, comp);
 	}
 
-	public Instelling getInstelling()
+	public Organisatie getOrganisatie()
 	{
-		Account loggendInGebruiker = getLoggedInAccount();
-		Instelling instelling = null;
-		if (loggendInGebruiker instanceof InstellingGebruiker)
+		Account ingelogdAccount = getIngelogdAccount();
+		Organisatie organisatie = null;
+		if (ingelogdAccount instanceof OrganisatieMedewerker organisatieMedewerker)
 		{
-			instelling = ((InstellingGebruiker) loggendInGebruiker).getOrganisatie();
+			organisatie = organisatieMedewerker.getOrganisatie();
 		}
-		return instelling;
+		return organisatie;
 	}
 
 	public ScreeningOrganisatie getScreeningOrganisatie()
 	{
 
-		Instelling instelling = hibernateService.deproxy(getInstelling());
-		if (OrganisatieType.SCREENINGSORGANISATIE.equals(instelling.getOrganisatieType()))
+		Organisatie organisatie = hibernateService.deproxy(getOrganisatie());
+		if (OrganisatieType.SCREENINGSORGANISATIE.equals(organisatie.getOrganisatieType()))
 		{
-			return (ScreeningOrganisatie) instelling;
+			return (ScreeningOrganisatie) organisatie;
 		}
 		return null;
 	}
 
 	public ColonIntakelocatie getIntakelocatie()
 	{
-		Instelling instelling = getInstelling();
-		if (ColonIntakelocatie.class.isAssignableFrom(Hibernate.getClass(instelling)))
+		Organisatie organisatie = getOrganisatie();
+		if (ColonIntakelocatie.class.isAssignableFrom(Hibernate.getClass(organisatie)))
 		{
-			if (!(instelling instanceof ColonIntakelocatie))
+			if (!(organisatie instanceof ColonIntakelocatie))
 			{
-				HibernateProxy hibernateProxy = (HibernateProxy) instelling;
-				instelling = (ColonIntakelocatie) hibernateProxy.getHibernateLazyInitializer().getImplementation();
+				HibernateProxy hibernateProxy = (HibernateProxy) organisatie;
+				organisatie = (ColonIntakelocatie) hibernateProxy.getHibernateLazyInitializer().getImplementation();
 			}
-			return (ColonIntakelocatie) instelling;
+			return (ColonIntakelocatie) organisatie;
 		}
 		return null;
 	}
 
-	public InstellingGebruiker getLoggedInInstellingGebruiker()
+	public OrganisatieMedewerker getIngelogdeOrganisatieMedewerker()
 	{
-		Account instellingGebruiker = getLoggedInAccount();
-		if (instellingGebruiker instanceof InstellingGebruiker)
+		Account account = getIngelogdAccount();
+		if (account instanceof OrganisatieMedewerker)
 		{
-			return (InstellingGebruiker) instellingGebruiker;
+			return (OrganisatieMedewerker) account;
 		}
 		return null;
 	}
 
-	public Account getLoggedInAccount()
+	public Account getIngelogdAccount()
 	{
 		return accountId != null ? hibernateService.load(accountClass, accountId) : null;
 	}
 
-	public void setLoggedInAccount(Account account)
+	public void setIngelogdeAccount(Account account)
 	{
 		accountId = account != null ? account.getId() : null;
 		accountClass = account != null ? HibernateHelper.getDeproxiedClass(account) : null;
 
-		InstellingGebruiker instellingGebruiker = getLoggedInInstellingGebruiker();
-		if (instellingGebruiker != null)
+		OrganisatieMedewerker organisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		if (organisatieMedewerker != null)
 		{
-			LOG.info("InstellingGebruiker (id: '{}') is aan het inloggen namens {}. (Gid: '{}')", instellingGebruiker.getId(), instellingGebruiker.getOrganisatie().getNaam(),
-				instellingGebruiker.getMedewerker().getId());
+			LOG.info("OrganisatieMedewerker (id: '{}') is aan het inloggen namens {}. (Gid: '{}')", organisatieMedewerker.getId(),
+				organisatieMedewerker.getOrganisatie().getNaam(),
+				organisatieMedewerker.getMedewerker().getId());
 		}
 	}
 
@@ -678,22 +672,22 @@ public class ScreenitSession extends WebSession
 		super.detach();
 	}
 
-	public Gebruiker getCurrentSelectedMedewerker()
+	public Medewerker getCurrentSelectedMedewerker()
 	{
-		return currentSelectedMedewerkerId != null ? hibernateService.load(Gebruiker.class, currentSelectedMedewerkerId) : null;
+		return currentSelectedMedewerkerId != null ? hibernateService.load(Medewerker.class, currentSelectedMedewerkerId) : null;
 	}
 
-	public void setCurrentSelectedMedewerker(Gebruiker medewerker)
+	public void setCurrentSelectedMedewerker(Medewerker medewerker)
 	{
 		currentSelectedMedewerkerId = medewerker != null ? medewerker.getId() : null;
 	}
 
-	public Instelling getCurrentSelectedOrganisatie()
+	public Organisatie getCurrentSelectedOrganisatie()
 	{
 		return currentSelectedOrganisatieId != null ? hibernateService.load(currentSelectedOrganisatieClass, currentSelectedOrganisatieId) : null;
 	}
 
-	public void setCurrentSelectedOrganisatie(Instelling organisatie)
+	public void setCurrentSelectedOrganisatie(Organisatie organisatie)
 	{
 		currentSelectedOrganisatieId = organisatie != null ? organisatie.getId() : null;
 		currentSelectedOrganisatieClass = organisatie != null ? HibernateHelper.getDeproxiedClass(organisatie) : null;
@@ -709,34 +703,34 @@ public class ScreenitSession extends WebSession
 		try
 		{
 			securityManager.authenticate(uziToken);
-			var gebruiker = gebruikerService.getGebruikerByUzinummer(uziCertInfo.getUziCode()).orElse(null);
+			var medewerker = medewerkerService.getMedewerkerByUzinummer(uziCertInfo.getUziCode()).orElse(null);
 
-			if (gebruiker != null && gebruiker.getInlogMethode() != InlogMethode.UZIPAS)
+			if (medewerker != null && medewerker.getInlogMethode() != InlogMethode.UZIPAS)
 			{
-				uzipasMeldingen.add(getString(gebruiker.getInlogMethode().getLoginErrorMsg(), null));
+				uzipasMeldingen.add(getString(medewerker.getInlogMethode().getLoginErrorMsg(), null));
 				return false;
 			}
 
-			setLoggedInAccount(gebruiker);
+			setIngelogdeAccount(medewerker);
 
-			if (gebruiker != null && !authenticatieService.isAccountLocked(gebruiker))
+			if (medewerker != null && !authenticatieService.isAccountLocked(medewerker))
 			{
-				authenticatieService.unlockAccount(gebruiker);
+				authenticatieService.unlockAccount(medewerker);
 
-				List<InstellingGebruiker> instellingGebruikers = authenticatieService.getActieveInstellingGebruikers(gebruiker);
-				if (instellingGebruikers.isEmpty())
+				List<OrganisatieMedewerker> organisatieMedewerkers = authenticatieService.getActieveOrganisatieMedewerkers(medewerker);
+				if (organisatieMedewerkers.isEmpty())
 				{
 
-					logService.logGebeurtenis(LogGebeurtenis.INLOGGEN_MISLUKT, gebruiker, "Gebruikersnaam: " + gebruiker.getGebruikersnaam()
-						+ ", geen actieve instelling gekoppeld aan medewerker of niet voldoende rechten voor gekoppelde instelling(en).");
+					logService.logGebeurtenis(LogGebeurtenis.INLOGGEN_MISLUKT, medewerker, "Gebruikersnaam: " + medewerker.getGebruikersnaam()
+						+ ", geen actieve organisatie gekoppeld aan medewerker of niet voldoende rechten voor gekoppelde organisatie(s).");
 
 					uzipasMeldingen.add(getString("error.nietvoldoende.rechten", null));
 				}
-				else if (instellingGebruikers.size() == 1)
+				else if (organisatieMedewerkers.size() == 1)
 				{
 
-					InstellingGebruiker inTeLoggenInstellingGebruiker = instellingGebruikers.get(0);
-					if (getPageForInstellingGebruiker(inTeLoggenInstellingGebruiker) == null)
+					OrganisatieMedewerker inTeLoggenOrganisatieMedewerker = organisatieMedewerkers.get(0);
+					if (getPageForOrganisatieMedewerker(inTeLoggenOrganisatieMedewerker) == null)
 					{
 						uzipasMeldingen.add("Niet genoeg rechten om in te loggen");
 					}
@@ -744,14 +738,14 @@ public class ScreenitSession extends WebSession
 			}
 			else
 			{
-				if (authenticatieService.isAccountLocked(gebruiker))
+				if (authenticatieService.isAccountLocked(medewerker))
 				{
 					uzipasMeldingen.add("Uw account is geblokkeerd. Neem contact op met uw beheerder.");
 				}
 			}
 			if (uzipasMeldingen.isEmpty())
 			{
-				String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(gebruiker, currentDateSupplier.getDate());
+				String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDate());
 				if (meldingNavActiefVanafEnTotEnMet != null)
 				{
 					uzipasMeldingen.add(meldingNavActiefVanafEnTotEnMet);
@@ -843,10 +837,10 @@ public class ScreenitSession extends WebSession
 
 	public List<Bevolkingsonderzoek> getOnderzoeken()
 	{
-		InstellingGebruiker gebruiker = getLoggedInInstellingGebruiker();
-		if (gebruiker != null && CollectionUtils.isNotEmpty(gebruiker.getBevolkingsonderzoeken()))
+		OrganisatieMedewerker organisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		if (organisatieMedewerker != null && CollectionUtils.isNotEmpty(organisatieMedewerker.getBevolkingsonderzoeken()))
 		{
-			return Bevolkingsonderzoek.sort(new ArrayList<>(gebruiker.getBevolkingsonderzoeken()));
+			return Bevolkingsonderzoek.sort(new ArrayList<>(organisatieMedewerker.getBevolkingsonderzoeken()));
 		}
 		else
 		{
@@ -863,12 +857,12 @@ public class ScreenitSession extends WebSession
 		return scopeService.getHoogsteToegangLevel(getPrincipalCollection(), constraintToCheck);
 	}
 
-	public ToegangLevel getToegangsLevel(InstellingGebruiker gebruiker, Actie actie, Recht recht, boolean checkBvo)
+	public ToegangLevel getToegangsLevel(OrganisatieMedewerker organisatieMedewerker, Actie actie, Recht recht, boolean checkBvo)
 	{
 		Constraint constraintToCheck = new Constraint();
 		constraintToCheck.setActie(actie);
 		constraintToCheck.setRecht(recht);
-		return scopeService.getHoogsteToegangLevel(gebruiker, constraintToCheck, checkBvo);
+		return scopeService.getHoogsteToegangLevel(organisatieMedewerker, constraintToCheck, checkBvo);
 	}
 
 	public static class ScreenitSessionRevisionInformationResolverDelegate implements RevisionInformationResolverDelegate
@@ -878,7 +872,7 @@ public class ScreenitSession extends WebSession
 		{
 			if (Session.exists())
 			{
-				return ScreenitSession.get().getLoggedInAccount();
+				return ScreenitSession.get().getIngelogdAccount();
 			}
 			return null;
 		}
@@ -893,12 +887,12 @@ public class ScreenitSession extends WebSession
 	public Page getUzipasPage(boolean fromUitwisselportaal)
 	{
 		this.fromUitwisselportaal = fromUitwisselportaal;
-		Account loggedInAccount = getLoggedInAccount();
-		if (loggedInAccount instanceof InstellingGebruiker)
+		Account ingelogdAccount = getIngelogdAccount();
+		if (ingelogdAccount instanceof OrganisatieMedewerker)
 		{
-			return login(null, ((InstellingGebruiker) loggedInAccount).getMedewerker());
+			return login(null, ((OrganisatieMedewerker) ingelogdAccount).getMedewerker());
 		}
-		return login(null, (Gebruiker) loggedInAccount);
+		return login(null, (Medewerker) ingelogdAccount);
 	}
 
 	public List<String> getUzipasMeldingen()
@@ -981,13 +975,13 @@ public class ScreenitSession extends WebSession
 	{
 		if (constraint.checkScope() && constraint.organisatieTypeScopes().length > 0)
 		{
-			Instelling instelling = getInstelling();
+			Organisatie organisatie = getOrganisatie();
 			boolean valtBinnenOrganisatieTypeScopes = false;
-			if (instelling != null)
+			if (organisatie != null)
 			{
 				for (OrganisatieType type : constraint.organisatieTypeScopes())
 				{
-					if (instelling.getOrganisatieType().equals(type))
+					if (organisatie.getOrganisatieType().equals(type))
 					{
 						valtBinnenOrganisatieTypeScopes = true;
 						break;

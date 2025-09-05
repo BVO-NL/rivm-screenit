@@ -43,7 +43,7 @@ import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.component.table.AjaxImageCellPanel;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatiePaspoortPanel;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.colon.CapaciteitsPercWijziging;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
@@ -98,7 +98,7 @@ import com.google.common.primitives.Ints;
 	constraint = ShiroConstraint.HasPermission,
 	checkScope = true,
 	level = ToegangLevel.REGIO,
-	recht = Recht.GEBRUIKER_BEHEER_GEBIEDEN,
+	recht = Recht.MEDEWERKER_BEHEER_GEBIEDEN,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class AdherentieIntakelocatie extends GebiedenBeheerPage
 {
@@ -374,11 +374,11 @@ public class AdherentieIntakelocatie extends GebiedenBeheerPage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.beheer.gemeente.zoeken", GemeenteZoeken.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.beheer.adherentieintakelocatie", false, AdherentieIntakelocatie.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.beheer.gemeente.zoeken", GemeenteZoeken.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.beheer.adherentieintakelocatie", false, AdherentieIntakelocatie.class));
 		return contextMenuItems;
 	}
 
@@ -640,7 +640,7 @@ public class AdherentieIntakelocatie extends GebiedenBeheerPage
 						{
 							ColonIntakelocatie intakelocatie = getPageModelObject();
 							uitnodigingsGebiedService.wijzigingenDoorvoeren(intakelocatie, getVerwijderdeItems(), capaciteitsPercWijzigingen,
-								ScreenitSession.get().getLoggedInInstellingGebruiker());
+								ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 							ControleResultaatFragment fragment = ControleResultaatFragment.this;
 							fragment.setVisible(false);
 							target.add(fragment, adherentieTabel);
@@ -677,7 +677,7 @@ public class AdherentieIntakelocatie extends GebiedenBeheerPage
 
 			};
 			add(doorvoeren);
-			doorvoeren.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_GEBIEDEN_ADHERENTIE_AANPASSEN, Actie.AANPASSEN));
+			doorvoeren.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_GEBIEDEN_ADHERENTIE_AANPASSEN, Actie.AANPASSEN));
 
 			add(new AjaxLink<Void>("annuleren")
 			{

@@ -23,5 +23,5 @@ import ScreenitBackend from "../utils/Backend"
 import {AfmeldingDto} from "../datatypes/afmelden/AfmeldingDto"
 
 export const saveNieuwAfmeldMoment = (bvo: Bevolkingsonderzoek, afmeldingDto: AfmeldingDto) => () => {
-	return ScreenitBackend.post(`/afmelden/${bvo.toLowerCase()}`, afmeldingDto)
+	return ScreenitBackend.post(`afmelden/${bvo.toLowerCase()}`, {json: afmeldingDto})
 }

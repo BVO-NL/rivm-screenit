@@ -51,8 +51,8 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.colon.ColonUitnodigingService;
 import nl.rivm.screenit.service.colon.ColonUitnodigingsgebiedService;
 import nl.rivm.screenit.service.colon.PlanningService;
@@ -89,7 +89,7 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 	private ICurrentDateSupplier currentDateSupplier;
 
 	@Autowired
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@Autowired
 	private ColonUitnodigingService uitnodigingService;
@@ -119,7 +119,7 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 		LOG.info("Bepaal uitnodigingscapaciteit op basis van de capaciteit van de intakelocaties voor alle uitnodigingsgebieden in de week van {} tot/met {}",
 			weekStart.format(DateUtil.LOCAL_DATE_FORMAT), weekEnd.format(DateUtil.LOCAL_DATE_FORMAT));
 
-		for (ColonIntakelocatie intakelocatie : instellingService.getActieveIntakelocaties())
+		for (ColonIntakelocatie intakelocatie : organisatieService.getActieveIntakelocaties())
 		{
 			BigDecimal intakecapaciteitPerDag = bepaalIntakeCapaciteitPerDag(weekStart, weekEnd, intakelocatie);
 

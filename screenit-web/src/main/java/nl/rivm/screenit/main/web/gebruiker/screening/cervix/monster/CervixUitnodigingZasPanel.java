@@ -161,7 +161,7 @@ public abstract class CervixUitnodigingZasPanel extends CervixUitnodigingPanel<C
 			mogelijkeZasStatussen.add(CervixZasStatus.NIET_ANALYSEERBAAR);
 		}
 
-		if (ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CERVIX_ONTVANGST_MONSTER, Actie.VERWIJDEREN))
+		if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CERVIX_ONTVANGST_MONSTER, Actie.VERWIJDEREN))
 		{
 			mogelijkeZasStatussen.add(CervixZasStatus.VERSTUURD);
 		}
@@ -219,7 +219,7 @@ public abstract class CervixUitnodigingZasPanel extends CervixUitnodigingPanel<C
 
 		logMessage = logMessage + getSignaleringen();
 
-		uitnodingingService.saveMonster(zas, ScreenitSession.get().getLoggedInInstellingGebruiker(), logMessage);
+		uitnodingingService.saveMonster(zas, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), logMessage);
 
 		String feedback = getString("uitnodiging.opgeslagen");
 		boolean hasFeedbackMessage = getFeedbackMessages().hasMessage(new IFeedbackMessageFilter()
@@ -243,7 +243,7 @@ public abstract class CervixUitnodigingZasPanel extends CervixUitnodigingPanel<C
 	@Override
 	protected void registreerBarcodeAfgedrukt(AjaxRequestTarget target)
 	{
-		uitnodingingService.registreerMonsterBarcodeAfgedrukt(getModelObject(), ScreenitSession.get().getLoggedInInstellingGebruiker(),
+		uitnodingingService.registreerMonsterBarcodeAfgedrukt(getModelObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker(),
 			LogGebeurtenis.CERVIX_ZAS_BARCODE_AFGEDRUKT);
 	}
 }

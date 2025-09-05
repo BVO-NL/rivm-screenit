@@ -24,14 +24,11 @@ package nl.rivm.screenit.clientportaal.controllers;
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.service.ClientService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,18 +36,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("regio")
 @AllArgsConstructor
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class RegioController extends AbstractController
 {
-	private final HibernateService hibernateService;
-
 	private final ClientService clientService;
 
 	@GetMapping
 	public ResponseEntity<String> getRegio(Authentication authentication)
 	{
 		Client client = getClient(authentication);
-		Instelling regio = clientService.getScreeningOrganisatieVan(client).size() == 1 ? clientService.getScreeningOrganisatieVan(client).get(0) : null;
+		Organisatie regio = clientService.getScreeningOrganisatieVan(client).size() == 1 ? clientService.getScreeningOrganisatieVan(client).get(0) : null;
 		return ResponseEntity.ok(regio != null ? regio.getNaam() : "");
 	}
 }

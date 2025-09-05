@@ -26,7 +26,7 @@ import java.util.Date;
 
 import nl.rivm.screenit.main.web.component.DatePickerHelper;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.colon.SKMLExternSchema;
 import nl.rivm.screenit.model.enums.Actie;
@@ -49,7 +49,7 @@ import org.wicketstuff.wiquery.ui.datepicker.DatePickerYearRange;
 	actie = Actie.AANPASSEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_BEHEER_SCHEMA_EXTERNE_CONTROLE,
+	recht = Recht.MEDEWERKER_BEHEER_SCHEMA_EXTERNE_CONTROLE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class SKMLExterneControleSchemaToevoegenPage extends KwaliteitscontroleBasePage
 {
@@ -126,7 +126,7 @@ public class SKMLExterneControleSchemaToevoegenPage extends KwaliteitscontroleBa
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveContextMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveContextMenuClass()
 	{
 		return SKMLExterneControleSchemaPage.class;
 	}

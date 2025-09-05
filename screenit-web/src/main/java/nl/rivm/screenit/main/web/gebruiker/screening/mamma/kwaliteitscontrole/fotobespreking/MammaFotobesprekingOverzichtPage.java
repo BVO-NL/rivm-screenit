@@ -32,14 +32,14 @@ import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.table.AjaxImageCellPanel;
 import nl.rivm.screenit.main.web.component.table.AjaxLinkTableCellPanel;
 import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
-import nl.rivm.screenit.main.web.component.table.GebruikerColumn;
+import nl.rivm.screenit.main.web.component.table.MedewerkerColumn;
 import nl.rivm.screenit.main.web.component.table.NotClickableAbstractColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Gebruiker_;
-import nl.rivm.screenit.model.InstellingGebruiker_;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Medewerker_;
+import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -71,7 +71,7 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 @SecurityConstraint(
 	constraint = ShiroConstraint.HasPermission,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA },
-	recht = { Recht.GEBRUIKER_FOTOBESPREKING },
+	recht = { Recht.MEDEWERKER_FOTOBESPREKING },
 	organisatieTypeScopes = { OrganisatieType.BEOORDELINGSEENHEID, OrganisatieType.SCREENINGSORGANISATIE, OrganisatieType.RIVM })
 public class MammaFotobesprekingOverzichtPage extends MammaFotobesprekingBasePage
 {
@@ -104,19 +104,19 @@ public class MammaFotobesprekingOverzichtPage extends MammaFotobesprekingBasePag
 			public void onClick(AjaxRequestTarget target)
 			{
 				IModel<MammaFotobespreking> model = ModelUtil.cModel(new MammaFotobespreking());
-				model.getObject().setAangemaaktDoor(ScreenitSession.get().getLoggedInInstellingGebruiker());
+				model.getObject().setAangemaaktDoor(getIngelogdeOrganisatieMedewerker());
 				model.getObject().setAangemaaktOp(dateSupplier.getDate());
 				openEditPopupPanel(target, model);
 			}
 
-		}.setVisible(!ScreenitSession.get().getInstelling().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID)
-			&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_FOTOBESPREKING, Actie.TOEVOEGEN)));
+		}.setVisible(!ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID)
+			&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_FOTOBESPREKING, Actie.TOEVOEGEN)));
 	}
 
 	private void createFilter()
 	{
 		zoekModel = new CompoundPropertyModel<>(new MammaFotobesprekingWerklijstZoekObject());
-		if (ScreenitSession.get().getInstelling().getOrganisatieType() == OrganisatieType.BEOORDELINGSEENHEID)
+		if (ScreenitSession.get().getOrganisatie().getOrganisatieType() == OrganisatieType.BEOORDELINGSEENHEID)
 		{
 			zoekModel.getObject().setVanaf(dateSupplier.getLocalDate().minusMonths(3));
 		}
@@ -138,13 +138,13 @@ public class MammaFotobesprekingOverzichtPage extends MammaFotobesprekingBasePag
 		columns.add(new DateTimePropertyColumn<>(Model.of("Gestart"), "gestartOp", MammaFotobespreking_.GESTART_OP, Constants.getDateTimeFormat()));
 		columns.add(new DateTimePropertyColumn<>(Model.of("Afgerond"), "afgerondOp", MammaFotobespreking_.AFGEROND_OP, Constants.getDateTimeFormat()));
 		columns.add(new DateTimePropertyColumn<>(Model.of("Aangemaakt"), "aangemaaktOp", MammaFotobespreking_.AANGEMAAKT_OP, Constants.getDateTimeFormat()));
-		columns.add(new GebruikerColumn<>(Model.of("Door"), propertyChain(MammaFotobespreking_.AANGEMAAKT_DOOR, InstellingGebruiker_.MEDEWERKER, Gebruiker_.ACHTERNAAM),
+		columns.add(new MedewerkerColumn<>(Model.of("Door"), propertyChain(MammaFotobespreking_.AANGEMAAKT_DOOR, OrganisatieMedewerker_.MEDEWERKER, Medewerker_.ACHTERNAAM),
 			"aangemaaktDoor.medewerker"));
 		columns.add(new EnumPropertyColumn<>(Model.of("Type"), MammaFotobespreking_.TYPE, "type", this));
 		columns.add(new EnumPropertyColumn<>(Model.of("Role"), MammaFotobespreking_.ROLE, "role", this));
-		columns.add(new PropertyColumn<>(Model.of("BE"), propertyChain(MammaFotobespreking_.BEOORDELINGS_EENHEID, Instelling_.NAAM), "beoordelingsEenheid.naam"));
+		columns.add(new PropertyColumn<>(Model.of("BE"), propertyChain(MammaFotobespreking_.BEOORDELINGS_EENHEID, Organisatie_.NAAM), "beoordelingsEenheid.naam"));
 		columns.add(new PropertyColumn<>(Model.of("SE"), propertyChain(MammaFotobespreking_.SCREENINGS_EENHEID, MammaScreeningsEenheid_.NAAM), "screeningsEenheid.naam"));
-		if (!ScreenitSession.get().getInstelling().getOrganisatieType().equals(OrganisatieType.RIVM))
+		if (!ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.RIVM))
 		{
 			columns.add(new AbstractColumn<MammaFotobespreking, String>(Model.of(""))
 			{
@@ -168,8 +168,8 @@ public class MammaFotobesprekingOverzichtPage extends MammaFotobesprekingBasePag
 				}
 			});
 		}
-		if (!ScreenitSession.get().getInstelling().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID)
-			&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_FOTOBESPREKING, Actie.VERWIJDEREN))
+		if (!ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID)
+			&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_FOTOBESPREKING, Actie.VERWIJDEREN))
 		{
 			columns.add(getFotobesprekingVerwijderenColumn());
 		}
@@ -181,8 +181,8 @@ public class MammaFotobesprekingOverzichtPage extends MammaFotobesprekingBasePag
 			public void onClick(AjaxRequestTarget target, IModel<MammaFotobespreking> model)
 			{
 				super.onClick(target, model);
-				if (!ScreenitSession.get().getInstelling().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID)
-					&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_FOTOBESPREKING, Actie.INZIEN))
+				if (!ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID)
+					&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_FOTOBESPREKING, Actie.INZIEN))
 				{
 					openEditPopupPanel(target, ModelUtil.cModel(model.getObject()));
 				}

@@ -82,10 +82,10 @@ public abstract class MammaFotobesprekingEditPopupPanel extends GenericPanel<Mam
 		super(id, model);
 
 		Form<MammaFotobespreking> form = new ScreenitForm<>("form", model);
-		form.setEnabled(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_FOTOBESPREKING, Actie.AANPASSEN) && model.getObject().getGestartOp() == null);
+		form.setEnabled(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_FOTOBESPREKING, Actie.AANPASSEN) && model.getObject().getGestartOp() == null);
 		add(form);
 
-		List<BeoordelingsEenheid> beoordelingsEenheden = beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getInstelling());
+		List<BeoordelingsEenheid> beoordelingsEenheden = beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getOrganisatie());
 		List<MammaScreeningsEenheid> screeningsEenheden = screeningsEenheidService.getActieveScreeningsEenhedenVoorBeoordelingsEenheden(beoordelingsEenheden);
 		ComponentHelper.addTextField(form, "omschrijving", true, HibernateMagicNumber.L256, String.class, false)
 			.add(new ScreenitUniqueFieldValidator<>(MammaFotobespreking.class, getModelObject().getId(), "omschrijving", false));

@@ -40,7 +40,9 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+
 import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
+
 import org.apache.wicket.validation.validator.StringValidator;
 
 public class ClientContactGegevensPanel extends GenericPanel<Client>
@@ -53,7 +55,8 @@ public class ClientContactGegevensPanel extends GenericPanel<Client>
 	public ClientContactGegevensPanel(String id, IModel<Client> model)
 	{
 		super(id, model);
-		magWijzigen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_CONTACTGEGEVENS_REGISTREREN, Actie.AANPASSEN) && clientService.isClientActief(model.getObject());
+		magWijzigen =
+			ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_CONTACTGEGEVENS_REGISTREREN, Actie.AANPASSEN) && clientService.isClientActief(model.getObject());
 	}
 
 	@Override
@@ -73,7 +76,7 @@ public class ClientContactGegevensPanel extends GenericPanel<Client>
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				clientService.saveContactGegevens(getModelObject(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+				clientService.saveContactGegevens(getModelObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				info(getString("contactgegevens.opgeslagen"));
 			}
 		}.setVisible(magWijzigen));

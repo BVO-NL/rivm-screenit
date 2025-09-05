@@ -22,16 +22,16 @@ package nl.rivm.screenit.service;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.batch.BatchJob;
 import nl.rivm.screenit.model.enums.JobType;
 
 public interface JobService
 {
 
-	String startJob(final JobType jobType, InstellingGebruiker instellingGebruiker);
+	String startJob(final JobType jobType, OrganisatieMedewerker organisatieMedewerker);
 
-	String startJob(final BatchJob batchJob, InstellingGebruiker instellingGebruiker);
+	String startJob(final BatchJob batchJob, OrganisatieMedewerker organisatieMedewerker);
 
 	void resumeClientSelectie();
 }

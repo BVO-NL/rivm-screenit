@@ -25,19 +25,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 
 public interface CervixUitnodigingService
 {
 
-	String zoekMonsters(Instelling ingelogdNamensOrganisatie, String monsterId, String bsn, Date geboortedatum, List<CervixUitnodiging> uitnodigingen,
+	String zoekMonsters(Organisatie ingelogdNamensOrganisatie, String monsterId, String bsn, Date geboortedatum, List<CervixUitnodiging> uitnodigingen,
 		UnaryOperator<String> getString);
 
-	char getVerwachteEersteZASMonsterIdLetter(Instelling ingelogdNamensOrganisatie);
+	char getVerwachteEersteZASMonsterIdLetter(Organisatie ingelogdNamensOrganisatie);
 
-	boolean magMonsterVerwerktWordenDoorLab(Instelling ingelogdNamensOrganisatie, CervixUitnodiging uitnodiging);
+	boolean magMonsterVerwerktWordenDoorLab(Organisatie ingelogdNamensOrganisatie, CervixUitnodiging uitnodiging);
 
 	boolean uitnodigingHeeftZasMetNieuweBarcode(CervixUitnodiging uitnodiging);
 

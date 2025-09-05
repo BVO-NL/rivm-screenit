@@ -22,10 +22,9 @@ import {Dispatch} from "redux"
 import ScreenitBackend from "../utils/Backend"
 import {createPersoonAction} from "../actions/PersoonAction"
 import {EmailDto} from "../datatypes/mail/EmailDto"
+import {Persoon} from "../datatypes/Persoon"
 
 export const saveEmail = (email: EmailDto) => (dispatch: Dispatch) => {
-	return ScreenitBackend.put("/persoon/email", email)
-		.then(response => {
-			dispatch(createPersoonAction(response.data))
-		})
+	return ScreenitBackend.put<Persoon>("persoon/email", {json: email}).json()
+		.then(response => dispatch(createPersoonAction(response)))
 }

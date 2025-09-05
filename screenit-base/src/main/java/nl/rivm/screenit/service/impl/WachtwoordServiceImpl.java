@@ -30,7 +30,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.Constants;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
@@ -61,15 +61,15 @@ public class WachtwoordServiceImpl implements WachtwoordService
 	private final LogService logService;
 
 	@Override
-	public String hashWachtwoord(Gebruiker gebruiker, String plainWachtwoord)
+	public String hashWachtwoord(Medewerker medewerker, String plainWachtwoord)
 	{
-		Sha512Hash hash = new Sha512Hash(plainWachtwoord, gebruiker.getId().toString(), Constants.PASSWORDHASHINGITERATIONS);
+		Sha512Hash hash = new Sha512Hash(plainWachtwoord, medewerker.getId().toString(), Constants.PASSWORDHASHINGITERATIONS);
 		return hash.toHex();
 	}
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void setWachtwoord(@NonNull Gebruiker medewerker, String uncryptedWachtwoord)
+	public void setWachtwoord(@NonNull Medewerker medewerker, String uncryptedWachtwoord)
 	{
 		Assert.isTrue(medewerker.getId() != null, "Medewerker moet opgeslagen zijn.");
 		medewerker.setWachtwoord(hashWachtwoord(medewerker, uncryptedWachtwoord));
@@ -78,7 +78,7 @@ public class WachtwoordServiceImpl implements WachtwoordService
 	}
 
 	@Override
-	public boolean isEerderGebruiktWachtwoord(@NonNull Gebruiker medewerker, String unecryptedWachtwoord, List<String> vorigeWachtwoorden)
+	public boolean isEerderGebruiktWachtwoord(@NonNull Medewerker medewerker, String unecryptedWachtwoord, List<String> vorigeWachtwoorden)
 	{
 		String hashedWachtwoord = hashWachtwoord(medewerker, unecryptedWachtwoord);
 
@@ -89,26 +89,26 @@ public class WachtwoordServiceImpl implements WachtwoordService
 	}
 
 	@Override
-	public List<String> getVorigeWachtwoorden(Gebruiker gebruiker, LocalDate vanaf)
+	public List<String> getVorigeWachtwoorden(Medewerker medewerker, LocalDate vanaf)
 	{
-		return EntityAuditUtil.getEntityHistory(gebruiker, hibernateService.getHibernateSession(),
+		return EntityAuditUtil.getEntityHistory(medewerker, hibernateService.getHibernateSession(),
 				AuditEntity.revisionProperty("timestamp").gt(DateUtil.toUtilDate(vanaf).getTime()), true)
 			.stream()
 			.map((Object auditRow) ->
 			{
-				Gebruiker gebruikerAtRevision = EntityAuditUtil.getRevisionEntity(auditRow);
-				return gebruikerAtRevision.getWachtwoord();
+				Medewerker medewerkerAtRevision = EntityAuditUtil.getRevisionEntity(auditRow);
+				return medewerkerAtRevision.getWachtwoord();
 			}).collect(Collectors.toList());
 	}
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void verstuurWachtwoordVerlooptHerinneringMail(Gebruiker gebruiker)
+	public void verstuurWachtwoordVerlooptHerinneringMail(Medewerker medewerker)
 	{
-		mailService.sendWachwoordVerlooptHerinneringMail(gebruiker);
-		gebruiker.setWachtwoordVerlooptWaarschuwingVerzonden(true);
-		hibernateService.saveOrUpdate(gebruiker);
-		logService.logGebeurtenis(LogGebeurtenis.WACHTWOORD_VERLOOPT_HERINNERING_VERSTUURD, gebruiker);
+		mailService.sendWachwoordVerlooptHerinneringMail(medewerker);
+		medewerker.setWachtwoordVerlooptWaarschuwingVerzonden(true);
+		hibernateService.saveOrUpdate(medewerker);
+		logService.logGebeurtenis(LogGebeurtenis.WACHTWOORD_VERLOOPT_HERINNERING_VERSTUURD, medewerker);
 	}
 
 }

@@ -42,7 +42,7 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.modal.DefaultDialogCloseCallback;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.base.ZoekenContextMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
@@ -90,7 +90,7 @@ import static nl.rivm.screenit.main.web.gebruiker.screening.mamma.afspraken.Mamm
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_AFSPRAKEN_BEHEER },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_AFSPRAKEN_BEHEER },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 @ZoekenContextMenuItem
 public class MammaAfsprakenDagOverzichtPage extends MammaAfsprakenBasePage
@@ -151,8 +151,8 @@ public class MammaAfsprakenDagOverzichtPage extends MammaAfsprakenBasePage
 
 	public MammaAfsprakenDagOverzichtPage(IModel<MammaScreeningsEenheid> screeningsEenheidModel, Date startDatum)
 	{
-		magVerzetten = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_MAMMA_AFSPRAAK_WIJZIGEN, Actie.AANPASSEN) && ingelogdNamensRegio;
-		magBulkVerzetten = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_MAMMA_AFSPRAAK_BULK_VERZETTEN, Actie.AANPASSEN) && ingelogdNamensRegio;
+		magVerzetten = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAAK_WIJZIGEN, Actie.AANPASSEN) && ingelogdNamensRegio;
+		magBulkVerzetten = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_MAMMA_AFSPRAAK_BULK_VERZETTEN, Actie.AANPASSEN) && ingelogdNamensRegio;
 
 		var sessionSO = ScreenitSession.get().getScreeningOrganisatie();
 		this.screeningsEenheidModel = ModelUtil.csModel(screeningsEenheidModel.getObject());
@@ -413,7 +413,7 @@ public class MammaAfsprakenDagOverzichtPage extends MammaAfsprakenBasePage
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveContextMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveContextMenuClass()
 	{
 		return MammaAfsprakenSEZoekenPage.class;
 	}

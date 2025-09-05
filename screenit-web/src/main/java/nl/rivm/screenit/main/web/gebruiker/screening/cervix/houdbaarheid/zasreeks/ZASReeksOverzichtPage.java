@@ -22,7 +22,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.cervix.houdbaarheid.zasree
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.gedeeld.houdbaarheid.HoudbaarheidEditPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.gedeeld.houdbaarheid.HoudbaarheidOverzichtPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
@@ -38,7 +38,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_SCREENING_ZAS_BATCH,
+	recht = Recht.MEDEWERKER_SCREENING_ZAS_BATCH,
 	bevolkingsonderzoekScopes = Bevolkingsonderzoek.CERVIX)
 public class ZASReeksOverzichtPage extends HoudbaarheidOverzichtPage<CervixZasHoudbaarheid>
 {
@@ -59,8 +59,8 @@ public class ZASReeksOverzichtPage extends HoudbaarheidOverzichtPage<CervixZasHo
 	}
 
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.CERVIX;
+		return MedewerkerHoofdMenuItem.CERVIX;
 	}
 }

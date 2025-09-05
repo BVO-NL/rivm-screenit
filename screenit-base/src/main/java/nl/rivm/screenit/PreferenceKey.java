@@ -361,6 +361,8 @@ public enum PreferenceKey
 
 	MAMMA_CLIENTPORTAAL_TIJDELIJKE_MELDING("BK clientportaal: Tijdelijke melding", String.class),
 
+	MAMMA_MINDERVALIDE_RESERVERING_ACTIEF("BK mindervalide reservering actief", Boolean.class),
+
 	CERVIX_UITSTEL_UITSLAGBRIEF_PAP3A2_OF_HOGER("Uitstel uitslagbrief na PAP3a2 of hoger", Integer.class),
 
 	CERVIX_VOORAANKONDIGINGS_PERIODE("Het aantal dagen voor de 30e verjaardag dat de vooraankondiging gegenereerd wordt", Integer.class),
@@ -474,7 +476,11 @@ public enum PreferenceKey
 		Integer.class),
 	COLON_START_DK2026("Startdatum DK2026", Date.class),
 
+	START_NIEUWE_INPAKCENTRUM_KOPPELING("Start nieuwe inpakcentrum koppeling", Date.class),
+
 	COLON_BETROUWBARE_LIMIET_FIT("Betrouwbare limiet FIT uitslag", Integer.class),
+
+	TOON_TEST_ELEMENTEN("Toon test elementen (knoppen, inputs etc) in de UI", Boolean.class),
 	;
 
 	private final String layoutName;

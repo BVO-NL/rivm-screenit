@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.model;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -50,27 +50,8 @@ public class EnvironmentInfoDto
 
 	private boolean tomosyntheseMogelijk;
 
-	public Boolean isNfcEnabled()
-	{
-		return nfcEnabled;
-	}
-
 	public void setNfcEnabled(String nfcEnabled)
 	{
 		this.nfcEnabled = nfcEnabled.equals("true");
-	}
-
-	public EnvironmentInfoDto(EnvironmentInfoDto environmentInfoDto)
-	{
-		this.version = environmentInfoDto.version;
-		this.environment = environmentInfoDto.environment;
-		this.timestamp = environmentInfoDto.timestamp;
-		this.nfcEnabled = environmentInfoDto.nfcEnabled;
-		this.huidigWerkstationIpAdres = environmentInfoDto.huidigWerkstationIpAdres;
-		this.magUpdaten = environmentInfoDto.magUpdaten;
-		this.dagenInDaglijstCache = environmentInfoDto.dagenInDaglijstCache;
-		this.cacheVulling = environmentInfoDto.cacheVulling;
-		this.dagenDaglijstOphalenLimiet = environmentInfoDto.dagenDaglijstOphalenLimiet;
-		this.tomosyntheseMogelijk = environmentInfoDto.tomosyntheseMogelijk;
 	}
 }

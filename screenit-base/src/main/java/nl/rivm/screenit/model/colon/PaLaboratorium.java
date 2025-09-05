@@ -34,7 +34,7 @@ import jakarta.persistence.ManyToMany;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 
 import org.hibernate.annotations.Cascade;
@@ -45,11 +45,11 @@ import org.hibernate.envers.Audited;
 @Audited
 @Getter
 @Setter
-public class PaLaboratorium extends Instelling
+public class PaLaboratorium extends Organisatie
 {
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade(CascadeType.SAVE_UPDATE)
-	@JoinTable(schema = "colon", name = "org_organisatie_coloscopielocaties", joinColumns = { @JoinColumn(name = "org_organisatie") })
+	@JoinTable(schema = "colon", name = "organisatie_coloscopielocaties", joinColumns = { @JoinColumn(name = "organisatie") })
 	private List<ColoscopieLocatie> coloscopielocaties = new ArrayList<>();
 
 	@Column(nullable = true, length = HibernateMagicNumber.L255)

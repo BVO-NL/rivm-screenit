@@ -29,7 +29,7 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractBEAccordio
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaLezingPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaLezingParameters;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDto;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaLezing;
@@ -77,8 +77,8 @@ public class DiscrepantieArbitrageLezingenContainer extends AbstractBEAccordionP
 		IModel<MammaLezing> eersteLezing = new CompoundPropertyModel<>(new PropertyModel<>(getModel(), "eersteLezing"));
 		IModel<MammaLezing> tweedeLezing = new CompoundPropertyModel<>(new PropertyModel<>(getModel(), "tweedeLezing"));
 
-		InstellingGebruiker gebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
-		huidigeLezingModel = ModelUtil.cModel(beoordelingService.getOrCreateDiscrepantieOfArbitrageLezing(getModelObject(), huidigeLezingType(), gebruiker));
+		OrganisatieMedewerker organisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
+		huidigeLezingModel = ModelUtil.cModel(beoordelingService.getOrCreateDiscrepantieOfArbitrageLezing(getModelObject(), huidigeLezingType(), organisatieMedewerker));
 
 		MammaLezingParameters mammaLezingParameters = MammaLezingParameters.maakAlleenInzien()
 			.setMetAfbeelding(true)
@@ -138,14 +138,14 @@ public class DiscrepantieArbitrageLezingenContainer extends AbstractBEAccordionP
 	private boolean isDezeBeoordelingAlleenInzien()
 	{
 		return MammaBeoordelingStatus.VERSLAG_MAKEN.equals(getModelObject().getStatus()) || MammaBeoordelingStatus.UITSLAG_GUNSTIG.equals(getModelObject().getStatus())
-			|| (MammaBeoordelingStatus.ARBITRAGE.equals(getModelObject().getStatus()) && beoordeeldDoorIngelogdeGebruiker());
+			|| (MammaBeoordelingStatus.ARBITRAGE.equals(getModelObject().getStatus()) && beoordeeldDoorIngelogdeOrganisatieMedewerker());
 	}
 
-	private boolean beoordeeldDoorIngelogdeGebruiker()
+	private boolean beoordeeldDoorIngelogdeOrganisatieMedewerker()
 	{
-		InstellingGebruiker instellingGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
-		return instellingGebruiker.equals(getModelObject().getEersteLezing().getBeoordelaar())
-			|| instellingGebruiker.equals(getModelObject().getTweedeLezing().getBeoordelaar());
+		OrganisatieMedewerker organisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
+		return organisatieMedewerker.equals(getModelObject().getEersteLezing().getBeoordelaar())
+			|| organisatieMedewerker.equals(getModelObject().getTweedeLezing().getBeoordelaar());
 	}
 
 	public void beoordelingNaarArbitrageEnOpslaan(MammaLezing lezing, AjaxRequestTarget target)

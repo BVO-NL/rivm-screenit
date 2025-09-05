@@ -41,7 +41,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @SecurityConstraint(
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_CLIENT_SR_HUISARTSBERICHT_DETAILS,
+	recht = Recht.MEDEWERKER_CLIENT_SR_HUISARTSBERICHT_DETAILS,
 	bevolkingsonderzoekScopes = Bevolkingsonderzoek.CERVIX)
 public class CervixExtraHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailPanel
 {

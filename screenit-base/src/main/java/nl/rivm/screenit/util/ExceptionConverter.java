@@ -43,7 +43,7 @@ public final class ExceptionConverter
 	{
 	}
 
-	public static String getGebruikerMeldingUitTriggerMessage(RuntimeException e)
+	public static String getMedewerkerMeldingUitTriggerMessage(RuntimeException e)
 	{
 		String uiMessage = null;
 		Throwable cause = null;
@@ -91,7 +91,7 @@ public final class ExceptionConverter
 
 	public static String convertExceptionToJson(RuntimeException e, String keyValue)
 	{
-		ExceptieOmschrijving exceptieOmschrijving = new ExceptieOmschrijving(keyValue, ExceptionConverter.getGebruikerMeldingUitTriggerMessage(e));
+		ExceptieOmschrijving exceptieOmschrijving = new ExceptieOmschrijving(keyValue, ExceptionConverter.getMedewerkerMeldingUitTriggerMessage(e));
 		try
 		{
 			return OBJECTMAPPER.writeValueAsString(exceptieOmschrijving);

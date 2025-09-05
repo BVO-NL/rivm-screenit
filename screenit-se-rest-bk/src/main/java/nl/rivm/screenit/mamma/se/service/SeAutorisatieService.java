@@ -22,16 +22,16 @@ package nl.rivm.screenit.mamma.se.service;
  */
 
 import nl.rivm.screenit.mamma.se.dto.SeAutorisatieDto;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Recht;
 
 public interface SeAutorisatieService
 {
 	boolean isGeautoriseerd(Long accountId, Recht recht);
 
-	boolean isGeautoriseerdVoorInloggen(Long accountId);
+	boolean isGeautoriseerdVoorInloggen(Long organisatieMedewerkerId);
 
-	boolean isInstellingGebruikerGeautoriseerd(InstellingGebruiker instellingGebruiker, Recht recht);
+	boolean isOrganisatieMedewerkerGeautoriseerd(OrganisatieMedewerker organisatieMedewerker, Recht recht);
 
 	SeAutorisatieDto getSeRechten(Long accountId);
 }

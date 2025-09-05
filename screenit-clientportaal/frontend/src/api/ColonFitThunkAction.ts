@@ -21,23 +21,24 @@
 import {Dispatch} from "redux"
 import ScreenitBackend from "../utils/Backend"
 import {getString} from "../utils/TekstPropertyUtil"
-import {AxiosResponse} from "axios"
 import {ToastMessageType} from "../datatypes/toast/ToastMessage"
 import {ResetFitStatus, setHuidigeFitStatusAction} from "../actions/ColonDossierAction"
 import properties from "../pages/bvo/colon/ColonFitAanvragenPage.json"
 import {showToast} from "../utils/ToastUtil"
+import {FitStatus} from "../datatypes/colon/FitStatus"
+import {KyResponse} from "ky"
 
 export const getHuidigeFitStatus = () => (dispatch: Dispatch<ResetFitStatus>) => {
-	return ScreenitBackend.get("/colon/fit/status")
-		.then(response => dispatch(setHuidigeFitStatusAction(response.data)))
+	return ScreenitBackend.get<FitStatus>("colon/fit/status").json()
+		.then(response => dispatch(setHuidigeFitStatusAction(response)))
 }
 
 export const saveFitAanvraag = () => () => {
-	return ScreenitBackend.put("/colon/fit/aanvragen")
+	return ScreenitBackend.put("colon/fit/aanvragen")
 		.then(() => {
 			showToast(getString(properties.toast.title), getString(properties.toast.description))
 		})
-		.catch((error: AxiosResponse) => {
+		.catch((error: KyResponse) => {
 			if (error.status === 409) {
 				showToast(undefined, getString(properties.error.request), ToastMessageType.ERROR)
 			}

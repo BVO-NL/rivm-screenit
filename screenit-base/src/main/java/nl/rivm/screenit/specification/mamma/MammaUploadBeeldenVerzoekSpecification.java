@@ -25,7 +25,7 @@ import java.util.List;
 
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.mamma.MammaUploadBeeldenVerzoek;
 import nl.rivm.screenit.model.mamma.MammaUploadBeeldenVerzoekStatus;
 import nl.rivm.screenit.model.mamma.MammaUploadBeeldenVerzoek_;
@@ -34,7 +34,7 @@ import nl.rivm.screenit.specification.SpecificationUtil;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import static nl.rivm.screenit.specification.algemeen.OrganisatieMedewerkerSpecification.heeftInstelling;
+import static nl.rivm.screenit.specification.algemeen.OrganisatieMedewerkerSpecification.heeftOrganisatie;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class MammaUploadBeeldenVerzoekSpecification
@@ -44,19 +44,19 @@ public class MammaUploadBeeldenVerzoekSpecification
 		return (r, q, cb) -> r.get(MammaUploadBeeldenVerzoek_.status).in(statussen);
 	}
 
-	public static ExtendedSpecification<MammaUploadBeeldenVerzoek> heeftZiekenhuis(Instelling ziekenhuis)
+	public static ExtendedSpecification<MammaUploadBeeldenVerzoek> heeftZiekenhuis(Organisatie ziekenhuis)
 	{
 		return (r, q, cb) -> cb.equal(r.get(MammaUploadBeeldenVerzoek_.ziekenhuis), ziekenhuis);
 	}
 
-	public static ExtendedSpecification<MammaUploadBeeldenVerzoek> filterOpZiekenhuis(Instelling ziekenhuis)
+	public static ExtendedSpecification<MammaUploadBeeldenVerzoek> filterOpZiekenhuis(Organisatie ziekenhuis)
 	{
 		return SpecificationUtil.skipWhenNullExtended(ziekenhuis, heeftZiekenhuis(ziekenhuis));
 	}
 
-	public static Specification<MammaUploadBeeldenVerzoek> filterOpGemaaktDoorOrganisatie(Instelling organisatie)
+	public static Specification<MammaUploadBeeldenVerzoek> filterOpGemaaktDoorOrganisatie(Organisatie organisatie)
 	{
-		return SpecificationUtil.skipWhenNull(organisatie, heeftInstelling(organisatie).with(MammaUploadBeeldenVerzoek_.gemaaktDoor));
+		return SpecificationUtil.skipWhenNull(organisatie, heeftOrganisatie(organisatie).with(MammaUploadBeeldenVerzoek_.gemaaktDoor));
 	}
 
 }

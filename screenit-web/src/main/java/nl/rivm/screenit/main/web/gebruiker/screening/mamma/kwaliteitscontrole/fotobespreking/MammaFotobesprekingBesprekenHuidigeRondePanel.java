@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.main.service.mamma.MammaKwaliteitscontroleService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxLink;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaBeoordelenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.panels.MammaKwaliteitscontroleHuidigeRondePanel;
 import nl.rivm.screenit.model.GbaPersoon;
@@ -82,7 +82,7 @@ public class MammaFotobesprekingBesprekenHuidigeRondePanel extends MammaKwalitei
 
 	private void addButton(WebMarkupContainer panelContainer, List<Component> buttons, final String id, MammaFotobesprekingOnderzoekStatus status)
 	{
-		ConfirmingIndicatingAjaxLink<Void> button = new ConfirmingIndicatingAjaxLink<Void>(id, ((GebruikerBasePage) getPage()).getDialog(), "confirm.herbeoordelen")
+		ConfirmingIndicatingAjaxLink<Void> button = new ConfirmingIndicatingAjaxLink<Void>(id, ((MedewerkerBasePage) getPage()).getDialog(), "confirm.herbeoordelen")
 		{
 			private boolean bevestigingNietNodig = !ID_OPNIEUW_BEOORDELEN.equals(id);
 
@@ -105,7 +105,7 @@ public class MammaFotobesprekingBesprekenHuidigeRondePanel extends MammaKwalitei
 				{
 					logService.logGebeurtenis(
 						logGebeurtenis,
-						ScreenitSession.get().getLoggedInAccount(),
+						ScreenitSession.get().getIngelogdAccount(),
 						fotobesprekingOnderzoekModel.getObject().getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient());
 				}
 				volgende(target, status);
@@ -122,7 +122,7 @@ public class MammaFotobesprekingBesprekenHuidigeRondePanel extends MammaKwalitei
 		MammaFotobesprekingOnderzoek fotobesprekingOnderzoek = fotobesprekingOnderzoekModel.getObject();
 		if (fotobesprekingOnderzoek.getFotobespreking().getAfgerondOp() == null)
 		{
-			boolean heeftImsDesktopSyncRecht = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_IMS_KOPPELING, Actie.INZIEN);
+			boolean heeftImsDesktopSyncRecht = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_IMS_KOPPELING, Actie.INZIEN);
 			switch (fotobesprekingOnderzoek.getStatus())
 			{
 			case NIET_BESPROKEN:

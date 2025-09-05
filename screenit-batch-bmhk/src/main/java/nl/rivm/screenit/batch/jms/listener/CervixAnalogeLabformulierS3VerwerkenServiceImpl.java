@@ -42,6 +42,8 @@ import nl.rivm.screenit.repository.cervix.BmhkLaboratoriumRepository;
 import nl.rivm.screenit.repository.cervix.CervixLabformulierRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.cervix.CervixBaseMonsterService;
+import nl.rivm.screenit.service.cervix.CervixBaseTestTimelineHuisartsService;
 import nl.rivm.screenit.service.cervix.CervixLabformulierService;
 import nl.rivm.screenit.specification.cervix.CervixBMHKLaboratoriumSpecification;
 import nl.rivm.screenit.util.DateUtil;
@@ -75,6 +77,10 @@ public class CervixAnalogeLabformulierS3VerwerkenServiceImpl implements CervixAn
 
 	private final CervixLabformulierRepository labformulierRepository;
 
+	private final CervixBaseTestTimelineHuisartsService testTimelineHuisartsService;
+
+	private final CervixBaseMonsterService monsterService;
+
 	@Transactional
 	public void verwerkLabformulier(String bestandsnaam, String bucketName)
 	{
@@ -98,10 +104,29 @@ public class CervixAnalogeLabformulierS3VerwerkenServiceImpl implements CervixAn
 		}
 		else
 		{
-			var labformulier = new CervixLabformulier();
-			labformulier.setDigitaal(false);
-			return labformulier;
+			return maakStubbedLabformulier(bestandsnaam);
 		}
+	}
+
+	private CervixLabformulier maakStubbedLabformulier(String bestandsnaam)
+	{
+		var labformulier = new CervixLabformulier();
+		var barCode = haalWaardeOpUitBestandsnaam(bestandsnaam, "uid");
+
+		monsterService.getUitstrijkje(barCode).ifPresent(uitstrijkje ->
+		{
+			var uitnodiging = uitstrijkje.getUitnodiging();
+			var scanDatum = haalDatumUitBestandsnaam(bestandsnaam);
+
+			if (uitnodiging.getCreatieDatum().before(scanDatum))
+			{
+				labformulier.setDatumUitstrijkje(scanDatum);
+			}
+		});
+
+		testTimelineHuisartsService.findFirstHuisartsLocatie().ifPresent(labformulier::setHuisartsLocatie);
+
+		return labformulier;
 	}
 
 	private void haalWaardenUitBestandsnaamEnSlaOp(CervixLabformulier labformulier, String bestandsnaam)
@@ -112,6 +137,7 @@ public class CervixAnalogeLabformulierS3VerwerkenServiceImpl implements CervixAn
 		labformulier.setBarcode(haalWaardeOpUitBestandsnaam(bestandsnaam, "uid"));
 		labformulier.setStatus(CervixLabformulierStatus.GESCAND);
 		labformulier.setStatusDatum(currentDateSupplier.getDate());
+
 		labformulierRepository.save(labformulier);
 		labformulierService.koppelEnBewaarLabformulier(labformulier);
 		logService.logGebeurtenis(LogGebeurtenis.CERVIX_LABFORMULIER_GESCAND,

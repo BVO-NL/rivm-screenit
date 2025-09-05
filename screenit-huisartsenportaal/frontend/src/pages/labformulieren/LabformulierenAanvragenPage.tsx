@@ -61,7 +61,7 @@ const LabformulierenAanvragenPage = () => {
 					</div>
 				</div>
 			</div>
-			<BaseTabelComponent<LabformulierAanvragenOverzichtDto> resultsPerPage={10} url={"/aanvragen/huisarts"}>
+			<BaseTabelComponent<LabformulierAanvragenOverzichtDto> resultsPerPage={10} url={"aanvragen/huisarts"}>
 				{(props) => (
 					<>
 						<h3 className={styles.historyOverzicht}>{getString(properties.table.title)}</h3>

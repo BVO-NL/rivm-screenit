@@ -20,7 +20,6 @@
  */
 import React, {useCallback, useEffect, useState} from "react"
 import ScreenitBackend from "../../util/Backend"
-import {AxiosResponse} from "axios"
 import {PaginationDto, SortOptionsDto, SortOrder} from "../../state/datatypes/dto/TabelRequestDto"
 import {useAppThunkDispatch} from "../../index"
 import {loadingThunkAction} from "../../api/LoadingThunkAction"
@@ -57,49 +56,50 @@ function BaseTabelComponent<T>(props: TabelComponentProps<T>) {
 	const [page, setPage] = useState<number>(1)
 
 	const exportCsv = useCallback(() => {
-		(props.exportUrl && props.exportFileName) && ScreenitBackend.request({
-			url: props.exportUrl,
+		props.exportUrl && props.exportFileName && ScreenitBackend(props.exportUrl, {
 			method: "POST",
-			responseType: "arraybuffer",
-			responseEncoding: "binary",
-			data: {
+			json: {
 				resultOptions: {
 					first: 0,
 					count: -1,
 					sortOptions: sortOptions,
-				} as PaginationDto, ...zoekObjectToevoeging,
+				} as PaginationDto,
 				...(zoekObjectToevoeging ? {[zoekObjectToevoeging?.property]: zoekObjectToevoeging.value} : {}),
 			},
 			headers: {
 				"Content-Type": "application/json;charset=UTF-8",
 				Accept: "application/octet-stream;charset=UTF-8",
 			},
-		}).then((response => {
-			const downloadUrl = URL.createObjectURL(new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), response.data], {type: "application/csv;charset=UTF-8"}))
-			const downloadElement = document.createElement("a")
-			if (typeof downloadElement.download === "undefined") {
-				window.location.href = downloadUrl
-			} else {
-				downloadElement.href = downloadUrl
-				downloadElement.download = props.exportFileName!
-				document.body.appendChild(downloadElement)
-				downloadElement.click()
-			}
-		}))
+		})
+			.arrayBuffer()
+			.then((response: ArrayBuffer) => {
+				const downloadUrl = URL.createObjectURL(new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), response], {type: "application/csv;charset=UTF-8"}))
+				const downloadElement = document.createElement("a")
+				if (typeof downloadElement.download === "undefined") {
+					window.location.href = downloadUrl
+				} else {
+					downloadElement.href = downloadUrl
+					downloadElement.download = props.exportFileName!
+					document.body.appendChild(downloadElement)
+					downloadElement.click()
+				}
+			})
 	}, [sortOptions, zoekObjectToevoeging, props.exportUrl, props.exportFileName])
 
 	const fetchResults = useCallback(() => {
-		dispatch(loadingThunkAction(async () => {
-			return await ScreenitBackend.post(props.url, {
-				resultOptions: {
-					first: page === 1 ? 0 : (page - 1) * props.resultsPerPage,
-					count: props.resultsPerPage,
-					sortOptions: sortOptions,
-				} as PaginationDto, ...zoekObjectToevoeging,
-				...(zoekObjectToevoeging ? {[zoekObjectToevoeging?.property]: zoekObjectToevoeging.value} : {}),
-			})
-		})).then((response: AxiosResponse<T>) => {
-			setResults(response.data)
+		dispatch(loadingThunkAction(() => {
+			return ScreenitBackend.post(props.url, {
+				json: {
+					resultOptions: {
+						first: page === 1 ? 0 : (page - 1) * props.resultsPerPage,
+						count: props.resultsPerPage,
+						sortOptions: sortOptions,
+					} as PaginationDto,
+					...(zoekObjectToevoeging ? {[zoekObjectToevoeging?.property]: zoekObjectToevoeging.value} : {}),
+				},
+			}).json()
+		})).then((response: T) => {
+			setResults(response)
 		})
 	}, [page, sortOptions, zoekObjectToevoeging, setResults, dispatch, props.resultsPerPage, props.url])
 

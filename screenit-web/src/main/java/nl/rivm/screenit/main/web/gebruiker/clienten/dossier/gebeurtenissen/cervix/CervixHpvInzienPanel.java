@@ -71,7 +71,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_CLIENT_SR_CERVIX_HPV_UITSLAG_INZIEN,
+	recht = Recht.MEDEWERKER_CLIENT_SR_CERVIX_HPV_UITSLAG_INZIEN,
 	bevolkingsonderzoekScopes = Bevolkingsonderzoek.CERVIX)
 public class CervixHpvInzienPanel extends AbstractGebeurtenisDetailPanel
 {
@@ -213,7 +213,7 @@ public class CervixHpvInzienPanel extends AbstractGebeurtenisDetailPanel
 					LOG.error("Fout bij uploaden van een bezwaar formulier: ", e);
 					error(getString("error.onbekend"));
 				}
-				cervixUitnodigingService.verwijderResultatenMonster(uitnodiging.getMonster(), uploadDocument, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				cervixUitnodigingService.verwijderResultatenMonster(uitnodiging.getMonster(), uploadDocument, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				ScreenitSession.get().info(CervixHpvInzienPanel.this.getString("uitslagen.verwijderd"));
 				setResponsePage(new ClientDossierPage(ModelUtil.sModel(uitnodiging.getScreeningRonde().getDossier().getClient())));
 			}
@@ -230,7 +230,7 @@ public class CervixHpvInzienPanel extends AbstractGebeurtenisDetailPanel
 		CervixUitnodiging uitnodiging = (CervixUitnodiging) getModelObject().getUitnodiging();
 		CervixMonster monster = uitnodiging.getMonster();
 		CervixScreeningRonde ontvangstRonde = monster.getOntvangstScreeningRonde();
-		return ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_VERWIJDEREN_RESULTATEN_MONSTER, Actie.VERWIJDEREN, ontvangstRonde.getDossier().getClient())
+		return ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_VERWIJDEREN_RESULTATEN_MONSTER, Actie.VERWIJDEREN, ontvangstRonde.getDossier().getClient())
 			&& monster.equals(cervixUitnodigingService.getUitnodigingMagVerwijderdWorden(ontvangstRonde));
 	}
 
@@ -248,13 +248,13 @@ public class CervixHpvInzienPanel extends AbstractGebeurtenisDetailPanel
 			public void onClick(AjaxRequestTarget target)
 			{
 				uploadField.setVisible(true);
-				formUploadBtn.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_VERWIJDEREN_RESULTATEN_MONSTER, Actie.VERWIJDEREN,
+				formUploadBtn.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_VERWIJDEREN_RESULTATEN_MONSTER, Actie.VERWIJDEREN,
 					CervixHpvInzienPanel.this.getModelObject().getUitnodiging().getScreeningRonde().getDossier().getClient())
 					&& CervixHpvInzienPanel.this.getModelObject().getBeoordeling().getMonster().getVerwijderdBrief() != null);
 				target.add(uploadForm);
 			}
 		};
-		btn.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_VERWIJDEREN_RESULTATEN_MONSTER, Actie.VERWIJDEREN,
+		btn.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_VERWIJDEREN_RESULTATEN_MONSTER, Actie.VERWIJDEREN,
 			getModelObject().getUitnodiging().getScreeningRonde().getDossier().getClient())
 			&& CervixHpvInzienPanel.this.getModelObject().getBeoordeling().getMonster().getVerwijderdBrief() != null);
 		parent.add(btn);

@@ -24,7 +24,7 @@ package nl.rivm.screenit.repository.mamma;
 import java.util.List;
 import java.util.Optional;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaConclusieReview;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.repository.BaseJpaRepository;
@@ -34,19 +34,19 @@ import org.springframework.data.repository.query.Param;
 
 public interface MammaConclusieReviewRepository extends BaseJpaRepository<MammaConclusieReview>
 {
-	Optional<MammaConclusieReview> findByRadioloogAndScreeningRondeAndReviewAlsCoordinerendRadioloog(InstellingGebruiker radioloog,
+	Optional<MammaConclusieReview> findByRadioloogAndScreeningRondeAndReviewAlsCoordinerendRadioloog(OrganisatieMedewerker radioloog,
 		MammaScreeningRonde screeningRonde, boolean reviewdAlsCoordinerendRadioloog);
 
-	@Query("select distinct ig"
-		+ " from InstellingGebruiker ig"
-		+ " join MammaLezing l on ig = l.beoordelaar"
+	@Query("select distinct om"
+		+ " from OrganisatieMedewerker om"
+		+ " join MammaLezing l on om = l.beoordelaar"
 		+ " join MammaBeoordeling b on l = b.eersteLezing or l = b.tweedeLezing or l = b.arbitrageLezing or l = b.discrepantieLezing"
 		+ " join MammaOnderzoek o on b.onderzoek = o"
 		+ " join MammaAfspraak a on o = a.onderzoek"
 		+ " join MammaUitnodiging u on a.uitnodiging = u"
 		+ " join MammaScreeningRonde sr on u.screeningRonde = sr"
-		+ " left join MammaConclusieReview cr on sr = cr.screeningRonde and cr.radioloog = ig"
+		+ " left join MammaConclusieReview cr on sr = cr.screeningRonde and cr.radioloog = om"
 		+ " where sr = :screeningRonde"
 		+ " and cr.id is null")
-	List<InstellingGebruiker> getRadiologenMetLezingVanRondeEnZonderReview(@Param("screeningRonde") MammaScreeningRonde screeningRonde);
+	List<OrganisatieMedewerker> getRadiologenMetLezingVanRondeEnZonderReview(@Param("screeningRonde") MammaScreeningRonde screeningRonde);
 }

@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.service.mamma.MammaStandplaatsService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.form.PostcodeField;
@@ -32,7 +31,7 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaPostcodeReeks;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
@@ -57,7 +56,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaPostcodeReeksZoekenPage extends MammaPlanningBasePage
 {
@@ -70,7 +69,7 @@ public class MammaPostcodeReeksZoekenPage extends MammaPlanningBasePage
 	private MammaBaseStandplaatsService standplaatsService;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private MammaBaseConceptPlanningsApplicatie baseConceptPlanningsApplicatie;
@@ -106,7 +105,7 @@ public class MammaPostcodeReeksZoekenPage extends MammaPlanningBasePage
 			}
 		};
 
-		toevoegen.setVisible(ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.TOEVOEGEN));
+		toevoegen.setVisible(ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.TOEVOEGEN));
 		add(toevoegen);
 
 		zoekForm = new Form<MammaPostcodeReeks>("zoekForm", (IModel<MammaPostcodeReeks>) getDefaultModel());
@@ -120,7 +119,7 @@ public class MammaPostcodeReeksZoekenPage extends MammaPlanningBasePage
 		zoekForm.add(standplaatsDropdown);
 
 		ScreenitDropdown<ScreeningOrganisatie> regioDropdown = new ScreenitDropdown<>("standplaats.regio",
-			ModelUtil.listRModel(instellingService.getActieveInstellingen(ScreeningOrganisatie.class), false), new ChoiceRenderer<ScreeningOrganisatie>("naam"));
+			ModelUtil.listRModel(organisatieService.getActieveOrganisaties(ScreeningOrganisatie.class), false), new ChoiceRenderer<ScreeningOrganisatie>("naam"));
 
 		if (ingelogdNamensRegio == null)
 		{

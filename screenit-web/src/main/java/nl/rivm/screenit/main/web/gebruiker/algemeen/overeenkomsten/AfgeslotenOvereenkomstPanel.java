@@ -35,9 +35,9 @@ import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.component.table.UploadDocumentDownloadColumn;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.medewerker.MedewerkerPaspoortPanel;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatiePaspoortPanel;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.overeenkomsten.AbstractAfgeslotenOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.AbstractAfgeslotenOvereenkomst_;
@@ -79,15 +79,15 @@ public abstract class AfgeslotenOvereenkomstPanel extends Panel
 	@SpringBean
 	private ICurrentDateSupplier currentDateSupplier;
 
-	protected AfgeslotenOvereenkomstPanel(String id, Actie actie, Gebruiker gebruiker, SortableDataProvider<AbstractAfgeslotenOvereenkomst, String> dataprovider,
+	protected AfgeslotenOvereenkomstPanel(String id, Actie actie, Medewerker medewerker, SortableDataProvider<AbstractAfgeslotenOvereenkomst, String> dataprovider,
 		final IModel<Boolean> actiefModel)
 	{
 		super(id);
-		add(new MedewerkerPaspoortPanel("paspoort", ModelUtil.ccModel(gebruiker)));
+		add(new MedewerkerPaspoortPanel("paspoort", ModelUtil.ccModel(medewerker)));
 		constructPanel(actie, dataprovider, actiefModel);
 	}
 
-	protected AfgeslotenOvereenkomstPanel(String id, Actie actie, Instelling selectedOrganisatie, SortableDataProvider<AbstractAfgeslotenOvereenkomst, String> dataprovider,
+	protected AfgeslotenOvereenkomstPanel(String id, Actie actie, Organisatie selectedOrganisatie, SortableDataProvider<AbstractAfgeslotenOvereenkomst, String> dataprovider,
 		final IModel<Boolean> actiefModel)
 	{
 
@@ -129,7 +129,7 @@ public abstract class AfgeslotenOvereenkomstPanel extends Panel
 		columns.add(new PropertyColumn<>(new SimpleStringResourceModel("label.naamovereenkomst"), propertyChain(AbstractAfgeslotenOvereenkomst_.OVEREENKOMST, Overeenkomst_.NAAM),
 			propertyChain(AbstractAfgeslotenOvereenkomst_.OVEREENKOMST, Overeenkomst_.NAAM)));
 		columns.add(new PropertyColumn<>(new SimpleStringResourceModel("label.screeningsorganisatie"), propertyChain(AbstractAfgeslotenOvereenkomst_.SCREENING_ORGANISATIE,
-			Instelling_.NAAM), propertyChain(AbstractAfgeslotenOvereenkomst_.SCREENING_ORGANISATIE, Instelling_.NAAM)));
+			Organisatie_.NAAM), propertyChain(AbstractAfgeslotenOvereenkomst_.SCREENING_ORGANISATIE, Organisatie_.NAAM)));
 		columns.add(new DateTimePropertyColumn<>(new SimpleStringResourceModel("label.startdatum"), AbstractAfgeslotenOvereenkomst_.START_DATUM,
 			AbstractAfgeslotenOvereenkomst_.START_DATUM,
 			new SimpleDateFormat("dd-MM-yyyy")));

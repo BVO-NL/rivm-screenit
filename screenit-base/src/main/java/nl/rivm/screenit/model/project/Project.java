@@ -47,8 +47,8 @@ import lombok.Setter;
 
 import nl.rivm.screenit.model.IBevolkingsonderzoek;
 import nl.rivm.screenit.model.INaam;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ProjectParameter;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
@@ -92,22 +92,22 @@ public class Project extends AbstractHibernateObject implements INaam, IBevolkin
 
 	@NotAudited
 	@ManyToOne(fetch = FetchType.LAZY)
-	private Instelling organisatie;
+	private Organisatie organisatie;
 
 	@Cascade({ CascadeType.SAVE_UPDATE })
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	private InstellingGebruiker contactpersoon;
+	private OrganisatieMedewerker contactpersoon;
 
 	@NotAudited
 	@Cascade({ CascadeType.SAVE_UPDATE })
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@JoinTable(schema = "algemeen", name = "project_medewerkers")
-	private List<InstellingGebruiker> medewerkers;
+	private List<OrganisatieMedewerker> medewerkers;
 
 	@NotAudited
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(schema = "algemeen", name = "project_screening_organisaties")
-	private List<Instelling> screeningOrganisaties = new ArrayList<Instelling>();
+	private List<Organisatie> screeningOrganisaties = new ArrayList<Organisatie>();
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = jakarta.persistence.CascadeType.ALL)
 	private List<ProjectClient> clienten = new ArrayList<>();

@@ -49,7 +49,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_CENTRALE_EENHEID_VERWIJSVERSLAGEN_CONTROLLEREN },
+	recht = { Recht.MEDEWERKER_CENTRALE_EENHEID_VERWIJSVERSLAGEN_CONTROLLEREN },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaCeVerwijsVerslagenWerklijstPage extends AbstractMammaCeWerklijst
 {

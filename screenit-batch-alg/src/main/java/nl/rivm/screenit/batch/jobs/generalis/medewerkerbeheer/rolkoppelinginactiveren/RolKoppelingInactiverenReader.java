@@ -24,7 +24,7 @@ package nl.rivm.screenit.batch.jobs.generalis.medewerkerbeheer.rolkoppelinginact
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
-import nl.rivm.screenit.model.InstellingGebruikerRol;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 
 import org.springframework.data.jpa.domain.Specification;
@@ -35,12 +35,12 @@ import static nl.rivm.screenit.specification.algemeen.OrganisatieMedewerkerRolSp
 
 @Component
 @AllArgsConstructor
-public class RolKoppelingInactiverenReader extends BaseSpecificationScrollableResultReader<InstellingGebruikerRol>
+public class RolKoppelingInactiverenReader extends BaseSpecificationScrollableResultReader<OrganisatieMedewerkerRol>
 {
 	private final ICurrentDateSupplier currentDateSupplier;
 
 	@Override
-	protected Specification<InstellingGebruikerRol> createSpecification()
+	protected Specification<OrganisatieMedewerkerRol> createSpecification()
 	{
 		return isActief(true).and(heeftEindDatumVoor(currentDateSupplier.getLocalDate()));
 	}

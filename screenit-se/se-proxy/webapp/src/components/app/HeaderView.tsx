@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -40,7 +40,7 @@ export type HeaderViewDispatchProps = {
 
 export default class HeaderView extends React.Component<HeaderViewStateProps & HeaderViewDispatchProps> {
 	render(): JSX.Element | null {
-		return this.props.aangemeld ? <Col md={10} className={"float-right gebruiker-view"}>
+		return this.props.aangemeld ? <Col md={10} className={"float-right medewerker-view"}>
 			{!this.props.online ?
 				<img className="geen-verbinding" src="images/geen-verbinding.png" alt="geen-verbinding"/> : null}
 			{this.props.isTestOmgeving && (this.props.online ? <div className="col-2 offline-knop">
@@ -69,13 +69,13 @@ export default class HeaderView extends React.Component<HeaderViewStateProps & H
 				</Col>
 			</Row>
 		</Col> : this.props.isTestOmgeving ? (this.props.online ?
-			<Col md={10} className={"float-right gebruiker-view"}>
+			<Col md={10} className={"float-right medewerker-view"}>
 				<div className="col-2 offline-knop">
 					<input className="btn btn-danger" type="submit" value="Ga offline" onClick={(): void => {
 						gaOffline()
 					}}/>
 				</div>
-			</Col> : <Col md={10} className={"float-right gebruiker-view"}>
+			</Col> : <Col md={10} className={"float-right medewerker-view"}>
 				<div className="col-2 offline-knop">
 					<input className="btn btn-success" type="submit" value="Ga online" onClick={(): void => {
 						gaOnline()

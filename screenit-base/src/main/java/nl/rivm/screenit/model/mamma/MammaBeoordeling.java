@@ -40,7 +40,7 @@ import jakarta.persistence.TemporalType;
 import jakarta.persistence.UniqueConstraint;
 
 import nl.rivm.screenit.model.BeoordelingsEenheid;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.mamma.berichten.MammaHuisartsBericht;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingOpschortenReden;
@@ -96,7 +96,7 @@ public class MammaBeoordeling extends AbstractHibernateObject
 	private MammaBeoordelingStatus status = MammaBeoordelingStatus.EERSTE_LEZING;
 
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
-	private InstellingGebruiker reserveringhouder;
+	private OrganisatieMedewerker reserveringhouder;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date reserveringsmoment;
@@ -118,10 +118,10 @@ public class MammaBeoordeling extends AbstractHibernateObject
 	private String opschortRedenTekst;
 
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
-	private InstellingGebruiker opschortGebruiker;
+	private OrganisatieMedewerker opschortOrganisatieMedewerker;
 
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
-	private InstellingGebruiker toegewezenGebruiker;
+	private OrganisatieMedewerker toegewezenOrganisatieMedewerker;
 
 	@Column(nullable = true)
 	@Temporal(TemporalType.TIMESTAMP)
@@ -206,12 +206,12 @@ public class MammaBeoordeling extends AbstractHibernateObject
 		this.status = status;
 	}
 
-	public InstellingGebruiker getReserveringhouder()
+	public OrganisatieMedewerker getReserveringhouder()
 	{
 		return reserveringhouder;
 	}
 
-	public void setReserveringhouder(InstellingGebruiker reserveringhouder)
+	public void setReserveringhouder(OrganisatieMedewerker reserveringhouder)
 	{
 		this.reserveringhouder = reserveringhouder;
 	}
@@ -286,24 +286,24 @@ public class MammaBeoordeling extends AbstractHibernateObject
 		this.opschortRedenTekst = opschortenRedenTekst;
 	}
 
-	public InstellingGebruiker getOpschortGebruiker()
+	public OrganisatieMedewerker getOpschortOrganisatieMedewerker()
 	{
-		return opschortGebruiker;
+		return opschortOrganisatieMedewerker;
 	}
 
-	public void setOpschortGebruiker(InstellingGebruiker opschortGebruiker)
+	public void setOpschortOrganisatieMedewerker(OrganisatieMedewerker opschortOrganisatieMedewerker)
 	{
-		this.opschortGebruiker = opschortGebruiker;
+		this.opschortOrganisatieMedewerker = opschortOrganisatieMedewerker;
 	}
 
-	public InstellingGebruiker getToegewezenGebruiker()
+	public OrganisatieMedewerker getToegewezenOrganisatieMedewerker()
 	{
-		return toegewezenGebruiker;
+		return toegewezenOrganisatieMedewerker;
 	}
 
-	public void setToegewezenGebruiker(InstellingGebruiker toegewezenGebruiker)
+	public void setToegewezenOrganisatieMedewerker(OrganisatieMedewerker toegewezenOrganisatieMedewerker)
 	{
-		this.toegewezenGebruiker = toegewezenGebruiker;
+		this.toegewezenOrganisatieMedewerker = toegewezenOrganisatieMedewerker;
 	}
 
 	public Date getToegewezenOp()

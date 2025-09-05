@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.dao.UitnodigingsDao;
 import nl.rivm.screenit.model.DossierStatus;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -310,13 +310,13 @@ public class MammaBaseFactoryImpl implements MammaBaseFactory
 
 	@Override
 	@Transactional
-	public MammaMammografie maakMammografie(MammaOnderzoek onderzoek, InstellingGebruiker instellingGebruiker, MammaAnnotatieAfbeelding afbeelding)
+	public MammaMammografie maakMammografie(MammaOnderzoek onderzoek, OrganisatieMedewerker organisatieMedewerker, MammaAnnotatieAfbeelding afbeelding)
 	{
 		var mammografie = new MammaMammografie();
 		mammografie.setAfgerondOp(dateSupplier.getDate());
 		mammografie.setIlmStatus(MammaMammografieIlmStatus.NIET_BESCHIKBAAR);
 		mammografie.setIlmStatusDatum(dateSupplier.getDate());
-		mammografie.setAfgerondDoor(instellingGebruiker);
+		mammografie.setAfgerondDoor(organisatieMedewerker);
 		mammografie.setOnderzoek(onderzoek);
 		mammografie.setVisueleInspectieAfbeelding(afbeelding);
 		onderzoek.setMammografie(mammografie);

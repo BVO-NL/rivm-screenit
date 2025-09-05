@@ -24,7 +24,7 @@ package nl.rivm.screenit.wsb.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Level;
@@ -53,25 +53,23 @@ public abstract class BaseHL7v2Service<T extends Message>
 
 	protected abstract Message processTypedMessage(T message) throws ApplicationException, HL7Exception;
 
-	protected void logging(LogGebeurtenis logGebeurtenis, Level level, Instelling instelling, String melding, Bevolkingsonderzoek bvo)
+	protected void logging(LogGebeurtenis logGebeurtenis, Level level, Organisatie organisatie, String melding, Bevolkingsonderzoek bvo)
 	{
 		LogEvent event = new LogEvent();
 		event.setLevel(level);
 		event.setMelding(melding);
-		List<Instelling> instellingen = addRivmInstelling(new ArrayList<>());
-		if (instelling != null)
+		List<Organisatie> organisaties = addLandelijkeBeheerOrganisaties(new ArrayList<>());
+		if (organisatie != null)
 		{
-			instellingen.add(instelling);
+			organisaties.add(organisatie);
 		}
-		logService.logGebeurtenis(logGebeurtenis, instellingen, event, bvo);
+		logService.logGebeurtenis(logGebeurtenis, organisaties, event, bvo);
 	}
 
-	private List<Instelling> addRivmInstelling(List<Instelling> instellingen)
+	private List<Organisatie> addLandelijkeBeheerOrganisaties(List<Organisatie> organisaties)
 	{
-		List<Rivm> rivm = hibernateService.loadAll(Rivm.class);
-		List<Instelling> rivmInstellingen = new ArrayList<>(rivm);
-		instellingen.addAll(rivmInstellingen);
-		return instellingen;
+		organisaties.addAll(hibernateService.loadAll(Rivm.class));
+		return organisaties;
 	}
 
 }

@@ -44,7 +44,7 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaBlokkade;
 import nl.rivm.screenit.model.mamma.MammaBlokkade_;
 import nl.rivm.screenit.model.mamma.enums.MammaBlokkadeType;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.input.validator.DependantDateValidator;
@@ -71,12 +71,12 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaBlokkadeBeheerPage extends MammaPlanningBasePage
 {
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private MammaScreeningsEenheidService screeningsEenheidService;
@@ -112,7 +112,7 @@ public class MammaBlokkadeBeheerPage extends MammaPlanningBasePage
 		add(form);
 
 		var regio = new ScreenitDropdown<>("regio",
-			ModelUtil.listRModel(instellingService.getActieveInstellingen(ScreeningOrganisatie.class), true), new ChoiceRenderer<>("naam"));
+			ModelUtil.listRModel(organisatieService.getActieveOrganisaties(ScreeningOrganisatie.class), true), new ChoiceRenderer<>("naam"));
 		regio.setVisible(sessionSO == null);
 		regio.setNullValid(true);
 		form.add(regio);
@@ -236,7 +236,7 @@ public class MammaBlokkadeBeheerPage extends MammaPlanningBasePage
 				});
 			}
 		};
-		blokkade.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN) && sessionSO != null);
+		blokkade.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN) && sessionSO != null);
 		add(blokkade);
 	}
 

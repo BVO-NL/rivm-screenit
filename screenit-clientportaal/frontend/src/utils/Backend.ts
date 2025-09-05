@@ -25,36 +25,44 @@ import {transformDates} from "./DateTransformUtil"
 import {showToast} from "./ToastUtil"
 import httpStatus from "../datatypes/HttpStatus"
 import {countRequest, countResponse} from "./SpinnerCounterUtil"
-import axios, {AxiosError} from "axios"
 import {getCookie} from "./CookieUtil"
+import ky, {HTTPError} from "ky"
 
 const BASE_URL = "/api"
 
-export const ScreenitBackend = axios.create({baseURL: BASE_URL, allowAbsoluteUrls: false})
-ScreenitBackend.interceptors.request.use((config) => {
-	countRequest()
-	if (keycloak?.token !== undefined && config.headers) {
-		config.headers.Authorization = `Bearer ${keycloak.token}`
-	}
+export const ScreenitBackend = ky.create({
+	prefixUrl: BASE_URL,
+	parseJson: text => transformDates(JSON.parse(text)),
+	hooks: {
+		beforeRequest: [
+			request => {
+				countRequest()
+				if (keycloak?.token !== undefined && request.headers) {
+					request.headers.set("Authorization", `Bearer ${keycloak.token}`)
+				}
 
-	const xsrfToken = getCookie("XSRF-TOKEN")
-	if (xsrfToken) {
-		config.headers["X-XSRF-TOKEN"] = xsrfToken
-	}
-
-	return config
-})
-
-ScreenitBackend.interceptors.response.use((response) => {
-	countResponse()
-	response.data = transformDates(response.data)
-	return response
-}, (error: AxiosError) => {
-	countResponse()
-	if (error.response?.status !== httpStatus.NOT_MODIFIED && error.response?.status !== httpStatus.CONFLICT && error.response?.status !== httpStatus.NOT_FOUND) {
-		showToast(undefined, properties.foutmelding, ToastMessageType.ERROR)
-	}
-	return Promise.reject(error)
+				const xsrfToken = getCookie("XSRF-TOKEN")
+				if (xsrfToken) {
+					request.headers.set("X-XSRF-TOKEN", xsrfToken)
+				}
+			},
+		],
+		afterResponse: [
+			async (input, options, response) => {
+				countResponse()
+				return response
+			},
+		],
+		beforeError: [
+			(error: HTTPError) => {
+				countResponse()
+				if (error.response?.status !== httpStatus.NOT_MODIFIED && error.response?.status !== httpStatus.CONFLICT && error.response?.status !== httpStatus.NOT_FOUND) {
+					showToast(undefined, properties.foutmelding, ToastMessageType.ERROR)
+				}
+				return error
+			},
+		],
+	},
 })
 
 export default ScreenitBackend

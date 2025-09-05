@@ -33,7 +33,7 @@ import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.service.impl.ImportBvoViaCsv;
 
@@ -64,5 +64,5 @@ public interface TestService
 
 	Gemeente getEersteGemeenteMetNaam(String naam);
 
-	Instelling getOrganisatieByNaam(String naam);
+	Organisatie getOrganisatieByNaam(String naam);
 }

@@ -20,7 +20,7 @@
  */
 export enum ToegangLevel {
   EIGEN = 'EIGEN',
-  INSTELLING = 'INSTELLING',
+  ORGANISATIE = 'ORGANISATIE',
   REGIO = 'REGIO',
   LANDELIJK = 'LANDELIJK',
 }

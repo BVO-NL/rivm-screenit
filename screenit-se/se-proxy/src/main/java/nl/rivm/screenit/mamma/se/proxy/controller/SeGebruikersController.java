@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -23,8 +23,8 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
 
 import java.util.Map;
 
-import nl.rivm.screenit.mamma.se.proxy.services.GebruikerStoreService;
 import nl.rivm.screenit.mamma.se.proxy.services.LogischeSessieService;
+import nl.rivm.screenit.mamma.se.proxy.services.MedewerkerStoreService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,10 +39,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.servlet.http.HttpSession;
-
 @RestController
 @RequestMapping("/api/seGebruiker")
+@Deprecated(forRemoval = true, since = "25.6.0")
+
 public class SeGebruikersController
 {
 	private static final Logger LOG = LoggerFactory.getLogger(SeGebruikersController.class);
@@ -50,13 +50,13 @@ public class SeGebruikersController
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Autowired
-	private GebruikerStoreService gebruikerStoreService;
+	private MedewerkerStoreService medewerkerStoreService;
 
 	@Autowired
 	private LogischeSessieService logischeSessieService;
 
 	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<String> getSeMedewerkers(HttpSession httpSession, @RequestHeader("YubikeyIdentificatie") String yubikeyIdentificatie)
+	public ResponseEntity<String> getSeGebruiker(@RequestHeader("YubikeyIdentificatie") String yubikeyIdentificatie)
 	{
 		if (!logischeSessieService.geldigeYubikey(yubikeyIdentificatie))
 		{
@@ -65,8 +65,8 @@ public class SeGebruikersController
 
 		try
 		{
-			Map<Long, String> gebruikers = gebruikerStoreService.getSeGebruikers();
-			return ResponseEntity.ok(objectMapper.writeValueAsString(gebruikers));
+			Map<Long, String> organisatieMedewerkers = medewerkerStoreService.getSeOrganisatieMedewerkers();
+			return ResponseEntity.ok(objectMapper.writeValueAsString(organisatieMedewerkers));
 		}
 		catch (JsonProcessingException e)
 		{

@@ -27,7 +27,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.enums.BestandStatus;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoek_;
@@ -61,14 +61,14 @@ public class MammaDownloadOnderzoekenVerzoekSpecification
 		};
 	}
 
-	public static ExtendedSpecification<MammaDownloadOnderzoekenVerzoek> isAangemaaktDoorGebruikerVanInstelling(Instelling instelling)
+	public static ExtendedSpecification<MammaDownloadOnderzoekenVerzoek> isAangemaaktDoorMedewerkerVanOrganisatie(Organisatie organisatie)
 	{
-		return OrganisatieMedewerkerSpecification.heeftInstelling(instelling).with(MammaDownloadOnderzoekenVerzoek_.aangemaaktDoor);
+		return OrganisatieMedewerkerSpecification.heeftOrganisatie(organisatie).with(MammaDownloadOnderzoekenVerzoek_.aangemaaktDoor);
 	}
 
-	public static ExtendedSpecification<MammaDownloadOnderzoekenVerzoek> filterOpAangemaaktDoorGebruikerVanInstelling(Instelling instelling)
+	public static ExtendedSpecification<MammaDownloadOnderzoekenVerzoek> filterOpAangemaaktDoorMedewerkerVanOrganisatie(Organisatie organisatie)
 	{
-		return skipWhenNullExtended(instelling, isAangemaaktDoorGebruikerVanInstelling(instelling));
+		return skipWhenNullExtended(organisatie, isAangemaaktDoorMedewerkerVanOrganisatie(organisatie));
 	}
 
 	public static ExtendedSpecification<MammaDownloadOnderzoekenVerzoek> heeftGeenStatusIn(List<BestandStatus> bestandStatussen)

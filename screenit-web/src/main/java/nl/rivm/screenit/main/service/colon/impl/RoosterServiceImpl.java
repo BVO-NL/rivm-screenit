@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 import nl.rivm.screenit.dao.colon.RoosterDao;
 import nl.rivm.screenit.main.exception.ValidatieException;
 import nl.rivm.screenit.main.service.colon.RoosterService;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.colon.ColonAfspraakslotListViewWrapper;
 import nl.rivm.screenit.model.colon.ColonHerhalingsfrequentie;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
@@ -166,9 +166,9 @@ public class RoosterServiceImpl implements RoosterService
 	}
 
 	@Override
-	public ColonIntakelocatie getIntakelocatieVanInstellingGebruiker(InstellingGebruiker instellingGebruiker)
+	public ColonIntakelocatie getIntakelocatieVanOrganisatieMedewerker(OrganisatieMedewerker organisatieMedewerker)
 	{
-		var organisatie = instellingGebruiker.getOrganisatie();
+		var organisatie = organisatieMedewerker.getOrganisatie();
 		return (ColonIntakelocatie) HibernateHelper.deproxy(organisatie);
 	}
 

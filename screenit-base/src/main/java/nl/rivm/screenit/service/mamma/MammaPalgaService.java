@@ -35,7 +35,7 @@ public interface MammaPalgaService
 {
 	List<Long> getClientenVoorPalga(MammaPalgaExportConfig exportConfig);
 
-	void deleteExports(String naam, Account loggedInAccount);
+	void deleteExports(String naam, Account ingelogdAccount);
 
 	UploadDocument getExport();
 

@@ -24,7 +24,7 @@ package nl.rivm.screenit.specification.algemeen;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.dashboard.DashboardLogRegel;
 import nl.rivm.screenit.model.dashboard.DashboardLogRegel_;
 import nl.rivm.screenit.model.dashboard.DashboardStatus_;
@@ -46,7 +46,7 @@ public class DashboardLogRegelSpecification
 		};
 	}
 
-	public static Specification<DashboardLogRegel> heeftOrganisatie(Instelling organisatie)
+	public static Specification<DashboardLogRegel> heeftOrganisatie(Organisatie organisatie)
 	{
 		return (r, q, cb) ->
 		{

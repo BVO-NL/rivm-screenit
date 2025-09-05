@@ -1,0 +1,72 @@
+openapi: 3.1.0
+info:
+  title: Packaging Facility -> ScreenIT API
+  description: Packaging Facility -> ScreenIT API
+  version: 1.0.0
+servers:
+  - url: 'https://inpakcentrum.landelijkescreening.nl/inpakcentrum/dk'
+    description: DK
+  - url: 'https://inpakcentrum.landelijkescreening.nl/inpakcentrum/bmhk'
+    description: BMHK
+paths:
+  /mappingdata:
+    post:
+      summary: "Verzend koppeldatabestand naar Inpakcentrum"
+      operationId: submitMappingData
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mappingData:
+                  type: string
+                  format: byte
+                  description: "Base64 encoded json bestand"
+                filename:
+                  type: string
+                  description: "Naam van bestand (moet beginnen met 'DK' of 'BMHK' gevolgd door '_mergdata_' + uniek nummer per bestand."
+      responses:
+        200:
+          description: "Koppelbericht gevalideerd"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+                    description: "Dit bericht en het koppelbericht zijn syntactisch valide = true (of niet = false)."
+                  foutmelding:
+                    type: string
+                    description: "Foutmelding in valid = false"
+        400:
+          description: "Ongeldig verzoek"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/badRequestError"
+        500:
+          description: "Er ging iets mis bij het ophalen van de status"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/internalServerError"
+
+components:
+  schemas:
+    internalServerError:
+      type: object
+      properties:
+        message:
+          type: string
+        exceptie:
+          type: string
+    badRequestError:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string

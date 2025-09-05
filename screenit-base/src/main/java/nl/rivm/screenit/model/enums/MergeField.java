@@ -50,11 +50,11 @@ import nl.rivm.screenit.model.CentraleEenheid;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.Functie;
-import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.InpakbareUitnodiging;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.MailMergeContext;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
@@ -90,8 +90,8 @@ import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaUitstelReden;
 import nl.rivm.screenit.model.mamma.enums.MammaVerzettenReden;
 import nl.rivm.screenit.model.mamma.enums.MammaZijde;
-import nl.rivm.screenit.model.overeenkomsten.AfgeslotenInstellingOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst;
+import nl.rivm.screenit.model.overeenkomsten.AfgeslotenOrganisatieOvereenkomst;
 import nl.rivm.screenit.service.BarcodeService;
 import nl.rivm.screenit.service.HeraanmeldenMergeVeldService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
@@ -1559,9 +1559,11 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				if (context.getIntakeAfspraak() != null)
+				var intakeAfspraak = context.getIntakeAfspraak();
+
+				if (intakeAfspraak != null && intakeAfspraak.getId() != null)
 				{
-					return getOrganisatieParameterService().getOrganisatieParameter(context.getIntakeAfspraak().getKamer().getIntakelocatie(),
+					return getOrganisatieParameterService().getOrganisatieParameter(intakeAfspraak.getKamer().getIntakelocatie(),
 						OrganisatieParameterKey.COLON_INTAKELOCATIE_BESCHRIJVING);
 				}
 				return null;
@@ -1725,7 +1727,7 @@ public enum MergeField
 			}
 		},
 
-	ZI_NAAM("_ZI_NAAM", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.gebruiker.organisatieMedewerkers[0].instelling.naam", String.class)
+	ZI_NAAM("_ZI_NAAM", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.medewerker.organisatieMedewerkers[0].organisatie.naam", String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
@@ -1739,7 +1741,7 @@ public enum MergeField
 			}
 		},
 
-	ZI_STRAATNAAM("_ZI_STRAATNAAM", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.gebruiker.organisatieMedewerkers[0].instelling.adressen[0].straat", String.class)
+	ZI_STRAATNAAM("_ZI_STRAATNAAM", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.medewerker.organisatieMedewerkers[0].organisatie.adres.straat", String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
@@ -1767,7 +1769,7 @@ public enum MergeField
 			}
 		},
 
-	ZI_POSTCODE("_ZI_POSTCODE", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.gebruiker.organisatieMedewerkers[0].instelling.adressen[0].postcode", String.class)
+	ZI_POSTCODE("_ZI_POSTCODE", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.medewerker.organisatieMedewerkers[0].organisatie.adres.postcode", String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
@@ -1781,7 +1783,7 @@ public enum MergeField
 			}
 		},
 
-	ZI_PLAATS("_ZI_PLAATS", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.gebruiker.organisatieMedewerkers[0].instelling.adressen[0].plaats", String.class)
+	ZI_PLAATS("_ZI_PLAATS", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.medewerker.organisatieMedewerkers[0].organisatie.adres.plaats", String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
@@ -1795,7 +1797,8 @@ public enum MergeField
 			}
 		},
 
-	ZI_POSTBUSNR("_ZI_POSTBUSNR", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.gebruiker.organisatieMedewerkers[0].instelling.adressen[1].huisnummer", String.class)
+	ZI_POSTBUSNR("_ZI_POSTBUSNR", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.medewerker.organisatieMedewerkers[0].organisatie.postbusAdres.huisnummer",
+		String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
@@ -1809,7 +1812,8 @@ public enum MergeField
 			}
 		},
 
-	ZI_POSTBUSPOSTCODE("_ZI_POSTBUSPOSTCODE", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.gebruiker.organisatieMedewerkers[0].instelling.adressen[1].postcode", String.class)
+	ZI_POSTBUSPOSTCODE("_ZI_POSTBUSPOSTCODE", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.medewerker.organisatieMedewerkers[0].organisatie.postbusAdres.postcode",
+		String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
@@ -1824,7 +1828,8 @@ public enum MergeField
 
 		},
 
-	ZI_POSTBUSPLAATS("_ZI_POSTBUSPLAATS", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.gebruiker.organisatieMedewerkers[0].instelling.adressen[1].plaats", String.class)
+	ZI_POSTBUSPLAATS("_ZI_POSTBUSPLAATS", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.medewerker.organisatieMedewerkers[0].organisatie.postbusAdres.plaats",
+		String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
@@ -1839,7 +1844,7 @@ public enum MergeField
 
 		},
 
-	ZI_TEL("_ZI_TEL", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.gebruiker.organisatieMedewerkers[0].instelling.telefoon", String.class)
+	ZI_TEL("_ZI_TEL", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.medewerker.organisatieMedewerkers[0].organisatie.telefoon", String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
@@ -1854,7 +1859,7 @@ public enum MergeField
 
 		},
 
-	ZI_FAX("_ZI_FAX", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.gebruiker.organisatieMedewerkers[0].instelling.fax", String.class)
+	ZI_FAX("_ZI_FAX", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.medewerker.organisatieMedewerkers[0].organisatie.fax", String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
@@ -1869,7 +1874,7 @@ public enum MergeField
 
 		},
 
-	ZI_EMAILADRES("_ZI_EMAILADRES", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.gebruiker.organisatieMedewerkers[0].instelling.email", String.class)
+	ZI_EMAILADRES("_ZI_EMAILADRES", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.medewerker.organisatieMedewerkers[0].organisatie.email", String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
@@ -1884,7 +1889,7 @@ public enum MergeField
 
 		},
 
-	ZI_WEBSITEADRES("_ZI_WEBSITEADRES", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.gebruiker.organisatieMedewerkers[0].instelling.website", String.class)
+	ZI_WEBSITEADRES("_ZI_WEBSITEADRES", MergeFieldTestType.ZORGINSTELLING, "overeenkomst.medewerker.organisatieMedewerkers[0].organisatie.website", String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
@@ -1916,14 +1921,14 @@ public enum MergeField
 				if (arts != null && arts.getOrganisatieMedewerkers() != null && !arts.getOrganisatieMedewerkers().isEmpty())
 				{
 					var aanhef = "Geachte ";
-					var gebruiker = arts.getOrganisatieMedewerkers().get(0).getMedewerker();
-					if (gebruiker != null && gebruiker.getAanhef() != null)
+					var medewerker = arts.getOrganisatieMedewerkers().get(0).getMedewerker();
+					if (medewerker != null && medewerker.getAanhef() != null)
 					{
-						if (gebruiker.getAanhef() == Aanhef.DHR)
+						if (medewerker.getAanhef() == Aanhef.DHR)
 						{
 							aanhef += "heer";
 						}
-						else if (gebruiker.getAanhef() == Aanhef.MEVR)
+						else if (medewerker.getAanhef() == Aanhef.MEVR)
 						{
 							aanhef += "mevrouw";
 						}
@@ -1933,13 +1938,13 @@ public enum MergeField
 					{
 						aanhef += "heer of mevrouw ";
 					}
-					if (gebruiker != null && gebruiker.getTussenvoegsel() != null)
+					if (medewerker != null && medewerker.getTussenvoegsel() != null)
 					{
-						aanhef += StringUtils.capitalize(gebruiker.getTussenvoegsel()) + " ";
+						aanhef += StringUtils.capitalize(medewerker.getTussenvoegsel()) + " ";
 					}
-					if (gebruiker != null && gebruiker.getAchternaam() != null)
+					if (medewerker != null && medewerker.getAchternaam() != null)
 					{
-						aanhef += StringUtils.capitalize(gebruiker.getAchternaam());
+						aanhef += StringUtils.capitalize(medewerker.getAchternaam());
 					}
 
 					return aanhef;
@@ -1958,10 +1963,10 @@ public enum MergeField
 				if (arts != null && arts.getOrganisatieMedewerkers() != null && !arts.getOrganisatieMedewerkers().isEmpty())
 				{
 					String naam = null;
-					var gebruiker = arts.getOrganisatieMedewerkers().get(0).getMedewerker();
-					if (gebruiker != null)
+					var medewerker = arts.getOrganisatieMedewerkers().get(0).getMedewerker();
+					if (medewerker != null)
 					{
-						naam = NaamUtil.getNaamGebruiker(gebruiker);
+						naam = NaamUtil.getNaamMedewerker(medewerker);
 					}
 
 					return naam;
@@ -2291,7 +2296,7 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				Instelling uitstrijkendArts = context.getValue(MailMergeContext.CONTEXT_CERVIX_HUISARTS);
+				Organisatie uitstrijkendArts = context.getValue(MailMergeContext.CONTEXT_CERVIX_HUISARTS);
 				String registratieCode = null;
 				if (uitstrijkendArts != null)
 				{
@@ -2327,7 +2332,7 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				Instelling uitstrijkendArts = context.getValue(MailMergeContext.CONTEXT_CERVIX_HUISARTS);
+				Organisatie uitstrijkendArts = context.getValue(MailMergeContext.CONTEXT_CERVIX_HUISARTS);
 				String agbcode = null;
 				if (uitstrijkendArts != null)
 				{
@@ -2484,101 +2489,101 @@ public enum MergeField
 			}
 		},
 
-	ZV_ACHTERNAAM("_ZV_ACHTERNAAM", MergeFieldTestType.ZORGVERLENER, "overeenkomst.gebruiker.achternaam", String.class)
+	ZV_ACHTERNAAM("_ZV_ACHTERNAAM", MergeFieldTestType.ZORGVERLENER, "overeenkomst.medewerker.achternaam", String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
 				if (context.getOvereenkomst() instanceof AfgeslotenMedewerkerOvereenkomst)
 				{
-					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getGebruiker().getAchternaam();
+					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getMedewerker().getAchternaam();
 				}
 				return null;
 			}
 
 		},
 
-	ZV_TUSSENVOEGSEL("_ZV_TUSSENVOEGSEL", MergeFieldTestType.ZORGVERLENER, "overeenkomst.gebruiker.tussenvoegsel", String.class)
+	ZV_TUSSENVOEGSEL("_ZV_TUSSENVOEGSEL", MergeFieldTestType.ZORGVERLENER, "overeenkomst.medewerker.tussenvoegsel", String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
 				if (context.getOvereenkomst() instanceof AfgeslotenMedewerkerOvereenkomst)
 				{
-					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getGebruiker().getTussenvoegsel();
+					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getMedewerker().getTussenvoegsel();
 				}
 				return null;
 			}
 
 		},
 
-	ZV_VOORLETTERS("_ZV_VOORLETTERS", MergeFieldTestType.ZORGVERLENER, "overeenkomst.gebruiker.voorletters", String.class)
+	ZV_VOORLETTERS("_ZV_VOORLETTERS", MergeFieldTestType.ZORGVERLENER, "overeenkomst.medewerker.voorletters", String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
 				if (context.getOvereenkomst() instanceof AfgeslotenMedewerkerOvereenkomst)
 				{
-					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getGebruiker().getVoorletters();
+					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getMedewerker().getVoorletters();
 				}
 				return null;
 			}
 
 		},
 
-	ZV_AANHEF("_ZV_AANHEF", MergeFieldTestType.ZORGVERLENER, "overeenkomst.gebruiker.aanhef", Aanhef.class)
+	ZV_AANHEF("_ZV_AANHEF", MergeFieldTestType.ZORGVERLENER, "overeenkomst.medewerker.aanhef", Aanhef.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
 				if (context.getOvereenkomst() instanceof AfgeslotenMedewerkerOvereenkomst
-					&& ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getGebruiker().getAanhef() != null)
+					&& ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getMedewerker().getAanhef() != null)
 				{
-					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getGebruiker().getAanhef().getNaam();
+					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getMedewerker().getAanhef().getNaam();
 				}
 				return null;
 			}
 
 		},
 
-	ZV_TITEL("_ZV_TITEL", MergeFieldTestType.ZORGVERLENER, "overeenkomst.gebruiker.titel", Titel.class)
+	ZV_TITEL("_ZV_TITEL", MergeFieldTestType.ZORGVERLENER, "overeenkomst.medewerker.titel", Titel.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
 				if (context.getOvereenkomst() instanceof AfgeslotenMedewerkerOvereenkomst
-					&& ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getGebruiker().getTitel() != null)
+					&& ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getMedewerker().getTitel() != null)
 				{
-					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getGebruiker().getTitel().getNaam();
+					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getMedewerker().getTitel().getNaam();
 				}
 				return null;
 			}
 
 		},
 
-	ZV_FUNCTIE("_ZV_FUNCTIE", MergeFieldTestType.ZORGVERLENER, "overeenkomst.gebruiker.functie", Functie.class)
+	ZV_FUNCTIE("_ZV_FUNCTIE", MergeFieldTestType.ZORGVERLENER, "overeenkomst.medewerker.functie", Functie.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
 				if (context.getOvereenkomst() instanceof AfgeslotenMedewerkerOvereenkomst
-					&& ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getGebruiker().getFunctie() != null)
+					&& ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getMedewerker().getFunctie() != null)
 				{
-					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getGebruiker().getFunctie().getNaam();
+					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getMedewerker().getFunctie().getNaam();
 				}
 				return null;
 			}
 
 		},
 
-	ZV_UZINR("_ZV_UZINR", MergeFieldTestType.ZORGVERLENER, "overeenkomst.gebruiker.uzinummer", String.class)
+	ZV_UZINR("_ZV_UZINR", MergeFieldTestType.ZORGVERLENER, "overeenkomst.medewerker.uzinummer", String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
 				if (context.getOvereenkomst() instanceof AfgeslotenMedewerkerOvereenkomst)
 				{
-					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getGebruiker().getUzinummer();
+					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getMedewerker().getUzinummer();
 
 				}
 				return null;
@@ -2586,7 +2591,7 @@ public enum MergeField
 
 		},
 
-	ZV_PLAATS("_ZV_PLAATS", MergeFieldTestType.ZORGVERLENER, "overeenkomst.gebruiker.adressen[0].plaats", String.class)
+	ZV_PLAATS("_ZV_PLAATS", MergeFieldTestType.ZORGVERLENER, "overeenkomst.medewerker.adres.plaats", String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
@@ -2594,10 +2599,10 @@ public enum MergeField
 				var overeenkomst = context.getOvereenkomst();
 				if (overeenkomst instanceof AfgeslotenMedewerkerOvereenkomst afgeslotenKwaliteitsOvereenkomst)
 				{
-					var adres = getAdres(afgeslotenKwaliteitsOvereenkomst.getGebruiker());
-					if (adres != null)
+					var medewerker = afgeslotenKwaliteitsOvereenkomst.getMedewerker();
+					if (medewerker != null)
 					{
-						return adres.getPlaats();
+						return medewerker.getWoonplaats();
 					}
 
 				}
@@ -2606,28 +2611,28 @@ public enum MergeField
 
 		},
 
-	ZV_GEBOORTEDATUM("_ZV_GEBOORTEDATUM", MergeFieldTestType.ZORGVERLENER, "overeenkomst.gebruiker.geboortedatum", Date.class)
+	ZV_GEBOORTEDATUM("_ZV_GEBOORTEDATUM", MergeFieldTestType.ZORGVERLENER, "overeenkomst.medewerker.geboortedatum", Date.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
 				if (context.getOvereenkomst() instanceof AfgeslotenMedewerkerOvereenkomst)
 				{
-					return new SimpleDateFormat("dd-MM-yyyy").format(((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getGebruiker().getGeboortedatum());
+					return new SimpleDateFormat("dd-MM-yyyy").format(((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getMedewerker().getGeboortedatum());
 				}
 				return null;
 			}
 
 		},
 
-	ZV_BIGNR("_ZV_BIGNR", MergeFieldTestType.ZORGVERLENER, "overeenkomst.gebruiker.bignummer", String.class)
+	ZV_BIGNR("_ZV_BIGNR", MergeFieldTestType.ZORGVERLENER, "overeenkomst.medewerker.bignummer", String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
 				if (context.getOvereenkomst() instanceof AfgeslotenMedewerkerOvereenkomst)
 				{
-					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getGebruiker().getBignummer();
+					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getMedewerker().getBignummer();
 
 				}
 				return null;
@@ -2635,14 +2640,14 @@ public enum MergeField
 
 		},
 
-	ZV_EMAIL("_ZV_EMAIL", MergeFieldTestType.ZORGVERLENER, "overeenkomst.gebruiker.emailextra", String.class)
+	ZV_EMAIL("_ZV_EMAIL", MergeFieldTestType.ZORGVERLENER, "overeenkomst.medewerker.emailextra", String.class)
 		{
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
 				if (context.getOvereenkomst() instanceof AfgeslotenMedewerkerOvereenkomst)
 				{
-					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getGebruiker().getEmailextra();
+					return ((AfgeslotenMedewerkerOvereenkomst) context.getOvereenkomst()).getMedewerker().getEmailextra();
 				}
 				return null;
 			}
@@ -2669,12 +2674,12 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				if (context.getOvereenkomst() instanceof AfgeslotenInstellingOvereenkomst)
+				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst)
 				{
-					var afgeslotenOvereenkomst = (AfgeslotenInstellingOvereenkomst) context.getOvereenkomst();
-					if (afgeslotenOvereenkomst.getInstelling().getGemachtigde() != null)
+					var afgeslotenOvereenkomst = (AfgeslotenOrganisatieOvereenkomst) context.getOvereenkomst();
+					if (afgeslotenOvereenkomst.getOrganisatie().getGemachtigde() != null)
 					{
-						return afgeslotenOvereenkomst.getInstelling().getGemachtigde().getAchternaam();
+						return afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getAchternaam();
 					}
 				}
 				return null;
@@ -2687,12 +2692,12 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				if (context.getOvereenkomst() instanceof AfgeslotenInstellingOvereenkomst)
+				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst)
 				{
-					var afgeslotenOvereenkomst = (AfgeslotenInstellingOvereenkomst) context.getOvereenkomst();
-					if (afgeslotenOvereenkomst.getInstelling().getGemachtigde() != null)
+					var afgeslotenOvereenkomst = (AfgeslotenOrganisatieOvereenkomst) context.getOvereenkomst();
+					if (afgeslotenOvereenkomst.getOrganisatie().getGemachtigde() != null)
 					{
-						return afgeslotenOvereenkomst.getInstelling().getGemachtigde().getTussenvoegsel();
+						return afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getTussenvoegsel();
 					}
 				}
 				return null;
@@ -2705,12 +2710,12 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				if (context.getOvereenkomst() instanceof AfgeslotenInstellingOvereenkomst)
+				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst)
 				{
-					var afgeslotenOvereenkomst = (AfgeslotenInstellingOvereenkomst) context.getOvereenkomst();
-					if (afgeslotenOvereenkomst.getInstelling().getGemachtigde() != null)
+					var afgeslotenOvereenkomst = (AfgeslotenOrganisatieOvereenkomst) context.getOvereenkomst();
+					if (afgeslotenOvereenkomst.getOrganisatie().getGemachtigde() != null)
 					{
-						return afgeslotenOvereenkomst.getInstelling().getGemachtigde().getVoorletters();
+						return afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getVoorletters();
 					}
 				}
 				return null;
@@ -2723,12 +2728,12 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				if (context.getOvereenkomst() instanceof AfgeslotenInstellingOvereenkomst)
+				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst)
 				{
-					var afgeslotenOvereenkomst = (AfgeslotenInstellingOvereenkomst) context.getOvereenkomst();
-					if (afgeslotenOvereenkomst.getInstelling().getGemachtigde() != null && afgeslotenOvereenkomst.getInstelling().getGemachtigde().getAanhef() != null)
+					var afgeslotenOvereenkomst = (AfgeslotenOrganisatieOvereenkomst) context.getOvereenkomst();
+					if (afgeslotenOvereenkomst.getOrganisatie().getGemachtigde() != null && afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getAanhef() != null)
 					{
-						return afgeslotenOvereenkomst.getInstelling().getGemachtigde().getAanhef().getNaam();
+						return afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getAanhef().getNaam();
 					}
 				}
 				return null;
@@ -2741,12 +2746,12 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				if (context.getOvereenkomst() instanceof AfgeslotenInstellingOvereenkomst)
+				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst)
 				{
-					var afgeslotenOvereenkomst = (AfgeslotenInstellingOvereenkomst) context.getOvereenkomst();
-					if (afgeslotenOvereenkomst.getInstelling().getGemachtigde() != null && afgeslotenOvereenkomst.getInstelling().getGemachtigde().getTitel() != null)
+					var afgeslotenOvereenkomst = (AfgeslotenOrganisatieOvereenkomst) context.getOvereenkomst();
+					if (afgeslotenOvereenkomst.getOrganisatie().getGemachtigde() != null && afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getTitel() != null)
 					{
-						return afgeslotenOvereenkomst.getInstelling().getGemachtigde().getTitel().getNaam();
+						return afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getTitel().getNaam();
 					}
 				}
 				return null;
@@ -2759,12 +2764,12 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				if (context.getOvereenkomst() instanceof AfgeslotenInstellingOvereenkomst)
+				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst)
 				{
-					var afgeslotenOvereenkomst = (AfgeslotenInstellingOvereenkomst) context.getOvereenkomst();
-					if (afgeslotenOvereenkomst.getInstelling().getGemachtigde() != null && afgeslotenOvereenkomst.getInstelling().getGemachtigde().getFunctie() != null)
+					var afgeslotenOvereenkomst = (AfgeslotenOrganisatieOvereenkomst) context.getOvereenkomst();
+					if (afgeslotenOvereenkomst.getOrganisatie().getGemachtigde() != null && afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getFunctie() != null)
 					{
-						return afgeslotenOvereenkomst.getInstelling().getGemachtigde().getFunctie().getNaam();
+						return afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getFunctie().getNaam();
 					}
 				}
 				return null;
@@ -4116,32 +4121,23 @@ public enum MergeField
 		}
 	}
 
-	private static Adres getAdres(Instelling instelling, int index)
+	private static Adres getAdres(Organisatie organisatie, int index)
 	{
 		Adres adres = null;
-		if (instelling != null)
+		if (organisatie != null)
 		{
-			adres = getAdresFromList(instelling.getAdressen(), index);
-		}
-		return adres;
-	}
-
-	private static Adres getAdres(Gebruiker gebruiker)
-	{
-		Adres adres = null;
-		if (gebruiker != null)
-		{
-			adres = getAdresFromList(gebruiker.getAdressen(), 0);
-		}
-		return adres;
-	}
-
-	private static Adres getAdresFromList(List<Adres> adressen, int index)
-	{
-		Adres adres = null;
-		if (adressen != null && adressen.size() >= index + 1)
-		{
-			adres = adressen.get(index);
+			switch (index)
+			{
+			case 0:
+				adres = organisatie.getAdres();
+				break;
+			case 1:
+				adres = organisatie.getPostbusAdres();
+				break;
+			case 2:
+				adres = organisatie.getAntwoordnummerAdres();
+				break;
+			}
 		}
 		return adres;
 	}
@@ -4153,11 +4149,11 @@ public enum MergeField
 		return AdresUtil.getAdres(persoon, LocalDate.now());
 	}
 
-	private static Instelling getZorginstellingBijKwaliteitsOvereenkomst(AfgeslotenMedewerkerOvereenkomst afgeslotenOvereenkomst)
+	private static Organisatie getZorginstellingBijKwaliteitsOvereenkomst(AfgeslotenMedewerkerOvereenkomst afgeslotenOvereenkomst)
 	{
-		if (CollectionUtils.isNotEmpty(afgeslotenOvereenkomst.getGebruiker().getOrganisatieMedewerkers()))
+		if (CollectionUtils.isNotEmpty(afgeslotenOvereenkomst.getMedewerker().getOrganisatieMedewerkers()))
 		{
-			for (var orgMede : afgeslotenOvereenkomst.getGebruiker().getOrganisatieMedewerkers())
+			for (var orgMede : afgeslotenOvereenkomst.getMedewerker().getOrganisatieMedewerkers())
 			{
 				if (organisatieMedewerkerActief(orgMede))
 				{
@@ -4184,7 +4180,7 @@ public enum MergeField
 		return null;
 	}
 
-	private static boolean organisatieMedewerkerActief(InstellingGebruiker orgMede)
+	private static boolean organisatieMedewerkerActief(OrganisatieMedewerker orgMede)
 	{
 		var inDienst = false;
 		for (var organisatieMedewerkerRol : orgMede.getRollen())
@@ -4213,13 +4209,13 @@ public enum MergeField
 		return inDienst && !Boolean.FALSE.equals(orgMede.getActief());
 	}
 
-	private static Instelling getZorgInstelling(MailMergeContext context)
+	private static Organisatie getZorgInstelling(MailMergeContext context)
 	{
 		var overeenkomst = context.getOvereenkomst();
-		if (overeenkomst instanceof AfgeslotenInstellingOvereenkomst)
+		if (overeenkomst instanceof AfgeslotenOrganisatieOvereenkomst)
 		{
-			var afgeslotenOvereenkomst = (AfgeslotenInstellingOvereenkomst) context.getOvereenkomst();
-			return afgeslotenOvereenkomst.getInstelling();
+			var afgeslotenOvereenkomst = (AfgeslotenOrganisatieOvereenkomst) context.getOvereenkomst();
+			return afgeslotenOvereenkomst.getOrganisatie();
 		}
 		else if (overeenkomst instanceof AfgeslotenMedewerkerOvereenkomst afgeslotenOvereenkomst)
 		{
@@ -4469,7 +4465,7 @@ public enum MergeField
 		return context.getValue(MailMergeContext.CONTEXT_MAMMA_CE);
 	}
 
-	private static Gebruiker getMammaRadioloog1(MailMergeContext context)
+	private static Medewerker getMammaRadioloog1(MailMergeContext context)
 	{
 		var mergeFieldService = getBean(MammaMergeFieldService.class);
 		var beoordeling = getMammaBeoordeling(context);
@@ -4477,7 +4473,7 @@ public enum MergeField
 		return mergeFieldService.bepaalRadioloog1(beoordeling);
 	}
 
-	private static Gebruiker getMammaRadioloog2(MailMergeContext context)
+	private static Medewerker getMammaRadioloog2(MailMergeContext context)
 	{
 		var mergeFieldService = getBean(MammaMergeFieldService.class);
 		var beoordeling = getMammaBeoordeling(context);

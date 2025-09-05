@@ -619,7 +619,7 @@ public class BaseAfmeldServiceImpl implements BaseAfmeldService
 	@Override
 	@Transactional
 	public boolean vervangAfmeldingDocument(UploadDocument nieuwDocument, Afmelding<?, ?, ?> afmelding, UploadDocument huidigDocument, ClientBrief<?, ?, ?> brief,
-		Account loggedInAccount)
+		Account ingelogdAccount)
 	{
 		afmelding.setHandtekeningDocumentAfmelding(null);
 		uploadDocumentService.delete(huidigDocument);
@@ -636,7 +636,7 @@ public class BaseAfmeldServiceImpl implements BaseAfmeldService
 			return false;
 		}
 
-		logService.logGebeurtenis(LogGebeurtenis.VERVANGEN_DOCUMENT, loggedInAccount, brief.getClient(),
+		logService.logGebeurtenis(LogGebeurtenis.VERVANGEN_DOCUMENT, ingelogdAccount, brief.getClient(),
 			brief.getBriefType() + ", is vervangen.", brief.getBriefType().getOnderzoeken());
 		return true;
 
@@ -645,7 +645,7 @@ public class BaseAfmeldServiceImpl implements BaseAfmeldService
 	@Override
 	@Transactional
 	public boolean vervangHeraanmeldingDocument(UploadDocument nieuwDocument, Afmelding<?, ?, ?> afmelding, UploadDocument huidigDocument, ClientBrief<?, ?, ?> brief,
-		Account loggedInAccount)
+		Account ingelogdAccount)
 	{
 		afmelding.setHandtekeningDocumentHeraanmelding(null);
 		uploadDocumentService.delete(huidigDocument);
@@ -662,7 +662,7 @@ public class BaseAfmeldServiceImpl implements BaseAfmeldService
 			return false;
 		}
 
-		logService.logGebeurtenis(LogGebeurtenis.VERVANGEN_DOCUMENT, loggedInAccount, brief.getClient(),
+		logService.logGebeurtenis(LogGebeurtenis.VERVANGEN_DOCUMENT, ingelogdAccount, brief.getClient(),
 			brief.getBriefType() + ", is vervangen.", brief.getBriefType().getOnderzoeken());
 		return true;
 

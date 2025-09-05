@@ -39,14 +39,14 @@ import nl.rivm.screenit.main.web.component.table.ExportToXslLink;
 import nl.rivm.screenit.main.web.component.table.GeboortedatumColumn;
 import nl.rivm.screenit.main.web.component.table.NotClickableAbstractColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaBeTabelCounterPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.GbaPersoon_;
-import nl.rivm.screenit.model.Gebruiker_;
-import nl.rivm.screenit.model.InstellingGebruiker_;
+import nl.rivm.screenit.model.Medewerker_;
+import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -94,7 +94,7 @@ import static org.springframework.data.domain.Sort.Direction.ASC;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_VISITATIE },
+	recht = { Recht.MEDEWERKER_VISITATIE },
 	organisatieTypeScopes = { OrganisatieType.KWALITEITSPLATFORM, OrganisatieType.SCREENINGSORGANISATIE },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisitatieBasePage
@@ -139,7 +139,7 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 
 		var onderzoekProperty = propertyChain(MammaVisitatieOnderzoek_.BEOORDELING, MammaBeoordeling_.ONDERZOEK);
 		var screeningsEenheidProperty = propertyChain(onderzoekProperty, MammaOnderzoek_.SCREENINGS_EENHEID);
-		var medewerkerProperty = propertyChain(onderzoekProperty, MammaOnderzoek_.MAMMOGRAFIE, MammaMammografie_.AFGEROND_DOOR, InstellingGebruiker_.MEDEWERKER);
+		var medewerkerProperty = propertyChain(onderzoekProperty, MammaOnderzoek_.MAMMOGRAFIE, MammaMammografie_.AFGEROND_DOOR, OrganisatieMedewerker_.MEDEWERKER);
 		var persoonProperty = propertyChain(onderzoekProperty, MammaOnderzoek_.AFSPRAAK, MammaAfspraak_.UITNODIGING, MammaUitnodiging_.SCREENING_RONDE,
 			MammaScreeningRonde_.DOSSIER, MammaDossier_.CLIENT, Client_.PERSOON);
 
@@ -157,11 +157,11 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 			Constants.getDateTimeSecondsFormat()));
 		if (zoekObjectModel.getObject().getOnderdeel() == MammaVisitatieOnderdeel.INSTELTECHNIEK)
 		{
-			columns.add(new PropertyColumn<>(Model.of("MBBer code"), propertyChain(medewerkerProperty, Gebruiker_.MEDEWERKERCODE),
+			columns.add(new PropertyColumn<>(Model.of("MBBer code"), propertyChain(medewerkerProperty, Medewerker_.MEDEWERKERCODE),
 				"beoordeling.onderzoek.mammografie.afgerondDoor.medewerker.medewerkercode"));
 		}
 		columns.add(new PropertyColumn<>(Model.of("Volgnummer"), MammaVisitatieOnderzoek_.VOLGNUMMER, "volgnummer"));
-		if (ScreenitSession.get().getInstelling().getOrganisatieType() != OrganisatieType.KWALITEITSPLATFORM)
+		if (ScreenitSession.get().getOrganisatie().getOrganisatieType() != OrganisatieType.KWALITEITSPLATFORM)
 		{
 			columns.add(new ClientColumn<>(propertyChain(persoonProperty, GbaPersoon_.ACHTERNAAM), "beoordeling.onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client"));
 			columns.add(new GeboortedatumColumn<>(propertyChain(persoonProperty, GbaPersoon_.GEBOORTEDATUM),
@@ -172,9 +172,9 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 		columns.add(new PropertyColumn<>(Model.of("SE"), propertyChain(screeningsEenheidProperty, MammaScreeningsEenheid_.NAAM), "beoordeling.onderzoek.screeningsEenheid.naam"));
 		columns.add(new EnumPropertyColumn<>(Model.of("Status"), MammaVisitatieOnderzoek_.STATUS, "status", this));
 
-		if (!ScreenitSession.get().getInstelling().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID)
-			&& !ScreenitSession.get().getInstelling().getOrganisatieType().equals(OrganisatieType.KWALITEITSPLATFORM)
-			&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_VISITATIE, Actie.VERWIJDEREN))
+		if (!ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID)
+			&& !ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.KWALITEITSPLATFORM)
+			&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VISITATIE, Actie.VERWIJDEREN))
 		{
 			columns.add(getOnderzoekVerwijderenColumn());
 		}
@@ -185,7 +185,7 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<MammaVisitatieOnderzoek> model)
 			{
-				if (ScreenitSession.get().getInstelling().getOrganisatieType() == OrganisatieType.KWALITEITSPLATFORM)
+				if (ScreenitSession.get().getOrganisatie().getOrganisatieType() == OrganisatieType.KWALITEITSPLATFORM)
 				{
 					openBesprekenScherm(target, model, onderzoekDataProvider.getSort().getProperty());
 				}
@@ -284,9 +284,9 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 				openOnderzoekToevoegenPopupPanel(target);
 			}
 
-		}.setVisible(!ScreenitSession.get().getInstelling().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID)
-			&& !ScreenitSession.get().getInstelling().getOrganisatieType().equals(OrganisatieType.KWALITEITSPLATFORM)
-			&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_VISITATIE, Actie.TOEVOEGEN)));
+		}.setVisible(!ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID)
+			&& !ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.KWALITEITSPLATFORM)
+			&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VISITATIE, Actie.TOEVOEGEN)));
 	}
 
 	private void openOnderzoekToevoegenPopupPanel(AjaxRequestTarget target)
@@ -348,9 +348,9 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = super.getContextMenuItems();
+		List<MedewerkerMenuItem> contextMenuItems = super.getContextMenuItems();
 		contextMenuItems.addAll(MammaVisitatieOnderdeelWrapper.getContextMenuItems());
 
 		return contextMenuItems;

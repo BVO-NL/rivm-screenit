@@ -32,5 +32,5 @@ public class OrganisatieMedewerkerDto
 {
 	private OrganisatieDto organisatie;
 
-	private List<InstellingGebruikerRolDto> rollen;
+	private List<OrganisatieMedewerkerRolDto> rollen;
 }

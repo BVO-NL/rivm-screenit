@@ -31,7 +31,7 @@ import nl.rivm.screenit.mamma.se.dto.actions.MammografieOpslaanDto;
 import nl.rivm.screenit.mamma.se.service.MammaAfspraakService;
 import nl.rivm.screenit.mamma.se.service.MammografieService;
 import nl.rivm.screenit.mamma.se.service.dtomapper.AfbeeldingDtoMapper;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaAnnotatieAfbeelding;
 import nl.rivm.screenit.model.mamma.MammaMammografie;
@@ -67,25 +67,25 @@ public class MammografieServiceImpl implements MammografieService
 
 	@Override
 	@Transactional
-	public void opslaanEnStatusovergang(MammografieOpslaanDto action, InstellingGebruiker instellingGebruiker, LocalDateTime transactieDatumTijd)
+	public void opslaanEnStatusovergang(MammografieOpslaanDto action, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd)
 	{
-		var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), instellingGebruiker);
+		var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), organisatieMedewerker);
 		var onderzoek = getOnderzoek(action, afspraak);
 		var screeningRonde = afspraak.getUitnodiging().getScreeningRonde();
 		var dossier = screeningRonde.getDossier();
 		var mammografie = getOfMaakMammografie(onderzoek);
 
 		verwerkVisueleInspectieAfbeelding(onderzoek, action);
-		mammografieVerwerken(mammografie, instellingGebruiker, transactieDatumTijd);
+		mammografieVerwerken(mammografie, organisatieMedewerker, transactieDatumTijd);
 
 		hibernateService.saveOrUpdateAll(dossier, onderzoek, mammografie);
 	}
 
 	@Override
 	@Transactional
-	public void opslaan(MammografieOpslaanDto action, InstellingGebruiker instellingGebruiker)
+	public void opslaan(MammografieOpslaanDto action, OrganisatieMedewerker organisatieMedewerker)
 	{
-		var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), instellingGebruiker);
+		var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), organisatieMedewerker);
 		var onderzoek = getOnderzoek(action, afspraak);
 		var mammografie = getOfMaakMammografie(onderzoek);
 
@@ -105,9 +105,9 @@ public class MammografieServiceImpl implements MammografieService
 		return mammografie;
 	}
 
-	private void mammografieVerwerken(MammaMammografie mammografie, InstellingGebruiker instellingGebruiker, LocalDateTime transactieDatumTijd)
+	private void mammografieVerwerken(MammaMammografie mammografie, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd)
 	{
-		mammografie.setAfgerondDoor(instellingGebruiker);
+		mammografie.setAfgerondDoor(organisatieMedewerker);
 		mammografie.setAfgerondOp(DateUtil.toUtilDate(transactieDatumTijd));
 	}
 

@@ -78,7 +78,7 @@ public interface ZorgIdSessieService
 		}
 	}
 
-	default boolean isUziPasVerwijderdDoorGebruiker(SessieState sessieState)
+	default boolean isUziPasVerwijderdDoorMedewerker(SessieState sessieState)
 	{
 		return ClosedReason.SIGNER_REQUESTED == getSessionClosedReason(sessieState);
 	}

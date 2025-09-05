@@ -27,7 +27,7 @@ import java.util.List;
 
 import nl.rivm.screenit.mamma.se.dto.actions.ActionDto;
 import nl.rivm.screenit.mamma.se.dto.actions.TransactionDto;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 
 import org.springframework.http.ResponseEntity;
@@ -35,6 +35,5 @@ import org.springframework.http.ResponseEntity;
 public interface SeTransactionService
 {
 	ResponseEntity executeAsTransactionIfAuthorised(List<ActionDto> acties, TransactionDto transactionDto, LocalDateTime transactieDatumTijd,
-		InstellingGebruiker transactieGebruiker,
-		MammaScreeningsEenheid screeningsEenheid) throws IOException;
+		OrganisatieMedewerker transactieGebruiker, MammaScreeningsEenheid screeningsEenheid) throws IOException;
 }

@@ -21,16 +21,16 @@ package nl.rivm.screenit.main.service.mamma;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaPostcodeReeks;
 
 public interface MammaPostcodeReeksService
 {
 
-	boolean saveOrUpdatePostcodeReeks(MammaPostcodeReeks postcodeReeks, InstellingGebruiker loggedInInstellingGebruiker);
+	boolean saveOrUpdatePostcodeReeks(MammaPostcodeReeks postcodeReeks, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	String overlaptBestaandeReeks(MammaPostcodeReeks postcodeReeks);
 
-	void deletePostcodeReeks(MammaPostcodeReeks postcodeReeks, InstellingGebruiker loggedInInstellingGebruiker);
+	void deletePostcodeReeks(MammaPostcodeReeks postcodeReeks, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 }

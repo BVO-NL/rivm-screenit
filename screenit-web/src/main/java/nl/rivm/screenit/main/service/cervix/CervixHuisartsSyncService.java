@@ -27,7 +27,7 @@ import nl.rivm.screenit.huisartsenportaal.dto.AanvraagDto;
 import nl.rivm.screenit.huisartsenportaal.dto.HuisartsDto;
 import nl.rivm.screenit.huisartsenportaal.dto.LocatieDto;
 import nl.rivm.screenit.huisartsenportaal.dto.ResetDto;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
 import nl.rivm.screenit.model.cervix.CervixLabformulierAanvraag;
@@ -49,7 +49,7 @@ public interface CervixHuisartsSyncService
 
 	void updateHuisarts(HuisartsDto huisartsDto);
 
-	String getPraktijkNaam(Gebruiker gebruiker);
+	String getPraktijkNaam(Medewerker medewerker);
 
 	void nieuweAanvraagLabformulieren(AanvraagDto aanvraagDto);
 

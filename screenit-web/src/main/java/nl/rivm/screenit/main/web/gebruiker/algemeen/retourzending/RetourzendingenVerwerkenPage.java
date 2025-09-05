@@ -53,7 +53,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_SCREENING_RETOURZENDINGEN,
+	recht = Recht.MEDEWERKER_SCREENING_RETOURZENDINGEN,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX })
 public class RetourzendingenVerwerkenPage extends RetourzendingBasePage
@@ -89,7 +89,7 @@ public class RetourzendingenVerwerkenPage extends RetourzendingBasePage
 
 					try
 					{
-						RetourzendingLogEvent logEvent = retourzendingService.verwerkBestandMetRetourzendingen(ScreenitSession.get().getLoggedInInstellingGebruiker(),
+						RetourzendingLogEvent logEvent = retourzendingService.verwerkBestandMetRetourzendingen(getIngelogdeOrganisatieMedewerker(),
 							retourzendingBestandFileUpload.getContentType(), retourzendingBestandFileUpload.writeToTempFile(), retourzendingBestandFileUpload.getClientFileName());
 						dialog.openWith(target, new RetourzendingenVerwerkingsVerslagPopup(IDialog.CONTENT_ID, ModelUtil.cRModel(logEvent)));
 					}

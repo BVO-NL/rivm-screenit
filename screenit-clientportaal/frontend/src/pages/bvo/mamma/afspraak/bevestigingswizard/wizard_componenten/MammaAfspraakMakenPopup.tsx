@@ -39,6 +39,8 @@ import {AfspraakBevestigingOpties} from "../../../../../../datatypes/mamma/Afspr
 import {datadogRum} from "@datadog/browser-rum"
 import {useSelector} from "react-redux"
 import {State} from "../../../../../../datatypes/State"
+import {showToast} from "../../../../../../utils/ToastUtil"
+import {ToastMessageType} from "../../../../../../datatypes/toast/ToastMessage"
 
 export type MammaAfspraakMakenPopupProps = {
 	afspraak: KandidaatAfspraak,
@@ -65,12 +67,14 @@ const MammaAfspraakMakenPopup = (props: MammaAfspraakMakenPopupProps) => {
 
 		dispatch(maakAfspraak(bvo, kandidaatAfspraak)).then(
 			(response) => {
-				props.setAfspraakBevestiging!(new AfspraakBevestigingOpties(response.data, kandidaatAfspraak))
+				props.setAfspraakBevestiging!(new AfspraakBevestigingOpties(response, kandidaatAfspraak))
 				props.onNext!()
 			},
 		).catch((error) => {
 			if (error.response.data === "tijd.niet.beschikbaar") {
 				props.onFailure && props.onFailure()
+			} else {
+				showToast(getString(properties.afspraak_maken.toast.geen_wijzigingen), getString(properties.afspraak_maken.toast.error.algemeen), ToastMessageType.ERROR)
 			}
 		})
 	}

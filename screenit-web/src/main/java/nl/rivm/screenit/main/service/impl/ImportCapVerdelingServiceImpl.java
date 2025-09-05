@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.service.colon.ImportCapVerdelingService;
 import nl.rivm.screenit.model.Gemeente;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.ColoscopieCentrumColonCapaciteitVerdeling;
 import nl.rivm.screenit.model.colon.UitnodigingsGebied;
@@ -83,7 +83,7 @@ public class ImportCapVerdelingServiceImpl implements ImportCapVerdelingService
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public Level verwerkBestand(InstellingGebruiker loggedInInstellingGebruiker, File file)
+	public Level verwerkBestand(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, File file)
 	{
 		var melding = "";
 		var level = Level.INFO;
@@ -175,7 +175,7 @@ public class ImportCapVerdelingServiceImpl implements ImportCapVerdelingService
 			hibernateService.clearSecondLevelCache();
 			LogEvent logEvent = new LogEvent(melding);
 			logEvent.setLevel(level);
-			logService.logGebeurtenis(LogGebeurtenis.IMPORT_CAP_VERDELING_VERWERKT, logEvent, loggedInInstellingGebruiker, Bevolkingsonderzoek.COLON);
+			logService.logGebeurtenis(LogGebeurtenis.IMPORT_CAP_VERDELING_VERWERKT, logEvent, ingelogdeOrganisatieMedewerker, Bevolkingsonderzoek.COLON);
 		}
 
 		return level;

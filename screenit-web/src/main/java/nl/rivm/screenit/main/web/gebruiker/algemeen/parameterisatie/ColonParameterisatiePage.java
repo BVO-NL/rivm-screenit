@@ -66,7 +66,7 @@ import org.apache.wicket.util.convert.IConverter;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(
-	recht = Recht.GEBRUIKER_BEHEER_PARAMETERISATIE,
+	recht = Recht.MEDEWERKER_BEHEER_PARAMETERISATIE,
 	actie = Actie.INZIEN,
 	level = ToegangLevel.REGIO,
 	bevolkingsonderzoekScopes = Bevolkingsonderzoek.COLON,
@@ -108,9 +108,9 @@ public class ColonParameterisatiePage extends ParameterisatieBasePage
 			cohortenContainer.setOutputMarkupId(true);
 			add(cohortenContainer);
 
-			var actie = autorisatieService.getActieVoorMedewerker(ScreenitSession.get().getLoggedInInstellingGebruiker(), ScreenitSession.get().getCurrentSelectedMedewerker(),
-				Recht.GEBRUIKER_BEHEER_PARAMETERISATIE);
-			level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.GEBRUIKER_BEHEER_PARAMETERISATIE);
+			var actie = autorisatieService.getActieVoorMedewerker(getIngelogdeOrganisatieMedewerker(), ScreenitSession.get().getCurrentSelectedMedewerker(),
+				Recht.MEDEWERKER_BEHEER_PARAMETERISATIE);
+			level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_BEHEER_PARAMETERISATIE);
 			inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 
 			cohorten = new ListModel<>(nieuweCohortenModel.getObject().getCohorten());
@@ -212,7 +212,7 @@ public class ColonParameterisatiePage extends ParameterisatieBasePage
 				{
 					BasePage.markeerFormulierenOpgeslagen(target);
 					nieuweCohortenModel.getObject().setCohorten(cohorten.getObject());
-					parameterisatieService.saveParametrisatieCohort(ScreenitSession.get().getLoggedInAccount(), getModelObject().getCohorten(), nieuweCohortenModel.getObject());
+					parameterisatieService.saveParametrisatieCohort(ScreenitSession.get().getIngelogdAccount(), getModelObject().getCohorten(), nieuweCohortenModel.getObject());
 					markeerFormulierenOpgeslagen(target);
 					info("Cohorten zijn opgeslagen");
 				}

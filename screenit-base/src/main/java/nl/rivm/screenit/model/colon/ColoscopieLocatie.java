@@ -27,7 +27,7 @@ import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 
 import org.hibernate.envers.Audited;
 
@@ -35,7 +35,7 @@ import org.hibernate.envers.Audited;
 @Getter
 @Entity
 @Audited
-public class ColoscopieLocatie extends Instelling
+public class ColoscopieLocatie extends Organisatie
 {
 
 	@Column

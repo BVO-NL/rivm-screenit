@@ -22,15 +22,14 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.ifobtlab;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.base.BasePage;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieBeheer;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatiePaspoortPanel;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieZoeken;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -50,7 +49,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = {
-	Recht.GEBRUIKER_LABORATORIA_BEHEER }, checkScope = true, level = ToegangLevel.INSTELLING, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
+	Recht.MEDEWERKER_LABORATORIA_BEHEER }, checkScope = true, level = ToegangLevel.ORGANISATIE, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class AanvullendeLabGegevensPage extends OrganisatieBeheer
 {
 
@@ -68,13 +67,13 @@ public class AanvullendeLabGegevensPage extends OrganisatieBeheer
 
 	public AanvullendeLabGegevensPage()
 	{
-		Instelling organisatie = getCurrentSelectedOrganisatie();
-		Actie actie = autorisatieService.getActieVoorOrganisatie(ScreenitSession.get().getLoggedInInstellingGebruiker(), organisatie, Recht.GEBRUIKER_LABORATORIA_BEHEER);
+		Organisatie organisatie = getCurrentSelectedOrganisatie();
+		Actie actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie, Recht.MEDEWERKER_LABORATORIA_BEHEER);
 		final boolean inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 
 		add(new OrganisatiePaspoortPanel("paspoort", ModelUtil.sModel(super.getCurrentSelectedOrganisatie())));
 
-		final IModel<Instelling> model = ModelUtil.cModel(super.getCurrentSelectedOrganisatie());
+		final IModel<Organisatie> model = ModelUtil.cModel(super.getCurrentSelectedOrganisatie());
 		setDefaultModel(model);
 
 		Form<Void> form = new Form<>("form");
@@ -108,7 +107,7 @@ public class AanvullendeLabGegevensPage extends OrganisatieBeheer
 
 		});
 
-		AjaxLink<Gebruiker> annuleren = new AjaxLink<Gebruiker>("annuleren")
+		AjaxLink<Medewerker> annuleren = new AjaxLink<Medewerker>("annuleren")
 		{
 
 			private static final long serialVersionUID = 1L;

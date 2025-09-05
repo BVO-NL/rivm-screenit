@@ -61,7 +61,7 @@ const NavbarComponent = () => {
 				{maakNavItem("/logout", "Afmelden", () => {
 					dispatch(loadingThunkAction(afmelden())).then(() => {
 						dispatch(createActionPushToast({type: ToastType.SUCCESS, message: "U bent uitgelogd"}))
-						navigate("/")
+						navigate("/login")
 					})
 				})}
 			</Nav>}

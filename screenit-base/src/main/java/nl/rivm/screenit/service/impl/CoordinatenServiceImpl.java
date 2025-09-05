@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.PostcodeCoordinaten;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.repository.algemeen.GemeenteRepository;
@@ -72,7 +73,22 @@ public class CoordinatenServiceImpl implements CoordinatenService
 	@Override
 	public PostcodeCoordinaten getCoordinaten(Adres adres)
 	{
-		return getCoordinaten(adres.getPostcode(), adres.getHuisnummer(), adres.getHuisnummerToevoeging(), adres.getHuisletter());
+		return adres != null ? getCoordinaten(adres.getPostcode(), adres.getHuisnummer(), adres.getHuisnummerToevoeging(), adres.getHuisletter()) : null;
+	}
+
+	@Override
+	public PostcodeCoordinaten getCoordinaten(Organisatie organisatie)
+	{
+		var coordinaten = getCoordinaten(organisatie.getAdres());
+		if (coordinaten == null)
+		{
+			coordinaten = getCoordinaten(organisatie.getPostbusAdres());
+		}
+		if (coordinaten == null)
+		{
+			coordinaten = getCoordinaten(organisatie.getAntwoordnummerAdres());
+		}
+		return coordinaten;
 	}
 
 	@Override

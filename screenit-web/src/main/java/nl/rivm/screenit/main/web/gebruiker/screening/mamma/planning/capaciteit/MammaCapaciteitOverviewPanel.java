@@ -164,7 +164,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 
 		config.setDefaultView("agendaWeek");
 
-		boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN)
+		boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN)
 			&& ScreenitSession.get().getScreeningOrganisatie() != null;
 		config.setDisableDragging(!magAanpassen);
 		config.setDisableResizing(true);
@@ -248,7 +248,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 			protected void onVerwijderen(AjaxRequestTarget target, IModel<PlanningCapaciteitBlokDto> model)
 			{
 				PlanningCapaciteitBlokDto abstractAppointmentToDelete = model.getObject();
-				String melding = baseCapaciteitsBlokService.delete(abstractAppointmentToDelete, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				String melding = baseCapaciteitsBlokService.delete(abstractAppointmentToDelete, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				if (StringUtils.isBlank(melding))
 				{
 					blokSuccesvolChanged(response, target);
@@ -266,7 +266,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 				onBeforeOpslaan(blokDto);
 				if (!getThisPage().hasMeldingen())
 				{
-					String melding = baseCapaciteitsBlokService.saveOrUpdate(blokDto, ScreenitSession.get().getLoggedInInstellingGebruiker());
+					String melding = baseCapaciteitsBlokService.saveOrUpdate(blokDto, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 					if (StringUtils.isBlank(melding))
 					{
 						blokSuccesvolChanged(response, target);
@@ -364,7 +364,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 
 			if (!getThisPage().hasMeldingen())
 			{
-				String melding = baseCapaciteitsBlokService.saveOrUpdate(blok, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				String melding = baseCapaciteitsBlokService.saveOrUpdate(blok, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 
 				if (StringUtils.isBlank(melding))
 				{

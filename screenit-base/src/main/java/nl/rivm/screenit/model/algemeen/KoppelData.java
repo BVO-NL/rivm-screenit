@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.algemeen;
 
 /*-
@@ -22,7 +21,6 @@ package nl.rivm.screenit.model.algemeen;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -32,16 +30,17 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 @Entity
 @Table(schema = "gedeeld")
+@Setter
+@Getter
 public class KoppelData extends AbstractHibernateObject
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	private String filename;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -52,7 +51,7 @@ public class KoppelData extends AbstractHibernateObject
 	private byte[] xmlData;
 
 	@Column(columnDefinition = "TEXT")
-	private String xmlBericht;
+	private String koppelData;
 
 	@Deprecated
 	public byte[] getXmlData()
@@ -72,35 +71,4 @@ public class KoppelData extends AbstractHibernateObject
 			this.xmlData = null;
 		}
 	}
-
-	public Date getOntvangen()
-	{
-		return ontvangen;
-	}
-
-	public void setOntvangen(Date ontvangen)
-	{
-		this.ontvangen = ontvangen;
-	}
-
-	public String getFilename()
-	{
-		return filename;
-	}
-
-	public void setFilename(String filename)
-	{
-		this.filename = filename;
-	}
-
-	public String getXmlBericht()
-	{
-		return xmlBericht;
-	}
-
-	public void setXmlBericht(String xmlBericht)
-	{
-		this.xmlBericht = xmlBericht;
-	}
-
 }

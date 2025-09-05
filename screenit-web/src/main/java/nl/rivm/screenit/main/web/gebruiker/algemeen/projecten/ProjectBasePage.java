@@ -34,7 +34,7 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.populatie.Populati
 import nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.project.ProjectOverzicht;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.project.ProjectStatusPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.uitslag.ProjectUitslagUploadenPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
@@ -71,11 +71,11 @@ public class ProjectBasePage extends AlgemeenPage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.projecten.overzicht", ProjectOverzicht.class));
-		contextMenuItems.add(new ProjectGebruikerMenuItem("menu.algemeen.project.gegevens", ProjectStatusPage.class)
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.projecten.overzicht", ProjectOverzicht.class));
+		contextMenuItems.add(new ProjectMedewerkerMenuItem("menu.algemeen.project.gegevens", ProjectStatusPage.class)
 		{
 			@Override
 			protected ProjectBasePage createPage()
@@ -85,11 +85,11 @@ public class ProjectBasePage extends AlgemeenPage
 		});
 		if (getProjectModel() != null)
 		{
-			if (ProjectType.PROJECT.equals(getProjectType()) && ScreenitSession.get().checkPermission(Recht.GEBRUIKER_PROJECT_SELECTIE, Actie.INZIEN) ||
+			if (ProjectType.PROJECT.equals(getProjectType()) && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_PROJECT_SELECTIE, Actie.INZIEN) ||
 				ProjectType.BRIEFPROJECT.equals(getProjectType())
-					&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BRIEFPROJECT_SELECTIE, Actie.INZIEN))
+					&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BRIEFPROJECT_SELECTIE, Actie.INZIEN))
 			{
-				contextMenuItems.add(new ProjectGebruikerMenuItem("menu.algemeen.project.populatie", PopulatiePage.class)
+				contextMenuItems.add(new ProjectMedewerkerMenuItem("menu.algemeen.project.populatie", PopulatiePage.class)
 				{
 					@Override
 					protected ProjectBasePage createPage()
@@ -98,11 +98,11 @@ public class ProjectBasePage extends AlgemeenPage
 					}
 				});
 			}
-			if (ProjectType.PROJECT.equals(getProjectType()) && ScreenitSession.get().checkPermission(Recht.GEBRUIKER_PROJECT_BRIEVEN, Actie.INZIEN) ||
+			if (ProjectType.PROJECT.equals(getProjectType()) && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_PROJECT_BRIEVEN, Actie.INZIEN) ||
 				ProjectType.BRIEFPROJECT.equals(getProjectType())
-					&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BRIEFPROJECT_BRIEVEN, Actie.INZIEN))
+					&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BRIEFPROJECT_BRIEVEN, Actie.INZIEN))
 			{
-				contextMenuItems.add(new ProjectGebruikerMenuItem("menu.algemeen.project.briefactie", ProjectBriefActiePage.class)
+				contextMenuItems.add(new ProjectMedewerkerMenuItem("menu.algemeen.project.briefactie", ProjectBriefActiePage.class)
 				{
 					@Override
 					protected ProjectBasePage createPage()
@@ -112,7 +112,7 @@ public class ProjectBasePage extends AlgemeenPage
 				});
 			}
 		}
-		contextMenuItems.add(new ProjectGebruikerMenuItem("menu.algemeen.project.clientenwijzigen", ProjectClientenWijzigenPage.class)
+		contextMenuItems.add(new ProjectMedewerkerMenuItem("menu.algemeen.project.clientenwijzigen", ProjectClientenWijzigenPage.class)
 		{
 			@Override
 			protected ProjectBasePage createPage()
@@ -120,7 +120,7 @@ public class ProjectBasePage extends AlgemeenPage
 				return new ProjectClientenWijzigenPage(getProjectModel());
 			}
 		});
-		contextMenuItems.add(new ProjectGebruikerMenuItem("menu.algemeen.project.attributen", ProjectAttributenPage.class)
+		contextMenuItems.add(new ProjectMedewerkerMenuItem("menu.algemeen.project.attributen", ProjectAttributenPage.class)
 		{
 			@Override
 			protected ProjectBasePage createPage()
@@ -131,7 +131,7 @@ public class ProjectBasePage extends AlgemeenPage
 
 		if (getProjectType().equals(ProjectType.PROJECT) && !ProjectUtil.getStatus(projectModel.getObject(), currentDateSupplier.getDate()).equals(ProjectStatus.BEEINDIGD))
 		{
-			contextMenuItems.add(new ProjectGebruikerMenuItem("menu.algemeen.project.uitslagen", ProjectUitslagUploadenPage.class)
+			contextMenuItems.add(new ProjectMedewerkerMenuItem("menu.algemeen.project.uitslagen", ProjectUitslagUploadenPage.class)
 			{
 				@Override
 				protected ProjectBasePage createPage()
@@ -140,7 +140,7 @@ public class ProjectBasePage extends AlgemeenPage
 				}
 			});
 		}
-		contextMenuItems.add(new ProjectGebruikerMenuItem("menu.algemeen.project.bestanden", ProjectBestandenOverzicht.class)
+		contextMenuItems.add(new ProjectMedewerkerMenuItem("menu.algemeen.project.bestanden", ProjectBestandenOverzicht.class)
 		{
 			@Override
 			protected ProjectBasePage createPage()
@@ -153,12 +153,12 @@ public class ProjectBasePage extends AlgemeenPage
 
 	protected Recht getRechtOverzicht()
 	{
-		return ProjectType.BRIEFPROJECT.equals(getProjectType()) ? Recht.GEBRUIKER_BRIEFPROJECT_OVERZICHT : Recht.GEBRUIKER_PROJECT_OVERZICHT;
+		return ProjectType.BRIEFPROJECT.equals(getProjectType()) ? Recht.MEDEWERKER_BRIEFPROJECT_OVERZICHT : Recht.MEDEWERKER_PROJECT_OVERZICHT;
 	}
 
 	protected Recht getRechtSelectie()
 	{
-		return ProjectType.BRIEFPROJECT.equals(getProjectType()) ? Recht.GEBRUIKER_BRIEFPROJECT_SELECTIE : Recht.GEBRUIKER_PROJECT_SELECTIE;
+		return ProjectType.BRIEFPROJECT.equals(getProjectType()) ? Recht.MEDEWERKER_BRIEFPROJECT_SELECTIE : Recht.MEDEWERKER_PROJECT_SELECTIE;
 	}
 
 	private ProjectType getProjectType()
@@ -168,7 +168,7 @@ public class ProjectBasePage extends AlgemeenPage
 
 	protected ToegangLevel getToegangsLevel(Recht recht, Actie actie)
 	{
-		return autorisatieService.getToegangLevel(ScreenitSession.get().getLoggedInInstellingGebruiker(), actie, true, recht);
+		return autorisatieService.getToegangLevel(getIngelogdeOrganisatieMedewerker(), actie, true, recht);
 	}
 
 	protected IModel<Project> getProjectModel()
@@ -176,10 +176,10 @@ public class ProjectBasePage extends AlgemeenPage
 		return projectModel;
 	}
 
-	private abstract class ProjectGebruikerMenuItem extends GebruikerMenuItem
+	private abstract class ProjectMedewerkerMenuItem extends MedewerkerMenuItem
 	{
 		@SuppressWarnings("unchecked")
-		public ProjectGebruikerMenuItem(String resourceTag, Class<? extends ProjectBasePage> targetPageClass)
+		public ProjectMedewerkerMenuItem(String resourceTag, Class<? extends ProjectBasePage> targetPageClass)
 		{
 			super(resourceTag, targetPageClass);
 		}

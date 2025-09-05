@@ -22,7 +22,7 @@ package nl.rivm.screenit.main.service.mamma.impl;
  */
 
 import nl.rivm.screenit.main.service.mamma.MammaMammograafService;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaMammograaf;
@@ -47,7 +47,7 @@ public class MammaMammograafServiceImpl implements MammaMammograafService
 	private LogService logService;
 
 	@Override
-	public boolean saveOrUpdateMammograaf(MammaMammograaf mammograaf, InstellingGebruiker ingelogdeGebruiker)
+	public boolean saveOrUpdateMammograaf(MammaMammograaf mammograaf, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		String melding = "";
 		String diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(mammograaf, hibernateService.getHibernateSession());
@@ -64,7 +64,7 @@ public class MammaMammograafServiceImpl implements MammaMammograafService
 
 		if (StringUtils.isNotEmpty(melding))
 		{
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_MAMMOGRAAF, ingelogdeGebruiker, melding, Bevolkingsonderzoek.MAMMA);
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_MAMMOGRAAF, ingelogdeOrganisatieMedewerker, melding, Bevolkingsonderzoek.MAMMA);
 			hibernateService.saveOrUpdate(mammograaf);
 			return true;
 		}

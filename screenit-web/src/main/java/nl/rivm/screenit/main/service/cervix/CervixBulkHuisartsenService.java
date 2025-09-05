@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.service.cervix;
 import java.io.File;
 import java.io.IOException;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.cervix.CervixBulkUpload;
 
 public interface CervixBulkHuisartsenService
@@ -32,5 +32,5 @@ public interface CervixBulkHuisartsenService
 
 	void verwerkBulkHuisartsen(CervixBulkUpload cervixBulkUpload);
 
-	CervixBulkUpload saveExcelBestand(File file, String contentType, String filename, InstellingGebruiker gebruiker) throws IOException;
+	CervixBulkUpload saveExcelBestand(File file, String contentType, String filename, OrganisatieMedewerker organisatieMedewerker) throws IOException;
 }

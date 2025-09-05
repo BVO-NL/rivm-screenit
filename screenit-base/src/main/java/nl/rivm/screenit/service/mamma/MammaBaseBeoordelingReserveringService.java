@@ -23,19 +23,19 @@ package nl.rivm.screenit.service.mamma;
 
 import java.util.List;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.enums.MammaBeLezerSoort;
 
 public interface MammaBaseBeoordelingReserveringService
 {
-	List<Long> reserveerBeoordelingen(Long startBeoordelingId, List<Long> beoordelingenIds, InstellingGebruiker ingelogdeGebruiker, MammaBeLezerSoort lezerSoort);
+	List<Long> reserveerBeoordelingen(Long startBeoordelingId, List<Long> beoordelingenIds, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, MammaBeLezerSoort lezerSoort);
 
-	boolean gereserveerdDoorIemandAnders(InstellingGebruiker ingelogdeGebruiker, MammaBeoordeling beoordeling);
+	boolean gereserveerdDoorIemandAnders(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, MammaBeoordeling beoordeling);
 
-	boolean gereserveerdVoorGebruiker(long beoordelingId, InstellingGebruiker ingelogdeGebruiker, MammaBeLezerSoort lezerSoort);
+	boolean gereserveerdVoorMedewerker(long beoordelingId, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, MammaBeLezerSoort lezerSoort);
 
-	void reserveringenVrijgeven(InstellingGebruiker ingelogdeGebruiker);
+	void reserveringenVrijgeven(OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	void geefBeoordelingVrij(MammaBeoordeling beoordeling);
 }

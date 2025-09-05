@@ -21,11 +21,10 @@ package nl.rivm.screenit.batch.jobs.colon.ifobtverwerking.verwerkingstep;
  * =========================LICENSE_END==================================
  */
 
-import java.math.BigDecimal;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.colon.ifobtverwerking.IfobtVerwerkingConstants;
+import nl.rivm.screenit.model.colon.ColonGeinterpreteerdeUitslag;
 import nl.rivm.screenit.model.colon.IFOBTBestand;
 import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.colon.IFOBTType;
@@ -39,6 +38,7 @@ import nl.rivm.screenit.model.verwerkingverslag.IfobtVerwerkingRapportageEntry;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.colon.ColonBaseFITService;
+import nl.rivm.screenit.util.FITTestUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.batch.core.StepExecution;
@@ -114,12 +114,19 @@ public class IFOBTVerwerkingWriter implements ItemWriter<IFOBTUitslag>
 				if (ifobtTest.getUitslag() == null)
 				{
 					logService.logGebeurtenis(LogGebeurtenis.IFOBT_VERWERKT, client, "barcode: " + ifobtTest.getBarcode(), Bevolkingsonderzoek.COLON);
-
 					zetAnalysegegevensOverNaarFit(bestand, ifobtResult, ifobtTest);
 
-					fitService.uitslagFitOntvangen(ifobtTest);
-
+					if (ifobtResult.getOnbeoordeelbaarReden() != null || (!FITTestUtil.UITSLAG_FLAG_PRO.equals(ifobtTest.getFlag()) && ifobtTest.getFlag() != null))
+					{
+						ifobtTest.setRedenNietTeBeoordelen(ifobtResult.getOnbeoordeelbaarReden());
+						fitService.monsterNietBeoordeelbaar(ifobtTest);
+					}
+					else
+					{
+						fitService.uitslagFitOntvangen(ifobtTest);
+					}
 					verslagEntry.setAantalVerwerkingen(verslagEntry.getAantalVerwerkingen() + 1);
+
 				}
 				else
 				{
@@ -153,10 +160,15 @@ public class IFOBTVerwerkingWriter implements ItemWriter<IFOBTUitslag>
 	{
 		ifobtTest.setAnalyseDatum(ifobtResult.getAnalyseDatum());
 		ifobtTest.setVerwerkingsDatum(currentDateSupplier.getDate());
+		ifobtTest.setFlag(ifobtResult.getFlag());
 
+		if (FITTestUtil.UITSLAG_FLAG_PRO.equals(ifobtTest.getFlag()))
+		{
+			ifobtTest.setGeinterpreteerdeUitslag(ColonGeinterpreteerdeUitslag.ONGUNSTIG);
+		}
 		if (correctForInpakcentrumIncident(ifobtTest))
 		{
-			BigDecimal uitslag = ifobtResult.getUitslag();
+			var uitslag = ifobtResult.getUitslag();
 			ifobtTest.setUitslag(uitslag);
 		}
 

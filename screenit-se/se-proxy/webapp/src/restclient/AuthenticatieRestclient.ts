@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -32,7 +32,7 @@ import {logoffToIMS, logonToIMS} from "../util/ImsApiUtil"
 import {readMammografen} from "./MammografenRestClient"
 import {leesZorginstellingen} from "./ZorginstellingenRestclient"
 import {ensureIdleCheck} from "../util/TimeoutUtil"
-import {readSeGebruikers} from "./SeGebruikerRestClient"
+import {readSeMedewerkers} from "./SeMedewerkerRestClient"
 import {clearWerklijst, getActieveKwaliteitsopname} from "./WerklijstRestclient"
 import {createActionNavigateToDaglijst, createActionNavigateToKwaliteitsopname, NAVIGATE_TO_KWALITEITSOPNAME, NavigationActions} from "../actions/NavigationActions"
 import {createActionClearCache} from "../actions/ClearCacheActions"
@@ -159,7 +159,7 @@ function verwerkSuccesvolleLogin(response: any, yubikeyIdentificatie: string): P
 		autorisatie = autorisatieObject
 		const navigatieActie = JSON.parse(autorisatie.navigatie)
 		store.dispatch(createActionSetSession(autorisatie.username, autorisatie.medewerkercode, autorisatie.displayName, autorisatie.seCode, autorisatie.seNaam,
-			yubikeyIdentificatie, autorisatie.instellingGebruikerId))
+			yubikeyIdentificatie, autorisatie.organisatieMedewerkerId))
 		store.dispatch(createActionSetAutorisatie(autorisatie))
 		return navigatieActie
 	}).then((navigatieActie: NavigationActions) => {
@@ -186,7 +186,7 @@ function verwerkSuccesvolleLogin(response: any, yubikeyIdentificatie: string): P
 			leesHuisartsen()
 			leesPlanning(vandaagISO())
 			leesZorginstellingen()
-			readSeGebruikers()
+			readSeMedewerkers()
 		}
 		readEnvironmentInfo()
 	})

@@ -62,7 +62,7 @@ public abstract class MammaHuisartsBeheerPanel extends GenericPanel<MammaScreeni
 		super(id, screeningRondeModel);
 		this.voorPrimaireHuisarts = voorPrimaireHuisarts;
 
-		boolean magWijzigen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_WIJZIGEN_HUISARTS, Actie.AANPASSEN);
+		boolean magWijzigen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_WIJZIGEN_HUISARTS, Actie.AANPASSEN);
 
 		AjaxLink<MammaScreeningRonde> wijzigHuisartsBtn = new IndicatingAjaxLink<MammaScreeningRonde>("wijzigHuisarts")
 		{

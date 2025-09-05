@@ -23,11 +23,11 @@ package nl.rivm.screenit.main.service;
 
 import java.util.List;
 
-import nl.rivm.screenit.dto.InstellingGebruikerRolDto;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruikerRol;
+import nl.rivm.screenit.dto.OrganisatieMedewerkerRolDto;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.model.Rol;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -36,28 +36,28 @@ import org.springframework.data.domain.Sort;
 
 public interface MedewerkerService
 {
-	List<InstellingGebruiker> zoekOrganisatieMedewerker(InstellingGebruiker zoekInstellingGebruiker, long first, long count, Sort sort);
+	List<OrganisatieMedewerker> zoekOrganisatieMedewerkers(OrganisatieMedewerker zoekOrganisatieMedewerker, long first, long count, Sort sort);
 
-	List<InstellingGebruiker> getActieveRadiologen(InstellingGebruiker zoekOrganisatieMedewerker, List<Long> exclIds, Sort sort);
+	List<OrganisatieMedewerker> getActieveRadiologen(OrganisatieMedewerker zoekOrganisatieMedewerker, List<Long> exclIds, Sort sort);
 
-	long countInstellingGebruiker(InstellingGebruiker instellingGebruiker);
+	long countOrganisatieMedewerkers(OrganisatieMedewerker organisatieMedewerker);
 
-	void addOrganisatieMedewerker(Instelling organisatie, Gebruiker medewerker);
+	void addOrganisatieMedewerker(Organisatie organisatie, Medewerker medewerker);
 
-	void saveOrUpdateRollen(InstellingGebruiker ingelogdeGebruiker, List<InstellingGebruikerRolDto> initieleRollen, InstellingGebruiker instellingGebruiker);
+	void saveOrUpdateRollen(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, List<OrganisatieMedewerkerRolDto> initieleRollen, OrganisatieMedewerker organisatieMedewerker);
 
-	boolean saveOrUpdateGebruiker(Gebruiker medewerker, boolean isBestaande, boolean wordGeblokkeerd);
+	boolean saveOrUpdateMedewerker(Medewerker medewerker, boolean isBestaande, boolean wordGeblokkeerd);
 
-	boolean resetWachtwoord(Gebruiker medewerker);
+	boolean resetWachtwoord(Medewerker medewerker);
 
-	InstellingGebruiker getOrganisatieMedewerker(Instelling organisatie, Gebruiker medewerker);
+	OrganisatieMedewerker getOrganisatieMedewerker(Organisatie organisatie, Medewerker medewerker);
 
-	List<InstellingGebruikerRol> getOrganisatieMedewerkersMetRol(Rol rol);
+	List<OrganisatieMedewerkerRol> getOrganisatieMedewerkersMetRol(Rol rol);
 
-	boolean zijnErInstellingGebruikersMetRol(Rol rol);
+	boolean zijnErOrganisatieMedewerkersMetRol(Rol rol);
 
-	List<Gebruiker> getActieveGebruikersMetRecht(Recht recht);
+	List<Medewerker> getActieveMedewerkersMetRecht(Recht recht);
 
-	List<InstellingGebruikerRol> getInstellingGebruikersMetRolEnBvos(Rol rol, List<Bevolkingsonderzoek> onderzoeken);
+	List<OrganisatieMedewerkerRol> getOrganisatieMedewerkersMetRolEnBvos(Rol rol, List<Bevolkingsonderzoek> onderzoeken);
 
 }

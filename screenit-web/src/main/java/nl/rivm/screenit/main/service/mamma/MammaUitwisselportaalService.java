@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Optional;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek;
 import nl.rivm.screenit.model.mamma.MammaFollowUpRadiologieVerslag;
@@ -37,23 +37,23 @@ import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 public interface MammaUitwisselportaalService
 {
 
-	void maakDownloadVerzoek(List<MammaOnderzoek> onderzoeken, InstellingGebruiker loggedInInstellingGebruiker) throws IOException;
+	void maakDownloadVerzoek(List<MammaOnderzoek> onderzoeken, OrganisatieMedewerker ingelogdeOrganisatieMedewerker) throws IOException;
 
 	void startDownloading();
 
 	void resetDownloadVerzoek(MammaDownloadOnderzoekenVerzoek object) throws IOException;
 
-	Optional<MammaDownloadOnderzoekenVerzoek> geldigDownloadVerzoekVoorIngelogdeGebruiker(long downloadVerzoekid, InstellingGebruiker instellingGebruiker);
+	Optional<MammaDownloadOnderzoekenVerzoek> geldigDownloadVerzoekVoorIngelogdeOrganisatieMedewerker(long downloadVerzoekid, OrganisatieMedewerker organisatieMedewerker);
 
-	MammaDownloadOnderzoekenVerzoek maakDownloadVerzoekFilter(InstellingGebruiker instellingGebruiker);
+	MammaDownloadOnderzoekenVerzoek maakDownloadVerzoekFilter(OrganisatieMedewerker organisatieMedewerker);
 
 	boolean zipKanGedownloadWorden(MammaDownloadOnderzoekenVerzoek downloadOnderzoekenVerzoek);
 
-	void updateDownloadVerzoekInformatie(MammaDownloadOnderzoekenVerzoek verzoek, InstellingGebruiker loggedInInstellingGebruiker);
+	void updateDownloadVerzoekInformatie(MammaDownloadOnderzoekenVerzoek verzoek, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	MammaFollowUpRadiologieVerslag getFollowUpRadiologieVerslag(MammaScreeningRonde screeningRonde, InstellingGebruiker loggedInInstellingGebruiker);
+	MammaFollowUpRadiologieVerslag getFollowUpRadiologieVerslag(MammaScreeningRonde screeningRonde, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	Instelling getLaatstGedownloadDoorInstelling(MammaDossier dossier);
+	Organisatie getLaatstGedownloadDoorOrganisatie(MammaDossier dossier);
 
 	List<MammaScreeningRonde> beschikbareRondesVoorDownload(Client client);
 }

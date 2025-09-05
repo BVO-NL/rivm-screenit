@@ -25,7 +25,7 @@ import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.service.AuthenticatieService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -40,7 +40,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-class OrganisatieWisselPanel extends GenericPanel<InstellingGebruiker>
+class OrganisatieWisselPanel extends GenericPanel<OrganisatieMedewerker>
 {
 	@SpringBean
 	private AuthenticatieService authenticatieService;
@@ -50,9 +50,9 @@ class OrganisatieWisselPanel extends GenericPanel<InstellingGebruiker>
 	OrganisatieWisselPanel(String id)
 	{
 		super(id);
-		InstellingGebruiker ingelogdeGebruiker = getIngelogdeGebruiker();
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker = getIngelogdeOrganisatieMedewerker();
 
-		setModel(ModelUtil.sModel(ingelogdeGebruiker));
+		setModel(ModelUtil.sModel(ingelogdeOrganisatieMedewerker));
 
 		organisatiepanel = new WebMarkupContainer("organisatiepanel");
 		organisatiepanel.add(createOrganisatiesDropdown());
@@ -60,10 +60,10 @@ class OrganisatieWisselPanel extends GenericPanel<InstellingGebruiker>
 		add(organisatiepanel);
 	}
 
-	private DropDownChoice<InstellingGebruiker> createOrganisatiesDropdown()
+	private DropDownChoice<OrganisatieMedewerker> createOrganisatiesDropdown()
 	{
-		List<InstellingGebruiker> organisatieMedewerkers = authenticatieService.getActieveInstellingGebruikers(getIngelogdeGebruiker().getMedewerker());
-		DropDownChoice<InstellingGebruiker> organisatie = new ScreenitDropdown<>("organisatie", getModel(),
+		List<OrganisatieMedewerker> organisatieMedewerkers = authenticatieService.getActieveOrganisatieMedewerkers(getIngelogdeOrganisatieMedewerker().getMedewerker());
+		DropDownChoice<OrganisatieMedewerker> organisatie = new ScreenitDropdown<>("organisatie", getModel(),
 			ModelUtil.listRModel(organisatieMedewerkers), new ChoiceRenderer<>("organisatie.naam"));
 
 		organisatie.setNullValid(false);
@@ -95,12 +95,12 @@ class OrganisatieWisselPanel extends GenericPanel<InstellingGebruiker>
 			@Override
 			protected void respond(AjaxRequestTarget target)
 			{
-				InstellingGebruiker gewensteInstellingGebruiker = getModelObject();
-				Component pageForInstellingGebruiker = ScreenitSession.get().getPageForInstellingGebruiker(gewensteInstellingGebruiker);
-				if (pageForInstellingGebruiker != null)
+				OrganisatieMedewerker gewensteOrganisatieMedewerker = getModelObject();
+				Component pageForOrganisatieMedewerker = ScreenitSession.get().getPageForOrganisatieMedewerker(gewensteOrganisatieMedewerker);
+				if (pageForOrganisatieMedewerker != null)
 				{
 					ScreenitSession.get().clear();
-					setResponsePage((WebPage) pageForInstellingGebruiker);
+					setResponsePage((WebPage) pageForOrganisatieMedewerker);
 				}
 				else
 				{
@@ -117,14 +117,14 @@ class OrganisatieWisselPanel extends GenericPanel<InstellingGebruiker>
 			@Override
 			protected void respond(AjaxRequestTarget target)
 			{
-				setModelObject(getIngelogdeGebruiker());
+				setModelObject(getIngelogdeOrganisatieMedewerker());
 				target.add(organisatiepanel);
 			}
 		};
 	}
 
-	private InstellingGebruiker getIngelogdeGebruiker()
+	private OrganisatieMedewerker getIngelogdeOrganisatieMedewerker()
 	{
-		return ScreenitSession.get().getLoggedInInstellingGebruiker();
+		return ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 	}
 }

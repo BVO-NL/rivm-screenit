@@ -44,7 +44,7 @@ public class GebruikersnaamValidator extends BaseValidator<HuisartsDto>
 			var gevondenHuisarts = huisartsRepository.findByGebruikersnaam(target.getUsername());
 			if (gevondenHuisarts != null && !ingelogdeHuisarts.getHuisartsportaalId().equals(gevondenHuisarts.getHuisartsportaalId()))
 			{
-				errors.reject("error.username.gebruikt", "De gekozen gebruikersnaam wordt al gebruikt door een andere gebruiker.");
+				errors.reject("error.username.gebruikt", "De gekozen gebruikersnaam wordt al gebruikt door een andere medewerker.");
 			}
 		}
 		else

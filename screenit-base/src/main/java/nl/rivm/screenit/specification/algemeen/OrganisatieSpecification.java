@@ -43,13 +43,13 @@ import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.CentraleEenheid;
 import nl.rivm.screenit.model.CentraleEenheid_;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker_;
-import nl.rivm.screenit.model.Instelling_;
 import nl.rivm.screenit.model.Mammapoli;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.RadiologieAfdeling;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
@@ -67,12 +67,11 @@ import nl.rivm.screenit.model.colon.ColoscopieLocatie_;
 import nl.rivm.screenit.model.colon.IFobtLaboratorium;
 import nl.rivm.screenit.model.colon.PaLaboratorium;
 import nl.rivm.screenit.model.colon.PaLaboratorium_;
-import nl.rivm.screenit.model.overeenkomsten.AfgeslotenInstellingOvereenkomst;
-import nl.rivm.screenit.model.overeenkomsten.AfgeslotenInstellingOvereenkomst_;
+import nl.rivm.screenit.model.overeenkomsten.AfgeslotenOrganisatieOvereenkomst;
+import nl.rivm.screenit.model.overeenkomsten.AfgeslotenOrganisatieOvereenkomst_;
 import nl.rivm.screenit.model.overeenkomsten.Overeenkomst;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.organisatie.model.Adres;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -87,6 +86,7 @@ import static nl.rivm.screenit.specification.SpecificationUtil.exactCaseInsensit
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenEmpty;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenEmptyExtended;
+import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenFalse;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNull;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNullExtended;
 import static nl.rivm.screenit.specification.SpecificationUtil.treat;
@@ -98,23 +98,23 @@ import static nl.rivm.screenit.specification.algemeen.MedewerkerSpecification.fi
 public class OrganisatieSpecification
 {
 
-	public static ExtendedSpecification<Instelling> filterActief(Boolean actief)
+	public static ExtendedSpecification<Organisatie> filterActief(Boolean actief)
 	{
-		return skipWhenNullExtended(actief, (r, q, cb) -> cb.equal(r.get(Instelling_.actief), actief));
+		return skipWhenNullExtended(actief, (r, q, cb) -> cb.equal(r.get(Organisatie_.actief), actief));
 	}
 
-	public static ExtendedSpecification<Instelling> filterNaamContaining(String naam)
+	public static ExtendedSpecification<Organisatie> filterNaamContaining(String naam)
 	{
-		return skipWhenEmptyExtended(naam, (r, q, cb) -> containsCaseInsensitive(cb, r.get(Instelling_.naam), naam));
+		return skipWhenEmptyExtended(naam, (r, q, cb) -> containsCaseInsensitive(cb, r.get(Organisatie_.naam), naam));
 	}
 
-	public static ExtendedSpecification<Instelling> filterEmailsDeelsExactEnDeelsContaining(String email)
+	public static ExtendedSpecification<Organisatie> filterEmailsDeelsExactEnDeelsContaining(String email)
 	{
 		return skipWhenEmptyExtended(email, (r, q, cb) ->
 		{
 			var ceRoot = treat(r, CentraleEenheid.class, cb);
 			return cb.or(
-				exactCaseInsensitive(cb, r.get(Instelling_.email), email),
+				exactCaseInsensitive(cb, r.get(Organisatie_.email), email),
 				exactCaseInsensitive(cb, ceRoot.get(CentraleEenheid_.email2), email),
 				exactCaseInsensitive(cb, ceRoot.get(CentraleEenheid_.email3), email),
 				exactCaseInsensitive(cb, ceRoot.get(CentraleEenheid_.email4), email),
@@ -123,60 +123,60 @@ public class OrganisatieSpecification
 		});
 	}
 
-	public static ExtendedSpecification<Instelling> filterId(Long id)
+	public static ExtendedSpecification<Organisatie> filterId(Long id)
 	{
 		return skipWhenNullExtended(id, (r, q, cb) -> cb.equal(r.get(AbstractHibernateObject_.id), id));
 	}
 
-	public static Specification<Instelling> heeftNietOrganisatieTypes(List<OrganisatieType> excludeOrganisatieTypes)
+	public static Specification<Organisatie> heeftNietOrganisatieTypes(List<OrganisatieType> excludeOrganisatieTypes)
 	{
-		return skipWhenEmpty(excludeOrganisatieTypes, (r, q, cb) -> cb.not(r.get(Instelling_.organisatieType).in(excludeOrganisatieTypes)));
+		return skipWhenEmpty(excludeOrganisatieTypes, (r, q, cb) -> cb.not(r.get(Organisatie_.organisatieType).in(excludeOrganisatieTypes)));
 	}
 
-	public static Specification<Instelling> heeftOrganisatieTypes(List<OrganisatieType> organisatieTypes)
+	public static Specification<Organisatie> heeftOrganisatieTypes(List<OrganisatieType> organisatieTypes)
 	{
-		return (r, q, cb) -> r.get(Instelling_.organisatieType).in(organisatieTypes);
+		return (r, q, cb) -> r.get(Organisatie_.organisatieType).in(organisatieTypes);
 	}
 
-	public static ExtendedSpecification<Instelling> heeftOrganisatieType(OrganisatieType organisatieType)
+	public static ExtendedSpecification<Organisatie> heeftOrganisatieType(OrganisatieType organisatieType)
 	{
-		return (r, q, cb) -> cb.equal(r.get(Instelling_.organisatieType), organisatieType);
+		return (r, q, cb) -> cb.equal(r.get(Organisatie_.organisatieType), organisatieType);
 	}
 
-	public static Specification<Instelling> filterUniekeCodeContaining(String uniekeCode)
+	public static Specification<Organisatie> filterUniekeCodeContaining(String uniekeCode)
 	{
 		return skipWhenEmpty(uniekeCode, (r, q, cb) -> cb.or(
-			containsCaseInsensitive(cb, r.get(Instelling_.uziAbonneenummer), uniekeCode),
-			containsCaseInsensitive(cb, r.get(Instelling_.agbcode), uniekeCode),
-			containsCaseInsensitive(cb, r.get(Instelling_.rootOid), uniekeCode)
+			containsCaseInsensitive(cb, r.get(Organisatie_.uziAbonneenummer), uniekeCode),
+			containsCaseInsensitive(cb, r.get(Organisatie_.agbcode), uniekeCode),
+			containsCaseInsensitive(cb, r.get(Organisatie_.rootOid), uniekeCode)
 		));
 	}
 
-	public static ExtendedSpecification<Instelling> filterAgbCodeOfUziAbonneenummerContaining(String uniekeCode)
+	public static ExtendedSpecification<Organisatie> filterAgbCodeOfUziAbonneenummerContaining(String uniekeCode)
 	{
 		return skipWhenEmptyExtended(uniekeCode, (r, q, cb) -> cb.or(
-			containsCaseInsensitive(cb, r.get(Instelling_.uziAbonneenummer), uniekeCode),
-			containsCaseInsensitive(cb, r.get(Instelling_.agbcode), uniekeCode)
+			containsCaseInsensitive(cb, r.get(Organisatie_.uziAbonneenummer), uniekeCode),
+			containsCaseInsensitive(cb, r.get(Organisatie_.agbcode), uniekeCode)
 		));
 	}
 
-	public static Specification<Instelling> filterUziAbonneeNummer(String uziAbonneeNummer)
+	public static Specification<Organisatie> filterUziAbonneeNummer(String uziAbonneeNummer)
 	{
-		return skipWhenEmpty(uziAbonneeNummer, (r, q, cb) -> cb.equal(r.get(Instelling_.uziAbonneenummer), uziAbonneeNummer));
+		return skipWhenEmpty(uziAbonneeNummer, (r, q, cb) -> cb.equal(r.get(Organisatie_.uziAbonneenummer), uziAbonneeNummer));
 	}
 
-	public static Specification<Instelling> filterOrganisatieType(OrganisatieType organisatieType)
+	public static Specification<Organisatie> filterOrganisatieType(OrganisatieType organisatieType)
 	{
-		return skipWhenNull(organisatieType, (r, q, cb) -> cb.equal(r.get(Instelling_.organisatieType), organisatieType));
+		return skipWhenNull(organisatieType, (r, q, cb) -> cb.equal(r.get(Organisatie_.organisatieType), organisatieType));
 	}
 
-	public static ExtendedSpecification<Instelling> filterOvereenkomst(Overeenkomst overeenkomst, Date peildatum)
+	public static ExtendedSpecification<Organisatie> filterOvereenkomst(Overeenkomst overeenkomst, Date peildatum)
 	{
 		return (r, q, cb) ->
 		{
 			var subquery = q.subquery(Long.class);
-			var subqueryRoot = subquery.from(AfgeslotenInstellingOvereenkomst.class);
-			var instellingJoin = join(subqueryRoot, AfgeslotenInstellingOvereenkomst_.instelling);
+			var subqueryRoot = subquery.from(AfgeslotenOrganisatieOvereenkomst.class);
+			var organisatieJoin = join(subqueryRoot, AfgeslotenOrganisatieOvereenkomst_.organisatie);
 			var predicates = new ArrayList<Predicate>();
 			if (overeenkomst != null)
 			{
@@ -187,7 +187,7 @@ public class OrganisatieSpecification
 				predicates.add(AbstractAfgeslotenOvereenkomstSpecification.bevatPeildatum(peildatum).toPredicate(subqueryRoot, q, cb));
 			}
 
-			subquery.select(instellingJoin.get(AbstractHibernateObject_.id));
+			subquery.select(organisatieJoin.get(AbstractHibernateObject_.id));
 			if (!predicates.isEmpty())
 			{
 				subquery.where(composePredicates(cb, predicates));
@@ -197,49 +197,36 @@ public class OrganisatieSpecification
 		};
 	}
 
-	public static Specification<Instelling> filterParent(ScreeningOrganisatie parent)
+	public static Specification<Organisatie> filterParent(ScreeningOrganisatie parent)
 	{
 		return skipWhenNull(parent, (r, q, cb) ->
 		{
-			var parentJoin = join(r, Instelling_.parent, JoinType.LEFT);
-			return cb.or(cb.equal(r.get(Instelling_.parent), parent), cb.equal(parentJoin.get(Instelling_.parent), parent));
+			var parentJoin = join(r, Organisatie_.parent, JoinType.LEFT);
+			return cb.or(cb.equal(r.get(Organisatie_.parent), parent), cb.equal(parentJoin.get(Organisatie_.parent), parent));
 		});
 	}
 
-	public static Specification<Instelling> filterAdres(String plaats, String postcode)
+	public static ExtendedSpecification<Organisatie> filterAdres(String plaats, String postcode)
 	{
-		return (r, q, cb) ->
-		{
-			var subquery = q.subquery(Long.class);
-			var subRoot = subquery.from(Instelling.class);
-			var adressenJoin = join(subRoot, Instelling_.adressen, JoinType.LEFT);
-			if (StringUtils.isNotBlank(plaats) || StringUtils.isNotBlank(postcode))
-			{
-				var spec = AdresSpecification.filterPlaatsContaining(plaats)
-					.and(AdresSpecification.filterPostcodeContaining(postcode)).with(root -> adressenJoin);
-				subquery.select(subRoot.get(AbstractHibernateObject_.id)).where(spec.toPredicate(subRoot, q, cb));
-				return r.get(AbstractHibernateObject_.id).in(subquery);
-			}
-			else
-			{
-				return null;
-			}
-		};
+		return skipWhenFalse(StringUtils.isNotBlank(plaats) || StringUtils.isNotBlank(postcode),
+			AdresSpecification.filterPlaatsPostcode(plaats, postcode).with(Organisatie_.adres, JoinType.LEFT)
+				.or(AdresSpecification.filterPlaatsPostcode(plaats, postcode).with(Organisatie_.postbusAdres, JoinType.LEFT))
+				.or(AdresSpecification.filterPlaatsPostcode(plaats, postcode).with(Organisatie_.antwoordnummerAdres, JoinType.LEFT)));
 	}
 
-	public static ExtendedSpecification<Instelling> filterPlaatsnaam(String plaatsnaam)
+	public static ExtendedSpecification<Organisatie> filterPlaatsnaam(String plaatsnaam)
 	{
-		return skipWhenEmptyExtended(plaatsnaam, AdresSpecification.filterPlaatsContaining(plaatsnaam).with(Instelling_.adressen));
+		return filterAdres(plaatsnaam, null);
 	}
 
-	public static Specification<Instelling> heeftFqdn(String fqdn)
+	public static Specification<Organisatie> heeftFqdn(String fqdn)
 	{
 		return (r, q, cb) -> cb.or(cb.equal(treat(r, ZorgInstelling.class, cb).get(ZorgInstelling_.fqdn), fqdn),
 			cb.equal(treat(r, ZorgInstelling.class, cb).get(ZorgInstelling_.fqdn), fqdn), cb.equal(treat(r, PaLaboratorium.class, cb).get(PaLaboratorium_.fqdn), fqdn),
 			cb.equal(treat(r, ColoscopieLocatie.class, cb).get(ColoscopieLocatie_.fqdn), fqdn));
 	}
 
-	public static Specification<Instelling> getZoekOrganisatiesSpecification(Instelling organisatie, Map<OrganisatieType, List<Instelling>> hierarchieCriteria,
+	public static Specification<Organisatie> getZoekOrganisatiesSpecification(Organisatie organisatie, Map<OrganisatieType, List<Organisatie>> hierarchieCriteria,
 		List<OrganisatieType> excludeOrganisatieTypes, LocalDateTime peilMoment)
 	{
 		return (r, q, cb) ->
@@ -255,7 +242,7 @@ public class OrganisatieSpecification
 				.and(heeftNietOrganisatieTypes(excludeOrganisatieTypes))
 				.and(filterUniekeCodeContaining(organisatie.getUziAbonneenummer()))
 				.and(getMedewerkerSpecifications(organisatie, peilMoment))
-				.and(getAdresSpecifications(organisatie, cb));
+				.and(filterPlaatsPostcode(organisatie, cb));
 
 			predicates.add(spec.toPredicate(r, q, cb));
 
@@ -263,7 +250,7 @@ public class OrganisatieSpecification
 		};
 	}
 
-	private static Predicate hierarchiePredicate(Map<OrganisatieType, List<Instelling>> hierarchieCriteria, From<?, ? extends Instelling> r, CriteriaBuilder cb)
+	private static Predicate hierarchiePredicate(Map<OrganisatieType, List<Organisatie>> hierarchieCriteria, From<?, ? extends Organisatie> r, CriteriaBuilder cb)
 	{
 		if (MapUtils.isNotEmpty(hierarchieCriteria))
 		{
@@ -274,12 +261,12 @@ public class OrganisatieSpecification
 		return null;
 	}
 
-	public static ExtendedSpecification<Instelling> filterHierarchie(Map<OrganisatieType, List<Instelling>> hierarchieCriteria)
+	public static ExtendedSpecification<Organisatie> filterHierarchie(Map<OrganisatieType, List<Organisatie>> hierarchieCriteria)
 	{
 		return (r, q, cb) -> hierarchiePredicate(hierarchieCriteria, r, cb);
 	}
 
-	private static Specification<Instelling> getMedewerkerSpecifications(Instelling organisatie, LocalDateTime peilMoment)
+	private static Specification<Organisatie> getMedewerkerSpecifications(Organisatie organisatie, LocalDateTime peilMoment)
 	{
 		if (CollectionUtils.isNotEmpty(organisatie.getOrganisatieMedewerkers()))
 		{
@@ -295,42 +282,48 @@ public class OrganisatieSpecification
 		return null;
 	}
 
-	private static Specification<Instelling> getAdresSpecifications(Instelling organisatie, CriteriaBuilder cb)
+	private static Specification<Organisatie> filterPlaatsPostcode(Organisatie zoekObject, CriteriaBuilder cb)
 	{
-		var adres = organisatie.getHuidigAdres();
-		Specification<Instelling> spec = null;
+		var adres = zoekObject.getAdres();
+		Specification<Organisatie> spec = null;
 		if (adres != null)
 		{
 			if (adres.getPlaats() != null)
 			{
-				spec = AdresSpecification.filterPlaatsContaining(adres.getPlaats()).with(adresJoin())
+				var plaatsFilter = AdresSpecification.filterPlaatsContaining(adres.getPlaats());
+				spec = plaatsFilter.with(Organisatie_.adres, JoinType.LEFT)
+					.or(plaatsFilter.with(Organisatie_.postbusAdres, JoinType.LEFT))
+					.or(plaatsFilter.with(Organisatie_.antwoordnummerAdres, JoinType.LEFT))
 					.or(WoonplaatsSpecification.filterPlaatsContaining(adres.getPlaats()).with(woonplaatsJoin(cb)));
 			}
 			if (adres.getPostcode() != null)
 			{
 				var postcodeFilter = filterPostcodeContaining(adres.getPostcode());
-				spec = postcodeFilter.with(adresJoin()).or(postcodeFilter.with(ri -> postadresJoin(cb, ri))).and(spec);
+				spec = postcodeFilter.with(Organisatie_.adres, JoinType.LEFT)
+					.or(postcodeFilter.with(Organisatie_.postbusAdres, JoinType.LEFT))
+					.or(postcodeFilter.with(Organisatie_.antwoordnummerAdres, JoinType.LEFT))
+					.or(postcodeFilter.with(ri -> postadresJoin(cb, ri))).and(spec);
 			}
 		}
 		return spec;
 	}
 
-	private static Predicate forceerDtypesVoorAlleMogelijkeOrganisationTypes(Root<Instelling> r, CriteriaBuilder cb)
+	private static Predicate forceerDtypesVoorAlleMogelijkeOrganisationTypes(Root<Organisatie> r, CriteriaBuilder cb)
 	{
 		var organisatiePredicates = new ArrayList<Predicate>();
-		var mogelijkeOrganisatieClasses = List.of(Instelling.class, BMHKLaboratorium.class, BeoordelingsEenheid.class, CentraleEenheid.class, CervixHuisarts.class,
+		var mogelijkeOrganisatieClasses = List.of(Organisatie.class, BMHKLaboratorium.class, BeoordelingsEenheid.class, CentraleEenheid.class, CervixHuisarts.class,
 			ColonIntakelocatie.class, ColoscopieLocatie.class, IFobtLaboratorium.class, Mammapoli.class, PaLaboratorium.class, RadiologieAfdeling.class, Rivm.class,
 			ScreeningOrganisatie.class, ZorgInstelling.class);
 		mogelijkeOrganisatieClasses.forEach(c -> organisatiePredicates.add(cb.equal(treat(r, c, cb).type(), c)));
 		return composePredicatesOr(cb, organisatiePredicates);
 	}
 
-	public static Predicate hierarchieEntryPredicate(Map.Entry<OrganisatieType, List<Instelling>> type, From<?, ? extends Instelling> root, CriteriaBuilder cb)
+	public static Predicate hierarchieEntryPredicate(Map.Entry<OrganisatieType, List<Organisatie>> type, From<?, ? extends Organisatie> root, CriteriaBuilder cb)
 	{
 		var predicates = new ArrayList<Predicate>();
 		var organisatieType = type.getKey();
 		var organisatiesVoorToegangslevel = type.getValue();
-		predicates.add(cb.equal(root.get(Instelling_.organisatieType), organisatieType));
+		predicates.add(cb.equal(root.get(Organisatie_.organisatieType), organisatieType));
 		if (CollectionUtils.isNotEmpty(organisatiesVoorToegangslevel))
 		{
 			var organisatieTypeToegangslevel = organisatiesVoorToegangslevel.get(0).getOrganisatieType();
@@ -383,7 +376,7 @@ public class OrganisatieSpecification
 			case BEOORDELINGSEENHEID:
 				if (isScreeningorganisatieToegangslevel)
 				{
-					predicates.add(createCriteriaOrganisaties(join(parentJoin(root), Instelling_.regio, JoinType.LEFT), organisatiesVoorToegangslevel, cb));
+					predicates.add(createCriteriaOrganisaties(join(parentJoin(root), Organisatie_.regio, JoinType.LEFT), organisatiesVoorToegangslevel, cb));
 				}
 				break;
 			default:
@@ -393,35 +386,35 @@ public class OrganisatieSpecification
 		return composePredicates(cb, predicates);
 	}
 
-	public static Specification<Instelling> heeftNaam(String naam)
+	public static Specification<Organisatie> heeftNaam(String naam)
 	{
-		return (r, q, cb) -> cb.equal(r.get(Instelling_.naam), naam);
+		return (r, q, cb) -> cb.equal(r.get(Organisatie_.naam), naam);
 	}
 
-	public static <T extends Instelling> ExtendedSpecification<T> isActief(boolean actief)
+	public static <T extends Organisatie> ExtendedSpecification<T> isActief(boolean actief)
 	{
-		return (r, q, cb) -> cb.equal(r.get(Instelling_.actief), actief);
+		return (r, q, cb) -> cb.equal(r.get(Organisatie_.actief), actief);
 	}
 
-	public static <T extends Instelling> ExtendedSpecification<T> isActieveInstelling(Class<? extends Instelling> typeInstelling)
-	{
-		return (r, q, cb) ->
-		{
-			var instelling = treat(r, typeInstelling, cb);
-			return cb.isTrue(instelling.get(Instelling_.actief));
-		};
-	}
-
-	public static <T extends Instelling> ExtendedSpecification<T> heeftParent(Instelling instelling, Class<? extends Instelling> typeInstelling)
+	public static <T extends Organisatie> ExtendedSpecification<T> isActieveOrganisatie(Class<? extends Organisatie> typeOrganisatie)
 	{
 		return (r, q, cb) ->
 		{
-			var root = treat(r, typeInstelling, cb);
-			return cb.equal(root.get(Instelling_.parent), instelling);
+			var organisatie = treat(r, typeOrganisatie, cb);
+			return cb.isTrue(organisatie.get(Organisatie_.actief));
 		};
 	}
 
-	public static <T extends Instelling> ExtendedSpecification<T> heeftColoscopielocatieId(Long locatieId)
+	public static <T extends Organisatie> ExtendedSpecification<T> heeftParent(Organisatie organisatie, Class<? extends Organisatie> typeOrganisatie)
+	{
+		return (r, q, cb) ->
+		{
+			var root = treat(r, typeOrganisatie, cb);
+			return cb.equal(root.get(Organisatie_.parent), organisatie);
+		};
+	}
+
+	public static <T extends Organisatie> ExtendedSpecification<T> heeftColoscopielocatieId(Long locatieId)
 	{
 		return (r, q, cb) ->
 		{
@@ -431,72 +424,66 @@ public class OrganisatieSpecification
 		};
 	}
 
-	public static <T extends Instelling> ExtendedSpecification<T> heeftColoscopielocatieParent(Long locatieId)
+	public static <T extends Organisatie> ExtendedSpecification<T> heeftColoscopielocatieParent(Long locatieId)
 	{
 		return (r, q, cb) ->
 		{
 			var root = treat(r, PaLaboratorium.class, cb);
 			var coloscopielocatieJoin = join(root, PaLaboratorium_.coloscopielocaties);
-			return cb.equal(coloscopielocatieJoin.get(Instelling_.parent).get(AbstractHibernateObject_.id), locatieId);
+			return cb.equal(coloscopielocatieJoin.get(Organisatie_.parent).get(AbstractHibernateObject_.id), locatieId);
 		};
 	}
 
-	public static <T extends Instelling> ExtendedSpecification<T> heeftRegio(Instelling regio)
+	public static <T extends Organisatie> ExtendedSpecification<T> heeftRegio(Organisatie regio)
 	{
-		return (r, q, cb) -> cb.equal(r.get(Instelling_.regio), regio);
+		return (r, q, cb) -> cb.equal(r.get(Organisatie_.regio), regio);
 	}
 
-	public static Specification<Instelling> heeftUziAbonneenummer(String uziAbonneenummer)
+	public static Specification<Organisatie> heeftUziAbonneenummer(String uziAbonneenummer)
 	{
-		return (r, q, cb) -> cb.equal(r.get(Instelling_.uziAbonneenummer), uziAbonneenummer);
+		return (r, q, cb) -> cb.equal(r.get(Organisatie_.uziAbonneenummer), uziAbonneenummer);
 	}
 
-	public static Specification<Instelling> heeftRootOid(String rootOid)
+	public static Specification<Organisatie> heeftRootOid(String rootOid)
 	{
-		return (r, q, cb) -> cb.equal(r.get(Instelling_.rootOid), rootOid);
-	}
-
-	@NotNull
-	private static Function<From<?, ? extends Instelling>, From<?, ? extends InstellingGebruiker>> organisatieMedewerkerJoin()
-	{
-		return r -> join(r, Instelling_.organisatieMedewerkers);
+		return (r, q, cb) -> cb.equal(r.get(Organisatie_.rootOid), rootOid);
 	}
 
 	@NotNull
-	private static Function<From<?, ? extends Instelling>, From<?, ? extends Gebruiker>> medewerkerJoin()
+	private static Function<From<?, ? extends Organisatie>, From<?, ? extends OrganisatieMedewerker>> organisatieMedewerkerJoin()
+	{
+		return r -> join(r, Organisatie_.organisatieMedewerkers);
+	}
+
+	@NotNull
+	private static Function<From<?, ? extends Organisatie>, From<?, ? extends Medewerker>> medewerkerJoin()
 	{
 		return r ->
 		{
 			var organisatieMedewerkerJoin = organisatieMedewerkerJoin().apply(r);
-			return join(organisatieMedewerkerJoin, InstellingGebruiker_.medewerker);
+			return join(organisatieMedewerkerJoin, OrganisatieMedewerker_.medewerker);
 		};
 	}
 
 	@NotNull
-	private static Function<From<?, ? extends Instelling>, From<?, ? extends Adres>> adresJoin()
-	{
-		return r -> join(r, Instelling_.adressen, JoinType.LEFT);
-	}
-
-	@NotNull
-	private static Join<CervixHuisarts, CervixHuisartsAdres> postadresJoin(CriteriaBuilder cb, From<?, ? extends Instelling> r)
+	private static Join<CervixHuisarts, CervixHuisartsAdres> postadresJoin(CriteriaBuilder cb, From<?, ? extends Organisatie> r)
 	{
 		return join(treat(r, CervixHuisarts.class, cb), CervixHuisarts_.postadres, JoinType.LEFT);
 	}
 
 	@NotNull
-	private static Function<From<?, ? extends Instelling>, From<?, ? extends Woonplaats>> woonplaatsJoin(CriteriaBuilder cb)
+	private static Function<From<?, ? extends Organisatie>, From<?, ? extends Woonplaats>> woonplaatsJoin(CriteriaBuilder cb)
 	{
 		return r -> join(postadresJoin(cb, r), CervixHuisartsAdres_.woonplaats, JoinType.LEFT);
 	}
 
 	@NotNull
-	private static Join<? extends Instelling, ? extends Instelling> parentJoin(From<?, ? extends Instelling> root)
+	private static Join<? extends Organisatie, ? extends Organisatie> parentJoin(From<?, ? extends Organisatie> root)
 	{
-		return join(root, Instelling_.parent, JoinType.LEFT);
+		return join(root, Organisatie_.parent, JoinType.LEFT);
 	}
 
-	private static Predicate createCriteriaOrganisaties(Path<?> path, List<Instelling> organisaties, CriteriaBuilder cb)
+	private static Predicate createCriteriaOrganisaties(Path<?> path, List<Organisatie> organisaties, CriteriaBuilder cb)
 	{
 		if (organisaties.size() == 1)
 		{

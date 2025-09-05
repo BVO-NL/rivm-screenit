@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.web.gebruiker.login;
 
 /*-
@@ -83,6 +82,6 @@ public abstract class LoginBasePage extends BasePage
 	@Override
 	public ScreenitContext getContext()
 	{
-		return ScreenitContext.GEBRUIKER;
+		return ScreenitContext.MEDEWERKER;
 	}
 }

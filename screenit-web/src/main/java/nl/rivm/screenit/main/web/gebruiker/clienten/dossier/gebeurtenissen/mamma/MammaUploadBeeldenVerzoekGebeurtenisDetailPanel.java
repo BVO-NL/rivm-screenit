@@ -53,7 +53,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_MAMMA_INZAGE_UPLOADVERZOEK,
+	recht = Recht.MEDEWERKER_MAMMA_INZAGE_UPLOADVERZOEK,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaUploadBeeldenVerzoekGebeurtenisDetailPanel extends AbstractGebeurtenisDetailPanel
 {
@@ -117,7 +117,7 @@ public class MammaUploadBeeldenVerzoekGebeurtenisDetailPanel extends AbstractGeb
 				MammaUploadBeeldenVerzoek uploadBeeldenVerzoek = (MammaUploadBeeldenVerzoek) verzoekContainer.getDefaultModelObject();
 				MammaUploadBeeldenPoging uploadBeeldenPoging = uploadBeeldenVerzoek.getLaatsteUploadPoging();
 				uitwisselportaalService.verwijderBeelden(uploadBeeldenPoging);
-				logService.logGebeurtenis(LogGebeurtenis.MAMMA_UPLOAD_VERZOEK, ScreenitSession.get().getLoggedInInstellingGebruiker(),
+				logService.logGebeurtenis(LogGebeurtenis.MAMMA_UPLOAD_VERZOEK, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(),
 					uploadBeeldenVerzoek.getScreeningRonde().getDossier().getClient(),
 					"Beelden verwijderd voor uploadverzoek met accessionnummer " + uploadBeeldenPoging.getAccessionNumber(), Bevolkingsonderzoek.MAMMA);
 				verwijderenContainer.setVisible(false);
@@ -126,7 +126,7 @@ public class MammaUploadBeeldenVerzoekGebeurtenisDetailPanel extends AbstractGeb
 
 			}
 		};
-		boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_MAMMA_BEELDEN_VERWIJDEREN_UPLOADVERZOEK, Actie.VERWIJDEREN);
+		boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_MAMMA_BEELDEN_VERWIJDEREN_UPLOADVERZOEK, Actie.VERWIJDEREN);
 		verwijderenContainer.setVisible(magVerwijderen && uploadBeeldenPoging != null && MammaMammografieIlmStatus.BESCHIKBAAR.equals(uploadBeeldenPoging.getIlmStatus()));
 		verwijderenContainer.add(verwijderButton);
 		verwijderenContainer.setOutputMarkupId(true);

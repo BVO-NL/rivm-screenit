@@ -142,7 +142,7 @@ public class ProjectAttributenBestandEditPage extends ProjectBasePage
 						projectService.queueProjectBestandVoorAttributen(project, getGroepVanToepassenOp(getProjectModel().getObject(), bestand.getToepassenOp()), bestand,
 							attributenBestand.getContentType(),
 							attributenBestand.getClientFileName(),
-							attributenBestand.writeToTempFile(), ScreenitSession.get().getLoggedInAccount());
+							attributenBestand.writeToTempFile(), ScreenitSession.get().getIngelogdAccount());
 
 						setResponsePage(new ProjectBestandenOverzicht(getProjectModel()));
 

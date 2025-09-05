@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.cron;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -36,16 +36,16 @@ public class OfflineWerkenCleaner
 {
 	private static final Logger LOG = LoggerFactory.getLogger(OfflineWerkenCleaner.class);
 
-	private static final String JOB_OMSCHRIJVING = "Opruimen van ingelogde gebrukers";
+	private static final String JOB_OMSCHRIJVING = "Opruimen van ingelogde medewerkers";
 
 	@Autowired
 	private AuthenticatieService authenticatieService;
 
 	@Scheduled(cron = "0 0 * * * ?")
-	public void verwijderOudeIngelogdeGebruikers()
+	public void verwijderOudeIngelogdeMedewerkers()
 	{
 		LOG.debug("Start: " + JOB_OMSCHRIJVING);
-		authenticatieService.verwijderOudeIngelogdeGebruikers();
+		authenticatieService.verwijderOudeIngelogdeMedewerkers();
 		LOG.debug("Stop: " + JOB_OMSCHRIJVING);
 	}
 }

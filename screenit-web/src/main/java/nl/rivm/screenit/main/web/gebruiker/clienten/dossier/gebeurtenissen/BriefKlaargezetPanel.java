@@ -57,8 +57,8 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_CLIENT_SR_BRIEVEN_OPNIEUW_KLAARZETTEN,
-		Recht.GEBRUIKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Recht.GEBRUIKER_CLIENT_SCREENINGSRONDE },
+	recht = { Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_OPNIEUW_KLAARZETTEN,
+		Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Recht.MEDEWERKER_CLIENT_SCREENINGSRONDE },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class BriefKlaargezetPanel extends AbstractGebeurtenisDetailPanel
 {
@@ -87,7 +87,7 @@ public class BriefKlaargezetPanel extends AbstractGebeurtenisDetailPanel
 	private WebMarkupContainer maakBriefTegenhoudenContent()
 	{
 		WebMarkupContainer tegenhoudenContainer = new WebMarkupContainer("tegenhoudenContainer");
-		tegenhoudenContainer.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN));
+		tegenhoudenContainer.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN));
 
 		WebMarkupContainer mogelijk = new WebMarkupContainer("mogelijk");
 		ClientBrief<?, ?, ?> brief = getModelObject().getBrief();
@@ -102,7 +102,7 @@ public class BriefKlaargezetPanel extends AbstractGebeurtenisDetailPanel
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				baseBriefService.briefTegenhouden(BriefKlaargezetPanel.this.getModelObject().getBrief(), ScreenitSession.get().getLoggedInAccount());
+				baseBriefService.briefTegenhouden(BriefKlaargezetPanel.this.getModelObject().getBrief(), ScreenitSession.get().getIngelogdAccount());
 				info(getString("info.brieftegenhouden"));
 				verversTegenhouden(target);
 			}
@@ -117,7 +117,7 @@ public class BriefKlaargezetPanel extends AbstractGebeurtenisDetailPanel
 			{
 				ScreeningRondeGebeurtenis screeningRondeGebeurtenis = BriefKlaargezetPanel.this.getModelObject();
 				screeningRondeGebeurtenis.setGebeurtenis(TypeGebeurtenis.BRIEF_TEGENHOUDEN);
-				baseBriefService.briefNietMeerTegenhouden(BriefKlaargezetPanel.this.getModelObject().getBrief(), ScreenitSession.get().getLoggedInAccount());
+				baseBriefService.briefNietMeerTegenhouden(BriefKlaargezetPanel.this.getModelObject().getBrief(), ScreenitSession.get().getIngelogdAccount());
 				info(getString("info.briefactiveren"));
 				verversTegenhouden(target);
 			}

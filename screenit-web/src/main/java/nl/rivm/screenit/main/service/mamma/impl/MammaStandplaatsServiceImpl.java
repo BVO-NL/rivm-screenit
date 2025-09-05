@@ -37,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.service.mamma.MammaStandplaatsService;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -129,7 +129,7 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 	private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
 
 	@Override
-	public boolean saveOrUpdateStandplaats(MammaStandplaats standplaats, InstellingGebruiker ingelogdeGebruiker)
+	public boolean saveOrUpdateStandplaats(MammaStandplaats standplaats, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		if (standplaats.getLocatie() == null)
 		{
@@ -172,7 +172,7 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 		}
 		if (StringUtils.isNotBlank(melding))
 		{
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_STANDPLAATS, ingelogdeGebruiker, melding, Bevolkingsonderzoek.MAMMA);
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_STANDPLAATS, ingelogdeOrganisatieMedewerker, melding, Bevolkingsonderzoek.MAMMA);
 			hibernateService.saveOrUpdate(standplaats);
 			baseConceptPlanningsApplicatie.sendStandplaats(standplaats, isNieuw);
 			return true;
@@ -188,7 +188,7 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 	}
 
 	@Override
-	public boolean saveOrUpdateStandplaatsOpmerking(MammaStandplaatsOpmerking opmerking, MammaStandplaats standplaats, InstellingGebruiker loggedInInstellingGebruiker)
+	public boolean saveOrUpdateStandplaatsOpmerking(MammaStandplaatsOpmerking opmerking, MammaStandplaats standplaats, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		opmerking.setCreatieDatum(dateSupplier.getDate());
 		if (opmerking.getId() == null && standplaats != null)
@@ -214,7 +214,7 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 		}
 		if (StringUtils.isNotBlank(melding))
 		{
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_STANDPLAATS, loggedInInstellingGebruiker, melding, Bevolkingsonderzoek.MAMMA);
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_STANDPLAATS, ingelogdeOrganisatieMedewerker, melding, Bevolkingsonderzoek.MAMMA);
 
 			hibernateService.saveOrUpdateAll(opmerking, standplaats);
 			return true;
@@ -224,7 +224,7 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 
 	@Override
 	public boolean saveOrUpdateStandplaatsLocatie(MammaStandplaatsLocatie locatie, UploadDocument nieuweBijlage, MammaStandplaats standplaats,
-		InstellingGebruiker ingelogdeGebruiker, String oudeAdres, Range<Date> oudePeriode)
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker, String oudeAdres, Range<Date> oudePeriode)
 	{
 		if (nieuweBijlage != null)
 		{
@@ -258,7 +258,7 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 				melding += "Tijdelijke locatie";
 			}
 			melding += " voor standplaats '" + standplaats.getNaam() + "' gewijzigd.";
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_STANDPLAATS, ingelogdeGebruiker, melding, Bevolkingsonderzoek.MAMMA);
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_STANDPLAATS, ingelogdeOrganisatieMedewerker, melding, Bevolkingsonderzoek.MAMMA);
 			hibernateService.saveOrUpdate(locatie);
 			maakBrievenVoorGewijzigdeLocatieGegevens(standplaats, locatie, oudeAdres, oudePeriode);
 			return true;

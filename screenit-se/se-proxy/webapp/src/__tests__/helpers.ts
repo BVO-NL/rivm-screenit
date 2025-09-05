@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -74,7 +74,7 @@ export const createStateHelper = (stateSlice: Partial<RootState> = {}): RootStat
 			},
 			titel: "", visible: false,
 		},
-		seGebruikers: new Map(),
+		seMedewerkers: new Map(),
 		session: null,
 		signaleringByAfspraakId: new Map(),
 		visueleInspectieAfbeeldingByAfspraakId: new Map(),

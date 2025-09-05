@@ -28,7 +28,7 @@ import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.batch.jobs.mamma.beoordeling.status.MammaBeoordelingenAccorderenListener;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
@@ -55,7 +55,7 @@ public class MammaBeoordelingenAccorderenWriter extends BaseWriter<MammaBeoordel
 
 	private String getRadioloogNaamVoorAccorderen(MammaBeoordeling beoordeling)
 	{
-		InstellingGebruiker radioloog;
+		OrganisatieMedewerker radioloog;
 		if (MammaBeoordelingStatus.EERSTE_LEZING_OPGESLAGEN.equals(beoordeling.getStatus()))
 		{
 			radioloog = beoordeling.getEersteLezing().getBeoordelaar();
@@ -65,7 +65,7 @@ public class MammaBeoordelingenAccorderenWriter extends BaseWriter<MammaBeoordel
 			radioloog = beoordeling.getTweedeLezing().getBeoordelaar();
 		}
 
-		return NaamUtil.getNaamGebruiker(radioloog.getMedewerker());
+		return NaamUtil.getNaamMedewerker(radioloog.getMedewerker());
 	}
 
 	private void geefNaamDoor(String naam)

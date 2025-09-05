@@ -23,18 +23,18 @@ package nl.rivm.screenit.service.impl;
 
 import java.util.Objects;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 
 class DistributedLockKey
 {
 	private String locknaam;
 
-	private InstellingGebruiker gebruiker;
+	private OrganisatieMedewerker organisatieMedewerker;
 
-	DistributedLockKey(String locknaam, InstellingGebruiker gebruiker)
+	DistributedLockKey(String locknaam, OrganisatieMedewerker organisatieMedewerker)
 	{
 		this.locknaam = locknaam;
-		this.gebruiker = gebruiker;
+		this.organisatieMedewerker = organisatieMedewerker;
 	}
 
 	DistributedLockKey(String locknaam)
@@ -47,9 +47,9 @@ class DistributedLockKey
 		return locknaam;
 	}
 
-	InstellingGebruiker getGebruiker()
+	OrganisatieMedewerker getOrganisatieMedewerker()
 	{
-		return gebruiker;
+		return organisatieMedewerker;
 	}
 
 	@Override
@@ -71,12 +71,12 @@ class DistributedLockKey
 		}
 		DistributedLockKey that = (DistributedLockKey) o;
 		return Objects.equals(locknaam, that.locknaam) &&
-			Objects.equals(gebruiker, that.gebruiker);
+			Objects.equals(organisatieMedewerker, that.organisatieMedewerker);
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(locknaam, gebruiker);
+		return Objects.hash(locknaam, organisatieMedewerker);
 	}
 }

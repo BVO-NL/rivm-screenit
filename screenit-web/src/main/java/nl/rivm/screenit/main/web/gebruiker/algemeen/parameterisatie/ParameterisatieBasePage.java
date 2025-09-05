@@ -29,26 +29,26 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.parameterisatie.algemeen.Alg
 import nl.rivm.screenit.main.web.gebruiker.algemeen.parameterisatie.digitaleberichten.emailconfiguratie.EmailConfiguratiePage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.parameterisatie.digitaleberichten.smsconfiguratie.SmsConfiguratiePage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.parameterisatie.huisartsberichten.HuisartsBerichtTemplateEditPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.model.enums.Actie;
 
 public abstract class ParameterisatieBasePage extends AlgemeenPage
 {
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.parameterisatie.darmkanker", ColonParameterisatiePage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.parameterisatie.baarmoederhalskanker", CervixParameterisatiePage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.parameterisatie.borstkanker", MammaParameterisatiePage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.parameterisatie.clientportaal", ClientportaalParameterisatiePage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.parameterisatie.wachtwoordconfiguratie", WachtwoordConfiguratiePage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.parameterisatie.medewerkerconfiguratie", EmailConfiguratiePage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.parameterisatie.smsconfiguratie", SmsConfiguratiePage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.parameterisatie.overeenkomstconfiguratie", OvereenkomstConfiguratiePage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.parameterisatie.huisartsberichttemplate", HuisartsBerichtTemplateEditPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.parameterisatie.algemeen", AlgemeenParameterisatiePage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.parameterisatie.darmkanker", ColonParameterisatiePage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.parameterisatie.baarmoederhalskanker", CervixParameterisatiePage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.parameterisatie.borstkanker", MammaParameterisatiePage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.parameterisatie.clientportaal", ClientportaalParameterisatiePage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.parameterisatie.wachtwoordconfiguratie", WachtwoordConfiguratiePage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.parameterisatie.medewerkerconfiguratie", EmailConfiguratiePage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.parameterisatie.smsconfiguratie", SmsConfiguratiePage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.parameterisatie.overeenkomstconfiguratie", OvereenkomstConfiguratiePage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.parameterisatie.huisartsberichttemplate", HuisartsBerichtTemplateEditPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.parameterisatie.algemeen", AlgemeenParameterisatiePage.class));
 		return contextMenuItems;
 	}
 

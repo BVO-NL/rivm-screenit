@@ -24,7 +24,7 @@ package nl.rivm.screenit.mamma.se.service.impl;
 import nl.rivm.screenit.mamma.se.dto.actions.UitschrijvenDto;
 import nl.rivm.screenit.mamma.se.service.MammaAfspraakService;
 import nl.rivm.screenit.mamma.se.service.MammaUitschrijvenService;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
@@ -42,9 +42,9 @@ public class MammaUitschrijvenServiceImpl implements MammaUitschrijvenService
 	private MammaAfspraakService afspraakService;
 
 	@Override
-	public void uitschrijven(UitschrijvenDto action, InstellingGebruiker instellingGebruiker)
+	public void uitschrijven(UitschrijvenDto action, OrganisatieMedewerker organisatieMedewerker)
 	{
-		MammaAfspraak afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), instellingGebruiker);
+		MammaAfspraak afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), organisatieMedewerker);
 		afspraak.setStatus(MammaAfspraakStatus.GEPLAND);
 		hibernateService.saveOrUpdate(afspraak);
 	}

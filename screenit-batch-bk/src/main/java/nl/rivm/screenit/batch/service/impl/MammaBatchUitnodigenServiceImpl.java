@@ -44,8 +44,8 @@ import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.model.mamma.MammaUitstel;
 import nl.rivm.screenit.service.ClientService;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBaseFactory;
 import nl.rivm.screenit.service.mamma.MammaBaseKansberekeningService;
@@ -75,7 +75,7 @@ public class MammaBatchUitnodigenServiceImpl implements MammaBatchUitnodigenServ
 
 	private final LogService logService;
 
-	private final InstellingService instellingService;
+	private final OrganisatieService organisatieService;
 
 	private final ClientService clientService;
 
@@ -105,7 +105,7 @@ public class MammaBatchUitnodigenServiceImpl implements MammaBatchUitnodigenServ
 		if (standplaats == null)
 		{
 			var dashboardIntstellingen = new ArrayList<>(clientService.getScreeningOrganisatieVan(client));
-			dashboardIntstellingen.add(instellingService.getActieveInstellingen(Rivm.class).get(0));
+			dashboardIntstellingen.add(organisatieService.getActieveOrganisaties(Rivm.class).get(0));
 			logService.logGebeurtenis(LogGebeurtenis.MAMMA_UITNODIGEN_FOUT, dashboardIntstellingen, null, client,
 				uitnodigingsreden + "uitnodiging mislukt: geen standplaats gekoppeld aan postcode van client", Bevolkingsonderzoek.MAMMA);
 			return null;
@@ -114,7 +114,7 @@ public class MammaBatchUitnodigenServiceImpl implements MammaBatchUitnodigenServ
 		var standplaatsPeriode = standplaatsService.huidigeStandplaatsPeriodeInRouteVanStandplaats(standplaats);
 		if (standplaatsPeriode == null)
 		{
-			var dashboardIntstellingen = new ArrayList<>(List.of(standplaats.getRegio(), instellingService.getActieveInstellingen(Rivm.class).get(0)));
+			var dashboardIntstellingen = new ArrayList<>(List.of(standplaats.getRegio(), organisatieService.getActieveOrganisaties(Rivm.class).get(0)));
 			var melding = String.format("%suitnodiging mislukt: standplaats '%s' niet gevonden in een route", uitnodigingsreden, standplaats.getNaam());
 			logService.logGebeurtenis(LogGebeurtenis.MAMMA_UITNODIGEN_FOUT, dashboardIntstellingen, null, client, melding, Bevolkingsonderzoek.MAMMA);
 			return null;

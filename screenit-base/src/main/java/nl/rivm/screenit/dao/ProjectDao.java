@@ -27,16 +27,13 @@ import java.util.List;
 import nl.rivm.screenit.model.SortState;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.project.Project;
-import nl.rivm.screenit.model.project.ProjectAttribuut;
-import nl.rivm.screenit.model.project.ProjectClient;
-import nl.rivm.screenit.model.project.ProjectClientAttribuut;
 
 public interface ProjectDao
 {
 
-	List<Project> getProjecten(Project zoekObject, List<Long> instellingIdsProject, List<Long> instellingIdsBriefproject, long first, long count, SortState<String> sortState);
+	List<Project> getProjecten(Project zoekObject, List<Long> organisatieIdsProject, List<Long> organisatieIdsBriefproject, long first, long count, SortState<String> sortState);
 
-	long getCountProjecten(Project zoekObject, List<Long> instellingIdsProject, List<Long> instellingIdsBriefproject);
+	long getCountProjecten(Project zoekObject, List<Long> organisatieIdsProject, List<Long> organisatieIdsBriefproject);
 
 	void resetWachtOpStartProject(Bevolkingsonderzoek bvo);
 

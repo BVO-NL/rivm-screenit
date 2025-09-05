@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.rivm.screenit.Constants;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.clienten.ClientContactActieTypeWrapper;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.ClientContactPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.AbstractMammaCePage;
@@ -43,7 +43,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_CENTRALE_EENHEID_OPSCHORTEN_BEOORDELINGEN },
+	recht = { Recht.MEDEWERKER_CENTRALE_EENHEID_OPSCHORTEN_BEOORDELINGEN },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaClientContactNaOpgeschortOnderzoekPage extends AbstractMammaCePage
 {
@@ -71,11 +71,11 @@ public class MammaClientContactNaOpgeschortOnderzoekPage extends AbstractMammaCe
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = super.getContextMenuItems();
+		List<MedewerkerMenuItem> contextMenuItems = super.getContextMenuItems();
 		contextMenuItems
-			.add(new GebruikerMenuItem("label.tab.mammascreening.ce-onderbroken-onderzoeken-werklijst-client-contact", false, MammaClientContactNaOpgeschortOnderzoekPage.class));
+			.add(new MedewerkerMenuItem("label.tab.mammascreening.ce-onderbroken-onderzoeken-werklijst-client-contact", false, MammaClientContactNaOpgeschortOnderzoekPage.class));
 
 		return contextMenuItems;
 	}

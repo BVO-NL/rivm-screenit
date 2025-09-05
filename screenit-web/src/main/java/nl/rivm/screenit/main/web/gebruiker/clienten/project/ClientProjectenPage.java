@@ -64,7 +64,7 @@ import static nl.rivm.screenit.model.project.Project_.EIND_DATUM;
 import static nl.rivm.screenit.model.project.Project_.NAAM;
 import static nl.rivm.screenit.model.project.Project_.START_DATUM;
 
-@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
+@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
 	Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class ClientProjectenPage extends ClientPage
 {

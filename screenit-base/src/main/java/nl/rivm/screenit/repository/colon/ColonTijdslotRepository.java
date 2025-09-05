@@ -42,7 +42,7 @@ public interface ColonTijdslotRepository extends BaseJpaRepository<ColonTijdslot
 		+ "extract(DOW from t.vanaf) as dag "
 		+ "from colon.tijdslot t "
 		+ "inner join colon.intakekamer k on t.kamer = k.id "
-		+ "inner join algemeen.org_organisatie il on il.id = k.intakelocatie "
+		+ "inner join algemeen.organisatie il on il.id = k.intakelocatie "
 		+ "where il.id = :intakelocatieId "
 		+ "and il.actief = true "
 		+ "and k.actief = true "

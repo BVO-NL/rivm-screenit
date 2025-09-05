@@ -21,7 +21,7 @@ package nl.rivm.screenit.service.mamma;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.model.mamma.MammaTehuis;
@@ -29,9 +29,9 @@ import nl.rivm.screenit.model.mamma.MammaTehuis;
 public interface MammaBaseTehuisService
 {
 
-	boolean saveOrUpdateTehuis(MammaTehuis tehuis, InstellingGebruiker account);
+	boolean saveOrUpdateTehuis(MammaTehuis tehuis, OrganisatieMedewerker account);
 
-	boolean saveOrUpdateTehuis(MammaTehuis tehuis, MammaStandplaats origineleStandplaats, InstellingGebruiker ingelogdeGebruiker);
+	boolean saveOrUpdateTehuis(MammaTehuis tehuis, MammaStandplaats origineleStandplaats, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	MammaStandplaatsRonde getHuidigeStandplaatsRondeVoorStandplaats(MammaStandplaats standplaats);
 }

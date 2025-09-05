@@ -42,7 +42,7 @@ import nl.rivm.screenit.main.web.gebruiker.clienten.ClientPaspoortPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.exchange.MammaExchangeBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.enums.BestandStatus;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -87,7 +87,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @SecurityConstraint(
 	constraint = ShiroConstraint.HasPermission,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA },
-	recht = { Recht.GEBRUIKER_MAMMA_EXCHANGE },
+	recht = { Recht.MEDEWERKER_MAMMA_EXCHANGE },
 	organisatieTypeScopes = { OrganisatieType.SCREENINGSORGANISATIE, OrganisatieType.RADIOLOGIEAFDELING, OrganisatieType.MAMMAPOLI, OrganisatieType.ZORGINSTELLING,
 		OrganisatieType.RIVM },
 	checkScope = true) 
@@ -159,8 +159,8 @@ public class MammaExchangeDownloadPage extends MammaExchangeBasePage
 			public IModel<?> getDataModel(IModel<MammaDownloadOnderzoekenVerzoek> rowModel)
 			{
 				var dataModel = super.getDataModel(rowModel);
-				var medewerker = (Gebruiker) dataModel.getObject();
-				return new Model<>(NaamUtil.getNaamGebruiker(medewerker));
+				var medewerker = (Medewerker) dataModel.getObject();
+				return new Model<>(NaamUtil.getNaamMedewerker(medewerker));
 			}
 		});
 		columns.add(new DateTimePropertyColumn<>(Model.of("Gewijzigd"), "gewijzigdOp", "gewijzigdOp", Constants.getDateTimeFormat()));
@@ -173,7 +173,7 @@ public class MammaExchangeDownloadPage extends MammaExchangeBasePage
 		columns.add(new DateTimePropertyColumn<>(Model.of("Gedownload op"), "gedownloadOp", "gedownloadOp", Constants.getDateTimeFormat()));
 		columns.add(opnieuwOphalenKolom());
 
-		verzoekFilter = ModelUtil.ccModel(uitwisselPortaalService.maakDownloadVerzoekFilter(ScreenitSession.get().getLoggedInInstellingGebruiker()));
+		verzoekFilter = ModelUtil.ccModel(uitwisselPortaalService.maakDownloadVerzoekFilter(getIngelogdeOrganisatieMedewerker()));
 		var dataProvider = new MammaDownloadOnderzoekenVerzoekenProvider(verzoekFilter);
 		werklijst = new ScreenitDataTable<>("werklijst", columns, dataProvider, 10, Model.of("verzoek(en)"))
 		{
@@ -258,7 +258,7 @@ public class MammaExchangeDownloadPage extends MammaExchangeBasePage
 			@Override
 			protected void onClick(AjaxRequestTarget target, IModel<MammaDownloadOnderzoekenVerzoek> model)
 			{
-				uitwisselPortaalService.updateDownloadVerzoekInformatie(model.getObject(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+				uitwisselPortaalService.updateDownloadVerzoekInformatie(model.getObject(), getIngelogdeOrganisatieMedewerker());
 				target.appendJavaScript("setTimeout(() => window.location.href='" + urlFor(downloadResourceReference, pageParameters) + "', 100);");
 				target.add(werklijst);
 			}
@@ -366,7 +366,7 @@ public class MammaExchangeDownloadPage extends MammaExchangeBasePage
 				{
 					try
 					{
-						uitwisselPortaalService.maakDownloadVerzoek(onderzoeken, ScreenitSession.get().getLoggedInInstellingGebruiker());
+						uitwisselPortaalService.maakDownloadVerzoek(onderzoeken, getIngelogdeOrganisatieMedewerker());
 						uitwisselPortaalService.startDownloading();
 						info("Verzoek voor ophalen van beelden en verslag van geselecteerde onderzoeken is gestart");
 						target.add(werklijst);

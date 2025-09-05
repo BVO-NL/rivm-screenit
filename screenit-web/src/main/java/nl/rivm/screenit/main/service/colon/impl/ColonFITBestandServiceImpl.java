@@ -24,6 +24,8 @@ package nl.rivm.screenit.main.service.colon.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.criteria.Predicate;
+
 import nl.rivm.screenit.main.model.colon.IFobtBatchFilter;
 import nl.rivm.screenit.main.service.colon.ColonFITBestandService;
 import nl.rivm.screenit.model.Account;
@@ -48,8 +50,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.BoundType;
-
-import jakarta.persistence.criteria.Predicate;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.composePredicates;
 import static nl.rivm.screenit.specification.colon.ColonFITBestandSpecification.filterLaboratorium;
@@ -126,7 +126,7 @@ public class ColonFITBestandServiceImpl implements ColonFITBestandService
 
 	@Override
 	@Transactional
-	public void verwijderBestanden(List<IFOBTBestand> ifobtBestanden, Account ingelogdeAccount)
+	public void verwijderBestanden(List<IFOBTBestand> ifobtBestanden, Account ingelogdAccount)
 	{
 		IFobtLaboratorium lab = null;
 		for (var bestand : ifobtBestanden)
@@ -137,13 +137,13 @@ public class ColonFITBestandServiceImpl implements ColonFITBestandService
 		}
 		if (lab != null)
 		{
-			logService.logGebeurtenis(LogGebeurtenis.IFOBT_BESTANDEN_VERWIJDERD, ingelogdeAccount, "Labid qbase " + lab.getQbasenummer(), Bevolkingsonderzoek.COLON);
+			logService.logGebeurtenis(LogGebeurtenis.IFOBT_BESTANDEN_VERWIJDERD, ingelogdAccount, "Labid qbase " + lab.getQbasenummer(), Bevolkingsonderzoek.COLON);
 		}
 	}
 
 	@Override
 	@Transactional
-	public void autoriseerBestanden(List<IFOBTBestand> ifobtBestanden, Account ingelogdeAccount)
+	public void autoriseerBestanden(List<IFOBTBestand> ifobtBestanden, Account ingelogdAccount)
 	{
 		IFobtLaboratorium lab = null;
 		for (var bestand : ifobtBestanden)
@@ -154,7 +154,7 @@ public class ColonFITBestandServiceImpl implements ColonFITBestandService
 		}
 		if (lab != null)
 		{
-			logService.logGebeurtenis(LogGebeurtenis.IFOBT_BESTANDEN_GEAUTORISEERD, ingelogdeAccount, "Labid qbase " + lab.getQbasenummer(), Bevolkingsonderzoek.COLON);
+			logService.logGebeurtenis(LogGebeurtenis.IFOBT_BESTANDEN_GEAUTORISEERD, ingelogdAccount, "Labid qbase " + lab.getQbasenummer(), Bevolkingsonderzoek.COLON);
 		}
 	}
 }

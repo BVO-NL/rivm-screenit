@@ -38,7 +38,7 @@ import nl.rivm.screenit.mamma.se.service.dtomapper.TijdelijkAdresDtoMapper;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.EnovationHuisarts;
 import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -88,26 +88,27 @@ public class InschrijvenServiceImpl implements InschrijvenService
 
 	@Override
 	@Transactional
-	public void inschrijven(InschrijvenDto action, InstellingGebruiker instellingGebruiker, LocalDateTime transactieDatumTijd, MammaScreeningsEenheid screeningsEenheid)
+	public void inschrijven(InschrijvenDto action, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd, MammaScreeningsEenheid screeningsEenheid)
 	{
-		var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), instellingGebruiker);
+		var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), organisatieMedewerker);
 		var dossier = afspraak.getUitnodiging().getScreeningRonde().getDossier();
 		baseAfmeldService.heraanmeldenAlsClientAfgemeldIs(dossier);
-		afspraakWijzigen(action, afspraak, instellingGebruiker);
-		afspraakInschrijven(afspraak, instellingGebruiker, transactieDatumTijd);
-		opslaanClientgegevens(action, dossier.getClient(), instellingGebruiker, transactieDatumTijd, screeningsEenheid);
+		afspraakWijzigen(action, afspraak, organisatieMedewerker);
+		afspraakInschrijven(afspraak, organisatieMedewerker, transactieDatumTijd);
+		opslaanClientgegevens(action, dossier.getClient(), organisatieMedewerker, transactieDatumTijd, screeningsEenheid);
 		hibernateService.saveOrUpdate(afspraak);
 	}
 
 	@Override
 	@Transactional
-	public void inschrijvingWijzigen(InschrijvenDto action, InstellingGebruiker instellingGebruiker, LocalDateTime transactieDatumTijd, MammaScreeningsEenheid screeningsEenheid)
+	public void inschrijvingWijzigen(InschrijvenDto action, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd,
+		MammaScreeningsEenheid screeningsEenheid)
 	{
-		var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), instellingGebruiker);
+		var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), organisatieMedewerker);
 		var dossier = afspraak.getUitnodiging().getScreeningRonde().getDossier();
 		baseAfmeldService.heraanmeldenAlsClientAfgemeldIs(dossier);
-		afspraakWijzigen(action, afspraak, instellingGebruiker);
-		opslaanClientgegevens(action, dossier.getClient(), instellingGebruiker, transactieDatumTijd, screeningsEenheid);
+		afspraakWijzigen(action, afspraak, organisatieMedewerker);
+		opslaanClientgegevens(action, dossier.getClient(), organisatieMedewerker, transactieDatumTijd, screeningsEenheid);
 		hibernateService.saveOrUpdate(afspraak);
 	}
 
@@ -121,7 +122,7 @@ public class InschrijvenServiceImpl implements InschrijvenService
 	}
 
 	@Override
-	public void setEmailAdres(SetEmailAdresDto setEmailAdresDto, InstellingGebruiker ingelogdeGebruiker)
+	public void setEmailAdres(SetEmailAdresDto setEmailAdresDto, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 
 	}
@@ -145,7 +146,7 @@ public class InschrijvenServiceImpl implements InschrijvenService
 		screeningsRonde.setDatumVastleggenHuisarts(currentDateSupplier.getDate());
 	}
 
-	private void vraagBezwaarAan(MammaAfspraak afspraak, InstellingGebruiker instellingGebruiker)
+	private void vraagBezwaarAan(MammaAfspraak afspraak, OrganisatieMedewerker organisatieMedewerker)
 	{
 		Client client = afspraak.getUitnodiging().getScreeningRonde().getDossier().getClient();
 
@@ -158,31 +159,31 @@ public class InschrijvenServiceImpl implements InschrijvenService
 			}
 			else
 			{
-				briefHerdrukkenService.opnieuwAanmaken(bezwaarBrief.get(), instellingGebruiker);
+				briefHerdrukkenService.opnieuwAanmaken(bezwaarBrief.get(), organisatieMedewerker);
 			}
 			afspraak.setBezwaarAangevraagd(true);
 		}
 	}
 
-	private void afspraakWijzigen(InschrijvenDto action, MammaAfspraak afspraak, InstellingGebruiker instellingGebruiker)
+	private void afspraakWijzigen(InschrijvenDto action, MammaAfspraak afspraak, OrganisatieMedewerker organisatieMedewerker)
 	{
 		afspraak.setIdentificatiesoort(action.getIdentificatiesoort());
 		afspraak.setIdentificatienummer(action.getIdentificatienummer());
 		if (action.getBezwaarAangevraagd())
 		{
-			vraagBezwaarAan(afspraak, instellingGebruiker);
+			vraagBezwaarAan(afspraak, organisatieMedewerker);
 		}
 		huisartsSelecteren(action.getHuisartsId(), action.getGeenHuisartsOptie(), afspraak.getUitnodiging().getScreeningRonde());
 	}
 
-	private void afspraakInschrijven(MammaAfspraak afspraak, InstellingGebruiker instellingGebruiker, LocalDateTime transactieDatumTijd)
+	private void afspraakInschrijven(MammaAfspraak afspraak, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd)
 	{
 		afspraak.setStatus(MammaAfspraakStatus.INGESCHREVEN);
 		afspraak.setIngeschrevenOp(DateUtil.toUtilDate(transactieDatumTijd));
-		afspraak.setIngeschrevenDoor(instellingGebruiker);
+		afspraak.setIngeschrevenDoor(organisatieMedewerker);
 	}
 
-	private void opslaanClientgegevens(InschrijvenDto inschrijvenDto, Client client, InstellingGebruiker instellingGebruiker, LocalDateTime transactieDatumTijd,
+	private void opslaanClientgegevens(InschrijvenDto inschrijvenDto, Client client, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd,
 		MammaScreeningsEenheid screeningsEenheid)
 	{
 		GbaPersoon persoon = client.getPersoon();
@@ -194,7 +195,7 @@ public class InschrijvenServiceImpl implements InschrijvenService
 		valideerEnZetEmailadres(inschrijvenDto, persoon);
 		valideerEnZetMobielnummer(inschrijvenDto, persoon);
 		valideerEnZetExtraTelefoonnummer(inschrijvenDto, persoon);
-		clientService.saveContactGegevens(client, instellingGebruiker, screeningsEenheid, transactieDatumTijd);
+		clientService.saveContactGegevens(client, organisatieMedewerker, screeningsEenheid, transactieDatumTijd);
 	}
 
 	private void valideerEnZetEmailadres(InschrijvenDto inschrijvenDto, GbaPersoon persoon)

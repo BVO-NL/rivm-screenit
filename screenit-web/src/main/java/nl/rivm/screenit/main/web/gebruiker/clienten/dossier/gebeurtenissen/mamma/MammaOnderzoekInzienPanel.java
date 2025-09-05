@@ -42,7 +42,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_MAMMA_INZIEN_ONDERZOEK,
+	recht = Recht.MEDEWERKER_MAMMA_INZIEN_ONDERZOEK,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaOnderzoekInzienPanel extends AbstractGebeurtenisDetailPanel
 {

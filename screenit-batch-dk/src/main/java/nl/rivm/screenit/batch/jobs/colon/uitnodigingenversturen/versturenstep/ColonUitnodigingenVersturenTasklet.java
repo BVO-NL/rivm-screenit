@@ -33,8 +33,8 @@ import nl.rivm.screenit.batch.jobs.colon.uitnodigingenversturen.UitnodigingenVer
 import nl.rivm.screenit.batch.jobs.uitnodigingenversturen.versturenstep.AbstractUitnodigingenVersturenTasklet;
 import nl.rivm.screenit.model.BriefDefinitie;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.MailMergeContext;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.ProjectParameterKey;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.UploadDocument;
@@ -48,8 +48,8 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.colon.ColonUitnodigingService;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.ProjectUtil;
@@ -75,7 +75,7 @@ public class ColonUitnodigingenVersturenTasklet extends AbstractUitnodigingenVer
 
 	private ClientService clientService;
 
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@Override
 	protected List<Long> getUitnodigingen()
@@ -115,24 +115,25 @@ public class ColonUitnodigingenVersturenTasklet extends AbstractUitnodigingenVer
 	}
 
 	@Override
-	protected boolean geenUitzonderingGevonden(ColonUitnodiging uitnodiging)
+	protected boolean uitzonderingGevonden(ColonUitnodiging uitnodiging)
 	{
 		var client = getClientVanUitnodiging(uitnodiging);
-		if (!AdresUtil.isVolledigAdresVoorInpakcentrum(client))
+		if (AdresUtil.isVolledigAdresVoorInpakcentrum(client))
 		{
-			String melding = "De cliënt heeft een onvolledig adres, dit is geconstateerd bij het aanmaken. De volgende gegevens ontbreken: "
-				+ AdresUtil.bepaalMissendeAdresgegevensString(AdresUtil.getAdres(client.getPersoon(), currentDateSupplier.getLocalDate())) + ".";
-			int dagen = simplePreferenceService.getInteger(PreferenceKey.INTERNAL_HERINNERINGSPERIODE_LOGREGEL_ONVOLLEDIG_ADRES.name());
-			LOG.warn("clientId " + client.getId() + ": " + melding);
-			if (logService.heeftGeenBestaandeLogregelBinnenPeriode(List.of(LogGebeurtenis.COLON_ADRES_ONVOLLEDIG_VOOR_INPAKCENTRUM), client.getPersoon().getBsn(),
-				melding, dagen))
-			{
-				List<Instelling> dashboardOrganisaties = addLandelijkBeheerInstelling(new ArrayList<>());
-				dashboardOrganisaties.addAll(clientService.getScreeningOrganisatieVan(client));
-				logService.logGebeurtenis(LogGebeurtenis.COLON_ADRES_ONVOLLEDIG_VOOR_INPAKCENTRUM, dashboardOrganisaties, null, client, melding,
-					Bevolkingsonderzoek.COLON);
-			}
 			return false;
+		}
+
+		String melding = "De cliënt heeft een onvolledig adres, dit is geconstateerd bij het aanmaken. De volgende gegevens ontbreken: "
+			+ AdresUtil.bepaalMissendeAdresgegevensString(AdresUtil.getAdres(client.getPersoon(), currentDateSupplier.getLocalDate())) + ".";
+		int dagen = simplePreferenceService.getInteger(PreferenceKey.INTERNAL_HERINNERINGSPERIODE_LOGREGEL_ONVOLLEDIG_ADRES.name());
+		LOG.warn("clientId {}: {}", client.getId(), melding);
+		if (logService.heeftGeenBestaandeLogregelBinnenPeriode(List.of(LogGebeurtenis.COLON_ADRES_ONVOLLEDIG_VOOR_INPAKCENTRUM), client.getPersoon().getBsn(),
+			melding, dagen))
+		{
+				List<Organisatie> dashboardOrganisaties = addLandelijkBeheerorganisatie(new ArrayList<>());
+			dashboardOrganisaties.addAll(clientService.getScreeningOrganisatieVan(client));
+			logService.logGebeurtenis(LogGebeurtenis.COLON_ADRES_ONVOLLEDIG_VOOR_INPAKCENTRUM, dashboardOrganisaties, null, client, melding,
+				Bevolkingsonderzoek.COLON);
 		}
 		return true;
 	}
@@ -140,15 +141,15 @@ public class ColonUitnodigingenVersturenTasklet extends AbstractUitnodigingenVer
 	@Override
 	protected synchronized void updateCounts(ColonUitnodiging uitnodiging)
 	{
-		Long aantalVerstuurd = getExecutionContext().getLong(uitnodiging.getColonUitnodigingCategorie().name());
+		var aantalVerstuurd = getExecutionContext().getLong(uitnodiging.getColonUitnodigingCategorie().name());
 		getExecutionContext().put(uitnodiging.getColonUitnodigingCategorie().name(), aantalVerstuurd + 1);
 
 		var client = getClientVanUitnodiging(uitnodiging);
 		var uitnodigingCategorie = uitnodiging.getColonUitnodigingCategorie();
 		var projectClienten = ProjectUtil.getHuidigeProjectClienten(client, currentDateSupplier.getDate(), true);
-		if ((uitnodigingCategorie.equals(ColonUitnodigingCategorie.U1) || uitnodigingCategorie.equals(ColonUitnodigingCategorie.U2)) && projectClienten.size() > 0)
+		if ((uitnodigingCategorie.equals(ColonUitnodigingCategorie.U1) || uitnodigingCategorie.equals(ColonUitnodigingCategorie.U2)) && !projectClienten.isEmpty())
 		{
-			List<UitnodigingenVersturenProjectGroepCounterHolder> projectGroepenCounters = (List<UitnodigingenVersturenProjectGroepCounterHolder>) getExecutionContext()
+			var projectGroepenCounters = (List<UitnodigingenVersturenProjectGroepCounterHolder>) getExecutionContext()
 				.get(UitnodigingenVersturenConstants.PROJECTENCOUNTERS);
 			for (var projectClient : projectClienten)
 			{
@@ -240,9 +241,9 @@ public class ColonUitnodigingenVersturenTasklet extends AbstractUitnodigingenVer
 		return uitnodiging.getScreeningRonde().getDossier().getClient();
 	}
 
-	private List<Instelling> addLandelijkBeheerInstelling(List<Instelling> list)
+	private List<Organisatie> addLandelijkBeheerorganisatie(List<Organisatie> list)
 	{
-		list.addAll(instellingService.getActieveInstellingen(Rivm.class));
+		list.addAll(organisatieService.getActieveOrganisaties(Rivm.class));
 		return list;
 	}
 }

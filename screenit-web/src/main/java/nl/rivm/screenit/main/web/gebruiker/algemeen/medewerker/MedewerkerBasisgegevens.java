@@ -21,11 +21,9 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.medewerker;
  * =========================LICENSE_END==================================
  */
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import lombok.Getter;
@@ -48,14 +46,14 @@ import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidato
 import nl.rivm.screenit.main.web.component.validator.TussenvoegselValidator;
 import nl.rivm.screenit.main.web.component.validator.VoorlettersValidator;
 import nl.rivm.screenit.main.web.component.validator.VoornaamValidator;
-import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.UploadGebruikerImageFormComponent;
-import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.UploadGebruikerImageType;
+import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.UploadMedewerkerImageFormComponent;
+import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.UploadMedewerkerImageType;
 import nl.rivm.screenit.main.web.gebruiker.login.PasswordChangePanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Aanhef;
 import nl.rivm.screenit.model.Functie;
-import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.InlogStatus;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.Titel;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -65,12 +63,10 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.AuthenticatieService;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.BaseMedewerkerService;
-import nl.rivm.screenit.service.GebruikersService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.StamtabellenService;
 import nl.rivm.screenit.service.WachtwoordService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.organisatie.model.Adres;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.yubikey.model.YubiKey;
 
@@ -104,7 +100,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_MEDEWERKER_BEHEER,
+	recht = Recht.MEDEWERKER_BEHEER,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class MedewerkerBasisgegevens extends MedewerkerBeheer
@@ -120,9 +116,6 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 
 	@SpringBean
 	private BaseMedewerkerService baseMedewerkerService;
-
-	@SpringBean
-	private GebruikersService gebruikersService;
 
 	@SpringBean
 	private WachtwoordService wachtwoordService;
@@ -150,14 +143,14 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 		init(ModelUtil.ccModel(getCurrentSelectedMedewerker()));
 	}
 
-	public MedewerkerBasisgegevens(IModel<Gebruiker> model)
+	public MedewerkerBasisgegevens(IModel<Medewerker> model)
 	{
 		init(model);
 	}
 
-	private void init(IModel<Gebruiker> model)
+	private void init(IModel<Medewerker> model)
 	{
-		Gebruiker medewerker = model.getObject();
+		Medewerker medewerker = model.getObject();
 
 		if (medewerker.getYubiKey() == null)
 		{
@@ -168,7 +161,7 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 		if (medewerker.getId() == null)
 		{
 			label = new Label("label", Model.of("Medewerker toevoegen"));
-			medewerker.setMedewerkercode(gebruikersService.getNextMedewerkercode());
+			medewerker.setMedewerkercode(baseMedewerkerService.getNextMedewerkercode());
 		}
 		add(label);
 		if (model.getObject().getId() != null)
@@ -183,12 +176,12 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 		add(new MedewerkerEditForm("medewerkerForm", model));
 	}
 
-	private void logAction(LogGebeurtenis gebeurtenis, Gebruiker medewerker)
+	private void logAction(LogGebeurtenis gebeurtenis, Medewerker medewerker)
 	{
-		logService.logGebeurtenis(gebeurtenis, ScreenitSession.get().getLoggedInAccount(), "Medewerker: " + medewerker.getNaamVolledig());
+		logService.logGebeurtenis(gebeurtenis, ScreenitSession.get().getIngelogdAccount(), "Medewerker: " + medewerker.getNaamVolledig());
 	}
 
-	public class MedewerkerEditForm extends ScreenitForm<Gebruiker>
+	public class MedewerkerEditForm extends ScreenitForm<Medewerker>
 	{
 
 		@Getter
@@ -215,9 +208,9 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 
 		private boolean bestaandUziNummer;
 
-		private UploadGebruikerImageFormComponent handtekeningField;
+		private UploadMedewerkerImageFormComponent handtekeningField;
 
-		public MedewerkerEditForm(String id, IModel<Gebruiker> model)
+		public MedewerkerEditForm(String id, IModel<Medewerker> model)
 		{
 			super(id, model);
 		}
@@ -226,24 +219,14 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 		protected void onInitialize()
 		{
 			super.onInitialize();
-			Gebruiker medewerker = getModelObject();
-			List<Adres> adressen = medewerker.getAdressen();
-			if (adressen == null)
-			{
-				medewerker.setAdressen(new ArrayList<>());
-				adressen = medewerker.getAdressen();
-			}
-			if (adressen.isEmpty())
-			{
-				adressen.add(new Adres());
-			}
-			Actie actie = autorisatieService.getActieVoorMedewerker(ScreenitSession.get().getLoggedInInstellingGebruiker(), getModelObject(), Recht.GEBRUIKER_MEDEWERKER_BEHEER);
+			Medewerker medewerker = getModelObject();
+			Actie actie = autorisatieService.getActieVoorMedewerker(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), getModelObject(), Recht.MEDEWERKER_BEHEER);
 
 			isBestaande = medewerker.getId() != null;
 			inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 			isBeheerder = isMinimumActie(actie, Actie.VERWIJDEREN);
 			isZorgverlener = medewerker.getZorgverlener() != null && medewerker.getZorgverlener() == Boolean.TRUE;
-			eigenGegevens = medewerker.equals(ScreenitSession.get().getLoggedInInstellingGebruiker().getMedewerker()) && isMinimumActie(actie, Actie.AANPASSEN);
+			eigenGegevens = medewerker.equals(ScreenitSession.get().getIngelogdeOrganisatieMedewerker().getMedewerker()) && isMinimumActie(actie, Actie.AANPASSEN);
 			bestaandUziNummer = medewerker.getUzinummer() != null;
 
 			addOpslaanButton();
@@ -266,7 +249,7 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 			ComponentHelper.addTextField(this, "voornaam", false, 50, inzien).add(new VoornaamValidator());
 			ComponentHelper.addTextField(this, "voorletters", false, 20, inzien).add(new VoorlettersValidator());
 			ComponentHelper.addTextField(this, "tussenvoegsel", false, 20, inzien).add(new TussenvoegselValidator());
-			handtekeningField = new UploadGebruikerImageFormComponent("handtekening", getModel(), UploadGebruikerImageType.HANDTEKENING);
+			handtekeningField = new UploadMedewerkerImageFormComponent("handtekening", getModel(), UploadMedewerkerImageType.HANDTEKENING);
 			add(handtekeningField.setEnabled(!inzien));
 			Component ondertekenaar = new TextArea<>("ondertekenaar").add(StringValidator.maximumLength(255));
 			ondertekenaar.setEnabled(!inzien);
@@ -278,7 +261,7 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 			add(bigNummerLabel);
 
 			bigNummer = ComponentHelper.addTextField(this, "bignummer", false, 11, inzien)
-				.add(new ScreenitUniqueFieldValidator<>(Gebruiker.class, medewerker.getId(), "bignummer", false)).setVisible(isZorgverlener);
+				.add(new ScreenitUniqueFieldValidator<>(Medewerker.class, medewerker.getId(), "bignummer", false)).setVisible(isZorgverlener);
 			bigNummer.setOutputMarkupPlaceholderTag(true);
 			DateTextField geboortedatum = new ScreenitDateTextField("geboortedatum");
 			geboortedatum.setOutputMarkupId(true);
@@ -287,7 +270,7 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 			uziContainer = new WebMarkupContainer("uzi-container");
 			uziContainer.setOutputMarkupPlaceholderTag(true);
 			ComponentHelper.addTextField(uziContainer, "uzinummer", false, 9, inzien)
-				.add(new ScreenitUniqueFieldValidator<>(Gebruiker.class, medewerker.getId(), "uzinummer", false)).add(new PatternValidator("[0-9]*"));
+				.add(new ScreenitUniqueFieldValidator<>(Medewerker.class, medewerker.getId(), "uzinummer", false)).add(new PatternValidator("[0-9]*"));
 			add(uziContainer);
 
 			ComponentHelper.addTextField(this, "patholoogId", false, 25, inzien).setEnabled(!inzien);
@@ -321,8 +304,8 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 			ComponentHelper.addTextField(this, "telefoonnummerextra", false, 25, inzien);
 
 			ComponentHelper.addTextField(this, "emailextra", false, 255, inzien).add(EmailAddressValidator.getInstance()).setLabel(Model.of("E-mailadres"))
-				.add(new ScreenitUniqueFieldValidator<>(Gebruiker.class, medewerker.getId(), "emailextra", restrictions));
-			ComponentHelper.addTextField(this, "adressen[0].plaats", false, 80, inzien);
+				.add(new ScreenitUniqueFieldValidator<>(Medewerker.class, medewerker.getId(), "emailextra", restrictions));
+			ComponentHelper.addTextField(this, "woonplaats", false, 80, inzien);
 			ComponentHelper.addTextField(this, "telefoonnummerprive", false, 25, inzien);
 
 			yubiContainer = new WebMarkupContainer("yubi-container");
@@ -336,7 +319,7 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 
 		private void addAnnulerenButton()
 		{
-			AjaxLink<Gebruiker> annuleren = new AjaxLink<>("annuleren")
+			AjaxLink<Medewerker> annuleren = new AjaxLink<>("annuleren")
 			{
 				@Override
 				public void onClick(AjaxRequestTarget target)
@@ -348,11 +331,11 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 			annuleren.setVisible(false);
 		}
 
-		private void addWachtwoordFragment(Gebruiker medewerker)
+		private void addWachtwoordFragment(Medewerker medewerker)
 		{
 			FormComponent<String> gebruikersnaam = ComponentHelper.addTextField(this, "gebruikersnaam", true, 30, inzien);
 			gebruikersnaam.setEnabled(!inzien && isBeheerder);
-			gebruikersnaam.add(new ScreenitUniqueFieldValidator<>(Gebruiker.class, medewerker.getId(), "gebruikersnaam", true));
+			gebruikersnaam.add(new ScreenitUniqueFieldValidator<>(Medewerker.class, medewerker.getId(), "gebruikersnaam", true));
 			gebruikersnaam.setLabel(Model.of("Gebruikersnaam"));
 
 			geenWachtwoordContainer = new WebMarkupContainer("geenWachtwoord");
@@ -442,11 +425,11 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 				public void onClick(AjaxRequestTarget target)
 				{
 
-					Gebruiker medewerker = MedewerkerEditForm.this.getModelObject();
+					Medewerker medewerker = MedewerkerEditForm.this.getModelObject();
 					if (StringUtils.isNotBlank(medewerker.getEmailextra()))
 					{
 						medewerkerService.resetWachtwoord(medewerker);
-						logService.logGebeurtenis(LogGebeurtenis.WACHTWOORD_GERESET, ScreenitSession.get().getLoggedInAccount(), "Medewerker: " + medewerker.getGebruikersnaam());
+						logService.logGebeurtenis(LogGebeurtenis.WACHTWOORD_GERESET, ScreenitSession.get().getIngelogdAccount(), "Medewerker: " + medewerker.getGebruikersnaam());
 					}
 					else
 					{
@@ -463,11 +446,11 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 				@Override
 				public void onClick(AjaxRequestTarget target)
 				{
-					Gebruiker medewerker = MedewerkerEditForm.this.getModelObject();
+					Medewerker medewerker = MedewerkerEditForm.this.getModelObject();
 					dialog.setContent(new PasswordChangePanel(IDialog.CONTENT_ID, medewerker)
 					{
 						@Override
-						protected void onWachtwoordChanged(AjaxRequestTarget target, Gebruiker gebruiker)
+						protected void onWachtwoordChanged(AjaxRequestTarget target, Medewerker medewerker)
 						{
 							dialog.close(target);
 						}
@@ -491,14 +474,14 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 			laatsteWachtwoordWijzigingContainer.setVisible(InlogMethode.UZIPAS != inlogMethode);
 		}
 
-		private void addVerwijderenButton(Gebruiker medewerker)
+		private void addVerwijderenButton(Medewerker medewerker)
 		{
-			AjaxLink<Gebruiker> inActiveren = new ConfirmingIndicatingAjaxLink<>("inActiveren", dialog, "question.remove.medewerker")
+			AjaxLink<Medewerker> inActiveren = new ConfirmingIndicatingAjaxLink<>("inActiveren", dialog, "question.remove.medewerker")
 			{
 				@Override
 				public void onClick(AjaxRequestTarget target)
 				{
-					Gebruiker medewerker = MedewerkerEditForm.this.getModelObject();
+					Medewerker medewerker = MedewerkerEditForm.this.getModelObject();
 
 					baseMedewerkerService.inActiveerMedewerker(medewerker);
 					if (Boolean.FALSE.equals(medewerker.getActief()))
@@ -539,7 +522,7 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 				@Override
 				protected void onSubmit(AjaxRequestTarget target)
 				{
-					Gebruiker medewerker = getModelObject();
+					Medewerker medewerker = getModelObject();
 					if (medewerker.getInlogMethode().equals(InlogMethode.UZIPAS) || medewerker.getEmailextra() != null)
 					{
 						InlogStatus oldInlogstatus = medewerker.getInlogstatus();
@@ -616,7 +599,7 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 								{ 
 									medewerker.setActiefTotEnMet(DateUtil.eindDag(actiefTotEnMet));
 								}
-								medewerkerService.saveOrUpdateGebruiker(medewerker, isBestaande, wordGeblokkeerd);
+								medewerkerService.saveOrUpdateMedewerker(medewerker, isBestaande, wordGeblokkeerd);
 								if (handtekeningField.hasFile())
 								{
 									handtekeningField.uploadImage(target);
@@ -633,7 +616,7 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 							}
 							else
 							{
-								if (medewerkerService.saveOrUpdateGebruiker(medewerker, isBestaande, wordGeblokkeerd))
+								if (medewerkerService.saveOrUpdateMedewerker(medewerker, isBestaande, wordGeblokkeerd))
 								{
 									if (handtekeningField.hasFile())
 									{
@@ -646,7 +629,7 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 										yubiKey.setSessionCounter(0);
 										yubiKey.setUsageInSessionCounter(0);
 
-										medewerkerService.saveOrUpdateGebruiker(medewerker, isBestaande, wordGeblokkeerd);
+										medewerkerService.saveOrUpdateMedewerker(medewerker, isBestaande, wordGeblokkeerd);
 									}
 
 									logAction(LogGebeurtenis.MEDEWERKER_NIEUW, medewerker);

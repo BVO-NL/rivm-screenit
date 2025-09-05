@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import nl.rivm.screenit.ApplicationEnvironment;
-import nl.rivm.screenit.main.web.ScreenitApplication;
+import nl.rivm.screenit.service.EnvironmentInfoService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -47,11 +47,15 @@ public class ApplicatieInfoPanel extends Panel
 	@SpringBean(name = "applicationInstance")
 	private String applicationInstance;
 
+	@SpringBean
+	private EnvironmentInfoService environmentInfoService;
+
 	public ApplicatieInfoPanel(String id)
 	{
 		super(id);
 
-		add(new Label("version", ScreenitApplication.get().getVersionString()));
+		add(new Label("version", environmentInfoService.getVersion()));
+		add(new Label("buildTime", environmentInfoService.getBuildTime()));
 		add(new Label("name", applicationName));
 
 		WebMarkupContainer environmentContainer = new WebMarkupContainer("environmentContainer");

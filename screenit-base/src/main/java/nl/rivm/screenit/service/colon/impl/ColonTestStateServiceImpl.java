@@ -35,7 +35,7 @@ import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.TestModel;
@@ -591,8 +591,8 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 			conclusie = new ColonConclusie();
 			conclusie.setType(ColonConclusieType.COLOSCOPIE);
 			conclusie.setDatum(currentDateSupplier.getDate());
-			List<InstellingGebruiker> all = hibernateService.loadAll(InstellingGebruiker.class);
-			conclusie.setInstellingGebruiker(all.get(0));
+			List<OrganisatieMedewerker> all = hibernateService.loadAll(OrganisatieMedewerker.class);
+			conclusie.setOrganisatieMedewerker(all.get(0));
 			intakeAfspraak.setConclusie(conclusie);
 		}
 		intakeAfspraak.setStatus(ColonAfspraakStatus.UITGEVOERD);

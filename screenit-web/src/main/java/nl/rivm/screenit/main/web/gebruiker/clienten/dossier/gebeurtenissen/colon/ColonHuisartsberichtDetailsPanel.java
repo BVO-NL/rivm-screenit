@@ -56,7 +56,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @SecurityConstraint(
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_CLIENT_SR_HUISARTSBERICHT_DETAILS,
+	recht = Recht.MEDEWERKER_CLIENT_SR_HUISARTSBERICHT_DETAILS,
 	bevolkingsonderzoekScopes = Bevolkingsonderzoek.COLON)
 public class ColonHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailPanel
 {
@@ -260,7 +260,7 @@ public class ColonHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailP
 	private boolean heeftRechtOpnieuwVersturen()
 	{
 		boolean laatstVerstuurdeHuisartsbericht = HuisartsBerichtenUtil.isLaatstVerstuurdeHuisartsbericht(getHuisartsBericht());
-		boolean permission = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_HUISARTSBERICHT_OPNIEUW_VERZENDEN, Actie.AANPASSEN,
+		boolean permission = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_HUISARTSBERICHT_OPNIEUW_VERZENDEN, Actie.AANPASSEN,
 			getHuisartsBericht().getClient());
 		return laatstVerstuurdeHuisartsbericht && permission;
 	}

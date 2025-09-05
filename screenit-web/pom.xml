@@ -35,26 +35,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>set-build-time</id>
-                        <phase>compile</phase>
-                        <configuration>
-                            <target>
-                                <tstamp>
-                                    <format property="timestamp" pattern="dd-MM-yyyy HH:mm:ss"/>
-                                </tstamp>
-                                <replace file="target/classes/nl/rivm/screenit/main/web/ScreenitApplication.properties" token="build.time=nu" value="build.time=${timestamp}"/>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
             <plugin>
                 <groupId>nl.geodienstencentrum.maven</groupId>
@@ -124,20 +104,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>build-info</goal>
-                            <goal>repackage</goal>
-                        </goals>
-                        <configuration>
-                            <additionalProperties>
-                                <number>${buildnumber}</number>
-                            </additionalProperties>
-                            <outputFile>target/classes/build-info.properties</outputFile>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
@@ -305,11 +271,6 @@
         <dependency>
             <groupId>nl.topicuszorg</groupId>
             <artifactId>zorgid</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>nl.topicuszorg.idp</groupId>
-            <artifactId>idp-client-credentials-java</artifactId>
         </dependency>
 
         <dependency>

@@ -38,13 +38,13 @@ import nl.rivm.screenit.main.web.component.table.ActiefPropertyColumn;
 import nl.rivm.screenit.main.web.component.table.AjaxImageCellPanel;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.component.table.booleanfilter.BooleanFilterPropertyColumn;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
-import nl.rivm.screenit.model.Gebruiker_;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
+import nl.rivm.screenit.model.Medewerker_;
 import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.MergedBrievenFilter;
 import nl.rivm.screenit.model.MergedBrieven_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.UploadDocument_;
 import nl.rivm.screenit.model.algemeen.AlgemeneMergedBrieven;
@@ -86,7 +86,7 @@ import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 import static nl.rivm.screenit.main.util.WicketSpringDataUtil.toSpringSort;
 import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
-public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> extends GebruikerBasePage
+public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> extends MedewerkerBasePage
 {
 	private final class MergedBrievenDataProvider extends SortableDataProvider<MB, String>
 	{
@@ -195,8 +195,8 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 		if (!AlgemeneMergedBrieven.class.equals(mergedBrievenClass))
 		{
 			columns.add(
-				new PropertyColumn<>(Model.of("Screeningsorganisatie"), propertyChain(MergedBrieven_.SCREENING_ORGANISATIE, Instelling_.NAAM),
-					propertyChain(MergedBrieven_.SCREENING_ORGANISATIE, Instelling_.NAAM)));
+				new PropertyColumn<>(Model.of("Screeningsorganisatie"), propertyChain(MergedBrieven_.SCREENING_ORGANISATIE, Organisatie_.NAAM),
+					propertyChain(MergedBrieven_.SCREENING_ORGANISATIE, Organisatie_.NAAM)));
 		}
 		columns.add(new PropertyColumn<>(Model.of("Datum"), propertyChain(MergedBrieven_.CREATIE_DATUM), propertyChain(MergedBrieven_.CREATIE_DATUM)));
 		columns.add(new AbstractColumn<>(Model.of("Downloaden"))
@@ -215,7 +215,7 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 						{
 							mergedbrieven.setGeprint(true);
 							mergedbrieven.setPrintDatum(currentDateSupplier.getDate());
-							mergedbrieven.setAfgedruktDoor(ScreenitSession.get().getLoggedInInstellingGebruiker().getMedewerker());
+							mergedbrieven.setAfgedruktDoor(getIngelogdeOrganisatieMedewerker().getMedewerker());
 							if (HibernateHelper.deproxy(mergedbrieven) instanceof CervixRegioMergedBrieven)
 							{
 								cervixHuisartsService.updateLabformulierAanvraag((CervixRegioMergedBrieven) mergedbrieven);
@@ -279,7 +279,7 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 				}
 			}
 		});
-		columns.add(new PropertyColumn<>(Model.of("Gebruiker"), propertyChain(MergedBrieven_.AFGEDRUKT_DOOR, Gebruiker_.ACHTERNAAM),
+		columns.add(new PropertyColumn<>(Model.of("Medewerker"), propertyChain(MergedBrieven_.AFGEDRUKT_DOOR, Medewerker_.ACHTERNAAM),
 			propertyChain(MergedBrieven_.AFGEDRUKT_DOOR, "naamVolledig")));
 
 		ScreenitDataTable<MB, String> brieven = new ScreenitDataTable<>("brieven", columns, new MergedBrievenDataProvider(), new Model<>(""));
@@ -331,16 +331,16 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 		{
 			melding += "BriefType." + mergedBrieven.getBriefType().name();
 		}
-		logService.logGebeurtenis(gebeurtenis, ScreenitSession.get().getLoggedInAccount(), melding,
+		logService.logGebeurtenis(gebeurtenis, ScreenitSession.get().getIngelogdAccount(), melding,
 			mergedBrieven.getBriefType() != null ? mergedBrieven.getBriefType().getOnderzoeken() : null);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.all.afdrukkendocumentenmammaafdrukken", MammaAfdrukkenDocumentenPage.class)
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.all.afdrukkendocumentenmammaafdrukken", MammaAfdrukkenDocumentenPage.class)
 		{
 			@Override
 			public Component getPostfix(String id)
@@ -350,7 +350,7 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 
 		});
 
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.all.afdrukkendocumentencervixafdrukken", CervixAfdrukkenDocumentenPage.class)
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.all.afdrukkendocumentencervixafdrukken", CervixAfdrukkenDocumentenPage.class)
 		{
 			@Override
 			public Component getPostfix(String id)
@@ -359,7 +359,7 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 			}
 
 		});
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.all.afdrukkendocumentenregioafdrukken", CervixRegioAfdrukkenDocumentenPage.class)
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.all.afdrukkendocumentenregioafdrukken", CervixRegioAfdrukkenDocumentenPage.class)
 		{
 			@Override
 			public Component getPostfix(String id)
@@ -367,7 +367,7 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 				return getAantalPostfixLabel(id, CervixRegioMergedBrieven.class);
 			}
 		});
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.all.afdrukkendocumentencolonafdrukken", ColonAfdrukkenDocumentenPage.class)
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.all.afdrukkendocumentencolonafdrukken", ColonAfdrukkenDocumentenPage.class)
 		{
 			@Override
 			public Component getPostfix(String id)
@@ -377,7 +377,7 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 
 		});
 
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.all.afdrukkendocumentenbezwaarafdrukken", BezwaarAfdrukkenDocumentenPage.class)
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.all.afdrukkendocumentenbezwaarafdrukken", BezwaarAfdrukkenDocumentenPage.class)
 		{
 
 			@Override
@@ -387,7 +387,7 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 			}
 
 		});
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.all.afdrukkendocumentenalgemeenafdrukken", AlgemeenAfdrukkenDocumentenPage.class)
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.all.afdrukkendocumentenalgemeenafdrukken", AlgemeenAfdrukkenDocumentenPage.class)
 		{
 
 			@Override
@@ -397,7 +397,7 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 			}
 
 		});
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.all.afdrukkendocumentenprojectafdrukken", ProjectAfdrukkenDocumentenPage.class)
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.all.afdrukkendocumentenprojectafdrukken", ProjectAfdrukkenDocumentenPage.class)
 		{
 			@Override
 			public Component getPostfix(String id)
@@ -440,15 +440,15 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 	{
 		if (ProjectMergedBrieven.class.equals(clazz))
 		{
-			return Recht.GEBRUIKER_SCREENING_PRINTER_PROJECTBRIEVEN;
+			return Recht.MEDEWERKER_SCREENING_PRINTER_PROJECTBRIEVEN;
 		}
 		else if (AlgemeneMergedBrieven.class.equals(clazz))
 		{
-			return Recht.GEBRUIKER_SCREENING_PRINTER_LANDELIJK;
+			return Recht.MEDEWERKER_SCREENING_PRINTER_LANDELIJK;
 		}
 		else
 		{
-			return Recht.GEBRUIKER_SCREENING_PRINTER;
+			return Recht.MEDEWERKER_SCREENING_PRINTER;
 		}
 	}
 }

@@ -21,18 +21,18 @@ package nl.rivm.screenit.service;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 
 public interface DistributedLockService
 {
 
 	void lockAndWait(String locknaam);
 
-	void lockAndWait(String locknaam, InstellingGebruiker gebruiker);
+	void lockAndWait(String locknaam, OrganisatieMedewerker organisatieMedewerker);
 
 	boolean verkrijgLockIndienBeschikbaar(String locknaam);
 
 	void unlock(String locknaam);
 
-	void unlock(String locknaam, InstellingGebruiker gebruiker);
+	void unlock(String locknaam, OrganisatieMedewerker organisatieMedewerker);
 }

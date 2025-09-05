@@ -183,7 +183,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 			{
 				try
 				{
-					overdrachtPersoonsgegevensService.slaOntvangenFormulierOp(getModelObject(), uploadDocument, ScreenitSession.get().getLoggedInAccount());
+					overdrachtPersoonsgegevensService.slaOntvangenFormulierOp(getModelObject(), uploadDocument, ScreenitSession.get().getIngelogdAccount());
 					info(getString("info.vervangendocument"));
 					close(target);
 				}
@@ -228,7 +228,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 			{
 				super.onConfigure();
 				setVisible(OverdrachtGegevensAanvraagPopupPanel.this.getModelObject().getStatus() == AanvraagBriefStatus.BRIEF_ONTVANGEN
-					&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_DOWNLOAD_OVERDRACHT_PERSOONSGEGEVENS, Actie.INZIEN));
+					&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_DOWNLOAD_OVERDRACHT_PERSOONSGEGEVENS, Actie.INZIEN));
 			}
 		});
 	}
@@ -263,7 +263,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 			public void onClick(AjaxRequestTarget target)
 			{
 				OverdrachtPersoonsgegevens overdracht = OverdrachtGegevensAanvraagPopupPanel.this.getModelObject();
-				overdrachtPersoonsgegevensService.verstuurGeenHandtekeningBrief(overdracht, ScreenitSession.get().getLoggedInAccount());
+				overdrachtPersoonsgegevensService.verstuurGeenHandtekeningBrief(overdracht, ScreenitSession.get().getIngelogdAccount());
 				info(getString("info.geenhandtekening.overdrachtgegevens"));
 				close(target);
 			}
@@ -343,7 +343,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 			if (uploadContainer.isVisible())
 			{
 				UploadDocument uploadDocument = maakUploadDocument();
-				overdrachtPersoonsgegevensService.slaOntvangenFormulierOp(getModelObject(), uploadDocument, ScreenitSession.get().getLoggedInAccount());
+				overdrachtPersoonsgegevensService.slaOntvangenFormulierOp(getModelObject(), uploadDocument, ScreenitSession.get().getIngelogdAccount());
 			}
 			else
 			{
@@ -406,7 +406,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 						{
 							outputStream = new ByteArrayOutputStream();
 							overdrachtPersoonsgegevensService.createDataDump(OverdrachtGegevensAanvraagPopupPanel.this.getModelObject(), outputStream,
-								ScreenitSession.get().getLoggedInInstellingGebruiker());
+								ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 
 							inputStream = new ByteArrayInputStream(outputStream.toByteArray());
 							IOUtils.copy(inputStream, output);
@@ -459,7 +459,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 			{
 				super.onConfigure();
 				setVisible(OverdrachtGegevensAanvraagPopupPanel.this.getModelObject().getStatus() == AanvraagBriefStatus.BRIEF_ONTVANGEN
-					&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_DOWNLOAD_OVERDRACHT_PERSOONSGEGEVENS, Actie.INZIEN));
+					&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_DOWNLOAD_OVERDRACHT_PERSOONSGEGEVENS, Actie.INZIEN));
 			}
 
 		});

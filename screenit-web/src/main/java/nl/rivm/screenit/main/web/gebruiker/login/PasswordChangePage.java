@@ -30,9 +30,9 @@ import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.ScreenitWachtwoordField;
 import nl.rivm.screenit.main.web.component.validator.ScreenITWachtwoordValidator;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
-import nl.rivm.screenit.repository.algemeen.GebruikerRepository;
+import nl.rivm.screenit.repository.algemeen.MedewerkerRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.WachtwoordService;
@@ -70,7 +70,7 @@ public class PasswordChangePage extends LoginBasePage
 	private ICurrentDateSupplier currentDateSupplier;
 
 	@SpringBean
-	private GebruikerRepository gebruikerRepository;
+	private MedewerkerRepository medewerkerRepository;
 
 	private final String gebruikersnaam;
 
@@ -80,7 +80,7 @@ public class PasswordChangePage extends LoginBasePage
 
 	private String wachtwoord2;
 
-	private IModel<Gebruiker> medewerker;
+	private IModel<Medewerker> medewerkerModel;
 
 	public PasswordChangePage(PageParameters pageParameters)
 	{
@@ -88,14 +88,14 @@ public class PasswordChangePage extends LoginBasePage
 		changeCode = pageParameters.get("code").toString();
 		gebruikersnaam = pageParameters.get("user").toString();
 
-		var gebruiker = gebruikerRepository.findByWachtwoordChangeCode(changeCode).orElse(null);
-		if (gebruiker != null)
+		var medewerker = medewerkerRepository.findByWachtwoordChangeCode(changeCode).orElse(null);
+		if (medewerker != null)
 		{
-			var gebruikerByGebruikersnaam = gebruikerRepository.findByGebruikersnaam(gebruikersnaam);
+			var gebruikerByGebruikersnaam = medewerkerRepository.findByGebruikersnaam(gebruikersnaam);
 
-			if (gebruikerByGebruikersnaam.isPresent() && gebruikerByGebruikersnaam.get().equals(gebruiker))
+			if (gebruikerByGebruikersnaam.isPresent() && gebruikerByGebruikersnaam.get().equals(medewerker))
 			{
-				medewerker = ModelUtil.sModel(gebruiker);
+				medewerkerModel = ModelUtil.sModel(medewerker);
 				if (!isValidChangeCode())
 				{
 					error(getString("error.code.niet.meer.geldig"));
@@ -118,7 +118,7 @@ public class PasswordChangePage extends LoginBasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				Gebruiker gebruiker = ModelUtil.nullSafeGet(medewerker);
+				Medewerker medewerker = ModelUtil.nullSafeGet(PasswordChangePage.this.medewerkerModel);
 				if (!isValidChangeCode())
 				{
 					error("Code is niet meer geldig. Neem contact op met de beheerder.");
@@ -127,7 +127,7 @@ public class PasswordChangePage extends LoginBasePage
 				{
 					error("De beide wachtwoorden zijn niet gelijk aan elkaar.");
 				}
-				else if (!gebruiker.getGebruikersnaam().equals(gebruikersnaam))
+				else if (!medewerker.getGebruikersnaam().equals(gebruikersnaam))
 				{
 					error("Gebruikersnaam is niet geldig");
 				}
@@ -135,13 +135,13 @@ public class PasswordChangePage extends LoginBasePage
 				{
 					try
 					{
-						wachtwoordService.setWachtwoord(gebruiker, wachtwoord1);
+						wachtwoordService.setWachtwoord(medewerker, wachtwoord1);
 
-						gebruiker.setDatumWachtwoordAanvraag(null);
-						gebruiker.setWachtwoordChangeCode(null);
+						medewerker.setDatumWachtwoordAanvraag(null);
+						medewerker.setWachtwoordChangeCode(null);
 
-						hibernateService.saveOrUpdate(gebruiker);
-						logService.logGebeurtenis(LogGebeurtenis.WACHTWOORD_GEWIJZIGD, gebruiker);
+						hibernateService.saveOrUpdate(medewerker);
+						logService.logGebeurtenis(LogGebeurtenis.WACHTWOORD_GEWIJZIGD, medewerker);
 						info("Wachtwoord is opgeslagen");
 						naarinlogpagina.setVisible(Boolean.TRUE);
 						setVisible(Boolean.FALSE);
@@ -179,7 +179,7 @@ public class PasswordChangePage extends LoginBasePage
 
 		ComponentHelper.addTextField(form, "changeCode", true, 50, true);
 
-		ScreenITWachtwoordValidator validator = new ScreenITWachtwoordValidator(gebruikersnaamTf, true, medewerker);
+		ScreenITWachtwoordValidator validator = new ScreenITWachtwoordValidator(gebruikersnaamTf, true, medewerkerModel);
 		ScreenitWachtwoordField wachtwoord1Field = new ScreenitWachtwoordField("wachtwoord1", new PropertyModel<>(this, "wachtwoord1"), true, validator);
 		form.add(wachtwoord1Field);
 
@@ -190,10 +190,10 @@ public class PasswordChangePage extends LoginBasePage
 	private boolean isValidChangeCode()
 	{
 		var nu = currentDateSupplier.getLocalDateTime();
-		var gebruiker = ModelUtil.nullSafeGet(medewerker);
-		if (gebruiker != null)
+		var medewerker = ModelUtil.nullSafeGet(medewerkerModel);
+		if (medewerker != null)
 		{
-			var aanvraagDatum = gebruiker.getDatumWachtwoordAanvraag();
+			var aanvraagDatum = medewerker.getDatumWachtwoordAanvraag();
 			return Duration.between(DateUtil.toLocalDateTime(aanvraagDatum), nu).toDays() < 1;
 		}
 		else
@@ -207,7 +207,7 @@ public class PasswordChangePage extends LoginBasePage
 	protected void onDetach()
 	{
 		super.onDetach();
-		ModelUtil.nullSafeDetach(medewerker);
+		ModelUtil.nullSafeDetach(medewerkerModel);
 	}
 
 }

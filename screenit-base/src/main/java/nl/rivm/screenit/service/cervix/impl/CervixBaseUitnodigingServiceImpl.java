@@ -29,7 +29,7 @@ import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
@@ -73,19 +73,19 @@ public class CervixBaseUitnodigingServiceImpl implements CervixBaseUitnodigingSe
 	private ICurrentDateSupplier currentDateSupplier;
 
 	@Override
-	public void saveMonster(CervixZas zas, InstellingGebruiker loggedInInstellingGebruiker, String logMessage)
+	public void saveMonster(CervixZas zas, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, String logMessage)
 	{
-		saveMonster(zas, !CervixZasStatus.VERSTUURD.equals(zas.getZasStatus()), loggedInInstellingGebruiker, logMessage);
+		saveMonster(zas, !CervixZasStatus.VERSTUURD.equals(zas.getZasStatus()), ingelogdeOrganisatieMedewerker, logMessage);
 	}
 
 	@Override
-	public void saveMonster(CervixUitstrijkje uitstrijkje, InstellingGebruiker loggedInInstellingGebruiker, String logMessage)
+	public void saveMonster(CervixUitstrijkje uitstrijkje, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, String logMessage)
 	{
 
-		saveMonster(uitstrijkje, !CervixUitstrijkjeStatus.NIET_ONTVANGEN.equals(uitstrijkje.getUitstrijkjeStatus()), loggedInInstellingGebruiker, logMessage);
+		saveMonster(uitstrijkje, !CervixUitstrijkjeStatus.NIET_ONTVANGEN.equals(uitstrijkje.getUitstrijkjeStatus()), ingelogdeOrganisatieMedewerker, logMessage);
 	}
 
-	private void saveMonster(CervixMonster monster, boolean ingeboekt, InstellingGebruiker loggedInInstellingGebruiker, String logMessage)
+	private void saveMonster(CervixMonster monster, boolean ingeboekt, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, String logMessage)
 	{
 		monster.setStatusDatum(dateSupplier.getDate());
 		if (ingeboekt)
@@ -94,7 +94,7 @@ public class CervixBaseUitnodigingServiceImpl implements CervixBaseUitnodigingSe
 			{
 				monster.setOntvangstdatum(dateSupplier.getDate());
 				monster.setOntvangstScreeningRonde(baseScreeningrondeService.getOntvangstRondeVoorMonster(monster));
-				var bmhkLaboratorium = (BMHKLaboratorium) HibernateHelper.deproxy(loggedInInstellingGebruiker.getOrganisatie());
+				var bmhkLaboratorium = (BMHKLaboratorium) HibernateHelper.deproxy(ingelogdeOrganisatieMedewerker.getOrganisatie());
 				monster.setLaboratorium(bmhkLaboratorium);
 				labformulierService.updateLabformulierLaboratoriumNaOntvangstMonster(monster);
 			}
@@ -114,7 +114,7 @@ public class CervixBaseUitnodigingServiceImpl implements CervixBaseUitnodigingSe
 		hibernateService.saveOrUpdate(monster);
 
 		Client client = monster.getUitnodiging().getScreeningRonde().getDossier().getClient();
-		logService.logGebeurtenis(LogGebeurtenis.CERVIX_UITNODIGING_OPGESLAGEN, loggedInInstellingGebruiker, client, logMessage, Bevolkingsonderzoek.CERVIX);
+		logService.logGebeurtenis(LogGebeurtenis.CERVIX_UITNODIGING_OPGESLAGEN, ingelogdeOrganisatieMedewerker, client, logMessage, Bevolkingsonderzoek.CERVIX);
 	}
 
 	private boolean heeftGecontroleerdLabformulier(CervixUitstrijkje uitstrijkje)
@@ -124,18 +124,18 @@ public class CervixBaseUitnodigingServiceImpl implements CervixBaseUitnodigingSe
 	}
 
 	@Override
-	public void registreerMonsterBarcodeAfgedrukt(CervixMonster monster, InstellingGebruiker loggedInInstellingGebruiker, LogGebeurtenis logGebeurtenis)
+	public void registreerMonsterBarcodeAfgedrukt(CervixMonster monster, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, LogGebeurtenis logGebeurtenis)
 	{
 		List<Date> barcodeAfgedruktList = monster.getBarcodeAfgedrukt();
 		barcodeAfgedruktList.add(currentDateSupplier.getDate());
 		monster.setBarcodeAfgedrukt(barcodeAfgedruktList); 
 		hibernateService.saveOrUpdate(monster);
 		Client client = monster.getUitnodiging().getScreeningRonde().getDossier().getClient();
-		logService.logGebeurtenis(logGebeurtenis, loggedInInstellingGebruiker, client, "Monster-id: " + monster.getMonsterId(), Bevolkingsonderzoek.CERVIX);
+		logService.logGebeurtenis(logGebeurtenis, ingelogdeOrganisatieMedewerker, client, "Monster-id: " + monster.getMonsterId(), Bevolkingsonderzoek.CERVIX);
 	}
 
 	@Override
-	public void verwijderResultatenMonster(CervixMonster monster, UploadDocument uploadDocument, InstellingGebruiker loggedInInstellingGebruiker)
+	public void verwijderResultatenMonster(CervixMonster monster, UploadDocument uploadDocument, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		monster.setVerwijderdDatum(dateSupplier.getDate());
 		if (uploadDocument != null)
@@ -172,7 +172,7 @@ public class CervixBaseUitnodigingServiceImpl implements CervixBaseUitnodigingSe
 			hibernateService.saveOrUpdate(uploadDocument);
 		}
 		hibernateService.saveOrUpdateAll(monster, ronde);
-		logService.logGebeurtenis(LogGebeurtenis.CERVIX_RESULTATEN_MONSTER_VERWIJDERD, loggedInInstellingGebruiker, ronde.getDossier().getClient(),
+		logService.logGebeurtenis(LogGebeurtenis.CERVIX_RESULTATEN_MONSTER_VERWIJDERD, ingelogdeOrganisatieMedewerker, ronde.getDossier().getClient(),
 			"Monster-id: " + monster.getMonsterId(), Bevolkingsonderzoek.CERVIX);
 	}
 

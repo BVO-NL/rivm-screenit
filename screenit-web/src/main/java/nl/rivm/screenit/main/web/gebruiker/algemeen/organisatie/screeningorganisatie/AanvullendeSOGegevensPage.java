@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.screeningorgani
  * =========================LICENSE_END==================================
  */
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,13 +36,13 @@ import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidato
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieBeheer;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatiePaspoortPanel;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieZoeken;
-import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.UploadInstellingImageFormComponent;
-import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.UploadInstellingImageType;
+import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.UploadOrganisatieImageFormComponent;
+import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.UploadOrganisatieImageType;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.Gemeente;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.ZASRetouradres;
@@ -53,7 +52,7 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.GemeenteService;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.organisatie.model.Adres;
@@ -81,9 +80,9 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	constraint = ShiroConstraint.HasPermission,
 	recht = {
-		Recht.GEBRUIKER_SCREENINGS_ORG_BEHEER },
+		Recht.MEDEWERKER_SCREENINGS_ORG_BEHEER },
 	checkScope = true,
-	level = ToegangLevel.INSTELLING,
+	level = ToegangLevel.ORGANISATIE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON,
 		Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class AanvullendeSOGegevensPage extends OrganisatieBeheer
@@ -95,7 +94,7 @@ public class AanvullendeSOGegevensPage extends OrganisatieBeheer
 	private HibernateService hibernateService;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private AutorisatieService autorisatieService;
@@ -105,36 +104,32 @@ public class AanvullendeSOGegevensPage extends OrganisatieBeheer
 
 	public AanvullendeSOGegevensPage()
 	{
-		Instelling organisatie = getCurrentSelectedOrganisatie();
+		var organisatie = getCurrentSelectedOrganisatie();
 		add(new OrganisatiePaspoortPanel("paspoort", ModelUtil.sModel(organisatie)));
 
-		final IModel<Instelling> model = ModelUtil.cModel(organisatie);
+		var model = ModelUtil.cModel(organisatie);
 		setDefaultModel(model);
-		Instelling instelling = model.getObject();
-		if (instelling.getAdressen() == null)
+		organisatie = model.getObject();
+		if (organisatie.getAdres() == null)
 		{
-			instelling.setAdressen(new ArrayList<Adres>());
+			organisatie.setAdres(new Adres());
 		}
-		if (instelling.getAdressen().size() == 0)
+		if (organisatie.getPostbusAdres() == null)
 		{
-			instelling.getAdressen().add(new Adres());
+			organisatie.setPostbusAdres(new Adres());
 		}
-		if (instelling.getAdressen().size() == 1)
+		if (organisatie.getAntwoordnummerAdres() == null)
 		{
-			instelling.getAdressen().add(new Adres());
-		}
-		if (instelling.getAdressen().size() == 2)
-		{
-			instelling.getAdressen().add(new Adres());
+			organisatie.setAntwoordnummerAdres(new Adres());
 		}
 
-		ScreenitForm<Instelling> form = new ScreenitForm<>("form", model);
+		ScreenitForm<Organisatie> form = new ScreenitForm<>("form", model);
 		add(form);
 
 		OrganisatieType organisatieType = organisatie.getOrganisatieType();
 		Recht recht = organisatieType.getRecht();
 
-		Actie actie = autorisatieService.getActieVoorOrganisatie(ScreenitSession.get().getLoggedInInstellingGebruiker(), organisatie, recht);
+		Actie actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie, recht);
 
 		boolean inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 		SpecifiekeContactinformatiePanel contactinformatiePanel = new SpecifiekeContactinformatiePanel("specifiekeContactInformatie", model, inzien);
@@ -144,15 +139,15 @@ public class AanvullendeSOGegevensPage extends OrganisatieBeheer
 		form.add(percentageIntegerField);
 
 		ComponentHelper.addTextField(form, "regioCode", true, 2, String.class, inzien).setOutputMarkupId(true).add(StringValidator.exactLength(2))
-			.add(new ScreenitUniqueFieldValidator<>(ScreeningOrganisatie.class, instelling.getId(), "regioCode", false));
+			.add(new ScreenitUniqueFieldValidator<>(ScreeningOrganisatie.class, organisatie.getId(), "regioCode", false));
 		ComponentHelper.addTextField(form, "rechtbank", false, 255, String.class, inzien);
 		ComponentHelper.addTextField(form, "rcmdl", false, 255, String.class, inzien);
 		form.add(new TextArea<String>("vertegenwoordiger").add(StringValidator.maximumLength(512)).setEnabled(!inzien));
-		form.add(new UploadInstellingImageFormComponent("logo", model, UploadInstellingImageType.DK_SO_LOGO_INPAKCENTRUM).setEnabled(!inzien));
-		form.add(new UploadInstellingImageFormComponent("logoBrief", model, UploadInstellingImageType.DK_SO_LOGO_BRIEF).setEnabled(!inzien));
-		form.add(new UploadInstellingImageFormComponent("besturderSign", model, UploadInstellingImageType.DK_SO_BESTUUR).setEnabled(!inzien));
-		form.add(new UploadInstellingImageFormComponent("rcmdlSign", model, UploadInstellingImageType.DK_SO_RCMDL).setEnabled(!inzien));
-		form.add(new UploadInstellingImageFormComponent("kwaliteitslogo", model, UploadInstellingImageType.DK_SO_KWALITEITS_LOGO).setEnabled(!inzien));
+		form.add(new UploadOrganisatieImageFormComponent("logo", model, UploadOrganisatieImageType.DK_SO_LOGO_INPAKCENTRUM).setEnabled(!inzien));
+		form.add(new UploadOrganisatieImageFormComponent("logoBrief", model, UploadOrganisatieImageType.DK_SO_LOGO_BRIEF).setEnabled(!inzien));
+		form.add(new UploadOrganisatieImageFormComponent("besturderSign", model, UploadOrganisatieImageType.DK_SO_BESTUUR).setEnabled(!inzien));
+		form.add(new UploadOrganisatieImageFormComponent("rcmdlSign", model, UploadOrganisatieImageType.DK_SO_RCMDL).setEnabled(!inzien));
+		form.add(new UploadOrganisatieImageFormComponent("kwaliteitslogo", model, UploadOrganisatieImageType.DK_SO_KWALITEITS_LOGO).setEnabled(!inzien));
 
 		WebMarkupContainer bkGroep = new WebMarkupContainer("borstkankerGegevens");
 		form.add(bkGroep);
@@ -210,15 +205,15 @@ public class AanvullendeSOGegevensPage extends OrganisatieBeheer
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				ScreeningOrganisatie screeningOrganisatie = (ScreeningOrganisatie) model.getObject();
-				instellingService.saveOrUpdateScreeningOrganisatie(screeningOrganisatie, gemeentes.getChoices().getObject(),
-					ScreenitSession.get().getLoggedInInstellingGebruiker());
+				organisatieService.saveOrUpdateScreeningOrganisatie(screeningOrganisatie, gemeentes.getChoices().getObject(),
+					getIngelogdeOrganisatieMedewerker());
 				BasePage.markeerFormulierenOpgeslagen(target);
 				this.info("Gegevens zijn succesvol opgeslagen");
 			}
 
 		});
 
-		AjaxLink<Gebruiker> annuleren = new AjaxLink<Gebruiker>("annuleren")
+		AjaxLink<Medewerker> annuleren = new AjaxLink<Medewerker>("annuleren")
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target)
@@ -229,7 +224,7 @@ public class AanvullendeSOGegevensPage extends OrganisatieBeheer
 		form.add(annuleren);
 	}
 
-	private void addBmhkLabRetouradressen(ScreenitForm<Instelling> form, Instelling organisatie, boolean inzien)
+	private void addBmhkLabRetouradressen(ScreenitForm<Organisatie> form, Organisatie organisatie, boolean inzien)
 	{
 		IModel<List<ZASRetouradres>> retouradressenModel = new PropertyModel<List<ZASRetouradres>>(getDefaultModel(), "retouradressen");
 		List<ZASRetouradres> retouradressen = retouradressenModel.getObject();

@@ -24,9 +24,9 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.component.ScreenitForm;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.UploadDocument;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -44,13 +44,13 @@ public abstract class OrganisatieDocumentPopupPanel extends GenericPanel<UploadD
 {
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	private static final long serialVersionUID = 1L;
 
-	private final IModel<Instelling> selectedOrganisatieModel;
+	private final IModel<Organisatie> selectedOrganisatieModel;
 
-	public OrganisatieDocumentPopupPanel(String id, final IModel<UploadDocument> model, IModel<Instelling> selectedOrganisatie, final WebMarkupContainer documentenContainer)
+	public OrganisatieDocumentPopupPanel(String id, final IModel<UploadDocument> model, IModel<Organisatie> selectedOrganisatie, final WebMarkupContainer documentenContainer)
 	{
 		super(id, model);
 		this.selectedOrganisatieModel = selectedOrganisatie;
@@ -75,7 +75,7 @@ public abstract class OrganisatieDocumentPopupPanel extends GenericPanel<UploadD
 					nieuwDocument.setFile(files.getObject().get(0).writeToTempFile());
 					nieuwDocument.setNaam(files.getObject().get(0).getClientFileName());
 					nieuwDocument.setContentType(files.getObject().get(0).getContentType());
-					instellingService.saveDocumentForInstelling(nieuwDocument, ModelUtil.nullSafeGet(selectedOrganisatieModel));
+					organisatieService.saveDocumentForOrganisatie(nieuwDocument, ModelUtil.nullSafeGet(selectedOrganisatieModel));
 					close(target);
 					info("Document is succesvol geupload");
 				}

@@ -25,7 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.rivm.screenit.Constants;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.ClientContactActieTypeWrapper;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.ClientContactPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaPlanningBasePage;
@@ -46,7 +47,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_TEHUIS },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_TEHUIS },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaAfspraakVerzettenAfmeldenPage extends MammaPlanningBasePage
 {
@@ -87,10 +88,10 @@ public class MammaAfspraakVerzettenAfmeldenPage extends MammaPlanningBasePage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = super.getContextMenuItems();
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.planning.afspraken.verzetten.afmelden", false, MammaAfspraakVerzettenAfmeldenPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = super.getContextMenuItems();
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.planning.afspraken.verzetten.afmelden", false, MammaAfspraakVerzettenAfmeldenPage.class));
 
 		return contextMenuItems;
 	}

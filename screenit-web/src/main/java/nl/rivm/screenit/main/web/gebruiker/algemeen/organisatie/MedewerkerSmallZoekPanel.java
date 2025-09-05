@@ -33,9 +33,9 @@ import nl.rivm.screenit.main.web.component.table.ActiefPropertyColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.medewerker.MedewerkerDataProvider;
 import nl.rivm.screenit.model.Functie_;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Gebruiker_;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Medewerker_;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
@@ -64,7 +64,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
-public abstract class MedewerkerSmallZoekPanel extends GenericPanel<Gebruiker>
+public abstract class MedewerkerSmallZoekPanel extends GenericPanel<Medewerker>
 {
 	private WebMarkupContainer medewerkersContainer = null;
 
@@ -77,7 +77,7 @@ public abstract class MedewerkerSmallZoekPanel extends GenericPanel<Gebruiker>
 	@SpringBean
 	private ICurrentDateSupplier currentDateSupplier;
 
-	private IModel<Gebruiker> selectedMedewerker = Model.of();
+	private IModel<Medewerker> selectedMedewerker = Model.of();
 
 	private WebMarkupContainer selectedMedewerkerContainer;
 
@@ -94,22 +94,22 @@ public abstract class MedewerkerSmallZoekPanel extends GenericPanel<Gebruiker>
 	{
 		super.onInitialize();
 
-		var ingelogdeOrganisatieMedewerker = ScreenitSession.get().getLoggedInInstellingGebruiker();
+		var ingelogdeOrganisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 
 		var toegangLevel = autorisatieService.getToegangLevel(ingelogdeOrganisatieMedewerker, minimumActie, true,
-			Recht.GEBRUIKER_MEDEWERKER_BEHEER);
-		var searchObject = new Gebruiker();
+			Recht.MEDEWERKER_BEHEER);
+		var searchObject = new Medewerker();
 		searchObject.setActief(Boolean.TRUE);
-		if (toegangLevel != null && toegangLevel.equals(ToegangLevel.INSTELLING))
+		if (toegangLevel != null && toegangLevel.equals(ToegangLevel.ORGANISATIE))
 		{
 			searchObject.setOrganisatieMedewerkers(new ArrayList<>());
-			searchObject.getOrganisatieMedewerkers().add(new InstellingGebruiker());
+			searchObject.getOrganisatieMedewerkers().add(new OrganisatieMedewerker());
 			searchObject.getOrganisatieMedewerkers().get(0).setOrganisatie(ingelogdeOrganisatieMedewerker.getOrganisatie());
 		}
 
 		var searchObjectModel = ModelUtil.ccModel(searchObject);
 		setModel(searchObjectModel);
-		var medewerkerZoekForm = new ScreenitForm<Gebruiker>("form", searchObjectModel);
+		var medewerkerZoekForm = new ScreenitForm<Medewerker>("form", searchObjectModel);
 
 		medewerkerZoekForm.add(new TextField<String>("achternaam"));
 		medewerkerZoekForm.add(new ScreenitDropdown<>("functie", ModelUtil.listRModel(stamtabellenService.getFuncties(null), false), new NaamChoiceRenderer<>()));
@@ -174,35 +174,35 @@ public abstract class MedewerkerSmallZoekPanel extends GenericPanel<Gebruiker>
 		setVorigZoekObject(searchObject);
 
 		return new ScreenitDataTable<>("medewerkers", columns,
-			new MedewerkerDataProvider(Gebruiker_.ACHTERNAAM, getModel()), new Model<>("medewerkers"))
+			new MedewerkerDataProvider(Medewerker_.ACHTERNAAM, getModel()), new Model<>("medewerkers"))
 		{
 			@Override
-			public void onClick(AjaxRequestTarget target, IModel<Gebruiker> model)
+			public void onClick(AjaxRequestTarget target, IModel<Medewerker> model)
 			{
 				onSelected(target, model);
 			}
 		};
 	}
 
-	protected void onSelected(AjaxRequestTarget target, IModel<Gebruiker> model)
+	protected void onSelected(AjaxRequestTarget target, IModel<Medewerker> model)
 	{
 		selectedMedewerker = model;
 		addOrReplaceSelectedMedewerker();
 	}
 
-	protected abstract Gebruiker getVorigZoekObject();
+	protected abstract Medewerker getVorigZoekObject();
 
-	protected abstract void setVorigZoekObject(Gebruiker searchObject);
+	protected abstract void setVorigZoekObject(Medewerker searchObject);
 
-	private List<IColumn<Gebruiker, String>> getMedewerkerColumns(IModel<Gebruiker> searchModel)
+	private List<IColumn<Medewerker, String>> getMedewerkerColumns(IModel<Medewerker> searchModel)
 	{
-		List<IColumn<Gebruiker, String>> columns = new ArrayList<>();
+		List<IColumn<Medewerker, String>> columns = new ArrayList<>();
 
-		columns.add(new PropertyColumn<>(Model.of("Naam medewerker"), Gebruiker_.ACHTERNAAM, "naamVolledigMetVoornaam"));
-		columns.add(new PropertyColumn<>(Model.of("Organisaties"), "instelling")
+		columns.add(new PropertyColumn<>(Model.of("Naam medewerker"), Medewerker_.ACHTERNAAM, "naamVolledigMetVoornaam"));
+		columns.add(new PropertyColumn<>(Model.of("Organisaties"), "organisatie")
 		{
 			@Override
-			public void populateItem(Item<ICellPopulator<Gebruiker>> item, String componentId, IModel<Gebruiker> rowModel)
+			public void populateItem(Item<ICellPopulator<Medewerker>> item, String componentId, IModel<Medewerker> rowModel)
 			{
 				var medewerker = rowModel.getObject();
 				var organisaties = "";
@@ -236,12 +236,12 @@ public abstract class MedewerkerSmallZoekPanel extends GenericPanel<Gebruiker>
 				item.add(new Label(componentId, organisaties));
 			}
 		});
-		columns.add(new PropertyColumn<>(Model.of("Functie"), propertyChain(Gebruiker_.FUNCTIE, Functie_.FUNCTIE), "functie.naam"));
+		columns.add(new PropertyColumn<>(Model.of("Functie"), propertyChain(Medewerker_.FUNCTIE, Functie_.FUNCTIE), "functie.naam"));
 		columns.add(new ActiefPropertyColumn<>(Model.of(""), "actief", medewerkersContainer, searchModel));
 
 		return columns;
 	}
 
-	protected abstract void onCloseWithSelected(AjaxRequestTarget target, IModel<Gebruiker> model);
+	protected abstract void onCloseWithSelected(AjaxRequestTarget target, IModel<Medewerker> model);
 
 }

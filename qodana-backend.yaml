@@ -1,0 +1,28 @@
+version: "1.0"
+profile:
+  name: qodana.recommended
+
+projectJDK: "17"
+linter: qodana-jvm
+
+coverage:
+  reportProblems: false
+
+exclude:
+  - name: All
+    paths:
+      - screenit-frontend-base
+      - screenit-frontend
+      - screenit-clientportaal/frontend
+      - screenit-huisartsenportaal/frontend
+      - screenit-se/se-proxy/webapp
+
+      #failureConditions:
+      #  testCoverageThresholds:
+      #    fresh: 80
+      #  severityThresholds:
+      #    critical: 0
+      #    high: 0
+      #    moderate: 2
+      #    low: 5
+    #    info: 10

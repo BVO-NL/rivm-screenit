@@ -67,7 +67,7 @@ import static nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht_.SET_ID;
 import static nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht_.VERSIE;
 
 @Slf4j
-@SecurityConstraint(actie = Actie.INZIEN, checkScope = false, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_VERSLAGEN, bevolkingsonderzoekScopes = {
+@SecurityConstraint(actie = Actie.INZIEN, checkScope = false, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_VERSLAGEN, bevolkingsonderzoekScopes = {
 	Bevolkingsonderzoek.COLON })
 public class VerwerkteBerichtenOverzichtPage extends ColonScreeningBasePage
 {
@@ -151,7 +151,7 @@ public class VerwerkteBerichtenOverzichtPage extends ColonScreeningBasePage
 			}
 
 		});
-		final var magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_VERSLAGEN, Actie.AANPASSEN);
+		final var magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VERSLAGEN, Actie.AANPASSEN);
 		if (magAanpassen)
 		{
 			columns.add(new AbstractColumn<>(Model.of("Opnieuw aanbieden"))
@@ -235,7 +235,7 @@ public class VerwerkteBerichtenOverzichtPage extends ColonScreeningBasePage
 					verslagService.herverwerkAlleBerichten(ModelUtil.nullSafeGet(berichtZoekFilter));
 					info("Alle gefilterde berichten worden opnieuw aangeboden");
 				}
-			}.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_VERSLAGEN, Actie.AANPASSEN)));
+			}.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VERSLAGEN, Actie.AANPASSEN)));
 		}
 	}
 

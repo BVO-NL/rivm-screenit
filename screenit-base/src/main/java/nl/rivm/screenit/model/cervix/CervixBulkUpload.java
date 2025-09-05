@@ -31,12 +31,17 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import lombok.Getter;
+import lombok.Setter;
+
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 @Entity
 @Table(schema = "cervix", name = "bulk_upload")
+@Getter
+@Setter
 public class CervixBulkUpload extends AbstractHibernateObject
 {
 
@@ -47,35 +52,5 @@ public class CervixBulkUpload extends AbstractHibernateObject
 	private Date uploadDatum;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	private InstellingGebruiker gebruiker;
-
-	public UploadDocument getDocument()
-	{
-		return document;
-	}
-
-	public void setDocument(UploadDocument document)
-	{
-		this.document = document;
-	}
-
-	public Date getUploadDatum()
-	{
-		return uploadDatum;
-	}
-
-	public void setUploadDatum(Date uploadDatum)
-	{
-		this.uploadDatum = uploadDatum;
-	}
-
-	public InstellingGebruiker getGebruiker()
-	{
-		return gebruiker;
-	}
-
-	public void setGebruiker(InstellingGebruiker gebruiker)
-	{
-		this.gebruiker = gebruiker;
-	}
+	private OrganisatieMedewerker organisatieMedewerker;
 }

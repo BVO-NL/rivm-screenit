@@ -31,9 +31,9 @@ import nl.rivm.screenit.model.enums.Recht;
 @Getter
 public enum ProjectType
 {
-	BRIEFPROJECT("Briefproject", Recht.GEBRUIKER_BRIEFPROJECT_OVERZICHT),
+	BRIEFPROJECT("Briefproject", Recht.MEDEWERKER_BRIEFPROJECT_OVERZICHT),
 
-	PROJECT("Project", Recht.GEBRUIKER_PROJECT_OVERZICHT),
+	PROJECT("Project", Recht.MEDEWERKER_PROJECT_OVERZICHT),
 	;
 
 	private final String naam;

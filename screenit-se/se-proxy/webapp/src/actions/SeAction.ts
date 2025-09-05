@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -37,7 +37,7 @@ import type {WijzigingenActions} from "./WijzigingenActions"
 import type {PassantAfspraakMakenActions} from "./PassantAfspraakMakenActions"
 import type {PlanningActions} from "./PlanningActions"
 import type {PopupActions} from "./PopupActions"
-import type {SeGebruikersActions} from "./SeGebruikersActions"
+import type {SeMedewerkersActions} from "./SeMedewerkersActions"
 import type {SessionActions} from "./SessionActions"
 import type {SignalerenActions} from "./SignalerenActions"
 import type {UpdateActions} from "./UpdateAction"
@@ -71,7 +71,7 @@ export type SeAction =
 	| PassantAfspraakMakenActions
 	| PlanningActions
 	| PopupActions
-	| SeGebruikersActions
+	| SeMedewerkersActions
 	| SessionActions
 	| SignalerenActions
 	| UpdateActions

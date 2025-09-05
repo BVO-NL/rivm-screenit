@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.service.AsyncMessageReceiver;
 import nl.rivm.screenit.main.service.BatchService;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.batch.AddTriggerRequest;
 import nl.rivm.screenit.model.batch.AddTriggerResponse;
 import nl.rivm.screenit.model.batch.BatchQueue;
@@ -268,7 +268,7 @@ public class BatchServiceImpl implements BatchService
 	}
 
 	@Override
-	public Date addTrigger(final Trigger trigger, InstellingGebruiker instellingGebruiker)
+	public Date addTrigger(final Trigger trigger, OrganisatieMedewerker organisatieMedewerker)
 	{
 		Date result = jmsTemplate.execute(new SessionCallback<Date>()
 		{
@@ -325,7 +325,7 @@ public class BatchServiceImpl implements BatchService
 			}
 		});
 
-		if (instellingGebruiker != null)
+		if (organisatieMedewerker != null)
 		{
 			LogEvent logEvent = new LogEvent();
 			String logMelding = getTriggerForMelding(trigger);
@@ -335,7 +335,7 @@ public class BatchServiceImpl implements BatchService
 				logMelding = "Trigger kon niet aangemaakt worden => " + logMelding;
 			}
 			logEvent.setMelding(logMelding);
-			logService.logGebeurtenis(LogGebeurtenis.BATCH_ADD_TRIGGER, logEvent, instellingGebruiker);
+			logService.logGebeurtenis(LogGebeurtenis.BATCH_ADD_TRIGGER, logEvent, organisatieMedewerker);
 		}
 		return result;
 	}
@@ -353,7 +353,7 @@ public class BatchServiceImpl implements BatchService
 	}
 
 	@Override
-	public Boolean removeTrigger(final String triggerNaam, InstellingGebruiker instellingGebruiker)
+	public Boolean removeTrigger(final String triggerNaam, OrganisatieMedewerker organisatieMedewerker)
 	{
 		LOG.trace("removeTrigger");
 		Boolean result = jmsTemplate.execute(new SessionCallback<Boolean>()
@@ -420,7 +420,7 @@ public class BatchServiceImpl implements BatchService
 			logMelding = "Trigger kon niet verwijderd worden => " + logMelding;
 		}
 		logEvent.setMelding(logMelding);
-		logService.logGebeurtenis(LogGebeurtenis.BATCH_REMOVE_TRIGGER, logEvent, instellingGebruiker);
+		logService.logGebeurtenis(LogGebeurtenis.BATCH_REMOVE_TRIGGER, logEvent, organisatieMedewerker);
 
 		return result;
 	}

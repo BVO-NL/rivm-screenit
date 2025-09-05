@@ -54,7 +54,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.AANPASSEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_KOPPELRESULTATEN_KANKERREGISTRATIE },
+	recht = { Recht.MEDEWERKER_KOPPELRESULTATEN_KANKERREGISTRATIE },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class UploadKoppelresultatenKankerregistratiePage extends AlgemeenPage
 {
@@ -96,7 +96,7 @@ public class UploadKoppelresultatenKankerregistratiePage extends AlgemeenPage
 					try
 					{
 						Executors.newSingleThreadExecutor().submit(new KoppelresultatenKankerregistratieVerwerkenThread(
-							fileUpload.writeToTempFile(), fileUpload.getContentType(), fileUpload.getClientFileName(), ScreenitSession.get().getLoggedInInstellingGebruiker(),
+							fileUpload.writeToTempFile(), fileUpload.getContentType(), fileUpload.getClientFileName(), getIngelogdeOrganisatieMedewerker(),
 							bvoModel.getObject()));
 
 						info(getString("upload.gestart"));

@@ -37,7 +37,7 @@ import jakarta.persistence.TemporalType;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.enums.MammaDenseWaarde;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
@@ -62,7 +62,7 @@ public class MammaMammografie extends AbstractHibernateObject
 	private MammaAnnotatieAfbeelding visueleInspectieAfbeelding;
 
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
-	private InstellingGebruiker afgerondDoor;
+	private OrganisatieMedewerker afgerondDoor;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = true)

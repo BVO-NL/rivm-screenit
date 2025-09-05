@@ -40,7 +40,7 @@ import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
 import nl.rivm.screenit.main.web.component.table.GeboortedatumColumn;
 import nl.rivm.screenit.main.web.component.table.NotClickableAbstractColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaBeTabelCounterPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.werklijst.MammaBeoordelingenWerklijstPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
@@ -91,7 +91,7 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_FOTOBESPREKING },
+	recht = { Recht.MEDEWERKER_FOTOBESPREKING },
 	organisatieTypeScopes = { OrganisatieType.BEOORDELINGSEENHEID, OrganisatieType.SCREENINGSORGANISATIE },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobesprekingBasePage
@@ -156,7 +156,7 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 		columns.add(new PropertyColumn<>(Model.of("Volgnummer"), MammaFotobesprekingOnderzoek_.VOLGNUMMER, "volgnummer"));
 
 		if (!MammobridgeRole.anoniemeRollen().contains(ScreenitSession.get().getMammaHuidigeIDS7Role())
-			|| ScreenitSession.get().getInstelling().getOrganisatieType() != OrganisatieType.BEOORDELINGSEENHEID)
+			|| ScreenitSession.get().getOrganisatie().getOrganisatieType() != OrganisatieType.BEOORDELINGSEENHEID)
 		{
 			columns.add(new ClientColumn<>(propertyChain(persoonProperty, GbaPersoon_.ACHTERNAAM), "beoordeling.onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client"));
 			columns.add(
@@ -170,9 +170,9 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 			"beoordeling.onderzoek.screeningsEenheid.naam"));
 		columns.add(new EnumPropertyColumn<>(Model.of("Status"), MammaFotobesprekingOnderzoek_.STATUS, "status", this));
 
-		if (!ScreenitSession.get().getInstelling().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID)
-			&& !ScreenitSession.get().getInstelling().getOrganisatieType().equals(OrganisatieType.KWALITEITSPLATFORM)
-			&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_FOTOBESPREKING, Actie.VERWIJDEREN))
+		if (!ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID)
+			&& !ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.KWALITEITSPLATFORM)
+			&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_FOTOBESPREKING, Actie.VERWIJDEREN))
 		{
 			columns.add(getOnderzoekVerwijderenColumn());
 		}
@@ -182,7 +182,7 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<MammaFotobesprekingOnderzoek> model)
 			{
-				if (ScreenitSession.get().checkPermission(Recht.GEBRUIKER_FOTOBESPREKING, Actie.INZIEN) && isHeeftImsKoppelingRecht())
+				if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_FOTOBESPREKING, Actie.INZIEN) && isHeeftImsKoppelingRecht())
 				{
 					openBesprekenScherm(target, model, onderzoekDataProvider.getSort().getProperty());
 				}
@@ -275,15 +275,15 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 				openOnderzoekToevoegenPopupPanel(target);
 			}
 
-		}.setVisible(!ScreenitSession.get().getInstelling().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID)
-			&& !ScreenitSession.get().getInstelling().getOrganisatieType().equals(OrganisatieType.KWALITEITSPLATFORM)
-			&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_FOTOBESPREKING, Actie.TOEVOEGEN)));
+		}.setVisible(!ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID)
+			&& !ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.KWALITEITSPLATFORM)
+			&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_FOTOBESPREKING, Actie.TOEVOEGEN)));
 	}
 
 	private void addFotobesprekingAfrondenButton()
 	{
 		boolean kanFotobesprekingAfronden = fotobesprekingService.kanFotobesprekingAfronden(getFotobespreking())
-			&& OrganisatieType.BEOORDELINGSEENHEID.equals(ScreenitSession.get().getInstelling().getOrganisatieType());
+			&& OrganisatieType.BEOORDELINGSEENHEID.equals(ScreenitSession.get().getOrganisatie().getOrganisatieType());
 
 		add(new ConfirmingIndicatingAjaxLink<Void>("besprekingAfronden", dialog, "confirm.fotobespreking.afronden")
 		{
@@ -368,10 +368,10 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = super.getContextMenuItems();
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.fotobespreking.onderzoeken", false,
+		List<MedewerkerMenuItem> contextMenuItems = super.getContextMenuItems();
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.fotobespreking.onderzoeken", false,
 			MammaFotobesprekingOnderzoekenWerklijstPage.class));
 
 		return contextMenuItems;

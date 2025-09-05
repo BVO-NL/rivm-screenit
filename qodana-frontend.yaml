@@ -1,0 +1,45 @@
+version: "1.0"
+profile:
+  name: qodana.recommended
+
+linter: qodana-js
+
+coverage:
+  reportProblems: false
+exclude:
+  - name: All
+    paths:
+      - .github/actions/cloudsmith
+      - screenit-batch/
+      - screenit-batch-base/
+      - screenit-batch-alg/
+      - screenit-batch-bk/
+      - screenit-batch-bmhk/
+      - screenit-batch-dk/
+      - screenit-clientportaal/rest/
+      - screenit-huisartsenportaal/rest/
+      - screenit-ims-api/
+      - screenit-kansberekening/
+      - screenit-liquibase/
+      - screenit-mammobridge-stub/
+      - screenit-planning-bk/
+      - screenit-se/se-proxy/src/
+      - screenit-se/se-rest-bk/
+      - screenit-testportaal/
+      - screenit-web/
+      - screenit-web-commons/
+      - screenit-webservice-broker/
+      - screenit-ws-common/
+      - source-publisher/
+      - testen/
+  - name: Eslint
+
+#failureConditions:
+#  testCoverageThresholds:
+#    fresh: 80
+#  severityThresholds:
+#    critical: 0
+#    high: 0
+#    moderate: 2
+#    low: 5
+#    info: 10

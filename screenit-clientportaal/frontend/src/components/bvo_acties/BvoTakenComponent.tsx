@@ -51,11 +51,8 @@ const BvoTakenComponent = (props: BvoTakenComponentProps) => {
 	const afmeldContactActieTypeVanBvo: ClientContactActieType = bvo === Bevolkingsonderzoek.MAMMA ? ClientContactActieType.MAMMA_AFMELDEN : bvo === Bevolkingsonderzoek.CERVIX ? ClientContactActieType.CERVIX_AFMELDEN : ClientContactActieType.COLON_AFMELDEN
 
 	useEffect(() => {
-		ScreenitBackend.get(`/afmelden/${bvo}`)
-			.then((response) => {
-				setAfmeldOpties(response.data)
-			})
-
+		ScreenitBackend.get<AfmeldOptiesDto>(`afmelden/${bvo}`).json()
+			.then((response) => setAfmeldOpties(response))
 	}, [bvo])
 
 	return (

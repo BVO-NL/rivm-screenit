@@ -33,9 +33,9 @@ import nl.rivm.screenit.main.web.component.modal.DefaultConfirmCallback;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.component.table.AjaxImageCellPanel;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.CervixScreeningBasePage;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.cervix.facturatie.CervixBetaalopdracht;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.BestandStatus;
@@ -94,7 +94,7 @@ public class CervixBetalingSepaBestandenPage extends CervixScreeningBasePage
 		betaalOpdrachtColumns.add(new PropertyColumn<>(Model.of("Betalingskenmerk"), BETALINGSKENMERK, BETALINGSKENMERK));
 		betaalOpdrachtColumns.add(new PropertyColumn<>(Model.of("Omschrijving"), OMSCHRIJVING, OMSCHRIJVING));
 		betaalOpdrachtColumns.add(
-			new PropertyColumn<>(Model.of("Screeningorganisatie"), SCREENING_ORGANISATIE + "." + Instelling_.NAAM, SCREENING_ORGANISATIE + "." + Instelling_.NAAM));
+			new PropertyColumn<>(Model.of("Screeningorganisatie"), SCREENING_ORGANISATIE + "." + Organisatie_.NAAM, SCREENING_ORGANISATIE + "." + Organisatie_.NAAM));
 		betaalOpdrachtColumns.add(new AbstractColumn<>(Model.of("Status"))
 		{
 
@@ -113,7 +113,7 @@ public class CervixBetalingSepaBestandenPage extends CervixScreeningBasePage
 							{
 								try
 								{
-									betalingService.opslaanBetaalopdracht(rowModel.getObject(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+									betalingService.opslaanBetaalopdracht(rowModel.getObject(), getIngelogdeOrganisatieMedewerker());
 									betalingService.genereerCervixBetalingsSpecificatieEnSepaBestand(rowModel.getObject().getId());
 
 									var container = getCervixBetalingopdrachtTabelContainer();
@@ -148,7 +148,7 @@ public class CervixBetalingSepaBestandenPage extends CervixScreeningBasePage
 			protected void loggingBijOnClick(IModel<CervixBetaalopdracht> rowModel)
 			{
 				var melding = "Betalingskenmerk: " + rowModel.getObject().getBetalingskenmerk();
-				logService.logGebeurtenis(LogGebeurtenis.CERVIX_SEPA_SPECIFICATIE_DOCUMENT_GEDOWNLOAD, ScreenitSession.get().getLoggedInAccount(), melding,
+				logService.logGebeurtenis(LogGebeurtenis.CERVIX_SEPA_SPECIFICATIE_DOCUMENT_GEDOWNLOAD, ScreenitSession.get().getIngelogdAccount(), melding,
 					Bevolkingsonderzoek.CERVIX);
 			}
 
@@ -165,7 +165,7 @@ public class CervixBetalingSepaBestandenPage extends CervixScreeningBasePage
 			protected void loggingBijOnClick(IModel<CervixBetaalopdracht> rowModel)
 			{
 				var melding = "Betalingskenmerk: " + rowModel.getObject().getBetalingskenmerk();
-				logService.logGebeurtenis(LogGebeurtenis.CERVIX_SEPA_DOCUMENT_GEDOWNLOAD, ScreenitSession.get().getLoggedInAccount(), melding, Bevolkingsonderzoek.CERVIX);
+				logService.logGebeurtenis(LogGebeurtenis.CERVIX_SEPA_DOCUMENT_GEDOWNLOAD, ScreenitSession.get().getIngelogdAccount(), melding, Bevolkingsonderzoek.CERVIX);
 			}
 
 			@Override
@@ -174,7 +174,7 @@ public class CervixBetalingSepaBestandenPage extends CervixScreeningBasePage
 				return !BestandStatus.CRASH.equals(rowModel.getObject().getStatus());
 			}
 		});
-		if (ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_BETALINGEN_BMHK, Actie.VERWIJDEREN))
+		if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_BETALINGEN_BMHK, Actie.VERWIJDEREN))
 		{
 			betaalOpdrachtColumns.add(new AbstractColumn<>(Model.of("Verwijderen"))
 			{
@@ -240,11 +240,11 @@ public class CervixBetalingSepaBestandenPage extends CervixScreeningBasePage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.cervixscreening.betalingen", CervixBetalingPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.cervixscreening.betalingen.sepabestanden", CervixBetalingSepaBestandenPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.cervixscreening.betalingen", CervixBetalingPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.cervixscreening.betalingen.sepabestanden", CervixBetalingSepaBestandenPage.class));
 		return contextMenuItems;
 	}
 

@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.service.LogService;
@@ -52,7 +52,7 @@ public abstract class MammaOnderzoekenZonderBeelenOfNietAfgeslotenBaseWriter ext
 		var melding = "UitnodigingsNr: " + screeningRonde.getUitnodigingsNr();
 		var client = screeningRonde.getDossier().getClient();
 		var screeningsEenheid = afspraak.getStandplaatsPeriode().getScreeningsEenheid();
-		List<Instelling> dashboardOrganisaties = Collections.singletonList(client.getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie());
+		List<Organisatie> dashboardOrganisaties = Collections.singletonList(client.getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie());
 
 		logService.logGebeurtenis(logGebeurtenis, screeningsEenheid, dashboardOrganisaties, client, melding);
 	}

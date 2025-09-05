@@ -50,7 +50,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @SecurityConstraint(
 	constraint = ShiroConstraint.HasPermission,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA },
-	recht = { Recht.GEBRUIKER_MAMMA_EXCHANGE },
+	recht = { Recht.MEDEWERKER_MAMMA_EXCHANGE },
 	organisatieTypeScopes = { OrganisatieType.SCREENINGSORGANISATIE, OrganisatieType.RADIOLOGIEAFDELING, OrganisatieType.MAMMAPOLI, OrganisatieType.ZORGINSTELLING,
 		OrganisatieType.RIVM },
 	checkScope = true) 
@@ -72,7 +72,8 @@ public class MammaExchangeDownloadResource extends AbstractResource
 	{
 		var parameters = attributes.getParameters();
 		var downloadVerzoekId = getDownloadVerzoekId(parameters);
-		var downloadVerzoek = uitwisselPortaalService.geldigDownloadVerzoekVoorIngelogdeGebruiker(downloadVerzoekId, ScreenitSession.get().getLoggedInInstellingGebruiker());
+		var downloadVerzoek = uitwisselPortaalService.geldigDownloadVerzoekVoorIngelogdeOrganisatieMedewerker(downloadVerzoekId,
+			ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 		if (downloadVerzoek.isEmpty())
 		{
 			LOG.warn("Geen toegang voor downloadverzoek '{}'", downloadVerzoekId);

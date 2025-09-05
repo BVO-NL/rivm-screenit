@@ -29,18 +29,16 @@ import properties from "../pages/bvo/gedeeld/HeraanmeldenPage.json"
 import {getString} from "../utils/TekstPropertyUtil"
 import HttpStatusCode from "../datatypes/HttpStatus"
 
-export const saveHeraanmeldVerzoekEnGeefBeschikbareActies = (bvo: Bevolkingsonderzoek, wilNieuweUitnodigingOntvangen: boolean, dispatch: Dispatch<ResetBeschikbareContactActies>) => (): Promise<ContactActiesDto> => {
-	return new Promise<ContactActiesDto>((resolve => {
-		ScreenitBackend.post(`/heraanmelden/${bvo}/${wilNieuweUitnodigingOntvangen}`).then(() => {
-			ScreenitBackend.get(`/acties/beschikbaar`)
-				.then(response => {
-					dispatch(setBeschikbareContactActies(response.data))
-					resolve(response.data)
-				})
-		}).catch((error) => {
+export const saveHeraanmeldVerzoekEnGeefBeschikbareActies = (bvo: Bevolkingsonderzoek, wilNieuweUitnodigingOntvangen: boolean, dispatch: Dispatch<ResetBeschikbareContactActies>) => (): Promise<ContactActiesDto | void> => {
+	return ScreenitBackend.post(`heraanmelden/${bvo}/${wilNieuweUitnodigingOntvangen}`)
+		.then(() => ScreenitBackend.get<ContactActiesDto>(`acties/beschikbaar`).json())
+		.then(response => {
+			dispatch(setBeschikbareContactActies(response))
+			return response
+		})
+		.catch((error) => {
 			if (error.response.status === HttpStatusCode.CONFLICT && error.response.data === "mamma.standplaats.postcode.onbekend") {
 				showToast(undefined, getString(properties.toast.MAMMA.postcode), ToastMessageType.ERROR)
 			}
 		})
-	}))
 }

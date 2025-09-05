@@ -30,9 +30,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.web.component.table.NavigeerNaarCellPanel;
 import nl.rivm.screenit.main.web.component.table.UploadDocumentDownloadLinkPanel;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.model.MailMergeContext;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -86,10 +86,9 @@ public class ProjectBriefActieTemplatePage extends ProjectTemplateTestenBasePage
 		Project project = briefactieModel.getObject().getProject();
 		if (project != null && project.getScreeningOrganisaties() != null)
 		{
-			for (Instelling instelling : project.getScreeningOrganisaties())
+			for (Organisatie organisatie : project.getScreeningOrganisaties())
 			{
-				ScreeningOrganisatie organisatie = hibernateService.load(ScreeningOrganisatie.class, instelling.getId());
-				soLijst.add(organisatie);
+				soLijst.add(hibernateService.load(ScreeningOrganisatie.class, organisatie.getId()));
 			}
 		}
 		return soLijst;
@@ -191,7 +190,7 @@ public class ProjectBriefActieTemplatePage extends ProjectTemplateTestenBasePage
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveContextMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveContextMenuClass()
 	{
 		return ProjectBriefActiePage.class;
 	}

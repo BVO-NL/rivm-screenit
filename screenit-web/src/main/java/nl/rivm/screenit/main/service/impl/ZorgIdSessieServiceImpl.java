@@ -35,13 +35,13 @@ import jakarta.inject.Inject;
 import javax.net.ssl.SSLContext;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.main.service.IdpServer2ServerService;
 import nl.rivm.screenit.main.service.ZorgIdSessieService;
 import nl.rivm.screenit.main.service.impl.zorgid.ClosedSessieState;
 import nl.rivm.screenit.main.service.impl.zorgid.InitializedSessieState;
 import nl.rivm.screenit.main.service.impl.zorgid.OpenCancelledSessieState;
 import nl.rivm.screenit.main.service.impl.zorgid.OpenedSessieState;
 import nl.rivm.screenit.main.service.impl.zorgid.SessieState;
+import nl.rivm.screenit.service.IdpServer2ServerService;
 import nl.topicuszorg.cloud.distributedsessions.RedisConfig;
 import nl.topicuszorg.cloud.distributedsessions.jedis.JedisFactory;
 import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
@@ -81,6 +81,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+
+import static nl.rivm.screenit.model.enums.IdpServer2ServerType.ZORG_ID;
 
 @Configuration
 @EnableScheduling
@@ -299,7 +301,7 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 				}
 				else if (entry.getValue() instanceof OpenedSessieState)
 				{
-					LOG.warn("Verlopen OpenedSessieState wordt verwijderd (gebruiker te lang ingelogd?): {}", entry.getKey());
+					LOG.warn("Verlopen OpenedSessieState wordt verwijderd (medewerker te lang ingelogd?): {}", entry.getKey());
 				}
 				else
 				{
@@ -462,8 +464,13 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 	{
 		String zorgidCallbackUrl = zorgidCallbackUrl();
 		LOG.info("Opgestart met zorgidCallbackUrl: {}", zorgidCallbackUrl);
-		Supplier<String> oAuthTokenSupplier = idpService::getIdpAccessTokenVoorZorgId;
+		Supplier<String> oAuthTokenSupplier = this::getIdpAccesssTokenVoorZorgId;
 		return new ZorgidClientImpl(zorgidServerUrl(), zorgidCallbackUrl, zorgidClientTemplate, oAuthTokenSupplier);
+	}
+
+	private String getIdpAccesssTokenVoorZorgId()
+	{
+		return idpService.getIdpAccessToken(ZORG_ID);
 	}
 
 	@Override

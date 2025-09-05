@@ -26,7 +26,7 @@ import java.util.Date;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.overeenkomsten.AbstractAfgeslotenOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.AbstractAfgeslotenOvereenkomst_;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst;
@@ -44,12 +44,12 @@ import static nl.rivm.screenit.specification.SpecificationUtil.treat;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AfgeslotenMedewerkerOvereenkomstSpecification
 {
-	public static <O extends AbstractAfgeslotenOvereenkomst> ExtendedSpecification<O> heeftGebruiker(Gebruiker gebruiker)
+	public static <O extends AbstractAfgeslotenOvereenkomst> ExtendedSpecification<O> heeftMedewerker(Medewerker medewerker)
 	{
 		return (r, q, cb) ->
 		{
 			var medewerkerRoot = treat(r, AfgeslotenMedewerkerOvereenkomst.class, cb);
-			return cb.equal(medewerkerRoot.get(AfgeslotenMedewerkerOvereenkomst_.gebruiker), gebruiker);
+			return cb.equal(medewerkerRoot.get(AfgeslotenMedewerkerOvereenkomst_.medewerker), medewerker);
 		};
 	}
 

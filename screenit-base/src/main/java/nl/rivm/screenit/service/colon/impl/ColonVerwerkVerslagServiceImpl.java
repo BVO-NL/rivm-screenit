@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DossierStatus;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.enums.VerslagGeneratie;
@@ -264,19 +264,19 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 
 	@Override
 	@Transactional
-	public void handmatigMdlVerslagOpslaan(MdlVerslag verslag, InstellingGebruiker ingelogdeGebruiker)
+	public void handmatigMdlVerslagOpslaan(MdlVerslag verslag, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		verslag.setInvoerder(ingelogdeGebruiker);
+		verslag.setInvoerder(ingelogdeOrganisatieMedewerker);
 		verslag.getVerslagContent().setVersie(VerslagGeneratie.getHuidigeGeneratie(VerslagType.MDL));
 		verslag.setDatumVerwerkt(currentDateSupplier.getDate());
 		verwerkInDossier(verslag);
 		onAfterVerwerkVerslagContent(verslag);
 		var client = verslag.getScreeningRonde().getDossier().getClient();
-		var organisatie = ingelogdeGebruiker.getOrganisatie();
+		var organisatie = ingelogdeOrganisatieMedewerker.getOrganisatie();
 		var melding = "Handmatige invoer eindconclusie en vervolgbeleid.";
 		melding += " Datum onderzoek: " + DateUtil.formatShortDate(verslag.getVerslagContent().getVerrichting().getAanvangVerrichting());
 		melding += " Coloscopie locatie: " + organisatie.getNaam();
-		logService.logGebeurtenis(LogGebeurtenis.MDL_VERSLAG_VAST, ingelogdeGebruiker, client, melding,
+		logService.logGebeurtenis(LogGebeurtenis.MDL_VERSLAG_VAST, ingelogdeOrganisatieMedewerker, client, melding,
 			Bevolkingsonderzoek.COLON);
 	}
 

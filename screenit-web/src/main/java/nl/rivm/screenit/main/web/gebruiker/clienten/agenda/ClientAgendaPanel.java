@@ -77,7 +77,7 @@ public class ClientAgendaPanel extends GenericPanel<Client>
 		};
 		Client client = model.getObject();
 		contactAanmaken
-			.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_CONTACT, null, client) && !clientService.isClientOverleden(client));
+			.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_CONTACT, null, client) && !clientService.isClientOverleden(client));
 		add(contactAanmaken);
 
 		ColonAfspraakPanel colonAfspraakPanel = new ColonAfspraakPanel("dkAfspraak", ModelUtil.sModel(client))

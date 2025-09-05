@@ -87,8 +87,8 @@ public abstract class CervixMonsterIdScannenPanel extends Panel
 				var monster = monsterService.getMonster(monsterId.getObject()).orElse(null);
 				if (monster != null)
 				{
-					var ingelogdNamensOrganisatie = ScreenitSession.get().getInstelling();
-					if (!monsterService.magInstellingMonsterInzien(ingelogdNamensOrganisatie, monster))
+					var ingelogdNamensOrganisatie = ScreenitSession.get().getOrganisatie();
+					if (!monsterService.magOrganisatieMonsterInzien(ingelogdNamensOrganisatie, monster))
 					{
 						error(String.format(getString("laboratorium.mag.monster.niet.inzien")));
 					}

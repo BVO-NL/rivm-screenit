@@ -65,7 +65,7 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_SCREENING_WERKLIJST_MISSENDE_MDL_VERSLAGEN,
+	recht = Recht.MEDEWERKER_SCREENING_WERKLIJST_MISSENDE_MDL_VERSLAGEN,
 	organisatieTypeScopes = OrganisatieType.INTAKELOCATIE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class ColonMissendeMdlVerslagenWerklijstPage extends WerklijstIntakePage

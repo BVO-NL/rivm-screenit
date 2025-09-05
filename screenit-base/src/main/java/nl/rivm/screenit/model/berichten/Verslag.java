@@ -23,9 +23,9 @@ package nl.rivm.screenit.model.berichten;
 
 import java.util.Date;
 
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
@@ -40,21 +40,21 @@ public interface Verslag<T extends VerslagContent<?>, R extends ScreeningRonde> 
 
 	void setOntvangenBericht(OntvangenCdaBericht ontvangencdaBericht);
 
-	Instelling getUitvoerderOrganisatie();
+	Organisatie getUitvoerderOrganisatie();
 
-	void setUitvoerderOrganisatie(Instelling uitvoerderOrganisatie);
+	void setUitvoerderOrganisatie(Organisatie uitvoerderOrganisatie);
 
-	Gebruiker getUitvoerderMedewerker();
+	Medewerker getUitvoerderMedewerker();
 
-	void setUitvoerderMedewerker(Gebruiker uitvoerderMedewerker);
+	void setUitvoerderMedewerker(Medewerker uitvoerderMedewerker);
 
 	Date getDatumVerwerkt();
 
 	void setDatumVerwerkt(Date datumVerwerkt);
 
-	InstellingGebruiker getInvoerder();
+	OrganisatieMedewerker getInvoerder();
 
-	void setInvoerder(InstellingGebruiker invoerder);
+	void setInvoerder(OrganisatieMedewerker invoerder);
 
 	Date getDatumOnderzoek();
 

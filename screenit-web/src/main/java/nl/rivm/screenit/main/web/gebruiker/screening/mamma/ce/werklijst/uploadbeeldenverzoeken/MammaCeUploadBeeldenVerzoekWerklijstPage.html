@@ -21,26 +21,26 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:extend>
-    <div class="row-fluid">
-        <form wicket:id="form">
-            <div class="span8 selecteer-instelling-uploadverzoek">
-				<h2 class="pageTitle">Selecteer instelling</h2>
+	<div class="row-fluid">
+		<form wicket:id="form">
+			<div class="span8 selecteer-organisatie-uploadverzoek">
+				<h2 class="pageTitle">Selecteer organisatie</h2>
 				<select wicket:id="gedownloadDoorZiekenhuizen"></select>
 				<div class="pull-right">
 					<a class="btn btn-success" wicket:id="maakVerzoek">Maak uploadverzoek</a>
 				</div>
 			</div>
-        </form>
-        <div class="span4 pull-right">
-            <div wicket:id="paspoort"></div>
-        </div>
-    </div>
-    <h1 class="pageTitle">Instellingen met openstaande uploadverzoeken</h1>
-    <div class="row-fluid">
-        <div class="span12">
-            <div wicket:id="werklijst"></div>
-        </div>
-    </div>
+		</form>
+		<div class="span4 pull-right">
+			<div wicket:id="paspoort"></div>
+		</div>
+	</div>
+	<h1 class="pageTitle">Organisaties met openstaande uploadverzoeken</h1>
+	<div class="row-fluid">
+		<div class="span12">
+			<div wicket:id="werklijst"></div>
+		</div>
+	</div>
 </wicket:extend>
 </body>
 </html>

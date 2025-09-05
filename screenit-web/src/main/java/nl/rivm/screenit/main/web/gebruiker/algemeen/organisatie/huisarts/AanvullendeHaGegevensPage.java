@@ -42,7 +42,7 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.CervixHuisartsPa
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieBeheer;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Aanhef;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.Woonplaats;
 import nl.rivm.screenit.model.Woonplaats_;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
@@ -82,7 +82,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
 @SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = {
-	Recht.GEBRUIKER_HUISARTSENPRAKTIJKEN_BEHEER }, checkScope = true, level = ToegangLevel.INSTELLING, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX })
+	Recht.MEDEWERKER_HUISARTSENPRAKTIJKEN_BEHEER }, checkScope = true, level = ToegangLevel.ORGANISATIE, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX })
 public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 {
 	@SpringBean
@@ -115,8 +115,8 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 
 		CervixHuisarts huisarts = (CervixHuisarts) super.getCurrentSelectedOrganisatie();
 
-		alleenInzien = autorisatieService.getActieVoorOrganisatie(ScreenitSession.get().getLoggedInInstellingGebruiker(), huisarts,
-			Recht.GEBRUIKER_HUISARTSENPRAKTIJKEN_BEHEER) == Actie.INZIEN;
+		alleenInzien = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), huisarts,
+			Recht.MEDEWERKER_HUISARTSENPRAKTIJKEN_BEHEER) == Actie.INZIEN;
 
 		addOrReplacePaspoortPanel(huisarts, null);
 
@@ -179,7 +179,7 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 			public void onClick(AjaxRequestTarget target)
 			{
 				CervixHuisarts huisarts = huisartsIModel.getObject();
-				cervixHuisartsService.resetWachtwoord(huisarts, ScreenitSession.get().getLoggedInAccount());
+				cervixHuisartsService.resetWachtwoord(huisarts, ScreenitSession.get().getIngelogdAccount());
 
 				info("Account in het huisartsenportaal wordt gereset.");
 			}
@@ -200,7 +200,7 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				CervixHuisarts huisarts = (CervixHuisarts) form.getModelObject();
-				cervixHuisartsService.saveOrUpdateArts(huisarts, LogGebeurtenis.ORGANISATIE_WIJZIG, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				cervixHuisartsService.saveOrUpdateArts(huisarts, LogGebeurtenis.ORGANISATIE_WIJZIG, getIngelogdeOrganisatieMedewerker());
 				addOrReplacePaspoortPanel(huisarts, target);
 				info("Huisarts succesvol opgeslagen.");
 				BasePage.markeerFormulierenOpgeslagen(target);
@@ -212,7 +212,7 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 			public void onClick(AjaxRequestTarget target)
 			{
 				CervixHuisarts huisarts = huisartsIModel.getObject();
-				cervixHuisartsService.inactiveerHuisarts(huisarts, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				cervixHuisartsService.inactiveerHuisarts(huisarts, getIngelogdeOrganisatieMedewerker());
 
 				addOrReplacePaspoortPanel(huisarts, target);
 				info("huisarts succesvol geinactiveerd.");
@@ -232,7 +232,7 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 			@Override
 			public boolean isVisible()
 			{
-				boolean heeftRecht = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_HUISARTSENPRAKTIJKEN_BEHEER, Actie.VERWIJDEREN);
+				boolean heeftRecht = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_HUISARTSENPRAKTIJKEN_BEHEER, Actie.VERWIJDEREN);
 				boolean locatieActief = huisartsIModel.getObject().getActief();
 				return heeftRecht && locatieActief;
 			}
@@ -299,7 +299,7 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 			propertyChain(CervixHuisartsLocatie_.LOCATIE_ADRES, Adres_.POSTCODE)));
 		columns.add(new PropertyColumn<>(Model.of("Plaats"), propertyChain(CervixHuisartsLocatie_.LOCATIE_ADRES, CervixHuisartsAdres_.WOONPLAATS, Woonplaats_.NAAM),
 			propertyChain(CervixHuisartsLocatie_.LOCATIE_ADRES, CervixHuisartsAdres_.WOONPLAATS, Woonplaats_.NAAM)));
-		columns.add(new ActiefPropertyColumn<>(Model.of(""), Instelling_.ACTIEF, container, searchLocatieModel));
+		columns.add(new ActiefPropertyColumn<>(Model.of(""), Organisatie_.ACTIEF, container, searchLocatieModel));
 
 		ScreenitDataTable<CervixHuisartsLocatie, String> dataTable = new ScreenitDataTable<CervixHuisartsLocatie, String>("locaties", columns,
 			new HuisartsLocatieDataProvider(huisartsIModel, searchLocatieModel), 10, Model.of("Locaties"))

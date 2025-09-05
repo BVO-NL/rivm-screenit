@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen.gba;
 
 /*-
@@ -115,7 +114,7 @@ public class GbaVerslagPanel extends GenericPanel<GbaVerwerkingsLog>
 			return null;
 		}
 
-		ToegangLevel toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.GEBRUIKER_GBA_VERWERKING_VERSLAG);
+		ToegangLevel toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_GBA_VERWERKING_VERSLAG);
 		if (toegangLevel == ToegangLevel.LANDELIJK)
 		{
 			return model.getObject().getAantalNieuweBurgers().toString();
@@ -140,7 +139,7 @@ public class GbaVerslagPanel extends GenericPanel<GbaVerwerkingsLog>
 			return null;
 		}
 
-		ToegangLevel toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.GEBRUIKER_GBA_VERWERKING_VERSLAG);
+		ToegangLevel toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_GBA_VERWERKING_VERSLAG);
 		if (toegangLevel == ToegangLevel.LANDELIJK)
 		{
 			return model.getObject().getAantalBijgewerkteBugers().toString();
@@ -160,7 +159,7 @@ public class GbaVerslagPanel extends GenericPanel<GbaVerwerkingsLog>
 
 	private IModel<List<GbaFoutRegel>> filterFouten(List<GbaFoutRegel> fouten)
 	{
-		ToegangLevel toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.GEBRUIKER_GBA_VERWERKING_VERSLAG);
+		ToegangLevel toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_GBA_VERWERKING_VERSLAG);
 		if (toegangLevel == ToegangLevel.LANDELIJK)
 		{
 			return new SimpleListHibernateModel<>(fouten);

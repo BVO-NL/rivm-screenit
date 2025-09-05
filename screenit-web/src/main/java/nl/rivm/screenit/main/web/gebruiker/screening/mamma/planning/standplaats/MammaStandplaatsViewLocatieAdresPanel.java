@@ -60,7 +60,7 @@ public class MammaStandplaatsViewLocatieAdresPanel extends GenericPanel<MammaSta
 		}
 
 		add(new Label("titel", titel));
-		boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN)
+		boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN)
 			&& ScreenitSession.get().getScreeningOrganisatie() != null;
 
 		MammaStandplaatsLocatie locatie = model.getObject();

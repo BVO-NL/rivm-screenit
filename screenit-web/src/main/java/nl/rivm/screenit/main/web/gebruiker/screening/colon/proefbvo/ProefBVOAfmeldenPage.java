@@ -53,7 +53,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_AFMELDEN_PROEF_BEVOLKINGSONDERZOEK,
+	recht = Recht.MEDEWERKER_AFMELDEN_PROEF_BEVOLKINGSONDERZOEK,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class ProefBVOAfmeldenPage extends ProefBVOPage
 {
@@ -116,7 +116,7 @@ public class ProefBVOAfmeldenPage extends ProefBVOPage
 						{
 							meldingenModel
 								.setObject(StringUtils.join(
-									proefBvoService.afmelden(ScreenitSession.get().getLoggedInAccount(), afmeldingBriefFileUpload.writeToTempFile(),
+									proefBvoService.afmelden(ScreenitSession.get().getIngelogdAccount(), afmeldingBriefFileUpload.writeToTempFile(),
 										afmeldingBriefFileUpload.getContentType(), afmeldingBriefFileUpload.getClientFileName(), clientenBestandFileUpload.writeToTempFile()),
 									"<br>"));
 							target.add(meldingen);

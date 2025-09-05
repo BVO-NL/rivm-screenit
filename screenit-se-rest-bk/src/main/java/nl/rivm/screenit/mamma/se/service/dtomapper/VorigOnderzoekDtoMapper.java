@@ -67,8 +67,8 @@ public class VorigOnderzoekDtoMapper
 			vorigOnderzoekDto.setEersteBeeindigdeAfspraakOp(eersteBeeindigdeAfspraakOp(ronde));
 			vorigOnderzoekDto.setOnderzoekDatum(DateUtil.toLocalDateTime(onderzoek.getCreatieDatum()));
 			vorigOnderzoekDto.setUitvoerendMbber(
-				NaamUtil.getNaamGebruiker(mammografie != null && mammografie.getAfgerondDoor() != null ? mammografie.getAfgerondDoor().getMedewerker() : null));
-			vorigOnderzoekDto.setExtraMedewerker(onderzoek.getExtraMedewerker() == null ? null : NaamUtil.getNaamGebruiker(onderzoek.getExtraMedewerker().getMedewerker()));
+				NaamUtil.getNaamMedewerker(mammografie != null && mammografie.getAfgerondDoor() != null ? mammografie.getAfgerondDoor().getMedewerker() : null));
+			vorigOnderzoekDto.setExtraMedewerker(onderzoek.getExtraMedewerker() == null ? null : NaamUtil.getNaamMedewerker(onderzoek.getExtraMedewerker().getMedewerker()));
 			vorigOnderzoekDto.setMeerdereOnderzoekenInRondeOnderbrokenRedenen(geefRedenMeerdereRondeWanneerHetGeval(ronde));
 			vorigOnderzoekDto.setMeerdereOnderzoekenInRondeOpschortRedenen(geefOpschortRedenMeerdereRondeWanneerHetGeval(ronde));
 			vorigOnderzoekDto.setOnderzoek(onderzoekDtoMapper.createOnderzoekDto(onderzoek));
@@ -95,7 +95,7 @@ public class VorigOnderzoekDtoMapper
 			vorigOnderzoekDto.setNevenbevindingen(
 				onderzoek.getLaatsteBeoordeling() != null
 					? beoordelingService.getMammaLezingEnumsTekst(MammaLezing::getNevenbevindingen, onderzoek.getLaatsteBeoordeling().getEersteLezing(),
-						onderzoek.getLaatsteBeoordeling().getTweedeLezing())
+					onderzoek.getLaatsteBeoordeling().getTweedeLezing())
 					: "");
 			vorigOnderzoekDto.setNevenbevindingenOpmerkingen(beoordelingService.getNevenBevindingenOpmerkingenAsList(onderzoek.getLaatsteBeoordeling()));
 		}

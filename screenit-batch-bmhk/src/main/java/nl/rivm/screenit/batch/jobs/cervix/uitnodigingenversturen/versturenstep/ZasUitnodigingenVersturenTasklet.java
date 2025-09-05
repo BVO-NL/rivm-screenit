@@ -29,6 +29,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.dm_ict.photo._358.MERGEDATA.UITNODIGING;
+import nl.rivm.screenit.KoppelConstants;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.jobs.cervix.uitnodigingenversturen.ProjectCounterHolder;
 import nl.rivm.screenit.batch.jobs.cervix.uitnodigingenversturen.ZasUitnodigingenVersturenConstants;
@@ -36,8 +37,8 @@ import nl.rivm.screenit.batch.jobs.uitnodigingenversturen.versturenstep.Abstract
 import nl.rivm.screenit.batch.service.CervixUitnodigingService;
 import nl.rivm.screenit.model.BriefDefinitie;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.MailMergeContext;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.UploadDocument;
@@ -48,13 +49,15 @@ import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.MergeField;
+import nl.rivm.screenit.model.inpakcentrum.naarinpakcentrum.InpakcentrumUitnodigingDto;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
+import nl.rivm.screenit.repository.cervix.CervixUitnodigingRepository;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.ProjectUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
@@ -82,11 +85,13 @@ public class ZasUitnodigingenVersturenTasklet extends AbstractUitnodigingenVerst
 
 	private final ClientService clientService;
 
-	private final InstellingService instellingService;
+	private final OrganisatieService organisatieService;
 
 	private final SimplePreferenceService simplePreferenceService;
 
 	private final CervixUitnodigingService uitnodigingService;
+
+	private final CervixUitnodigingRepository uitnodigingRepository;
 
 	@Override
 	protected List<Long> getUitnodigingen()
@@ -225,36 +230,37 @@ public class ZasUitnodigingenVersturenTasklet extends AbstractUitnodigingenVerst
 	}
 
 	@Override
-	protected boolean geenUitzonderingGevonden(CervixUitnodiging uitnodiging)
+	protected boolean uitzonderingGevonden(CervixUitnodiging uitnodiging)
 	{
 		var melding = new StringBuilder();
 		MergeField.getBmhkRetouradresMetMelding(uitnodiging, melding);
 		var client = uitnodiging.getScreeningRonde().getDossier().getClient();
-		if (melding.length() > 0)
+		if (!melding.isEmpty())
 		{
 			melding.append("ZAS uitnodiging niet verstuurd naar inpakcentrum!");
 			LOG.warn("client (id '{}'): {}", client.getId(), melding);
 			logService.logGebeurtenis(LogGebeurtenis.CERVIX_FOUT_RETOURADRES_BMHK_LAB, client, null, melding.toString(), Bevolkingsonderzoek.CERVIX);
+			return true;
+		}
+
+		if (AdresUtil.isVolledigAdresVoorInpakcentrum(client))
+		{
 			return false;
 		}
-		if (!AdresUtil.isVolledigAdresVoorInpakcentrum(client))
-		{
-			var onvolledigAdresMelding = "De cliënt heeft een onvolledig adres, dit is geconstateerd bij het aanmaken. De volgende gegevens ontbreken: "
-				+ AdresUtil.bepaalMissendeAdresgegevensString(AdresUtil.getAdres(client.getPersoon(), currentDateSupplier.getLocalDate())) + ".";
-			int dagen = simplePreferenceService.getInteger(PreferenceKey.INTERNAL_HERINNERINGSPERIODE_LOGREGEL_ONVOLLEDIG_ADRES.name());
-			if (logService.heeftGeenBestaandeLogregelBinnenPeriode(Collections.singletonList(LogGebeurtenis.CERVIX_ADRES_ONVOLLEDIG_VOOR_INPAKCENTRUM),
-				client.getPersoon().getBsn(),
-				onvolledigAdresMelding, dagen))
-			{
-				melding.append(onvolledigAdresMelding);
-				LOG.warn("client (id '{}'): {}", client.getId(), melding);
-				var dashboardOrganisaties = addLandelijkBeheerInstelling(new ArrayList<>());
-				dashboardOrganisaties.addAll(clientService.getScreeningOrganisatieVan(client));
-				logService.logGebeurtenis(LogGebeurtenis.CERVIX_ADRES_ONVOLLEDIG_VOOR_INPAKCENTRUM, dashboardOrganisaties, null, client, melding.toString(),
-					Bevolkingsonderzoek.CERVIX);
-			}
 
-			return false;
+		var onvolledigAdresMelding = "De cliënt heeft een onvolledig adres, dit is geconstateerd bij het aanmaken. De volgende gegevens ontbreken: "
+			+ AdresUtil.bepaalMissendeAdresgegevensString(AdresUtil.getAdres(client.getPersoon(), currentDateSupplier.getLocalDate())) + ".";
+		int dagen = simplePreferenceService.getInteger(PreferenceKey.INTERNAL_HERINNERINGSPERIODE_LOGREGEL_ONVOLLEDIG_ADRES.name());
+		if (logService.heeftGeenBestaandeLogregelBinnenPeriode(Collections.singletonList(LogGebeurtenis.CERVIX_ADRES_ONVOLLEDIG_VOOR_INPAKCENTRUM),
+			client.getPersoon().getBsn(),
+			onvolledigAdresMelding, dagen))
+		{
+			melding.append(onvolledigAdresMelding);
+			LOG.warn("client (id '{}'): {}", client.getId(), melding);
+				var dashboardOrganisaties = addLandelijkBeheerorganisatie(new ArrayList<>());
+			dashboardOrganisaties.addAll(clientService.getScreeningOrganisatieVan(client));
+			logService.logGebeurtenis(LogGebeurtenis.CERVIX_ADRES_ONVOLLEDIG_VOOR_INPAKCENTRUM, dashboardOrganisaties, null, client, melding.toString(),
+				Bevolkingsonderzoek.CERVIX);
 		}
 
 		return true;
@@ -263,7 +269,7 @@ public class ZasUitnodigingenVersturenTasklet extends AbstractUitnodigingenVerst
 	@Override
 	protected CervixUitnodiging getUitnodigingById(Long uitnodigingId)
 	{
-		return hibernateService.get(CervixUitnodiging.class, uitnodigingId);
+		return uitnodigingRepository.findById(uitnodigingId).orElse(null);
 	}
 
 	@Override
@@ -277,18 +283,29 @@ public class ZasUitnodigingenVersturenTasklet extends AbstractUitnodigingenVerst
 	}
 
 	@Override
-	protected void vulMetaData(UITNODIGING inpakcentrumUitnodiging, ProjectBriefActie briefActie, MailMergeContext mailMergeContext, int uitnodigingVolgnummer,
+	protected void vulMetaDataMetWsdl(UITNODIGING inpakcentrumUitnodiging, ProjectBriefActie briefActie, MailMergeContext mailMergeContext, int uitnodigingVolgnummer,
 		UploadDocument uploadDocument)
 	{
-		super.vulMetaData(inpakcentrumUitnodiging, briefActie, mailMergeContext, uitnodigingVolgnummer, uploadDocument);
+		super.vulMetaDataMetWsdl(inpakcentrumUitnodiging, briefActie, mailMergeContext, uitnodigingVolgnummer, uploadDocument);
 		var mergefieldContainer = inpakcentrumUitnodiging.getMERGEFIELDS().getMERGEFIELD();
 		var uitnodiging = mailMergeContext.getCervixUitnodiging();
-		addMergeFieldValue(mergefieldContainer, "_TYPE", uitnodiging.getGecombineerdeZas() != null ? ZAS_TYPE_COMBI : ZAS_TYPE_STANDAARD);
+		addMergeFieldValue(mergefieldContainer, KoppelConstants.CERVIX_KOPPEL_TYPE, uitnodiging.getGecombineerdeZas() != null ? ZAS_TYPE_COMBI : ZAS_TYPE_STANDAARD);
 	}
 
-	private List<Instelling> addLandelijkBeheerInstelling(List<Instelling> list)
+	@Override
+	protected void vulMetaDataMetRest(InpakcentrumUitnodigingDto inpakcentrumUitnodiging, ProjectBriefActie briefActie, MailMergeContext mailMergeContext,
+		int uitnodigingVolgnummer,
+		UploadDocument uploadDocument)
 	{
-		list.addAll(instellingService.getActieveInstellingen(Rivm.class));
+		super.vulMetaDataMetRest(inpakcentrumUitnodiging, briefActie, mailMergeContext, uitnodigingVolgnummer, uploadDocument);
+		var mergeFields = inpakcentrumUitnodiging.getMergeFields();
+		var uitnodiging = mailMergeContext.getCervixUitnodiging();
+		addMergeField(mergeFields, KoppelConstants.CERVIX_KOPPEL_TYPE, uitnodiging.getGecombineerdeZas() != null ? ZAS_TYPE_COMBI : ZAS_TYPE_STANDAARD);
+	}
+
+	private List<Organisatie> addLandelijkBeheerorganisatie(List<Organisatie> list)
+	{
+		list.addAll(organisatieService.getActieveOrganisaties(Rivm.class));
 		return list;
 	}
 }

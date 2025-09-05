@@ -25,7 +25,7 @@ package nl.rivm.screenit.main.service;
 import java.io.File;
 import java.io.IOException;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.InpakbareUitnodiging;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.Uitnodiging;
@@ -36,10 +36,11 @@ import nl.rivm.screenit.model.logging.RetourzendingLogEvent;
 public interface RetourzendingService
 {
 
-	RetourzendingLogEvent verwerkBestandMetRetourzendingen(InstellingGebruiker ingelogdeGebruiker, String contentType, File file, String fileName) throws IOException;
+	RetourzendingLogEvent verwerkBestandMetRetourzendingen(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, String contentType, File file, String fileName) throws IOException;
 
-	<U extends InpakbareUitnodiging<S>, S extends ScreeningRonde<?, ?, ?, ?>> void verwerkRetourzendingHandmatig(InstellingGebruiker ingelogdeGebruiker, U uitnodiging,
-                                                                                                                 String retourzendingReden);
+	<U extends InpakbareUitnodiging<S>, S extends ScreeningRonde<?, ?, ?, ?>> void verwerkRetourzendingHandmatig(OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
+		U uitnodiging,
+		String retourzendingReden);
 
 	String isValideCervixUitnodiging(CervixUitnodiging uitnodiging);
 

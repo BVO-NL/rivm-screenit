@@ -75,7 +75,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_CLIENT_SR_AANVRAAGFORMULIER_ONTVANGEN,
+	recht = Recht.MEDEWERKER_CLIENT_SR_AANVRAAGFORMULIER_ONTVANGEN,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class AntwoordformulierOntvangenPanel extends AbstractGebeurtenisDetailPanel
 {
@@ -141,7 +141,7 @@ public class AntwoordformulierOntvangenPanel extends AbstractGebeurtenisDetailPa
 			public void onClick(AjaxRequestTarget target)
 			{
 				ColonUitnodiging uitnodiging = (ColonUitnodiging) AntwoordformulierOntvangenPanel.this.getModelObject().getUitnodiging();
-				colonDossierService.verwijderScannedAntwoordFormulier(uitnodiging, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				colonDossierService.verwijderScannedAntwoordFormulier(uitnodiging, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				ScreenitSession.get().info(AntwoordformulierOntvangenPanel.this.getString("antwoordformulier.verwijderd"));
 				setResponsePage(new ClientDossierPage(ModelUtil.sModel(uitnodiging.getScreeningRonde().getDossier().getClient())));
 			}
@@ -149,7 +149,7 @@ public class AntwoordformulierOntvangenPanel extends AbstractGebeurtenisDetailPa
 		button.add(new Label("label", getString("label.verwijderen")));
 		button.add(new AttributeAppender("class", Model.of(" btn-danger")));
 		ScreeningRondeGebeurtenis screeningRondeGebeurtenis = getModelObject();
-		boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_AANVRAAGFORMULIER_ONTVANGEN, Actie.VERWIJDEREN);
+		boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_AANVRAAGFORMULIER_ONTVANGEN, Actie.VERWIJDEREN);
 		ColonUitnodiging uitnodiging = (ColonUitnodiging) screeningRondeGebeurtenis.getUitnodiging();
 		if (uitnodiging != null)
 		{
@@ -240,7 +240,7 @@ public class AntwoordformulierOntvangenPanel extends AbstractGebeurtenisDetailPa
 				{
 					IModel<SAFTransactionTrail> model = item.getModel();
 					item.add(DateLabel.forDatePattern("datum", new PropertyModel<Date>(model, "datumTijd"), "dd-MM-yyyy HH:mm"));
-					item.add(new Label("gebruiker", new PropertyModel<String>(model, "gebruiker")));
+					item.add(new Label("medewerker", new PropertyModel<String>(model, "medewerker")));
 					item.add(new Label("bericht", getString(model.getObject().getTransactionId(), model, model.getObject().getTransactionId())));
 				}
 			};

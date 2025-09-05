@@ -45,7 +45,7 @@ import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -91,7 +91,7 @@ import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_INZIEN_LOGGING,
+	recht = Recht.MEDEWERKER_INZIEN_LOGGING,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class LoggingInzienPage extends AlgemeenPage
@@ -156,16 +156,16 @@ public class LoggingInzienPage extends AlgemeenPage
 
 				if (regio == null)
 				{
-					Instelling gebruikerInstelling = null;
-					if (logRegel.getIngelogdeGebruiker() != null)
+					Organisatie gebruikerOrganisatie = null;
+					if (logRegel.getIngelogdeOrganisatieMedewerker() != null)
 					{
-						gebruikerInstelling = logRegel.getIngelogdeGebruiker().getOrganisatie();
+						gebruikerOrganisatie = logRegel.getIngelogdeOrganisatieMedewerker().getOrganisatie();
 					}
 
-					gebruikerInstelling = (Instelling) HibernateHelper.deproxy(gebruikerInstelling);
-					if (gebruikerInstelling instanceof ScreeningOrganisatie)
+					gebruikerOrganisatie = (Organisatie) HibernateHelper.deproxy(gebruikerOrganisatie);
+					if (gebruikerOrganisatie instanceof ScreeningOrganisatie)
 					{
-						regio = (ScreeningOrganisatie) gebruikerInstelling;
+						regio = (ScreeningOrganisatie) gebruikerOrganisatie;
 					}
 				}
 				if (regio != null)
@@ -201,13 +201,13 @@ public class LoggingInzienPage extends AlgemeenPage
 				item.add(new AttributeAppender("class", new Model<>("column-datum-tijd"), " "));
 			}
 		});
-		columns.add(new PropertyColumn<>(new SimpleStringResourceModel("label.gebruiker"), "gebruiker.gebruikersnaam", "gebruiker.gebruikersnaam")
+		columns.add(new PropertyColumn<>(new SimpleStringResourceModel("label.medewerker"), "medewerker.gebruikersnaam", "medewerker.gebruikersnaam")
 		{
 			@Override
 			public void populateItem(Item<ICellPopulator<LogRegel>> item, String componentId, IModel<LogRegel> rowModel)
 			{
 				super.populateItem(item, componentId, rowModel);
-				item.add(new AttributeAppender("class", new Model<>("column-gebruiker")));
+				item.add(new AttributeAppender("class", new Model<>("column-medewerker")));
 			}
 		});
 		columns.add(new PropertyColumn<>(new SimpleStringResourceModel("label.client"), "persoon.achternaam", "client")
@@ -384,9 +384,9 @@ public class LoggingInzienPage extends AlgemeenPage
 
 			add(new DependantDateValidator(vanaf, tot, Operator.AFTER));
 
-			List<Instelling> soLijst = organisatieZoekService.getAllActieveOrganisatiesWithType(ScreeningOrganisatie.class);
+			List<Organisatie> soLijst = organisatieZoekService.getAllActieveOrganisatiesWithType(ScreeningOrganisatie.class);
 
-			add(new ScreenitDropdown<>("regio", soLijst.stream().map(Instelling::getId).collect(Collectors.toList()),
+			add(new ScreenitDropdown<>("regio", soLijst.stream().map(Organisatie::getId).collect(Collectors.toList()),
 				new HibernateIdChoiceRenderer(soLijst, "naam")).setNullValid(true));
 		}
 	}

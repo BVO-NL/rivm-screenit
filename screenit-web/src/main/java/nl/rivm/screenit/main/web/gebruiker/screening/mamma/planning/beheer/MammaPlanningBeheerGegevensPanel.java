@@ -30,7 +30,7 @@ import nl.rivm.screenit.main.web.component.form.BigDecimalField;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -49,9 +49,9 @@ public class MammaPlanningBeheerGegevensPanel extends GenericPanel<ScreeningOrga
 	private String applicationUrl;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
-	private boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING_BEHEER, Actie.AANPASSEN)
+	private boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING_BEHEER, Actie.AANPASSEN)
 		&& ScreenitSession.get().getScreeningOrganisatie() != null;
 
 	public MammaPlanningBeheerGegevensPanel(String id, IModel<ScreeningOrganisatie> model)
@@ -82,7 +82,7 @@ public class MammaPlanningBeheerGegevensPanel extends GenericPanel<ScreeningOrga
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				ScreeningOrganisatie screeningOrganisatie = model.getObject();
-				instellingService.saveOrUpdateSoPlanningBk(screeningOrganisatie, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				organisatieService.saveOrUpdateSoPlanningBk(screeningOrganisatie, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				BasePage.markeerFormulierenOpgeslagen(target);
 				this.info("Gegevens zijn succesvol opgeslagen");
 			}

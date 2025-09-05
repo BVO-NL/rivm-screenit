@@ -43,8 +43,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import jakarta.persistence.criteria.Root;
-
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.mamma.MammaConclusieReviewSpecification.filterOpFollowUpStatusGewijzigdOpOfNaMoment;
 import static nl.rivm.screenit.specification.mamma.MammaConclusieReviewSpecification.heeftFollowUpConclusieStatus;
@@ -135,10 +133,10 @@ public class MammaConclusieReviewDataProviderServiceImpl extends RepositoryDataP
 		{
 			if (filter.isGezienCoordinerendRadioloogTonen())
 			{
-				return heeftRondeGereviewedAlsCoordinerendRadioloog(filter.getIngelogdeGebruiker());
+				return heeftRondeGereviewedAlsCoordinerendRadioloog(filter.getIngelogdeOrganisatieMedewerker());
 			}
 			return (r, q, cb) ->
-				cb.not(heeftRondeGereviewedAlsCoordinerendRadioloog(filter.getIngelogdeGebruiker()).toPredicate(r, q, cb));
+				cb.not(heeftRondeGereviewedAlsCoordinerendRadioloog(filter.getIngelogdeOrganisatieMedewerker()).toPredicate(r, q, cb));
 		}
 		return (r, q, cb) -> null;
 	}

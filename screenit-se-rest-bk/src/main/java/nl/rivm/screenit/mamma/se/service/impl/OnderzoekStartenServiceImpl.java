@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 import nl.rivm.screenit.mamma.se.dto.actions.OnderzoekStartenDto;
 import nl.rivm.screenit.mamma.se.service.MammaAfspraakService;
 import nl.rivm.screenit.mamma.se.service.OnderzoekStartenService;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
@@ -66,9 +66,9 @@ public class OnderzoekStartenServiceImpl implements OnderzoekStartenService
 	private MammaVolgendeUitnodigingService volgendeUitnodigingService;
 
 	@Override
-	public void starten(OnderzoekStartenDto action, MammaScreeningsEenheid screeningsEenheid, LocalDateTime transactieDatumTijd, InstellingGebruiker gebruiker)
+	public void starten(OnderzoekStartenDto action, MammaScreeningsEenheid screeningsEenheid, LocalDateTime transactieDatumTijd, OrganisatieMedewerker organisatieMedewerker)
 	{
-		final MammaAfspraak afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), gebruiker);
+		final MammaAfspraak afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), organisatieMedewerker);
 		zetAfspraakInOnderzoek(afspraak);
 		maakOnderzoek(afspraak, screeningsEenheid, action, transactieDatumTijd);
 		volgendeUitnodigingService.updateVolgendeUitnodigingNaDeelname(afspraak.getUitnodiging().getScreeningRonde().getDossier());

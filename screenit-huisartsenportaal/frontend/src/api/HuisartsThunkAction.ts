@@ -19,25 +19,23 @@
  * =========================LICENSE_END==================================
  */
 import {AppThunkDispatch} from "../index"
-import ScreenitBackend, {validatingRequest} from "../util/Backend"
-import {AxiosResponse} from "axios"
+import ScreenitBackend from "../util/Backend"
 import {createActionSetHuisarts} from "../state/HuisartsState"
 import {HuisartsDto} from "../state/datatypes/dto/HuisartsDto"
 
 export const fetchHuisarts = () => async (dispatch: AppThunkDispatch) => {
-	const response: AxiosResponse<HuisartsDto> = await ScreenitBackend.get("/huisarts")
-	const huisarts = response.data
+	const huisarts: HuisartsDto = await ScreenitBackend.get<HuisartsDto>("huisarts").json()
 	if (huisarts) {
 		dispatch(createActionSetHuisarts(huisarts))
 	}
 }
 
 export const controleerHuisarts = (huisarts: HuisartsDto) => async (dispatch: AppThunkDispatch): Promise<HuisartsDto> => {
-	return dispatch(validatingRequest<HuisartsDto>("/huisarts/controle", "PUT", huisarts))
+	return ScreenitBackend.put<HuisartsDto>("huisarts/controle", {json: huisarts}).json()
 }
 
 export const saveHuisarts = (huisarts: HuisartsDto) => async (dispatch: AppThunkDispatch): Promise<HuisartsDto> => {
-	const response = await dispatch(validatingRequest<HuisartsDto>("/huisarts", "PUT", huisarts))
+	const response = await ScreenitBackend.put<HuisartsDto>("huisarts", {json: huisarts}).json()
 	dispatch(createActionSetHuisarts(response))
 	return response
 }

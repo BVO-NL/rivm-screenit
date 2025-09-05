@@ -24,9 +24,14 @@ package nl.rivm.screenit.mamma.se.dto.actions;
 import java.time.LocalDate;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 
+@Getter
+@Setter
 public class TransactionDto
 {
 	private SETransactieType type;
@@ -42,87 +47,23 @@ public class TransactionDto
 	@JsonDeserialize(using = LocalDateDeserializer.class)
 	private LocalDate afspraakVanafDatum;
 
+	@Deprecated(forRemoval = true, since = "25.6.0")
 	private Long instellingGebruikerId;
+
+	private Long organisatieMedewerkerId;
 
 	private List<ActionDto> actions;
 
-	public LocalDate getAfspraakVanafDatum()
+	@Deprecated(forRemoval = true, since = "25.6.0")
+	public Long getOrganisatieMedewerkerId()
 	{
-		return afspraakVanafDatum;
+		return organisatieMedewerkerId != null ? organisatieMedewerkerId : instellingGebruikerId;
 	}
 
-	public void setAfspraakVanafDatum(LocalDate afspraakVanafDatum)
+	@Deprecated(forRemoval = true, since = "25.6.0")
+	public void setOrganisatieMedewerkerId(Long organisatieMedewerkerId)
 	{
-		this.afspraakVanafDatum = afspraakVanafDatum;
-	}
-
-	public Long getInstellingGebruikerId()
-	{
-		return instellingGebruikerId;
-	}
-
-	public void setInstellingGebruikerId(Long instellingGebruikerId)
-	{
-		this.instellingGebruikerId = instellingGebruikerId;
-	}
-
-	public String getMedewerkercode()
-	{
-		return medewerkercode;
-	}
-
-	public void setMedewerkercode(String medewerkercode)
-	{
-		this.medewerkercode = medewerkercode;
-	}
-
-	public String getUitnodigingsNr()
-	{
-		return uitnodigingsNr;
-	}
-
-	public void setUitnodigingsNr(String uitnodigingsNr)
-	{
-		this.uitnodigingsNr = uitnodigingsNr;
-	}
-
-	public SETransactieType getType()
-	{
-		return type;
-	}
-
-	public void setType(SETransactieType type)
-	{
-		this.type = type;
-	}
-
-	public List<ActionDto> getActions()
-	{
-		return actions;
-	}
-
-	public void setActions(List<ActionDto> actions)
-	{
-		this.actions = actions;
-	}
-
-	public Long getClientId()
-	{
-		return clientId;
-	}
-
-	public void setClientId(Long clientId)
-	{
-		this.clientId = clientId;
-	}
-
-	public String getSessionId()
-	{
-		return sessionId;
-	}
-
-	public void setSessionId(String sessionId)
-	{
-		this.sessionId = sessionId;
+		this.organisatieMedewerkerId = organisatieMedewerkerId;
+		this.instellingGebruikerId = organisatieMedewerkerId;
 	}
 }

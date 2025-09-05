@@ -24,12 +24,12 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup.followuppat
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.rivm.screenit.dto.mamma.MammaFollowUpInstellingDto;
+import nl.rivm.screenit.dto.mamma.MammaFollowUpOrganisatieDto;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup.AbstractMammaFollowUpPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -49,7 +49,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	constraint = ShiroConstraint.HasPermission,
 	checkScope = true,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA },
-	recht = { Recht.GEBRUIKER_MAMMA_FOLLOW_UP_PATHOLOGIE_WERKLIJST },
+	recht = { Recht.MEDEWERKER_MAMMA_FOLLOW_UP_PATHOLOGIE_WERKLIJST },
 	organisatieTypeScopes = { OrganisatieType.SCREENINGSORGANISATIE })
 public class MammaFollowUpPathologieRegioWerklijstPage extends AbstractMammaFollowUpPage
 {
@@ -71,22 +71,22 @@ public class MammaFollowUpPathologieRegioWerklijstPage extends AbstractMammaFoll
 		MammaFollowUpPathologieRegioProvider followUpPathologieRegioProvider = new MammaFollowUpPathologieRegioProvider(
 			ModelUtil.sModel(ScreenitSession.get().getScreeningOrganisatie()));
 
-		List<IColumn<MammaFollowUpInstellingDto, String>> columns = new ArrayList<>();
-		columns.add(new PropertyColumn<>(Model.of("Naam"), "instellingNaam", "instellingNaam"));
+		List<IColumn<MammaFollowUpOrganisatieDto, String>> columns = new ArrayList<>();
+		columns.add(new PropertyColumn<>(Model.of("Naam"), "organisatieNaam", "organisatieNaam"));
 		columns.add(new PropertyColumn<>(Model.of("Telefoon 1"), "telefoon"));
 		columns.add(new PropertyColumn<>(Model.of("Telefoon 2"), "telefoon2"));
 		columns.add(new PropertyColumn<>(Model.of("Gebeld op"), "laatstGebeld", "laatstGebeld"));
-		ScreenitDataTable<MammaFollowUpInstellingDto, String> table = new ScreenitDataTable<MammaFollowUpInstellingDto, String>("resultaten", columns,
+		ScreenitDataTable<MammaFollowUpOrganisatieDto, String> table = new ScreenitDataTable<MammaFollowUpOrganisatieDto, String>("resultaten", columns,
 			followUpPathologieRegioProvider,
-			10, Model.of("instelling(en)"))
+			10, Model.of("organisatie(s)"))
 		{
 
 			@Override
-			public void onClick(AjaxRequestTarget target, IModel<MammaFollowUpInstellingDto> model)
+			public void onClick(AjaxRequestTarget target, IModel<MammaFollowUpOrganisatieDto> model)
 			{
 				super.onClick(target, model);
-				Instelling instelling = hibernateService.get(Instelling.class, model.getObject().getInstellingId());
-				setResponsePage(new MammaFollowUpPathologieWerklijstPage(ModelUtil.sModel(instelling)));
+				Organisatie organisatie = hibernateService.get(Organisatie.class, model.getObject().getOrganisatieId());
+				setResponsePage(new MammaFollowUpPathologieWerklijstPage(ModelUtil.sModel(organisatie)));
 			}
 		};
 		refreshContainer.add(table);

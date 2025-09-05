@@ -22,7 +22,7 @@ package nl.rivm.screenit.main.dao.impl;
  */
 
 import nl.rivm.screenit.main.dao.MedewerkerDao;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
 
 import org.springframework.stereotype.Repository;
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Repository;
 public class MedewerkerDaoImpl extends AbstractAutowiredDao implements MedewerkerDao
 {
 	@Override
-	public void saveOrUpdateInstellingGebruiker(InstellingGebruiker organisatieMedewerker)
+	public void saveOrUpdateOrganisatieMedewerker(OrganisatieMedewerker organisatieMedewerker)
 	{
 		getSession().saveOrUpdate(organisatieMedewerker);
 		getSession().saveOrUpdate(organisatieMedewerker.getOrganisatie());

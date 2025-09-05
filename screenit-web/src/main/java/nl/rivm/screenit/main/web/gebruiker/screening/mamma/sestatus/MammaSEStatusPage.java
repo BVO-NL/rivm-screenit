@@ -34,11 +34,11 @@ import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.PollingAbstractAjaxTimerBehavior;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.component.table.ScreenitDateTimePropertyColumn;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -72,9 +72,9 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 @SecurityConstraint(
 	constraint = ShiroConstraint.HasPermission,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA },
-	recht = { Recht.GEBRUIKER_MAMMA_SE_STATUS_INZIEN },
+	recht = { Recht.MEDEWERKER_MAMMA_SE_STATUS_INZIEN },
 	organisatieTypeScopes = { OrganisatieType.RIVM, OrganisatieType.SCREENINGSORGANISATIE })
-public class MammaSEStatusPage extends GebruikerBasePage
+public class MammaSEStatusPage extends MedewerkerBasePage
 {
 
 	@SpringBean
@@ -112,7 +112,7 @@ public class MammaSEStatusPage extends GebruikerBasePage
 		List<IColumn<MammaScreeningsEenheid, String>> columns = new ArrayList<>();
 		columns.add(new PropertyColumn<>(Model.of("Code"), MammaScreeningsEenheid_.CODE, "code"));
 		columns.add(new PropertyColumn<>(Model.of("Screeningsorganisatie"),
-			propertyChain(MammaScreeningsEenheid_.BEOORDELINGS_EENHEID, Instelling_.PARENT, Instelling_.REGIO, Instelling_.NAAM), "beoordelingsEenheid.parent.regio.naam"));
+			propertyChain(MammaScreeningsEenheid_.BEOORDELINGS_EENHEID, Organisatie_.PARENT, Organisatie_.REGIO, Organisatie_.NAAM), "beoordelingsEenheid.parent.regio.naam"));
 		columns.add(new PropertyColumn<>(Model.of("Versie"), propertyChain(MammaScreeningsEenheid_.STATUS, MammaScreeningsEenheidStatus_.VERSIE), "status.versie"));
 		columns.add(new AbstractColumn<>(Model.of("Stamgegevens aanwezig"))
 		{
@@ -213,15 +213,15 @@ public class MammaSEStatusPage extends GebruikerBasePage
 	}
 
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.MAMMA;
+		return MedewerkerHoofdMenuItem.MAMMA;
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 		return new ArrayList<>(List.of(
-			new GebruikerMenuItem("label.tab.mammascreening.sestatus.overzicht", MammaSEStatusPage.class)));
+			new MedewerkerMenuItem("label.tab.mammascreening.sestatus.overzicht", MammaSEStatusPage.class)));
 	}
 }

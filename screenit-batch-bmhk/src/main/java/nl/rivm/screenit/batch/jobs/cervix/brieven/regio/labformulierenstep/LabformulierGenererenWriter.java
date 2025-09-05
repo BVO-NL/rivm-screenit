@@ -31,8 +31,8 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.BatchConstants;
-import nl.rivm.screenit.model.Instelling;
 import nl.rivm.screenit.model.MailMergeContext;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixLabformulierAanvraag;
@@ -177,8 +177,8 @@ public class LabformulierGenererenWriter implements ItemStreamWriter<Long>
 			{
 				var melding = String.format("Foutief IBAN voor AGB: %s, locatie: %s", aanvraag.getHuisartsLocatie().getHuisarts().getAgbcode(),
 					aanvraag.getHuisartsLocatie().getNaam());
-				List<Instelling> instellingen = Collections.singletonList(aanvraag.getHuisartsLocatie().getLocatieAdres().getGbaGemeente().getScreeningOrganisatie());
-				logService.logGebeurtenis(LogGebeurtenis.CERVIX_LABFORMULIER_GENEREREN_IBAN_FOUT, instellingen, null, melding, Bevolkingsonderzoek.CERVIX);
+				List<Organisatie> organisaties = Collections.singletonList(aanvraag.getHuisartsLocatie().getLocatieAdres().getGbaGemeente().getScreeningOrganisatie());
+				logService.logGebeurtenis(LogGebeurtenis.CERVIX_LABFORMULIER_GENEREREN_IBAN_FOUT, organisaties, null, melding, Bevolkingsonderzoek.CERVIX);
 			}
 
 		}
@@ -370,7 +370,7 @@ public class LabformulierGenererenWriter implements ItemStreamWriter<Long>
 			uploadDocument.setFile(mergedPdfFile);
 
 			var fileStoreId = aanvraag.getHuisartsLocatie().getHuisarts().getId();
-			uploadDocumentService.saveOrUpdate(uploadDocument, FileStoreLocation.INSTELLING_MERGED_BRIEVEN, fileStoreId);
+			uploadDocumentService.saveOrUpdate(uploadDocument, FileStoreLocation.ORGANISATIE_MERGED_BRIEVEN, fileStoreId);
 
 			mergedBrieven.setMergedBrieven(uploadDocument);
 			mergedPdfFile.delete();
@@ -394,7 +394,7 @@ public class LabformulierGenererenWriter implements ItemStreamWriter<Long>
 				outputStream = new FileOutputStream(mergedBrievenFile);
 				pdfMergerUtility.setDestinationStream(outputStream);
 				pdfMergerUtility.mergeDocuments(IOUtils.createMemoryOnlyStreamCache());
-				uploadDocumentService.saveOrUpdate(uploadDocumentMergedBrieven, FileStoreLocation.INSTELLING_MERGED_BRIEVEN,
+				uploadDocumentService.saveOrUpdate(uploadDocumentMergedBrieven, FileStoreLocation.ORGANISATIE_MERGED_BRIEVEN,
 					aanvraag.getHuisartsLocatie().getHuisarts().getId());
 				outputStream.close();
 

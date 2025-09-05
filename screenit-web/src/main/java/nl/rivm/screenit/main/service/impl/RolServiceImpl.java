@@ -39,9 +39,9 @@ import nl.rivm.screenit.dto.RolDto;
 import nl.rivm.screenit.main.service.MedewerkerService;
 import nl.rivm.screenit.main.service.RolService;
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruikerRol;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.model.Permissie;
 import nl.rivm.screenit.model.Rol;
 import nl.rivm.screenit.model.Rol_;
@@ -77,7 +77,7 @@ public class RolServiceImpl implements RolService
 
 	@Transactional
 	@Override
-	public void setRolActiefOfInactief(Rol rol, Account ingelogdeAccount)
+	public void setRolActiefOfInactief(Rol rol, Account ingelogdAccount)
 	{
 		boolean nieuwInActief = !rol.getActief();
 		long rolId = rol.getId();
@@ -92,9 +92,9 @@ public class RolServiceImpl implements RolService
 			var organisatieMedewerkersMetRol = medewerkerService.getOrganisatieMedewerkersMetRol(rol);
 			baseMedewerkerService.inactiveerOrganisatieMedewerkersMetRol(organisatieMedewerkersMetRol);
 			melding += ". Medewerkers met deze rol: " + organisatieMedewerkersMetRol.stream()
-				.map(InstellingGebruikerRol::getInstellingGebruiker)
-				.map(InstellingGebruiker::getMedewerker)
-				.map(Gebruiker::getMedewerkercode)
+				.map(OrganisatieMedewerkerRol::getOrganisatieMedewerker)
+				.map(OrganisatieMedewerker::getMedewerker)
+				.map(Medewerker::getMedewerkercode)
 				.filter(Objects::nonNull)
 				.map(Object::toString)
 				.collect(Collectors.joining(", "));
@@ -105,11 +105,11 @@ public class RolServiceImpl implements RolService
 		opslaanRol.setActief(nieuwInActief);
 		rolRepository.save(opslaanRol);
 
-		logService.logGebeurtenis(logGebeurtenis, ingelogdeAccount, melding);
+		logService.logGebeurtenis(logGebeurtenis, ingelogdAccount, melding);
 	}
 
 	@Override
-	public List<Rol> getToeTeVoegenRollen(InstellingGebruiker organisatieMedewerkerRolToevoegen, InstellingGebruiker ingelogdeOrganisatieMedewerker)
+	public List<Rol> getToeTeVoegenRollen(OrganisatieMedewerker organisatieMedewerkerRolToevoegen, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		List<Rol> toeTeVoegenRollen = new ArrayList<>();
 
@@ -117,7 +117,7 @@ public class RolServiceImpl implements RolService
 		for (Rol rol : rollen)
 		{
 			boolean hasRol = false;
-			for (InstellingGebruikerRol organisatieMedewerkerRol : organisatieMedewerkerRolToevoegen.getRollen())
+			for (OrganisatieMedewerkerRol organisatieMedewerkerRol : organisatieMedewerkerRolToevoegen.getRollen())
 			{
 				if (organisatieMedewerkerRol.isRolActief() && rol.equals(organisatieMedewerkerRol.getRol()) && organisatieMedewerkerRol.getId() != null)
 				{
@@ -134,15 +134,16 @@ public class RolServiceImpl implements RolService
 		return toeTeVoegenRollen;
 	}
 
-	private boolean authorizedRol(Rol rol, InstellingGebruiker ingelogdeInstellingGebruiker)
+	private boolean authorizedRol(Rol rol, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		Set<Rol> actieveRollenInstellingGebruiker = ingelogdeInstellingGebruiker.getRollen().stream().filter(InstellingGebruikerRol::getActief).map(InstellingGebruikerRol::getRol)
+		Set<Rol> actieveRollenOrganisatieMedewerker = ingelogdeOrganisatieMedewerker.getRollen().stream().filter(OrganisatieMedewerkerRol::getActief)
+			.map(OrganisatieMedewerkerRol::getRol)
 			.collect(Collectors.toSet());
 
 		while (rol != null)
 		{
-			if (rol.getParentRol() == null && actieveRollenInstellingGebruiker.contains(rol)
-				|| actieveRollenInstellingGebruiker.contains(rol.getParentRol()))
+			if (rol.getParentRol() == null && actieveRollenOrganisatieMedewerker.contains(rol)
+				|| actieveRollenOrganisatieMedewerker.contains(rol.getParentRol()))
 			{
 				return true;
 			}
@@ -190,21 +191,21 @@ public class RolServiceImpl implements RolService
 	}
 
 	@Override
-	public boolean opslaan(Rol rol, List<InstellingGebruikerRol> rollen, RolDto initieleRol, List<Bevolkingsonderzoek> verwijderdeBevolkingsonderzoek,
-		InstellingGebruiker ingelogdeInstellingGebruiker)
+	public boolean opslaan(Rol rol, List<OrganisatieMedewerkerRol> rollen, RolDto initieleRol, List<Bevolkingsonderzoek> verwijderdeBevolkingsonderzoek,
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		if (rollen != null && !verwijderdeBevolkingsonderzoek.isEmpty())
 		{
-			for (InstellingGebruikerRol igRol : rollen)
+			for (OrganisatieMedewerkerRol omRol : rollen)
 			{
 				for (Bevolkingsonderzoek onderzoek : verwijderdeBevolkingsonderzoek)
 				{
-					igRol.getBevolkingsonderzoeken().remove(onderzoek);
+					omRol.getBevolkingsonderzoeken().remove(onderzoek);
 				}
-				if (igRol.getBevolkingsonderzoeken().isEmpty())
+				if (omRol.getBevolkingsonderzoeken().isEmpty())
 				{
-					igRol.getBevolkingsonderzoeken().addAll(verwijderdeBevolkingsonderzoek);
-					igRol.setActief(Boolean.FALSE);
+					omRol.getBevolkingsonderzoeken().addAll(verwijderdeBevolkingsonderzoek);
+					omRol.setActief(Boolean.FALSE);
 				}
 			}
 		}
@@ -213,7 +214,7 @@ public class RolServiceImpl implements RolService
 		var opslaanGelukt = zijnErActivePermissies(rol);
 		if (opslaanGelukt)
 		{
-			saveLogInformatieVoorRol(initieleRol, rol, ingelogdeInstellingGebruiker);
+			saveLogInformatieVoorRol(initieleRol, rol, ingelogdeOrganisatieMedewerker);
 			hibernateService.saveOrUpdate(rol);
 			hibernateService.saveOrUpdateAll(rollen);
 		}
@@ -245,11 +246,11 @@ public class RolServiceImpl implements RolService
 		return RolSpecification.filterBevolkingsonderzoek(filter.getBevolkingsonderzoeken()).and(RolSpecification.filterIsActief(filter.getActief()));
 	}
 
-	private void saveLogInformatieVoorRol(RolDto initieleRol, Rol rol, InstellingGebruiker instellingGebruiker)
+	private void saveLogInformatieVoorRol(RolDto initieleRol, Rol rol, OrganisatieMedewerker organisatieMedewerker)
 	{
 		if (rol.getId() == null)
 		{
-			logService.logGebeurtenis(LogGebeurtenis.ROL_NIEUW, instellingGebruiker, String.format("Rol: %s", rol.getNaam()));
+			logService.logGebeurtenis(LogGebeurtenis.ROL_NIEUW, organisatieMedewerker, String.format("Rol: %s", rol.getNaam()));
 		}
 		else if (isRolGewijzigd(initieleRol, rol))
 		{
@@ -258,9 +259,9 @@ public class RolServiceImpl implements RolService
 
 			toevoegenWijzigingen(initieleRol, rol, wijzigingen);
 			melding += wijzigingen.toString();
-			logService.logGebeurtenis(LogGebeurtenis.ROL_WIJZIG, instellingGebruiker, melding);
+			logService.logGebeurtenis(LogGebeurtenis.ROL_WIJZIG, organisatieMedewerker, melding);
 		}
-		rol.getPermissies().forEach(permissie -> saveLogInformatieVoorPermissie(rol, initieleRol, permissie, instellingGebruiker));
+		rol.getPermissies().forEach(permissie -> saveLogInformatieVoorPermissie(rol, initieleRol, permissie, organisatieMedewerker));
 	}
 
 	private static void toevoegenWijzigingen(RolDto initieleRol, Rol rol, StringJoiner wijzigingen)
@@ -281,7 +282,7 @@ public class RolServiceImpl implements RolService
 		}
 	}
 
-	private void saveLogInformatieVoorPermissie(Rol rol, RolDto initieleRol, Permissie permissie, InstellingGebruiker instellingGebruiker)
+	private void saveLogInformatieVoorPermissie(Rol rol, RolDto initieleRol, Permissie permissie, OrganisatieMedewerker organisatieMedewerker)
 	{
 		if (permissie.getRecht() != null)
 		{
@@ -297,7 +298,7 @@ public class RolServiceImpl implements RolService
 			if (initielePermissieOptional.isEmpty() || initielePermissieOptional.get().getId() == null)
 			{
 				melding += String.format("toegevoegd met actie '%s' en niveau '%s'", permissie.getActie().getNaam(), permissie.getToegangLevel().getNaam());
-				logService.logGebeurtenis(LogGebeurtenis.ROL_WIJZIG, instellingGebruiker, melding);
+				logService.logGebeurtenis(LogGebeurtenis.ROL_WIJZIG, organisatieMedewerker, melding);
 				return;
 			}
 
@@ -309,7 +310,7 @@ public class RolServiceImpl implements RolService
 			}
 
 			melding = aanvullenMelding(permissie, melding, initielePermissie);
-			logService.logGebeurtenis(LogGebeurtenis.ROL_WIJZIG, instellingGebruiker, melding);
+			logService.logGebeurtenis(LogGebeurtenis.ROL_WIJZIG, organisatieMedewerker, melding);
 		}
 	}
 
@@ -371,21 +372,4 @@ public class RolServiceImpl implements RolService
 		return actief;
 	}
 
-	private void maakLogGebeurtenis(Rol rol, Account ingelogdeAccount, List<InstellingGebruikerRol> organisatieMedewerkersMetRol)
-	{
-		var melding = "Rol: " + rol.getNaam();
-		var rolActief = rol.getActief();
-		if (rolActief)
-		{
-			melding += ". Medewerkers met deze rol: " + organisatieMedewerkersMetRol.stream()
-				.map(InstellingGebruikerRol::getInstellingGebruiker)
-				.map(InstellingGebruiker::getMedewerker)
-				.map(Gebruiker::getMedewerkercode)
-				.filter(Objects::nonNull)
-				.map(Object::toString)
-				.collect(Collectors.joining(", "));
-		}
-		var logGebeurtenis = rolActief ? LogGebeurtenis.ROL_VERWIJDEREN : LogGebeurtenis.ROL_ACTIVEREN;
-		logService.logGebeurtenis(logGebeurtenis, ingelogdeAccount, melding);
-	}
 }

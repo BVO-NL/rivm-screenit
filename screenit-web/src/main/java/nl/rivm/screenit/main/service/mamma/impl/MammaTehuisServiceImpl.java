@@ -34,8 +34,8 @@ import nl.rivm.screenit.main.service.mamma.MammaTehuisService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.IDocument;
-import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.MailMergeContext;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
@@ -114,7 +114,7 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 
 	@Transactional
 	@Override
-	public void deactiveerTehuis(MammaTehuis tehuis, InstellingGebruiker instellingGebruiker)
+	public void deactiveerTehuis(MammaTehuis tehuis, OrganisatieMedewerker organisatieMedewerker)
 	{
 		for (var dossier : tehuis.getDossiers())
 		{
@@ -123,12 +123,12 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 
 			baseKansberekeningService.dossierEventHerzien(dossier);
 		}
-		baseTehuisService.saveOrUpdateTehuis(tehuis, instellingGebruiker);
+		baseTehuisService.saveOrUpdateTehuis(tehuis, organisatieMedewerker);
 	}
 
 	@Transactional
 	@Override
-	public boolean saveOrUpdateTehuisOpmerking(MammaTehuisOpmerking opmerking, MammaTehuis tehuis, InstellingGebruiker loggedInInstellingGebruiker)
+	public boolean saveOrUpdateTehuisOpmerking(MammaTehuisOpmerking opmerking, MammaTehuis tehuis, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		opmerking.setCreatieDatum(dateSupplier.getDate());
 		if (opmerking.getId() == null && tehuis != null)
@@ -154,7 +154,7 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 		}
 		if (StringUtils.isNotBlank(melding))
 		{
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_TEHUIS_BEHEER, loggedInInstellingGebruiker, melding, Bevolkingsonderzoek.MAMMA);
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_TEHUIS_BEHEER, ingelogdeOrganisatieMedewerker, melding, Bevolkingsonderzoek.MAMMA);
 			hibernateService.saveOrUpdateAll(opmerking, tehuis);
 			return true;
 		}
@@ -164,7 +164,7 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 	@Transactional
 	@Override
 	public void uitnodigen(MammaTehuis tehuis, AtomicInteger aantalClientenMetProjectBrief, AtomicInteger aantalClientenMetBrieven,
-		AtomicInteger aantalClientenMetSuspectBrieven, InstellingGebruiker ingelogdeInstellingGebruiker)
+		AtomicInteger aantalClientenMetSuspectBrieven, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		var standplaatsRonde = baseTehuisService.getHuidigeStandplaatsRondeVoorStandplaats(tehuis.getStandplaats());
 		List<MammaBrief> uitnodigingen = new ArrayList<>();
@@ -223,7 +223,7 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 			tehuis.setUitgenodigd(nu);
 			tehuis.getOpmerkingen().add(opmerking);
 			hibernateService.saveOrUpdateAll(opmerking, tehuis);
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_TEHUIS_UITGENODIGD, ingelogdeInstellingGebruiker,
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_TEHUIS_UITGENODIGD, ingelogdeOrganisatieMedewerker,
 				"'" + tehuis.getNaam() + "' met " + tehuis.getDossiers().size() + " clienten. " + melding, Bevolkingsonderzoek.MAMMA);
 		}
 		if (!uitnodigingen.isEmpty())
@@ -256,7 +256,7 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 			else
 			{
 				baseUitstelService.uitstelAfzeggen(uitstel, MammaUitstelGeannuleerdReden.TEHUIS_KOPPELING, dateSupplier.getDate());
-				logService.logGebeurtenis(LogGebeurtenis.MAMMA_UITSTEL_GEANNULEERD_TEHUIS, ScreenitSession.get().getLoggedInAccount(), client);
+				logService.logGebeurtenis(LogGebeurtenis.MAMMA_UITSTEL_GEANNULEERD_TEHUIS, ScreenitSession.get().getIngelogdAccount(), client);
 				meldingen.add("client.gekoppeld.uitstel.geannuleerd");
 			}
 		}

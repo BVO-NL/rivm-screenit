@@ -325,7 +325,7 @@ public class CervixVerwerkTextractLabformulierServiceImpl implements CervixVerwe
 		if (antwoord != null)
 		{
 			var block = antwoord.valueBlocks.get(0);
-			var huisartsLocatieRuw = block.text(); 
+			var huisartsLocatieRuw = block.text();
 			var huisartsLocatieId = getHuisartsLocatieIdLong(huisartsLocatieRuw);
 			if (huisartsLocatieId != null)
 			{
@@ -342,7 +342,7 @@ public class CervixVerwerkTextractLabformulierServiceImpl implements CervixVerwe
 
 	private Long getHuisartsLocatieIdLong(String huisartsLocatieRuw)
 	{
-		var huisartsLocatieIdString = StringUtils.substringBetween(huisartsLocatieRuw, ":", ",");
+		var huisartsLocatieIdString = StringUtils.substringAfter(huisartsLocatieRuw, ":"); 
 		try
 		{
 			return Long.parseLong(StringUtils.trim(TextractVerwerkenUtil.vervangLettersMetCijfers(huisartsLocatieIdString)));

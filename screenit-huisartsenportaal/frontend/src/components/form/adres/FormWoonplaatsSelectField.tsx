@@ -23,7 +23,6 @@ import React, {ChangeEvent} from "react"
 import {WoonplaatsDto} from "../../../state/datatypes/dto/WoonplaatsDto"
 import styles from "./FormWoonplaatsSelectField.module.scss"
 import AsyncSelect from "react-select/async"
-import {AxiosResponse} from "axios"
 import ScreenitBackend from "../../../util/Backend"
 import properties from "./FormWoonplaatsSelectField.json"
 import {getString} from "../../../util/TekstPropertyUtil"
@@ -37,9 +36,10 @@ export interface FormWoonplaatsSelectFieldProps<T> {
 }
 
 const loadWoonplaatsen = async (value: string): Promise<WoonplaatsDto[]> => {
-	return await ScreenitBackend.get("/woonplaatsen/" + value).then((response: AxiosResponse<WoonplaatsDto[]>) => {
-		return response.data
-	})
+	if (value.length > 2) {
+		return await ScreenitBackend.get<WoonplaatsDto[]>(`woonplaatsen/${value}`).json()
+	}
+	return []
 }
 
 function FormWoonplaatsSelectField<T>(props: FormWoonplaatsSelectFieldProps<T>) {
@@ -55,9 +55,7 @@ function FormWoonplaatsSelectField<T>(props: FormWoonplaatsSelectFieldProps<T>) 
 			loadingMessage={() => getString(properties.laden)}
 			getOptionLabel={v => v ? (v.naam + " (Gemeente " + v.gemeente + ")") : ""}
 			getOptionValue={v => v ? String(v.huisartsportaalId) : ""}
-			loadOptions={(value: string) => {
-				return (value.length > 2 ? loadWoonplaatsen(value) : new Promise((resolve) => resolve([])))
-			}}
+			loadOptions={(value: string) => loadWoonplaatsen(value)}
 			onChange={(value) => {
 				props.form.setFieldValue(props.property, value)
 			}}

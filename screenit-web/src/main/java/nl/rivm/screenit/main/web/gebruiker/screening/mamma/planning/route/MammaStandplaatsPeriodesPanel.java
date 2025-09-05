@@ -118,7 +118,7 @@ public class MammaStandplaatsPeriodesPanel extends Panel
 		huidigeScreeningsEenheid = model;
 		this.dialog = dialog;
 
-		magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN) && ScreenitSession.get().getScreeningOrganisatie() != null;
+		magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN) && ScreenitSession.get().getScreeningOrganisatie() != null;
 
 		standplaatsPerioden1Container.setOutputMarkupId(true);
 		add(standplaatsPerioden1Container);

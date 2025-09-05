@@ -102,7 +102,7 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_BEOORDELING_WERKLIJST },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_BEOORDELING_WERKLIJST },
 	organisatieTypeScopes = { OrganisatieType.BEOORDELINGSEENHEID },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public abstract class AbstractMammaBeWerklijstPage extends AbstractMammaBePage
@@ -138,7 +138,7 @@ public abstract class AbstractMammaBeWerklijstPage extends AbstractMammaBePage
 	protected AbstractMammaBeWerklijstPage()
 	{
 		var screeningsEenheden = getMogelijkeScreeningsEenheden();
-		heeftToegangTotOnderzoektypeFilter = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_BE_ONDERZOEKTYPE_FILTER, Actie.INZIEN);
+		heeftToegangTotOnderzoektypeFilter = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_BE_ONDERZOEKTYPE_FILTER, Actie.INZIEN);
 
 		if (CollectionUtils.isNotEmpty(screeningsEenheden))
 		{
@@ -221,7 +221,7 @@ public abstract class AbstractMammaBeWerklijstPage extends AbstractMammaBePage
 
 	private Component createBeoordelingenTabel()
 	{
-		final var heeftHandtekeningVoorScreenen = ScreenitSession.get().getLoggedInInstellingGebruiker().getMedewerker().getHandtekening() != null;
+		final var heeftHandtekeningVoorScreenen = getIngelogdeOrganisatieMedewerker().getMedewerker().getHandtekening() != null;
 
 		var beoordelingenDataProvider = new MammaBeoordelingWerklijstDataProvider(MammaOnderzoek_.CREATIE_DATUM, zoekObjectModel);
 
@@ -269,7 +269,7 @@ public abstract class AbstractMammaBeWerklijstPage extends AbstractMammaBePage
 				{
 					if (!emailHandtekeningVerstuurd)
 					{
-						beoordelingService.radioloogHeeftGeenHandtekening(ScreenitSession.get().getLoggedInInstellingGebruiker().getMedewerker());
+						beoordelingService.radioloogHeeftGeenHandtekening(getIngelogdeOrganisatieMedewerker().getMedewerker());
 						emailHandtekeningVerstuurd = true;
 					}
 					error(getString("error.heeft.geen.handtekening"));
@@ -299,7 +299,7 @@ public abstract class AbstractMammaBeWerklijstPage extends AbstractMammaBePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				beWerklijstService.bevestig1eEn2eLezingen(ScreenitSession.get().getLoggedInInstellingGebruiker());
+				beWerklijstService.bevestig1eEn2eLezingen(getIngelogdeOrganisatieMedewerker());
 				resetZoekObject();
 				target.add(refreshContainer, zoekForm);
 			}
@@ -321,11 +321,11 @@ public abstract class AbstractMammaBeWerklijstPage extends AbstractMammaBePage
 	private void resetZoekObject()
 	{
 		MammaBeWerklijstZoekObject zoekObject = zoekObjectModel.getObject();
-		zoekObject.setInstellingGebruiker(ScreenitSession.get().getLoggedInInstellingGebruiker());
+		zoekObject.setOrganisatieMedewerker(getIngelogdeOrganisatieMedewerker());
 		zoekObject.setOnderzoekType(MammaOnderzoekType.MAMMOGRAFIE);
 		zoekObject.setBeoordelingStatussen(getDefaultStatussen());
 		zoekObject.setScreeningsEenheden(screeningsEenhedenModel.getObject());
-		zoekObject.setBeoordelingsEenheid((BeoordelingsEenheid) ScreenitSession.get().getInstelling());
+		zoekObject.setBeoordelingsEenheid((BeoordelingsEenheid) ScreenitSession.get().getOrganisatie());
 		zoekObject.setGeboortedatum(null);
 		zoekObject.setBsn(null);
 		zoekObject.setPostcode(null);
@@ -361,7 +361,7 @@ public abstract class AbstractMammaBeWerklijstPage extends AbstractMammaBePage
 
 	private List<MammaScreeningsEenheid> getMogelijkeScreeningsEenheden()
 	{
-		return beWerklijstService.zoekScreeningsEenhedenMetBeWerklijstBeoordeling(ScreenitSession.get().getLoggedInInstellingGebruiker(), getBeschikbarePaginaStatussen());
+		return beWerklijstService.zoekScreeningsEenhedenMetBeWerklijstBeoordeling(getIngelogdeOrganisatieMedewerker(), getBeschikbarePaginaStatussen());
 	}
 
 	private void resetSeKeuzelijst()
@@ -406,7 +406,7 @@ public abstract class AbstractMammaBeWerklijstPage extends AbstractMammaBePage
 		filter += "statussen: [";
 		filter += zoekObject.getBeoordelingStatussen().stream().map(MammaBeoordelingStatus::getNaam).collect(Collectors.joining(", "));
 		filter += "]";
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_WERKLIJST_INGEZIEN, ScreenitSession.get().getLoggedInInstellingGebruiker(), filter, Bevolkingsonderzoek.MAMMA);
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_WERKLIJST_INGEZIEN, getIngelogdeOrganisatieMedewerker(), filter, Bevolkingsonderzoek.MAMMA);
 	}
 
 	public boolean bevestigenButtonVisible()

@@ -24,7 +24,7 @@ package nl.rivm.screenit.service;
 import java.io.OutputStream;
 import java.util.List;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
 import nl.rivm.screenit.model.colon.MdlVerslag;
@@ -36,7 +36,7 @@ import nl.rivm.screenit.model.verslag.DSValue;
 
 public interface BaseVerslagService
 {
-	void verwijderVerslag(Verslag<?, ?> verslag, InstellingGebruiker instellingGebruiker, boolean heropenRondeEnDossier);
+	void verwijderVerslag(Verslag<?, ?> verslag, OrganisatieMedewerker organisatieMedewerker, boolean heropenRondeEnDossier);
 
 	void heropenRondeEnDossier(Verslag<?, ?> verslag);
 

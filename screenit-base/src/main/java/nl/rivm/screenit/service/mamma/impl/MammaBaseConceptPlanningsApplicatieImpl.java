@@ -50,7 +50,7 @@ import nl.rivm.screenit.dto.mamma.planning.PlanningStandplaatsPeriodeDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningStatusDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningVerzetClientenDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningWeekDto;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -194,12 +194,13 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 
 	}
 
-	private <T extends PlanningDto> void sendToPlanningApplicatie(String context, T dto, boolean isNieuw, InstellingGebruiker ingelogdeInstellingGebruiker)
+	private <T extends PlanningDto> void sendToPlanningApplicatie(String context, T dto, boolean isNieuw, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		sendToPlanningApplicatie(context, dto, isNieuw, ingelogdeInstellingGebruiker, null);
+		sendToPlanningApplicatie(context, dto, isNieuw, ingelogdeOrganisatieMedewerker, null);
 	}
 
-	private <T extends PlanningDto> void sendToPlanningApplicatie(String context, T dto, boolean isNieuw, InstellingGebruiker ingelogdeInstellingGebruiker, Duration readTimeout)
+	private <T extends PlanningDto> void sendToPlanningApplicatie(String context, T dto, boolean isNieuw, OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
+		Duration readTimeout)
 	{
 		RestTemplate restApi = RestApiFactory.create(readTimeout);
 		if (isNieuw)
@@ -210,15 +211,15 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 		{
 			restApi.put(planningBkRestUrl + context, dto, String.class);
 		}
-		sendGewijzigdDoor(ingelogdeInstellingGebruiker, restApi);
+		sendGewijzigdDoor(ingelogdeOrganisatieMedewerker, restApi);
 	}
 
-	private void sendGewijzigdDoor(InstellingGebruiker ingelogdeInstellingGebruiker, RestTemplate restApi)
+	private void sendGewijzigdDoor(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, RestTemplate restApi)
 	{
-		if (ingelogdeInstellingGebruiker != null)
+		if (ingelogdeOrganisatieMedewerker != null)
 		{
-			restApi.postForEntity(planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptGewijzigdDoor/" + ingelogdeInstellingGebruiker.getId() + "/"
-				+ ingelogdeInstellingGebruiker.getOrganisatie().getId(), null, String.class);
+			restApi.postForEntity(planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptGewijzigdDoor/" + ingelogdeOrganisatieMedewerker.getId() + "/"
+				+ ingelogdeOrganisatieMedewerker.getOrganisatie().getId(), null, String.class);
 		}
 	}
 
@@ -261,11 +262,11 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 		sendDeleteToPlanningApplicatie(PlanningRestConstants.C_POSTCODEREEKS + "/" + postcodeReeks.getId(), null);
 	}
 
-	private void sendDeleteToPlanningApplicatie(String payload, InstellingGebruiker ingelogdeGebruiker)
+	private void sendDeleteToPlanningApplicatie(String payload, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		RestTemplate restApi = RestApiFactory.create();
 		restApi.delete(planningBkRestUrl + payload);
-		sendGewijzigdDoor(ingelogdeGebruiker, restApi);
+		sendGewijzigdDoor(ingelogdeOrganisatieMedewerker, restApi);
 	}
 
 	@Override
@@ -339,17 +340,17 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	}
 
 	@Override
-	public void sendCapaciteitBlok(PlanningCapaciteitBlokDto blok, boolean isNieuw, InstellingGebruiker ingelogdeGebruiker)
+	public void sendCapaciteitBlok(PlanningCapaciteitBlokDto blok, boolean isNieuw, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		sendToPlanningApplicatie(PlanningRestConstants.C_CAPACITEITBLOK, blok, isNieuw, ingelogdeGebruiker);
+		sendToPlanningApplicatie(PlanningRestConstants.C_CAPACITEITBLOK, blok, isNieuw, ingelogdeOrganisatieMedewerker);
 	}
 
 	@Override
-	public String deleteCapaciteitBlok(PlanningCapaciteitBlokDto blok, InstellingGebruiker ingelogdeGebruiker)
+	public String deleteCapaciteitBlok(PlanningCapaciteitBlokDto blok, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		try
 		{
-			sendDeleteToPlanningApplicatie(PlanningRestConstants.C_CAPACITEITBLOK + "/" + blok.conceptId, ingelogdeGebruiker);
+			sendDeleteToPlanningApplicatie(PlanningRestConstants.C_CAPACITEITBLOK + "/" + blok.conceptId, ingelogdeOrganisatieMedewerker);
 		}
 		catch (HttpClientErrorException | HttpServerErrorException se)
 		{
@@ -372,26 +373,26 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	}
 
 	@Override
-	public void changeRoute(PlanningStandplaatsPeriodeDto standplaatsPeriodeDto, MammaScreeningsEenheid screeningsEenheid, InstellingGebruiker ingelogdeInstellingGebruiker)
+	public void changeRoute(PlanningStandplaatsPeriodeDto standplaatsPeriodeDto, MammaScreeningsEenheid screeningsEenheid, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		PlanningRouteWijzigenDto wijziging = new PlanningRouteWijzigenDto();
 		wijziging.screeningsEenheidId = screeningsEenheid.getId();
 		wijziging.standplaatsId = standplaatsPeriodeDto.standplaatsId;
 		wijziging.volgNr = standplaatsPeriodeDto.screeningsEenheidVolgNr;
 		wijziging.standplaatsPeriodeConceptId = standplaatsPeriodeDto.conceptId;
-		sendToPlanningApplicatie(PlanningRestConstants.C_ROUTE, wijziging, false, ingelogdeInstellingGebruiker);
+		sendToPlanningApplicatie(PlanningRestConstants.C_ROUTE, wijziging, false, ingelogdeOrganisatieMedewerker);
 	}
 
 	@Override
-	public void splitsStandplaatsPeriode(PlanningStandplaatsPeriodeDto standplaatsPeriodeDto, InstellingGebruiker ingelogdeInstellingGebruiker)
+	public void splitsStandplaatsPeriode(PlanningStandplaatsPeriodeDto standplaatsPeriodeDto, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		sendToPlanningApplicatie(PlanningRestConstants.C_ROUTE + "/splitsStandplaatsPeriode/" + standplaatsPeriodeDto.conceptId, null, false, ingelogdeInstellingGebruiker);
+		sendToPlanningApplicatie(PlanningRestConstants.C_ROUTE + "/splitsStandplaatsPeriode/" + standplaatsPeriodeDto.conceptId, null, false, ingelogdeOrganisatieMedewerker);
 	}
 
 	@Override
-	public void sendAfspraakDrempelStandplaatsPeriode(PlanningStandplaatsPeriodeDto standplaatsPeriodeDto, InstellingGebruiker ingelogdeInstellingGebruiker)
+	public void sendAfspraakDrempelStandplaatsPeriode(PlanningStandplaatsPeriodeDto standplaatsPeriodeDto, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		sendToPlanningApplicatie(PlanningRestConstants.C_STANDPLAATS_PERIODE, standplaatsPeriodeDto, false, ingelogdeInstellingGebruiker);
+		sendToPlanningApplicatie(PlanningRestConstants.C_STANDPLAATS_PERIODE, standplaatsPeriodeDto, false, ingelogdeOrganisatieMedewerker);
 	}
 
 	@Override
@@ -413,24 +414,24 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	}
 
 	@Override
-	public PlanningConceptMeldingenDto saveConcept(InstellingGebruiker ingelogdeInstellingGebruiker, boolean runDry)
+	public PlanningConceptMeldingenDto saveConcept(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, boolean runDry)
 	{
 		RestTemplate restApi = RestApiFactory.create();
 		ResponseEntity<PlanningConceptMeldingenDto> result = restApi.getForEntity(
-			planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptOpslaan/" + ingelogdeInstellingGebruiker.getOrganisatie().getId() + "/" + runDry,
+			planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptOpslaan/" + ingelogdeOrganisatieMedewerker.getOrganisatie().getId() + "/" + runDry,
 			PlanningConceptMeldingenDto.class);
 		if (!runDry)
 		{
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_PLANNING_CONCEPT_OPGESLAGEN, ingelogdeInstellingGebruiker, Bevolkingsonderzoek.MAMMA);
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_PLANNING_CONCEPT_OPGESLAGEN, ingelogdeOrganisatieMedewerker, Bevolkingsonderzoek.MAMMA);
 		}
 		return result.getBody();
 	}
 
 	@Override
-	public void conceptAnnuleren(InstellingGebruiker ingelogdeInstellingGebruiker)
+	public void conceptAnnuleren(OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		RestTemplate restApi = RestApiFactory.create();
-		restApi.postForEntity(planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptAnnuleren/" + ingelogdeInstellingGebruiker.getOrganisatie().getId(), null,
+		restApi.postForEntity(planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptAnnuleren/" + ingelogdeOrganisatieMedewerker.getOrganisatie().getId(), null,
 			String.class);
 	}
 
@@ -478,7 +479,7 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 
 	@Override
 	public void herhaalWeek(MammaScreeningsEenheid screeningsEenheidVan, MammaScreeningsEenheid screeningsEenheidNaar, LocalDate teHerhalenWeek, LocalDate herhalenVanafWeek,
-		LocalDate herhalenTotEnMetWeek, InstellingGebruiker ingelogdeInstellingGebruiker)
+		LocalDate herhalenTotEnMetWeek, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		PlanningHerhalenDto dto = new PlanningHerhalenDto();
 		dto.screeningsEenheidIdVan = screeningsEenheidVan.getId();
@@ -487,7 +488,7 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 		dto.herhalenVanaf = herhalenVanafWeek;
 		dto.herhalenTotEnMet = herhalenTotEnMetWeek;
 
-		sendToPlanningApplicatie(PlanningRestConstants.C_WEEK, dto, false, ingelogdeInstellingGebruiker);
+		sendToPlanningApplicatie(PlanningRestConstants.C_WEEK, dto, false, ingelogdeOrganisatieMedewerker);
 	}
 
 	@Override
@@ -539,7 +540,7 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 
 	@Override
 	public void kopieerDag(MammaScreeningsEenheid bronScreeningsEenheid, MammaScreeningsEenheid doelScreeningsEenheid, LocalDate bronDag, LocalTime bronVanTijd,
-		LocalTime bronTotTijd, LocalDate doelDag, InstellingGebruiker ingelogdeInstellingGebruiker)
+		LocalTime bronTotTijd, LocalDate doelDag, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		var dto = new PlanningDagKopierenDto();
 		dto.bronScreeningsEenheidId = bronScreeningsEenheid.getId();
@@ -549,6 +550,6 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 		dto.bronTotTijd = bronTotTijd;
 		dto.doelDatum = doelDag;
 
-		sendToPlanningApplicatie(PlanningRestConstants.C_DAG_KOPIEREN, dto, false, ingelogdeInstellingGebruiker);
+		sendToPlanningApplicatie(PlanningRestConstants.C_DAG_KOPIEREN, dto, false, ingelogdeOrganisatieMedewerker);
 	}
 }

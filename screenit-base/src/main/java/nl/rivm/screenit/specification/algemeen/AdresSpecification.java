@@ -53,6 +53,11 @@ public class AdresSpecification
 		return skipWhenNullExtended(huisnummer, (r, q, cb) -> cb.equal(r.get(Adres_.huisnummer), huisnummer));
 	}
 
+	public static ExtendedSpecification<Adres> filterPlaatsPostcode(String plaats, String postcode)
+	{
+		return filterPlaatsContaining(plaats).and(filterPostcodeContaining(postcode));
+	}
+
 	public static ExtendedSpecification<Adres> heeftHuisnummer(Integer huisnummer)
 	{
 		return (r, q, cb) -> cb.equal(r.get(Adres_.huisnummer), huisnummer);

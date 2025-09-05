@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.OrganisatieZoekService;
@@ -38,7 +38,7 @@ import org.apache.wicket.injection.Injector;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-public class OrganisatieDataProvider extends SortableDataProvider<Instelling, String>
+public class OrganisatieDataProvider extends SortableDataProvider<Organisatie, String>
 {
 
 	@SpringBean
@@ -51,9 +51,9 @@ public class OrganisatieDataProvider extends SortableDataProvider<Instelling, St
 
 	private final List<OrganisatieType> excludeOrganisatieTypes;
 
-	private final IModel<Instelling> criteralModel;
+	private final IModel<Organisatie> criteralModel;
 
-	public OrganisatieDataProvider(IModel<Instelling> criteriaModel, IModel<List<OrganisatieType>> selectedOrganisatieTypes, List<OrganisatieType> excludeOrganisatieTypes,
+	public OrganisatieDataProvider(IModel<Organisatie> criteriaModel, IModel<List<OrganisatieType>> selectedOrganisatieTypes, List<OrganisatieType> excludeOrganisatieTypes,
 		String defaultSortProperty)
 	{
 		Injector.get().inject(this);
@@ -64,7 +64,7 @@ public class OrganisatieDataProvider extends SortableDataProvider<Instelling, St
 	}
 
 	@Override
-	public Iterator<Instelling> iterator(long first, long count)
+	public Iterator<Organisatie> iterator(long first, long count)
 	{
 		String sortProperty = null;
 		boolean asc = true;
@@ -74,18 +74,18 @@ public class OrganisatieDataProvider extends SortableDataProvider<Instelling, St
 			asc = getSort().isAscending();
 		}
 		return organisatieZoekService.zoekOrganisaties(ModelUtil.nullSafeGet(criteralModel), getSelectedOrganisatieTypes(), excludeOrganisatieTypes,
-			ScreenitSession.get().getLoggedInInstellingGebruiker(), first, count, sortProperty, asc).iterator();
+			ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), first, count, sortProperty, asc).iterator();
 	}
 
 	@Override
 	public long size()
 	{
 		return organisatieZoekService.countOrganisaties(ModelUtil.nullSafeGet(criteralModel), getSelectedOrganisatieTypes(), excludeOrganisatieTypes,
-			ScreenitSession.get().getLoggedInInstellingGebruiker());
+			ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 	}
 
 	@Override
-	public IModel<Instelling> model(Instelling object)
+	public IModel<Organisatie> model(Organisatie object)
 	{
 		return ModelUtil.sModel(object);
 	}
@@ -103,7 +103,7 @@ public class OrganisatieDataProvider extends SortableDataProvider<Instelling, St
 		if (selectedOrganisatieTypes != null && CollectionUtils.isEmpty(organisatieTypes))
 		{
 
-			organisatieTypes = autorisatieService.getOrganisatieTypes(ScreenitSession.get().getLoggedInInstellingGebruiker(), true);
+			organisatieTypes = autorisatieService.getOrganisatieTypes(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), true);
 		}
 		return organisatieTypes;
 	}

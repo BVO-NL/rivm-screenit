@@ -40,8 +40,8 @@ import nl.rivm.screenit.model.mamma.enums.MammaFollowUpConclusieStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaUitnodigingsintervalType;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.mamma.MammaBaseFactory;
 import nl.rivm.screenit.service.mamma.MammaBaseFollowUpService;
 import nl.rivm.screenit.service.mamma.MammaBaseScreeningrondeService;
@@ -82,7 +82,7 @@ public class MammaVolgendeUitnodigingServiceImpl implements MammaVolgendeUitnodi
 	private LogService logService;
 
 	@Autowired
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@Autowired
 	private ClientService clientService;

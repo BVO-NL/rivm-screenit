@@ -33,19 +33,19 @@ import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.main.service.algemeen.MedewerkerZoekService;
 import nl.rivm.screenit.model.Functie;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Gebruiker_;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruikerRol;
-import nl.rivm.screenit.model.InstellingGebruikerRol_;
-import nl.rivm.screenit.model.InstellingGebruiker_;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Medewerker_;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol_;
+import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.Rol;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
-import nl.rivm.screenit.repository.algemeen.GebruikerRepository;
+import nl.rivm.screenit.repository.algemeen.MedewerkerRepository;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieZoekService;
@@ -96,28 +96,28 @@ public class MedewerkerZoekServiceImpl implements MedewerkerZoekService
 
 	private final AutorisatieService autorisatieService;
 
-	private final GebruikerRepository gebruikerRepository;
+	private final MedewerkerRepository medewerkerRepository;
 
 	private final ICurrentDateSupplier currentDateSupplier;
 
 	@Override
-	public List<Gebruiker> searchMedewerkers(Gebruiker zoekObject, List<Functie> selectedFuncties, List<Rol> selectedRollen, InstellingGebruiker ingelogdeOrganisatieMedewerker,
+	public List<Medewerker> searchMedewerkers(Medewerker zoekObject, List<Functie> selectedFuncties, List<Rol> selectedRollen, OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
 		boolean voorOrganisatieKoppelen, long first, long count, Sort sort)
 	{
 		var zoekSpecification = getZoekSpecification(zoekObject, selectedFuncties, selectedRollen, ingelogdeOrganisatieMedewerker, voorOrganisatieKoppelen);
-		return gebruikerRepository.findWith(zoekSpecification, q -> q.sortBy(sort).all(first, count));
+		return medewerkerRepository.findWith(zoekSpecification, q -> q.sortBy(sort).all(first, count));
 	}
 
 	@Override
-	public long countMedewerkers(Gebruiker zoekObject, List<Functie> selectedFuncties, List<Rol> selectedRollen, InstellingGebruiker ingelogdeOrganisatieMedewerker,
+	public long countMedewerkers(Medewerker zoekObject, List<Functie> selectedFuncties, List<Rol> selectedRollen, OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
 		boolean voorOrganisatieKoppelen)
 	{
 		var zoekSpecification = getZoekSpecification(zoekObject, selectedFuncties, selectedRollen, ingelogdeOrganisatieMedewerker, voorOrganisatieKoppelen);
-		return gebruikerRepository.count(zoekSpecification);
+		return medewerkerRepository.count(zoekSpecification);
 	}
 
-	private Specification<Gebruiker> getZoekSpecification(Gebruiker zoekObject, List<Functie> selectedFuncties, List<Rol> selectedRollen,
-		InstellingGebruiker ingelogdeOrganisatieMedewerker, boolean voorOrganisatieKoppelen)
+	private Specification<Medewerker> getZoekSpecification(Medewerker zoekObject, List<Functie> selectedFuncties, List<Rol> selectedRollen,
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker, boolean voorOrganisatieKoppelen)
 	{
 		if (voorOrganisatieKoppelen)
 		{
@@ -126,31 +126,31 @@ public class MedewerkerZoekServiceImpl implements MedewerkerZoekService
 		return getMedewerkerZoekenSpecification(zoekObject, selectedFuncties, selectedRollen, ingelogdeOrganisatieMedewerker);
 	}
 
-	private Specification<Gebruiker> getMedewerkerKoppelenSpecification(Gebruiker zoekObject)
+	private Specification<Medewerker> getMedewerkerKoppelenSpecification(Medewerker zoekObject)
 	{
 		return filterBasisVelden(zoekObject)
 			.and(filterFunctie(zoekObject.getFunctie()))
 			.and(filterOrganisatieVoorMedewerkerKoppelen(getOrganisatie(zoekObject)));
 	}
 
-	private ExtendedSpecification<Gebruiker> filterBasisVelden(Gebruiker zoekObject)
+	private ExtendedSpecification<Medewerker> filterBasisVelden(Medewerker zoekObject)
 	{
 		return filterActief(zoekObject.getActief())
 			.and(filterId(zoekObject.getId()))
 			.and(filterAchternaamContaining(zoekObject.getAchternaam()));
 	}
 
-	public static Specification<Gebruiker> filterOrganisatieVoorMedewerkerKoppelen(Instelling organisatie)
+	public static Specification<Medewerker> filterOrganisatieVoorMedewerkerKoppelen(Organisatie organisatie)
 	{
 		return (r, q, cb) ->
 		{
 			var subquery = q.subquery(Long.class);
-			var medewerkerRoot = subquery.from(Gebruiker.class);
+			var medewerkerRoot = subquery.from(Medewerker.class);
 
 			var geenHuisartsOfGeenOrganisatieKoppelingen = not(heeftOrganisatieType(HUISARTS)).or(HibernateObjectSpecification.heeftGeenId());
-			var organisatieSpecification = organisatie == null ? geenHuisartsOfGeenOrganisatieKoppelingen : HibernateObjectSpecification.<Instelling> heeftId(organisatie.getId());
+			var organisatieSpecification = organisatie == null ? geenHuisartsOfGeenOrganisatieKoppelingen : HibernateObjectSpecification.<Organisatie> heeftId(organisatie.getId());
 
-			subquery.where(organisatieSpecification.<Gebruiker> with(s -> getOrganisatiesJoin(s, LEFT))
+			subquery.where(organisatieSpecification.<Medewerker> with(s -> getOrganisatiesJoin(s, LEFT))
 				.toPredicate(medewerkerRoot, q, cb));
 
 			subquery.select(medewerkerRoot.get(AbstractHibernateObject_.id));
@@ -158,8 +158,8 @@ public class MedewerkerZoekServiceImpl implements MedewerkerZoekService
 		};
 	}
 
-	private Specification<Gebruiker> getMedewerkerZoekenSpecification(Gebruiker zoekObject, List<Functie> selectedFuncties, List<Rol> selectedRollen,
-		InstellingGebruiker ingelogdeOrganisatieMedewerker)
+	private Specification<Medewerker> getMedewerkerZoekenSpecification(Medewerker zoekObject, List<Functie> selectedFuncties, List<Rol> selectedRollen,
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		return filterBasisVelden(zoekObject)
 			.and(filterEmailAdres(zoekObject.getEmailextra()))
@@ -169,7 +169,7 @@ public class MedewerkerZoekServiceImpl implements MedewerkerZoekService
 				.or(includeerNietGekoppeldeMedewerkers(selectedRollen, zoekObject)));
 	}
 
-	private static Specification<Gebruiker> filterMedewerkercodeOfUzinummer(String code)
+	private static Specification<Medewerker> filterMedewerkercodeOfUzinummer(String code)
 	{
 		if (code != null)
 		{
@@ -178,66 +178,66 @@ public class MedewerkerZoekServiceImpl implements MedewerkerZoekService
 		return null;
 	}
 
-	public Specification<Gebruiker> filterOrganisatieMedewerker(Gebruiker zoekObject, List<Rol> selectedRollen, InstellingGebruiker ingelogdeOrganisatieMedewerker)
+	public Specification<Medewerker> filterOrganisatieMedewerker(Medewerker zoekObject, List<Rol> selectedRollen, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		return (r, q, cb) ->
 		{
 			var subquery = q.subquery(Long.class);
-			var organisatieMedewerkerRoot = subquery.from(InstellingGebruiker.class);
+			var organisatieMedewerkerRoot = subquery.from(OrganisatieMedewerker.class);
 
 			subquery.where(OrganisatieMedewerkerSpecification.isActief()
-				.and(heeftBevolkingsonderzoekIn(ingelogdeOrganisatieMedewerker.getBevolkingsonderzoeken()).with(InstellingGebruiker_.rollen))
+				.and(heeftBevolkingsonderzoekIn(ingelogdeOrganisatieMedewerker.getBevolkingsonderzoeken()).with(OrganisatieMedewerker_.rollen))
 				.and(filterRol(selectedRollen))
 				.and(filterOrganisatie(zoekObject))
 				.and(filterHierarchie(ingelogdeOrganisatieMedewerker))
 				.toPredicate(organisatieMedewerkerRoot, q, cb));
 
-			subquery.select(organisatieMedewerkerRoot.get(InstellingGebruiker_.medewerker).get(AbstractHibernateObject_.id));
+			subquery.select(organisatieMedewerkerRoot.get(OrganisatieMedewerker_.medewerker).get(AbstractHibernateObject_.id));
 			return r.get(AbstractHibernateObject_.id).in(subquery);
 		};
 	}
 
-	private ExtendedSpecification<InstellingGebruiker> filterRol(List<Rol> rollen)
+	private ExtendedSpecification<OrganisatieMedewerker> filterRol(List<Rol> rollen)
 	{
 		return skipWhenEmpty(rollen,
 			isActiefOpDatum(currentDateSupplier.getLocalDate())
-				.and(heeftRolIn(rollen)).with(InstellingGebruiker_.rollen)
+				.and(heeftRolIn(rollen)).with(OrganisatieMedewerker_.rollen)
 				.and(RolSpecification.isActief(true).with(s -> getRollenJoin(s))));
 	}
 
-	private ExtendedSpecification<InstellingGebruiker> filterOrganisatie(Gebruiker zoekObject)
+	private ExtendedSpecification<OrganisatieMedewerker> filterOrganisatie(Medewerker zoekObject)
 	{
 		var organisatie = getOrganisatie(zoekObject);
 		return skipWhenFalse(isOrganisatieFilterGevuld(organisatie),
 			OrganisatieSpecification.isActief(true)
 				.and(filterNaamContaining(organisatie.getNaam()))
 				.and(filterAgbCodeOfUziAbonneenummerContaining(organisatie.getUziAbonneenummer()))
-				.and(OrganisatieSpecification.filterPlaatsnaam(organisatie.getHuidigAdres().getPlaats()))
-				.with(InstellingGebruiker_.organisatie)
+				.and(OrganisatieSpecification.filterPlaatsnaam(organisatie.getAdres().getPlaats()))
+				.with(OrganisatieMedewerker_.organisatie)
 		);
 	}
 
-	private boolean isOrganisatieFilterGevuld(Instelling organisatie)
+	private boolean isOrganisatieFilterGevuld(Organisatie organisatie)
 	{
 		return StringUtils.isNotBlank(organisatie.getNaam()) || StringUtils.isNotBlank(organisatie.getUziAbonneenummer()) || StringUtils.isNotBlank(
-			organisatie.getHuidigAdres().getPlaats());
+			organisatie.getAdres().getPlaats());
 	}
 
-	private ExtendedSpecification<InstellingGebruiker> filterHierarchie(InstellingGebruiker ingelogdeOrganisatieMedewerker)
+	private ExtendedSpecification<OrganisatieMedewerker> filterHierarchie(OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		var hierarchieCriteria = getHierarchieCriteria(ingelogdeOrganisatieMedewerker);
 		var hierarchieCriteriaGevuld = MapUtils.isNotEmpty(hierarchieCriteria);
 		return skipWhenFalse(hierarchieCriteriaGevuld,
 			OrganisatieSpecification.isActief(true)
 				.and(OrganisatieSpecification.filterHierarchie(hierarchieCriteria))
-				.with(InstellingGebruiker_.organisatie)
+				.with(OrganisatieMedewerker_.organisatie)
 		);
 	}
 
-	private Map<OrganisatieType, List<Instelling>> getHierarchieCriteria(InstellingGebruiker ingelogdeOrganisatieMedewerker)
+	private Map<OrganisatieType, List<Organisatie>> getHierarchieCriteria(OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		Map<OrganisatieType, List<Instelling>> hierarchieCriteria = new EnumMap<>(OrganisatieType.class);
-		var toegangLevel = autorisatieService.getToegangLevel(ingelogdeOrganisatieMedewerker, Actie.INZIEN, true, Recht.GEBRUIKER_MEDEWERKER_BEHEER);
+		Map<OrganisatieType, List<Organisatie>> hierarchieCriteria = new EnumMap<>(OrganisatieType.class);
+		var toegangLevel = autorisatieService.getToegangLevel(ingelogdeOrganisatieMedewerker, Actie.INZIEN, true, Recht.MEDEWERKER_BEHEER);
 		for (var organisatieType : OrganisatieType.values())
 		{
 			if (moetToegevoegdWordenAanHierarchieCriteria(organisatieType, toegangLevel.getNiveau()))
@@ -254,19 +254,19 @@ public class MedewerkerZoekServiceImpl implements MedewerkerZoekService
 		{
 			case RIVM, INPAKCENTRUM, LABORATORIUM -> toegangsniveau == ToegangLevel.LANDELIJK.getNiveau();
 			case SCREENINGSORGANISATIE -> toegangsniveau >= ToegangLevel.REGIO.getNiveau();
-			default -> toegangsniveau >= ToegangLevel.INSTELLING.getNiveau();
+			default -> toegangsniveau >= ToegangLevel.ORGANISATIE.getNiveau();
 		};
 	}
 
-	public Specification<Gebruiker> includeerNietGekoppeldeMedewerkers(List<Rol> selectedRollen, Gebruiker zoekObject)
+	public Specification<Medewerker> includeerNietGekoppeldeMedewerkers(List<Rol> selectedRollen, Medewerker zoekObject)
 	{
 		var includeerNietGekoppeldeMedewerkers = CollectionUtils.isEmpty(selectedRollen) && !isOrganisatieFilterGevuld(getOrganisatie(zoekObject));
 		return skipWhenFalse(includeerNietGekoppeldeMedewerkers, (r, q, cb) ->
 		{
 			var subquery = q.subquery(Long.class);
-			var medewerkerRoot = subquery.from(Gebruiker.class);
+			var medewerkerRoot = subquery.from(Medewerker.class);
 
-			var heeftActieveRolKoppeling = OrganisatieMedewerkerSpecification.isActief().with(Gebruiker_.organisatieMedewerkers)
+			var heeftActieveRolKoppeling = OrganisatieMedewerkerSpecification.isActief().with(Medewerker_.organisatieMedewerkers)
 				.and(OrganisatieSpecification.isActief(true).with(s -> getOrganisatiesJoin(s, INNER)))
 				.and(heeftId().with(s -> getOrganisatieMedewerkerRollenJoin(s)));
 
@@ -280,24 +280,24 @@ public class MedewerkerZoekServiceImpl implements MedewerkerZoekService
 		});
 	}
 
-	private Instelling getOrganisatie(Gebruiker zoekObject)
+	private Organisatie getOrganisatie(Medewerker zoekObject)
 	{
-		return zoekObject.getOrganisatieMedewerkers().stream().findFirst().map(InstellingGebruiker::getOrganisatie).orElse(null);
+		return zoekObject.getOrganisatieMedewerkers().stream().findFirst().map(OrganisatieMedewerker::getOrganisatie).orElse(null);
 	}
 
-	private static Join<InstellingGebruikerRol, Rol> getRollenJoin(From<?, ? extends InstellingGebruiker> organisatieMedewerkerRoot)
+	private static Join<OrganisatieMedewerkerRol, Rol> getRollenJoin(From<?, ? extends OrganisatieMedewerker> organisatieMedewerkerRoot)
 	{
-		var rollenJoin = join(organisatieMedewerkerRoot, InstellingGebruiker_.rollen);
-		return join(rollenJoin, InstellingGebruikerRol_.rol);
+		var rollenJoin = join(organisatieMedewerkerRoot, OrganisatieMedewerker_.rollen);
+		return join(rollenJoin, OrganisatieMedewerkerRol_.rol);
 	}
 
-	private static Join<InstellingGebruiker, InstellingGebruikerRol> getOrganisatieMedewerkerRollenJoin(From<?, ? extends Gebruiker> medewerkerRoot)
+	private static Join<OrganisatieMedewerker, OrganisatieMedewerkerRol> getOrganisatieMedewerkerRollenJoin(From<?, ? extends Medewerker> medewerkerRoot)
 	{
-		return join(join(medewerkerRoot, Gebruiker_.organisatieMedewerkers), InstellingGebruiker_.rollen, LEFT);
+		return join(join(medewerkerRoot, Medewerker_.organisatieMedewerkers), OrganisatieMedewerker_.rollen, LEFT);
 	}
 
-	private static Join<InstellingGebruiker, Instelling> getOrganisatiesJoin(From<?, ? extends Gebruiker> medewerkerRoot, JoinType joinType)
+	private static Join<OrganisatieMedewerker, Organisatie> getOrganisatiesJoin(From<?, ? extends Medewerker> medewerkerRoot, JoinType joinType)
 	{
-		return join(join(medewerkerRoot, Gebruiker_.organisatieMedewerkers, joinType), InstellingGebruiker_.organisatie, joinType);
+		return join(join(medewerkerRoot, Medewerker_.organisatieMedewerkers, joinType), OrganisatieMedewerker_.organisatie, joinType);
 	}
 }

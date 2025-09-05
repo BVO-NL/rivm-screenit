@@ -38,7 +38,7 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
 import nl.rivm.screenit.model.BeoordelingsEenheid;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieStatus;
@@ -64,7 +64,7 @@ public class MammaVisitatie extends AbstractHibernateObject implements MammaIKwa
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@NotAudited
-	private InstellingGebruiker aangemaaktDoor;
+	private OrganisatieMedewerker aangemaaktDoor;
 
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	private BeoordelingsEenheid beoordelingsEenheid;
@@ -134,12 +134,12 @@ public class MammaVisitatie extends AbstractHibernateObject implements MammaIKwa
 		this.aangemaaktOp = aangemaaktOp;
 	}
 
-	public InstellingGebruiker getAangemaaktDoor()
+	public OrganisatieMedewerker getAangemaaktDoor()
 	{
 		return aangemaaktDoor;
 	}
 
-	public void setAangemaaktDoor(InstellingGebruiker aangemaaktDoor)
+	public void setAangemaaktDoor(OrganisatieMedewerker aangemaaktDoor)
 	{
 		this.aangemaaktDoor = aangemaaktDoor;
 	}

@@ -225,7 +225,7 @@ public class MammaLezingPanel extends GenericPanel<MammaLezing>
 			}
 		};
 		arbitrageBtn.setVisible(!lezingParameters.isInzien() && MammaLezingType.DISCREPANTIE_LEZING.equals(panelType)
-			&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_IMS_KOPPELING, Actie.INZIEN));
+			&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_IMS_KOPPELING, Actie.INZIEN));
 		arbitrageBtn.setOutputMarkupId(true);
 		arbitrageBtn.setOutputMarkupPlaceholderTag(true);
 		form.add(arbitrageBtn);
@@ -265,7 +265,7 @@ public class MammaLezingPanel extends GenericPanel<MammaLezing>
 		};
 		afrondenBtn.setOutputMarkupId(true);
 		afrondenBtn.setVisible(!lezingParameters.isInzien() && !lezingParameters.isVerbergAfrondKnop()
-			&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_IMS_KOPPELING, Actie.INZIEN));
+			&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_IMS_KOPPELING, Actie.INZIEN));
 		form.add(afrondenBtn);
 	}
 

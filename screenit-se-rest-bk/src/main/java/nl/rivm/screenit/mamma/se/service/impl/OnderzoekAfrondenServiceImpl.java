@@ -31,7 +31,7 @@ import nl.rivm.screenit.mamma.se.dto.onderzoek.SignalerenSeDto;
 import nl.rivm.screenit.mamma.se.service.MammaAfspraakService;
 import nl.rivm.screenit.mamma.se.service.OnderzoekAfrondenService;
 import nl.rivm.screenit.mamma.se.service.dtomapper.AfbeeldingDtoMapper;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaAnnotatieAfbeelding;
 import nl.rivm.screenit.model.mamma.MammaAnnotatieIcoon;
@@ -73,13 +73,13 @@ public class OnderzoekAfrondenServiceImpl implements OnderzoekAfrondenService
 	private MammaAfspraakService afspraakService;
 
 	@Override
-	public void beeindigen(AfrondenDto action, InstellingGebruiker instellingGebruiker, LocalDateTime transactieDatumTijd)
+	public void beeindigen(AfrondenDto action, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd)
 	{
-		final MammaAfspraak afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), instellingGebruiker);
+		final MammaAfspraak afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), organisatieMedewerker);
 		beeindigAfspraak(afspraak);
 		SignalerenSeDto signalerenSeDto = action.getSignaleren();
 		MammaOnderzoek onderzoek = afspraak.getOnderzoek();
-		beeindigOnderzoek(onderzoek, instellingGebruiker, signalerenSeDto, transactieDatumTijd);
+		beeindigOnderzoek(onderzoek, organisatieMedewerker, signalerenSeDto, transactieDatumTijd);
 		hl7BerichtenToBatchService.queueMammaHL7v24BerichtUitgaand(afspraak.getUitnodiging().getScreeningRonde().getDossier().getClient(), MammaHL7v24ORMBerichtStatus.COMPLETED);
 		baseKansberekeningService.kansberekeningHerzien(afspraak.getUitnodiging().getScreeningRonde().getDossier(), transactieDatumTijd.toLocalDate());
 	}
@@ -90,21 +90,21 @@ public class OnderzoekAfrondenServiceImpl implements OnderzoekAfrondenService
 		hibernateService.saveOrUpdate(afspraak);
 	}
 
-	private void beeindigOnderzoek(MammaOnderzoek onderzoek, InstellingGebruiker instellingGebruiker, SignalerenSeDto signalering, LocalDateTime transactieDatumTijd)
+	private void beeindigOnderzoek(MammaOnderzoek onderzoek, OrganisatieMedewerker organisatieMedewerker, SignalerenSeDto signalering, LocalDateTime transactieDatumTijd)
 	{
-		maakSignalering(instellingGebruiker, onderzoek, signalering, transactieDatumTijd);
+		maakSignalering(organisatieMedewerker, onderzoek, signalering, transactieDatumTijd);
 	}
 
 	@Override
-	public void onderzoekAfronden(OnderzoekAfrondenDto action, InstellingGebruiker instellingGebruiker, LocalDateTime transactieDatumTijd)
+	public void onderzoekAfronden(OnderzoekAfrondenDto action, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd)
 	{
-		final MammaAfspraak afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), instellingGebruiker);
+		final MammaAfspraak afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), organisatieMedewerker);
 		MammaOnderzoek onderzoek = afspraak.getOnderzoek();
 		onderzoek.setAfgerondOp(DateUtil.toUtilDate(transactieDatumTijd));
 	}
 
 	@Override
-	public void maakSignalering(InstellingGebruiker instellingGebruiker, MammaOnderzoek onderzoek, SignalerenSeDto signaleringDto, LocalDateTime transactieDatumTijd)
+	public void maakSignalering(OrganisatieMedewerker organisatieMedewerker, MammaOnderzoek onderzoek, SignalerenSeDto signaleringDto, LocalDateTime transactieDatumTijd)
 	{
 		MammaSignaleren signalering = onderzoek.getSignaleren();
 		if (onderzoek.getSignaleren() == null)
@@ -116,7 +116,7 @@ public class OnderzoekAfrondenServiceImpl implements OnderzoekAfrondenService
 		signalering.setHeeftAfwijkingen(signaleringDto.getHeeftAfwijkingen());
 		if (onderzoek.getAfspraak().getStatus() == MammaAfspraakStatus.BEEINDIGD)
 		{
-			afrondenSignalering(instellingGebruiker, onderzoek, transactieDatumTijd);
+			afrondenSignalering(organisatieMedewerker, onderzoek, transactieDatumTijd);
 		}
 
 		if (signaleringDto.getDoorsnedeAfbeeldingen() != null)
@@ -134,9 +134,9 @@ public class OnderzoekAfrondenServiceImpl implements OnderzoekAfrondenService
 		hibernateService.saveOrUpdate(onderzoek);
 	}
 
-	private void afrondenSignalering(InstellingGebruiker instellingGebruiker, MammaOnderzoek onderzoek, LocalDateTime transactieDatumTijd)
+	private void afrondenSignalering(OrganisatieMedewerker organisatieMedewerker, MammaOnderzoek onderzoek, LocalDateTime transactieDatumTijd)
 	{
-		onderzoek.getSignaleren().setAfgerondDoor(instellingGebruiker);
+		onderzoek.getSignaleren().setAfgerondDoor(organisatieMedewerker);
 		onderzoek.getSignaleren().setAfgerondOp(DateUtil.toUtilDate(transactieDatumTijd));
 		hibernateService.saveOrUpdate(onderzoek.getSignaleren());
 	}

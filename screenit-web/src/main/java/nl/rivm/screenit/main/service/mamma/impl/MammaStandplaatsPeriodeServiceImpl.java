@@ -37,7 +37,7 @@ import nl.rivm.screenit.dto.mamma.planning.PlanningStandplaatsPeriodeDto;
 import nl.rivm.screenit.main.exception.MagOpslaanException;
 import nl.rivm.screenit.main.service.mamma.MammaAfspraakService;
 import nl.rivm.screenit.main.service.mamma.MammaStandplaatsPeriodeService;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid_;
@@ -121,24 +121,24 @@ public class MammaStandplaatsPeriodeServiceImpl implements MammaStandplaatsPerio
 
 	@Override
 	@Transactional
-	public void splitsStandplaatsPeriode(PlanningStandplaatsPeriodeDto standplaatsPeriode, InstellingGebruiker ingelogdeInstellingGebruiker)
+	public void splitsStandplaatsPeriode(PlanningStandplaatsPeriodeDto standplaatsPeriode, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		baseConceptPlanningsApplicatie.splitsStandplaatsPeriode(standplaatsPeriode, ingelogdeInstellingGebruiker);
+		baseConceptPlanningsApplicatie.splitsStandplaatsPeriode(standplaatsPeriode, ingelogdeOrganisatieMedewerker);
 	}
 
 	@Override
 	@Transactional
-	public void updateSortList(int nieuwVolgnummer, PlanningStandplaatsPeriodeDto item, MammaScreeningsEenheid screeningsEenheid, InstellingGebruiker ingelogdeInstellingGebruiker)
+	public void updateSortList(int nieuwVolgnummer, PlanningStandplaatsPeriodeDto item, MammaScreeningsEenheid screeningsEenheid, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		item.screeningsEenheidVolgNr = nieuwVolgnummer;
-		baseConceptPlanningsApplicatie.changeRoute(item, screeningsEenheid, ingelogdeInstellingGebruiker);
+		baseConceptPlanningsApplicatie.changeRoute(item, screeningsEenheid, ingelogdeOrganisatieMedewerker);
 	}
 
 	@Override
 	@Transactional
-	public boolean saveOrUpdateStandplaatsPeriode(PlanningStandplaatsPeriodeDto standplaatsPeriode, InstellingGebruiker ingelogdeInstellingGebruiker)
+	public boolean saveOrUpdateStandplaatsPeriode(PlanningStandplaatsPeriodeDto standplaatsPeriode, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		baseConceptPlanningsApplicatie.sendAfspraakDrempelStandplaatsPeriode(standplaatsPeriode, ingelogdeInstellingGebruiker);
+		baseConceptPlanningsApplicatie.sendAfspraakDrempelStandplaatsPeriode(standplaatsPeriode, ingelogdeOrganisatieMedewerker);
 		return true;
 	}
 

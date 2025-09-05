@@ -25,10 +25,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
+import jakarta.xml.bind.JAXBException;
+
 import nl.rivm.screenit.dto.cervix.facturatie.CervixBetalingsZoekObject;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.cervix.enums.CervixTariefType;
 import nl.rivm.screenit.model.cervix.facturatie.CervixBetaalopdracht;
@@ -37,15 +39,13 @@ import nl.rivm.screenit.model.cervix.facturatie.CervixTarief;
 
 import org.springframework.data.domain.Sort;
 
-import jakarta.xml.bind.JAXBException;
-
 public interface CervixBetalingService
 {
 	List<CervixTariefType> getTariefTypenVoorLaboratorium(BMHKLaboratorium laboratorium);
 
 	void genereerCervixBetalingsSpecificatieEnSepaBestand(Long betaalopdrachtId);
 
-	Long opslaanBetaalopdracht(CervixBetaalopdracht opdracht, InstellingGebruiker ingelogedeGebruiker);
+	Long opslaanBetaalopdracht(CervixBetaalopdracht opdracht, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	void maakSepaBestand(File sepaBestand, CervixBetaalopdracht betaalOpdracht) throws JAXBException, FileNotFoundException;
 

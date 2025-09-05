@@ -63,7 +63,7 @@ public class MammaAdhocMeekijkverzoekMiniWerklijstPanel extends Panel
 
 		columns.add(new DateTimePropertyColumn<>(Model.of("Onderzoeksdatum"), "onderzoek.creatieDatum", Constants.getDateTimeFormat()));
 		columns.add(new PropertyColumn<>(Model.of("Volgnummer"), "volgnummer"));
-		if (ScreenitSession.get().getInstelling().getOrganisatieType() != OrganisatieType.KWALITEITSPLATFORM)
+		if (ScreenitSession.get().getOrganisatie().getOrganisatieType() != OrganisatieType.KWALITEITSPLATFORM)
 		{
 			columns.add(new ClientColumn<>("onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client"));
 			columns.add(new GeboortedatumColumn<>("onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client.persoon"));

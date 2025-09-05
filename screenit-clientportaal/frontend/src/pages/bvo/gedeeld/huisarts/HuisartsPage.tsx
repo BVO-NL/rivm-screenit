@@ -126,9 +126,9 @@ const HuisartsPage = () => {
 	}, [dispatch, bvo])
 
 	const zoekHuisartsen = useCallback((zoekobject: HuisartsZoekobject, paginaNummer: number) => {
-		return ScreenitBackend.post(`huisarts?paginaNummer=${paginaNummer}`, zoekobject)
+		return ScreenitBackend.post<Huisarts[]>(`huisarts?paginaNummer=${paginaNummer}`, {json: zoekobject}).json()
 			.then((response) => {
-				paginaNummer > 0 ? setZoekResultaten(zoekResultaten.concat(response.data)) : setZoekResultaten(response.data)
+				paginaNummer > 0 ? setZoekResultaten(zoekResultaten.concat(response)) : setZoekResultaten(response)
 				setGezocht(true)
 			})
 	}, [setZoekResultaten, zoekResultaten])

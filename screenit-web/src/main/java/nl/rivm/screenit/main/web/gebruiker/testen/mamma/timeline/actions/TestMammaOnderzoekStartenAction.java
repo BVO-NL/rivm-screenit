@@ -47,7 +47,7 @@ public class TestMammaOnderzoekStartenAction extends TestMammaVervolgKeuzeAction
 		for (Client client : clienten)
 		{
 			MammaAfspraak afspraak = client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getLaatsteAfspraak();
-			mammaTestTimelineService.doorvoerenOnderzoekStarten(afspraak, ScreenitSession.get().getLoggedInInstellingGebruiker(), verstuurHl7Berichten.getObject());
+			mammaTestTimelineService.doorvoerenOnderzoekStarten(afspraak, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), verstuurHl7Berichten.getObject());
 		}
 	}
 

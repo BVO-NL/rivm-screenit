@@ -23,12 +23,12 @@ package nl.rivm.screenit.util;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 
 public class MedewerkerUtil
@@ -38,34 +38,28 @@ public class MedewerkerUtil
 	{
 	}
 
-	public static String getMedewerkerNamen(List<InstellingGebruiker> gebruikers)
+	public static String getMedewerkerNamen(List<OrganisatieMedewerker> organisatieMedewerkers)
 	{
-		StringBuilder sb = new StringBuilder();
-		for (InstellingGebruiker gebruiker : gebruikers)
-		{
-			if (gebruiker != null && gebruiker.getMedewerker() != null)
-			{
-				sb.append(gebruiker.getMedewerker().getNaamVolledig());
-				sb.append(", ");
-			}
-		}
-		return StringUtils.removeEnd(sb.toString(), ", ").toString();
+		return organisatieMedewerkers.stream()
+			.filter(om -> om != null && om.getMedewerker() != null)
+			.map(om -> om.getMedewerker().getNaamVolledig())
+			.collect(Collectors.joining(", "));
 	}
 
-	public static boolean isMedewerkerActief(Gebruiker medewerker, Date now)
+	public static boolean isMedewerkerActief(Medewerker medewerker, Date now)
 	{
 		return BooleanUtils.isNotFalse(medewerker.getActief())
 			&& (medewerker.getActiefVanaf() == null || !DateUtil.compareAfter(medewerker.getActiefVanaf(), now))
 			&& (medewerker.getActiefTotEnMet() == null || !DateUtil.compareBefore(medewerker.getActiefTotEnMet(), now));
 	}
 
-	public static String meldingNavActiefVanafEnTotEnMet(Gebruiker gebruiker, final Date now)
+	public static String meldingNavActiefVanafEnTotEnMet(Medewerker medewerker, final Date now)
 	{
-		if (gebruiker != null && gebruiker.getActiefTotEnMet() != null && DateUtil.compareBefore(gebruiker.getActiefTotEnMet(), now))
+		if (medewerker != null && medewerker.getActiefTotEnMet() != null && DateUtil.compareBefore(medewerker.getActiefTotEnMet(), now))
 		{
 			return "Uw account is geïnactiveerd";
 		}
-		else if (gebruiker != null && gebruiker.getActiefVanaf() != null && DateUtil.compareAfter(gebruiker.getActiefVanaf(), now))
+		else if (medewerker != null && medewerker.getActiefVanaf() != null && DateUtil.compareAfter(medewerker.getActiefVanaf(), now))
 		{
 			return "Uw account is nog niet actief";
 		}

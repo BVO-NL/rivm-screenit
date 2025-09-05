@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.generalis.medewerkerbeheer.MedewerkerBeheerListener;
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
-import nl.rivm.screenit.model.InstellingGebruikerRol;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.service.AutorisatieService;
 
 import org.springframework.stereotype.Component;
@@ -34,14 +34,14 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 @Slf4j
-public class RolKoppelingInactiverenWriter extends BaseWriter<InstellingGebruikerRol>
+public class RolKoppelingInactiverenWriter extends BaseWriter<OrganisatieMedewerkerRol>
 {
 	private final AutorisatieService autorisatieService;
 
 	@Override
-	protected void write(InstellingGebruikerRol rolKoppeling) throws Exception
+	protected void write(OrganisatieMedewerkerRol rolKoppeling) throws Exception
 	{
-		LOG.info("InstellingGebruikerRol ('{}') wordt ge&iuml;nactiveerd", rolKoppeling.getId());
+		LOG.info("OrganisatieMedewerkerRol ('{}') wordt ge&iuml;nactiveerd", rolKoppeling.getId());
 		autorisatieService.inactiveerRolKoppeling(rolKoppeling);
 		aantalContextOphogen(MedewerkerBeheerListener.TOTAAL_AANTAL_ROLLEN_GEINACTIVEERD);
 

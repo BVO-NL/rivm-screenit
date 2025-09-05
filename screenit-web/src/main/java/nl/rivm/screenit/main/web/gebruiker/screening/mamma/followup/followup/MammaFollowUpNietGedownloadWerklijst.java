@@ -30,7 +30,7 @@ import nl.rivm.screenit.main.service.mamma.MammaFollowUpService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.table.NotClickableAbstractColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.ClientDossierPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.panels.MammaCeFilter;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.panels.MammaCeZoekPanel;
@@ -51,7 +51,7 @@ import nl.rivm.screenit.model.mamma.MammaScreeningRonde_;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaFollowUpConclusieStatus;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -71,13 +71,13 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_MAMMA_FOLLOW_UP_NIET_GEDOWNLOAD_WERKLIJST },
+	recht = { Recht.MEDEWERKER_MAMMA_FOLLOW_UP_NIET_GEDOWNLOAD_WERKLIJST },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA },
 	organisatieTypeScopes = { OrganisatieType.SCREENINGSORGANISATIE })
 public class MammaFollowUpNietGedownloadWerklijst extends AbstractMammaCeWerklijst
 {
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	private MammaCeFollowUpDataProvider dataProvider;
 
@@ -127,7 +127,7 @@ public class MammaFollowUpNietGedownloadWerklijst extends AbstractMammaCeWerklij
 
 	private List<CentraleEenheid> getAlleMogelijkeCentraleEenheden()
 	{
-		return instellingService.getMogelijkeCentraleEenheden(ScreenitSession.get().getInstelling());
+		return organisatieService.getMogelijkeCentraleEenheden(ScreenitSession.get().getOrganisatie());
 	}
 
 	private void createResultTable()
@@ -175,7 +175,7 @@ public class MammaFollowUpNietGedownloadWerklijst extends AbstractMammaCeWerklij
 
 						MammaScreeningRonde screeningRonde = beoordelingModel.getObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde();
 						MammaFollowUpConclusieStatus conclusieStatus = MammaFollowUpConclusieStatus.NIET_TE_VERWACHTEN;
-						followUpService.saveFollowUpConclusieStatus(screeningRonde, conclusieStatus, ScreenitSession.get().getLoggedInAccount());
+						followUpService.saveFollowUpConclusieStatus(screeningRonde, conclusieStatus, ScreenitSession.get().getIngelogdAccount());
 						ajaxRequestTarget.add(resultatenContainer);
 					}
 				});
@@ -198,7 +198,7 @@ public class MammaFollowUpNietGedownloadWerklijst extends AbstractMammaCeWerklij
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 		return AbstractMammaFollowUpPage.getContextMenuItemsList();
 	}

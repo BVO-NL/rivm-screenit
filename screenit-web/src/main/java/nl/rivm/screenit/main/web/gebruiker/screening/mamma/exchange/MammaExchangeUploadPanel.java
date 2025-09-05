@@ -110,7 +110,7 @@ public class MammaExchangeUploadPanel extends GenericPanel<MammaUploadBeeldenVer
 			@Override
 			protected void onOpslaan(AjaxRequestTarget ajaxRequestTarget, MammaUploadBeeldenVerzoek uploadBeeldenVerzoek)
 			{
-				uploadBeeldenService.setGeenBeeldenBeschikbaar(uploadBeeldenVerzoek, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				uploadBeeldenService.setGeenBeeldenBeschikbaar(uploadBeeldenVerzoek, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				onSubmit(ajaxRequestTarget);
 			}
 		});
@@ -139,7 +139,7 @@ public class MammaExchangeUploadPanel extends GenericPanel<MammaUploadBeeldenVer
 					return;
 				}
 
-				String errorMelding = uploadBeeldenService.uploadBeelden(uploadBeeldenVerzoek, uploadDocumenten, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				String errorMelding = uploadBeeldenService.uploadBeelden(uploadBeeldenVerzoek, uploadDocumenten, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				berichtToBatchService.queueMammaUploadBeeldenVerzoekBericht();
 				if (StringUtils.isNotBlank(errorMelding))
 				{

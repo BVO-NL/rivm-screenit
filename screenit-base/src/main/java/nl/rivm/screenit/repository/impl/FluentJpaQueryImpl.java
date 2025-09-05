@@ -48,6 +48,7 @@ import org.hibernate.ScrollableResults;
 import org.hibernate.boot.internal.SessionFactoryOptionsBuilder;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.internal.EmptyScrollableResults;
+import org.hibernate.jpa.SpecHints;
 import org.hibernate.query.Query;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -153,7 +154,7 @@ public class FluentJpaQueryImpl<T, P> implements FluentJpaQuery<T, P>
 	@Override
 	public FluentJpaQuery<T, P> fetch(Consumer<EntityGraph<T>> entityGraphFunction)
 	{
-		return fetch(entityGraphFunction, getDefaultMaxFetchDepth());
+		return fetch(entityGraphFunction, 1);
 	}
 
 	@Override
@@ -386,13 +387,8 @@ public class FluentJpaQueryImpl<T, P> implements FluentJpaQuery<T, P>
 	{
 		if (entityGraph != null)
 		{
-			typedQuery.setHint("jakarta.persistence.loadgraph", entityGraph);
+			typedQuery.setHint(SpecHints.HINT_SPEC_LOAD_GRAPH, entityGraph);
 		}
-	}
-
-	private int getDefaultMaxFetchDepth()
-	{
-		return getSessionFactoryOptionsBuilder().getMaximumFetchDepth();
 	}
 
 	private @NotNull Integer applyEntityFetchGraphDepth()

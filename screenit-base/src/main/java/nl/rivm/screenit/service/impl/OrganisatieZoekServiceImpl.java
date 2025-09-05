@@ -34,8 +34,8 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.Woonplaats_;
@@ -49,11 +49,11 @@ import nl.rivm.screenit.model.colon.ColoscopieCentrumZoekCriteria;
 import nl.rivm.screenit.model.colon.PaLaboratorium;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.ToegangLevel;
-import nl.rivm.screenit.repository.algemeen.InstellingRepository;
+import nl.rivm.screenit.repository.algemeen.OrganisatieRepository;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.CoordinatenService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.OrganisatieZoekService;
 import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
@@ -65,7 +65,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import static nl.rivm.screenit.model.Instelling_.ADRESSEN;
+import static nl.rivm.screenit.model.Organisatie_.ADRES;
 import static nl.rivm.screenit.model.cervix.CervixHuisartsAdres_.WOONPLAATS;
 import static nl.rivm.screenit.model.cervix.CervixHuisarts_.POSTADRES;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
@@ -81,7 +81,7 @@ import static nl.topicuszorg.organisatie.model.Adres_.STRAAT;
 public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 {
 	@Autowired
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@Autowired
 	private AutorisatieService autorisatieService;
@@ -90,27 +90,27 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 	private CoordinatenService coordinatenService;
 
 	@Autowired
-	private InstellingRepository organisatieRepository;
+	private OrganisatieRepository organisatieRepository;
 
 	@Autowired
 	private ICurrentDateSupplier currentDateSupplier;
 
 	@Override
-	public List<Instelling> zoekOrganisaties(Instelling searchObject, List<OrganisatieType> selectedOrganisatieTypes, List<OrganisatieType> excludeOrganisatieTypes,
-		InstellingGebruiker organisatieMedewerker, long first, long count, String sortProperty, boolean asc)
+	public List<Organisatie> zoekOrganisaties(Organisatie searchObject, List<OrganisatieType> selectedOrganisatieTypes, List<OrganisatieType> excludeOrganisatieTypes,
+		OrganisatieMedewerker organisatieMedewerker, long first, long count, String sortProperty, boolean asc)
 	{
 		var hierarchieCriteria = getHierarchieCriteria(searchObject, selectedOrganisatieTypes, organisatieMedewerker);
 		return zoekOrganisaties(searchObject, hierarchieCriteria, excludeOrganisatieTypes, first, count, sortProperty, asc);
 	}
 
-	private List<Instelling> zoekOrganisaties(Instelling searchObject, Map<OrganisatieType, List<Instelling>> hierarchieCriteria, List<OrganisatieType> excludeOrganisatieTypes,
+	private List<Organisatie> zoekOrganisaties(Organisatie searchObject, Map<OrganisatieType, List<Organisatie>> hierarchieCriteria, List<OrganisatieType> excludeOrganisatieTypes,
 		long first, long count, String sortProperty, boolean asc)
 	{
 		var spec = getZoekOrganisatiesSpecification(searchObject, hierarchieCriteria, excludeOrganisatieTypes, currentDateSupplier.getLocalDateTime());
 
 		var alleGevondenOrganisaties = organisatieRepository.findWith(spec, q -> q.sortBy(getSort(sortProperty, asc), this::addJoinsForSortingOrCreateDedicatedOrders)).all();
 		var alleUniekeGevondenOrganisaties = new ArrayList<>(new LinkedHashSet<>(alleGevondenOrganisaties));
-		List<Instelling> resultaten = alleUniekeGevondenOrganisaties;
+		List<Organisatie> resultaten = alleUniekeGevondenOrganisaties;
 		if (first != -1)
 		{
 			if (alleUniekeGevondenOrganisaties.size() > first + count)
@@ -129,11 +129,11 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 	{
 		var direction = asc ? Sort.Direction.ASC : Sort.Direction.DESC;
 		var sort = Sort.by(direction, sortProperty);
-		if (sortProperty.startsWith(propertyChain(ADRESSEN, PLAATS)))
+		if (sortProperty.startsWith(propertyChain(ADRES, PLAATS)))
 		{
 			sort = sort.and(Sort.by(direction, propertyChain(POSTADRES, WOONPLAATS, Woonplaats_.NAAM)));
 		}
-		else if (sortProperty.startsWith(propertyChain(ADRESSEN, STRAAT)))
+		else if (sortProperty.startsWith(propertyChain(ADRES, STRAAT)))
 		{
 			sort = sort.and(Sort.by(direction, propertyChain(POSTADRES, STRAAT)));
 		}
@@ -141,7 +141,7 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 		return sort;
 	}
 
-	private jakarta.persistence.criteria.Order addJoinsForSortingOrCreateDedicatedOrders(Sort.Order order, Root<Instelling> r, CriteriaBuilder cb)
+	private jakarta.persistence.criteria.Order addJoinsForSortingOrCreateDedicatedOrders(Sort.Order order, Root<Organisatie> r, CriteriaBuilder cb)
 	{
 		var sortProperty = order.getProperty();
 		if (sortProperty.startsWith(POSTADRES))
@@ -165,19 +165,19 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 	}
 
 	@Override
-	public long countOrganisaties(Instelling searchObject, List<OrganisatieType> selectedOrganisatieTypes, List<OrganisatieType> excludeOrganisatieTypes,
-		InstellingGebruiker organisatieMedewerker)
+	public long countOrganisaties(Organisatie searchObject, List<OrganisatieType> selectedOrganisatieTypes, List<OrganisatieType> excludeOrganisatieTypes,
+		OrganisatieMedewerker organisatieMedewerker)
 	{
 		var hierarchieCriteria = getHierarchieCriteria(searchObject, selectedOrganisatieTypes, organisatieMedewerker);
 		var spec = getZoekOrganisatiesSpecification(searchObject, hierarchieCriteria, excludeOrganisatieTypes, currentDateSupplier.getLocalDateTime());
 		return organisatieRepository.countDistinct(spec);
 	}
 
-	private Map<OrganisatieType, List<Instelling>> getHierarchieCriteria(Instelling zoekInstelling, List<OrganisatieType> selectedOrganisatieTypes,
-		InstellingGebruiker organisatieMedewerker)
+	private Map<OrganisatieType, List<Organisatie>> getHierarchieCriteria(Organisatie zoekOrganisatie, List<OrganisatieType> selectedOrganisatieTypes,
+		OrganisatieMedewerker organisatieMedewerker)
 	{
-		var hierarchieCriteria = new HashMap<OrganisatieType, List<Instelling>>();
-		var organisatieTypeGekozen = zoekInstelling.getOrganisatieType();
+		var hierarchieCriteria = new HashMap<OrganisatieType, List<Organisatie>>();
+		var organisatieTypeGekozen = zoekOrganisatie.getOrganisatieType();
 		if (organisatieTypeGekozen != null)
 		{
 			hierarchieCriteria.put(organisatieTypeGekozen, getOrganisatiesForGekozenOrganisatieType(organisatieMedewerker, organisatieTypeGekozen));
@@ -192,7 +192,7 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 		return hierarchieCriteria;
 	}
 
-	private List<Instelling> getOrganisatiesForGekozenOrganisatieType(InstellingGebruiker organisatieMedewerker, OrganisatieType organisatieTypeGekozen)
+	private List<Organisatie> getOrganisatiesForGekozenOrganisatieType(OrganisatieMedewerker organisatieMedewerker, OrganisatieType organisatieTypeGekozen)
 	{
 		var toegangLevel = autorisatieService.getToegangLevel(organisatieMedewerker, Actie.INZIEN, true, organisatieTypeGekozen.getRecht());
 
@@ -200,9 +200,9 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 	}
 
 	@Override
-	public List<Instelling> getOrganisatiesForNiveau(InstellingGebruiker ingelogdeOrganisatieMedewerker, OrganisatieType organisatieTypeGekozen, ToegangLevel toegangLevel)
+	public List<Organisatie> getOrganisatiesForNiveau(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, OrganisatieType organisatieTypeGekozen, ToegangLevel toegangLevel)
 	{
-		var organisaties = new ArrayList<Instelling>();
+		var organisaties = new ArrayList<Organisatie>();
 		var ingelogdVoorOrganisatie = ingelogdeOrganisatieMedewerker.getOrganisatie();
 		switch (organisatieTypeGekozen)
 		{
@@ -213,7 +213,7 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 		case PA_LABORATORIUM:
 			switch (toegangLevel)
 			{
-			case INSTELLING:
+			case ORGANISATIE:
 				organisaties.add(ingelogdVoorOrganisatie);
 				break;
 			case REGIO:
@@ -238,9 +238,9 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 	}
 
 	@Override
-	public List<Instelling> screeningsorganisatiesWaarOrganisatieOndervalt(Instelling organisatie)
+	public List<Organisatie> screeningsorganisatiesWaarOrganisatieOndervalt(Organisatie organisatie)
 	{
-		var screeningsorganisaties = new ArrayList<Instelling>();
+		var screeningsorganisaties = new ArrayList<Organisatie>();
 		if (OrganisatieType.PA_LABORATORIUM == organisatie.getOrganisatieType())
 		{
 			for (var locatie : ((PaLaboratorium) organisatie).getColoscopielocaties())
@@ -266,12 +266,12 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 	@Override
 	public List<ColoscopieCentrumWrapper> zoekIntakeLocaties(ColoscopieCentrumZoekCriteria zoekObject, Client client, boolean alleenActiefKamers)
 	{
-		Map<OrganisatieType, List<Instelling>> types = Map.of(OrganisatieType.INTAKELOCATIE, List.of());
+		Map<OrganisatieType, List<Organisatie>> types = Map.of(OrganisatieType.INTAKELOCATIE, List.of());
 
-		var searchObject = new Instelling();
+		var searchObject = new Organisatie();
 		searchObject.setNaam(zoekObject.getNaam());
-		searchObject.add(new Adres());
-		searchObject.getHuidigAdres().setPlaats(zoekObject.getPlaats());
+		searchObject.setAdres(new Adres());
+		searchObject.getAdres().setPlaats(zoekObject.getPlaats());
 		var organisaties = zoekOrganisaties(searchObject, types, null, -1, -1, "naam", true);
 		var list = new ArrayList<ColoscopieCentrumWrapper>();
 
@@ -299,18 +299,15 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 
 			var wrapper = new ColoscopieCentrumWrapper();
 			wrapper.setNaam(intakelocatie.getNaam());
-			var adressen = intakelocatie.getAdressen();
-			if (adressen != null && !adressen.isEmpty())
+			var adres = intakelocatie.getAdres();
+			var postbusAdres = intakelocatie.getPostbusAdres();
+			if (adres != null && adres.getPlaats() != null)
 			{
-				for (var adres : adressen)
-				{
-					if (adres.getPlaats() != null)
-					{
-						wrapper.setPlaats(adres.getPlaats());
-						break;
-					}
-
-				}
+				wrapper.setPlaats(adres.getPlaats());
+			}
+			if (postbusAdres != null && wrapper.getPlaats() == null && postbusAdres.getPlaats() != null)
+			{
+				wrapper.setPlaats(postbusAdres.getPlaats());
 			}
 			wrapper.setId(intakelocatie.getId());
 
@@ -334,14 +331,14 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 	}
 
 	@Override
-	public List<Instelling> getMogelijkeParents(Instelling organisatie, @NotNull InstellingGebruiker loggedInInstellingGebruiker)
+	public List<Organisatie> getMogelijkeParents(Organisatie organisatie, @NotNull OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		if (organisatie.getOrganisatieType() == OrganisatieType.BEOORDELINGSEENHEID)
 		{
-			return getMogelijkeParentsVoorBeoordelingsEenheid(loggedInInstellingGebruiker);
+			return getMogelijkeParentsVoorBeoordelingsEenheid(ingelogdeOrganisatieMedewerker);
 		}
 
-		Class<? extends Instelling> filter = null;
+		Class<? extends Organisatie> filter = null;
 		switch (organisatie.getOrganisatieType())
 		{
 		case ZORGINSTELLING:
@@ -357,16 +354,16 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 			break;
 		}
 
-		return (List<Instelling>) instellingService.getActieveInstellingen(filter);
+		return (List<Organisatie>) organisatieService.getActieveOrganisaties(filter);
 	}
 
-	private List<Instelling> getMogelijkeParentsVoorBeoordelingsEenheid(InstellingGebruiker loggedInInstellingGebruiker)
+	private List<Organisatie> getMogelijkeParentsVoorBeoordelingsEenheid(OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		var loggedInInstelling = loggedInInstellingGebruiker.getOrganisatie();
-		if (OrganisatieType.SCREENINGSORGANISATIE == loggedInInstelling.getOrganisatieType())
+		var ingelogdeOrganisatie = ingelogdeOrganisatieMedewerker.getOrganisatie();
+		if (OrganisatieType.SCREENINGSORGANISATIE == ingelogdeOrganisatie.getOrganisatieType())
 		{
-			var screeningOrganisatie = (ScreeningOrganisatie) loggedInInstelling;
-			return instellingService.getActieveCentraleEenhedenBinnenRegio(screeningOrganisatie).stream().map(ce -> (Instelling) ce).toList();
+			var screeningOrganisatie = (ScreeningOrganisatie) ingelogdeOrganisatie;
+			return organisatieService.getActieveCentraleEenhedenBinnenRegio(screeningOrganisatie).stream().map(ce -> (Organisatie) ce).toList();
 		}
 		else
 		{
@@ -375,24 +372,24 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 	}
 
 	@Override
-	public List<Instelling> getAllActieveOrganisatiesWithType(Class<? extends Instelling> organisatie)
+	public List<Organisatie> getAllActieveOrganisatiesWithType(Class<? extends Organisatie> organisatie)
 	{
-		return (List<Instelling>) instellingService.getActieveInstellingen(organisatie);
+		return (List<Organisatie>) organisatieService.getActieveOrganisaties(organisatie);
 	}
 
 	@Override
-	public List<Long> getZichtbareInstellingenOpToegangLevel(Instelling organisatie, ToegangLevel level, List<OrganisatieType> types)
+	public List<Long> getZichtbareOrganisatiesOpToegangLevel(Organisatie organisatie, ToegangLevel level, List<OrganisatieType> types)
 	{
 		var zichtbaar = new ArrayList<Long>();
 		var regios = screeningsorganisatiesWaarOrganisatieOndervalt(organisatie);
 		if (ToegangLevel.REGIO.equals(level) && CollectionUtils.isNotEmpty(regios) && !types.isEmpty())
 		{
-			var hierarchieCriteria = new HashMap<OrganisatieType, List<Instelling>>();
+			var hierarchieCriteria = new HashMap<OrganisatieType, List<Organisatie>>();
 			for (var type : types)
 			{
 				hierarchieCriteria.put(type, regios);
 			}
-			var result = zoekOrganisaties(new Instelling(), hierarchieCriteria, null, -1, -1, "id", true);
+			var result = zoekOrganisaties(new Organisatie(), hierarchieCriteria, null, -1, -1, "id", true);
 			var regioIds = new ArrayList<Long>();
 			result.forEach(i -> regioIds.add(i.getId()));
 			zichtbaar.addAll(regioIds);
@@ -401,7 +398,7 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 		{
 			for (var type : types)
 			{
-				zichtbaar.addAll(instellingService.getOrganisatieIdsMetType(type));
+				zichtbaar.addAll(organisatieService.getOrganisatieIdsMetType(type));
 			}
 		}
 		else
@@ -440,7 +437,7 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 	}
 
 	@Override
-	public List<Instelling> zoekOrganisatieMetFqdn(String fqdn)
+	public List<Organisatie> zoekOrganisatieMetFqdn(String fqdn)
 	{
 		return organisatieRepository.findAll(filterActief(true).and(heeftFqdn(fqdn)));
 	}

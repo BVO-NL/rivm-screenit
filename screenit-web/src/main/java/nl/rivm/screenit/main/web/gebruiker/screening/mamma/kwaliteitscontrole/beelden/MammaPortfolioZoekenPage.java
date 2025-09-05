@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaScreeningBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.OrganisatieType;
@@ -37,7 +37,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @SecurityConstraint(
 	constraint = ShiroConstraint.HasPermission,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA },
-	recht = { Recht.GEBRUIKER_BEELDEN_PORTFOLIO },
+	recht = { Recht.MEDEWERKER_BEELDEN_PORTFOLIO },
 	organisatieTypeScopes = { OrganisatieType.SCREENINGSORGANISATIE })
 public class MammaPortfolioZoekenPage extends MammaScreeningBasePage
 {
@@ -47,11 +47,11 @@ public class MammaPortfolioZoekenPage extends MammaScreeningBasePage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 		return new ArrayList<>(Arrays.asList(
-			new GebruikerMenuItem("label.tab.mammascreening.beelden.zoeken", MammaBeeldenZoekenPage.class),
-			new GebruikerMenuItem("label.tab.mammascreening.portfolio.zoeken", MammaPortfolioZoekenPage.class)));
+			new MedewerkerMenuItem("label.tab.mammascreening.beelden.zoeken", MammaBeeldenZoekenPage.class),
+			new MedewerkerMenuItem("label.tab.mammascreening.portfolio.zoeken", MammaPortfolioZoekenPage.class)));
 	}
 
 }

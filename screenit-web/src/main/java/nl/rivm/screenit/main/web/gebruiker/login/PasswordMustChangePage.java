@@ -23,8 +23,8 @@ package nl.rivm.screenit.main.web.gebruiker.login;
  */
 
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.Application;
@@ -38,23 +38,23 @@ public class PasswordMustChangePage extends LoginBasePage
 
 	private static final long serialVersionUID = 1L;
 
-	public PasswordMustChangePage(InstellingGebruiker instellingGebruiker)
+	public PasswordMustChangePage(OrganisatieMedewerker organisatieMedewerker)
 	{
-		setDefaultModel(ModelUtil.sModel(instellingGebruiker));
-		add(new PasswordChangePanel("panel", instellingGebruiker.getMedewerker())
+		setDefaultModel(ModelUtil.sModel(organisatieMedewerker));
+		add(new PasswordChangePanel("panel", organisatieMedewerker.getMedewerker())
 		{
 
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			protected void onWachtwoordChanged(AjaxRequestTarget target, Gebruiker gebruiker)
+			protected void onWachtwoordChanged(AjaxRequestTarget target, Medewerker medewerker)
 			{
-				InstellingGebruiker instellingGebruiker = (InstellingGebruiker) PasswordMustChangePage.this.getDefaultModelObject();
+				OrganisatieMedewerker organisatieMedewerker = (OrganisatieMedewerker) PasswordMustChangePage.this.getDefaultModelObject();
 				ScreenitSession session = ScreenitSession.get();
-				Component pageForInstellingGebruiker = session.getPageForInstellingGebruiker(instellingGebruiker);
-				if (pageForInstellingGebruiker != null)
+				Component pageForOrganisatieMedewerker = session.getPageForOrganisatieMedewerker(organisatieMedewerker);
+				if (pageForOrganisatieMedewerker != null)
 				{
-					setResponsePage((WebPage) pageForInstellingGebruiker);
+					setResponsePage((WebPage) pageForOrganisatieMedewerker);
 				}
 				else if (session.getFeedbackMessages().isEmpty())
 				{

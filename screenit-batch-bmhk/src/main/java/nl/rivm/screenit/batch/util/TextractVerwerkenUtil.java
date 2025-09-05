@@ -34,7 +34,7 @@ import static org.apache.commons.lang.StringUtils.replaceChars;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TextractVerwerkenUtil
 {
-	private static final Pattern LOCATIE_ID_PATTERN = Pattern.compile("L[o0O]cat[iIl1]e[iIl1]D:.*");
+	private static final Pattern LOCATIE_ID_PATTERN = Pattern.compile("L[o0O]cat[iIl1]e-[iIl1]D:.*");
 
 	public static boolean isValideHuisartsLocatieBlock(Block block)
 	{

@@ -24,7 +24,7 @@ package nl.rivm.screenit.batch.jobs.generalis.medewerkerbeheer.mederwerkerinacti
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 
 import org.springframework.data.jpa.domain.Specification;
@@ -35,12 +35,12 @@ import static nl.rivm.screenit.specification.algemeen.MedewerkerSpecification.is
 
 @Component
 @AllArgsConstructor
-public class MedewerkerInactiverenReader extends BaseSpecificationScrollableResultReader<Gebruiker>
+public class MedewerkerInactiverenReader extends BaseSpecificationScrollableResultReader<Medewerker>
 {
 	private final ICurrentDateSupplier currentDateSupplier;
 
 	@Override
-	protected Specification<Gebruiker> createSpecification()
+	protected Specification<Medewerker> createSpecification()
 	{
 		return isActief(true).and(isActiefTotEnMetVoor(currentDateSupplier.getLocalDate()));
 	}

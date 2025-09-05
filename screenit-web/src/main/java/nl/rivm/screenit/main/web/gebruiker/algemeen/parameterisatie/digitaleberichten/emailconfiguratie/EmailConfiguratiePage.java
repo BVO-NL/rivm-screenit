@@ -52,7 +52,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
 	level = ToegangLevel.LANDELIJK,
-	recht = Recht.GEBRUIKER_BEHEER_PARAMETERISATIE,
+	recht = Recht.MEDEWERKER_BEHEER_PARAMETERISATIE,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class EmailConfiguratiePage extends ParameterisatieBasePage
@@ -86,9 +86,9 @@ public class EmailConfiguratiePage extends ParameterisatieBasePage
 		public EmailConfiguratieForm(String id, IModel<EmailConfiguratie> model)
 		{
 			super(id, model);
-			level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.GEBRUIKER_BEHEER_PARAMETERISATIE);
-			Actie actie = autorisatieService.getActieVoorMedewerker(ScreenitSession.get().getLoggedInInstellingGebruiker(), ScreenitSession.get().getCurrentSelectedMedewerker(),
-				Recht.GEBRUIKER_BEHEER_PARAMETERISATIE);
+			level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_BEHEER_PARAMETERISATIE);
+			Actie actie = autorisatieService.getActieVoorMedewerker(getIngelogdeOrganisatieMedewerker(), ScreenitSession.get().getCurrentSelectedMedewerker(),
+				Recht.MEDEWERKER_BEHEER_PARAMETERISATIE);
 			inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 
 			final TextArea<String> inactiverenemail = new TextArea<String>("inactiverenemail")
@@ -169,7 +169,7 @@ public class EmailConfiguratiePage extends ParameterisatieBasePage
 				{
 					BasePage.markeerFormulierenOpgeslagen(target);
 					parameterisatieService.saveOrUpdateEmailConfiguratie(getModelObject());
-					logService.logGebeurtenis(LogGebeurtenis.PARAMETERISATIE_WIJZIG, ScreenitSession.get().getLoggedInAccount(), "E-mail configuratie aangepast",
+					logService.logGebeurtenis(LogGebeurtenis.PARAMETERISATIE_WIJZIG, ScreenitSession.get().getIngelogdAccount(), "E-mail configuratie aangepast",
 						Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX);
 					info(getString("menu.algemeen.parameterisatie.medewerkerconfiguratie") + " is opgeslagen.");
 				}

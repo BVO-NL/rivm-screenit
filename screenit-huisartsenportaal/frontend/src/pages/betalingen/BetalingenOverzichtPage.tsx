@@ -44,7 +44,7 @@ const BetalingenOverzichtPage = () => {
 
 	return <BasePage title={getString(properties.title)}>
 		<div className={styles.style}>
-			<BaseTabelComponent<BetalingenOverzichtDto> resultsPerPage={resultsPerPage} url={"/betaling/all"} exportUrl={"/betaling/csv"}
+			<BaseTabelComponent<BetalingenOverzichtDto> resultsPerPage={resultsPerPage} url={"betaling/all"} exportUrl={"betaling/csv"}
 														exportFileName={"overzicht-betalingen.csv"}>
 				{(props) => (
 					<>

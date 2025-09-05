@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import nl.rivm.screenit.main.exception.ValidatieException;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.colon.ColonAfspraakslotListViewWrapper;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.RoosterListViewFilter;
@@ -54,7 +54,7 @@ public interface RoosterService
 
 	void valideerTijdslot(ColonTijdslot tijdslot) throws ValidatieException;
 
-	ColonIntakelocatie getIntakelocatieVanInstellingGebruiker(InstellingGebruiker instellingGebruiker);
+	ColonIntakelocatie getIntakelocatieVanOrganisatieMedewerker(OrganisatieMedewerker organisatieMedewerker);
 
 	List<ColonAfspraakslot> getAfspraakslotsInRangeEnKamer(Range<LocalDateTime> range, ColonAfspraakslot afspraakslot);
 

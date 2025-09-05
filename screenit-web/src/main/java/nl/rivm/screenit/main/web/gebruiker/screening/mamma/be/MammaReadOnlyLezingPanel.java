@@ -23,7 +23,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.be;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.verslag.MammaVerslagRondePanel;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.enums.Recht;
@@ -118,14 +118,14 @@ public class MammaReadOnlyLezingPanel extends GenericPanel<MammaBeoordeling>
 
 	public IModel<MammaLezing> maakVerslagLezing()
 	{
-		InstellingGebruiker beoordelaar = ScreenitSession.get().getLoggedInInstellingGebruiker();
+		OrganisatieMedewerker beoordelaar = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 		MammaLezing verslagLezing = baseBeoordelingService.maakVerslagLezing(lezingModel.getObject(), beoordelaar, isOnervarenRadioloog());
 		return ModelUtil.cModel(verslagLezing);
 	}
 
 	private boolean isOnervarenRadioloog()
 	{
-		return !ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_ARBITRAGE_WERKLIJST, Actie.TOEVOEGEN);
+		return !ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_ARBITRAGE_WERKLIJST, Actie.TOEVOEGEN);
 	}
 
 	@Override

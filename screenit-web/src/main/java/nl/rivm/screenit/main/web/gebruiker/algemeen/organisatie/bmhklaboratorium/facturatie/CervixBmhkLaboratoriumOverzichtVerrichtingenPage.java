@@ -49,7 +49,7 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatiePaspo
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.GbaPersoon_;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.cervix.CervixLabformulier_;
 import nl.rivm.screenit.model.cervix.CervixMonster;
@@ -66,7 +66,7 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
@@ -117,9 +117,9 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	actie = Actie.INZIEN,
 	constraint = ShiroConstraint.HasPermission,
 	recht = {
-		Recht.GEBRUIKER_BMHK_LABORATORIA_OVERZICHT_VERRICHTINGEN },
+		Recht.MEDEWERKER_BMHK_LABORATORIA_OVERZICHT_VERRICHTINGEN },
 	checkScope = true,
-	level = ToegangLevel.INSTELLING,
+	level = ToegangLevel.ORGANISATIE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX })
 @Slf4j
 public class CervixBmhkLaboratoriumOverzichtVerrichtingenPage extends OrganisatieBeheer
@@ -134,7 +134,7 @@ public class CervixBmhkLaboratoriumOverzichtVerrichtingenPage extends Organisati
 	private CervixVerrichtingService verrichtingService;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private ICurrentDateSupplier currentDateSupplier;
@@ -288,10 +288,10 @@ public class CervixBmhkLaboratoriumOverzichtVerrichtingenPage extends Organisati
 
 	private void bepaalSoDropdown(Form<?> form)
 	{
-		List<ScreeningOrganisatie> screeningOrganisaties = instellingService.getAllActiefScreeningOrganisaties();
+		List<ScreeningOrganisatie> screeningOrganisaties = organisatieService.getAllActiefScreeningOrganisaties();
 
 		boolean toonSOdropdown = true;
-		ToegangLevel toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.GEBRUIKER_BMHK_LABORATORIA_OVERZICHT_VERRICHTINGEN);
+		ToegangLevel toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_BMHK_LABORATORIA_OVERZICHT_VERRICHTINGEN);
 		if (ScreenitSession.get().getScreeningOrganisatie() != null && ToegangLevel.REGIO.equals(toegangLevel))
 		{
 			screeningOrganisatieModel.setObject(ScreenitSession.get().getScreeningOrganisatie());
@@ -364,7 +364,7 @@ public class CervixBmhkLaboratoriumOverzichtVerrichtingenPage extends Organisati
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy");
 
 		List<IColumn<CervixBoekRegel, String>> columns = new ArrayList<>();
-		columns.add(new PropertyColumn<>(Model.of("Screeningsorganisatie"), propertyChain(REGIO_PROPERTY, Instelling_.NAAM), propertyChain(REGIO_PROPERTY, Instelling_.NAAM)));
+		columns.add(new PropertyColumn<>(Model.of("Screeningsorganisatie"), propertyChain(REGIO_PROPERTY, Organisatie_.NAAM), propertyChain(REGIO_PROPERTY, Organisatie_.NAAM)));
 		columns.add(new ClientColumn<>(propertyChain(PERSOON_PROPERTY, GbaPersoon_.ACHTERNAAM), propertyChain(CervixBoekRegel_.VERRICHTING, CervixVerrichting_.CLIENT)));
 		columns.add(new GeboortedatumColumn<>(propertyChain(PERSOON_PROPERTY, GbaPersoon_.GEBOORTEDATUM), PERSOON_PROPERTY));
 		columns.add(new PropertyColumn<>(Model.of("BSN"), propertyChain(PERSOON_PROPERTY, GbaPersoon_.BSN), propertyChain(PERSOON_PROPERTY, GbaPersoon_.BSN)));

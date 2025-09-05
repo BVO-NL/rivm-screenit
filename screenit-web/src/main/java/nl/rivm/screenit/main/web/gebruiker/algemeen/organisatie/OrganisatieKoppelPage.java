@@ -24,14 +24,13 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie;
 import java.util.List;
 
 import nl.rivm.screenit.main.service.MedewerkerService;
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.medewerker.MedewerkerBasisgegevens;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatiemedewerker.OrganisatieMedewerkerKoppelPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
@@ -47,9 +46,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class OrganisatieKoppelPage extends OrganisatieMedewerkerKoppelPage
 {
-
-	private static final long serialVersionUID = 1L;
-
 	@SpringBean
 	private AutorisatieService autorisatieService;
 
@@ -68,7 +64,7 @@ public class OrganisatieKoppelPage extends OrganisatieMedewerkerKoppelPage
 	public Actie getActie(Recht recht)
 	{
 		Actie actie = autorisatieService.getActieVoorMedewerker(
-			ScreenitSession.get().getLoggedInInstellingGebruiker(), 
+			getIngelogdeOrganisatieMedewerker(), 
 			getCurrentSelectedMedewerker(), 
 			recht);
 		return actie;
@@ -81,29 +77,29 @@ public class OrganisatieKoppelPage extends OrganisatieMedewerkerKoppelPage
 	}
 
 	@Override
-	protected void onNavigeerNaar(IModel<InstellingGebruiker> rowModel, AjaxRequestTarget target)
+	protected void onNavigeerNaar(IModel<OrganisatieMedewerker> rowModel, AjaxRequestTarget target)
 	{
-		InstellingGebruiker organisatieMedewerker = rowModel.getObject();
-		Gebruiker medewerker = organisatieMedewerker.getMedewerker();
+		OrganisatieMedewerker organisatieMedewerker = rowModel.getObject();
+		Medewerker medewerker = organisatieMedewerker.getMedewerker();
 		setCurrentSelectedMedewerker(medewerker);
 		setCurrentSelectedOrganisatie(null);
 		setResponsePage(new MedewerkerBasisgegevens(ModelUtil.cModel(medewerker)));
 	}
 
 	@Override
-	protected boolean magNavigerenNaar(IModel<InstellingGebruiker> rowModel)
+	protected boolean magNavigerenNaar(IModel<OrganisatieMedewerker> rowModel)
 	{
-		InstellingGebruiker instellingGebruiker = rowModel.getObject();
-		InstellingGebruiker loggedInInstellingGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
-		return autorisatieService.getActieVoorMedewerker(loggedInInstellingGebruiker, instellingGebruiker.getMedewerker(), Recht.GEBRUIKER_MEDEWERKER_BEHEER) != null;
+		OrganisatieMedewerker organisatieMedewerker = rowModel.getObject();
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		return autorisatieService.getActieVoorMedewerker(ingelogdeOrganisatieMedewerker, organisatieMedewerker.getMedewerker(), Recht.MEDEWERKER_BEHEER) != null;
 	}
 
 	@Override
-	protected InstellingGebruiker createSearchObject()
+	protected OrganisatieMedewerker createSearchObject()
 	{
-		InstellingGebruiker searchObject = super.createSearchObject();
+		OrganisatieMedewerker searchObject = super.createSearchObject();
 		searchObject.setOrganisatie(getCurrentSelectedOrganisatie());
-		Gebruiker medewerker = new Gebruiker();
+		Medewerker medewerker = new Medewerker();
 		medewerker.setActief(Boolean.TRUE);
 		searchObject.setMedewerker(medewerker);
 		return searchObject;
@@ -114,34 +110,33 @@ public class OrganisatieKoppelPage extends OrganisatieMedewerkerKoppelPage
 	{
 		dialog.setContent(new MedewerkerSmallZoekPanel(IDialog.CONTENT_ID, null)
 		{
-			private static final long serialVersionUID = 1L;
 
 			@Override
-			protected void setVorigZoekObject(Gebruiker organisatieSearchObject)
+			protected void setVorigZoekObject(Medewerker organisatieSearchObject)
 			{
 			}
 
 			@Override
-			protected Gebruiker getVorigZoekObject()
+			protected Medewerker getVorigZoekObject()
 			{
 				return null;
 			}
 
 			@Override
-			protected void onCloseWithSelected(AjaxRequestTarget target, IModel<Gebruiker> model)
+			protected void onCloseWithSelected(AjaxRequestTarget target, IModel<Medewerker> model)
 			{
-				Instelling instelling = getCurrentSelectedOrganisatie();
-				Instelling loggedInOrganisatie = ScreenitSession.get().getLoggedInInstellingGebruiker().getOrganisatie();
-				if (instelling.equals(loggedInOrganisatie))
+				Organisatie organisatie = getCurrentSelectedOrganisatie();
+				Organisatie loggedInOrganisatie = getIngelogdeOrganisatieMedewerker().getOrganisatie();
+				if (organisatie.equals(loggedInOrganisatie))
 				{
-					instelling = loggedInOrganisatie;
+					organisatie = loggedInOrganisatie;
 				}
-				Gebruiker medewerker = ModelUtil.nullSafeGet(model);
+				Medewerker medewerker = ModelUtil.nullSafeGet(model);
 				if (medewerker != null)
 				{
-					medewerkerService.addOrganisatieMedewerker(instelling, medewerker);
-					logService.logGebeurtenis(LogGebeurtenis.ORGANISATIE_MEDEWERKER_KOPPEL, ScreenitSession.get().getLoggedInInstellingGebruiker(),
-						String.format("Medewerker %1$s gekoppeld aan organisatie %2$s", medewerker.getNaamVolledigMetVoornaam(), instelling.getNaam()));
+					medewerkerService.addOrganisatieMedewerker(organisatie, medewerker);
+					logService.logGebeurtenis(LogGebeurtenis.ORGANISATIE_MEDEWERKER_KOPPEL, getIngelogdeOrganisatieMedewerker(),
+						String.format("Medewerker %1$s gekoppeld aan organisatie %2$s", medewerker.getNaamVolledigMetVoornaam(), organisatie.getNaam()));
 					target.add(refreshContainer);
 				}
 				dialog.close(target);
@@ -151,7 +146,7 @@ public class OrganisatieKoppelPage extends OrganisatieMedewerkerKoppelPage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 		return OrganisatieBeheer.createContextMenu();
 	}

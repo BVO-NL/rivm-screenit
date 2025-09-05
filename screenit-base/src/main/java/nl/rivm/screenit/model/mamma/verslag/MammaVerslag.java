@@ -34,9 +34,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
@@ -70,7 +70,7 @@ public abstract class MammaVerslag<T extends VerslagContent<?>> extends Abstract
 	private Date datumOnderzoek;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	private InstellingGebruiker invoerder;
+	private OrganisatieMedewerker invoerder;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -105,24 +105,24 @@ public abstract class MammaVerslag<T extends VerslagContent<?>> extends Abstract
 	}
 
 	@Override
-	public Instelling getUitvoerderOrganisatie()
+	public Organisatie getUitvoerderOrganisatie()
 	{
 		return null;
 	}
 
 	@Override
-	public void setUitvoerderOrganisatie(Instelling uitvoerderOrganisatie)
+	public void setUitvoerderOrganisatie(Organisatie uitvoerderOrganisatie)
 	{
 	}
 
 	@Override
-	public Gebruiker getUitvoerderMedewerker()
+	public Medewerker getUitvoerderMedewerker()
 	{
 		return null;
 	}
 
 	@Override
-	public void setUitvoerderMedewerker(Gebruiker uitvoerderMedewerker)
+	public void setUitvoerderMedewerker(Medewerker uitvoerderMedewerker)
 	{
 	}
 
@@ -139,13 +139,13 @@ public abstract class MammaVerslag<T extends VerslagContent<?>> extends Abstract
 	}
 
 	@Override
-	public InstellingGebruiker getInvoerder()
+	public OrganisatieMedewerker getInvoerder()
 	{
 		return invoerder;
 	}
 
 	@Override
-	public void setInvoerder(InstellingGebruiker invoerder)
+	public void setInvoerder(OrganisatieMedewerker invoerder)
 	{
 		this.invoerder = invoerder;
 	}

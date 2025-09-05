@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -23,7 +23,7 @@ import AfsprakenReducer from "./AfspraakReducer"
 import DaglijstDatumReducer from "./DaglijstDatumReducer"
 import DagverslagReducer from "./DagverslagReducer"
 import NietAfgeslotenVanafReducer from "./NietAfgeslotenVanafReducer"
-import SeGebruikersReducer from "./SeGebruikersReducer"
+import SeMedewerkersReducer from "./SeMedewerkersReducer"
 import SessionReducer from "./SessionReducer"
 import ClientReducer from "./ClientReducer"
 import NavigationReducer from "./NavigationReducer"
@@ -57,7 +57,7 @@ const seReducers = combineReducers({
 	daglijstDatum: DaglijstDatumReducer,
 	dagverslag: DagverslagReducer,
 	nietAfgeslotenVanaf: NietAfgeslotenVanafReducer,
-	seGebruikers: SeGebruikersReducer,
+	seMedewerkers: SeMedewerkersReducer,
 	clientenById: ClientReducer,
 	planning: PlanningReducer,
 	session: SessionReducer,

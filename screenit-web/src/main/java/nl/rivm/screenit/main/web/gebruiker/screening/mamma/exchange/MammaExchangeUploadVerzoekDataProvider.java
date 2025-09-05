@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.exchange;
 import java.util.Iterator;
 
 import nl.rivm.screenit.main.service.mamma.MammaUploadBeeldenService;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.mamma.MammaUploadBeeldenVerzoek;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -42,25 +42,25 @@ public class MammaExchangeUploadVerzoekDataProvider extends SortableDataProvider
 	@SpringBean
 	private MammaUploadBeeldenService uploadBeeldenService;
 
-	private IModel<Instelling> instellingModel;
+	private IModel<Organisatie> organisatieModel;
 
-	public MammaExchangeUploadVerzoekDataProvider(IModel<Instelling> instellingModel)
+	public MammaExchangeUploadVerzoekDataProvider(IModel<Organisatie> organisatieModel)
 	{
 		Injector.get().inject(this);
-		this.instellingModel = instellingModel;
+		this.organisatieModel = organisatieModel;
 		setSort("creatieDatum", SortOrder.ASCENDING);
 	}
 
 	@Override
 	public Iterator<? extends MammaUploadBeeldenVerzoek> iterator(long first, long count)
 	{
-		return uploadBeeldenService.zoekOpenstaandeUploadBeeldenVerzoeken(ModelUtil.nullSafeGet(instellingModel), null, first, count, toSpringSort(getSort())).iterator();
+		return uploadBeeldenService.zoekOpenstaandeUploadBeeldenVerzoeken(ModelUtil.nullSafeGet(organisatieModel), null, first, count, toSpringSort(getSort())).iterator();
 	}
 
 	@Override
 	public long size()
 	{
-		return uploadBeeldenService.countOpenstaandeUploadBeeldenVerzoeken(ModelUtil.nullSafeGet(instellingModel), null);
+		return uploadBeeldenService.countOpenstaandeUploadBeeldenVerzoeken(ModelUtil.nullSafeGet(organisatieModel), null);
 	}
 
 	@Override
@@ -73,6 +73,6 @@ public class MammaExchangeUploadVerzoekDataProvider extends SortableDataProvider
 	public void detach()
 	{
 		super.detach();
-		ModelUtil.nullSafeDetach(instellingModel);
+		ModelUtil.nullSafeDetach(organisatieModel);
 	}
 }

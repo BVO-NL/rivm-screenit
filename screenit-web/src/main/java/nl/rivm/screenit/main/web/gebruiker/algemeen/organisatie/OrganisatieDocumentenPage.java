@@ -29,13 +29,13 @@ import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxLink;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.documentupload.wicket.UploadDocumentLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -55,9 +55,9 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @SecurityConstraint(
 	actie = Actie.INZIEN,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_ORGANISATIE_DOCUMENTEN,
+	recht = Recht.MEDEWERKER_ORGANISATIE_DOCUMENTEN,
 	checkScope = true,
-	level = ToegangLevel.INSTELLING,
+	level = ToegangLevel.ORGANISATIE,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class OrganisatieDocumentenPage extends OrganisatieBeheer
@@ -66,18 +66,18 @@ public class OrganisatieDocumentenPage extends OrganisatieBeheer
 	private static final long serialVersionUID = 1L;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	private BootstrapDialog addDocumentDialog;
 
 	private BootstrapDialog confirmDialog;
 
-	private IModel<Instelling> organisatieModel;
+	private IModel<Organisatie> organisatieModel;
 
 	public OrganisatieDocumentenPage()
 	{
 
-		Instelling organisatie = getCurrentSelectedOrganisatie();
+		Organisatie organisatie = getCurrentSelectedOrganisatie();
 		organisatieModel = ModelUtil.sModel(organisatie);
 		add(new OrganisatiePaspoortPanel("paspoort", organisatieModel));
 
@@ -112,12 +112,12 @@ public class OrganisatieDocumentenPage extends OrganisatieBeheer
 					@Override
 					public void onClick(AjaxRequestTarget target)
 					{
-						instellingService.deleteDocumentForInstelling(item.getModelObject(), organisatieModel.getObject());
+						organisatieService.deleteDocumentForOrganisatie(item.getModelObject(), organisatieModel.getObject());
 						target.add(documentenContainer);
 
 					}
 				};
-				verwijderen.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_ORGANISATIE_DOCUMENTEN, Actie.VERWIJDEREN));
+				verwijderen.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_ORGANISATIE_DOCUMENTEN, Actie.VERWIJDEREN));
 				item.add(verwijderen);
 			}
 
@@ -149,7 +149,7 @@ public class OrganisatieDocumentenPage extends OrganisatieBeheer
 			}
 
 		};
-		toevoegen.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_ORGANISATIE_DOCUMENTEN, Actie.TOEVOEGEN));
+		toevoegen.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_ORGANISATIE_DOCUMENTEN, Actie.TOEVOEGEN));
 		form.add(toevoegen);
 
 		documentenContainer.add(new Label("aantalDocumenten", new PropertyModel<>(organisatieModel, "documents.size")));

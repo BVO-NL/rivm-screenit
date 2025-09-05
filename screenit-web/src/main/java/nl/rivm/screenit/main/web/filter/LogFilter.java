@@ -24,6 +24,15 @@ package nl.rivm.screenit.main.web.filter;
 import java.io.IOException;
 import java.util.Locale;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.service.LocaleResolver;
@@ -31,8 +40,8 @@ import nl.rivm.screenit.main.service.LocaleResolverService;
 import nl.rivm.screenit.main.web.ScreenitApplication;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 
 import org.apache.wicket.Session;
 import org.hibernate.SessionFactory;
@@ -42,15 +51,6 @@ import org.springframework.orm.hibernate5.support.OpenSessionInViewFilter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 
 @Slf4j
 public class LogFilter implements Filter
@@ -97,19 +97,19 @@ public class LogFilter implements Filter
 
 			if (session != null)
 			{
-				Class<?> loggedInAccountClass = session.getLoggedInAccountClass();
-				if (loggedInAccountClass != null)
+				Class<?> ingelogdAccountClass = session.getLoggedInAccountClass();
+				if (ingelogdAccountClass != null)
 				{
 					String prefix = "";
-					if (Gebruiker.class.isAssignableFrom(loggedInAccountClass))
+					if (Medewerker.class.isAssignableFrom(ingelogdAccountClass))
 					{
 						prefix = "G";
 					}
-					if (InstellingGebruiker.class.isAssignableFrom(loggedInAccountClass))
+					if (OrganisatieMedewerker.class.isAssignableFrom(ingelogdAccountClass))
 					{
 						prefix = "M";
 					}
-					else if (Client.class.isAssignableFrom(loggedInAccountClass))
+					else if (Client.class.isAssignableFrom(ingelogdAccountClass))
 					{
 						prefix = "C";
 					}

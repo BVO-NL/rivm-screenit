@@ -22,7 +22,7 @@ package nl.rivm.screenit.service.mamma.impl;
  */
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
@@ -69,13 +69,13 @@ public class MammaBaseTehuisServiceImpl implements MammaBaseTehuisService
 	private ICurrentDateSupplier dateSupplier;
 
 	@Override
-	public boolean saveOrUpdateTehuis(MammaTehuis tehuis, InstellingGebruiker ingelogdeGebruiker)
+	public boolean saveOrUpdateTehuis(MammaTehuis tehuis, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		return saveOrUpdateTehuis(tehuis, null, ingelogdeGebruiker);
+		return saveOrUpdateTehuis(tehuis, null, ingelogdeOrganisatieMedewerker);
 	}
 
 	@Override
-	public boolean saveOrUpdateTehuis(MammaTehuis tehuis, MammaStandplaats origineleStandplaats, InstellingGebruiker ingelogdeGebruiker)
+	public boolean saveOrUpdateTehuis(MammaTehuis tehuis, MammaStandplaats origineleStandplaats, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		String melding = StringUtils.EMPTY;
 		String diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(tehuis, hibernateService.getHibernateSession());
@@ -94,7 +94,7 @@ public class MammaBaseTehuisServiceImpl implements MammaBaseTehuisService
 
 		if (hasDiffText)
 		{
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_TEHUIS_BEHEER, ingelogdeGebruiker, melding, Bevolkingsonderzoek.MAMMA);
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_TEHUIS_BEHEER, ingelogdeOrganisatieMedewerker, melding, Bevolkingsonderzoek.MAMMA);
 			hibernateService.saveOrUpdate(tehuis.getAanschrijfAdres());
 		}
 		if (origineleStandplaats != null && !origineleStandplaats.equals(tehuis.getStandplaats()))

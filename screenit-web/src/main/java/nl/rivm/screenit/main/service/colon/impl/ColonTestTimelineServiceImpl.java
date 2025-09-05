@@ -51,7 +51,7 @@ import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.TestVervolgKe
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
@@ -853,7 +853,7 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 		var ronde = dossier.getLaatsteScreeningRonde();
 		var intakeAfspraak = ronde.getLaatsteAfspraak();
 		var conclusie = intakeAfspraak.getConclusie();
-		var ingelogdeGebruiker = hibernateService.loadAll(InstellingGebruiker.class).get(0);
+		var ingelogdeOrganisatieMedewerker = hibernateService.loadAll(OrganisatieMedewerker.class).get(0);
 		keuzes.conclusie = type;
 		if (conclusie == null)
 		{
@@ -889,9 +889,9 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 		}
 		intakeAfspraak.setConclusie(conclusie);
 
-		conclusie.setInstellingGebruiker(ingelogdeGebruiker);
+		conclusie.setOrganisatieMedewerker(ingelogdeOrganisatieMedewerker);
 
-		colonDossierService.conclusieOpslaan(intakeAfspraak, keuzes, ingelogdeGebruiker, null);
+		colonDossierService.conclusieOpslaan(intakeAfspraak, keuzes, ingelogdeOrganisatieMedewerker, null);
 	}
 
 	@Override

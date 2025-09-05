@@ -21,14 +21,16 @@ package nl.rivm.screenit.main.web.error;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.servlet.http.HttpServletResponse;
+
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.base.BasePage;
 import nl.rivm.screenit.main.web.base.ScreenitContext;
 import nl.rivm.screenit.main.web.component.panels.ApplicatieInfoPanel;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.util.FoutmeldingsCodeUtil;
 
 import org.apache.commons.lang.StringUtils;
@@ -45,8 +47,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 public class ErrorPage extends BasePage
 {
 
@@ -61,28 +61,27 @@ public class ErrorPage extends BasePage
 	{
 		this.errorId = Model.of(getNextErrorId());
 
-		String gebruikerId = "";
-		Account loggedInAccount = ScreenitSession.get().getLoggedInAccount();
-		if (loggedInAccount != null)
+		var accountId = "";
+		var ingelogdAccount = ScreenitSession.get().getIngelogdAccount();
+		if (ingelogdAccount != null)
 		{
-			if (loggedInAccount instanceof InstellingGebruiker)
+			if (ingelogdAccount instanceof OrganisatieMedewerker)
 			{
-				gebruikerId = "IG";
+				accountId = "OM";
 			}
-			else if (loggedInAccount instanceof Gebruiker)
+			else if (ingelogdAccount instanceof Medewerker)
 			{
-				gebruikerId = "G";
+				accountId = "M";
 			}
-			else if (loggedInAccount instanceof Client)
+			else if (ingelogdAccount instanceof Client)
 			{
-				gebruikerId = "C";
+				accountId = "C";
 			}
-			gebruikerId += loggedInAccount.getId().toString();
+			accountId += ingelogdAccount.getId().toString();
 		}
 
-		String errorCode = errorId.getObject();
-		LOG.error(String.format("Fout in applicatie (ErrorCode: %s, gebruiker: %s)", errorCode, gebruikerId));
-
+		var errorCode = errorId.getObject();
+		LOG.error(String.format("Fout in applicatie (ErrorCode: %s, account: %s)", errorCode, accountId));
 	}
 
 	protected void logFeedback(String feedback)
@@ -117,8 +116,8 @@ public class ErrorPage extends BasePage
 					logFeedback(feedbackObject);
 				}
 
-				Account loggedInAccount = ScreenitSession.get().getLoggedInAccount();
-				if (loggedInAccount != null)
+				Account ingelogdAccount = ScreenitSession.get().getIngelogdAccount();
+				if (ingelogdAccount != null)
 				{
 					setResponsePage(Application.get().getHomePage());
 				}

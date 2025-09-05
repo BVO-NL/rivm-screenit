@@ -21,28 +21,15 @@
 import {Dispatch} from "redux"
 import ScreenitBackend from "../utils/Backend"
 import {KandidaatAfspraak} from "../datatypes/mamma/KandidaatAfspraak"
-import {ToastMessageType} from "../datatypes/toast/ToastMessage"
-import {getString} from "../utils/TekstPropertyUtil"
 import {setHuidigeMammaAfspraakReduxAction} from "../actions/MammaDossierAction"
-import properties from "../pages/bvo/mamma/afspraak/bevestigingswizard/wizard_componenten/MammaAfspraakMakenWizardModuleProperties.json"
 import {Bevolkingsonderzoek} from "../datatypes/Bevolkingsonderzoek"
-import {showToast} from "../utils/ToastUtil"
-import {AxiosResponse} from "axios"
+import {HuidigeAfspraak} from "../datatypes/mamma/HuidigeAfspraak"
 
-export const maakAfspraak = (bvo: Bevolkingsonderzoek, afspraak: KandidaatAfspraak): () => Promise<AxiosResponse<string>> => () => {
-	return ScreenitBackend.post("/mamma/afspraak/maak", afspraak)
-		.then(response => {
-			return response
-		})
-		.catch((error) => {
-			if (error.response.data !== "tijd.niet.beschikbaar") {
-				showToast(getString(properties.afspraak_maken.toast.geen_wijzigingen), getString(properties.afspraak_maken.toast.error.algemeen), ToastMessageType.ERROR)
-			}
-			return Promise.reject(error)
-		})
+export const maakAfspraak = (bvo: Bevolkingsonderzoek, afspraak: KandidaatAfspraak): () => Promise<string> => () => {
+	return ScreenitBackend.post<string>("mamma/afspraak/maak", {json: afspraak}).json()
 }
 
 export const getHuidigeAfspraak = () => (dispatch: Dispatch) => {
-	return ScreenitBackend.get(`/mamma/afspraak/huidige`)
-		.then(response => dispatch(setHuidigeMammaAfspraakReduxAction(response.data)))
+	return ScreenitBackend.get<HuidigeAfspraak>(`mamma/afspraak/huidige`).json()
+		.then(response => dispatch(setHuidigeMammaAfspraakReduxAction(response)))
 }

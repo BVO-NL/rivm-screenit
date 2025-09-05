@@ -66,12 +66,12 @@ public class MammaConclusieReviewHuidigeRondePanel extends MammaKwaliteitscontro
 	{
 		super(id, beoordelingModel);
 		this.beoordelingIds = beoordelingIds;
-		this.coordinerendRadioloogKijktBijAndereRadioloog = !conclusieReviewModel.getObject().getRadioloog().equals(ScreenitSession.get().getLoggedInInstellingGebruiker());
+		this.coordinerendRadioloogKijktBijAndereRadioloog = !conclusieReviewModel.getObject().getRadioloog().equals(ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 		this.screeningRondeModel = screeningRondeModel;
 
 		this.conclusieReviewModel = coordinerendRadioloogKijktBijAndereRadioloog ?
 			ModelUtil.ccModel(
-				conclusieReviewService.getConclusieReviewCoordinerendRadioloog(screeningRondeModel.getObject(), ScreenitSession.get().getLoggedInInstellingGebruiker())) :
+				conclusieReviewService.getConclusieReviewCoordinerendRadioloog(screeningRondeModel.getObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker())) :
 			conclusieReviewModel;
 
 		setIngeklapt(false);
@@ -185,14 +185,14 @@ public class MammaConclusieReviewHuidigeRondePanel extends MammaKwaliteitscontro
 	private void voerVolgendeUit(AjaxRequestTarget target)
 	{
 		conclusieReviewService.saveConclusieReviewCoordinerendRadioloog(conclusieReviewModel.getObject(), screeningRondeModel.getObject(),
-			ScreenitSession.get().getLoggedInInstellingGebruiker());
+			ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 
 		((AbstractMammaBeoordelenPage) getPage()).volgendeBeoordeling(target);
 	}
 
 	private void logConclusieReviewAfgerond()
 	{
-		conclusieReviewService.logConclusieReviewAfgerond(ScreenitSession.get().getLoggedInInstellingGebruiker(), screeningRondeModel.getObject().getDossier().getClient(),
+		conclusieReviewService.logConclusieReviewAfgerond(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), screeningRondeModel.getObject().getDossier().getClient(),
 			conclusieReviewModel.getObject(),
 			coordinerendRadioloogKijktBijAndereRadioloog);
 	}

@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.stub.services.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * se-mammograaf-stub
+ * screenit-se-mammograaf-stub
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%

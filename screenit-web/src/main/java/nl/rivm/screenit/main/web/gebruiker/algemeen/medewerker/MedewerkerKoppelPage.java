@@ -24,14 +24,13 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.medewerker;
 import java.util.List;
 
 import nl.rivm.screenit.main.service.MedewerkerService;
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieBasisgegevens;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatiemedewerker.OrganisatieMedewerkerKoppelPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
@@ -47,8 +46,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class MedewerkerKoppelPage extends OrganisatieMedewerkerKoppelPage
 {
-
-	private static final long serialVersionUID = 1L;
 
 	@SpringBean
 	private AutorisatieService autorisatieService;
@@ -68,7 +65,7 @@ public class MedewerkerKoppelPage extends OrganisatieMedewerkerKoppelPage
 	public Actie getActie(Recht recht)
 	{
 		Actie actie = autorisatieService.getActieVoorOrganisatie(
-			ScreenitSession.get().getLoggedInInstellingGebruiker(), 
+			getIngelogdeOrganisatieMedewerker(), 
 			getCurrentSelectedOrganisatie(), 
 			recht);
 		return actie;
@@ -81,21 +78,21 @@ public class MedewerkerKoppelPage extends OrganisatieMedewerkerKoppelPage
 	}
 
 	@Override
-	protected void onNavigeerNaar(IModel<InstellingGebruiker> rowModel, AjaxRequestTarget target)
+	protected void onNavigeerNaar(IModel<OrganisatieMedewerker> rowModel, AjaxRequestTarget target)
 	{
-		Instelling organisatie = rowModel.getObject().getOrganisatie();
+		Organisatie organisatie = rowModel.getObject().getOrganisatie();
 		setCurrentSelectedOrganisatie(organisatie);
 		setResponsePage(new OrganisatieBasisgegevens(ModelUtil.cModel(organisatie)));
 	}
 
 	@Override
-	protected boolean magNavigerenNaar(IModel<InstellingGebruiker> rowModel)
+	protected boolean magNavigerenNaar(IModel<OrganisatieMedewerker> rowModel)
 	{
-		InstellingGebruiker loggedInInstellingGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
-		InstellingGebruiker instellingGebruiker = rowModel.getObject();
-		Instelling organisatie = instellingGebruiker.getOrganisatie();
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		OrganisatieMedewerker organisatieMedewerker = rowModel.getObject();
+		Organisatie organisatie = organisatieMedewerker.getOrganisatie();
 		Recht recht = organisatie.getOrganisatieType().getRecht();
-		if (recht != null && autorisatieService.getActieVoorOrganisatie(loggedInInstellingGebruiker, organisatie, recht) != null)
+		if (recht != null && autorisatieService.getActieVoorOrganisatie(ingelogdeOrganisatieMedewerker, organisatie, recht) != null)
 		{
 			return true;
 		}
@@ -103,9 +100,9 @@ public class MedewerkerKoppelPage extends OrganisatieMedewerkerKoppelPage
 	}
 
 	@Override
-	protected InstellingGebruiker createSearchObject()
+	protected OrganisatieMedewerker createSearchObject()
 	{
-		InstellingGebruiker searchObject = super.createSearchObject();
+		OrganisatieMedewerker searchObject = super.createSearchObject();
 		searchObject.setMedewerker(getCurrentSelectedMedewerker());
 		return searchObject;
 	}
@@ -115,35 +112,32 @@ public class MedewerkerKoppelPage extends OrganisatieMedewerkerKoppelPage
 	{
 		dialog.setContent(new OrganisatieSmallZoekPanel(IDialog.CONTENT_ID)
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
-			protected void setVorigZoekObject(Instelling organisatieSearchObject)
+			protected void setVorigZoekObject(Organisatie organisatieSearchObject)
 			{
 			}
 
 			@Override
-			protected Instelling getVorigZoekObject()
+			protected Organisatie getVorigZoekObject()
 			{
 				return null;
 			}
 
 			@Override
-			protected void onCloseWithSelected(AjaxRequestTarget target, IModel<Instelling> model)
+			protected void onCloseWithSelected(AjaxRequestTarget target, IModel<Organisatie> model)
 			{
-				Gebruiker medewerker = getCurrentSelectedMedewerker();
-				Gebruiker loggedInMedewerker = ScreenitSession.get().getLoggedInInstellingGebruiker().getMedewerker();
+				Medewerker medewerker = getCurrentSelectedMedewerker();
+				Medewerker loggedInMedewerker = getIngelogdeOrganisatieMedewerker().getMedewerker();
 				if (medewerker.equals(loggedInMedewerker))
 				{
 					medewerker = loggedInMedewerker;
 				}
-				Instelling organisatie = ModelUtil.nullSafeGet(model);
+				Organisatie organisatie = ModelUtil.nullSafeGet(model);
 				if (organisatie != null)
 				{
 
 					medewerkerService.addOrganisatieMedewerker(organisatie, medewerker);
-					logService.logGebeurtenis(LogGebeurtenis.ORGANISATIE_MEDEWERKER_KOPPEL, ScreenitSession.get().getLoggedInInstellingGebruiker(),
+					logService.logGebeurtenis(LogGebeurtenis.ORGANISATIE_MEDEWERKER_KOPPEL, getIngelogdeOrganisatieMedewerker(),
 						String.format("Medewerker %1$s gekoppeld aan organisatie %2$s", medewerker.getNaamVolledig(), organisatie.getNaam()));
 					target.add(medewerkerContainer);
 				}
@@ -154,7 +148,7 @@ public class MedewerkerKoppelPage extends OrganisatieMedewerkerKoppelPage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 		return MedewerkerBeheer.createContextMenu();
 	}

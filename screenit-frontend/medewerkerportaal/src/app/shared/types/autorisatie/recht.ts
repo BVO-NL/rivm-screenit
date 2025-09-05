@@ -19,5 +19,5 @@
  * =========================LICENSE_END==================================
  */
 export enum Recht {
-  GEBRUIKER_LOCATIE_ROOSTER = 'GEBRUIKER_LOCATIE_ROOSTER',
+  MEDEWERKER_LOCATIE_ROOSTER = 'MEDEWERKER_LOCATIE_ROOSTER',
 }

@@ -21,9 +21,9 @@ package nl.rivm.screenit.repository.algemeen;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.overeenkomsten.AfgeslotenInstellingOvereenkomst;
+import nl.rivm.screenit.model.overeenkomsten.AfgeslotenOrganisatieOvereenkomst;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 
-public interface AfgeslotenOrganisatieOvereenkomstRepository extends BaseJpaRepository<AfgeslotenInstellingOvereenkomst>
+public interface AfgeslotenOrganisatieOvereenkomstRepository extends BaseJpaRepository<AfgeslotenOrganisatieOvereenkomst>
 {
 }

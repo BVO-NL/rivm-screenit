@@ -28,8 +28,8 @@ import nl.rivm.screenit.main.model.mamma.beoordeling.MammaPortfolioZoekObject;
 import nl.rivm.screenit.main.service.RepositoryDataProviderService;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.util.DateUtil;
 
@@ -47,14 +47,14 @@ public class MammaPortfolioDataProviderServiceImpl extends RepositoryDataProvide
 	@Override
 	protected Specification<Client> getSpecification(MammaPortfolioZoekObject zoekObject, Sort sortParam)
 	{
-		var instellingGebruikers = getInstellingGebruikersVoorGebruikers(zoekObject.getGebruikers());
+		var organisatieMedewerkers = getOrganisatieMedewerkersVoorMedewerkers(zoekObject.getMedewerkers());
 		var range = Range.closed(DateUtil.toLocalDate(zoekObject.getVanaf()), DateUtil.toLocalDate(zoekObject.getTotEnMet()));
-		return heeftOnderzoekMetBeeldenGemaaktDoor(instellingGebruikers, range);
+		return heeftOnderzoekMetBeeldenGemaaktDoor(organisatieMedewerkers, range);
 	}
 
-	private List<InstellingGebruiker> getInstellingGebruikersVoorGebruikers(List<Gebruiker> gebruikers)
+	private List<OrganisatieMedewerker> getOrganisatieMedewerkersVoorMedewerkers(List<Medewerker> medewerkers)
 	{
-		return gebruikers.stream().flatMap(gebruiker -> gebruiker.getOrganisatieMedewerkers().stream()).collect(Collectors.toList());
+		return medewerkers.stream().flatMap(medewerker -> medewerker.getOrganisatieMedewerkers().stream()).collect(Collectors.toList());
 	}
 
 	public List<Long> zoekPortfolioClientenIds(MammaPortfolioZoekObject zoekObject, Sort sortParam)

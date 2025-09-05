@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.stub.services.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * se-mammograaf-stub
+ * screenit-se-mammograaf-stub
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.concurrent.Executors;
 
+import jakarta.annotation.PostConstruct;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.mamma.se.stub.services.DicomService;
@@ -46,8 +48,6 @@ import org.dcm4che3.net.pdu.PresentationContext;
 import org.dcm4che3.util.UIDUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import jakarta.annotation.PostConstruct;
 
 @Service
 @Slf4j

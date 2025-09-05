@@ -26,7 +26,7 @@ import java.util.List;
 import nl.rivm.screenit.main.service.mamma.MammaConclusieReviewService;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaBeoordelenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.werklijst.MiniWerklijstPanel;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaConclusieReview;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -41,10 +41,10 @@ public class MammaConclusieReviewMiniWerklijstPanel extends MiniWerklijstPanel
 	@SpringBean
 	private MammaConclusieReviewService conclusieReviewService;
 
-	private final IModel<InstellingGebruiker> radioloogModel;
+	private final IModel<OrganisatieMedewerker> radioloogModel;
 
 	public MammaConclusieReviewMiniWerklijstPanel(String id, AbstractMammaBeoordelenPage parent, Long huidigeBeoordelingId, List<Long> beoordelingenIds,
-		IModel<InstellingGebruiker> radioloog)
+		IModel<OrganisatieMedewerker> radioloog)
 	{
 		super(id, parent, huidigeBeoordelingId, beoordelingenIds);
 		this.radioloogModel = radioloog;

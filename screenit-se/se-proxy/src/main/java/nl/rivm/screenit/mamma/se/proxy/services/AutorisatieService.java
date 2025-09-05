@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.services;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,15 +21,15 @@ package nl.rivm.screenit.mamma.se.proxy.services;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.mamma.se.proxy.model.IngelogdeGebruikerDto;
-import nl.rivm.screenit.mamma.se.proxy.model.SERechtDto;
-
 import java.io.IOException;
+
+import nl.rivm.screenit.mamma.se.proxy.model.IngelogdeMedewerkerDto;
+import nl.rivm.screenit.mamma.se.proxy.model.SERechtDto;
 
 public interface AutorisatieService
 {
 
-    boolean isGeautoriseerdVoorInloggen(IngelogdeGebruikerDto ingelogdeGebruikerDto) throws IOException;
+	boolean isGeautoriseerdVoorInloggen(IngelogdeMedewerkerDto ingelogdeOrganisatieMedewerkerDto) throws IOException;
 
-    boolean isGeautoriseerd(SERechtDto seRechtDto);
+	boolean isGeautoriseerd(SERechtDto seRechtDto);
 }

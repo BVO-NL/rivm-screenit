@@ -29,15 +29,15 @@ import lombok.RequiredArgsConstructor;
 import nl.rivm.screenit.main.service.mamma.MammaBeoordelingsEenheidService;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.CentraleEenheid;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.repository.algemeen.BeoordelingsEenheidRepository;
 import nl.rivm.screenit.repository.mamma.MammaBaseOnderzoekRepository;
 import nl.rivm.screenit.repository.mamma.MammaScreeningsEenheidRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.specification.algemeen.BeoordelingsEenheidSpecification;
 import nl.rivm.screenit.specification.mamma.MammaOnderzoekSpecification;
 import nl.rivm.screenit.specification.mamma.MammaScreeningsEenheidSpecification;
@@ -57,7 +57,7 @@ import static nl.rivm.screenit.specification.mamma.MammaScreeningsEenheidSpecifi
 @RequiredArgsConstructor
 public class MammaBeoordelingsEenheidServiceImpl implements MammaBeoordelingsEenheidService
 {
-	private final InstellingService instellingService;
+	private final OrganisatieService organisatieService;
 
 	private final MammaScreeningsEenheidRepository screeningsEenheidRepository;
 
@@ -119,32 +119,32 @@ public class MammaBeoordelingsEenheidServiceImpl implements MammaBeoordelingsEen
 	}
 
 	@Override
-	public List<BeoordelingsEenheid> getBeoordelingsEenheden(Instelling instelling)
+	public List<BeoordelingsEenheid> getBeoordelingsEenheden(Organisatie organisatie)
 	{
-		if (instelling == null)
+		if (organisatie == null)
 		{
 			return Collections.emptyList();
 		}
-		instelling = (Instelling) HibernateHelper.deproxy(instelling);
-		OrganisatieType organisatieType = instelling.getOrganisatieType();
+		organisatie = (Organisatie) HibernateHelper.deproxy(organisatie);
+		OrganisatieType organisatieType = organisatie.getOrganisatieType();
 		return switch (organisatieType)
 		{
-			case RIVM, KWALITEITSPLATFORM -> instellingService.getActieveInstellingen(BeoordelingsEenheid.class);
-			case BEOORDELINGSEENHEID -> Collections.singletonList((BeoordelingsEenheid) instelling);
-			case SCREENINGSORGANISATIE -> getActieveBeoordelingsEenhedenVoorScreeningsOrganisatie(instelling);
+			case RIVM, KWALITEITSPLATFORM -> organisatieService.getActieveOrganisaties(BeoordelingsEenheid.class);
+			case BEOORDELINGSEENHEID -> Collections.singletonList((BeoordelingsEenheid) organisatie);
+			case SCREENINGSORGANISATIE -> getActieveBeoordelingsEenhedenVoorScreeningsOrganisatie(organisatie);
 			default -> Collections.emptyList();
 		};
 	}
 
 	@Override
-	public List<BeoordelingsEenheid> getBeoordelingsEenheden(Instelling instelling, List<CentraleEenheid> centraleEenheden)
+	public List<BeoordelingsEenheid> getBeoordelingsEenheden(Organisatie organisatie, List<CentraleEenheid> centraleEenheden)
 	{
-		if (instelling == null)
+		if (organisatie == null)
 		{
 			return Collections.emptyList();
 		}
-		OrganisatieType organisatieType = instelling.getOrganisatieType();
-		instelling = (Instelling) HibernateHelper.deproxy(instelling);
+		OrganisatieType organisatieType = organisatie.getOrganisatieType();
+		organisatie = (Organisatie) HibernateHelper.deproxy(organisatie);
 		return switch (organisatieType)
 		{
 			case RIVM, KWALITEITSPLATFORM, SCREENINGSORGANISATIE ->
@@ -155,22 +155,22 @@ public class MammaBeoordelingsEenheidServiceImpl implements MammaBeoordelingsEen
 				}
 				yield getActieveBeoordelingsEenhedenVoorCentraleEenheden(centraleEenheden);
 			}
-			case BEOORDELINGSEENHEID -> Collections.singletonList((BeoordelingsEenheid) instelling);
+			case BEOORDELINGSEENHEID -> Collections.singletonList((BeoordelingsEenheid) organisatie);
 			default -> Collections.emptyList();
 		};
 	}
 
-	private List<BeoordelingsEenheid> getActieveBeoordelingsEenhedenVoorScreeningsOrganisatie(Instelling instelling)
+	private List<BeoordelingsEenheid> getActieveBeoordelingsEenhedenVoorScreeningsOrganisatie(Organisatie organisatie)
 	{
 		return beoordelingsEenheidRepository.findAll(
-			BeoordelingsEenheidSpecification.isActief(true).and(heeftScreeningOrganisatie(instelling)),
-			Sort.by(Instelling_.NAAM));
+			BeoordelingsEenheidSpecification.isActief(true).and(heeftScreeningOrganisatie(organisatie)),
+			Sort.by(Organisatie_.NAAM));
 	}
 
 	private List<BeoordelingsEenheid> getActieveBeoordelingsEenhedenVoorCentraleEenheden(List<CentraleEenheid> centraleEenheden)
 	{
 		return beoordelingsEenheidRepository.findAll(
 			BeoordelingsEenheidSpecification.isActief(true).and(heeftCentraleEenheidIn(centraleEenheden)),
-			Sort.by(Instelling_.NAAM));
+			Sort.by(Organisatie_.NAAM));
 	}
 }

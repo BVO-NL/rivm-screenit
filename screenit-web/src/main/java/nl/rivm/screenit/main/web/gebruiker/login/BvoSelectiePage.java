@@ -26,7 +26,7 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.security.IScreenitRealm;
 import nl.rivm.screenit.service.AutorisatieService;
@@ -60,24 +60,24 @@ public class BvoSelectiePage extends LoginBasePage
 	@SpringBean
 	private IScreenitRealm realm;
 
-	public BvoSelectiePage(InstellingGebruiker instellingGebruiker)
+	public BvoSelectiePage(OrganisatieMedewerker organisatieMedewerker)
 	{
-		List<Bevolkingsonderzoek> onderzoeken = Bevolkingsonderzoek.sort(autorisatieService.getBevolkingsonderzoeken(instellingGebruiker));
+		List<Bevolkingsonderzoek> onderzoeken = Bevolkingsonderzoek.sort(autorisatieService.getBevolkingsonderzoeken(organisatieMedewerker));
 		if (CollectionUtils.isNotEmpty(onderzoeken) && onderzoeken.size() == 1)
 		{
 			LOG.debug("Er is 1 BVO beschikbaar, deze wordt meteen toegekend.");
 			add(new WebMarkupContainer("bvoBeschikbaarContainer").setVisible(false));
 			add(new WebMarkupContainer("bvoOnbeschikbaarContainer").setVisible(false));
-			instellingGebruiker.setBevolkingsonderzoeken(onderzoeken);
-			hibernateService.saveOrUpdate(instellingGebruiker);
-			realm.clearCachedAuthorizationInfo(instellingGebruiker);
-			throw new RestartResponseException(ScreenitSession.get().getPageForInstellingGebruiker(instellingGebruiker));
+			organisatieMedewerker.setBevolkingsonderzoeken(onderzoeken);
+			hibernateService.saveOrUpdate(organisatieMedewerker);
+			realm.clearCachedAuthorizationInfo(organisatieMedewerker);
+			throw new RestartResponseException(ScreenitSession.get().getPageForOrganisatieMedewerker(organisatieMedewerker));
 		}
 		else if (CollectionUtils.isNotEmpty(onderzoeken) && onderzoeken.size() > 1)
 		{
 			LOG.debug("Er zijn meerdere BVO's beschikbaar, selectiescherm wordt getoond.");
 			WebMarkupContainer bvoBeschikbaarContainer = new WebMarkupContainer("bvoBeschikbaarContainer");
-			Form<InstellingGebruiker> bvoForm = new Form<InstellingGebruiker>("bvoForm", ModelUtil.cModel(instellingGebruiker));
+			Form<OrganisatieMedewerker> bvoForm = new Form<OrganisatieMedewerker>("bvoForm", ModelUtil.cModel(organisatieMedewerker));
 			bvoForm.add(new BootstrapFeedbackPanel("feedback"));
 			CheckBoxMultipleChoice<Bevolkingsonderzoek> keuzemaken = new CheckBoxMultipleChoice<Bevolkingsonderzoek>("bevolkingsonderzoeken", onderzoeken,
 				new EnumChoiceRenderer<Bevolkingsonderzoek>()
@@ -98,18 +98,20 @@ public class BvoSelectiePage extends LoginBasePage
 				@Override
 				protected void onSubmit(AjaxRequestTarget target)
 				{
-					InstellingGebruiker instGebruiker = (InstellingGebruiker) getForm().getDefaultModelObject();
-					if (CollectionUtils.isEmpty(instGebruiker.getBevolkingsonderzoeken()))
+					OrganisatieMedewerker organisatieMedewerker = (OrganisatieMedewerker) getForm().getDefaultModelObject();
+					if (CollectionUtils.isEmpty(organisatieMedewerker.getBevolkingsonderzoeken()))
 					{
 						error(getString("error.bvo.selecteer.een.minimaal"));
 					}
 					else
 					{
-						hibernateService.saveOrUpdate(instGebruiker);
-						realm.clearCachedAuthorizationInfo(instGebruiker);
-						setResponsePage(ScreenitSession.get().getPageForInstellingGebruiker(instGebruiker));
+						hibernateService.saveOrUpdate(organisatieMedewerker);
+						realm.clearCachedAuthorizationInfo(organisatieMedewerker);
+						setResponsePage(ScreenitSession.get().getPageForOrganisatieMedewerker(organisatieMedewerker));
 					}
-				};
+				}
+
+				;
 			});
 			bvoBeschikbaarContainer.add(bvoForm);
 			add(bvoBeschikbaarContainer);

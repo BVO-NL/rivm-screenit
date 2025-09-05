@@ -23,12 +23,12 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen;
  */
 
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
 
-public class AlgemeenPage extends GebruikerBasePage
+public class AlgemeenPage extends MedewerkerBasePage
 {
 
 	private static final long serialVersionUID = 1L;
@@ -38,30 +38,30 @@ public class AlgemeenPage extends GebruikerBasePage
 
 	}
 
-	protected void setCurrentSelectedMedewerker(Gebruiker medewerker)
+	protected void setCurrentSelectedMedewerker(Medewerker medewerker)
 	{
 		ScreenitSession.get().setCurrentSelectedMedewerker(medewerker);
 	}
 
-	protected Gebruiker getCurrentSelectedMedewerker()
+	protected Medewerker getCurrentSelectedMedewerker()
 	{
 		return ScreenitSession.get().getCurrentSelectedMedewerker();
 	}
 
-	protected void setCurrentSelectedOrganisatie(Instelling organisatie)
+	protected void setCurrentSelectedOrganisatie(Organisatie organisatie)
 	{
 		ScreenitSession.get().setCurrentSelectedOrganisatie(organisatie);
 	}
 
-	protected Instelling getCurrentSelectedOrganisatie()
+	protected Organisatie getCurrentSelectedOrganisatie()
 	{
 		return ScreenitSession.get().getCurrentSelectedOrganisatie();
 	}
 
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.ALGEMEEN;
+		return MedewerkerHoofdMenuItem.ALGEMEEN;
 	}
 
 }

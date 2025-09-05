@@ -40,7 +40,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.model.BeoordelingsEenheid;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.mamma.enums.MammaFotobesprekingType;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
@@ -67,7 +67,7 @@ public class MammaFotobespreking extends AbstractHibernateObject implements Mamm
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@NotAudited
-	private InstellingGebruiker aangemaaktDoor;
+	private OrganisatieMedewerker aangemaaktDoor;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private BeoordelingsEenheid beoordelingsEenheid;

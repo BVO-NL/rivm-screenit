@@ -38,7 +38,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.BestandStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
@@ -67,7 +67,7 @@ public class MammaDownloadOnderzoekenVerzoek extends AbstractHibernateObject
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@NotAudited
-	private InstellingGebruiker aangemaaktDoor;
+	private OrganisatieMedewerker aangemaaktDoor;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -125,12 +125,12 @@ public class MammaDownloadOnderzoekenVerzoek extends AbstractHibernateObject
 		this.gewijzigdOp = gewijzigdOp;
 	}
 
-	public InstellingGebruiker getAangemaaktDoor()
+	public OrganisatieMedewerker getAangemaaktDoor()
 	{
 		return aangemaaktDoor;
 	}
 
-	public void setAangemaaktDoor(InstellingGebruiker aangemaaktDoor)
+	public void setAangemaaktDoor(OrganisatieMedewerker aangemaaktDoor)
 	{
 		this.aangemaaktDoor = aangemaaktDoor;
 	}

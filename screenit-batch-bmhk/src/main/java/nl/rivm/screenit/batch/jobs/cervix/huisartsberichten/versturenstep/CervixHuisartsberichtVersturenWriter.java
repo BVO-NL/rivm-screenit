@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.batch.jobs.cervix.huisartsberichten.CervixHuisartsberichtenConstants;
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.cervix.CervixHuisartsBericht;
 import nl.rivm.screenit.model.cervix.enums.CervixHuisartsBerichtStatus;
@@ -61,7 +61,7 @@ public class CervixHuisartsberichtVersturenWriter extends BaseWriter<CervixHuisa
 			{
 				huisartsBericht.setStatus(CervixHuisartsBerichtStatus.KLANTNUMMER_NIET_GEVERIFIEERD);
 				getHibernateService().saveOrUpdate(huisartsBericht);
-				List<Instelling> dashboardOrganisaties = rivmInstelling();
+				List<Organisatie> dashboardOrganisaties = landelijkBeheerOrganisatie();
 				dashboardOrganisaties.add(huisartsBericht.getScreeningsOrganisatie());
 				logService.logGebeurtenis(LogGebeurtenis.CERVIX_HUISARTSBERICHT_VERZENDEN_MISLUKT, dashboardOrganisaties, null, huisartsBericht.getClient(),
 					String.format(
@@ -96,10 +96,10 @@ public class CervixHuisartsberichtVersturenWriter extends BaseWriter<CervixHuisa
 		}
 	}
 
-	private List<Instelling> rivmInstelling()
+	private List<Organisatie> landelijkBeheerOrganisatie()
 	{
-		List<Instelling> instellingen = new ArrayList<>();
-		instellingen.addAll(getHibernateService().loadAll(Rivm.class));
-		return instellingen;
+		List<Organisatie> organisaties = new ArrayList<Organisatie>();
+		organisaties.addAll(getHibernateService().loadAll(Rivm.class));
+		return organisaties;
 	}
 }

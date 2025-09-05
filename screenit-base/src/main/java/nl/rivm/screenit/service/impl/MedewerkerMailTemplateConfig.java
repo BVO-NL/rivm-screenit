@@ -33,8 +33,8 @@ import nl.rivm.screenit.PreferenceKey;
 enum MedewerkerMailTemplateConfig
 {
 
-	WACHTWOORD_VERLOOPT_HERINNERNIG(PreferenceKey.WACHTWOORDVERLOOPTEMAILSUBJECT, Constants.DEFAULT_GEBRUIKER_WACHTWOORD_VERLOOPT_MAIL_SUBJECT,
-		PreferenceKey.WACHTWOORDVERLOOPTEMAIL, Constants.DEFAULT_GEBRUIKER_WACHTWOORD_VERLOOPT_MAIL_CONTENT,
+	WACHTWOORD_VERLOOPT_HERINNERNIG(PreferenceKey.WACHTWOORDVERLOOPTEMAILSUBJECT, Constants.DEFAULT_MEDEWERKER_WACHTWOORD_VERLOOPT_MAIL_SUBJECT,
+		PreferenceKey.WACHTWOORDVERLOOPTEMAIL, Constants.DEFAULT_MEDEWERKER_WACHTWOORD_VERLOOPT_MAIL_CONTENT,
 		false, ""),
 	BMHK_HUISARTS_REGISTRATIE(PreferenceKey.HUISARTS_REG_EMAILSUBJECT, Constants.DEFAULT_HA_REGISTRATIE_MAIL_SUBJECT,
 		PreferenceKey.HUISARTS_REG_EMAIL, Constants.DEFAULT_HA_REGISTRATIE_MAIL_CONTENT,
@@ -57,9 +57,9 @@ enum MedewerkerMailTemplateConfig
 			+ "U heeft een nieuw wachtwoord aangevraagd. U kunt via deze {link} en inlogcode: {code} uw wachtwoord opnieuw instellen. <br><br> "
 			+ "Met vriendelijke groet, <br> Het ScreenIT-team";
 
-		static final String DEFAULT_GEBRUIKER_WACHTWOORD_VERLOOPT_MAIL_SUBJECT = "Wachtwoord verloopt";
+		static final String DEFAULT_MEDEWERKER_WACHTWOORD_VERLOOPT_MAIL_SUBJECT = "Wachtwoord verloopt";
 
-		static final String DEFAULT_GEBRUIKER_WACHTWOORD_VERLOOPT_MAIL_CONTENT = "Geachte {aanhef}{tussenvoegsel}{achternaam} <br><br>"
+		static final String DEFAULT_MEDEWERKER_WACHTWOORD_VERLOOPT_MAIL_CONTENT = "Geachte {aanhef}{tussenvoegsel}{achternaam} <br><br>"
 			+ "Over een aantal dagen verloopt uw wachtwoord. U kunt via deze {link} uw wachtwoord opnieuw instellen. <br><br> "
 			+ "Met vriendelijke groet, <br> Het ScreenIT-team";
 	}

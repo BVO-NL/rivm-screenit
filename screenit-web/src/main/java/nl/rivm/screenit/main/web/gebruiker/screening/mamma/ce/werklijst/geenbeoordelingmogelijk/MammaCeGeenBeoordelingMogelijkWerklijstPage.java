@@ -29,7 +29,7 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.panels.MammaCeZoek
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.werklijst.AbstractMammaCeWerklijst;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.werklijst.TelefoonnrColumn;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -51,7 +51,7 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_CENTRALE_EENHEID_GEEN_BEOORDELING_MOGELIJK },
+	recht = { Recht.MEDEWERKER_CENTRALE_EENHEID_GEEN_BEOORDELING_MOGELIJK },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaCeGeenBeoordelingMogelijkWerklijstPage extends AbstractMammaCeWerklijst
 {
@@ -96,7 +96,7 @@ public class MammaCeGeenBeoordelingMogelijkWerklijstPage extends AbstractMammaCe
 		columns.add(new TelefoonnrColumn<>("onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client.persoon"));
 		columns.add(getSeColumn());
 		columns.add(new PropertyColumn<>(Model.of("CE"),
-			propertyChain(MammaOnderzoek_.LAATSTE_BEOORDELING, MammaBeoordeling_.BEOORDELINGS_EENHEID, Instelling_.PARENT, Instelling_.NAAM),
+			propertyChain(MammaOnderzoek_.LAATSTE_BEOORDELING, MammaBeoordeling_.BEOORDELINGS_EENHEID, Organisatie_.PARENT, Organisatie_.NAAM),
 			"onderzoek.screeningsEenheid.beoordelingsEenheid.parent.naam"));
 
 		resultatenContainer.add(new ScreenitDataTable<>("resultaten", columns, geenBeoordelingMogelijkDataProvider, 10,

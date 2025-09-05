@@ -40,7 +40,7 @@ import org.wicketstuff.wiquery.core.javascript.JsStatement;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_MAMMA_INZIEN_LEZING,
+	recht = Recht.MEDEWERKER_MAMMA_INZIEN_LEZING,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaLezingInzienPanel extends AbstractGebeurtenisDetailPanel
 {
@@ -57,7 +57,8 @@ public class MammaLezingInzienPanel extends AbstractGebeurtenisDetailPanel
 		super.renderHead(response);
 
 		JsStatement jsStatement = new JsStatement();
-		jsStatement.append(String.format("new MutationObserver(calcLaesiePositions).observe($('#%1$s')[0], { attributes: true })", getParent().getParent().getParent().getMarkupId()));
+		jsStatement.append(
+			String.format("new MutationObserver(calcLaesiePositions).observe($('#%1$s')[0], { attributes: true })", getParent().getParent().getParent().getMarkupId()));
 		response.render(OnDomReadyHeaderItem.forScript(jsStatement.render()));
 	}
 }

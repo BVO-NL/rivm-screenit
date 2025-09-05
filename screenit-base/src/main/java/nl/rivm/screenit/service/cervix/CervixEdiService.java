@@ -28,9 +28,9 @@ import nl.rivm.screenit.service.cervix.enums.CervixEdiVerstuurStatus;
 
 public interface CervixEdiService
 {
-	void verstuurMedVry(CervixHuisartsBericht bericht, Account loggedInAccount);
+	void verstuurMedVry(CervixHuisartsBericht bericht, Account ingelogdAccount);
 
-	CervixEdiVerstuurStatus verstuurMedVryNaarExtraHuisartsLocatie(CervixHuisartsBericht huisartsBericht, CervixHuisartsLocatie locatie, Account loggedInAccount);
+	CervixEdiVerstuurStatus verstuurMedVryNaarExtraHuisartsLocatie(CervixHuisartsBericht huisartsBericht, CervixHuisartsLocatie locatie, Account ingelogdAccount);
 
 	void verstuurKlantnummerVerificatieMedVry(CervixHuisartsBericht huisartsBericht);
 }

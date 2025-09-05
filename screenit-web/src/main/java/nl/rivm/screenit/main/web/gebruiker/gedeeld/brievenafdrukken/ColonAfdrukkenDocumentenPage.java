@@ -22,7 +22,7 @@ package nl.rivm.screenit.main.web.gebruiker.gedeeld.brievenafdrukken;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.colon.ColonMergedBrieven;
 import nl.rivm.screenit.model.enums.Actie;
@@ -35,7 +35,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_SCREENING_PRINTER,
+	recht = Recht.MEDEWERKER_SCREENING_PRINTER,
 	bevolkingsonderzoekScopes = Bevolkingsonderzoek.COLON)
 public class ColonAfdrukkenDocumentenPage extends AfdrukkenDocumentenBasePage<ColonMergedBrieven>
 {
@@ -48,8 +48,8 @@ public class ColonAfdrukkenDocumentenPage extends AfdrukkenDocumentenBasePage<Co
 	}
 
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.COLON;
+		return MedewerkerHoofdMenuItem.COLON;
 	}
 }

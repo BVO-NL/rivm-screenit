@@ -27,6 +27,8 @@ public enum JobStartParameter
 
 	KOPPEL_XML,
 
+	KOPPEL_DATA,
+
 	COLON_SELECTIE_HERSTART,
 
 	MAMMA_PALGA_EXPORT,

@@ -24,28 +24,26 @@ import {CervixUitstelDto, CervixUitstelFormulier} from "../datatypes/cervix/Cerv
 import {plusDagen} from "../utils/DateUtil"
 import {CervixUitstelAction, createCervixUitstelAction, ResetCervixUitstelStatusAction, setCervixUitstelStatusAction} from "../actions/CervixDossierAction"
 import {CervixUitstelType} from "../datatypes/cervix/CervixUitstelType"
+import {CervixUitstelStatus} from "../datatypes/cervix/CervixUitstelStatus"
 
 export const getHuidigeCervixUitstelStatus = () => async (dispatch: Dispatch<ResetCervixUitstelStatusAction>) => {
-    return ScreenitBackend.get("/cervix/uitstellen/status")
-        .then(response => dispatch(setCervixUitstelStatusAction(response.data)))
+	return ScreenitBackend.get<CervixUitstelStatus>("cervix/uitstellen/status").json()
+		.then(response => dispatch(setCervixUitstelStatusAction(response)))
 }
 
 export const getHuidigeCervixUitstel = () => async (dispatch: Dispatch<CervixUitstelAction>) => {
-    return ScreenitBackend.get(`/cervix/uitstellen/huidig`)
-        .then(response => dispatch(createCervixUitstelAction(response.data)))
+	return ScreenitBackend.get<CervixUitstelDto>(`cervix/uitstellen/huidig`).json()
+		.then(response => dispatch(createCervixUitstelAction(response)))
 }
 
 export const saveCervixUitstel = (cervixUitstel: CervixUitstelFormulier, uitstelBijZwangerschap: number) => (dispatch: Dispatch) => {
+	const cervixUitstelDto: CervixUitstelDto = {
+		uitstelType: cervixUitstel.uitstelType,
+		uitstellenTotDatum: getUitstellenTotDatum(cervixUitstel, uitstelBijZwangerschap),
+	}
 
-    const cervixUitstelDto: CervixUitstelDto = {
-        uitstelType: cervixUitstel.uitstelType,
-        uitstellenTotDatum: getUitstellenTotDatum(cervixUitstel, uitstelBijZwangerschap),
-    }
-
-    return ScreenitBackend.put("/cervix/uitstellen/aanvragen", cervixUitstelDto)
-        .then(response => {
-            dispatch(createCervixUitstelAction(response.data))
-        })
+	return ScreenitBackend.put<CervixUitstelDto>("cervix/uitstellen/aanvragen", {json: cervixUitstelDto}).json()
+		.then(response => dispatch(createCervixUitstelAction(response)))
 }
 
 export function getUitstellenTotDatum(cervixUitstel: CervixUitstelFormulier, uitstelBijZwangerschap: number): Date | null {

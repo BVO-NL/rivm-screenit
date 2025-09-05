@@ -69,7 +69,7 @@ public class ColonAfspraakslotController
 	private final ColonAfspraakslotService afspraakslotService;
 
 	@GetMapping
-	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
+	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
 	public List<ColonAfspraakslotDto> getAfspraakslots(@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 		@RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate)
@@ -78,7 +78,7 @@ public class ColonAfspraakslotController
 
 		if (intakeLocatie == null)
 		{
-			throw new IllegalStateException("Gebruiker heeft geen intakelocatie.");
+			throw new IllegalStateException("Medewerker heeft geen intakelocatie.");
 		}
 
 		if (startDate == null)
@@ -95,7 +95,7 @@ public class ColonAfspraakslotController
 	}
 
 	@GetMapping("/search")
-	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
+	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
 	public List<ColonTijdslotDto> searchAfspraakslots(@RequestParam() @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDatum,
 		@RequestParam() @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate eindDatum,
@@ -107,7 +107,7 @@ public class ColonAfspraakslotController
 
 		if (intakelocatie == null)
 		{
-			throw new IllegalStateException("Gebruiker heeft geen intakelocatie.");
+			throw new IllegalStateException("Medewerker heeft geen intakelocatie.");
 		}
 
 		var filter = new RoosterListViewFilter();
@@ -125,27 +125,27 @@ public class ColonAfspraakslotController
 	}
 
 	@PostMapping
-	@SecurityConstraint(actie = Actie.TOEVOEGEN, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
+	@SecurityConstraint(actie = Actie.TOEVOEGEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
 	public ResponseEntity<Void> createAfspraakslots(@RequestBody ColonAfspraakslotDto afspraakslotsDto)
 		throws ValidatieException, OpslaanVerwijderenTijdBlokException, BeperkingException, BulkAanmakenException
 	{
-		afspraakslotService.createAfspraakslot(afspraakslotsDto, ScreenitSession.get().getLoggedInInstellingGebruiker());
+		afspraakslotService.createAfspraakslot(afspraakslotsDto, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@PutMapping("{id}")
-	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
+	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
 	public ResponseEntity<Void> updateAfspraakslot(@PathVariable("id") Long id, @RequestBody ColonAfspraakslotDto afspraakslotDto)
 		throws ValidatieException, OpslaanVerwijderenTijdBlokException, BeperkingException
 	{
-		afspraakslotService.updateAfspraakslot(id, afspraakslotDto, ScreenitSession.get().getLoggedInInstellingGebruiker());
+		afspraakslotService.updateAfspraakslot(id, afspraakslotDto, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 	@DeleteMapping("{ids}")
-	@SecurityConstraint(actie = Actie.VERWIJDEREN, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
+	@SecurityConstraint(actie = Actie.VERWIJDEREN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
 	public ResponseEntity<Void> deleteAfspraakslots(@PathVariable("ids") String ids, @RequestParam(required = false) Boolean alleenValidatie,
 		@RequestParam(required = false) Boolean bulk)
@@ -158,11 +158,11 @@ public class ColonAfspraakslotController
 
 		if (Boolean.TRUE.equals(bulk))
 		{
-			afspraakslotService.bulkDeleteAfspraakslots(afspraakslotIds, ScreenitSession.get().getLoggedInInstellingGebruiker(), alleenValidatie);
+			afspraakslotService.bulkDeleteAfspraakslots(afspraakslotIds, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), alleenValidatie);
 		}
 		else
 		{
-			afspraakslotService.deleteAfspraakslot(afspraakslotIds.get(0), ScreenitSession.get().getLoggedInInstellingGebruiker());
+			afspraakslotService.deleteAfspraakslot(afspraakslotIds.get(0), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 		}
 
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

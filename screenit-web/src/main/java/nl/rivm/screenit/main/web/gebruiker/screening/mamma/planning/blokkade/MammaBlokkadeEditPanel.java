@@ -92,7 +92,7 @@ public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
 		this.screeningsEenheidModel = screeningsEenheidModel;
 
 		ScreeningOrganisatie ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
-		boolean magAanpassen = ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
+		boolean magAanpassen = ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
 
 		if (blokkadeModel == null)
 		{
@@ -123,7 +123,7 @@ public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
 
 		ScreeningOrganisatie sessionSO = ScreenitSession.get().getScreeningOrganisatie();
 		form = new Form("form");
-		form.setEnabled(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN) && sessionSO != null);
+		form.setEnabled(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN) && sessionSO != null);
 		add(form);
 
 		ScreenitDropdown<MammaBlokkadeType> type = new ScreenitDropdown<>("type", Arrays.asList(MammaBlokkadeType.values()),
@@ -202,7 +202,7 @@ public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
 			{
 				MammaBlokkade blokkade = MammaBlokkadeEditPanel.this.getModelObject();
 				blokkade.setActief(!blokkade.getActief());
-				baseBlokkadeService.saveOrUpdate(blokkade, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				baseBlokkadeService.saveOrUpdate(blokkade, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				blokkadeGewijzigd(target);
 			}
 		};
@@ -238,7 +238,7 @@ public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				baseBlokkadeService.saveOrUpdate(MammaBlokkadeEditPanel.this.getModelObject(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+				baseBlokkadeService.saveOrUpdate(MammaBlokkadeEditPanel.this.getModelObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				blokkadeGewijzigd(target);
 			}
 		});

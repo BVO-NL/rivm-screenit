@@ -55,7 +55,7 @@ public interface ParameterisatieService
 
 	IMSConfiguratie getIMSConfiguratie();
 
-	void saveIMSConfiguratie(Account loggedInAccount, IMSConfiguratie configuratie);
+	void saveIMSConfiguratie(Account ingelogdAccount, IMSConfiguratie configuratie);
 
 	List<ColonUitnodigingsinterval> getColonIntervalParameters();
 

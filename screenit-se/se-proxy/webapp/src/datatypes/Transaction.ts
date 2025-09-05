@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -36,7 +36,7 @@ export type Transaction = {
 	type: TransactionType;
 	clientId?: number;
 	uitnodigingsNr?: number;
-	instellingGebruikerId?: number;
+	organisatieMedewerkerId?: number;
 	afspraakVanafDatum: string;
 	medewerkercode?: string;
 	sessionId?: string;

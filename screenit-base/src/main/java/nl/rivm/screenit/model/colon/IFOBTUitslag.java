@@ -36,12 +36,17 @@ import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.model.colon.enums.IFOBTUitslagType;
+import nl.rivm.screenit.model.enums.RedenNietTeBeoordelen;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
+
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 @Getter
 @Setter
 @Entity
 @Table(schema = "colon")
+@Audited
 public class IFOBTUitslag extends AbstractHibernateObject
 {
 	@Enumerated(EnumType.STRING)
@@ -55,5 +60,11 @@ public class IFOBTUitslag extends AbstractHibernateObject
 	private BigDecimal uitslag;
 
 	@ManyToOne
+	@NotAudited
 	private IFOBTBestand bestand;
+
+	private String flag;
+
+	@Enumerated(EnumType.STRING)
+	private RedenNietTeBeoordelen onbeoordeelbaarReden;
 }

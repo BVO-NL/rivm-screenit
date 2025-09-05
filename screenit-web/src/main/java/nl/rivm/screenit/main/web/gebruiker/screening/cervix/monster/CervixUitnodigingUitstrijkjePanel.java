@@ -119,7 +119,7 @@ public abstract class CervixUitnodigingUitstrijkjePanel extends CervixUitnodigin
 
 		boolean enabled = ontvangstMonster()
 			&& !ingeboektInAnderLaboratorium && (uitstrijkjeStatus.equals(CervixUitstrijkjeStatus.NIET_ONTVANGEN)
-				|| uitstrijkjeStatus.equals(CervixUitstrijkjeStatus.ONTVANGEN) || uitstrijkjeStatus.equals(CervixUitstrijkjeStatus.NIET_ANALYSEERBAAR))
+			|| uitstrijkjeStatus.equals(CervixUitstrijkjeStatus.ONTVANGEN) || uitstrijkjeStatus.equals(CervixUitstrijkjeStatus.NIET_ANALYSEERBAAR))
 			&& verzenddatumUitnodiging != null && uitstrijkje.getBrief() == null;
 		uitstrijkjeStatusDropdown.setEnabled(enabled);
 		nietAnalyseerbaarReden.setEnabled(enabled);
@@ -178,7 +178,7 @@ public abstract class CervixUitnodigingUitstrijkjePanel extends CervixUitnodigin
 				mogelijkeUitstrijkjeStatussen.add(CervixUitstrijkjeStatus.NIET_ANALYSEERBAAR);
 			}
 
-			if (ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CERVIX_ONTVANGST_MONSTER, Actie.VERWIJDEREN))
+			if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CERVIX_ONTVANGST_MONSTER, Actie.VERWIJDEREN))
 			{
 				mogelijkeUitstrijkjeStatussen.add(CervixUitstrijkjeStatus.NIET_ONTVANGEN);
 			}
@@ -233,7 +233,7 @@ public abstract class CervixUitnodigingUitstrijkjePanel extends CervixUitnodigin
 
 		logMessage = logMessage + getSignaleringen();
 
-		uitnodingingService.saveMonster(uitstrijkje, ScreenitSession.get().getLoggedInInstellingGebruiker(), logMessage);
+		uitnodingingService.saveMonster(uitstrijkje, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), logMessage);
 		if (success)
 		{
 			success(getString("uitnodiging.opgeslagen"));
@@ -243,7 +243,7 @@ public abstract class CervixUitnodigingUitstrijkjePanel extends CervixUitnodigin
 	@Override
 	protected void registreerBarcodeAfgedrukt(AjaxRequestTarget target)
 	{
-		uitnodingingService.registreerMonsterBarcodeAfgedrukt(getModelObject(), ScreenitSession.get().getLoggedInInstellingGebruiker(),
+		uitnodingingService.registreerMonsterBarcodeAfgedrukt(getModelObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker(),
 			LogGebeurtenis.CERVIX_UITSTRIJKJE_BARCODE_AFGEDRUKT);
 	}
 }

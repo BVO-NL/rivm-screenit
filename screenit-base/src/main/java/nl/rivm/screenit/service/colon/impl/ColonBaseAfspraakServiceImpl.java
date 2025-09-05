@@ -40,7 +40,7 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.colon.ColonBrief;
@@ -506,7 +506,7 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 		account = (Account) HibernateHelper.deproxy(account);
 		var lijktOpEenVerwijzing = laatsteAfspraak.getConclusie() == null
 			&& laatsteAfspraak.getVanaf().isBefore(currentDateSupplier.getLocalDateTime())
-			&& account instanceof InstellingGebruiker
+			&& account instanceof OrganisatieMedewerker
 			&& !laatsteAfspraak.getKamer().getIntakelocatie().equals(nieuweAfspraak.getKamer().getIntakelocatie());
 		if (lijktOpEenVerwijzing && verwezenMedischeRedenenDoorInfolijn)
 		{
@@ -514,7 +514,7 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 			conclusie.setType(ColonConclusieType.DOORVERWIJZEN_NAAR_ANDER_CENTRUM);
 			conclusie.setDatum(currentDateSupplier.getDate());
 			conclusie.setDoorverwijzingBevestigd(false);
-			conclusie.setInstellingGebruiker((InstellingGebruiker) account);
+			conclusie.setOrganisatieMedewerker((OrganisatieMedewerker) account);
 			hibernateService.saveOrUpdate(conclusie);
 			laatsteAfspraak.setConclusie(conclusie);
 			setAfspraakStatus(laatsteAfspraak, ColonAfspraakStatus.UITGEVOERD);

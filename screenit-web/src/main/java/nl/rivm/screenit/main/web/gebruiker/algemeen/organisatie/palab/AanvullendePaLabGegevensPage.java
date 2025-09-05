@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.palab;
 
 import java.util.List;
 
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.base.BasePage;
 import nl.rivm.screenit.main.web.component.pingpong.PingPongInput;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.KoppelAanRegioOrganisatiePanel;
@@ -32,8 +31,8 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieBehee
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatiePaspoortPanel;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieZoeken;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.colon.ColoscopieLocatie;
 import nl.rivm.screenit.model.colon.PaLaboratorium;
 import nl.rivm.screenit.model.enums.Actie;
@@ -41,7 +40,7 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.service.AutorisatieService;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -63,18 +62,15 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	constraint = ShiroConstraint.HasPermission,
 	recht = {
-		Recht.GEBRUIKER_PA_LABORATORIA_BEHEER },
+		Recht.MEDEWERKER_PA_LABORATORIA_BEHEER },
 	checkScope = true,
-	level = ToegangLevel.INSTELLING,
+	level = ToegangLevel.ORGANISATIE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON,
 		Bevolkingsonderzoek.CERVIX })
 public class AanvullendePaLabGegevensPage extends OrganisatieBeheer
 {
-
-	private static final long serialVersionUID = 1L;
-
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private HibernateService hibernateService;
@@ -84,8 +80,8 @@ public class AanvullendePaLabGegevensPage extends OrganisatieBeheer
 
 	public AanvullendePaLabGegevensPage()
 	{
-		Instelling organisatie = getCurrentSelectedOrganisatie();
-		Actie actie = autorisatieService.getActieVoorOrganisatie(ScreenitSession.get().getLoggedInInstellingGebruiker(), organisatie, Recht.GEBRUIKER_PA_LABORATORIA_BEHEER);
+		Organisatie organisatie = getCurrentSelectedOrganisatie();
+		Actie actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie, Recht.MEDEWERKER_PA_LABORATORIA_BEHEER);
 		final boolean inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 
 		add(new OrganisatiePaspoortPanel("paspoort", ModelUtil.sModel(organisatie)));
@@ -96,24 +92,24 @@ public class AanvullendePaLabGegevensPage extends OrganisatieBeheer
 		Form<Void> form = new Form<>("form");
 		add(form);
 
-		SimpleListHibernateModel<ColoscopieLocatie> choices = new SimpleListHibernateModel<>(instellingService.getActieveInstellingen(ColoscopieLocatie.class));
+		SimpleListHibernateModel<ColoscopieLocatie> choices = new SimpleListHibernateModel<>(organisatieService.getActieveOrganisaties(ColoscopieLocatie.class));
 		final PingPongInput<ColoscopieLocatie> coloscopielocaties = new PingPongInput<ColoscopieLocatie>("coloscopielocaties",
 			new PropertyModel<List<ColoscopieLocatie>>(model, "coloscopielocaties"), choices, new ChoiceRenderer<ColoscopieLocatie>("naam", "id")
+		{
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public Object getDisplayValue(ColoscopieLocatie object)
 			{
-
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public Object getDisplayValue(ColoscopieLocatie object)
+				Object returnValue = super.getDisplayValue(object);
+				if (object.getParent() != null)
 				{
-					Object returnValue = super.getDisplayValue(object);
-					if (object.getParent() != null)
-					{
-						returnValue = returnValue.toString() + " (" + object.getParent().getNaam() + ")";
-					}
-					return returnValue;
+					returnValue = returnValue.toString() + " (" + object.getParent().getNaam() + ")";
 				}
-			}, inzien)
+				return returnValue;
+			}
+		}, inzien)
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -136,8 +132,8 @@ public class AanvullendePaLabGegevensPage extends OrganisatieBeheer
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				Instelling instelling = model.getObject();
-				instellingService.saveOrUpdate(instelling);
+				Organisatie organisatie = model.getObject();
+				organisatieService.saveOrUpdate(organisatie);
 				BasePage.markeerFormulierenOpgeslagen(target);
 				this.info("Gegevens zijn succesvol opgeslagen");
 			}
@@ -150,7 +146,7 @@ public class AanvullendePaLabGegevensPage extends OrganisatieBeheer
 
 		});
 
-		AjaxLink<Gebruiker> annuleren = new AjaxLink<Gebruiker>("annuleren")
+		AjaxLink<Medewerker> annuleren = new AjaxLink<Medewerker>("annuleren")
 		{
 
 			private static final long serialVersionUID = 1L;

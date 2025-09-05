@@ -42,7 +42,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @Getter
 @Audited
-public class BMHKLaboratorium extends Instelling
+public class BMHKLaboratorium extends Organisatie
 {
 
 	@ElementCollection(fetch = FetchType.LAZY)

@@ -22,7 +22,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.gedeeld.verslagen;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -34,7 +34,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.AANPASSEN,
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN,
+	recht = Recht.MEDEWERKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.MAMMA })
 public class MammaVerwerkOngeldigeBerichtenPage extends VerwerkOngeldigeBerichtenPage
@@ -42,9 +42,9 @@ public class MammaVerwerkOngeldigeBerichtenPage extends VerwerkOngeldigeBerichte
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.MAMMA;
+		return MedewerkerHoofdMenuItem.MAMMA;
 	}
 
 }

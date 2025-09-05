@@ -23,7 +23,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon.overeenkomstenzoeken
 
 import java.util.List;
 
-import nl.rivm.screenit.model.overeenkomsten.AfgeslotenInstellingOvereenkomst;
+import nl.rivm.screenit.model.overeenkomsten.AfgeslotenOrganisatieOvereenkomst;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -36,18 +36,18 @@ public class AfgeslotenOvereenkomstenLijstPanel extends Panel
 
 	private static final long serialVersionUID = 1L;
 
-	public AfgeslotenOvereenkomstenLijstPanel(String id, IModel<List<AfgeslotenInstellingOvereenkomst>> model)
+	public AfgeslotenOvereenkomstenLijstPanel(String id, IModel<List<AfgeslotenOrganisatieOvereenkomst>> model)
 	{
 		super(id, model);
-		add(new ListView<AfgeslotenInstellingOvereenkomst>("lijst", model)
+		add(new ListView<AfgeslotenOrganisatieOvereenkomst>("lijst", model)
 		{
 
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			protected void populateItem(ListItem<AfgeslotenInstellingOvereenkomst> item)
+			protected void populateItem(ListItem<AfgeslotenOrganisatieOvereenkomst> item)
 			{
-				AfgeslotenInstellingOvereenkomst overeenkomst = (AfgeslotenInstellingOvereenkomst) item.getDefaultModelObject();
+				AfgeslotenOrganisatieOvereenkomst overeenkomst = (AfgeslotenOrganisatieOvereenkomst) item.getDefaultModelObject();
 				StringBuilder sb = new StringBuilder();
 				sb.append(overeenkomst.getOvereenkomst().getNaam());
 				sb.append(" (");

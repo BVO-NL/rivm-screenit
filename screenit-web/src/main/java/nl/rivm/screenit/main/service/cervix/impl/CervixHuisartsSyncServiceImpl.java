@@ -34,7 +34,7 @@ import nl.rivm.screenit.huisartsenportaal.dto.WoonplaatsDto;
 import nl.rivm.screenit.huisartsenportaal.enums.CervixLocatieStatus;
 import nl.rivm.screenit.main.service.cervix.CervixHuisartsSyncService;
 import nl.rivm.screenit.model.Aanhef;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.Woonplaats;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsAdres;
@@ -136,12 +136,12 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 		huisarts.setGebruikersnaamHuisartsenPortaal(dto.getUsername());
 		huisarts.setEmail(dto.getEmail());
 		huisarts.setMutatiedatum(mutatieDatum);
-		Gebruiker gebruiker = huisarts.getOrganisatieMedewerkers().get(0).getMedewerker();
-		gebruiker.setAchternaam(dto.getAchternaam());
-		gebruiker.setTussenvoegsel(dto.getTussenvoegsel());
-		gebruiker.setVoorletters(dto.getVoorletters());
-		gebruiker.setAanhef(Aanhef.getAanhefWithName(dto.getAanhef()));
-		huisarts.setNaam(getPraktijkNaam(gebruiker));
+		Medewerker medewerker = huisarts.getOrganisatieMedewerkers().get(0).getMedewerker();
+		medewerker.setAchternaam(dto.getAchternaam());
+		medewerker.setTussenvoegsel(dto.getTussenvoegsel());
+		medewerker.setVoorletters(dto.getVoorletters());
+		medewerker.setAanhef(Aanhef.getAanhefWithName(dto.getAanhef()));
+		huisarts.setNaam(getPraktijkNaam(medewerker));
 		huisarts.setTelefoon(dto.getTelefoon());
 		huisarts.setActief(dto.getActief());
 		huisarts.setAanmeldStatus(CervixHuisartsAanmeldStatus.valueOf(dto.getAanmeldStatus()));
@@ -152,7 +152,7 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 		}
 		else
 		{
-			gebruiker.setWachtwoordChangeCode(null);
+			medewerker.setWachtwoordChangeCode(null);
 		}
 		if (dto.getPostadres() != null)
 		{
@@ -164,10 +164,10 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 	}
 
 	@Override
-	public String getPraktijkNaam(Gebruiker gebruiker)
+	public String getPraktijkNaam(Medewerker medewerker)
 	{
 		String builder = "Praktijk van "
-			+ NaamUtil.getTussenvoegselEnAchternaam(gebruiker);
+			+ NaamUtil.getTussenvoegselEnAchternaam(medewerker);
 		return builder;
 	}
 
@@ -312,7 +312,7 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 		aanvraag.setHuisartsportaalId(aanvraagDto.getHuisartsportaalId());
 		aanvraag.setMutatiedatum(nu);
 		aanvraag.setAantal(aanvraagDto.getAantal());
-		aanvraag.setInstellingGebruiker(huisarts.getOrganisatieMedewerkers().get(0));
+		aanvraag.setOrganisatieMedewerker(huisarts.getOrganisatieMedewerkers().get(0));
 		aanvraag.setStatus(CervixLabformulierAanvraagStatus.valueOf(aanvraagDto.getStatus()));
 		aanvraag.setStatusDatum(aanvraagDto.getStatusDatum());
 		aanvraag.setHuisartsLocatie(locatie);

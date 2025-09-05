@@ -60,11 +60,11 @@ public class InpakcentrumCxfConfig
 	}
 
 	@Bean
-	public BasicAuthAuthorizationInterceptor inpakSecurityInterceptor(String inpakCentrumInlognaam, String inpakCentrumWachtwoord)
+	public BasicAuthAuthorizationInterceptor inpakSecurityInterceptor(String inpakcentrumInlognaam, String inpakcentrumWachtwoord)
 	{
 		var interceptor = new BasicAuthAuthorizationInterceptor();
-		interceptor.setUsername(inpakCentrumInlognaam);
-		interceptor.setPassword(inpakCentrumWachtwoord);
+		interceptor.setUsername(inpakcentrumInlognaam);
+		interceptor.setPassword(inpakcentrumWachtwoord);
 		return interceptor;
 	}
 

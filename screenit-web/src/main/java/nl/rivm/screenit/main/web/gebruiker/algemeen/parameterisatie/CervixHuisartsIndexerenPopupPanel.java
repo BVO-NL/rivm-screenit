@@ -95,7 +95,7 @@ public abstract class CervixHuisartsIndexerenPopupPanel extends GenericPanel<Cer
 				try
 				{
 					var nieuweTarief = (CervixTarief) HibernateHelper.deproxy(ModelProxyHelper.deproxy(form.getModelObject()));
-					var melding = betalingService.toevoegenIndexatieTarief(nieuweTarief, ScreenitSession.get().getLoggedInAccount());
+					var melding = betalingService.toevoegenIndexatieTarief(nieuweTarief, ScreenitSession.get().getIngelogdAccount());
 					opslaan(target, melding);
 				}
 				catch (IllegalArgumentException e)

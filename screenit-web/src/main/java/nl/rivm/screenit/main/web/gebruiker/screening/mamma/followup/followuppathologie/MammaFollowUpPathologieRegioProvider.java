@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup.followuppat
 import java.util.Iterator;
 import java.util.List;
 
-import nl.rivm.screenit.dto.mamma.MammaFollowUpInstellingDto;
+import nl.rivm.screenit.dto.mamma.MammaFollowUpOrganisatieDto;
 import nl.rivm.screenit.main.service.mamma.MammaFollowUpService;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -37,27 +37,27 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.beans.support.PropertyComparator;
 
-public class MammaFollowUpPathologieRegioProvider extends SortableDataProvider<MammaFollowUpInstellingDto, String>
+public class MammaFollowUpPathologieRegioProvider extends SortableDataProvider<MammaFollowUpOrganisatieDto, String>
 {
 	@SpringBean
 	private MammaFollowUpService followUpService;
 
 	private IModel<ScreeningOrganisatie> regioModel;
 
-	private List<MammaFollowUpInstellingDto> instellingList;
+	private List<MammaFollowUpOrganisatieDto> organisatieList;
 
 	MammaFollowUpPathologieRegioProvider(IModel<ScreeningOrganisatie> regioModel)
 	{
 		Injector.get().inject(this);
-		setSort("instellingNaam", SortOrder.ASCENDING);
+		setSort("organisatieNaam", SortOrder.ASCENDING);
 		this.regioModel = regioModel;
 	}
 
 	@Override
-	public Iterator<? extends MammaFollowUpInstellingDto> iterator(long first, long count)
+	public Iterator<? extends MammaFollowUpOrganisatieDto> iterator(long first, long count)
 	{
 		setList();
-		return instellingList.stream().sorted(new PropertyComparator<>(getSort().getProperty(), true, getSort().isAscending())).skip(first).limit(count)
+		return organisatieList.stream().sorted(new PropertyComparator<>(getSort().getProperty(), true, getSort().isAscending())).skip(first).limit(count)
 			.iterator();
 	}
 
@@ -65,20 +65,20 @@ public class MammaFollowUpPathologieRegioProvider extends SortableDataProvider<M
 	public long size()
 	{
 		setList();
-		return instellingList.size();
+		return organisatieList.size();
 	}
 
 	@Override
-	public IModel<MammaFollowUpInstellingDto> model(MammaFollowUpInstellingDto mammaFollowUpRadiologieVerslag)
+	public IModel<MammaFollowUpOrganisatieDto> model(MammaFollowUpOrganisatieDto mammaFollowUpRadiologieVerslag)
 	{
 		return Model.of(mammaFollowUpRadiologieVerslag);
 	}
 
 	private void setList()
 	{
-		if (instellingList == null)
+		if (organisatieList == null)
 		{
-			instellingList = followUpService.zoekInstellingenMetOpenstaandePaVerslagen(ModelUtil.nullSafeGet(regioModel));
+			organisatieList = followUpService.zoekOrganisatiesMetOpenstaandePaVerslagen(ModelUtil.nullSafeGet(regioModel));
 		}
 	}
 

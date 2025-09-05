@@ -30,7 +30,7 @@ import nl.rivm.screenit.main.service.mamma.MammaBeWerklijstService;
 import nl.rivm.screenit.main.service.mamma.MammaBeoordelingService;
 import nl.rivm.screenit.main.specification.mamma.MammaBeoordelingWerklijstSpecification;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -78,42 +78,42 @@ public class MammaBeWerklijstServiceImpl implements MammaBeWerklijstService
 	private LogService logService;
 
 	@Override
-	public boolean heeftOnderzoekenInWerklijst(InstellingGebruiker gebruiker, BeoordelingsEenheid beoordelingsEenheid)
+	public boolean heeftOnderzoekenInWerklijst(OrganisatieMedewerker organisatieMedewerker, BeoordelingsEenheid beoordelingsEenheid)
 	{
-		return ((beoordelingService.isBevoegdVoorArbitrage(gebruiker) && heeftArbitrageInWerklijst(gebruiker, beoordelingsEenheid))
-			|| heeftDiscrepantieInWerklijst(gebruiker, beoordelingsEenheid) || heeftVerslagInWerklijst(gebruiker, beoordelingsEenheid));
+		return ((beoordelingService.isBevoegdVoorArbitrage(organisatieMedewerker) && heeftArbitrageInWerklijst(organisatieMedewerker, beoordelingsEenheid))
+			|| heeftDiscrepantieInWerklijst(organisatieMedewerker, beoordelingsEenheid) || heeftVerslagInWerklijst(organisatieMedewerker, beoordelingsEenheid));
 	}
 
-	private boolean heeftDiscrepantieInWerklijst(InstellingGebruiker gebruiker, BeoordelingsEenheid beoordelingsEenheid)
+	private boolean heeftDiscrepantieInWerklijst(OrganisatieMedewerker organisatieMedewerker, BeoordelingsEenheid beoordelingsEenheid)
 	{
-		MammaBeWerklijstZoekObject zoekObject = maakZoekObject(gebruiker, beoordelingsEenheid, Collections.singletonList(MammaBeoordelingStatus.DISCREPANTIE));
+		MammaBeWerklijstZoekObject zoekObject = maakZoekObject(organisatieMedewerker, beoordelingsEenheid, Collections.singletonList(MammaBeoordelingStatus.DISCREPANTIE));
 		return countBeoordelingen(zoekObject) != 0L;
 	}
 
-	private boolean heeftArbitrageInWerklijst(InstellingGebruiker gebruiker, BeoordelingsEenheid beoordelingsEenheid)
+	private boolean heeftArbitrageInWerklijst(OrganisatieMedewerker organisatieMedewerker, BeoordelingsEenheid beoordelingsEenheid)
 	{
-		MammaBeWerklijstZoekObject zoekObject = maakZoekObject(gebruiker, beoordelingsEenheid, Collections.singletonList(MammaBeoordelingStatus.ARBITRAGE));
+		MammaBeWerklijstZoekObject zoekObject = maakZoekObject(organisatieMedewerker, beoordelingsEenheid, Collections.singletonList(MammaBeoordelingStatus.ARBITRAGE));
 		return countBeoordelingen(zoekObject) != 0L;
 	}
 
-	private boolean heeftVerslagInWerklijst(InstellingGebruiker gebruiker, BeoordelingsEenheid beoordelingsEenheid)
+	private boolean heeftVerslagInWerklijst(OrganisatieMedewerker organisatieMedewerker, BeoordelingsEenheid beoordelingsEenheid)
 	{
-		MammaBeWerklijstZoekObject zoekObject = maakZoekObject(gebruiker, beoordelingsEenheid,
+		MammaBeWerklijstZoekObject zoekObject = maakZoekObject(organisatieMedewerker, beoordelingsEenheid,
 			Arrays.asList(MammaBeoordelingStatus.VERSLAG_MAKEN, MammaBeoordelingStatus.VERSLAG_AFGEKEURD));
 		return countBeoordelingen(zoekObject) != 0L;
 	}
 
-	private MammaBeWerklijstZoekObject maakZoekObject(InstellingGebruiker gebruiker, BeoordelingsEenheid beoordelingsEenheid, List<MammaBeoordelingStatus> stutussen)
+	private MammaBeWerklijstZoekObject maakZoekObject(OrganisatieMedewerker organisatieMedewerker, BeoordelingsEenheid beoordelingsEenheid, List<MammaBeoordelingStatus> stutussen)
 	{
 		MammaBeWerklijstZoekObject zoekObject = new MammaBeWerklijstZoekObject();
 
-		if (autorisatieService.getToegangLevel(gebruiker, Actie.INZIEN, true, Recht.GEBRUIKER_SCREENING_MAMMA_BE_ONDERZOEKTYPE_FILTER) == null)
+		if (autorisatieService.getToegangLevel(organisatieMedewerker, Actie.INZIEN, true, Recht.MEDEWERKER_SCREENING_MAMMA_BE_ONDERZOEKTYPE_FILTER) == null)
 		{
 			zoekObject.setOnderzoekType(MammaOnderzoekType.MAMMOGRAFIE);
 		}
 
 		zoekObject.setBeoordelingsEenheid(beoordelingsEenheid);
-		zoekObject.setInstellingGebruiker(gebruiker);
+		zoekObject.setOrganisatieMedewerker(organisatieMedewerker);
 		zoekObject.setBeoordelingStatussen(stutussen);
 		return zoekObject;
 	}
@@ -150,15 +150,15 @@ public class MammaBeWerklijstServiceImpl implements MammaBeWerklijstService
 	}
 
 	@Override
-	public List<MammaScreeningsEenheid> zoekScreeningsEenhedenMetBeWerklijstBeoordeling(InstellingGebruiker loggedInInstellingGebruiker,
+	public List<MammaScreeningsEenheid> zoekScreeningsEenhedenMetBeWerklijstBeoordeling(OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
 		List<MammaBeoordelingStatus> beschikbarePaginaStatussen)
 	{
 		var zoekObject = new MammaBeWerklijstZoekObject();
-		zoekObject.setInstellingGebruiker(loggedInInstellingGebruiker);
+		zoekObject.setOrganisatieMedewerker(ingelogdeOrganisatieMedewerker);
 		zoekObject.setBeoordelingStatussen(beschikbarePaginaStatussen);
-		if (loggedInInstellingGebruiker.getOrganisatie().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID))
+		if (ingelogdeOrganisatieMedewerker.getOrganisatie().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID))
 		{
-			zoekObject.setBeoordelingsEenheid((BeoordelingsEenheid) loggedInInstellingGebruiker.getOrganisatie());
+			zoekObject.setBeoordelingsEenheid((BeoordelingsEenheid) ingelogdeOrganisatieMedewerker.getOrganisatie());
 		}
 
 		return onderzoekRepository.findWith(beWerklijstSpecification(zoekObject), MammaScreeningsEenheid.class,
@@ -185,26 +185,27 @@ public class MammaBeWerklijstServiceImpl implements MammaBeWerklijstService
 	}
 
 	@Override
-	public boolean is1eOf2eLezingenTeBevestigen(InstellingGebruiker instellingGebruiker)
+	public boolean is1eOf2eLezingenTeBevestigen(OrganisatieMedewerker organisatieMedewerker)
 	{
 		var zoekObject = new MammaBeWerklijstZoekObject();
-		zoekObject.setInstellingGebruiker(instellingGebruiker);
+		zoekObject.setOrganisatieMedewerker(organisatieMedewerker);
 		zoekObject.setBeoordelingStatussen(Arrays.asList(EERSTE_LEZING_OPGESLAGEN, TWEEDE_LEZING_OPGESLAGEN));
 		return getAantalBeoordeeld(zoekObject) > 0;
 	}
 
 	@Override
 	@Transactional
-	public void bevestig1eEn2eLezingen(InstellingGebruiker instellingGebruiker)
+	public void bevestig1eEn2eLezingen(OrganisatieMedewerker organisatieMedewerker)
 	{
 		var zoekObject = new MammaBeWerklijstZoekObject();
-		zoekObject.setInstellingGebruiker(instellingGebruiker);
+		zoekObject.setOrganisatieMedewerker(organisatieMedewerker);
 		zoekObject.setBeoordelingStatussen(Arrays.asList(EERSTE_LEZING_OPGESLAGEN, TWEEDE_LEZING_OPGESLAGEN));
 		var beoordelingen = zoekBeoordelingen(zoekObject, -1, -1, Sort.unsorted());
 		for (var beoordeling : beoordelingen)
 		{
 			baseBeoordelingService.bevestigLezing(beoordeling);
 		}
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_BEOORDELINGEN_GEACCORDEERD, instellingGebruiker, "Aantal beoordelingen: " + beoordelingen.size(), Bevolkingsonderzoek.MAMMA);
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_BEOORDELINGEN_GEACCORDEERD, organisatieMedewerker, "Aantal beoordelingen: " + beoordelingen.size(),
+			Bevolkingsonderzoek.MAMMA);
 	}
 }

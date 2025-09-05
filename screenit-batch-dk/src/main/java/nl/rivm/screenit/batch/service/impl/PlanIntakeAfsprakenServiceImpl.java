@@ -44,6 +44,7 @@ public class PlanIntakeAfsprakenServiceImpl implements PlanIntakeAfsprakenServic
 	@Override
 	public List<ClientAfspraak> planIntakeAfspraken(List<ClientAfspraak> clienten, List<VrijSlot> vrijeSloten, StringBuilder planningResultaat, Long maximumSecondsSpend)
 	{
+		System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
 		SolverConfig solverConfig = SolverConfig.createFromXmlResource("screenit-planning-solver-config.xml");
 		solverConfig.getTerminationConfig().setSecondsSpentLimit(maximumSecondsSpend);
 		SolverFactory<IntakeSolution> solverFactory = SolverFactory.create(solverConfig);

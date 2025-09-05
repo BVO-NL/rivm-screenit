@@ -31,20 +31,20 @@ import nl.rivm.screenit.main.service.mamma.MammaUploadBeeldenService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.clienten.ClientPaspoortPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaClientZoekenBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.AbstractMammaCePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaUploadBeeldenVerzoek;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.mamma.MammaBaseScreeningrondeService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
@@ -68,7 +68,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_CENTRALE_EENHEID_UPLOADVERZOEKEN },
+	recht = { Recht.MEDEWERKER_CENTRALE_EENHEID_UPLOADVERZOEKEN },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaCeUploadBeeldenVerzoekWerklijstPage extends MammaClientZoekenBasePage
 {
@@ -86,7 +86,7 @@ public class MammaCeUploadBeeldenVerzoekWerklijstPage extends MammaClientZoekenB
 	private HibernateService hibernateService;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private MammaUploadBeeldenService uploadBeeldenService;
@@ -99,9 +99,9 @@ public class MammaCeUploadBeeldenVerzoekWerklijstPage extends MammaClientZoekenB
 
 	private WebMarkupContainer passport = null;
 
-	private IModel<List<Instelling>> organisatiesModel = ModelUtil.listRModel(new ArrayList<>());
+	private IModel<List<Organisatie>> organisatiesModel = ModelUtil.listRModel(new ArrayList<>());
 
-	private IModel<Instelling> organisatieModel;
+	private IModel<Organisatie> organisatieModel;
 
 	private ScreenitDropdown gedownloadDoorZiekenhuizenDropdown;
 
@@ -147,21 +147,21 @@ public class MammaCeUploadBeeldenVerzoekWerklijstPage extends MammaClientZoekenB
 	{
 		List<IColumn<MammaUploadBeeldenVerzoekDto, String>> columns = new ArrayList<>();
 
-		columns.add(new PropertyColumn<>(Model.of("Naam"), "instellingNaam"));
+		columns.add(new PropertyColumn<>(Model.of("Naam"), "organisatieNaam"));
 		columns.add(new PropertyColumn<>(Model.of("Aantal openstaand"), "aantalOpenstaand"));
 		columns.add(new PropertyColumn<>(Model.of("Telefoon"), "telefoon"));
 		columns.add(new PropertyColumn<>(Model.of("Telefoon 2"), "telefoon2"));
 
 		dataProvider = new MammaCeUploadBeeldenVerzoekDataProvider(ModelUtil.sModel(ScreenitSession.get().getScreeningOrganisatie()));
 		table = new ScreenitDataTable<MammaUploadBeeldenVerzoekDto, String>("werklijst", columns, dataProvider, 10,
-			Model.of("instelling(en)"))
+			Model.of("organisatie(s)"))
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<MammaUploadBeeldenVerzoekDto> model)
 			{
 				super.onClick(target, model);
-				Instelling instelling = hibernateService.get(Instelling.class, model.getObject().getZiekenhuisId());
-				setResponsePage(new MammaCeUploadBeeldenVerzoekInstellingWerklijstPage(ModelUtil.sModel(instelling)));
+				Organisatie organisatie = hibernateService.get(Organisatie.class, model.getObject().getZiekenhuisId());
+				setResponsePage(new MammaCeUploadBeeldenVerzoekOrganisatieWerklijstPage(ModelUtil.sModel(organisatie)));
 			}
 		};
 
@@ -183,7 +183,7 @@ public class MammaCeUploadBeeldenVerzoekWerklijstPage extends MammaClientZoekenB
 
 				MammaUploadBeeldenVerzoek uploadBeeldenVerzoek = form.getModelObject();
 
-				uploadBeeldenService.maakUploadVerzoek(uploadBeeldenVerzoek, clientOpt.getObject(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+				uploadBeeldenService.maakUploadVerzoek(uploadBeeldenVerzoek, clientOpt.getObject(), getIngelogdeOrganisatieMedewerker());
 
 				clientOpt = null;
 				updateContent();
@@ -215,19 +215,19 @@ public class MammaCeUploadBeeldenVerzoekWerklijstPage extends MammaClientZoekenB
 
 	private void createContentContainer(IModel<Client> clientOpt, AjaxRequestTarget target)
 	{
-		List<Instelling> organisaties = instellingService
-			.getInstellingByOrganisatieTypes(Arrays.asList(OrganisatieType.MAMMAPOLI, OrganisatieType.RADIOLOGIEAFDELING, OrganisatieType.ZORGINSTELLING));
+		List<Organisatie> organisaties = organisatieService
+			.getOrganisatieByOrganisatieTypes(Arrays.asList(OrganisatieType.MAMMAPOLI, OrganisatieType.RADIOLOGIEAFDELING, OrganisatieType.ZORGINSTELLING));
 		organisatiesModel.setObject(organisaties);
 
 		form.setVisible(true);
 		MammaUploadBeeldenVerzoek uploadBeeldenVerzoek = new MammaUploadBeeldenVerzoek();
 		form.setModelObject(uploadBeeldenVerzoek);
-		organisatieModel.setObject(uitwisselportaalService.getLaatstGedownloadDoorInstelling(clientOpt.getObject().getMammaDossier()));
+		organisatieModel.setObject(uitwisselportaalService.getLaatstGedownloadDoorOrganisatie(clientOpt.getObject().getMammaDossier()));
 		target.add(form);
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 		return AbstractMammaCePage.getContextMenuItemsList();
 	}

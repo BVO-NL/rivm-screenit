@@ -27,9 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.clienten.agenda.ClientAgendaPage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.cis.ClientCISHistoriePage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.ClientContactPage;
@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
 
 import static nl.rivm.screenit.main.web.gebruiker.screening.mamma.afspraken.MammaAfsprakenBlokPanel.AFSPRAAK_VERZETTEN_KOMT_VANUIT_AFSPRAKENKALENDER;
 
-public abstract class ClientPage extends GebruikerBasePage
+public abstract class ClientPage extends MedewerkerBasePage
 {
 	private static final Logger LOG = LoggerFactory.getLogger(ClientPage.class);
 
@@ -99,41 +99,41 @@ public abstract class ClientPage extends GebruikerBasePage
 	}
 
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.CLIENTEN;
+		return MedewerkerHoofdMenuItem.CLIENTEN;
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveSubMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveSubMenuClass()
 	{
 		return ClientZoekenPage.class;
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
 
 		if (ScreenitSession.get().isZoekObjectGezetForComponent(AFSPRAAK_VERZETTEN_KOMT_VANUIT_AFSPRAKENKALENDER) && (boolean) ScreenitSession.get()
 			.getZoekObject(AFSPRAAK_VERZETTEN_KOMT_VANUIT_AFSPRAKENKALENDER).getObject())
 		{
-			contextMenuItems.add(new GebruikerMenuItem("label.afsprakenbeheer", MammaAfsprakenDagOverzichtPage.class));
+			contextMenuItems.add(new MedewerkerMenuItem("label.afsprakenbeheer", MammaAfsprakenDagOverzichtPage.class));
 		}
 		else
 		{
-			contextMenuItems.add(new GebruikerMenuItem("label.clientzoeken", ClientZoekenPage.class));
+			contextMenuItems.add(new MedewerkerMenuItem("label.clientzoeken", ClientZoekenPage.class));
 		}
 		clientDossierTabsMaken(contextMenuItems);
 
 		return contextMenuItems;
 	}
 
-	private void clientDossierTabsMaken(List<GebruikerMenuItem> contextMenuItems)
+	private void clientDossierTabsMaken(List<MedewerkerMenuItem> contextMenuItems)
 	{
 		for (Object[] menuItem : getClientDossierTabs(getClientModel().getObject()))
 		{
-			contextMenuItems.add(new ClientGebruikerMenuItem((String) menuItem[0], (Class<ClientPage>) menuItem[1])
+			contextMenuItems.add(new ClientMedewerkerMenuItem((String) menuItem[0], (Class<ClientPage>) menuItem[1])
 			{
 				@Override
 				protected ClientPage createPage()
@@ -180,10 +180,10 @@ public abstract class ClientPage extends GebruikerBasePage
 		response.render(OnDomReadyHeaderItem.forScript("initTooltip();"));
 	}
 
-	private abstract class ClientGebruikerMenuItem extends GebruikerMenuItem
+	private abstract class ClientMedewerkerMenuItem extends MedewerkerMenuItem
 	{
 		@SuppressWarnings("unchecked")
-		public ClientGebruikerMenuItem(String resourceTag, Class<? extends ClientPage> targetPageClass)
+		public ClientMedewerkerMenuItem(String resourceTag, Class<? extends ClientPage> targetPageClass)
 		{
 			super(resourceTag, targetPageClass);
 		}

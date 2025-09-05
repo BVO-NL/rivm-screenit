@@ -28,16 +28,16 @@ import HttpStatusCode from "../datatypes/HttpStatus"
 import properties from "../pages/bvo/colon/afspraak/ColonAfspraakMakenBevestigingsPopup.json"
 import {showToast} from "../utils/ToastUtil"
 
-export const afspraakVerplaatsen = (nieuwafspraak: VrijSlotZonderKamer, onError: () => void) => (dispatch: Dispatch) => {
-	return voerActieUit("/colon/afspraak/verplaatsen", nieuwafspraak, dispatch, onError)
+export const afspraakVerplaatsen = (nieuweAfspraak: VrijSlotZonderKamer, onError: () => void) => (dispatch: Dispatch) => {
+	return voerActieUit("colon/afspraak/verplaatsen", nieuweAfspraak, dispatch, onError)
 }
 
-export const nieuweAfspraak = (nieuwafspraak: VrijSlotZonderKamer, onError: () => void) => (dispatch: Dispatch) => {
-	return voerActieUit("/colon/afspraak/maken", nieuwafspraak, dispatch, onError)
+export const nieuweAfspraak = (nieuweAfspraak: VrijSlotZonderKamer, onError: () => void) => (dispatch: Dispatch) => {
+	return voerActieUit("colon/afspraak/maken", nieuweAfspraak, dispatch, onError)
 }
 
-function voerActieUit(backendUrl: string, nieuwafspraak: VrijSlotZonderKamer, dispatch: Dispatch, onError: () => void) {
-	return ScreenitBackend.put(backendUrl, nieuwafspraak)
+function voerActieUit(backendUrl: string, nieuweAfspraak: VrijSlotZonderKamer, dispatch: Dispatch, onError: () => void) {
+	return ScreenitBackend.put(backendUrl, {json: nieuweAfspraak})
 		.then(() => {
 			showToast(getString(properties.toast.bevestiging.title), getString(properties.toast.bevestiging.message))
 		})

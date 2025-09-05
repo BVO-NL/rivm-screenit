@@ -73,7 +73,7 @@ import static nl.rivm.screenit.model.project.ProjectGroep_.UITNODIGINGEN_PUSHEN_
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_PROJECT_SELECTIE, Recht.GEBRUIKER_BRIEFPROJECT_SELECTIE },
+	recht = { Recht.MEDEWERKER_PROJECT_SELECTIE, Recht.MEDEWERKER_BRIEFPROJECT_SELECTIE },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.MAMMA })
 public class PopulatiePage extends ProjectBasePage
 {
@@ -120,8 +120,8 @@ public class PopulatiePage extends ProjectBasePage
 				Project project = getProjectModel().getObject();
 				Date eindDatum = project.getEindDatum();
 				Date nu = currentDateSupplier.getDate();
-				boolean levelProject = getToegangsLevel(Recht.GEBRUIKER_PROJECT_SELECTIE, Actie.TOEVOEGEN) != null;
-				boolean levelBriefproject = getToegangsLevel(Recht.GEBRUIKER_BRIEFPROJECT_SELECTIE, Actie.TOEVOEGEN) != null;
+				boolean levelProject = getToegangsLevel(Recht.MEDEWERKER_PROJECT_SELECTIE, Actie.TOEVOEGEN) != null;
+				boolean levelBriefproject = getToegangsLevel(Recht.MEDEWERKER_BRIEFPROJECT_SELECTIE, Actie.TOEVOEGEN) != null;
 				setVisible(!eindDatum.before(nu) && (levelProject || levelBriefproject) && project.getGroepSelectieType() == GroepSelectieType.STATISCH);
 			}
 		});
@@ -158,7 +158,7 @@ public class PopulatiePage extends ProjectBasePage
 				@Override
 				protected void onAfterToggleActief(AjaxRequestTarget target, ProjectGroep actiefObject)
 				{
-					String melding = projectService.updateProjectGroepActiefStatus(actiefObject, ScreenitSession.get().getLoggedInAccount());
+					String melding = projectService.updateProjectGroepActiefStatus(actiefObject, ScreenitSession.get().getIngelogdAccount());
 					info(melding);
 
 					WebMarkupContainer container = getGroepenDataTable();
@@ -168,7 +168,7 @@ public class PopulatiePage extends ProjectBasePage
 				}
 			});
 
-		if (getToegangsLevel(Recht.GEBRUIKER_PROJECT_SELECTIE, Actie.VERWIJDEREN) != null)
+		if (getToegangsLevel(Recht.MEDEWERKER_PROJECT_SELECTIE, Actie.VERWIJDEREN) != null)
 		{
 			VerwijderPropertyColumn verwijderPropertyColumn = new VerwijderPropertyColumn<ProjectGroep, String>(Model.of("Verwijderen"), getString("verwijderen.vervangendeTekst"),
 				dialog, getString("verwijderen.dialogMessage"))
@@ -176,7 +176,7 @@ public class PopulatiePage extends ProjectBasePage
 				@Override
 				public void onClickDeleteAction(AjaxRequestTarget target, IModel<ProjectGroep> rowModel)
 				{
-					projectService.verwijderProjectGroep(ModelProxyHelper.deproxy(rowModel.getObject()), ScreenitSession.get().getLoggedInAccount());
+					projectService.verwijderProjectGroep(ModelProxyHelper.deproxy(rowModel.getObject()), ScreenitSession.get().getIngelogdAccount());
 
 					WebMarkupContainer container = getGroepenDataTable();
 					PopulatiePage.this.groepenContainer.replaceWith(container);

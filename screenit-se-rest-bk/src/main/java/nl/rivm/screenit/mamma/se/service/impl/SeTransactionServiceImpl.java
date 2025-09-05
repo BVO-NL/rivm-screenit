@@ -67,8 +67,8 @@ import nl.rivm.screenit.mamma.se.service.SELogService;
 import nl.rivm.screenit.mamma.se.service.SeAutorisatieService;
 import nl.rivm.screenit.mamma.se.service.SeTransactionService;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
@@ -78,7 +78,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.service.BerichtToBatchService;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.mamma.MammaBaseOnderzoekService;
 import nl.rivm.screenit.util.FoutmeldingsCodeUtil;
 
@@ -120,58 +120,58 @@ public class SeTransactionServiceImpl implements SeTransactionService
 
 	private final BerichtToBatchService hl7BerichtenToBatchService;
 
-	private final InstellingService instellingService;
+	private final OrganisatieService organisatieService;
 
 	private final ClientRepository clientRepository;
 
 	@Override
 	@Transactional
 	public ResponseEntity executeAsTransactionIfAuthorised(List<ActionDto> acties, TransactionDto transactionDto, LocalDateTime transactieDatumTijd,
-		InstellingGebruiker transactieGebruiker, MammaScreeningsEenheid screeningsEenheid) throws IOException
+		OrganisatieMedewerker transactieOrganisatieMedewerker, MammaScreeningsEenheid screeningsEenheid) throws IOException
 	{
 		var client = transactionDto.getClientId() == null ? null : clientRepository.findById(transactionDto.getClientId()).orElseThrow();
 
-		if (isAuthorized(transactieGebruiker, getRechtenVoorTransactie(acties)))
+		if (isAuthorized(transactieOrganisatieMedewerker, getRechtenVoorTransactie(acties)))
 		{
-			SEAccountResolverDelegate.setInstellingGebruiker(transactieGebruiker);
+			SEAccountResolverDelegate.setOrganisatieMedewerker(transactieOrganisatieMedewerker);
 			for (var actionDto : acties)
 			{
-				executeAction(actionDto, transactieDatumTijd, transactieGebruiker, screeningsEenheid);
+				executeAction(actionDto, transactieDatumTijd, transactieOrganisatieMedewerker, screeningsEenheid);
 			}
 
 			if (transactionDto.getType().equals(SETransactieType.LOG_GEBEURTENIS_SE))
 			{
-				logAlleLogActies(acties, transactieDatumTijd, transactieGebruiker, screeningsEenheid, client);
+				logAlleLogActies(acties, transactieDatumTijd, transactieOrganisatieMedewerker, screeningsEenheid, client);
 			}
 			else if (!transactionDto.getType().equals(SETransactieType.BEEINDIGDE_AFSPRAAK_DOORVOEREN))
 			{
 
 				var onderzoek = client == null ? null : client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getLaatsteAfspraak().getOnderzoek();
-				logTransaction(transactionDto, transactieDatumTijd, transactieGebruiker, screeningsEenheid, client, onderzoek);
+				logTransaction(transactionDto, transactieDatumTijd, transactieOrganisatieMedewerker, screeningsEenheid, client, onderzoek);
 			}
 			return ResponseEntity.ok().build();
 		}
 		else
 		{
 			var referentie = FoutmeldingsCodeUtil.getFoutmeldingsCode("SE_REST");
-			LOG.error("{}: Gebruiker is niet geautoriseerd om de actie uit te voeren", referentie);
+			LOG.error("{}: Medewerker is niet geautoriseerd om de actie uit te voeren", referentie);
 			var errorDto = new ErrorDto(referentie);
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDto);
 		}
 	}
 
-	private void logTransaction(TransactionDto transactionDto, LocalDateTime transactieDatumTijd, InstellingGebruiker transactieGebruiker,
+	private void logTransaction(TransactionDto transactionDto, LocalDateTime transactieDatumTijd, OrganisatieMedewerker transactieOrganisatieMedewerker,
 		MammaScreeningsEenheid screeningsEenheid, Client client, MammaOnderzoek onderzoek)
 	{
 		var logGebeurtenis = getLoggebeurtenis(transactionDto.getType(), onderzoek);
 		if (logGebeurtenis != null)
 		{
-			logService.logInfo(logGebeurtenis, transactieGebruiker, client, screeningsEenheid, transactieDatumTijd,
+			logService.logInfo(logGebeurtenis, transactieOrganisatieMedewerker, client, screeningsEenheid, transactieDatumTijd,
 				getLogMessage(transactionDto.getType(), onderzoek));
 		}
 	}
 
-	private void logAlleLogActies(List<ActionDto> acties, LocalDateTime transactieDatumTijd, InstellingGebruiker transactieGebruiker,
+	private void logAlleLogActies(List<ActionDto> acties, LocalDateTime transactieDatumTijd, OrganisatieMedewerker transactieOrganisatieMedewerker,
 		MammaScreeningsEenheid screeningsEenheid, Client client) throws IOException
 	{
 		for (var dto : acties)
@@ -179,20 +179,20 @@ public class SeTransactionServiceImpl implements SeTransactionService
 			switch (dto.getType())
 			{
 			case LOG_GEBEURTENIS_BEELDEN_VORIGE_RONDE_OPGEHAALD:
-				logService.logInfo(LogGebeurtenis.MAMMA_OUDE_BEELDEN_OPGEHAALD_OP_SE, transactieGebruiker, client, screeningsEenheid, transactieDatumTijd,
+				logService.logInfo(LogGebeurtenis.MAMMA_OUDE_BEELDEN_OPGEHAALD_OP_SE, transactieOrganisatieMedewerker, client, screeningsEenheid, transactieDatumTijd,
 					getActionBody(dto, LogBeeldenOpgehaaldActionDto.class).getLogMessage());
 				break;
 			case LOG_GEBEURTENIS_BEELDEN_GEEN_MPPS_ONTVANGEN:
-				logService.logWarning(LogGebeurtenis.MAMMA_GEEN_MPPS_ONTVANGEN_SE, transactieGebruiker, client, screeningsEenheid.getId(), transactieDatumTijd,
+				logService.logWarning(LogGebeurtenis.MAMMA_GEEN_MPPS_ONTVANGEN_SE, transactieOrganisatieMedewerker, client, screeningsEenheid.getId(), transactieDatumTijd,
 					getActionBody(dto, LogGeenMppsBerichtActionDto.class).getLogMessage());
 				break;
 			case LOG_GEBEURTENIS_BEELDEN_ANNOTATIE_AMPUTATIE_MISMATCH:
-				logService.logInfo(LogGebeurtenis.MAMMA_VERSCHIL_BEELDEN_ANNOTATIE_AMPUTATIE_SE, transactieGebruiker, client, screeningsEenheid, transactieDatumTijd,
+				logService.logInfo(LogGebeurtenis.MAMMA_VERSCHIL_BEELDEN_ANNOTATIE_AMPUTATIE_SE, transactieOrganisatieMedewerker, client, screeningsEenheid, transactieDatumTijd,
 					getActionBody(dto, LogAmputatieBeeldenAnnotatieMismatchActionDto.class).getLogMessage());
 				break;
 			case LOG_GEBEURTENIS_GEFAALDE_TRANSACTIE:
-				List<Instelling> instellingen = Collections.singletonList(instellingService.getActieveInstellingen(Rivm.class).get(0));
-				logService.logError(LogGebeurtenis.MAMMA_GEFAALDE_TRANSACTIE_SE, transactieGebruiker, client, screeningsEenheid, instellingen, transactieDatumTijd,
+				List<Organisatie> organisaties = Collections.singletonList(organisatieService.getActieveOrganisaties(Rivm.class).get(0));
+				logService.logError(LogGebeurtenis.MAMMA_GEFAALDE_TRANSACTIE_SE, transactieOrganisatieMedewerker, client, screeningsEenheid, organisaties, transactieDatumTijd,
 					getActionBody(dto, LogGefaaldeTransactieActionDto.class).getLogMessage());
 				break;
 			default:
@@ -272,58 +272,59 @@ public class SeTransactionServiceImpl implements SeTransactionService
 		return "";
 	}
 
-	private void executeAction(ActionDto actionDto, LocalDateTime transactieDatumTijd, InstellingGebruiker transactieGebruiker, MammaScreeningsEenheid screeningsEenheid)
+	private void executeAction(ActionDto actionDto, LocalDateTime transactieDatumTijd, OrganisatieMedewerker transactieOrganisatieMedewerker,
+		MammaScreeningsEenheid screeningsEenheid)
 		throws IOException
 	{
 		switch (actionDto.getType())
 		{
 		case INSCHRIJVEN:
-			inschrijvenService.inschrijven(getActionBody(actionDto, InschrijvenDto.class), transactieGebruiker, transactieDatumTijd, screeningsEenheid);
+			inschrijvenService.inschrijven(getActionBody(actionDto, InschrijvenDto.class), transactieOrganisatieMedewerker, transactieDatumTijd, screeningsEenheid);
 			break;
 		case CLIENTGEGEVENS_OPSLAAN:
-			inschrijvenService.inschrijvingWijzigen(getActionBody(actionDto, InschrijvenDto.class), transactieGebruiker, transactieDatumTijd,
+			inschrijvenService.inschrijvingWijzigen(getActionBody(actionDto, InschrijvenDto.class), transactieOrganisatieMedewerker, transactieDatumTijd,
 				screeningsEenheid);
 			break;
 		case UITSCHRIJVEN:
-			uitschrijvenService.uitschrijven(getActionBody(actionDto, UitschrijvenDto.class), transactieGebruiker);
+			uitschrijvenService.uitschrijven(getActionBody(actionDto, UitschrijvenDto.class), transactieOrganisatieMedewerker);
 			break;
 		case SET_EMAILADRES:
-			inschrijvenService.setEmailAdres(getActionBody(actionDto, SetEmailAdresDto.class), transactieGebruiker);
+			inschrijvenService.setEmailAdres(getActionBody(actionDto, SetEmailAdresDto.class), transactieOrganisatieMedewerker);
 			break;
 		case ONDERZOEK_STARTEN:
 			onderzoekStartenService.starten(getActionBody(actionDto, OnderzoekStartenDto.class), screeningsEenheid, transactieDatumTijd,
-				transactieGebruiker);
+				transactieOrganisatieMedewerker);
 			break;
 		case MAMMOGRAFIE_OPSLAAN_EN_STATUSOVERGANG:
-			mammografieService.opslaanEnStatusovergang(getActionBody(actionDto, MammografieOpslaanDto.class), transactieGebruiker,
+			mammografieService.opslaanEnStatusovergang(getActionBody(actionDto, MammografieOpslaanDto.class), transactieOrganisatieMedewerker,
 				transactieDatumTijd);
 			break;
 		case MAMMOGRAFIE_OPSLAAN:
-			mammografieService.opslaan(getActionBody(actionDto, MammografieOpslaanDto.class), transactieGebruiker);
+			mammografieService.opslaan(getActionBody(actionDto, MammografieOpslaanDto.class), transactieOrganisatieMedewerker);
 			break;
 		case DENSITEITMETING:
 			mammografieService.densiteitMetingOpslaan(getActionBody(actionDto, DensiteitMetingActionDto.class));
 			break;
 		case ONDERZOEK_OPSLAAN:
-			onderzoekService.opslaan(getActionBody(actionDto, OnderzoekOpslaanDto.class), transactieGebruiker);
+			onderzoekService.opslaan(getActionBody(actionDto, OnderzoekOpslaanDto.class), transactieOrganisatieMedewerker);
 			break;
 		case MAAK_DUBBELE_TIJD:
-			onderzoekService.maakDubbeleTijd(getActionBody(actionDto, MaakDubbeleTijdDto.class), transactieGebruiker, transactieDatumTijd);
+			onderzoekService.maakDubbeleTijd(getActionBody(actionDto, MaakDubbeleTijdDto.class), transactieOrganisatieMedewerker, transactieDatumTijd);
 			break;
 		case MAAK_DUBBELE_TIJD_REDEN:
-			onderzoekService.maakDubbeleTijdReden(getActionBody(actionDto, MaakDubbeleTijdRedenDto.class), transactieGebruiker);
+			onderzoekService.maakDubbeleTijdReden(getActionBody(actionDto, MaakDubbeleTijdRedenDto.class), transactieOrganisatieMedewerker);
 			break;
 		case AFSPRAAK_SIGNALEREN:
-			afspraakService.setAfspraakStatus(getActionBody(actionDto, AfspraakSignalerenDto.class), MammaAfspraakStatus.SIGNALEREN, transactieGebruiker);
+			afspraakService.setAfspraakStatus(getActionBody(actionDto, AfspraakSignalerenDto.class), MammaAfspraakStatus.SIGNALEREN, transactieOrganisatieMedewerker);
 			break;
 		case AFSPRAAK_AFRONDEN:
-			onderzoekAfrondenService.beeindigen(getActionBody(actionDto, AfrondenDto.class), transactieGebruiker, transactieDatumTijd);
+			onderzoekAfrondenService.beeindigen(getActionBody(actionDto, AfrondenDto.class), transactieOrganisatieMedewerker, transactieDatumTijd);
 			break;
 		case AFSPRAAK_SIGNALEREN_OPSLAAN:
-			onderzoekService.signalerenOpslaan(getActionBody(actionDto, SignalerenOpslaanDto.class), transactieGebruiker, transactieDatumTijd);
+			onderzoekService.signalerenOpslaan(getActionBody(actionDto, SignalerenOpslaanDto.class), transactieOrganisatieMedewerker, transactieDatumTijd);
 			break;
 		case ONDERZOEK_AFRONDEN:
-			onderzoekAfrondenService.onderzoekAfronden(getActionBody(actionDto, OnderzoekAfrondenDto.class), transactieGebruiker, transactieDatumTijd);
+			onderzoekAfrondenService.onderzoekAfronden(getActionBody(actionDto, OnderzoekAfrondenDto.class), transactieOrganisatieMedewerker, transactieDatumTijd);
 			break;
 		case LOG_GEBEURTENIS_BEELDEN_VORIGE_RONDE_OPGEHAALD:
 		case LOG_GEBEURTENIS_BEELDEN_ANNOTATIE_AMPUTATIE_MISMATCH:
@@ -331,10 +332,10 @@ public class SeTransactionServiceImpl implements SeTransactionService
 		case LOG_GEBEURTENIS_GEFAALDE_TRANSACTIE:
 			break;
 		case AFSPRAAK_DOORVOEREN:
-			afspraakDoorvoeren(actionDto, transactieDatumTijd, transactieGebruiker, screeningsEenheid);
+			afspraakDoorvoeren(actionDto, transactieDatumTijd, transactieOrganisatieMedewerker, screeningsEenheid);
 			break;
 		case AFSPRAAK_MAKEN_PASSANT:
-			afspraakService.afspraakMakenPassant(getActionBody(actionDto, AfspraakMakenPassantDto.class), transactieGebruiker, screeningsEenheid);
+			afspraakService.afspraakMakenPassant(getActionBody(actionDto, AfspraakMakenPassantDto.class), transactieOrganisatieMedewerker, screeningsEenheid);
 			break;
 		case START_KWALITEITSOPNAME:
 			kwaliteitsopname(actionDto, MammaHL7v24ORMBerichtStatus.STARTED);
@@ -363,11 +364,12 @@ public class SeTransactionServiceImpl implements SeTransactionService
 		return objectMapper.readValue(actionDto.getNodeText(), valueType);
 	}
 
-	private void afspraakDoorvoeren(ActionDto actionDto, LocalDateTime transactieDatumTijd, InstellingGebruiker transactieGebruiker, MammaScreeningsEenheid screeningsEenheid)
+	private void afspraakDoorvoeren(ActionDto actionDto, LocalDateTime transactieDatumTijd, OrganisatieMedewerker transactieOrganisatieMedewerker,
+		MammaScreeningsEenheid screeningsEenheid)
 		throws IOException
 	{
 		var afspraak = afspraakService
-			.getOfMaakLaatsteAfspraakVanVandaag(getActionBody(actionDto, OnderzoekDoorvoerenDto.class).getAfspraakId(), transactieGebruiker);
+			.getOfMaakLaatsteAfspraakVanVandaag(getActionBody(actionDto, OnderzoekDoorvoerenDto.class).getAfspraakId(), transactieOrganisatieMedewerker);
 		var onderzoek = afspraak.getOnderzoek();
 		if (onderzoek.isDoorgevoerd())
 		{
@@ -377,7 +379,7 @@ public class SeTransactionServiceImpl implements SeTransactionService
 		{
 			baseOnderzoekService.onderzoekDoorvoerenVanuitSe(onderzoek);
 			var client = afspraak.getUitnodiging().getScreeningRonde().getDossier().getClient();
-			logService.logInfo(LogGebeurtenis.MAMMA_SE_ONDERZOEK_DOORGEVOERD, transactieGebruiker, client, screeningsEenheid, transactieDatumTijd,
+			logService.logInfo(LogGebeurtenis.MAMMA_SE_ONDERZOEK_DOORGEVOERD, transactieOrganisatieMedewerker, client, screeningsEenheid, transactieDatumTijd,
 				getLogMessage(SETransactieType.BEEINDIGDE_AFSPRAAK_DOORVOEREN, onderzoek));
 
 		}
@@ -399,8 +401,8 @@ public class SeTransactionServiceImpl implements SeTransactionService
 			.collect(Collectors.toList());
 	}
 
-	private boolean isAuthorized(InstellingGebruiker instellingGebruiker, List<Recht> rechten)
+	private boolean isAuthorized(OrganisatieMedewerker organisatieMedewerker, List<Recht> rechten)
 	{
-		return rechten.stream().allMatch(r -> seAutorisatieService.isInstellingGebruikerGeautoriseerd(instellingGebruiker, r));
+		return rechten.stream().allMatch(r -> seAutorisatieService.isOrganisatieMedewerkerGeautoriseerd(organisatieMedewerker, r));
 	}
 }

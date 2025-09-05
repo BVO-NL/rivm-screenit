@@ -32,7 +32,7 @@ import nl.rivm.screenit.model.enums.Recht;
 import org.apache.wicket.model.IModel;
 import org.wicketstuff.shiro.ShiroConstraint;
 
-@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_CLIENT_CIS_HISTORIE, bevolkingsonderzoekScopes = {
+@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_CIS_HISTORIE, bevolkingsonderzoekScopes = {
 	Bevolkingsonderzoek.CERVIX })
 public class ClientCISHistoriePage extends ClientPage
 {

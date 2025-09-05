@@ -75,7 +75,7 @@ public abstract class BerichtInzienPanel extends GenericPanel<MeldingOngeldigCda
 		}
 		add(DateLabel.forDatePattern("geboortedatum", Model.of(geboortedatum), "dd-MM-yyyy"));
 
-		final boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN, Actie.VERWIJDEREN);
+		final boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN, Actie.VERWIJDEREN);
 		add(new ConfirmingIndicatingAjaxLink<MeldingOngeldigCdaBericht>("verwijderen", getModel(), confirmDialog, "ongeldigBerichtVerwijderen")
 		{
 
@@ -89,7 +89,7 @@ public abstract class BerichtInzienPanel extends GenericPanel<MeldingOngeldigCda
 
 		}.setVisible(magVerwijderen));
 
-		final boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN, Actie.AANPASSEN)
+		final boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN, Actie.AANPASSEN)
 			&& Boolean.TRUE.equals(getModelObject().getHerstelbaar());
 
 		add(new IndicatingAjaxLink<MeldingOngeldigCdaBericht>("opnieuwAanbieden")

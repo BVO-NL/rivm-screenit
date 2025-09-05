@@ -44,7 +44,7 @@ import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidato
 import nl.rivm.screenit.main.web.gebruiker.gedeeld.formulieren.FormulierIndicatingAjaxSubmitLink;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.mappers.RolMapper;
-import nl.rivm.screenit.model.InstellingGebruikerRol;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.model.Permissie;
 import nl.rivm.screenit.model.Rol;
 import nl.rivm.screenit.model.enums.Actie;
@@ -90,7 +90,7 @@ import org.apache.wicket.util.visit.IVisitor;
 import org.apache.wicket.validation.ValidationError;
 import org.wicketstuff.shiro.ShiroConstraint;
 
-@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_ROLLEN_BEHEREN, bevolkingsonderzoekScopes = {
+@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_ROLLEN_BEHEREN, bevolkingsonderzoekScopes = {
 	Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class RolEditPanel extends GenericPanel<Rol>
 {
@@ -131,7 +131,7 @@ public class RolEditPanel extends GenericPanel<Rol>
 
 	long totalePermissies = 0;
 
-	private final boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_ROLLEN_BEHEREN, Actie.AANPASSEN);
+	private final boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_ROLLEN_BEHEREN, Actie.AANPASSEN);
 
 	public RolEditPanel(String id, IModel<Rol> model)
 	{
@@ -380,7 +380,7 @@ public class RolEditPanel extends GenericPanel<Rol>
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				rolService.setRolActiefOfInactief(RolEditPanel.this.getModelObject(), ScreenitSession.get().getLoggedInAccount());
+				rolService.setRolActiefOfInactief(RolEditPanel.this.getModelObject(), ScreenitSession.get().getIngelogdAccount());
 				setResponsePage(RollenBeheer.class);
 			}
 
@@ -447,7 +447,7 @@ public class RolEditPanel extends GenericPanel<Rol>
 				Map<String, List<Bevolkingsonderzoek>> resultaten = vergelijkArrays(beginDataBevolkingsOnderzoeken, rol.getBevolkingsonderzoeken());
 
 				if (rol.getId() != null && (!resultaten.get("toegevoegd").isEmpty() || !resultaten.get("verwijderd").isEmpty())
-					&& medewerkerService.zijnErInstellingGebruikersMetRol(rol))
+					&& medewerkerService.zijnErOrganisatieMedewerkersMetRol(rol))
 				{
 					voegMessagesToe(rol, messages, resultaten);
 				}
@@ -462,8 +462,8 @@ public class RolEditPanel extends GenericPanel<Rol>
 				}
 				if (!resultaten.get("verwijderd").isEmpty())
 				{
-					List<InstellingGebruikerRol> rollen;
-					rollen = medewerkerService.getInstellingGebruikersMetRolEnBvos(rol, resultaten.get("verwijderd"));
+					List<OrganisatieMedewerkerRol> rollen;
+					rollen = medewerkerService.getOrganisatieMedewerkersMetRolEnBvos(rol, resultaten.get("verwijderd"));
 					if (!rollen.isEmpty())
 					{
 						messages.add(getString("question.rol.remove.bevolkingsonderzoek"));
@@ -512,13 +512,13 @@ public class RolEditPanel extends GenericPanel<Rol>
 	private void opslaan(List<Bevolkingsonderzoek> verwijderdeOnderzoeken)
 	{
 		var rol = getModelObject();
-		List<InstellingGebruikerRol> rollen = new ArrayList<>();
+		List<OrganisatieMedewerkerRol> rollen = new ArrayList<>();
 		if (rol.getId() != null)
 		{
-			rollen = medewerkerService.getInstellingGebruikersMetRolEnBvos(rol, verwijderdeOnderzoeken);
+			rollen = medewerkerService.getOrganisatieMedewerkersMetRolEnBvos(rol, verwijderdeOnderzoeken);
 		}
 
-		var opslaan = rolService.opslaan(rol, rollen, initieleRol.getObject(), verwijderdeOnderzoeken, ScreenitSession.get().getLoggedInInstellingGebruiker());
+		var opslaan = rolService.opslaan(rol, rollen, initieleRol.getObject(), verwijderdeOnderzoeken, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 		if (opslaan)
 		{
 			clearAuthorizationCache();

@@ -54,7 +54,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_IMPORT_CAP_VERDELING,
+	recht = Recht.MEDEWERKER_IMPORT_CAP_VERDELING,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
 public class ImportCapVerdelingPage extends ColonScreeningBasePage
@@ -96,7 +96,7 @@ public class ImportCapVerdelingPage extends ColonScreeningBasePage
 
 					try
 					{
-						Level level = importCapVerdelingService.verwerkBestand(ScreenitSession.get().getLoggedInInstellingGebruiker(),
+						Level level = importCapVerdelingService.verwerkBestand(getIngelogdeOrganisatieMedewerker(),
 							importCapVerdelingFileUpload.writeToTempFile());
 						switch (level)
 						{

@@ -27,7 +27,8 @@ import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 
 public abstract class MedewerkerBeheer extends AlgemeenPage
 {
@@ -35,7 +36,7 @@ public abstract class MedewerkerBeheer extends AlgemeenPage
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 		return createContextMenu();
 	}
@@ -47,15 +48,15 @@ public abstract class MedewerkerBeheer extends AlgemeenPage
 		return Boolean.TRUE;
 	}
 
-	public static List<GebruikerMenuItem> createContextMenu()
+	public static List<MedewerkerMenuItem> createContextMenu()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.medewerkers.zoeken", MedewerkerZoeken.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.medewerkers.gegevens", MedewerkerBasisgegevens.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.medewerkers.zoeken", MedewerkerZoeken.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.medewerkers.gegevens", MedewerkerBasisgegevens.class));
 		if (ScreenitSession.get().getCurrentSelectedMedewerker() != null)
 		{
-			contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.medewerkers.overeenkomsten", MedewerkerOvereenkomstenPage.class));
-			contextMenuItems.add(new GebruikerMenuItem("menu.algemeen.medewerkers.organisaties", MedewerkerKoppelPage.class));
+			contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.medewerkers.overeenkomsten", MedewerkerOvereenkomstenPage.class));
+			contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.medewerkers.organisaties", MedewerkerKoppelPage.class));
 
 		}
 

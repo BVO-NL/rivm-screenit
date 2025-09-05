@@ -78,10 +78,10 @@ public class MammaTestSluitDagenSEPanel extends Panel
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				var ingelogdeGebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
+				var ingelogdeOrganisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 				try
 				{
-					testTimelineService.sluitAlleDagenTotEnMetGisteren(screeningsEenheid.getObject(), ingelogdeGebruiker);
+					testTimelineService.sluitAlleDagenTotEnMetGisteren(screeningsEenheid.getObject(), ingelogdeOrganisatieMedewerker);
 					info("Dagen afgesloten");
 				}
 				catch (IllegalStateException ex)

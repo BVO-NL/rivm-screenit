@@ -126,7 +126,7 @@ public class QuartzTriggerPanel extends BatchBvoFilterPanel
 					@Override
 					public void onClick(AjaxRequestTarget target)
 					{
-						Boolean result = batchService.removeTrigger(getModelObject(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+						Boolean result = batchService.removeTrigger(getModelObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 						if (BooleanUtils.isTrue(result))
 						{
 							Session.get().info("Trigger is verwijderd");
@@ -137,7 +137,7 @@ public class QuartzTriggerPanel extends BatchBvoFilterPanel
 							error("Trigger verwijderen mislukt");
 						}
 					}
-				}.setBody(new Model<>("Verwijder trigger")).setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BATCH_STATUS, Actie.VERWIJDEREN)));
+				}.setBody(new Model<>("Verwijder trigger")).setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BATCH_STATUS, Actie.VERWIJDEREN)));
 			}
 		};
 		container.add(triggerListView);

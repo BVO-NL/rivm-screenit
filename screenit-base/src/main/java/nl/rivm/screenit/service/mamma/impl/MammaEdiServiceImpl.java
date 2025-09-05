@@ -34,11 +34,11 @@ import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.edi.model.MedVryOut;
 import nl.rivm.screenit.edi.model.OutboundMessageData;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.MailVerzenden;
 import nl.rivm.screenit.model.MedVryOntvanger;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.berichten.MammaHuisartsBericht;
@@ -132,7 +132,7 @@ public class MammaEdiServiceImpl extends EdiServiceBaseImpl implements MammaEdiS
 	private void verstuurEdiBericht(MammaHuisartsBericht huisartsBericht, String transactionId, MedVryOut medVry)
 	{
 		LOG.debug("[BK HA] verzamel data edi bericht");
-		InstellingGebruiker sender = zetZender(huisartsBericht, medVry);
+		OrganisatieMedewerker sender = zetZender(huisartsBericht, medVry);
 		zetOntvanger(huisartsBericht, medVry);
 		OutboundMessageData<MedVryOut> outboundMessageData = new OutboundMessageData<>(medVry);
 		outboundMessageData.setSubject(medVry.getSubject());
@@ -159,12 +159,12 @@ public class MammaEdiServiceImpl extends EdiServiceBaseImpl implements MammaEdiS
 		LOG.debug("[BK HA] Klaar met versturen bericht");
 	}
 
-	private void verzendenEdiMedVryBericht(OutboundMessageData<MedVryOut> outboundMessageData, String foutmelding, MedVryOut medVry, InstellingGebruiker sender,
+	private void verzendenEdiMedVryBericht(OutboundMessageData<MedVryOut> outboundMessageData, String foutmelding, MedVryOut medVry, OrganisatieMedewerker sender,
 		String transactionId, MammaHuisartsBericht huisartsBericht)
 	{
 		MailVerzenden mailVerzenden = manipulateEmailadressen(sender, outboundMessageData);
 		if (StringUtils.isBlank(foutmelding)
-			&& (MailVerzenden.UIT.equals(mailVerzenden) || ediMessageService.sendMedVry(sender, sender.getEmail(), outboundMessageData, transactionId)))
+			&& (MailVerzenden.UIT.equals(mailVerzenden) || ediMessageService.sendMedVry(sender, sender.getMedewerker().getEmailextra(), outboundMessageData, transactionId)))
 		{
 			huisartsBericht.setBerichtInhoud("");
 			huisartsBericht.setStatus(MammaHuisartsBerichtStatus.VERSTUURD);
@@ -180,14 +180,14 @@ public class MammaEdiServiceImpl extends EdiServiceBaseImpl implements MammaEdiS
 
 	private void logHuisartsberichtStatus(String foutmelding, MammaHuisartsBericht huisartsBericht, MedVryOut medVry)
 	{
-		final List<Instelling> instellingList = addRivmInstelling(new ArrayList<>());
-		instellingList.addAll(clientService.getScreeningOrganisatieVan(huisartsBericht.getClient()));
+		final List<Organisatie> organisaties = addLandelijkeBeheerOrganisatie(new ArrayList<>());
+		organisaties.addAll(clientService.getScreeningOrganisatieVan(huisartsBericht.getClient()));
 
 		final String enovationEdiAdres = huisartsBericht.getScreeningsOrganisatie().getEnovationEdiAdres();
 		if (MammaHuisartsBerichtStatus.VERSTUURD.equals(huisartsBericht.getStatus()))
 		{
 			logService.logGebeurtenis(LogGebeurtenis.MAMMA_HUISARTSBERICHTEN_VERZONDEN,
-				instellingList,
+				organisaties,
 				huisartsBericht.getClient(),
 				getLoggingTekst(huisartsBericht, foutmelding, enovationEdiAdres, medVry.getReceiverId()),
 				Bevolkingsonderzoek.MAMMA);
@@ -195,7 +195,7 @@ public class MammaEdiServiceImpl extends EdiServiceBaseImpl implements MammaEdiS
 		else if (MammaHuisartsBerichtStatus.VERSTUREN_MISLUKT.equals(huisartsBericht.getStatus()))
 		{
 			logService.logGebeurtenis(LogGebeurtenis.MAMMA_HUISARTSBERICHTEN_NIET_VERZONDEN,
-				instellingList,
+				organisaties,
 				huisartsBericht.getClient(),
 				getLoggingTekst(huisartsBericht, foutmelding, enovationEdiAdres, medVry.getReceiverId()),
 				Bevolkingsonderzoek.MAMMA);

@@ -30,7 +30,7 @@ import nl.rivm.screenit.dto.mamma.planning.PlanningStatusDto;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.PollingAbstractAjaxTimerBehavior;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaScreeningBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.beheer.MammaPlanningBeheerPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.blokkade.MammaBlokkadeBeheerPage;
@@ -67,7 +67,7 @@ public abstract class MammaPlanningBasePage extends MammaScreeningBasePage
 		ScreenitSession.get().setInPlanningmodule(true);
 		ScreeningOrganisatie sessionSO = ScreenitSession.get().getScreeningOrganisatie();
 		ingelogdNamensRegio = sessionSO != null;
-		magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN) && ingelogdNamensRegio;
+		magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN) && ingelogdNamensRegio;
 	}
 
 	@Override
@@ -101,16 +101,16 @@ public abstract class MammaPlanningBasePage extends MammaScreeningBasePage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.planning.dashboard", MammaPlanningDashboardPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.planning.blokkade.beheer", MammaBlokkadeBeheerPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.planning.standplaats", MammaStandplaatsZoekenPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.planning.postcodereeks", MammaPostcodeReeksZoekenPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.planning.se", MammaSEZoekenPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.planning.tehuis", MammaTehuisZoekenPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.tab.mammascreening.planning.beheer", MammaPlanningBeheerPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.planning.dashboard", MammaPlanningDashboardPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.planning.blokkade.beheer", MammaBlokkadeBeheerPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.planning.standplaats", MammaStandplaatsZoekenPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.planning.postcodereeks", MammaPostcodeReeksZoekenPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.planning.se", MammaSEZoekenPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.planning.tehuis", MammaTehuisZoekenPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.planning.beheer", MammaPlanningBeheerPage.class));
 		return contextMenuItems;
 	}
 

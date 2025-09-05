@@ -29,7 +29,7 @@ public enum ToegangLevel implements INaam
 
 	EIGEN("Eigen data", 1),
 
-	INSTELLING("Organisatie", 2),
+	ORGANISATIE("Organisatie", 2),
 
 	REGIO("Regio", 3),
 

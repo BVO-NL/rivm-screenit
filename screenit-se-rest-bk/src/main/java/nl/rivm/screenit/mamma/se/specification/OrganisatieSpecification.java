@@ -26,8 +26,8 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.OrganisatieType;
 
 import org.springframework.data.jpa.domain.Specification;
@@ -37,17 +37,17 @@ import static nl.rivm.screenit.specification.SpecificationUtil.join;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrganisatieSpecification
 {
-	public static Specification<Instelling> heeftSubInstellingVanType(List<OrganisatieType> organisatieTypes)
+	public static Specification<Organisatie> heeftSubInstellingVanType(List<OrganisatieType> organisatieTypes)
 	{
 		return (r, q, cb) ->
 		{
-			var afdelingJoin = join(r, Instelling_.children);
-			return afdelingJoin.get(Instelling_.organisatieType).in(organisatieTypes);
+			var afdelingJoin = join(r, Organisatie_.children);
+			return afdelingJoin.get(Organisatie_.organisatieType).in(organisatieTypes);
 		};
 	}
 
-	public static Specification<Instelling> isZorgInstelling()
+	public static Specification<Organisatie> isZorgInstelling()
 	{
-		return (r, q, cb) -> cb.equal(r.get(Instelling_.organisatieType), OrganisatieType.ZORGINSTELLING);
+		return (r, q, cb) -> cb.equal(r.get(Organisatie_.organisatieType), OrganisatieType.ZORGINSTELLING);
 	}
 }

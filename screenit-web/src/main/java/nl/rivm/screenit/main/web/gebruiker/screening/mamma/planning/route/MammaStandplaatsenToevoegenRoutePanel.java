@@ -80,7 +80,7 @@ public abstract class MammaStandplaatsenToevoegenRoutePanel extends GenericPanel
 				if (!hasErrorMessage())
 				{
 					routeService.standplaatsenToevoegenRoute(MammaStandplaatsenToevoegenRoutePanel.this.getModelObject(), standplaatsenModel.getObject(),
-						ScreenitSession.get().getLoggedInInstellingGebruiker());
+						ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 					standplaatsenToegevoegd(target);
 				}
 			}

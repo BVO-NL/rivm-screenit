@@ -68,7 +68,7 @@ const MammaAfspraakBevestigingsWizard = (props: MammaAfspraakBevestigingsWizardP
 	const huisartsVanClientBekend: boolean = !!geefMeestRecenteHuisarts()
 
 	function maakBevestiging(afspraakBevestiging: AfspraakBevestigingOpties) {
-		ScreenitBackend.post(`/mamma/afspraak/bevestiging`, afspraakBevestiging)
+		ScreenitBackend.post(`mamma/afspraak/bevestiging`, {json: afspraakBevestiging})
 			.catch((error) => {
 				if (error.response.data === "afspraak.bevestiging.niet.mogelijk") {
 					showToast(getString(properties.afspraak_maken.toast.geen_bevestiging), getString(properties.afspraak_maken.toast.error.algemeen), ToastMessageType.ERROR)

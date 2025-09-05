@@ -34,7 +34,7 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.model.overeenkomsten.AbstractAfgeslotenOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.AbstractAfgeslotenOvereenkomst_;
-import nl.rivm.screenit.model.overeenkomsten.AfgeslotenInstellingOvereenkomst;
+import nl.rivm.screenit.model.overeenkomsten.AfgeslotenOrganisatieOvereenkomst;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.topicuszorg.wicket.hibernate.SimpleHibernateModel;
 
@@ -47,7 +47,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 
 import static nl.rivm.screenit.main.util.WicketSpringDataUtil.toSpringSort;
 
-@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.GEBRUIKER_OVEREENKOMSTEN_BEHEER, checkScope = true, level = ToegangLevel.INSTELLING, bevolkingsonderzoekScopes = {
+@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_OVEREENKOMSTEN_BEHEER, checkScope = true, level = ToegangLevel.ORGANISATIE, bevolkingsonderzoekScopes = {
 	Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.COLON })
 public class OrganisatieOvereenkomstenPage extends OrganisatieBeheer
 {
@@ -61,29 +61,29 @@ public class OrganisatieOvereenkomstenPage extends OrganisatieBeheer
 	{
 		IModel<Boolean> actiefModel = new Model<>(Boolean.TRUE);
 		var organisatie = getCurrentSelectedOrganisatie();
-		var actie = autorisatieService.getActieVoorOrganisatie(ScreenitSession.get().getLoggedInInstellingGebruiker(), organisatie, Recht.GEBRUIKER_OVEREENKOMSTEN_BEHEER);
+		var actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie, Recht.MEDEWERKER_OVEREENKOMSTEN_BEHEER);
 
 		add(new AfgeslotenOvereenkomstPanel("overeenkomstenPanel", actie, getCurrentSelectedOrganisatie(), new KwaliteitsOvereenkomstDataProvider(actiefModel), actiefModel)
 		{
 			@Override
 			protected AbstractAfgeslotenOvereenkomst createAfgeslotenOvereenkomst()
 			{
-				var afgeslotenOvereenkomst = new AfgeslotenInstellingOvereenkomst();
-				afgeslotenOvereenkomst.setInstelling(ScreenitSession.get().getCurrentSelectedOrganisatie());
+				var afgeslotenOvereenkomst = new AfgeslotenOrganisatieOvereenkomst();
+				afgeslotenOvereenkomst.setOrganisatie(ScreenitSession.get().getCurrentSelectedOrganisatie());
 				afgeslotenOvereenkomst.setScreeningOrganisatie(ScreenitSession.get().getScreeningOrganisatie());
 
 				if (afgeslotenOvereenkomst.getScreeningOrganisatie() == null)
 				{
-					var instelling = ScreenitSession.get().getCurrentSelectedOrganisatie();
-					while (instelling.getParent() != null)
+					var organisatie = ScreenitSession.get().getCurrentSelectedOrganisatie();
+					while (organisatie.getParent() != null)
 					{
-						if (instelling.getParent() instanceof ScreeningOrganisatie)
+						if (organisatie.getParent() instanceof ScreeningOrganisatie)
 						{
-							var screeningOrganisatie = (ScreeningOrganisatie) instelling.getParent();
+							var screeningOrganisatie = (ScreeningOrganisatie) organisatie.getParent();
 							afgeslotenOvereenkomst.setScreeningOrganisatie(screeningOrganisatie);
 							break;
 						}
-						instelling = instelling.getParent();
+						organisatie = organisatie.getParent();
 					}
 				}
 

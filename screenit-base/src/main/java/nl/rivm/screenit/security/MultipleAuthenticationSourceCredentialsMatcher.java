@@ -80,7 +80,7 @@ public class MultipleAuthenticationSourceCredentialsMatcher implements Credentia
 
 			return result;
 		}
-		else if (token instanceof InstellingGebruikerToken || token instanceof UziToken)
+		else if (token instanceof OrganisatieMedewerkerToken || token instanceof UziToken)
 		{
 
 			return true;

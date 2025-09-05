@@ -23,7 +23,7 @@ package nl.rivm.screenit.main.web.component.panels;
 
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.service.UploadDocumentService;
@@ -65,7 +65,7 @@ public class UploadImageFormComponent<T extends HibernateObject> extends Generic
 		this.whatToUpload = whatToUpload;
 		this.fileStoreLocation = fileStoreLocation;
 
-		final Form<Instelling> form = new Form<>("uploadForm");
+		final Form<Organisatie> form = new Form<>("uploadForm");
 		add(form);
 		form.add(new FileUploadField("fileUpload", fileUploads).add(whatToUpload.getValidator()));
 

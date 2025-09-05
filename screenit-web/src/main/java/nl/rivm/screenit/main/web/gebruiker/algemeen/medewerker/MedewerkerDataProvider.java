@@ -27,8 +27,8 @@ import java.util.List;
 import nl.rivm.screenit.main.service.algemeen.MedewerkerZoekService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.Functie;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.Rol;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
@@ -44,12 +44,12 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import static nl.rivm.screenit.main.util.WicketSpringDataUtil.toSpringSort;
 
-public class MedewerkerDataProvider extends SortableDataProvider<Gebruiker, String>
+public class MedewerkerDataProvider extends SortableDataProvider<Medewerker, String>
 {
 	@SpringBean
 	private MedewerkerZoekService medewerkerZoekService;
 
-	private final IModel<Gebruiker> zoekObjectModel;
+	private final IModel<Medewerker> zoekObjectModel;
 
 	private final IModel<List<Functie>> selectedFunctiesModel;
 
@@ -57,7 +57,7 @@ public class MedewerkerDataProvider extends SortableDataProvider<Gebruiker, Stri
 
 	private final boolean voorOrganisatieKoppelen;
 
-	public MedewerkerDataProvider(String sortProperty, IModel<Gebruiker> zoekObjectModel, IModel<List<Functie>> selectedFunctiesModel, IModel<List<Rol>> selectedRollenModel,
+	public MedewerkerDataProvider(String sortProperty, IModel<Medewerker> zoekObjectModel, IModel<List<Functie>> selectedFunctiesModel, IModel<List<Rol>> selectedRollenModel,
 		boolean voorOrganisatieKoppelen)
 	{
 		this.selectedFunctiesModel = selectedFunctiesModel;
@@ -68,16 +68,16 @@ public class MedewerkerDataProvider extends SortableDataProvider<Gebruiker, Stri
 		this.zoekObjectModel = zoekObjectModel;
 	}
 
-	public MedewerkerDataProvider(String sortProperty, IModel<Gebruiker> zoekObjectModel)
+	public MedewerkerDataProvider(String sortProperty, IModel<Medewerker> zoekObjectModel)
 	{
 		this(sortProperty, zoekObjectModel, null, null, true);
 	}
 
 	@Override
-	public Iterator<? extends Gebruiker> iterator(long first, long count)
+	public Iterator<? extends Medewerker> iterator(long first, long count)
 	{
 		updateZoekObjectVoorZoekActie();
-		var searchMedewerkers = medewerkerZoekService.searchMedewerkers(getZoekObject(), getSelectedFuncties(), getSelectedRollen(), getLoggedInInstellingGebruiker(),
+		var searchMedewerkers = medewerkerZoekService.searchMedewerkers(getZoekObject(), getSelectedFuncties(), getSelectedRollen(), getIngelogdeOrganisatieMedewerker(),
 			voorOrganisatieKoppelen, first, count, toSpringSort(getSort()));
 		updateZoekObjectNaZoekActie();
 		return searchMedewerkers.iterator();
@@ -87,7 +87,7 @@ public class MedewerkerDataProvider extends SortableDataProvider<Gebruiker, Stri
 	public long size()
 	{
 		updateZoekObjectVoorZoekActie();
-		var countMedewerkers = medewerkerZoekService.countMedewerkers(getZoekObject(), getSelectedFuncties(), getSelectedRollen(), getLoggedInInstellingGebruiker(),
+		var countMedewerkers = medewerkerZoekService.countMedewerkers(getZoekObject(), getSelectedFuncties(), getSelectedRollen(), getIngelogdeOrganisatieMedewerker(),
 			voorOrganisatieKoppelen);
 		updateZoekObjectNaZoekActie();
 		return countMedewerkers;
@@ -95,16 +95,16 @@ public class MedewerkerDataProvider extends SortableDataProvider<Gebruiker, Stri
 
 	private void updateZoekObjectVoorZoekActie()
 	{
-		var toeganglevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.GEBRUIKER_MEDEWERKER_BEHEER);
+		var toeganglevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_BEHEER);
 		if (ToegangLevel.EIGEN.equals(toeganglevel))
 		{
-			getZoekObject().setId(getLoggedInInstellingGebruiker().getMedewerker().getId());
+			getZoekObject().setId(getIngelogdeOrganisatieMedewerker().getMedewerker().getId());
 		}
 	}
 
-	private InstellingGebruiker getLoggedInInstellingGebruiker()
+	private OrganisatieMedewerker getIngelogdeOrganisatieMedewerker()
 	{
-		return ScreenitSession.get().getLoggedInInstellingGebruiker();
+		return ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 	}
 
 	private void updateZoekObjectNaZoekActie()
@@ -112,7 +112,7 @@ public class MedewerkerDataProvider extends SortableDataProvider<Gebruiker, Stri
 		getZoekObject().setId(null); 
 	}
 
-	private Gebruiker getZoekObject()
+	private Medewerker getZoekObject()
 	{
 		return ModelUtil.nullSafeGet(zoekObjectModel);
 	}
@@ -128,7 +128,7 @@ public class MedewerkerDataProvider extends SortableDataProvider<Gebruiker, Stri
 	}
 
 	@Override
-	public IModel<Gebruiker> model(Gebruiker object)
+	public IModel<Medewerker> model(Medewerker object)
 	{
 		return new SimpleHibernateModel<>(object);
 	}

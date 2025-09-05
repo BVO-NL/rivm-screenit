@@ -27,8 +27,8 @@ import java.util.Collection;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.InstellingGebruikerRol;
-import nl.rivm.screenit.model.InstellingGebruikerRol_;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol_;
 import nl.rivm.screenit.model.Rol;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.specification.ExtendedSpecification;
@@ -44,45 +44,45 @@ import static nl.rivm.screenit.specification.SpecificationUtil.join;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrganisatieMedewerkerRolSpecification
 {
-	public static ExtendedSpecification<InstellingGebruikerRol> isActiefOpDatum(LocalDate peildatum)
+	public static ExtendedSpecification<OrganisatieMedewerkerRol> isActiefOpDatum(LocalDate peildatum)
 	{
 		return (r, q, cb) ->
 		{
 			var vandaagRange = Range.closed(peildatum, peildatum);
-			var beginExpression = cb.coalesce(r.get(InstellingGebruikerRol_.beginDatum), DateUtil.BEGIN_OF_TIME);
-			var eindExpression = cb.coalesce(r.get(InstellingGebruikerRol_.eindDatum), DateUtil.END_OF_TIME);
+			var beginExpression = cb.coalesce(r.get(OrganisatieMedewerkerRol_.beginDatum), DateUtil.BEGIN_OF_TIME);
+			var eindExpression = cb.coalesce(r.get(OrganisatieMedewerkerRol_.eindDatum), DateUtil.END_OF_TIME);
 			return isActief(true)
 				.and(overlaptLocalDateToDate(vandaagRange, ri -> beginExpression, ri -> eindExpression))
 				.toPredicate(r, q, cb);
 		};
 	}
 
-	public static Specification<InstellingGebruikerRol> heeftEindDatumVoor(LocalDate peilDatum)
+	public static Specification<OrganisatieMedewerkerRol> heeftEindDatumVoor(LocalDate peilDatum)
 	{
 		return (r, q, cb) ->
 		{
-			var eindDatumExpression = cb.coalesce(r.get(InstellingGebruikerRol_.eindDatum), DateUtil.END_OF_TIME);
+			var eindDatumExpression = cb.coalesce(r.get(OrganisatieMedewerkerRol_.eindDatum), DateUtil.END_OF_TIME);
 			return cb.lessThan(eindDatumExpression, DateUtil.toUtilDate(peilDatum));
 		};
 	}
 
-	public static ExtendedSpecification<InstellingGebruikerRol> isActief(Boolean waarde)
+	public static ExtendedSpecification<OrganisatieMedewerkerRol> isActief(Boolean waarde)
 	{
-		return (r, q, cb) -> cb.equal(r.get(InstellingGebruikerRol_.actief), waarde);
+		return (r, q, cb) -> cb.equal(r.get(OrganisatieMedewerkerRol_.actief), waarde);
 	}
 
-	public static ExtendedSpecification<InstellingGebruikerRol> heeftRol(Rol rol)
+	public static ExtendedSpecification<OrganisatieMedewerkerRol> heeftRol(Rol rol)
 	{
-		return (r, q, cb) -> cb.equal(r.get(InstellingGebruikerRol_.rol), rol);
+		return (r, q, cb) -> cb.equal(r.get(OrganisatieMedewerkerRol_.rol), rol);
 	}
 
-	public static ExtendedSpecification<InstellingGebruikerRol> heeftRolIn(Collection<Rol> rollen)
+	public static ExtendedSpecification<OrganisatieMedewerkerRol> heeftRolIn(Collection<Rol> rollen)
 	{
-		return (r, q, cb) -> r.get(InstellingGebruikerRol_.rol).in(rollen);
+		return (r, q, cb) -> r.get(OrganisatieMedewerkerRol_.rol).in(rollen);
 	}
 
-	public static ExtendedSpecification<InstellingGebruikerRol> heeftBevolkingsonderzoekIn(Collection<Bevolkingsonderzoek> bevolkingsonderzoeken)
+	public static ExtendedSpecification<OrganisatieMedewerkerRol> heeftBevolkingsonderzoekIn(Collection<Bevolkingsonderzoek> bevolkingsonderzoeken)
 	{
-		return (r, q, cb) -> join(r, InstellingGebruikerRol_.bevolkingsonderzoeken).in(bevolkingsonderzoeken);
+		return (r, q, cb) -> join(r, OrganisatieMedewerkerRol_.bevolkingsonderzoeken).in(bevolkingsonderzoeken);
 	}
 }

@@ -22,16 +22,16 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma;
  */
 
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
 
-public abstract class MammaScreeningBasePage extends GebruikerBasePage
+public abstract class MammaScreeningBasePage extends MedewerkerBasePage
 {
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.MAMMA;
+		return MedewerkerHoofdMenuItem.MAMMA;
 	}
 
 	public void wijzigIDS7Role(MammobridgeRole role)

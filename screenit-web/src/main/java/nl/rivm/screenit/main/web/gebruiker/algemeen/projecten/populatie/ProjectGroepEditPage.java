@@ -79,7 +79,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.TOEVOEGEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_PROJECT_SELECTIE, Recht.GEBRUIKER_BRIEFPROJECT_SELECTIE },
+	recht = { Recht.MEDEWERKER_PROJECT_SELECTIE, Recht.MEDEWERKER_BRIEFPROJECT_SELECTIE },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class ProjectGroepEditPage extends ProjectBasePage
 {
@@ -233,7 +233,7 @@ public class ProjectGroepEditPage extends ProjectBasePage
 						}
 						FileUpload clientenBestand = clientenBestanden.getObject().get(0);
 						projectService.queueProjectBestandVoorPopulatie(groep, clientenBestand.getContentType(), clientenBestand.getClientFileName(),
-							clientenBestand.writeToTempFile(), ScreenitSession.get().getLoggedInAccount());
+							clientenBestand.writeToTempFile(), ScreenitSession.get().getIngelogdAccount());
 
 						setResponsePage(new ProjectBestandenOverzicht(ProjectGroepEditPage.this.getProjectModel()));
 					}
@@ -254,7 +254,7 @@ public class ProjectGroepEditPage extends ProjectBasePage
 					DateFormatter formatter = new DateFormatter("dd-MM-yyyy");
 					String melding = "Project: " + project.getNaam() + ", Groep: " + groep.getNaam() + ", Pushdatum: "
 						+ formatter.print(groep.getUitnodigingenPushenNa(), Constants.LOCALE_NL);
-					logService.logGebeurtenis(LogGebeurtenis.PROJECT_GROEP_GEPUSHT, ScreenitSession.get().getLoggedInAccount(), melding);
+					logService.logGebeurtenis(LogGebeurtenis.PROJECT_GROEP_GEPUSHT, ScreenitSession.get().getIngelogdAccount(), melding);
 				}
 				hibernateService.saveOrUpdate(groep);
 				if (project.getEindeInstroom() != null && groep.getUitnodigenVoorDKvoor() != null && groep.getUitnodigenVoorDKvoor().after(project.getEindeInstroom()))

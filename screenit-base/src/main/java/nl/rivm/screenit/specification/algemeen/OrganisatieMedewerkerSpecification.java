@@ -24,10 +24,10 @@ package nl.rivm.screenit.specification.algemeen;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker_;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNullExtended;
@@ -35,23 +35,23 @@ import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNullExten
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrganisatieMedewerkerSpecification
 {
-	public static ExtendedSpecification<InstellingGebruiker> isActief()
+	public static ExtendedSpecification<OrganisatieMedewerker> isActief()
 	{
-		return (r, q, cb) -> cb.isTrue(r.get(InstellingGebruiker_.actief));
+		return (r, q, cb) -> cb.isTrue(r.get(OrganisatieMedewerker_.actief));
 	}
 
-	public static ExtendedSpecification<InstellingGebruiker> heeftInstelling(Instelling instelling)
+	public static ExtendedSpecification<OrganisatieMedewerker> heeftOrganisatie(Organisatie organisatie)
 	{
-		return (r, q, cb) -> cb.equal(r.get(InstellingGebruiker_.organisatie), instelling);
+		return (r, q, cb) -> cb.equal(r.get(OrganisatieMedewerker_.organisatie), organisatie);
 	}
 
-	public static ExtendedSpecification<InstellingGebruiker> heeftMedewerker(Gebruiker medewerker)
+	public static ExtendedSpecification<OrganisatieMedewerker> heeftMedewerker(Medewerker medewerker)
 	{
-		return (r, q, cb) -> cb.equal(r.get(InstellingGebruiker_.medewerker), medewerker);
+		return (r, q, cb) -> cb.equal(r.get(OrganisatieMedewerker_.medewerker), medewerker);
 	}
 
-	public static ExtendedSpecification<InstellingGebruiker> filterActief(Boolean actief)
+	public static ExtendedSpecification<OrganisatieMedewerker> filterActief(Boolean actief)
 	{
-		return skipWhenNullExtended(actief, (r, q, cb) -> cb.equal(r.get(InstellingGebruiker_.actief), actief));
+		return skipWhenNullExtended(actief, (r, q, cb) -> cb.equal(r.get(OrganisatieMedewerker_.actief), actief));
 	}
 }

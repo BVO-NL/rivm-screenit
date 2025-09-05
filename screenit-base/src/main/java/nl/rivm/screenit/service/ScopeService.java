@@ -23,7 +23,7 @@ package nl.rivm.screenit.service;
  */
 
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.security.Constraint;
 
@@ -36,5 +36,5 @@ public interface ScopeService
 
 	ToegangLevel getHoogsteToegangLevel(PrincipalCollection principalCollection, Constraint constraintToCheck);
 
-	ToegangLevel getHoogsteToegangLevel(InstellingGebruiker instellingGebruiker, Constraint constraint, boolean checkBvo);
+	ToegangLevel getHoogsteToegangLevel(OrganisatieMedewerker organisatieMedewerker, Constraint constraint, boolean checkBvo);
 }

@@ -35,7 +35,7 @@ import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.component.table.AjaxImageCellPanel;
 import nl.rivm.screenit.main.web.component.table.AjaxLinkTableCellPanel;
 import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
-import nl.rivm.screenit.main.web.component.table.GebruikerColumn;
+import nl.rivm.screenit.main.web.component.table.MedewerkerColumn;
 import nl.rivm.screenit.main.web.component.table.NotClickableAbstractColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.component.table.UploadDocumentDownloadColumn;
@@ -68,7 +68,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @SecurityConstraint(
 	constraint = ShiroConstraint.HasPermission,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA },
-	recht = { Recht.GEBRUIKER_VISITATIE },
+	recht = { Recht.MEDEWERKER_VISITATIE },
 	organisatieTypeScopes = { OrganisatieType.KWALITEITSPLATFORM, OrganisatieType.SCREENINGSORGANISATIE, OrganisatieType.RIVM })
 public class MammaVisitatieOverzichtPage extends MammaVisitatieBasePage
 {
@@ -76,7 +76,7 @@ public class MammaVisitatieOverzichtPage extends MammaVisitatieBasePage
 	@SpringBean
 	private ICurrentDateSupplier dateSupplier;
 
-	private final boolean isKwaliteitsplatform = ScreenitSession.get().getInstelling().getOrganisatieType().equals(OrganisatieType.KWALITEITSPLATFORM);
+	private final boolean isKwaliteitsplatform = ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.KWALITEITSPLATFORM);
 
 	private ScreenitDataTable<MammaVisitatie, String> overzicht;
 
@@ -100,14 +100,14 @@ public class MammaVisitatieOverzichtPage extends MammaVisitatieBasePage
 			{
 				IModel<MammaVisitatie> model = ModelUtil.ccModel(new MammaVisitatie());
 				MammaVisitatie visitatie = model.getObject();
-				visitatie.setAangemaaktDoor(ScreenitSession.get().getLoggedInInstellingGebruiker());
+				visitatie.setAangemaaktDoor(getIngelogdeOrganisatieMedewerker());
 				visitatie.setAangemaaktOp(dateSupplier.getDate());
 				visitatie.setStatus(MammaVisitatieStatus.INGEPLAND);
 				openEditPopupPanel(target, model);
 			}
 
 		}.setVisible(!isKwaliteitsplatform
-			&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_VISITATIE, Actie.TOEVOEGEN)));
+			&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VISITATIE, Actie.TOEVOEGEN)));
 	}
 
 	private void createFilter()
@@ -154,13 +154,13 @@ public class MammaVisitatieOverzichtPage extends MammaVisitatieBasePage
 		columns.add(new DateTimePropertyColumn<>(Model.of("Gestart"), "gestartOp", "gestartOp", Constants.getDateTimeFormat()));
 		columns.add(new DateTimePropertyColumn<>(Model.of("Afgerond"), "afgerondOp", "afgerondOp", Constants.getDateTimeFormat()));
 		columns.add(new DateTimePropertyColumn<>(Model.of("Aangemaakt"), "aangemaaktOp", "aangemaaktOp", Constants.getDateTimeFormat()));
-		columns.add(new GebruikerColumn<>(Model.of("Door"), "medewerker.achternaam", "aangemaaktDoor.medewerker"));
+		columns.add(new MedewerkerColumn<>(Model.of("Door"), "medewerker.achternaam", "aangemaaktDoor.medewerker"));
 		columns.add(new EnumPropertyColumn<>(Model.of("Status"), "status", "status", this));
 		columns.add(new PropertyColumn<>(Model.of("BE"), "beoordelingsEenheid.naam", "beoordelingsEenheid.naam"));
 		columns.add(new UploadDocumentDownloadColumn<>(Model.of("Rapportage"), "rapportageBijlage"));
 		columns.add(new UploadDocumentDownloadColumn<>(Model.of("Vragenlijst"), "vragenlijstBijlage"));
 
-		if (!ScreenitSession.get().getInstelling().getOrganisatieType().equals(OrganisatieType.RIVM))
+		if (!ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.RIVM))
 		{
 			columns.add(new AbstractColumn<>(Model.of(""))
 			{
@@ -185,7 +185,7 @@ public class MammaVisitatieOverzichtPage extends MammaVisitatieBasePage
 			});
 		}
 
-		if (!isKwaliteitsplatform && ScreenitSession.get().checkPermission(Recht.GEBRUIKER_VISITATIE, Actie.VERWIJDEREN))
+		if (!isKwaliteitsplatform && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VISITATIE, Actie.VERWIJDEREN))
 		{
 			columns.add(getVerwijderenColumn());
 		}
@@ -198,7 +198,7 @@ public class MammaVisitatieOverzichtPage extends MammaVisitatieBasePage
 			{
 				super.onClick(target, model);
 				if (!isKwaliteitsplatform
-					&& ScreenitSession.get().checkPermission(Recht.GEBRUIKER_VISITATIE, Actie.INZIEN))
+					&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VISITATIE, Actie.INZIEN))
 				{
 					if (MammaVisitatieStatus.UITGEVOERD != model.getObject().getStatus())
 					{

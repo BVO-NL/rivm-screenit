@@ -35,7 +35,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
@@ -49,7 +49,7 @@ public class MammaAfspraakReservering extends AbstractHibernateObject
 	private Client client;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	private InstellingGebruiker medewerker;
+	private OrganisatieMedewerker medewerker;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	private MammaCapaciteitBlok capaciteitBlok;

@@ -23,7 +23,7 @@ package nl.rivm.screenit.service.colon;
 
 import java.time.LocalDate;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 
 import com.google.common.collect.Range;
@@ -38,7 +38,7 @@ public interface ColonIntakelocatieService
 
 	LocalDate getSignaleringstermijnDeadline();
 
-	void saveIntakelocatieBeschrijving(ColonIntakelocatie intakelocatie, String locatieBeschrijving, InstellingGebruiker inInstellingGebruiker);
+	void saveIntakelocatieBeschrijving(ColonIntakelocatie intakelocatie, String locatieBeschrijving, OrganisatieMedewerker inOrganisatieMedewerker);
 
-	void saveIntakelocatieDigitaleIntake(ColonIntakelocatie intakelocatie, String digitaleIntakeTekst, InstellingGebruiker inInstellingGebruiker);
+	void saveIntakelocatieDigitaleIntake(ColonIntakelocatie intakelocatie, String digitaleIntakeTekst, OrganisatieMedewerker inOrganisatieMedewerker);
 }

@@ -29,15 +29,15 @@ import properties from "./../pages/profiel/BezwaarWijzigenPage.json"
 import {showToast} from "../utils/ToastUtil"
 
 export const getLaatsteBezwaarMoment = () => (dispatch: Dispatch<ResetBezwaarMoment>) => {
-	return ScreenitBackend.get(`/bezwaar`).then(
-		(response) => dispatch(setLaatsteBezwaarMomentAction(response.data)),
-	)
+	return ScreenitBackend.get<BezwaarMoment>(`bezwaar`)
+		.json()
+		.then((response: BezwaarMoment) => dispatch(setLaatsteBezwaarMomentAction(response)))
 }
 
 export const saveNieuwBezwaarMoment = (bezwaarMoment: BezwaarMoment) => (dispatch: Dispatch<ResetBezwaarMoment>) => {
-	return ScreenitBackend.post(`/bezwaar`, bezwaarMoment)
+	return ScreenitBackend.post<BezwaarMoment>(`bezwaar`, {json: bezwaarMoment}).json()
 		.then(response => {
-			dispatch(setLaatsteBezwaarMomentAction(response.data))
+			dispatch(setLaatsteBezwaarMomentAction(response))
 			showToast(getString(properties.toast.wijzigingen.titel), getString(properties.toast.wijzigingen.text))
 		})
 		.catch(error => {

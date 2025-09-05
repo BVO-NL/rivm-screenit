@@ -21,14 +21,11 @@ package nl.rivm.screenit.main.web.status;
  * =========================LICENSE_END==================================
  */
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.repository.algemeen.PreferenceItemRepository;
+import nl.rivm.screenit.service.EnvironmentInfoService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,14 +41,16 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequiredArgsConstructor
 public class StatusController
 {
-	@Autowired
-	private String applicationInstance;
-
-	private final PreferenceItemRepository preferenceItemRepository;
-
 	private static final String ONBEKEND = "Onbekend";
 
 	private static final String OK = "OK";
+
+	private final PreferenceItemRepository preferenceItemRepository;
+
+	private final EnvironmentInfoService environmentInfoService;
+
+	@Autowired
+	private String applicationInstance;
 
 	@GetMapping(value = "/status", produces = APPLICATION_JSON_VALUE)
 	protected String getStatus()
@@ -66,7 +65,7 @@ public class StatusController
 		var prefItemCount = preferenceItemRepository.count();
 		var databaseStatus = prefItemCount > 0 ? OK : ONBEKEND;
 
-		var applicatieVersie = readVersie();
+		var applicatieVersie = environmentInfoService.getVersion();
 		applicatieVersie = StringUtils.isBlank(applicatieVersie) ? ONBEKEND : applicatieVersie;
 
 		var node = new ObjectMapper().createObjectNode();
@@ -75,31 +74,5 @@ public class StatusController
 		node.put("databaseStatus", databaseStatus);
 
 		return node.toString();
-	}
-
-	private String readVersie()
-	{
-		var versieBuilder = new StringBuilder();
-		var applicationProperties = new Properties();
-		try (InputStream resourceAsStream = this.getClass().getResourceAsStream("/build-info.properties"))
-		{
-			applicationProperties.load(resourceAsStream);
-			var version = applicationProperties.getProperty("build.version");
-			versieBuilder.append(version);
-			if (!version.endsWith("SNAPSHOT"))
-			{
-				String buildnumber = applicationProperties.getProperty("build.number");
-
-				if (!"${BUILD_NUMBER}".equals(buildnumber))
-				{
-					versieBuilder.append("-").append(buildnumber);
-				}
-			}
-		}
-		catch (IOException e)
-		{
-			LOG.error("Fout bij laden van build-info.properties (voor versienummer)");
-		}
-		return versieBuilder.toString();
 	}
 }

@@ -60,17 +60,17 @@ public class IntakeLocatieFieldsFragment extends Fragment
 
 		ComponentHelper.addTextField(this, "naam", false, 50, false);
 
-		ComponentHelper.addTextField(this, "adressen[0].straat", false, 43, false);
-		ComponentHelper.addTextField(this, "adressen[0].huisnummer", false, 10, Integer.class, false);
-		ComponentHelper.addTextField(this, "adressen[0].huisnummerToevoeging", false, 26, false);
-		ComponentHelper.addTextField(this, "adressen[0].huisnummerAanduiding", false, 2, false);
-		ComponentHelper.addTextField(this, "adressen[0].huisletter", false, 200, false);
-		ComponentHelper.newPostcodeTextField(this, "adressen[0].postcode", false, false);
-		ComponentHelper.addTextField(this, "adressen[0].plaats", false, 200, false);
+		ComponentHelper.addTextField(this, "adres.straat", false, 43, false);
+		ComponentHelper.addTextField(this, "adres.huisnummer", false, 10, Integer.class, false);
+		ComponentHelper.addTextField(this, "adres.huisnummerToevoeging", false, 26, false);
+		ComponentHelper.addTextField(this, "adres.huisnummerAanduiding", false, 2, false);
+		ComponentHelper.addTextField(this, "adres.huisletter", false, 200, false);
+		ComponentHelper.newPostcodeTextField(this, "adres.postcode", false, false);
+		ComponentHelper.addTextField(this, "adres.plaats", false, 200, false);
 
-		ComponentHelper.addTextField(this, "adressen[1].huisnummer", false, 10, Integer.class, false);
-		ComponentHelper.newPostcodeTextField(this, "adressen[1].postcode", false, false);
-		ComponentHelper.addTextField(this, "adressen[1].plaats", false, 200, false);
+		ComponentHelper.addTextField(this, "postbusAdres.huisnummer", false, 10, Integer.class, false);
+		ComponentHelper.newPostcodeTextField(this, "postbusAdres.postcode", false, false);
+		ComponentHelper.addTextField(this, "postbusAdres.plaats", false, 200, false);
 
 		ComponentHelper.addTextField(this, "email", false, 100, false).add(EmailAddressValidator.getInstance());
 		ComponentHelper.addTextField(this, "website", false, 200, false);

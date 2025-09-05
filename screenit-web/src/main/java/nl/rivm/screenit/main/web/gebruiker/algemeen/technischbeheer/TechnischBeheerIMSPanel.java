@@ -95,7 +95,7 @@ public class TechnischBeheerIMSPanel extends GenericPanel<IMSConfiguratie>
 
 	private void opslaanIMSConfiguratieSettings()
 	{
-		parameterisatieService.saveIMSConfiguratie(ScreenitSession.get().getLoggedInAccount(), getModelObject());
+		parameterisatieService.saveIMSConfiguratie(ScreenitSession.get().getIngelogdAccount(), getModelObject());
 	}
 
 	private boolean magAanpassen()

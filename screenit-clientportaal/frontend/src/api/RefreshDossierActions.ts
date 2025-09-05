@@ -23,21 +23,24 @@ import ScreenitBackend from "../utils/Backend"
 import {createColonDossierAction} from "../actions/ColonDossierAction"
 import {createCervixDossierAction} from "../actions/CervixDossierAction"
 import {createMammaDossierAction} from "../actions/MammaDossierAction"
+import {ColonDossier} from "../datatypes/ColonDossier"
+import {CervixDossier} from "../datatypes/CervixDossier"
+import {MammaDossier} from "../datatypes/MammaDossier"
 
 export const refreshColonDossier = () => (dispatch: Dispatch) => {
 
-    return ScreenitBackend.get("/dossier/colon")
-        .then((response) => dispatch(createColonDossierAction(response.data)))
+	return ScreenitBackend.get<ColonDossier>("dossier/colon").json()
+		.then((response) => dispatch(createColonDossierAction(response)))
 }
 
 export const refreshCervixDossier = () => (dispatch: Dispatch) => {
 
-    return ScreenitBackend.get("/dossier/cervix")
-        .then(response => dispatch(createCervixDossierAction(response.data)))
+	return ScreenitBackend.get<CervixDossier>("dossier/cervix").json()
+		.then(response => dispatch(createCervixDossierAction(response)))
 }
 
 export const refreshMammaDossier = () => (dispatch: Dispatch) => {
 
-    return ScreenitBackend.get("/dossier/mamma")
-        .then(response => dispatch(createMammaDossierAction(response.data)))
+	return ScreenitBackend.get<MammaDossier>("dossier/mamma").json()
+		.then(response => dispatch(createMammaDossierAction(response)))
 }

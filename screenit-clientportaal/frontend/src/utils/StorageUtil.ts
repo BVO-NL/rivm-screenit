@@ -36,19 +36,19 @@ export const loadState = (): State => {
 	} catch (err) {
 		return legeState
 	}
-};
+}
 
 export const saveState = () => {
-    try {
-        const cpState = JSON.stringify(cpStore.getState());
-        sessionStorage.setItem('cpState', cpState);
-    } catch {
-    }
-};
+	try {
+		const cpState = JSON.stringify(cpStore.getState())
+		sessionStorage.setItem("cpState", cpState)
+	} catch {
+	}
+}
 
 export const removeStateFromStorage = () => {
-    try{
-        sessionStorage.removeItem("cpState")
-    } catch {
-    }
+	try {
+		sessionStorage.removeItem("cpState")
+	} catch {
+	}
 }

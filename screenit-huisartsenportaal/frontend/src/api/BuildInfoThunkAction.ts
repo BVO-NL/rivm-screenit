@@ -20,11 +20,10 @@
  */
 import {AppThunkDispatch} from "../index"
 import ScreenitBackend from "../util/Backend"
-import {AxiosResponse} from "axios"
 import {BuildDto} from "../state/datatypes/dto/BuildDto"
 import {createActionSetBuildInfo} from "../state/BuildInfoState"
 
 export const fetchBuildInfo = () => async (dispatch: AppThunkDispatch) => {
-	const response: AxiosResponse<BuildDto> = await ScreenitBackend.get("/build")
-	return dispatch(createActionSetBuildInfo(response.data))
+	const response: BuildDto = await ScreenitBackend.get<BuildDto>("build").json()
+	return dispatch(createActionSetBuildInfo(response))
 }

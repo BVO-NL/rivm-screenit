@@ -21,7 +21,7 @@ package nl.rivm.screenit.service.cervix;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixMonster;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
@@ -31,13 +31,13 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 
 public interface CervixBaseUitnodigingService
 {
-	void saveMonster(CervixZas zas, InstellingGebruiker loggedInAccount, String logMessage);
+	void saveMonster(CervixZas zas, OrganisatieMedewerker ingelogdAccount, String logMessage);
 
-	void saveMonster(CervixUitstrijkje uitstrijkje, InstellingGebruiker loggedInInstellingGebruiker, String logMessage);
+	void saveMonster(CervixUitstrijkje uitstrijkje, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, String logMessage);
 
-	void registreerMonsterBarcodeAfgedrukt(CervixMonster monster, InstellingGebruiker loggedInInstellingGebruiker, LogGebeurtenis logGebeurtenis);
+	void registreerMonsterBarcodeAfgedrukt(CervixMonster monster, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, LogGebeurtenis logGebeurtenis);
 
-	void verwijderResultatenMonster(CervixMonster monster, UploadDocument uploadDocument, InstellingGebruiker loggedInInstellingGebruiker);
+	void verwijderResultatenMonster(CervixMonster monster, UploadDocument uploadDocument, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	CervixMonster getUitnodigingMagVerwijderdWorden(CervixScreeningRonde screeningRonde);
 

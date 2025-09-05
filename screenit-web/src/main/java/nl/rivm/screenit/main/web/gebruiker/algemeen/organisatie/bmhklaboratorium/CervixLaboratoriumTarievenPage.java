@@ -39,7 +39,7 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieBehee
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatiePaspoortPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.cervix.enums.CervixTariefType;
 import nl.rivm.screenit.model.cervix.facturatie.CervixLabTarief;
 import nl.rivm.screenit.model.cervix.facturatie.CervixTarief_;
@@ -72,7 +72,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @SecurityConstraint(
 	actie = Actie.INZIEN,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_CERVIX_LABORATORIUM_TARIEF },
+	recht = { Recht.MEDEWERKER_CERVIX_LABORATORIUM_TARIEF },
 	checkScope = true,
 	level = ToegangLevel.LANDELIJK,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX })
@@ -103,8 +103,8 @@ public class CervixLaboratoriumTarievenPage extends OrganisatieBeheer
 
 	public CervixLaboratoriumTarievenPage()
 	{
-		InstellingGebruiker gebruiker = ScreenitSession.get().getLoggedInInstellingGebruiker();
-		actie = autorisatieService.getActieVoorMedewerker(gebruiker, null, Recht.GEBRUIKER_CERVIX_LABORATORIUM_TARIEF);
+		OrganisatieMedewerker organisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		actie = autorisatieService.getActieVoorMedewerker(organisatieMedewerker, null, Recht.MEDEWERKER_CERVIX_LABORATORIUM_TARIEF);
 
 		labModel = ModelUtil.sModel((BMHKLaboratorium) ScreenitSession.get().getCurrentSelectedOrganisatie());
 
@@ -219,7 +219,7 @@ public class CervixLaboratoriumTarievenPage extends OrganisatieBeheer
 										@Override
 										public void onYesClick(AjaxRequestTarget target)
 										{
-											betalingService.verwijderCervixTarief(rowModel.getObject(), ScreenitSession.get().getLoggedInAccount());
+											betalingService.verwijderCervixTarief(rowModel.getObject(), ScreenitSession.get().getIngelogdAccount());
 											info("Laboratoriumtarief succesvol verwijderd.");
 											replaceContainer(target);
 

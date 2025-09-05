@@ -26,12 +26,12 @@ import jakarta.persistence.criteria.JoinType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.overeenkomsten.AbstractAfgeslotenOvereenkomst;
-import nl.rivm.screenit.model.overeenkomsten.AfgeslotenInstellingOvereenkomst;
-import nl.rivm.screenit.model.overeenkomsten.AfgeslotenInstellingOvereenkomst_;
+import nl.rivm.screenit.model.overeenkomsten.AfgeslotenOrganisatieOvereenkomst;
+import nl.rivm.screenit.model.overeenkomsten.AfgeslotenOrganisatieOvereenkomst_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
@@ -40,22 +40,22 @@ import static nl.rivm.screenit.specification.SpecificationUtil.treat;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AfgeslotenOrganisatieOvereenkomstSpecification
 {
-	public static <O extends AbstractAfgeslotenOvereenkomst> ExtendedSpecification<O> heeftGemachtigde(Gebruiker gebruiker)
+	public static <O extends AbstractAfgeslotenOvereenkomst> ExtendedSpecification<O> heeftGemachtigde(Medewerker medewerker)
 	{
 		return (r, q, cb) ->
 		{
-			var organisatieRoot = treat(r, AfgeslotenInstellingOvereenkomst.class, cb);
-			var organisatieJoin = join(organisatieRoot, AfgeslotenInstellingOvereenkomst_.instelling, JoinType.LEFT);
-			return cb.equal(organisatieJoin.get(Instelling_.gemachtigde), gebruiker);
+			var organisatieRoot = treat(r, AfgeslotenOrganisatieOvereenkomst.class, cb);
+			var organisatieJoin = join(organisatieRoot, AfgeslotenOrganisatieOvereenkomst_.organisatie, JoinType.LEFT);
+			return cb.equal(organisatieJoin.get(Organisatie_.gemachtigde), medewerker);
 		};
 	}
 
-	public static <O extends AbstractAfgeslotenOvereenkomst> ExtendedSpecification<O> heeftOrganisatie(Instelling organisatie)
+	public static <O extends AbstractAfgeslotenOvereenkomst> ExtendedSpecification<O> heeftOrganisatie(Organisatie organisatie)
 	{
 		return (r, q, cb) ->
 		{
-			var organisatieRoot = treat(r, AfgeslotenInstellingOvereenkomst.class, cb);
-			return cb.equal(organisatieRoot.get(AfgeslotenInstellingOvereenkomst_.instelling), organisatie);
+			var organisatieRoot = treat(r, AfgeslotenOrganisatieOvereenkomst.class, cb);
+			return cb.equal(organisatieRoot.get(AfgeslotenOrganisatieOvereenkomst_.organisatie), organisatie);
 		};
 	}
 }

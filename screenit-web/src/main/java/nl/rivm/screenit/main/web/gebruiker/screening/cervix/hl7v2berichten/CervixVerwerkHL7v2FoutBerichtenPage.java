@@ -36,8 +36,8 @@ import nl.rivm.screenit.main.web.component.table.ClientColumn;
 import nl.rivm.screenit.main.web.component.table.NotClickablePropertyColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.component.table.ScreenitDateTimePropertyColumn;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.clienten.inzien.ClientInzienPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.cervix.berichten.CervixFoutHL7v2Bericht;
@@ -68,10 +68,10 @@ import com.google.common.primitives.Ints;
 	actie = Actie.AANPASSEN,
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN,
+	recht = Recht.MEDEWERKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.CERVIX })
-public class CervixVerwerkHL7v2FoutBerichtenPage extends GebruikerBasePage
+public class CervixVerwerkHL7v2FoutBerichtenPage extends MedewerkerBasePage
 {
 
 	@SpringBean
@@ -101,9 +101,9 @@ public class CervixVerwerkHL7v2FoutBerichtenPage extends GebruikerBasePage
 	}
 
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.CERVIX;
+		return MedewerkerHoofdMenuItem.CERVIX;
 	}
 
 	private void addOrReplaceTable(AjaxRequestTarget target)
@@ -118,7 +118,7 @@ public class CervixVerwerkHL7v2FoutBerichtenPage extends GebruikerBasePage
 		addBerichtOpnieuwAanbiedenKolom(columns);
 		addBerichtVerwijderenKolom(columns);
 
-		var magClientDossierInzien = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_GEGEVENS, Actie.INZIEN);
+		var magClientDossierInzien = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_GEGEVENS, Actie.INZIEN);
 
 		Component newScreenitDataTable = new ScreenitDataTable<>("tabel", columns, new Hl7FoutBerichtenProvider(), 10,
 			Model.of("fout(e) bericht(en)"))
@@ -156,7 +156,7 @@ public class CervixVerwerkHL7v2FoutBerichtenPage extends GebruikerBasePage
 
 	private void addBerichtOpnieuwAanbiedenKolom(ArrayList<IColumn<CervixFoutHL7v2Bericht, String>> columns)
 	{
-		var magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN, Actie.AANPASSEN);
+		var magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN, Actie.AANPASSEN);
 		if (magAanpassen)
 		{
 			columns.add(new NotClickablePropertyColumn<>(Model.of("Opnieuw aanbieden"), "")
@@ -186,7 +186,7 @@ public class CervixVerwerkHL7v2FoutBerichtenPage extends GebruikerBasePage
 
 	private void addBerichtVerwijderenKolom(ArrayList<IColumn<CervixFoutHL7v2Bericht, String>> columns)
 	{
-		var magVerwijderen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN, Actie.VERWIJDEREN);
+		var magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN, Actie.VERWIJDEREN);
 		if (magVerwijderen)
 		{
 			columns.add(new NotClickablePropertyColumn<>(Model.of("Verwijderen"), "")

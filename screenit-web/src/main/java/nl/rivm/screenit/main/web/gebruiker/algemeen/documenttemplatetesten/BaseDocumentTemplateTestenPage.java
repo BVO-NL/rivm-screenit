@@ -35,13 +35,13 @@ import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.validator.FileValidator;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.BriefDefinitie;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.MailMergeContext;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.ZASRetouradres;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
@@ -61,8 +61,8 @@ import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst;
 import nl.rivm.screenit.service.AsposeService;
 import nl.rivm.screenit.service.BaseBriefService;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
@@ -109,7 +109,7 @@ public abstract class BaseDocumentTemplateTestenPage extends AlgemeenPage
 	protected final IModel<Boolean> zonderHandtekeningModel = Model.of(false);
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private LogService logService;
@@ -142,15 +142,15 @@ public abstract class BaseDocumentTemplateTestenPage extends AlgemeenPage
 		DocumentTemplateTestWrapper wrapper = wrapperModel.getObject();
 		CervixUitnodiging uitnodiging = wrapper.getCervixUitnodiging();
 		uitnodiging.setUitnodigingsId(uitnodigingsDao.getNextUitnodigingsId());
-		List<ColonIntakelocatie> actieveIntakelocaties = instellingService.getActieveIntakelocaties();
+		List<ColonIntakelocatie> actieveIntakelocaties = organisatieService.getActieveIntakelocaties();
 		if (CollectionUtils.isNotEmpty(actieveIntakelocaties))
 		{
 			wrapper.cloneIntakeLocatie(actieveIntakelocaties.get(0));
 		}
 
-		ToegangLevel level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.GEBRUIKER_BEHEER_DOCUMENTENTEMPLATES);
+		ToegangLevel level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_BEHEER_DOCUMENTENTEMPLATES);
 
-		List<ScreeningOrganisatie> screeningOrganisatieLijst = instellingService.getAllActiefScreeningOrganisaties();
+		List<ScreeningOrganisatie> screeningOrganisatieLijst = organisatieService.getAllActiefScreeningOrganisaties();
 		selectedType = Model.of();
 		selectedRegio = ModelUtil.sModel(screeningOrganisatieLijst.get(0));
 
@@ -316,7 +316,7 @@ public abstract class BaseDocumentTemplateTestenPage extends AlgemeenPage
 
 				DocumentTemplateTestWrapper wrapper = wrapperModel.getObject();
 				List<Bevolkingsonderzoek> bevolkingsonderzoeken = getBevolkingsonderzoeken();
-				logService.logGebeurtenis(LogGebeurtenis.TESTEN_VAN_BRIEVEN, ScreenitSession.get().getLoggedInAccount(),
+				logService.logGebeurtenis(LogGebeurtenis.TESTEN_VAN_BRIEVEN, ScreenitSession.get().getIngelogdAccount(),
 					bevolkingsonderzoeken.toArray(new Bevolkingsonderzoek[bevolkingsonderzoeken.size()]));
 
 				ScreeningOrganisatie screeningOrganisatie = selectedRegio.getObject();
@@ -363,17 +363,16 @@ public abstract class BaseDocumentTemplateTestenPage extends AlgemeenPage
 					Document mergedDocument = null;
 
 					MammaBeoordeling laatsteBeoordelingMetUitslag = MammaScreeningRondeUtil.getLaatsteBeoordelingVanLaatsteOnderzoek(wrapper.getClient());
-					Gebruiker handmatigeRadioloog1 = laatsteBeoordelingMetUitslag.getEersteLezing().getBeoordelaar().getMedewerker();
-					Gebruiker handmatigeRadioloog2 = laatsteBeoordelingMetUitslag.getTweedeLezing().getBeoordelaar().getMedewerker();
+					Medewerker handmatigeRadioloog1 = laatsteBeoordelingMetUitslag.getEersteLezing().getBeoordelaar().getMedewerker();
+					Medewerker handmatigeRadioloog2 = laatsteBeoordelingMetUitslag.getTweedeLezing().getBeoordelaar().getMedewerker();
 					if (!wrapper.isFreeTextBKRADIOLOOG())
 					{
 						laatsteBeoordelingMetUitslag.getEersteLezing().getBeoordelaar().setMedewerker(wrapper.getRadioloog1());
 						laatsteBeoordelingMetUitslag.getTweedeLezing().getBeoordelaar().setMedewerker(wrapper.getRadioloog2());
 					}
-
 					if (wrapper.isFromDBINTAKELOCATIE())
 					{
-						List<ColonIntakelocatie> intakeLocaties = instellingService.getActieveIntakelocatiesBinnenRegio(screeningOrganisatie);
+						List<ColonIntakelocatie> intakeLocaties = organisatieService.getActieveIntakelocatiesBinnenRegio(screeningOrganisatie);
 						var kamer = wrapper.getIntakeAfspraak().getKamer();
 						ColonIntakelocatie handmatigeIntakeLocatie = kamer.getIntakelocatie();
 						for (var intakeLocatie : intakeLocaties)
@@ -392,7 +391,7 @@ public abstract class BaseDocumentTemplateTestenPage extends AlgemeenPage
 					}
 					else if (wrapper.isFromDBBMHKLAB())
 					{
-						List<BMHKLaboratorium> labs = instellingService.getActieveInstellingen(BMHKLaboratorium.class);
+						List<BMHKLaboratorium> labs = organisatieService.getActieveOrganisaties(BMHKLaboratorium.class);
 
 						for (BMHKLaboratorium lab : labs)
 						{
@@ -435,10 +434,10 @@ public abstract class BaseDocumentTemplateTestenPage extends AlgemeenPage
 					}
 					else
 					{
+
 						Document document = proccesDocument(context, briefTemplate);
 						mergedDocument = DocumentTemplateTestenFieldsPanel.addDocument(mergedDocument, document);
 					}
-
 					if (!wrapper.isFreeTextBKRADIOLOOG())
 					{
 						laatsteBeoordelingMetUitslag.getEersteLezing().getBeoordelaar().setMedewerker(handmatigeRadioloog1);
@@ -487,11 +486,11 @@ public abstract class BaseDocumentTemplateTestenPage extends AlgemeenPage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("label.documententemplates.overige", DocumentTemplateTestenPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.documententemplates.bezwaar", BezwaarDocumentenTemplatesPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.documententemplates.overige", DocumentTemplateTestenPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.documententemplates.bezwaar", BezwaarDocumentenTemplatesPage.class));
 		return contextMenuItems;
 	}
 }

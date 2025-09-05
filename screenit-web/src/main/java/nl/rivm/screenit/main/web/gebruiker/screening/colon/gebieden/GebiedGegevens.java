@@ -44,10 +44,10 @@ import nl.rivm.screenit.main.web.component.modal.DefaultConfirmCallback;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.component.table.AjaxImageCellPanel;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Gemeente;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.colon.CapaciteitsPercWijziging;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.ColoscopieCentrumColonCapaciteitVerdeling;
@@ -58,7 +58,7 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.colon.ColonUitnodigingsgebiedService;
 import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.rivm.screenit.util.PercentageUtil;
@@ -108,7 +108,7 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	constraint = ShiroConstraint.HasPermission,
 	checkScope = true,
 	level = ToegangLevel.REGIO,
-	recht = Recht.GEBRUIKER_BEHEER_GEBIEDEN,
+	recht = Recht.MEDEWERKER_BEHEER_GEBIEDEN,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class GebiedGegevens extends GebiedenBeheerPage
 {
@@ -120,7 +120,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 	private ColonUitnodigingsgebiedService uitnodigingsGebiedService;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	private Map<String, Integer> newAdherentiePercentages;
 
@@ -156,9 +156,9 @@ public class GebiedGegevens extends GebiedenBeheerPage
 		Form<UitnodigingsGebied> form = new Form<>("form", model);
 		add(form);
 		form.add(new TextField<>("naam").setRequired(true).setEnabled(model.getObject().getPostcodeGebied() != null || StringUtils.isNotBlank(model.getObject().getWoonplaats())));
-		boolean magGebiedAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_GEBIEDEN, Actie.AANPASSEN);
-		boolean magRetourPercentageAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_GEBIEDEN_PERC_IFOBT_RETOUR, Actie.AANPASSEN);
-		boolean magOngunstigPercentageAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_GEBIEDEN_PERC_ONGUNSTIGE_IFOBT, Actie.AANPASSEN);
+		boolean magGebiedAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_GEBIEDEN, Actie.AANPASSEN);
+		boolean magRetourPercentageAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_GEBIEDEN_PERC_IFOBT_RETOUR, Actie.AANPASSEN);
+		boolean magOngunstigPercentageAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_GEBIEDEN_PERC_ONGUNSTIGE_IFOBT, Actie.AANPASSEN);
 
 		PercentageIntegerField percentageIFobtRetour = new PercentageIntegerField("percentageIFobtRetour", 1);
 		percentageIFobtRetour.setEnabled(magRetourPercentageAanpassen);
@@ -234,7 +234,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 		adherentieForm.setOutputMarkupId(true);
 		add(adherentieForm);
 
-		List<ColonIntakelocatie> actieveIntakelocaties = instellingService.getActieveIntakelocaties();
+		List<ColonIntakelocatie> actieveIntakelocaties = organisatieService.getActieveIntakelocaties();
 		for (ColoscopieCentrumColonCapaciteitVerdeling verdeling : getPageModel().getObject().getVerdeling())
 		{
 			actieveIntakelocaties.remove(verdeling.getIntakelocatie());
@@ -249,7 +249,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 		initAdherentiePercentages();
 
 		List<IColumn<ColoscopieCentrumColonCapaciteitVerdeling, String>> columns = new ArrayList<>();
-		columns.add(new PropertyColumn<>(Model.of("Naam intakelocatie"), propertyChain(ColoscopieCentrumColonCapaciteitVerdeling_.INTAKELOCATIE, Instelling_.NAAM)));
+		columns.add(new PropertyColumn<>(Model.of("Naam intakelocatie"), propertyChain(ColoscopieCentrumColonCapaciteitVerdeling_.INTAKELOCATIE, Organisatie_.NAAM)));
 		columns.add(new PropertyColumn<>(Model.of("Huidige adherentiepercentage"), ColoscopieCentrumColonCapaciteitVerdeling_.PERCENTAGE_CAPACITEIT)
 		{
 
@@ -442,11 +442,11 @@ public class GebiedGegevens extends GebiedenBeheerPage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.beheer.gemeente.zoeken", GemeenteZoeken.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.beheer.gemeentegegevens", GemeenteGegevens.class)
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.beheer.gemeente.zoeken", GemeenteZoeken.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.beheer.gemeentegegevens", GemeenteGegevens.class)
 		{
 			@Override
 			public IndicatingAjaxLink<?> createWicketLink(String markupId)
@@ -464,7 +464,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 				};
 			}
 		});
-		contextMenuItems.add(new GebruikerMenuItem("menu.beheer.gebiedgegevens", false, GebiedGegevens.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.beheer.gebiedgegevens", false, GebiedGegevens.class));
 		return contextMenuItems;
 	}
 
@@ -739,7 +739,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 							IModel<UitnodigingsGebied> model = getPageModel();
 							UitnodigingsGebied uitnodiginsgebied = model.getObject();
 							uitnodigingsGebiedService.wijzigingenDoorvoeren(uitnodiginsgebied, newAdherentiePercentages, getVerwijderdeItems(), capaciteitsPercWijzigingen,
-								ScreenitSession.get().getLoggedInInstellingGebruiker());
+								ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 							ControleResultaatFragment fragment = ControleResultaatFragment.this;
 							fragment.setVisible(false);
 							target.add(fragment, adherentieTabel);

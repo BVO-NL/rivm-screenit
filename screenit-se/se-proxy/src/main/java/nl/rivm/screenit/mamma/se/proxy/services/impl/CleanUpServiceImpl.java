@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.services.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -28,8 +28,8 @@ import nl.rivm.screenit.mamma.se.proxy.model.SeConfiguratieKey;
 import nl.rivm.screenit.mamma.se.proxy.services.AchtergrondRequestService;
 import nl.rivm.screenit.mamma.se.proxy.services.CleanUpService;
 import nl.rivm.screenit.mamma.se.proxy.services.ConfiguratieService;
-import nl.rivm.screenit.mamma.se.proxy.services.GebruikerStoreService;
 import nl.rivm.screenit.mamma.se.proxy.services.KwaliteitsopnameStoreService;
+import nl.rivm.screenit.mamma.se.proxy.services.MedewerkerStoreService;
 import nl.rivm.screenit.mamma.se.proxy.services.NfcOtpAdministratieService;
 import nl.rivm.screenit.mamma.se.proxy.services.PersistableTransactionService;
 import nl.rivm.screenit.mamma.se.proxy.services.ProxyService;
@@ -56,7 +56,7 @@ public class CleanUpServiceImpl implements CleanUpService
 	private WerklijstStoreService werklijstStoreService;
 
 	@Autowired
-	private GebruikerStoreService gebruikerStoreService;
+	private MedewerkerStoreService medewerkerStoreService;
 
 	@Autowired
 	private KwaliteitsopnameStoreService kwaliteitsopnameStoreService;
@@ -111,7 +111,7 @@ public class CleanUpServiceImpl implements CleanUpService
 	private void clearOldEntries()
 	{
 		nfcOtpAdministratieService.clearOldEntries();
-		gebruikerStoreService.clearOldEntries();
+		medewerkerStoreService.clearOldEntries();
 		persistableTransactionService.clearOldEntries();
 		proxyService.deleteOudePlanningCache();
 	}

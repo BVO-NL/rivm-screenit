@@ -60,7 +60,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	constraint = ShiroConstraint.HasPermission,
 	checkScope = false,
 	level = ToegangLevel.LANDELIJK,
-	recht = Recht.GEBRUIKER_BEHEER_PARAMETERISATIE,
+	recht = Recht.MEDEWERKER_BEHEER_PARAMETERISATIE,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 
@@ -73,7 +73,7 @@ public class DigitaalBerichtTemplateAanpassenPanel extends GenericPanel<Digitaal
 	@SpringBean
 	private DigitaalBerichtTemplateService templateService;
 
-	private final boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_PARAMETERISATIE, Actie.AANPASSEN);
+	private final boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_PARAMETERISATIE, Actie.AANPASSEN);
 
 	public DigitaalBerichtTemplateAanpassenPanel(String id, IModel<DigitaalBerichtTemplate> digitaalBerichtTemplateModel)
 	{
@@ -111,7 +111,7 @@ public class DigitaalBerichtTemplateAanpassenPanel extends GenericPanel<Digitaal
 
 				var berichtTemplateNaam = EnumStringUtil.maakStringMetBvoEnEnumPropertyString(template.getType(), this::getString);
 
-				templateService.saveOrUpdateDigitaalBerichtTemplate(template, ScreenitSession.get().getLoggedInAccount(), berichtTemplateNaam);
+				templateService.saveOrUpdateDigitaalBerichtTemplate(template, ScreenitSession.get().getIngelogdAccount(), berichtTemplateNaam);
 				info(String.format(getString("opgeslagen"), berichtTemplateNaam));
 			}
 		};

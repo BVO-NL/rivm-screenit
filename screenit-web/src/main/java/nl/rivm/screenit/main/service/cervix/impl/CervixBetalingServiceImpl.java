@@ -46,9 +46,9 @@ import nl.rivm.screenit.main.model.cervix.sepa.SEPACreditTransfer;
 import nl.rivm.screenit.main.service.cervix.CervixBetalingService;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.MailMergeContext;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.enums.CervixTariefType;
@@ -470,7 +470,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 
 	@Override
 	@Transactional
-	public Long opslaanBetaalopdracht(CervixBetaalopdracht opdracht, InstellingGebruiker ingelogedeGebruiker)
+	public Long opslaanBetaalopdracht(CervixBetaalopdracht opdracht, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		var nu = currentDateSupplier.getDate();
 		opdracht.setStatusDatum(currentDateSupplier.getDate());
@@ -488,7 +488,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 
 		var melding = "Screeningorganisatie: " + opdracht.getScreeningOrganisatie().getNaam() + "; Betalingskenmerk: " + opdracht.getBetalingskenmerk() + "; "
 			+ opdracht.getOmschrijving();
-		logService.logGebeurtenis(LogGebeurtenis.CERVIX_EXPORTEER_BETAALOPDRACHT, ingelogedeGebruiker, melding, Bevolkingsonderzoek.CERVIX);
+		logService.logGebeurtenis(LogGebeurtenis.CERVIX_EXPORTEER_BETAALOPDRACHT, ingelogdeOrganisatieMedewerker, melding, Bevolkingsonderzoek.CERVIX);
 
 		for (CervixBetaalopdrachtRegel regel : opdracht.getBetaalopdrachtRegels())
 		{
@@ -509,19 +509,20 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 			else
 			{
 				var ibanMelding = "";
-				List<Instelling> instellingen = new ArrayList<>();
+				List<Organisatie> organisaties = new ArrayList<>();
 				if (regel.getHuisartsLocatie() != null)
 				{
 					ibanMelding = String.format("Foutief IBAN voor AGB: %s, locatie: %s", regel.getHuisartsLocatie().getHuisarts().getAgbcode(),
 						regel.getHuisartsLocatie().getNaam());
-					instellingen.add(opdracht.getScreeningOrganisatie());
+					organisaties.add(opdracht.getScreeningOrganisatie());
 				}
 				else if (regel.getLaboratorium() != null)
 				{
 					ibanMelding = String.format("Foutief IBAN voor BMHK Laboratorium: %s", regel.getLaboratorium().getNaam());
 				}
 
-				logService.logGebeurtenis(LogGebeurtenis.CERVIX_BETALING_GENEREREN_IBAN_FOUT, instellingen, ingelogedeGebruiker, ibanMelding, Bevolkingsonderzoek.CERVIX);
+				logService.logGebeurtenis(LogGebeurtenis.CERVIX_BETALING_GENEREREN_IBAN_FOUT, organisaties, ingelogdeOrganisatieMedewerker, ibanMelding,
+					Bevolkingsonderzoek.CERVIX);
 			}
 		}
 		return opdracht.getId();

@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.gedeeld.houdbaarheid;
 import nl.rivm.screenit.main.service.HoudbaarheidService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.DatePickerHelper;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.model.AbstractHoudbaarheid;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
@@ -43,7 +43,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-public abstract class HoudbaarheidEditPage<H extends AbstractHoudbaarheid> extends GebruikerBasePage
+public abstract class HoudbaarheidEditPage<H extends AbstractHoudbaarheid> extends MedewerkerBasePage
 {
 	@SpringBean
 	private HibernateService hibernateService;

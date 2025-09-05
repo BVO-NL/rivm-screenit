@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon.houdbaarheid.ifobtba
 
 import java.util.List;
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.gedeeld.houdbaarheid.HoudbaarheidEditPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.gedeeld.houdbaarheid.HoudbaarheidOverzichtPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
@@ -43,7 +43,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_SCREENING_IFOBT_BATCH,
+	recht = Recht.MEDEWERKER_SCREENING_IFOBT_BATCH,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class IFOBTBatchOverzichtPage extends HoudbaarheidOverzichtPage<IFOBTVervaldatum>
 {
@@ -72,9 +72,9 @@ public class IFOBTBatchOverzichtPage extends HoudbaarheidOverzichtPage<IFOBTVerv
 	}
 
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.COLON;
+		return MedewerkerHoofdMenuItem.COLON;
 	}
 
 }

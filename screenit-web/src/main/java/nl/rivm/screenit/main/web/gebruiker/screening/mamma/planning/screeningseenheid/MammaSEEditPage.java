@@ -35,18 +35,18 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.validator.Ip4Validator;
 import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaPlanningBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.enums.MammaDuurMinderValideAfspraak;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -73,7 +73,7 @@ import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_SCREENING_MAMMA_SE_BEHEER },
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_SE_BEHEER },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaSEEditPage extends MammaPlanningBasePage
 {
@@ -98,7 +98,7 @@ public class MammaSEEditPage extends MammaPlanningBasePage
 	private ScreenitDropdown<BeoordelingsEenheid> tijdelijkeBeoordelingsEenheid;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	MammaSEEditPage(IModel<MammaScreeningsEenheid> model)
 	{
@@ -107,7 +107,7 @@ public class MammaSEEditPage extends MammaPlanningBasePage
 		dialog = new BootstrapDialog("dialog");
 		add(dialog);
 
-		magSeAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_SE_BEHEER, Actie.AANPASSEN) && !ingelogdNamensRegio;
+		magSeAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_SE_BEHEER, Actie.AANPASSEN) && !ingelogdNamensRegio;
 
 		seWijzigenForm = new ScreenitForm<>("seWijzigenForm", model);
 		createOrReplaceCodeComponent(seWijzigenForm, null);
@@ -173,7 +173,7 @@ public class MammaSEEditPage extends MammaPlanningBasePage
 					return;
 				}
 				getScreeningsEenheid().getMammografen().forEach(mammograaf -> hibernateService.reload(mammograaf));
-				boolean succes = screeningsEenheidService.saveOrUpdateSE(getScreeningsEenheid(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+				boolean succes = screeningsEenheidService.saveOrUpdateSE(getScreeningsEenheid(), getIngelogdeOrganisatieMedewerker());
 				if (succes)
 				{
 					success(getString("message.gegevensopgeslagen"));
@@ -302,12 +302,12 @@ public class MammaSEEditPage extends MammaPlanningBasePage
 		List<BeoordelingsEenheid> mogelijkeBeoordelingsEenheden;
 		if (magSeAanpassen)
 		{
-			mogelijkeBeoordelingsEenheden = instellingService.getActieveInstellingen(BeoordelingsEenheid.class);
+			mogelijkeBeoordelingsEenheden = organisatieService.getActieveOrganisaties(BeoordelingsEenheid.class);
 		}
 		else
 		{
 			ScreeningOrganisatie regio = ScreenitSession.get().getScreeningOrganisatie();
-			mogelijkeBeoordelingsEenheden = instellingService.getActieveBeoordelingseenhedenBinnenRegio(regio);
+			mogelijkeBeoordelingsEenheden = organisatieService.getActieveBeoordelingseenhedenBinnenRegio(regio);
 		}
 
 		if (huidigeBeoordelingsEenheid != null && !mogelijkeBeoordelingsEenheden.contains(huidigeBeoordelingsEenheid))
@@ -320,7 +320,7 @@ public class MammaSEEditPage extends MammaPlanningBasePage
 
 	private void addInActiverenButton(Form<MammaScreeningsEenheid> seWijzigenForm)
 	{
-		AjaxLink<Gebruiker> inActiveren = new ConfirmingIndicatingAjaxLink<>("inActiveren", dialog, "question.remove.se")
+		AjaxLink<Medewerker> inActiveren = new ConfirmingIndicatingAjaxLink<>("inActiveren", dialog, "question.remove.se")
 		{
 
 			@Override
@@ -345,7 +345,7 @@ public class MammaSEEditPage extends MammaPlanningBasePage
 				}
 
 				screeningsEenheid.setActief(Boolean.FALSE.equals(screeningsEenheid.getActief()));
-				screeningsEenheidService.saveOrUpdateSE(screeningsEenheid, ScreenitSession.get().getLoggedInInstellingGebruiker());
+				screeningsEenheidService.saveOrUpdateSE(screeningsEenheid, getIngelogdeOrganisatieMedewerker());
 				setResponsePage(MammaSEZoekenPage.class);
 			}
 
@@ -367,7 +367,7 @@ public class MammaSEEditPage extends MammaPlanningBasePage
 		{
 			inActiveren.add(new Label("inActiverenTitle", "Inactiveren"));
 		}
-		boolean magInActiveren = screeningsEenheid.getId() != null && ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_PLANNING, Actie.VERWIJDEREN)
+		boolean magInActiveren = screeningsEenheid.getId() != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.VERWIJDEREN)
 			&& ingelogdNamensRegio;
 		inActiveren.setVisible(magInActiveren);
 		seWijzigenForm.add(inActiveren);
@@ -379,7 +379,7 @@ public class MammaSEEditPage extends MammaPlanningBasePage
 	}
 
 	@Override
-	protected Class<? extends GebruikerBasePage> getActiveContextMenuClass()
+	protected Class<? extends MedewerkerBasePage> getActiveContextMenuClass()
 	{
 		return MammaSEZoekenPage.class;
 	}

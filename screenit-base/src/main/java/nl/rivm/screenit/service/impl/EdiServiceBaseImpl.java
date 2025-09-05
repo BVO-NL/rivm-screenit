@@ -21,7 +21,6 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,13 +31,13 @@ import nl.rivm.screenit.edi.model.OutboundMessageData;
 import nl.rivm.screenit.edi.service.EdiMessageService;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.HuisartsBericht;
 import nl.rivm.screenit.model.HuisartsBerichtTemplate;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.MailVerzenden;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.HuisartsBerichtType;
@@ -147,14 +146,14 @@ public abstract class EdiServiceBaseImpl
 		return copyPersoon;
 	}
 
-	protected InstellingGebruiker zetZender(HuisartsBericht huisartsBericht, MedVryOut medVry)
+	protected OrganisatieMedewerker zetZender(HuisartsBericht huisartsBericht, MedVryOut medVry)
 	{
-		InstellingGebruiker sender = new InstellingGebruiker();
+		OrganisatieMedewerker sender = new OrganisatieMedewerker();
 		ScreeningOrganisatie so = huisartsBericht.getScreeningsOrganisatie();
-		sender.setMedewerker(new Gebruiker());
+		sender.setMedewerker(new Medewerker());
 		sender.getMedewerker().setAchternaam(so.getNaam());
 		sender.getMedewerker().setVoornaam("SO");
-		sender.setEmail(so.getEnovationEdiAdres());
+		sender.getMedewerker().setEmailextra(so.getEnovationEdiAdres());
 		medVry.setSenderId(so.getEnovationKlantnummer());
 		return sender;
 	}
@@ -217,16 +216,17 @@ public abstract class EdiServiceBaseImpl
 		return foutmelding;
 	}
 
-	protected MailVerzenden manipulateEmailadressen(InstellingGebruiker sender, OutboundMessageData<MedVryOut> outboundMessageData)
+	protected MailVerzenden manipulateEmailadressen(OrganisatieMedewerker sender, OutboundMessageData<MedVryOut> outboundMessageData)
 	{
 		var mailVerzendOptie = mailService.getMailVerzenden();
 
 		if (MailVerzenden.ALTERNATIEF_ADRES.equals(mailVerzendOptie))
 		{
 			var gewensteEmailAdres = simplePreferenceService.getString(PreferenceKey.ALTERNATIEF_ADRES.name());
-			outboundMessageData.setSubject(outboundMessageData.getSubject() + " (Orig. TO: " + outboundMessageData.getAddress() + ", orig. FROM: " + sender.getEmail() + ")");
+			outboundMessageData.setSubject(
+				outboundMessageData.getSubject() + " (Orig. TO: " + outboundMessageData.getAddress() + ", orig. FROM: " + sender.getMedewerker().getEmailextra() + ")");
 			outboundMessageData.setAddress(gewensteEmailAdres);
-			sender.setEmail(afzendEmailadres);
+			sender.getMedewerker().setEmailextra(afzendEmailadres);
 			LOG.info("Er wordt een huisartsbericht naar het alternatieve email adres gestuurd.");
 		}
 		else if (MailVerzenden.UIT.equals(mailVerzendOptie))
@@ -268,11 +268,9 @@ public abstract class EdiServiceBaseImpl
 		return berichtInhoud;
 	}
 
-	protected List<Instelling> addRivmInstelling(List<Instelling> instellingen)
+	protected List<Organisatie> addLandelijkeBeheerOrganisatie(List<Organisatie> organisaties)
 	{
-		List<Rivm> rivm = hibernateService.loadAll(Rivm.class);
-		List<Instelling> rivmInstellingen = new ArrayList<>(rivm);
-		instellingen.addAll(rivmInstellingen);
-		return instellingen;
+		organisaties.addAll(hibernateService.loadAll(Rivm.class));
+		return organisaties;
 	}
 }

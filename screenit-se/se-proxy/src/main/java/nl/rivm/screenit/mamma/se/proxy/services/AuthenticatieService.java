@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.services;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,20 +21,20 @@ package nl.rivm.screenit.mamma.se.proxy.services;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.mamma.se.proxy.model.IngelogdeGebruikerDto;
+import nl.rivm.screenit.mamma.se.proxy.model.IngelogdeMedewerkerDto;
 import nl.rivm.screenit.mamma.se.proxy.model.LoginContext;
 
 public interface AuthenticatieService
 {
-	IngelogdeGebruikerDto getIngelogdeGebruiker(LoginContext loginContext);
+	IngelogdeMedewerkerDto getIngelogdeMedewerker(LoginContext loginContext);
 
-	void insertOrUpdateIngelogdeGebruiker(IngelogdeGebruikerDto ingelogdeGebruikerDto);
+	void insertOrUpdateIngelogdeMedewerker(IngelogdeMedewerkerDto ingelogdeOrganisatieMedewerkerDto);
 
-	void updateIngelogdeGebruiker(IngelogdeGebruikerDto ingelogdeGebruikerDto);
+	void updateIngelogdeMedewerker(IngelogdeMedewerkerDto ingelogdeOrganisatieMedewerkerDto);
 
 	Long getAccountIdFromUsername(String gebruikersnaam);
 
-	void verwijderOudeIngelogdeGebruikers();
+	void verwijderOudeIngelogdeMedewerkers();
 
 	String hashWachtwoord(String plainWachtwoord, Long accountId);
 

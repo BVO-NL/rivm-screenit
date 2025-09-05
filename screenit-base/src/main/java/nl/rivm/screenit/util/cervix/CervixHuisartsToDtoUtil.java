@@ -30,7 +30,7 @@ import nl.rivm.screenit.huisartsenportaal.dto.HuisartsDto;
 import nl.rivm.screenit.huisartsenportaal.dto.LocatieDto;
 import nl.rivm.screenit.huisartsenportaal.dto.VerrichtingDto;
 import nl.rivm.screenit.huisartsenportaal.dto.WoonplaatsDto;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.Woonplaats;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsAdres;
@@ -61,16 +61,16 @@ public class CervixHuisartsToDtoUtil
 		huisartsDto.setHuisartsportaalId(huisarts.getHuisartsportaalId());
 		huisartsDto.setAgbcode(huisarts.getAgbcode());
 		huisartsDto.setEmail(huisarts.getEmail());
-		Gebruiker gebruiker = huisarts.getOrganisatieMedewerkers().get(0).getMedewerker();
-		huisartsDto.setAchternaam(gebruiker.getAchternaam());
-		huisartsDto.setTussenvoegsel(gebruiker.getTussenvoegsel());
-		huisartsDto.setVoorletters(gebruiker.getVoorletters());
-		huisartsDto.setInlogCode(gebruiker.getWachtwoordChangeCode());
+		Medewerker medewerker = huisarts.getOrganisatieMedewerkers().get(0).getMedewerker();
+		huisartsDto.setAchternaam(medewerker.getAchternaam());
+		huisartsDto.setTussenvoegsel(medewerker.getTussenvoegsel());
+		huisartsDto.setVoorletters(medewerker.getVoorletters());
+		huisartsDto.setInlogCode(medewerker.getWachtwoordChangeCode());
 		huisartsDto.setAanmeldStatus(huisarts.getAanmeldStatus().name());
 		huisartsDto.setTelefoon(huisarts.getTelefoon());
-		if (gebruiker.getAanhef() != null)
+		if (medewerker.getAanhef() != null)
 		{
-			huisartsDto.setAanhef(gebruiker.getAanhef().getNaam());
+			huisartsDto.setAanhef(medewerker.getAanhef().getNaam());
 		}
 		huisartsDto.setActief(huisarts.getActief());
 		huisartsDto.setExtraEmails(huisarts.getExtraEmails());
@@ -108,7 +108,7 @@ public class CervixHuisartsToDtoUtil
 		aanvraagDto.setStatus(aanvraag.getStatus().getNaam());
 		aanvraagDto.setStatusDatum(aanvraag.getStatusDatum());
 		aanvraagDto.setAanvraagDatum(aanvraag.getAanvraagDatum());
-		aanvraagDto.setAangevraagdDoor(aanvraag.getInstellingGebruiker().getOrganisatie().getNaam());
+		aanvraagDto.setAangevraagdDoor(aanvraag.getOrganisatieMedewerker().getOrganisatie().getNaam());
 		aanvraagDto.setLocatie(getLocatieDto(aanvraag.getHuisartsLocatie()));
 		return aanvraagDto;
 	}

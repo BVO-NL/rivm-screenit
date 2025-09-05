@@ -35,7 +35,7 @@ import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.component.table.AjaxImageCellPanel;
 import nl.rivm.screenit.main.web.component.table.ClickableTextCellPanel;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.inzien.ClientInzienPage;
 import nl.rivm.screenit.model.BerichtZoekFilter;
 import nl.rivm.screenit.model.berichten.cda.MeldingOngeldigCdaBericht;
@@ -46,8 +46,8 @@ import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.ClientService;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.wicket.hibernate.SimpleHibernateModel;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
@@ -77,7 +77,7 @@ import static nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht_.BERICHT_
 import static nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht_.ONTVANGEN;
 import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
-public abstract class VerwerkOngeldigeBerichtenPage extends GebruikerBasePage
+public abstract class VerwerkOngeldigeBerichtenPage extends MedewerkerBasePage
 {
 	private final BootstrapDialog dialog;
 
@@ -85,7 +85,7 @@ public abstract class VerwerkOngeldigeBerichtenPage extends GebruikerBasePage
 	private OngeldigeBerichtenService ongeldigeBerichtenService;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private ClientService clientService;
@@ -177,7 +177,7 @@ public abstract class VerwerkOngeldigeBerichtenPage extends GebruikerBasePage
 
 		});
 
-		final var magClientDossierInzien = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_GEGEVENS, Actie.INZIEN);
+		final var magClientDossierInzien = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_GEGEVENS, Actie.INZIEN);
 
 		if (magClientDossierInzien)
 		{
@@ -255,7 +255,7 @@ public abstract class VerwerkOngeldigeBerichtenPage extends GebruikerBasePage
 			}
 
 		});
-		final var magAanpassen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN, Actie.AANPASSEN);
+		final var magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN, Actie.AANPASSEN);
 		if (magAanpassen)
 		{
 			columns.add(new AbstractColumn<>(Model.of("Opnieuw aanbieden"))
@@ -291,7 +291,7 @@ public abstract class VerwerkOngeldigeBerichtenPage extends GebruikerBasePage
 
 			});
 		}
-		final var magVerwijderen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN, Actie.VERWIJDEREN);
+		final var magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN, Actie.VERWIJDEREN);
 		if (magVerwijderen)
 		{
 			columns.add(new AbstractColumn<>(Model.of("Verwijderen"))
@@ -425,7 +425,7 @@ public abstract class VerwerkOngeldigeBerichtenPage extends GebruikerBasePage
 			berichtInformatie.append(ontvangenMelding.getOntvangenCdaBericht().getSetId());
 		}
 
-		logService.logGebeurtenis(LogGebeurtenis.VERWIJDEREN_ONGELDIG_BERICHT, ScreenitSession.get().getLoggedInAccount(), getMelding(model, berichtInformatie, ontvangenMelding),
+		logService.logGebeurtenis(LogGebeurtenis.VERWIJDEREN_ONGELDIG_BERICHT, ScreenitSession.get().getIngelogdAccount(), getMelding(model, berichtInformatie, ontvangenMelding),
 			Bevolkingsonderzoek.COLON);
 		info("Melding is verwijderd.");
 		addOrReplaceTable(target);

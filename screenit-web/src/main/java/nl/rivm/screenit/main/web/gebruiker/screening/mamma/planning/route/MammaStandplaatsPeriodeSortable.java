@@ -85,7 +85,7 @@ public abstract class MammaStandplaatsPeriodeSortable extends Sortable<PlanningS
 					.orElse(bepaalVolgNummerIndienGeenPeriodeVerplaatstWordt(teVerplaatsenStandplaatsPeriode));
 
 				standplaatsPeriodeService.updateSortList(nieuwVolgnr, teVerplaatsenStandplaatsPeriode, getScreeningsEenheid(),
-					ScreenitSession.get().getLoggedInInstellingGebruiker());
+					ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				finalizeMovement(target, true);
 			}
 			else
@@ -112,7 +112,7 @@ public abstract class MammaStandplaatsPeriodeSortable extends Sortable<PlanningS
 				.orElse(bepaalVolgNummerIndienGeenPeriodeVerplaatstWordt(teVerplaatsenStandplaatsPeriode));
 
 			standplaatsPeriodeService.updateSortList(nieuwVolgnr, teVerplaatsenStandplaatsPeriode, getScreeningsEenheid(),
-				ScreenitSession.get().getLoggedInInstellingGebruiker());
+				ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 			super.onReceive(target, teVerplaatsenStandplaatsPeriode, rijNummerWaarheenGeschovenIs - 1);
 
 			finalizeMovement(target, true);

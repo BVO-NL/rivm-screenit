@@ -131,16 +131,16 @@ public class BaseProjectServiceImpl implements BaseProjectService
 	private UploadDocumentService uploadDocumentService;
 
 	@Override
-	public List<Project> getProjecten(Project zoekObject, List<Long> instellingIdsProject, List<Long> instellingIdsBriefproject, long first, long count,
+	public List<Project> getProjecten(Project zoekObject, List<Long> organisatieIdsProject, List<Long> organisatieIdsBriefproject, long first, long count,
 		SortState<String> sortState)
 	{
-		return projectDao.getProjecten(zoekObject, instellingIdsProject, instellingIdsBriefproject, first, count, sortState);
+		return projectDao.getProjecten(zoekObject, organisatieIdsProject, organisatieIdsBriefproject, first, count, sortState);
 	}
 
 	@Override
-	public long getCountProjecten(Project zoekObject, List<Long> instellingIdsProject, List<Long> instellingIdsBriefproject)
+	public long getCountProjecten(Project zoekObject, List<Long> organisatieIdsProject, List<Long> organisatieIdsBriefproject)
 	{
-		return projectDao.getCountProjecten(zoekObject, instellingIdsProject, instellingIdsBriefproject);
+		return projectDao.getCountProjecten(zoekObject, organisatieIdsProject, organisatieIdsBriefproject);
 	}
 
 	private void valideerRulesPopulatie(ProjectGroep groep, Client client)

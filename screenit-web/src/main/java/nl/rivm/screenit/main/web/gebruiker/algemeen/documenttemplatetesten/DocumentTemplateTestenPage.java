@@ -51,7 +51,7 @@ import com.aspose.words.Document;
 @SecurityConstraint(
 	actie = Actie.INZIEN,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_BEHEER_DOCUMENTENTEMPLATES,
+	recht = Recht.MEDEWERKER_BEHEER_DOCUMENTENTEMPLATES,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA },
 	organisatieTypeScopes = { OrganisatieType.SCREENINGSORGANISATIE, OrganisatieType.RIVM })

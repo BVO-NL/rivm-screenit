@@ -26,7 +26,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.model.Functie;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.Titel;
 import nl.rivm.screenit.repository.algemeen.FunctieRepository;
 import nl.rivm.screenit.repository.algemeen.TitelRepository;
@@ -43,7 +43,7 @@ public class StamtabellenServiceImpl implements StamtabellenService
 	private TitelRepository titelRepository;
 
 	@Override
-	public List<Titel> getTitels(Gebruiker medewerker)
+	public List<Titel> getTitels(Medewerker medewerker)
 	{
 		var titels = titelRepository.findByActiefTrueOrderByTitelAsc();
 
@@ -72,7 +72,7 @@ public class StamtabellenServiceImpl implements StamtabellenService
 	}
 
 	@Override
-	public List<Functie> getFuncties(Gebruiker medewerker)
+	public List<Functie> getFuncties(Medewerker medewerker)
 	{
 		var functies = functieRepository.findByActiefTrueOrderByFunctieAsc();
 

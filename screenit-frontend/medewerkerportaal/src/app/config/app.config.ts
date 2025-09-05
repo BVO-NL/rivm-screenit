@@ -41,7 +41,7 @@ export const appConfig: ApplicationConfig = {
       const commonStrings = inject(ClrCommonStringsService)
 
       commonStrings.localize(clarityTranslations)
-      return autorisatieService.getGebruiker()
+      return autorisatieService.getMedewerker()
     }),
     {
       provide: WINDOW,

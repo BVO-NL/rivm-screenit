@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.service;
 import java.util.List;
 
 import nl.rivm.screenit.model.BerichtZoekFilter;
-import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;

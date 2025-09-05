@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.service.mamma;
 import java.util.Date;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsLocatie;
@@ -34,14 +34,14 @@ import com.google.common.collect.Range;
 
 public interface MammaStandplaatsService
 {
-	boolean saveOrUpdateStandplaats(MammaStandplaats standplaats, InstellingGebruiker ingelogdeGebruiker);
+	boolean saveOrUpdateStandplaats(MammaStandplaats standplaats, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	long countActieveStandplaatsPeriodes(MammaStandplaats standplaats);
 
-	boolean saveOrUpdateStandplaatsOpmerking(MammaStandplaatsOpmerking opmerking, MammaStandplaats standplaats, InstellingGebruiker loggedInInstellingGebruiker);
+	boolean saveOrUpdateStandplaatsOpmerking(MammaStandplaatsOpmerking opmerking, MammaStandplaats standplaats, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	boolean saveOrUpdateStandplaatsLocatie(MammaStandplaatsLocatie locatie, UploadDocument documentFromSelectedFile, MammaStandplaats standplaats,
-		InstellingGebruiker ingelogdeGebruiker, String oudeAdres, Range<Date> oudePeriode);
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker, String oudeAdres, Range<Date> oudePeriode);
 
 	String magStandplaatsInactiveren(MammaStandplaats standplaats);
 

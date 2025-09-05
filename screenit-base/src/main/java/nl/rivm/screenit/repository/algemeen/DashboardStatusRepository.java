@@ -23,7 +23,7 @@ package nl.rivm.screenit.repository.algemeen;
 
 import java.util.List;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.dashboard.DashboardStatus;
 import nl.rivm.screenit.model.dashboard.DashboardType;
 import nl.rivm.screenit.repository.BaseJpaRepository;
@@ -32,5 +32,5 @@ public interface DashboardStatusRepository extends BaseJpaRepository<DashboardSt
 {
 	List<DashboardStatus> findByType(DashboardType type);
 
-	List<DashboardStatus> findByOrganisatie(Instelling organisatie);
+	List<DashboardStatus> findByOrganisatie(Organisatie organisatie);
 }

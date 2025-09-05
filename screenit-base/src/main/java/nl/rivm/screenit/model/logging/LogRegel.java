@@ -42,8 +42,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
@@ -65,7 +65,7 @@ public class LogRegel extends AbstractHibernateObject
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore 
-	private Gebruiker gebruiker;
+	private Medewerker medewerker;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore 
@@ -73,7 +73,7 @@ public class LogRegel extends AbstractHibernateObject
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore 
-	private InstellingGebruiker ingelogdeGebruiker;
+	private OrganisatieMedewerker ingelogdeOrganisatieMedewerker;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore 

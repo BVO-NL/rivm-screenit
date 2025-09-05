@@ -32,7 +32,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_BEZWAAR_BRP },
+	recht = { Recht.MEDEWERKER_BEZWAAR_BRP },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class ExtraBeveiligdeOmgevingClientZoekenPage extends ExtraBeveiligdeOmgevingBasePage
 {

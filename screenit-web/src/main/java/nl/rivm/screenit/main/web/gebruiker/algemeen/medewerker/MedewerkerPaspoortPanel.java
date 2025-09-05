@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.web.gebruiker.algemeen.medewerker;
 
 /*-
@@ -22,45 +21,30 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.medewerker;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.service.OrganisatieService;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-public class MedewerkerPaspoortPanel extends GenericPanel<Gebruiker>
+public class MedewerkerPaspoortPanel extends GenericPanel<Medewerker>
 {
-
-	private static final long serialVersionUID = 1L;
-
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
-	public MedewerkerPaspoortPanel(String id, IModel<Gebruiker> model)
+	public MedewerkerPaspoortPanel(String id, IModel<Medewerker> model)
 	{
 		super(id, model);
 		add(new Label("voornaam"));
 		add(new Label("achternaamVolledig"));
 		add(new Label("functie.naam"));
-		String instellingen = "";
-		Gebruiker medewerker = model.getObject();
-		List<InstellingGebruiker> instellingMedewerkers = instellingService.getActieveInstellingGebruikers(medewerker);
-		boolean first = true;
-		for (InstellingGebruiker instellingMedewerker : instellingMedewerkers)
-		{
-			if (!first)
-			{
-				instellingen += ", ";
-			}
-			instellingen += instellingMedewerker.getOrganisatie().getNaam();
-			first = false;
-		}
-
-		add(new Label("organisaties", instellingen));
+		var medewerker = model.getObject();
+		var organisatieMedewerkers = organisatieService.getActieveOrganisatieMedewerkers(medewerker);
+		var organisaties = organisatieMedewerkers.stream()
+			.map(om -> om.getOrganisatie().getNaam())
+			.collect(java.util.stream.Collectors.joining(", "));
+		add(new Label("organisaties", organisaties));
 	}
 }

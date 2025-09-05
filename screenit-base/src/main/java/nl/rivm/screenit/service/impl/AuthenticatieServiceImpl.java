@@ -29,15 +29,15 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.InlogStatus;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.InlogMethode;
-import nl.rivm.screenit.repository.algemeen.GebruikerRepository;
+import nl.rivm.screenit.repository.algemeen.MedewerkerRepository;
 import nl.rivm.screenit.service.AuthenticatieService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InstellingService;
 import nl.rivm.screenit.service.MailService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.util.CodeGenerator;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
@@ -55,7 +55,7 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 {
 
 	@Autowired
-	private GebruikerRepository gebruikerRepository;
+	private MedewerkerRepository medewerkerRepository;
 
 	@Autowired
 	private SimplePreferenceService simplePreferenceService;
@@ -67,7 +67,7 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 	private HibernateService hibernateService;
 
 	@Autowired
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@Autowired
 	@Qualifier(value = "applicationUrl")
@@ -77,61 +77,61 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 	private ICurrentDateSupplier currentDateSupplier;
 
 	@Override
-	public Gebruiker requestNewPassword(String gebruikersnaam, String emailextra)
+	public Medewerker requestNewPassword(String gebruikersnaam, String emailextra)
 	{
-		Gebruiker gebruiker = null;
+		Medewerker medewerker = null;
 		try
 		{
 			if (StringUtils.isNotBlank(gebruikersnaam))
 			{
-				gebruiker = gebruikerRepository.findByGebruikersnaam(gebruikersnaam).orElse(null);
+				medewerker = medewerkerRepository.findByGebruikersnaam(gebruikersnaam).orElse(null);
 			}
 			else if (StringUtils.isNotBlank(emailextra))
 			{
-				gebruiker = gebruikerRepository.findByEmailextraAndActief(emailextra, true).orElse(null);
+				medewerker = medewerkerRepository.findByEmailextraAndActief(emailextra, true).orElse(null);
 			}
 
-			if (gebruiker != null && gebruiker.getEmailextra() != null && gebruiker.getInlogMethode() != InlogMethode.UZIPAS)
+			if (medewerker != null && medewerker.getEmailextra() != null && medewerker.getInlogMethode() != InlogMethode.UZIPAS)
 			{
 				var codeB = CodeGenerator.genereerCode(4, 5);
-				gebruiker.setDatumWachtwoordAanvraag(currentDateSupplier.getDate());
-				gebruiker.setWachtwoordChangeCode(codeB);
+				medewerker.setDatumWachtwoordAanvraag(currentDateSupplier.getDate());
+				medewerker.setWachtwoordChangeCode(codeB);
 				var url = applicationUrl;
 				if (!url.endsWith("/"))
 				{
 					url += "/";
 				}
 				var content = simplePreferenceService.getString(PreferenceKey.WACHTWOORDEMAIL.name(), "{link}");
-				var link = "<a href=\"" + url + "passwordchange?code=" + codeB + "&user=" + gebruiker.getGebruikersnaam() + "\">Wachtwoord</a>";
+				var link = "<a href=\"" + url + "passwordchange?code=" + codeB + "&user=" + medewerker.getGebruikersnaam() + "\">Wachtwoord</a>";
 
 				var aanhef = "";
-				if (gebruiker.getAanhef() != null)
+				if (medewerker.getAanhef() != null)
 				{
-					aanhef = " " + gebruiker.getAanhef().getNaam();
+					aanhef = " " + medewerker.getAanhef().getNaam();
 				}
 
 				var titel = "";
-				if (gebruiker.getTitel() != null)
+				if (medewerker.getTitel() != null)
 				{
-					titel = " " + gebruiker.getTitel().getNaam();
+					titel = " " + medewerker.getTitel().getNaam();
 				}
 
 				var achternaam = "";
-				if (StringUtils.isNotBlank(gebruiker.getAchternaam()))
+				if (StringUtils.isNotBlank(medewerker.getAchternaam()))
 				{
-					achternaam = " " + gebruiker.getAchternaam();
+					achternaam = " " + medewerker.getAchternaam();
 				}
 
 				var tussenvoegsel = "";
-				if (StringUtils.isNotBlank(gebruiker.getTussenvoegsel()))
+				if (StringUtils.isNotBlank(medewerker.getTussenvoegsel()))
 				{
-					tussenvoegsel = " " + gebruiker.getTussenvoegsel();
+					tussenvoegsel = " " + medewerker.getTussenvoegsel();
 				}
 
 				var voorletters = "";
-				if (StringUtils.isNotBlank(gebruiker.getVoorletters()))
+				if (StringUtils.isNotBlank(medewerker.getVoorletters()))
 				{
-					voorletters = " " + gebruiker.getVoorletters();
+					voorletters = " " + medewerker.getVoorletters();
 				}
 
 				content = content.replaceAll("\\{link\\}", link);
@@ -140,9 +140,9 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 				content = content.replaceAll("\\{achternaam\\}", achternaam);
 				content = content.replaceAll("\\{tussenvoegsel\\}", tussenvoegsel);
 				content = content.replaceAll("\\{voorletters\\}", voorletters);
-				content = content.replaceAll("\\{gebruikersnaam\\}", gebruiker.getGebruikersnaam());
+				content = content.replaceAll("\\{gebruikersnaam\\}", medewerker.getGebruikersnaam());
 
-				var emailAdres = gebruiker.getEmailextra();
+				var emailAdres = medewerker.getEmailextra();
 
 				mailService.queueMailAanProfessional(emailAdres, simplePreferenceService.getString(PreferenceKey.WACHTWOORDEMAILSUBJECT.name(), "Geen onderwerp"), content);
 			}
@@ -151,48 +151,48 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 		{
 			LOG.error(e.getMessage(), e);
 		}
-		return gebruiker;
+		return medewerker;
 	}
 
 	@Override
-	public Map<Gebruiker, Boolean> accountGeblokkeerd(Gebruiker gebruiker)
+	public Map<Medewerker, Boolean> accountGeblokkeerd(Medewerker medewerker)
 	{
-		var gebruikerGelukt = new HashMap<Gebruiker, Boolean>();
+		var gebruikerGelukt = new HashMap<Medewerker, Boolean>();
 		try
 		{
 
-			if (gebruiker != null && gebruiker.getEmailextra() != null)
+			if (medewerker != null && medewerker.getEmailextra() != null)
 			{
 				var content = simplePreferenceService.getString(PreferenceKey.GEBLOKKEERDEMAIL.name(), "U account is geblokkeerd door een beheerder.");
 
 				var aanhef = "";
-				if (gebruiker.getAanhef() != null)
+				if (medewerker.getAanhef() != null)
 				{
-					aanhef = " " + gebruiker.getAanhef().getNaam();
+					aanhef = " " + medewerker.getAanhef().getNaam();
 				}
 
 				var titel = "";
-				if (gebruiker.getTitel() != null)
+				if (medewerker.getTitel() != null)
 				{
-					titel = " " + gebruiker.getTitel().getNaam();
+					titel = " " + medewerker.getTitel().getNaam();
 				}
 
 				var achternaam = "";
-				if (StringUtils.isNotBlank(gebruiker.getAchternaam()))
+				if (StringUtils.isNotBlank(medewerker.getAchternaam()))
 				{
-					achternaam = " " + gebruiker.getAchternaam();
+					achternaam = " " + medewerker.getAchternaam();
 				}
 
 				var tussenvoegsel = "";
-				if (StringUtils.isNotBlank(gebruiker.getTussenvoegsel()))
+				if (StringUtils.isNotBlank(medewerker.getTussenvoegsel()))
 				{
-					tussenvoegsel = " " + gebruiker.getTussenvoegsel();
+					tussenvoegsel = " " + medewerker.getTussenvoegsel();
 				}
 
 				var voorletters = "";
-				if (StringUtils.isNotBlank(gebruiker.getVoorletters()))
+				if (StringUtils.isNotBlank(medewerker.getVoorletters()))
 				{
-					voorletters = " " + gebruiker.getVoorletters();
+					voorletters = " " + medewerker.getVoorletters();
 				}
 
 				content = content.replaceAll("\\{aanhef\\}", aanhef);
@@ -200,20 +200,20 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 				content = content.replaceAll("\\{achternaam\\}", achternaam);
 				content = content.replaceAll("\\{tussenvoegsel\\}", tussenvoegsel);
 				content = content.replaceAll("\\{voorletters\\}", voorletters);
-				content = content.replaceAll("\\{gebruikersnaam\\}", gebruiker.getGebruikersnaam());
+				content = content.replaceAll("\\{gebruikersnaam\\}", medewerker.getGebruikersnaam());
 
-				var emailAdres = gebruiker.getEmailwerk();
-				if (StringUtils.isNotBlank(gebruiker.getEmailextra()))
+				var emailAdres = medewerker.getEmailwerk();
+				if (StringUtils.isNotBlank(medewerker.getEmailextra()))
 				{
-					emailAdres = gebruiker.getEmailextra();
+					emailAdres = medewerker.getEmailextra();
 				}
 
 				mailService.queueMailAanProfessional(emailAdres, simplePreferenceService.getString(PreferenceKey.GEBLOKKEERDEMAILSUBJECT.name(), "Account geblokkeerd"), content);
-				gebruikerGelukt.put(gebruiker, true);
+				gebruikerGelukt.put(medewerker, true);
 			}
 			else
 			{
-				gebruikerGelukt.put(gebruiker, false);
+				gebruikerGelukt.put(medewerker, false);
 			}
 		}
 		catch (Exception e)
@@ -224,54 +224,54 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 	}
 
 	@Override
-	public void sendUziEmail(Gebruiker gebruiker)
+	public void sendUziEmail(Medewerker medewerker)
 	{
-		if (gebruiker.getEmailextra() != null)
+		if (medewerker.getEmailextra() != null)
 		{
 			var content = simplePreferenceService.getString(PreferenceKey.UZIEMAIL.name(), "Het Uzinummer is toegevoegd.");
 
 			var aanhef = "";
-			if (gebruiker.getAanhef() != null)
+			if (medewerker.getAanhef() != null)
 			{
-				aanhef = " " + gebruiker.getAanhef().getNaam();
+				aanhef = " " + medewerker.getAanhef().getNaam();
 			}
 
 			var titel = "";
-			if (gebruiker.getTitel() != null)
+			if (medewerker.getTitel() != null)
 			{
-				titel = " " + gebruiker.getTitel().getNaam();
+				titel = " " + medewerker.getTitel().getNaam();
 			}
 
 			var achternaam = "";
-			if (StringUtils.isNotBlank(gebruiker.getAchternaam()))
+			if (StringUtils.isNotBlank(medewerker.getAchternaam()))
 			{
-				achternaam = " " + gebruiker.getAchternaam();
+				achternaam = " " + medewerker.getAchternaam();
 			}
 
 			var tussenvoegsel = "";
-			if (StringUtils.isNotBlank(gebruiker.getTussenvoegsel()))
+			if (StringUtils.isNotBlank(medewerker.getTussenvoegsel()))
 			{
-				tussenvoegsel = " " + gebruiker.getTussenvoegsel();
+				tussenvoegsel = " " + medewerker.getTussenvoegsel();
 			}
 
 			var voorletters = "";
-			if (StringUtils.isNotBlank(gebruiker.getVoorletters()))
+			if (StringUtils.isNotBlank(medewerker.getVoorletters()))
 			{
-				voorletters = " " + gebruiker.getVoorletters();
+				voorletters = " " + medewerker.getVoorletters();
 			}
 
-			content = content.replaceAll("\\{uzinummer\\}", gebruiker.getUzinummer());
+			content = content.replaceAll("\\{uzinummer\\}", medewerker.getUzinummer());
 			content = content.replaceAll("\\{aanhef\\}", aanhef);
 			content = content.replaceAll("\\{titel\\}", titel);
 			content = content.replaceAll("\\{achternaam\\}", achternaam);
 			content = content.replaceAll("\\{tussenvoegsel\\}", tussenvoegsel);
 			content = content.replaceAll("\\{voorletters\\}", voorletters);
-			content = content.replaceAll("\\{gebruikersnaam\\}", gebruiker.getGebruikersnaam());
+			content = content.replaceAll("\\{gebruikersnaam\\}", medewerker.getGebruikersnaam());
 
-			var emailAdres = gebruiker.getEmailwerk();
-			if (StringUtils.isNotBlank(gebruiker.getEmailextra()))
+			var emailAdres = medewerker.getEmailwerk();
+			if (StringUtils.isNotBlank(medewerker.getEmailextra()))
 			{
-				emailAdres = gebruiker.getEmailextra();
+				emailAdres = medewerker.getEmailextra();
 			}
 
 			mailService.queueMailAanProfessional(emailAdres, simplePreferenceService.getString(PreferenceKey.UZIEMAILSUBJECT.name(), "Geen onderwerp"), content);
@@ -280,41 +280,41 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 	}
 
 	@Override
-	public List<InstellingGebruiker> getActieveInstellingGebruikers(Gebruiker gebruiker)
+	public List<OrganisatieMedewerker> getActieveOrganisatieMedewerkers(Medewerker medewerker)
 	{
-		return instellingService.getActieveInstellingGebruikersMetRollen(gebruiker);
+		return organisatieService.getActieveOrganisatieMedewerkersMetRollen(medewerker);
 	}
 
 	@Override
-	public Boolean isAccountLocked(Gebruiker gebruiker)
+	public Boolean isAccountLocked(Medewerker medewerker)
 	{
 		var foutieveAanmeldpogingenTimeout = simplePreferenceService.getInteger(PreferenceKey.FOUTIEVE_AANMELDPOGINGEN_TIMEOUT.name());
 		if (foutieveAanmeldpogingenTimeout == null)
 		{
 			foutieveAanmeldpogingenTimeout = 30;
 		}
-		return gebruiker != null &&
-			(InlogStatus.GEBLOKKEERD.equals(gebruiker.getInlogstatus()) ||
-				(InlogStatus.TIJDELIJK_GEBLOKKEERD.equals(gebruiker.getInlogstatus())
-					&& DateUtil.compareAfter(DateUtil.plusTijdseenheid(gebruiker.getTijdLaatsteFoutieveInlog(), foutieveAanmeldpogingenTimeout, ChronoUnit.MINUTES),
+		return medewerker != null &&
+			(InlogStatus.GEBLOKKEERD.equals(medewerker.getInlogstatus()) ||
+				(InlogStatus.TIJDELIJK_GEBLOKKEERD.equals(medewerker.getInlogstatus())
+					&& DateUtil.compareAfter(DateUtil.plusTijdseenheid(medewerker.getTijdLaatsteFoutieveInlog(), foutieveAanmeldpogingenTimeout, ChronoUnit.MINUTES),
 					currentDateSupplier.getDate())));
 	}
 
 	@Override
 	@Transactional
-	public void unlockAccount(Gebruiker gebruiker)
+	public void unlockAccount(Medewerker medewerker)
 	{
 
-		gebruiker.setFoutieveInlogpogingen(0);
-		gebruiker.setTijdLaatsteFoutieveInlog(null);
-		gebruiker.setInlogstatus(InlogStatus.OK);
-		hibernateService.saveOrUpdate(gebruiker);
+		medewerker.setFoutieveInlogpogingen(0);
+		medewerker.setTijdLaatsteFoutieveInlog(null);
+		medewerker.setInlogstatus(InlogStatus.OK);
+		hibernateService.saveOrUpdate(medewerker);
 	}
 
 	@Override
-	public void foutieveInlogpoging(Gebruiker gebruiker)
+	public void foutieveInlogpoging(Medewerker medewerker)
 	{
-		if (gebruiker != null && InlogStatus.OK.equals(gebruiker.getInlogstatus()))
+		if (medewerker != null && InlogStatus.OK.equals(medewerker.getInlogstatus()))
 		{
 			var foutieveAanmeldpogingenTimeout = simplePreferenceService.getInteger(PreferenceKey.FOUTIEVE_AANMELDPOGINGEN_TIMEOUT.name());
 			if (foutieveAanmeldpogingenTimeout == null)
@@ -326,7 +326,7 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 			{
 				maxFoutieveAanmeldpogingen = 3;
 			}
-			var foutieveInlogpogingen = gebruiker.getFoutieveInlogpogingen();
+			var foutieveInlogpogingen = medewerker.getFoutieveInlogpogingen();
 			if (foutieveInlogpogingen == null)
 			{
 				foutieveInlogpogingen = 1;
@@ -335,21 +335,21 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 			{
 				foutieveInlogpogingen++;
 			}
-			gebruiker.setFoutieveInlogpogingen(foutieveInlogpogingen);
+			medewerker.setFoutieveInlogpogingen(foutieveInlogpogingen);
 
-			if (gebruiker.getTijdLaatsteFoutieveInlog() == null)
+			if (medewerker.getTijdLaatsteFoutieveInlog() == null)
 			{
-				gebruiker.setTijdLaatsteFoutieveInlog(currentDateSupplier.getDate());
+				medewerker.setTijdLaatsteFoutieveInlog(currentDateSupplier.getDate());
 			}
-			var diff = currentDateSupplier.getDate().getTime() - gebruiker.getTijdLaatsteFoutieveInlog().getTime();
+			var diff = currentDateSupplier.getDate().getTime() - medewerker.getTijdLaatsteFoutieveInlog().getTime();
 			var blokkeren = foutieveInlogpogingen >= maxFoutieveAanmeldpogingen && diff < 60000L * foutieveAanmeldpogingenTimeout;
 			if (blokkeren)
 			{
-				gebruiker.setInlogstatus(InlogStatus.TIJDELIJK_GEBLOKKEERD);
+				medewerker.setInlogstatus(InlogStatus.TIJDELIJK_GEBLOKKEERD);
 			}
 
-			gebruiker.setTijdLaatsteFoutieveInlog(currentDateSupplier.getDate());
-			hibernateService.saveOrUpdate(gebruiker);
+			medewerker.setTijdLaatsteFoutieveInlog(currentDateSupplier.getDate());
+			hibernateService.saveOrUpdate(medewerker);
 		}
 	}
 

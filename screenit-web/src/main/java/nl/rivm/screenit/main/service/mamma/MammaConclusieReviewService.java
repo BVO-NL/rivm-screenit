@@ -26,7 +26,7 @@ import java.util.Optional;
 
 import nl.rivm.screenit.main.model.mamma.beoordeling.MammaConclusieReviewZoekObject;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.MammaConclusieReviewFilterOptie;
 import nl.rivm.screenit.model.mamma.MammaConclusieReview;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
@@ -34,12 +34,12 @@ import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
 
 public interface MammaConclusieReviewService
 {
-	MammaConclusieReview getConclusieReview(MammaScreeningRonde screeningRonde, InstellingGebruiker radioloog);
+	MammaConclusieReview getConclusieReview(MammaScreeningRonde screeningRonde, OrganisatieMedewerker radioloog);
 
-	MammaConclusieReview getConclusieReviewCoordinerendRadioloog(MammaScreeningRonde screeningRonde, InstellingGebruiker radioloog);
+	MammaConclusieReview getConclusieReviewCoordinerendRadioloog(MammaScreeningRonde screeningRonde, OrganisatieMedewerker radioloog);
 
 	void saveConclusieReviewCoordinerendRadioloog(MammaConclusieReview conclusieReview, MammaScreeningRonde screeningRonde,
-		InstellingGebruiker radioloog);
+		OrganisatieMedewerker radioloog);
 
 	void maakConclusieReviewVoorBetrokkenRadiologen(MammaScreeningRonde screeningRonde);
 
@@ -49,7 +49,7 @@ public interface MammaConclusieReviewService
 
 	Date bepaalInitieleConclusieReviewSorteerDatumCoordinerendRadioloog(MammaConclusieReviewZoekObject zoekObject);
 
-	void logConclusieReviewAfgerond(InstellingGebruiker gebruiker, Client client, MammaConclusieReview conclusieReview, boolean doorCoordinerendRadioloog);
+	void logConclusieReviewAfgerond(OrganisatieMedewerker organisatieMedewerker, Client client, MammaConclusieReview conclusieReview, boolean doorCoordinerendRadioloog);
 
-	Optional<MammaConclusieReview> getReviewAfgerondDoorCoordinerendRadioloog(InstellingGebruiker radioloog, MammaScreeningRonde screeningRonde);
+	Optional<MammaConclusieReview> getReviewAfgerondDoorCoordinerendRadioloog(OrganisatieMedewerker radioloog, MammaScreeningRonde screeningRonde);
 }

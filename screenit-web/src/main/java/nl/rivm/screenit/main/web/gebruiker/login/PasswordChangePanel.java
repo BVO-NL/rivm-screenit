@@ -24,8 +24,8 @@ package nl.rivm.screenit.main.web.gebruiker.login;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.ScreenitWachtwoordField;
 import nl.rivm.screenit.main.web.component.validator.ScreenITWachtwoordValidator;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.WachtwoordService;
@@ -40,7 +40,7 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-public abstract class PasswordChangePanel extends GenericPanel<Gebruiker>
+public abstract class PasswordChangePanel extends GenericPanel<Medewerker>
 {
 
 	@SpringBean
@@ -56,11 +56,11 @@ public abstract class PasswordChangePanel extends GenericPanel<Gebruiker>
 
 	private String wachtwoord2;
 
-	public PasswordChangePanel(String id, Gebruiker gebruiker)
+	public PasswordChangePanel(String id, Medewerker medewerker)
 	{
-		super(id, ModelUtil.cRModel(gebruiker));
+		super(id, ModelUtil.cRModel(medewerker));
 
-		ScreenitForm<InstellingGebruiker> passwordChangeForm = new ScreenitForm<>("passwordChangeForm");
+		ScreenitForm<OrganisatieMedewerker> passwordChangeForm = new ScreenitForm<>("passwordChangeForm");
 
 		HiddenField<String> gebruikersnaam = new HiddenField<>("gebruikersnaam");
 		passwordChangeForm.add(gebruikersnaam);
@@ -74,10 +74,10 @@ public abstract class PasswordChangePanel extends GenericPanel<Gebruiker>
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				Gebruiker medewerker = PasswordChangePanel.this.getModelObject();
+				Medewerker medewerker = PasswordChangePanel.this.getModelObject();
 
 				String previousPassword = medewerker.getWachtwoord();
-				Gebruiker newPasswordMedewerker = new Gebruiker();
+				Medewerker newPasswordMedewerker = new Medewerker();
 				newPasswordMedewerker.setId(medewerker.getId());
 				wachtwoordService.setWachtwoord(newPasswordMedewerker, wachtwoord1);
 				String newPassword = newPasswordMedewerker.getWachtwoord();
@@ -109,5 +109,5 @@ public abstract class PasswordChangePanel extends GenericPanel<Gebruiker>
 		add(passwordChangeForm);
 	}
 
-	protected abstract void onWachtwoordChanged(AjaxRequestTarget target, Gebruiker gebruiker);
+	protected abstract void onWachtwoordChanged(AjaxRequestTarget target, Medewerker medewerker);
 }

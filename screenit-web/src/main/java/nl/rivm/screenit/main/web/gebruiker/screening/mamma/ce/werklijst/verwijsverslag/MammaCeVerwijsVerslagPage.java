@@ -164,7 +164,7 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 			}
 		}.setVisible(!MammaBeoordelingStatus.GUNSTIG_MET_NEVENBEVINDING.equals(beoordelingModel.getObject().getStatus())));
 
-		verslagActiesContainer.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CENTRALE_EENHEID_VERWIJSVERSLAGEN_CONTROLLEREN, Actie.AANPASSEN));
+		verslagActiesContainer.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CENTRALE_EENHEID_VERWIJSVERSLAGEN_CONTROLLEREN, Actie.AANPASSEN));
 		add(verslagActiesContainer);
 	}
 
@@ -197,7 +197,7 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				beoordelingService.verslagLaterGoedkeurenDoorCE(ModelProxyHelper.deproxy(beoordelingModel.getObject()), ScreenitSession.get().getLoggedInInstellingGebruiker());
+				beoordelingService.verslagLaterGoedkeurenDoorCE(ModelProxyHelper.deproxy(beoordelingModel.getObject()), getIngelogdeOrganisatieMedewerker());
 				ScreenitSession.get().info(getString("verslag.goedkeuring.opgeschort"));
 				setResponsePage(MammaCeVerwijsVerslagenWerklijstPage.class);
 			}
@@ -238,7 +238,7 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 				MammaBeoordeling beoordeling = ModelProxyHelper.deproxy(beoordelingModel.getObject());
 				MammaScreeningRonde screeningRonde = baseBeoordelingService.getScreeningRonde(beoordeling);
 				beoordelingService.gunstigeUitslagMetNevenbevindingAfronden(beoordeling, rondeVoorAlternatieveHuisartsModel.getObject().getHuisarts(),
-					ScreenitSession.get().getLoggedInInstellingGebruiker());
+					getIngelogdeOrganisatieMedewerker());
 				if (screeningRonde.getHuisarts() != null || rondeVoorAlternatieveHuisartsModel.getObject().getHuisarts() != null)
 				{
 					ScreenitSession.get().info(getString("huisartsbericht.verstuurd"));
@@ -271,7 +271,7 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 				try
 				{
 					file = beoordelingService.verslagGoedkeurenDoorCE(beoordeling, directPrinten.getObject(),
-						rondeVoorAlternatieveHuisartsModel.getObject().getHuisarts(), ScreenitSession.get().getLoggedInInstellingGebruiker());
+						rondeVoorAlternatieveHuisartsModel.getObject().getHuisarts(), getIngelogdeOrganisatieMedewerker());
 				}
 				catch (IllegalStateException e)
 				{

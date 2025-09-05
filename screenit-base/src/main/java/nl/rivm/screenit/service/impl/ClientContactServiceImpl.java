@@ -54,8 +54,8 @@ import nl.rivm.screenit.model.ClientContactActie;
 import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.DossierStatus;
-import nl.rivm.screenit.model.InstellingGebruiker;
 import nl.rivm.screenit.model.OnderzoeksresultatenActie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.TijdelijkAdres;
@@ -280,15 +280,15 @@ public class ClientContactServiceImpl implements ClientContactService
 	public void saveClientContact(ClientContact contact, Map<ClientContactActieType, Map<ExtraOpslaanKey, Object>> extraOpslaanObjecten, Account account)
 	{
 		@SuppressWarnings("unchecked")
-		var isInstellingGebruiker = Hibernate.getClass(account).isAssignableFrom(InstellingGebruiker.class);
-		if (isInstellingGebruiker)
+		var isOrganisatieMedewerker = Hibernate.getClass(account).isAssignableFrom(OrganisatieMedewerker.class);
+		if (isOrganisatieMedewerker)
 		{
-			contact.setInstellingGebruiker((InstellingGebruiker) account);
+			contact.setOrganisatieMedewerker((OrganisatieMedewerker) account);
 		}
 		List<ClientContactActie> actiesToDelete = new ArrayList<>();
 		var client = contact.getClient();
 		mammaDoelgroepGewijzigd(contact, account);
-		contact = verwerkEerstHuisartsWijzigenActie(contact, actiesToDelete, account, extraOpslaanObjecten, isInstellingGebruiker);
+		contact = verwerkEerstHuisartsWijzigenActie(contact, actiesToDelete, account, extraOpslaanObjecten, isOrganisatieMedewerker);
 		for (var actie : contact.getActies())
 		{
 			var extraOpslaanParams = extraOpslaanObjecten.get(actie.getType());
@@ -377,13 +377,13 @@ public class ClientContactServiceImpl implements ClientContactService
 				mammaStuurVerzoekOmContact(client);
 				break;
 			case MAMMA_HERBEOORDELEN:
-				mammaAnnuleerBeoordeling(client, contact.getInstellingGebruiker());
+				mammaAnnuleerBeoordeling(client, contact.getOrganisatieMedewerker());
 				break;
 			default:
 				LOG.warn("Actie type niet verwerkt/opgeslagen. Type: {}", actie.getType());
 				break;
 			}
-			if (actie != null && isInstellingGebruiker)
+			if (actie != null && isOrganisatieMedewerker)
 			{
 				hibernateService.saveOrUpdate(actie);
 			}
@@ -392,7 +392,7 @@ public class ClientContactServiceImpl implements ClientContactService
 		{
 			contact.getActies().remove(actieToDelete);
 		}
-		if (isInstellingGebruiker)
+		if (isOrganisatieMedewerker)
 		{
 			var uitgevoerdeActies = contact.getActies().stream().map(a -> a.getType().name()).collect(Collectors.joining(", "));
 			logService.logGebeurtenis(LogGebeurtenis.CLIENTCONTACT_REGISTREREN, account, client, "Aangemaakt met vervolgstap(pen): " + uitgevoerdeActies);
@@ -414,10 +414,10 @@ public class ClientContactServiceImpl implements ClientContactService
 		return actie;
 	}
 
-	private void mammaAnnuleerBeoordeling(Client client, InstellingGebruiker ingelogdeGebruiker)
+	private void mammaAnnuleerBeoordeling(Client client, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		var laatsteBeoordeling = MammaScreeningRondeUtil.getLaatsteBeoordelingVanLaatsteOnderzoek(client);
-		beoordelingService.valideerEnHerbeoordeelBeoordeling(laatsteBeoordeling, ingelogdeGebruiker);
+		beoordelingService.valideerEnHerbeoordeelBeoordeling(laatsteBeoordeling, ingelogdeOrganisatieMedewerker);
 	}
 
 	private void mammaStuurVerzoekOmContact(Client client)
@@ -743,15 +743,15 @@ public class ClientContactServiceImpl implements ClientContactService
 	}
 
 	private ClientContact verwerkEerstHuisartsWijzigenActie(ClientContact contact, List<ClientContactActie> actiesToDelete, Account account,
-		Map<ClientContactActieType, Map<ExtraOpslaanKey, Object>> extraOpslaanObjecten, boolean isInstellingGebruiker)
+		Map<ClientContactActieType, Map<ExtraOpslaanKey, Object>> extraOpslaanObjecten, boolean isOrganisatieMedewerker)
 	{
-		verwerkEerstColonHuisartsWijzigenActie(contact, actiesToDelete, account, extraOpslaanObjecten, isInstellingGebruiker);
-		verwerkEerstMammaHuisartsWijzigenActie(contact, actiesToDelete, account, extraOpslaanObjecten, isInstellingGebruiker);
+		verwerkEerstColonHuisartsWijzigenActie(contact, actiesToDelete, account, extraOpslaanObjecten, isOrganisatieMedewerker);
+		verwerkEerstMammaHuisartsWijzigenActie(contact, actiesToDelete, account, extraOpslaanObjecten, isOrganisatieMedewerker);
 		return contact;
 	}
 
 	private void verwerkEerstMammaHuisartsWijzigenActie(ClientContact contact, List<ClientContactActie> actiesToDelete, Account account,
-		Map<ClientContactActieType, Map<ExtraOpslaanKey, Object>> extraOpslaanObjecten, boolean isInstellingGebruiker)
+		Map<ClientContactActieType, Map<ExtraOpslaanKey, Object>> extraOpslaanObjecten, boolean isOrganisatieMedewerker)
 	{
 		var huisartsWijzigenActie = contact.getActies().stream().filter(c -> ClientContactActieType.MAMMA_HUISARTS_WIJZIGEN.equals(c.getType()))
 			.findFirst();
@@ -761,7 +761,7 @@ public class ClientContactServiceImpl implements ClientContactService
 			var extraOpslaanParams = extraOpslaanObjecten.get(ClientContactActieType.MAMMA_HUISARTS_WIJZIGEN);
 			actie = wijzigMammaHuisarts(account, actie, actiesToDelete, extraOpslaanParams);
 
-			if (actie != null && isInstellingGebruiker)
+			if (actie != null && isOrganisatieMedewerker)
 			{
 				hibernateService.saveOrUpdate(actie);
 			}
@@ -769,7 +769,7 @@ public class ClientContactServiceImpl implements ClientContactService
 	}
 
 	private void verwerkEerstColonHuisartsWijzigenActie(ClientContact contact, List<ClientContactActie> actiesToDelete, Account account,
-		Map<ClientContactActieType, Map<ExtraOpslaanKey, Object>> extraOpslaanObjecten, boolean isInstellingGebruiker)
+		Map<ClientContactActieType, Map<ExtraOpslaanKey, Object>> extraOpslaanObjecten, boolean isOrganisatieMedewerker)
 	{
 		var huisartsWijzigenActie = contact.getActies().stream().filter(c -> ClientContactActieType.COLON_HUISARTS_WIJZIGEN.equals(c.getType()))
 			.findFirst();
@@ -781,7 +781,7 @@ public class ClientContactServiceImpl implements ClientContactService
 				c -> (ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN.equals(c.getType()) || ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN.equals(c.getType())));
 			actie = wijzigColonHuisarts(account, actie, contact.getClient(), actiesToDelete, extraOpslaanParams, isAfspraakActieAanwezig);
 
-			if (actie != null && isInstellingGebruiker)
+			if (actie != null && isOrganisatieMedewerker)
 			{
 				hibernateService.saveOrUpdate(actie);
 			}
@@ -1438,7 +1438,7 @@ public class ClientContactServiceImpl implements ClientContactService
 		return resultaat;
 	}
 
-	private boolean magNieuweIfobtAanvragen(Client client, boolean isHeraanmelding)
+	private boolean magNieuweFitAanvragen(Client client, boolean isHeraanmelding)
 	{
 		var resultaat = true;
 		var colonDossier = client.getColonDossier();
@@ -1460,7 +1460,7 @@ public class ClientContactServiceImpl implements ClientContactService
 		{
 			resultaat = false;
 		}
-		else if (ColonScreeningRondeUtil.heeftUitslagBrief(laatsteScreeningRonde))
+		else if (FITTestUtil.heeftUitslag(laatsteScreeningRonde))
 		{
 			resultaat = false;
 		}
@@ -1486,7 +1486,7 @@ public class ClientContactServiceImpl implements ClientContactService
 	@Override
 	public boolean magNieuweIfobtAanvragen(Client client)
 	{
-		return magNieuweIfobtAanvragen(client, false);
+		return magNieuweFitAanvragen(client, false);
 	}
 
 	@Override
@@ -1598,7 +1598,7 @@ public class ClientContactServiceImpl implements ClientContactService
 		switch (dossier.getBevolkingsonderzoek())
 		{
 		case COLON:
-			return magNieuweIfobtAanvragen(dossier.getClient(), isHeraanmelding);
+			return magNieuweFitAanvragen(dossier.getClient(), isHeraanmelding);
 		case CERVIX:
 			return cervixMagNieuweUitnodigingAanvragen((CervixDossier) dossier);
 		case MAMMA:
@@ -1695,17 +1695,17 @@ public class ClientContactServiceImpl implements ClientContactService
 
 	@Override
 	@Transactional
-	public void updateContact(ClientContact contact, InstellingGebruiker loggedInInstellingGebruiker)
+	public void updateContact(ClientContact contact, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		hibernateService.saveOrUpdate(contact);
 		var format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-		logService.logGebeurtenis(LogGebeurtenis.CLIENTCONTACT_REGISTREREN, loggedInInstellingGebruiker, contact.getClient(),
+		logService.logGebeurtenis(LogGebeurtenis.CLIENTCONTACT_REGISTREREN, ingelogdeOrganisatieMedewerker, contact.getClient(),
 			"van " + format.format(contact.getDatum()) + " gewijzigd");
 	}
 
 	@Override
 	@Transactional
-	public void verwijderContact(ClientContact contact, InstellingGebruiker loggedInInstellingGebruiker)
+	public void verwijderContact(ClientContact contact, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		var format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 		var melding = "van " + format.format(contact.getDatum()) + " verwijderd";
@@ -1713,7 +1713,7 @@ public class ClientContactServiceImpl implements ClientContactService
 		client.getContacten().remove(contact);
 		hibernateService.delete(contact);
 		hibernateService.saveOrUpdate(client);
-		logService.logGebeurtenis(LogGebeurtenis.CLIENTCONTACT_REGISTREREN, loggedInInstellingGebruiker, client, melding);
+		logService.logGebeurtenis(LogGebeurtenis.CLIENTCONTACT_REGISTREREN, ingelogdeOrganisatieMedewerker, client, melding);
 	}
 
 	@Override

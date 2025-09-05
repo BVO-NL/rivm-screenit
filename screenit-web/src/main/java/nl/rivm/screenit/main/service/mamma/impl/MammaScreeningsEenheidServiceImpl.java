@@ -37,7 +37,7 @@ import nl.rivm.screenit.main.util.ExportToXslUtil;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.screeningseenheid.MammaSECodeValidator;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -138,10 +138,10 @@ public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheid
 	}
 
 	@Override
-	public List<MammaScreeningsEenheid> getActieveScreeningsEenhedenVoorBeoordelingsEenheid(BeoordelingsEenheid beoordelingEenheid)
+	public List<MammaScreeningsEenheid> getActieveScreeningsEenhedenVoorBeoordelingsEenheid(BeoordelingsEenheid beoordelingsEenheid)
 	{
 		var zoekObject = new MammaScreeningsEenheid();
-		var be = hibernateService.deproxy(beoordelingEenheid);
+		var be = hibernateService.deproxy(beoordelingsEenheid);
 		zoekObject.setBeoordelingsEenheid(be);
 		zoekObject.setActief(true);
 		return zoekScreeningsEenheden(zoekObject, null, -1, -1, Sort.by(MammaScreeningsEenheid_.NAAM));
@@ -173,7 +173,7 @@ public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheid
 
 	@Transactional(propagation = Propagation.REQUIRED)
 	@Override
-	public boolean saveOrUpdateSE(MammaScreeningsEenheid screeningsEenheid, InstellingGebruiker ingelogdeGebruiker)
+	public boolean saveOrUpdateSE(MammaScreeningsEenheid screeningsEenheid, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		String melding = "";
 		String diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(screeningsEenheid, hibernateService.getHibernateSession());
@@ -190,7 +190,7 @@ public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheid
 
 		if (StringUtils.isNotEmpty(melding))
 		{
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_SCREENINGS_EENHEID, ingelogdeGebruiker, melding, Bevolkingsonderzoek.MAMMA);
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_SCREENINGS_EENHEID, ingelogdeOrganisatieMedewerker, melding, Bevolkingsonderzoek.MAMMA);
 			hibernateService.saveOrUpdate(screeningsEenheid);
 			baseConceptPlanningsApplicatie.sendScreeningsEenheid(screeningsEenheid, isNieuw);
 			return true;
@@ -205,7 +205,7 @@ public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheid
 		String melding = "Mammograaf " + mammograaf.getAeTitle() + " met werkstation IP-adres " + mammograaf.getWerkstationIpAdres() + " verwijderd";
 		hibernateService.delete(mammograaf);
 		screeningsEenheid.getMammografen().remove(mammograaf);
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_MAMMOGRAAF, ScreenitSession.get().getLoggedInInstellingGebruiker(), melding, Bevolkingsonderzoek.MAMMA);
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_MAMMOGRAAF, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), melding, Bevolkingsonderzoek.MAMMA);
 	}
 
 	private String seMetCodeEnNaam(MammaScreeningsEenheid screeningsEenheid)

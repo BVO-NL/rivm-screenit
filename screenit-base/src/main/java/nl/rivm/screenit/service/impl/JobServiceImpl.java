@@ -27,7 +27,7 @@ import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.Session;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.batch.BatchJob;
 import nl.rivm.screenit.model.enums.JobType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -72,15 +72,15 @@ public class JobServiceImpl implements JobService
 	private LogService logService;
 
 	@Override
-	public String startJob(JobType jobType, InstellingGebruiker instellingGebruiker)
+	public String startJob(JobType jobType, OrganisatieMedewerker organisatieMedewerker)
 	{
 		BatchJob batchJob = new BatchJob();
 		batchJob.setJobType(jobType);
-		return startJob(batchJob, instellingGebruiker);
+		return startJob(batchJob, organisatieMedewerker);
 	}
 
 	@Override
-	public String startJob(final BatchJob batchJob, InstellingGebruiker instellingGebruiker)
+	public String startJob(final BatchJob batchJob, OrganisatieMedewerker organisatieMedewerker)
 	{
 		MessageStoringMessageCreator messageStoringMessageCreator = new MessageStoringMessageCreator(batchJob);
 
@@ -107,10 +107,10 @@ public class JobServiceImpl implements JobService
 
 			String jmsMessageID = messageStoringMessageCreator.getMessage().getJMSMessageID();
 			String infoJobStartParameter = batchJob.getJobParameters().toString();
-			if (instellingGebruiker != null)
+			if (organisatieMedewerker != null)
 			{
 
-				logService.logGebeurtenis(LogGebeurtenis.BATCH_START, instellingGebruiker, batchJob.getJobType() + ": " + jmsMessageID + " params: " + infoJobStartParameter);
+				logService.logGebeurtenis(LogGebeurtenis.BATCH_START, organisatieMedewerker, batchJob.getJobType() + ": " + jmsMessageID + " params: " + infoJobStartParameter);
 			}
 			return jmsMessageID;
 		}

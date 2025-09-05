@@ -37,7 +37,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(
-	recht = Recht.GEBRUIKER_BEHEER_PARAMETERISATIE,
+	recht = Recht.MEDEWERKER_BEHEER_PARAMETERISATIE,
 	actie = Actie.INZIEN,
 	level = ToegangLevel.REGIO,
 	bevolkingsonderzoekScopes = Bevolkingsonderzoek.CERVIX,
@@ -56,7 +56,7 @@ public class CervixParameterisatiePage extends ParameterisatieBasePage
 		Parameterisatie parameterisatie = parameterisatieService.loadParameterisatie();
 		add(new CervixPrimaireParametersPanel("landelijkeParameters", new Model<>(parameterisatie)));
 
-		if (ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CERVIX_HUISARTS_TARIEF, Actie.INZIEN))
+		if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CERVIX_HUISARTS_TARIEF, Actie.INZIEN))
 		{
 			add(new CervixHuisartsTarievenPanel("huisartsTarieven"));
 		}

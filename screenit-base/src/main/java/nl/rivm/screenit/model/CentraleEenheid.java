@@ -32,7 +32,7 @@ import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
-public class CentraleEenheid extends Instelling
+public class CentraleEenheid extends Organisatie
 {
 	@Serial
 	private static final long serialVersionUID = 1L;

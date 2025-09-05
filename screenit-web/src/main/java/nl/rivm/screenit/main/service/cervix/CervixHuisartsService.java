@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.service.cervix;
 import java.util.List;
 
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
 import nl.rivm.screenit.model.cervix.CervixLabformulierAanvraag;
@@ -40,13 +40,13 @@ public interface CervixHuisartsService
 
 	CervixHuisarts getUitstrijkendArtsMetAgb(String agbCode);
 
-	CervixHuisarts maakOfWijzigUitstrijkendArts(CervixHuisarts uitstrijkendCervixHuisarts, InstellingGebruiker account) throws IllegalStateException;
+	CervixHuisarts maakOfWijzigUitstrijkendArts(CervixHuisarts uitstrijkendCervixHuisarts, OrganisatieMedewerker account) throws IllegalStateException;
 
 	void saveCervixHuisartsLocatie(List<CervixHuisartsLocatie> locaties);
 
-	void aanvraagLabformulieren(CervixLabformulierAanvraag labformulierAanvraag, CervixHuisartsLocatie huisartsLocatie, InstellingGebruiker instellingGebruiker);
+	void aanvraagLabformulieren(CervixLabformulierAanvraag labformulierAanvraag, CervixHuisartsLocatie huisartsLocatie, OrganisatieMedewerker organisatieMedewerker);
 
-	void saveOrUpdateArts(CervixHuisarts arts, LogGebeurtenis logGebeurtenis, InstellingGebruiker instellingGebruiker);
+	void saveOrUpdateArts(CervixHuisarts arts, LogGebeurtenis logGebeurtenis, OrganisatieMedewerker organisatieMedewerker);
 
 	CervixRegioBrief getLaatsteRegistratieBrief(CervixHuisarts arts);
 
@@ -56,13 +56,13 @@ public interface CervixHuisartsService
 
 	void updateLabformulierAanvraag(CervixRegioMergedBrieven regioMergedBrieven);
 
-	void resetWachtwoord(CervixHuisarts huisarts, Account loggedInAccount);
+	void resetWachtwoord(CervixHuisarts huisarts, Account ingelogdAccount);
 
-	void inactiveerHuisarts(CervixHuisarts huisarts, InstellingGebruiker loggedInAccount);
+	void inactiveerHuisarts(CervixHuisarts huisarts, OrganisatieMedewerker ingelogdAccount);
 
-	List<CervixLabformulierAanvraag> getCervixLabformulierOrdersVanHuisarts(CervixHuisarts instelling, long first, long count, Sort sort);
+	List<CervixLabformulierAanvraag> getCervixLabformulierOrdersVanHuisarts(CervixHuisarts huisarts, long first, long count, Sort sort);
 
-	long getAantalCervixLabformulierOrdersVanHuisarts(CervixHuisarts instelling);
+	long getAantalCervixLabformulierOrdersVanHuisarts(CervixHuisarts huisarts);
 
 	List<CervixHuisartsLocatie> getActieveHuisartsLocatiesVanHuisarts(CervixHuisarts huisarts);
 

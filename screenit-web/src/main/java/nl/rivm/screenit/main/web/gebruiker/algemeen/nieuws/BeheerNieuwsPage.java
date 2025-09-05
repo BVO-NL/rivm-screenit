@@ -30,7 +30,7 @@ import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -86,7 +86,7 @@ public class BeheerNieuwsPage extends AlgemeenPage
 	private IModel<NieuwsItem> nieuwNieuwsItem()
 	{
 		NieuwsItem nieuwsItem = new NieuwsItem();
-		nieuwsItem.setGemaaktDoor(((ScreenitSession) getSession()).getLoggedInInstellingGebruiker());
+		nieuwsItem.setGemaaktDoor(((ScreenitSession) getSession()).getIngelogdeOrganisatieMedewerker());
 		nieuwsItem.setGemaakt(currentDateSupplier.getDate());
 		return ModelUtil.cModel(nieuwsItem);
 	}
@@ -139,7 +139,7 @@ public class BeheerNieuwsPage extends AlgemeenPage
 					}
 					else
 					{
-						formNieuwsItem.setGewijzigdDoor(((ScreenitSession) getSession()).getLoggedInInstellingGebruiker());
+						formNieuwsItem.setGewijzigdDoor(((ScreenitSession) getSession()).getIngelogdeOrganisatieMedewerker());
 						formNieuwsItem.setGewijzigd(currentDateSupplier.getDate());
 
 						String gewijzigdTekst = "";
@@ -162,10 +162,10 @@ public class BeheerNieuwsPage extends AlgemeenPage
 			});
 		}
 
-		private String opDoorTekst(Date date, InstellingGebruiker instellingGebruiker)
+		private String opDoorTekst(Date date, OrganisatieMedewerker organisatieMedewerker)
 		{
 			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-			return "op " + format.format(date) + " door " + instellingGebruiker.getMedewerker().getNaamVolledig();
+			return "op " + format.format(date) + " door " + organisatieMedewerker.getMedewerker().getNaamVolledig();
 		}
 	}
 }

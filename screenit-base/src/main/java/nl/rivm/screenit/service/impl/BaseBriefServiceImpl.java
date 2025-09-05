@@ -50,7 +50,7 @@ import nl.rivm.screenit.model.BriefDefinitie;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.IDocument;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
@@ -367,7 +367,7 @@ public class BaseBriefServiceImpl implements BaseBriefService
 						if (logService.heeftGeenBestaandeLogregelBinnenPeriode(List.of(briefGenerator.getOnvolledigAdresLogGebeurtenis()), client.getPersoon().getBsn(),
 							onvolledigAdresMelding, dagen))
 						{
-							List<Instelling> organisaties = new ArrayList<>();
+							List<Organisatie> organisaties = new ArrayList<>();
 							organisaties.add(hibernateService.loadAll(Rivm.class).get(0));
 							if (mergedBrieven.getScreeningOrganisatie() != null)
 							{
@@ -390,7 +390,7 @@ public class BaseBriefServiceImpl implements BaseBriefService
 				{
 					LOG.error("Error bij aanmaken brief (brieftype: {}, briefId: {})", brief.getBriefType(), brief.getId(), e);
 					Client client = getClientFromBrief(brief);
-					var dashboardOrganisaties = new ArrayList<Instelling>();
+					var dashboardOrganisaties = new ArrayList<Organisatie>();
 					if (mergedBrieven.getScreeningOrganisatie() != null)
 					{
 						dashboardOrganisaties.add(mergedBrieven.getScreeningOrganisatie());

@@ -37,9 +37,9 @@ import lombok.AllArgsConstructor;
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.service.mamma.MammaUitwisselportaalService;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker_;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.BestandStatus;
@@ -107,13 +107,13 @@ public class MammaUitwisselportaalServiceImpl implements MammaUitwisselportaalSe
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void maakDownloadVerzoek(List<MammaOnderzoek> onderzoeken, InstellingGebruiker loggedInInstellingGebruiker) throws IOException
+	public void maakDownloadVerzoek(List<MammaOnderzoek> onderzoeken, OrganisatieMedewerker ingelogdeOrganisatieMedewerker) throws IOException
 	{
 		Client client = beoordelingService.getClientVanBeoordeling(onderzoeken.get(0).getLaatsteBeoordeling());
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_UITWISSELPORTAAL_DOWNLOAD, loggedInInstellingGebruiker, client,
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_UITWISSELPORTAAL_DOWNLOAD, ingelogdeOrganisatieMedewerker, client,
 			"Downloadverzoek aangemaakt");
 		MammaDownloadOnderzoekenVerzoek verzoek = new MammaDownloadOnderzoekenVerzoek();
-		verzoek.setAangemaaktDoor(loggedInInstellingGebruiker);
+		verzoek.setAangemaaktDoor(ingelogdeOrganisatieMedewerker);
 		verzoek.setAangemaaktOp(dateSupplier.getDate());
 		verzoek.setStatus(BestandStatus.NOG_TE_VERWERKEN);
 		verzoek.setGewijzigdOp(verzoek.getAangemaaktOp());
@@ -177,14 +177,14 @@ public class MammaUitwisselportaalServiceImpl implements MammaUitwisselportaalSe
 	}
 
 	@Override
-	public Optional<MammaDownloadOnderzoekenVerzoek> geldigDownloadVerzoekVoorIngelogdeGebruiker(long downloadVerzoekId, InstellingGebruiker instellingGebruiker)
+	public Optional<MammaDownloadOnderzoekenVerzoek> geldigDownloadVerzoekVoorIngelogdeOrganisatieMedewerker(long downloadVerzoekId, OrganisatieMedewerker organisatieMedewerker)
 	{
-		if (downloadVerzoekId <= 0 || instellingGebruiker == null)
+		if (downloadVerzoekId <= 0 || organisatieMedewerker == null)
 		{
 			return Optional.empty();
 		}
 
-		var verzoekFilter = maakDownloadVerzoekFilter(instellingGebruiker);
+		var verzoekFilter = maakDownloadVerzoekFilter(organisatieMedewerker);
 		verzoekFilter.setId(downloadVerzoekId);
 
 		if (downloadOnderzoekenVerzoekenDataProviderService.size(verzoekFilter) != 1)
@@ -198,12 +198,12 @@ public class MammaUitwisselportaalServiceImpl implements MammaUitwisselportaalSe
 	}
 
 	@Override
-	public MammaDownloadOnderzoekenVerzoek maakDownloadVerzoekFilter(InstellingGebruiker instellingGebruiker)
+	public MammaDownloadOnderzoekenVerzoek maakDownloadVerzoekFilter(OrganisatieMedewerker organisatieMedewerker)
 	{
 		var verzoekFilter = new MammaDownloadOnderzoekenVerzoek();
-		if (instellingGebruiker.getOrganisatie().getOrganisatieType() != OrganisatieType.RIVM)
+		if (organisatieMedewerker.getOrganisatie().getOrganisatieType() != OrganisatieType.RIVM)
 		{
-			verzoekFilter.setAangemaaktDoor(instellingGebruiker);
+			verzoekFilter.setAangemaaktDoor(organisatieMedewerker);
 		}
 		return verzoekFilter;
 	}
@@ -227,49 +227,49 @@ public class MammaUitwisselportaalServiceImpl implements MammaUitwisselportaalSe
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void updateDownloadVerzoekInformatie(MammaDownloadOnderzoekenVerzoek verzoek, InstellingGebruiker loggedInInstellingGebruiker)
+	public void updateDownloadVerzoekInformatie(MammaDownloadOnderzoekenVerzoek verzoek, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		verzoek.setGedownloadOp(dateSupplier.getDate());
 		hibernateService.saveOrUpdate(verzoek);
 		MammaOnderzoek onderzoek = verzoek.getOnderzoeken().get(0).getOnderzoek();
 		MammaScreeningRonde laatsteScreeningRondeMetUitslag = screeningrondeService
 			.getLaatsteScreeningRondeMetUitslag(onderzoek.getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient());
-		if (getFollowUpRadiologieVerslag(laatsteScreeningRondeMetUitslag, loggedInInstellingGebruiker) == null
-			&& ArrayUtils.contains(RADIOLOGIE_VERSLAG_ORGANISATIE_TYPES, loggedInInstellingGebruiker.getOrganisatie().getOrganisatieType()))
+		if (getFollowUpRadiologieVerslag(laatsteScreeningRondeMetUitslag, ingelogdeOrganisatieMedewerker) == null
+			&& ArrayUtils.contains(RADIOLOGIE_VERSLAG_ORGANISATIE_TYPES, ingelogdeOrganisatieMedewerker.getOrganisatie().getOrganisatieType()))
 		{
 			MammaFollowUpRadiologieVerslag radiologieVerslag = new MammaFollowUpRadiologieVerslag();
 			laatsteScreeningRondeMetUitslag.getFollowUpRadiologieVerslagen().add(radiologieVerslag);
 			radiologieVerslag.setScreeningRonde(laatsteScreeningRondeMetUitslag);
-			radiologieVerslag.setAangemaaktIn(loggedInInstellingGebruiker.getOrganisatie());
+			radiologieVerslag.setAangemaaktIn(ingelogdeOrganisatieMedewerker.getOrganisatie());
 			radiologieVerslag.setAangemaaktOp(dateSupplier.getDate());
 			radiologieVerslag.setInformatieBeschikbaar(true);
 			hibernateService.saveOrUpdateAll(radiologieVerslag, laatsteScreeningRondeMetUitslag);
 		}
 		Client client = beoordelingService.getClientVanBeoordeling(onderzoek.getLaatsteBeoordeling());
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_UITWISSELPORTAAL_DOWNLOAD, loggedInInstellingGebruiker, client,
+		logService.logGebeurtenis(LogGebeurtenis.MAMMA_UITWISSELPORTAAL_DOWNLOAD, ingelogdeOrganisatieMedewerker, client,
 			"ZIP bestand is gedownload");
 	}
 
 	@Override
-	public MammaFollowUpRadiologieVerslag getFollowUpRadiologieVerslag(MammaScreeningRonde screeningRonde, InstellingGebruiker loggedInInstellingGebruiker)
+	public MammaFollowUpRadiologieVerslag getFollowUpRadiologieVerslag(MammaScreeningRonde screeningRonde, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		return screeningRonde != null
 			? screeningRonde.getFollowUpRadiologieVerslagen().stream()
-			.filter(mammaFollowUpRadiologieVerslag -> mammaFollowUpRadiologieVerslag.getAangemaaktIn().equals(loggedInInstellingGebruiker.getOrganisatie())).findFirst()
+			.filter(mammaFollowUpRadiologieVerslag -> mammaFollowUpRadiologieVerslag.getAangemaaktIn().equals(ingelogdeOrganisatieMedewerker.getOrganisatie())).findFirst()
 			.orElse(null)
 			: null;
 	}
 
 	@Override
-	public Instelling getLaatstGedownloadDoorInstelling(MammaDossier dossier)
+	public Organisatie getLaatstGedownloadDoorOrganisatie(MammaDossier dossier)
 	{
 		return downloadOnderzoekRepository.findWith(MammaDownloadOnderzoekSpecification.isGedownload().and(MammaDownloadOnderzoekSpecification.heeftDossier(dossier))
-				.and(MammaDownloadOnderzoekSpecification.isGemaaktDoorActieveInstelling()), Instelling.class,
+				.and(MammaDownloadOnderzoekSpecification.isGemaaktDoorActieveOrganisatie()), Organisatie.class,
 			q -> q.projection((cb, r) ->
 				{
 					var verzoekJoin = join(r, MammaDownloadOnderzoek_.verzoek);
 					var aangemaaktDoorJoin = join(verzoekJoin, MammaDownloadOnderzoekenVerzoek_.aangemaaktDoor);
-					return aangemaaktDoorJoin.get(InstellingGebruiker_.organisatie);
+					return aangemaaktDoorJoin.get(OrganisatieMedewerker_.organisatie);
 				})
 				.sortBy(Sort.by(Sort.Order.desc(propertyChain(MammaDownloadOnderzoek_.VERZOEK, MammaDownloadOnderzoekenVerzoek_.GEDOWNLOAD_OP))))
 				.first().orElse(null));

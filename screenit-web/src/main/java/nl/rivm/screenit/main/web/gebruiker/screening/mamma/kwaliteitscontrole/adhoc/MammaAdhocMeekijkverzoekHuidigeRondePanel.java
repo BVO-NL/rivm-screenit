@@ -79,7 +79,7 @@ public class MammaAdhocMeekijkverzoekHuidigeRondePanel extends AbstractBEAccordi
 	protected void createButtons(WebMarkupContainer panelContainer, List<Component> buttons)
 	{
 		addButton(panelContainer, buttons, ID_GEZIEN, MammaVisitatieOnderzoekStatus.GEZIEN,
-			ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_MAMMA_IMS_KOPPELING, Actie.INZIEN));
+			ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_IMS_KOPPELING, Actie.INZIEN));
 	}
 
 	private void addButton(WebMarkupContainer panelContainer, List<Component> buttons, String id, MammaVisitatieOnderzoekStatus status, boolean btnVisible)

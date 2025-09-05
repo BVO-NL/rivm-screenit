@@ -64,7 +64,7 @@ public class TestMammaFollowUpVastleggenPopup extends TestMammaAbstractPopupPane
 		{
 			var screeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
 			var conclusieStatus = followUpService.bepaalFollowUpConclusie(screeningRonde, conclusieEnumModel.getObject());
-			followUpService.saveFollowUpConclusieStatus(screeningRonde, conclusieStatus, ScreenitSession.get().getLoggedInAccount());
+			followUpService.saveFollowUpConclusieStatus(screeningRonde, conclusieStatus, ScreenitSession.get().getIngelogdAccount());
 		}
 	}
 }

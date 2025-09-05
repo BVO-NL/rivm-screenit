@@ -34,7 +34,7 @@ public class MammaUploadBeeldenVerzoekDto implements Serializable
 {
 	private Long ziekenhuisId;
 
-	private String instellingNaam;
+	private String organisatieNaam;
 
 	private Long aantalOpenstaand;
 

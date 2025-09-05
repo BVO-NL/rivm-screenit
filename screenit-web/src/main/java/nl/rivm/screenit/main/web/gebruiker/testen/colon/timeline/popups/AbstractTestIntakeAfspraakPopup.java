@@ -24,25 +24,28 @@ package nl.rivm.screenit.main.web.gebruiker.testen.colon.timeline.popups;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
 import nl.rivm.screenit.main.service.colon.ColonTestTimelineService;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.popups.AbstractTestBasePopupPanel;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
+@Slf4j
 public abstract class AbstractTestIntakeAfspraakPopup extends AbstractTestBasePopupPanel
 {
 	@SpringBean
 	protected ColonTestTimelineService colonTestTimelineService;
 
 	@SpringBean
-	protected InstellingService instellingService;
+	protected OrganisatieService organisatieService;
 
 	protected final IModel<ColonIntakelocatie> intakeLocatieModel;
 
@@ -61,7 +64,7 @@ public abstract class AbstractTestIntakeAfspraakPopup extends AbstractTestBasePo
 	protected List<ColonIntakelocatie> getAlleIntakesLocatiesMetTenminste1ActieveKamer()
 	{
 		var actieveIntakeLocatiesMetActieveKamer = new ArrayList<ColonIntakelocatie>();
-		var actieveIntakeLocaties = instellingService.getActieveIntakelocaties();
+		var actieveIntakeLocaties = organisatieService.getActieveIntakelocaties();
 		for (var intakelocatie : actieveIntakeLocaties)
 		{
 			for (var kamer : intakelocatie.getKamers())
@@ -89,6 +92,7 @@ public abstract class AbstractTestIntakeAfspraakPopup extends AbstractTestBasePo
 			}
 			catch (Exception e)
 			{
+				LOG.error("Fout bij het maken van een intakeafspraak voor client: '{}'", client.getId(), e);
 				error(e.getMessage());
 			}
 		}

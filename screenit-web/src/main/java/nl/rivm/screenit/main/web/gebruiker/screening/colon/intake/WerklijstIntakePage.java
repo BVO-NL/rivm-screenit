@@ -43,7 +43,7 @@ import nl.rivm.screenit.main.web.component.table.GeboortedatumColumn;
 import nl.rivm.screenit.main.web.component.table.NotClickablePropertyColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.component.table.ScreenitDateTimePropertyColumn;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.ColonScreeningBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.ClientBrief;
@@ -117,7 +117,7 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_SCREENING_INTAKE_WERKLIJST,
+	recht = Recht.MEDEWERKER_SCREENING_INTAKE_WERKLIJST,
 	organisatieTypeScopes = OrganisatieType.INTAKELOCATIE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public abstract class WerklijstIntakePage extends ColonScreeningBasePage
@@ -200,7 +200,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 			@Override
 			protected boolean isRowClickable(IModel<ColonIntakeAfspraak> model)
 			{
-				return ScreenitSession.get().checkPermission(Recht.GEBRUIKER_SCREENING_INTAKE_WERKLIJST, Actie.AANPASSEN);
+				return ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_INTAKE_WERKLIJST, Actie.AANPASSEN);
 			}
 		};
 		add(table);
@@ -387,7 +387,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 
 	protected void addHandmatigVervolgbeleidColumn(List<IColumn<ColonIntakeAfspraak, String>> columns)
 	{
-		if (ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN, Actie.AANPASSEN))
+		if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN, Actie.AANPASSEN))
 		{
 
 			columns.add(new NotClickablePropertyColumn<>(Model.of("Handmatig vervolgbeleid"), "")
@@ -690,11 +690,11 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("label.werklijst.geplande", ColonGeplandeIntakesWerklijstPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.werklijst.openstaande", ColonOpenstaanteIntakesWerklijstPage.class)
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.werklijst.geplande", ColonGeplandeIntakesWerklijstPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.werklijst.openstaande", ColonOpenstaanteIntakesWerklijstPage.class)
 		{
 
 			@Override
@@ -717,8 +717,8 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 			}
 
 		});
-		contextMenuItems.add(new GebruikerMenuItem("label.werklijst.afgeronde", ColonAfgerondeIntakesWerklijstPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("label.werklijst.missende", ColonMissendeMdlVerslagenWerklijstPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.werklijst.afgeronde", ColonAfgerondeIntakesWerklijstPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("label.werklijst.missende", ColonMissendeMdlVerslagenWerklijstPage.class));
 		return contextMenuItems;
 	}
 }

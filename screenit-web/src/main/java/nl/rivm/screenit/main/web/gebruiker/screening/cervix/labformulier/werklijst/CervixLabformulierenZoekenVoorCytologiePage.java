@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.controleren.CervixLabformulierVoorCytologiePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.OrganisatieType;
@@ -42,7 +42,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	constraint = ShiroConstraint.HasPermission,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX },
 	recht = {
-		Recht.GEBRUIKER_CERVIX_LABFORMULIEREN_ZOEKEN_VOOR_CYTOLOGIE },
+		Recht.MEDEWERKER_CERVIX_LABFORMULIEREN_ZOEKEN_VOOR_CYTOLOGIE },
 	organisatieTypeScopes = { OrganisatieType.BMHK_LABORATORIUM })
 public class CervixLabformulierenZoekenVoorCytologiePage extends CervixLabformulierenBasePage
 {
@@ -52,7 +52,7 @@ public class CervixLabformulierenZoekenVoorCytologiePage extends CervixLabformul
 	public CervixLabformulierenZoekenVoorCytologiePage()
 	{
 		super(new CervixLabformulierStatus[] {},
-			new CervixLabformulierenFilter(ScreenitSession.get().getInstelling().getId(), ScreenitSession.get().getInstelling().getOrganisatieType(),
+			new CervixLabformulierenFilter(ScreenitSession.get().getOrganisatie().getId(), ScreenitSession.get().getOrganisatie().getOrganisatieType(),
 				CervixLabformulierenFilter.LabprocesStap.CYTOLOGIE, null,
 				Arrays.asList(new CervixLabformulierStatus[] { CervixLabformulierStatus.GECONTROLEERD_CYTOLOGIE }), null, null, null, null, null),
 			false, true, false, false, true, true, false);
@@ -65,10 +65,10 @@ public class CervixLabformulierenZoekenVoorCytologiePage extends CervixLabformul
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.cervixscreening.labformulieren-zoeken-voor-cytologie", CervixLabformulierenZoekenVoorCytologiePage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.cervixscreening.labformulieren-zoeken-voor-cytologie", CervixLabformulierenZoekenVoorCytologiePage.class));
 		return contextMenuItems;
 	}
 

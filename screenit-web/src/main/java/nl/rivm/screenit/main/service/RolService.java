@@ -26,8 +26,8 @@ import java.util.List;
 
 import nl.rivm.screenit.dto.RolDto;
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.InstellingGebruiker;
-import nl.rivm.screenit.model.InstellingGebruikerRol;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.model.Rol;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 
@@ -35,9 +35,9 @@ import org.springframework.data.domain.Sort;
 
 public interface RolService
 {
-	void setRolActiefOfInactief(Rol rol, Account loggedInAccount);
+	void setRolActiefOfInactief(Rol rol, Account ingelogdAccount);
 
-	List<Rol> getToeTeVoegenRollen(InstellingGebruiker organisatieMedewerkerRolToevoegen, InstellingGebruiker ingelogdeOrganisatieMedewerker);
+	List<Rol> getToeTeVoegenRollen(OrganisatieMedewerker organisatieMedewerkerRolToevoegen, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	List<Rol> getParentRollen(Rol rol);
 
@@ -47,8 +47,8 @@ public interface RolService
 
 	List<Rol> getActieveRollen(Collection<Bevolkingsonderzoek> bevolkingsonderzoeken);
 
-	boolean opslaan(Rol rol, List<InstellingGebruikerRol> rollen, RolDto initieleRol, List<Bevolkingsonderzoek> verwijderdeBevolkingsonderzoek,
-		InstellingGebruiker ingelogdeInstellingGebruiker);
+	boolean opslaan(Rol rol, List<OrganisatieMedewerkerRol> rollen, RolDto initieleRol, List<Bevolkingsonderzoek> verwijderdeBevolkingsonderzoek,
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	boolean zijnErRechtenDieVerwijderdWorden(Rol rol);
 

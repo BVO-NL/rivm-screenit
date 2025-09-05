@@ -79,17 +79,17 @@ import static nl.rivm.screenit.specification.cervix.CervixBoekRegelSpecification
 public class CervixLabformulierSpecification
 {
 
-	public static Specification<CervixLabformulier> filterHeeftOrganisatieType(OrganisatieType organisatieType, Long instellingId)
+	public static Specification<CervixLabformulier> filterHeeftOrganisatieType(OrganisatieType organisatieType, Long organisatieId)
 	{
 		return (r, q, cb) ->
 		{
 			if (organisatieType == OrganisatieType.BMHK_LABORATORIUM)
 			{
-				return cb.equal(join(r, CervixLabformulier_.laboratorium).get(AbstractHibernateObject_.id), instellingId);
+				return cb.equal(join(r, CervixLabformulier_.laboratorium).get(AbstractHibernateObject_.id), organisatieId);
 			}
 			else if (organisatieType == OrganisatieType.SCREENINGSORGANISATIE)
 			{
-				return cb.equal(screeningOrganisatieJoin(r).get(AbstractHibernateObject_.id), instellingId);
+				return cb.equal(screeningOrganisatieJoin(r).get(AbstractHibernateObject_.id), organisatieId);
 			}
 			else
 			{
@@ -206,10 +206,10 @@ public class CervixLabformulierSpecification
 		});
 	}
 
-	public static Specification<CervixLabformulier> filterOrganisatieTypeIsScreeningorganisatie(OrganisatieType organisatieType, Long instellingId)
+	public static Specification<CervixLabformulier> filterOrganisatieTypeIsScreeningorganisatie(OrganisatieType organisatieType, Long organisatieId)
 	{
 		return skipWhenFalse(organisatieType == OrganisatieType.SCREENINGSORGANISATIE,
-			(r, q, cb) -> cb.and(cb.equal(screeningOrganisatieJoin(r).get(AbstractHibernateObject_.id), instellingId)));
+			(r, q, cb) -> cb.and(cb.equal(screeningOrganisatieJoin(r).get(AbstractHibernateObject_.id), organisatieId)));
 	}
 
 	public static Specification<CervixLabformulier> filterIsDigitaal(Boolean heeftDigitaal)

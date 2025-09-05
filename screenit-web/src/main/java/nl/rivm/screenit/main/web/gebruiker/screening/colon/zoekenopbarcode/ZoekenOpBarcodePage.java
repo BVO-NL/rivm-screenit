@@ -32,7 +32,7 @@ import nl.rivm.screenit.main.web.component.table.ClientColumn;
 import nl.rivm.screenit.main.web.component.table.GeboortedatumColumn;
 import nl.rivm.screenit.main.web.component.table.PostcodeColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.clienten.inzien.ClientInzienPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.ColonScreeningBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
@@ -60,7 +60,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_SCREENING_ZOEKENOPBARCODE,
+	recht = Recht.MEDEWERKER_SCREENING_ZOEKENOPBARCODE,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class ZoekenOpBarcodePage extends ColonScreeningBasePage
 {
@@ -113,10 +113,10 @@ public class ZoekenOpBarcodePage extends ColonScreeningBasePage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("label.zoekenopbarcode", ZoekenOpBarcodePage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.zoekenopbarcode", ZoekenOpBarcodePage.class));
 		return contextMenuItems;
 	}
 
@@ -155,7 +155,7 @@ public class ZoekenOpBarcodePage extends ColonScreeningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<Client> model)
 			{
-				if (ScreenitSession.get().checkPermission(Recht.GEBRUIKER_CLIENT_GEGEVENS, Actie.INZIEN, model.getObject()))
+				if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_GEGEVENS, Actie.INZIEN, model.getObject()))
 				{
 					setResponsePage(new ClientInzienPage(model));
 				}

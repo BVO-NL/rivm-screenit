@@ -29,7 +29,7 @@ import nl.rivm.screenit.exceptions.OpslaanVerwijderenTijdBlokException;
 import nl.rivm.screenit.main.exception.BulkAanmakenException;
 import nl.rivm.screenit.main.exception.BulkVerwijderenException;
 import nl.rivm.screenit.main.exception.ValidatieException;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.RoosterListViewFilter;
 import nl.rivm.screenit.model.colon.dto.ColonBlokkadeDto;
@@ -47,23 +47,23 @@ import jakarta.annotation.Nullable;
 
 public interface ColonBlokkadeService
 {
-	void createBlokkade(ColonBlokkadeDto blokkadeDto, InstellingGebruiker instellingGebruiker)
+	void createBlokkade(ColonBlokkadeDto blokkadeDto, OrganisatieMedewerker organisatieMedewerker)
 		throws ValidatieException, OpslaanVerwijderenTijdBlokException, BulkAanmakenException;
 
-	void logAction(ColonBlokkade unsavedObject, InstellingGebruiker instellingGebruiker, ColonIntakelocatie intakelocatie, @Nullable ColonBlokkade origineleBlokkade,
+	void logAction(ColonBlokkade unsavedObject, OrganisatieMedewerker organisatieMedewerker, ColonIntakelocatie intakelocatie, @Nullable ColonBlokkade origineleBlokkade,
 		LogGebeurtenis logGebeurtenis, ColonHerhalingDto herhalingDto, Exception ex);
 
 	String getPeriodeTekst(ColonBlokkade unsavedObject);
 
-	void deleteBlokkade(Long blokkadeId, InstellingGebruiker instellingGebruiker) throws ValidatieException;
+	void deleteBlokkade(Long blokkadeId, OrganisatieMedewerker organisatieMedewerker) throws ValidatieException;
 
 	Optional<ColonBlokkade> getBlokkade(Long blokkadeId);
 
-	void updateBlokkade(ColonBlokkadeDto blokkadeDto, InstellingGebruiker loggedInInstellingGebruiker) throws OpslaanVerwijderenTijdBlokException, ValidatieException;
+	void updateBlokkade(ColonBlokkadeDto blokkadeDto, OrganisatieMedewerker ingelogdeOrganisatieMedewerker) throws OpslaanVerwijderenTijdBlokException, ValidatieException;
 
 	List<ColonTijdslotDto> zoekBlokkades(RoosterListViewFilter filter, long intakelocatieId);
 
-	void bulkDeleteBlokkades(List<Long> blokkadeIds, InstellingGebruiker loggedInInstellingGebruiker, boolean alleenValidatie) throws BulkVerwijderenException;
+	void bulkDeleteBlokkades(List<Long> blokkadeIds, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, boolean alleenValidatie) throws BulkVerwijderenException;
 
 	List<ColonBlokkade> zoekBlokkadesInRange(Range<LocalDateTime> range);
 

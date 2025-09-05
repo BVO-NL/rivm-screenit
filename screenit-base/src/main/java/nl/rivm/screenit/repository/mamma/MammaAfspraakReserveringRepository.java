@@ -28,7 +28,7 @@ import java.util.Optional;
 
 import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakReserveringView;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaAfspraakReservering;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 
@@ -50,7 +50,7 @@ public interface MammaAfspraakReserveringRepository extends BaseJpaRepository<Ma
 
 	void deleteAllByClient(Client client);
 
-	void deleteAllByMedewerker(InstellingGebruiker medewerker);
+	void deleteAllByMedewerker(OrganisatieMedewerker medewerker);
 
 	void deleteAllByAangemaaktOpBefore(LocalDateTime moment);
 

@@ -25,7 +25,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.huisartsenportaal.enums.CervixLocatieStatus;
-import nl.rivm.screenit.model.Instelling_;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie_;
@@ -44,12 +44,12 @@ public class CervixHuisartsSpecification
 {
 	public static Specification<CervixHuisarts> heeftAgbCode(String agbCode)
 	{
-		return (r, q, cb) -> cb.equal(r.get(Instelling_.agbcode), agbCode.trim());
+		return (r, q, cb) -> cb.equal(r.get(Organisatie_.agbcode), agbCode.trim());
 	}
 
 	public static ExtendedSpecification<CervixHuisarts> filterAgbCodeContaining(String agbCode)
 	{
-		return skipWhenEmptyExtended(agbCode, (r, q, cb) -> containsCaseInsensitive(cb, r.get(Instelling_.agbcode), agbCode));
+		return skipWhenEmptyExtended(agbCode, (r, q, cb) -> containsCaseInsensitive(cb, r.get(Organisatie_.agbcode), agbCode));
 	}
 
 	public static ExtendedSpecification<CervixHuisarts> isGeregistreerd()
@@ -76,6 +76,6 @@ public class CervixHuisartsSpecification
 
 	public static ExtendedSpecification<CervixHuisarts> isActief()
 	{
-		return (r, q, cb) -> cb.isTrue(r.get(Instelling_.actief));
+		return (r, q, cb) -> cb.isTrue(r.get(Organisatie_.actief));
 	}
 }

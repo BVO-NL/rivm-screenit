@@ -34,7 +34,7 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.PdfViewerPanel;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.CervixBarcodeAfdrukkenBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client;
@@ -71,7 +71,7 @@ import com.aspose.words.ImportFormatMode;
 @SecurityConstraint(
 	actie = Actie.INZIEN,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_CERVIX_BARCODES_AFDRUKKEN,
+	recht = Recht.MEDEWERKER_CERVIX_BARCODES_AFDRUKKEN,
 	bevolkingsonderzoekScopes = Bevolkingsonderzoek.CERVIX)
 public class CervixBarcodesAfdrukkenPage extends CervixBarcodeAfdrukkenBasePage
 {
@@ -245,9 +245,9 @@ public class CervixBarcodesAfdrukkenPage extends CervixBarcodeAfdrukkenBasePage
 	}
 
 	@Override
-	protected GebruikerHoofdMenuItem getActieveMenuItem()
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
-		return GebruikerHoofdMenuItem.CERVIX;
+		return MedewerkerHoofdMenuItem.CERVIX;
 	}
 
 }

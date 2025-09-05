@@ -39,7 +39,7 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.enums.MammaLezingRedenenFotobesprekingMbber;
 import nl.rivm.screenit.model.mamma.enums.MammaLezingRedenenFotobesprekingRadioloog;
 import nl.rivm.screenit.model.mamma.enums.MammaRetourCeReden;
@@ -61,7 +61,7 @@ public class MammaConclusieReview extends AbstractHibernateObject
 	private MammaScreeningRonde screeningRonde;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	private InstellingGebruiker radioloog;
+	private OrganisatieMedewerker radioloog;
 
 	@Column(nullable = false)
 	private Boolean reviewAlsCoordinerendRadioloog = false;

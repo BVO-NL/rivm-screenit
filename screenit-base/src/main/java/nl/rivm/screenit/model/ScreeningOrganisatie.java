@@ -43,7 +43,7 @@ import org.hibernate.envers.NotAudited;
 
 @Entity
 @Audited
-public class ScreeningOrganisatie extends Instelling
+public class ScreeningOrganisatie extends Organisatie
 {
 	@Serial
 	private static final long serialVersionUID = 1L;

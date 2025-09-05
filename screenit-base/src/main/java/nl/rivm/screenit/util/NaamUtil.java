@@ -28,8 +28,8 @@ import java.util.stream.Collectors;
 import nl.rivm.screenit.model.Aanhef;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.Gebruiker;
 import nl.rivm.screenit.model.Huisarts;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.NaamGebruik;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.weergave.persoon.NaamWeergaveHelper;
@@ -40,44 +40,44 @@ import com.google.common.base.Strings;
 
 public abstract class NaamUtil
 {
-	public static String getNaamGebruiker(Gebruiker gebruiker)
+	public static String getNaamMedewerker(Medewerker medewerker)
 	{
-		if (gebruiker == null)
+		if (medewerker == null)
 		{
 			return null;
 		}
 
-		StringBuilder ingelogdeGebruikerNaam = new StringBuilder();
-		if (StringUtils.isNotBlank(gebruiker.getVoorletters()))
+		StringBuilder medewerkerNaam = new StringBuilder();
+		if (StringUtils.isNotBlank(medewerker.getVoorletters()))
 		{
-			ingelogdeGebruikerNaam.append(NaamWeergaveHelper.standaardiseerVoorletters(gebruiker.getVoorletters()));
-			ingelogdeGebruikerNaam.append(" ");
+			medewerkerNaam.append(NaamWeergaveHelper.standaardiseerVoorletters(medewerker.getVoorletters()));
+			medewerkerNaam.append(" ");
 		}
-		ingelogdeGebruikerNaam.append(getTussenvoegselEnAchternaam(gebruiker));
-		return ingelogdeGebruikerNaam.toString();
+		medewerkerNaam.append(getTussenvoegselEnAchternaam(medewerker));
+		return medewerkerNaam.toString();
 	}
 
-	public static List<String> getNamenGebruikers(List<Gebruiker> gebruikers)
+	public static List<String> getNamenMedewerkers(List<Medewerker> medewerkers)
 	{
-		return gebruikers.stream().map(Gebruiker::getNaamVolledig).collect(Collectors.toList());
+		return medewerkers.stream().map(Medewerker::getNaamVolledig).collect(Collectors.toList());
 	}
 
-	public static String getTussenvoegselEnAchternaam(Gebruiker gebruiker)
+	public static String getTussenvoegselEnAchternaam(Medewerker medewerker)
 	{
-		if (gebruiker == null)
+		if (medewerker == null)
 		{
 			return null;
 		}
 
-		StringBuilder ingelogdeGebruikerNaam = new StringBuilder();
-		if (StringUtils.isNotBlank(gebruiker.getTussenvoegsel()))
+		StringBuilder medewerkerNaam = new StringBuilder();
+		if (StringUtils.isNotBlank(medewerker.getTussenvoegsel()))
 		{
-			ingelogdeGebruikerNaam.append(gebruiker.getTussenvoegsel());
-			ingelogdeGebruikerNaam.append(" ");
+			medewerkerNaam.append(medewerker.getTussenvoegsel());
+			medewerkerNaam.append(" ");
 
 		}
-		ingelogdeGebruikerNaam.append(gebruiker.getAchternaam());
-		return ingelogdeGebruikerNaam.toString();
+		medewerkerNaam.append(medewerker.getAchternaam());
+		return medewerkerNaam.toString();
 	}
 
 	public static String getTussenvoegselEnEigenAchternaam(GbaPersoon persoon)

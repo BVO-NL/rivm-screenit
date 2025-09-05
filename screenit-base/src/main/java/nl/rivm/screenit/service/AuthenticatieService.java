@@ -24,24 +24,24 @@ package nl.rivm.screenit.service;
 import java.util.List;
 import java.util.Map;
 
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 
 public interface AuthenticatieService
 {
 
-	Gebruiker requestNewPassword(String gebruikersnaam, String emailextra);
+	Medewerker requestNewPassword(String gebruikersnaam, String emailextra);
 
-	Map<Gebruiker, Boolean> accountGeblokkeerd(Gebruiker searchObject);
+	Map<Medewerker, Boolean> accountGeblokkeerd(Medewerker medewerker);
 
-	List<InstellingGebruiker> getActieveInstellingGebruikers(Gebruiker gebruiker);
+	List<OrganisatieMedewerker> getActieveOrganisatieMedewerkers(Medewerker medewerker);
 
-	Boolean isAccountLocked(Gebruiker gebruiker);
+	Boolean isAccountLocked(Medewerker medewerker);
 
-	void unlockAccount(Gebruiker gebruiker);
+	void unlockAccount(Medewerker medewerker);
 
-	void foutieveInlogpoging(Gebruiker gebruiker);
+	void foutieveInlogpoging(Medewerker medewerker);
 
-	void sendUziEmail(Gebruiker gebruiker);
+	void sendUziEmail(Medewerker medewerker);
 
 }

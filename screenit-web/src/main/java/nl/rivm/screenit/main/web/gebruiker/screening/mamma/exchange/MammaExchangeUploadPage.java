@@ -29,7 +29,7 @@ import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
 import nl.rivm.screenit.main.web.component.table.GeboortedatumColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaScreeningBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.OrganisatieType;
@@ -54,7 +54,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	constraint = ShiroConstraint.HasPermission,
 	checkScope = true,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA },
-	recht = { Recht.GEBRUIKER_MAMMA_EXCHANGE_UPLOAD },
+	recht = { Recht.MEDEWERKER_MAMMA_EXCHANGE_UPLOAD },
 	organisatieTypeScopes = { OrganisatieType.RADIOLOGIEAFDELING, OrganisatieType.MAMMAPOLI, OrganisatieType.ZORGINSTELLING, OrganisatieType.RIVM })
 public class MammaExchangeUploadPage extends MammaScreeningBasePage
 {
@@ -107,7 +107,7 @@ public class MammaExchangeUploadPage extends MammaScreeningBasePage
 		columns.add(new EnumPropertyColumn<>(Model.of("Status"), MammaUploadBeeldenVerzoek_.STATUS, "status"));
 		columns.add(new PropertyColumn<>(Model.of("Melding"), "laatsteUploadPoging.statusMelding"));
 
-		MammaExchangeUploadVerzoekDataProvider dataProvider = new MammaExchangeUploadVerzoekDataProvider(ModelUtil.sModel(ScreenitSession.get().getInstelling()));
+		MammaExchangeUploadVerzoekDataProvider dataProvider = new MammaExchangeUploadVerzoekDataProvider(ModelUtil.sModel(ScreenitSession.get().getOrganisatie()));
 		ScreenitDataTable<MammaUploadBeeldenVerzoek, String> openstaandeUploadVerzoekenTabel = new ScreenitDataTable<MammaUploadBeeldenVerzoek, String>(
 			"openstaandeUploadVerzoekenTabel", columns, dataProvider, 10, Model.of("verzoek(en)"))
 		{
@@ -125,7 +125,7 @@ public class MammaExchangeUploadPage extends MammaScreeningBasePage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 		return MammaExchangeBasePage.getContextMenuItemsList();
 	}

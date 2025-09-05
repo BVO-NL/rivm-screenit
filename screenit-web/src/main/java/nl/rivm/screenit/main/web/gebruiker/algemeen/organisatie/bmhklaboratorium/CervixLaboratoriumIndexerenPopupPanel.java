@@ -62,14 +62,12 @@ public abstract class CervixLaboratoriumIndexerenPopupPanel extends GenericPanel
 	{
 		super(id, ModelUtil.ccModel(new CervixLabTarief()));
 
-		var instelling = (BMHKLaboratorium) ScreenitSession.get().getCurrentSelectedOrganisatie();
+		var organisatie = (BMHKLaboratorium) ScreenitSession.get().getCurrentSelectedOrganisatie();
 		var tarief = getModelObject();
-		tarief.setBmhkLaboratorium(instelling);
+		tarief.setBmhkLaboratorium(organisatie);
 
-		var latest = verrichtingService.getLatestLabTarief(instelling);
+		var latest = verrichtingService.getLatestLabTarief(organisatie);
 		CervixTariefUtil.vulTarief(tarief, latest);
-
-		var organisatie = ScreenitSession.get().getCurrentSelectedOrganisatie();
 
 		var form = new Form<>("form", getModel());
 
@@ -113,7 +111,7 @@ public abstract class CervixLaboratoriumIndexerenPopupPanel extends GenericPanel
 				try
 				{
 					var nieuweTarief = (CervixTarief) HibernateHelper.deproxy(ModelProxyHelper.deproxy(form.getModelObject()));
-					var melding = betalingService.toevoegenIndexatieTarief(nieuweTarief, ScreenitSession.get().getLoggedInAccount());
+					var melding = betalingService.toevoegenIndexatieTarief(nieuweTarief, ScreenitSession.get().getIngelogdAccount());
 					opslaan(target, melding);
 				}
 				catch (IllegalArgumentException e)

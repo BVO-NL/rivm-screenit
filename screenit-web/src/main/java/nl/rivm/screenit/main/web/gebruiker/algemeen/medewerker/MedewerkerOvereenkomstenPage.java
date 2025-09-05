@@ -27,7 +27,7 @@ import nl.rivm.screenit.main.service.OvereenkomstService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.overeenkomsten.AfgeslotenOvereenkomstPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -50,7 +50,7 @@ import static nl.rivm.screenit.main.util.WicketSpringDataUtil.toSpringSort;
 	actie = Actie.INZIEN,
 	checkScope = false,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_OVEREENKOMSTEN_BEHEER,
+	recht = Recht.MEDEWERKER_OVEREENKOMSTEN_BEHEER,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class MedewerkerOvereenkomstenPage extends MedewerkerBeheer
 {
@@ -64,16 +64,16 @@ public class MedewerkerOvereenkomstenPage extends MedewerkerBeheer
 	{
 		IModel<Boolean> actiefModel = new Model<>(Boolean.TRUE);
 
-		Gebruiker gebruiker = getCurrentSelectedMedewerker();
-		Actie actie = autorisatieService.getActieVoorMedewerker(ScreenitSession.get().getLoggedInInstellingGebruiker(), gebruiker, Recht.GEBRUIKER_OVEREENKOMSTEN_BEHEER);
+		Medewerker medewerker = getCurrentSelectedMedewerker();
+		Actie actie = autorisatieService.getActieVoorMedewerker(getIngelogdeOrganisatieMedewerker(), medewerker, Recht.MEDEWERKER_OVEREENKOMSTEN_BEHEER);
 
-		add(new AfgeslotenOvereenkomstPanel("overeenkomstenPanel", actie, gebruiker, new KwaliteitsOvereenkomstDataProvider(actiefModel), actiefModel)
+		add(new AfgeslotenOvereenkomstPanel("overeenkomstenPanel", actie, medewerker, new KwaliteitsOvereenkomstDataProvider(actiefModel), actiefModel)
 		{
 			@Override
 			protected AbstractAfgeslotenOvereenkomst createAfgeslotenOvereenkomst()
 			{
 				AfgeslotenMedewerkerOvereenkomst afgeslotenMedewerkerOvereenkomst = new AfgeslotenMedewerkerOvereenkomst();
-				afgeslotenMedewerkerOvereenkomst.setGebruiker(ScreenitSession.get().getCurrentSelectedMedewerker());
+				afgeslotenMedewerkerOvereenkomst.setMedewerker(ScreenitSession.get().getCurrentSelectedMedewerker());
 				afgeslotenMedewerkerOvereenkomst.setScreeningOrganisatie(ScreenitSession.get().getScreeningOrganisatie());
 				afgeslotenMedewerkerOvereenkomst.setTeAccoderen(true);
 				return afgeslotenMedewerkerOvereenkomst;

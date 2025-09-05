@@ -159,7 +159,7 @@ public abstract class AfdrukkenControlePanel<MB extends MergedBrieven<?>> extend
 
 	private void logging(Level level, String melding)
 	{
-		Account account = ScreenitSession.get().getLoggedInAccount();
+		Account account = ScreenitSession.get().getIngelogdAccount();
 
 		LogEvent event = new LogEvent(melding);
 		event.setLevel(level);

@@ -84,7 +84,7 @@ public abstract class MammaRouteConceptWijzigingMeldingenDialogPanel extends Gen
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				PlanningConceptMeldingenDto meldingenDto = baseConceptPlanningsApplicatie.saveConcept(ScreenitSession.get().getLoggedInInstellingGebruiker(), false);
+				PlanningConceptMeldingenDto meldingenDto = baseConceptPlanningsApplicatie.saveConcept(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), false);
 				if (meldingenDto.niveau == MammaMeldingNiveau.PROBLEEM)
 				{
 					listContainer.addOrReplace(createMeldingenView(Model.of(meldingenDto)));
@@ -95,7 +95,8 @@ public abstract class MammaRouteConceptWijzigingMeldingenDialogPanel extends Gen
 				else
 				{
 					ScreenitSession.get().success(getString("message.gegevensopgeslagen"));
-					afspraakService.verzetAfsprakenNaarStandplaatsPlusBrievenKlaarzettenVoorAfdrukken(meldingenDto.afsprakenTeVerplaatsen, ScreenitSession.get().getLoggedInAccount());
+					afspraakService.verzetAfsprakenNaarStandplaatsPlusBrievenKlaarzettenVoorAfdrukken(meldingenDto.afsprakenTeVerplaatsen,
+						ScreenitSession.get().getIngelogdAccount());
 					close(target);
 				}
 			}

@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.CentraleEenheid;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.Mammapoli;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.RadiologieAfdeling;
@@ -48,14 +48,14 @@ import nl.rivm.screenit.model.colon.PaLaboratorium;
 public class OrganisatieUtil
 {
 
-	public static String getOrganisatieNamen(List<Instelling> instellingen)
+	public static String getOrganisatieNamen(List<Organisatie> organisaties)
 	{
-		return instellingen.stream().map(Instelling::getNaam).collect(Collectors.joining(", "));
+		return organisaties.stream().map(Organisatie::getNaam).collect(Collectors.joining(", "));
 	}
 
-	public static Instelling maakOrganisatie(OrganisatieType organisatieType, Instelling binnenOrganisatie)
+	public static Organisatie maakOrganisatie(OrganisatieType organisatieType, Organisatie binnenOrganisatie)
 	{
-		Instelling nieuweOrganisatie;
+		Organisatie nieuweOrganisatie;
 		var organisatieTypeGerelateerdeOrganisatie = binnenOrganisatie != null ? binnenOrganisatie.getOrganisatieType() : null;
 		switch (organisatieType)
 		{
@@ -119,7 +119,7 @@ public class OrganisatieUtil
 			nieuweOrganisatie = new BeoordelingsEenheid();
 			break;
 		default:
-			nieuweOrganisatie = new Instelling();
+			nieuweOrganisatie = new Organisatie();
 			break;
 		}
 		nieuweOrganisatie.setOrganisatieType(organisatieType);

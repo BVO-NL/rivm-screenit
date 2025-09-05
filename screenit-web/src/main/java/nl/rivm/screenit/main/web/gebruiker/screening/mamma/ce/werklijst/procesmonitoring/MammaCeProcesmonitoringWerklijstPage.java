@@ -51,7 +51,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.GEBRUIKER_CENTRALE_EENHEID_PROCESMONITORING },
+	recht = { Recht.MEDEWERKER_CENTRALE_EENHEID_PROCESMONITORING },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaCeProcesmonitoringWerklijstPage extends AbstractMammaCeWerklijst
 {

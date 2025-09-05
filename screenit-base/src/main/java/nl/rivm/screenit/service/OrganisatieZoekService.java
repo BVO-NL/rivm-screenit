@@ -26,8 +26,8 @@ import java.util.List;
 import jakarta.annotation.Nonnull;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.colon.ColoscopieCentrumWrapper;
 import nl.rivm.screenit.model.colon.ColoscopieCentrumZoekCriteria;
@@ -35,25 +35,25 @@ import nl.rivm.screenit.model.enums.ToegangLevel;
 
 public interface OrganisatieZoekService
 {
-	List<Instelling> zoekOrganisaties(Instelling searchObject, List<OrganisatieType> selectedOrganisatieTypes, List<OrganisatieType> excludeOrganisatieTypes,
-		InstellingGebruiker instellingGebruiker, long first, long count, String sortProperty, boolean asc);
+	List<Organisatie> zoekOrganisaties(Organisatie searchObject, List<OrganisatieType> selectedOrganisatieTypes, List<OrganisatieType> excludeOrganisatieTypes,
+		OrganisatieMedewerker organisatieMedewerker, long first, long count, String sortProperty, boolean asc);
 
-	long countOrganisaties(Instelling searchObject, List<OrganisatieType> selectedOrganisatieTypes, List<OrganisatieType> excludeOrganisatieTypes,
-		InstellingGebruiker instellingGebruiker);
+	long countOrganisaties(Organisatie searchObject, List<OrganisatieType> selectedOrganisatieTypes, List<OrganisatieType> excludeOrganisatieTypes,
+		OrganisatieMedewerker organisatieMedewerker);
 
-	List<Instelling> getOrganisatiesForNiveau(InstellingGebruiker instellingGebruiker, OrganisatieType organisatieTypeGekozen, ToegangLevel toegangLevel);
+	List<Organisatie> getOrganisatiesForNiveau(OrganisatieMedewerker organisatieMedewerker, OrganisatieType organisatieTypeGekozen, ToegangLevel toegangLevel);
 
-	List<Instelling> getAllActieveOrganisatiesWithType(Class<? extends Instelling> instelling);
+	List<Organisatie> getAllActieveOrganisatiesWithType(Class<? extends Organisatie> organisatie);
 
 	List<ColoscopieCentrumWrapper> zoekIntakeLocaties(ColoscopieCentrumZoekCriteria zoekObject, Client client, boolean alleenActiefKamers);
 
-	List<Instelling> getMogelijkeParents(@Nonnull Instelling instelling, @Nonnull InstellingGebruiker loggedInInstellingGebruiker);
+	List<Organisatie> getMogelijkeParents(@Nonnull Organisatie organisatie, @Nonnull OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	List<Long> getZichtbareInstellingenOpToegangLevel(Instelling instelling, ToegangLevel level, List<OrganisatieType> types);
+	List<Long> getZichtbareOrganisatiesOpToegangLevel(Organisatie organisatie, ToegangLevel level, List<OrganisatieType> types);
 
-	List<Instelling> screeningsorganisatiesWaarOrganisatieOndervalt(Instelling organisatie);
+	List<Organisatie> screeningsorganisatiesWaarOrganisatieOndervalt(Organisatie organisatie);
 
 	ColoscopieCentrumWrapper getNearestIntakeLocatie(Client client);
 
-	List<Instelling> zoekOrganisatieMetFqdn(String fqdn);
+	List<Organisatie> zoekOrganisatieMetFqdn(String fqdn);
 }

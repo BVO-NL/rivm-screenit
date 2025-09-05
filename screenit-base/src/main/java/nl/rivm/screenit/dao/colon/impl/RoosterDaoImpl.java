@@ -96,7 +96,7 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 		selectFromQueryString += " from colon.afspraakslot afs "
 			+ "join colon.tijdslot ts on afs.id=ts.id " 
 			+ "join colon.intakekamer k on ts.kamer=k.id " 
-			+ "join algemeen.org_organisatie il on il.id=k.intakelocatie "; 
+			+ "join algemeen.organisatie il on il.id=k.intakelocatie "; 
 		var whereQueryString = "where il.id=:intakelocatie and il.actief = true and k.actief = true ";
 
 		var params = new HashMap<String, Object>();
@@ -231,19 +231,15 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 
 		var querySB = new StringBuilder();
 
-		querySB.append("WITH bezoek_adres AS");
-		querySB.append("(");
-		querySB.append("	WITH organisatie_adressn_met_rank AS");
-		querySB.append("	(");
-		querySB.append("		SELECT");
-		querySB.append("		row_number() OVER (PARTITION BY org_organisatie ORDER BY adressen) AS rank,");
-		querySB.append("		org_organisatie, adressen");
-		querySB.append("		FROM algemeen.org_organisatie_adressen");
-		querySB.append("	)");
-		querySB.append("	SELECT org_organisatie, adressen");
-		querySB.append("	FROM organisatie_adressn_met_rank");
-		querySB.append("	WHERE rank = 1");
-		querySB.append(")");
+		if (!Boolean.TRUE.equals(filter.getAlleenIntakelocaties()))
+		{
+			querySB.append("""
+				WITH blokkades as MATERIALIZED ( \
+				   select vanaf, tot, kamer \
+				   from colon.tijdslot b \
+				   where b.type='BLOKKADE'\
+				)""");
+		}
 
 		if (!Boolean.TRUE.equals(filter.getAlleenIntakelocaties()))
 		{
@@ -279,9 +275,8 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 		{
 			querySB.append(" from colon.intakekamer k");
 		}
-		querySB.append(" join algemeen.org_organisatie il on k.intakelocatie=il.id");
-		querySB.append(" join bezoek_adres ba on il.id=ba.org_organisatie");
-		querySB.append(" join gedeeld.org_adres a on ba.adressen=a.id");
+		querySB.append(" join algemeen.organisatie il on k.intakelocatie=il.id");
+		querySB.append(" join gedeeld.org_adres a on il.adres=a.id");
 
 		var params = new HashMap<String, Object>();
 		querySB.append(" where il.actief = true");
@@ -291,15 +286,11 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 			querySB.append(" and not exists(select id from colon.intakeafspraak ia where ia.afspraakslot = afs.id and (ia.status=:status1 or ia.status=:status2))");
 			params.put("status1", ColonAfspraakStatus.GEPLAND.name());
 			params.put("status2", ColonAfspraakStatus.UITGEVOERD.name());
-			querySB.append(" and ts.id not in (select iafs.id from colon.tijdslot b, colon.tijdslot iafs "
-				+ "where b.type='BLOKKADE' and iafs.type='AFSPRAAKSLOT' "
-				+ "and b.kamer=iafs.kamer and b.vanaf<iafs.tot and b.tot>iafs.vanaf and iafs.vanaf>:vanaf1 and iafs.vanaf<:totEnMet1 )");
+			querySB.append(" and not exists(select 1 from blokkades b where b.kamer=ts.kamer and b.vanaf<ts.tot and b.tot>ts.vanaf) ");
 
 			querySB.append(" and ts.vanaf>:vanaf and ts.vanaf<:totEnMet");
 			params.put("vanaf", filter.getVanaf());
 			params.put("totEnMet", DateUtil.plusDagen(filter.getTotEnMet(), 1));
-			params.put("vanaf1", filter.getVanaf());
-			params.put("totEnMet1", DateUtil.plusDagen(filter.getTotEnMet(), 1));
 			if (filter.getIntakelocatieId() != null)
 			{
 				querySB.append(" and il.id = :intakelocatieId");
@@ -374,6 +365,7 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 		querySB.append(" join colon.tijdslot ts on afs.id=ts.id");
 		querySB.append(" join colon.intakekamer k on ts.kamer=k.id");
 
+//221f9288-0b32-4659-a21a-b32f2587a55f
 		var params = new HashMap<String, Object>();
 		querySB.append(" and k.actief = true");
 		querySB.append(" and not exists(select id from colon.intakeafspraak ia where ia.afspraakslot = afs.id and (ia.status=:status1 or ia.status=:status2))");

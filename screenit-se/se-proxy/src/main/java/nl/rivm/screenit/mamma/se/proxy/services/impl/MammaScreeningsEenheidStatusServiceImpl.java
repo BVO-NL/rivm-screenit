@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.services.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -23,37 +23,35 @@ package nl.rivm.screenit.mamma.se.proxy.services.impl;
 
 import java.time.LocalDateTime;
 
-import nl.rivm.screenit.mamma.se.proxy.SeProxyApplication;
-import nl.rivm.screenit.mamma.se.proxy.model.EnvironmentInfoDto;
+import lombok.RequiredArgsConstructor;
+
 import nl.rivm.screenit.mamma.se.proxy.model.SeStatusDto;
 import nl.rivm.screenit.mamma.se.proxy.services.AchtergrondRequestService;
+import nl.rivm.screenit.mamma.se.proxy.services.EnvironmentInfoService;
 import nl.rivm.screenit.mamma.se.proxy.services.MammaScreeningsEenheidStatusService;
 import nl.rivm.screenit.mamma.se.proxy.services.ProxyService;
 import nl.rivm.screenit.mamma.se.proxy.services.SeDaglijstService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class MammaScreeningsEenheidStatusServiceImpl implements MammaScreeningsEenheidStatusService
 {
+	private final AchtergrondRequestService achtergrondRequestService;
 
-	@Autowired
-	private AchtergrondRequestService achtergrondRequestService;
+	private final ProxyService proxyService;
 
-	@Autowired
-	private ProxyService proxyService;
+	private final SeDaglijstService daglijstService;
 
-	@Autowired
-	private SeDaglijstService daglijstService;
+	private final EnvironmentInfoService environmentInfoService;
 
 	@Override
 	public void maakStatusEnQueueRequestNaarCentraal()
 	{
-		EnvironmentInfoDto environmentInfo = SeProxyApplication.getEnvironmentInfo();
 		proxyService.cacheVullingInfo();
 		SeStatusDto statusDto = new SeStatusDto();
-		statusDto.setVersie(environmentInfo.getVersion());
+		statusDto.setVersie(environmentInfoService.getVersion());
 		statusDto.setHuisartsenAanwezig(proxyService.huisartsenInCache());
 		statusDto.setZorginstellingenAanwezig(proxyService.zorginstellingeninCache());
 		statusDto.setMammografenAanwezig(proxyService.mammografenInCache());

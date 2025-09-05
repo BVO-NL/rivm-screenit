@@ -138,7 +138,7 @@ public abstract class MammaWeekHerhalenPopup extends GenericPanel<MammaScreening
 				}
 				MammaScreeningsEenheid selectedSe = getSelectedScreeningEenheid();
 				baseConceptPlanningsApplicatie.herhaalWeek(MammaWeekHerhalenPopup.this.getModelObject(), selectedSe, herhalingsWeek, herhalenVanafWeek, herhalenTotEnMetWeek,
-					ScreenitSession.get().getLoggedInInstellingGebruiker());
+					ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				MammaScreeningsEenheid origSe = MammaWeekHerhalenPopup.this.getModelObject();
 				if (!origSe.equals(selectedSe))
 				{

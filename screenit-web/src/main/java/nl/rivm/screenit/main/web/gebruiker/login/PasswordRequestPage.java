@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.login;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.web.component.ComponentHelper;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.service.AuthenticatieService;
 import nl.rivm.screenit.service.LogService;
@@ -49,12 +49,12 @@ public class PasswordRequestPage extends LoginBasePage
 
 	public PasswordRequestPage(PageParameters pageParameters)
 	{
-		Gebruiker medewerker = new Gebruiker();
+		Medewerker medewerker = new Medewerker();
 		if (pageParameters != null && pageParameters.get("naam") != null && !pageParameters.get("naam").equals("null"))
 		{
 			medewerker.setGebruikersnaam(pageParameters.get("naam").toString());
 		}
-		final Form<Gebruiker> form = new Form<>("requestForm");
+		final Form<Medewerker> form = new Form<>("requestForm");
 		form.setDefaultModel(ModelUtil.csModel(medewerker));
 
 		ComponentHelper.addTextField(form, "gebruikersnaam", false, 50, false).add(new FocusBehavior());
@@ -65,14 +65,14 @@ public class PasswordRequestPage extends LoginBasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				var zoekGebruiker = form.getModelObject();
-				if (StringUtils.isBlank(zoekGebruiker.getGebruikersnaam()) && StringUtils.isBlank(zoekGebruiker.getEmailextra()))
+				var zoekMedewerker = form.getModelObject();
+				if (StringUtils.isBlank(zoekMedewerker.getGebruikersnaam()) && StringUtils.isBlank(zoekMedewerker.getEmailextra()))
 				{
 					error(getString("error.password.request"));
 					return;
 				}
 
-				requestPassword(zoekGebruiker);
+				requestPassword(zoekMedewerker);
 			}
 
 			@Override
@@ -89,22 +89,21 @@ public class PasswordRequestPage extends LoginBasePage
 
 	}
 
-	private void requestPassword(Gebruiker zoekGebruiker)
+	private void requestPassword(Medewerker zoekMedewerker)
 	{
-		var gebruiker = authenticatieService.requestNewPassword(zoekGebruiker.getGebruikersnaam(), zoekGebruiker.getEmailextra());
+		var medewerker = authenticatieService.requestNewPassword(zoekMedewerker.getGebruikersnaam(), zoekMedewerker.getEmailextra());
 
-		if (gebruiker != null)
+		if (medewerker != null)
 		{
-			if (gebruiker.getEmailextra() == null)
+			if (medewerker.getEmailextra() == null)
 			{
-				logService.logGebeurtenis(LogGebeurtenis.AANVRAGEN_ACCOUNT_MISLUKT, gebruiker, "Er is geen mail adres aanwezig voor deze gebruiker");
-				error(getString("error.password.request"));
+				logService.logGebeurtenis(LogGebeurtenis.AANVRAGEN_ACCOUNT_MISLUKT, medewerker, "Er is geen mail adres aanwezig voor deze medewerker");
 			}
 			else
 			{
-				logService.logGebeurtenis(LogGebeurtenis.WACHTWOORD_AANGEVRAAGD, gebruiker);
-				info(getString("info.gegevens.verstuurd"));
+				logService.logGebeurtenis(LogGebeurtenis.WACHTWOORD_AANGEVRAAGD, medewerker);
 			}
 		}
+		info(getString("info.gegevens.verstuurd"));
 	}
 }

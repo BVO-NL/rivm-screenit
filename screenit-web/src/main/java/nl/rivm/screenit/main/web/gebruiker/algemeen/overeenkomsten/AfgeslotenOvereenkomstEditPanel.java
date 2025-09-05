@@ -31,14 +31,14 @@ import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.ScreenitIndicatingAjaxSubmitLink;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.overeenkomsten.AbstractAfgeslotenOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.Overeenkomst;
 import nl.rivm.screenit.model.overeenkomsten.OvereenkomstType;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.wicket.hibernate.CglibHibernateModel;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -75,7 +75,7 @@ public abstract class AfgeslotenOvereenkomstEditPanel extends Panel
 	private OvereenkomstService overeenkomstService;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	private final IModel<List<FileUpload>> fileUploadModel = new ListModel<>();
 
@@ -131,7 +131,7 @@ public abstract class AfgeslotenOvereenkomstEditPanel extends Panel
 				try
 				{
 					overeenkomstService.saveOrUpdateOvereenkomst(overeenkomstModel.getObject(), ScreenitSession.get().fileUploadToUploadDocument(fileUpload),
-						ScreenitSession.get().getLoggedInAccount());
+						ScreenitSession.get().getIngelogdAccount());
 					info(getString("message.succes"));
 				}
 				catch (Exception e)
@@ -154,7 +154,7 @@ public abstract class AfgeslotenOvereenkomstEditPanel extends Panel
 		{
 			super(id, new CompoundPropertyModel<>(model));
 
-			Instelling currentSelectedOrganisatie = ScreenitSession.get().getCurrentSelectedOrganisatie();
+			Organisatie currentSelectedOrganisatie = ScreenitSession.get().getCurrentSelectedOrganisatie();
 			OvereenkomstType[] overeenkomstTypes = getOvereenkomstTypes(model.getObject());
 			List<OvereenkomstType> listOvereenkomstTypes = Arrays.asList(overeenkomstTypes);
 			OrganisatieType organisatieType = currentSelectedOrganisatie != null && listOvereenkomstTypes.contains(OvereenkomstType.OVEREENKOMST)
@@ -225,7 +225,7 @@ public abstract class AfgeslotenOvereenkomstEditPanel extends Panel
 
 			add(new DependantDateValidator(startDatum, eindDatum, Operator.AFTER));
 			add(new ScreenitDropdown<ScreeningOrganisatie>("screeningOrganisatie",
-				new SimpleListHibernateModel<>(instellingService.getActieveInstellingen(ScreeningOrganisatie.class)), new IChoiceRenderer<ScreeningOrganisatie>()
+				new SimpleListHibernateModel<>(organisatieService.getActieveOrganisaties(ScreeningOrganisatie.class)), new IChoiceRenderer<ScreeningOrganisatie>()
 			{
 
 				private static final long serialVersionUID = 1L;

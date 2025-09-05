@@ -73,6 +73,8 @@ public class TestPreferencesPage extends TestenBasePage
 
 	private Model<Boolean> bkKansberekeningEnabledModel;
 
+	private Model<Boolean> toonTestElementenModel;
+
 	private Model<Integer> bkKansberekeningDefaultOpkomstKansModel;
 
 	private WebMarkupContainer alternatiefMobielnummerContainer;
@@ -93,6 +95,7 @@ public class TestPreferencesPage extends TestenBasePage
 		alternatiefMobielNummer(form);
 
 		kansBerekeningBKFields(form);
+		toonTestElementenFields(form);
 
 		formOpslaan(form);
 	}
@@ -165,6 +168,7 @@ public class TestPreferencesPage extends TestenBasePage
 				preferenceEmailOpslaan();
 				preferenceSmsOpslaan();
 				opslaanBkKansberekening();
+				opslaanToonTestElementen();
 				success("Voorkeuren opgeslagen");
 
 			}
@@ -179,6 +183,17 @@ public class TestPreferencesPage extends TestenBasePage
 			{
 				preferenceService.putEnum(PreferenceKey.MAIL_VERZENDEN.name(), mailVerzendenModel.getObject());
 				preferenceService.putString(PreferenceKey.ALTERNATIEF_ADRES.toString(), alternatiefAdresModel.getObject());
+			}
+
+			private void opslaanBkKansberekening()
+			{
+				preferenceService.putBoolean(PreferenceKey.KANSBEREKENING_BK.toString(), bkKansberekeningEnabledModel.getObject());
+				preferenceService.putInteger(PreferenceKey.KANSBEREKENING_BK_TEST_DEFAULT_OPKOMSTKANS.toString(), bkKansberekeningDefaultOpkomstKansModel.getObject());
+			}
+
+			private void opslaanToonTestElementen()
+			{
+				preferenceService.putBoolean(PreferenceKey.TOON_TEST_ELEMENTEN.toString(), toonTestElementenModel.getObject());
 			}
 		});
 	}
@@ -246,9 +261,9 @@ public class TestPreferencesPage extends TestenBasePage
 		form.add(new NumberTextField<Integer>("defaultOpkomstkans", bkKansberekeningDefaultOpkomstKansModel).setMinimum(0).setMaximum(100));
 	}
 
-	private void opslaanBkKansberekening()
+	private void toonTestElementenFields(Form<Void> form)
 	{
-		preferenceService.putBoolean(PreferenceKey.KANSBEREKENING_BK.toString(), bkKansberekeningEnabledModel.getObject());
-		preferenceService.putInteger(PreferenceKey.KANSBEREKENING_BK_TEST_DEFAULT_OPKOMSTKANS.toString(), bkKansberekeningDefaultOpkomstKansModel.getObject());
+		toonTestElementenModel = Model.of(preferenceService.getBoolean(PreferenceKey.TOON_TEST_ELEMENTEN.toString()));
+		form.add(ComponentHelper.newCheckBox("toonTestElementen", toonTestElementenModel));
 	}
 }

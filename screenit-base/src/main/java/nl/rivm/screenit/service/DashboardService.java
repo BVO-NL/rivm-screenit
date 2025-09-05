@@ -23,7 +23,7 @@ package nl.rivm.screenit.service;
 
 import java.util.List;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.dashboard.DashboardLogRegel;
 import nl.rivm.screenit.model.dashboard.DashboardStatus;
 import nl.rivm.screenit.model.dashboard.DashboardType;
@@ -34,7 +34,7 @@ import nl.rivm.screenit.model.logging.LogRegel;
 
 public interface DashboardService
 {
-	void updateDashboard(LogRegel logRegel, List<Instelling> dashboardOrganisaties);
+	void updateDashboard(LogRegel logRegel, List<Organisatie> dashboardOrganisaties);
 
 	boolean updateLogRegelMetDashboardStatus(LogRegel logregel, String gebruikersnaam, DashboardStatus dashboardStatus);
 
@@ -44,9 +44,9 @@ public interface DashboardService
 
 	boolean verwijderLogRegelsVanDashboards(List<LogRegel> logRegels);
 
-	Level getHoogsteLevelDashboardItems(Instelling ingelogdVoorOrganisatie, List<Bevolkingsonderzoek> bevolkingsOnderzoeken);
+	Level getHoogsteLevelDashboardItems(Organisatie ingelogdVoorOrganisatie, List<Bevolkingsonderzoek> bevolkingsOnderzoeken);
 
-	List<DashboardStatus> getListOfDashboardStatussen(Instelling ingelogdVoorOrganisatie, List<Bevolkingsonderzoek> bevolkingsOnderzoeken, List<Level> loggingLevels);
+	List<DashboardStatus> getListOfDashboardStatussen(Organisatie ingelogdVoorOrganisatie, List<Bevolkingsonderzoek> bevolkingsOnderzoeken, List<Level> loggingLevels);
 
 	List<DashboardLogRegel> getDashboardLogRegelMetLogRegel(LogRegel logRegel);
 

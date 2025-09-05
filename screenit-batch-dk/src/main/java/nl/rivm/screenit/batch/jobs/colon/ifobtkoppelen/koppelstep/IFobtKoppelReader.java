@@ -37,6 +37,7 @@ import generated.KOPPELDATA.VERZONDENUITNODIGING;
 
 @Component
 @AllArgsConstructor
+@Deprecated(forRemoval = true, since = "nieuwe endpoint wordt gebruikt in PROD")
 public class IFobtKoppelReader extends BaseKoppelReader implements ItemReader<VERZONDENUITNODIGING>
 {
 	private final LogService logService;

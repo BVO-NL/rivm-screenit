@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 
 import nl.rivm.screenit.exceptions.MammaStandplaatsVanPostcodeOnbekendException;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.dashboard.DashboardStatus;
 import nl.rivm.screenit.model.logging.LogRegel;
 import nl.rivm.screenit.model.mamma.MammaDossier;
@@ -62,6 +62,6 @@ public interface MammaBaseDossierService extends LeegDossierService
 
 	void maakDossierLeeg(MammaDossier dossier, boolean alleAfmeldingen);
 
-	boolean setUitslagenGecontroleerdEnUpdateDashboard(LogRegel logRegel, InstellingGebruiker medewerker, DashboardStatus dashboardStatus);
+	boolean setUitslagenGecontroleerdEnUpdateDashboard(LogRegel logRegel, OrganisatieMedewerker medewerker, DashboardStatus dashboardStatus);
 
 }

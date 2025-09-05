@@ -28,8 +28,8 @@ import java.util.List;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.nieuws.GebruikerNieuwsItem;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.nieuws.MedewerkerNieuwsItem;
 import nl.rivm.screenit.model.nieuws.NieuwsItem;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.NieuwsService;
@@ -48,9 +48,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class NieuwsPage extends AlgemeenPage
 {
-
-	private static final long serialVersionUID = 1L;
-
 	@SpringBean
 	private NieuwsService nieuwsService;
 
@@ -65,29 +62,26 @@ public class NieuwsPage extends AlgemeenPage
 	{
 		super.onInitialize();
 
-		Gebruiker gebruiker = ((ScreenitSession) getSession()).getLoggedInInstellingGebruiker().getMedewerker();
+		Medewerker medewerker = ((ScreenitSession) getSession()).getIngelogdeOrganisatieMedewerker().getMedewerker();
 
 		WebMarkupContainer nieuwsContainer = new WebMarkupContainer("nieuws");
 		WebMarkupContainer geenNieuwsContainer = new WebMarkupContainer("geenNieuws");
 
-		List<Long> nieuwsItemIdsGebruiker = nieuwsService.getNieuwsItemIdsGebruiker(gebruiker);
-		List<NieuwsItem> nieuwsItemsGebruiker = new ArrayList<>();
-		for (Long nieuwItemId : nieuwsItemIdsGebruiker)
+		List<Long> nieuwsItemIdsMedewerker = nieuwsService.getNieuwsItemIdsMedewerker(medewerker);
+		List<NieuwsItem> nieuwsItemsMedewerker = new ArrayList<>();
+		for (Long nieuwItemId : nieuwsItemIdsMedewerker)
 		{
-			nieuwsItemsGebruiker.add(hibernateService.load(NieuwsItem.class, nieuwItemId));
+			nieuwsItemsMedewerker.add(hibernateService.load(NieuwsItem.class, nieuwItemId));
 		}
-		IModel<List<NieuwsItem>> nieuwsItemsGebruikerModel = ModelUtil.listRModel(nieuwsItemsGebruiker);
-		if (nieuwsItemsGebruikerModel.getObject() != null && !nieuwsItemsGebruikerModel.getObject().isEmpty())
+		IModel<List<NieuwsItem>> nieuwsItemsMedewerkerModel = ModelUtil.listRModel(nieuwsItemsMedewerker);
+		if (nieuwsItemsMedewerkerModel.getObject() != null && !nieuwsItemsMedewerkerModel.getObject().isEmpty())
 		{
-			ListView<NieuwsItem> nieuwsItemForms = new ListView<NieuwsItem>("nieuwsItem", nieuwsItemsGebruikerModel)
+			ListView<NieuwsItem> nieuwsItemForms = new ListView<NieuwsItem>("nieuwsItem", nieuwsItemsMedewerkerModel)
 			{
-
-				private static final long serialVersionUID = 1L;
-
 				@Override
 				protected void populateItem(ListItem<NieuwsItem> item)
 				{
-					EditForm nieuwsItemForm = new EditForm("form", ModelUtil.cModel(item.getModelObject()));
+					EditForm nieuwsItemForm = new EditForm("form", ModelUtil.ccModel(item.getModelObject()));
 					item.add(nieuwsItemForm);
 				}
 			};
@@ -132,37 +126,36 @@ public class NieuwsPage extends AlgemeenPage
 
 			AjaxSubmitLink gelezen = new AjaxSubmitLink("gelezen")
 			{
-				private static final long serialVersionUID = 1L;
 
 				@Override
 				protected void onSubmit(AjaxRequestTarget target)
 				{
-					Gebruiker gebruiker = ((ScreenitSession) getSession()).getLoggedInInstellingGebruiker().getMedewerker();
+					Medewerker medewerker = ((ScreenitSession) getSession()).getIngelogdeOrganisatieMedewerker().getMedewerker();
 
 					NieuwsItem formNieuwsItem = (NieuwsItem) EditForm.this.getDefaultModelObject();
 
-					GebruikerNieuwsItem gebruikerNieuwsItem = null;
-					for (GebruikerNieuwsItem item : gebruiker.getGebruikerNieuwsItems())
+					MedewerkerNieuwsItem medewerkerNieuwsItem = null;
+					for (MedewerkerNieuwsItem item : medewerker.getMedewerkerNieuwsItems())
 					{
 						if (item.getNieuwsItem().equals(formNieuwsItem))
 						{
-							gebruikerNieuwsItem = item;
+							medewerkerNieuwsItem = item;
 							break;
 						}
 					}
 
-					if (gebruikerNieuwsItem == null)
+					if (medewerkerNieuwsItem == null)
 					{
-						gebruikerNieuwsItem = new GebruikerNieuwsItem();
-						gebruikerNieuwsItem.setGebruiker(gebruiker);
-						gebruikerNieuwsItem.setNieuwsItem(formNieuwsItem);
+						medewerkerNieuwsItem = new MedewerkerNieuwsItem();
+						medewerkerNieuwsItem.setMedewerker(medewerker);
+						medewerkerNieuwsItem.setNieuwsItem(formNieuwsItem);
 
-						formNieuwsItem.getGebruikerNieuwsItems().add(gebruikerNieuwsItem);
-						gebruiker.getGebruikerNieuwsItems().add(gebruikerNieuwsItem);
+						formNieuwsItem.getMedewerkerNieuwsItems().add(medewerkerNieuwsItem);
+						medewerker.getMedewerkerNieuwsItems().add(medewerkerNieuwsItem);
 					}
 
-					gebruikerNieuwsItem.setNietZichtbaarVanaf(iCurrentDateSupplier.getDate());
-					hibernateService.saveOrUpdate(gebruikerNieuwsItem);
+					medewerkerNieuwsItem.setNietZichtbaarVanaf(iCurrentDateSupplier.getDate());
+					hibernateService.saveOrUpdate(medewerkerNieuwsItem);
 				}
 
 				@Override

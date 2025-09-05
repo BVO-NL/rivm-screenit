@@ -66,7 +66,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	constraint = ShiroConstraint.HasPermission,
 	checkScope = true,
 	level = ToegangLevel.REGIO,
-	recht = Recht.GEBRUIKER_BEHEER_GEBIEDEN,
+	recht = Recht.MEDEWERKER_BEHEER_GEBIEDEN,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class GemeenteGegevens extends GebiedenBeheerPage
 {
@@ -143,11 +143,11 @@ public class GemeenteGegevens extends GebiedenBeheerPage
 			}
 
 		};
-		allesVerwijderen.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_GEBIEDEN, Actie.VERWIJDEREN) && gemeente.getUitnodigingsGebieden().size() > 1);
+		allesVerwijderen.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_GEBIEDEN, Actie.VERWIJDEREN) && gemeente.getUitnodigingsGebieden().size() > 1);
 		refreshContainer.add(allesVerwijderen);
 
 		WebMarkupContainer opsplitsen = new WebMarkupContainer("opsplitsen");
-		opsplitsen.setVisible(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_BEHEER_GEBIEDEN, Actie.TOEVOEGEN));
+		opsplitsen.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_GEBIEDEN, Actie.TOEVOEGEN));
 		refreshContainer.add(opsplitsen);
 		opsplitsen.add(new IndicatingAjaxLink<Gemeente>("woonplaats")
 		{

@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.enums.MammaBeLezerSoort;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
@@ -65,7 +65,8 @@ public class MammaBaseBeoordelingReserveringServiceImpl implements MammaBaseBeoo
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW) 
-	public List<Long> reserveerBeoordelingen(Long startBeoordelingId, List<Long> beoordelingenIds, InstellingGebruiker ingelogdeGebruiker, MammaBeLezerSoort lezerSoort)
+	public List<Long> reserveerBeoordelingen(Long startBeoordelingId, List<Long> beoordelingenIds, OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
+		MammaBeLezerSoort lezerSoort)
 	{
 		var komendeGereserveerdeIds = new ArrayList<Long>();
 		var overgeslagenIds = new ArrayList<Long>();
@@ -75,9 +76,9 @@ public class MammaBaseBeoordelingReserveringServiceImpl implements MammaBaseBeoo
 		{
 			var beoordeling = hibernateService.get(MammaBeoordeling.class, beoordelingenIds.get(teReserverenIndex));
 			hibernateService.reload(beoordeling); 
-			if (!gereserveerdDoorIemandAnders(ingelogdeGebruiker, beoordeling) && statusToegestaan(beoordeling, lezerSoort, ingelogdeGebruiker))
+			if (!gereserveerdDoorIemandAnders(ingelogdeOrganisatieMedewerker, beoordeling) && statusToegestaan(beoordeling, lezerSoort, ingelogdeOrganisatieMedewerker))
 			{
-				beoordeling.setReserveringhouder(ingelogdeGebruiker);
+				beoordeling.setReserveringhouder(ingelogdeOrganisatieMedewerker);
 				beoordeling.setReserveringsmoment(currentDateSupplier.getDate());
 				komendeGereserveerdeIds.add(beoordeling.getId());
 			}
@@ -98,15 +99,15 @@ public class MammaBaseBeoordelingReserveringServiceImpl implements MammaBaseBeoo
 		return lezerSoort == MammaBeLezerSoort.EERSTE_OF_TWEEDE_LEZER ? 3 : 1;
 	}
 
-	private boolean statusToegestaan(MammaBeoordeling beoordeling, MammaBeLezerSoort lezerSoort, InstellingGebruiker ingelogdeGebruiker)
+	private boolean statusToegestaan(MammaBeoordeling beoordeling, MammaBeLezerSoort lezerSoort, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		if (beoordeling.getStatus() == MammaBeoordelingStatus.VERSLAG_GEREED && !beoordeling.getVerslagLezing().getBeoordelaar().equals(ingelogdeGebruiker))
+		if (beoordeling.getStatus() == MammaBeoordelingStatus.VERSLAG_GEREED && !beoordeling.getVerslagLezing().getBeoordelaar().equals(ingelogdeOrganisatieMedewerker))
 		{
 			return false;
 		}
 
 		if (List.of(MammaBeoordelingStatus.TWEEDE_LEZING, MammaBeoordelingStatus.TWEEDE_LEZING_OPGESLAGEN).contains(beoordeling.getStatus())
-			&& ingelogdeGebruiker.equals(beoordeling.getEersteLezing().getBeoordelaar()))
+			&& ingelogdeOrganisatieMedewerker.equals(beoordeling.getEersteLezing().getBeoordelaar()))
 		{
 			LOG.warn("1e lezer probeert beoordeling '{}' te openenen voor 2e lezing", beoordeling.getId());
 			return false;
@@ -140,9 +141,9 @@ public class MammaBaseBeoordelingReserveringServiceImpl implements MammaBaseBeoo
 	}
 
 	@Override
-	public boolean gereserveerdDoorIemandAnders(InstellingGebruiker ingelogdeGebruiker, MammaBeoordeling beoordeling)
+	public boolean gereserveerdDoorIemandAnders(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, MammaBeoordeling beoordeling)
 	{
-		return beoordeling.getReserveringhouder() != null && !ingelogdeGebruiker.equals(beoordeling.getReserveringhouder()) && !heeftVerlopenReservering(beoordeling);
+		return beoordeling.getReserveringhouder() != null && !ingelogdeOrganisatieMedewerker.equals(beoordeling.getReserveringhouder()) && !heeftVerlopenReservering(beoordeling);
 	}
 
 	private boolean heeftVerlopenReservering(MammaBeoordeling beoordeling)
@@ -165,7 +166,7 @@ public class MammaBaseBeoordelingReserveringServiceImpl implements MammaBaseBeoo
 	}
 
 	@Override
-	public boolean gereserveerdVoorGebruiker(long beoordelingId, InstellingGebruiker ingelogdeGebruiker, MammaBeLezerSoort lezerSoort)
+	public boolean gereserveerdVoorMedewerker(long beoordelingId, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, MammaBeLezerSoort lezerSoort)
 	{
 		if (MammaBeLezerSoort.CONCLUSIE_REVIEW.equals(lezerSoort))
 		{
@@ -174,14 +175,14 @@ public class MammaBaseBeoordelingReserveringServiceImpl implements MammaBaseBeoo
 
 		var beoordeling = hibernateService.get(MammaBeoordeling.class, beoordelingId); 
 		hibernateService.reload(beoordeling); 
-		return ingelogdeGebruiker.equals(beoordeling.getReserveringhouder()) && !heeftVerlopenReservering(beoordeling);
+		return ingelogdeOrganisatieMedewerker.equals(beoordeling.getReserveringhouder()) && !heeftVerlopenReservering(beoordeling);
 	}
 
 	@Transactional
 	@Override
-	public void reserveringenVrijgeven(InstellingGebruiker ingelogdeGebruiker)
+	public void reserveringenVrijgeven(OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		var vrijTeGevenBeoordelingen = beoordelingRepository.findAll(isVrijTeGeven(ingelogdeGebruiker));
+		var vrijTeGevenBeoordelingen = beoordelingRepository.findAll(isVrijTeGeven(ingelogdeOrganisatieMedewerker));
 		vrijTeGevenBeoordelingen.forEach(this::geefBeoordelingVrij);
 		LOG.info("Vrijgegeven beoordeling id's: {} ", vrijTeGevenBeoordelingen.stream().map(b -> b.getId().toString()).collect(Collectors.joining(",")));
 	}

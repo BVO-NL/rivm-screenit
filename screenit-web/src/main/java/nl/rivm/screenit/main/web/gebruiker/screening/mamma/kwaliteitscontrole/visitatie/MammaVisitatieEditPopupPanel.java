@@ -85,10 +85,10 @@ public abstract class MammaVisitatieEditPopupPanel extends GenericPanel<MammaVis
 
 		Form<MammaVisitatie> form = new ScreenitForm<>("form", model);
 		MammaVisitatie visitatie = model.getObject();
-		form.setEnabled(ScreenitSession.get().checkPermission(Recht.GEBRUIKER_VISITATIE, Actie.AANPASSEN) && visitatie.getGestartOp() == null);
+		form.setEnabled(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VISITATIE, Actie.AANPASSEN) && visitatie.getGestartOp() == null);
 		add(form);
 
-		List<BeoordelingsEenheid> beoordelingsEenheden = beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getInstelling());
+		List<BeoordelingsEenheid> beoordelingsEenheden = beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getOrganisatie());
 		ComponentHelper.addTextField(form, "omschrijving", true, HibernateMagicNumber.L256, String.class, false)
 			.add(new ScreenitUniqueFieldValidator<>(MammaVisitatie.class, getModelObject().getId(), "omschrijving", false));
 		ScreenitDropdown<BeoordelingsEenheid> beDropdown = new ScreenitDropdown<>("beoordelingsEenheid", ModelUtil.listRModel(beoordelingsEenheden, false),

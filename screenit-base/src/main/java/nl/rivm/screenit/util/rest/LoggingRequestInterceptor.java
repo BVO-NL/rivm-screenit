@@ -21,80 +21,21 @@ package nl.rivm.screenit.util.rest;
  * =========================LICENSE_END==================================
  */
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.io.IOUtils;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.util.StreamUtils;
 
 @Slf4j
 public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor
 {
-
-	final class BufferingClientHttpResponseWrapper implements ClientHttpResponse
-	{
-
-		private final ClientHttpResponse response;
-
-		private byte[] body;
-
-		BufferingClientHttpResponseWrapper(ClientHttpResponse response)
-		{
-			this.response = response;
-		}
-
-		@Override
-		public HttpStatusCode getStatusCode() throws IOException
-		{
-			return response.getStatusCode();
-		}
-
-		@Override
-		public int getRawStatusCode() throws IOException
-		{
-			return response.getRawStatusCode();
-		}
-
-		@Override
-		public String getStatusText() throws IOException
-		{
-			return response.getStatusText();
-		}
-
-		@Override
-		public HttpHeaders getHeaders()
-		{
-			return response.getHeaders();
-		}
-
-		@Override
-		public InputStream getBody() throws IOException
-		{
-			if (body == null)
-			{
-				body = StreamUtils.copyToByteArray(response.getBody());
-			}
-			return new ByteArrayInputStream(body);
-		}
-
-		@Override
-		public void close()
-		{
-			response.close();
-		}
-
-	}
 
 	@Override
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException

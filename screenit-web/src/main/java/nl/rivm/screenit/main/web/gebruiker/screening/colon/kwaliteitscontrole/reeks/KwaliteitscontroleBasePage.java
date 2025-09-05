@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon.kwaliteitscontrole.r
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.rivm.screenit.main.web.gebruiker.base.GebruikerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.ColonScreeningBasePage;
 
 public class KwaliteitscontroleBasePage extends ColonScreeningBasePage
@@ -38,12 +38,12 @@ public class KwaliteitscontroleBasePage extends ColonScreeningBasePage
 	}
 
 	@Override
-	protected List<GebruikerMenuItem> getContextMenuItems()
+	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<GebruikerMenuItem> contextMenuItems = new ArrayList<GebruikerMenuItem>();
-		contextMenuItems.add(new GebruikerMenuItem("menu.colonscreening.kwaliteitscontrole.reeks.sentinelcontroles", SentinelControlesPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.colonscreening.kwaliteitscontrole.reeks.skmlinternecontroleconfig", SKMLInterneControleConfigPage.class));
-		contextMenuItems.add(new GebruikerMenuItem("menu.colonscreening.kwaliteitscontrole.reeks.skmlexternecontroleschema", SKMLExterneControleSchemaPage.class));
+		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.kwaliteitscontrole.reeks.sentinelcontroles", SentinelControlesPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.kwaliteitscontrole.reeks.skmlinternecontroleconfig", SKMLInterneControleConfigPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.kwaliteitscontrole.reeks.skmlexternecontroleschema", SKMLExterneControleSchemaPage.class));
 
 		return contextMenuItems;
 	}

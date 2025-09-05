@@ -64,14 +64,12 @@ public abstract class CervixLaboratoriumTarievenPopupPanel extends GenericPanel<
 	{
 		super(id, ModelUtil.ccModel(new CervixLabTarief()));
 
-		var instelling = (BMHKLaboratorium) ScreenitSession.get().getCurrentSelectedOrganisatie();
+		var organisatie = (BMHKLaboratorium) ScreenitSession.get().getCurrentSelectedOrganisatie();
 		var tarief = getModelObject();
-		tarief.setBmhkLaboratorium(instelling);
+		tarief.setBmhkLaboratorium(organisatie);
 
-		var latest = verrichtingService.getLatestLabTarief(instelling);
+		var latest = verrichtingService.getLatestLabTarief(organisatie);
 		CervixTariefUtil.vulTarief(tarief, latest);
-
-		var organisatie = ScreenitSession.get().getCurrentSelectedOrganisatie();
 
 		var form = new Form<>("form", getModel());
 
@@ -112,7 +110,7 @@ public abstract class CervixLaboratoriumTarievenPopupPanel extends GenericPanel<
 				}
 				else
 				{
-					betalingService.toevoegenTarief(tarief, ScreenitSession.get().getLoggedInAccount());
+					betalingService.toevoegenTarief(tarief, ScreenitSession.get().getIngelogdAccount());
 					opslaan(target);
 				}
 			}

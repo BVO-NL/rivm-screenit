@@ -26,8 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.dto.mamma.MammaFollowUpInstellingDto;
-import nl.rivm.screenit.dto.mamma.MammaFollowUpInstellingRadiologieDto;
+import nl.rivm.screenit.dto.mamma.MammaFollowUpOrganisatieDto;
+import nl.rivm.screenit.dto.mamma.MammaFollowUpOrganisatieRadiologieDto;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
@@ -37,7 +37,7 @@ import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup.AbstractMammaFollowUpPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup.MammaFollowUpGebeldCellPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.MammaFollowUpDoorverwezenFilterOptie;
@@ -68,7 +68,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	constraint = ShiroConstraint.HasPermission,
 	checkScope = true,
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA },
-	recht = { Recht.GEBRUIKER_MAMMA_FOLLOW_UP_RADIOLOGIE_WERKLIJST },
+	recht = { Recht.MEDEWERKER_MAMMA_FOLLOW_UP_RADIOLOGIE_WERKLIJST },
 	organisatieTypeScopes = { OrganisatieType.SCREENINGSORGANISATIE })
 public class MammaFollowUpRadiologieRegioWerklijstPage extends AbstractMammaFollowUpPage
 {
@@ -115,18 +115,18 @@ public class MammaFollowUpRadiologieRegioWerklijstPage extends AbstractMammaFoll
 		refreshContainer.setOutputMarkupId(Boolean.TRUE);
 		add(refreshContainer);
 
-		List<IColumn<MammaFollowUpInstellingRadiologieDto, String>> columns = new ArrayList<>();
-		columns.add(new PropertyColumn<>(Model.of("Instelling"), "instellingNaam", "instellingNaam"));
+		List<IColumn<MammaFollowUpOrganisatieRadiologieDto, String>> columns = new ArrayList<>();
+		columns.add(new PropertyColumn<>(Model.of("Organisatie"), "organisatieNaam", "organisatieNaam"));
 		columns.add(new PropertyColumn<>(
 			Model.of("Aantal > " + simplePreferenceService.getString(PreferenceKey.MAMMA_FOLLOW_UP_RADIOLOGIE_WERKLIJST_NA_DOWNLOADEN.name(), "30") + " dagen"),
 			"aantalOpenstaande"));
 		columns.add(new PropertyColumn<>(Model.of("Telefoon 1"), "telefoon"));
 		columns.add(new PropertyColumn<>(Model.of("Telefoon 2"), "telefoon2"));
 		columns.add(new PropertyColumn<>(Model.of("Gebeld op"), "laatstGebeld", "laatstGebeld"));
-		columns.add(new AbstractColumn<MammaFollowUpInstellingRadiologieDto, String>(Model.of(""))
+		columns.add(new AbstractColumn<MammaFollowUpOrganisatieRadiologieDto, String>(Model.of(""))
 		{
 			@Override
-			public void populateItem(Item<ICellPopulator<MammaFollowUpInstellingRadiologieDto>> item, String id, IModel<MammaFollowUpInstellingRadiologieDto> iModel)
+			public void populateItem(Item<ICellPopulator<MammaFollowUpOrganisatieRadiologieDto>> item, String id, IModel<MammaFollowUpOrganisatieRadiologieDto> iModel)
 			{
 				item.add(new MammaFollowUpGebeldCellPanel(id, dialog, "gebeld")
 				{
@@ -134,10 +134,10 @@ public class MammaFollowUpRadiologieRegioWerklijstPage extends AbstractMammaFoll
 					protected void onOpslaan(AjaxRequestTarget ajaxRequestTarget)
 					{
 						super.onOpslaan(ajaxRequestTarget);
-						MammaFollowUpInstellingDto followUpInstellingDto = iModel.getObject();
-						Instelling instelling = hibernateService.get(Instelling.class, followUpInstellingDto.getInstellingId());
-						instelling.setMammaRadiologieGebeld(currentDateSupplier.getDate());
-						hibernateService.saveOrUpdate(instelling);
+						MammaFollowUpOrganisatieDto followUpOrganisatieDto = iModel.getObject();
+						Organisatie organisatie = hibernateService.get(Organisatie.class, followUpOrganisatieDto.getOrganisatieId());
+						organisatie.setMammaRadiologieGebeld(currentDateSupplier.getDate());
+						hibernateService.saveOrUpdate(organisatie);
 						ajaxRequestTarget.add(refreshContainer);
 						followUpDataRegioProvider.resetList();
 					}
@@ -145,12 +145,12 @@ public class MammaFollowUpRadiologieRegioWerklijstPage extends AbstractMammaFoll
 			}
 		});
 
-		ScreenitDataTable<MammaFollowUpInstellingRadiologieDto, String> table = new ScreenitDataTable<MammaFollowUpInstellingRadiologieDto, String>("resultaten", columns,
+		ScreenitDataTable<MammaFollowUpOrganisatieRadiologieDto, String> table = new ScreenitDataTable<MammaFollowUpOrganisatieRadiologieDto, String>("resultaten", columns,
 			followUpDataRegioProvider,
-			10, Model.of("instelling(en)"))
+			10, Model.of("organisatie(s)"))
 		{
 			@Override
-			protected boolean isRowClickable(IModel<MammaFollowUpInstellingRadiologieDto> rowModel)
+			protected boolean isRowClickable(IModel<MammaFollowUpOrganisatieRadiologieDto> rowModel)
 			{
 				return false;
 			}

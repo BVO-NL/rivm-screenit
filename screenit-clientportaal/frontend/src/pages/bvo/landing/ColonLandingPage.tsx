@@ -49,7 +49,7 @@ const ColonLandingPage = (props: Props) => {
 	const {dossier, beschikbareActies} = props
 
 	const dispatch = useThunkDispatch()
-	const locatieIntakeAfspraak = dossier.intakeAfspraak ? dossier.intakeAfspraak.naamInstelling + "<br>" + splitAdresString(dossier.intakeAfspraak.adresString) : ""
+	const locatieIntakeAfspraak = dossier.intakeAfspraak ? dossier.intakeAfspraak.naamIntakelocatie + "<br>" + splitAdresString(dossier.intakeAfspraak.adresString) : ""
 	const toonVervangendeTekst: boolean = useSelector((state: State) => state.landingOverzicht.colonParameters.toonVervangendeTekst)
 
 	useEffect(() => {

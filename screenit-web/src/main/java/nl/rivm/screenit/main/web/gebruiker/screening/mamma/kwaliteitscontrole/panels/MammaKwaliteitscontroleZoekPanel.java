@@ -31,7 +31,7 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitListMultipleChoice;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.CentraleEenheid;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -48,7 +48,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 public abstract class MammaKwaliteitscontroleZoekPanel<T extends MammaKwaliteitscontroleWerklijstZoekObject> extends GenericPanel<T>
 {
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private MammaScreeningsEenheidService screeningsEenheidService;
@@ -213,18 +213,18 @@ public abstract class MammaKwaliteitscontroleZoekPanel<T extends MammaKwaliteits
 
 	private List<BeoordelingsEenheid> getMogelijkeBeoordelingsEenheden()
 	{
-		return beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getInstelling());
+		return beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getOrganisatie());
 	}
 
 	private List<BeoordelingsEenheid> getMogelijkeBeoordelingsEenheden(List<CentraleEenheid> centraleEenheden)
 	{
-		return CollectionUtils.isEmpty(centraleEenheden) ? beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getInstelling())
-			: beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getInstelling(), centraleEenheden);
+		return CollectionUtils.isEmpty(centraleEenheden) ? beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getOrganisatie())
+			: beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getOrganisatie(), centraleEenheden);
 	}
 
 	private List<CentraleEenheid> getMogelijkeCentraleEenheden()
 	{
-		return instellingService.getMogelijkeCentraleEenheden(ScreenitSession.get().getInstelling());
+		return organisatieService.getMogelijkeCentraleEenheden(ScreenitSession.get().getOrganisatie());
 	}
 
 }

@@ -105,6 +105,7 @@ export const clarityTranslations: ClrCommonStrings = {
   wizardStepSuccess: 'Voltooid',
   wizardStepError: 'Fout',
   wizardStepnavAriaLabel: 'Stapnavigatie',
+  wizardStepCurrent: 'Huidige stap',
   passwordHide: 'Verberg wachtwoord',
   passwordShow: 'Toon wachtwoord',
   selectedRows: 'Geselecteerde rijen',

@@ -24,7 +24,7 @@ package nl.rivm.screenit.service.cervix;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.cervix.CervixMonster;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
@@ -47,7 +47,7 @@ public interface CervixBaseMonsterService
 
 	boolean monsterHeeftHpvBeoordelingMetGenotypeOther(CervixMonster monsterHpvUitslag);
 
-	boolean magInstellingMonsterInzien(Instelling instelling, CervixMonster monster);
+	boolean magOrganisatieMonsterInzien(Organisatie organisatie, CervixMonster monster);
 
 	boolean isVerwijderdMonster(String monsterId);
 

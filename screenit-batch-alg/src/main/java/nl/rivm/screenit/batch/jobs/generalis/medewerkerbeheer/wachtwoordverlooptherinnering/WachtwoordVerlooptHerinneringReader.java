@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
@@ -34,27 +34,27 @@ import org.springframework.stereotype.Component;
 
 import static nl.rivm.screenit.specification.algemeen.MedewerkerSpecification.heeftEmailAdres;
 import static nl.rivm.screenit.specification.algemeen.MedewerkerSpecification.heeftWachtwoordInlogMethode;
-import static nl.rivm.screenit.specification.algemeen.MedewerkerSpecification.isActieveGebruiker;
+import static nl.rivm.screenit.specification.algemeen.MedewerkerSpecification.isActieveMedewerker;
 import static nl.rivm.screenit.specification.algemeen.MedewerkerSpecification.isNietGeblokkeerd;
 import static nl.rivm.screenit.specification.algemeen.MedewerkerSpecification.moetHerinneringKrijgen;
 
 @Component
 @RequiredArgsConstructor
-public class WachtwoordVerlooptHerinneringReader extends BaseSpecificationScrollableResultReader<Gebruiker>
+public class WachtwoordVerlooptHerinneringReader extends BaseSpecificationScrollableResultReader<Medewerker>
 {
 	private final SimplePreferenceService preferenceService;
 
 	private final ICurrentDateSupplier currentDateSupplier;
 
 	@Override
-	public Specification<Gebruiker> createSpecification()
+	public Specification<Medewerker> createSpecification()
 	{
 		var dagenWachtwoordGeldig = preferenceService.getInteger(PreferenceKey.DAGEN_WACHTWOORD_GELDIG.name(), 365);
 		var wachtwoordVerlooptTermijn = preferenceService.getInteger(PreferenceKey.WACHTWOORD_VERLOOPT_HERINNERINGS_TERMIJN.name(), 14);
 
 		var vandaag = currentDateSupplier.getLocalDate();
 		var peildatumHerinneringsTermijn = vandaag.minusDays(dagenWachtwoordGeldig).plusDays(wachtwoordVerlooptTermijn);
-		return isActieveGebruiker(vandaag, dagenWachtwoordGeldig)
+		return isActieveMedewerker(vandaag, dagenWachtwoordGeldig)
 			.and(heeftEmailAdres())
 			.and(heeftWachtwoordInlogMethode())
 			.and(isNietGeblokkeerd())

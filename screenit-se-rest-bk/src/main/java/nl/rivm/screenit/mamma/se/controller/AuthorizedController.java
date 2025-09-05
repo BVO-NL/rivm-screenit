@@ -31,7 +31,7 @@ import nl.rivm.screenit.mamma.se.dto.ErrorDto;
 import nl.rivm.screenit.mamma.se.dto.SeAutorisatieDto;
 import nl.rivm.screenit.mamma.se.service.MammaScreeningsEenheidService;
 import nl.rivm.screenit.mamma.se.service.SeAutorisatieService;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.util.EnvironmentUtil;
@@ -89,12 +89,12 @@ abstract class AuthorizedController
 		return screeningsEenheidService.getActieveScreeningsEenheidByCode(getSeCode(request));
 	}
 
-	final protected InstellingGebruiker getInstellingGebruiker(HttpServletRequest request)
+	final protected OrganisatieMedewerker getOrganisatieMedewerker(HttpServletRequest request)
 	{
 		String accountId = getAccountId(request);
 		if (NumberUtils.isNumber(accountId))
 		{
-			return hibernateService.get(InstellingGebruiker.class, Long.parseLong(accountId));
+			return hibernateService.get(OrganisatieMedewerker.class, Long.parseLong(accountId));
 		}
 		return null;
 	}
@@ -109,9 +109,9 @@ abstract class AuthorizedController
 		return false;
 	}
 
-	final protected SeAutorisatieDto getSeRechtenGebruiker(Long accountId)
+	final protected SeAutorisatieDto getSeRechtenOrganisatieMedewerker(Long organisatieMedewerkerId)
 	{
-		return seAutorisatieService.getSeRechten(accountId);
+		return seAutorisatieService.getSeRechten(organisatieMedewerkerId);
 	}
 
 	final protected ResponseEntity<ErrorDto> forbiddenResponse(String errorReferentie)
@@ -132,7 +132,7 @@ abstract class AuthorizedController
 	final protected ResponseEntity<ErrorDto> createUnauthorizedResponse()
 	{
 		String referentie = FoutmeldingsCodeUtil.getFoutmeldingsCode("SE_REST");
-		LOG.error(referentie + ": Gebruiker is niet geautoriseerd om de actie uit te voeren");
+		LOG.error(referentie + ": Medewerker is niet geautoriseerd om de actie uit te voeren");
 		return forbiddenResponse(referentie);
 	}
 }

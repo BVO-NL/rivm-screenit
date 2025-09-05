@@ -123,7 +123,7 @@ public class MammaBeeldenZoekenPanel extends Panel
 							client.getPersoon().getBsn(),
 							DateUtil.LOCAL_DATE_FORMAT.format(DateUtil.toLocalDate(client.getPersoon().getGeboortedatum())));
 
-						logService.logGebeurtenis(LogGebeurtenis.ZOEKEN_BEELDEN_CLIENT, ScreenitSession.get().getLoggedInAccount(), logRegel);
+						logService.logGebeurtenis(LogGebeurtenis.ZOEKEN_BEELDEN_CLIENT, ScreenitSession.get().getIngelogdAccount(), logRegel);
 						tabelContainer.setVisible(true);
 						replaceTabel(target);
 					}
@@ -188,7 +188,7 @@ public class MammaBeeldenZoekenPanel extends Panel
 					if (!onderzoekenMetBeelden.isEmpty())
 					{
 						setResponsePage(new MammaBeeldenInzienPage(Arrays.asList(model.getObject().getId()), onderzoekenMetBeelden, MammaBeeldenZoekenPage.class));
-						logService.logGebeurtenis(LogGebeurtenis.INZIEN_BEELDEN_CLIENT, ScreenitSession.get().getLoggedInAccount(), model.getObject());
+						logService.logGebeurtenis(LogGebeurtenis.INZIEN_BEELDEN_CLIENT, ScreenitSession.get().getIngelogdAccount(), model.getObject());
 					}
 					else
 					{

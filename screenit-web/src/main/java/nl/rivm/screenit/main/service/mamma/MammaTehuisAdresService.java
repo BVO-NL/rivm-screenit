@@ -23,7 +23,7 @@ package nl.rivm.screenit.main.service.mamma;
 
 import java.util.List;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaTehuis;
 import nl.rivm.screenit.model.mamma.MammaTehuisAdres;
 import nl.rivm.screenit.service.mamma.enums.MammaTehuisSelectie;
@@ -31,9 +31,9 @@ import nl.topicuszorg.organisatie.model.Adres;
 
 public interface MammaTehuisAdresService
 {
-	void adresToevoegen(MammaTehuisAdres adres, InstellingGebruiker instellingGebruiker);
+	void adresToevoegen(MammaTehuisAdres adres, OrganisatieMedewerker organisatieMedewerker);
 
-	void adresVerwijderen(MammaTehuisAdres adres, InstellingGebruiker instellingGebruiker);
+	void adresVerwijderen(MammaTehuisAdres adres, OrganisatieMedewerker organisatieMedewerker);
 
 	boolean isAdresAlGekoppeld(MammaTehuisAdres adres);
 

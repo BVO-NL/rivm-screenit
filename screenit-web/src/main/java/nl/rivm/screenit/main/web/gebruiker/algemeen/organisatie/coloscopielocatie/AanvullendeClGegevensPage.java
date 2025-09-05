@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.coloscopielocat
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.base.BasePage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.KoppelAanParentOrganisatiePanel;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.KoppelAanRegioOrganisatiePanel;
@@ -31,15 +30,15 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatiePaspo
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieZoeken;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.zorginstelling.GekoppeldePaLabsPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Gebruiker;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.colon.ColoscopieLocatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.service.AutorisatieService;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -54,14 +53,11 @@ import org.apache.wicket.validation.validator.StringValidator;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = {
-	Recht.GEBRUIKER_COLOSCOPIELOCATIE_ORG_BEHEER }, checkScope = true, level = ToegangLevel.INSTELLING, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
+	Recht.MEDEWERKER_COLOSCOPIELOCATIE_ORG_BEHEER }, checkScope = true, level = ToegangLevel.ORGANISATIE, bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class AanvullendeClGegevensPage extends OrganisatieBeheer
 {
-
-	private static final long serialVersionUID = 1L;
-
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private HibernateService hibernateService;
@@ -71,9 +67,9 @@ public class AanvullendeClGegevensPage extends OrganisatieBeheer
 
 	public AanvullendeClGegevensPage()
 	{
-		Instelling organisatie = getCurrentSelectedOrganisatie();
+		Organisatie organisatie = getCurrentSelectedOrganisatie();
 
-		Actie actie = autorisatieService.getActieVoorOrganisatie(ScreenitSession.get().getLoggedInInstellingGebruiker(), organisatie, Recht.GEBRUIKER_COLOSCOPIELOCATIE_ORG_BEHEER);
+		Actie actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie, Recht.MEDEWERKER_COLOSCOPIELOCATIE_ORG_BEHEER);
 		final boolean inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 
 		add(new OrganisatiePaspoortPanel("paspoort", ModelUtil.sModel(organisatie)));
@@ -98,8 +94,8 @@ public class AanvullendeClGegevensPage extends OrganisatieBeheer
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				Instelling instelling = model.getObject();
-				instellingService.saveOrUpdate(instelling);
+				Organisatie organisatie = model.getObject();
+				organisatieService.saveOrUpdate(organisatie);
 				BasePage.markeerFormulierenOpgeslagen(target);
 				this.info("Gegevens zijn succesvol opgeslagen");
 			}
@@ -112,7 +108,7 @@ public class AanvullendeClGegevensPage extends OrganisatieBeheer
 
 		});
 
-		AjaxLink<Gebruiker> annuleren = new AjaxLink<Gebruiker>("annuleren")
+		AjaxLink<Medewerker> annuleren = new AjaxLink<Medewerker>("annuleren")
 		{
 
 			private static final long serialVersionUID = 1L;

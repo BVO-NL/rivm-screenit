@@ -23,12 +23,12 @@ package nl.rivm.screenit.main.service.mamma;
 
 import java.util.List;
 
-import nl.rivm.screenit.dto.mamma.MammaFollowUpInstellingDto;
-import nl.rivm.screenit.dto.mamma.MammaFollowUpInstellingRadiologieDto;
+import nl.rivm.screenit.dto.mamma.MammaFollowUpOrganisatieDto;
+import nl.rivm.screenit.dto.mamma.MammaFollowUpOrganisatieRadiologieDto;
 import nl.rivm.screenit.main.model.mamma.MammaFollowUpConclusieChoice;
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.Instelling;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.MammaFollowUpDoorverwezenFilterOptie;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
@@ -42,11 +42,11 @@ import org.springframework.data.domain.Sort;
 public interface MammaFollowUpService
 {
 
-	void saveOrUpdateRadiologie(MammaFollowUpRadiologieVerslag verslag, InstellingGebruiker loggedInInstellingGebruiker);
+	void saveOrUpdateRadiologie(MammaFollowUpRadiologieVerslag verslag, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	void saveFollowUpConclusieStatus(MammaScreeningRonde screeningRonde, MammaFollowUpConclusieStatus followUpConclusieStatus, Account loggedInInstellingGebruiker);
+	void saveFollowUpConclusieStatus(MammaScreeningRonde screeningRonde, MammaFollowUpConclusieStatus followUpConclusieStatus, Account ingelogdeOrganisatieMedewerker);
 
-	void savePaVerslagNietTeVerwachten(MammaFollowUpRadiologieVerslag followUpRadiologieVerslag, Account loggedInInstellingGebruiker);
+	void savePaVerslagNietTeVerwachten(MammaFollowUpRadiologieVerslag followUpRadiologieVerslag, Account ingelogdeOrganisatieMedewerker);
 
 	MammaFollowUpConclusieStatus bepaalFollowUpConclusie(MammaScreeningRonde screeningRonde, MammaFollowUpConclusieChoice conclusieEnum);
 
@@ -58,13 +58,13 @@ public interface MammaFollowUpService
 
 	long countOpenstaandeFollowUpConclusies(ScreeningOrganisatie regio);
 
-	List<MammaFollowUpRadiologieVerslag> zoekDossiersMetOpenstaandePaVerslagen(Instelling instelling, long first, long count, Sort sort);
+	List<MammaFollowUpRadiologieVerslag> zoekDossiersMetOpenstaandePaVerslagen(Organisatie organisatie, long first, long count, Sort sort);
 
-	long countDossiersMetOpenstaandePaVerslagen(Instelling instelling);
+	long countDossiersMetOpenstaandePaVerslagen(Organisatie organisatie);
 
-	List<MammaFollowUpInstellingDto> zoekInstellingenMetOpenstaandePaVerslagen(ScreeningOrganisatie regio);
+	List<MammaFollowUpOrganisatieDto> zoekOrganisatiesMetOpenstaandePaVerslagen(ScreeningOrganisatie regio);
 
-	List<MammaFollowUpInstellingRadiologieDto> zoekOpenstaandeRadiologieVerslagenPerOrganisatie(ScreeningOrganisatie regio,
+	List<MammaFollowUpOrganisatieRadiologieDto> zoekOpenstaandeRadiologieVerslagenPerOrganisatie(ScreeningOrganisatie regio,
 		MammaFollowUpDoorverwezenFilterOptie doorverwezenFilterOptie, Integer jaar);
 
 }

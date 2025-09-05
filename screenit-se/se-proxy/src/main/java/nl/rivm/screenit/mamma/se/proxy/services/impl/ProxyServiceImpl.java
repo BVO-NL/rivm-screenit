@@ -2,7 +2,7 @@ package nl.rivm.screenit.mamma.se.proxy.services.impl;
 
 /*-
  * ========================LICENSE_START=================================
- * se-proxy
+ * screenit-se-proxy
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -30,9 +30,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.mamma.se.proxy.SeProxyApplication;
 import nl.rivm.screenit.mamma.se.proxy.model.CacheProxyActie;
 import nl.rivm.screenit.mamma.se.proxy.model.RequestTypeCentraal;
+import nl.rivm.screenit.mamma.se.proxy.services.EnvironmentInfoService;
 import nl.rivm.screenit.mamma.se.proxy.services.ProxyService;
 import nl.rivm.screenit.mamma.se.proxy.services.SeRestSocketService;
 import nl.rivm.screenit.mamma.se.proxy.services.SeStatusService;
@@ -69,6 +69,9 @@ public class ProxyServiceImpl implements ProxyService
 	@Autowired
 	private SeRestSocketService seRestSocketService;
 
+	@Autowired
+	private EnvironmentInfoService environmentInfoService;
+
 	private String userAgent;
 
 	private final static int requestTimeoutInMS = 30000;
@@ -84,7 +87,7 @@ public class ProxyServiceImpl implements ProxyService
 		requestFactory.setConnectTimeout(requestTimeoutInMS);
 		restTemplate.setRequestFactory(requestFactory);
 		seRestUrl = StringUtils.removeEnd(seRestUrl, "/") + "/api";
-		userAgent = "SE-Proxy/" + SeProxyApplication.getEnvironmentInfo().getVersion();
+		userAgent = "SE-Proxy/" + environmentInfoService.getVersion();
 	}
 
 	@Override
@@ -122,7 +125,7 @@ public class ProxyServiceImpl implements ProxyService
 
 		requestBuilder.header("User-agent", userAgent);
 		requestBuilder.header("SE_CODE", seStatusService.getSeCode());
-		requestBuilder.header("versie", SeProxyApplication.getEnvironmentInfo().getVersion());
+		requestBuilder.header("versie", environmentInfoService.getVersion());
 
 		if (seStatusService.getSeCode() == null)
 		{
@@ -222,7 +225,7 @@ public class ProxyServiceImpl implements ProxyService
 	{
 		try
 		{
-			if (!seStatusService.isTestOnline() && SeProxyApplication.getEnvironmentInfo().getEnvironment().equals("Test"))
+			if (!seStatusService.isTestOnline() && environmentInfoService.isTestEnvironment())
 			{
 				return createNoConnectionSeRestBkResponse();
 			}
@@ -237,7 +240,7 @@ public class ProxyServiceImpl implements ProxyService
 		{
 			if (ex.getStatusCode() == HttpStatus.FORBIDDEN)
 			{
-				LOG.warn("SeGebruiker is niet geautoriseerd", ex);
+				LOG.warn("SeMedewerker is niet geautoriseerd", ex);
 				return new ResponseEntity(ex.getResponseBodyAsString(), HttpStatus.FORBIDDEN);
 			}
 			if (ex.getStatusCode() == HttpStatus.NOT_FOUND)

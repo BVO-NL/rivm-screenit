@@ -29,9 +29,9 @@ import java.util.stream.Collectors;
 import nl.rivm.screenit.main.service.mamma.MammaScreeningsEenheidService;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.CentraleEenheid;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
-import nl.rivm.screenit.service.InstellingService;
+import nl.rivm.screenit.service.OrganisatieService;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -40,19 +40,19 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-public class GekoppeldeCeBeSePanel extends GenericPanel<Instelling>
+public class GekoppeldeCeBeSePanel extends GenericPanel<Organisatie>
 {
 	private static final long serialVersionUID = 1L;
 
 	@SpringBean
-	private InstellingService instellingService;
+	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private MammaScreeningsEenheidService screeningsEenheidService;
 
 	private List<GekoppeldeCeBeSeRij> rijen = new ArrayList<>();
 
-	public GekoppeldeCeBeSePanel(String id, IModel<Instelling> model)
+	public GekoppeldeCeBeSePanel(String id, IModel<Organisatie> model)
 	{
 		super(id, model);
 
@@ -73,8 +73,8 @@ public class GekoppeldeCeBeSePanel extends GenericPanel<Instelling>
 
 	private void vulRijen(ScreeningOrganisatie regio)
 	{
-		List<CentraleEenheid> centraleEenheden = instellingService.getActieveCentraleEenhedenBinnenRegio(regio);
-		List<BeoordelingsEenheid> regioBeoordelingseenheden = instellingService.getActieveBeoordelingseenhedenBinnenRegio(regio);
+		List<CentraleEenheid> centraleEenheden = organisatieService.getActieveCentraleEenhedenBinnenRegio(regio);
+		List<BeoordelingsEenheid> regioBeoordelingseenheden = organisatieService.getActieveBeoordelingseenhedenBinnenRegio(regio);
 
 		for (CentraleEenheid centraleEenheid : centraleEenheden)
 		{

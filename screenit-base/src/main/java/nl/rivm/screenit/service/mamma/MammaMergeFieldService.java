@@ -21,12 +21,12 @@ package nl.rivm.screenit.service.mamma;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.Gebruiker;
+import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 
 public interface MammaMergeFieldService
 {
-	Gebruiker bepaalRadioloog1(MammaBeoordeling beoordeling);
+	Medewerker bepaalRadioloog1(MammaBeoordeling beoordeling);
 
-	Gebruiker bepaalRadioloog2(MammaBeoordeling beoordeling);
+	Medewerker bepaalRadioloog2(MammaBeoordeling beoordeling);
 }

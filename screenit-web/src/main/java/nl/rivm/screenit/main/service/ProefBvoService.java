@@ -31,8 +31,8 @@ import nl.rivm.screenit.model.Account;
 public interface ProefBvoService
 {
 
-	List<String> afmelden(Account ingelogdeGebruiker, File fileAfmeldingBrief, String contentType, String fileName, File fileClientenBestand) throws IOException;
+	List<String> afmelden(Account ingelogdAccount, File fileAfmeldingBrief, String contentType, String fileName, File fileClientenBestand) throws IOException;
 
-	List<String> heraanmelden(Account ingelogdeGebruiker, File fileAfmeldingBrief, String contentType, String fileName, File fileClientenBestand) throws IOException;
+	List<String> heraanmelden(Account ingelogdeOrganisatieMedewerker, File fileAfmeldingBrief, String contentType, String fileName, File fileClientenBestand) throws IOException;
 
 }

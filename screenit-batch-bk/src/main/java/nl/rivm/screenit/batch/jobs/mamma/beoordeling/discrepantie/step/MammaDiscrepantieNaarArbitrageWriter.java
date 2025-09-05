@@ -72,7 +72,7 @@ public class MammaDiscrepantieNaarArbitrageWriter extends BaseWriter<MammaBeoord
 		var radioloog1 = beoordeling.getEersteLezing().getBeoordelaar();
 		var radioloog2 = beoordeling.getTweedeLezing().getBeoordelaar();
 
-		return NaamUtil.getNaamGebruiker(radioloog1.getMedewerker()) + " & " + NaamUtil.getNaamGebruiker(radioloog2.getMedewerker());
+		return NaamUtil.getNaamMedewerker(radioloog1.getMedewerker()) + " & " + NaamUtil.getNaamMedewerker(radioloog2.getMedewerker());
 	}
 
 	private void geefNamenDoor(String namen)

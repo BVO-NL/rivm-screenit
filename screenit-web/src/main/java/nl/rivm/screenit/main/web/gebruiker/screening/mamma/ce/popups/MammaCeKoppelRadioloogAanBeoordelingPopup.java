@@ -22,7 +22,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.popups;
  */
 
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.panels.CeRadioloogZoekPanel;
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 
@@ -43,7 +43,7 @@ public abstract class MammaCeKoppelRadioloogAanBeoordelingPopup extends GenericP
 		CeRadioloogZoekPanel radioloogZoekPanel = new CeRadioloogZoekPanel("zoekPanel", getModel())
 		{
 			@Override
-			public void callback(AjaxRequestTarget target, IModel<InstellingGebruiker> radioloog)
+			public void callback(AjaxRequestTarget target, IModel<OrganisatieMedewerker> radioloog)
 			{
 				MammaBeoordeling beoordeling = MammaCeKoppelRadioloogAanBeoordelingPopup.this.getModelObject();
 				beoordelingService.wijsBeoordelingAanRadioloogToe(beoordeling, radioloog.getObject());

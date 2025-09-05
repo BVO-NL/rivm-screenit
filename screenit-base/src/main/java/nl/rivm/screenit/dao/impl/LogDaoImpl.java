@@ -110,7 +110,7 @@ public class LogDaoImpl extends AbstractAutowiredDao implements LogDao
 		}
 		if (loggingZoekCriteria.getGebruikersnaam() != null)
 		{
-			from += "left outer join algemeen.org_medewerker m on lr.gebruiker = m.id ";
+			from += "left outer join algemeen.medewerker m on lr.medewerker = m.id ";
 			joinM = true;
 			where = SQLQueryUtil.whereOrAnd(where);
 			where += "m.gebruikersnaam = :gebruikersnaam ";
@@ -167,7 +167,7 @@ public class LogDaoImpl extends AbstractAutowiredDao implements LogDao
 			}
 			from += "left outer join gedeeld.org_adres aga on ppe.gba_adres = aga.id ";
 			from += "left outer join algemeen.gemeente agm on agm.id = aga.gba_gemeente ";
-			from += "left outer join algemeen.org_organisatie_medewerker om on om.id = lr.ingelogde_gebruiker ";
+			from += "left outer join algemeen.organisatie_medewerker om on om.id = lr.ingelogde_organisatie_medewerker ";
 			where = SQLQueryUtil.whereOrAnd(where);
 			where += "(agm.screening_organisatie = :soid or om.organisatie = :soid2)";
 			parameters.put("soid", loggingZoekCriteria.getRegio());
@@ -185,10 +185,10 @@ public class LogDaoImpl extends AbstractAutowiredDao implements LogDao
 			case "gebeurtenisDatum":
 				orderByQueryString += "lr.gebeurtenis_datum ";
 				break;
-			case "gebruiker.gebruikersnaam":
+			case "medewerker.gebruikersnaam":
 				if (!joinM)
 				{
-					from += "left outer join algemeen.org_medewerker m on lr.gebruiker = m.id ";
+					from += "left outer join algemeen.medewerker m on lr.medewerker = m.id ";
 				}
 				orderByQueryString += "m.gebruikersnaam ";
 				break;

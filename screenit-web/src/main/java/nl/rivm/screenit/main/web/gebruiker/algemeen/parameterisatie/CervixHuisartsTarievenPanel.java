@@ -88,9 +88,9 @@ public class CervixHuisartsTarievenPanel extends GenericPanel<CervixHuisartsTari
 	{
 		super(id);
 
-		actie = autorisatieService.getActieVoorMedewerker(ScreenitSession.get().getLoggedInInstellingGebruiker(), ScreenitSession.get().getCurrentSelectedMedewerker(),
-			Recht.GEBRUIKER_CERVIX_HUISARTS_TARIEF);
-		level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.GEBRUIKER_CERVIX_HUISARTS_TARIEF);
+		actie = autorisatieService.getActieVoorMedewerker(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), ScreenitSession.get().getCurrentSelectedMedewerker(),
+			Recht.MEDEWERKER_CERVIX_HUISARTS_TARIEF);
+		level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_CERVIX_HUISARTS_TARIEF);
 		boolean magToevoegen = AutorisatieUtil.isMinimumActie(actie, Actie.TOEVOEGEN);
 
 		dialog = new BootstrapDialog("dialog");
@@ -184,7 +184,7 @@ public class CervixHuisartsTarievenPanel extends GenericPanel<CervixHuisartsTari
 										@Override
 										public void onYesClick(AjaxRequestTarget target)
 										{
-											betalingService.verwijderCervixTarief(rowModel.getObject(), ScreenitSession.get().getLoggedInAccount());
+											betalingService.verwijderCervixTarief(rowModel.getObject(), ScreenitSession.get().getIngelogdAccount());
 
 											info("Huisartstarief succesvol verwijderd.");
 											replaceContainer(target);

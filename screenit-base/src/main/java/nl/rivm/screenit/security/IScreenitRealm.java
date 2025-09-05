@@ -21,7 +21,7 @@ package nl.rivm.screenit.security;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.InstellingGebruiker;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.cache.Cache;
@@ -29,7 +29,7 @@ import org.apache.shiro.cache.Cache;
 public interface IScreenitRealm
 {
 
-	void clearCachedAuthorizationInfo(InstellingGebruiker instellingGebruiker);
+	void clearCachedAuthorizationInfo(OrganisatieMedewerker organisatieMedewerker);
 
 	Cache<Object, AuthorizationInfo> getAuthorizationCache();
 }

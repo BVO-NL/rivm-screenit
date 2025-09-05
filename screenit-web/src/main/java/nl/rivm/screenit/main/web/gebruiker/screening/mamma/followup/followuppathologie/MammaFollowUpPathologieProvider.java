@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup.followuppat
 import java.util.Iterator;
 
 import nl.rivm.screenit.main.service.mamma.MammaFollowUpService;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.mamma.MammaFollowUpRadiologieVerslag;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -41,26 +41,26 @@ public class MammaFollowUpPathologieProvider extends SortableDataProvider<MammaF
 	@SpringBean
 	private MammaFollowUpService followUpService;
 
-	private IModel<Instelling> instellingModel;
+	private IModel<Organisatie> organisatieModel;
 
-	MammaFollowUpPathologieProvider(IModel<Instelling> instellingModel)
+	MammaFollowUpPathologieProvider(IModel<Organisatie> organisatieModel)
 	{
 		Injector.get().inject(this);
 		setSort("ingevoerdOp", SortOrder.ASCENDING);
-		this.instellingModel = instellingModel;
+		this.organisatieModel = organisatieModel;
 	}
 
 	@Override
 	public Iterator<? extends MammaFollowUpRadiologieVerslag> iterator(long first, long count)
 	{
-		return followUpService.zoekDossiersMetOpenstaandePaVerslagen(ModelUtil.nullSafeGet(instellingModel), first, count,
+		return followUpService.zoekDossiersMetOpenstaandePaVerslagen(ModelUtil.nullSafeGet(organisatieModel), first, count,
 			toSpringSort(getSort())).iterator();
 	}
 
 	@Override
 	public long size()
 	{
-		return followUpService.countDossiersMetOpenstaandePaVerslagen(ModelUtil.nullSafeGet(instellingModel));
+		return followUpService.countDossiersMetOpenstaandePaVerslagen(ModelUtil.nullSafeGet(organisatieModel));
 	}
 
 	@Override

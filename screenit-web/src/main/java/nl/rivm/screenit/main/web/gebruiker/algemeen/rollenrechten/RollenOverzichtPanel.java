@@ -59,7 +59,7 @@ import static nl.rivm.screenit.main.util.WicketSpringDataUtil.toSpringSort;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = Recht.GEBRUIKER_ROLLEN_BEHEREN,
+	recht = Recht.MEDEWERKER_ROLLEN_BEHEREN,
 	bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class RollenOverzichtPanel extends GenericPanel<Rol>
@@ -71,7 +71,7 @@ public class RollenOverzichtPanel extends GenericPanel<Rol>
 
 	private IModel<Rol> rolModel;
 
-	private final boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.GEBRUIKER_ROLLEN_BEHEREN, Actie.VERWIJDEREN);
+	private final boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_ROLLEN_BEHEREN, Actie.VERWIJDEREN);
 
 	public RollenOverzichtPanel(String id)
 	{

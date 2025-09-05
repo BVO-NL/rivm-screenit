@@ -145,7 +145,7 @@ public class ColonFeestdagServiceImpl implements ColonFeestdagService
 
 	private void logAction(String bericht)
 	{
-		var account = ScreenitSession.get().getLoggedInAccount();
+		var account = ScreenitSession.get().getIngelogdAccount();
 		logService.logGebeurtenis(LogGebeurtenis.COLON_FEESTDAGEN_BEHEER, account, bericht, Bevolkingsonderzoek.COLON);
 	}
 

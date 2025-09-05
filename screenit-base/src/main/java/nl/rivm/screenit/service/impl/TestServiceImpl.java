@@ -46,12 +46,12 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Gemeente_;
-import nl.rivm.screenit.model.Instelling;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.repository.algemeen.GemeenteRepository;
-import nl.rivm.screenit.repository.algemeen.InstellingRepository;
+import nl.rivm.screenit.repository.algemeen.OrganisatieRepository;
 import nl.rivm.screenit.repository.cervix.BmhkLaboratoriumRepository;
 import nl.rivm.screenit.service.BaseClientContactService;
 import nl.rivm.screenit.service.ClientService;
@@ -113,7 +113,7 @@ public class TestServiceImpl implements TestService
 	private GemeenteRepository gemeenteRepository;
 
 	@Autowired
-	private InstellingRepository organisatieRepository;
+	private OrganisatieRepository organisatieRepository;
 
 	@Autowired
 	private BmhkLaboratoriumRepository bmhkLaboratoriumRepository;
@@ -628,7 +628,7 @@ public class TestServiceImpl implements TestService
 	}
 
 	@Override
-	public Instelling getOrganisatieByNaam(String naam)
+	public Organisatie getOrganisatieByNaam(String naam)
 	{
 		return organisatieRepository.findOne(OrganisatieSpecification.heeftNaam(naam).and(OrganisatieSpecification.isActief(true))).orElse(null);
 	}

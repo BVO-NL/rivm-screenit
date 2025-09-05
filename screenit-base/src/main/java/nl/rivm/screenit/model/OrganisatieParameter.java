@@ -41,7 +41,7 @@ import org.hibernate.envers.Audited;
 public class OrganisatieParameter extends AbstractHibernateObject
 {
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	private Instelling organisatie;
+	private Organisatie organisatie;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -53,12 +53,12 @@ public class OrganisatieParameter extends AbstractHibernateObject
 	@Transient
 	private transient String parameterNaam;
 
-	public Instelling getOrganisatie()
+	public Organisatie getOrganisatie()
 	{
 		return organisatie;
 	}
 
-	public void setOrganisatie(Instelling organisatie)
+	public void setOrganisatie(Organisatie organisatie)
 	{
 		this.organisatie = organisatie;
 	}
