@@ -119,12 +119,12 @@ public class LogDaoImpl extends AbstractAutowiredDao implements LogDao
 
 		if (loggingZoekCriteria.getBsnClient() != null)
 		{
-			from += "left outer join gedeeld.pat_patient ppa on lr.client = ppa.id ";
-			from += "left outer join gedeeld.pat_persoon ppe on ppe.patient = ppa.id ";
+			from += "left outer join gedeeld.client c on lr.client = c.id ";
+			from += "left outer join gedeeld.persoon pers on pers.client = c.id ";
 			joinPpe = true;
 
 			where = SQLQueryUtil.whereOrAnd(where);
-			where += "ppe.bsn = :bsn ";
+			where += "pers.bsn = :bsn ";
 			parameters.put("bsn", loggingZoekCriteria.getBsnClient());
 		}
 
@@ -161,11 +161,11 @@ public class LogDaoImpl extends AbstractAutowiredDao implements LogDao
 		{
 			if (!joinPpe)
 			{
-				from += "left outer join gedeeld.pat_patient ppa on lr.client = ppa.id ";
-				from += "left outer join gedeeld.pat_persoon ppe on ppe.patient = ppa.id ";
+				from += "left outer join gedeeld.client c on lr.client = c.id ";
+				from += "left outer join gedeeld.pers pers on pers.client = c.id ";
 				joinPpe = true;
 			}
-			from += "left outer join gedeeld.org_adres aga on ppe.gba_adres = aga.id ";
+			from += "left outer join gedeeld.org_adres aga on pers.gba_adres = aga.id ";
 			from += "left outer join algemeen.gemeente agm on agm.id = aga.gba_gemeente ";
 			from += "left outer join algemeen.organisatie_medewerker om on om.id = lr.ingelogde_organisatie_medewerker ";
 			where = SQLQueryUtil.whereOrAnd(where);
@@ -195,10 +195,10 @@ public class LogDaoImpl extends AbstractAutowiredDao implements LogDao
 			case "persoon.achternaam":
 				if (!joinPpe)
 				{
-					from += "left outer join gedeeld.pat_patient ppa on lr.client = ppa.id ";
-					from += "left outer join gedeeld.pat_persoon ppe on ppe.patient = ppa.id ";
+					from += "left outer join gedeeld.client c on lr.client = c.id ";
+					from += "left outer join gedeeld.persoon pers on pers.client = c.id ";
 				}
-				orderByQueryString += "ppe.achternaam ";
+				orderByQueryString += "pers.achternaam ";
 				break;
 			case "logEvent":
 				if (!joinLe)

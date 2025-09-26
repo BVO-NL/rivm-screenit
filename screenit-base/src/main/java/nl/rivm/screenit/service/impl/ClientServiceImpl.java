@@ -44,10 +44,10 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Dossier;
-import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.Persoon;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.TijdelijkGbaAdres;
 import nl.rivm.screenit.model.UploadDocument;
@@ -146,9 +146,9 @@ public class ClientServiceImpl implements ClientService
 	@Autowired(required = false)
 	private MammaBaseStandplaatsService baseStandplaatsService;
 
-	public static final String BSN_PROPERTY = Client_.PERSOON + "." + GbaPersoon_.BSN;
+	public static final String BSN_PROPERTY = Client_.PERSOON + "." + Persoon_.BSN;
 
-	public static final String ACHTERNAAM_PROPERTY = Client_.PERSOON + "." + GbaPersoon_.ACHTERNAAM;
+	public static final String ACHTERNAAM_PROPERTY = Client_.PERSOON + "." + Persoon_.ACHTERNAAM;
 
 	@Override
 	public Client getClientByBsn(String bsn)
@@ -302,7 +302,7 @@ public class ClientServiceImpl implements ClientService
 		return q ->
 		{
 			var persoon = join(q, Client_.persoon);
-			return join(persoon, GbaPersoon_.gbaAdres);
+			return join(persoon, Persoon_.gbaAdres);
 		};
 	}
 
@@ -409,7 +409,7 @@ public class ClientServiceImpl implements ClientService
 	{
 		if (client.getPersoon() != null)
 		{
-			GbaPersoon persoon = client.getPersoon();
+			Persoon persoon = client.getPersoon();
 			if (persoon.getOverlijdensdatum() != null)
 			{
 				alleProjectClientenInactiveren(client, ProjectInactiefReden.OVERLEDEN, null);
@@ -533,7 +533,7 @@ public class ClientServiceImpl implements ClientService
 	}
 
 	@Override
-	public boolean isTijdelijkeAdresNuActueel(GbaPersoon persoon)
+	public boolean isTijdelijkeAdresNuActueel(Persoon persoon)
 	{
 		return AdresUtil.isTijdelijkAdres(persoon, currentDateSupplier.getLocalDate());
 	}
@@ -543,7 +543,7 @@ public class ClientServiceImpl implements ClientService
 	public void saveOrUpdateTijdelijkGbaAdres(Client client, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		String melding = "Gewijzigd.";
-		GbaPersoon persoon = client.getPersoon();
+		Persoon persoon = client.getPersoon();
 		TijdelijkGbaAdres tijdelijkGbaAdres = persoon.getTijdelijkGbaAdres();
 		if (tijdelijkGbaAdres != null && tijdelijkGbaAdres.getId() == null)
 		{
@@ -558,7 +558,7 @@ public class ClientServiceImpl implements ClientService
 	public void verwijderTijdelijkGbaAdres(Client client, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		String melding = "Handmatig verwijderd.";
-		GbaPersoon persoon = client.getPersoon();
+		Persoon persoon = client.getPersoon();
 		TijdelijkGbaAdres tijdelijkGbaAdres = persoon.getTijdelijkGbaAdres();
 		persoon.setTijdelijkGbaAdres(null);
 		hibernateService.delete(tijdelijkGbaAdres);
@@ -584,8 +584,8 @@ public class ClientServiceImpl implements ClientService
 					&& zoekClient.getPersoon().getGeboortedatum().equals(client.getPersoon().getGeboortedatum());
 				if (heeftBriefPersoon && heeftZoekClientPersoon)
 				{
-					GbaPersoon zoekPersoon = zoekClient.getPersoon();
-					GbaPersoon briefPersoon = client.getPersoon();
+					Persoon zoekPersoon = zoekClient.getPersoon();
+					Persoon briefPersoon = client.getPersoon();
 
 					boolean kloptIngevoerdeBsn = zoekPersoon.getBsn() == null
 						|| zoekPersoon.getBsn() != null && zoekPersoon.getBsn().equals(briefPersoon.getBsn());

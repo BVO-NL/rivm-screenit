@@ -45,8 +45,8 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaBeTabelCounte
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -227,10 +227,10 @@ public abstract class AbstractMammaBeWerklijstPage extends AbstractMammaBePage
 
 		List<IColumn<MammaBeoordeling, String>> columns = new ArrayList<>();
 		columns.add(new DateTimePropertyColumn<>(Model.of("Onderzoeksdatum"), "onderzoek.creatieDatum", Constants.getDateTimeSecondsFormat()));
-		columns.add(new ClientColumn<>(propertyChain(persoonSortProperty(), GbaPersoon_.ACHTERNAAM), "onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client"));
-		columns.add(new GeboortedatumColumn<>(propertyChain(persoonSortProperty(), GbaPersoon_.GEBOORTEDATUM),
+		columns.add(new ClientColumn<>(propertyChain(persoonSortProperty(), Persoon_.ACHTERNAAM), "onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client"));
+		columns.add(new GeboortedatumColumn<>(propertyChain(persoonSortProperty(), Persoon_.GEBOORTEDATUM),
 			"onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client.persoon"));
-		columns.add(new PropertyColumn<>(Model.of("BSN"), propertyChain(persoonSortProperty(), GbaPersoon_.BSN),
+		columns.add(new PropertyColumn<>(Model.of("BSN"), propertyChain(persoonSortProperty(), Persoon_.BSN),
 			"onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client.persoon.bsn"));
 		columns.add(new PropertyColumn<>(Model.of("SE"), propertyChain(MammaOnderzoek_.SCREENINGS_EENHEID, MammaScreeningsEenheid_.NAAM), "onderzoek.screeningsEenheid.naam"));
 		columns.add(new EnumPropertyColumn<>(Model.of("Status"), propertyChain(MammaOnderzoek_.LAATSTE_BEOORDELING, MammaBeoordeling_.STATUS), "status"));

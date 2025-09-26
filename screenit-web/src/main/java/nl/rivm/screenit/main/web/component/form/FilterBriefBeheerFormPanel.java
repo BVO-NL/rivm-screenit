@@ -1,8 +1,8 @@
-package nl.rivm.screenit.repository.algemeen;
+package nl.rivm.screenit.main.web.component.form;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-base
+ * screenit-web
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,10 +21,19 @@ package nl.rivm.screenit.repository.algemeen;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.repository.BaseJpaRepository;
+import nl.rivm.screenit.model.BriefDefinitiesFilter;
 
-public interface GbaPersoonRepository extends BaseJpaRepository<GbaPersoon>
+import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.model.IModel;
+
+public abstract class FilterBriefBeheerFormPanel extends FilterBvoFormPanel<BriefDefinitiesFilter>
 {
+	public FilterBriefBeheerFormPanel(String id, IModel<BriefDefinitiesFilter> model, boolean altijdZichtbaar, boolean showExactMatch)
+	{
+		super(id, model, altijdZichtbaar, showExactMatch, false);
 
+		form.add(new TextField<>("naam"));
+		form.add(new CheckBox("brievenNietMeerInGebruikOokTonen"));
+	}
 }

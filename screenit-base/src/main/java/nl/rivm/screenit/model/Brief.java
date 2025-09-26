@@ -72,6 +72,7 @@ public abstract class Brief extends AbstractHibernateObject
 	private BriefType briefType;
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	private Date creatieDatum;
 
 	private boolean gegenereerd;

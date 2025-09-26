@@ -21,11 +21,14 @@ package nl.rivm.screenit.main.web.gebruiker.gedeeld.brievenafdrukken;
  * =========================LICENSE_END==================================
  */
 
+import java.util.List;
+
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.cervix.CervixRegioMergedBrieven;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
+import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.Recht;
 
 import org.wicketstuff.shiro.ShiroConstraint;
@@ -38,9 +41,6 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX })
 public class CervixRegioAfdrukkenDocumentenPage extends AfdrukkenDocumentenBasePage<CervixRegioMergedBrieven>
 {
-
-	private static final long serialVersionUID = 1L;
-
 	public CervixRegioAfdrukkenDocumentenPage()
 	{
 		super(CervixRegioMergedBrieven.class);
@@ -50,5 +50,11 @@ public class CervixRegioAfdrukkenDocumentenPage extends AfdrukkenDocumentenBaseP
 	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
 		return MedewerkerHoofdMenuItem.CERVIX;
+	}
+
+	@Override
+	protected List<BriefType> getBriefTypes()
+	{
+		return List.of(BriefType.REGIO_REGISTRATIE_UITSTRIJKEND_HUISARTS, BriefType.REGIO_UITSTRIJKEND_ARTS_VOORBLAD_LABFORMULIER, BriefType.REGIO_UITSTRIJKEND_ARTS_LABFORMULIER);
 	}
 }

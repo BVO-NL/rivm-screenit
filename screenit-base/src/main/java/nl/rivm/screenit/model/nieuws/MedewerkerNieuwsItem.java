@@ -48,11 +48,11 @@ import org.hibernate.envers.Audited;
 public class MedewerkerNieuwsItem extends AbstractHibernateObject
 {
 
-	@ManyToOne(cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
+	@ManyToOne(cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE }, optional = false)
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private Medewerker medewerker;
 
-	@ManyToOne(cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
+	@ManyToOne(cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE }, optional = false)
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private NieuwsItem nieuwsItem;
 

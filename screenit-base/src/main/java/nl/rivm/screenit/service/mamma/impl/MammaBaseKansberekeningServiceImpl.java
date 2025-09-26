@@ -373,10 +373,10 @@ public class MammaBaseKansberekeningServiceImpl implements MammaBaseKansberekeni
 		dummyAfspraak.setVanaf(dateSupplier.getDate());
 		dummyAfspraak.setStatus(MammaAfspraakStatus.GEPLAND);
 
-		var gbaPersoon = uitnodiging.getScreeningRonde().getDossier().getClient().getPersoon();
+		var persoon = uitnodiging.getScreeningRonde().getDossier().getClient().getPersoon();
 		dummyAfspraak
-			.setPostcode(gbaPersoon.getTijdelijkGbaAdres() != null && gbaPersoon.getTijdelijkGbaAdres().getPostcode() != null ? gbaPersoon.getTijdelijkGbaAdres().getPostcode()
-				: gbaPersoon.getGbaAdres().getPostcode());
+			.setPostcode(persoon.getTijdelijkGbaAdres() != null && persoon.getTijdelijkGbaAdres().getPostcode() != null ? persoon.getTijdelijkGbaAdres().getPostcode()
+				: persoon.getGbaAdres().getPostcode());
 		dummyAfspraak.setVerzettenReden(verzettenReden);
 		dummyAfspraak.setAfspraakEvent(new MammaKansberekeningAfspraakEvent());
 		dummyAfspraak.setUitnodiging(uitnodiging);

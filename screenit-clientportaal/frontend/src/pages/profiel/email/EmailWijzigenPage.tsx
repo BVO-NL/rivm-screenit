@@ -35,6 +35,8 @@ import SubmitForm from "../../../components/form/SubmitForm"
 import ScreenitTextfield from "../../../components/input/ScreenitTextfield"
 import styles from "./EmailWijzigenPage.module.scss"
 import {EmailDto} from "../../../datatypes/mail/EmailDto"
+import datadogService from "../../../services/DatadogService"
+import {AnalyticsCategorie} from "../../../datatypes/AnalyticsCategorie"
 
 const EmailWijzigenPage = () => {
 	const dispatch = useThunkDispatch()
@@ -69,6 +71,7 @@ const EmailWijzigenPage = () => {
 			<Formik initialValues={initialValues}
 					validationSchema={validatieSchema}
 					onSubmit={(email) => {
+						datadogService.stuurEvent("emailadresGewijzigd", AnalyticsCategorie.PROFIEL)
 						updateEmailAdres(email)
 					}}>
 

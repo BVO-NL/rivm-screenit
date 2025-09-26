@@ -24,7 +24,7 @@ package nl.rivm.screenit.service.impl;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DeelnamemodusDossier;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.TransgenderService;
@@ -92,7 +92,7 @@ public class TransgenderServiceImpl implements TransgenderService
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public boolean isNieuweClientAdhocPlaatsingTransgender(GbaPersoon persoon)
+	public boolean isNieuweClientAdhocPlaatsingTransgender(Persoon persoon)
 	{
 		if (persoon.getGeslacht() != Geslacht.MAN || persoon.getGeboortedatum() == null)
 		{

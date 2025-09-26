@@ -43,10 +43,10 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Gemeente_;
 import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.GbaStatus;
@@ -71,7 +71,6 @@ import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.NaamGebruik;
 import nl.topicuszorg.util.postcode.PostcodeFormatter;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -149,9 +148,9 @@ public class TestServiceImpl implements TestService
 	}
 
 	@Override
-	public GbaPersoon maakPersoon(LocalDate geboorteDatum)
+	public Persoon maakPersoon(LocalDate geboorteDatum)
 	{
-		var persoon = new GbaPersoon();
+		var persoon = new Persoon();
 		persoon.setGeslacht(Geslacht.VROUW);
 		persoon.setAchternaam("Lange");
 		persoon.setTussenvoegsel("de");
@@ -171,7 +170,7 @@ public class TestServiceImpl implements TestService
 
 	@Override
 	@Transactional
-	public Client maakClient(GbaPersoon filter)
+	public Client maakClient(Persoon filter)
 	{
 		var client = geefClient(filter.getBsn(), filter.getGeboortedatum(), filter.getOverlijdensdatum(), filter.getGeslacht());
 		geefAdres(client, filter.getGbaAdres());
@@ -182,7 +181,7 @@ public class TestServiceImpl implements TestService
 
 	@Override
 	@Transactional
-	public void createGbaFile(GbaPersoon persoon, InputStream vo107template, OutputStream vo107)
+	public void createGbaFile(Persoon persoon, InputStream vo107template, OutputStream vo107)
 	{
 		OutputStreamWriter vo107Bestand;
 
@@ -194,9 +193,9 @@ public class TestServiceImpl implements TestService
 			var arecordNr = 1;
 			var vo107Regel = vo107TemplateString;
 			var client = geefClient(persoon.getBsn(), persoon.getGeboortedatum(), persoon.getOverlijdensdatum(), persoon.getGeslacht());
-			var gbaPersoon = client.getPersoon();
-			var anummer = gbaPersoon.getAnummer();
-			var gbaAdres = gbaPersoon.getGbaAdres();
+			var clientPersoon = client.getPersoon();
+			var anummer = clientPersoon.getAnummer();
+			var gbaAdres = clientPersoon.getGbaAdres();
 			var postcode = PostcodeFormatter.formatPostcode(gbaAdres.getPostcode(), false);
 			if (postcode == null)
 			{
@@ -209,38 +208,22 @@ public class TestServiceImpl implements TestService
 
 			vo107Regel = vo107Regel.replace("Ag31", gbaBerichtType);
 
-			var bsn = gbaPersoon.getBsn();
+			var bsn = clientPersoon.getBsn();
 			vo107Regel = vo107Regel.replaceAll("<BSN>", StringUtils.rightPad(bsn, 9, ' '));
-			vo107Regel = vo107Regel.replaceAll("<Geslachtsaanduiding>", gbaPersoon.getGeslacht().getMnem());
-			vo107Regel = vo107Regel.replaceAll("<Geboortedatum>", StringUtils.rightPad(getGbaDatum("yyyyMMdd", gbaPersoon.getGeboortedatum()), 8, ' '));
-			vo107Regel = vo107Regel.replaceAll("<Geboorteplaats>", getValue(gbaPersoon.getGeboorteplaats()));
-			vo107Regel = vo107Regel.replaceAll("<Voornamen>", getValue(gbaPersoon.getVoornaam()));
-			vo107Regel = vo107Regel.replaceAll("<Tussenvoegsel>", getValue(gbaPersoon.getTussenvoegsel()));
-			vo107Regel = vo107Regel.replaceAll("<Geslachtsnaam>", getValue(gbaPersoon.getAchternaam()));
+			vo107Regel = vo107Regel.replaceAll("<Geslachtsaanduiding>", clientPersoon.getGeslacht().getMnem());
+			vo107Regel = vo107Regel.replaceAll("<Geboortedatum>", StringUtils.rightPad(getGbaDatum("yyyyMMdd", clientPersoon.getGeboortedatum()), 8, ' '));
+			vo107Regel = vo107Regel.replaceAll("<Voornamen>", getValue(clientPersoon.getVoornaam()));
+			vo107Regel = vo107Regel.replaceAll("<Tussenvoegsel>", getValue(clientPersoon.getTussenvoegsel()));
+			vo107Regel = vo107Regel.replaceAll("<Geslachtsnaam>", getValue(clientPersoon.getAchternaam()));
 
-			vo107Regel = vo107Regel.replaceAll("<DatumOverlijden>", StringUtils.rightPad(getGbaDatum("yyyyMMdd", gbaPersoon.getOverlijdensdatum()), 8, ' '));
+			vo107Regel = vo107Regel.replaceAll("<DatumOverlijden>", StringUtils.rightPad(getGbaDatum("yyyyMMdd", clientPersoon.getOverlijdensdatum()), 8, ' '));
 
-			if (CollectionUtils.isNotEmpty(gbaPersoon.getGbaNationaliteiten()))
-			{
-				vo107Regel = vo107Regel.replaceAll("<Nationaliteit>", getValue2(gbaPersoon.getGbaNationaliteiten().get(0).getNaam()));
-				vo107Regel = vo107Regel.replaceAll("<Nationaliteitcode>", StringUtils.leftPad(gbaPersoon.getGbaNationaliteiten().get(0).getCode(), 4, '0'));
-			}
-			else
-			{
-				vo107Regel = vo107Regel.replaceAll("<Nationaliteit>", getValue2(""));
-				vo107Regel = vo107Regel.replaceAll("<Nationaliteitcode>", StringUtils.leftPad("", 4, '0'));
-			}
+			vo107Regel = vo107Regel.replaceAll("<Nationaliteit>", getValue2(""));
+			vo107Regel = vo107Regel.replaceAll("<Nationaliteitcode>", StringUtils.leftPad("", 4, '0'));
 
-			if (gbaPersoon.getGbaGeboorteLand() != null)
-			{
-				vo107Regel = vo107Regel.replaceAll("<Geboorteland>", getValue2(gbaPersoon.getGbaGeboorteLand().getNaam()));
-				vo107Regel = vo107Regel.replaceAll("<Geboortlandcode>", StringUtils.leftPad(gbaPersoon.getGbaGeboorteLand().getCode(), 4, '0'));
-			}
-			else
-			{
-				vo107Regel = vo107Regel.replaceAll("<Geboorteland>", getValue2(""));
-				vo107Regel = vo107Regel.replaceAll("<Geboortlandcode>", StringUtils.leftPad("", 4, '0'));
-			}
+			vo107Regel = vo107Regel.replaceAll("<Geboorteland>", getValue2(""));
+			vo107Regel = vo107Regel.replaceAll("<Geboortlandcode>", StringUtils.leftPad("", 4, '0'));
+
 			vo107Regel = vo107Regel.replaceAll("<Straatnaam>", getValue(gbaAdres.getStraat()));
 
 			vo107Regel = vo107Regel.replaceAll("<Huisnummer>", StringUtils.rightPad(gbaAdres.getHuisnummer() + "", 254, ' '));
@@ -316,7 +299,7 @@ public class TestServiceImpl implements TestService
 		if (client == null)
 		{
 			client = new Client();
-			var persoon = new GbaPersoon();
+			var persoon = new Persoon();
 			client.setPersoon(persoon);
 			persoon.setNaamGebruik(NaamGebruik.EIGEN);
 			switch (geslacht)
@@ -343,7 +326,7 @@ public class TestServiceImpl implements TestService
 			persoon.setBsn(bsn);
 			persoon.setOverlijdensdatum(overlijdensDatum);
 			zetGeboortedatum(geboortedatum, persoon);
-			persoon.setPatient(client);
+			persoon.setClient(client);
 			client.setGbaStatus(GbaStatus.INDICATIE_AANWEZIG);
 			hibernateService.saveOrUpdate(persoon);
 			hibernateService.saveOrUpdate(client);
@@ -363,7 +346,7 @@ public class TestServiceImpl implements TestService
 		return client;
 	}
 
-	private static void zetGeboortedatum(Date geboortedatum, GbaPersoon persoon)
+	private static void zetGeboortedatum(Date geboortedatum, Persoon persoon)
 	{
 		if (geboortedatum == null)
 		{
@@ -482,16 +465,14 @@ public class TestServiceImpl implements TestService
 							client.setGbaStatus(GbaStatus.INDICATIE_AANWEZIG);
 						}
 
-						var persoon = new GbaPersoon();
+						var persoon = new Persoon();
 						client.setPersoon(persoon);
-						persoon.setPatient(client);
+						persoon.setClient(client);
 
 						persoon.setBsn(bsn);
 						persoon.setAnummer(columns[headersIndex.get("Anummer")]);
 						persoon.setGeslacht(Geslacht.getGeslacht(columns[headersIndex.get("Geslacht")].toUpperCase()));
 						persoon.setGeboortedatum(new SimpleDateFormat("yyyyMMdd").parse(columns[headersIndex.get("GeboorteDatum")]));
-						persoon.setGeboorteplaats(columns[headersIndex.get("Geboorteplaats")]);
-						persoon.setVoorletters(columns[headersIndex.get("Voorletters")]);
 
 						persoon.setTussenvoegsel(columns[headersIndex.get("VoorvGeslachtsnaam")]);
 						persoon.setAchternaam(columns[headersIndex.get("Geslachtsnaam")]);

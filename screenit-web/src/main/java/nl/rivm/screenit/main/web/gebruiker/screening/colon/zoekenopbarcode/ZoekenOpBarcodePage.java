@@ -38,7 +38,7 @@ import nl.rivm.screenit.main.web.gebruiker.screening.colon.ColonScreeningBasePag
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -76,7 +76,7 @@ public class ZoekenOpBarcodePage extends ColonScreeningBasePage
 	public ZoekenOpBarcodePage()
 	{
 		Client zoekobject = new Client();
-		GbaPersoon persoon = new GbaPersoon();
+		Persoon persoon = new Persoon();
 		persoon.setGbaAdres(new BagAdres());
 		zoekobject.setPersoon(persoon);
 

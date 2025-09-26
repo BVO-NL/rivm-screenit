@@ -27,9 +27,9 @@ import java.util.List;
 import nl.rivm.screenit.main.web.component.NaamChoiceRenderer;
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.components.TestEnumRadioChoice;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.INaam;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.TestService;
@@ -83,7 +83,7 @@ public abstract class BijzondereClientDatumPopup extends GenericPanel<List<Clien
 	{
 		List<GbaPersoonDatum> opties = new ArrayList<GbaPersoonDatum>();
 		Client client = getModelObject().get(0);
-		GbaPersoon persoon = client.getPersoon();
+		Persoon persoon = client.getPersoon();
 		if (persoon.getOverlijdensdatum() == null)
 		{
 			opties.add(GbaPersoonDatum.DATUM_OVERLIJDEN);

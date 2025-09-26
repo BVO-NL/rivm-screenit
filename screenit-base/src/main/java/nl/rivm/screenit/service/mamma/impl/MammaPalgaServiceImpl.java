@@ -36,7 +36,7 @@ import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.dto.mamma.MammaPalgaCsvImportDto;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.UploadDocument_;
 import nl.rivm.screenit.model.batch.popupconfig.MammaPalgaExportConfig;
@@ -391,7 +391,7 @@ public class MammaPalgaServiceImpl implements MammaPalgaService
 		{
 			return "pseudoId";
 		}
-		GbaPersoon persoon = dossier.getClient().getPersoon();
+		Persoon persoon = dossier.getClient().getPersoon();
 		if (dto.getGeboortejaar() != DateUtil.toLocalDate(persoon.getGeboortedatum()).getYear())
 		{
 			return "geboortejaar";
@@ -474,7 +474,7 @@ public class MammaPalgaServiceImpl implements MammaPalgaService
 	}
 
 	@Override
-	public long getPatid3MatchCount(GbaPersoon persoon)
+	public long getPatid3MatchCount(Persoon persoon)
 	{
 		return clientRepository.count(MammaPalgaSpecification.heeftPalgaPatid3Voorwaarden(persoon));
 	}

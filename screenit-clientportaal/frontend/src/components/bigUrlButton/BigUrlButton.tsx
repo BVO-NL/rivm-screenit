@@ -31,6 +31,7 @@ export type BigUrlButtonProps = {
 	title: string,
 	text: string,
 	link: string,
+	onClickStuurDatadogEvent?: () => void
 }
 
 const BigUrlButton = (props: BigUrlButtonProps) => {
@@ -39,7 +40,13 @@ const BigUrlButton = (props: BigUrlButtonProps) => {
 
 	return (
 		<div className={classNames(styles.bigUrl, BevolkingsonderzoekStyle[bvo!])}
-			 onClick={() => isExternalUrl(props.link) ? window.open(props.link, "_self") : navigate(props.link)}>
+			 onClick={() => {
+				 if (props.onClickStuurDatadogEvent) {
+					 props.onClickStuurDatadogEvent()
+				 }
+				 isExternalUrl(props.link) ? window.open(props.link, "_self") : navigate(props.link)
+			 }
+			 }>
 			<span className={bvoStyle.bvoText}>{props.title}</span>
 			<br/>
 			<span>{props.text}</span>

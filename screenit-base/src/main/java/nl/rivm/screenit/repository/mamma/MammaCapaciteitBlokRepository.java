@@ -21,7 +21,6 @@ package nl.rivm.screenit.repository.mamma;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -43,7 +42,6 @@ import nl.rivm.screenit.model.mamma.MammaScreeningRonde_;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
-import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 import nl.rivm.screenit.specification.mamma.MammaCapaciteitBlokSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
@@ -52,17 +50,20 @@ import org.springframework.data.domain.Sort;
 
 import com.google.common.collect.Range;
 
+import static nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType.SCREENING;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
+import static nl.rivm.screenit.specification.mamma.MammaCapaciteitBlokSpecification.heeftBlokType;
 import static nl.rivm.screenit.specification.mamma.MammaCapaciteitBlokSpecification.voorScreeningsEenheidInPeriode;
 
 public interface MammaCapaciteitBlokRepository extends BaseJpaRepository<MammaCapaciteitBlok>
 {
 
-	default List<MammaCapaciteitBlokProjectie> findNietGeblokkeerdeCapaciteitBlokken(Range<Date> zoekPeriode, Collection<MammaCapaciteitBlokType> blokTypes,
-		MammaScreeningsEenheid screeningsEenheid, ScreeningOrganisatie screeningOrganisatie, MammaStandplaats standplaats)
+	default List<MammaCapaciteitBlokProjectie> findNietGeblokkeerdeScreeningCapaciteitBlokken(Range<Date> zoekPeriode, MammaScreeningsEenheid screeningsEenheid,
+		ScreeningOrganisatie screeningOrganisatie, MammaStandplaats standplaats)
 	{
 		return findWith(
-			voorScreeningsEenheidInPeriode(screeningsEenheid, blokTypes, zoekPeriode)
+			voorScreeningsEenheidInPeriode(screeningsEenheid, zoekPeriode)
+				.and(heeftBlokType(SCREENING))
 				.and(MammaCapaciteitBlokSpecification.metActieveAfspraken())
 				.and(MammaCapaciteitBlokSpecification.heeftGeenActieveBlokkade(zoekPeriode, screeningsEenheid, screeningOrganisatie, standplaats)),
 			MammaCapaciteitBlokProjectie.class,
@@ -76,7 +77,6 @@ public interface MammaCapaciteitBlokRepository extends BaseJpaRepository<MammaCa
 						r.get(AbstractHibernateObject_.id).alias("blokId"),
 						r.get(MammaCapaciteitBlok_.vanaf).alias("blokVanaf"),
 						r.get(MammaCapaciteitBlok_.tot).alias("blokTot"),
-						r.get(MammaCapaciteitBlok_.blokType).alias("blokType"),
 						r.get(MammaCapaciteitBlok_.aantalOnderzoeken).alias("aantalOnderzoeken"),
 						r.get(MammaCapaciteitBlok_.minderValideAfspraakMogelijk).alias("minderValideAfspraakMogelijk"),
 						afspraakJoin.get(MammaAfspraak_.vanaf).alias("afspraakVanaf"),

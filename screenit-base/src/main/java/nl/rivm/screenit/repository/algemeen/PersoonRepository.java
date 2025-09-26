@@ -21,12 +21,10 @@ package nl.rivm.screenit.repository.algemeen;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Optional;
-
-import nl.rivm.screenit.model.gba.Land;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 
-public interface LandRepository extends BaseJpaRepository<Land>
+public interface PersoonRepository extends BaseJpaRepository<Persoon>
 {
-	Optional<Land> findOneByCode(String code);
+
 }

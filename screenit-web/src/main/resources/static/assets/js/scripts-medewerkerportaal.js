@@ -144,7 +144,7 @@ function toggleBkAfsprakenCheckboxes() {
 	let toggle = $('.js-toggleBkAfsprakenCheckBox')
 	if (toggle !== null) {
 		toggle.on('change', function (event) {
-			$(this).closest('table').find('td input[type=checkbox]').prop('checked',  $(this).prop('checked') === true);
+			$(this).closest('table').find('td input[type=checkbox]').prop('checked', $(this).prop('checked') === true);
 		});
 	}
 }
@@ -180,6 +180,10 @@ function initDatadog(applicationId, clientToken) {
 		trackUserInteractions: false,
 		defaultPrivacyLevel: "mask-user-input",
 	});
+}
+
+function pushDatadogEvent(event, attributen) {
+	window.DD_RUM && window.DD_RUM.addAction(event, attributen);
 }
 
 document.addEventListener('DOMContentLoaded', function () {

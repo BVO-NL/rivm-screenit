@@ -29,8 +29,8 @@ import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
 import nl.rivm.screenit.main.web.component.table.GeboortedatumColumn;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.AbstractMammaCePage;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Organisatie_;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling_;
@@ -108,18 +108,18 @@ public abstract class AbstractMammaCeWerklijst extends AbstractMammaCePage
 
 	protected IColumn<MammaBeoordeling, String> getBsnColumn()
 	{
-		return new PropertyColumn<>(Model.of("BSN"), propertyChain(persoonSortProperty(), GbaPersoon_.BSN),
+		return new PropertyColumn<>(Model.of("BSN"), propertyChain(persoonSortProperty(), Persoon_.BSN),
 			"onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client.persoon.bsn");
 	}
 
 	protected IColumn<MammaBeoordeling, String> getGeboortedatumColumn()
 	{
-		return new GeboortedatumColumn<>(propertyChain(persoonSortProperty(), GbaPersoon_.GEBOORTEDATUM), "onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client.persoon");
+		return new GeboortedatumColumn<>(propertyChain(persoonSortProperty(), Persoon_.GEBOORTEDATUM), "onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client.persoon");
 	}
 
 	protected IColumn<MammaBeoordeling, String> getClientColumn()
 	{
-		return new ClientColumn<>(propertyChain(persoonSortProperty(), GbaPersoon_.ACHTERNAAM), "onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client");
+		return new ClientColumn<>(propertyChain(persoonSortProperty(), Persoon_.ACHTERNAAM), "onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client");
 	}
 
 	protected IColumn<MammaBeoordeling, String> getVerslagdatumColumn()

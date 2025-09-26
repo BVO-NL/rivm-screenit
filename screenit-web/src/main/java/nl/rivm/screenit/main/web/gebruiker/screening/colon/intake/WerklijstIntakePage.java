@@ -48,10 +48,10 @@ import nl.rivm.screenit.main.web.gebruiker.screening.colon.ColonScreeningBasePag
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.Persoon;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonConclusie_;
 import nl.rivm.screenit.model.colon.ColonDossier_;
@@ -348,34 +348,34 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 		});
 		columns.add(
 			new PropertyColumn<>(Model.of("Kamer"), propertyChain(ColonTijdslot_.KAMER, ColonIntakekamer_.NAAM), propertyChain(ColonTijdslot_.KAMER, ColonIntakekamer_.NAAM)));
-		columns.add(new ClientColumn<>(propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, GbaPersoon_.ACHTERNAAM), ColonIntakeAfspraak_.CLIENT));
+		columns.add(new ClientColumn<>(propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, Persoon_.ACHTERNAAM), ColonIntakeAfspraak_.CLIENT));
 		columns.add(
-			new PropertyColumn<>(Model.of("BSN"), propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, GbaPersoon_.BSN),
-				propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, GbaPersoon_.BSN)));
-		columns.add(new GeboortedatumColumn<>(propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, GbaPersoon_.GEBOORTEDATUM),
+			new PropertyColumn<>(Model.of("BSN"), propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, Persoon_.BSN),
+				propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, Persoon_.BSN)));
+		columns.add(new GeboortedatumColumn<>(propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, Persoon_.GEBOORTEDATUM),
 			propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON)));
-		columns.add(new EnumPropertyColumn<>(Model.of("Gender"), propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, GbaPersoon_.GESLACHT),
-			propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, GbaPersoon_.GESLACHT)));
-		columns.add(new PropertyColumn<>(Model.of("Adres"), propertyChain(ColonIntakeAfspraak_.CLIENT, GbaPersoon_.GBA_ADRES, Adres_.STRAAT))
+		columns.add(new EnumPropertyColumn<>(Model.of("Gender"), propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, Persoon_.GESLACHT),
+			propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, Persoon_.GESLACHT)));
+		columns.add(new PropertyColumn<>(Model.of("Adres"), propertyChain(ColonIntakeAfspraak_.CLIENT, Persoon_.GBA_ADRES, Adres_.STRAAT))
 		{
 
 			@Override
 			public IModel<String> getDataModel(IModel<ColonIntakeAfspraak> rowModel)
 			{
-				GbaPersoon persoon = rowModel.getObject().getClient().getPersoon();
+				Persoon persoon = rowModel.getObject().getClient().getPersoon();
 
 				Adres adres = AdresUtil.getAdres(persoon, dateSupplier.getLocalDate());
 				return new Model<>(AdresUtil.getAdres(adres));
 			}
 		});
 
-		columns.add(new PropertyColumn<>(Model.of("PC/Plaats"), propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, GbaPersoon_.GBA_ADRES, Adres_.PLAATS))
+		columns.add(new PropertyColumn<>(Model.of("PC/Plaats"), propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, Persoon_.GBA_ADRES, Adres_.PLAATS))
 		{
 
 			@Override
 			public IModel<String> getDataModel(IModel<ColonIntakeAfspraak> rowModel)
 			{
-				GbaPersoon persoon = rowModel.getObject().getClient().getPersoon();
+				Persoon persoon = rowModel.getObject().getClient().getPersoon();
 
 				Adres adres = AdresUtil.getAdres(persoon, dateSupplier.getLocalDate());
 				return new Model<>(PostcodeFormatter.formatPostcode(adres.getPostcode(), true) + " " + adres.getPlaats());

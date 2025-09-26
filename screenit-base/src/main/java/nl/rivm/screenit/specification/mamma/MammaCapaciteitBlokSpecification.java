@@ -21,7 +21,6 @@ package nl.rivm.screenit.specification.mamma;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Collection;
 import java.util.Date;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -51,17 +50,14 @@ import com.google.common.collect.Range;
 
 import static nl.rivm.screenit.specification.RangeSpecification.overlapt;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
-import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MammaCapaciteitBlokSpecification
 {
-	public static Specification<MammaCapaciteitBlok> voorScreeningsEenheidInPeriode(MammaScreeningsEenheid screeningsEenheid,
-		Collection<MammaCapaciteitBlokType> blokTypes, Range<Date> periode)
+	public static Specification<MammaCapaciteitBlok> voorScreeningsEenheidInPeriode(MammaScreeningsEenheid screeningsEenheid, Range<Date> periode)
 	{
 		return heeftScreeningsEenheid(screeningsEenheid)
-			.and(heeftOverlapMetPeriode(periode))
-			.and(filterOpBlokTypes(blokTypes));
+			.and(heeftOverlapMetPeriode(periode));
 	}
 
 	public static Specification<MammaCapaciteitBlok> heeftScreeningsEenheid(MammaScreeningsEenheid screeningsEenheid)
@@ -79,9 +75,9 @@ public class MammaCapaciteitBlokSpecification
 		return overlapt(periode, r -> r.get(MammaCapaciteitBlok_.vanaf), r -> r.get(MammaCapaciteitBlok_.tot));
 	}
 
-	public static Specification<MammaCapaciteitBlok> filterOpBlokTypes(Collection<MammaCapaciteitBlokType> blokTypes)
+	public static Specification<MammaCapaciteitBlok> heeftBlokType(MammaCapaciteitBlokType blokType)
 	{
-		return skipWhenNull(blokTypes, (r, q, cb) -> r.get(MammaCapaciteitBlok_.blokType).in(blokTypes));
+		return (r, q, cb) -> cb.equal(r.get(MammaCapaciteitBlok_.blokType), blokType);
 	}
 
 	public static Specification<MammaCapaciteitBlok> metActieveAfspraken()

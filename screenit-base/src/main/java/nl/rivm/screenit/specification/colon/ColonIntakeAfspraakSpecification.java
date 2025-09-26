@@ -36,8 +36,8 @@ import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.GbaPersoon_;
+import nl.rivm.screenit.model.Persoon;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.ScreeningRonde_;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
@@ -97,7 +97,7 @@ public class ColonIntakeAfspraakSpecification
 			var subquery = q.subquery(Client.class);
 			var subqueryRoot = subquery.from(Client.class);
 
-			var gbaPersoonAlias = cb.treat(subqueryRoot.join(Client_.persoon), GbaPersoon.class);
+			var persoonAlias = cb.treat(subqueryRoot.join(Client_.persoon), Persoon.class);
 			var datumColoscopiePath = r.join(ColonIntakeAfspraak_.conclusie).get(ColonConclusie_.datumColoscopie);
 			var dossierPath = r.join(ColonIntakeAfspraak_.colonScreeningRonde).get(ColonScreeningRonde_.dossier);
 
@@ -105,12 +105,12 @@ public class ColonIntakeAfspraakSpecification
 				cb.equal(dossierPath, subqueryRoot.get(Client_.colonDossier)),
 				cb.and(
 					cb.or(
-						cb.isNull(gbaPersoonAlias.get(GbaPersoon_.overlijdensdatum)),
-						cb.greaterThan(gbaPersoonAlias.get(GbaPersoon_.overlijdensdatum), datumColoscopiePath)
+						cb.isNull(persoonAlias.get(Persoon_.overlijdensdatum)),
+						cb.greaterThan(persoonAlias.get(Persoon_.overlijdensdatum), datumColoscopiePath)
 					),
 					cb.or(
-						cb.isNull(gbaPersoonAlias.get(GbaPersoon_.datumVertrokkenUitNederland)),
-						cb.greaterThan(gbaPersoonAlias.get(GbaPersoon_.datumVertrokkenUitNederland),
+						cb.isNull(persoonAlias.get(Persoon_.datumVertrokkenUitNederland)),
+						cb.greaterThan(persoonAlias.get(Persoon_.datumVertrokkenUitNederland),
 							datumColoscopiePath)
 					)
 				))
@@ -155,7 +155,7 @@ public class ColonIntakeAfspraakSpecification
 
 			if (StringUtils.isNotBlank(zoekObject.getBsn()))
 			{
-				predicates.add(cb.equal(persoonPath.get(GbaPersoon_.bsn), zoekObject.getBsn()));
+				predicates.add(cb.equal(persoonPath.get(Persoon_.bsn), zoekObject.getBsn()));
 			}
 
 			if (zoekObject.getVanaf() != null)

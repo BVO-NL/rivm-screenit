@@ -34,15 +34,6 @@
         </attributes>
     </mapped-superclass>
 
-
-    <entity class="nl.topicuszorg.patientregistratie.persoonsgegevens.model.VerzekeringsMaatschappij"
-            metadata-complete="false">
-        <table schema="algemeen"/>
-    </entity>
-    <entity class="nl.topicuszorg.patientregistratie.persoonsgegevens.model.Polis" metadata-complete="false">
-        <table schema="algemeen"/>
-    </entity>
-
     <entity class="nl.topicuszorg.yubikey.model.YubiKey" metadata-complete="false">
         <table schema="algemeen"/>
     </entity>

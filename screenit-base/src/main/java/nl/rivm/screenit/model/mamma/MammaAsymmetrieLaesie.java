@@ -43,7 +43,7 @@ public class MammaAsymmetrieLaesie extends MammaLaesie
 		return MammaLaesieType.ASYMMETRIE;
 	}
 
-	@Column()
+	@Column
 	@Enumerated(EnumType.STRING)
 	private MammaAsymmetrieSpecificatie asymmetrieSpecificatie;
 

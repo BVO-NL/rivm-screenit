@@ -24,7 +24,6 @@ package nl.rivm.screenit.model;
 import java.io.Serial;
 import java.util.Date;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -37,12 +36,15 @@ import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 
-import javax.annotation.CheckForNull;
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 @Entity
+@Getter
+@Setter
 @Table(schema = "algemeen", uniqueConstraints = @UniqueConstraint(name = "uc_brief_definitie_type_laatst_gewijzigd", columnNames = { "briefType", "laatstGewijzigd" }))
 public class BriefDefinitie extends AbstractHibernateObject implements IDocument
 {
@@ -66,83 +68,6 @@ public class BriefDefinitie extends AbstractHibernateObject implements IDocument
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	private OrganisatieMedewerker uploader;
 
-	private String formulierNummer;
-
 	@Transient
 	private int volgnummer;
-
-	public BriefType getBriefType()
-	{
-		return briefType;
-	}
-
-	public void setBriefType(BriefType briefType)
-	{
-		this.briefType = briefType;
-	}
-
-	@Override
-	public UploadDocument getDocument()
-	{
-		return document;
-	}
-
-	@Override
-	public void setDocument(UploadDocument document)
-	{
-		this.document = document;
-	}
-
-	@Override
-	public Date getLaatstGewijzigd()
-	{
-		return laatstGewijzigd;
-	}
-
-	@Override
-	public void setLaatstGewijzigd(Date laatstGewijzigd)
-	{
-		this.laatstGewijzigd = laatstGewijzigd;
-	}
-
-	public OrganisatieMedewerker getUploader()
-	{
-		return uploader;
-	}
-
-	public void setUploader(OrganisatieMedewerker uploader)
-	{
-		this.uploader = uploader;
-	}
-
-	public String getFormulierNummer()
-	{
-		return formulierNummer;
-	}
-
-	public void setFormulierNummer(String formulierNummer)
-	{
-		this.formulierNummer = formulierNummer;
-	}
-
-	public int getVolgnummer()
-	{
-		return volgnummer;
-	}
-
-	public void setVolgnummer(int volgnummer)
-	{
-		this.volgnummer = volgnummer;
-	}
-
-	@CheckForNull
-	public Date getGeldigTot()
-	{
-		return geldigTot;
-	}
-
-	public void setGeldigTot(@Nullable Date geldigTot)
-	{
-		this.geldigTot = geldigTot;
-	}
 }

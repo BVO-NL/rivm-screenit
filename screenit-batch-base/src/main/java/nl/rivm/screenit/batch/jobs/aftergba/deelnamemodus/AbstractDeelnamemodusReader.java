@@ -23,22 +23,22 @@ package nl.rivm.screenit.batch.jobs.aftergba.deelnamemodus;
 
 import java.util.List;
 
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.DeelnamemodusDossier;
 import nl.rivm.screenit.model.Dossier;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
 import nl.rivm.screenit.model.mamma.MammaDossier_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 
 import org.springframework.data.jpa.domain.Specification;
-
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.SpecificationUtil.joinByString;
@@ -61,7 +61,7 @@ public abstract class AbstractDeelnamemodusReader<D extends Dossier<?, ?> & Deel
 			.and(heeftDeelnamemodus(deelnamemodus));
 	}
 
-	private Join<Client, GbaPersoon> persoonJoin(From<?, ? extends D> dossierRoot)
+	private Join<Client, Persoon> persoonJoin(From<?, ? extends D> dossierRoot)
 	{
 		Join<?, Client> clientJoin = joinByString(dossierRoot, MammaDossier_.CLIENT, JoinType.INNER);
 		return join(clientJoin, Client_.persoon);

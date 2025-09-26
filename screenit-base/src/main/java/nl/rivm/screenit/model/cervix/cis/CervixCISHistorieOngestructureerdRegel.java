@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.cervix.cis;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -32,63 +31,28 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
+@Getter
+@Setter
 @Entity
 @Table(schema = "cervix", name = "cis_historie_ongestructureerd_regel")
 public class CervixCISHistorieOngestructureerdRegel extends AbstractHibernateObject
 {
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	private CervixCISHistorie cisHistorie;
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	private Date datum;
 
+	@Column(nullable = false)
 	private String ronde;
 
 	@Column(nullable = false, columnDefinition = "TEXT")
 	private String tekst;
 
-	public CervixCISHistorie getCisHistorie()
-	{
-		return cisHistorie;
-	}
-
-	public void setCisHistorie(CervixCISHistorie cisHistorie)
-	{
-		this.cisHistorie = cisHistorie;
-	}
-
-	public Date getDatum()
-	{
-		return datum;
-	}
-
-	public void setDatum(Date datum)
-	{
-		this.datum = datum;
-	}
-
-	public String getRonde()
-	{
-		return ronde;
-	}
-
-	public void setRonde(String ronde)
-	{
-		this.ronde = ronde;
-	}
-
-	public String getTekst()
-	{
-		return tekst;
-	}
-
-	public void setTekst(String tekst)
-	{
-		this.tekst = tekst;
-	}
 }

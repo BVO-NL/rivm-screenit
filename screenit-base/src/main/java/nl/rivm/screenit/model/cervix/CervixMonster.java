@@ -74,7 +74,7 @@ public abstract class CervixMonster extends AbstractHibernateObject
 	@OneToOne(mappedBy = "monster", optional = false, fetch = FetchType.LAZY)
 	private CervixUitnodiging uitnodiging;
 
-	@Column(unique = true)
+	@Column(unique = true, nullable = false)
 	private String monsterId;
 
 	@Temporal(TemporalType.TIMESTAMP)

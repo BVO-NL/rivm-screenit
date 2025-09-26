@@ -28,7 +28,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 
 @Getter
@@ -41,8 +40,6 @@ public class MammaCapaciteitBlokProjectie
 	private Date blokVanaf;
 
 	private Date blokTot;
-
-	private MammaCapaciteitBlokType blokType;
 
 	private Integer aantalOnderzoeken;
 

@@ -46,9 +46,9 @@ import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.components.Te
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.popups.BijzondereClientDatumPopup;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Gemeente_;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.cervix.CervixDossier;
@@ -386,7 +386,7 @@ public class CervixTestTimelinePage extends TestenBasePage
 			@Override
 			public boolean isVisible()
 			{
-				GbaPersoon persoon = clientModel.getObject().get(0).getPersoon();
+				Persoon persoon = clientModel.getObject().get(0).getPersoon();
 				boolean isOverleden = persoon.getOverlijdensdatum() != null;
 				return !isOverleden;
 			}
@@ -437,7 +437,7 @@ public class CervixTestTimelinePage extends TestenBasePage
 					public boolean isVisible()
 					{
 						Client client = clientModel.getObject().get(0);
-						GbaPersoon persoon = client.getPersoon();
+						Persoon persoon = client.getPersoon();
 						boolean isOverleden = persoon.getOverlijdensdatum() != null;
 						TestTimelineRonde timeLineRonde = item.getModelObject();
 						ScreeningRondeGebeurtenissen gebeurtenissen = timeLineRonde.getCervixScreeningRondeDossier();

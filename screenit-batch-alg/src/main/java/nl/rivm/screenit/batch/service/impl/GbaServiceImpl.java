@@ -34,8 +34,8 @@ import nl.rivm.screenit.batch.service.GbaService;
 import nl.rivm.screenit.batch.service.GbaVraagService;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.TijdelijkGbaAdres;
 import nl.rivm.screenit.model.enums.DatumPrecisie;
 import nl.rivm.screenit.model.enums.GbaStatus;
@@ -47,11 +47,7 @@ import nl.rivm.screenit.model.gba.GbaFoutRegel;
 import nl.rivm.screenit.model.gba.GbaMutatie;
 import nl.rivm.screenit.model.gba.GbaVerwerkingEntry;
 import nl.rivm.screenit.model.gba.GbaVerwerkingsLog;
-import nl.rivm.screenit.model.gba.Land;
-import nl.rivm.screenit.model.gba.Nationaliteit;
 import nl.rivm.screenit.repository.algemeen.GemeenteRepository;
-import nl.rivm.screenit.repository.algemeen.LandRepository;
-import nl.rivm.screenit.repository.algemeen.NationaliteitRepository;
 import nl.rivm.screenit.service.BaseGbaVraagService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.CoordinatenService;
@@ -93,12 +89,6 @@ public class GbaServiceImpl implements GbaService
 
 	@Autowired
 	private LogService logService;
-
-	@Autowired
-	private LandRepository landRepository;
-
-	@Autowired
-	private NationaliteitRepository nationaliteitRepository;
 
 	@Autowired
 	private GemeenteRepository gemeenteRepository;
@@ -561,8 +551,8 @@ public class GbaServiceImpl implements GbaService
 	private Client vulNieuweClient(Vo107Bericht bericht, GbaVerwerkingsLog verwerkingLog)
 	{
 		Client client = new Client();
-		GbaPersoon persoon = new GbaPersoon();
-		persoon.setPatient(client);
+		Persoon persoon = new Persoon();
+		persoon.setClient(client);
 		client.setPersoon(persoon);
 		client.setGbaStatus(GbaStatus.INDICATIE_AANWEZIG);
 		vulPersoonsGegevens(client, bericht, verwerkingLog, true);
@@ -647,7 +637,7 @@ public class GbaServiceImpl implements GbaService
 	private boolean verwerkAdres(Vo107Bericht bericht, GbaVerwerkingsLog verwerkingLog, Client client)
 	{
 
-		GbaPersoon persoon = client.getPersoon();
+		Persoon persoon = client.getPersoon();
 		BagAdres adres = persoon.getGbaAdres();
 		if (adres == null)
 		{
@@ -755,71 +745,7 @@ public class GbaServiceImpl implements GbaService
 
 	private void verwerkTabelRegel(Vo107Bericht bericht)
 	{
-		if (bericht.getRubriekMap().containsKey(GbaRubriek.LAND_CODE.getNummer()))
-		{
-
-			String landCode = getStringUitBericht(bericht, GbaRubriek.LAND_CODE);
-			var land = landRepository.findOneByCode(landCode).orElse(null);
-			if (land == null)
-			{
-				land = new Land();
-				land.setCode(landCode);
-			}
-
-			String naam = getStringUitBericht(bericht, GbaRubriek.LAND_NAAM);
-			Date beginDatum = getDateUitBericht(bericht, GbaRubriek.LAND_BEGINDATUM);
-			Date eindDatum = getDateUitBericht(bericht, GbaRubriek.LAND_EINDDATUM);
-
-			if (naam != null)
-			{
-				land.setNaam(naam);
-			}
-
-			if (beginDatum != null)
-			{
-				land.setBeginDatum(beginDatum);
-			}
-
-			if (eindDatum != null)
-			{
-				land.setEindDatum(eindDatum);
-			}
-
-			hibernateService.saveOrUpdate(land);
-		}
-		else if (bericht.getRubriekMap().containsKey(GbaRubriek.NATIONALITEIT_CODE.getNummer()))
-		{
-
-			String nationaliteitCode = getStringUitBericht(bericht, GbaRubriek.NATIONALITEIT_CODE);
-			var nationaliteit = nationaliteitRepository.findOneByCode(nationaliteitCode).orElse(null);
-			if (nationaliteit == null)
-			{
-				nationaliteit = new Nationaliteit();
-				nationaliteit.setCode(nationaliteitCode);
-			}
-
-			String naam = getStringUitBericht(bericht, GbaRubriek.NATIONALTIEIT_NAAM);
-			Date beginDatum = getDateUitBericht(bericht, GbaRubriek.NATIONALITEIT_BEGINDATUM);
-			Date eindDatum = getDateUitBericht(bericht, GbaRubriek.NATIONALITEIT_EINDDATUM);
-
-			if (naam != null)
-			{
-				nationaliteit.setNaam(naam);
-			}
-
-			if (beginDatum != null)
-			{
-				nationaliteit.setBeginDatum(beginDatum);
-			}
-
-			if (eindDatum != null)
-			{
-				nationaliteit.setEindDatum(eindDatum);
-			}
-
-			hibernateService.saveOrUpdate(nationaliteit);
-		}
-		else if (bericht.getRubriekMap().containsKey(GbaRubriek.TITEL_CODE.getNummer()))
+		if (bericht.getRubriekMap().containsKey(GbaRubriek.TITEL_CODE.getNummer()))
 		{
 			String titelCode = getStringUitBericht(bericht, GbaRubriek.TITEL_CODE);
 			List<Client> clienten = clientService.getClientenMetTitel(titelCode);
@@ -987,13 +913,12 @@ public class GbaServiceImpl implements GbaService
 
 		boolean verstrekking = bericht.isVerstrekking();
 
-		GbaPersoon persoon = client.getPersoon();
+		Persoon persoon = client.getPersoon();
 
 		if (!Strings.isNullOrEmpty(bsn))
 		{
 			String oorspronkelijkBsn = persoon.getBsn();
 			persoonsGegevensGewijzigd |= changeProperty(persoon, "bsn", bsn, false);
-			persoon.setBsnGeverifieerd(Boolean.TRUE);
 			if (persoonsGegevensGewijzigd)
 			{
 				plaatsBSNGewijzigdMarker(client, oorspronkelijkBsn, bsn);

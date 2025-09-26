@@ -27,6 +27,8 @@ import {useSelectedBvo} from "../../utils/Hooks"
 import SpanWithHtml from "../span/SpanWithHtml"
 import {RoutePath} from "../../routes/routes"
 import {useNavigate} from "react-router"
+import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
+import datadogService from "../../services/DatadogService"
 
 export type TopTaakProps = {
 	link: RoutePath,
@@ -34,15 +36,27 @@ export type TopTaakProps = {
 	subTitel?: string,
 	subTekst?: string,
 	icon?: React.ReactNode,
+	datadogEventVoorCategorie?: AnalyticsCategorie
 }
 
 const TopTaakComponent = (props: TopTaakProps) => {
 	const selectedBvo = useSelectedBvo()
 	const navigate = useNavigate()
 
+	const stuurDatadogEventEnNavigeer = () => {
+		if (props.datadogEventVoorCategorie) {
+			datadogService.stuurEvent(
+				"primaireActietegelGeklikt",
+				props.datadogEventVoorCategorie,
+				{naam: props.titel},
+			)
+		}
+		navigate(props.link)
+	}
+
 	return (
 		<div className={classNames(styles.topTaak, BevolkingsonderzoekStyle[selectedBvo!])}
-			 onClick={() => navigate(props.link)}>
+			 onClick={stuurDatadogEventEnNavigeer}>
 
 			<div className={classNames(styles.topTaakIcon, BevolkingsonderzoekToptaakStyle[selectedBvo!])}>{props.icon}</div>
 
@@ -55,7 +69,6 @@ const TopTaakComponent = (props: TopTaakProps) => {
 			</div>}
 		</div>
 	)
-
 }
 
 export default TopTaakComponent

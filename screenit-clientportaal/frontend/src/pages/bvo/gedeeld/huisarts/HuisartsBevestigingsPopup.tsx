@@ -34,6 +34,8 @@ import {concatWithSpace} from "../../../../utils/StringUtil"
 import properties from "./HuisartsBevestigingsPopup.json"
 import {ArrowType} from "../../../../components/vectors/ArrowIconComponent"
 import SubmitButton from "../../../../components/input/SubmitButton"
+import datadogService from "../../../../services/DatadogService"
+import {AnalyticsCategorie} from "../../../../datatypes/AnalyticsCategorie"
 
 export type HuisartsBevestigingsPopupProps = {
 	huisarts?: Huisarts,
@@ -45,22 +47,22 @@ export type HuisartsBevestigingsPopupProps = {
 }
 
 export enum HuisartsBevestigingsPopupType {
-    "BEVESTIGEN",
+	"BEVESTIGEN",
 	"VERWIJDEREN",
 	"DOORGEVEN"
 }
 
 export const HuisartsBevestigingsPopup = (props: HuisartsBevestigingsPopupProps) => {
-    const bvo = useSelectedBvo()
-    const dispatch = useThunkDispatch()
+	const bvo = useSelectedBvo()
+	const dispatch = useThunkDispatch()
 
-    const bevestigHuisarts = () => {
-        switch (props.type) {
-            case HuisartsBevestigingsPopupType.VERWIJDEREN:
-                dispatch(ontkoppelHuisarts(bvo)).then(
-                    () => {
+	const bevestigHuisarts = () => {
+		switch (props.type) {
+			case HuisartsBevestigingsPopupType.VERWIJDEREN:
+				dispatch(ontkoppelHuisarts(bvo)).then(
+					() => {
 						props.onPrimaireKnop && props.onPrimaireKnop()
-                    },
+					},
 					() => {
 						props.onSecundaireKnop()
 					},
@@ -85,7 +87,6 @@ export const HuisartsBevestigingsPopup = (props: HuisartsBevestigingsPopupProps)
 	}
 
 	return (
-
 		<BasePopup title={bepaalTitel()}
 				   description={bepaalOmschrijving()}
 				   children={
@@ -113,9 +114,14 @@ export const HuisartsBevestigingsPopup = (props: HuisartsBevestigingsPopupProps)
 							   <SubmitButton displayArrow={ArrowType.ARROW_RIGHT}
 											 label={bepaalHoofdKnopTekst()}
 											 onClick={() => {
+												 datadogService.stuurEvent("huisartsBevestigd", AnalyticsCategorie.MAMMA_HUISARTS)
 												 bevestigHuisarts()
 											 }}/>
-							   <NavLink onClick={props.onSecundaireKnop} className={styles.andereHuisarts}>
+							   <NavLink onClick={() => {
+								   datadogService.stuurEvent("andereHuisartsKiezen", AnalyticsCategorie.MAMMA_HUISARTS)
+								   props.onSecundaireKnop()
+							   }}
+										className={styles.andereHuisarts}>
 								   {bepaalAlternatieveLinkTekst()}
 							   </NavLink>
 							   {HuisartsBevestigingsPopupType.DOORGEVEN === props.type && props.huisarts &&

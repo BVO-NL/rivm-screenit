@@ -33,60 +33,69 @@ import HeraanmeldenIcon from "../../scss/media/icons_toptaken/HeraanmeldenIcon/H
 import AfspraakIcon from "../../scss/media/icons_toptaken/AfspraakIcon/AfspraakIcon"
 import HuisartsIcon from "../../scss/media/icons_toptaken/HuisartsIcon/HuisartsIcon"
 import properties from "./MammaTopTakenComponent.json"
+import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 
 export type MammaTopTakenComponentProps = {
-    className?: string
-    getTekstHuisartsToptaak: (huisartsHuidigeRondeIsBekend: boolean, huisartsVorigeRondeIsBekend: boolean) => "controleren" | "wijzigen" | "opgeven"
-    beschikbareActies: ClientContactActieType[]
+	className?: string
+	getTekstHuisartsToptaak: (huisartsHuidigeRondeIsBekend: boolean, huisartsVorigeRondeIsBekend: boolean) => "controleren" | "wijzigen" | "opgeven"
+	beschikbareActies: ClientContactActieType[]
 }
 
 const MammaTopTakenComponent = (props: MammaTopTakenComponentProps) => {
 
-    const dispatch = useThunkDispatch()
+	const dispatch = useThunkDispatch()
 
-    const huisartsVorigeRondeIsBekend = useSelector((state: State) => !!state.client.mammaDossier.huisartsVorigeRonde)
-    const geenHuisartsOptieHuidigeRonde = useSelector((state:State) => !!state.client.mammaDossier.geenHuisartsOptieHuidigeRonde)
-    const huisartsHuidigeRondeIsBekend = useSelector((state: State) => !!state.client.mammaDossier.huisartsHuidigeRonde)
-    const geenHuisartsOptieVorigeRonde = useSelector((state:State) => !!state.client.mammaDossier.geenHuisartsOptieVorigeRonde)
+	const huisartsVorigeRondeIsBekend = useSelector((state: State) => !!state.client.mammaDossier.huisartsVorigeRonde)
+	const geenHuisartsOptieHuidigeRonde = useSelector((state: State) => !!state.client.mammaDossier.geenHuisartsOptieHuidigeRonde)
+	const huisartsHuidigeRondeIsBekend = useSelector((state: State) => !!state.client.mammaDossier.huisartsHuidigeRonde)
+	const geenHuisartsOptieVorigeRonde = useSelector((state: State) => !!state.client.mammaDossier.geenHuisartsOptieVorigeRonde)
 
-    const huidigeAfspraak = useSelector((state: State) => state.client.mammaDossier.huidigeAfspraak)
+	const huidigeAfspraak = useSelector((state: State) => state.client.mammaDossier.huidigeAfspraak)
 
-    useEffect(() => {
-        dispatch(getVorigeHuisarts(Bevolkingsonderzoek.MAMMA))
-        dispatch(getHuidigeHuisarts(Bevolkingsonderzoek.MAMMA))
-        dispatch(getVorigeMammaGeenHuisartsOptie(Bevolkingsonderzoek.MAMMA))
-        dispatch(getHuidigeMammaGeenHuisartsOptie(Bevolkingsonderzoek.MAMMA))
-        dispatch(getHuidigeAfspraak())
-    }, [dispatch])
+	useEffect(() => {
+		dispatch(getVorigeHuisarts(Bevolkingsonderzoek.MAMMA))
+		dispatch(getHuidigeHuisarts(Bevolkingsonderzoek.MAMMA))
+		dispatch(getVorigeMammaGeenHuisartsOptie(Bevolkingsonderzoek.MAMMA))
+		dispatch(getHuidigeMammaGeenHuisartsOptie(Bevolkingsonderzoek.MAMMA))
+		dispatch(getHuidigeAfspraak())
+	}, [dispatch])
 
-    return (
-        <Row className={props.className}>
-            {props.beschikbareActies && (props.beschikbareActies.includes(ClientContactActieType.MAMMA_AFSPRAAK_MAKEN) || props.beschikbareActies.includes(ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN)) &&
-			<Col lg={4}>
-				<TopTaakComponent icon={<AfspraakIcon/>}
-								  link="/mamma/afspraak/"
-								  titel={props.beschikbareActies.includes(ClientContactActieType.MAMMA_AFSPRAAK_MAKEN) ? getString(properties.afspraak.maken) : getString(properties.afspraak.verzetten)}/>
-			</Col>}
-            {props.beschikbareActies && huidigeAfspraak && props.beschikbareActies.includes(ClientContactActieType.MAMMA_AFMELDEN) &&
-			<Col lg={4}>
-				<TopTaakComponent icon={<AfspraakIcon/>}
-								  link="/mamma/afmelden/"
-								  titel={getString(properties.afspraak.afzeggen)}/>
-			</Col>}
-            {props.beschikbareActies && props.beschikbareActies.includes(ClientContactActieType.MAMMA_HERAANMELDEN) &&
-			<Col lg={4}>
-				<TopTaakComponent icon={<HeraanmeldenIcon/>}
-								  link="/mamma/heraanmelden/"
-								  titel={getString(properties.heraanmelden)}/>
-			</Col>}
-            {props.beschikbareActies && props.beschikbareActies.includes(ClientContactActieType.MAMMA_HUISARTS_WIJZIGEN) &&
-			<Col lg={4}>
-				<TopTaakComponent icon={<HuisartsIcon/>}
-								  link="/mamma/huisarts/"
-								  titel={getString(properties.huisarts[props.getTekstHuisartsToptaak(huisartsHuidigeRondeIsBekend || geenHuisartsOptieHuidigeRonde, huisartsVorigeRondeIsBekend || geenHuisartsOptieVorigeRonde)])}/>
-			</Col>}
-        </Row>
-    )
+	return (
+		<Row className={props.className}>
+			{props.beschikbareActies && (props.beschikbareActies.includes(ClientContactActieType.MAMMA_AFSPRAAK_MAKEN) || props.beschikbareActies.includes(ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN)) &&
+				<Col lg={4}>
+					<TopTaakComponent icon={<AfspraakIcon/>}
+									  link="/mamma/afspraak/"
+									  titel={props.beschikbareActies.includes(ClientContactActieType.MAMMA_AFSPRAAK_MAKEN) ? getString(properties.afspraak.maken) : getString(properties.afspraak.verzetten)}
+									  datadogEventVoorCategorie={AnalyticsCategorie.MAMMA}
+					/>
+				</Col>}
+			{props.beschikbareActies && huidigeAfspraak && props.beschikbareActies.includes(ClientContactActieType.MAMMA_AFMELDEN) &&
+				<Col lg={4}>
+					<TopTaakComponent icon={<AfspraakIcon/>}
+									  link="/mamma/afmelden/"
+									  titel={getString(properties.afspraak.afzeggen)}
+									  datadogEventVoorCategorie={AnalyticsCategorie.MAMMA}
+					/>
+				</Col>}
+			{props.beschikbareActies && props.beschikbareActies.includes(ClientContactActieType.MAMMA_HERAANMELDEN) &&
+				<Col lg={4}>
+					<TopTaakComponent icon={<HeraanmeldenIcon/>}
+									  link="/mamma/heraanmelden/"
+									  titel={getString(properties.heraanmelden)}
+									  datadogEventVoorCategorie={AnalyticsCategorie.MAMMA}
+					/>
+				</Col>}
+			{props.beschikbareActies && props.beschikbareActies.includes(ClientContactActieType.MAMMA_HUISARTS_WIJZIGEN) &&
+				<Col lg={4}>
+					<TopTaakComponent icon={<HuisartsIcon/>}
+									  link="/mamma/huisarts/"
+									  titel={getString(properties.huisarts[props.getTekstHuisartsToptaak(huisartsHuidigeRondeIsBekend || geenHuisartsOptieHuidigeRonde, huisartsVorigeRondeIsBekend || geenHuisartsOptieVorigeRonde)])}
+									  datadogEventVoorCategorie={AnalyticsCategorie.MAMMA}
+					/>
+				</Col>}
+		</Row>
+	)
 }
 
 export default MammaTopTakenComponent

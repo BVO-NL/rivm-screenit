@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -561,27 +560,7 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 		{
 			return true;
 		}
-		var dossier = afspraak.getUitnodiging().getScreeningRonde().getDossier();
-		switch (nieuweBlokType)
-		{
-		case REGULIER:
-			if (dossier.getTehuis() != null)
-			{
-				return true;
-			}
-			break;
-		case TEHUIS:
-			if (dossier.getTehuis() == null)
-			{
-				return true;
-			}
-			break;
-		case GEEN_SCREENING:
-			return true;
-		default:
-			throw new IllegalArgumentException("Onbekend bloktype: " + nieuweBlokType);
-		}
-		return false;
+		return nieuweBlokType == MammaCapaciteitBlokType.GEEN_SCREENING;
 	}
 
 	private String koppelNietGekoppeldeAfspraken(MammaCapaciteitBlok persistentBlok, boolean runDry)

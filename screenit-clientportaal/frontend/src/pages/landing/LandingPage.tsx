@@ -38,6 +38,8 @@ import {AanhefType} from "../../datatypes/aanhef/AanhefType"
 import {Geslacht} from "../../datatypes/Geslacht"
 import {isNullOfLeeg} from "../../utils/EmptyUtil"
 import {useThunkDispatch} from "../../index"
+import datadogService from "../../services/DatadogService"
+import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 
 const LandingPage = () => {
 	const dispatch = useThunkDispatch()
@@ -57,7 +59,8 @@ const LandingPage = () => {
 						<SpanWithHtml className={styles.infoText} value={getString(properties.inleiding)}/>
 					</div>
 					<BvoUrlComponent link={getBevolkingsonderzoekNederlandUrl()}
-									 tekst={getString(properties.link, [getBevolkingsonderzoekNederlandUrlNaam()])}/>
+									 tekst={getString(properties.link, [getBevolkingsonderzoekNederlandUrlNaam()])}
+									 onClick={() => datadogService.stuurEvent("infoBVOlinkGeklikt", AnalyticsCategorie.LANDINGSPAGINA)}/>
 				</Col>
 				<Col lg={4}>
 					<ImageBlobComponent image={blob_personen} className={styles.blob}/>

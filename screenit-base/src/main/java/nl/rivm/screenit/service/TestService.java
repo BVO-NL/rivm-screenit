@@ -31,9 +31,9 @@ import java.util.List;
 
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.service.impl.ImportBvoViaCsv;
 
@@ -44,11 +44,11 @@ public interface TestService
 
 	List<Client> vindClienten(List<String> bsns, Bevolkingsonderzoek onderzoek);
 
-	GbaPersoon maakPersoon(LocalDate geboorteDatum);
+	Persoon maakPersoon(LocalDate geboorteDatum);
 
-	Client maakClient(GbaPersoon persoon);
+	Client maakClient(Persoon persoon);
 
-	void createGbaFile(GbaPersoon persoon, InputStream vo107template, OutputStream outputStream);
+	void createGbaFile(Persoon persoon, InputStream vo107template, OutputStream outputStream);
 
 	void importClientenViaCsv(File file, ImportBvoViaCsv importBvoViaCsv) throws IOException, ParseException;
 

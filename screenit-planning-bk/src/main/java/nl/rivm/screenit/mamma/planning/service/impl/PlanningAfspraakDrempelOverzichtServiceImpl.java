@@ -109,7 +109,7 @@ public class PlanningAfspraakDrempelOverzichtServiceImpl implements PlanningAfsp
 			int cdvIndex = client.getDeelnamekans().movePointRight(2).intValue();
 			boolean drempelToepassen = true;
 
-			if (client.getTehuis() != null)
+			if (client.inTehuis())
 			{
 				voegToeCumulatieveVerdeling(cdvTehuis, cdvIndex);
 				drempelToepassen = false;

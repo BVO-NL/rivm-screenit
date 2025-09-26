@@ -28,10 +28,13 @@ import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.UploadDocument_;
+import nl.rivm.screenit.specification.ExtendedSpecification;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import static nl.rivm.screenit.specification.SpecificationUtil.containsCaseInsensitive;
 import static nl.rivm.screenit.specification.SpecificationUtil.endsWithCaseInsensitive;
+import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenEmptyExtended;
 import static nl.rivm.screenit.specification.SpecificationUtil.startsWithCaseInsensitive;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -60,5 +63,10 @@ public class UploadDocumentSpecification
 	public static Specification<UploadDocument> heeftContentTypeIn(List<String> contentTypes)
 	{
 		return (r, q, cb) -> r.get(UploadDocument_.contentType).in(contentTypes);
+	}
+
+	public static ExtendedSpecification<UploadDocument> filterNaamContaining(String naam)
+	{
+		return skipWhenEmptyExtended(naam, (r, q, cb) -> containsCaseInsensitive(cb, r.get(UploadDocument_.naam), naam));
 	}
 }

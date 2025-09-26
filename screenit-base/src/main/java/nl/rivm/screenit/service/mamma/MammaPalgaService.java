@@ -26,7 +26,7 @@ import java.util.List;
 
 import nl.rivm.screenit.dto.mamma.MammaPalgaCsvImportDto;
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.batch.popupconfig.MammaPalgaExportConfig;
 import nl.rivm.screenit.model.batch.popupconfig.MammaPalgaGrondslag;
@@ -57,5 +57,5 @@ public interface MammaPalgaService
 
 	String verwerkImportDto(MammaPalgaCsvImportDto dto, MammaPalgaGrondslag grondslag) throws NoSuchFieldException;
 
-	long getPatid3MatchCount(GbaPersoon persoon);
+	long getPatid3MatchCount(Persoon persoon);
 }

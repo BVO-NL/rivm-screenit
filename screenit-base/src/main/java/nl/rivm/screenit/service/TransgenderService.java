@@ -23,7 +23,7 @@ package nl.rivm.screenit.service;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DeelnamemodusDossier;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 
 public interface TransgenderService
 {
@@ -31,5 +31,5 @@ public interface TransgenderService
 
 	void bijwerkenDeelnamemodus(Client client);
 
-	boolean isNieuweClientAdhocPlaatsingTransgender(GbaPersoon persoon);
+	boolean isNieuweClientAdhocPlaatsingTransgender(Persoon persoon);
 }

@@ -24,6 +24,7 @@ package nl.rivm.screenit.specification.algemeen;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Date;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -37,13 +38,17 @@ import nl.rivm.screenit.util.DateUtil;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import com.google.common.collect.Range;
+
+import static nl.rivm.screenit.specification.RangeSpecification.bevat;
+import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenEmpty;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNullExtended;
 import static nl.rivm.screenit.util.DateUtil.toUtilDate;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MergedBrievenSpecification
 {
-	public static <M extends MergedBrieven<?>> Specification<M> heeftBriefTypeIn(Collection<BriefType> briefTypes)
+	public static <M extends MergedBrieven<?>> ExtendedSpecification<M> heeftBriefTypeIn(Collection<BriefType> briefTypes)
 	{
 		return (r, q, cb) -> r.get(MergedBrieven_.briefType).in(briefTypes);
 	}
@@ -101,6 +106,26 @@ public class MergedBrievenSpecification
 	public static <M extends MergedBrieven<?>> ExtendedSpecification<M> filterControle(Boolean waarde)
 	{
 		return skipWhenNullExtended(waarde, (r, q, cb) -> cb.equal(r.get(MergedBrieven_.controle), waarde));
+	}
+
+	public static <M extends MergedBrieven<?>> ExtendedSpecification<M> filterCreatieDatumTussen(Range<Date> peilRange)
+	{
+		return bevat(peilRange, r -> r.get(MergedBrieven_.creatieDatum));
+	}
+
+	public static <M extends MergedBrieven<?>> ExtendedSpecification<M> filterCreatieDatumVoor(Date peilDatum)
+	{
+		return skipWhenNullExtended(peilDatum, (r, q, cb) -> cb.lessThan(r.get(MergedBrieven_.creatieDatum), peilDatum));
+	}
+
+	public static <M extends MergedBrieven<?>> ExtendedSpecification<M> filterCreatieDatumNa(Date peilDatum)
+	{
+		return skipWhenNullExtended(peilDatum, (r, q, cb) -> cb.greaterThan(r.get(MergedBrieven_.creatieDatum), peilDatum));
+	}
+
+	public static <M extends MergedBrieven<?>> ExtendedSpecification<M> filterBriefTypeIn(Collection<BriefType> briefTypes)
+	{
+		return skipWhenEmpty(briefTypes, (r, q, cb) -> r.get(MergedBrieven_.briefType).in(briefTypes));
 	}
 
 }

@@ -30,8 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.main.web.gebruiker.testen.TestenBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BagAdres;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.MailMergeContext;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.enums.Actie;
@@ -108,16 +108,15 @@ public class TestBarcodePage extends TestenBasePage
 					String[] barcodesArray = StringUtils.split(barcodes.getObject(), ',');
 					for (String barcode : barcodesArray)
 					{
-						GbaPersoon gbaPersoon = new GbaPersoon();
-						gbaPersoon.setBsn(TestBsnGenerator.getValideBsn());
-						gbaPersoon.setGeslacht(Geslacht.VROUW);
-						gbaPersoon.setAchternaam("Doe-" + gbaPersoon.getBsn());
-						gbaPersoon.setVoornaam("Jane");
-						gbaPersoon.setVoorletters("J");
-						gbaPersoon.setGeboortedatum(DateUtil.toUtilDate(dateSupplier.getLocalDate().minusYears(50)));
-						gbaPersoon.setGbaAdres(new BagAdres());
+						Persoon persoon = new Persoon();
+						persoon.setBsn(TestBsnGenerator.getValideBsn());
+						persoon.setGeslacht(Geslacht.VROUW);
+						persoon.setAchternaam("Doe-" + persoon.getBsn());
+						persoon.setVoornaam("Jane");
+						persoon.setGeboortedatum(DateUtil.toUtilDate(dateSupplier.getLocalDate().minusYears(50)));
+						persoon.setGbaAdres(new BagAdres());
 
-						CervixScreeningRonde ronde = cervixTestService.geefScreeningRonde(gbaPersoon);
+						CervixScreeningRonde ronde = cervixTestService.geefScreeningRonde(persoon);
 
 						Document document = cervixTestService.geefBarcodeUitnodigingsIdTestPdf(ronde.getLaatsteUitnodiging());
 						if (alleDocumenten == null)
@@ -176,16 +175,15 @@ public class TestBarcodePage extends TestenBasePage
 					String[] barcodesArray = StringUtils.split(barcodes.getObject(), ',');
 					for (String barcode : barcodesArray)
 					{
-						GbaPersoon gbaPersoon = new GbaPersoon();
-						gbaPersoon.setBsn(TestBsnGenerator.getValideBsn());
-						gbaPersoon.setGeslacht(Geslacht.VROUW);
-						gbaPersoon.setAchternaam("Doe-" + gbaPersoon.getBsn());
-						gbaPersoon.setVoornaam("Jane");
-						gbaPersoon.setVoorletters("J");
-						gbaPersoon.setGeboortedatum(DateUtil.toUtilDate(dateSupplier.getLocalDate().minusYears(50)));
-						gbaPersoon.setGbaAdres(new BagAdres());
+						Persoon persoon = new Persoon();
+						persoon.setBsn(TestBsnGenerator.getValideBsn());
+						persoon.setGeslacht(Geslacht.VROUW);
+						persoon.setAchternaam("Doe-" + persoon.getBsn());
+						persoon.setVoornaam("Jane");
+						persoon.setGeboortedatum(DateUtil.toUtilDate(dateSupplier.getLocalDate().minusYears(50)));
+						persoon.setGbaAdres(new BagAdres());
 
-						CervixScreeningRonde ronde = cervixTestService.geefScreeningRonde(gbaPersoon);
+						CervixScreeningRonde ronde = cervixTestService.geefScreeningRonde(persoon);
 
 						MailMergeContext context = new MailMergeContext();
 						context.setCervixUitnodiging(ronde.getLaatsteUitnodiging());

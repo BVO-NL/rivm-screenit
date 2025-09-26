@@ -24,11 +24,14 @@ package nl.rivm.screenit.service.impl;
 
 import java.util.Arrays;
 
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.JoinType;
+
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.InpakbareUitnodiging;
+import nl.rivm.screenit.model.Persoon;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.Uitnodiging;
 import nl.rivm.screenit.model.cervix.CervixDossier_;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde_;
@@ -58,9 +61,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.JoinType;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
@@ -152,9 +152,9 @@ public class BaseUitnodigingServiceImpl implements BaseUitnodigingService
 	{
 		return colonUitnodigingRepository.findOne(
 			AdresSpecification.heeftPostcode(postcode).and(AdresSpecification.heeftHuisnummer(huisnummer))
-				.with((From<?, ? extends ColonUitnodiging> r) -> join(colonPersoonJoin(r), GbaPersoon_.gbaAdres))
+				.with((From<?, ? extends ColonUitnodiging> r) -> join(colonPersoonJoin(r), Persoon_.gbaAdres))
 				.or(AdresSpecification.heeftPostcode(postcode).and(AdresSpecification.heeftHuisnummer(huisnummer))
-					.with((From<?, ? extends ColonUitnodiging> r) -> join(colonPersoonJoin(r), GbaPersoon_.tijdelijkAdres, JoinType.LEFT)))
+					.with((From<?, ? extends ColonUitnodiging> r) -> join(colonPersoonJoin(r), Persoon_.tijdelijkAdres, JoinType.LEFT)))
 				.and(ColonUitnodigingSpecification.heeftTrackTraceId(trackId))).orElse(null);
 	}
 
@@ -162,9 +162,9 @@ public class BaseUitnodigingServiceImpl implements BaseUitnodigingService
 	public CervixUitnodiging getCervixUitnodiging(String trackId, String postcode, Integer huisnummer)
 	{
 		return cervixUitnodigingRepository.findOne(AdresSpecification.heeftPostcode(postcode).and(AdresSpecification.heeftHuisnummer(huisnummer))
-			.with((From<?, ? extends CervixUitnodiging> r) -> join(cervixPersoonJoin(r), GbaPersoon_.gbaAdres))
+			.with((From<?, ? extends CervixUitnodiging> r) -> join(cervixPersoonJoin(r), Persoon_.gbaAdres))
 			.or(AdresSpecification.heeftPostcode(postcode).and(AdresSpecification.heeftHuisnummer(huisnummer))
-				.with((From<?, ? extends CervixUitnodiging> r) -> join(cervixPersoonJoin(r), GbaPersoon_.tijdelijkAdres, JoinType.LEFT)))
+				.with((From<?, ? extends CervixUitnodiging> r) -> join(cervixPersoonJoin(r), Persoon_.tijdelijkAdres, JoinType.LEFT)))
 			.and(CervixUitnodigingSpecification.heeftTrackTraceId(trackId))).orElse(null);
 	}
 
@@ -188,7 +188,7 @@ public class BaseUitnodigingServiceImpl implements BaseUitnodigingService
 		return cervixUitnodigingRepository.exists(CervixUitnodigingSpecification.heeftTrackTraceId(trackId));
 	}
 
-	private From<?, ? extends GbaPersoon> colonPersoonJoin(From<?, ? extends ColonUitnodiging> r)
+	private From<?, ? extends Persoon> colonPersoonJoin(From<?, ? extends ColonUitnodiging> r)
 	{
 		var rondeJoin = join(r, ColonUitnodiging_.screeningRonde);
 		var dossierJoin = join(rondeJoin, ColonScreeningRonde_.dossier);
@@ -196,7 +196,7 @@ public class BaseUitnodigingServiceImpl implements BaseUitnodigingService
 		return join(clientJoin, Client_.persoon);
 	}
 
-	private From<?, ? extends GbaPersoon> cervixPersoonJoin(From<?, ? extends CervixUitnodiging> r)
+	private From<?, ? extends Persoon> cervixPersoonJoin(From<?, ? extends CervixUitnodiging> r)
 	{
 		var rondeJoin = join(r, CervixUitnodiging_.screeningRonde);
 		var dossierJoin = join(rondeJoin, CervixScreeningRonde_.dossier);

@@ -33,8 +33,8 @@ import nl.rivm.screenit.main.web.gebruiker.clienten.contact.ClientContactPage;
 import nl.rivm.screenit.main.web.gebruiker.gedeeld.MammaDoelgroepIndicatorPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.formatter.TelefoonnummersFormatter;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
@@ -161,7 +161,7 @@ public class MammaAfsprakenBlokPanel extends GenericPanel<List<MammaAfspraak>>
 	{
 		MammaAfspraak afspraak = item.getModelObject();
 		MammaDossier dossier = afspraak.getUitnodiging().getScreeningRonde().getDossier();
-		GbaPersoon persoon = dossier.getClient().getPersoon();
+		Persoon persoon = dossier.getClient().getPersoon();
 
 		MammaScreeningRonde laatsteScreeningRonde = dossier.getLaatsteScreeningRonde();
 		MammaAfspraak laatsteAfspraak = laatsteScreeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak();

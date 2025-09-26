@@ -34,8 +34,8 @@ import nl.rivm.screenit.batch.service.HL7BaseSendMessageService;
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.cervix.CervixMonster;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieParameterService;
@@ -48,8 +48,6 @@ import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Connection;
@@ -62,7 +60,6 @@ import ca.uhn.hl7v2.model.v24.segment.PID;
 
 @Slf4j
 @Service
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class CervixHL7BaseServiceImpl implements CervixHL7BaseService
 {
 	@Autowired
@@ -131,7 +128,7 @@ public class CervixHL7BaseServiceImpl implements CervixHL7BaseService
 	@Override
 	public PID buildPIDSegmentWithForcedGender(PID pid, Client client, Geslacht forcedGender) throws DataTypeException
 	{
-		GbaPersoon persoon = client.getPersoon();
+		Persoon persoon = client.getPersoon();
 		BagAdres persoonAdres = persoon.getGbaAdres();
 
 		pid.getSetIDPID().setValue("1");
@@ -178,7 +175,6 @@ public class CervixHL7BaseServiceImpl implements CervixHL7BaseService
 
 		pid.getPid12_CountyCode().setValue("NLD");
 
-		pid.getPid23_BirthPlace().setValue(persoon.getGeboorteplaats());
 		return pid;
 	}
 

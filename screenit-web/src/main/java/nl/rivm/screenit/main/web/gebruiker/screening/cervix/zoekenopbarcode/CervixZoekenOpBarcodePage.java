@@ -38,7 +38,7 @@ import nl.rivm.screenit.main.web.gebruiker.screening.cervix.monster.CervixMonste
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -72,7 +72,7 @@ public class CervixZoekenOpBarcodePage extends CervixScreeningBasePage
 	public CervixZoekenOpBarcodePage()
 	{
 		var zoekobject = new Client();
-		var persoon = new GbaPersoon();
+		var persoon = new Persoon();
 		persoon.setGbaAdres(new BagAdres());
 		zoekobject.setPersoon(persoon);
 

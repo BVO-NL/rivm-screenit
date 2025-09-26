@@ -45,9 +45,9 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaBeTabelCounte
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.werklijst.MammaBeoordelingenWerklijstPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.Persoon;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -158,11 +158,11 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 		if (!MammobridgeRole.anoniemeRollen().contains(ScreenitSession.get().getMammaHuidigeIDS7Role())
 			|| ScreenitSession.get().getOrganisatie().getOrganisatieType() != OrganisatieType.BEOORDELINGSEENHEID)
 		{
-			columns.add(new ClientColumn<>(propertyChain(persoonProperty, GbaPersoon_.ACHTERNAAM), "beoordeling.onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client"));
+			columns.add(new ClientColumn<>(propertyChain(persoonProperty, Persoon_.ACHTERNAAM), "beoordeling.onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client"));
 			columns.add(
-				new GeboortedatumColumn<>(propertyChain(persoonProperty, GbaPersoon_.GEBOORTEDATUM),
+				new GeboortedatumColumn<>(propertyChain(persoonProperty, Persoon_.GEBOORTEDATUM),
 					"beoordeling.onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client.persoon"));
-			columns.add(new PropertyColumn<>(Model.of("BSN"), propertyChain(persoonProperty, GbaPersoon_.BSN),
+			columns.add(new PropertyColumn<>(Model.of("BSN"), propertyChain(persoonProperty, Persoon_.BSN),
 				"beoordeling.onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client.persoon.bsn"));
 		}
 
@@ -247,7 +247,7 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 							}
 							else
 							{
-								GbaPersoon persoon = fotobesprekingOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier()
+								Persoon persoon = fotobesprekingOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier()
 									.getClient()
 									.getPersoon();
 								warn(String.format(getString("error.verwijderen"), persoon.getBsn(), DateUtil.getGeboortedatum(persoon), getString("error.verwijderen.besproken")));
@@ -255,7 +255,7 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 						}
 						else
 						{
-							GbaPersoon persoon = fotobesprekingOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient()
+							Persoon persoon = fotobesprekingOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient()
 								.getPersoon();
 							warn(String.format(getString("error.verwijderen"), persoon.getBsn(), DateUtil.getGeboortedatum(persoon), getString("error.fotobespreking.afgerond")));
 						}

@@ -26,7 +26,6 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 
-import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
@@ -38,11 +37,8 @@ import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaBlokkade;
-import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaMammografie_;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek_;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde_;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid_;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
@@ -52,7 +48,6 @@ import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde_;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
-import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
@@ -140,21 +135,6 @@ public class MammaAfspraakSpecification
 		return (r, q, cb) -> cb.isNull(r.get(MammaAfspraak_.capaciteitBlok));
 	}
 
-	public static Specification<MammaAfspraak> heeftClientInTehuis()
-	{
-		return MammaBaseDossierSpecification.woontInTehuis().withRoot(MammaAfspraakSpecification::dossierJoin);
-	}
-
-	public static Specification<MammaAfspraak> heeftGeenClientInTehuis()
-	{
-		return MammaBaseDossierSpecification.woontNietInTehuis().withRoot(MammaAfspraakSpecification::dossierJoin);
-	}
-
-	public static Specification<MammaAfspraak> heeftDoelgroepIn(Collection<MammaDoelgroep> doelgroepen)
-	{
-		return MammaBaseDossierSpecification.heeftDoelgroepIn(doelgroepen).withRoot(MammaAfspraakSpecification::dossierJoin);
-	}
-
 	public static Specification<MammaAfspraak> heeftScreeningsEenheid(MammaScreeningsEenheid screeningsEenheid)
 	{
 		return (r, q, cb) -> cb.equal(standplaatsPeriodeJoin(r).get(MammaStandplaatsPeriode_.screeningsEenheid), screeningsEenheid);
@@ -170,9 +150,9 @@ public class MammaAfspraakSpecification
 		return (r, q, cb) -> cb.equal(standplaatsRondeJoin(r).get(MammaStandplaatsRonde_.standplaats), standplaats);
 	}
 
-	private static Join<MammaStandplaatsPeriode, MammaStandplaatsRonde> standplaatsRondeJoin(Root<MammaAfspraak> r)
+	private static Join<MammaStandplaatsPeriode, MammaStandplaatsRonde> standplaatsRondeJoin(Root<MammaAfspraak> afspraakRoot)
 	{
-		return join(standplaatsPeriodeJoin(r), MammaStandplaatsPeriode_.standplaatsRonde);
+		return join(standplaatsPeriodeJoin(afspraakRoot), MammaStandplaatsPeriode_.standplaatsRonde);
 	}
 
 	public static Specification<MammaAfspraak> heeftStandplaatsPeriode(long standplaatsPeriodeId)
@@ -245,15 +225,9 @@ public class MammaAfspraakSpecification
 		};
 	}
 
-	private static Join<MammaAfspraak, MammaStandplaatsPeriode> standplaatsPeriodeJoin(Root<MammaAfspraak> r)
+	private static Join<MammaAfspraak, MammaStandplaatsPeriode> standplaatsPeriodeJoin(Root<MammaAfspraak> afspraakRoot)
 	{
-		return join(r, MammaAfspraak_.standplaatsPeriode);
+		return join(afspraakRoot, MammaAfspraak_.standplaatsPeriode);
 	}
 
-	private static From<MammaScreeningRonde, MammaDossier> dossierJoin(Root<MammaAfspraak> afspraakRoot)
-	{
-		var uitnodigingJoin = join(afspraakRoot, MammaAfspraak_.uitnodiging);
-		var screeningRondeJoin = join(uitnodigingJoin, MammaUitnodiging_.screeningRonde);
-		return join(screeningRondeJoin, MammaScreeningRonde_.dossier);
-	}
 }

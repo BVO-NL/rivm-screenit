@@ -21,7 +21,6 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -30,56 +29,30 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.enums.HuisartsBerichtType;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.hibernate.envers.Audited;
 
+@Getter
+@Setter
 @Entity
 @Audited
 @Table(schema = "algemeen")
 public class HuisartsBerichtTemplate extends AbstractHibernateObject
 {
 
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private HuisartsBerichtType berichtType;
 
+	@Column(nullable = false)
 	private Date aangepast;
 
 	@Column(length = HibernateMagicNumber.L5000)
 	private String berichtInhoud;
-
-	public HuisartsBerichtType getBerichtType()
-	{
-		return berichtType;
-	}
-
-	public void setBerichtType(HuisartsBerichtType berichtType)
-	{
-		this.berichtType = berichtType;
-	}
-
-	public String getBerichtInhoud()
-	{
-		return berichtInhoud;
-	}
-
-	public void setBerichtInhoud(String berichtInhoud)
-	{
-		this.berichtInhoud = berichtInhoud;
-	}
-
-	public Date getAangepast()
-	{
-		return aangepast;
-	}
-
-	public void setAangepast(Date aangepast)
-	{
-		this.aangepast = aangepast;
-	}
 }

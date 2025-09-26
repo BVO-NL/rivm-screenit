@@ -34,7 +34,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.Constants;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.service.BaseTestTimelineService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
@@ -63,7 +63,7 @@ public class BaseTestTimelineServiceImpl implements BaseTestTimelineService
 	private boolean terugrekenenEnabled = true;
 
 	@Override
-	public void rekenAllePersoonsDatumTerug(GbaPersoon persoon, int aantalDagen)
+	public void rekenAllePersoonsDatumTerug(Persoon persoon, int aantalDagen)
 	{
 		if (!terugrekenenEnabled)
 		{

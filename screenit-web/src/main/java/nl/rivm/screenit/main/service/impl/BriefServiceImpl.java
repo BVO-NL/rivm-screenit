@@ -43,14 +43,21 @@ import nl.rivm.screenit.model.mamma.MammaBrief;
 import nl.rivm.screenit.repository.algemeen.BezwaarBriefRepository;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification;
+import nl.rivm.screenit.specification.algemeen.UploadDocumentSpecification;
+import nl.rivm.screenit.util.RangeUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.BoundType;
+
+import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefTypeIn;
 import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.heeftAfmelding;
+import static nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification.filterBriefTypeIn;
 import static nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification.filterControle;
+import static nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification.filterCreatieDatumTussen;
 import static nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification.filterGeprint;
 import static nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification.isVerwijderd;
 import static nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification.isVrijgegeven;
@@ -153,8 +160,11 @@ public class BriefServiceImpl implements BriefService
 		return MergedBrievenSpecification.<B> filterScreeningOrganisatie(screeningOrganisatie)
 			.and(filterGeprint(filter.getActief()))
 			.and(filterControle(filter.getControle()))
+			.and(filterBriefTypeIn(filter.getBriefTypes()))
+			.and(filterCreatieDatumTussen(RangeUtil.range(filter.getVanaf(), BoundType.OPEN, filter.getTot(), BoundType.OPEN)))
 			.and(isVerwijderd(false))
-			.and(isVrijgegeven(true));
+			.and(isVrijgegeven(true))
+			.and(UploadDocumentSpecification.filterNaamContaining(filter.getNaam()).with(r -> join(r, MergedBrieven_.mergedBrieven)));
 	}
 
 }

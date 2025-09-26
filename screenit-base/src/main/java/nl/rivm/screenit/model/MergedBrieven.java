@@ -22,7 +22,6 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 import java.util.List;
 
@@ -37,22 +36,24 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
+@Getter
+@Setter
 @Entity
 @Audited
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class MergedBrieven<B extends Brief> extends AbstractHibernateObject implements IActief
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	private Date creatieDatum;
 
 	@Enumerated(EnumType.STRING)
@@ -88,76 +89,6 @@ public abstract class MergedBrieven<B extends Brief> extends AbstractHibernateOb
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date controleerDatum;
 
-	public BriefType getBriefType()
-	{
-		return briefType;
-	}
-
-	public void setBriefType(BriefType briefType)
-	{
-		this.briefType = briefType;
-	}
-
-	public UploadDocument getMergedBrieven()
-	{
-		return mergedBrieven;
-	}
-
-	public void setMergedBrieven(UploadDocument mergedBrieven)
-	{
-		this.mergedBrieven = mergedBrieven;
-	}
-
-	public Boolean getGeprint()
-	{
-		return geprint;
-	}
-
-	public Date getCreatieDatum()
-	{
-		return creatieDatum;
-	}
-
-	public void setCreatieDatum(Date creatieDatum)
-	{
-		this.creatieDatum = creatieDatum;
-	}
-
-	public ScreeningOrganisatie getScreeningOrganisatie()
-	{
-		return screeningOrganisatie;
-	}
-
-	public void setScreeningOrganisatie(ScreeningOrganisatie screeningOrganisatie)
-	{
-		this.screeningOrganisatie = screeningOrganisatie;
-	}
-
-	public void setGeprint(Boolean geprint)
-	{
-		this.geprint = geprint;
-	}
-
-	public Date getPrintDatum()
-	{
-		return printDatum;
-	}
-
-	public void setPrintDatum(Date printDatum)
-	{
-		this.printDatum = printDatum;
-	}
-
-	public boolean isVerwijderd()
-	{
-		return verwijderd;
-	}
-
-	public void setVerwijderd(boolean verwijderd)
-	{
-		this.verwijderd = verwijderd;
-	}
-
 	@Override
 	@Transient
 	public Boolean getActief()
@@ -172,57 +103,7 @@ public abstract class MergedBrieven<B extends Brief> extends AbstractHibernateOb
 		setGeprint(actief);
 	}
 
-	public Medewerker getAfgedruktDoor()
-	{
-		return afgedruktDoor;
-	}
-
-	public void setAfgedruktDoor(Medewerker afgedruktDoor)
-	{
-		this.afgedruktDoor = afgedruktDoor;
-	}
-
-	public Date getControleerDatum()
-	{
-		return controleerDatum;
-	}
-
-	public void setControleerDatum(Date controleerDatum)
-	{
-		this.controleerDatum = controleerDatum;
-	}
-
-	public Boolean getControle()
-	{
-		return controle;
-	}
-
-	public void setControle(Boolean controle)
-	{
-		this.controle = controle;
-	}
-
-	public Boolean getVrijgegeven()
-	{
-		return vrijgegeven;
-	}
-
-	public void setVrijgegeven(Boolean vrijgegegeven)
-	{
-		this.vrijgegeven = vrijgegegeven;
-	}
-
 	public abstract List<B> getBrieven();
 
 	public abstract void setBrieven(List<B> brieven);
-
-	public Integer getAantalBrieven()
-	{
-		return aantalBrieven;
-	}
-
-	public void setAantalBrieven(Integer aantalBrieven)
-	{
-		this.aantalBrieven = aantalBrieven;
-	}
 }

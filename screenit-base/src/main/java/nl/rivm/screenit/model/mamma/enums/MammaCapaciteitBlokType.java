@@ -21,76 +21,23 @@ package nl.rivm.screenit.model.mamma.enums;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Arrays;
-import java.util.List;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.model.INaam;
 
+@Getter
+@RequiredArgsConstructor
 public enum MammaCapaciteitBlokType implements INaam
 {
 
-	REGULIER("Regulier", "#f7f2ff", "#d8beff", MammaFactorType.GEEN)
-	{
-		@Override
-		public List<MammaDoelgroep> getDoelgroepen()
-		{
-			return Arrays.asList(MammaDoelgroep.REGULIER, MammaDoelgroep.DUBBELE_TIJD, MammaDoelgroep.MINDER_VALIDE);
-		}
-	},
-	TEHUIS("Tehuis", "#fff297", "#ddd69f", MammaFactorType.DUBBELE_TIJD)
-	{
-		@Override
-		public List<MammaDoelgroep> getDoelgroepen()
-		{
-			return Arrays.asList();
-		}
-	},
+	SCREENING("Screening", "#f7f2ff", "#d8beff"),
 
-	GEEN_SCREENING("Geen screening", "#f4f4f4", "#c8c8c8", MammaFactorType.GEEN)
-	{
-		@Override
-		public List<MammaDoelgroep> getDoelgroepen()
-		{
-			return Arrays.asList();
-		}
-	};
+	GEEN_SCREENING("Geen screening", "#f4f4f4", "#c8c8c8");
 
 	private final String naam;
 
 	private final String backgroundColor;
 
 	private final String borderColor;
-
-	private final MammaFactorType factorType;
-
-	MammaCapaciteitBlokType(String naam, String backgroundColor, String borderColor, MammaFactorType factorType)
-	{
-		this.naam = naam;
-		this.backgroundColor = backgroundColor;
-		this.borderColor = borderColor;
-		this.factorType = factorType;
-	}
-
-	@Override
-	public String getNaam()
-	{
-		return naam;
-	}
-
-	public String getBackgroundColor()
-	{
-		return backgroundColor;
-	}
-
-	public String getBorderColor()
-	{
-		return borderColor;
-	}
-
-	public abstract List<MammaDoelgroep> getDoelgroepen();
-
-	public MammaFactorType getFactorType()
-	{
-		return factorType;
-	}
 }

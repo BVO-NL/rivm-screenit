@@ -25,7 +25,7 @@ import nl.rivm.screenit.main.service.algemeen.DeelnamemodusService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.gedeeld.MammaDoelgroepIndicatorPanel;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaDossier;
@@ -64,7 +64,7 @@ public class ClientPaspoortPanel extends GenericPanel<Client>
 	{
 		super.onInitialize();
 		Client client = getModelObject();
-		GbaPersoon persoon = client.getPersoon();
+		Persoon persoon = client.getPersoon();
 
 		add(new Label("persoon.voornaam"));
 		add(new Label("persoon.achternaam", NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client)));

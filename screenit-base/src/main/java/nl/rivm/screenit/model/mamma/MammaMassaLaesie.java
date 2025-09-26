@@ -45,15 +45,15 @@ public class MammaMassaLaesie extends MammaLaesie
 		return MammaLaesieType.MASSA;
 	}
 
-	@Column()
+	@Column
 	@Enumerated(EnumType.STRING)
 	private MammaMassaVorm massaVorm;
 
-	@Column()
+	@Column
 	@Enumerated(EnumType.STRING)
 	private MammaMassaBegrenzing massaBegrenzing;
 
-	@Column()
+	@Column
 	@Enumerated(EnumType.STRING)
 	private MammaMassaDensiteit massaDensiteit;
 

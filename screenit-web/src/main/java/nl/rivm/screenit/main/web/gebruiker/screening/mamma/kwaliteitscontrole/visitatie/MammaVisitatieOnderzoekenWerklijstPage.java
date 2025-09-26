@@ -43,11 +43,11 @@ import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaBeTabelCounterPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Medewerker_;
 import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.Persoon;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -163,10 +163,10 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 		columns.add(new PropertyColumn<>(Model.of("Volgnummer"), MammaVisitatieOnderzoek_.VOLGNUMMER, "volgnummer"));
 		if (ScreenitSession.get().getOrganisatie().getOrganisatieType() != OrganisatieType.KWALITEITSPLATFORM)
 		{
-			columns.add(new ClientColumn<>(propertyChain(persoonProperty, GbaPersoon_.ACHTERNAAM), "beoordeling.onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client"));
-			columns.add(new GeboortedatumColumn<>(propertyChain(persoonProperty, GbaPersoon_.GEBOORTEDATUM),
+			columns.add(new ClientColumn<>(propertyChain(persoonProperty, Persoon_.ACHTERNAAM), "beoordeling.onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client"));
+			columns.add(new GeboortedatumColumn<>(propertyChain(persoonProperty, Persoon_.GEBOORTEDATUM),
 				"beoordeling.onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client.persoon"));
-			columns.add(new PropertyColumn<>(Model.of("BSN"), propertyChain(persoonProperty, GbaPersoon_.BSN),
+			columns.add(new PropertyColumn<>(Model.of("BSN"), propertyChain(persoonProperty, Persoon_.BSN),
 				"beoordeling.onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client.persoon.bsn"));
 		}
 		columns.add(new PropertyColumn<>(Model.of("SE"), propertyChain(screeningsEenheidProperty, MammaScreeningsEenheid_.NAAM), "beoordeling.onderzoek.screeningsEenheid.naam"));
@@ -252,14 +252,14 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 							}
 							else
 							{
-								GbaPersoon persoon = visitatieOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient()
+								Persoon persoon = visitatieOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient()
 									.getPersoon();
 								warn(String.format(getString("error.verwijderen"), persoon.getBsn(), DateUtil.getGeboortedatum(persoon), getString("error.verwijderen.besproken")));
 							}
 						}
 						else
 						{
-							GbaPersoon persoon = visitatieOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient()
+							Persoon persoon = visitatieOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient()
 								.getPersoon();
 							warn(String.format(getString("error.verwijderen"), persoon.getBsn(), DateUtil.getGeboortedatum(persoon), getString("error.visitatie.afgerond")));
 						}

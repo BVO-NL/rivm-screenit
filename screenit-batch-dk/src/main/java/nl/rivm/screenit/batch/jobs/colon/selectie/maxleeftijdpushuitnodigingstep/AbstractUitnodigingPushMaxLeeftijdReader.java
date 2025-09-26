@@ -39,9 +39,9 @@ import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.BagAdres_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Gemeente_;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
 import nl.rivm.screenit.specification.algemeen.PersoonSpecification;
 import nl.rivm.screenit.util.DateUtil;
@@ -95,7 +95,7 @@ public abstract class AbstractUitnodigingPushMaxLeeftijdReader extends AbstractU
 	private static Join<BagAdres, Gemeente> gemeenteJoin(Root<Client> r)
 	{
 		var persoonJoin = join(r, Client_.persoon);
-		var adresJoin = join(persoonJoin, GbaPersoon_.gbaAdres);
+		var adresJoin = join(persoonJoin, Persoon_.gbaAdres);
 		return join(adresJoin, BagAdres_.gbaGemeente);
 	}
 }

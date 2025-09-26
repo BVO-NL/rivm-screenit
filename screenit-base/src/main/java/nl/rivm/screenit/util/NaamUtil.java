@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
 
 import nl.rivm.screenit.model.Aanhef;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Huisarts;
 import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.NaamGebruik;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.weergave.persoon.NaamWeergaveHelper;
@@ -80,7 +80,7 @@ public abstract class NaamUtil
 		return medewerkerNaam.toString();
 	}
 
-	public static String getTussenvoegselEnEigenAchternaam(GbaPersoon persoon)
+	public static String getTussenvoegselEnEigenAchternaam(Persoon persoon)
 	{
 		if (persoon == null)
 		{
@@ -107,7 +107,7 @@ public abstract class NaamUtil
 		}
 		StringBuilder naam = new StringBuilder();
 		naam.append(naamClient);
-		GbaPersoon persoon = client.getPersoon();
+		Persoon persoon = client.getPersoon();
 		if (!Strings.isNullOrEmpty(persoon.getBsn()))
 		{
 			naam.append(" (Bsn: ");
@@ -141,7 +141,7 @@ public abstract class NaamUtil
 		{
 			return null;
 		}
-		GbaPersoon persoon = client.getPersoon();
+		Persoon persoon = client.getPersoon();
 		naam.append(naamClient);
 		if (persoon.getGeboortedatum() != null)
 		{
@@ -170,7 +170,7 @@ public abstract class NaamUtil
 
 		StringBuilder naam = new StringBuilder();
 
-		GbaPersoon persoon = client.getPersoon();
+		Persoon persoon = client.getPersoon();
 		if (!Strings.isNullOrEmpty(persoon.getTitel()))
 		{
 			naam.append(persoon.getTitel());
@@ -217,7 +217,7 @@ public abstract class NaamUtil
 		return volledigeNaam;
 	}
 
-	private static String getAanspreekNaamZonderTussenvoegsel(GbaPersoon persoon)
+	private static String getAanspreekNaamZonderTussenvoegsel(Persoon persoon)
 	{
 		var volledigeNaam = "";
 		var naamGebruik = persoon.getNaamGebruik();
@@ -261,7 +261,7 @@ public abstract class NaamUtil
 		return volledigeNaam;
 	}
 
-	private static String getEigennaam(GbaPersoon persoon)
+	private static String getEigennaam(Persoon persoon)
 	{
 		var eigennaam = "";
 		if (StringUtils.isNotBlank(persoon.getTussenvoegsel()))
@@ -275,7 +275,7 @@ public abstract class NaamUtil
 		return eigennaam;
 	}
 
-	private static String getPartnernaam(GbaPersoon persoon)
+	private static String getPartnernaam(Persoon persoon)
 	{
 		var partnernaam = "";
 		if (StringUtils.isNotBlank(persoon.getPartnerTussenvoegsel()))
@@ -303,7 +303,7 @@ public abstract class NaamUtil
 		return volledigeNaam;
 	}
 
-	private static String getTussenvoegsel(GbaPersoon persoon)
+	private static String getTussenvoegsel(Persoon persoon)
 	{
 		var tussenvoegels = "";
 		var naamGebruik = persoon.getNaamGebruik();
@@ -413,7 +413,7 @@ public abstract class NaamUtil
 		return naam.toString();
 	}
 
-	public static String getGeboorteTussenvoegselEnAchternaam(GbaPersoon persoon)
+	public static String getGeboorteTussenvoegselEnAchternaam(Persoon persoon)
 	{
 		return getEigennaam(persoon);
 	}

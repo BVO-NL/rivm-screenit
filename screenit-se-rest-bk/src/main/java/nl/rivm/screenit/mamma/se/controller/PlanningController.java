@@ -23,17 +23,12 @@ package nl.rivm.screenit.mamma.se.controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 import nl.rivm.screenit.mamma.se.service.dtomapper.PlanningDtoMapper;
-import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
-import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
 import nl.rivm.screenit.util.DateUtil;
 
@@ -44,6 +39,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.google.common.collect.Range;
 
 @RestController
 @RequestMapping("/api/planning")
@@ -57,16 +54,16 @@ public class PlanningController extends AuthorizedController
 	@RequestMapping(value = "/{datum}", method = RequestMethod.GET)
 	public ResponseEntity getGeenScreeningCapaciteitBlokken(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate datum, HttpServletRequest request)
 	{
-		MammaScreeningsEenheid screeningseenheid = getScreeningsEenheid(request);
-		MammaStandplaatsPeriode standplaatsPeriode = createStandplaatsPeriode(datum, screeningseenheid);
+		var screeningseenheid = getScreeningsEenheid(request);
+		var standplaatsPeriode = createStandplaatsPeriode(datum, screeningseenheid);
 
 		if (standplaatsPeriode != null)
 		{
-			Date date = DateUtil.toUtilDate(datum);
-			Date eindDate = DateUtil.toUtilDate(datum.plusDays(1));
+			var date = DateUtil.toUtilDate(datum);
+			var eindDate = DateUtil.toUtilDate(datum.plusDays(1));
 
-			List<MammaCapaciteitBlok> geenScreeningCapaciteitsBlokken = baseCapaciteitsBlokService
-				.getCapaciteitsBlokken(standplaatsPeriode.getScreeningsEenheid(), date, eindDate, false, Arrays.asList(MammaCapaciteitBlokType.GEEN_SCREENING));
+			var geenScreeningCapaciteitsBlokken = baseCapaciteitsBlokService.getGeenScreeningCapaciteitBlokken(standplaatsPeriode.getScreeningsEenheid(),
+				Range.closed(date, eindDate));
 
 			return ResponseEntity.ok(planningDtoMapper.createPlanningSeDto(geenScreeningCapaciteitsBlokken));
 		}
@@ -78,10 +75,10 @@ public class PlanningController extends AuthorizedController
 
 	private MammaStandplaatsPeriode createStandplaatsPeriode(LocalDate daglijstDatum, MammaScreeningsEenheid screeningseenheid)
 	{
-		for (MammaStandplaatsPeriode standplaatsPeriode : screeningseenheid.getStandplaatsPerioden())
+		for (var standplaatsPeriode : screeningseenheid.getStandplaatsPerioden())
 		{
-			LocalDate van = DateUtil.toLocalDate(standplaatsPeriode.getVanaf());
-			LocalDate totEnMet = DateUtil.toLocalDate(standplaatsPeriode.getTotEnMet());
+			var van = DateUtil.toLocalDate(standplaatsPeriode.getVanaf());
+			var totEnMet = DateUtil.toLocalDate(standplaatsPeriode.getTotEnMet());
 			if (van.compareTo(daglijstDatum) <= 0 && totEnMet.compareTo(daglijstDatum) >= 0)
 			{
 				return standplaatsPeriode;

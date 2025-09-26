@@ -42,6 +42,8 @@ import {CervixAfmeldingReden} from "../../../datatypes/afmelden/CervixAfmeldingR
 import {getBvoBaseUrl} from "../../../utils/UrlUtil"
 import {useNavigate} from "react-router"
 import {showToast} from "../../../utils/ToastUtil"
+import datadogService from "../../../services/DatadogService"
+import {AnalyticsCategorie} from "../../../datatypes/AnalyticsCategorie"
 
 const AfmeldenPage = () => {
 	const selectedBvo = useSelectedBvo()!
@@ -121,6 +123,9 @@ const AfmeldenPage = () => {
 						enableReinitialize={true}
 						validationSchema={validatieSchema}
 						onSubmit={(values) => {
+							if (selectedBvo === Bevolkingsonderzoek.MAMMA) {
+								datadogService.stuurEvent("afgemeldOnderzoek", AnalyticsCategorie.MAMMA_AFMELDEN, {periode: values.afmeldType, reden: values.afmeldReden})
+							}
 							dispatch(saveNieuwAfmeldMoment(selectedBvo,
 								getAfmeldingDto(values),
 							)).then(() => {

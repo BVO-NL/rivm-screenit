@@ -45,6 +45,7 @@ public class PreferenceItem extends AbstractHibernateObject implements IPreferen
 
 	private String contextId;
 
+	@Column(nullable = false)
 	private String key;
 
 	@Column(length = 4000)

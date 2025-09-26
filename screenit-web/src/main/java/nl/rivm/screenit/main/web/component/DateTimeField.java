@@ -100,12 +100,15 @@ public class DateTimeField extends FormComponentPanel<Date>
 				tijd = DateUtil.toLocalDateTime(getTimeField().getModelObject());
 			}
 
-			setConvertedInput(DateUtil.toUtilDate(datum
-				.withHour(tijd.getHour())
-				.withMinute(tijd.getMinute())
-				.withSecond(0)
-				.withNano(0)
-			));
+			if (datum != null && tijd != null)
+			{
+				setConvertedInput(DateUtil.toUtilDate(datum
+					.withHour(tijd.getHour())
+					.withMinute(tijd.getMinute())
+					.withSecond(0)
+					.withNano(0)
+				));
+			}
 		}
 	}
 

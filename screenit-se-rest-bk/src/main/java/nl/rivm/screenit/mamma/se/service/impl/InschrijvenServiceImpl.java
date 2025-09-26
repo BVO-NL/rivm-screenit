@@ -37,8 +37,8 @@ import nl.rivm.screenit.mamma.se.service.dtomapper.HuisartsDtoMapper;
 import nl.rivm.screenit.mamma.se.service.dtomapper.TijdelijkAdresDtoMapper;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.EnovationHuisarts;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -186,7 +186,7 @@ public class InschrijvenServiceImpl implements InschrijvenService
 	private void opslaanClientgegevens(InschrijvenDto inschrijvenDto, Client client, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd,
 		MammaScreeningsEenheid screeningsEenheid)
 	{
-		GbaPersoon persoon = client.getPersoon();
+		Persoon persoon = client.getPersoon();
 		if (inschrijvenDto.getTijdelijkAdres() != null)
 		{
 			opslaanTijdelijkAdres(inschrijvenDto, persoon);
@@ -198,7 +198,7 @@ public class InschrijvenServiceImpl implements InschrijvenService
 		clientService.saveContactGegevens(client, organisatieMedewerker, screeningsEenheid, transactieDatumTijd);
 	}
 
-	private void valideerEnZetEmailadres(InschrijvenDto inschrijvenDto, GbaPersoon persoon)
+	private void valideerEnZetEmailadres(InschrijvenDto inschrijvenDto, Persoon persoon)
 	{
 		var emailadres = StringUtils.trimToNull(inschrijvenDto.getEmailadres());
 		if (emailadres == null || EmailUtil.isCorrectEmailadres(emailadres))
@@ -211,7 +211,7 @@ public class InschrijvenServiceImpl implements InschrijvenService
 		}
 	}
 
-	private void valideerEnZetMobielnummer(InschrijvenDto inschrijvenDto, GbaPersoon persoon)
+	private void valideerEnZetMobielnummer(InschrijvenDto inschrijvenDto, Persoon persoon)
 	{
 		var mobielnummer = StringUtils.trimToNull(inschrijvenDto.getTelefoonnummer1());
 		if (mobielnummer == null || TelefoonnummerUtil.isCorrectNederlandsMobielNummer(mobielnummer))
@@ -224,7 +224,7 @@ public class InschrijvenServiceImpl implements InschrijvenService
 		}
 	}
 
-	private void valideerEnZetExtraTelefoonnummer(InschrijvenDto inschrijvenDto, GbaPersoon persoon)
+	private void valideerEnZetExtraTelefoonnummer(InschrijvenDto inschrijvenDto, Persoon persoon)
 	{
 		var extraTelefoonnummer = StringUtils.trimToNull(inschrijvenDto.getTelefoonnummer2());
 		if (extraTelefoonnummer == null || TelefoonnummerUtil.isCorrectTelefoonnummer(extraTelefoonnummer))
@@ -237,7 +237,7 @@ public class InschrijvenServiceImpl implements InschrijvenService
 		}
 	}
 
-	private void opslaanTijdelijkAdres(InschrijvenDto inschrijvenDto, GbaPersoon persoon)
+	private void opslaanTijdelijkAdres(InschrijvenDto inschrijvenDto, Persoon persoon)
 	{
 		TijdelijkAdres tijdelijkAdres = persoon.getTijdelijkAdres();
 		if (tijdelijkAdres == null)

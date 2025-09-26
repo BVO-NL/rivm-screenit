@@ -22,6 +22,7 @@ package nl.rivm.screenit.main.service.impl;
  */
 
 import java.io.IOException;
+import java.net.URL;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.service.HL7TestMessageService;
@@ -41,6 +42,9 @@ import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.HapiContext;
 import ca.uhn.hl7v2.app.Connection;
+import ca.uhn.hl7v2.hoh.hapi.api.MessageSendable;
+import ca.uhn.hl7v2.hoh.hapi.client.HohClientSimple;
+import ca.uhn.hl7v2.hoh.sockets.TlsSocketFactory;
 import ca.uhn.hl7v2.llp.LLPException;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.parser.Parser;
@@ -61,6 +65,10 @@ public class HL7TestMessageServiceImpl implements HL7TestMessageService
 	@Qualifier("hl7IfobtHost")
 	@Autowired(required = false)
 	private String hl7wsbHost;
+
+	@Qualifier("dkFitOulUrl")
+	@Autowired(required = false)
+	private String dkFitOulUrl;
 
 	private Integer hl7IMSOrmPort;
 
@@ -101,7 +109,7 @@ public class HL7TestMessageServiceImpl implements HL7TestMessageService
 	}
 
 	@Override
-	public ScreenITResponseV251MessageWrapper verstuurIFobtTestBericht(String message) throws LLPException, IOException, HL7Exception
+	public ScreenITResponseV251MessageWrapper verstuurFitTestBerichtMetMLLP(String message) throws LLPException, IOException, HL7Exception
 	{
 		ScreenITResponseV251MessageWrapper wrapper = null;
 		Connection conn = getIfobtConnection();
@@ -115,6 +123,39 @@ public class HL7TestMessageServiceImpl implements HL7TestMessageService
 		}
 
 		closingConnection(conn);
+		return wrapper;
+	}
+
+	@Override
+	public ScreenITResponseV251MessageWrapper verstuurFitTestBerichtMetHTTP(String message) throws IOException, HL7Exception
+	{
+		ScreenITResponseV251MessageWrapper wrapper = null;
+
+		var url = new URL(dkFitOulUrl + "/hl7v2/dk/lab/v1");
+
+		var client = new HohClientSimple(url);
+
+		if ("https".equalsIgnoreCase(url.getProtocol()))
+		{
+			client.setSocketFactory(new TlsSocketFactory());
+		}
+
+		var sendableMessage = parseMessage(message);
+
+		var sendable = new MessageSendable(sendableMessage);
+		try
+		{
+			var receivable = client.sendAndReceiveMessage(sendable);
+
+			var responseMessage = receivable.getMessage();
+			wrapper = new ScreenITResponseV251MessageWrapper(responseMessage);
+			LOG.info("Response was:\n" + responseMessage.encode());
+		}
+		catch (Exception e)
+		{
+			LOG.error("Exception occurred while processing response: ", e);
+		}
+
 		return wrapper;
 	}
 

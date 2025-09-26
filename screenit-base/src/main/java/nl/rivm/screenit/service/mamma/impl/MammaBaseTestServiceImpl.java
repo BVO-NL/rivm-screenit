@@ -32,7 +32,7 @@ import nl.rivm.screenit.model.AfmeldingType;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactManier;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.mamma.MammaAfmelding;
@@ -102,17 +102,17 @@ public class MammaBaseTestServiceImpl implements MammaBaseTestService
 	private MammaBaseHL7v24MessageService baseHL7v24MessageService;
 
 	@Override
-	public MammaDossier geefDossier(GbaPersoon gbaPersoon)
+	public MammaDossier geefDossier(Persoon persoon)
 	{
-		var client = testService.maakClient(gbaPersoon);
+		var client = testService.maakClient(persoon);
 		return client.getMammaDossier();
 	}
 
 	@Override
 	@Transactional
-	public MammaScreeningRonde geefScreeningRonde(GbaPersoon gbaPersoon)
+	public MammaScreeningRonde geefScreeningRonde(Persoon persoon)
 	{
-		var dossier = geefDossier(gbaPersoon);
+		var dossier = geefDossier(persoon);
 
 		var ronde = dossier.getLaatsteScreeningRonde();
 		if (ronde == null)
@@ -126,9 +126,9 @@ public class MammaBaseTestServiceImpl implements MammaBaseTestService
 
 	@Override
 	@Transactional
-	public MammaUitnodiging maakUitnodiging(GbaPersoon gbaPersoon, BriefType briefType)
+	public MammaUitnodiging maakUitnodiging(Persoon persoon, BriefType briefType)
 	{
-		var ronde = geefScreeningRonde(gbaPersoon);
+		var ronde = geefScreeningRonde(persoon);
 
 		var uitnodiging = baseFactory.maakUitnodiging(ronde, ronde.getStandplaatsRonde(), briefType);
 		verzendLaatsteBrief(ronde);
@@ -213,7 +213,7 @@ public class MammaBaseTestServiceImpl implements MammaBaseTestService
 	@Transactional
 	public void maakOfVindClient(String bsn, MammaDoelgroep doelgroep, String postcode, BigDecimal deelnamekans, BigDecimal opkomstkans, Date geboortedatum)
 	{
-		var persoon = new GbaPersoon();
+		var persoon = new Persoon();
 		persoon.setBsn(bsn);
 		persoon.setGeslacht(Geslacht.VROUW);
 		persoon.setGeboortedatum(geboortedatum);
@@ -236,7 +236,7 @@ public class MammaBaseTestServiceImpl implements MammaBaseTestService
 
 	@Override
 	@Transactional
-	public Client maakOfVindClient(GbaPersoon persoon, MammaDoelgroep doelgroep, BigDecimal deelnamekans, BigDecimal opkomstkans, boolean alleenMaken)
+	public Client maakOfVindClient(Persoon persoon, MammaDoelgroep doelgroep, BigDecimal deelnamekans, BigDecimal opkomstkans, boolean alleenMaken)
 	{
 		var client = testService.getClientByBsn(persoon.getBsn());
 		var bestaandeClient = client != null;

@@ -33,22 +33,27 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.hibernate.annotations.Cascade;
 
+@Getter
+@Setter
 @Entity
 @Table(schema = "algemeen")
 public class GbaVerwerkingsLog extends AbstractHibernateObject
 {
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column
+	@Column(nullable = false)
 	private Date datumVerwerking;
 
-	@Column
+	@Column(nullable = false)
 	private Integer aantalNieuweBurgers = 0;
 
-	@Column
+	@Column(nullable = false)
 	private Integer aantalBijgewerkteBugers = 0;
 
 	@Column
@@ -69,94 +74,4 @@ public class GbaVerwerkingsLog extends AbstractHibernateObject
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "gbaVerwerkingsLog")
 	private List<GbaFile> bestanden = new ArrayList<>();
-
-	public Integer getAantalNieuweBurgers()
-	{
-		return aantalNieuweBurgers;
-	}
-
-	public void setAantalNieuweBurgers(Integer aantalNieuweBurgers)
-	{
-		this.aantalNieuweBurgers = aantalNieuweBurgers;
-	}
-
-	public Integer getAantalBijgewerkteBugers()
-	{
-		return aantalBijgewerkteBugers;
-	}
-
-	public void setAantalBijgewerkteBugers(Integer aantalBijgewerkteBugers)
-	{
-		this.aantalBijgewerkteBugers = aantalBijgewerkteBugers;
-	}
-
-	public List<GbaFoutRegel> getFouten()
-	{
-		return fouten;
-	}
-
-	public void setFouten(List<GbaFoutRegel> fouten)
-	{
-		this.fouten = fouten;
-	}
-
-	public Date getDatumVerwerking()
-	{
-		return datumVerwerking;
-	}
-
-	public void setDatumVerwerking(Date datumVerwerking)
-	{
-		this.datumVerwerking = datumVerwerking;
-	}
-
-	public List<GbaVerwerkingEntry> getEntries()
-	{
-		return entries;
-	}
-
-	public void setEntries(List<GbaVerwerkingEntry> entries)
-	{
-		this.entries = entries;
-	}
-
-	public List<GbaFile> getBestanden()
-	{
-		return bestanden;
-	}
-
-	public void setBestanden(List<GbaFile> bestanden)
-	{
-		this.bestanden = bestanden;
-	}
-
-	public Long getAantalNieuweColonDossiers()
-	{
-		return aantalNieuweColonDossiers;
-	}
-
-	public void setAantalNieuweColonDossiers(Long aantalNieuweColonDossiers)
-	{
-		this.aantalNieuweColonDossiers = aantalNieuweColonDossiers;
-	}
-
-	public Long getAantalNieuweCervixDossiers()
-	{
-		return aantalNieuweCervixDossiers;
-	}
-
-	public void setAantalNieuweCervixDossiers(Long aantalNieuweCervixDossiers)
-	{
-		this.aantalNieuweCervixDossiers = aantalNieuweCervixDossiers;
-	}
-
-	public Long getAantalNieuweMammaDossiers()
-	{
-		return aantalNieuweMammaDossiers;
-	}
-
-	public void setAantalNieuweMammaDossiers(Long aantalNieuweMammaDossiers)
-	{
-		this.aantalNieuweMammaDossiers = aantalNieuweMammaDossiers;
-	}
 }

@@ -23,13 +23,17 @@ package nl.rivm.screenit.batch.jobs.mamma.uitnodigen.afronden;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
+
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaDossier_;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
@@ -45,10 +49,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Range;
-
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Root;
 
 import static nl.rivm.screenit.model.enums.Deelnamemodus.SELECTIEBLOKKADE;
 import static nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus.GEPLAND;
@@ -95,7 +95,7 @@ public class MammaVerlopenRondesReader extends BaseSpecificationScrollableResult
 		return specs.withRoot(this::getLaatsteAfspraakJoin);
 	}
 
-	private Join<?, GbaPersoon> getPersoonJoin(Root<MammaScreeningRonde> r)
+	private Join<?, Persoon> getPersoonJoin(Root<MammaScreeningRonde> r)
 	{
 		var dossierJoin = join(r, MammaScreeningRonde_.dossier);
 		var clientJoin = join(dossierJoin, MammaDossier_.client);

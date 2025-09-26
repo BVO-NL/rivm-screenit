@@ -28,6 +28,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
+
 import nl.rivm.screenit.batch.jobs.cervix.CervixLabPartitioner;
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.BMHKLaboratorium;
@@ -36,10 +42,10 @@ import nl.rivm.screenit.model.BagAdres_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.DossierStatus;
-import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
+import nl.rivm.screenit.model.Persoon;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.cervix.CervixCytologieVerslag;
 import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.cervix.CervixDossier_;
@@ -71,12 +77,6 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Root;
 
 import static jakarta.persistence.criteria.JoinType.LEFT;
 import static nl.rivm.screenit.model.cervix.berichten.CervixHpvResultValue.POS_OTHER_HR_HPV;
@@ -194,12 +194,12 @@ public class CervixSelectieReader extends BaseSpecificationScrollableResultReade
 		}
 	}
 
-	private static Expression<String> getGeboortedag(CriteriaBuilder cb, From<?, ? extends GbaPersoon> persoonJoin, LocalDate vandaag, LocalDate laatsteDagVanHuidigJaar)
+	private static Expression<String> getGeboortedag(CriteriaBuilder cb, From<?, ? extends Persoon> persoonJoin, LocalDate vandaag, LocalDate laatsteDagVanHuidigJaar)
 	{
 		return cb.function(
 			"to_char",
 			String.class,
-			DateSpecification.intervalInDagen(cb, persoonJoin.get(GbaPersoon_.geboortedatum), vandaag.until(laatsteDagVanHuidigJaar, ChronoUnit.DAYS)),
+			DateSpecification.intervalInDagen(cb, persoonJoin.get(Persoon_.geboortedatum), vandaag.until(laatsteDagVanHuidigJaar, ChronoUnit.DAYS)),
 			cb.literal("DDD")
 		);
 	}
@@ -216,7 +216,7 @@ public class CervixSelectieReader extends BaseSpecificationScrollableResultReade
 		return q -> join(q, Client_.cervixDossier);
 	}
 
-	private static Function<From<?, ? extends Client>, From<?, ? extends GbaPersoon>> persoonJoin()
+	private static Function<From<?, ? extends Client>, From<?, ? extends Persoon>> persoonJoin()
 	{
 		return q -> join(q, Client_.persoon);
 	}
@@ -226,7 +226,7 @@ public class CervixSelectieReader extends BaseSpecificationScrollableResultReade
 		return q ->
 		{
 			var persoon = persoonJoin().apply(q);
-			return join(persoon, GbaPersoon_.gbaAdres);
+			return join(persoon, Persoon_.gbaAdres);
 		};
 	}
 

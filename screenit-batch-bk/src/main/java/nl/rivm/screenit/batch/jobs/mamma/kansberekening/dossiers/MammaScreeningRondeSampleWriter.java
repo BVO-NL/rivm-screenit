@@ -30,8 +30,8 @@ import lombok.AllArgsConstructor;
 import nl.rivm.screenit.batch.jobs.mamma.kansberekening.MammaAbstractEventWriter;
 import nl.rivm.screenit.batch.jobs.mamma.kansberekening.MammaKansberekeningConstants;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.MergedBrieven_;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.mamma.MammaBrief;
 import nl.rivm.screenit.model.mamma.MammaBrief_;
 import nl.rivm.screenit.model.mamma.MammaDossier_;
@@ -93,10 +93,9 @@ public class MammaScreeningRondeSampleWriter extends MammaAbstractEventWriter<Ma
 			var dossierSubgraph = entityGraph.addSubgraph(MammaScreeningRonde_.dossier);
 			var clientSubgraph = dossierSubgraph.addSubgraph(MammaDossier_.client);
 			var persoonSubgraph = clientSubgraph.addSubgraph(Client_.persoon);
-			persoonSubgraph.addSubgraph(GbaPersoon_.gbaAdres);
-			persoonSubgraph.addSubgraph(GbaPersoon_.tijdelijkAdres);
-			persoonSubgraph.addSubgraph(GbaPersoon_.tijdelijkGbaAdres);
-			persoonSubgraph.addSubgraph(GbaPersoon_.gbaGeboorteLand);
+			persoonSubgraph.addSubgraph(Persoon_.gbaAdres);
+			persoonSubgraph.addSubgraph(Persoon_.tijdelijkAdres);
+			persoonSubgraph.addSubgraph(Persoon_.tijdelijkGbaAdres);
 		};
 	}
 }

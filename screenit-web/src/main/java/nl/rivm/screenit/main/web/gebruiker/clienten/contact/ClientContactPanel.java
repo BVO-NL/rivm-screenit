@@ -39,6 +39,7 @@ import nl.rivm.screenit.exceptions.MammaTijdNietBeschikbaarException;
 import nl.rivm.screenit.main.service.ClientDossierFilter;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.base.BasePage;
+import nl.rivm.screenit.main.web.component.DatadogRumActionBehavior;
 import nl.rivm.screenit.main.web.component.ScreenitIndicatingAjaxSubmitLink;
 import nl.rivm.screenit.main.web.component.ScreenitNoBordersForm;
 import nl.rivm.screenit.main.web.component.form.FilterBvoFormPanel;
@@ -74,6 +75,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.reflect.ConstructorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
@@ -150,8 +152,6 @@ public class ClientContactPanel extends GenericPanel<Client>
 
 	public static final class ClientContactPanelCreateContext implements Serializable
 	{
-		private static final long serialVersionUID = 1L;
-
 		public boolean bkVanuitPlanning = false;
 
 		public boolean bkAlleenClientContact = false;
@@ -160,7 +160,6 @@ public class ClientContactPanel extends GenericPanel<Client>
 
 	public static final MetaDataKey<ClientContactPanelCreateContext> CREATE_CONTEXT_KEY = new MetaDataKey<>()
 	{
-		private static final long serialVersionUID = 1L;
 	};
 
 	public ClientContactPanel(String id, IModel<Client> clientModel, final List<Object> extraPanelParams, final ClientContactActieTypeWrapper... defaultSelectedActies)
@@ -199,8 +198,6 @@ public class ClientContactPanel extends GenericPanel<Client>
 		FilterBvoFormPanel<ClientDossierFilter> bvoFilter = new FilterBvoFormPanel<>("bvoFilterContainer", zoekObjectModel, true)
 		{
 
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void doFilter(IModel<ClientDossierFilter> filterModel, AjaxRequestTarget target)
 			{
@@ -234,8 +231,6 @@ public class ClientContactPanel extends GenericPanel<Client>
 		columns.add(new AbstractColumn<>(Model.of("Vervolgstap(pen)"))
 		{
 
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void populateItem(Item<ICellPopulator<ClientContact>> cellItem, String componentId, IModel<ClientContact> rowModel)
 			{
@@ -264,8 +259,6 @@ public class ClientContactPanel extends GenericPanel<Client>
 			columns.add(new AbstractColumn<>(Model.of(""))
 			{
 
-				private static final long serialVersionUID = 1L;
-
 				@Override
 				public void populateItem(Item<ICellPopulator<ClientContact>> cellItem, String componentId, IModel<ClientContact> rowModel)
 				{
@@ -282,15 +275,11 @@ public class ClientContactPanel extends GenericPanel<Client>
 					cellItem.add(new AjaxLinkTableCellPanel<>(componentId, rowModel, "correctie")
 					{
 
-						private static final long serialVersionUID = 1L;
-
 						@Override
 						protected void onClick(AjaxRequestTarget target, IModel<ClientContact> iModel)
 						{
 							dialog.openWith(target, new ClientContactEditPanel(IDialog.CONTENT_ID, ModelUtil.ccModel(iModel.getObject()))
 							{
-
-								private static final long serialVersionUID = 1L;
 
 								@Override
 								protected void close(AjaxRequestTarget target)
@@ -308,8 +297,6 @@ public class ClientContactPanel extends GenericPanel<Client>
 		}
 		ScreenitDataTable<ClientContact, String> dataTable = new ScreenitDataTable<>("contacten", columns, provider, Model.of("contacten"))
 		{
-
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected boolean isRowClickable(IModel<ClientContact> model)
@@ -388,8 +375,6 @@ public class ClientContactPanel extends GenericPanel<Client>
 			vervolgactiesGroup.setOutputMarkupId(true);
 			vervolgactiesGroup.add(new AjaxFormChoiceComponentUpdatingBehavior()
 			{
-				private static final long serialVersionUID = 1L;
-
 				@Override
 				protected void onUpdate(AjaxRequestTarget target)
 				{
@@ -418,7 +403,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 
 			createInitialActiePanels(extraPanelParams);
 
-			add(new ScreenitIndicatingAjaxSubmitLink("afronden", this)
+			var afrondenButton = new ScreenitIndicatingAjaxSubmitLink("afronden", this)
 			{
 
 				@Override
@@ -469,6 +454,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 								meldingen.add(getString("mv.onderzoek.in.ziekenhuis.uitstel.annuleren"));
 							}
 						}
+
 						if (!meldingen.isEmpty())
 						{
 							dialog.openWith(target, new ClientContactAfrondenPopupPanel(IDialog.CONTENT_ID, meldingen)
@@ -486,7 +472,17 @@ public class ClientContactPanel extends GenericPanel<Client>
 						}
 					}
 				}
+			};
+			afrondenButton.add(new DatadogRumActionBehavior("click", "afspraakGemaakt",
+				Map.of("categorie", "contacten", "applicatie", "medewerkerportaal", "onderzoek", Bevolkingsonderzoek.MAMMA.name()))
+			{
+				@Override
+				protected boolean shouldPushEvent(Component component)
+				{
+					return !hasError() && selectedActies.contains(ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN);
+				}
 			});
+			add(afrondenButton);
 		}
 
 		private void createInitialActiePanels(List<Object> extraPanelParams)

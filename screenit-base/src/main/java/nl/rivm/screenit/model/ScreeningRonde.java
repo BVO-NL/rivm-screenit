@@ -36,6 +36,9 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -46,6 +49,8 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import org.hibernate.Hibernate;
 import org.hibernate.envers.Audited;
 
+@Getter
+@Setter
 @Entity
 @Table
 @Audited
@@ -54,9 +59,11 @@ public abstract class ScreeningRonde<D extends Dossier<?, ?>, B extends ClientBr
 	extends AbstractHibernateObject
 {
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	private Date creatieDatum;
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private ScreeningRondeStatus status;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -77,46 +84,6 @@ public abstract class ScreeningRonde<D extends Dossier<?, ?>, B extends ClientBr
 		return new ArrayList<>();
 	}
 
-	public Date getCreatieDatum()
-	{
-		return creatieDatum;
-	}
-
-	public void setCreatieDatum(Date creatieDatum)
-	{
-		this.creatieDatum = creatieDatum;
-	}
-
-	public ScreeningRondeStatus getStatus()
-	{
-		return status;
-	}
-
-	public void setStatus(ScreeningRondeStatus status)
-	{
-		this.status = status;
-	}
-
-	public Date getStatusDatum()
-	{
-		return statusDatum;
-	}
-
-	public void setStatusDatum(Date statusDatum)
-	{
-		this.statusDatum = statusDatum;
-	}
-
-	public String getAfgerondReden()
-	{
-		return afgerondReden;
-	}
-
-	public void setAfgerondReden(String afgerondReden)
-	{
-		this.afgerondReden = afgerondReden;
-	}
-
 	public abstract List<U> getUitnodigingen();
 
 	public abstract void setUitnodigingen(List<U> uitnodigingen);
@@ -124,16 +91,6 @@ public abstract class ScreeningRonde<D extends Dossier<?, ?>, B extends ClientBr
 	public abstract U getLaatsteUitnodiging();
 
 	public abstract void setLaatsteUitnodiging(U laatsteUitnodiging);
-
-	public Boolean getAangemeld()
-	{
-		return aangemeld;
-	}
-
-	public void setAangemeld(Boolean aangemeld)
-	{
-		this.aangemeld = aangemeld;
-	}
 
 	public abstract List<B> getBrieven();
 

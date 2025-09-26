@@ -52,11 +52,11 @@ public class ClientDaoImpl extends AbstractAutowiredDao implements ClientDao
 	public boolean heeftDossierMetRondeOfAfmelding(Client client)
 	{
 		var query = getSession().createNativeQuery("SELECT 1"
-			+ " FROM gedeeld.pat_patient pa"
-			+ "  LEFT JOIN colon.colon_dossier co ON pa.colon_dossier = co.id"
-			+ "  LEFT JOIN cervix.dossier ce ON pa.cervix_dossier = ce.id"
-			+ "  LEFT JOIN mamma.dossier ma ON pa.mamma_dossier = ma.id"
-			+ " WHERE pa.id = :clientId"
+			+ " FROM gedeeld.client client"
+			+ "  LEFT JOIN colon.colon_dossier co ON client.colon_dossier = co.id"
+			+ "  LEFT JOIN cervix.dossier ce ON client.cervix_dossier = ce.id"
+			+ "  LEFT JOIN mamma.dossier ma ON client.mamma_dossier = ma.id"
+			+ " WHERE client.id = :clientId"
 			+ "  AND (co.laatste_screening_ronde IS NOT NULL OR co.laatste_afmelding IS NOT NULL"
 			+ "   OR ce.laatste_screening_ronde IS NOT NULL OR ce.laatste_afmelding IS NOT NULL"
 			+ "   OR ma.laatste_screening_ronde IS NOT NULL OR ma.laatste_afmelding IS NOT NULL);");

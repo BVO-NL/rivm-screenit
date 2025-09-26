@@ -21,13 +21,14 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.formatter;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
+
 import org.apache.commons.lang3.StringUtils;
 
 public class TelefoonnummersFormatter
 {
 
-	public static String getTelefoonnummersVoorPersoon(GbaPersoon persoon)
+	public static String getTelefoonnummersVoorPersoon(Persoon persoon)
 	{
 		String telefoonnummers = "";
 		if (StringUtils.isNotBlank(persoon.getTelefoonnummer1()))

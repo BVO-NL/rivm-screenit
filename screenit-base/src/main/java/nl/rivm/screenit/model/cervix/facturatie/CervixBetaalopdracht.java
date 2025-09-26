@@ -62,7 +62,7 @@ public class CervixBetaalopdracht extends AbstractHibernateObject
 	@Column(nullable = false)
 	private String vanIban;
 
-	@Column(nullable = true)
+	@Column(nullable = false)
 	private String vanTenaamstelling;
 
 	@Column(nullable = false)

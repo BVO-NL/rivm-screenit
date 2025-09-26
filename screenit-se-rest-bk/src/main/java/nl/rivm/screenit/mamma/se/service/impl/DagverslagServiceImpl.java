@@ -25,7 +25,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,7 +45,6 @@ import nl.rivm.screenit.mamma.se.service.OnderzoekService;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
-import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseBlokkadeService;
 import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
@@ -59,6 +57,8 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Range;
 
 @Service
 @Transactional(propagation = Propagation.SUPPORTS)
@@ -174,8 +174,8 @@ public class DagverslagServiceImpl implements DagverslagService
 		}
 		else
 		{
-			var capaciteitsBlokken = baseCapaciteitsBlokService.getCapaciteitsBlokken(screeningsEenheid, datum,
-				DateUtil.toUtilDate(DateUtil.toLocalDate(datum).plusDays(1)), true, Arrays.asList(MammaCapaciteitBlokType.REGULIER, MammaCapaciteitBlokType.TEHUIS));
+			var capaciteitsBlokken = baseCapaciteitsBlokService.getScreeningCapaciteitBlokken(screeningsEenheid,
+				Range.closed(datum, DateUtil.toUtilDate(DateUtil.toLocalDate(datum).plusDays(1))), true);
 
 			return maakEnVulDagPlanningSamenvattingDto(capaciteitsBlokken, seCode, datum);
 		}

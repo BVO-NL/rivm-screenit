@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie_;
@@ -131,7 +131,7 @@ public class CervixBoekRegelSpecification
 		return join(join(join(r, CervixBoekRegel_.specificatie), CervixBetaalopdrachtRegelSpecificatie_.betaalopdrachtRegel), CervixBetaalopdrachtRegel_.betaalopdracht);
 	}
 
-	public static From<Client, GbaPersoon> persoonJoin(Root<CervixBoekRegel> r)
+	public static From<Client, Persoon> persoonJoin(Root<CervixBoekRegel> r)
 	{
 		return join(clientJoin(r), Client_.persoon);
 	}

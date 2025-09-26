@@ -119,18 +119,18 @@ public class MammaOnderzoek extends AbstractHibernateObject
 	@Column
 	private Integer eerderMammogramJaartal;
 
-	@Column()
+	@Column
 	@Enumerated(EnumType.STRING)
 	private SuboptimaleInsteltechniek suboptimaleInsteltechniek;
 
-	@Column()
+	@Column
 	@Enumerated(EnumType.STRING)
 	private MammaOnderzoekRedenFotobespreking redenFotobespreking;
 
-	@Column()
+	@Column
 	private String opmerkingMbber;
 
-	@Column()
+	@Column
 	private String opmerkingVoorRadioloog;
 
 	@Column(nullable = false)

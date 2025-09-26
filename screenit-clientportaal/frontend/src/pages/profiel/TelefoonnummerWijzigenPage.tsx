@@ -33,6 +33,8 @@ import ScreenitTextfield from "../../components/input/ScreenitTextfield"
 import {isMobielnummerValid, isTelefoonnummerValid} from "../../validators/TelefoonnummerValidator"
 import {useNavigate} from "react-router"
 import {showToast} from "../../utils/ToastUtil"
+import datadogService from "../../services/DatadogService"
+import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 
 const TelefoonnummerWijzigenPage = () => {
 	const dispatch = useThunkDispatch()
@@ -65,6 +67,7 @@ const TelefoonnummerWijzigenPage = () => {
 			<Formik initialValues={initialValues}
 					validationSchema={validatieSchema}
 					onSubmit={(telefoonNummers) => {
+						datadogService.stuurEvent("telefoonnummerGewijzigd", AnalyticsCategorie.PROFIEL)
 						dispatch(saveTelefoonNummers(telefoonNummers)).then(() => {
 							showToast(getString(properties.toast.title), getString(properties.toast.description))
 							navigate("/profiel")

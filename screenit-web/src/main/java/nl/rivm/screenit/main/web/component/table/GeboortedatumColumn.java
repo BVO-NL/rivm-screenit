@@ -22,9 +22,7 @@ package nl.rivm.screenit.main.web.component.table;
  * =========================LICENSE_END==================================
  */
 
-import java.text.SimpleDateFormat;
-
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 
@@ -50,7 +48,7 @@ public class GeboortedatumColumn<T extends HibernateObject> extends PropertyColu
 	@Override
 	public IModel<Object> getDataModel(IModel<T> rowModel)
 	{
-		GbaPersoon persoon = (GbaPersoon) super.getDataModel(rowModel).getObject();
+		Persoon persoon = (Persoon) super.getDataModel(rowModel).getObject();
 		if (persoon != null)
 		{
 			return new Model(DateUtil.getGeboortedatum(persoon));

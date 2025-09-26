@@ -21,11 +21,14 @@ package nl.rivm.screenit.main.web.gebruiker.gedeeld.brievenafdrukken;
  * =========================LICENSE_END==================================
  */
 
+import java.util.List;
+
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.algemeen.AlgemeneMergedBrieven;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
+import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.Recht;
 
 import org.wicketstuff.shiro.ShiroConstraint;
@@ -39,8 +42,6 @@ import org.wicketstuff.shiro.ShiroConstraint;
 		Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.MAMMA })
 public class AlgemeenAfdrukkenDocumentenPage extends AfdrukkenDocumentenBasePage<AlgemeneMergedBrieven>
 {
-	private static final long serialVersionUID = 1L;
-
 	public AlgemeenAfdrukkenDocumentenPage()
 	{
 		super(AlgemeneMergedBrieven.class);
@@ -50,5 +51,11 @@ public class AlgemeenAfdrukkenDocumentenPage extends AfdrukkenDocumentenBasePage
 	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
 		return MedewerkerHoofdMenuItem.ALGEMEEN;
+	}
+
+	@Override
+	protected List<BriefType> getBriefTypes()
+	{
+		return BriefType.ALGEMENE_BRIEVEN;
 	}
 }

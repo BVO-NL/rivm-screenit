@@ -21,9 +21,9 @@
 import bvoStyle from "../components/BvoStyle.module.scss"
 
 export enum Bevolkingsonderzoek {
-    MAMMA = "MAMMA",
-    CERVIX = "CERVIX",
-    COLON = "COLON"
+	MAMMA = "MAMMA",
+	CERVIX = "CERVIX",
+	COLON = "COLON"
 }
 
 export const Bevolkingsonderzoeken = [Bevolkingsonderzoek.MAMMA, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.COLON]
@@ -35,13 +35,13 @@ export const BevolkingsonderzoekNaam: { [key in Bevolkingsonderzoek]: string } =
 }
 
 export const BevolkingsonderzoekStyle: { [key in Bevolkingsonderzoek]: string } = {
-    [Bevolkingsonderzoek.MAMMA]: bvoStyle.mamma,
-    [Bevolkingsonderzoek.CERVIX]: bvoStyle.cervix,
-    [Bevolkingsonderzoek.COLON]: bvoStyle.colon,
+	[Bevolkingsonderzoek.MAMMA]: bvoStyle.mamma,
+	[Bevolkingsonderzoek.CERVIX]: bvoStyle.cervix,
+	[Bevolkingsonderzoek.COLON]: bvoStyle.colon,
 }
 
 export const BevolkingsonderzoekToptaakStyle: { [key in Bevolkingsonderzoek]: string } = {
-    [Bevolkingsonderzoek.MAMMA]: bvoStyle.mammaIcon,
-    [Bevolkingsonderzoek.CERVIX]: bvoStyle.cervixIcon,
-    [Bevolkingsonderzoek.COLON]: bvoStyle.colonIcon,
+	[Bevolkingsonderzoek.MAMMA]: bvoStyle.mammaIcon,
+	[Bevolkingsonderzoek.CERVIX]: bvoStyle.cervixIcon,
+	[Bevolkingsonderzoek.COLON]: bvoStyle.colonIcon,
 }

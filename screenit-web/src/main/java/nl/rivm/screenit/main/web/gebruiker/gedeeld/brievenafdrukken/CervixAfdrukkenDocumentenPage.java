@@ -22,11 +22,14 @@ package nl.rivm.screenit.main.web.gebruiker.gedeeld.brievenafdrukken;
  * =========================LICENSE_END==================================
  */
 
+import java.util.List;
+
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.cervix.CervixMergedBrieven;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
+import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.Recht;
 
 import org.wicketstuff.shiro.ShiroConstraint;
@@ -39,9 +42,6 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	bevolkingsonderzoekScopes = Bevolkingsonderzoek.CERVIX)
 public class CervixAfdrukkenDocumentenPage extends AfdrukkenDocumentenBasePage<CervixMergedBrieven>
 {
-
-	private static final long serialVersionUID = 1L;
-
 	public CervixAfdrukkenDocumentenPage()
 	{
 		super(CervixMergedBrieven.class);
@@ -51,5 +51,11 @@ public class CervixAfdrukkenDocumentenPage extends AfdrukkenDocumentenBasePage<C
 	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
 		return MedewerkerHoofdMenuItem.CERVIX;
+	}
+
+	@Override
+	protected List<BriefType> getBriefTypes()
+	{
+		return BriefType.getBriefTypes(true, true, Bevolkingsonderzoek.CERVIX);
 	}
 }

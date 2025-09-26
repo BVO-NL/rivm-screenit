@@ -22,7 +22,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.werklijst;
  */
 
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.formatter.TelefoonnummersFormatter;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.model.IModel;
@@ -39,7 +39,7 @@ public class TelefoonnrColumn<T> extends PropertyColumn<T, String>
 	@Override
 	public IModel<?> getDataModel(IModel<T> rowModel)
 	{
-		GbaPersoon persoon = (GbaPersoon) super.getDataModel(rowModel).getObject();
+		Persoon persoon = (Persoon) super.getDataModel(rowModel).getObject();
 		return Model.of(TelefoonnummersFormatter.getTelefoonnummersVoorPersoon(persoon));
 	}
 

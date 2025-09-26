@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,14 +52,12 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
-import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsRondeRapportageStatus;
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsRondeUitnodigenRapportage;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
 import nl.rivm.screenit.service.mamma.impl.MammaCapaciteit;
-import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -332,27 +329,16 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 			LocalDate totEnMet = Collections.min(Arrays.asList(vrijgegevenTotEnMet, standplaatsPeriodeDto.totEnMet));
 
 			MammaCapaciteit capaciteit = baseCapaciteitsBlokService.getCapaciteit(baseCapaciteitsBlokService
-				.getNietGeblokkeerdeCapaciteitsBlokDtos(standplaatsPeriode, DateUtil.toUtilDate(vanaf.atStartOfDay()),
-					DateUtil.toUtilDate(totEnMet.atTime(Constants.BK_EINDTIJD_DAG)),
-					EnumSet.of(MammaCapaciteitBlokType.REGULIER, MammaCapaciteitBlokType.TEHUIS), null));
+				.getNietGeblokkeerdeScreeningCapaciteitBlokDtos(standplaatsPeriode, DateUtil.toUtilDate(vanaf.atStartOfDay()),
+					DateUtil.toUtilDate(totEnMet.atTime(Constants.BK_EINDTIJD_DAG)), null));
 
-			BigDecimal beschikbareCapaciteitRegulier = capaciteit.getCapaciteit(MammaCapaciteitBlokType.REGULIER).beschikbareCapaciteit;
-			BigDecimal beschikbareCapaciteitTehuis = capaciteit.getCapaciteit(MammaCapaciteitBlokType.TEHUIS).beschikbareCapaciteit;
-			BigDecimal vrijeCapaciteitRegulier = capaciteit.getCapaciteit(MammaCapaciteitBlokType.REGULIER).vrijeCapaciteit;
-			BigDecimal vrijeCapaciteitTehuis = capaciteit.getCapaciteit(MammaCapaciteitBlokType.TEHUIS).vrijeCapaciteit;
-
-			BigDecimal factorDubbeleTijd = standplaats.getRegio().getFactorDubbeleTijdBk();
+			BigDecimal beschikbareCapaciteitRegulier = capaciteit.getBeschikbareCapaciteit();
+			BigDecimal vrijeCapaciteitRegulier = capaciteit.getVrijeCapaciteit();
 
 			capaciteitOverzichtContainer.add(new Label("beschikbaarRegulier",
 				beschikbareCapaciteitRegulier.setScale(0, RoundingMode.HALF_UP).toString()));
-			capaciteitOverzichtContainer.add(new Label("beschikbaarTehuis",
-				beschikbareCapaciteitTehuis.divide(factorDubbeleTijd, 0, RoundingMode.HALF_UP)
-					+ " (" + BigDecimalUtil.decimalToString(beschikbareCapaciteitTehuis, 1) + " regulier)"));
 			capaciteitOverzichtContainer.add(new Label("vrijRegulier",
 				vrijeCapaciteitRegulier.setScale(1, RoundingMode.HALF_UP).toString()));
-			capaciteitOverzichtContainer.add(new Label("vrijTehuis",
-				vrijeCapaciteitTehuis.divide(factorDubbeleTijd, 1, RoundingMode.HALF_UP)
-					+ " (" + vrijeCapaciteitTehuis.setScale(1, RoundingMode.HALF_UP) + " regulier)"));
 		}
 		else
 		{

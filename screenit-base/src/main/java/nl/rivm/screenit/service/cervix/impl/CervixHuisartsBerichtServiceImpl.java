@@ -25,7 +25,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsBericht;
@@ -121,7 +120,7 @@ public class CervixHuisartsBerichtServiceImpl implements CervixHuisartsBerichtSe
 
 	private CervixHuisartsBericht maakCervixHuisartsBericht(HuisartsBerichtType berichtType, Client client, CervixUitnodiging uitnodiging)
 	{
-		CervixHuisartsBericht huisartsBericht = new CervixHuisartsBericht();
+		var huisartsBericht = new CervixHuisartsBericht();
 		huisartsBericht.setStatus(CervixHuisartsBerichtStatus.AANGEMAAKT);
 		huisartsBericht.setEenOpnieuwVerzondenBericht(false);
 		huisartsBericht.setStatusDatum(currentDateSupplier.getDate());
@@ -130,8 +129,8 @@ public class CervixHuisartsBerichtServiceImpl implements CervixHuisartsBerichtSe
 		huisartsBericht.setBerichtType(berichtType);
 		huisartsBericht.setScreeningRonde(client.getCervixDossier().getLaatsteScreeningRonde());
 
-		GbaPersoon persoon = client.getPersoon();
-		Gemeente gemeente = persoon.getGbaAdres().getGbaGemeente();
+		var persoon = client.getPersoon();
+		var gemeente = persoon.getGbaAdres().getGbaGemeente();
 		if (gemeente == null)
 		{
 			throw new IllegalStateException("De gemeente is onbekend voor cliënt met id " + client.getId());

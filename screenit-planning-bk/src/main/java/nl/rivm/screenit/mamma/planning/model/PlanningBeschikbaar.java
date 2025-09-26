@@ -32,8 +32,6 @@ public class PlanningBeschikbaar
 {
 	private BigDecimal totaal;
 
-	private BigDecimal totaalTehuis;
-
 	public PlanningBeschikbaar()
 	{
 		clear();
@@ -42,17 +40,13 @@ public class PlanningBeschikbaar
 	public void add(PlanningBeschikbaar beschikbaar)
 	{
 		totaal = totaal.add(beschikbaar.totaal);
-		totaalTehuis = totaalTehuis.add(beschikbaar.totaalTehuis);
 	}
 
 	public void add(BigDecimal totaal, MammaCapaciteitBlokType blokType)
 	{
 		switch (blokType)
 		{
-		case TEHUIS:
-			totaalTehuis = totaalTehuis.add(totaal);
-
-		case REGULIER:
+		case SCREENING:
 			this.totaal = this.totaal.add(totaal);
 			break;
 		case GEEN_SCREENING:
@@ -62,14 +56,8 @@ public class PlanningBeschikbaar
 		}
 	}
 
-	public BigDecimal getTotaalRegulier()
-	{
-		return getTotaal().subtract(getTotaalTehuis());
-	}
-
 	public void clear()
 	{
 		totaal = BigDecimal.ZERO;
-		totaalTehuis = BigDecimal.ZERO;
 	}
 }

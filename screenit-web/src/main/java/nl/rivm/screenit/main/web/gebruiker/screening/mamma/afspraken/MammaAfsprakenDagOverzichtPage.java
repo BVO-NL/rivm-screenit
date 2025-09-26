@@ -26,7 +26,6 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,7 +51,6 @@ import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
-import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBaseBlokkadeService;
@@ -81,6 +79,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 import org.wicketstuff.shiro.ShiroConstraint;
+
+import com.google.common.collect.Range;
 
 import static nl.rivm.screenit.main.web.gebruiker.screening.mamma.afspraken.MammaAfsprakenBlokPanel.AFSPRAAK_VERZETTEN_DATUM;
 import static nl.rivm.screenit.main.web.gebruiker.screening.mamma.afspraken.MammaAfsprakenBlokPanel.AFSPRAAK_VERZETTEN_KOMT_VANUIT_AFSPRAKENKALENDER;
@@ -271,8 +271,7 @@ public class MammaAfsprakenDagOverzichtPage extends MammaAfsprakenBasePage
 		capaciteitContainer.addOrReplace(new Label("aantalAfspraken", Model.of(aantalAfspraken)));
 
 		var afspraken = baseAfspraakService.getAfspraken(screeningsEenheid, gekozenDag, gekozenDag, MammaAfspraakStatus.GEPLAND);
-		var capaciteitsBlokken = baseCapaciteitsBlokService.getCapaciteitsBlokken(screeningsEenheid, vanaf, totEnMet, true,
-			Arrays.asList(MammaCapaciteitBlokType.REGULIER, MammaCapaciteitBlokType.TEHUIS));
+		var capaciteitsBlokken = baseCapaciteitsBlokService.getScreeningCapaciteitBlokken(screeningsEenheid, Range.closed(vanaf, totEnMet), true);
 		var afsprakenZonderCapaciteitsBlok = afspraken.stream().filter(afspraak -> afspraak.getCapaciteitBlok() == null).collect(Collectors.toList());
 		blokken.add(
 			new MammaAfsprakenZonderBlokPanel(blokken.newChildId(), screeningsEenheidModel, gekozenDag, selectedAfspraken, localDialog, magNuVerzetten, magNuBulkVerzetten,
@@ -283,7 +282,7 @@ public class MammaAfsprakenDagOverzichtPage extends MammaAfsprakenBasePage
 		for (var blok : capaciteitsBlokken)
 		{
 			blokken.add(
-				new MammaBlokMetAfsprakenPanel(blokken.newChildId(), ModelUtil.csModel(blok), selectedAfspraken, gekozenDag, localDialog, magNuVerzetten, magNuBulkVerzetten));
+				new MammaBlokMetAfsprakenPanel(blokken.newChildId(), ModelUtil.csModel(blok), selectedAfspraken, gekozenDag, magNuVerzetten, magNuBulkVerzetten));
 			vrijeCapaciteit = vrijeCapaciteit.add(blok.getVrijeCapaciteit());
 			beschikbareCapaciteit = beschikbareCapaciteit.add(blok.getBeschikbareCapaciteit());
 		}

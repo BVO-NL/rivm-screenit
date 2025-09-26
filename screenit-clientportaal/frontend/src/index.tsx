@@ -30,7 +30,6 @@ import App from "./App"
 import {thunk, ThunkDispatch} from "redux-thunk"
 import {State} from "./datatypes/State"
 import IdleTimerWrapper from "./wrapper/IdleTimerWrapper"
-import {datadogRum} from "@datadog/browser-rum"
 import AuthenticationWrapper from "./wrapper/AuthenticationWrapper"
 import {createRoot} from "react-dom/client"
 import createCache from "@emotion/cache"
@@ -38,6 +37,7 @@ import {CacheProvider} from "@emotion/react"
 import ErrorBoundary from "./components/error_boundary/ErrorBoundary"
 import KeycloakProvider from "./components/KeycloakProvider"
 import {setLoggingOutAction} from "./actions/AuthenticatieAction"
+import datadogService from "./services/DatadogService"
 
 export type ReduxThunkDispatch = ThunkDispatch<State, any, Action>;
 
@@ -59,20 +59,7 @@ cpStore.subscribe(() => {
 	saveState()
 })
 
-const isAcceptatie = window.location.hostname === "acc.mijn.bevolkingsonderzoeknederland.nl"
-const isProductie = window.location.hostname === "mijn.bevolkingsonderzoeknederland.nl"
-
-if (isAcceptatie || isProductie) {
-	datadogRum.init({
-		applicationId: isAcceptatie ? process.env.REACT_APP_DD_RUM_APPLICATION_ID_ACC : process.env.REACT_APP_DD_RUM_APPLICATION_ID_PROD,
-		clientToken: isAcceptatie ? process.env.REACT_APP_DD_RUM_CLIENT_TOKEN_ACC : process.env.REACT_APP_DD_RUM_CLIENT_TOKEN_PROD,
-		site: "datadoghq.eu",
-		service: "clientportaal",
-		sessionReplaySampleRate: 0,
-		trackUserInteractions: false,
-		defaultPrivacyLevel: "mask-user-input",
-	})
-}
+datadogService.init()
 
 interface MetaElement extends HTMLElement {
 	content: string;

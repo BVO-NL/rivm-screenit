@@ -46,8 +46,8 @@ public class MammaNieuwePostcodesReader extends BaseSqlScrollableResultReader
 		var query = getHibernateSession().createNativeQuery("""
 			select c.id
 			from org_adres a
-			inner join pat_persoon pc on pc.gba_adres = a.id
-			inner join pat_patient c on c.id = pc.patient
+			inner join persoon pc on pc.gba_adres = a.id
+			inner join client c on c.id = pc.client
 			inner join algemeen.gemeente g on g.id = a.gba_gemeente
 			left outer join mamma.postcode_reeks r on (a.postcode >= r.van_postcode and a.postcode <= r.tot_postcode)
 			where a.dtype = 'BagAdres'

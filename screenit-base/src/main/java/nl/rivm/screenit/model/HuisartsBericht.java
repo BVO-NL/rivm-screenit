@@ -62,6 +62,7 @@ public abstract class HuisartsBericht extends AbstractHibernateObject
 	@Column(length = 7000)
 	private String berichtInhoud;
 
+	@Column(nullable = false)
 	private Date aanmaakDatum;
 
 	@Column(nullable = false)

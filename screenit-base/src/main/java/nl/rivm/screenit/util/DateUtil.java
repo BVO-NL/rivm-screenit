@@ -44,7 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -525,7 +525,7 @@ public final class DateUtil
 			&& testDate.toEpochDay() <= end.toEpochDay();
 	}
 
-	public static String getGeboortedatum(GbaPersoon persoon)
+	public static String getGeboortedatum(Persoon persoon)
 	{
 		var geboortedatumAlsTekst = "";
 		if (persoon != null && persoon.getGeboortedatum() != null)

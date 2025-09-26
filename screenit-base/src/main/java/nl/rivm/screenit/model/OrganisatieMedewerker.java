@@ -69,6 +69,7 @@ public class OrganisatieMedewerker extends AbstractHibernateObject implements Ac
 	@CollectionTable(schema = "algemeen", name = "organisatie_medewerker_bevolkingsonderzoeken")
 	private List<Bevolkingsonderzoek> bevolkingsonderzoeken = new ArrayList<>();
 
+	@Column(nullable = false)
 	private Boolean actief;
 
 	@Override

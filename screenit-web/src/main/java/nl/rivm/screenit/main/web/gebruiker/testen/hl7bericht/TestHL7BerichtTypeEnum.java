@@ -37,5 +37,7 @@ public enum TestHL7BerichtTypeEnum
 
 	MAMMA_ADT,
 
-	DK_IFOBT;
+	DK_FIT_MLLP,
+
+	DK_FIT_HTTP;
 }

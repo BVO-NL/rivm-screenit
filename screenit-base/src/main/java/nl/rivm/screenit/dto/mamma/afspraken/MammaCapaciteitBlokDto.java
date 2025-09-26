@@ -31,7 +31,6 @@ import java.util.List;
 import jakarta.persistence.Transient;
 
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
-import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 
 public class MammaCapaciteitBlokDto implements Serializable
 {
@@ -46,8 +45,6 @@ public class MammaCapaciteitBlokDto implements Serializable
 	public BigDecimal beschikbareCapaciteit;
 
 	public List<MammaAfspraakDto> afspraakDtos = new ArrayList<>();
-
-	public MammaCapaciteitBlokType blokType;
 
 	public Integer aantalOnderzoeken;
 

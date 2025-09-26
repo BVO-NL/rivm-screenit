@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.Map;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonConclusie;
 import nl.rivm.screenit.model.colon.ColonDossier;
@@ -46,31 +46,31 @@ public interface ColonTestService
 
 	ColonBrief maakBrief(Client client, ColonScreeningRonde screeningRonde, BriefType briefType);
 
-	ColonIntakeAfspraak maakAfspraak(GbaPersoon persoon, Date fitVerwerkingsDatum);
+	ColonIntakeAfspraak maakAfspraak(Persoon persoon, Date fitVerwerkingsDatum);
 
-	ColonIntakeAfspraak maakAfspraak(GbaPersoon persoon, boolean eenmalig, Date fitVerwerkingsDatum);
+	ColonIntakeAfspraak maakAfspraak(Persoon persoon, boolean eenmalig, Date fitVerwerkingsDatum);
 
-	ColonConclusie maakAfspraakEnConclusie(GbaPersoon persoon, Date fitVerwerkingsDatum);
+	ColonConclusie maakAfspraakEnConclusie(Persoon persoon, Date fitVerwerkingsDatum);
 
-	void maakClientKlaarVoorRappeleren(GbaPersoon persoon);
+	void maakClientKlaarVoorRappeleren(Persoon persoon);
 
-	IFOBTTest maakHuidigeIFobtOntvangenInclUitslag(GbaPersoon filter, BigDecimal normwaarde, BigDecimal uitslag);
+	IFOBTTest maakHuidigeIFobtOntvangenInclUitslag(Persoon filter, BigDecimal normwaarde, BigDecimal uitslag);
 
-	void maakUitnodigingEnTestenVergelijkendOnderzoek(GbaPersoon filter);
+	void maakUitnodigingEnTestenVergelijkendOnderzoek(Persoon filter);
 
 	ColonScreeningRonde maakNieuweScreeningRonde(ColonDossier dossier);
 
-	void huisartsBerichtKlaarzetten(GbaPersoon filter, HuisartsBerichtType berichtType);
+	void huisartsBerichtKlaarzetten(Persoon filter, HuisartsBerichtType berichtType);
 
-	IFOBTTest maakHuidigeIFobtOntvangenEnGunstig(GbaPersoon persoon);
+	IFOBTTest maakHuidigeIFobtOntvangenEnGunstig(Persoon persoon);
 
-	IFOBTTest maakHuidigeIFobtOntvangenEnOngunstig(GbaPersoon persoon);
+	IFOBTTest maakHuidigeIFobtOntvangenEnOngunstig(Persoon persoon);
 
-	void maakClientKlaarVoorAfronden(GbaPersoon modelObject);
+	void maakClientKlaarVoorAfronden(Persoon modelObject);
 
-	void huidigeIFOBTvoorRapelDatum(GbaPersoon modelObject);
+	void huidigeIFOBTvoorRapelDatum(Persoon modelObject);
 
-	IFOBTTest zetVelorenIfobt(GbaPersoon modelObject, boolean zetUitslag, boolean gunstig);
+	IFOBTTest zetVelorenIfobt(Persoon modelObject, boolean zetUitslag, boolean gunstig);
 
 	void brievenKlaarzetten(int aantal);
 

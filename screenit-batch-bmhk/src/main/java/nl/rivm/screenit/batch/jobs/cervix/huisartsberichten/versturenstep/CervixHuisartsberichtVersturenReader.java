@@ -32,10 +32,10 @@ import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.BagAdres_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.HuisartsBericht_;
+import nl.rivm.screenit.model.Persoon;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.cervix.CervixHuisartsBericht;
 import nl.rivm.screenit.model.cervix.CervixHuisartsBericht_;
@@ -88,11 +88,11 @@ public class CervixHuisartsberichtVersturenReader extends BaseSpecificationScrol
 	private static Join<BagAdres, Gemeente> getGemeenteJoin(From<?, ? extends CervixHuisartsBericht> r)
 	{
 		var persoonJoin = getPersoonJoin(r);
-		var adresJoin = join(persoonJoin, GbaPersoon_.gbaAdres);
+		var adresJoin = join(persoonJoin, Persoon_.gbaAdres);
 		return join(adresJoin, BagAdres_.gbaGemeente);
 	}
 
-	private static Join<Client, GbaPersoon> getPersoonJoin(From<?, ? extends CervixHuisartsBericht> r)
+	private static Join<Client, Persoon> getPersoonJoin(From<?, ? extends CervixHuisartsBericht> r)
 	{
 		var clientJoin = join(r, HuisartsBericht_.client);
 		return join(clientJoin, Client_.persoon);

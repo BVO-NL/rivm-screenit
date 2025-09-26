@@ -34,9 +34,9 @@ import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.BagAdres_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Gemeente_;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectClient_;
@@ -79,7 +79,7 @@ abstract class AbstractUitnodigingPushProjectReader extends AbstractUitnodigingP
 
 	private static Join<BagAdres, Gemeente> gemeenteJoin(Root<ProjectClient> r)
 	{
-		return join(join(join(clientJoin(r), Client_.persoon), GbaPersoon_.gbaAdres), BagAdres_.gbaGemeente);
+		return join(join(join(clientJoin(r), Client_.persoon), Persoon_.gbaAdres), BagAdres_.gbaGemeente);
 	}
 
 	private static Join<ProjectClient, Client> clientJoin(Root<ProjectClient> r)

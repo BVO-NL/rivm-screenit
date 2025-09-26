@@ -21,12 +21,15 @@ package nl.rivm.screenit.batch.jobs.mamma.kansberekening.dossiers;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaDossier_;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -36,9 +39,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Range;
-
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
 
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
@@ -77,7 +77,7 @@ public class MammaScreeningRondeEventReader extends BaseSpecificationScrollableR
 			.and(heeftGeboortedatumIn(geboortedatumBereik).with(r -> getPersoonJoin(r)));
 	}
 
-	private static Join<?, GbaPersoon> getPersoonJoin(From<?, ? extends MammaDossier> r)
+	private static Join<?, Persoon> getPersoonJoin(From<?, ? extends MammaDossier> r)
 	{
 		var clientJoin = join(r, MammaDossier_.client);
 		return join(clientJoin, Client_.persoon);

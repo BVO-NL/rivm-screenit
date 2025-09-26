@@ -23,6 +23,7 @@ package nl.rivm.screenit.model.cervix;
 
 import java.util.Date;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
@@ -49,6 +50,7 @@ public class CervixBulkUpload extends AbstractHibernateObject
 	private UploadDocument document;
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	private Date uploadDatum;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)

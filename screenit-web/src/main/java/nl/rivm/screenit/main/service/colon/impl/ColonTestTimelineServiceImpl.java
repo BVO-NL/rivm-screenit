@@ -50,9 +50,9 @@ import nl.rivm.screenit.main.service.colon.ColonVervolgonderzoekKeuzesDto;
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.TestVervolgKeuzeOptie;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
@@ -274,7 +274,7 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 
 	private Client maakOfVindClient(TestTimelineModel model, String bsn)
 	{
-		var persoon = new GbaPersoon();
+		var persoon = new Persoon();
 		persoon.setBsn(bsn);
 		persoon.setGeboortedatum(model.getGeboortedatum());
 		persoon.setGeslacht(model.getGeslacht());
@@ -300,11 +300,11 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 		{
 			var client = maakOfVindClient(model, bsn);
 			clienten.add(client);
-			var gbaPersoon = client.getPersoon();
-			gbaPersoon.setGeslacht(model.getGeslacht());
-			gbaPersoon.setGeboortedatum(model.getGeboortedatum());
+			var persoon = client.getPersoon();
+			persoon.setGeslacht(model.getGeslacht());
+			persoon.setGeboortedatum(model.getGeboortedatum());
 
-			hibernateService.saveOrUpdateAll(gbaPersoon);
+			hibernateService.saveOrUpdateAll(persoon);
 		}
 		return clienten;
 	}

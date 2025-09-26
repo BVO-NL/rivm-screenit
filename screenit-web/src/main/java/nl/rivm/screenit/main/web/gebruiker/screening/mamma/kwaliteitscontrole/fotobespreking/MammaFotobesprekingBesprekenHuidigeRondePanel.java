@@ -31,7 +31,7 @@ import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxLink;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaBeoordelenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.panels.MammaKwaliteitscontroleHuidigeRondePanel;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
@@ -158,7 +158,7 @@ public class MammaFotobesprekingBesprekenHuidigeRondePanel extends MammaKwalitei
 			}
 			catch (Exception e)
 			{
-				GbaPersoon persoon = getModelObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient().getPersoon();
+				Persoon persoon = getModelObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient().getPersoon();
 				LOG.error("Er is een fout opgetreden bij aanvraag herbeoordeling tijdens fotobespreking: ", e);
 				warn(String.format(getString("error.herbeoordelen"),
 					persoon.getBsn(),

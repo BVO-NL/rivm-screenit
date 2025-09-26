@@ -21,16 +21,17 @@ package nl.rivm.screenit.model.project;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.List;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
@@ -39,18 +40,15 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+@Getter
+@Setter
 @Entity
 @Table(schema = "algemeen")
 public class ProjectInactiveerDocument extends AbstractHibernateObject
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
-
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY, optional = false)
 	private UploadDocument uploadDocument;
 
-	@Column(nullable = true)
 	private String dynamischeInactiveerReden;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -60,57 +58,6 @@ public class ProjectInactiveerDocument extends AbstractHibernateObject
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private List<ProjectClient> projectClienten;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private OrganisatieMedewerker geuploadDoor;
-
-	public UploadDocument getUploadDocument()
-	{
-		return uploadDocument;
-	}
-
-	public void setUploadDocument(UploadDocument uploadDocument)
-	{
-		this.uploadDocument = uploadDocument;
-	}
-
-	public String getDynamischeInactiveerReden()
-	{
-		return dynamischeInactiveerReden;
-	}
-
-	public void setDynamischeInactiveerReden(String dynamischeInactiveerReden)
-	{
-		this.dynamischeInactiveerReden = dynamischeInactiveerReden;
-	}
-
-	public Project getProject()
-	{
-		return project;
-	}
-
-	public void setProject(Project project)
-	{
-		this.project = project;
-	}
-
-	public List<ProjectClient> getProjectClienten()
-	{
-		return projectClienten;
-	}
-
-	public void setProjectClienten(List<ProjectClient> projectClienten)
-	{
-		this.projectClienten = projectClienten;
-	}
-
-	public OrganisatieMedewerker getGeuploadDoor()
-	{
-		return geuploadDoor;
-	}
-
-	public void setGeuploadDoor(OrganisatieMedewerker geuploadDoor)
-	{
-		this.geuploadDoor = geuploadDoor;
-	}
-
 }

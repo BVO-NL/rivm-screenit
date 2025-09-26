@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon_;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.project.ProjectClient;
@@ -78,7 +78,7 @@ public class ClientSpecification
 		return (r, q, cb) ->
 		{
 			var persoon = join(r, Client_.persoon);
-			var geboorteDatum = persoon.get(GbaPersoon_.geboortedatum);
+			var geboorteDatum = persoon.get(Persoon_.geboortedatum);
 			var maxGeboortedatum = DateUtil.toUtilDate(LocalDate.of(peildatum.getYear() - minimaleLeeftijd, 12, 31));
 			var minGeboortedatum = DateUtil.toUtilDate(LocalDate.of(peildatum.getYear() - maximaleLeeftijd, 1, 1));
 			return cb.and(cb.greaterThanOrEqualTo(geboorteDatum, minGeboortedatum), cb.lessThanOrEqualTo(geboorteDatum, maxGeboortedatum));
@@ -92,7 +92,7 @@ public class ClientSpecification
 			var persoonJoin = join(r, Client_.persoon);
 			if (StringUtils.isNotEmpty(anummer))
 			{
-				return cb.equal(persoonJoin.get(GbaPersoon_.anummer), anummer);
+				return cb.equal(persoonJoin.get(Persoon_.anummer), anummer);
 			}
 			return null;
 		};
@@ -103,7 +103,7 @@ public class ClientSpecification
 		return (r, q, cb) ->
 		{
 			var persoonJoin = join(r, Client_.persoon);
-			return cb.equal(persoonJoin.get(GbaPersoon_.titelCode), titelCode);
+			return cb.equal(persoonJoin.get(Persoon_.titelCode), titelCode);
 		};
 	}
 
@@ -117,7 +117,7 @@ public class ClientSpecification
 		return (r, q, cb) ->
 		{
 			var persoonJoin = join(r, Client_.persoon);
-			return cb.equal(cb.function("right", String.class, persoonJoin.get(GbaPersoon_.bsn), cb.literal(9)), bsn);
+			return cb.equal(cb.function("right", String.class, persoonJoin.get(Persoon_.bsn), cb.literal(9)), bsn);
 		};
 	}
 

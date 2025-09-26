@@ -103,8 +103,10 @@ public abstract class Afmelding<SR extends ScreeningRonde<?, ?, ?, ?>, D extends
 
 	private Boolean clientWilNieuweUitnodiging;
 
+	@Column(nullable = false)
 	private Boolean implicieteAfmelding = false;
 
+	@Column(nullable = false)
 	private Boolean implicieteHeraanmelding = false;
 
 	public abstract B getAfmeldingAanvraag();

@@ -43,12 +43,12 @@ import {TijdelijkAdres} from "../../datatypes/adres/TijdelijkAdres"
 import {AanhefType} from "../../datatypes/aanhef/AanhefType"
 import AanspreekVormIcon from "../../scss/media/icons_toptaken/AanspreekVormIcon/AanspreekVormIcon"
 import BezwaarMakenIcon from "../../scss/media/icons_toptaken/BezwaarMakenIcon/BezwaarMakenIcon"
+import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 
 const ProfielPage = () => {
 	const persoon = useSelector((state: State) => state.client.persoon)
 	const toonTijdelijkAdres = !isNullOfLeeg(persoon.tijdelijkAdresTekst) && (isNullOfUndefined(persoon.tijdelijkAdres?.eindDatum) || isDatumVandaagOfLater(persoon.tijdelijkAdres!.eindDatum!))
 	const beschikbareActies = useSelector((state: State) => state.client.beschikbareActies.beschikbareActies)
-
 	return (
 		<Container fluid className={classNames(styles.content)}>
 			<KruimelpadComponent/>
@@ -79,12 +79,15 @@ const ProfielPage = () => {
 										  link="/profiel/telefoonnummer/"
 										  titel={getString(properties.toptaak.title.telefoonnummer)}
 										  subTitel={heeftTelefoonnummer(persoon) ? getString(properties.toptaak.subtitle.telefoonnummer) : ""}
-										  subTekst={heeftTelefoonnummer(persoon) ? (persoon.telefoonnummer1 ? persoon.telefoonnummer1 + "<br/>" : "") + (persoon.telefoonnummer2 ? persoon.telefoonnummer2 : "") : ""}/>
+										  subTekst={heeftTelefoonnummer(persoon) ? (persoon.telefoonnummer1 ? persoon.telefoonnummer1 + "<br/>" : "") + (persoon.telefoonnummer2 ? persoon.telefoonnummer2 : "") : ""}
+										  datadogEventVoorCategorie={AnalyticsCategorie.PROFIEL}
+						/>
 					</Col>
 					<Col lg={4}>
 						<TopTaakComponent icon={<EmailadresWijzigenIcon/>}
 										  link="/profiel/email/"
 										  titel={getString(properties.toptaak.title.email)}
+										  datadogEventVoorCategorie={AnalyticsCategorie.PROFIEL}
 						/>
 					</Col>
 					<Col lg={4}>
@@ -92,7 +95,9 @@ const ProfielPage = () => {
 										  link="/profiel/adres/"
 										  titel={getString(toonTijdelijkAdres ? properties.toptaak.title.adres.wijzigen : properties.toptaak.title.adres.opgeven)}
 										  subTitel={toonTijdelijkAdres ? getDatumVermeldingTijdelijkAdres(persoon.tijdelijkAdres!) : ""}
-										  subTekst={toonTijdelijkAdres ? getAdresStringMetHtmlSeparator(persoon.tijdelijkAdresTekst) : ""}/>
+										  subTekst={toonTijdelijkAdres ? getAdresStringMetHtmlSeparator(persoon.tijdelijkAdresTekst) : ""}
+										  datadogEventVoorCategorie={AnalyticsCategorie.PROFIEL}
+						/>
 					</Col>
 					<Col lg={4}>
 						<TopTaakComponent icon={<AanspreekVormIcon/>}

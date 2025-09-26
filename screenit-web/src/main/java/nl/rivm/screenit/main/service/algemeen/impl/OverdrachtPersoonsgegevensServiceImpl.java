@@ -42,7 +42,7 @@ import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.EnovationHuisarts;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.algemeen.AlgemeneBrief;
@@ -229,7 +229,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 			cellStyleDateTime.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy HH:mm:ss"));
 
 			Client client = overdrachtPersoonsgegevens.getClient();
-			GbaPersoon persoon = client.getPersoon();
+			Persoon persoon = client.getPersoon();
 			addClientGegevens(workbook, createHelper, cellStyleDate, persoon);
 			if (Boolean.TRUE.equals(overdrachtPersoonsgegevens.getDkGegevens()))
 			{
@@ -729,7 +729,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 		}
 	}
 
-	private void addClientGegevens(Workbook workbook, CreationHelper createHelper, CellStyle cellStyleDate, GbaPersoon persoon)
+	private void addClientGegevens(Workbook workbook, CreationHelper createHelper, CellStyle cellStyleDate, Persoon persoon)
 	{
 		Sheet sheet = workbook.createSheet("Clientgegevens");
 		addGbaPersoonGegevens(workbook, sheet, createHelper, cellStyleDate, persoon);
@@ -741,7 +741,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 		sheet.autoSizeColumn(1);
 	}
 
-	private void addGbaPersoonGegevens(Workbook workbook, Sheet sheet, CreationHelper createHelper, CellStyle cellStyleDate, GbaPersoon persoon)
+	private void addGbaPersoonGegevens(Workbook workbook, Sheet sheet, CreationHelper createHelper, CellStyle cellStyleDate, Persoon persoon)
 	{
 		CellStyle cellStyleGeboortedatum = workbook.createCellStyle();
 		addRow(sheet, "Bsn", persoon, "bsn", null);
@@ -767,7 +767,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 		addRow(sheet, "Datum ontbinding partnerschap", persoon, "datumOntbindingPartnerschap", cellStyleDate);
 	}
 
-	private void addGbaAdres(Sheet sheet, GbaPersoon persoon)
+	private void addGbaAdres(Sheet sheet, Persoon persoon)
 	{
 		BagAdres gbaAdres = persoon.getGbaAdres();
 		addAdres(sheet, gbaAdres, "BRP ");
@@ -775,7 +775,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 		addRow(sheet, "BRP Gemeente", gbaAdres, "gbaGemeente.naam", null);
 	}
 
-	private void addTijdelijkGbaAdres(Sheet sheet, GbaPersoon persoon)
+	private void addTijdelijkGbaAdres(Sheet sheet, Persoon persoon)
 	{
 		Adres adres = persoon.getTijdelijkGbaAdres();
 		if (adres != null)
@@ -784,7 +784,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 		}
 	}
 
-	private void addTijdelijkAdres(Sheet sheet, GbaPersoon persoon, CellStyle cellStyleDate)
+	private void addTijdelijkAdres(Sheet sheet, Persoon persoon, CellStyle cellStyleDate)
 	{
 		TijdelijkAdres adres = persoon.getTijdelijkAdres();
 		if (adres != null)

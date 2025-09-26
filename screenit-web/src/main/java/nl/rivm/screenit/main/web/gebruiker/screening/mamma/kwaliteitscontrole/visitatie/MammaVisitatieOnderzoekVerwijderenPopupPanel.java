@@ -23,7 +23,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.v
 
 import nl.rivm.screenit.main.service.mamma.MammaKwaliteitscontroleService;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.mamma.MammaVisitatieOnderzoek;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
@@ -58,7 +58,7 @@ public abstract class MammaVisitatieOnderzoekVerwijderenPopupPanel extends Gener
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				MammaVisitatieOnderzoek visitatieOnderzoek = getModelObject();
-				GbaPersoon persoon = visitatieOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient()
+				Persoon persoon = visitatieOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient()
 					.getPersoon();
 				if (visitatieOnderzoek.getId() != null)
 				{

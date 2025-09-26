@@ -45,7 +45,8 @@ import {placeNonBreakingSpaceInDate} from "../../../../utils/StringUtil"
 import {compareAsc} from "date-fns"
 import MammaAfspraakBevestigingsWizard from "./bevestigingswizard/MammaAfspraakBevestigingsWizard"
 import {ClientContactActieType} from "../../../../datatypes/ClientContactActieType"
-import {datadogRum} from "@datadog/browser-rum"
+import datadogService from "../../../../services/DatadogService"
+import {AnalyticsCategorie} from "../../../../datatypes/AnalyticsCategorie"
 
 export type AfspraakZoekFilter = {
 	vanaf?: Date,
@@ -96,6 +97,30 @@ const MammaAfspraakMakenPage = () => {
 	const gesplitsteAdresStandplaats = huidigeAfspraak && huidigeAfspraak.adresStandplaats.split(",", 2)
 	const resultatenGevonden = laatsteAfspraakZoekResultaten.length !== 0
 
+	const stuurSecondaireActietegelEvent = (naam: string) => {
+		datadogService.stuurEvent(
+			"secundaireActietegelGeklikt",
+			AnalyticsCategorie.MAMMA_AFSPRAAK,
+			{
+				naam: getString(naam),
+			},
+		)
+	}
+
+	const afspraakGekozen = (kandidaatAfspraak: KandidaatAfspraak) => {
+		datadogService.stuurEvent(
+			"mammaAfspraakOptieGekozen",
+			AnalyticsCategorie.MAMMA_AFSPRAAK,
+			{
+				client: client.persoon.id,
+				datumTijd: formatDateTime(kandidaatAfspraak.datumTijd),
+				standplaatsPeriode: kandidaatAfspraak.standplaatsPeriodeId,
+			},
+		)
+		kandidaatAfspraak.filter = zoekFilter
+		setGekozenAfspraak(kandidaatAfspraak)
+	}
+
 	return (
 		<BasePage bvoName={BevolkingsonderzoekNaam.MAMMA}
 				  title={huidigeAfspraak ? getString(properties.page.title.afspraak_verzetten) : getString(properties.page.title.afspraak_maken)}
@@ -132,11 +157,15 @@ const MammaAfspraakMakenPage = () => {
 					{beschikbareActies.includes(ClientContactActieType.MAMMA_UITSTELLEN) &&
 						<BigUrlButton title={getString(properties.searchresult.button.header.uitstellen)}
 									  text={getString(properties.searchresult.button.text.uitstellen)}
-									  link={"/mamma/uitstellen"}/>}
+									  link={"/mamma/uitstellen"}
+									  onClickStuurDatadogEvent={() => stuurSecondaireActietegelEvent(properties.searchresult.button.header.uitstellen)}
+						/>}
 
 					<BigUrlButton title={getString(properties.searchresult.button.header.contact)}
 								  text={getString(properties.searchresult.button.text.contact)}
-								  link={getContactUrl(regio)}/>
+								  link={getContactUrl(regio)}
+								  onClickStuurDatadogEvent={() => stuurSecondaireActietegelEvent(properties.searchresult.button.header.contact)}
+					/>
 				</Col>
 				<Col md={7} className={styles.results} ref={gevondenAfsprakenDiv}>
 					{laatsteAfspraakZoekResultaten && laatsteAfspraakZoekResultaten.map((kandidaatAfspraak, index) =>
@@ -148,15 +177,7 @@ const MammaAfspraakMakenPage = () => {
 							col3={["Locatie", kandidaatAfspraak.adres, kandidaatAfspraak.postcode + " " + kandidaatAfspraak.plaats]}
 
 							onHoverText={getString(properties.searchresult.hovertext)}
-							onClickAction={() => {
-								datadogRum.addAction("mammaAfspraakOptieGekozen", {
-									"client": client.persoon.id,
-									"datumTijd": formatDateTime(kandidaatAfspraak.datumTijd),
-									"standplaatsPeriode": kandidaatAfspraak.standplaatsPeriodeId,
-								})
-								kandidaatAfspraak.filter = zoekFilter
-								setGekozenAfspraak(kandidaatAfspraak)
-							}}
+							onClickAction={() => afspraakGekozen(kandidaatAfspraak)}
 						/>,
 					)}
 
@@ -195,6 +216,7 @@ const MammaAfspraakMakenPage = () => {
 								label={getString(properties.navigation.more_results)}
 								displayArrow={ArrowType.ARROW_DOWN}
 								onClick={() => {
+									datadogService.stuurEvent("toonmeerAfspraakopties", AnalyticsCategorie.MAMMA_AFSPRAAK)
 									const nieuwZoekFilter = {
 										...zoekFilter,
 										meerOpties: true,

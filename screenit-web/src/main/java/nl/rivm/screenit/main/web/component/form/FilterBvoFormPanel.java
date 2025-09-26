@@ -36,6 +36,8 @@ public abstract class FilterBvoFormPanel<T extends IBevolkingsonderzoek> extends
 {
 	private static final long serialVersionUID = 1L;
 
+	protected Form<T> form;
+
 	public FilterBvoFormPanel(String id, final IModel<T> model)
 	{
 		this(id, model, false, false, false);
@@ -55,8 +57,7 @@ public abstract class FilterBvoFormPanel<T extends IBevolkingsonderzoek> extends
 	{
 		super(id, new CompoundPropertyModel<>(model));
 
-		Form<T> form = new ScreenitForm<>("bvoFilterForm");
-		add(form);
+		add(form = new ScreenitForm<>("bvoFilterForm"));
 		form.add(new FilterBvoPanel<T>("bvoFilter", model, altijdZichtbaar));
 
 		form.add(new FilterLogLevelPanel<T>("logLevelFilter", model).setVisible(isDashboard));
@@ -74,7 +75,6 @@ public abstract class FilterBvoFormPanel<T extends IBevolkingsonderzoek> extends
 				FilterBvoFormPanel.this.doFilter(filterModel, target);
 			}
 		});
-
 	}
 
 	protected abstract void doFilter(IModel<T> filterModel, AjaxRequestTarget target);

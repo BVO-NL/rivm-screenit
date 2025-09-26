@@ -54,6 +54,7 @@ import org.hibernate.envers.Audited;
 @Audited
 public class ProjectBriefActie extends AbstractHibernateObject implements IActief, IDocument
 {
+	@Column(nullable = false)
 	private Boolean actief = true;
 
 	@Column

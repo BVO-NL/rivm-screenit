@@ -29,7 +29,7 @@ import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.ScreenitDateTextField;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.DocumentTemplateTestWrapper;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.DocumentTemplateTestenFieldsPanel;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.util.TestBsnGenerator;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 
@@ -141,7 +141,7 @@ public class ClientFieldsFragment extends Fragment
 			@Override
 			public void onClick(final AjaxRequestTarget target)
 			{
-				GbaPersoon persoon = (GbaPersoon) ClientFieldsFragment.this.getDefaultModelObject();
+				Persoon persoon = (Persoon) ClientFieldsFragment.this.getDefaultModelObject();
 				persoon.setBsn(TestBsnGenerator.getValideBsn());
 				target.add(bsnField);
 			}

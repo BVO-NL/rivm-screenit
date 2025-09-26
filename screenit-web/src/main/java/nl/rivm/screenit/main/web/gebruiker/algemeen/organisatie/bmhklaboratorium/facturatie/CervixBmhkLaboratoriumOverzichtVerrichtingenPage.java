@@ -48,8 +48,8 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieBehee
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatiePaspoortPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Organisatie_;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.cervix.CervixLabformulier_;
 import nl.rivm.screenit.model.cervix.CervixMonster;
@@ -365,9 +365,9 @@ public class CervixBmhkLaboratoriumOverzichtVerrichtingenPage extends Organisati
 
 		List<IColumn<CervixBoekRegel, String>> columns = new ArrayList<>();
 		columns.add(new PropertyColumn<>(Model.of("Screeningsorganisatie"), propertyChain(REGIO_PROPERTY, Organisatie_.NAAM), propertyChain(REGIO_PROPERTY, Organisatie_.NAAM)));
-		columns.add(new ClientColumn<>(propertyChain(PERSOON_PROPERTY, GbaPersoon_.ACHTERNAAM), propertyChain(CervixBoekRegel_.VERRICHTING, CervixVerrichting_.CLIENT)));
-		columns.add(new GeboortedatumColumn<>(propertyChain(PERSOON_PROPERTY, GbaPersoon_.GEBOORTEDATUM), PERSOON_PROPERTY));
-		columns.add(new PropertyColumn<>(Model.of("BSN"), propertyChain(PERSOON_PROPERTY, GbaPersoon_.BSN), propertyChain(PERSOON_PROPERTY, GbaPersoon_.BSN)));
+		columns.add(new ClientColumn<>(propertyChain(PERSOON_PROPERTY, Persoon_.ACHTERNAAM), propertyChain(CervixBoekRegel_.VERRICHTING, CervixVerrichting_.CLIENT)));
+		columns.add(new GeboortedatumColumn<>(propertyChain(PERSOON_PROPERTY, Persoon_.GEBOORTEDATUM), PERSOON_PROPERTY));
+		columns.add(new PropertyColumn<>(Model.of("BSN"), propertyChain(PERSOON_PROPERTY, Persoon_.BSN), propertyChain(PERSOON_PROPERTY, Persoon_.BSN)));
 		columns.add(
 			new PropertyColumn<>(Model.of("Monster-id"), propertyChain(MONSTER_PROPERTY, CervixMonster_.MONSTER_ID), propertyChain(MONSTER_PROPERTY, CervixMonster_.MONSTER_ID)));
 		columns.add(new EnumPropertyColumn<>(Model.of("Type verrichting"), propertyChain(CervixBoekRegel_.VERRICHTING, CervixVerrichting_.TYPE),

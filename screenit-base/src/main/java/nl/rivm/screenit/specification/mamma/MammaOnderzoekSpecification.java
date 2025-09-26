@@ -43,8 +43,8 @@ import nl.rivm.screenit.model.Brief_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Dossier_;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
@@ -303,7 +303,7 @@ public class MammaOnderzoekSpecification
 		);
 	}
 
-	private static Join<Client, GbaPersoon> persoonJoin(From<?, MammaOnderzoek> r)
+	private static Join<Client, Persoon> persoonJoin(From<?, MammaOnderzoek> r)
 	{
 		var rondeJoin = screeningRondeJoin(r);
 		var dossierJoin = join(rondeJoin, MammaScreeningRonde_.dossier);

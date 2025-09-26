@@ -21,39 +21,26 @@ package nl.rivm.screenit.model.verwerkingverslag.cervix;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
+@Getter
+@Setter
 @Entity
 @Table(schema = "cervix")
 public class CervixZasVersturenRapportageProjectEntry extends AbstractHibernateObject
 {
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private ProjectGroep projectGroep;
 
+	@Column(nullable = false)
 	private Long aantal;
-
-	public ProjectGroep getProjectGroep()
-	{
-		return projectGroep;
-	}
-
-	public void setProjectGroep(ProjectGroep projectGroep)
-	{
-		this.projectGroep = projectGroep;
-	}
-
-	public Long getAantal()
-	{
-		return aantal;
-	}
-
-	public void setAantal(Long aantal)
-	{
-		this.aantal = aantal;
-	}
 }

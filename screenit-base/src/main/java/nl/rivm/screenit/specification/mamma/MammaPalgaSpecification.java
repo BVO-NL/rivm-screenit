@@ -33,8 +33,8 @@ import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.Bezwaar_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.GbaPersoon_;
+import nl.rivm.screenit.model.Persoon;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.batch.popupconfig.MammaPalgaExportConfig;
 import nl.rivm.screenit.model.batch.popupconfig.MammaPalgaExportGewensteUitslag;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -123,15 +123,15 @@ public class MammaPalgaSpecification
 		}
 	}
 
-	public static Specification<Client> heeftPalgaPatid3Voorwaarden(GbaPersoon persoon)
+	public static Specification<Client> heeftPalgaPatid3Voorwaarden(Persoon persoon)
 	{
 		return (r, q, cb) ->
 		{
 			var persoonJoin = join(r, Client_.persoon);
 			join(r, Client_.mammaDossier);
 			return cb.and(
-				cb.equal(persoonJoin.get(GbaPersoon_.geboortedatum), persoon.getGeboortedatum()),
-				cb.like(persoonJoin.get(GbaPersoon_.achternaam), getWildcardAchternaam(persoon.getAchternaam())));
+				cb.equal(persoonJoin.get(Persoon_.geboortedatum), persoon.getGeboortedatum()),
+				cb.like(persoonJoin.get(Persoon_.achternaam), getWildcardAchternaam(persoon.getAchternaam())));
 		};
 	}
 

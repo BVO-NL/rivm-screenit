@@ -30,6 +30,9 @@ import {useSelector} from "react-redux"
 import MijnBevolkingsOnderzoekLogo from "../../scss/media/MijnBevolkingsOnderzoekLogo"
 import {State} from "../../datatypes/State"
 import {getContactUrl} from "../../utils/UrlUtil"
+import datadogService from "../../services/DatadogService"
+import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
+import {BevolkingsonderzoekNaam} from "../../datatypes/Bevolkingsonderzoek"
 
 const NavigationComponent = () => {
 	const [sticky, setSticky] = useState(true)
@@ -48,6 +51,11 @@ const NavigationComponent = () => {
 
 	const hideNavbar = () => setTimeout(() => setExpanded(false), 200)
 
+	const hideNavbarEnStuurDatadogEvent = (itemName: string) => {
+		datadogService.stuurEvent("menuItemGeklikt", AnalyticsCategorie.MENUBALK, {naam: itemName})
+		hideNavbar()
+	}
+
 	return (
 		<Navbar expand={"lg"} expanded={expanded}
 				className={classNames(styles.navBar, "justify-content-between", sticky ? "sticky-top" : "fixed-top", !sticky && styles.navBarFixed)}>
@@ -65,7 +73,7 @@ const NavigationComponent = () => {
 							<NavigationLinkComponent url={"/mamma"}
 													 text={"Borstkanker"}
 													 bold={true}
-													 onClick={hideNavbar}/>
+													 onClick={() => hideNavbarEnStuurDatadogEvent(BevolkingsonderzoekNaam.MAMMA)}/>
 						</NavItem>
 					}
 					{landingOverzicht.behoortTotCervixDoelgroep &&
@@ -73,7 +81,7 @@ const NavigationComponent = () => {
 							<NavigationLinkComponent url={"/cervix"}
 													 text={"Baarmoederhalskanker"}
 													 bold={true}
-													 onClick={hideNavbar}/>
+													 onClick={() => hideNavbarEnStuurDatadogEvent(BevolkingsonderzoekNaam.CERVIX)}/>
 						</NavItem>
 					}
 					{landingOverzicht.behoortTotColonDoelgroep &&
@@ -81,19 +89,20 @@ const NavigationComponent = () => {
 							<NavigationLinkComponent url={"/colon"}
 													 text={"Darmkanker"}
 													 bold={true}
-													 onClick={hideNavbar}/>
+													 onClick={() => hideNavbarEnStuurDatadogEvent(BevolkingsonderzoekNaam.COLON)}/>
 						</NavItem>
 					}
 					<NavItem>
 						<NavigationLinkComponent url={"/profiel"}
 												 text={"Mijn profiel"}
 												 bold={false}
-												 onClick={hideNavbar}/>
+												 onClick={() => hideNavbarEnStuurDatadogEvent("mijn_profiel")}/>
 					</NavItem>
 					<NavItem>
 						<NavigationLinkComponent url={getContactUrl(regio)}
 												 text={"Contact"}
-												 bold={false}/>
+												 bold={false}
+												 onClick={() => hideNavbarEnStuurDatadogEvent("contact")}/>
 					</NavItem>
 
 					{<div className={styles.clientLogout}>

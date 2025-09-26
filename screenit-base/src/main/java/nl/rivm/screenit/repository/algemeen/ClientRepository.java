@@ -24,15 +24,8 @@ package nl.rivm.screenit.repository.algemeen;
 import java.util.List;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon_;
-import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.mamma.MammaTehuis;
 import nl.rivm.screenit.repository.BaseJpaRepository;
-
-import org.springframework.data.jpa.domain.Specification;
-
-import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
 public interface ClientRepository extends BaseJpaRepository<Client>
 {

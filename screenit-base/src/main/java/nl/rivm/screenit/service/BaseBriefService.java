@@ -34,6 +34,7 @@ import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.BriefDefinitie;
+import nl.rivm.screenit.model.BriefDefinitiesFilter;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.MailMergeContext;
@@ -42,7 +43,6 @@ import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.algemeen.AlgemeneBrief;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
-import nl.rivm.screenit.model.batch.BvoZoekCriteria;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixRegioBrief;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -57,7 +57,7 @@ public interface BaseBriefService
 {
 	BriefDefinitie getNieuwsteBriefDefinitie(BriefType briefType);
 
-	List<BriefDefinitie> getBriefDefinities(BvoZoekCriteria briefType, Comparator<BriefType> comparator);
+	List<BriefDefinitie> getBriefDefinities(BriefDefinitiesFilter briefType, Comparator<BriefType> comparator);
 
 	void saveBriefDefinitie(BriefDefinitie definitie, File uploadFile, String contentType, String filename) throws IOException;
 

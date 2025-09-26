@@ -28,14 +28,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
+import nl.rivm.screenit.model.mamma.enums.MammaFactorType;
 import nl.rivm.screenit.util.BigDecimalUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.search.column.HibernateCheckBoxListContainer;
@@ -47,28 +46,24 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 public class MammaBlokMetAfsprakenPanel extends GenericPanel<MammaCapaciteitBlok>
 {
-
-	private static final long serialVersionUID = 1L;
-
 	@SpringBean
 	private HibernateService hibernateService;
 
 	public MammaBlokMetAfsprakenPanel(String id, IModel<MammaCapaciteitBlok> model, HibernateCheckBoxListContainer<MammaAfspraak> selectedAfspraken, LocalDate currentDay,
-		BootstrapDialog dialog, boolean magVerzetten, boolean magBulkVerzetten)
+		boolean magVerzetten, boolean magBulkVerzetten)
 	{
 		super(id, model);
 
 		MammaCapaciteitBlok capaciteitBlok = model.getObject();
 		hibernateService.reload(capaciteitBlok);
 
-		ScreeningOrganisatie screeningOrganisatie = (ScreeningOrganisatie) HibernateHelper
-			.deproxy(capaciteitBlok.getScreeningsEenheid().getBeoordelingsEenheid().getParent().getRegio());
-		MammaCapaciteitBlokType blokType = capaciteitBlok.getBlokType();
-		BigDecimal factor = blokType.getFactorType().getFactor(screeningOrganisatie);
+		ScreeningOrganisatie screeningOrganisatie = (ScreeningOrganisatie) Hibernate.unproxy(capaciteitBlok.getScreeningsEenheid().getBeoordelingsEenheid().getParent().getRegio());
+		BigDecimal factor = MammaFactorType.GEEN.getFactor(screeningOrganisatie);
 
 		BigDecimal vrijeCapaciteitRegulier = capaciteitBlok.getVrijeCapaciteit();
 		BigDecimal beschikbareCapaciteitRegulier = capaciteitBlok.getBeschikbareCapaciteit();
@@ -86,16 +81,9 @@ public class MammaBlokMetAfsprakenPanel extends GenericPanel<MammaCapaciteitBlok
 		blok.add(new Label("vrijeCapaciteit", vrijeCapaciteit.setScale(1, RoundingMode.HALF_UP).toString()));
 		blok.add(new Label("beschikbareCapaciteit", BigDecimalUtil.decimalToString(beschikbareCapaciteit, 1)));
 
-		WebMarkupContainer regulier = new WebMarkupContainer("regulier");
-		regulier.setVisible(blokType != MammaCapaciteitBlokType.REGULIER);
-		blok.add(regulier);
-		regulier.add(new Label("vrijeCapaciteitRegulier", vrijeCapaciteitRegulier.setScale(1, RoundingMode.HALF_UP).toString()));
-		regulier.add(new Label("beschikbareCapaciteitRegulier", BigDecimalUtil.decimalToString(beschikbareCapaciteitRegulier, 1)));
-
 		List<MammaAfspraak> afspraken = capaciteitBlok.getAfspraken().stream().filter(mammaAfspraak -> mammaAfspraak.getStatus().equals(MammaAfspraakStatus.GEPLAND))
 			.sorted(Comparator.comparing(MammaAfspraak::getVanaf)).collect(Collectors.toList());
-		magBulkVerzetten &= !blokType.equals(MammaCapaciteitBlokType.TEHUIS);
 		blok.add(new MammaAfsprakenBlokPanel("afspraken", ModelUtil.listRModel(afspraken), selectedAfspraken, currentDay, magVerzetten, magBulkVerzetten));
-		blok.add(new AttributeModifier("class", " mamma-blok-met-afspraken-" + blokType.name().toLowerCase()));
+		blok.add(new AttributeModifier("class", " mamma-blok-met-afspraken-regulier"));
 	}
 }

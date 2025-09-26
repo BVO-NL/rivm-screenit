@@ -24,8 +24,8 @@ package nl.rivm.screenit.service.impl;
 import java.math.BigDecimal;
 
 import nl.rivm.screenit.model.BagAdres;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.PostcodeCoordinaten;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.repository.algemeen.GemeenteRepository;
@@ -58,7 +58,7 @@ public class CoordinatenServiceImpl implements CoordinatenService
 	private GemeenteRepository gemeenteRepository;
 
 	@Override
-	public PersoonCoordinaten getCoordinatenVanPersoon(GbaPersoon persoon)
+	public PersoonCoordinaten getCoordinatenVanPersoon(Persoon persoon)
 	{
 		BagAdres gbaAdres = persoon.getGbaAdres();
 		TijdelijkAdres tijdelijkAdres = persoon.getTijdelijkAdres();
@@ -136,7 +136,7 @@ public class CoordinatenServiceImpl implements CoordinatenService
 	}
 
 	@Override
-	public PersoonCoordinaten getAdresEnTijdelijkAdresCoordinatenVanPersoon(GbaPersoon persoon)
+	public PersoonCoordinaten getAdresEnTijdelijkAdresCoordinatenVanPersoon(Persoon persoon)
 	{
 		BagAdres gbaAdres = persoon.getGbaAdres();
 		TijdelijkAdres tijdelijkAdres = persoon.getTijdelijkAdres();

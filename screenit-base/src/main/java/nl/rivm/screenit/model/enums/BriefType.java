@@ -980,6 +980,9 @@ public enum BriefType
 	public static final List<BriefType> CLIENT_BEZWAAR_BRIEVEN = Stream.concat(CLIENT_BEZWAAR_AANVRAAG_BRIEVEN.stream(), CLIENT_BEZWAAR_BEVESTIGING_BRIEVEN.stream())
 		.collect(Collectors.toList());
 
+	public static List<BriefType> ALGEMENE_BRIEVEN = List.of(BriefType.CLIENT_INZAGE_PERSOONSGEGEVENS_AANVRAAG, BriefType.CLIENT_INZAGE_PERSOONSGEGEVENS_HANDTEKENING,
+		BriefType.CLIENT_SIGNALERING_GENDER);
+
 	@Getter
 	private final Bevolkingsonderzoek[] onderzoeken;
 
@@ -1032,18 +1035,24 @@ public enum BriefType
 
 	public static List<BriefType> getBriefTypes(Bevolkingsonderzoek... onderzoeken)
 	{
-		return getBriefTypes(false, onderzoeken);
+		return getBriefTypes(false, true, onderzoeken);
 	}
 
-	public static List<BriefType> getBriefTypes(boolean exactMatch, Bevolkingsonderzoek... bvoFilter)
+	public static List<BriefType> getBriefTypes(boolean exactMatch, Bevolkingsonderzoek... onderzoeken)
+	{
+		return getBriefTypes(false, true, onderzoeken);
+	}
+
+	public static List<BriefType> getBriefTypes(boolean exactMatch, boolean ookInactieveTonen, Bevolkingsonderzoek... onderzoeken)
 	{
 		List<BriefType> briefTypes = new ArrayList<>();
 
-		List<Bevolkingsonderzoek> filterBvos = new ArrayList<>(Arrays.asList(bvoFilter));
+		var filterBvos = new ArrayList<>(Arrays.asList(onderzoeken));
 		Collections.sort(filterBvos);
-		for (BriefType type : values())
+		var types = Stream.of(values()).filter(type -> ookInactieveTonen || type.isActief()).toList();
+		for (var type : types)
 		{
-			List<Bevolkingsonderzoek> briefTypeBvos = new ArrayList<>(Arrays.asList(type.getOnderzoeken()));
+			var briefTypeBvos = new ArrayList<>(Arrays.asList(type.getOnderzoeken()));
 			Collections.sort(briefTypeBvos);
 			if (!exactMatch && !CollectionUtils.intersection(briefTypeBvos, filterBvos).isEmpty() || 
 				exactMatch && briefTypeBvos.equals(filterBvos))

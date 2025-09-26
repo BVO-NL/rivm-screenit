@@ -89,7 +89,6 @@ import nl.rivm.screenit.model.logging.NieuweIFobtAanvraagLogEvent;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaAfspraakReservering;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
-import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaUitstel;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
@@ -622,7 +621,7 @@ public class ClientContactServiceImpl implements ClientContactService
 		var dossier = nieuweAfspraak.getUitnodiging().getScreeningRonde().getDossier();
 		var capaciteitBlok = nieuweAfspraak.getCapaciteitBlok();
 		var nieuweVanaf = nieuweAfspraak.getVanaf();
-		if (clientOfAfspraakVanafMagNietInCapaciteitBlok(dossier, capaciteitBlok, nieuweVanaf))
+		if (clientOfAfspraakVanafMagNietInCapaciteitBlok(capaciteitBlok, nieuweVanaf))
 		{
 			LOG.trace("isAfspraakTijdBezet: Valt buiten blok/type");
 			return true;
@@ -664,10 +663,9 @@ public class ClientContactServiceImpl implements ClientContactService
 			.anyMatch(reservering -> reservering.getVanaf().equals(DateUtil.toLocalDateTime(nieuweVanaf)));
 	}
 
-	private boolean clientOfAfspraakVanafMagNietInCapaciteitBlok(MammaDossier dossier, MammaCapaciteitBlok capaciteitBlok, Date nieuweVanaf)
+	private boolean clientOfAfspraakVanafMagNietInCapaciteitBlok(MammaCapaciteitBlok capaciteitBlok, Date nieuweVanaf)
 	{
-		return dossier.getTehuis() != null && !capaciteitBlok.getBlokType().equals(MammaCapaciteitBlokType.TEHUIS)
-			|| dossier.getTehuis() == null && !capaciteitBlok.getBlokType().equals(MammaCapaciteitBlokType.REGULIER)
+		return capaciteitBlok.getBlokType() == MammaCapaciteitBlokType.GEEN_SCREENING
 			|| DateUtil.compareBefore(nieuweVanaf, capaciteitBlok.getVanaf())
 			|| !DateUtil.compareBefore(nieuweVanaf, capaciteitBlok.getTot());
 	}

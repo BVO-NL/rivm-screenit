@@ -82,6 +82,7 @@ import nl.rivm.screenit.mamma.planning.service.PlanningConceptmodelService;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningDoorrekenenManager;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningWijzigingen;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
+import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.model.mamma.enums.MammaPlanningStatus;
 import nl.rivm.screenit.repository.algemeen.ScreeningOrganisatieRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -814,7 +815,7 @@ public class PlanningConceptmodelServiceImpl implements PlanningConceptmodelServ
 				{
 					var screeningsEenheid = PlanningScreeningsEenheidIndex.get(afspraakProjectie.getScreeningsEenheidId());
 					var dag = screeningsEenheid.getDagNavigableMap().get(toLocalDate(afspraakProjectie.getAfspraakMoment()));
-					dag.getBeschikbaar().add(planningClient.getGebruikteCapaciteit(screeningsEenheid.getScreeningsOrganisatie()), planningClient.getBlokType());
+					dag.getBeschikbaar().add(planningClient.getGebruikteCapaciteit(screeningsEenheid.getScreeningsOrganisatie()), MammaCapaciteitBlokType.SCREENING);
 				}
 			}
 		}

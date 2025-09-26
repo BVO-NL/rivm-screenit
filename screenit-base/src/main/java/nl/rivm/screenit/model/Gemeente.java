@@ -60,6 +60,7 @@ public class Gemeente extends AbstractHibernateObject implements GbaStamtabel, I
 	@Column(unique = true, nullable = false)
 	private String code;
 
+	@Column(nullable = false)
 	private String naam;
 
 	@Temporal(TemporalType.DATE)

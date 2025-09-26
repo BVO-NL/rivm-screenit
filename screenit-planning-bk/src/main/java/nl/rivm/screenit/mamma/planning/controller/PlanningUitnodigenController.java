@@ -119,16 +119,15 @@ public class PlanningUitnodigenController
 
 	private static boolean teSelecteren(PlanningClient client, PlanningUitnodigingContext context, int uitnodigenTotEnMetJaar, PlanningPostcodeReeksRegio postcodeReeksRegio)
 	{
-		var tehuisClient = client.getTehuis() != null;
 		var oudGenoeg = client.getUitnodigenVanafJaar() <= uitnodigenTotEnMetJaar;
 		var jongGenoeg = client.getUitnodigenTotEnMetJaar() >= uitnodigenVanafJaar
-			|| client.getDoelgroep() != MammaDoelgroep.MINDER_VALIDE && !tehuisClient && isUitgenodigdVorigJaar(postcodeReeksRegio.getClientSet());
+			|| client.getDoelgroep() != MammaDoelgroep.MINDER_VALIDE && !client.inTehuis() && isUitgenodigdVorigJaar(postcodeReeksRegio.getClientSet());
 		var mammografieMogelijk = client.getLaatsteMammografieAfgerondDatum() == null
 			|| client.getLaatsteMammografieAfgerondDatum().plusDays(context.minimaleIntervalMammografieOnderzoeken).isBefore(PlanningConstanten.prognoseVanafDatum);
 		var uitnodigenMogelijk = client.getVorigeScreeningRondeCreatieDatum() == null
 			|| client.getVorigeScreeningRondeCreatieDatum().plusDays(context.minimaleIntervalUitnodigingen).isBefore(PlanningConstanten.prognoseVanafDatum);
 		var geenActiefUitstel = client.getUitstelStandplaats() == null;
-		var clientSpecifiekUitnodigenViaInterval = client.isSuspectOfHoogRisico() && !tehuisClient;
+		var clientSpecifiekUitnodigenViaInterval = client.isSuspectOfHoogRisico() && !client.inTehuis();
 
 		return oudGenoeg && jongGenoeg && uitnodigenMogelijk && geenActiefUitstel && !clientSpecifiekUitnodigenViaInterval
 			&& (client.isUitgenodigdHuidigeStandplaatsRonde() || mammografieMogelijk);
@@ -708,7 +707,7 @@ public class PlanningUitnodigenController
 				}
 			}
 
-			if (client.getTehuis() != null)
+			if (client.inTehuis())
 			{
 				totaalTehuis++;
 				if (uitTeNodigen(client))

@@ -36,11 +36,12 @@ import properties from "./MammaAfspraakMakenWizardModuleProperties.json"
 import {ArrowType} from "../../../../../../components/vectors/ArrowIconComponent"
 import {maakAfspraak} from "../../../../../../api/MammaAfspraakMakenThunkAction"
 import {AfspraakBevestigingOpties} from "../../../../../../datatypes/mamma/AfspraakBevestigingOpties"
-import {datadogRum} from "@datadog/browser-rum"
 import {useSelector} from "react-redux"
 import {State} from "../../../../../../datatypes/State"
 import {showToast} from "../../../../../../utils/ToastUtil"
 import {ToastMessageType} from "../../../../../../datatypes/toast/ToastMessage"
+import datadogService from "../../../../../../services/DatadogService"
+import {AnalyticsCategorie} from "../../../../../../datatypes/AnalyticsCategorie"
 
 export type MammaAfspraakMakenPopupProps = {
 	afspraak: KandidaatAfspraak,
@@ -59,11 +60,15 @@ const MammaAfspraakMakenPopup = (props: MammaAfspraakMakenPopupProps) => {
 	const client = useSelector((state: State) => state.client)
 
 	const afspraakMaken = () => {
-		datadogRum.addAction("mammaAfspraakOptieBevestigd", {
-			"client": client.persoon.id,
-			"datumTijd": formatDateTime(kandidaatAfspraak.datumTijd),
-			"standplaatsPeriode": kandidaatAfspraak.standplaatsPeriodeId,
-		})
+		datadogService.stuurEvent(
+			"mammaAfspraakOptieBevestigd",
+			AnalyticsCategorie.MAMMA_AFSPRAAK,
+			{
+				client: client.persoon.id,
+				datumTijd: formatDateTime(kandidaatAfspraak.datumTijd),
+				standplaatsPeriode: kandidaatAfspraak.standplaatsPeriodeId,
+			},
+		)
 
 		dispatch(maakAfspraak(bvo, kandidaatAfspraak)).then(
 			(response) => {
@@ -80,12 +85,16 @@ const MammaAfspraakMakenPopup = (props: MammaAfspraakMakenPopupProps) => {
 	}
 
 	const andereAfspraakKiezen = () => {
-		datadogRum.addAction("mammaAfspraakAndereOptieZoeken", {
-			"client": client.persoon.id,
-			"datumTijd": formatDateTime(kandidaatAfspraak.datumTijd),
-			"standplaatsPeriode": kandidaatAfspraak.standplaatsPeriodeId,
-			"redenTijdNietMeerBeschikbaar": !props.isBevestigingsPopup,
-		})
+		datadogService.stuurEvent(
+			"mammaAfspraakAndereOptieZoeken",
+			AnalyticsCategorie.MAMMA_AFSPRAAK,
+			{
+				client: client.persoon.id,
+				datumTijd: formatDateTime(kandidaatAfspraak.datumTijd),
+				standplaatsPeriode: kandidaatAfspraak.standplaatsPeriodeId,
+				redenTijdNietMeerBeschikbaar: !props.isBevestigingsPopup,
+			},
+		)
 		props.onAndereAfspraakKiezen()
 	}
 

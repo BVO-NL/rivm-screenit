@@ -22,18 +22,29 @@ package nl.rivm.screenit.main.web.gebruiker.gedeeld.brievenafdrukken;
  */
 
 import nl.rivm.screenit.PreferenceKey;
+import nl.rivm.screenit.main.service.cervix.CervixHuisartsService;
+import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.UploadDocument;
+import nl.rivm.screenit.model.cervix.CervixRegioMergedBrieven;
+import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.repository.algemeen.MergedBrievenRepository;
+import nl.rivm.screenit.service.ICurrentDateSupplier;
+import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.util.EnumStringUtil;
 import nl.topicuszorg.documentupload.wicket.UploadDocumentLink;
 import nl.topicuszorg.documentupload.wicket.UploadDocumentPdfObjectContainer;
+import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-public class MergedBrievenPrintPanel<MB extends MergedBrieven<?>> extends GenericPanel<MB>
+public abstract class MergedBrievenPrintPanel<MB extends MergedBrieven<?>> extends GenericPanel<MB>
 {
 
 	@SpringBean(name = "testModus")
@@ -41,6 +52,18 @@ public class MergedBrievenPrintPanel<MB extends MergedBrieven<?>> extends Generi
 
 	@SpringBean
 	private SimplePreferenceService preferenceService;
+
+	@SpringBean
+	private ICurrentDateSupplier currentDateSupplier;
+
+	@SpringBean
+	private MergedBrievenRepository mergedBrievenRepository;
+
+	@SpringBean
+	private CervixHuisartsService cervixHuisartsService;
+
+	@SpringBean
+	private LogService logService;
 
 	public MergedBrievenPrintPanel(String id, IModel<MB> model)
 	{
@@ -51,7 +74,45 @@ public class MergedBrievenPrintPanel<MB extends MergedBrieven<?>> extends Generi
 		var pdfObjectContainer = new UploadDocumentPdfObjectContainer("pdfObject", mergedBrievenModel);
 		add(pdfObjectContainer);
 		var toonTestUiElementen = preferenceService.getBoolean(PreferenceKey.TOON_TEST_ELEMENTEN.name(), false);
-		add(new UploadDocumentLink("downloadPdf", mergedBrievenModel, true)
-			.setVisible(testModus && toonTestUiElementen));
+		add(new UploadDocumentLink("downloadPdf", mergedBrievenModel, true).setVisible(testModus && toonTestUiElementen));
+		add(new AjaxLink<>("afdrukken")
+		{
+			@Override
+			public void onClick(AjaxRequestTarget target)
+			{
+				var mergedBrieven = model.getObject();
+				if (mergedBrieven.getGeprint().equals(Boolean.FALSE))
+				{
+					mergedBrieven.setGeprint(true);
+					mergedBrieven.setPrintDatum(currentDateSupplier.getDate());
+					mergedBrieven.setAfgedruktDoor(ScreenitSession.get().getIngelogdeOrganisatieMedewerker().getMedewerker());
+					if (HibernateHelper.deproxy(mergedBrieven) instanceof CervixRegioMergedBrieven)
+					{
+						cervixHuisartsService.updateLabformulierAanvraag((CervixRegioMergedBrieven) mergedBrieven);
+					}
+				}
+				mergedBrievenRepository.save(model.getObject());
+				logAction(mergedBrieven);
+				sluiten(target);
+			}
+		}.setVisible(model.getObject().getGeprint().equals(Boolean.FALSE)));
 	}
+
+	private void logAction(MergedBrieven mergedBrieven)
+	{
+		var melding = "Document afgedrukt met type: ";
+		if (mergedBrieven.getBriefType() == null)
+		{
+			melding += "ProjectBrief";
+		}
+		else
+		{
+			melding += EnumStringUtil.getPropertyString(mergedBrieven.getBriefType());
+		}
+		logService.logGebeurtenis(LogGebeurtenis.BRIEF_AFGEDRUKT, ScreenitSession.get().getIngelogdAccount(), melding,
+			mergedBrieven.getBriefType() != null ? mergedBrieven.getBriefType().getOnderzoeken() : null);
+	}
+
+	protected abstract void sluiten(AjaxRequestTarget target);
+
 }

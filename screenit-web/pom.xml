@@ -421,6 +421,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>ca.uhn.hapi</groupId>
+            <artifactId>hapi-hl7overhttp</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

@@ -21,6 +21,12 @@ package nl.rivm.screenit.batch.jobs.brieven.genereren;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
+
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.BagAdres_;
@@ -28,19 +34,13 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.ClientBrief_;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Gemeente;
+import nl.rivm.screenit.model.Persoon;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.topicuszorg.organisatie.model.Adres_;
 
 import org.springframework.data.jpa.domain.Specification;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Root;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.heeftScreeningsOrganisatieId;
@@ -79,10 +79,10 @@ public abstract class AbstractBrievenGenererenReader<B extends ClientBrief<?, ?,
 		return Object[].class;
 	}
 
-	private Join<GbaPersoon, BagAdres> adresJoin(From<?, ? extends B> r)
+	private Join<Persoon, BagAdres> adresJoin(From<?, ? extends B> r)
 	{
 		var persoonJoin = join(clientJoin(r), Client_.persoon);
-		return join(persoonJoin, GbaPersoon_.gbaAdres);
+		return join(persoonJoin, Persoon_.gbaAdres);
 	}
 
 	protected Join<? extends B, Client> clientJoin(From<?, ? extends B> r)

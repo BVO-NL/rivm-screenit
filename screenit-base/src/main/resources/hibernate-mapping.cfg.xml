@@ -58,7 +58,7 @@
         <mapping class="nl.rivm.screenit.model.TijdelijkAdres"/>
         <mapping class="nl.rivm.screenit.model.TijdelijkGbaAdres"/>
         <mapping class="nl.rivm.screenit.model.BagAdres"/>
-        <mapping class="nl.rivm.screenit.model.GbaPersoon"/>
+        <mapping class="nl.rivm.screenit.model.Persoon"/>
         <mapping class="nl.rivm.screenit.model.PostcodeCoordinaten"/>
 
         <mapping class="nl.rivm.screenit.model.BriefDefinitie"/>
@@ -67,8 +67,6 @@
         <mapping class="nl.rivm.screenit.model.MergedBrieven"/>
 
         <mapping class="nl.rivm.screenit.model.gba.GbaMutatie"/>
-        <mapping class="nl.rivm.screenit.model.gba.Land"/>
-        <mapping class="nl.rivm.screenit.model.gba.Nationaliteit"/>
         <mapping class="nl.rivm.screenit.model.gba.GbaVerwerkingsLog"/>
         <mapping class="nl.rivm.screenit.model.gba.GbaVerwerkingEntry"/>
         <mapping class="nl.rivm.screenit.model.gba.GbaFoutRegel"/>
@@ -145,7 +143,6 @@
         <mapping class="nl.rivm.screenit.model.colon.IFOBTUitslag"/>
         <mapping class="nl.rivm.screenit.model.colon.IFOBTBestand"/>
         <mapping class="nl.rivm.screenit.model.colon.ColonMergedBrieven"/>
-        <mapping class="nl.rivm.screenit.model.colon.AntedateerRange"/>
         <mapping class="nl.rivm.screenit.model.colon.OpenUitnodiging"/>
         <mapping class="nl.rivm.screenit.model.colon.ColonKoppelresultaatKankerregistratie"/>
         <mapping class="nl.rivm.screenit.model.colon.ColonUitnodigingsinterval"/>

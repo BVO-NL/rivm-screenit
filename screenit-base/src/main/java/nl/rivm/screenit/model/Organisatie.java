@@ -101,6 +101,7 @@ public class Organisatie extends AbstractHibernateObject implements IActief
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private Adres antwoordnummerAdres;
 
+	@Column(nullable = false)
 	private Boolean actief = Boolean.TRUE;
 
 	@Column(length = HibernateMagicNumber.L20)

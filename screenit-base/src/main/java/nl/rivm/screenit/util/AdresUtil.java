@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.TijdelijkGbaAdres;
 import nl.rivm.screenit.model.cervix.CervixHuisartsAdres;
@@ -52,7 +52,7 @@ public final class AdresUtil
 
 	}
 
-	public static String getVolledigeGbaAdresString(GbaPersoon persoon)
+	public static String getVolledigeGbaAdresString(Persoon persoon)
 	{
 		Adres adres = persoon.getGbaAdres();
 
@@ -228,12 +228,12 @@ public final class AdresUtil
 		return straatString.toString();
 	}
 
-	public static boolean isTijdelijkAdres(GbaPersoon persoon, LocalDate date)
+	public static boolean isTijdelijkAdres(Persoon persoon, LocalDate date)
 	{
 		return getAdres(persoon, date) instanceof TijdelijkAdres;
 	}
 
-	public static Adres getAdres(GbaPersoon persoon, LocalDate date)
+	public static Adres getAdres(Persoon persoon, LocalDate date)
 	{
 		Adres adres;
 		var tijdelijkAdres = persoon.getTijdelijkAdres();

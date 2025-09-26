@@ -29,6 +29,8 @@ import SpanWithHtml from "../span/SpanWithHtml"
 import HintComponent from "../hint/HintComponent"
 import properties from "./InleidingComponent.json"
 import {getString} from "../../utils/TekstPropertyUtil"
+import datadogService from "../../services/DatadogService"
+import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 
 export type InleidingComponentProps = {
 	bvoNaam: string,
@@ -55,7 +57,8 @@ const InleidingComponent = (props: InleidingComponentProps) => {
 			</div>
 			{props.hintTekst && <HintComponent><SpanWithHtml value={props.hintTekst}/></HintComponent>}
 			{props.volgendeUitnodigingTekst && <SpanWithHtml value={props.volgendeUitnodigingTekst}/>}
-			{props.link && props.linkTekst && <BvoUrlComponent link={props.link} tekst={props.linkTekst}/>}
+			{props.link && props.linkTekst &&
+				<BvoUrlComponent link={props.link} tekst={props.linkTekst} onClick={() => datadogService.stuurEvent("meerInfolinkGeklikt", AnalyticsCategorie.MAMMA)}/>}
 			{props.toonAlgemeneInleidingTekst && <SpanWithHtml className={styles.infoText} value={getString(properties.inleiding_algemeen)}/>}
 		</div>
 	)

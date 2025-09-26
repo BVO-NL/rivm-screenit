@@ -21,8 +21,6 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
@@ -30,44 +28,26 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.hibernate.annotations.Proxy;
 
+@Getter
+@Setter
 @Entity(name = "screenit_titel")
 @Table(schema = "algemeen", indexes = @Index(name = "titel_actiefIndex", columnList = "actief"))
 @Proxy(lazy = true)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Titel extends AbstractHibernateObject implements INaam
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
-
+	@Column(nullable = false)
 	private String titel;
 
 	@Column(nullable = false)
 	private Boolean actief;
-
-	public Boolean getActief()
-	{
-		return this.actief;
-	}
-
-	public void setActief(Boolean actief)
-	{
-		this.actief = actief;
-	}
-
-	public String getTitel()
-	{
-		return this.titel;
-	}
-
-	public void setTitel(String titel)
-	{
-		this.titel = titel;
-	}
 
 	@Override
 	public String getNaam()

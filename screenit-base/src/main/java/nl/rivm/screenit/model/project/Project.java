@@ -88,6 +88,7 @@ public class Project extends AbstractHibernateObject implements INaam, IBevolkin
 	private List<Bevolkingsonderzoek> bevolkingsonderzoeken;
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private GroepSelectieType groepSelectieType;
 
 	@NotAudited

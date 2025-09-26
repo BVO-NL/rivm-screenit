@@ -56,7 +56,7 @@ public enum Aanhef
 		return null;
 	}
 
-	public static Aanhef bepaalJuisteAanhef(GbaPersoon persoon)
+	public static Aanhef bepaalJuisteAanhef(Persoon persoon)
 	{
 		if (persoon.getAanhef() != null)
 		{

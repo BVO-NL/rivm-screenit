@@ -81,7 +81,7 @@ public class MammaDownloadOnderzoekenVerzoek extends AbstractHibernateObject
 	@Cascade(CascadeType.DELETE)
 	private List<MammaDownloadOnderzoek> onderzoeken = new ArrayList<>();
 
-	@Column()
+	@Column
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date gedownloadOp;
 

@@ -22,6 +22,7 @@ package nl.rivm.screenit.model.project;
  */
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
@@ -43,5 +44,6 @@ public class ProjectBestandVerwerkingEntry extends AbstractHibernateObject
 
 	private Integer regelNummer;
 
+	@Column(nullable = false)
 	private String melding;
 }

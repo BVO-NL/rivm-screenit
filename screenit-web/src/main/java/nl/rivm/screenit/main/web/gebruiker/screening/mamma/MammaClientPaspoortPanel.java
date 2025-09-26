@@ -22,7 +22,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma;
  */
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
@@ -67,7 +67,7 @@ public class MammaClientPaspoortPanel extends GenericPanel<MammaScreeningRonde>
 		add(new Label("mammaDossier.uitgenodigd", dossierService.aantalOproepen(dossier)));
 		add(new Label("mammaDossier.onderzocht", dossierService.aantalOpgekomenBE(dossier)));
 
-		GbaPersoon persoon = client.getPersoon();
+		Persoon persoon = client.getPersoon();
 		add(new Label("dossier.client.persoon.geboortedatum", DateUtil.getGeboortedatum(persoon)));
 		add(new Label("gbaLocatiebeschrijving", AdresUtil.getAdres(persoon.getGbaAdres())));
 		add(new Label("dossier.client.persoon.gbaAdres.postcode"));

@@ -50,6 +50,8 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit.s
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
+import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
+import nl.rivm.screenit.model.mamma.enums.MammaFactorType;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
@@ -178,6 +180,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 				{
 					IModel<PlanningCapaciteitBlokDto> blokModel = new CompoundPropertyModel<>(new PlanningCapaciteitBlokDto());
 					PlanningCapaciteitBlokDto blok = blokModel.getObject();
+					blok.blokType = MammaCapaciteitBlokType.SCREENING;
 					blok.screeningsEenheidId = getModelObject().getId();
 					blok.vanaf = range.getStart();
 					blok.tot = range.getEnd();
@@ -321,7 +324,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 			getThisPage().errorMelding(getString("CapaciteitKalender.eindtijd.minuten.geen.factor.vijf"));
 		}
 
-		Long minimumTijdvak = MammaPlanningUtil.minimumTijdvak(blok.blokType.getFactorType().getFactor(ScreenitSession.get().getScreeningOrganisatie()));
+		Long minimumTijdvak = MammaPlanningUtil.minimumTijdvak(MammaFactorType.GEEN.getFactor(ScreenitSession.get().getScreeningOrganisatie()));
 		if (startTime.plusMinutes(minimumTijdvak.intValue()).isAfter(totTime))
 		{
 			getThisPage().errorMelding(String.format(getString("CapaciteitKalender.starttijd.na.eindtijd"), minimumTijdvak));

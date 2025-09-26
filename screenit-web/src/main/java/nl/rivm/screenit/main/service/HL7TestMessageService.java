@@ -32,7 +32,9 @@ import ca.uhn.hl7v2.llp.LLPException;
 public interface HL7TestMessageService
 {
 
-	ScreenITResponseV251MessageWrapper verstuurIFobtTestBericht(String message) throws LLPException, IOException, HL7Exception;
+	ScreenITResponseV251MessageWrapper verstuurFitTestBerichtMetMLLP(String message) throws LLPException, IOException, HL7Exception;
+
+	ScreenITResponseV251MessageWrapper verstuurFitTestBerichtMetHTTP(String message) throws LLPException, IOException, HL7Exception;
 
 	ScreenITResponseV24MessageWrapper verstuurORMTestBericht(String message) throws LLPException, IOException, HL7Exception;
 

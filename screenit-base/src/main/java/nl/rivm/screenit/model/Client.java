@@ -22,7 +22,6 @@ package nl.rivm.screenit.model;
  */
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -38,8 +37,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -56,7 +53,6 @@ import nl.rivm.screenit.model.gba.GbaVraag;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-import nl.topicuszorg.patientregistratie.persoonsgegevens.model.BsnBron;
 
 import org.hibernate.annotations.Check;
 import org.hibernate.envers.Audited;
@@ -69,7 +65,7 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 @Getter
 @Setter
 @Audited
-@Entity(name = "pat_patient")
+@Entity(name = "client")
 @Table(schema = "gedeeld", indexes = { @Index(name = "IDX_GBASTATUS", columnList = "gbaStatus") })
 @Check(constraints = "reden_intrekken_gba_indicatie_door_bvo = 'NIET_INGETROKKEN' OR gba_status IN ('INDICATIE_AANWEZIG', 'PUNT_ADRES', 'BEZWAAR')")
 public class Client extends AbstractHibernateObject implements Account
@@ -102,7 +98,7 @@ public class Client extends AbstractHibernateObject implements Account
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@NotAudited
-	@JoinTable(schema = "gedeeld", name = "pat_patient_gba_mutaties", joinColumns = { @JoinColumn(name = "pat_patient") })
+	@JoinTable(schema = "gedeeld", name = "client_gba_mutaties", joinColumns = { @JoinColumn(name = "client") })
 	private List<GbaMutatie> gbaMutaties = new ArrayList<>();
 
 	@OneToMany(mappedBy = "client")
@@ -131,7 +127,7 @@ public class Client extends AbstractHibernateObject implements Account
 
 	@OneToMany(fetch = FetchType.LAZY)
 	@NotAudited
-	@JoinTable(schema = "gedeeld", name = "pat_patient_documents", joinColumns = { @JoinColumn(name = "pat_patient") })
+	@JoinTable(schema = "gedeeld", name = "client_documents", joinColumns = { @JoinColumn(name = "client") })
 	private List<UploadDocument> documents;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "client")
@@ -151,22 +147,6 @@ public class Client extends AbstractHibernateObject implements Account
 	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
 	private List<AlgemeneBrief> algemeneBrieven = new ArrayList<>();
 
-	@Column(length = 20)
-	@Deprecated(forRemoval = true)
-	private String patientnummer;
-
-	@Column(length = 255)
-	@Deprecated(forRemoval = true)
-	private String uitgeverPatientnummer;
-
-	@Temporal(TemporalType.DATE)
-	@Deprecated(forRemoval = true)
-	private Date inschrijfdatum;
-
-	@OneToOne(mappedBy = "patient", cascade = CascadeType.ALL)
-	private GbaPersoon persoon;
-
-	@Enumerated(EnumType.STRING)
-	@Deprecated(forRemoval = true)
-	private BsnBron bsnBron;
+	@OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
+	private Persoon persoon;
 }

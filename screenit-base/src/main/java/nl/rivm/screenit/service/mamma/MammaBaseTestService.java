@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
@@ -36,11 +36,11 @@ import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 
 public interface MammaBaseTestService
 {
-	MammaDossier geefDossier(GbaPersoon gbaPersoon);
+	MammaDossier geefDossier(Persoon persoon);
 
-	MammaScreeningRonde geefScreeningRonde(GbaPersoon gbaPersoon);
+	MammaScreeningRonde geefScreeningRonde(Persoon persoon);
 
-	MammaUitnodiging maakUitnodiging(GbaPersoon gbaPersoon, BriefType briefType);
+	MammaUitnodiging maakUitnodiging(Persoon persoon, BriefType briefType);
 
 	void clientReset(Client client, boolean verwijderAlleBerichten);
 
@@ -48,5 +48,5 @@ public interface MammaBaseTestService
 
 	void maakOfVindClient(String bsn, MammaDoelgroep doelgroep, String postcode, BigDecimal deelnamekans, BigDecimal opkomstkans, Date geboortedatum);
 
-	Client maakOfVindClient(GbaPersoon persoon, MammaDoelgroep doelgroep, BigDecimal deelnamekans, BigDecimal opkomstkans, boolean alleenMaken);
+	Client maakOfVindClient(Persoon persoon, MammaDoelgroep doelgroep, BigDecimal deelnamekans, BigDecimal opkomstkans, boolean alleenMaken);
 }

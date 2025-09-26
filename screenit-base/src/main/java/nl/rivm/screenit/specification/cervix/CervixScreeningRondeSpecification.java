@@ -38,7 +38,7 @@ import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.Brief_;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon_;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.ScannedFormulier_;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.ScreeningRonde_;
@@ -78,7 +78,7 @@ public class CervixScreeningRondeSpecification
 			var client = SpecificationUtil.join(dossier, CervixDossier_.client);
 			var persoon = SpecificationUtil.join(client, Client_.persoon);
 
-			return cb.equal(persoon.get(GbaPersoon_.bsn), bsn);
+			return cb.equal(persoon.get(Persoon_.bsn), bsn);
 		};
 	}
 

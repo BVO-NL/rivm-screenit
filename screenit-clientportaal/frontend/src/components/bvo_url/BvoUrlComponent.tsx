@@ -23,13 +23,14 @@ import styles from "./BvoUrlComponent.module.scss"
 
 export type BvoUrlProperties = {
 	link: string
-	tekst: string;
+	tekst: string
+	onClick?: () => void;
 }
 
 export const BvoUrlComponent = (props: BvoUrlProperties) => {
 	return (
 		<div className={styles.infoLinkContainer}>
-			<a href={props.link} target="_blank" rel="noopener noreferrer">
+			<a href={props.link} target="_blank" rel="noopener noreferrer" onClick={props.onClick}>
 				<span>{props.tekst}</span>
 			</a>
 		</div>)

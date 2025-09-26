@@ -30,7 +30,6 @@ import nl.rivm.screenit.edi.model.MedVryOut;
 import nl.rivm.screenit.edi.model.OutboundMessageData;
 import nl.rivm.screenit.edi.service.EdiMessageService;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.HuisartsBericht;
 import nl.rivm.screenit.model.HuisartsBerichtTemplate;
 import nl.rivm.screenit.model.MailMergeContext;
@@ -38,6 +37,7 @@ import nl.rivm.screenit.model.MailVerzenden;
 import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.HuisartsBerichtType;
@@ -47,7 +47,6 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.MailService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.organisatie.model.Adres;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.NaamGebruik;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
@@ -96,15 +95,13 @@ public abstract class EdiServiceBaseImpl
 	{
 		var persoon = huisartsBericht.getClient().getPersoon();
 		var transientPersoon = copyPersoon(persoon);
-		transientPersoon.setBsnControleDatum(currentDateSupplier.getDate());
-		transientPersoon.setBsnGeverifieerd(true);
 		NaamGebruik naamGebruik = transientPersoon.getNaamGebruik();
-		if (naamGebruik != null && NaamGebruik.EIGEN == naamGebruik)
+		if (NaamGebruik.EIGEN == naamGebruik)
 		{
 			transientPersoon.setPartnerAchternaam(null);
 			transientPersoon.setPartnerTussenvoegsel(null);
 		}
-		else if (naamGebruik != null && NaamGebruik.PARTNER == naamGebruik)
+		else if (NaamGebruik.PARTNER == naamGebruik)
 		{
 			if (StringUtils.isNotBlank(transientPersoon.getPartnerAchternaam()))
 			{
@@ -125,11 +122,10 @@ public abstract class EdiServiceBaseImpl
 		medVryOut.setPatient(transientPatient);
 	}
 
-	private GbaPersoon copyPersoon(GbaPersoon persoon)
+	private Persoon copyPersoon(Persoon persoon)
 	{
-		var copyPersoon = new GbaPersoon();
+		var copyPersoon = new Persoon();
 		copyPersoon.setAchternaam(persoon.getAchternaam());
-		persoon.getAdressen().forEach(a -> copyPersoon.getAdressen().add(new Adres(a)));
 		copyPersoon.setBsn(persoon.getBsn());
 		copyPersoon.setEmailadres(persoon.getEmailadres());
 		copyPersoon.setGeboortedatum(persoon.getGeboortedatum());

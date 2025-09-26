@@ -71,6 +71,7 @@ public class OrganisatieMedewerkerRol extends AbstractHibernateObject implements
 
 	private Date eindDatum;
 
+	@Column(nullable = false)
 	private Boolean actief = true;
 
 	@Deprecated

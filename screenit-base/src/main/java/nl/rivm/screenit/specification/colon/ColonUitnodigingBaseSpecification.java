@@ -24,14 +24,21 @@ package nl.rivm.screenit.specification.colon;
 import java.time.LocalDate;
 import java.util.List;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.GbaPersoon_;
+import nl.rivm.screenit.model.Persoon;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.ScreeningRonde_;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonDossier_;
@@ -50,13 +57,6 @@ import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.algemeen.ScreeningRondeSpecification;
 
 import org.jetbrains.annotations.NotNull;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Root;
 
 import static jakarta.persistence.criteria.JoinType.INNER;
 import static jakarta.persistence.criteria.JoinType.LEFT;
@@ -131,15 +131,15 @@ public class ColonUitnodigingBaseSpecification
 
 	public static @NotNull List<Order> getU1OrderByList(Root<Client> r, CriteriaBuilder cb)
 	{
-		return List.of(cb.asc(persoonJoin(r).get(GbaPersoon_.geboortedatum)), cb.asc(persoonJoin(r).get(GbaPersoon_.achternaam)));
+		return List.of(cb.asc(persoonJoin(r).get(Persoon_.geboortedatum)), cb.asc(persoonJoin(r).get(Persoon_.achternaam)));
 	}
 
 	public static @NotNull List<Order> getU2OrderByList(Root<Client> r, CriteriaBuilder cb)
 	{
 		return List.of(
 			cb.asc(laatsteScreeningRondeJoin(r, INNER).get(ScreeningRonde_.creatieDatum)),
-			cb.asc(persoonJoin(r).get(GbaPersoon_.geboortedatum)),
-			cb.asc(persoonJoin(r).get(GbaPersoon_.achternaam)));
+			cb.asc(persoonJoin(r).get(Persoon_.geboortedatum)),
+			cb.asc(persoonJoin(r).get(Persoon_.achternaam)));
 	}
 
 	public static ExtendedSpecification<Client> getSpecificationU3(LocalDate peildatum)
@@ -217,7 +217,7 @@ public class ColonUitnodigingBaseSpecification
 		return join(r, Client_.colonDossier, joinType);
 	}
 
-	private static Join<?, ? extends GbaPersoon> persoonJoin(From<?, ? extends Client> r)
+	private static Join<?, ? extends Persoon> persoonJoin(From<?, ? extends Client> r)
 	{
 		return join(r, Client_.persoon);
 	}
@@ -229,7 +229,7 @@ public class ColonUitnodigingBaseSpecification
 
 	private static Join<?, ? extends BagAdres> adresJoin(From<?, ? extends Client> r)
 	{
-		return join(persoonJoin(r), GbaPersoon_.gbaAdres);
+		return join(persoonJoin(r), Persoon_.gbaAdres);
 	}
 
 	private static Join<?, ? extends ColonUitnodiging> laatsteUitnodigingJoin(From<?, ? extends Client> r)

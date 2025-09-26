@@ -51,6 +51,8 @@ public class HL7Config
 
 	private String versionMapping;
 
+	private String dkFitOulUrl;
+
 	@Bean
 	String hpvHost()
 	{
@@ -91,6 +93,12 @@ public class HL7Config
 	String versionMapping()
 	{
 		return StringUtils.defaultIfBlank(versionMapping, "");
+	}
+
+	@Bean
+	String dkFitOulUrl()
+	{
+		return StringUtils.defaultIfBlank(dkFitOulUrl, "");
 	}
 
 }

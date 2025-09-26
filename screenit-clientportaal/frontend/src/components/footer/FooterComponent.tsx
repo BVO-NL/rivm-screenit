@@ -25,6 +25,8 @@ import styles from "./FooterComponent.module.scss"
 import {getBevolkingsonderzoekNederlandUrl, getContactUrl} from "../../utils/UrlUtil"
 import {useRegio} from "../../utils/Hooks"
 import properties from "./FooterComponent.json"
+import datadogService from "../../services/DatadogService"
+import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 
 const FooterComponent = () => {
 
@@ -38,15 +40,18 @@ const FooterComponent = () => {
 			<Col md={8}>
 				<ul className={styles.footerUrls}>
 					<a href={`${getBevolkingsonderzoekNederlandUrl()}/privacy/`}
-					   rel="noopener noreferrer" target="_blank">
+					   rel="noopener noreferrer" target="_blank"
+					   onClick={() => datadogService.stuurEvent("itemGeklikt", AnalyticsCategorie.FOOTER, {naam: "privacy"})}>
 						<li>{properties.links.privacy}</li>
 					</a>
 					<a href={`${getBevolkingsonderzoekNederlandUrl()}/responsible-disclosure/`}
-					   rel="noopener noreferrer" target="_blank">
+					   rel="noopener noreferrer" target="_blank"
+					   onClick={() => datadogService.stuurEvent("itemGeklikt", AnalyticsCategorie.FOOTER, {naam: "responsible_disclosure"})}>
 						<li>{properties.links.responsible_disclosure}</li>
 					</a>
 					<a href={getContactUrl(regio)}
-					   rel="noopener noreferrer" target="_blank">
+					   rel="noopener noreferrer" target="_blank"
+					   onClick={() => datadogService.stuurEvent("itemGeklikt", AnalyticsCategorie.FOOTER, {naam: "contact"})}>
 						<li>{properties.links.contact}</li>
 					</a>
 				</ul>

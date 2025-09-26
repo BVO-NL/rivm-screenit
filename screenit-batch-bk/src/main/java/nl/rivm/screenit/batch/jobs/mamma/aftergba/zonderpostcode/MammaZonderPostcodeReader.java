@@ -21,19 +21,19 @@ package nl.rivm.screenit.batch.jobs.mamma.aftergba.zonderpostcode;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.criteria.JoinType;
+
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.BagAdres_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon_;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.specification.algemeen.AdresSpecification;
 import nl.rivm.screenit.specification.algemeen.ClientSpecification;
 import nl.rivm.screenit.specification.algemeen.GemeenteSpecification;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-
-import jakarta.persistence.criteria.JoinType;
 
 import static nl.rivm.screenit.batch.jobs.mamma.aftergba.AfterGbaJobConfiguration.AFTER_GBA_JOB_READER_FETCH_SIZE;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
@@ -62,7 +62,7 @@ public class MammaZonderPostcodeReader extends BaseSpecificationScrollableResult
 		return GemeenteSpecification.heeftScreeningOrganisatie().with(r ->
 		{
 			var persoonJoin = join(r, Client_.persoon);
-			var adresJoin = join(persoonJoin, GbaPersoon_.gbaAdres);
+			var adresJoin = join(persoonJoin, Persoon_.gbaAdres);
 			return join(adresJoin, BagAdres_.gbaGemeente);
 		});
 	}
@@ -72,7 +72,7 @@ public class MammaZonderPostcodeReader extends BaseSpecificationScrollableResult
 		return AdresSpecification.heeftGeenPostcode().with(r ->
 		{
 			var persoonJoin = join(r, Client_.persoon);
-			return join(persoonJoin, GbaPersoon_.gbaAdres);
+			return join(persoonJoin, Persoon_.gbaAdres);
 		});
 	}
 
@@ -81,7 +81,7 @@ public class MammaZonderPostcodeReader extends BaseSpecificationScrollableResult
 		return AdresSpecification.heeftGeenPostcode().with(r ->
 		{
 			var persoonJoin = join(r, Client_.persoon);
-			return join(persoonJoin, GbaPersoon_.tijdelijkGbaAdres, JoinType.LEFT);
+			return join(persoonJoin, Persoon_.tijdelijkGbaAdres, JoinType.LEFT);
 		});
 	}
 }

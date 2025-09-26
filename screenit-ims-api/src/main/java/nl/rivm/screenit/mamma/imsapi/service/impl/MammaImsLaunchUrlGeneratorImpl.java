@@ -92,7 +92,8 @@ public class MammaImsLaunchUrlGeneratorImpl implements MammaImsLaunchUrlGenerato
 		return List.of(
 			new UrlParameter("user_id", username),
 			new UrlParameter("his_id", role),
-			new UrlParameter("time", String.valueOf(Instant.now().getEpochSecond())));
+			new UrlParameter("time", String.valueOf(Instant.now().getEpochSecond())),
+			new UrlParameter("application_id", "BVO.ContextBridge"));
 	}
 
 	private ArrayList<UrlParameter> desktopSyncParameters(String username, String role, String bsn, String accessionNumber)

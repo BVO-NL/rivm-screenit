@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model;
 
 /*-
@@ -22,19 +21,21 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import nl.rivm.screenit.model.IActief;
-import nl.rivm.screenit.model.MergedBrieven;
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.batch.BvoZoekCriteria;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
+import nl.rivm.screenit.model.enums.BriefType;
 
+@Getter
+@Setter
 public class MergedBrievenFilter<MB extends MergedBrieven<?>> extends BvoZoekCriteria implements IActief
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
 
 	private Boolean controle;
 
@@ -42,25 +43,13 @@ public class MergedBrievenFilter<MB extends MergedBrieven<?>> extends BvoZoekCri
 
 	private Class<MB> mergedBrievenClass;
 
-	public void setControle(Boolean controle)
-	{
-		this.controle = controle;
-	}
+	private List<BriefType> briefTypes = new ArrayList<>();
 
-	public Boolean getControle()
-	{
-		return controle;
-	}
+	private Date vanaf;
 
-	public void setGeprint(Boolean geprint)
-	{
-		this.geprint = geprint;
-	}
+	private Date tot;
 
-	public Boolean setGeprint()
-	{
-		return geprint;
-	}
+	private String naam;
 
 	@Override
 	public Boolean getActief()
@@ -72,16 +61,6 @@ public class MergedBrievenFilter<MB extends MergedBrieven<?>> extends BvoZoekCri
 	public void setActief(Boolean actief)
 	{
 		this.geprint = actief;
-	}
-
-	public Class<MB> getMergedBrievenClass()
-	{
-		return mergedBrievenClass;
-	}
-
-	public void setMergedBrievenClass(Class<MB> mergedBrievenClass)
-	{
-		this.mergedBrievenClass = mergedBrievenClass;
 	}
 
 	@Override

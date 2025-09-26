@@ -53,7 +53,7 @@ public abstract class DigitaalClientBericht<SR extends ScreeningRonde> extends A
 	@Column(nullable = false)
 	private Boolean isHerzonden = false;
 
-	@Column(nullable = false, length = GbaPersoon.MAX_EMAIL_LENGTH)
+	@Column(nullable = false, length = Persoon.MAX_EMAIL_LENGTH)
 	private String ontvanger;
 
 	@Column(nullable = false)

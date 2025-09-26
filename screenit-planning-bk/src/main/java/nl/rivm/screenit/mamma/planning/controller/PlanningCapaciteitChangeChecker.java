@@ -31,6 +31,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
+import lombok.extern.slf4j.Slf4j;
+
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
 import nl.rivm.screenit.exceptions.OpslaanVerwijderenTijdBlokException;
 import nl.rivm.screenit.exceptions.SeTijdBlokOverlapException;
@@ -38,11 +40,11 @@ import nl.rivm.screenit.mamma.planning.index.PlanningBlokIndex;
 import nl.rivm.screenit.mamma.planning.index.PlanningScreeningsEenheidIndex;
 import nl.rivm.screenit.mamma.planning.model.PlanningBlok;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
-import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.util.DateUtil;
 
 import com.google.common.collect.Range;
 
+@Slf4j
 public class PlanningCapaciteitChangeChecker
 {
 	private static Properties props = null;
@@ -60,7 +62,7 @@ public class PlanningCapaciteitChangeChecker
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				LOG.error("Fout bij het laden van de properties file: {}", resourceName, e);
 			}
 		}
 		return props;
@@ -120,7 +122,7 @@ public class PlanningCapaciteitChangeChecker
 					echteOverlapteBlokken.add(overlapteBlok);
 				}
 			}
-			if (echteOverlapteBlokken.size() > 0)
+			if (!echteOverlapteBlokken.isEmpty())
 			{
 
 				throw new SeTijdBlokOverlapException(getProps().getProperty("blok.heeft.overlap"), echteOverlapteBlokken, blok.screeningsEenheidId);
@@ -139,7 +141,6 @@ public class PlanningCapaciteitChangeChecker
 			overlappendeBlokken.add(items);
 		}
 		PlanningScreeningsEenheid screeningsEenheid = PlanningScreeningsEenheidIndex.get(blokDto.screeningsEenheidId);
-		Integer aantalMammografen = screeningsEenheid.getAantalMammografen();
 
 		for (PlanningBlok blok : screeningsEenheid.getBlokSet())
 		{
@@ -152,13 +153,8 @@ public class PlanningCapaciteitChangeChecker
 					var range = Range.closed(vanaf, tot);
 					if (DateUtil.overlaps(rangeToCheck, range))
 					{
-						if (aantalMammografen == null || (aantalMammografen == 1
-							|| aantalMammografen > 1 && (blokDto.blokType.equals(MammaCapaciteitBlokType.GEEN_SCREENING) || blokDto.blokType.equals(blok.getCapaciteitBlokType())
-							|| blok.getCapaciteitBlokType().equals(MammaCapaciteitBlokType.GEEN_SCREENING))))
-						{
-							Object[] items = new Object[] { vanaf, tot, blok.getConceptId() };
-							overlappendeBlokken.add(items);
-						}
+						Object[] items = new Object[] { vanaf, tot, blok.getConceptId() };
+						overlappendeBlokken.add(items);
 					}
 				}
 			}

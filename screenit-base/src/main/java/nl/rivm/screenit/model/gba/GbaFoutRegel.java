@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.gba;
 
 /*-
@@ -28,66 +27,32 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+@Getter
+@Setter
 @Entity
 @Table(schema = "algemeen")
 public class GbaFoutRegel extends AbstractHibernateObject
 {
-	@Column(length = HibernateMagicNumber.L1024)
+	@Column(length = HibernateMagicNumber.L1024, nullable = false)
 	private String fout;
 
 	@Enumerated
+	@Column(nullable = false)
 	private GbaFoutCategorie foutCategorie;
 
 	private Long client;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JsonIgnore
 	private GbaVerwerkingsLog verwerkingsLog;
-
-	public String getFout()
-	{
-		return fout;
-	}
-
-	public void setFout(String fout)
-	{
-		this.fout = fout;
-	}
-
-	public GbaFoutCategorie getFoutCategorie()
-	{
-		return foutCategorie;
-	}
-
-	public void setFoutCategorie(GbaFoutCategorie foutCategorie)
-	{
-		this.foutCategorie = foutCategorie;
-	}
-
-	public Long getClient()
-	{
-		return client;
-	}
-
-	public void setClient(Long client)
-	{
-		this.client = client;
-	}
-
-	public GbaVerwerkingsLog getVerwerkingsLog()
-	{
-		return verwerkingsLog;
-	}
-
-	public void setVerwerkingsLog(GbaVerwerkingsLog verwerkingsLog)
-	{
-		this.verwerkingsLog = verwerkingsLog;
-	}
 
 	@Override
 	public String toString()

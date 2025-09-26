@@ -53,6 +53,7 @@ import org.hibernate.envers.NotAudited;
 @Setter
 public class Rol extends AbstractHibernateObject implements INaam, IActief, IBevolkingsonderzoek
 {
+	@Column(nullable = false)
 	private String naam;
 
 	private String description;
@@ -71,6 +72,7 @@ public class Rol extends AbstractHibernateObject implements INaam, IActief, IBev
 	@NotAudited
 	private List<Bevolkingsonderzoek> bevolkingsonderzoeken = new ArrayList<>();
 
+	@Column(nullable = false)
 	private Boolean actief = true;
 
 	@Override

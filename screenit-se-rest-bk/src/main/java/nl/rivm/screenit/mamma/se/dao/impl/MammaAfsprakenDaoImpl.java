@@ -48,16 +48,16 @@ public class MammaAfsprakenDaoImpl extends AbstractAutowiredDao implements Mamma
 				"  , identificatiesoort\n" +
 				"  , identificatienummer\n" +
 				"from (\n" +
-				"       select pat.id as patient_id\n" +
+				"       select c.id as patient_id\n" +
 				"         , afs.*\n" +
-				"         , row_number() over(partition by pat.id order by afs.vanaf desc) as volgnr\n" +
+				"         , row_number() over(partition by c.id order by afs.vanaf desc) as volgnr\n" +
 				"       from mamma.afspraak afs\n" +
 				"         inner join mamma.uitnodiging uit on afs.uitnodiging = uit.id\n" +
 				"         inner join mamma.screening_ronde sr on uit.screening_ronde = sr.id\n" +
 				"         inner join mamma.dossier dos on sr.dossier = dos.id\n" +
-				"         inner join gedeeld.pat_patient pat on dos.id = pat.mamma_dossier\n" +
+				"         inner join gedeeld.client c on dos.id = c.mamma_dossier\n" +
 				"       where afs.identificatienummer is not null\n" +
-				"             and pat.id in (:clientIds)\n" +
+				"             and c.id in (:clientIds)\n" +
 				"     ) as d where volgnr = 1");
 		query.setParameterList("clientIds", clientIds);
 		final List<Object[]> queryResult = query.list();

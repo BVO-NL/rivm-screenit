@@ -47,6 +47,6 @@ public interface ColonIntakeAfspraakRepository extends BaseJpaRepository<ColonIn
 	@Query(nativeQuery = true, value = "select count(afs.id) as count"
 		+ " from colon.afspraakslot  afs"
 		+ " inner join colon.tijdslot ts on afs.id = ts.id"
-		+ " where ts.vanaf > now() and DATE_PART('DOW', ts.vanaf) = :dag")
+		+ " where ts.vanaf > now() and EXTRACT(DOW from ts.vanaf) = :dag")
 	List<Long> countColonIntakeAfsprakenOpDag(@Param("dag") int dag);
 }

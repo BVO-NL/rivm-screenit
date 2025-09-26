@@ -21,8 +21,6 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
@@ -30,48 +28,30 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.hibernate.annotations.Proxy;
 
+@Getter
+@Setter
 @Entity
 @Table(schema = "algemeen", indexes = @Index(name = "functie_actiefIndex", columnList = "actief"))
 @Proxy(lazy = true)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Functie extends AbstractHibernateObject implements INaam
 {
-
 	public static final String PATHOLOOG = "Patholoog";
 
 	public static final String ENDOSCOPIST = "Endoscopist";
 
-	@Serial
-	private static final long serialVersionUID = 1L;
-
+	@Column(nullable = false)
 	private String functie;
 
 	@Column(nullable = false)
 	private Boolean actief;
-
-	public Boolean getActief()
-	{
-		return this.actief;
-	}
-
-	public void setActief(Boolean actief)
-	{
-		this.actief = actief;
-	}
-
-	public String getFunctie()
-	{
-		return this.functie;
-	}
-
-	public void setFunctie(String functie)
-	{
-		this.functie = functie;
-	}
 
 	@Override
 	public String getNaam()

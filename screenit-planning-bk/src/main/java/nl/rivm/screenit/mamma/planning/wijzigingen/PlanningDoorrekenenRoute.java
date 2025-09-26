@@ -43,7 +43,6 @@ import nl.rivm.screenit.mamma.planning.model.PlanningConstanten;
 import nl.rivm.screenit.mamma.planning.model.PlanningDag;
 import nl.rivm.screenit.mamma.planning.model.PlanningMelding;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
-import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsOrganisatie;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaats;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsPeriode;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsRonde;
@@ -62,12 +61,6 @@ enum PlanningDoorrekenenRoute
 
 		BigDecimal totaal = new BigDecimal(blok.getAantalOnderzoeken());
 		MammaCapaciteitBlokType blokType = blok.getCapaciteitBlokType();
-
-		PlanningScreeningsOrganisatie screeningsOrganisatie = blok.getScreeningsEenheid().getScreeningsOrganisatie();
-		if (blokType == MammaCapaciteitBlokType.TEHUIS)
-		{
-			totaal = totaal.multiply(screeningsOrganisatie.getFactorDubbeleTijd());
-		}
 
 		PlanningBeschikbaar beschikbaar = blok.getBeschikbaar();
 		beschikbaar.clear();
@@ -128,27 +121,20 @@ enum PlanningDoorrekenenRoute
 				{
 					PlanningBenodigdJaar benodigdEersteJaarStandplaatsRonde = context.standplaats.getBenodigd().get(context.jaarEersteStandplaatsPeriode);
 					BigDecimal benodigdStandplaatsTotaal = benodigdEersteJaarStandplaatsRonde.getTotaal();
-					BigDecimal benodigdStandplaatsTehuis = benodigdEersteJaarStandplaatsRonde.getTotaalTehuis();
 					if (context.jaar > context.jaarEersteStandplaatsPeriode)
 					{
 						PlanningBenodigdJaar benodigdJaar = context.standplaats.getBenodigd().get(context.jaar);
 						benodigdStandplaatsTotaal = benodigdStandplaatsTotaal.add(benodigdJaar.getNieuw());
-						benodigdStandplaatsTehuis = benodigdStandplaatsTehuis.add(benodigdJaar.getNieuwTehuis());
 					}
 
 					BigDecimal benodigdVoorJaarovergangTotaal = BigDecimal.ZERO;
-					BigDecimal benodigdVoorJaarovergangTehuis = BigDecimal.ZERO;
 					for (PlanningStandplaatsPeriode sp : context.standplaatsRonde.getStandplaatsPeriodeNavigableSet())
 					{
 						benodigdVoorJaarovergangTotaal = benodigdVoorJaarovergangTotaal.add(sp.getBeschikbaarVoorJaarovergangTotaal());
-						benodigdVoorJaarovergangTehuis = benodigdVoorJaarovergangTehuis.add(sp.getBeschikbaarVoorJaarovergangTehuis());
 					}
 
 					context.benodigdTotaalRestant = context.benodigdTotaalRestant
 						.subtract(oudCorrectie(benodigdStandplaatsTotaal, benodigdVoorJaarovergangTotaal, benodigdEersteJaarStandplaatsRonde.getOud()));
-
-					context.benodigdTehuisRestant = context.benodigdTehuisRestant
-						.subtract(oudCorrectie(benodigdStandplaatsTehuis, benodigdVoorJaarovergangTehuis, benodigdEersteJaarStandplaatsRonde.getOudTehuis()));
 
 					context.oudCorrectieToegepast = true;
 				}
@@ -157,11 +143,9 @@ enum PlanningDoorrekenenRoute
 				if (dag.getBlokkadeSet().isEmpty())
 				{
 					BigDecimal dagBeschikbaarTotaal = dag.getBeschikbaar().getTotaal();
-					BigDecimal dagBeschikbaarTehuis = dag.getBeschikbaar().getTotaalTehuis();
 					context.benodigdTotaalRestant = context.benodigdTotaalRestant.subtract(dagBeschikbaarTotaal);
-					context.benodigdTehuisRestant = context.benodigdTehuisRestant.subtract(dag.getBeschikbaar().getTotaalTehuis());
 					benodigdRestantNegatief = context.benodigdTotaalRestant.compareTo(BigDecimal.ZERO) <= 0;
-					standplaatsPeriode.add(datum.toEpochDay(), dagBeschikbaarTotaal, dagBeschikbaarTehuis, datum.isBefore(context.jaarovergang));
+					standplaatsPeriode.add(datum.toEpochDay(), dagBeschikbaarTotaal, datum.isBefore(context.jaarovergang));
 				}
 				else
 				{
@@ -177,12 +161,10 @@ enum PlanningDoorrekenenRoute
 						{
 							PlanningBenodigdJaar benodigdJaar = context.standplaats.getBenodigd().get(j);
 							context.benodigdTotaalRestant = context.benodigdTotaalRestant.add(benodigdJaar.getNieuw());
-							context.benodigdTehuisRestant = context.benodigdTehuisRestant.add(benodigdJaar.getNieuwTehuis());
 							if (context.isEersteStandplaatsRonde)
 							{
 								benodigdJaar = context.standplaats.getTransport().get(j);
 								context.benodigdTotaalRestant = context.benodigdTotaalRestant.add(benodigdJaar.getNieuw());
-								context.benodigdTehuisRestant = context.benodigdTehuisRestant.add(benodigdJaar.getNieuwTehuis());
 							}
 							else
 							{
@@ -257,24 +239,14 @@ enum PlanningDoorrekenenRoute
 
 	private static void bepaalMeldingen(DoorrekenenStandplaatsPeriodeContext context, PlanningDag laatsteDag)
 	{
-		PlanningScreeningsOrganisatie screeningsOrganisatie = context.standplaatsRonde.getStandplaatsPeriodeNavigableSet().iterator().next().getScreeningsEenheid()
-			.getScreeningsOrganisatie();
-
 		List<PlanningMelding> meldingList = context.standplaatsRonde.getMeldingList();
 		meldingList.clear();
 
 		BigDecimal aantalBasisOnderzoeken = context.benodigdTotaalRestant.abs().setScale(1, BigDecimal.ROUND_UP);
-		BigDecimal aantalTehuisOnderzoekenBasis = context.benodigdTehuisRestant.abs().setScale(1, BigDecimal.ROUND_UP);
-		BigDecimal aantalTehuisOnderzoeken = context.benodigdTehuisRestant.abs().divide(screeningsOrganisatie.getFactorDubbeleTijd(), 1, BigDecimal.ROUND_UP);
 
 		meldingList.add(new PlanningMelding(
 			aantalBasisOnderzoeken + " " + (context.benodigdTotaalRestant.compareTo(BigDecimal.ZERO) < 0 ? "te veel" : "te weinig"),
 			bepaalMeldingNiveau(context.benodigdTotaalRestant, laatsteDag.getBeschikbaar().getTotaal())));
-
-		meldingList.add(new PlanningMelding(
-			aantalTehuisOnderzoeken + " tehuis " + (context.benodigdTehuisRestant.compareTo(BigDecimal.ZERO) < 0 ? "te veel" : "te weinig")
-				+ " (" + aantalTehuisOnderzoekenBasis + " regulier)",
-			bepaalMeldingNiveau(context.benodigdTehuisRestant, laatsteDag.getBeschikbaar().getTotaalTehuis())));
 	}
 
 	private static MammaMeldingNiveau bepaalMeldingNiveau(BigDecimal benodigdRestant, BigDecimal beschikbaarLaatsteDag)
@@ -435,8 +407,6 @@ class DoorrekenenStandplaatsPeriodeContext
 
 	BigDecimal benodigdTotaalRestant;
 
-	BigDecimal benodigdTehuisRestant;
-
 	boolean isEersteStandplaatsRonde;
 
 	NavigableSet<PlanningStandplaatsPeriode> voorgaandeStandplaatsPeriodeSet;
@@ -474,14 +444,12 @@ class DoorrekenenStandplaatsPeriodeContext
 
 		PlanningBenodigdJaar benodigdJaar = standplaats.getBenodigd().get(jaar);
 		benodigdTotaalRestant = benodigdJaar.getTotaal();
-		benodigdTehuisRestant = benodigdJaar.getTotaalTehuis();
 
 		isEersteStandplaatsRonde = standplaatsRonde.equals(standplaats.getStandplaatsRondeNavigableSet().first());
 		if (isEersteStandplaatsRonde)
 		{
 			benodigdJaar = standplaats.getTransport().get(jaar);
 			benodigdTotaalRestant = benodigdTotaalRestant.add(benodigdJaar.getTotaal());
-			benodigdTehuisRestant = benodigdTehuisRestant.add(benodigdJaar.getTotaalTehuis());
 		}
 		else
 		{
@@ -496,7 +464,6 @@ class DoorrekenenStandplaatsPeriodeContext
 			for (PlanningStandplaatsPeriode voorgaandeStandplaatsPeriode : voorgaandeStandplaatsPeriodeSet)
 			{
 				benodigdTotaalRestant = benodigdTotaalRestant.subtract(voorgaandeStandplaatsPeriode.getBeschikbaarTotaal());
-				benodigdTehuisRestant = benodigdTehuisRestant.subtract(voorgaandeStandplaatsPeriode.getBeschikbaarTehuis());
 			}
 		}
 

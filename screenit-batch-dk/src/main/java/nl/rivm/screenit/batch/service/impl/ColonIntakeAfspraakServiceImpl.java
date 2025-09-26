@@ -41,8 +41,8 @@ import nl.rivm.screenit.model.BagAdres_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.DossierStatus;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Gemeente_;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.PostcodeCoordinaten_;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonDossier_;
@@ -205,7 +205,7 @@ public class ColonIntakeAfspraakServiceImpl implements ColonIntakeAfspraakServic
 				var screeningRondeJoin = join(dossierJoin, ColonDossier_.laatsteScreeningRonde);
 				var testenJoin = join(screeningRondeJoin, ColonScreeningRonde_.ifobtTesten);
 				var persoonJoin = join(r, Client_.persoon);
-				var adresJoin = join(persoonJoin, GbaPersoon_.gbaAdres);
+				var adresJoin = join(persoonJoin, Persoon_.gbaAdres);
 				var coordinatenJoin = join(adresJoin, BagAdres_.postcodeCoordinaten, JoinType.LEFT);
 				var gemeenteJoin = join(adresJoin, BagAdres_.gbaGemeente, JoinType.LEFT);
 				var screeningOrganisatieJoin = join(gemeenteJoin, Gemeente_.screeningOrganisatie, JoinType.LEFT);
@@ -222,8 +222,8 @@ public class ColonIntakeAfspraakServiceImpl implements ColonIntakeAfspraakServic
 					gemeenteJoin.get(Gemeente_.naam),
 					screeningOrganisatieJoin.get(AbstractHibernateObject_.id),
 					intakeJoin.get(AbstractHibernateObject_.id),
-					persoonJoin.get(GbaPersoon_.bsn),
-					persoonJoin.get(GbaPersoon_.geboortedatum)
+					persoonJoin.get(Persoon_.bsn),
+					persoonJoin.get(Persoon_.geboortedatum)
 				);
 			}).distinct().all());
 	}

@@ -28,7 +28,7 @@ import nl.rivm.screenit.clientportaal.services.ClientGegevensService;
 import nl.rivm.screenit.clientportaal.validators.TijdelijkAdresValidator;
 import nl.rivm.screenit.model.Aanhef;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.service.ClientContactService;
@@ -67,7 +67,7 @@ public class ClientGegevensServiceImpl implements ClientGegevensService
 	@Override
 	public Client setTelefoonnummer(String telefoonnummer1, String telefoonnummer2, Client client)
 	{
-		GbaPersoon persoon = client.getPersoon();
+		Persoon persoon = client.getPersoon();
 
 		String getrimdeTelefoonnummer1 = StringUtils.trimToNull(telefoonnummer1);
 		if (getrimdeTelefoonnummer1 == null || TelefoonnummerUtil.isCorrectNederlandsMobielNummer(getrimdeTelefoonnummer1))
@@ -117,7 +117,7 @@ public class ClientGegevensServiceImpl implements ClientGegevensService
 	@Override
 	public Client setTijdelijkAdres(TijdelijkAdres nieuwTijdelijkAdres, Client client)
 	{
-		GbaPersoon persoon = client.getPersoon();
+		Persoon persoon = client.getPersoon();
 
 		TijdelijkAdres huidigTijdelijkAdres = persoon.getTijdelijkAdres();
 		TijdelijkAdresValidator.validateTijdelijkAdres(nieuwTijdelijkAdres, huidigTijdelijkAdres, currentDateSupplier.getLocalDate());

@@ -22,7 +22,6 @@ package nl.rivm.screenit.specification.mamma;
  */
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -31,26 +30,15 @@ import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.Dossier_;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaDossier_;
-import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MammaBaseDossierSpecification
 {
-	public static ExtendedSpecification<MammaDossier> woontInTehuis()
-	{
-		return (r, q, cb) -> cb.isNotNull(r.get(MammaDossier_.tehuis));
-	}
-
 	public static ExtendedSpecification<MammaDossier> woontNietInTehuis()
 	{
 		return (r, q, cb) -> cb.isNull(r.get(MammaDossier_.tehuis));
-	}
-
-	public static ExtendedSpecification<MammaDossier> heeftDoelgroepIn(Collection<MammaDoelgroep> doelgroepen)
-	{
-		return (r, q, cb) -> r.get(MammaDossier_.doelgroep).in(doelgroepen);
 	}
 
 	public static ExtendedSpecification<MammaDossier> heeftScreeningRondeEvent()

@@ -21,9 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit;
  * =========================LICENSE_END==================================
  */
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import nl.rivm.screenit.Constants;
@@ -36,16 +33,13 @@ import nl.rivm.screenit.main.web.component.DateTimeField;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.form.ScreenITDateTimeField;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
-import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.input.timefield.TimeField;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -67,20 +61,15 @@ import org.apache.wicket.validation.validator.RangeValidator;
 
 public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<PlanningCapaciteitBlokDto>
 {
-
-	private static final long serialVersionUID = 1L;
-
 	private BootstrapDialog confirmPopup;
 
-	private boolean magAanpassen;
+	private final boolean magAanpassen;
 
 	private WebMarkupContainer aantalOnderzoekenContainer;
 
 	private WebMarkupContainer opmerkingenContainer;
 
 	private WebMarkupContainer minderValideAfspraakMogelijkContainer;
-
-	private IModel<String> reguliereOnderzoekenModel = Model.of("");
 
 	@SpringBean
 	private HibernateService hibernateService;
@@ -111,7 +100,7 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 		initForm(editForm);
 
 		addOpslaanLink(editForm);
-		addDeleteLink(editForm);
+		addDeleteLink();
 	}
 
 	private void initForm(Form<PlanningCapaciteitBlokDto> form)
@@ -127,24 +116,6 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 		}
 
 		String tijdString = Constants.getDateTimeFormat().format(blok.vanaf) + "-" + Constants.getTimeFormat().format(blok.tot);
-
-		WebMarkupContainer aantalReguliereOnderzoekenContainer = new WebMarkupContainer("aantalReguliereOnderzoekenContainer")
-		{
-			@Override
-			protected void onConfigure()
-			{
-				super.onConfigure();
-				setVisible(!MammaCapaciteitBlokType.REGULIER.equals(getModelObject().blokType));
-				if (getModelObject().blokType != null && !MammaCapaciteitBlokType.REGULIER.equals(getModelObject().blokType))
-				{
-					reguliereOnderzoekenModel.setObject(BigDecimalUtil.decimalToString(getBeschikbareCapaciteit(), 1));
-				}
-			}
-		};
-
-		Label aantalReguliereOnderzoekenLabel = new Label("aantalReguliereOnderzoeken", reguliereOnderzoekenModel);
-
-		aantalReguliereOnderzoekenLabel.setOutputMarkupId(true);
 
 		aantalOnderzoekenContainer = new WebMarkupContainer("aantalOnderzoekenContainer")
 		{
@@ -172,21 +143,7 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 		opmerkingenContainer.setOutputMarkupId(true);
 		opmerkingenContainer.setOutputMarkupPlaceholderTag(true);
 
-		ComponentHelper.addTextField(aantalOnderzoekenContainer, "aantalOnderzoeken", true, 10, Integer.class, false).add(RangeValidator.minimum(0))
-			.add(new AjaxFormComponentUpdatingBehavior("keyup")
-			{
-				@Override
-				protected void onUpdate(AjaxRequestTarget target)
-				{
-					if (getModelObject().blokType != null && !MammaCapaciteitBlokType.REGULIER.equals(getModelObject().blokType))
-					{
-						reguliereOnderzoekenModel.setObject(BigDecimalUtil.decimalToString(getBeschikbareCapaciteit(), 1));
-						target.add(aantalReguliereOnderzoekenLabel);
-					}
-				}
-			});
-		aantalOnderzoekenContainer.add(aantalReguliereOnderzoekenContainer);
-		aantalReguliereOnderzoekenContainer.add(aantalReguliereOnderzoekenLabel);
+		ComponentHelper.addTextField(aantalOnderzoekenContainer, "aantalOnderzoeken", true, 10, Integer.class, false).add(RangeValidator.minimum(0));
 
 		TextArea<String> opmerkingen = ComponentHelper.addTextArea(opmerkingenContainer, "opmerkingen", true, 255,
 			false);
@@ -211,7 +168,7 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 		form.add(minderValideAfspraakMogelijkContainer);
 
 		ScreenitDropdown<MammaCapaciteitBlokType> bloktypen = ComponentHelper.newDropDownChoice("blokType",
-			new ListModel<>(new ArrayList<>(Arrays.asList(MammaCapaciteitBlokType.values()))), new EnumChoiceRenderer<>(), true);
+			new ListModel<>(Arrays.asList(MammaCapaciteitBlokType.values())), new EnumChoiceRenderer<>(), true);
 
 		bloktypen.add(new AjaxFormComponentUpdatingBehavior("change")
 		{
@@ -254,18 +211,6 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 		startTime.setRequired(true);
 		startTime.setEnabled(magAanpassen);
 		form.add(startTime);
-	}
-
-	private BigDecimal getBeschikbareCapaciteit()
-	{
-		PlanningCapaciteitBlokDto blok = getModelObject();
-		ScreeningOrganisatie screeningOrganisatie = ScreenitSession.get().getScreeningOrganisatie();
-
-		if (blok.aantalOnderzoeken != null)
-		{
-			return blok.blokType.getFactorType().getFactor(screeningOrganisatie).multiply(new BigDecimal(blok.aantalOnderzoeken)).setScale(1, RoundingMode.HALF_UP);
-		}
-		return BigDecimal.ZERO;
 	}
 
 	private void setDateForEndTimeField()
@@ -329,9 +274,9 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 
 	protected abstract void onOpslaan(AjaxRequestTarget target, IModel<PlanningCapaciteitBlokDto> model);
 
-	private void addDeleteLink(final Form<PlanningCapaciteitBlokDto> editForm)
+	private void addDeleteLink()
 	{
-		final IndicatingAjaxLink<Void> deleteSubmit = new ConfirmingIndicatingAjaxLink<Void>("verwijderen", confirmPopup, "verwijder.popup")
+		final IndicatingAjaxLink<Void> deleteSubmit = new ConfirmingIndicatingAjaxLink<>("verwijderen", confirmPopup, "verwijder.popup")
 		{
 			@Override
 			protected IModel<String> getContentStringModel()
@@ -346,7 +291,6 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 				{
 					return Model.of();
 				}
-
 			}
 
 			@Override
@@ -374,12 +318,4 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 	{
 		return Model.of("Onthouden");
 	}
-
-	@Override
-	protected void onDetach()
-	{
-		super.onDetach();
-		ModelUtil.nullSafeDetach(reguliereOnderzoekenModel);
-	}
-
 }

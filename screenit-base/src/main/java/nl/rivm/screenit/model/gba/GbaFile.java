@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.gba;
 
 /*-
@@ -22,6 +21,7 @@ package nl.rivm.screenit.model.gba;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -39,12 +39,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Setter
 public class GbaFile extends AbstractHibernateObject
 {
-
+	@Column(nullable = false)
 	private String naam;
 
+	@Column(nullable = false)
 	private String path;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JsonIgnore
 	private GbaVerwerkingsLog gbaVerwerkingsLog;
 }

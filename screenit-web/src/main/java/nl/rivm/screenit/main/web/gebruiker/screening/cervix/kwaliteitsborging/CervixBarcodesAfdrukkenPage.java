@@ -38,8 +38,8 @@ import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.CervixBarcodeAfdrukkenBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.MailMergeContext;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
@@ -228,7 +228,7 @@ public class CervixBarcodesAfdrukkenPage extends CervixBarcodeAfdrukkenBasePage
 		MailMergeContext context = new MailMergeContext();
 		context.setCervixUitnodiging(uitnodiging);
 		Client client = new Client();
-		GbaPersoon persoon = new GbaPersoon();
+		Persoon persoon = new Persoon();
 		persoon.setBsn("Controlemonster");
 		client.setPersoon(persoon);
 		context.setClient(client);

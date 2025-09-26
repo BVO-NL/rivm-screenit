@@ -107,10 +107,7 @@ import com.google.common.collect.Range;
 
 import static nl.rivm.screenit.specification.RangeSpecification.bevat;
 import static nl.rivm.screenit.specification.mamma.MammaAfspraakSpecification.filterStatus;
-import static nl.rivm.screenit.specification.mamma.MammaAfspraakSpecification.heeftClientInTehuis;
-import static nl.rivm.screenit.specification.mamma.MammaAfspraakSpecification.heeftDoelgroepIn;
 import static nl.rivm.screenit.specification.mamma.MammaAfspraakSpecification.heeftGeenCapaciteitBlok;
-import static nl.rivm.screenit.specification.mamma.MammaAfspraakSpecification.heeftGeenClientInTehuis;
 import static nl.rivm.screenit.specification.mamma.MammaAfspraakSpecification.heeftScreeningsEenheid;
 import static nl.rivm.screenit.specification.mamma.MammaAfspraakSpecification.heeftStandplaats;
 import static nl.rivm.screenit.specification.mamma.MammaAfspraakSpecification.heeftStandplaatsPeriode;
@@ -530,16 +527,6 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 			.and(valtInDatumTijdPeriode(closedOpen(DateUtil.toLocalDateTime(capaciteitBlok.getVanaf()), DateUtil.toLocalDateTime(capaciteitBlok.getTot()))))
 			.and(heeftGeenCapaciteitBlok())
 			.and(heeftScreeningsEenheid(capaciteitBlok.getScreeningsEenheid()));
-
-		var blokType = capaciteitBlok.getBlokType();
-		if (blokType.equals(MammaCapaciteitBlokType.TEHUIS))
-		{
-			specification = specification.and(heeftClientInTehuis());
-		}
-		else
-		{
-			specification = specification.and(heeftGeenClientInTehuis()).and(heeftDoelgroepIn(blokType.getDoelgroepen()));
-		}
 
 		return baseAfspraakRepository.findAll(specification);
 	}

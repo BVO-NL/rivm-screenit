@@ -23,12 +23,11 @@ package nl.rivm.screenit.batch.service;
 
 import nl.rivm.screenit.model.inpakcentrum.naarinpakcentrum.InpakcentrumReadyResponseDto;
 import nl.rivm.screenit.model.inpakcentrum.naarinpakcentrum.InpakcentrumStatusResponseDto;
-import nl.rivm.screenit.model.inpakcentrum.naarinpakcentrum.InpakcentrumUploadRequestDto;
 import nl.rivm.screenit.model.inpakcentrum.naarinpakcentrum.InpakcentrumUploadResponseDto;
 
 public interface InpakcentrumRestApplicatie
 {
-	InpakcentrumUploadResponseDto upload(InpakcentrumUploadRequestDto payload);
+	InpakcentrumUploadResponseDto upload(String type, String filename, byte[] content);
 
 	InpakcentrumReadyResponseDto ready(boolean value);
 

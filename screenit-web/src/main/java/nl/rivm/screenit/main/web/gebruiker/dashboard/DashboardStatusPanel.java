@@ -39,8 +39,8 @@ import nl.rivm.screenit.main.web.component.table.NotClickablePropertyColumn;
 import nl.rivm.screenit.main.web.component.validator.EmailAddressenValidator;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.LoggingTable;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Medewerker_;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.dashboard.DashboardLogRegel_;
 import nl.rivm.screenit.model.dashboard.DashboardStatus;
 import nl.rivm.screenit.model.enums.Actie;
@@ -119,7 +119,7 @@ public class DashboardStatusPanel extends GenericPanel<DashboardStatus>
 			propertyChain(DashboardLogRegel_.LOG_REGEL, LogRegel_.GEBEURTENIS_DATUM), Constants.getDateTimeSecondsFormat()));
 		columns.add(new PropertyColumn<>(new SimpleStringResourceModel("label.medewerker"), propertyChain(LogRegel_.MEDEWERKER, Medewerker_.GEBRUIKERSNAAM)));
 
-		columns.add(new PropertyColumn<>(new SimpleStringResourceModel("label.client"), propertyChain(Client_.PERSOON, GbaPersoon_.ACHTERNAAM))
+		columns.add(new PropertyColumn<>(new SimpleStringResourceModel("label.client"), propertyChain(Client_.PERSOON, Persoon_.ACHTERNAAM))
 		{
 			@Override
 			public IModel<?> getDataModel(IModel<LogRegel> rowModel)

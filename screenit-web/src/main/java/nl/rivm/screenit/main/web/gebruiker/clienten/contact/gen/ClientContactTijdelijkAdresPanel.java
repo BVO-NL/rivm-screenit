@@ -31,7 +31,7 @@ import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContactActiePanel;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActie;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.rivm.screenit.util.DateUtil;
@@ -51,7 +51,7 @@ public class ClientContactTijdelijkAdresPanel extends AbstractClientContactActie
 	public ClientContactTijdelijkAdresPanel(String id, IModel<ClientContactActie> model, IModel<Client> client, List<Object> extraPanelParams)
 	{
 		super(id, model);
-		GbaPersoon persoon = client.getObject().getPersoon();
+		Persoon persoon = client.getObject().getPersoon();
 		tijdelijkAdresModel = ModelUtil.cModel(new TijdelijkAdres());
 		if (persoon.getTijdelijkAdres() != null)
 		{

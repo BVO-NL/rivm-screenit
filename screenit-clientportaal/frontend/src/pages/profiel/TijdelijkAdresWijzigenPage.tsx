@@ -29,6 +29,8 @@ import properties from "./TijdelijkAdresWijzigenPage.json"
 import TijdelijkAdresWijzigenForm from "../../components/form/adres/TijdelijkAdresWijzigenForm"
 import {useNavigate} from "react-router"
 import {showToast} from "../../utils/ToastUtil"
+import datadogService from "../../services/DatadogService"
+import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 
 const TijdelijkAdresWijzigenPage = () => {
 	const tijdelijkAdres = useSelector((state: State) => state.client.persoon.tijdelijkAdres)
@@ -43,6 +45,7 @@ const TijdelijkAdresWijzigenPage = () => {
 
 			<TijdelijkAdresWijzigenForm huidigTijdelijkAdres={tijdelijkAdres}
 										onSubmitSucces={(adres) => {
+											datadogService.stuurEvent("tijdelijkadresOpgegeven", AnalyticsCategorie.PROFIEL)
 											if (tijdelijkAdres) {
 												adres.id = tijdelijkAdres.id
 											}

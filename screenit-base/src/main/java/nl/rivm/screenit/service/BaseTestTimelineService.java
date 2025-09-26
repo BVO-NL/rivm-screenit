@@ -21,14 +21,14 @@ package nl.rivm.screenit.service;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 
 public interface BaseTestTimelineService
 {
 	void setTerugrekenenEnabled(boolean terugrekenenEnabled);
 
-	void rekenAllePersoonsDatumTerug(GbaPersoon persoon, int aantalDagen);
+	void rekenAllePersoonsDatumTerug(Persoon persoon, int aantalDagen);
 
 	boolean rekenObjectTerug(HibernateObject object, int aantalDagen);
 }

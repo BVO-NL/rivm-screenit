@@ -33,10 +33,10 @@ import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.CentraleEenheid;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DossierStatus;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.ZASRetouradres;
 import nl.rivm.screenit.model.ZorgInstelling;
 import nl.rivm.screenit.model.cervix.CervixDossier;
@@ -88,7 +88,7 @@ public class DocumentTemplateTestUtil
 
 	public static Client getDefaultFilledClient()
 	{
-		var persoon = new GbaPersoon();
+		var persoon = new Persoon();
 
 		persoon.setBsn("999999999");
 		persoon.setGeslacht(Geslacht.VROUW);
@@ -308,7 +308,7 @@ public class DocumentTemplateTestUtil
 
 	static CervixUitnodiging getDefaultCervixUitnodiging()
 	{
-		var persoon = new GbaPersoon();
+		var persoon = new Persoon();
 		persoon.setBsn(TestBsnGenerator.getValideBsn());
 
 		var client = new Client();

@@ -66,6 +66,7 @@ public class CervixBetaalopdrachtRegelSpecificatie extends AbstractHibernateObje
 	private List<CervixBoekRegel> boekRegels = new ArrayList<>();
 
 	@Enumerated(value = EnumType.STRING)
+	@Column(nullable = false)
 	private CervixTariefType tariefType;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)

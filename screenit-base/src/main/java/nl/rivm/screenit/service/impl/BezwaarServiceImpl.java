@@ -42,8 +42,8 @@ import nl.rivm.screenit.model.Brief_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactManier;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.OnderzoeksresultatenActie;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.algemeen.BezwaarGroupViewWrapper;
@@ -65,10 +65,10 @@ import nl.rivm.screenit.repository.algemeen.BezwaarBriefRepository;
 import nl.rivm.screenit.repository.algemeen.BezwaarMomentRepository;
 import nl.rivm.screenit.repository.algemeen.BezwaarRepository;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
-import nl.rivm.screenit.repository.algemeen.GbaPersoonRepository;
 import nl.rivm.screenit.repository.algemeen.GbaVraagRepository;
 import nl.rivm.screenit.repository.algemeen.OnderzoeksresultatenActieRepository;
 import nl.rivm.screenit.repository.algemeen.OverdrachtPersoonsgegevensRepository;
+import nl.rivm.screenit.repository.algemeen.PersoonRepository;
 import nl.rivm.screenit.repository.cervix.CervixBaseMonsterRepository;
 import nl.rivm.screenit.repository.cervix.CervixDossierRepository;
 import nl.rivm.screenit.repository.colon.ColonDossierRepository;
@@ -187,7 +187,7 @@ public class BezwaarServiceImpl implements BezwaarService
 	private BagAdresRepository bagAdresRepository;
 
 	@Autowired
-	private GbaPersoonRepository gbaPersoonRepository;
+	private PersoonRepository persoonRepository;
 
 	@Autowired
 	private ColonDossierRepository colonDossierRepository;
@@ -679,7 +679,7 @@ public class BezwaarServiceImpl implements BezwaarService
 		persoon.setAanhef(null);
 		persoon.setTussenvoegsel(null);
 		persoon.setPartnerTussenvoegsel(null);
-		gbaPersoonRepository.save(persoon);
+		persoonRepository.save(persoon);
 	}
 
 	private void verwijderBezwaarMoment(BezwaarMoment bezwaarMoment)
@@ -708,7 +708,7 @@ public class BezwaarServiceImpl implements BezwaarService
 	private void verwijderPersoon(Client client)
 	{
 		var persoon = client.getPersoon();
-		gbaPersoonRepository.delete(persoon);
+		persoonRepository.delete(persoon);
 		client.setPersoon(null);
 	}
 
@@ -1042,42 +1042,25 @@ public class BezwaarServiceImpl implements BezwaarService
 		baseGbaVraagService.verzoekVerwijderIndicatieBijBezwaarBrp(client);
 	}
 
-	private void wisPersoonsGegevensVoorMakenBezwaarBrp(GbaPersoon persoon)
+	private void wisPersoonsGegevensVoorMakenBezwaarBrp(Persoon persoon)
 	{
 
-		persoon.setAanduidingBijzonderNederlanderschap(null);
 		persoon.setAkteNummerOverlijden(null);
-		persoon.setBurgelijkeStaat(null);
 		persoon.setDatumAangaanPartnerschap(null);
 		persoon.setDatumAanvangAdreshouding(null);
 		persoon.setDatumOntbindingPartnerschap(null);
 		persoon.setDatumVertrokkenUitNederland(null);
 		persoon.setDatumVestigingNederland(null);
-		persoon.setDocumentType(null);
 		persoon.setEmailadres(null);
-		persoon.setFaxnummer(null);
-		persoon.setGbaGeboorteLand(null);
-		persoon.setGbaNationaliteiten(new ArrayList<>());
-		persoon.setGeboorteplaats(null);
-		persoon.setGeboorteland(null);
 		persoon.setIndicatieGeheim(null);
-		persoon.setMeerling(null);
 		persoon.setMobielnummer(null);
 		persoon.setOverlijdensdatum(null);
-		persoon.setPolissen(new ArrayList<>());
-		persoon.setRedenOntbindingPartnerschap(null);
 		persoon.setRegisterGemeenteAkteOverlijden(null);
 		persoon.setTelefoonnummer1(null);
 		persoon.setTelefoonnummer2(null);
 		persoon.setTitel(null);
 		persoon.setTitelCode(null);
-		persoon.setWidControleDatum(null);
-		persoon.setWidGecontroleerd(null);
-		persoon.setWidGeregistreerdDoor(null);
-		persoon.setWidnummer(null);
-		persoon.setWidOrganisatieMedewerker(null);
-		persoon.setWidRegistreerDatum(null);
-		gbaPersoonRepository.save(persoon);
+		persoonRepository.save(persoon);
 	}
 
 	private void bezwaarWetenSchappelijkOnderzoekEnKwaliteitswaarborging(BezwaarMoment moment)

@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.web.gebruiker.gedeeld.brievenafdrukken;
 
 /*-
@@ -22,11 +21,14 @@ package nl.rivm.screenit.main.web.gebruiker.gedeeld.brievenafdrukken;
  * =========================LICENSE_END==================================
  */
 
+import java.util.List;
+
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.colon.ColonMergedBrieven;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
+import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.Recht;
 
 import org.wicketstuff.shiro.ShiroConstraint;
@@ -39,9 +41,6 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	bevolkingsonderzoekScopes = Bevolkingsonderzoek.COLON)
 public class ColonAfdrukkenDocumentenPage extends AfdrukkenDocumentenBasePage<ColonMergedBrieven>
 {
-
-	private static final long serialVersionUID = 1L;
-
 	public ColonAfdrukkenDocumentenPage()
 	{
 		super(ColonMergedBrieven.class);
@@ -51,5 +50,11 @@ public class ColonAfdrukkenDocumentenPage extends AfdrukkenDocumentenBasePage<Co
 	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
 		return MedewerkerHoofdMenuItem.COLON;
+	}
+
+	@Override
+	protected List<BriefType> getBriefTypes()
+	{
+		return BriefType.getBriefTypes(true, true, Bevolkingsonderzoek.COLON);
 	}
 }

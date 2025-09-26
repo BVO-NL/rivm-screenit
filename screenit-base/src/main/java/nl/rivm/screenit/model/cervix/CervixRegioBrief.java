@@ -21,13 +21,14 @@ package nl.rivm.screenit.model.cervix;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.MergedBrieven;
@@ -37,16 +38,15 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
+@Getter
+@Setter
 @Entity
 @Table(schema = "cervix", name = "regio_brief", indexes = { @Index(name = "idx_cervix_regio_brief_gegenereerd", columnList = "gegenereerd") })
 @Audited
 public class CervixRegioBrief extends Brief
 {
 
-	@Serial
-	private static final long serialVersionUID = 1L;
-
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private ScreeningOrganisatie regio;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -62,35 +62,10 @@ public class CervixRegioBrief extends Brief
 		return mergedBrieven;
 	}
 
-	public void setMergedBrieven(CervixRegioMergedBrieven mergedBrieven)
-	{
-		this.mergedBrieven = mergedBrieven;
-	}
-
 	@Override
 	public void setMergedBrieven(MergedBrieven mergedBrieven)
 	{
 		this.mergedBrieven = (CervixRegioMergedBrieven) mergedBrieven;
-	}
-
-	public ScreeningOrganisatie getRegio()
-	{
-		return regio;
-	}
-
-	public void setRegio(ScreeningOrganisatie regio)
-	{
-		this.regio = regio;
-	}
-
-	public CervixHuisarts getHuisarts()
-	{
-		return huisarts;
-	}
-
-	public void setHuisarts(CervixHuisarts cervixHuisarts)
-	{
-		this.huisarts = cervixHuisarts;
 	}
 
 }

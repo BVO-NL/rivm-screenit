@@ -49,11 +49,11 @@ public class AuthenticatieDaoImpl extends BaseDaoImpl implements AuthenticatieDa
 	@Override
 	public IngelogdeMedewerkerDto getIngelogdeMedewerker(LoginContext loginContext)
 	{
-		var query = "SELECT IM.gebruikersnaam, IM.wachtwoord, IM.laatste_inlog, IM.yubikey_public, IM.login_response, IMaccount_id " +
-			"FROM INGELOGDE_MEDEWERKER IM " +
-			"WHERE IM.gebruikersnaam=? " +
-			"AND IM.wachtwoord=? " +
-			"AND IM.yubikey_public=?;";
+		var query = "SELECT gebruikersnaam, wachtwoord, laatste_inlog, yubikey_public, login_response, account_id " +
+			"FROM INGELOGDE_MEDEWERKER " +
+			"WHERE gebruikersnaam=? " +
+			"AND wachtwoord=? " +
+			"AND yubikey_public=?;";
 
 		try (Connection dbConnection = getConnection();
 			PreparedStatement statement = dbConnection.prepareStatement(query))

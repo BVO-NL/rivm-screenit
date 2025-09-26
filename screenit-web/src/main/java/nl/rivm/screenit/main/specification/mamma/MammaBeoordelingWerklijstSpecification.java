@@ -40,8 +40,8 @@ import nl.rivm.screenit.main.model.mamma.beoordeling.MammaBeWerklijstZoekObject;
 import nl.rivm.screenit.main.model.mamma.beoordeling.MammaCeWerklijstZoekObject;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.ScreeningRonde_;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -261,7 +261,7 @@ public class MammaBeoordelingWerklijstSpecification
 			r.get(MammaBeoordeling_.toegewezenOrganisatieMedewerker).isNull());
 	}
 
-	private static Join<Client, GbaPersoon> persoonJoin(From<?, ? extends MammaOnderzoek> onderzoekRoot)
+	private static Join<Client, Persoon> persoonJoin(From<?, ? extends MammaOnderzoek> onderzoekRoot)
 	{
 		var screeningRondeJoin = screeningRondeJoin(onderzoekRoot);
 		var dossierJoin = join(screeningRondeJoin, MammaScreeningRonde_.dossier);

@@ -28,7 +28,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.mamma.planning.index.PlanningPostcodeReeksIndex;
-import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.model.mamma.enums.MammaFactorType;
 import nl.rivm.screenit.model.mamma.enums.MammaUitnodigingsintervalType;
@@ -79,8 +78,6 @@ public final class PlanningClient extends PlanningEntiteit
 	private final LocalDate laatsteScreeningRondeCreatieDatum;
 
 	private final LocalDate laatsteMammografieAfgerondDatum;
-
-	private final MammaCapaciteitBlokType blokType;
 
 	private LocalDate vorigeScreeningRondeCreatieDatum;
 
@@ -150,8 +147,6 @@ public final class PlanningClient extends PlanningEntiteit
 				throw new IllegalArgumentException();
 			}
 		}
-
-		blokType = tehuis != null ? MammaCapaciteitBlokType.TEHUIS : MammaCapaciteitBlokType.REGULIER;
 	}
 
 	public BigDecimal getGebruikteCapaciteit(PlanningScreeningsOrganisatie screeningsOrganisatie)
@@ -166,7 +161,7 @@ public final class PlanningClient extends PlanningEntiteit
 
 	public PlanningStandplaats getStandplaats()
 	{
-		if (tehuis != null)
+		if (inTehuis())
 		{
 			return tehuis.getStandplaats();
 		}

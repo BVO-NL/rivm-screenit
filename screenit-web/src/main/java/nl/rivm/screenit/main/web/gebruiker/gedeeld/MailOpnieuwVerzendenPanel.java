@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.gedeeld;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
 import nl.rivm.screenit.model.DigitaalClientBericht;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -117,7 +117,7 @@ public class MailOpnieuwVerzendenPanel extends GenericPanel<DigitaalClientBerich
 
 	private void setEmailValidaties(TextField<String> emailVeld)
 	{
-		emailVeld.add(StringValidator.maximumLength(GbaPersoon.MAX_EMAIL_LENGTH));
+		emailVeld.add(StringValidator.maximumLength(Persoon.MAX_EMAIL_LENGTH));
 		emailVeld.add(EmailAddressValidator.getInstance());
 		emailVeld.setRequired(true);
 	}

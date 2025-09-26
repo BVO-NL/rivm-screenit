@@ -29,8 +29,8 @@ import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.validator.ScreenitTelefoonnummerValidator;
 import nl.rivm.screenit.main.web.gebruiker.testen.TestenBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.MailVerzenden;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.SmsVerzenden;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -124,7 +124,7 @@ public class TestPreferencesPage extends TestenBasePage
 		alternatiefMobielnummerTextfield.setRequired(true);
 		alternatiefMobielnummerTextfield.setOutputMarkupPlaceholderTag(true);
 		alternatiefMobielnummerTextfield.add(ScreenitTelefoonnummerValidator.mobielNederlandsNummer());
-		alternatiefMobielnummerTextfield.add(StringValidator.maximumLength(GbaPersoon.MAX_PHONE_LENGTH));
+		alternatiefMobielnummerTextfield.add(StringValidator.maximumLength(Persoon.MAX_PHONE_LENGTH));
 
 		alternatiefMobielnummerContainer.add(alternatiefMobielnummerTextfield);
 

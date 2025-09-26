@@ -23,6 +23,9 @@ package nl.rivm.screenit.batch.jobs.colon.fitherinnering.step;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -30,7 +33,7 @@ import nl.rivm.screenit.batch.jobs.colon.fitherinnering.ColonFITHerinneringJobCo
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.colon.ColonDossier_;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
@@ -51,9 +54,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import com.google.common.primitives.Ints;
-
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
@@ -92,7 +92,7 @@ public class ColonFITHerinneringBriefReader extends BaseSpecificationScrollableR
 		return specification;
 	}
 
-	private static Join<? extends Client, GbaPersoon> persoonJoin(From<?, ? extends Client> r)
+	private static Join<? extends Client, Persoon> persoonJoin(From<?, ? extends Client> r)
 	{
 		return join(r, Client_.persoon);
 	}

@@ -33,10 +33,10 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dao.UitnodigingsDao;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.TestModel;
 import nl.rivm.screenit.model.colon.ColonBrief;
@@ -451,11 +451,11 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 
 	private Client geefClient(String bsn, Date geboortedatum, GbaStatus gbaStatus, Date datumOverlijden, Geslacht geslacht)
 	{
-		Client client = clientService.getClientByBsn(bsn);
+		var client = clientService.getClientByBsn(bsn);
 		if (client == null)
 		{
 			client = new Client();
-			GbaPersoon persoon = new GbaPersoon();
+			var persoon = new Persoon();
 			client.setPersoon(persoon);
 			persoon.setGeslacht(Geslacht.MAN);
 			persoon.setAchternaam("Doe-" + bsn);
@@ -485,7 +485,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 			{
 				persoon.setGeboortedatum(geboortedatum);
 			}
-			persoon.setPatient(client);
+			persoon.setClient(client);
 			persoon.setOverlijdensdatum(datumOverlijden);
 			client.setGbaStatus(gbaStatus);
 			hibernateService.saveOrUpdate(persoon);
@@ -493,9 +493,9 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 
 			dossierFactory.maakDossiers(client);
 		}
-		else if (client != null)
+		else
 		{
-			GbaPersoon persoon = client.getPersoon();
+			var persoon = client.getPersoon();
 			if (geboortedatum != null)
 			{
 				persoon.setGeboortedatum(geboortedatum);

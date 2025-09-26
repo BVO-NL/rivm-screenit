@@ -21,9 +21,7 @@ package nl.rivm.screenit.model.colon;
  * =========================LICENSE_END==================================
  */
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +29,6 @@ import lombok.Setter;
 import nl.rivm.screenit.model.Organisatie;
 
 import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 
 @Entity
 @Audited
@@ -44,9 +41,5 @@ public class IFobtLaboratorium extends Organisatie
 	private String labIdScanner;
 
 	private String qbasenummer;
-
-	@ManyToOne(cascade = CascadeType.ALL)
-	@NotAudited
-	private AntedateerRange laatsteAntedateerRange;
 
 }

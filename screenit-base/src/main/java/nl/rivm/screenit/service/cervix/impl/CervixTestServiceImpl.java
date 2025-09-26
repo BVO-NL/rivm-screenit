@@ -33,8 +33,8 @@ import nl.rivm.screenit.model.AfmeldingType;
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactManier;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.MailMergeContext;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixAfmelding;
 import nl.rivm.screenit.model.cervix.CervixBrief;
@@ -101,22 +101,22 @@ public class CervixTestServiceImpl implements CervixTestService
 	private final DossierFactory dossierFactory;
 
 	@Override
-	public CervixDossier geefDossier(GbaPersoon gbaPersoon)
+	public CervixDossier geefDossier(Persoon persoon)
 	{
-		var client = testService.maakClient(gbaPersoon);
+		var client = testService.maakClient(persoon);
 		return client.getCervixDossier();
 	}
 
 	@Override
-	public CervixScreeningRonde geefScreeningRonde(GbaPersoon gbaPersoon)
+	public CervixScreeningRonde geefScreeningRonde(Persoon persoon)
 	{
-		return geefScreeningRonde(gbaPersoon, null);
+		return geefScreeningRonde(persoon, null);
 	}
 
 	@Override
-	public CervixScreeningRonde geefScreeningRonde(GbaPersoon gbaPersoon, Date inVervolgonderzoekDatum)
+	public CervixScreeningRonde geefScreeningRonde(Persoon persoon, Date inVervolgonderzoekDatum)
 	{
-		var dossier = geefDossier(gbaPersoon);
+		var dossier = geefDossier(persoon);
 
 		var ronde = dossier.getLaatsteScreeningRonde();
 		if (ronde == null)
@@ -132,16 +132,16 @@ public class CervixTestServiceImpl implements CervixTestService
 		return ronde;
 	}
 
-	private CervixUitnodiging geefLaatsteUitnodiging(GbaPersoon gbaPersoon)
+	private CervixUitnodiging geefLaatsteUitnodiging(Persoon persoon)
 	{
-		var screeningRonde = geefScreeningRonde(gbaPersoon);
+		var screeningRonde = geefScreeningRonde(persoon);
 		return screeningRonde.getLaatsteUitnodiging();
 	}
 
 	@Override
-	public CervixUitnodiging maakUitnodiging(GbaPersoon gbaPersoon, BriefType briefType)
+	public CervixUitnodiging maakUitnodiging(Persoon persoon, BriefType briefType)
 	{
-		var ronde = geefScreeningRonde(gbaPersoon);
+		var ronde = geefScreeningRonde(persoon);
 
 		var uitnodiging = factory.maakUitnodiging(ronde, briefType, true, true);
 		verzendLaatsteBrief(ronde);
@@ -149,10 +149,10 @@ public class CervixTestServiceImpl implements CervixTestService
 	}
 
 	@Override
-	public CervixUitstrijkje geefUitstrijkje(GbaPersoon gbaPersoon, CervixUitstrijkjeStatus uitstrijkjeStatus, String monsterId,
+	public CervixUitstrijkje geefUitstrijkje(Persoon persoon, CervixUitstrijkjeStatus uitstrijkjeStatus, String monsterId,
 		BMHKLaboratorium bmhkLaboratorium)
 	{
-		var uitnodiging = geefLaatsteUitnodiging(gbaPersoon);
+		var uitnodiging = geefLaatsteUitnodiging(persoon);
 
 		var uitstrijkje = (CervixUitstrijkje) HibernateHelper.deproxy(uitnodiging.getMonster());
 		if (uitstrijkjeStatus != null)
@@ -170,10 +170,10 @@ public class CervixTestServiceImpl implements CervixTestService
 	}
 
 	@Override
-	public CervixLabformulier geefLabformulier(GbaPersoon gbaPersoon, CervixLabformulierStatus labformulierStatus, BMHKLaboratorium laboratorium,
+	public CervixLabformulier geefLabformulier(Persoon persoon, CervixLabformulierStatus labformulierStatus, BMHKLaboratorium laboratorium,
 		CervixHuisartsLocatie huisartsLocatie)
 	{
-		var uitstrijkje = geefUitstrijkje(gbaPersoon, null, null, null);
+		var uitstrijkje = geefUitstrijkje(persoon, null, null, null);
 
 		var labformulier = uitstrijkje.getLabformulier();
 		if (labformulier == null)

@@ -42,8 +42,8 @@ import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.TestVervolgKe
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.MergedBrieven;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.cervix.CervixMergedBrieven;
@@ -511,7 +511,7 @@ public class CervixTestTimelineServiceImpl implements CervixTestTimelineService
 
 	private Client maakOfVindClient(TestTimelineModel model, String bsn)
 	{
-		var persoon = new GbaPersoon();
+		var persoon = new Persoon();
 		persoon.setBsn(bsn);
 		persoon.setGeslacht(model.getGeslacht());
 		persoon.setGeboortedatum(model.getGeboortedatum());
@@ -537,11 +537,11 @@ public class CervixTestTimelineServiceImpl implements CervixTestTimelineService
 		{
 			var client = maakOfVindClient(model, bsn);
 			clienten.add(client);
-			var gbaPersoon = client.getPersoon();
-			gbaPersoon.setGeslacht(model.getGeslacht());
-			gbaPersoon.setGeboortedatum(model.getGeboortedatum());
+			var persoon = client.getPersoon();
+			persoon.setGeslacht(model.getGeslacht());
+			persoon.setGeboortedatum(model.getGeboortedatum());
 			transgenderService.bijwerkenDeelnamemodus(client);
-			hibernateService.saveOrUpdateAll(gbaPersoon);
+			hibernateService.saveOrUpdateAll(persoon);
 		}
 		return clienten;
 	}

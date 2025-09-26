@@ -21,16 +21,12 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit.
  * =========================LICENSE_END==================================
  */
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
 import nl.rivm.screenit.main.web.component.fullcalendar.event.Event;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit.sources.ScreenITEventSourceFactory;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
-import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 
 public class WeekCapaciteitEventsProvider extends AbstractScreenITEventProvider
 {
@@ -45,8 +41,6 @@ public class WeekCapaciteitEventsProvider extends AbstractScreenITEventProvider
 	public void createEvents(Date start, Date end)
 	{
 		screenITEventSourceFactory.resetCapaciteit(start);
-		ScreeningOrganisatie regio = (ScreeningOrganisatie) HibernateHelper
-			.deproxy(screenITEventSourceFactory.getScreeningsEenheidModel().getObject().getBeoordelingsEenheid().getParent().getRegio());
 		for (PlanningCapaciteitBlokDto blok : screenITEventSourceFactory.getWeekDto().blokken)
 		{
 			Event event = new Event();
@@ -58,13 +52,8 @@ public class WeekCapaciteitEventsProvider extends AbstractScreenITEventProvider
 			event.setBorderColor(blok.blokType.getBorderColor());
 			switch (blok.blokType)
 			{
-			case REGULIER:
+			case SCREENING:
 				topRight = "<span class=\"label pull-right background-paars\" >" + blok.aantalOnderzoeken + "</span>";
-				break;
-			case TEHUIS:
-				topRight = "<span class=\"label pull-right background-paars\">"
-					+ BigDecimalUtil.decimalToString(regio.getFactorDubbeleTijdBk().multiply(new BigDecimal(blok.aantalOnderzoeken)))
-					+ "</span><span class=\"label pull-right week-capaciteit-tehuis\">" + blok.aantalOnderzoeken + "</span>";
 				break;
 			case GEEN_SCREENING:
 				title = blok.opmerkingen;

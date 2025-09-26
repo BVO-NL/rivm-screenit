@@ -36,11 +36,11 @@ import nl.rivm.screenit.dao.UitnodigingsDao;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DossierStatus;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.MailMergeContext;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonConclusie;
@@ -147,7 +147,7 @@ public class ColonTestServiceImpl implements ColonTestService
 	private ColonAfspraakslotRepository afspraakslotRepository;
 
 	@Override
-	public ColonConclusie maakAfspraakEnConclusie(GbaPersoon filter, Date fitVerwerkingsDatum)
+	public ColonConclusie maakAfspraakEnConclusie(Persoon filter, Date fitVerwerkingsDatum)
 	{
 		var intakeAfspraak = maakAfspraak(filter, fitVerwerkingsDatum);
 		var conclusie = intakeAfspraak.getConclusie();
@@ -168,7 +168,7 @@ public class ColonTestServiceImpl implements ColonTestService
 	}
 
 	@Override
-	public ColonIntakeAfspraak maakAfspraak(GbaPersoon filter, boolean eenmalig, Date fitVerwerkingsDatum)
+	public ColonIntakeAfspraak maakAfspraak(Persoon filter, boolean eenmalig, Date fitVerwerkingsDatum)
 	{
 		var client = geefClient(filter.getBsn(), filter.getGeboortedatum(), filter.getOverlijdensdatum());
 		geefAdres(client, filter.getGbaAdres().getGbaGemeente());
@@ -260,7 +260,7 @@ public class ColonTestServiceImpl implements ColonTestService
 	}
 
 	@Override
-	public ColonIntakeAfspraak maakAfspraak(GbaPersoon filter, Date fitVerwerkingsDatum)
+	public ColonIntakeAfspraak maakAfspraak(Persoon filter, Date fitVerwerkingsDatum)
 	{
 		return maakAfspraak(filter, true, fitVerwerkingsDatum);
 	}
@@ -285,7 +285,7 @@ public class ColonTestServiceImpl implements ColonTestService
 	}
 
 	@Override
-	public IFOBTTest zetVelorenIfobt(GbaPersoon filter, boolean zetUitslag, boolean gunstig)
+	public IFOBTTest zetVelorenIfobt(Persoon filter, boolean zetUitslag, boolean gunstig)
 	{
 		var client = geefClient(filter.getBsn(), filter.getGeboortedatum(), filter.getOverlijdensdatum());
 		geefAdres(client, filter.getGbaAdres().getGbaGemeente());
@@ -326,7 +326,7 @@ public class ColonTestServiceImpl implements ColonTestService
 	}
 
 	@Override
-	public void huidigeIFOBTvoorRapelDatum(GbaPersoon filter)
+	public void huidigeIFOBTvoorRapelDatum(Persoon filter)
 	{
 		var client = geefClient(filter.getBsn(), filter.getGeboortedatum(), filter.getOverlijdensdatum());
 		geefAdres(client, filter.getGbaAdres().getGbaGemeente());
@@ -354,7 +354,7 @@ public class ColonTestServiceImpl implements ColonTestService
 	}
 
 	@Override
-	public void maakClientKlaarVoorRappeleren(GbaPersoon filter)
+	public void maakClientKlaarVoorRappeleren(Persoon filter)
 	{
 		var client = geefClient(filter.getBsn(), filter.getGeboortedatum(), filter.getOverlijdensdatum());
 		geefAdres(client, filter.getGbaAdres().getGbaGemeente());
@@ -372,7 +372,7 @@ public class ColonTestServiceImpl implements ColonTestService
 	}
 
 	@Override
-	public void maakClientKlaarVoorAfronden(GbaPersoon filter)
+	public void maakClientKlaarVoorAfronden(Persoon filter)
 	{
 		var client = geefClient(filter.getBsn(), filter.getGeboortedatum(), filter.getOverlijdensdatum());
 		geefAdres(client, filter.getGbaAdres().getGbaGemeente());
@@ -412,21 +412,21 @@ public class ColonTestServiceImpl implements ColonTestService
 	}
 
 	@Override
-	public IFOBTTest maakHuidigeIFobtOntvangenEnGunstig(GbaPersoon filter)
+	public IFOBTTest maakHuidigeIFobtOntvangenEnGunstig(Persoon filter)
 	{
 
 		return maakHuidigeIFobtOntvangenInclUitslag(filter, new BigDecimal(20), BigDecimal.TEN);
 	}
 
 	@Override
-	public IFOBTTest maakHuidigeIFobtOntvangenEnOngunstig(GbaPersoon filter)
+	public IFOBTTest maakHuidigeIFobtOntvangenEnOngunstig(Persoon filter)
 	{
 
 		return maakHuidigeIFobtOntvangenInclUitslag(filter, BigDecimal.TEN, new BigDecimal(20));
 	}
 
 	@Override
-	public IFOBTTest maakHuidigeIFobtOntvangenInclUitslag(GbaPersoon filter, BigDecimal normwaarde, BigDecimal uitslag)
+	public IFOBTTest maakHuidigeIFobtOntvangenInclUitslag(Persoon filter, BigDecimal normwaarde, BigDecimal uitslag)
 	{
 
 		var client = geefClient(filter.getBsn(), filter.getGeboortedatum(), filter.getOverlijdensdatum());
@@ -465,7 +465,7 @@ public class ColonTestServiceImpl implements ColonTestService
 	}
 
 	@Override
-	public void maakUitnodigingEnTestenVergelijkendOnderzoek(GbaPersoon filter)
+	public void maakUitnodigingEnTestenVergelijkendOnderzoek(Persoon filter)
 	{
 		var client = geefClient(filter.getBsn(), filter.getGeboortedatum(), filter.getOverlijdensdatum());
 		hibernateService.saveOrUpdate(client);
@@ -603,7 +603,7 @@ public class ColonTestServiceImpl implements ColonTestService
 	}
 
 	@Override
-	public void huisartsBerichtKlaarzetten(GbaPersoon filter, HuisartsBerichtType berichtType)
+	public void huisartsBerichtKlaarzetten(Persoon filter, HuisartsBerichtType berichtType)
 	{
 		var client = geefClient(filter.getBsn(), filter.getGeboortedatum(), filter.getOverlijdensdatum());
 		geefAdres(client, filter.getGbaAdres().getGbaGemeente());
@@ -627,7 +627,7 @@ public class ColonTestServiceImpl implements ColonTestService
 		if (client == null)
 		{
 			client = new Client();
-			var persoon = new GbaPersoon();
+			var persoon = new Persoon();
 			client.setPersoon(persoon);
 			persoon.setVoornaam("John");
 			persoon.setAchternaam("Doe-" + bsn);
@@ -648,7 +648,7 @@ public class ColonTestServiceImpl implements ColonTestService
 			{
 				persoon.setGeboortedatum(geboortedatum);
 			}
-			persoon.setPatient(client);
+			persoon.setClient(client);
 			client.setGbaStatus(GbaStatus.INDICATIE_AANWEZIG);
 			hibernateService.saveOrUpdate(persoon);
 			hibernateService.saveOrUpdate(client);
@@ -703,7 +703,7 @@ public class ColonTestServiceImpl implements ColonTestService
 	{
 		for (var i = 0; i < aantal; i++)
 		{
-			var persoon = new GbaPersoon();
+			var persoon = new Persoon();
 			persoon.setGeslacht(Geslacht.MAN);
 			persoon.setGbaAdres(new BagAdres());
 			persoon.setBsn(TestBsnGenerator.getValideBsn());

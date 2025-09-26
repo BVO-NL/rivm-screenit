@@ -57,6 +57,7 @@ import org.hibernate.envers.NotAudited;
 public abstract class Dossier<SR extends ScreeningRonde<?, ?, ?, ?>, AF extends Afmelding<?, ?, ?>> extends AbstractHibernateObject
 {
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private DossierStatus status;
 
 	@Column(nullable = false)
@@ -74,7 +75,6 @@ public abstract class Dossier<SR extends ScreeningRonde<?, ?, ?, ?>, AF extends 
 	@NotAudited
 	@Getter
 	@Setter
-	@Column(nullable = true)
 	private Boolean wachtOpStartProject = false;
 
 	public abstract Client getClient();

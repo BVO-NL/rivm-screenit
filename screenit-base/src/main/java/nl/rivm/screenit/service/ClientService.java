@@ -30,9 +30,9 @@ import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.CentraleEenheid;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Dossier;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
@@ -95,7 +95,7 @@ public interface ClientService
 
 	boolean clientHeeftGbaIndicatie(Client client);
 
-	boolean isTijdelijkeAdresNuActueel(GbaPersoon persoon);
+	boolean isTijdelijkeAdresNuActueel(Persoon persoon);
 
 	void saveOrUpdateTijdelijkGbaAdres(Client client, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 

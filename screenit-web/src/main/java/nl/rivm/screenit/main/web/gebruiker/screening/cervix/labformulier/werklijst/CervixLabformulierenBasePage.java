@@ -35,9 +35,9 @@ import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.gebruiker.base.ZoekenContextMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.CervixScreeningBasePage;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.batch.BatchJob;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
 import nl.rivm.screenit.model.cervix.CervixLabformulierenFilter;
@@ -128,7 +128,7 @@ public abstract class CervixLabformulierenBasePage extends CervixScreeningBasePa
 		columns = new ArrayList<>();
 		columns.add(new PropertyColumn<>(Model.of(getString("barcode")), "barcode", "barcode"));
 		columns.add(
-			new PropertyColumn<>(Model.of("Cliënt"), PERSOON_PROPERTY + "." + GbaPersoon_.ACHTERNAAM,
+			new PropertyColumn<>(Model.of("Cliënt"), PERSOON_PROPERTY + "." + Persoon_.ACHTERNAAM,
 				CLIENT_PROPERTY)
 			{
 				@Override
@@ -138,10 +138,10 @@ public abstract class CervixLabformulierenBasePage extends CervixScreeningBasePa
 					return new Model(client != null ? NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client) : "");
 				}
 			});
-		columns.add(new GeboortedatumColumn<>(PERSOON_PROPERTY + "." + GbaPersoon_.GEBOORTEDATUM,
+		columns.add(new GeboortedatumColumn<>(PERSOON_PROPERTY + "." + Persoon_.GEBOORTEDATUM,
 			PERSOON_PROPERTY));
-		columns.add(new PropertyColumn<>(Model.of("BSN"), PERSOON_PROPERTY + "." + GbaPersoon_.BSN,
-			PERSOON_PROPERTY + "." + GbaPersoon_.BSN));
+		columns.add(new PropertyColumn<>(Model.of("BSN"), PERSOON_PROPERTY + "." + Persoon_.BSN,
+			PERSOON_PROPERTY + "." + Persoon_.BSN));
 		columns.add(new PropertyColumn<>(Model.of("Scandatum"), "scanDatum", "scanDatum"));
 		if (labformulierStatussenVisible)
 		{

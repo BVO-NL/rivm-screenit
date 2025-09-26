@@ -83,8 +83,8 @@ public class BaseHibernateConfig
 			new ClassPathResource("hibernate-spring-boot.cfg.xml"),
 			new ClassPathResource("hibernate-dataset-mapping.cfg.xml"),
 			new ClassPathResource("hibernate-mapping.cfg.xml"),
-			new ClassPathResource("hibernate-organisatie.cfg.xml"),
-			new ClassPathResource("hibernate-persoonsgegevens.cfg.xml")));
+			new ClassPathResource("hibernate-organisatie.cfg.xml")
+		));
 		additionalHibernateConfigLocations.ifPresent(configLocations::addAll);
 		hibernateSessionFactory.setConfigLocations(configLocations.toArray(Resource[]::new));
 

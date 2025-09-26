@@ -23,21 +23,22 @@ import ArrowIconComponent, {ArrowType} from "../vectors/ArrowIconComponent"
 import React from "react"
 
 export type AdvancedSearchLinkComponentProps = {
-    advancedSearch: boolean
+	advancedSearch: boolean
+	onClickStuurDatadogEvent?: () => void
 }
 
 const AdvancedSearchLinkComponent = (props: AdvancedSearchLinkComponentProps) => {
-    return (
-        !props.advancedSearch ?
-            <div>
-                <span>{properties.meer_mogelijkheden}</span>
-                <ArrowIconComponent type={ArrowType.ARROW_DOWN}/>
-            </div> :
-            <div>
-                <span>{properties.minder_mogelijkheden}</span>
-                <ArrowIconComponent type={ArrowType.ARROW_UP}/>
-            </div>
-    )
+	return (
+		!props.advancedSearch ?
+			<div onClick={props.onClickStuurDatadogEvent}>
+				<span>{properties.meer_mogelijkheden}</span>
+				<ArrowIconComponent type={ArrowType.ARROW_DOWN}/>
+			</div> :
+			<div>
+				<span>{properties.minder_mogelijkheden}</span>
+				<ArrowIconComponent type={ArrowType.ARROW_UP}/>
+			</div>
+	)
 }
 
 export default AdvancedSearchLinkComponent

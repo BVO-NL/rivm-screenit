@@ -37,8 +37,8 @@ import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaScreeningBasePage;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Medewerker;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaDossier_;
@@ -176,8 +176,8 @@ public class MammaPortfolioZoekenPanel extends Panel
 				}
 
 			});
-			columns.add(new PropertyColumn<>(Model.of("Bsn"), propertyChain(Client_.PERSOON, GbaPersoon_.BSN), "persoon.bsn"));
-			columns.add(new GeboortedatumColumn<>(propertyChain(Client_.PERSOON, GbaPersoon_.GEBOORTEDATUM), "persoon"));
+			columns.add(new PropertyColumn<>(Model.of("Bsn"), propertyChain(Client_.PERSOON, Persoon_.BSN), "persoon.bsn"));
+			columns.add(new GeboortedatumColumn<>(propertyChain(Client_.PERSOON, Persoon_.GEBOORTEDATUM), "persoon"));
 			columns.add(new PropertyColumn(Model.of("Laatste mammografie"), propertyChain(Client_.MAMMA_DOSSIER, MammaDossier_.LAATSTE_MAMMOGRAFIE_AFGEROND),
 				"mammaDossier.laatsteMammografieAfgerond"));
 

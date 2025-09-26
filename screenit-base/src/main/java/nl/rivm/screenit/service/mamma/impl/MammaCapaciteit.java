@@ -23,49 +23,24 @@ package nl.rivm.screenit.service.mamma.impl;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 
-import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class MammaCapaciteit implements Serializable
 {
-	Map<MammaCapaciteitBlokType, BlokTypeCapaciteit> capaciteitMap = new HashMap<>();
+	private BigDecimal beschikbareCapaciteit = BigDecimal.ZERO;
 
-	public MammaCapaciteit()
+	private BigDecimal benutteCapaciteit = BigDecimal.ZERO;
+
+	private BigDecimal vrijeCapaciteit = BigDecimal.ZERO;
+
+	private BigDecimal negatieveVrijeCapaciteit = BigDecimal.ZERO;
+
+	public BigDecimal getVrijeCapaciteit(boolean corrigeerNegatieveVrijeCapaciteit)
 	{
-		for (MammaCapaciteitBlokType capaciteitBlokType : MammaCapaciteitBlokType.values())
-		{
-			capaciteitMap.put(capaciteitBlokType, new BlokTypeCapaciteit());
-		}
-	}
-
-	public class BlokTypeCapaciteit implements Serializable
-	{
-		public BigDecimal beschikbareCapaciteit = BigDecimal.ZERO;
-
-		public BigDecimal benutteCapaciteit = BigDecimal.ZERO;
-
-		public BigDecimal vrijeCapaciteit = BigDecimal.ZERO;
-
-		public BigDecimal negatieveVrijeCapaciteit = BigDecimal.ZERO;
-
-		public BigDecimal getVrijeCapaciteit(boolean corrigeerNegatieveVrijeCapaciteit)
-		{
-			return corrigeerNegatieveVrijeCapaciteit ? vrijeCapaciteit.add(negatieveVrijeCapaciteit) : vrijeCapaciteit;
-		}
-	}
-
-	public BlokTypeCapaciteit getCapaciteit(MammaCapaciteitBlokType... blokTypes)
-	{
-		BlokTypeCapaciteit blokTypeCapaciteit = new BlokTypeCapaciteit();
-		for (MammaCapaciteitBlokType blokType : blokTypes)
-		{
-			blokTypeCapaciteit.beschikbareCapaciteit = blokTypeCapaciteit.beschikbareCapaciteit.add(capaciteitMap.get(blokType).beschikbareCapaciteit);
-			blokTypeCapaciteit.benutteCapaciteit = blokTypeCapaciteit.benutteCapaciteit.add(capaciteitMap.get(blokType).benutteCapaciteit);
-			blokTypeCapaciteit.vrijeCapaciteit = blokTypeCapaciteit.vrijeCapaciteit.add(capaciteitMap.get(blokType).vrijeCapaciteit);
-			blokTypeCapaciteit.negatieveVrijeCapaciteit = blokTypeCapaciteit.negatieveVrijeCapaciteit.add(capaciteitMap.get(blokType).negatieveVrijeCapaciteit);
-		}
-		return blokTypeCapaciteit;
+		return corrigeerNegatieveVrijeCapaciteit ? getVrijeCapaciteit().add(getNegatieveVrijeCapaciteit()) : getVrijeCapaciteit();
 	}
 }

@@ -35,7 +35,7 @@ import lombok.NoArgsConstructor;
 import nl.rivm.screenit.model.Brief_;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Dossier_;
-import nl.rivm.screenit.model.GbaPersoon_;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.Uitnodiging_;
 import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.cervix.CervixCytologieVerslag_;
@@ -170,7 +170,7 @@ public class CervixMonsterSpecification
 				.join(CervixScreeningRonde_.dossier)
 				.join(CervixDossier_.client)
 				.join(Client_.persoon)
-				.get(GbaPersoon_.bsn), bsn);
+				.get(Persoon_.bsn), bsn);
 	}
 
 	public static Specification<CervixMonster> heeftOntvangstRonde()

@@ -33,12 +33,12 @@ import lombok.NoArgsConstructor;
 import nl.rivm.screenit.model.BagAdres_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Gemeente_;
 import nl.rivm.screenit.model.MergedBrieven_;
 import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.Persoon;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.ScannedFormulier_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.cervix.CervixBrief_;
@@ -130,7 +130,7 @@ public class CervixLabformulierSpecification
 
 	public static Specification<CervixLabformulier> filterHeeftGeboortedatum(Date geboorteDatum)
 	{
-		return skipWhenNull(geboorteDatum, (r, q, cb) -> cb.equal(persoonJoin(r, JoinType.INNER).get(GbaPersoon_.geboortedatum), geboorteDatum));
+		return skipWhenNull(geboorteDatum, (r, q, cb) -> cb.equal(persoonJoin(r, JoinType.INNER).get(Persoon_.geboortedatum), geboorteDatum));
 	}
 
 	public static Specification<CervixLabformulier> heeftGeldigHuisartsbericht(LabprocesStap labprocesStap, String bsn)
@@ -202,7 +202,7 @@ public class CervixLabformulierSpecification
 		return skipWhenEmpty(bsn, (r, q, cb) ->
 		{
 			var joinType = getJoinTypeVanLabprocesStap(labprocesStap, bsn);
-			return cb.equal(persoonJoin(r, joinType).get(GbaPersoon_.bsn), bsn);
+			return cb.equal(persoonJoin(r, joinType).get(Persoon_.bsn), bsn);
 		});
 	}
 
@@ -250,7 +250,7 @@ public class CervixLabformulierSpecification
 		}
 	}
 
-	public static From<Client, GbaPersoon> persoonJoin(From<?, ? extends CervixLabformulier> labformulierRoot, JoinType joinType)
+	public static From<Client, Persoon> persoonJoin(From<?, ? extends CervixLabformulier> labformulierRoot, JoinType joinType)
 	{
 		var uitstrijkjeJoin = join(labformulierRoot, CervixLabformulier_.uitstrijkje, joinType);
 		var uitnodigingJoin = join(uitstrijkjeJoin, CervixMonster_.uitnodiging, joinType);
@@ -263,7 +263,7 @@ public class CervixLabformulierSpecification
 	private static From<Gemeente, ScreeningOrganisatie> screeningOrganisatieJoin(From<?, ? extends CervixLabformulier> labformulierRoot)
 	{
 		var persoonJoin = persoonJoin(labformulierRoot, JoinType.INNER);
-		var adresJoin = join(persoonJoin, GbaPersoon_.gbaAdres);
+		var adresJoin = join(persoonJoin, Persoon_.gbaAdres);
 		var gemeenteJoin = join(adresJoin, BagAdres_.gbaGemeente);
 		return join(gemeenteJoin, Gemeente_.screeningOrganisatie);
 	}

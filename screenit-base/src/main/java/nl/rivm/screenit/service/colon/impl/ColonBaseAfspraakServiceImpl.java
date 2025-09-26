@@ -38,10 +38,10 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.MailMergeContext;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonConclusie;
@@ -364,7 +364,7 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 		return specification;
 	}
 
-	private Function<From<?, ? extends ColonIntakeAfspraak>, From<?, ? extends GbaPersoon>> persoonJoin()
+	private Function<From<?, ? extends ColonIntakeAfspraak>, From<?, ? extends Persoon>> persoonJoin()
 	{
 		return r ->
 		{

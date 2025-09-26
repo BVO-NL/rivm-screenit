@@ -28,19 +28,17 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.service.algemeen.ProjectService;
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.main.web.component.form.FilterBvoFormPanel;
+import nl.rivm.screenit.main.web.component.form.FilterBriefBeheerFormPanel;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.modal.ConfirmPanel;
 import nl.rivm.screenit.main.web.component.modal.DefaultConfirmCallback;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.component.validator.FileValidator;
-import nl.rivm.screenit.main.web.component.validator.FormuliernummerValidator;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BriefDefinitie;
-import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.BriefDefinitiesFilter;
 import nl.rivm.screenit.model.UploadDocument;
-import nl.rivm.screenit.model.batch.BvoZoekCriteria;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.FileType;
@@ -53,15 +51,12 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.extensions.ajax.markup.html.AjaxEditableLabel;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -99,7 +94,7 @@ public class BriefBeheerPage extends AlgemeenPage
 
 	private final BootstrapDialog dialog;
 
-	private final IModel<BvoZoekCriteria> zoekCriteria;
+	private final IModel<BriefDefinitiesFilter> zoekCriteria;
 
 	private IModel<List<BriefDefinitie>> briefDefinities = null;
 
@@ -110,19 +105,19 @@ public class BriefBeheerPage extends AlgemeenPage
 		dialog = new BootstrapDialog("dialog");
 		add(dialog);
 
-		zoekCriteria = Model.of(new BvoZoekCriteria());
+		zoekCriteria = Model.of(new BriefDefinitiesFilter());
 		zoekCriteria.getObject().setBevolkingsonderzoeken(ScreenitSession.get().getOnderzoeken());
+		zoekCriteria.getObject().setBrievenNietMeerInGebruikOokTonen(Boolean.FALSE);
 		final WebMarkupContainer brievenContainer = new WebMarkupContainer("brievenContainer");
 		brievenContainer.setOutputMarkupId(true);
 		add(brievenContainer);
 		final var uploadHeaderContainer = new WebMarkupContainer("uploadHeader");
 		uploadHeaderContainer.setVisible(magAanpassen);
 		add(uploadHeaderContainer);
-		add(new FilterBvoFormPanel<>("bvoFilter", zoekCriteria, true, true)
+		add(new FilterBriefBeheerFormPanel("bvoFilter", zoekCriteria, true, true)
 		{
-
 			@Override
-			protected void doFilter(IModel<BvoZoekCriteria> filterModel, AjaxRequestTarget target)
+			protected void doFilter(IModel<BriefDefinitiesFilter> filterModel, AjaxRequestTarget target)
 			{
 				briefDefinities = null;
 				target.add(brievenContainer);
@@ -170,39 +165,6 @@ public class BriefBeheerPage extends AlgemeenPage
 				item.add(uitklapknop);
 
 				item.add(new Label("volgnummer", Model.of(briefDefinitie.getVolgnummer())));
-
-				AjaxEditableLabel<String> formulerierNummer = new AjaxEditableLabel<String>("formulierNummer")
-				{
-
-					@Override
-					protected String defaultNullLabel()
-					{
-						return "&gtKlik hier voor invoer&lt";
-					}
-
-					@Override
-					protected void onSubmit(AjaxRequestTarget target)
-					{
-						super.onSubmit(target);
-						Object modelObject = getDefaultModelObject();
-						if (modelObject instanceof String)
-						{
-							item.getModelObject().setFormulierNummer((String) modelObject);
-							hibernateService.saveOrUpdate(item.getModelObject());
-						}
-					}
-
-					@Override
-					protected FormComponent<String> newEditor(MarkupContainer parent, String componentId, IModel<String> model)
-					{
-						FormComponent<String> newEditor = super.newEditor(parent, componentId, model);
-						newEditor.add(new FormuliernummerValidator());
-						return newEditor;
-					}
-
-				};
-				item.add(formulerierNummer);
-				formulerierNummer.setRequired(true).setVisible(briefType.getVerzendendeOrganisatieType().equals(OrganisatieType.INPAKCENTRUM));
 
 				item.add(DateLabel.forDatePattern("geldigVanaf", Model.of(briefDefinitie.getLaatstGewijzigd()), "dd-MM-yyyy HH:mm:ss"));
 				item.add(DateLabel.forDatePattern("geldigTot", Model.of(briefDefinitie.getGeldigTot()), "dd-MM-yyyy HH:mm:ss"));
@@ -291,7 +253,6 @@ public class BriefBeheerPage extends AlgemeenPage
 		{
 			var nieuweBriefDefinitie = new BriefDefinitie();
 			nieuweBriefDefinitie.setBriefType(definitie.getBriefType());
-			nieuweBriefDefinitie.setFormulierNummer(definitie.getFormulierNummer());
 			nieuweBriefDefinitie.setUploader(getIngelogdeOrganisatieMedewerker());
 			briefService.saveBriefDefinitie(nieuweBriefDefinitie, uploadDocument.getFile(), uploadDocument.getContentType(), uploadDocument.getNaam());
 		}

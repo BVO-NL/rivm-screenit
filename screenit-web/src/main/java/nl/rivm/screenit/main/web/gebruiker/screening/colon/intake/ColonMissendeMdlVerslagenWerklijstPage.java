@@ -32,8 +32,8 @@ import nl.rivm.screenit.main.web.component.table.GeboortedatumColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDateTimePropertyColumn;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.colon.ColonConclusie_;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak_;
@@ -95,11 +95,11 @@ public class ColonMissendeMdlVerslagenWerklijstPage extends WerklijstIntakePage
 	{
 		List<IColumn<ColonIntakeAfspraak, String>> columns = new ArrayList<>();
 
-		columns.add(new ClientColumn<>(propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, GbaPersoon_.ACHTERNAAM), ColonIntakeAfspraak_.CLIENT));
+		columns.add(new ClientColumn<>(propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, Persoon_.ACHTERNAAM), ColonIntakeAfspraak_.CLIENT));
 		columns.add(
-			new PropertyColumn<>(Model.of("BSN"), propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, GbaPersoon_.BSN),
-				propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, GbaPersoon_.BSN)));
-		columns.add(new GeboortedatumColumn<>(propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, GbaPersoon_.GEBOORTEDATUM),
+			new PropertyColumn<>(Model.of("BSN"), propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, Persoon_.BSN),
+				propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, Persoon_.BSN)));
+		columns.add(new GeboortedatumColumn<>(propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, Persoon_.GEBOORTEDATUM),
 			propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON)));
 		columns.add(new ScreenitDateTimePropertyColumn<>(Model.of("Intakeafspraak"), ColonTijdslot_.VANAF, ColonTijdslot_.VANAF));
 		columns.add(new DateTimePropertyColumn<>(Model.of("Datum intake conclusie"), propertyChain(ColonIntakeAfspraak_.CONCLUSIE, ColonConclusie_.DATUM),

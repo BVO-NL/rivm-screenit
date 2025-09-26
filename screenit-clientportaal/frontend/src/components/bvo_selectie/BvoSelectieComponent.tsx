@@ -21,12 +21,14 @@
 import {Col, Row} from "react-bootstrap"
 import styles from "./BvoSelectieComponent.module.scss"
 import BvoCard from "../bvo_card/BvoCard"
-import {Bevolkingsonderzoek} from "../../datatypes/Bevolkingsonderzoek"
+import {Bevolkingsonderzoek, BevolkingsonderzoekNaam} from "../../datatypes/Bevolkingsonderzoek"
 import React from "react"
 import classNames from "classnames"
 import {useSelector} from "react-redux"
-import {useNavigate} from "react-router"
+import {useLocation, useNavigate} from "react-router"
 import {selectBehoortTotCervixDoelgroep, selectBehoortTotColonDoelgroep, selectBehoortTotMammaDoelgroep} from "../../selectors/BvoSelectors"
+import datadogService from "../../services/DatadogService"
+import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 
 type BvoSelectieComponentProps = {
 	className?: string
@@ -34,25 +36,42 @@ type BvoSelectieComponentProps = {
 
 const BvoSelectieComponent = (props: BvoSelectieComponentProps) => {
 	const navigate = useNavigate()
+	const location = useLocation()
 
 	const behoortTotMammaDoelgroep = useSelector(selectBehoortTotMammaDoelgroep)
 	const behoortTotColonDoelgroep = useSelector(selectBehoortTotColonDoelgroep)
 	const behoortTotCervixDoelgroep = useSelector(selectBehoortTotCervixDoelgroep)
 
+	let analyticsCategorie = null
+	if (location.pathname === "/") {
+		analyticsCategorie = AnalyticsCategorie.LANDINGSPAGINA
+	} else if (location.pathname === "/mamma") {
+		analyticsCategorie = AnalyticsCategorie.MAMMA
+	}
+
+	const stuurDatadogEventEnNavigeer = (bevolkingsonderzoekNaam: string, path: string) => {
+		if (analyticsCategorie) {
+			datadogService.stuurEvent(bevolkingsonderzoekNaam, analyticsCategorie)
+		}
+		navigate(path)
+	}
+
 	return (
 		<Row className={classNames(styles.bvoSelectie, props.className)}>
 			<Col lg={4}>
-				<BvoCard bvo={Bevolkingsonderzoek.MAMMA} clickable={behoortTotMammaDoelgroep} onClick={() => navigate("/mamma")}/>
+				<BvoCard bvo={Bevolkingsonderzoek.MAMMA} clickable={behoortTotMammaDoelgroep} onClick={() =>
+					stuurDatadogEventEnNavigeer(BevolkingsonderzoekNaam.MAMMA, "/mamma")}/>
 			</Col>
 			<Col lg={4}>
-				<BvoCard bvo={Bevolkingsonderzoek.CERVIX} clickable={behoortTotCervixDoelgroep} onClick={() => navigate("/cervix")}/>
+				<BvoCard bvo={Bevolkingsonderzoek.CERVIX} clickable={behoortTotCervixDoelgroep} onClick={() =>
+					stuurDatadogEventEnNavigeer(BevolkingsonderzoekNaam.CERVIX, "/cervix")}/>
 			</Col>
 			<Col lg={4}>
-				<BvoCard bvo={Bevolkingsonderzoek.COLON} clickable={behoortTotColonDoelgroep} onClick={() => navigate("/colon")}/>
+				<BvoCard bvo={Bevolkingsonderzoek.COLON} clickable={behoortTotColonDoelgroep} onClick={() =>
+					stuurDatadogEventEnNavigeer(BevolkingsonderzoekNaam.COLON, "/colon")}/>
 			</Col>
 		</Row>
 	)
-
 }
 
 export default BvoSelectieComponent

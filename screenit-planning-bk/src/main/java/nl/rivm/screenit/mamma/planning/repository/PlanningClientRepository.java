@@ -30,8 +30,8 @@ import nl.rivm.screenit.mamma.planning.repository.projectie.ClientProjectie;
 import nl.rivm.screenit.model.BagAdres_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Gemeente_;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.ScreeningRonde_;
 import nl.rivm.screenit.model.Uitnodiging_;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
@@ -78,8 +78,8 @@ public interface PlanningClientRepository extends BaseJpaRepository<Client>
 				var dossierJoin = join(r, Client_.mammaDossier);
 				var deelnamekansJoin = join(dossierJoin, MammaDossier_.deelnamekans);
 				var persoonJoin = join(r, Client_.persoon);
-				var adresJoin = join(persoonJoin, GbaPersoon_.gbaAdres);
-				var tijdelijkGbaAdresJoin = join(persoonJoin, GbaPersoon_.tijdelijkGbaAdres, LEFT);
+				var adresJoin = join(persoonJoin, Persoon_.gbaAdres);
+				var tijdelijkGbaAdresJoin = join(persoonJoin, Persoon_.tijdelijkGbaAdres, LEFT);
 				var gemeenteJoin = join(adresJoin, BagAdres_.gbaGemeente);
 				var screeningOrganisatieJoin = join(gemeenteJoin, Gemeente_.screeningOrganisatie);
 				var laatsteScreeningRondeJoin = join(dossierJoin, MammaDossier_.laatsteScreeningRonde, LEFT);
@@ -94,7 +94,7 @@ public interface PlanningClientRepository extends BaseJpaRepository<Client>
 
 				return List.of(
 					r.get(AbstractHibernateObject_.id).alias("id"),
-					persoonJoin.get(GbaPersoon_.geboortedatum).alias("geboortedatum"),
+					persoonJoin.get(Persoon_.geboortedatum).alias("geboortedatum"),
 					adresJoin.get(Adres_.postcode).alias("postcode"),
 					tijdelijkGbaAdresJoin.get(Adres_.postcode).alias("tijdelijkGbaPostcode"),
 					screeningOrganisatieJoin.get(AbstractHibernateObject_.id).alias("screeningOrganisatieId"),

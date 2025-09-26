@@ -39,6 +39,8 @@ import {CircularProgress} from "@mui/material"
 import SearchForm from "../SearchForm"
 import {lijstBevatMeegegevenDatum} from "../../../utils/DateUtil"
 import {isValid} from "date-fns"
+import datadogService from "../../../services/DatadogService"
+import {AnalyticsCategorie} from "../../../datatypes/AnalyticsCategorie"
 
 export type MammaAfspraakMakenFormProps = {
 	zoekFilter: AfspraakZoekFilter
@@ -183,7 +185,8 @@ const MammaAfspraakMakenForm = (props: MammaAfspraakMakenFormProps) => {
 						 await setFieldValue("afstand", undefined)
 						 setAdvancedSearch(!isAdvancedSearch)
 					 }}>
-					<AdvancedSearchLinkComponent advancedSearch={isAdvancedSearch}/>
+					<AdvancedSearchLinkComponent advancedSearch={isAdvancedSearch}
+												 onClickStuurDatadogEvent={() => datadogService.stuurEvent("meerzoekopties", AnalyticsCategorie.MAMMA_AFSPRAAK)}/>
 				</div>
 
 				{isAdvancedSearch && <ScreenitDropdown propertyName={"afstand"}
@@ -204,6 +207,7 @@ const MammaAfspraakMakenForm = (props: MammaAfspraakMakenFormProps) => {
 						label={getString(properties.form.button)}
 						displayArrow={ArrowType.ARROW_RIGHT}
 						onClick={() => {
+							datadogService.stuurEvent("zoekAfspraken", AnalyticsCategorie.MAMMA_AFSPRAAK, {datum: values.vanaf, plaats: values.plaats, reisafstand: values.afstand})
 							if (beschikbaarheidOpgehaald) {
 								handleSubmit()
 								props.onZoekenClick && props.onZoekenClick()

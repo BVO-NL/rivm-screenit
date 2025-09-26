@@ -27,7 +27,7 @@ import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ScreenitDateTextField;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BezwaarType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -80,9 +80,9 @@ public abstract class MammaClientZoekenBasePage extends MammaScreeningBasePage
 	private IModel<Client> createClientZoekObjectModel()
 	{
 		Client client = new Client();
-		GbaPersoon gbaPersoon = new GbaPersoon();
-		gbaPersoon.setGbaAdres(new BagAdres());
-		client.setPersoon(gbaPersoon);
+		Persoon persoon = new Persoon();
+		persoon.setGbaAdres(new BagAdres());
+		client.setPersoon(persoon);
 		return new CompoundPropertyModel<>(client);
 	}
 

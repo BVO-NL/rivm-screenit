@@ -39,8 +39,8 @@ public interface MammaAfspraakReserveringRepository extends BaseJpaRepository<Ma
 	@Query(nativeQuery = true, value =
 		"select ar.capaciteit_blok as capaciteitBlokId, ar.vanaf, ar.opkomstkans, d.doelgroep , d.eerste_onderzoek as eersteOnderzoek, t.id as tehuisId "
 			+ "from mamma.afspraak_reservering ar "
-			+ "join gedeeld.pat_patient pp on pp.id = ar.client "
-			+ "join mamma.dossier d on pp.mamma_dossier = d.id  "
+			+ "join gedeeld.client client on client.id = ar.client "
+			+ "join mamma.dossier d on client.mamma_dossier = d.id  "
 			+ "left join mamma.tehuis t on d.tehuis = t.id "
 			+ "where "
 			+ "ar.aangemaakt_op > :ophaalMoment "

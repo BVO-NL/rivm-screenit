@@ -24,7 +24,7 @@ package nl.rivm.screenit.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -36,6 +36,6 @@ public class EmailUtil
 
 	public static boolean isCorrectEmailadres(String email)
 	{
-		return StringUtils.isNotBlank(email) && email.length() <= GbaPersoon.MAX_EMAIL_LENGTH && email.matches(EMAIL_PATTERN);
+		return StringUtils.isNotBlank(email) && email.length() <= Persoon.MAX_EMAIL_LENGTH && email.matches(EMAIL_PATTERN);
 	}
 }

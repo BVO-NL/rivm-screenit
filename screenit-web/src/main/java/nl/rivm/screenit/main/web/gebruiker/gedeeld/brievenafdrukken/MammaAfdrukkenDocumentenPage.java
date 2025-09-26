@@ -21,10 +21,13 @@ package nl.rivm.screenit.main.web.gebruiker.gedeeld.brievenafdrukken;
  * =========================LICENSE_END==================================
  */
 
+import java.util.List;
+
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
+import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaMergedBrieven;
 
@@ -38,9 +41,6 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	bevolkingsonderzoekScopes = Bevolkingsonderzoek.MAMMA)
 public class MammaAfdrukkenDocumentenPage extends AfdrukkenDocumentenBasePage<MammaMergedBrieven>
 {
-
-	private static final long serialVersionUID = 1L;
-
 	public MammaAfdrukkenDocumentenPage()
 	{
 		super(MammaMergedBrieven.class);
@@ -50,5 +50,11 @@ public class MammaAfdrukkenDocumentenPage extends AfdrukkenDocumentenBasePage<Ma
 	protected MedewerkerHoofdMenuItem getActieveMenuItem()
 	{
 		return MedewerkerHoofdMenuItem.MAMMA;
+	}
+
+	@Override
+	protected List<BriefType> getBriefTypes()
+	{
+		return BriefType.getBriefTypes(true, true, Bevolkingsonderzoek.MAMMA);
 	}
 }

@@ -22,6 +22,7 @@ package nl.rivm.screenit.batch.service.impl;
  */
 
 import java.time.Duration;
+import java.util.Base64;
 import java.util.function.Consumer;
 
 import lombok.RequiredArgsConstructor;
@@ -105,8 +106,12 @@ public class InpakcentrumRestApplicatieImpl implements InpakcentrumRestApplicati
 	}
 
 	@Override
-	public InpakcentrumUploadResponseDto upload(InpakcentrumUploadRequestDto payload)
+	public InpakcentrumUploadResponseDto upload(String type, String filename, byte[] content)
 	{
+		var payload = new InpakcentrumUploadRequestDto();
+		payload.setFilename(filename);
+		payload.setDatatype(type);
+		payload.setContent(content != null ? Base64.getEncoder().encodeToString(content) : null);
 		return sendToInpakcentrumRestApplicatie("/upload", payload, InpakcentrumUploadResponseDto.class, HttpMethod.POST).getBody();
 	}
 

@@ -21,7 +21,6 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,19 +34,20 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
+@Getter
+@Setter
 @Entity
 @Audited
 public class ScreeningOrganisatie extends Organisatie
 {
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@OneToMany(mappedBy = "screeningOrganisatie", cascade = CascadeType.ALL)
 	private List<Gemeente> gemeentes = new ArrayList<>();
 
@@ -92,13 +92,12 @@ public class ScreeningOrganisatie extends Organisatie
 
 	private String enovationEdiAdres;
 
-	@Column(length = 34, nullable = true)
+	@Column(length = 34)
 	private String iban;
 
-	@ColumnDefault("10")
-	private Integer afspraakDrempelBk;
+	private Integer afspraakDrempelBk = 10;
 
-	@Column(length = 70, nullable = true)
+	@Column(length = 70)
 	private String ibanTenaamstelling;
 
 	@NotAudited
@@ -109,281 +108,21 @@ public class ScreeningOrganisatie extends Organisatie
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private RegioBvoContactGegevens regioBvoContactGegevensBmhk;
 
-	@Column(nullable = true, precision = HibernateMagicNumber.P3, scale = HibernateMagicNumber.S2)
+	@Column(precision = HibernateMagicNumber.P3, scale = HibernateMagicNumber.S2)
 	private BigDecimal factorEersteOnderzoekBk;
 
-	@Column(nullable = true, precision = HibernateMagicNumber.P3, scale = HibernateMagicNumber.S2)
+	@Column(precision = HibernateMagicNumber.P3, scale = HibernateMagicNumber.S2)
 	private BigDecimal factorDubbeleTijdBk;
 
-	@Column(nullable = true, precision = HibernateMagicNumber.P3, scale = HibernateMagicNumber.S2)
+	@Column(precision = HibernateMagicNumber.P3, scale = HibernateMagicNumber.S2)
 	private BigDecimal factorMinderValideBk;
 
-	@Column(nullable = true)
+	@Column
 	private Integer wekenVanTevorenUitnodigen;
 
-	@Column(nullable = true)
+	@Column
 	private Integer vervallenCapaciteitsreserveringDagenBk;
 
-	@Column(nullable = true)
+	@Column
 	private Integer minimaleDagCapaciteitMinderValideAfspraken;
-
-	public List<Gemeente> getGemeentes()
-	{
-		return gemeentes;
-	}
-
-	public void setGemeentes(List<Gemeente> gemeentes)
-	{
-		this.gemeentes = gemeentes;
-	}
-
-	public Integer getIfobtRetourPercentage()
-	{
-		return ifobtRetourPercentage;
-	}
-
-	public void setIfobtRetourPercentage(Integer ifobtRetourPercentage)
-	{
-		this.ifobtRetourPercentage = ifobtRetourPercentage;
-	}
-
-	public String getRcmdl()
-	{
-		return rcmdl;
-	}
-
-	public void setRcmdl(String rcmdl)
-	{
-		this.rcmdl = rcmdl;
-	}
-
-	public UploadDocument getLogo()
-	{
-		return logo;
-	}
-
-	public void setLogo(UploadDocument logo)
-	{
-		this.logo = logo;
-	}
-
-	public String getRegioCode()
-	{
-		return regioCode;
-	}
-
-	public void setRegioCode(String regioCode)
-	{
-		this.regioCode = regioCode;
-	}
-
-	public String getVertegenwoordiger()
-	{
-		return vertegenwoordiger;
-	}
-
-	public void setVertegenwoordiger(String vertegenwoordiger)
-	{
-		this.vertegenwoordiger = vertegenwoordiger;
-	}
-
-	public String getRechtbank()
-	{
-		return rechtbank;
-	}
-
-	public void setRechtbank(String rechtbank)
-	{
-		this.rechtbank = rechtbank;
-	}
-
-	public UploadDocument getBestuurSign()
-	{
-		return bestuurSign;
-	}
-
-	public void setBestuurSign(UploadDocument bestuurSign)
-	{
-		this.bestuurSign = bestuurSign;
-	}
-
-	public UploadDocument getRcmdlSign()
-	{
-		return rcmdlSign;
-	}
-
-	public void setRcmdlSign(UploadDocument rcmdlSign)
-	{
-		this.rcmdlSign = rcmdlSign;
-	}
-
-	public UploadDocument getKwaliteitslogo()
-	{
-		return kwaliteitslogo;
-	}
-
-	public void setKwaliteitslogo(UploadDocument kwaliteitslogo)
-	{
-		this.kwaliteitslogo = kwaliteitslogo;
-	}
-
-	public String getClientPortaalVrijeTekst()
-	{
-		return clientPortaalVrijeTekst;
-	}
-
-	public void setClientPortaalVrijeTekst(String clientPortaalVrijeTekst)
-	{
-		this.clientPortaalVrijeTekst = clientPortaalVrijeTekst;
-	}
-
-	public String getEnovationKlantnummer()
-	{
-		return enovationKlantnummer;
-	}
-
-	public void setEnovationKlantnummer(String enovationKlantnummer)
-	{
-		this.enovationKlantnummer = enovationKlantnummer;
-	}
-
-	public String getEnovationEdiAdres()
-	{
-		return enovationEdiAdres;
-	}
-
-	public void setEnovationEdiAdres(String enovationEdiAdres)
-	{
-		this.enovationEdiAdres = enovationEdiAdres;
-	}
-
-	public UploadDocument getLogoBrief()
-	{
-		return logoBrief;
-	}
-
-	public void setLogoBrief(UploadDocument logoBrief)
-	{
-		this.logoBrief = logoBrief;
-	}
-
-	public List<ZASRetouradres> getRetouradressen()
-	{
-		return retouradressen;
-	}
-
-	public void setRetouradressen(List<ZASRetouradres> retouradressen)
-	{
-		this.retouradressen = retouradressen;
-	}
-
-	public String getIban()
-	{
-		return iban;
-	}
-
-	public void setIban(String iban)
-	{
-		this.iban = iban;
-	}
-
-	public String getIbanTenaamstelling()
-	{
-		return ibanTenaamstelling;
-	}
-
-	public void setIbanTenaamstelling(String tenaamstelling)
-	{
-		this.ibanTenaamstelling = tenaamstelling;
-	}
-
-	public Integer getAfspraakDrempelBk()
-	{
-		return afspraakDrempelBk;
-	}
-
-	public void setAfspraakDrempelBk(Integer afspraakDrempelBk)
-	{
-		this.afspraakDrempelBk = afspraakDrempelBk;
-	}
-
-	public RegioBvoContactGegevens getRegioBvoContactGegevensDk()
-	{
-		return regioBvoContactGegevensDk;
-	}
-
-	public void setRegioBvoContactGegevensDk(RegioBvoContactGegevens regioBvoContactGegevensDk)
-	{
-		this.regioBvoContactGegevensDk = regioBvoContactGegevensDk;
-	}
-
-	public RegioBvoContactGegevens getRegioBvoContactGegevensBmhk()
-	{
-		return regioBvoContactGegevensBmhk;
-	}
-
-	public void setRegioBvoContactGegevensBmhk(RegioBvoContactGegevens regioBvoContactGegevensBmhk)
-	{
-		this.regioBvoContactGegevensBmhk = regioBvoContactGegevensBmhk;
-	}
-
-	public BigDecimal getFactorMinderValideBk()
-	{
-		return factorMinderValideBk;
-	}
-
-	public void setFactorMinderValideBk(BigDecimal factorMinderValide)
-	{
-		this.factorMinderValideBk = factorMinderValide;
-	}
-
-	public BigDecimal getFactorDubbeleTijdBk()
-	{
-		return factorDubbeleTijdBk;
-	}
-
-	public void setFactorDubbeleTijdBk(BigDecimal factorDubbeleTijd)
-	{
-		this.factorDubbeleTijdBk = factorDubbeleTijd;
-	}
-
-	public BigDecimal getFactorEersteOnderzoekBk()
-	{
-		return factorEersteOnderzoekBk;
-	}
-
-	public void setFactorEersteOnderzoekBk(BigDecimal factorFirstTimer)
-	{
-		this.factorEersteOnderzoekBk = factorFirstTimer;
-	}
-
-	public Integer getWekenVanTevorenUitnodigen()
-	{
-		return wekenVanTevorenUitnodigen;
-	}
-
-	public void setWekenVanTevorenUitnodigen(Integer wekenVanTevorenUitnodigen)
-	{
-		this.wekenVanTevorenUitnodigen = wekenVanTevorenUitnodigen;
-	}
-
-	public Integer getMinimaleDagCapaciteitMinderValideAfspraken()
-	{
-		return minimaleDagCapaciteitMinderValideAfspraken;
-	}
-
-	public void setMinimaleDagCapaciteitMinderValideAfspraken(Integer minimaleDagCapaciteitMinderValideAfspraken)
-	{
-		this.minimaleDagCapaciteitMinderValideAfspraken = minimaleDagCapaciteitMinderValideAfspraken;
-	}
-
-	public Integer getVervallenCapaciteitsreserveringDagenBk()
-	{
-		return vervallenCapaciteitsreserveringDagenBk;
-	}
-
-	public void setVervallenCapaciteitsreserveringDagenBk(Integer vervallenCapaciteitsreserveringDagen)
-	{
-		this.vervallenCapaciteitsreserveringDagenBk = vervallenCapaciteitsreserveringDagen;
-	}
 }

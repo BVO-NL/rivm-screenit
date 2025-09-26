@@ -21,15 +21,18 @@ package nl.rivm.screenit.batch.jobs.cervix.selectie.vooraankondiging;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.jobs.cervix.CervixLabPartitioner;
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.BagAdres_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Gemeente;
+import nl.rivm.screenit.model.Persoon;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.cervix.enums.CervixLeeftijdcategorie;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -41,9 +44,6 @@ import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
 
 import static nl.rivm.screenit.model.DossierStatus.ACTIEF;
 import static nl.rivm.screenit.specification.ExtendedSpecification.not;
@@ -89,10 +89,10 @@ public class CervixVooraankondigingSelectieReader extends BaseSpecificationScrol
 
 	private static Join<?, Gemeente> gemeenteJoin(From<?, ? extends Client> r)
 	{
-		return join(join(persoonJoin(r), GbaPersoon_.gbaAdres), BagAdres_.gbaGemeente);
+		return join(join(persoonJoin(r), Persoon_.gbaAdres), BagAdres_.gbaGemeente);
 	}
 
-	private static Join<? extends Client, GbaPersoon> persoonJoin(From<?, ? extends Client> r)
+	private static Join<? extends Client, Persoon> persoonJoin(From<?, ? extends Client> r)
 	{
 		return join(r, Client_.persoon);
 	}

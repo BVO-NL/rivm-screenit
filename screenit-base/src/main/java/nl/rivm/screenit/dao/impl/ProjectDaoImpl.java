@@ -276,8 +276,8 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 		var sql = ("update %s.%s set wacht_op_start_project = true WHERE id in "
 			+ "(select dossier_.id as y0_ " +
 			"from gedeeld.project_client projectClient_ " +
-			"inner join gedeeld.pat_patient patient_ on projectClient_.client=patient_.id " +
-			"inner join %s.%s dossier_ on patient_.%s=dossier_.id " +
+			"inner join gedeeld.client client_ on projectClient_.client=client_.id " +
+			"inner join %s.%s dossier_ on client_.%s=dossier_.id " +
 			"inner join gedeeld.project_groep groep1_ on projectClient_.groep=groep1_.id " +
 			"inner join algemeen.project project2_ on groep1_.project=project2_.id " +
 			"inner join algemeen.project_bevolkingsonderzoeken projectBevolkingsonderzoeken3_ on project2_.id=projectBevolkingsonderzoeken3_.project " +

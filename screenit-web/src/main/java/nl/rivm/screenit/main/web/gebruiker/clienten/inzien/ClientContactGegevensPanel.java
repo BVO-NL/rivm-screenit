@@ -22,9 +22,10 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.inzien;
  */
 
 import nl.rivm.screenit.main.web.ScreenitSession;
+import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
 import nl.rivm.screenit.main.web.component.validator.ScreenitTelefoonnummerValidator;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.ClientService;
@@ -40,9 +41,6 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-
-import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
-
 import org.apache.wicket.validation.validator.StringValidator;
 
 public class ClientContactGegevensPanel extends GenericPanel<Client>
@@ -67,8 +65,8 @@ public class ClientContactGegevensPanel extends GenericPanel<Client>
 		var form = new Form<>("contactgegevensForm", getModel());
 		var contactgegevens = new WebMarkupContainer("contactgegevens");
 
-		contactgegevens.add(maakInvoerVeld("persoon.telefoonnummer1", GbaPersoon.MAX_PHONE_LENGTH).add(ScreenitTelefoonnummerValidator.mobielNederlandsNummer()));
-		contactgegevens.add(maakInvoerVeld("persoon.telefoonnummer2", GbaPersoon.MAX_PHONE_LENGTH).add(ScreenitTelefoonnummerValidator.alle()));
+		contactgegevens.add(maakInvoerVeld("persoon.telefoonnummer1", Persoon.MAX_PHONE_LENGTH).add(ScreenitTelefoonnummerValidator.mobielNederlandsNummer()));
+		contactgegevens.add(maakInvoerVeld("persoon.telefoonnummer2", Persoon.MAX_PHONE_LENGTH).add(ScreenitTelefoonnummerValidator.alle()));
 		contactgegevens.add(maakEmailInvoer());
 
 		contactgegevens.add(new IndicatingAjaxSubmitLink("opslaan")
@@ -87,7 +85,7 @@ public class ClientContactGegevensPanel extends GenericPanel<Client>
 
 	private FormComponent<String> maakEmailInvoer()
 	{
-		return maakInvoerVeld("persoon.emailadres", GbaPersoon.MAX_EMAIL_LENGTH)
+		return maakInvoerVeld("persoon.emailadres", Persoon.MAX_EMAIL_LENGTH)
 			.add(EmailAddressValidator.getInstance())
 			.setLabel(Model.of(getString("emailadres.label")));
 	}

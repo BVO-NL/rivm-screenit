@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import nl.rivm.screenit.main.service.BriefService;
-import nl.rivm.screenit.main.service.cervix.CervixHuisartsService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.PollingAbstractAjaxTimerBehavior;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
@@ -37,6 +36,7 @@ import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.component.table.ActiefPropertyColumn;
 import nl.rivm.screenit.main.web.component.table.AjaxImageCellPanel;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
+import nl.rivm.screenit.main.web.component.table.ScreenitDateTimePropertyColumn;
 import nl.rivm.screenit.main.web.component.table.booleanfilter.BooleanFilterPropertyColumn;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
@@ -53,20 +53,16 @@ import nl.rivm.screenit.model.cervix.CervixMergedBrieven;
 import nl.rivm.screenit.model.cervix.CervixRegioMergedBrieven;
 import nl.rivm.screenit.model.colon.ColonMergedBrieven;
 import nl.rivm.screenit.model.enums.Actie;
-import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.model.mamma.MammaMergedBrieven;
 import nl.rivm.screenit.model.project.ProjectMergedBrieven;
-import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.LogService;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
@@ -116,24 +112,10 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 		}
 	}
 
-	private static final long serialVersionUID = 1L;
-
 	@SpringBean
 	private BriefService briefService;
 
-	@SpringBean
-	private LogService logService;
-
-	@SpringBean
-	private HibernateService hibernateService;
-
-	@SpringBean
-	private CervixHuisartsService cervixHuisartsService;
-
-	@SpringBean
-	private ICurrentDateSupplier currentDateSupplier;
-
-	private IModel<MergedBrievenFilter<MB>> filterModel = Model.of(new MergedBrievenFilter<>());
+	private final IModel<MergedBrievenFilter<MB>> filterModel = Model.of(new MergedBrievenFilter<>());
 
 	private IModel<ScreeningOrganisatie> screeningOrganisatie;
 
@@ -153,6 +135,17 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 		final WebMarkupContainer documentContainer = new WebMarkupContainer("documentContainer");
 		documentContainer.setOutputMarkupId(true);
 		add(documentContainer);
+
+		var filterPanel = new AfdrukkenFilterPanel<MB>("filterPanel", filterModel, getBriefTypes())
+		{
+			@Override
+			protected void doFilter(IModel<MergedBrievenFilter<MB>> filterModel, AjaxRequestTarget target)
+			{
+				target.add(documentContainer);
+			}
+		};
+		filterPanel.setOutputMarkupId(true);
+		add(filterPanel);
 
 		timer = new PollingAbstractAjaxTimerBehavior(Duration.of(2, ChronoUnit.SECONDS))
 		{
@@ -198,7 +191,7 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 				new PropertyColumn<>(Model.of("Screeningsorganisatie"), propertyChain(MergedBrieven_.SCREENING_ORGANISATIE, Organisatie_.NAAM),
 					propertyChain(MergedBrieven_.SCREENING_ORGANISATIE, Organisatie_.NAAM)));
 		}
-		columns.add(new PropertyColumn<>(Model.of("Datum"), propertyChain(MergedBrieven_.CREATIE_DATUM), propertyChain(MergedBrieven_.CREATIE_DATUM)));
+		columns.add(new ScreenitDateTimePropertyColumn<>(Model.of("Datum/tijd"), MergedBrieven_.CREATIE_DATUM, MergedBrieven_.CREATIE_DATUM));
 		columns.add(new AbstractColumn<>(Model.of("Downloaden"))
 		{
 			@Override
@@ -209,22 +202,15 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 					@Override
 					protected void onClick(AjaxRequestTarget target)
 					{
-						printDialog.openWith(target, new MergedBrievenPrintPanel<MB>(IDialog.CONTENT_ID, getModel()));
-						MergedBrieven mergedbrieven = getModelObject();
-						if (mergedbrieven.getGeprint().equals(Boolean.FALSE))
+						printDialog.openWith(target, new MergedBrievenPrintPanel<MB>(IDialog.CONTENT_ID, getModel())
 						{
-							mergedbrieven.setGeprint(true);
-							mergedbrieven.setPrintDatum(currentDateSupplier.getDate());
-							mergedbrieven.setAfgedruktDoor(getIngelogdeOrganisatieMedewerker().getMedewerker());
-							if (HibernateHelper.deproxy(mergedbrieven) instanceof CervixRegioMergedBrieven)
+							@Override
+							protected void sluiten(AjaxRequestTarget target)
 							{
-								cervixHuisartsService.updateLabformulierAanvraag((CervixRegioMergedBrieven) mergedbrieven);
+								printDialog.close(target);
+								target.add(documentContainer);
 							}
-						}
-						hibernateService.saveOrUpdate(getModelObject());
-						target.add(documentContainer);
-
-						logAction(LogGebeurtenis.BRIEF_AFGEDRUKT, (MB) getDefaultModelObject());
+						});
 					}
 				});
 			}
@@ -285,31 +271,9 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 		ScreenitDataTable<MB, String> brieven = new ScreenitDataTable<>("brieven", columns, new MergedBrievenDataProvider(), new Model<>(""));
 
 		documentContainer.add(brieven);
-
-		AjaxLink<Void> afdrukkenBtn = new AjaxLink<>("afdrukken")
-		{
-			@Override
-			public void onClick(AjaxRequestTarget target)
-			{
-				filterModel.getObject().setGeprint(false);
-				filterModel.getObject().setControle(null);
-				target.add(documentContainer);
-			}
-		};
-		add(afdrukkenBtn);
-
-		AjaxLink<Void> controlerenBtn = new AjaxLink<>("controleren")
-		{
-			@Override
-			public void onClick(AjaxRequestTarget target)
-			{
-				filterModel.getObject().setGeprint(true);
-				filterModel.getObject().setControle(false);
-				target.add(documentContainer);
-			}
-		};
-		add(controlerenBtn);
 	}
+
+	protected abstract List<BriefType> getBriefTypes();
 
 	@Override
 	protected void onDetach()
@@ -317,22 +281,6 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 		super.onDetach();
 		ModelUtil.nullSafeDetach(filterModel);
 		ModelUtil.nullSafeDetach(screeningOrganisatie);
-	}
-
-	@SuppressWarnings("rawtypes")
-	private void logAction(LogGebeurtenis gebeurtenis, MergedBrieven mergedBrieven)
-	{
-		String melding = "Document afgedrukt met type:";
-		if (mergedBrieven.getBriefType() == null)
-		{
-			melding += "ProjectBrief";
-		}
-		else
-		{
-			melding += "BriefType." + mergedBrieven.getBriefType().name();
-		}
-		logService.logGebeurtenis(gebeurtenis, ScreenitSession.get().getIngelogdAccount(), melding,
-			mergedBrieven.getBriefType() != null ? mergedBrieven.getBriefType().getOnderzoeken() : null);
 	}
 
 	@SuppressWarnings("unchecked")

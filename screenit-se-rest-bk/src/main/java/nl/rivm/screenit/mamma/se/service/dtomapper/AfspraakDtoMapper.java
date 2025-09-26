@@ -37,7 +37,7 @@ import nl.rivm.screenit.mamma.se.dto.onderzoek.OnderzoekSeDto;
 import nl.rivm.screenit.mamma.se.dto.onderzoek.SignalerenSeDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.EnovationHuisarts;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
@@ -113,7 +113,7 @@ public class AfspraakDtoMapper
 	public ClientSeDto createClientSeDto(MammaDossier dossier)
 	{
 		Client client = dossier.getClient();
-		GbaPersoon persoon = client.getPersoon();
+		Persoon persoon = client.getPersoon();
 		return getClientSeDto(dossier, client, persoon);
 	}
 
@@ -171,7 +171,7 @@ public class AfspraakDtoMapper
 		return createClientSeDto(afspraak.getUitnodiging().getScreeningRonde().getDossier());
 	}
 
-	private ClientSeDto getClientSeDto(MammaDossier dossier, Client client, GbaPersoon persoon)
+	private ClientSeDto getClientSeDto(MammaDossier dossier, Client client, Persoon persoon)
 	{
 		ClientSeDto clientSeDto = new ClientSeDto();
 		clientSeDto.setId(client.getId());

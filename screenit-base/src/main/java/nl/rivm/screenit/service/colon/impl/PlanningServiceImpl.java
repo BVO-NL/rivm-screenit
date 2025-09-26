@@ -30,7 +30,6 @@ import java.util.Map;
 
 import nl.rivm.screenit.dao.colon.RoosterDao;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.IGeografischeCoordinaten;
 import nl.rivm.screenit.model.colon.ColonAfspraakslotListViewWrapper;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
@@ -174,7 +173,7 @@ public class PlanningServiceImpl<T extends VrijSlot> implements PlanningService<
 
 	private void voegAfstandenToe(Client client, List<VrijSlotZonderKamer> vrijeSlotenZonderKamer)
 	{
-		GbaPersoon persoon = client.getPersoon();
+		var persoon = client.getPersoon();
 		PersoonCoordinaten persoonCoordinaten = coordinatenService.getAdresEnTijdelijkAdresCoordinatenVanPersoon(persoon);
 
 		Map<Long, Double> adresAfstandenMap = new HashMap<>();

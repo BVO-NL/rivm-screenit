@@ -44,11 +44,11 @@ public class MammaCalcificatiesLaesie extends MammaLaesie
 		return MammaLaesieType.CALCIFICATIES;
 	}
 
-	@Column()
+	@Column
 	@Enumerated(EnumType.STRING)
 	private MammaCalcificatiesVorm calcificatiesVorm;
 
-	@Column()
+	@Column
 	@Enumerated(EnumType.STRING)
 	private MammaCalcificatiesDistributie calcificatiesDistributie;
 

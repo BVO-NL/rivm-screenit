@@ -22,6 +22,7 @@ package nl.rivm.screenit.model;
  */
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -45,10 +46,11 @@ import org.hibernate.envers.Audited;
 @NoArgsConstructor
 public class ClientContactActie extends AbstractHibernateObject
 {
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = false)
 	private ClientContact contact;
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private ClientContactActieType type;
 
 	@Enumerated(EnumType.STRING)

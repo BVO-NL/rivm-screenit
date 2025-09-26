@@ -24,13 +24,11 @@ package nl.rivm.screenit.batch.jobs.uitnodigingenversturen.versturenstep;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -68,7 +66,6 @@ import nl.rivm.screenit.model.enums.MailPriority;
 import nl.rivm.screenit.model.enums.MergeField;
 import nl.rivm.screenit.model.inpakcentrum.naarinpakcentrum.InpakcentrumMergeFieldDto;
 import nl.rivm.screenit.model.inpakcentrum.naarinpakcentrum.InpakcentrumUitnodigingDto;
-import nl.rivm.screenit.model.inpakcentrum.naarinpakcentrum.InpakcentrumUploadRequestDto;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.service.AsposeService;
@@ -175,7 +172,7 @@ public abstract class AbstractUitnodigingenVersturenTasklet<U extends InpakbareU
 
 	private Integer onsuccesvolleVerzendPogingenGehad = 0;
 
-	private List<InpakcentrumUitnodigingDto> gegenereerdeUitnodigingen = new ArrayList<>();
+	private final List<InpakcentrumUitnodigingDto> gegenereerdeUitnodigingen = new ArrayList<>();
 
 	protected abstract List<Long> getUitnodigingen();
 
@@ -389,11 +386,8 @@ public abstract class AbstractUitnodigingenVersturenTasklet<U extends InpakbareU
 
 	private boolean verstuurUitnodigingenMetRest() throws IOException
 	{
-		var inpakcentrumDto = new InpakcentrumUploadRequestDto();
-		inpakcentrumDto.setDatatype("json");
 		var dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT_YYYYMMDDHHMMSS);
 		var filename = bvoAfkorting + "_mergedata" + dateFormat.format(currentDateSupplier.getDate()) + ".json";
-		inpakcentrumDto.setFilename(filename);
 
 		var mapper = new ObjectMapper();
 		var content = mapper.createArrayNode();
@@ -404,9 +398,8 @@ public abstract class AbstractUitnodigingenVersturenTasklet<U extends InpakbareU
 				contentNode.put(field.getName(), field.getValue()));
 		});
 		var jsonBytes = mapper.writeValueAsBytes(content);
-		inpakcentrumDto.setContent(new String(jsonBytes, StandardCharsets.UTF_8));
 
-		var response = inpakcentrumRestApplicatie.upload(inpakcentrumDto);
+		var response = inpakcentrumRestApplicatie.upload("json", filename, jsonBytes);
 		var versturenGeslaagd = response.isUploadSucceeded();
 		if (versturenGeslaagd)
 		{
@@ -456,14 +449,8 @@ public abstract class AbstractUitnodigingenVersturenTasklet<U extends InpakbareU
 		{
 			try
 			{
-				var inpakcentrumDto = new InpakcentrumUploadRequestDto();
 				var template = FileUtils.readFileToByteArray(file);
-
-				var base64String = Base64.getEncoder().encodeToString(template);
-				inpakcentrumDto.setContent(base64String);
-				inpakcentrumDto.setDatatype("zip");
-				inpakcentrumDto.setFilename(fileName);
-				var response = inpakcentrumRestApplicatie.upload(inpakcentrumDto);
+				var response = inpakcentrumRestApplicatie.upload("zip", fileName, template);
 				verzendenGeslaagd = response.isUploadSucceeded();
 			}
 			catch (Exception e)

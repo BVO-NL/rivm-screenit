@@ -47,12 +47,13 @@ import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.BriefDefinitie;
+import nl.rivm.screenit.model.BriefDefinitiesFilter;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.IDocument;
-import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.MergedBrieven;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
@@ -60,7 +61,6 @@ import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.algemeen.AlgemeneBrief;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
-import nl.rivm.screenit.model.batch.BvoZoekCriteria;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixRegioBrief;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -87,6 +87,7 @@ import nl.topicuszorg.organisatie.model.Adres;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
@@ -149,21 +150,24 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	}
 
 	@Override
-	public List<BriefDefinitie> getBriefDefinities(BvoZoekCriteria criteria, Comparator<BriefType> comparator)
+	public List<BriefDefinitie> getBriefDefinities(BriefDefinitiesFilter criteria, Comparator<BriefType> comparator)
 	{
 		var result = new ArrayList<BriefDefinitie>();
 		var bevolkingsonderzoeken = criteria.getBevolkingsonderzoeken();
-		var briefTypes = BriefType.getBriefTypes(Boolean.TRUE.equals(criteria.getExactMatch()),
+		var briefTypes = BriefType.getBriefTypes(Boolean.TRUE.equals(criteria.getExactMatch()), Boolean.TRUE.equals(criteria.getBrievenNietMeerInGebruikOokTonen()),
 			bevolkingsonderzoeken.toArray(new Bevolkingsonderzoek[0]));
+		var naam = criteria.getNaam();
 		briefTypes.sort(comparator);
+
 		for (var briefType : briefTypes)
 		{
 
 			var briefDefinitiesVanDitBriefType = new ArrayList<BriefDefinitie>();
 			int eersteOngebruikteVolgnummer = 1;
 			var briefDefinities = briefDefinitieRepository.findByBriefTypeOrderByLaatstGewijzigdAsc(briefType);
+			var matchMetNaamFilter = filterOpNaamMatchtMetEenBriefDefinitie(briefDefinities, naam);
 
-			if (briefDefinities != null)
+			if (briefDefinities != null && matchMetNaamFilter)
 			{
 				for (var briefDefinitie : briefDefinities)
 				{
@@ -176,8 +180,8 @@ public class BaseBriefServiceImpl implements BaseBriefService
 				}
 			}
 
-			if (briefDefinitiesVanDitBriefType.isEmpty())
-			{ 
+			if (briefDefinitiesVanDitBriefType.isEmpty() && StringUtils.isBlank(naam))
+			{
 				var legeBriefDefinitie = new BriefDefinitie();
 				legeBriefDefinitie.setBriefType(briefType);
 				legeBriefDefinitie.setVolgnummer(1);
@@ -190,6 +194,16 @@ public class BaseBriefServiceImpl implements BaseBriefService
 			}
 		}
 		return result;
+	}
+
+	private boolean filterOpNaamMatchtMetEenBriefDefinitie(List<BriefDefinitie> briefDefinities, String naam)
+	{
+		if (StringUtils.isBlank(naam))
+		{
+			return true;
+		}
+
+		return briefDefinities.stream().anyMatch(briefDefinitie -> briefDefinitie.getDocument().getNaam().toLowerCase().contains(naam.toLowerCase()));
 	}
 
 	@Override

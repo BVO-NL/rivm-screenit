@@ -40,7 +40,7 @@ import nl.rivm.screenit.main.web.gebruiker.clienten.inzien.ClientInzienPage;
 import nl.rivm.screenit.main.web.gebruiker.testen.TestenBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BagAdres;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.colon.ColonOnderzoeksVariant;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -113,12 +113,12 @@ public class ColonTestProcesPage extends TestenBasePage
 
 	private void addColoscopieTestForm()
 	{
-		var persoon = new GbaPersoon();
+		var persoon = new Persoon();
 		persoon.setGeslacht(Geslacht.MAN);
 		var filterModel = ModelUtil.cModel(persoon);
 		persoon = filterModel.getObject();
 		persoon.setGbaAdres(new BagAdres());
-		final var form = new Form<GbaPersoon>("form", filterModel);
+		final var form = new Form<>("form", filterModel);
 		final var bsnField = new TextField<String>("bsn");
 		bsnField.add(new BSNValidator(true, true));
 		bsnField.setRequired(true);
@@ -149,8 +149,6 @@ public class ColonTestProcesPage extends TestenBasePage
 
 		form.add(new ScreenitDateTextField("overlijdensdatum").setOutputMarkupId(true).add(new AjaxFormComponentUpdatingBehavior("change")
 		{
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
@@ -163,8 +161,6 @@ public class ColonTestProcesPage extends TestenBasePage
 
 		form.add(new AjaxButton("maakClient", form)
 		{
-
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
@@ -282,11 +278,11 @@ public class ColonTestProcesPage extends TestenBasePage
 			@Override
 			public void onSubmit(AjaxRequestTarget target)
 			{
-				var gbaPersoon = form.getModelObject();
+				var modelObject = form.getModelObject();
 				var model = new TestTimelineModel();
-				model.setBsn(gbaPersoon.getBsn());
-				model.setGeslacht(gbaPersoon.getGeslacht());
-				model.setGeboortedatum(gbaPersoon.getGeboortedatum());
+				model.setBsn(modelObject.getBsn());
+				model.setGeslacht(modelObject.getGeslacht());
+				model.setGeboortedatum(modelObject.getGeboortedatum());
 				var clienten = testTimelineService.maakOfVindClienten(model);
 				var client = clienten.get(0);
 				testTimelineService.maakNieuweScreeningRonde(client, TestTimeLineDossierTijdstip.DAG_NA_UITNODIGING_KOPPELEN, ColonOnderzoeksVariant.STANDAARD);
@@ -336,7 +332,7 @@ public class ColonTestProcesPage extends TestenBasePage
 			}
 		});
 
-		final Form<GbaPersoon> form2 = new ScreenitForm<>("form2", filterModel);
+		final Form<Persoon> form2 = new ScreenitForm<>("form2", filterModel);
 		form2.add(new TextField<String>("bsn").setRequired(true));
 		final var download = new AjaxDownload()
 		{
@@ -417,7 +413,7 @@ public class ColonTestProcesPage extends TestenBasePage
 
 	}
 
-	protected IResourceStream createResourceStream(GbaPersoon modelObject)
+	protected IResourceStream createResourceStream(Persoon modelObject)
 	{
 		FileResourceStream fileResourceStream = null;
 		try

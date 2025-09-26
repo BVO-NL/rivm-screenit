@@ -26,13 +26,12 @@ import java.util.List;
 import java.util.concurrent.Executors;
 
 import nl.rivm.screenit.main.service.impl.KoppelresultatenKankerregistratieVerwerkenThread;
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.validator.FileValidator;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.FileType;
@@ -64,7 +63,7 @@ public class UploadKoppelresultatenKankerregistratiePage extends AlgemeenPage
 
 	public UploadKoppelresultatenKankerregistratiePage()
 	{
-		Form<GbaPersoon> form = new Form<>("form");
+		Form<Persoon> form = new Form<>("form");
 		add(form);
 
 		IModel<List<FileUpload>> files = new ListModel<>();

@@ -32,8 +32,9 @@ import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
-import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.service.mamma.impl.MammaCapaciteit;
+
+import com.google.common.collect.Range;
 
 public interface MammaBaseCapaciteitsBlokService
 {
@@ -43,14 +44,16 @@ public interface MammaBaseCapaciteitsBlokService
 
 	int getAantalAfsprakenOpBlok(PlanningCapaciteitBlokDto blokDto, boolean toDelete);
 
-	List<MammaCapaciteitBlok> getCapaciteitsBlokken(MammaScreeningsEenheid screeningsEenheid, Date start, Date end, boolean bepaalCapaciteit,
-		Collection<MammaCapaciteitBlokType> blokTypes);
-
 	MammaCapaciteit getCapaciteit(Collection<MammaCapaciteitBlokDto> nietGeblokkeerdeCapaciteitsBlokDtos);
 
 	MammaCapaciteitBlok getCapaciteitsBlokOpTijdstipVoorSe(Client client, MammaScreeningsEenheid screeningsEenheid, Date nu);
 
-	Collection<MammaCapaciteitBlokDto> getNietGeblokkeerdeCapaciteitsBlokDtos(MammaStandplaatsPeriode standplaatsPeriode, Date vanaf, Date totEnMet,
-		Collection<MammaCapaciteitBlokType> blokTypes, Client client);
+	List<MammaCapaciteitBlok> getAlleCapaciteitBlokken(MammaScreeningsEenheid screeningsEenheid, Range<Date> zoekbereik);
+
+	List<MammaCapaciteitBlok> getScreeningCapaciteitBlokken(MammaScreeningsEenheid screeningsEenheid, Range<Date> zoekbereik, boolean bepaalCapaciteit);
+
+	List<MammaCapaciteitBlok> getGeenScreeningCapaciteitBlokken(MammaScreeningsEenheid screeningsEenheid, Range<Date> zoekbereik);
+
+	Collection<MammaCapaciteitBlokDto> getNietGeblokkeerdeScreeningCapaciteitBlokDtos(MammaStandplaatsPeriode standplaatsPeriode, Date vanaf, Date totEnMet, Client client);
 
 }

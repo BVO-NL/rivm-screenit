@@ -21,15 +21,15 @@ package nl.rivm.screenit.service;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.PostcodeCoordinaten;
 import nl.rivm.screenit.service.impl.PersoonCoordinaten;
 import nl.topicuszorg.organisatie.model.Adres;
 
 public interface CoordinatenService
 {
-	PersoonCoordinaten getCoordinatenVanPersoon(GbaPersoon persoon);
+	PersoonCoordinaten getCoordinatenVanPersoon(Persoon persoon);
 
 	PostcodeCoordinaten getCoordinaten(Adres adres);
 
@@ -37,7 +37,7 @@ public interface CoordinatenService
 
 	PostcodeCoordinaten getCoordinaten(String postcode, Integer huisnummer, String huisnummerToevoeging, String huisletter);
 
-	PersoonCoordinaten getAdresEnTijdelijkAdresCoordinatenVanPersoon(GbaPersoon persoon);
+	PersoonCoordinaten getAdresEnTijdelijkAdresCoordinatenVanPersoon(Persoon persoon);
 
 	void updateGemeenteCoordinaten(String gemcode, String latitude, String longitude);
 

@@ -89,7 +89,7 @@ public class UitnodigenCapaciteitCalculator
 			}
 		}
 
-		capaciteitVoorUitnodigen = beschikbaar.getTotaalRegulier(); 
+		capaciteitVoorUitnodigen = beschikbaar.getTotaal();
 		LOG.info("{}: initieel beschikbaar: {}", logPrefix(), capaciteitVoorUitnodigen);
 	}
 
@@ -140,10 +140,7 @@ public class UitnodigenCapaciteitCalculator
 
 	private void reserveerCapaciteitVoor(PlanningClient client)
 	{
-		if (!client.inTehuis())
-		{
-			capaciteitVoorUitnodigen = capaciteitVoorUitnodigen.subtract(client.getBenodigdeCapaciteit(screeningsOrganisatieStandplaats));
-		}
+		capaciteitVoorUitnodigen = capaciteitVoorUitnodigen.subtract(client.getBenodigdeCapaciteit(screeningsOrganisatieStandplaats));
 	}
 
 	private void reserveerUitstel(PlanningClient client)

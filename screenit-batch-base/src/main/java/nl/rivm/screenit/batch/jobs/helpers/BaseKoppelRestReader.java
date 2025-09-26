@@ -35,7 +35,6 @@ import nl.rivm.screenit.batch.service.InpakcentrumRestApplicatie;
 import nl.rivm.screenit.model.algemeen.KoppelData;
 import nl.rivm.screenit.model.enums.JobStartParameter;
 import nl.rivm.screenit.model.enums.Level;
-import nl.rivm.screenit.model.inpakcentrum.naarinpakcentrum.InpakcentrumUploadRequestDto;
 import nl.rivm.screenit.model.inpakcentrum.vaninpakcentrum.InpakcentrumKoppelDataDto;
 import nl.rivm.screenit.model.logging.LogEvent;
 
@@ -152,11 +151,8 @@ public abstract class BaseKoppelRestReader implements ItemStream
 	protected boolean verstuurSemantischeFoutmeldingen(List<String> foutmeldingen) throws IOException
 	{
 		LOG.info("Start versturen, semantische foutmeldingen size: {}", foutmeldingen.size());
-		var request = new InpakcentrumUploadRequestDto();
-		request.setContent(maakCsvStream(foutmeldingen).toString());
-		request.setDatatype("csv");
-		request.setFilename(getFileNaam() + ".csv");
-		var response = inpakcentrumRestApplicatie.upload(request);
+		var csvFileContent = maakCsvStream(foutmeldingen).toByteArray();
+		var response = inpakcentrumRestApplicatie.upload("csv", getCsvFilenaam(), csvFileContent);
 		var result = response.isUploadSucceeded();
 
 		result &= inpakcentrumRestApplicatie.ready(result).isReady();
@@ -174,12 +170,12 @@ public abstract class BaseKoppelRestReader implements ItemStream
 		return result;
 	}
 
-	private String getFileNaam()
+	private String getCsvFilenaam()
 	{
 		var koppelData = getKoppelData();
 		var fileNaamVoorValidatie = koppelData.getFilename().replaceAll("mergedata", "validatie");
 		var filenameParts = fileNaamVoorValidatie.split("\\.");
-		return filenameParts[0];
+		return filenameParts[0] + ".csv";
 	}
 
 	private ByteArrayOutputStream maakCsvStream(List<String> foutmeldingen) throws IOException

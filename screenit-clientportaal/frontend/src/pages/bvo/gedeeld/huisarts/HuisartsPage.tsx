@@ -43,7 +43,7 @@ import {getString} from "../../../../utils/TekstPropertyUtil"
 import {useRegio, useSelectedBvo} from "../../../../utils/Hooks"
 import {getBvoBaseUrl, getContactUrl} from "../../../../utils/UrlUtil"
 import ActieBasePage from "../../../ActieBasePage"
-import {Formik} from "formik"
+import {Formik, FormikValues} from "formik"
 import * as Yup from "yup"
 import bvoStyle from "../../../../components/BvoStyle.module.scss"
 import HuisartsHintComponent from "./HuisartsHintComponent"
@@ -61,6 +61,8 @@ import {FormControl, FormControlLabel, Radio, RadioGroup} from "@mui/material"
 import SearchForm from "../../../../components/form/SearchForm"
 import {useLocation, useNavigate} from "react-router"
 import {showToast} from "../../../../utils/ToastUtil"
+import datadogService from "../../../../services/DatadogService"
+import {AnalyticsCategorie} from "../../../../datatypes/AnalyticsCategorie"
 
 const HuisartsPage = () => {
 	const dispatch = useThunkDispatch()
@@ -146,6 +148,7 @@ const HuisartsPage = () => {
 	}, [zoekResultaten, zoekHuisartsen, zoekObject])
 
 	function kiesHuisarts(huisarts: Huisarts) {
+		datadogService.stuurEvent("huisartsOptieGekozen", AnalyticsCategorie.MAMMA_HUISARTS)
 		if (huidigeHuisarts && huidigeHuisarts.id === huisarts.id) {
 			dispatch(createShowToastAction({
 				title: getString(properties.gedeeld.toasts.zelfde.title),
@@ -240,6 +243,16 @@ const HuisartsPage = () => {
 	}
 
 	function toonZoekpagina() {
+		const stuurDatadogEventEnHandleSubmit = (values: FormikValues, handleSubmit: (e?: React.FormEvent<HTMLFormElement>) => void) => {
+			datadogService.stuurEvent("huisartsZoeken", AnalyticsCategorie.MAMMA_HUISARTS, {
+				praktijk: values.naam,
+				plaats: values.adres.plaats,
+				postcode: values.adres.postcode,
+				straat: values.adres.straat,
+			})
+			handleSubmit()
+		}
+
 		return (
 			<BasePage
 				bvoName={bevolkingsonderzoekNaam}
@@ -285,7 +298,8 @@ const HuisartsPage = () => {
 											 await setFieldValue("adres.straat", "")
 											 setAdvancedSearch(!isAdvancedSearch)
 										 }}>
-										<AdvancedSearchLinkComponent advancedSearch={isAdvancedSearch}/>
+										<AdvancedSearchLinkComponent advancedSearch={isAdvancedSearch}
+																	 onClickStuurDatadogEvent={() => datadogService.stuurEvent("huisartsmeerZoekopties", AnalyticsCategorie.MAMMA_HUISARTS)}/>
 									</div>
 									{isAdvancedSearch && <div>
 										<ScreenitTextfield onChange={value => setFieldValue("adres.postcode", value)}
@@ -302,7 +316,7 @@ const HuisartsPage = () => {
 									<Button className={bvoStyle.darkBackgroundColor}
 											label={getString(properties.gedeeld.zoekpagina.zoekform.submit)}
 											displayArrow={ArrowType.ARROW_RIGHT}
-											onClick={handleSubmit}/>
+											onClick={() => stuurDatadogEventEnHandleSubmit(values, handleSubmit)}/>
 								</SearchForm>)}
 						</Formik>
 					</Col>

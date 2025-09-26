@@ -30,7 +30,7 @@ import nl.rivm.screenit.batch.service.MammaHL7CreateMessageService;
 import nl.rivm.screenit.dto.mamma.MammaHL7v24OrmBerichtTriggerMetClientDto;
 import nl.rivm.screenit.dto.mamma.MammaHL7v24OrmBerichtTriggerMetKwaliteitsopnameDto;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7OnderzoeksCode;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
@@ -161,7 +161,7 @@ public class MammaHL7CreateMessageServiceImpl implements MammaHL7CreateMessageSe
 
 	private void buildPIDSegment(PID pid, Client client, String nieuweBsn) throws DataTypeException
 	{
-		GbaPersoon persoon = client.getPersoon();
+		Persoon persoon = client.getPersoon();
 
 		pid.getSetIDPID().setValue("1");
 

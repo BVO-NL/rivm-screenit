@@ -54,13 +54,13 @@ import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.EnovationHuisarts;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Huisarts_;
 import nl.rivm.screenit.model.Medewerker_;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.model.Permissie;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -684,10 +684,10 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		{
 			var client = maakOfVindClient(model, bsn);
 			clienten.add(client);
-			var gbaPersoon = client.getPersoon();
-			gbaPersoon.setGeslacht(model.getGeslacht());
-			gbaPersoon.setGeboortedatum(model.getGeboortedatum());
-			gbaPersoon.getGbaAdres().setPostcode(model.getPostcode());
+			var persoon = client.getPersoon();
+			persoon.setGeslacht(model.getGeslacht());
+			persoon.setGeboortedatum(model.getGeboortedatum());
+			persoon.getGbaAdres().setPostcode(model.getPostcode());
 			var dossier = client.getMammaDossier();
 			dossier.setDoelgroep(model.getDoelgroep());
 
@@ -708,14 +708,14 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 			}
 
 			transgenderService.bijwerkenDeelnamemodus(client);
-			hibernateService.saveOrUpdateAll(gbaPersoon, dossier, deelnamekans);
+			hibernateService.saveOrUpdateAll(persoon, dossier, deelnamekans);
 		}
 		return clienten;
 	}
 
 	private Client maakOfVindClient(TestTimelineModel model, String bsn)
 	{
-		var persoon = new GbaPersoon();
+		var persoon = new Persoon();
 		persoon.setBsn(bsn);
 		persoon.setGeslacht(model.getGeslacht());
 		persoon.setGeboortedatum(model.getGeboortedatum());
@@ -796,7 +796,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 				var postcode = huidigeLine[11];
 				var huisnummer = huidigeLine[12];
 				var beoordeling = huidigeLine[13];
-				var filterPersoon = new GbaPersoon();
+				var filterPersoon = new Persoon();
 				filterPersoon.setBsn(StringUtils.leftPad(bsn, 9, '0'));
 				filterPersoon.setGeslacht(Geslacht.VROUW);
 
@@ -814,7 +814,6 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 				var naamSplitted = naam.split("\\^");
 				persoon.setAchternaam(naamSplitted[0]);
 				persoon.setVoornaam(naamSplitted[1]);
-				persoon.setVoorletters(null); 
 				persoon.setTussenvoegsel(naamSplitted[2]);
 				if (naamSplitted.length > 3)
 				{

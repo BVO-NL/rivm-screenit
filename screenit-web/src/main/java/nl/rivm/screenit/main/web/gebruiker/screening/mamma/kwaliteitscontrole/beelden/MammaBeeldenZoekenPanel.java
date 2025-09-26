@@ -32,7 +32,7 @@ import nl.rivm.screenit.main.web.component.table.GeboortedatumColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.service.ClientService;
@@ -77,7 +77,7 @@ public class MammaBeeldenZoekenPanel extends Panel
 	{
 		super(id);
 		Client zoekobject = new Client();
-		GbaPersoon persoon = new GbaPersoon();
+		Persoon persoon = new Persoon();
 		persoon.setGbaAdres(new BagAdres());
 		zoekobject.setPersoon(persoon);
 
@@ -204,7 +204,7 @@ public class MammaBeeldenZoekenPanel extends Panel
 		{
 			List<Client> clienten = new ArrayList<>();
 			Client zoekClient = MammaBeeldenZoekenPanel.MammaClientZoekenForm.this.getModelObject();
-			GbaPersoon zoekPersoon = zoekClient.getPersoon();
+			Persoon zoekPersoon = zoekClient.getPersoon();
 			if (StringUtils.isNotBlank(zoekPersoon.getBsn()) && zoekPersoon.getGeboortedatum() != null)
 			{
 				clienten = clientService.zoekClienten(zoekClient);

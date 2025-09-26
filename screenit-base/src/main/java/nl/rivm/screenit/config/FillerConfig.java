@@ -1,4 +1,4 @@
-package nl.rivm.screenit.repository.algemeen;
+package nl.rivm.screenit.config;
 
 /*-
  * ========================LICENSE_START=================================
@@ -21,12 +21,19 @@ package nl.rivm.screenit.repository.algemeen;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Optional;
+import lombok.Getter;
+import lombok.Setter;
 
-import nl.rivm.screenit.model.gba.Nationaliteit;
-import nl.rivm.screenit.repository.BaseJpaRepository;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
-public interface NationaliteitRepository extends BaseJpaRepository<Nationaliteit>
+@Configuration
+@ConfigurationProperties(prefix = "filler")
+@Getter
+@Setter
+public class FillerConfig
 {
-	Optional<Nationaliteit> findOneByCode(String code);
+	private String imsHostName;
+
+	private String wsbHostName;
 }

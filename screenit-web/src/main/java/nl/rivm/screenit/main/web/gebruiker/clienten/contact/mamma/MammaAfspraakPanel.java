@@ -34,7 +34,7 @@ import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
 import nl.rivm.screenit.main.web.component.validator.ScreenitTelefoonnummerValidator;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContactActiePanel;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.ClientContactPanel;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.BevestigingsType;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
@@ -231,7 +231,7 @@ public class MammaAfspraakPanel extends AbstractClientContactActiePanel<MammaAfs
 		var mobielNummerInvoerveld = new TextField<>("mobielNummer", mobielNummerNieuwModel);
 		mobielNummerInvoerveld.setOutputMarkupPlaceholderTag(true);
 		mobielNummerInvoerveld.add(ScreenitTelefoonnummerValidator.mobielNederlandsNummer());
-		mobielNummerInvoerveld.add(StringValidator.maximumLength(GbaPersoon.MAX_PHONE_LENGTH));
+		mobielNummerInvoerveld.add(StringValidator.maximumLength(Persoon.MAX_PHONE_LENGTH));
 		mobielNummerInvoerveld.setRequired(true);
 
 		mobielNummerContainer.add(mobielNummerInvoerveld);
@@ -310,7 +310,7 @@ public class MammaAfspraakPanel extends AbstractClientContactActiePanel<MammaAfs
 
 	private void setEmailValidaties(TextField<String> emailVeld)
 	{
-		emailVeld.add(StringValidator.maximumLength(GbaPersoon.MAX_EMAIL_LENGTH));
+		emailVeld.add(StringValidator.maximumLength(Persoon.MAX_EMAIL_LENGTH));
 		emailVeld.add(EmailAddressValidator.getInstance());
 		emailVeld.setRequired(true);
 	}

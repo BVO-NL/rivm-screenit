@@ -23,21 +23,18 @@ package nl.rivm.screenit.mamma.planning.model;
 
 import java.math.BigDecimal;
 
+import lombok.Getter;
+
+@Getter
 public final class PlanningBenodigdJaar
 {
 	private final Integer jaar;
 
 	private BigDecimal totaal;
 
-	private BigDecimal totaalTehuis;
-
 	private BigDecimal nieuw;
 
-	private BigDecimal nieuwTehuis;
-
 	private BigDecimal oud;
-
-	private BigDecimal oudTehuis;
 
 	private BigDecimal eersteOnderzoekCorrectie;
 
@@ -47,38 +44,18 @@ public final class PlanningBenodigdJaar
 		this.jaar = jaar;
 	}
 
-	public Integer getJaar()
+	public void add(BigDecimal benodigd)
 	{
-		return jaar;
-	}
-
-	public void add(BigDecimal benodigd, boolean tehuis)
-	{
-		if (tehuis)
-		{
-			totaalTehuis = totaalTehuis.add(benodigd);
-		}
-
 		totaal = totaal.add(benodigd);
 	}
 
-	public void addToNieuw(BigDecimal benodigd, boolean tehuis)
+	public void addToNieuw(BigDecimal benodigd)
 	{
-		if (tehuis)
-		{
-			nieuwTehuis = nieuwTehuis.add(benodigd);
-		}
-
 		nieuw = nieuw.add(benodigd);
 	}
 
-	public void addToOud(BigDecimal benodigd, boolean tehuis)
+	public void addToOud(BigDecimal benodigd)
 	{
-		if (tehuis)
-		{
-			oudTehuis = oudTehuis.add(benodigd);
-		}
-
 		oud = oud.add(benodigd);
 	}
 
@@ -90,103 +67,25 @@ public final class PlanningBenodigdJaar
 	public void add(PlanningBenodigdJaar benodigdJaar)
 	{
 		totaal = totaal.add(benodigdJaar.totaal);
-		totaalTehuis = totaalTehuis.add(benodigdJaar.totaalTehuis);
 		nieuw = nieuw.add(benodigdJaar.nieuw);
-		nieuwTehuis = nieuwTehuis.add(benodigdJaar.nieuwTehuis);
 		oud = oud.add(benodigdJaar.oud);
-		oudTehuis = oudTehuis.add(benodigdJaar.oudTehuis);
 		eersteOnderzoekCorrectie = eersteOnderzoekCorrectie.add(benodigdJaar.getEersteOnderzoekCorrectie());
 	}
 
 	public void subtract(PlanningBenodigdJaar benodigdJaar)
 	{
 		totaal = totaal.subtract(benodigdJaar.totaal);
-		totaalTehuis = totaalTehuis.subtract(benodigdJaar.totaalTehuis);
 		nieuw = nieuw.subtract(benodigdJaar.nieuw);
-		nieuwTehuis = nieuwTehuis.subtract(benodigdJaar.nieuwTehuis);
 		oud = oud.subtract(benodigdJaar.oud);
-		oudTehuis = oudTehuis.subtract(benodigdJaar.oudTehuis);
 		eersteOnderzoekCorrectie = eersteOnderzoekCorrectie.subtract(benodigdJaar.getEersteOnderzoekCorrectie());
 	}
 
 	public void clear()
 	{
 		totaal = BigDecimal.ZERO;
-		totaalTehuis = BigDecimal.ZERO;
 		nieuw = BigDecimal.ZERO;
-		nieuwTehuis = BigDecimal.ZERO;
 		oud = BigDecimal.ZERO;
-		oudTehuis = BigDecimal.ZERO;
 		eersteOnderzoekCorrectie = BigDecimal.ZERO;
 	}
 
-	public BigDecimal getTotaal()
-	{
-		return totaal;
-	}
-
-	public BigDecimal getTotaalTehuis()
-	{
-		return totaalTehuis;
-	}
-
-	public BigDecimal getNieuw()
-	{
-		return nieuw;
-	}
-
-	public BigDecimal getNieuwTehuis()
-	{
-		return nieuwTehuis;
-	}
-
-	public BigDecimal getOud()
-	{
-		return oud;
-	}
-
-	public BigDecimal getOudTehuis()
-	{
-		return oudTehuis;
-	}
-
-	private void setTotaal(BigDecimal totaal)
-	{
-		this.totaal = totaal;
-	}
-
-	private void setTotaalTehuis(BigDecimal totaalTehuis)
-	{
-		this.totaalTehuis = totaalTehuis;
-	}
-
-	private void setNieuw(BigDecimal nieuw)
-	{
-		this.nieuw = nieuw;
-	}
-
-	private void setNieuwTehuis(BigDecimal nieuwTehuis)
-	{
-		this.nieuwTehuis = nieuwTehuis;
-	}
-
-	public void setOud(BigDecimal oud)
-	{
-		this.oud = oud;
-	}
-
-	public void setOudTehuis(BigDecimal oudTehuis)
-	{
-		this.oudTehuis = oudTehuis;
-	}
-
-	public BigDecimal getEersteOnderzoekCorrectie()
-	{
-		return eersteOnderzoekCorrectie;
-	}
-
-	public void setEersteOnderzoekCorrectie(BigDecimal eersteOnderzoekCorrectie)
-	{
-		this.eersteOnderzoekCorrectie = eersteOnderzoekCorrectie;
-	}
 }

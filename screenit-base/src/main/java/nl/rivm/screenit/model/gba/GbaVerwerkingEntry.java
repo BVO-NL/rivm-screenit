@@ -21,71 +21,34 @@ package nl.rivm.screenit.model.gba;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+@Getter
+@Setter
 @Entity
 @Table(schema = "algemeen")
 public class GbaVerwerkingEntry extends AbstractHibernateObject
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
-
+	@Column(nullable = false)
 	private Long screeningOrganisatie;
 
+	@Column(nullable = false)
 	private Integer aantalNieuweBurgers = 0;
 
+	@Column(nullable = false)
 	private Integer aantalBijgewerkteBugers = 0;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JsonIgnore
 	private GbaVerwerkingsLog verwerkingsLog;
-
-	public Long getScreeningOrganisatie()
-	{
-		return screeningOrganisatie;
-	}
-
-	public void setScreeningOrganisatie(Long screeningOrganisatie)
-	{
-		this.screeningOrganisatie = screeningOrganisatie;
-	}
-
-	public Integer getAantalNieuweBurgers()
-	{
-		return aantalNieuweBurgers;
-	}
-
-	public void setAantalNieuweBurgers(Integer aantalNieuweBurgers)
-	{
-		this.aantalNieuweBurgers = aantalNieuweBurgers;
-	}
-
-	public Integer getAantalBijgewerkteBugers()
-	{
-		return aantalBijgewerkteBugers;
-	}
-
-	public void setAantalBijgewerkteBugers(Integer aantalBijgewerkteBugers)
-	{
-		this.aantalBijgewerkteBugers = aantalBijgewerkteBugers;
-	}
-
-	public GbaVerwerkingsLog getVerwerkingsLog()
-	{
-		return verwerkingsLog;
-	}
-
-	public void setVerwerkingsLog(GbaVerwerkingsLog verwerkingsLog)
-	{
-		this.verwerkingsLog = verwerkingsLog;
-	}
 }

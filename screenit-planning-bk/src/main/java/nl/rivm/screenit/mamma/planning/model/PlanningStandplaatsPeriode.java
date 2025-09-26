@@ -28,39 +28,49 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Getter
+@Setter
 public class PlanningStandplaatsPeriode extends PlanningConceptEntiteit
 {
-
+	@Getter(AccessLevel.NONE)
 	private final Lock lock = new ReentrantLock();
 
 	private final Integer standplaatsRondeVolgNr;
 
 	private final Set<PlanningBlokkade> blokkadeNavigableSet = new HashSet<>();
 
+	@Setter
 	private PlanningStandplaatsRonde standplaatsRonde;
 
+	@Setter
 	private PlanningScreeningsEenheid screeningsEenheid;
 
+	@Setter
 	private Integer screeningsEenheidVolgNr;
 
+	@Setter
 	private LocalDate vanaf;
 
+	@Setter
 	private LocalDate totEnMet;
 
+	@Setter
 	private Boolean prognose;
 
+	@Getter
 	private BigDecimal somGewogenDatum = BigDecimal.ZERO;
 
+	@Getter
 	private BigDecimal beschikbaarTotaal = BigDecimal.ZERO;
 
-	private BigDecimal beschikbaarTehuis = BigDecimal.ZERO;
-
+	@Getter
 	private BigDecimal beschikbaarVoorJaarovergangTotaal = BigDecimal.ZERO;
-
-	private BigDecimal beschikbaarVoorJaarovergangTehuis = BigDecimal.ZERO;
 
 	public PlanningStandplaatsPeriode(Long id, Integer screeningsEenheidVolgNr, Integer standplaatsRondeVolgNr, LocalDate vanaf, Boolean prognose, LocalDate totEnMet)
 	{
@@ -74,121 +84,21 @@ public class PlanningStandplaatsPeriode extends PlanningConceptEntiteit
 
 	public void lock()
 	{
-		LOG.trace("Lock SP: " + getId());
+		LOG.trace("Lock SP: {}", getId());
 		lock.lock();
 	}
 
 	public void unlock()
 	{
-		LOG.trace("Unlock SP: " + getId());
+		LOG.trace("Unlock SP: {}", getId());
 		lock.unlock();
 	}
 
 	public void await()
 	{
-		LOG.trace("Await SP: " + getId());
+		LOG.trace("Await SP: {}", getId());
 		lock.lock();
 		lock.unlock();
-	}
-
-	public PlanningStandplaatsRonde getStandplaatsRonde()
-	{
-		return standplaatsRonde;
-	}
-
-	public void setStandplaatsRonde(PlanningStandplaatsRonde standplaatsRonde)
-	{
-		this.standplaatsRonde = standplaatsRonde;
-	}
-
-	public PlanningScreeningsEenheid getScreeningsEenheid()
-	{
-		return screeningsEenheid;
-	}
-
-	public void setScreeningsEenheid(PlanningScreeningsEenheid screeningsEenheid)
-	{
-		this.screeningsEenheid = screeningsEenheid;
-	}
-
-	public LocalDate getVanaf()
-	{
-		return vanaf;
-	}
-
-	public void setVanaf(LocalDate vanaf)
-	{
-		this.vanaf = vanaf;
-	}
-
-	public LocalDate getTotEnMet()
-	{
-		return totEnMet;
-	}
-
-	public void setTotEnMet(LocalDate totEnMet)
-	{
-		this.totEnMet = totEnMet;
-	}
-
-	public Integer getScreeningsEenheidVolgNr()
-	{
-		return screeningsEenheidVolgNr;
-	}
-
-	public void setScreeningsEenheidVolgNr(Integer screeningsEenheidVolgNr)
-	{
-		this.screeningsEenheidVolgNr = screeningsEenheidVolgNr;
-	}
-
-	public Integer getStandplaatsRondeVolgNr()
-	{
-		return standplaatsRondeVolgNr;
-	}
-
-	public Set<PlanningBlokkade> getBlokkadeNavigableSet()
-	{
-		return blokkadeNavigableSet;
-	}
-
-	public Boolean getPrognose()
-	{
-		return prognose;
-	}
-
-	public void setPrognose(Boolean prognose)
-	{
-		this.prognose = prognose;
-	}
-
-	public BigDecimal getSomGewogenDatum()
-	{
-		return somGewogenDatum;
-	}
-
-	public BigDecimal getBeschikbaarTotaal()
-	{
-		return beschikbaarTotaal;
-	}
-
-	public BigDecimal getBeschikbaarTehuis()
-	{
-		return beschikbaarTehuis;
-	}
-
-	public void setBeschikbaarTehuis(BigDecimal beschikbaarTehuis)
-	{
-		this.beschikbaarTehuis = beschikbaarTehuis;
-	}
-
-	public BigDecimal getBeschikbaarVoorJaarovergangTotaal()
-	{
-		return beschikbaarVoorJaarovergangTotaal;
-	}
-
-	public BigDecimal getBeschikbaarVoorJaarovergangTehuis()
-	{
-		return beschikbaarVoorJaarovergangTehuis;
 	}
 
 	public boolean gesplitst()
@@ -200,21 +110,17 @@ public class PlanningStandplaatsPeriode extends PlanningConceptEntiteit
 	{
 		this.somGewogenDatum = BigDecimal.ZERO;
 		this.beschikbaarTotaal = BigDecimal.ZERO;
-		this.beschikbaarTehuis = BigDecimal.ZERO;
 		this.beschikbaarVoorJaarovergangTotaal = BigDecimal.ZERO;
-		this.beschikbaarVoorJaarovergangTehuis = BigDecimal.ZERO;
 	}
 
-	public void add(long epochDay, BigDecimal beschikbaarTotaal, BigDecimal beschikbaarTehuis, boolean voorJaarovergang)
+	public void add(long epochDay, BigDecimal beschikbaarTotaal, boolean voorJaarovergang)
 	{
 		this.somGewogenDatum = this.somGewogenDatum.add(new BigDecimal(epochDay).multiply(beschikbaarTotaal));
 		this.beschikbaarTotaal = this.beschikbaarTotaal.add(beschikbaarTotaal);
-		this.beschikbaarTehuis = this.beschikbaarTehuis.add(beschikbaarTehuis);
 
 		if (voorJaarovergang)
 		{
 			this.beschikbaarVoorJaarovergangTotaal = this.beschikbaarVoorJaarovergangTotaal.add(beschikbaarTotaal);
-			this.beschikbaarVoorJaarovergangTehuis = this.beschikbaarVoorJaarovergangTehuis.add(beschikbaarTehuis);
 		}
 	}
 }

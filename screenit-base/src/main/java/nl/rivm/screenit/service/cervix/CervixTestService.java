@@ -26,7 +26,7 @@ import java.util.List;
 
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
@@ -42,17 +42,17 @@ import com.aspose.words.Document;
 
 public interface CervixTestService
 {
-	CervixDossier geefDossier(GbaPersoon gbaPersoon);
+	CervixDossier geefDossier(Persoon persoon);
 
-	CervixScreeningRonde geefScreeningRonde(GbaPersoon gbaPersoon);
+	CervixScreeningRonde geefScreeningRonde(Persoon persoon);
 
-	CervixScreeningRonde geefScreeningRonde(GbaPersoon gbaPersoon, Date inVervolgonderzoekDatum);
+	CervixScreeningRonde geefScreeningRonde(Persoon persoon, Date inVervolgonderzoekDatum);
 
-	CervixUitnodiging maakUitnodiging(GbaPersoon gbaPersoon, BriefType briefType);
+	CervixUitnodiging maakUitnodiging(Persoon persoon, BriefType briefType);
 
-	CervixUitstrijkje geefUitstrijkje(GbaPersoon gbaPersoon, CervixUitstrijkjeStatus uitstrijkjeStatus, String monsterId, BMHKLaboratorium bmhkLaboratorium);
+	CervixUitstrijkje geefUitstrijkje(Persoon persoon, CervixUitstrijkjeStatus uitstrijkjeStatus, String monsterId, BMHKLaboratorium bmhkLaboratorium);
 
-	CervixLabformulier geefLabformulier(GbaPersoon gbaPersoon, CervixLabformulierStatus labformulierStatus, BMHKLaboratorium laboratorium, CervixHuisartsLocatie huisartsLocatie);
+	CervixLabformulier geefLabformulier(Persoon persoon, CervixLabformulierStatus labformulierStatus, BMHKLaboratorium laboratorium, CervixHuisartsLocatie huisartsLocatie);
 
 	Document geefBarcodeUitnodigingsIdTestPdf(CervixUitnodiging uitnodiging);
 

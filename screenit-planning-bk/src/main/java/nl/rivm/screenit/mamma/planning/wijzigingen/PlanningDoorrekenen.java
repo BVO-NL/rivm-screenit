@@ -51,17 +51,17 @@ public enum PlanningDoorrekenen
 
 		for (int jaar = client.getVanafJaar(); jaar <= client.getTotEnMetJaar(); jaar++)
 		{
-			benodigd.get(jaar).add(benodigdeCapaciteit, client.getTehuis() != null);
+			benodigd.get(jaar).add(benodigdeCapaciteit);
 		}
 
 		if (client.getUitnodigenVanafJaar() > PlanningConstanten.plannenVanafJaar && client.getUitnodigenVanafJaar() <= PlanningConstanten.plannenTotEnMetJaar)
 		{
-			benodigd.get(client.getUitnodigenVanafJaar()).addToNieuw(benodigdeCapaciteit, client.getTehuis() != null);
+			benodigd.get(client.getUitnodigenVanafJaar()).addToNieuw(benodigdeCapaciteit);
 		}
 
 		if (client.getUitnodigenTotEnMetJaar() >= PlanningConstanten.plannenVanafJaar && client.getUitnodigenTotEnMetJaar() <= PlanningConstanten.plannenTotEnMetJaar)
 		{
-			benodigd.get(client.getUitnodigenTotEnMetJaar()).addToOud(benodigdeCapaciteit, client.getTehuis() != null);
+			benodigd.get(client.getUitnodigenTotEnMetJaar()).addToOud(benodigdeCapaciteit);
 		}
 
 		if (client.getFactorType() == MammaFactorType.EERSTE_ONDERZOEK)

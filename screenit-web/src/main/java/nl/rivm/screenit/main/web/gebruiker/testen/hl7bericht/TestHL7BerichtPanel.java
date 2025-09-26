@@ -74,11 +74,12 @@ public class TestHL7BerichtPanel extends Panel
 		"ORC|XO|1|||SC \n" +
 		"OBR||UITNODIGING_ID||ZHOND^Ziekenhuis|R||20180703091331||||||||||||||||||STATUS_CODE||^^^20180703084745^^^ZHOND";
 
-	private final static String ormUploadBeeldenTestCentraalBeschikbaarBericht = "MSH|^~\\&|SCREENIT_MAMMA|SCREENIT|IMS|SECTRA|20180703084745||ORM^O01^ORM_O01|MESSAGE_ID|P|2.4||||||8859/1\n"
-		+
-		"PID|1||BSN^^^NLMINBIZA^NNNLD||van Doe&van&Doe^J.||19700206|||||||||||||||||||||||N\n" +
-		"ORC|XO|1|||SC\n" +
-		"OBR||UITNODIGING_ID||ZHOND^Ziekenhuis|R||20180703091331||||||||||||||||||CentralAvailable||^^^20180703084745^^^ZHOND";
+	private final static String ormUploadBeeldenTestCentraalBeschikbaarBericht =
+		"MSH|^~\\&|SCREENIT_MAMMA|SCREENIT|IMS|SECTRA|20180703084745||ORM^O01^ORM_O01|MESSAGE_ID|P|2.4||||||8859/1\n"
+			+
+			"PID|1||BSN^^^NLMINBIZA^NNNLD||van Doe&van&Doe^J.||19700206|||||||||||||||||||||||N\n" +
+			"ORC|XO|1|||SC\n" +
+			"OBR||UITNODIGING_ID||ZHOND^Ziekenhuis|R||20180703091331||||||||||||||||||CentralAvailable||^^^20180703084745^^^ZHOND";
 
 	private final static String ormIlmUploadBeeldenTestBericht = "MSH|^~\\&|SCREENIT_MAMMA|SCREENIT|IMS|SECTRA|20200226165332||ORM^O01^ORM_O01|MESSAGE_ID|P|2.4||||||8859/1 \n" +
 		"PID|1||BSN^^^NLMINBIZA^NNNLD||de Doe?-460160771&de&Doe?-460160771^J.||19700211|F||||||||||||||||||||||N \n" +
@@ -88,20 +89,21 @@ public class TestHL7BerichtPanel extends Panel
 	private final static String adtTestBericht = "MSH|^~\\&|SCREENIT_MAMMA|SCREENIT|IMS|SECTRA|20180711144339||ADT^A08^ADT_A01|13101|P|2.4||||||8859/1\n" +
 		"PID|1||888800000^^^NLMINBIZA^NNNLD||van Doe&van&Doe^J.||19500101|||||||||||||||||||||||N";
 
-	private final static String fitTestBericht = "MSH|^~\\&|SCREENIT_TEST|LAB_ID|SCREENIT|TOPICUS|20170213133912||OUL^R22^OUL_R22|MESSAGE_ID|P|2.5.1||||||UNICODE UTF-8|||LAB-29^IHE\n"
-		+
-		"SPM|1|||119339001^Stool specimen (specimen)^SNOMED\n" +
-		"SAC|||FIT_BARCODE\n" +
-		"OBR||||58453-2^Hemoglobine.gastrointestinaal^LN\n" +
-		"OBX|1|NM|58453-2^Hemoglobine.gastrointestinaal^LN||UITSLAG||||||F|||||||BioM690069^SYSMEX|ANALYSE_DATUM\n" +
-		"SPM|2|||119339001^Stool specimen (specimen)^SNM\n" +
-		"SAC|||FIT_BARCODE\n" +
-		"OBR||||58453-2^Hemoglobine.gastrointestinaal^LN\n" +
-		"OBX|1|NM|58453-2^Hemoglobine.gastrointestinaal^LN||UITSLAG||||||F|||||||BioM690069^SYSMEX|ANALYSE_DATUM\n" +
-		"SPM|3|||119339001^Stool specimen (specimen)^SNOMED\n" +
-		"SAC|||FIT_BARCODE\n" +
-		"OBR||||58453-2^Hemoglobine.gastrointestinaal^LN\n" +
-		"OBX|1|NM|58453-2^Hemoglobine.gastrointestinaal^LN||UITSLAG||||||F|||||||BioM690069^SYSMEX|ANALYSE_DATUM";
+	private final static String fitTestBericht =
+		"MSH|^~\\&|SCREENIT_TEST|LAB_ID|SCREENIT|TOPICUS|20170213133912||OUL^R22^OUL_R22|MESSAGE_ID|P|2.5.1||||||UNICODE UTF-8|||LAB-29^IHE\n"
+			+
+			"SPM|1|||119339001^Stool specimen (specimen)^SNOMED\n" +
+			"SAC|||FIT_BARCODE\n" +
+			"OBR||||58453-2^Hemoglobine.gastrointestinaal^LN\n" +
+			"OBX|1|NM|58453-2^Hemoglobine.gastrointestinaal^LN||UITSLAG||||||F|||||||BioM690069^SYSMEX|ANALYSE_DATUM\n" +
+			"SPM|2|||119339001^Stool specimen (specimen)^SNM\n" +
+			"SAC|||FIT_BARCODE\n" +
+			"OBR||||58453-2^Hemoglobine.gastrointestinaal^LN\n" +
+			"OBX|1|NM|58453-2^Hemoglobine.gastrointestinaal^LN||UITSLAG||||||F|||||||BioM690069^SYSMEX|ANALYSE_DATUM\n" +
+			"SPM|3|||119339001^Stool specimen (specimen)^SNOMED\n" +
+			"SAC|||FIT_BARCODE\n" +
+			"OBR||||58453-2^Hemoglobine.gastrointestinaal^LN\n" +
+			"OBX|1|NM|58453-2^Hemoglobine.gastrointestinaal^LN||UITSLAG||||||F|||||||BioM690069^SYSMEX|ANALYSE_DATUM";
 
 	private final static String ilmBerichtVerwijderdTestBericht = "MSH|^~\\&|SCREENIT_MAMMA|SCREENIT|IMS|SECTRA|20181003162245||ORM^O01^ORM_O01|MESSAGE_ID|P|2.4||||||8859/1|\n" +
 		"PID|1||BSN^^^NLMINBIZA^NNNLD||de Doe&van&Doe?^J.||19681003|F||||||||||||||||||||||N|\n" +
@@ -130,7 +132,7 @@ public class TestHL7BerichtPanel extends Panel
 
 		ScreenitDropdown<TestHL7BerichtTypeEnum> berichtTypeDropdown = new ScreenitDropdown<>("berichtType", Arrays.asList(TestHL7BerichtTypeEnum.values()),
 			new EnumChoiceRenderer<>());
-		testBerichtTypeModel = Model.of(TestHL7BerichtTypeEnum.DK_IFOBT);
+		testBerichtTypeModel = Model.of(TestHL7BerichtTypeEnum.DK_FIT_HTTP);
 		berichtTypeDropdown.setNullValid(false);
 		berichtTypeDropdown.setDefaultModel(testBerichtTypeModel);
 		berichtTypeDropdown.setRequired(true);
@@ -143,7 +145,7 @@ public class TestHL7BerichtPanel extends Panel
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				if (testBerichtTypeModel.getObject().equals(TestHL7BerichtTypeEnum.DK_IFOBT))
+				if (testBerichtTypeModel.getObject() == TestHL7BerichtTypeEnum.DK_FIT_MLLP || testBerichtTypeModel.getObject() == TestHL7BerichtTypeEnum.DK_FIT_HTTP)
 				{
 					ormBerichtHandleiding.setVisible(Boolean.FALSE);
 					ifobtBerichtHandleiding.setVisible(Boolean.TRUE);
@@ -200,8 +202,11 @@ public class TestHL7BerichtPanel extends Panel
 					ScreenITResponseHL7v2MessageWrapper responseMessageWrapper = null;
 					switch (testBerichtTypeModel.getObject())
 					{
-					case DK_IFOBT:
-						responseMessageWrapper = hl7TestMessageService.verstuurIFobtTestBericht(hl7BerichtTekst.getObject());
+					case DK_FIT_MLLP:
+						responseMessageWrapper = hl7TestMessageService.verstuurFitTestBerichtMetMLLP(hl7BerichtTekst.getObject());
+						break;
+					case DK_FIT_HTTP:
+						responseMessageWrapper = hl7TestMessageService.verstuurFitTestBerichtMetHTTP(hl7BerichtTekst.getObject());
 						break;
 					case MAMMA_ORM:
 					case MAMMA_ORM_UPLOAD_BEELDEN:

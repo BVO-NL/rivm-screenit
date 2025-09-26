@@ -43,7 +43,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit.s
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit.sources.providers.WeekCapaciteitEventsProvider;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
-import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
@@ -52,6 +51,8 @@ import nl.rivm.screenit.util.DateUtil;
 import org.apache.wicket.injection.Injector;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+
+import com.google.common.collect.Range;
 
 public class ScreenITEventSourceFactory implements Serializable
 {
@@ -126,8 +127,7 @@ public class ScreenITEventSourceFactory implements Serializable
 		{
 			Date to = Collections.min(Arrays.asList(DateUtil.toUtilDate(nu), DateUtil.plusDagen(weekStart, 7)));
 
-			List<MammaCapaciteitBlok> blokken = baseCapaciteitsBlokService.getCapaciteitsBlokken(screeningsEenheid, weekStart, to, true,
-				Arrays.asList(MammaCapaciteitBlokType.values()));
+			List<MammaCapaciteitBlok> blokken = baseCapaciteitsBlokService.getAlleCapaciteitBlokken(screeningsEenheid, Range.closed(weekStart, to));
 
 			final LocalDate prognoseVanafDatum = nu.toLocalTime().isBefore(Constants.BK_EINDTIJD_DAG) ? nu.toLocalDate() : nu.toLocalDate().plusDays(1);
 

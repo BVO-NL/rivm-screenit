@@ -52,7 +52,7 @@ import nl.rivm.screenit.main.web.gebruiker.testen.mamma.timeline.MammaTestTimeli
 import nl.rivm.screenit.main.web.gebruiker.testen.postcode.TestPostcodePage;
 import nl.rivm.screenit.main.web.gebruiker.testen.preferences.TestPreferencesPage;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaDossier;
@@ -177,7 +177,7 @@ public class TestenBasePage extends MedewerkerBasePage
 	protected TestTimelineModel refreshTimelineModel(TestTimelineModel timelineModel, List<Client> clienten)
 	{
 		Client client = clienten.get(0);
-		GbaPersoon persoon = client.getPersoon();
+		Persoon persoon = client.getPersoon();
 		timelineModel.setGeslacht(persoon.getGeslacht());
 		timelineModel.setGeboortedatum(persoon.getGeboortedatum());
 		timelineModel.setGemeente(persoon.getGbaAdres().getGbaGemeente());

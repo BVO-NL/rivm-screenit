@@ -43,9 +43,9 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.GbaPersoon;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -149,7 +149,7 @@ public class LoggingInzienPage extends AlgemeenPage
 
 				regio = Optional.ofNullable(logRegel.getClient())
 					.map(Client::getPersoon)
-					.map(GbaPersoon::getGbaAdres)
+					.map(Persoon::getGbaAdres)
 					.map(BagAdres::getGbaGemeente)
 					.map(Gemeente::getScreeningOrganisatie)
 					.orElse(null);

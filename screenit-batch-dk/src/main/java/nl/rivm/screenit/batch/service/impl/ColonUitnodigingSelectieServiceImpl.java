@@ -35,7 +35,7 @@ import nl.rivm.screenit.batch.jobs.colon.selectie.selectiestep.ColonClientSelect
 import nl.rivm.screenit.batch.service.ColonUitnodigingSelectieService;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon_;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.colon.UitnodigingsGebied;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
@@ -82,7 +82,7 @@ public class ColonUitnodigingSelectieServiceImpl implements ColonUitnodigingSele
 		return clientRepository.findWith(specification, q -> q)
 			.fetch(g ->
 			{
-				g.addSubgraph(Client_.persoon).addSubgraph(GbaPersoon_.gbaAdres);
+				g.addSubgraph(Client_.persoon).addSubgraph(Persoon_.gbaAdres);
 				g.addSubgraph(Client_.colonDossier);
 			})
 			.setScrollFetchSize(fetchSize)

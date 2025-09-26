@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.List;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -44,7 +43,6 @@ import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
-import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.model.mamma.enums.MammaFactorType;
 import nl.rivm.screenit.model.mamma.enums.MammaVerzettenReden;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -251,7 +249,7 @@ public abstract class MammaBulkVerzettenPopup extends GenericPanel<MammaBulkVerz
 			protected boolean skipConfirmation()
 			{
 				bulkVerzettenMogelijk = true;
-				if (benodigdeCapaciteitVoorAfspraken.compareTo(capaciteit.getCapaciteit(MammaCapaciteitBlokType.values()).vrijeCapaciteit) > 0)
+				if (benodigdeCapaciteitVoorAfspraken.compareTo(capaciteit.getVrijeCapaciteit()) > 0)
 				{
 					error(getString("bulk.verzetten.te.weinig.cap"));
 					bulkVerzettenMogelijk = false;
@@ -282,12 +280,12 @@ public abstract class MammaBulkVerzettenPopup extends GenericPanel<MammaBulkVerz
 		Date vanaf = DateUtil.toUtilDate(filter.getVanafLocalDate());
 		Date totEnMet = DateUtil.toUtilDate(filter.getTotEnMetLocalDate().plusDays(1));
 
-		Collection<MammaCapaciteitBlokDto> capaciteitsBlokken = baseCapaciteitsBlokService.getNietGeblokkeerdeCapaciteitsBlokDtos(standplaatsPeriode, vanaf, totEnMet,
-			EnumSet.of(MammaCapaciteitBlokType.REGULIER), null);
+		Collection<MammaCapaciteitBlokDto> capaciteitsBlokken = baseCapaciteitsBlokService.getNietGeblokkeerdeScreeningCapaciteitBlokDtos(standplaatsPeriode, vanaf, totEnMet,
+			null);
 		capaciteit = baseCapaciteitsBlokService.getCapaciteit(capaciteitsBlokken);
 
 		benodigdeCapaciteitContainer.addOrReplace(
-			new Label("vrijeCapaciteitTotaal", capaciteit.getCapaciteit(MammaCapaciteitBlokType.values()).vrijeCapaciteit.setScale(1, RoundingMode.HALF_UP).toString()));
+			new Label("vrijeCapaciteitTotaal", capaciteit.getVrijeCapaciteit().setScale(1, RoundingMode.HALF_UP).toString()));
 	}
 
 	private void standplaatsPeriodeSelected(AjaxRequestTarget target)

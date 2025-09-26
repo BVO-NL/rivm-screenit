@@ -38,10 +38,10 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.ClientBrief_;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.GbaPersoon;
-import nl.rivm.screenit.model.GbaPersoon_;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Gemeente_;
+import nl.rivm.screenit.model.Persoon;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.specification.ExtendedSpecification;
@@ -130,11 +130,11 @@ public class ClientBriefSpecification
 
 	private static <B extends ClientBrief<?, ?, ?>> Join<BagAdres, Gemeente> gemeenteJoin(From<?, ? extends B> r)
 	{
-		var adresJoin = join(persoonJoin(r), GbaPersoon_.gbaAdres);
+		var adresJoin = join(persoonJoin(r), Persoon_.gbaAdres);
 		return join(adresJoin, BagAdres_.gbaGemeente);
 	}
 
-	private static <B extends ClientBrief<?, ?, ?>> Join<Client, GbaPersoon> persoonJoin(From<?, ? extends B> r)
+	private static <B extends ClientBrief<?, ?, ?>> Join<Client, Persoon> persoonJoin(From<?, ? extends B> r)
 	{
 		var clientJoin = join(r, ClientBrief_.client);
 		return join(clientJoin, Client_.persoon);

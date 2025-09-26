@@ -78,7 +78,6 @@ public class NieuwsItem extends AbstractHibernateObject
 	@ManyToOne(fetch = FetchType.LAZY)
 	private OrganisatieMedewerker gewijzigdDoor;
 
-	@Column
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date gewijzigd;
 
