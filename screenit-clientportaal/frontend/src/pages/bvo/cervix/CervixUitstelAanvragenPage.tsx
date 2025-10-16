@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useEffect} from "react"
+import {useEffect} from "react"
 import {useSelectedBvo} from "../../../utils/Hooks"
 import {BevolkingsonderzoekNaam} from "../../../datatypes/Bevolkingsonderzoek"
 import ActieBasePage from "../../ActieBasePage"

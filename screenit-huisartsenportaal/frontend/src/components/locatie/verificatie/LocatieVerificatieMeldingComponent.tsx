@@ -21,7 +21,7 @@
 import styles from "./LocatieVerificatieMeldingComponent.module.scss"
 import {useAppSelector} from "../../../index"
 import {Col, Row} from "react-bootstrap"
-import React, {useState} from "react"
+import {useState} from "react"
 import {LocatieVerificatieDto} from "../../../state/datatypes/dto/LocatieVerificatieDto"
 import LocatieVerificatieModal from "./LocatieVerificatieModal"
 import properties from "./LocatieVerificatieMeldingComponent.json"

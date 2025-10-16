@@ -29,6 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.model.colon.IFOBTResult;
 
+import org.apache.commons.lang.StringUtils;
+
 import ca.uhn.hl7v2.model.DataTypeException;
 import ca.uhn.hl7v2.model.v251.datatype.NM;
 import ca.uhn.hl7v2.model.v251.datatype.ST;
@@ -75,23 +77,53 @@ public class ColonIFobtHL7BerichtWrapper
 			var observationValue = resultOBX.getObx5_ObservationValue(0);
 			var flag = resultOBX.getObx8_AbnormalFlags(0);
 
-			if (observationValue.getData() instanceof NM nm)
-			{
-				ifobtResult.setResultValue(nm.getValue());
-			}
+			var sid = ifobtResult.getSid();
+			boolean isQC = sid != null && sid.startsWith("QC");
 
-			else if (specimenRejectReason.getCwe1_Identifier().getValue() != null)
+			if (isQC)
 			{
-				ifobtResult.setOnbeoordeelbaarReden(specimenRejectReason.getCwe1_Identifier().getValue());
-			}
+				if (observationValue.getData() instanceof NM nm)
+				{
+					ifobtResult.setResultValue(nm.getValue());
+				}
+				else
+				{
 
-			else if (observationValue.getData() instanceof ST && flag.getValue() != null)
-			{
-				ifobtResult.setFlag(flag.getValue());
+					throw new DataTypeException("Combinatie van SPM en OBX waardes klopt niet samen. Barcode: " + sid);
+				}
 			}
 			else
 			{
-				throw new DataTypeException("Combinatie van SPM en OBX waardes klopt niet samen. Barcode: " + ifobtResult.getSid());
+
+				if (specimenRejectReason.getCwe1_Identifier().getValue() != null)
+				{
+					ifobtResult.setOnbeoordeelbaarReden(specimenRejectReason.getCwe1_Identifier().getValue());
+				}
+				else if (observationValue.getData() instanceof ST st && flag.getValue() != null)
+				{
+					var flagValue = flag.getValue();
+
+					if (!"PRO".equals(flagValue) && !"SS".equals(flagValue))
+					{
+						throw new DataTypeException("Combinatie van SPM en OBX waardes klopt niet samen. Barcode: " + sid);
+					}
+					var observationValueString = st.getValue();
+
+					if (observationValueString == null || StringUtils.countMatches(observationValueString, "*") != observationValueString.length())
+					{
+						throw new DataTypeException("Combinatie van SPM en OBX waardes klopt niet samen. Barcode: " + sid);
+					}
+					ifobtResult.setFlag(flagValue);
+				}
+
+				else if (observationValue.getData() instanceof NM nm)
+				{
+					ifobtResult.setResultValue(nm.getValue());
+				}
+				else
+				{
+					throw new DataTypeException("Combinatie van SPM en OBX waardes klopt niet samen. Barcode: " + sid);
+				}
 			}
 
 			var equipmentInstanceIdentifier = resultOBX.getObx18_EquipmentInstanceIdentifier(0).getEi1_EntityIdentifier();

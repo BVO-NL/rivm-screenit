@@ -18,13 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useEffect, useState} from "react"
+import {useEffect, useState} from "react"
 import {Nav, Navbar, NavItem} from "react-bootstrap"
 import styles from "./NavigationComponent.module.scss"
 import classNames from "classnames"
 import {Link, useNavigate} from "react-router"
 import NavigationLinkComponent from "./NavigationLinkComponent"
-import {useRegio} from "../../utils/Hooks"
 import {getLogoutLink, getPersoonNaam} from "../header/HeaderComponent"
 import {useSelector} from "react-redux"
 import MijnBevolkingsOnderzoekLogo from "../../scss/media/MijnBevolkingsOnderzoekLogo"
@@ -43,7 +42,6 @@ const NavigationComponent = () => {
 	const nietTonenHamburger = persoon.id !== undefined
 
 	const navigate = useNavigate()
-	const regio = useRegio()
 
 	useEffect(() => {
 		fixNavBarPositieBijScrollen()
@@ -99,7 +97,7 @@ const NavigationComponent = () => {
 												 onClick={() => hideNavbarEnStuurDatadogEvent("mijn_profiel")}/>
 					</NavItem>
 					<NavItem>
-						<NavigationLinkComponent url={getContactUrl(regio)}
+						<NavigationLinkComponent url={getContactUrl()}
 												 text={"Contact"}
 												 bold={false}
 												 onClick={() => hideNavbarEnStuurDatadogEvent("contact")}/>

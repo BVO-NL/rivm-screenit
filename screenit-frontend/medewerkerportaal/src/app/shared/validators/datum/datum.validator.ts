@@ -22,7 +22,7 @@ import { AbstractControl, FormControl, ValidationErrors, ValidatorFn } from '@an
 import { addDays, addMonths, isAfter, isBefore, isValid, parse, startOfDay } from 'date-fns'
 import { formatNLDate, parseDate } from '@shared/date-utils'
 import { TIME_FORMAT } from '@shared/constants'
-import { ToastService } from '@/toast/service/toast.service'
+import { ToastService } from '@shared/toast/service/toast.service'
 
 export const datumInVerledenValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   if (!control.dirty) {

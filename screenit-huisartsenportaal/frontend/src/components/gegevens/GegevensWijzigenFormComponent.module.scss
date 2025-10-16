@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "../../styling/scss/colors";
-
 .style {
 
 	table {
@@ -38,7 +36,7 @@
 
 		.overeenkomstLink {
 			font-weight: bold;
-			color: $blauw;
+			color: var(--blauw);
 			cursor: pointer;
 		}
 	}

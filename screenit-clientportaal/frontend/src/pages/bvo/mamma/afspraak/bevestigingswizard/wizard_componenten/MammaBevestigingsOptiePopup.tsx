@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {ReactNode} from "react"
 import BasePopup from "../../../../../../components/popup/BasePopup"
 import properties from "./MammaAfspraakMakenWizardModuleProperties.json"
 import styles from "./MammaAfspraakMakenWizardModuleStyles.module.scss"
@@ -35,7 +35,7 @@ import {BevestigingsType} from "../../../../../../datatypes/BevestigingsType"
 
 export type MammaBevestigingsOptiePopupProps = {
 	afspraakBevestiging: AfspraakBevestigingOpties,
-	children: React.ReactNode
+	children: ReactNode
 	onVolgende: () => void;
 }
 
@@ -43,7 +43,7 @@ const MammaBevestigingsOptiePopup = (props: MammaBevestigingsOptiePopupProps) =>
 
 	const validatieSchema: Yup.AnyObjectSchema = Yup.object().shape({
 		clientNieuwEmailAdres: Yup.string().required(getString(properties.mail.email_validatie.niet_aanwezig))
-			.test("mailValidatie", getString(properties.mail.email_validatie.fout), function (value) {
+			.test("mailValidatie", getString(properties.mail.email_validatie.fout), (value) => {
 				return isEmailadresValid(value)
 			})
 			.max(100, getString(properties.mail.email_validatie.te_lang)),
@@ -51,41 +51,41 @@ const MammaBevestigingsOptiePopup = (props: MammaBevestigingsOptiePopupProps) =>
 
 	return (<BasePopup
 		title={properties.mail.titel}
-		description={properties.mail.controleer_email_tekst}
-		children={
-			<div>
-				<h3>{properties.mail.boven_invoerveld}</h3>
-				<div className={styles.bevestigenForm}>
-					<Formik initialValues={props.afspraakBevestiging}
-							validationSchema={validatieSchema}
-							onSubmit={() => {
-								props.afspraakBevestiging.bevestigingsType = BevestigingsType.MAIL
-								props.onVolgende()
-							}}>
-						{({errors, values, isSubmitting, setFieldValue, handleSubmit}) => (
-							<><ScreenitTextfield name={"mail"}
-												 placeholder={"E-mailadres"}
-												 value={values.clientNieuwEmailAdres}
-												 invalidMessage={errors.clientNieuwEmailAdres}
-												 onChange={value => setFieldValue("clientNieuwEmailAdres", value)}/>
-								<Button label={properties.mail.mail_knop_tekst}
-										disableButton={isSubmitting}
-										onClick={() => {
-											props.afspraakBevestiging.clientNieuwEmailAdres = values.clientNieuwEmailAdres
-											handleSubmit()
-										}}
-										displayArrow={ArrowType.ARROW_RIGHT}/></>)}
-					</Formik>
-					{props.afspraakBevestiging.toonBriefOptie &&
-						<NavLink onClick={() => {
-							props.afspraakBevestiging.bevestigingsType = BevestigingsType.BRIEF
+		description={properties.mail.controleer_email_tekst}>
+		<div>
+			<h3>{properties.mail.boven_invoerveld}</h3>
+			<div className={styles.bevestigenForm}>
+				<Formik initialValues={props.afspraakBevestiging}
+						validationSchema={validatieSchema}
+						onSubmit={() => {
+							props.afspraakBevestiging.bevestigingsType = BevestigingsType.MAIL
 							props.onVolgende()
-						}}>{properties.mail.brief_link_tekst}</NavLink>}
+						}}>
+					{({errors, values, isSubmitting, setFieldValue, handleSubmit}) => (
+						<><ScreenitTextfield name={"mail"}
+											 placeholder={"E-mailadres"}
+											 value={values.clientNieuwEmailAdres}
+											 invalidMessage={errors.clientNieuwEmailAdres}
+											 onChange={value => setFieldValue("clientNieuwEmailAdres", value)}/>
+							<Button label={properties.mail.mail_knop_tekst}
+									disableButton={isSubmitting}
+									onClick={() => {
+										props.afspraakBevestiging.clientNieuwEmailAdres = values.clientNieuwEmailAdres
+										handleSubmit()
+									}}
+									displayArrow={ArrowType.ARROW_RIGHT}/></>)}
+				</Formik>
+				{props.afspraakBevestiging.toonBriefOptie &&
+					<NavLink onClick={() => {
+						props.afspraakBevestiging.bevestigingsType = BevestigingsType.BRIEF
+						props.onVolgende()
+					}}>{properties.mail.brief_link_tekst}</NavLink>}
 
-					<NavLink onClick={props.onVolgende}>{properties.mail.geen_bevestiging_tekst}</NavLink>
-				</div>
-				{props.children}
-			</div>}/>)
+				<NavLink onClick={props.onVolgende}>{properties.mail.geen_bevestiging_tekst}</NavLink>
+			</div>
+			{props.children}
+		</div>
+	</BasePopup>)
 }
 
 export default MammaBevestigingsOptiePopup

@@ -22,7 +22,6 @@ import BasePage from "../BasePage"
 import properties from "./GegevensWijzigenPage.json"
 import {getString} from "../../util/TekstPropertyUtil"
 import GegevensWijzigenFormComponent from "../../components/gegevens/GegevensWijzigenFormComponent"
-import React from "react"
 
 const GegevensWijzigenPage = () => {
 	return <BasePage title={getString(properties.title)} description={getString(properties.description)}>

@@ -18,13 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/colors";
-@import "src/scss/media-mixins";
-
 .topTaak {
 	min-width: 220px;
 	max-width: 320px;
-	background-color: $wit-base;
+	background-color: var(--wit-base);
 	border-radius: 10px;
 	box-shadow: 0 20px 30px -19px rgba(0, 0, 0, 0.15);
 	padding-left: 30px;
@@ -79,7 +76,7 @@
 			display: block;
 
 			&:first-of-type {
-				color: $grijs-900;
+				color: var(--grijs-900);
 				font-size: 1rem;
 
 				@include respond-below(xs) {
@@ -114,7 +111,7 @@
 	svg {
 		height: 50px;
 		width: 50px;
-		background-color: $wit-base;
+		background-color: var(--wit-base);
 
 		@include respond-below(lg) {
 			height: 40px;

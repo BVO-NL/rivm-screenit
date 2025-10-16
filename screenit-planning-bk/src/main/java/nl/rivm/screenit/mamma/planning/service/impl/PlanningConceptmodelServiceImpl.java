@@ -77,6 +77,7 @@ import nl.rivm.screenit.mamma.planning.repository.projectie.BlokkadeProjectie;
 import nl.rivm.screenit.mamma.planning.repository.projectie.ClientProjectie;
 import nl.rivm.screenit.mamma.planning.repository.projectie.StandplaatsPeriodeProjectie;
 import nl.rivm.screenit.mamma.planning.service.PlanningCapaciteitAgendaService;
+import nl.rivm.screenit.mamma.planning.service.PlanningCapaciteitBlokService;
 import nl.rivm.screenit.mamma.planning.service.PlanningConceptOpslaanService;
 import nl.rivm.screenit.mamma.planning.service.PlanningConceptmodelService;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningDoorrekenenManager;
@@ -145,6 +146,8 @@ public class PlanningConceptmodelServiceImpl implements PlanningConceptmodelServ
 	private final PlanningStandplaatsRondeRepository planningStandplaatsRondeRepository;
 
 	private final PlanningTehuisRepository planningTehuisRepository;
+
+	private final PlanningCapaciteitBlokService planningCapaciteitBlokService;
 
 	private boolean doInit = true; 
 
@@ -370,7 +373,7 @@ public class PlanningConceptmodelServiceImpl implements PlanningConceptmodelServ
 	{
 		LOG.info("leesBeschikbareCapaciteit se: {}", planningScreeningsEenheid.getId());
 
-		var planningBlokken = planningCapaciteitBlokRepository.leesCapaciteitBlokken(planningScreeningsEenheid, PlanningConstanten.prognoseVanafDatum, null);
+		var planningBlokken = planningCapaciteitBlokService.leesCapaciteitBlokken(planningScreeningsEenheid, PlanningConstanten.prognoseVanafDatum, null);
 		planningBlokken.forEach(blok ->
 		{
 			planningScreeningsEenheid.getBlokSet().add(blok);
@@ -771,7 +774,7 @@ public class PlanningConceptmodelServiceImpl implements PlanningConceptmodelServ
 
 		}
 
-		LOG.info(blokkadeViews.size() + " blokkades gelezen");
+		LOG.info("{} blokkades gelezen", blokkadeViews.size());
 	}
 
 	@NotNull

@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import styles from "./KruimelpadComponent.module.scss"
 import bvoStyles from "../BvoStyle.module.scss"
 import routes from "../../routes/routes"
@@ -51,7 +50,7 @@ const KruimelpadComponent = (props: KruimelpadComponentProps) => {
 					const containsRegexCharacters = subPath.match(/(\(|\)|[|]|\*)/g)
 					return containsRegexCharacters ? Object.values(matchedPath.params)[currentRegexIndex++] : subPath
 				}).join("/"),
-			}
+			};
 		})
 	return (
 		<div className={classNames(styles.style, props.className)}>

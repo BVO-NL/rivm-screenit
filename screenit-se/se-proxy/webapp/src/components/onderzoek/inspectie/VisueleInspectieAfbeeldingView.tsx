@@ -18,8 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {Component} from "react"
-import inspectieAfbeelding from "./visuele_inspectie_afbeelding.svg"
+import {Component, JSX} from "react"
 import type {AnnotatieIcoon, AnnotatieIcoonType} from "../../../datatypes/AnnotatieIcoon"
 import {Card, CardBody, CardFooter, Row} from "reactstrap"
 import AnnotatiePaletView from "../afbeelding/AnnotatiePaletView"
@@ -63,7 +62,7 @@ export default class VisueleInspectieAfbeeldingView extends Component<VisueleIns
 				<CardBody className={"visuele-inspectie-afbeelding non-selectable"}>
 					<img
 						id={`visuele-inspectie-afbeelding${this.props.containerId}`} alt="visuele inspectie afbeelding"
-						draggable="false" src={inspectieAfbeelding}
+						draggable="false" src="./images/visuele_inspectie_afbeelding.svg"
 						onLoadCapture={
 							(): void => {
 								this.props.afterLoad && this.props.afterLoad()

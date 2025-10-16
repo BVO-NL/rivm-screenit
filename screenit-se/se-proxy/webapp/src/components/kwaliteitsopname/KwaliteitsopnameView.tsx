@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 import AutorisatieButton from "../generic/AutorisatieButton"
 import {Col, Row} from "reactstrap"
 import PaneelNaam from "../generic/PaneelNaam"
@@ -64,7 +64,7 @@ export type KwaliteitsopnameState = {
 	bezigMetKwaliteitsopname: boolean;
 };
 
-export default class KwaliteitsopnameView extends React.Component<KwaliteitsopnameViewProps & KwaliteitsopnameViewStateProps, KwaliteitsopnameState> {
+export default class KwaliteitsopnameView extends Component<KwaliteitsopnameViewProps & KwaliteitsopnameViewStateProps, KwaliteitsopnameState> {
 
 	constructor(props: KwaliteitsopnameViewProps & KwaliteitsopnameViewStateProps) {
 		super(props)

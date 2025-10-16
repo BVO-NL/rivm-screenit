@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {Component} from "react"
+import {Component, JSX} from "react"
 import type {Afspraak} from "../../datatypes/Afspraak"
 import {daglijstStatusnaam} from "../../datatypes/Afspraak"
 import {datumFormaat} from "../../util/DateUtil"
@@ -48,9 +48,9 @@ export default class AfspraakRijView extends Component<AfspraakRijViewStateProps
 			<td>{this.props.afspraak.vanafTijd}
 				{this.props.client.inTehuis && <i className="fa fa-home px-1 py-1 float-right"/>}
 				{!this.props.client.inTehuis && this.props.client.doelgroep === "DUBBELE_TIJD" &&
-				<i className="fa fa-clock-o px-1 py-1 float-right"/>}
+					<i className="fa fa-clock-o px-1 py-1 float-right"/>}
 				{this.props.client.doelgroep === "MINDER_VALIDE" &&
-				<i className="fa fa-wheelchair px-1 py-1 float-right"/>}
+					<i className="fa fa-wheelchair px-1 py-1 float-right"/>}
 				{this.props.afspraak.eerderOnderbrokenInZelfdeRonde ?
 					<i className="fa fa-step-forward px-1 py-1 float-right">
 						<span className="tooltiptext">Aan deze client is in de huidige screeningsronde een onderbroken onderzoek gekoppeld</span></i> : null}

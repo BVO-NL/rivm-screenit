@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "../../../styling/scss/colors";
-
 .style {
 
 	height: 20px;
@@ -30,15 +28,15 @@
 	text-align: center;
 
 	&.statusActief {
-		background-color: $groen;
+		background-color: var(--groen);
 	}
 
 	&.statusNietGeverifieerd {
-		background-color: $oranje;
+		background-color: var(--oranje);
 	}
 
 	&.statusVerwijderd {
-		background-color: $rood;
+		background-color: var(--rood);
 	}
 
 }

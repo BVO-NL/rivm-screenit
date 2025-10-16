@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useCallback, useEffect, useRef, useState} from "react"
+import {useCallback, useEffect, useRef, useState} from "react"
 import {BevolkingsonderzoekNaam} from "../../../../datatypes/Bevolkingsonderzoek"
 import styles from "./ColonAfspraakMakenPage.module.scss"
 import ScreenitDropdown, {DropdownOption} from "../../../../components/input/ScreenitDropdown"
@@ -47,7 +47,7 @@ import {ToastMessageType} from "../../../../datatypes/toast/ToastMessage"
 import {Col, Row} from "react-bootstrap"
 import {placeNonBreakingSpaceInDate, splitAdresString} from "../../../../utils/StringUtil"
 import {getContactUrl} from "../../../../utils/UrlUtil"
-import {useRegio, useWindowDimensions} from "../../../../utils/Hooks"
+import {useWindowDimensions} from "../../../../utils/Hooks"
 import AdvancedSearchLinkComponent from "../../../../components/form/AdvancedSearchLinkComponent"
 import SearchForm from "../../../../components/form/SearchForm"
 import ScreenitDatePicker from "../../../../components/input/ScreenitDatePicker"
@@ -77,7 +77,7 @@ const afstandOpties = () => {
 	const afstanden = ["5", "10", "15", "20", "25", "30", "35", "40", "45"]
 	const afstandOpties: Array<DropdownOption> = []
 	for (const afstand of afstanden) {
-		afstandOpties.push({value: afstand, label: afstand + " km"})
+		afstandOpties.push({value: afstand, label: `${afstand  } km`})
 	}
 	return afstandOpties
 }
@@ -85,7 +85,6 @@ const afstandOpties = () => {
 const ColonAfspraakMakenPage = () => {
 	const [isNieuweAfspraak, setIsNieuweAfspraak] = useState<boolean>(false)
 	const [vrijeSloten, setVrijeSloten] = useState<VrijSlotZonderKamer[]>([])
-	const regio = useRegio()
 	const dispatch = useThunkDispatch()
 	const huidigeIntakeAfspraak = useSelector((state: State) => state.client.colonDossier.intakeAfspraak)
 	const [gezocht, setGezocht] = useState<boolean>(false)
@@ -262,7 +261,7 @@ const ColonAfspraakMakenPage = () => {
 					{geenResultaten &&
 						<BigUrlButton title={getString(properties.search.search_no_results_contact_header)}
 									  text={getString(properties.search.search_no_results_contact_text)}
-									  link={getContactUrl(regio)}/>}
+									  link={getContactUrl()}/>}
 					<div className={styles.navigationButtons}>
 						{gezocht && !geenResultaten && visibleZoekMeerButton &&
 							<div className={styles.showMoreResultsButtonArea}>

@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import styles from "./App.module.scss"
 import ToastOverlay from "./components/overlay/toast/ToastOverlay"
 import LoadingSpinnerOverlay from "./components/overlay/loading/LoadingSpinnerOverlay"
@@ -28,6 +27,7 @@ import {Container} from "react-bootstrap"
 import classNames from "classnames"
 import properties from "./App.json"
 import {getString} from "./util/TekstPropertyUtil"
+import {JSX} from "react"
 
 const App = ({children}: { children: JSX.Element }) => {
 	return (

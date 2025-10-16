@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import TextBlobComponent from "./TextBlobComponent"
 import properties from "./BvoLandingBlobComponent.json"
 import {getString} from "../../utils/TekstPropertyUtil"

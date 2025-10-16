@@ -18,22 +18,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react";
-import classNames from "classnames";
+import classNames from "classnames"
 
 export type VerticalDividerProps = {
-    className?: string,
-    heightSubtraction?: number
+	className?: string,
+	heightSubtraction?: number
 }
 
 const VerticalDividerComponent = (props: VerticalDividerProps) => {
 
-    return (
-        <svg className={classNames(props.className)} xmlns="http:
-             height={"calc(100% - " + (props.heightSubtraction || 40) + "px)"}>
-            <rect width="5" height="100%" rx="2.5"/>
-        </svg>
-    )
+	return (
+		<svg className={classNames(props.className)} xmlns="http:
+			 height={`calc(100% - ${props.heightSubtraction || 40}px)`}>
+			<rect width="5" height="100%" rx="2.5"/>
+		</svg>
+	)
 }
 
-export default VerticalDividerComponent;
+export default VerticalDividerComponent

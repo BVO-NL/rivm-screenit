@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import BasePopup from "../../../../components/popup/BasePopup"
 import {Col, NavLink, Row} from "react-bootstrap"
 import classNames from "classnames"
@@ -51,42 +50,41 @@ const ColonAfspraakMakenBevestigingsPopup = (props: ColonAfspraakMakenBevestigin
 
 	return (
 		<BasePopup title={getString(properties.page.title)}
-				   description={getString(properties.page.description)}
-				   children={
-					   <div>
-						   <div className={classNames(BevolkingsonderzoekStyle[bvo!], styles.afspraakDiv)}>
-							   <VerticalDividerComponent className={styles.verticalRectangle} heightSubtraction={15}/>
-							   <Row className={styles.afspraakGegevensRow}>
-								   <Col sm={6}>
+				   description={getString(properties.page.description)}>
+			<div>
+				<div className={classNames(BevolkingsonderzoekStyle[bvo!], styles.afspraakDiv)}>
+					<VerticalDividerComponent className={styles.verticalRectangle} heightSubtraction={15}/>
+					<Row className={styles.afspraakGegevensRow}>
+						<Col sm={6}>
                                            <span
 											   className={classNames(bvoStyles.bvoText)}>{getString(properties.appointment.description.datetime)}</span>
-									   <span>{formatDateText(props.afspraak.startTijd)}</span>
-									   <span>{getString(properties.appointment.values.time, [formatTime(props.afspraak.startTijd)])}</span>
-								   </Col>
-								   <Col sm={6} className={styles.locatieColumn}>
+							<span>{formatDateText(props.afspraak.startTijd)}</span>
+							<span>{getString(properties.appointment.values.time, [formatTime(props.afspraak.startTijd)])}</span>
+						</Col>
+						<Col sm={6} className={styles.locatieColumn}>
                                            <span
 											   className={classNames(bvoStyles.bvoText)}>{getString(properties.appointment.description.location)}</span>
-									   <span>{props.afspraak.ziekenhuis}</span>
-									   <span>{props.afspraak.adres}</span>
-									   <span>{props.afspraak.postcode + " " + props.afspraak.plaats}</span>
-								   </Col>
-							   </Row>
-						   </div>
-						   <div className={styles.buttons}>
-							   <SubmitButton label={getString(properties.buttons.confirmationletter)}
-											 displayArrow={ArrowType.ARROW_RIGHT}
-											 onClick={() => {
-												 if (props.heraanmelding) {
-													 dispatch(nieuweAfspraak(props.afspraak, props.onClose)).then(() => navigate(getBvoBaseUrl(Bevolkingsonderzoek.COLON)))
-												 } else {
-													 dispatch(afspraakVerplaatsen(props.afspraak, props.onClose)).then(() => navigate(getBvoBaseUrl(Bevolkingsonderzoek.COLON)))
-												 }
-											 }}/>
-							   <NavLink onClick={props.onClose} className={styles.andereOptie}>
-								   {getString(properties.buttons.differentappointment)}</NavLink>
-						   </div>
-					   </div>
-				   }/>
+							<span>{props.afspraak.ziekenhuis}</span>
+							<span>{props.afspraak.adres}</span>
+							<span>{`${props.afspraak.postcode  } ${  props.afspraak.plaats}`}</span>
+						</Col>
+					</Row>
+				</div>
+				<div className={styles.buttons}>
+					<SubmitButton label={getString(properties.buttons.confirmationletter)}
+								  displayArrow={ArrowType.ARROW_RIGHT}
+								  onClick={() => {
+									  if (props.heraanmelding) {
+										  dispatch(nieuweAfspraak(props.afspraak, props.onClose)).then(() => navigate(getBvoBaseUrl(Bevolkingsonderzoek.COLON)))
+									  } else {
+										  dispatch(afspraakVerplaatsen(props.afspraak, props.onClose)).then(() => navigate(getBvoBaseUrl(Bevolkingsonderzoek.COLON)))
+									  }
+								  }}/>
+					<NavLink onClick={props.onClose} className={styles.andereOptie}>
+						{getString(properties.buttons.differentappointment)}</NavLink>
+				</div>
+			</div>
+		</BasePopup>
 	)
 }
 

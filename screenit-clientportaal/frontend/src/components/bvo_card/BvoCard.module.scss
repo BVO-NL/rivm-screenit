@@ -18,14 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/colors";
-@import "src/scss/media-mixins";
-
 .bvoCard {
 	position: relative;
 	height: 300px;
 	max-width: 320px;
-	background-color: $wit-base;
+	background-color: var(--wit-base);
 	border-radius: 10px;
 	box-shadow: 0 20px 30px -19px rgba(0, 0, 0, 0.15);
 	padding-left: 50px;
@@ -49,7 +46,7 @@
 	&.disabled {
 		* {
 			opacity: 0.5;
-			color: $zwart;
+			color: var(--zwart);
 		}
 
 		&:hover {
@@ -98,7 +95,7 @@
 		}
 
 		.bvoEventLabel {
-			color: $grijs-900;
+			color: var(--grijs-900);
 			font-size: 1rem;
 
 			@include respond-below(xs) {
@@ -107,7 +104,7 @@
 		}
 
 		.bvoDoelgroepUitleg {
-			color: $grijs-900;
+			color: var(--grijs-900);
 			font-size: 1rem;
 			font-style: italic;
 

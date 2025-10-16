@@ -20,7 +20,6 @@
  */
 import {Field} from "formik"
 import BaseFormField, {SharedFormFieldProps} from "../BaseFormField"
-import React from "react"
 
 export interface FormTextFieldProps extends SharedFormFieldProps {
 	min?: number;

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 import Select from "react-select"
 
 export type DropdownValueProps<T> = {
@@ -39,7 +39,7 @@ type DropdownOption<T> = {
 	label: string;
 }
 
-export default class DropdownValue<T> extends React.Component<DropdownValueProps<T>> {
+export default class DropdownValue<T> extends Component<DropdownValueProps<T>> {
 
 	constructor(props: DropdownValueProps<T>) {
 		super(props)

@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import {IdleTimerProvider} from "react-idle-timer"
 import {useAppSelector, useAppThunkDispatch} from "../index"
 import {loadingThunkAction} from "../api/LoadingThunkAction"
@@ -26,6 +25,7 @@ import {afmelden} from "../api/AfmeldenThunkAction"
 import {createActionPushToast} from "../state/ToastsState"
 import {ToastType} from "../state/datatypes/Toast"
 import {useNavigate} from "react-router"
+import {JSX} from "react"
 
 const IdleTimerWrapper = (props: { children: JSX.Element }) => {
 	const dispatch = useAppThunkDispatch()

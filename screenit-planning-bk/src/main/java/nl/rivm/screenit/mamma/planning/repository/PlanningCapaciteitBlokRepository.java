@@ -24,12 +24,10 @@ package nl.rivm.screenit.mamma.planning.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import nl.rivm.screenit.mamma.planning.model.PlanningBlok;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
 import nl.rivm.screenit.mamma.planning.repository.projectie.PlanningCapaciteitBlokProjectie;
+import nl.rivm.screenit.mamma.planning.repository.projectie.PlanningMinderValideReserveringProjectie;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok_;
 import nl.rivm.screenit.repository.BaseJpaRepository;
@@ -48,11 +46,14 @@ public interface PlanningCapaciteitBlokRepository extends BaseJpaRepository<Mamm
 	@Query("SELECT CAST( MAX(vanaf) as LocalDate) FROM MammaCapaciteitBlok")
 	Optional<LocalDate> findMaxDatumVanAlleCapaciteitBlokken();
 
-	default Set<PlanningBlok> leesCapaciteitBlokken(PlanningScreeningsEenheid screeningsEenheid, LocalDate vanaf, LocalDate totEnMet)
+	@Query("select id, vanaf from MammaMinderValideReservering where capaciteitBlok.id = :capaciteitBlokId")
+	List<PlanningMinderValideReserveringProjectie> findMindervalideReserveringenByCapaciteitBlokId(Long capaciteitBlokId);
+
+	default List<PlanningCapaciteitBlokProjectie> leesCapaciteitBlokken(PlanningScreeningsEenheid screeningsEenheid, LocalDate vanaf, LocalDate totEnMet)
 	{
 		var nullSafeRange = RangeUtil.range(vanaf, BoundType.CLOSED, totEnMet, BoundType.CLOSED);
 
-		var capaciteitblokken = findWith(
+		return findWith(
 			heeftScreeningsEenheidId(screeningsEenheid.getId())
 				.and(bevatLocalDateToDate(nullSafeRange, r -> r.get(MammaCapaciteitBlok_.vanaf))),
 			PlanningCapaciteitBlokProjectie.class,
@@ -66,21 +67,6 @@ public interface PlanningCapaciteitBlokRepository extends BaseJpaRepository<Mamm
 					r.get(MammaCapaciteitBlok_.minderValideAfspraakMogelijk)))
 				.all());
 
-		return capaciteitblokken.stream()
-			.map(blokProjectie -> mapNaarPlanningBlok(screeningsEenheid, blokProjectie))
-			.collect(Collectors.toSet());
 	}
 
-	private PlanningBlok mapNaarPlanningBlok(PlanningScreeningsEenheid screeningsEenheid, PlanningCapaciteitBlokProjectie blokProjectie)
-	{
-		var vanaf = blokProjectie.getVanaf();
-
-		var blok = new PlanningBlok(blokProjectie.getId(), vanaf.toLocalTime(), blokProjectie.getTot().toLocalTime(),
-			blokProjectie.getAantalOnderzoeken(), blokProjectie.getBlokType(), blokProjectie.getOpmerkingen(), blokProjectie.isMinderValideAfspraakMogelijk());
-
-		var dag = screeningsEenheid.getDagNavigableMap().get(vanaf.toLocalDate());
-		blok.setDag(dag);
-		blok.setScreeningsEenheid(screeningsEenheid);
-		return blok;
-	}
 }

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useEffect} from "react"
+import {useEffect} from "react"
 import {Col, Container, Row} from "react-bootstrap"
 import styles from "./BvoLandingPage.module.scss"
 import landingPageStyle from "../../landing/LandingPage.module.scss"
@@ -49,7 +49,7 @@ const ColonLandingPage = (props: Props) => {
 	const {dossier, beschikbareActies} = props
 
 	const dispatch = useThunkDispatch()
-	const locatieIntakeAfspraak = dossier.intakeAfspraak ? dossier.intakeAfspraak.naamIntakelocatie + "<br>" + splitAdresString(dossier.intakeAfspraak.adresString) : ""
+	const locatieIntakeAfspraak = dossier.intakeAfspraak ? `${dossier.intakeAfspraak.naamIntakelocatie  }<br>${  splitAdresString(dossier.intakeAfspraak.adresString)}` : ""
 	const toonVervangendeTekst: boolean = useSelector((state: State) => state.landingOverzicht.colonParameters.toonVervangendeTekst)
 
 	useEffect(() => {

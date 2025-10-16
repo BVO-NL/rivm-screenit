@@ -41,6 +41,7 @@ import nl.rivm.screenit.mamma.planning.index.PlanningScreeningsEenheidIndex;
 import nl.rivm.screenit.mamma.planning.model.PlanningBlok;
 import nl.rivm.screenit.mamma.planning.model.PlanningConstanten;
 import nl.rivm.screenit.mamma.planning.model.PlanningDag;
+import nl.rivm.screenit.mamma.planning.model.PlanningMinderValideReservering;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsPeriode;
 import nl.rivm.screenit.mamma.planning.model.PlanningWeek;
@@ -168,7 +169,6 @@ public class PlanningCapaciteitAgendaServiceImpl implements PlanningCapaciteitAg
 		nieuwBlok.id = null;
 		nieuwBlok.conceptId = null;
 		nieuwBlok.screeningsEenheidId = doelScreeningsEenheid.getId();
-
 		return nieuwBlok;
 	}
 
@@ -180,7 +180,7 @@ public class PlanningCapaciteitAgendaServiceImpl implements PlanningCapaciteitAg
 			herhalenTotEnMet = weekNavigableMapNaar.lastKey();
 		}
 
-		if (herhalenVanaf.compareTo(herhalenTotEnMet) <= 0)
+		if (!herhalenVanaf.isAfter(herhalenTotEnMet))
 		{
 			PlanningWijzigingenRoute wijzigingenRoute = PlanningWijzigingen.getWijzigingenRoute(naarScreeningsEenheid);
 
@@ -205,13 +205,17 @@ public class PlanningCapaciteitAgendaServiceImpl implements PlanningCapaciteitAg
 
 					for (PlanningBlok teHerhalenBlok : teHerhalenDag.getBlokSet())
 					{
+						var teHerhalenReserveringen = teHerhalenBlok.getMindervalideReserveringen().stream().map(r -> new PlanningMinderValideReservering(null, r.getVanaf()))
+							.toList();
+
 						PlanningBlok naarBlok = new PlanningBlok(null,
 							teHerhalenBlok.getVanaf(),
 							teHerhalenBlok.getTot(),
 							teHerhalenBlok.getAantalOnderzoeken(),
 							teHerhalenBlok.getCapaciteitBlokType(),
 							teHerhalenBlok.getOpmerkingen(),
-							teHerhalenBlok.isMinderValideAfspraakMogelijk());
+							teHerhalenBlok.isMinderValideAfspraakMogelijk(),
+							teHerhalenReserveringen);
 
 						changedBlokList.add(naarBlok);
 

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 import {Col, Row} from "reactstrap"
 
 export type LabelInputProps = {
@@ -28,7 +28,7 @@ export type LabelInputProps = {
 	mdInput?: number;
 };
 
-export default class LabelInput extends React.Component<LabelInputProps> {
+export default class LabelInput extends Component<LabelInputProps> {
 	render(): JSX.Element {
 		return <Row className={"label-input-row"} noGutters={true}>
 			<Col md={this.props.mdLabel ? this.props.mdLabel : 6}>{this.props.label}</Col>

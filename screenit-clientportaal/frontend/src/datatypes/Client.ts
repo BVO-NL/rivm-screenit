@@ -22,15 +22,14 @@ import {BezwaarMoment} from "./Bezwaar"
 import {Persoon} from "./Persoon"
 import {ContactActiesDto} from "./ContactActiesDto"
 import {MammaDossier} from "./MammaDossier"
-import {CervixDossier, leegCervixDossier} from "./CervixDossier"
+import {CervixDossier} from "./CervixDossier"
 import {ColonDossier} from "./ColonDossier"
 
 export type Client = {
-    beschikbareActies: ContactActiesDto,
-    cervixDossier: CervixDossier,
-    colonDossier: ColonDossier,
-    laatsteBezwaarMoment: BezwaarMoment,
-    mammaDossier: MammaDossier,
-    persoon: Persoon,
-    regio: string
+	beschikbareActies: ContactActiesDto,
+	cervixDossier: CervixDossier,
+	colonDossier: ColonDossier,
+	laatsteBezwaarMoment: BezwaarMoment,
+	mammaDossier: MammaDossier,
+	persoon: Persoon,
 }

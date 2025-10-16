@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {ReactNode} from "react"
 import classNames from "classnames"
 import styles from "./TopTaakComponent.module.scss"
 import {BevolkingsonderzoekStyle, BevolkingsonderzoekToptaakStyle} from "../../datatypes/Bevolkingsonderzoek"
@@ -35,15 +35,15 @@ export type TopTaakProps = {
 	titel: string,
 	subTitel?: string,
 	subTekst?: string,
-	icon?: React.ReactNode,
+	icon?: ReactNode,
 	datadogEventVoorCategorie?: AnalyticsCategorie
 }
 
-const TopTaakComponent = (props: TopTaakProps) => {
+const TopTaakComponent = (props: TopTaakProps): ReactNode => {
 	const selectedBvo = useSelectedBvo()
 	const navigate = useNavigate()
 
-	const stuurDatadogEventEnNavigeer = () => {
+	const stuurDatadogEventEnNavigeer = (): void => {
 		if (props.datadogEventVoorCategorie) {
 			datadogService.stuurEvent(
 				"primaireActietegelGeklikt",

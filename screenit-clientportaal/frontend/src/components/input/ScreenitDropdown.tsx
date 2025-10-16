@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {ReactNode} from "react"
 import classNames from "classnames"
 import styles from "./ScreenitDropdown.module.scss"
 import {FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material"
@@ -38,18 +38,18 @@ export type ScreenitDropdownProps = {
 	invalidMessage?: string,
 	onChange: (
 		event: SelectChangeEvent<string>,
-		child: React.ReactNode,
+		child: ReactNode,
 	) => void;
 }
 
-function ScreenitDropdown(props: ScreenitDropdownProps) {
+function ScreenitDropdown(props: ScreenitDropdownProps): ReactNode {
 	return (
 		<div className={styles.container}>
 			<FormControl className={classNames(styles.inputContainer)}>
-				<InputLabel id={"lbl_" + props.propertyName} htmlFor={props.propertyName}>{props.placeholder}</InputLabel>
+				<InputLabel id={`lbl_${props.propertyName}`} htmlFor={props.propertyName}>{props.placeholder}</InputLabel>
 				<Select
 					className={styles.dropdown}
-					labelId={"lbl_" + props.propertyName}
+					labelId={`lbl_${props.propertyName}`}
 					inputProps={{
 						name: props.placeholder,
 						id: props.propertyName,

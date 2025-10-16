@@ -25,7 +25,6 @@ import {LocatieStatus} from "../../../../state/datatypes/dto/LocatieDto"
 import {useAppThunkDispatch} from "../../../../index"
 import {loadingThunkAction} from "../../../../api/LoadingThunkAction"
 import {fetchLocaties} from "../../../../api/LocatieThunkAction"
-import React from "react"
 
 const locatieStatusOptions: LocatieStatusDropdownChoice[] = [
 	{value: LocatieStatus.ACTIEF, label: "actief"},

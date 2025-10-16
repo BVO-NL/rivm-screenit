@@ -18,30 +18,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "../../../styling/scss/colors";
-
 .style {
 	width: 300px;
-	color: $wit;
+	color: var(--wit);
 	box-shadow: 0 0 12px #999;
 	animation: fadeInAnimation ease 1.5s;
 	animation-iteration-count: 1;
 	animation-fill-mode: forwards;
 
 	&.success {
-		background-color: $groen;
+		background-color: var(--groen);
 	}
 
 	&.info {
-		background-color: $blauw;
+		background-color: var(--blauw);
 	}
 
 	&.warn {
-		background-color: $oranje;
+		background-color: var(--oranje);
 	}
 
 	&.error {
-		background-color: $donkerrood;
+		background-color: var(--donkerrood);
 	}
 
 	&.dismiss {

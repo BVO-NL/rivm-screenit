@@ -30,7 +30,6 @@ import cervixDossierReducer from "./cervix/CervixDossierReducer"
 import colonDossierReducer from "./colon/ColonDossierReducer"
 import ToastsReducer from "./ToastsReducer"
 import ContactActiesReducer from "./ContactActiesReducer"
-import regioReducer from "./RegioReducer"
 import EnvironmentInfoReducer from "./EnvironmentInfoReducer"
 import SpinnerCounterReducer from "./SpinnerCounterReducer"
 
@@ -44,7 +43,6 @@ const cpReducers = combineReducers({
 		laatsteBezwaarMoment: BezwaarReducer,
 		mammaDossier: mammaDossierReducer,
 		persoon: PersoonReducer,
-		regio: regioReducer,
 	}),
 	landingOverzicht: LandingOverzichtReducer,
 	toasts: ToastsReducer,

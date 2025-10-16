@@ -18,23 +18,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "~bootstrap/scss/functions";
 @import "colors";
-@import "~bootstrap/scss/bootstrap";
-@import "src/styling/font/fonts";
+@import "bootstrap";
+@import "fonts";
 @import "media-mixins";
-@import "~bootstrap-icons/font/bootstrap-icons.css";
+
+:root {
+	--wit: white;
+	--wit-doorzichtig: rgba(255, 255, 255, 0.9);
+	--tabel-background: #f9f9f9;
+	--zwart: black;
+	--grijs: #acacac;
+	--paars: #54026e;
+	--donkerpaars: #440959;
+	--rood: #a94442;
+	--donkerrood: #bd362f;
+	--blauw: #2f96b4;
+	--oranje: #f89406;
+	--groen: #51a351;
+	--primary: var(--paars);
+	--danger: var(--donkerrood);
+}
 
 body {
 	font-family: 'Roboto', Helvetica, Arial, 'sans-serif';
 	font-size: 0.95rem;
-	color: $zwart;
+	color: var(--zwart);
 	background: url('../media/background.jpg') no-repeat center center fixed;
 	background-size: cover;
 
 	form {
 		p.form-error {
-			color: $rood;
+			color: var(--rood);
 			font-size: 0.8rem;
 			margin-top: 5px;
 			margin-bottom: 0;
@@ -51,12 +66,12 @@ body {
 			}
 
 			th:hover {
-				background-color: $wit-doorzichtig;
+				background-color: var(--wit-doorzichtig);
 			}
 		}
 
 		tbody {
-			background-color: $tabel-background;
+			background-color: var(--tabel-background);
 		}
 
 		th, td {
@@ -65,7 +80,7 @@ body {
 
 		tbody {
 			tr:hover {
-				background-color: $wit-doorzichtig;
+				background-color: var(--wit-doorzichtig);
 			}
 		}
 

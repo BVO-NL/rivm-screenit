@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import * as React from "react"
 import {useCallback, useContext} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Col, Row} from "react-bootstrap"

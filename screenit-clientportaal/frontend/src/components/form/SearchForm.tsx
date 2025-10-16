@@ -20,31 +20,31 @@
  */
 import searchFormStyles from "./SearchForm.module.scss"
 import bvoStyle from "../BvoStyle.module.scss"
-import React from "react"
+import {ReactNode} from "react"
 import classNames from "classnames"
 
 export type SearchFormProps = {
-    className?: string
-    title: string
-    children: React.ReactNode
+	className?: string
+	title: string
+	children: ReactNode
 }
 
-const SearchForm = (props: SearchFormProps) => {
+const SearchForm = (props: SearchFormProps): ReactNode => {
 
-    return (
-        <form className={classNames(bvoStyle.baseBackgroundColor, searchFormStyles.content, props.className)}
-              autoComplete={"off"}>
+	return (
+		<form className={classNames(bvoStyle.baseBackgroundColor, searchFormStyles.content, props.className)}
+			  autoComplete={"off"}>
 
-            <div>
-                <h2>{props.title}</h2>
-            </div>
+			<div>
+				<h2>{props.title}</h2>
+			</div>
 
-            <div>
-                {props.children}
-            </div>
+			<div>
+				{props.children}
+			</div>
 
-        </form>
-    )
+		</form>
+	)
 
 }
 

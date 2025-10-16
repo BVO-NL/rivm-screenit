@@ -36,7 +36,6 @@ import FormCheckField from "../../components/form/check/FormCheckField"
 import {LocatieDto, LocatieStatus} from "../../state/datatypes/dto/LocatieDto"
 import LocatieStatusComponent from "../../components/locatie/status/LocatieStatusComponent"
 import TabelPagineringComponent from "../../components/tabel/TabelPagineringComponent"
-import React from "react"
 
 const BetalingenOverzichtPage = () => {
 	const locaties = useAppSelector((state) => state.locaties)?.values.locaties || []
@@ -51,7 +50,7 @@ const BetalingenOverzichtPage = () => {
 						<Formik<BetalingenZoekObjectDto>
 							initialValues={{
 								locatie: null,
-								alleenZonderBetalingskenmerk: null,
+								alleenZonderBetalingskenmerk: false,
 								betalingsdatumTotenMet: null,
 								betalingsdatumVanaf: null,
 								betalingskenmerk: null,
@@ -97,6 +96,7 @@ const BetalingenOverzichtPage = () => {
 													   label={getString(properties.form.labels.betalingsdatumTotenMet)} type={"date"}/>
 										<FormCheckField className={"row my-3"} property={"alleenZonderBetalingskenmerk"}
 														label={getString(properties.form.labels.alleenZonderBetalingskenmerk)}/>
+
 										<Row>
 											<Col md={6}/>
 											<Col md={6}>

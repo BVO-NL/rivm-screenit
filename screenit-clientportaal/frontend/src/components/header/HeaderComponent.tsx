@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useContext} from "react"
+import {useContext} from "react"
 import {Col, Row} from "react-bootstrap"
 import classNames from "classnames"
 import styles from "./HeaderComponent.module.scss"
@@ -29,6 +29,7 @@ import {State} from "../../datatypes/State"
 import {Persoon} from "../../datatypes/Persoon"
 import {useNavigate} from "react-router"
 import {KeycloakContext} from "../KeycloakProvider"
+import ArrowIconComponent, {ArrowType} from "../vectors/ArrowIconComponent"
 
 const HeaderComponent = () => {
 	const {keycloak} = useContext(KeycloakContext)
@@ -40,7 +41,7 @@ const HeaderComponent = () => {
 			<Row className={classNames(styles.headerTopLinks, "align-items-center")}>
 				<Col md={6} className={"text-left"}>
 					<a href={getBevolkingsonderzoekNederlandUrl()}>
-						<i className="material-icons">arrow_back</i><span>Terug naar {getBevolkingsonderzoekNederlandUrlNaam()}</span>
+						<ArrowIconComponent type={ArrowType.CHEVRON_LEFT}/><span>Terug naar {getBevolkingsonderzoekNederlandUrlNaam()}</span>
 					</a>
 				</Col>
 				<Col md={6} className={"text-right"}>

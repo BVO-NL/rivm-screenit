@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {ChangeEvent} from "react"
+import {ChangeEvent, Component, JSX} from "react"
 import {Input} from "reactstrap"
 
 export type TextValueProps = {
@@ -35,7 +35,7 @@ type TextValueState = {
 	value: string;
 };
 
-export default class TextAreaValue extends React.Component<TextValueProps, TextValueState> {
+export default class TextAreaValue extends Component<TextValueProps, TextValueState> {
 
 	constructor(props: TextValueProps) {
 		super(props)

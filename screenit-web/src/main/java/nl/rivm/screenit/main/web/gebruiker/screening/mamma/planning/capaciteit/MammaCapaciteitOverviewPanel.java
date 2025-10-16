@@ -32,6 +32,8 @@ import java.util.List;
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningMeldingenDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningStandplaatsPeriodeDto;
+import nl.rivm.screenit.main.exception.MammaMinderValideReserveringException;
+import nl.rivm.screenit.main.service.mamma.MammaMinderValideReserveringService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.fullcalendar.CalendarResponse;
 import nl.rivm.screenit.main.web.component.fullcalendar.FullCalendar;
@@ -61,6 +63,8 @@ import nl.rivm.screenit.util.mamma.MammaPlanningUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -88,6 +92,9 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 
 	@SpringBean
 	private MammaBaseConceptPlanningsApplicatie baseConceptPlanningsApplicatie;
+
+	@SpringBean
+	private MammaMinderValideReserveringService minderValideReserveringService;
 
 	private Date origStartTijd;
 
@@ -232,6 +239,13 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 		tooltipContainer.add(tooltips);
 	}
 
+	@Override
+	public void renderHead(IHeaderResponse response)
+	{
+		super.renderHead(response);
+		response.render(CssHeaderItem.forUrl("assets/font-awesome/css/font-awesome.min.css"));
+	}
+
 	protected void onCalenderRendered(AjaxRequestTarget target)
 	{
 
@@ -340,6 +354,25 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 		if (totTime.getHour() == 0 || startTime.isBefore(MINIMALE_TIJD) || totTime.isAfter(MAXIMALE_TIJD))
 		{
 			getThisPage().errorMelding(getString("CapaciteitKalender.blok.buiten.minmax"));
+		}
+		if (!getThisPage().hasMeldingen())
+		{
+			valideerMinderValideReserveringen(blok);
+		}
+	}
+
+	private void valideerMinderValideReserveringen(PlanningCapaciteitBlokDto blok)
+	{
+		if (!blok.getMinderValideReserveringen().isEmpty())
+		{
+			try
+			{
+				minderValideReserveringService.valideerMinderValideReserveringen(blok);
+			}
+			catch (MammaMinderValideReserveringException e)
+			{
+				getThisPage().errorMelding(getString(e.getMessage()));
+			}
 		}
 	}
 

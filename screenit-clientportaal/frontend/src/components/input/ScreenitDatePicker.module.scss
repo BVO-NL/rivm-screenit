@@ -18,12 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/colors";
-@import "src/scss/media-mixins";
-
 .errorLabel {
 	position: relative;
-	color: $rood-base;
+	color: var(--rood-base);
 	font-size: 0.7rem;
 	line-height: 0.9rem;
 	width: 100%;
@@ -38,8 +35,8 @@
 	padding: 5px 12px 0 12px;
 	width: 100%;
 
-	border: 1px solid $grijs-700;
-	background-color: $wit-base;
+	border: 1px solid var(--grijs-700);
+	background-color: var(--wit-base);
 
 	box-sizing: border-box;
 
@@ -49,13 +46,13 @@
 }
 
 .inputDivError {
-  display: inline-block;
-  border-radius: 4px;
-  padding: 5px 12px 0 12px;
-  width: 100%;
+	display: inline-block;
+	border-radius: 4px;
+	padding: 5px 12px 0 12px;
+	width: 100%;
 
-  border: 3px solid $rood-base;
-  background-color: $wit-base;
+	border: 3px solid var(-rood-base);
+	background-color: var(--wit-base);
 
-  box-sizing: border-box;
+	box-sizing: border-box;
 }

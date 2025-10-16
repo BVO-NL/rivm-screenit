@@ -22,7 +22,6 @@ import styles from "./ToastOverlay.module.scss"
 import classNames from "classnames"
 import {useAppSelector} from "../../../index"
 import ToastComponent from "./ToastComponent"
-import React from "react"
 
 const ToastOverlay = () => {
 	const toasts = useAppSelector(state => state.toasts)

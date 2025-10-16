@@ -30,7 +30,7 @@ import bvoStyle from "../../BvoStyle.module.scss"
 import ScreenitDatePicker from "../../input/ScreenitDatePicker"
 import {ArrowType} from "../../vectors/ArrowIconComponent"
 import Button from "../../input/Button"
-import React, {useEffect, useRef, useState} from "react"
+import {useEffect, useRef, useState} from "react"
 import ScreenitDropdown, {DropdownOption} from "../../input/ScreenitDropdown"
 import styles from "./MammaAfspraakMakenForm.module.scss"
 import AdvancedSearchLinkComponent from "../AdvancedSearchLinkComponent"
@@ -63,7 +63,7 @@ const afstandOpties = () => {
 	const afstanden = ["5", "10", "15", "20", "25", "30", "35", "40", "45"]
 	const afstandOpties: Array<DropdownOption> = []
 	for (const afstand of afstanden) {
-		afstandOpties.push({value: afstand, label: afstand + " km"})
+		afstandOpties.push({value: afstand, label: `${afstand  } km`})
 	}
 	return afstandOpties
 }
@@ -99,7 +99,7 @@ const MammaAfspraakMakenForm = (props: MammaAfspraakMakenFormProps) => {
 	useEffect(() => {
 		if (dossierVerverst) {
 			setBeschikbaarheidOpgehaald(false)
-			const url = "mamma/afspraak/beschikbaarheid" + (gekozenPlaats ? `/plaats` : `/afstand/${gekozenAfstand}`)
+			const url = `mamma/afspraak/beschikbaarheid${  gekozenPlaats ? "/plaats" : `/afstand/${gekozenAfstand}`}`
 
 			ScreenitBackend<Date[]>(url, {
 				method: gekozenPlaats ? "POST" : "GET",

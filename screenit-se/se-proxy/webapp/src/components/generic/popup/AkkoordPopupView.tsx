@@ -18,7 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import * as React from "react"
+import {JSX} from "react"
 import {Button, Modal, ModalBody, ModalFooter, ModalHeader} from "reactstrap"
 import AlleenOnlineButton from "../AlleenOnlineButton"
 

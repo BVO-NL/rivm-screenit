@@ -23,7 +23,6 @@ import {getString} from "../../../utils/TekstPropertyUtil"
 import properties from "../../../pages/profiel/TijdelijkAdresWijzigenPage.json"
 import {Formik} from "formik"
 import SubmitForm from "../SubmitForm"
-import React from "react"
 import {TijdelijkAdres} from "../../../datatypes/adres/TijdelijkAdres"
 import ScreenitTextfield from "../../input/ScreenitTextfield"
 import {formatDate, isDatumInToekomst, isDatumVandaagOfLater, plusDagen, vandaag} from "../../../utils/DateUtil"
@@ -55,8 +54,8 @@ const TijdelijkAdresWijzigenForm = (props: TijdelijkAdresWijzigenFormProps) => {
 	const validatieSchema: Yup.AnyObjectSchema = Yup.object().shape({
 		straat: Yup.string().max(43, getString(properties.form.error.lengte))
 			.required(getString(properties.form.error.verplicht))
-			.test("dompurify", getString(properties.form.error.ongeldig), function (value) {
-				return purifyInput(value) !== ""
+			.test("dompurify", getString(properties.form.error.ongeldig), (value: string): boolean => {
+				return purifyInput(value).length > 0
 			}),
 		huisnummer: Yup.string().required(getString(properties.form.error.verplicht))
 			.max(10, getString(properties.form.error.lengte))
@@ -70,8 +69,8 @@ const TijdelijkAdresWijzigenForm = (props: TijdelijkAdresWijzigenFormProps) => {
 			.matches(REGEX_POSTCODE_EXACT, getString(properties.form.error.postcode)),
 		plaats: Yup.string().max(30, getString(properties.form.error.lengte))
 			.required(getString(properties.form.error.verplicht))
-			.test("dompurify", getString(properties.form.error.ongeldig), function (value) {
-				return purifyInput(value) !== ""
+			.test("dompurify", getString(properties.form.error.ongeldig), (value: string): boolean => {
+				return purifyInput(value).length > 0
 			}),
 		startDatum: Yup.date()
 			.test("datumTest", getString(properties.form.error.datum.eind_voor_start), function (value) {
@@ -87,7 +86,7 @@ const TijdelijkAdresWijzigenForm = (props: TijdelijkAdresWijzigenFormProps) => {
 			.test("datumTest", getString(properties.form.error.datum.eind_voor_start), function (value) {
 				return value ? this.parent.startDatum < value : true
 			})
-			.test("verplichtTest", getString(properties.form.error.verplicht), function (value) {
+			.test("verplichtTest", getString(properties.form.error.verplicht), (value) => {
 				return (props.huidigTijdelijkAdres != null && props.huidigTijdelijkAdres.eindDatum === null) || value != null
 			})
 			.nullable()
@@ -95,9 +94,7 @@ const TijdelijkAdresWijzigenForm = (props: TijdelijkAdresWijzigenFormProps) => {
 			.typeError(getString(properties.form.error.datum.ongeldig)),
 	})
 
-	const purifyInput = (value: string | undefined): string => {
-		return value ? DOMPurify.sanitize(value, {ALLOWED_TAGS: []}) : ""
-	}
+	const purifyInput = (value = ""): string => DOMPurify.sanitize(value, {ALLOWED_TAGS: []}).trim()
 
 	return <>
 		<Formik<TijdelijkAdres> initialValues={initialValues}
@@ -109,8 +106,6 @@ const TijdelijkAdresWijzigenForm = (props: TijdelijkAdresWijzigenFormProps) => {
 										plaats: purifyInput(values.plaats),
 										id: props.huidigTijdelijkAdres ? props.huidigTijdelijkAdres.id : undefined,
 										huisnummer: Number(values.huisnummer),
-										startDatum: values.startDatum,
-										eindDatum: values.eindDatum,
 									})
 								}>
 			{formikProps => (

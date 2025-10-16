@@ -27,7 +27,6 @@ import {State} from "../datatypes/State"
 import {createPersoonAction} from "../actions/PersoonAction"
 import ScreenitBackend from "../utils/Backend"
 import {useThunkDispatch} from "../index"
-import {getRegio} from "../api/RegioThunkAction"
 import {getBeschikbareContactActies} from "../api/ContactActiesThunkAction"
 import {assertUnreachable} from "./EnumUtil"
 import {refreshCervixDossier, refreshColonDossier, refreshMammaDossier} from "../api/RefreshDossierActions"
@@ -107,21 +106,6 @@ export const useRefreshBvoDossier = () => {
 			}
 		}
 	}, [pathname, selectedBvo, dispatch, isLoggedIn, authenticated])
-}
-
-export const useRegio = () => {
-	const regio = useSelector((state: State) => state.client.regio)
-	const authenticatie = useSelector((state: State) => state.authenticatie)
-	const thunkDispatch = useThunkDispatch()
-	const {authenticated} = keycloak
-
-	useEffect(() => {
-		if (authenticated && authenticatie.isLoggedIn && !authenticatie.isLoggingOut && !regio) {
-			thunkDispatch(getRegio())
-		}
-	}, [regio, authenticatie, thunkDispatch, authenticated])
-
-	return regio
 }
 
 export const useRedirectAfterSeconds = (url: string, timeoutSeconds: number) => {

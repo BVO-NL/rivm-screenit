@@ -18,22 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/colors";
-@import "src/scss/media-mixins";
-
 .errorLabel {
-  position: relative;
-  color: $rood-base;
-  font-size: 0.7rem;
-  width: 100%;
-  margin-bottom: 0;
+	position: relative;
+	color: var(-rood-base);
+	font-size: 0.7rem;
+	width: 100%;
+	margin-bottom: 0;
 }
 
 .radioGroup {
-  list-style: none;
-  margin-left: -40px;
+	list-style: none;
+	margin-left: -40px;
 }
 
 .datepicker {
-  width: 100%;
+	width: 100%;
 }

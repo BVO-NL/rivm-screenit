@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {Component, ErrorInfo, ReactNode} from "react"
+import {Component, ErrorInfo, ReactNode} from "react"
 import {Grid, IconButton} from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
 import styles from "../../App.module.scss"
@@ -52,7 +52,7 @@ class ErrorBoundary extends Component<Props, State> {
 
 	componentDidCatch(error: Error, info: ErrorInfo) {
 		const renderingError = new Error(error.message)
-		renderingError.name = `ReactRenderingError`
+		renderingError.name = "ReactRenderingError"
 		renderingError.stack = info.componentStack ?? undefined
 		renderingError.cause = error
 		datadogRum.addError(renderingError)

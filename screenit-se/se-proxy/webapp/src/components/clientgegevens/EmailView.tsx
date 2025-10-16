@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {Component} from "react"
+import {Component, JSX} from "react"
 import PaneelNaam from "../generic/PaneelNaam"
 import Paneel from "../generic/Paneel"
 import type {Form, FORM_FIELD_ID} from "../../datatypes/Form"

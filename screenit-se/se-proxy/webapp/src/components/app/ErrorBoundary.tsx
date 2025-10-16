@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {ErrorInfo} from "react"
+import {Component, ErrorInfo, JSX} from "react"
 import {store} from "../../Store"
 import {verstuurConsoleMeldingNaarCentraal} from "../../restclient/ErrorRestClient"
 import {navigateToDaglijst} from "../../util/NavigationUtil"
@@ -31,7 +31,7 @@ type ErrorBoundaryState = {
 	hasError: boolean;
 }
 
-export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 	constructor(props: ErrorBoundaryProps) {
 		super(props)
 		this.state = {hasError: false}

@@ -20,19 +20,22 @@
  */
 import { AfterViewInit, Component, ElementRef, inject, ViewChild } from '@angular/core'
 import { ComponentLoaderDirective } from '@shared/directives/component-loader/component-loader.directive'
+import { ToastComponent } from '@/shared/toast/component/toast.component'
+import { SessionTimeoutService } from '@shared/session-timeout/service/session-timeout.service'
 import { ColonRoosterPageComponent } from '@/colon/colon-rooster-page/colon-rooster-page.component'
 import { ColonFeestdagenBeheerPageComponent } from '@/colon/colon-feestdagen-beheer-page/colon-feestdagen-beheer-page.component'
 import { ColonWeekendWerkdagBeperkingenPageComponent } from '@/colon/colon-weekend-werkdag-beperkingen/colon-weekend-werkdag-beperkingen-page.component'
-import { ToastComponent } from '@/toast/component/toast.component'
-import { SessionTimeoutService } from '@shared/session-timeout/service/session-timeout.service'
 import { MammaDense2UitwisselingPageComponent } from '@/mamma/mamma-dense2-uitwisseling-page/mamma-dense2-uitwisseling-page.component'
-import { ExtraBeveiligdeOmgevingClientZoekenPageComponent } from '@/algemeen/extra-beveiligde-omgeving/extra-beveiligde-omgeving-client-zoeken-page/extra-beveiligde-omgeving-client-zoeken-page.component'
-import { ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent } from '@/algemeen/extra-beveiligde-omgeving/extra-beveiligde-omgeving-keuze-herstellen-page/extra-beveiligde-omgeving-keuze-herstellen-page.component'
+import {
+  ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent
+} from '@/algemeen/extra-beveiligde-omgeving/extra-beveiligde-omgeving-keuze-herstellen-page/extra-beveiligde-omgeving-keuze-herstellen-page.component'
+import {
+  ExtraBeveiligdeOmgevingClientZoekenPageComponent
+} from '@/algemeen/extra-beveiligde-omgeving/extra-beveiligde-omgeving-client-zoeken-page/extra-beveiligde-omgeving-client-zoeken-page.component'
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
   imports: [ComponentLoaderDirective, ToastComponent],
 })
 export class AppComponent implements AfterViewInit {

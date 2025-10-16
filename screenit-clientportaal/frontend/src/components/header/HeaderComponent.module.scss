@@ -18,9 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/media-mixins";
-@import "src/scss/colors";
-
 .header {
 	margin-bottom: 30px;
 	height: 150px;
@@ -46,35 +43,35 @@
 }
 
 .logout {
-  color: $blauw-base;
+	color: var(--blauw-base);
 
-  &:hover {
-    text-decoration: underline;
-    text-underline: $blauw-base;
-    cursor: pointer;
-  }
+	&:hover {
+		text-decoration: underline;
+		text-underline: var(--blauw-base);
+		cursor: pointer;
+	}
 }
 
 .headerTopLinks {
-  height: 50px;
-  margin-left: 40px;
-  margin-right: 40px;
-  font-size: 14px;
-  transition: 0.2s;
+	height: 50px;
+	margin-left: 40px;
+	margin-right: 40px;
+	font-size: 14px;
+	transition: 0.2s;
 
-  span {
-    margin-right: 15px;
-  }
+	span {
+		margin-right: 15px;
+	}
 
-  i {
-    font-size: 20px;
-    vertical-align: middle;
-    margin-right: 10px;
-    padding-bottom: 3px;
-  }
+	i {
+		font-size: 20px;
+		vertical-align: middle;
+		margin-right: 10px;
+		padding-bottom: 3px;
+	}
 
-  @include respond-below(md) {
-    display: none;
-  }
+	@include respond-below(md) {
+		display: none;
+	}
 
 }

@@ -18,20 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import {Col, Row} from "react-bootstrap"
 import classNames from "classnames"
 import styles from "./FooterComponent.module.scss"
 import {getBevolkingsonderzoekNederlandUrl, getContactUrl} from "../../utils/UrlUtil"
-import {useRegio} from "../../utils/Hooks"
 import properties from "./FooterComponent.json"
 import datadogService from "../../services/DatadogService"
 import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 
 const FooterComponent = () => {
-
-	const regio = useRegio()
-
 	return (
 		<Row className={classNames(styles.footer, "footer", "align-items-center")}>
 			<Col md={4}>
@@ -49,7 +44,7 @@ const FooterComponent = () => {
 					   onClick={() => datadogService.stuurEvent("itemGeklikt", AnalyticsCategorie.FOOTER, {naam: "responsible_disclosure"})}>
 						<li>{properties.links.responsible_disclosure}</li>
 					</a>
-					<a href={getContactUrl(regio)}
+					<a href={getContactUrl()}
 					   rel="noopener noreferrer" target="_blank"
 					   onClick={() => datadogService.stuurEvent("itemGeklikt", AnalyticsCategorie.FOOTER, {naam: "contact"})}>
 						<li>{properties.links.contact}</li>
@@ -58,7 +53,6 @@ const FooterComponent = () => {
 			</Col>
 		</Row>
 	)
-
 }
 
 export default FooterComponent

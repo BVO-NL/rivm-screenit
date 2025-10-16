@@ -29,7 +29,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,6 +48,7 @@ import nl.rivm.screenit.mamma.planning.index.PlanningScreeningsOrganisatieIndex;
 import nl.rivm.screenit.mamma.planning.index.PlanningStandplaatsRondeIndex;
 import nl.rivm.screenit.mamma.planning.model.PlanningBlok;
 import nl.rivm.screenit.mamma.planning.model.PlanningConstanten;
+import nl.rivm.screenit.mamma.planning.model.PlanningMinderValideReservering;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsOrganisatie;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsPeriode;
@@ -56,6 +59,7 @@ import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningDoorrekenenManager;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
+import nl.rivm.screenit.model.mamma.MammaMinderValideReservering;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
@@ -365,14 +369,13 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 		Set<MammaCapaciteitBlok> ontkoppelAfsprakenCapaciteitBlokken = new HashSet<>();
 		Set<MammaCapaciteitBlok> koppelAfsprakenCapaciteitBlokken = new HashSet<>();
 		Map<MammaCapaciteitBlok, PlanningMeldingDto> capaciteitBlokMeldingMap = new HashMap<>();
-
 		try
 		{
 			for (var blok : PlanningBlokIndex.getBlokChangedSet(screeningsEenheid))
 			{
 				MammaCapaciteitBlok persistentBlok = null;
 				var isNieuw = blok.getId() == null;
-				LOG.info("Nieuw/wijzig cap.blok " + blok.getCapaciteitBlokType() + " - " + blok.getDateVanaf() + ". Nieuw? " + isNieuw);
+				LOG.info("Nieuw/wijzig cap.blok {} - {}. Nieuw? {}", blok.getCapaciteitBlokType(), blok.getDateVanaf(), isNieuw);
 				if (!isNieuw)
 				{
 					persistentBlok = hibernateService.get(MammaCapaciteitBlok.class, blok.getId());
@@ -397,6 +400,14 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 				persistentBlok.setTot(blok.getDateTot());
 				persistentBlok.setVanaf(blok.getDateVanaf());
 				persistentBlok.setMinderValideAfspraakMogelijk(blok.isMinderValideAfspraakMogelijk());
+				var persistentMvReserveringen = persistentBlok.getMinderValideReserveringen();
+				var persistentMvReserveringenMap = maakPersistentMvReserveringMap(persistentMvReserveringen);
+				var conceptMvReserveringen = blok.getMindervalideReserveringen();
+
+				var conceptNieuweMvReserveringen = bepaalNieuweConceptMvReserveringen(conceptMvReserveringen);
+				var teVerwijderenMvReserveringen = bepaalTeVerwijderenMvReserveringen(persistentMvReserveringen, conceptMvReserveringen);
+				var bestaandeMvReserveringen = conceptMvReserveringen.stream().filter(reservering -> reservering.getId() != null).toList();
+				var conceptMvReserveringenMetWijzigingen = bepaalConceptMvReserveringenMetWijzigingen(bestaandeMvReserveringen, persistentMvReserveringenMap);
 
 				var melding = "";
 
@@ -412,6 +423,8 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 						melding += "Capaciteit gewijzigd (" + diffToLatestVersion + ").";
 					}
 				}
+				melding += voegMeldingenToeVoorMvReserveringen(conceptNieuweMvReserveringen, conceptMvReserveringenMetWijzigingen, teVerwijderenMvReserveringen);
+
 				if (StringUtils.isNotBlank(melding))
 				{
 					if (!runDry)
@@ -422,6 +435,8 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 							ontkoppelAfsprakenCapaciteitBlokken.add(persistentBlok);
 						}
 						hibernateService.saveOrUpdate(persistentBlok);
+						verwerkWijzigingenMvReserveringen(teVerwijderenMvReserveringen, conceptNieuweMvReserveringen, conceptMvReserveringenMetWijzigingen, persistentBlok);
+
 						if (isNieuw)
 						{
 							nieuweBlokken.put(persistentBlok.getId(), blok);
@@ -441,7 +456,6 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 
 				}
 			}
-
 			ontkoppelAfsprakenCapaciteitBlokken.forEach(ontkoppelAfsprakenCapaciteitBlok -> ontkoppelAfspraken(ontkoppelAfsprakenCapaciteitBlok, false));
 		}
 		catch (MaxMeldingenVoorSeBereiktException e)
@@ -464,13 +478,93 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 
 	}
 
+	private void verwerkWijzigingenMvReserveringen(List<MammaMinderValideReservering> teVerwijderenMvReserveringen,
+		List<PlanningMinderValideReservering> conceptNieuweMvReserveringen,
+		List<PlanningMinderValideReservering> conceptMvReserveringenMetWijzigingen, MammaCapaciteitBlok persistentBlok)
+	{
+		teVerwijderenMvReserveringen.forEach(hibernateService::delete);
+		slaNieuweConceptMvReserveringenOp(conceptNieuweMvReserveringen, persistentBlok);
+		slaConceptMvReserveringWijzigingenOp(conceptMvReserveringenMetWijzigingen);
+	}
+
+	private List<PlanningMinderValideReservering> bepaalNieuweConceptMvReserveringen(List<PlanningMinderValideReservering> conceptMindervalideReserveringen)
+	{
+		return conceptMindervalideReserveringen.stream().filter(reservering -> reservering.getId() == null).toList();
+	}
+
+	private Map<Long, MammaMinderValideReservering> maakPersistentMvReserveringMap(List<MammaMinderValideReservering> persistentReserveringen)
+	{
+		return persistentReserveringen.stream().collect(Collectors.toMap(MammaMinderValideReservering::getId, r -> r));
+	}
+
+	private List<PlanningMinderValideReservering> bepaalConceptMvReserveringenMetWijzigingen(List<PlanningMinderValideReservering> bestaandeReserveringen,
+		Map<Long, MammaMinderValideReservering> persistentReserveringenMap)
+	{
+		return bestaandeReserveringen.stream()
+			.filter(bestaandeReservering ->
+			{
+				var persistentReservering = persistentReserveringenMap.get(bestaandeReservering.getId());
+				return persistentReservering != null && !persistentReservering.getVanaf().equals(bestaandeReservering.getVanaf());
+			})
+			.toList();
+	}
+
+	private List<MammaMinderValideReservering> bepaalTeVerwijderenMvReserveringen(List<MammaMinderValideReservering> persistentMvReserveringen,
+		List<PlanningMinderValideReservering> conceptMindervalideReserveringen)
+	{
+		var bestaandeConceptMvReserveringIds = conceptMindervalideReserveringen.stream().map(PlanningMinderValideReservering::getId).filter(Objects::nonNull).toList();
+		return persistentMvReserveringen.stream()
+			.filter(reservering -> !bestaandeConceptMvReserveringIds.contains(reservering.getId()))
+			.toList();
+	}
+
+	private String voegMeldingenToeVoorMvReserveringen(List<PlanningMinderValideReservering> conceptNieuweReserveringen,
+		List<PlanningMinderValideReservering> conceptReserveringenVoorWijzigen, List<MammaMinderValideReservering> teVerwijderenReserveringen)
+	{
+		var melding = "";
+		if (!conceptNieuweReserveringen.isEmpty())
+		{
+			melding += " Nieuwe mindervalide reserveringen (#" + conceptNieuweReserveringen.size() + ").";
+		}
+		if (!conceptReserveringenVoorWijzigen.isEmpty())
+		{
+			melding += " Gewijzigde mindervalide reserveringen (#" + conceptReserveringenVoorWijzigen.size() + ").";
+		}
+		if (!teVerwijderenReserveringen.isEmpty())
+		{
+			melding += " Verwijderde mindervalide reserveringen (#" + teVerwijderenReserveringen.size() + ").";
+		}
+		return melding;
+	}
+
+	private void slaConceptMvReserveringWijzigingenOp(List<PlanningMinderValideReservering> teWijzigenReserveringen)
+	{
+		teWijzigenReserveringen.forEach(teWijzigenReserveringing ->
+		{
+			var reservering = hibernateService.get(MammaMinderValideReservering.class, teWijzigenReserveringing.getId());
+			reservering.setVanaf(teWijzigenReserveringing.getVanaf());
+		});
+	}
+
+	private void slaNieuweConceptMvReserveringenOp(List<PlanningMinderValideReservering> conceptReserveringen, MammaCapaciteitBlok persistentBlok)
+	{
+		conceptReserveringen.forEach(reservering ->
+		{
+			var nieuweReservering = new MammaMinderValideReservering();
+			nieuweReservering.setCapaciteitBlok(persistentBlok);
+			nieuweReservering.setVanaf(reservering.getVanaf());
+			hibernateService.save(nieuweReservering);
+			reservering.setId(nieuweReservering.getId());
+		});
+	}
+
 	private void verwijderCapaciteitblokken(boolean runDry, PlanningConceptMeldingenDto meldingenDto, PlanningScreeningsEenheid screeningsEenheid)
 	{
 		for (var blokToRemove : PlanningBlokIndex.getBlokDeletedSet(screeningsEenheid))
 		{
 			if (blokToRemove.getId() != null)
 			{
-				LOG.info("Verwijder cap.blok " + blokToRemove.getCapaciteitBlokType() + " - " + blokToRemove.getVanaf());
+				LOG.info("Verwijder cap.blok {} - {}", blokToRemove.getCapaciteitBlokType(), blokToRemove.getVanaf());
 				var persistentBlok = hibernateService.get(MammaCapaciteitBlok.class, blokToRemove.getId());
 				if (persistentBlok != null)
 				{
@@ -486,6 +580,7 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 					if (!runDry)
 					{
 						ontkoppelAfspraken(persistentBlok, true);
+
 						hibernateService.delete(persistentBlok);
 					}
 				}
@@ -601,7 +696,7 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 		meldingDto.niveau = niveau;
 		var screeningsEenheidId = screeningsEenheid.getId();
 
-		LOG.info(screeningsEenheidId + " " + niveau + ": " + melding);
+		LOG.info("{} {}: {}", screeningsEenheidId, niveau, melding);
 
 		var meldingenPerSeDto = getMeldingenPerSeDto(meldingenDto, screeningsEenheid);
 		if (meldingenPerSeDto == null)

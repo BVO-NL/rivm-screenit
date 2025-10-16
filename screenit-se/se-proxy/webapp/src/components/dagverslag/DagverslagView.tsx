@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 import DatumkiezerContainer from "../daglijst/DatumkiezerContainer"
 import DagproductieContainer from "./DagproductieContainer"
 import DagStatistiekenContainer from "./DagStatistiekenContainer"
@@ -37,7 +37,7 @@ export type DagverslagViewDispatchProps = {
 	showAfsprakenDoorvoerenPopup: (afsprakenDoorvoerenDisabled: boolean, doorvoerenFeedback: string) => void;
 }
 
-export default class DagverslagView extends React.Component<DagverslagViewStateProps & DagverslagViewDispatchProps> {
+export default class DagverslagView extends Component<DagverslagViewStateProps & DagverslagViewDispatchProps> {
 	render(): JSX.Element {
 		const clickAfsprakenDoorvoeren = (): void => this.props.showAfsprakenDoorvoerenPopup(this.props.afsprakenDoorvoerenDisabled, this.props.doorvoerenFeedback)
 

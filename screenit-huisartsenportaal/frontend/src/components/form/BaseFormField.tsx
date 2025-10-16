@@ -21,7 +21,7 @@
 import classNames from "classnames"
 import styles from "./BaseFormField.module.scss"
 import {Col, FormGroup} from "react-bootstrap"
-import React from "react"
+import {JSX} from "react"
 
 export interface SharedFormFieldProps {
 	alignRight?: boolean;

@@ -19,6 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import {RootState} from "../Store"
+import {WEBSOCKET_STATUS_OFFLINE} from "../datatypes/WebsocketStatus"
 
 export const createStateHelper = (stateSlice: Partial<RootState> = {}): RootState => {
 	return {
@@ -79,6 +80,7 @@ export const createStateHelper = (stateSlice: Partial<RootState> = {}): RootStat
 		signaleringByAfspraakId: new Map(),
 		visueleInspectieAfbeeldingByAfspraakId: new Map(),
 		zorginstellingen: new Map(),
+		websocketStatus: WEBSOCKET_STATUS_OFFLINE,
 		...stateSlice,
 	}
 }

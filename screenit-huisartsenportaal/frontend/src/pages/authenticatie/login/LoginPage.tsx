@@ -31,7 +31,7 @@ import FormTextField from "../../../components/form/text/FormTextField"
 import FormPasswordTextField from "../../../components/form/text/FormPasswordTextField"
 import {Col, Row} from "react-bootstrap"
 import styles from "./LoginPage.module.scss"
-import React, {useEffect} from "react"
+import {useEffect} from "react"
 
 export const LoginPage = () => {
 	const dispatch = useAppThunkDispatch()

@@ -18,12 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import AppContainer from "./AppContainer"
 import FooterContainer from "./FooterContainer"
 import HeaderContainer from "./HeaderContainer"
 import ErrorBoundary from "./ErrorBoundary"
 import DubbeleInstantieDetector from "./DubbeleInstantieDetector"
+import {JSX} from "react"
 
 const BuitensteView = (): JSX.Element => {
 	return <ErrorBoundary>

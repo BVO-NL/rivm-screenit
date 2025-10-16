@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import {useSelectedBvo} from "../../utils/Hooks"
 import classNames from "classnames"
 import {BevolkingsonderzoekStyle} from "../../datatypes/Bevolkingsonderzoek"

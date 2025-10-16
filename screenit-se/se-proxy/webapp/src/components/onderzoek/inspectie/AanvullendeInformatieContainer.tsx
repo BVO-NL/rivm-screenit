@@ -19,7 +19,6 @@
  * =========================LICENSE_END==================================
  */
 import {connect} from "react-redux"
-import React from "react"
 import AanvullendeInformatieView, {AanvullendeInformatieViewDispatchProps, AanvullendeInformatieViewStateProps, DUBBELE_TIJD_FIELD_ID} from "./AanvullendeInformatieView"
 import type {OnvolledigOnderzoekOption} from "../../../datatypes/visueleinspectie/aanvullendeinformatie/OnvolledigOnderzoek"
 import type {OnderbrokenOnderzoekOption} from "../../../datatypes/visueleinspectie/aanvullendeinformatie/OnderbrokenOnderzoek"

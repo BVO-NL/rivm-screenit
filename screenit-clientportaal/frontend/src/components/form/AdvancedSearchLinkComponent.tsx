@@ -20,7 +20,6 @@
  */
 import properties from "./AdvancedSearchLinkComponent.json"
 import ArrowIconComponent, {ArrowType} from "../vectors/ArrowIconComponent"
-import React from "react"
 
 export type AdvancedSearchLinkComponentProps = {
 	advancedSearch: boolean

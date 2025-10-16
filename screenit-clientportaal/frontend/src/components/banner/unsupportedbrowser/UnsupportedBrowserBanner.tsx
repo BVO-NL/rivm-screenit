@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useMemo} from "react"
+import {useMemo, useState} from "react"
 import supportedBrowsers from "../../../supportedBrowsers"
 import {Alert, AlertTitle, Collapse} from "@mui/material"
 
@@ -31,7 +31,7 @@ const styles: React.CSSProperties = {
 const UnsupportedBrowserBanner: React.FC = () => {
 	const isSupportedBrowser = useMemo(() => supportedBrowsers.test(navigator.userAgent), [])
 
-	const [open, setOpen] = React.useState(true)
+	const [open, setOpen] = useState(true)
 
 	if (isSupportedBrowser) {
 		return null

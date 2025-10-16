@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {Component} from "react"
+import {Component, JSX} from "react"
 import type {Afspraak} from "../../datatypes/Afspraak"
 import type {SubPagina} from "../../datatypes/Navigation"
 import DaglijstView from "../daglijst/DaglijstView"

@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import * as React from "react"
 import * as serviceWorker from "./serviceWorker"
 import "./index.css"
 import {Action, applyMiddleware, compose, createStore, Store} from "redux"

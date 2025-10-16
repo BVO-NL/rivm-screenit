@@ -20,7 +20,6 @@
  */
 import {createActionShowPopup} from "../actions/PopupActions"
 import WijzigingenOngedaanPopupView from "../components/melding/WijzigingenOngedaanPopupView"
-import React from "react"
 import AmputatieWaarschuwingPopup from "../components/melding/AmputatieWaarschuwingPopupView"
 
 export const showWijzigingenPopup = (callback: (...args: Array<any>) => any, dispatch: any): void => {

@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import style from "./BasePopup.module.scss"
-import React from "react"
+import {ReactNode} from "react"
 import classNames from "classnames"
 import {isEmpty} from "../../utils/EmptyUtil"
 import SpanWithHtml from "../span/SpanWithHtml"
@@ -27,7 +27,7 @@ import SpanWithHtml from "../span/SpanWithHtml"
 export type BasePopupProps = {
 	title: string,
 	description: string,
-	children: React.ReactNode
+	children: ReactNode
 }
 
 const BasePopup = (props: BasePopupProps) => {
@@ -42,8 +42,8 @@ const BasePopup = (props: BasePopupProps) => {
 					{props.children}
 				</div>
 			</div>
-        </div>
-    )
+		</div>
+	)
 }
 
 export default BasePopup

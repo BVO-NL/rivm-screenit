@@ -18,12 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/colors";
-@import "src/scss/media-mixins";
-
 .beforeSearching {
 	border-radius: 10px;
-	background-color: $grijs-600;
+	background-color: var(--grijs-600);
 	height: fit-content;
 	padding-bottom: 50px;
 	padding-top: 50px;
@@ -36,7 +33,7 @@
 
 	span {
 		width: 60%;
-		color: $zwart;
+		color: var(--zwart);
 		font-size: 1.1rem;
 		letter-spacing: 0;
 		line-height: 27px;

@@ -21,7 +21,7 @@
 import BasePopup from "../../../../../../components/popup/BasePopup"
 import properties from "./MammaAfspraakMakenWizardModuleProperties.json"
 import styles from "./MammaAfspraakMakenWizardModuleStyles.module.scss"
-import React from "react"
+import {ReactNode} from "react"
 import Button from "../../../../../../components/input/Button"
 import {ArrowType} from "../../../../../../components/vectors/ArrowIconComponent"
 import {NavLink} from "react-bootstrap"
@@ -34,7 +34,7 @@ import {BevestigingsType} from "../../../../../../datatypes/BevestigingsType"
 export type MammaAfspraakAfsluitendPopupProps = {
 	afspraakBevestiging: AfspraakBevestigingOpties,
 	onHuisartsControleren: () => void;
-	children: React.ReactNode
+	children: ReactNode
 }
 
 const MammaAfspraakAfsluitendPopup = (props: MammaAfspraakAfsluitendPopupProps) => {
@@ -42,9 +42,8 @@ const MammaAfspraakAfsluitendPopup = (props: MammaAfspraakAfsluitendPopupProps) 
 	const bvo = useSelectedBvo()!
 
 	return (<BasePopup
-		title={properties.bevestiging.titel}
-		description={maakOmschrijving(props.afspraakBevestiging)}
-		children={
+			title={properties.bevestiging.titel}
+			description={maakOmschrijving(props.afspraakBevestiging)}>
 			<div>
 				<div className={styles.bevestigenForm}>
 					<Button label={properties.bevestiging.controleer_ha}
@@ -59,7 +58,9 @@ const MammaAfspraakAfsluitendPopup = (props: MammaAfspraakAfsluitendPopupProps) 
 					}}>{properties.bevestiging.sla_over}</NavLink>
 				</div>
 				{props.children}
-			</div>}/>)
+			</div>
+		</BasePopup>
+	)
 }
 
 function maakOmschrijving(gekozenBevestiging: AfspraakBevestigingOpties): string {

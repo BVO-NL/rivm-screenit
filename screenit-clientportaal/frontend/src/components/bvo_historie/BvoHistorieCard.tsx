@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import classNames from "classnames"
 
 import styles from "./BvoHistorieCard.module.scss"
@@ -29,6 +28,7 @@ import {getString} from "../../utils/TekstPropertyUtil"
 import {formatDate, formatTime} from "../../utils/DateUtil"
 import SpanWithHtml from "../span/SpanWithHtml"
 import VerticalDividerComponent from "../vectors/VerticalDividerComponent"
+import properties from "./BvoHistorieCard.json"
 
 export type BvoHistorieCardProps = {
 	datumTijd: Date
@@ -38,7 +38,6 @@ export type BvoHistorieCardProps = {
 
 const BvoHistorieCard = (props: BvoHistorieCardProps) => {
 	const selectedBvo = useSelectedBvo()
-	const properties = require("./BvoHistorieCard.json")
 
 	return (
 		<Row className={classNames(styles.historyCard, BevolkingsonderzoekStyle[selectedBvo!])}>
@@ -57,7 +56,8 @@ const BvoHistorieCard = (props: BvoHistorieCardProps) => {
 		if ("EENMALIGE_AFMELDING" === tekstKey) {
 			return selectedBvo === Bevolkingsonderzoek.MAMMA ? getString(properties["EENMALIGE_AFMELDING_BK"]) : getString(properties["EENMALIGE_AFMELDING_DK_BMHK"])
 		} else {
-			return getString(properties[props.tekstKey], props.extraParameters)
+			const tekst = props.tekstKey as keyof typeof properties
+			return getString(properties[tekst], props.extraParameters)
 		}
 	}
 

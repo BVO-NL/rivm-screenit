@@ -20,7 +20,7 @@
  */
 import styles from "./BasePage.module.scss"
 import classNames from "classnames"
-import React from "react"
+import {JSX} from "react"
 
 export interface BasePageProps {
 	children: JSX.Element;

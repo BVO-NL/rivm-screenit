@@ -18,18 +18,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/colors";
-@import "src/scss/media-mixins";
-@import "src/scss/mixins";
+@import "../../../../scss/mixins";
 
 .results {
-  .showMoreResultsButtonArea {
-    text-align: center;
-  }
+	.showMoreResultsButtonArea {
+		text-align: center;
+	}
 
-  .navigationButtons {
+	.navigationButtons {
 		position: relative;
-		background-color: $grijs-600;
+		background-color: var(--grijs-600);
 		border-radius: 10px;
 		margin-left: 0;
 		width: 100%;
@@ -58,15 +56,15 @@
 		}
 
 		.left svg, .right svg {
-			fill: $blauw-base !important;
+			fill: var(--blauw-base) !important;
 		}
 
 		.meerResultaten svg {
-			fill: $wit-base;
+			fill: var(--wit-base);
 		}
 	}
 }
 
 .meerResultaten {
-  margin-top: 15px;
+	margin-top: 15px;
 }

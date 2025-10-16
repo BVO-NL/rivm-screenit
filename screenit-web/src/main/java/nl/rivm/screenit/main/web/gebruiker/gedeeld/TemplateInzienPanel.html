@@ -22,25 +22,23 @@
 <wicket:panel>
 	<div wicket:id="pdfDialog"></div>
 	<fieldset class="form-horizontal" wicket:id="inzienContainer">
-		<div class="row-fluid span12">
-			<h3>Gebruikte template</h3>
-			<div class="control-group value no-label" wicket:id="inzienGroep">
-				<div class="controls">
-					Wilt u "
-					<wicket:container wicket:id="brief.briefType">brief type</wicket:container>
-					<wicket:container wicket:id="brief.templateNaam">naam</wicket:container>
-					" (
-					<wicket:container wicket:id="brief.creatieDatum">12-10-2010</wicket:container>
-					) inzien?
-				</div>
-				<div class="buttons">
-					<button class="btn left btn-primary" wicket:id="inzien">Inzien</button>
-				</div>
+		<h3>Gebruikte template</h3>
+		<div class="control-group value no-label" wicket:id="inzienGroep">
+			<div class="controls">
+				Wilt u "
+				<wicket:container wicket:id="brief.briefType">brief type</wicket:container>
+				<wicket:container wicket:id="brief.templateNaam">naam</wicket:container>
+				" (
+				<wicket:container wicket:id="brief.creatieDatum">12-10-2010</wicket:container>
+				) inzien?
 			</div>
-			<div class="control-group value no-label margin-right-24px" wicket:id="inzienMeldingGroup">
+			<div class="buttons">
+				<button class="btn left btn-primary" wicket:id="inzien">Inzien</button>
+			</div>
+		</div>
+		<div class="control-group value no-label" wicket:id="inzienMeldingGroup">
 
-				<div class="controls"><span wicket:id="inzienMelding"></span></div>
-			</div>
+			<div class="controls"><span wicket:id="inzienMelding"></span></div>
 		</div>
 	</fieldset>
 </wicket:panel>

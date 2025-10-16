@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 import {Table} from "reactstrap"
 import Paneel from "../generic/Paneel"
 import {Dagverslag} from "../../datatypes/Dagverslag"
@@ -36,7 +36,7 @@ export type DagStatistiekenViewProps = {
 	aantalTotaal: number;
 };
 
-export default class DagStatistiekenView extends React.Component<DagStatistiekenViewProps> {
+export default class DagStatistiekenView extends Component<DagStatistiekenViewProps> {
 	render(): JSX.Element {
 		return <Paneel className="dagverslag-paneel">
 			<h6>

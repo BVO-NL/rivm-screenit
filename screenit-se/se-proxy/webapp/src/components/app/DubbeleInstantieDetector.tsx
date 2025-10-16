@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 import {dispatchActions} from "../../util/DispatchUtil"
 import {store} from "../../Store"
 import {createActionDubbeleInstantie} from "../../actions/DubbeleInstantieActions"
@@ -27,7 +27,7 @@ import {MELDING_DUBBELE_INSTANTIE, showErrorToastWithoutAutoClose} from "../../u
 const SE_VENSTER_GEOPEND = "SE_VENSTER_GEOPEND"
 const SE_SLUIT_DUBBEL_VENSTER = "SE_SLUIT_DUBBEL_VENSTER"
 
-export default class DubbeleInstantieDetector extends React.Component {
+export default class DubbeleInstantieDetector extends Component {
 
 	constructor(props: { children: JSX.Element }) {
 		super(props)

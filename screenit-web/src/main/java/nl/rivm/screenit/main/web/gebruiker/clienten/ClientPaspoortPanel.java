@@ -36,6 +36,7 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.NaamUtil;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.wicket.markup.html.basic.EnumLabel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -70,12 +71,13 @@ public class ClientPaspoortPanel extends GenericPanel<Client>
 		add(new Label("persoon.achternaam", NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client)));
 		add(new Label("persoon.bsn"));
 		add(new Label("geboortenaam", NaamUtil.getGeboorteTussenvoegselEnAchternaam(persoon)));
-
+		add(new EnumLabel<>("persoon.geslacht").setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_TOON_GENDERINDETITEIT, Actie.INZIEN)));
 		add(new Label("persoon.geboortedatum", DateUtil.getGeboortedatum(persoon) + " (" + clientService.getLeeftijd(client) + " jaar)"));
 		add(new Label("persoon.overlijdensdatum").setVisible(persoon.getOverlijdensdatum() != null));
 		add(new Label("gbaLocatiebeschrijving", AdresUtil.getAdres(persoon.getGbaAdres())));
 		add(new Label("persoon.gbaAdres.postcode"));
 		add(new Label("persoon.gbaAdres.plaats"));
+		add(new Label("persoon.emailadres"));
 		if (AdresUtil.isTijdelijkAdres(persoon, dateSupplier.getLocalDate()))
 		{
 			add(new Label("tijdelijkadres", getString("message.letop.tijdelijkadres")));

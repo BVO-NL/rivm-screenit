@@ -24,7 +24,6 @@ import {formatDateText} from "../../utils/DateUtil"
 import {getString} from "../../utils/TekstPropertyUtil"
 import properties from "../../pages/bvo/mamma/afspraak/MammaAfspraakMakenPage.json"
 import {ArrowType} from "../vectors/ArrowIconComponent"
-import React from "react"
 import {Col, Row} from "react-bootstrap"
 import classNames from "classnames"
 

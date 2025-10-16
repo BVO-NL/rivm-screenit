@@ -18,8 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/colors";
-@import "src/scss/mixins";
+@import "../../scss/mixins";
 
 .style {
 	position: fixed;
@@ -44,7 +43,7 @@
 		@include center-in-div(50%);
 
 		.spinner {
-			color: $paars-900;
+			color: var(--paars-900);
 			width: 100%;
 			height: 100%;
 		}

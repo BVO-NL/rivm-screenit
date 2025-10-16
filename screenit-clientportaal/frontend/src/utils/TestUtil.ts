@@ -18,12 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import renderer, {ReactTestRenderer} from "react-test-renderer"
 import userEvent from "@testing-library/user-event"
-import {screen} from "@testing-library/react"
+import {RenderResult, screen} from "@testing-library/react"
 
-export function rerender(component: ReactTestRenderer): renderer.ReactTestRendererJSON {
-	return component.toJSON() as renderer.ReactTestRendererJSON
+export function rerender(component: RenderResult): DocumentFragment {
+	return component.asFragment()
 }
 
 export function enterDate(testId: string, datum: string): Promise<void> {

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useEffect} from "react"
+import {useEffect} from "react"
 import {Col, Container, Row} from "react-bootstrap"
 import styles from "./LandingPage.module.scss"
 import {useSelector} from "react-redux"

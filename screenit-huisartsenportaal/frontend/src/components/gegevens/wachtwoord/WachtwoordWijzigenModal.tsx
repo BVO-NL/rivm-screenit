@@ -32,7 +32,6 @@ import {createActionPushToast} from "../../../state/ToastsState"
 import {ToastType} from "../../../state/datatypes/Toast"
 import {loadingThunkAction} from "../../../api/LoadingThunkAction"
 import {wachtwoordValidatie} from "../../../util/ValidatieUtil"
-import React from "react"
 
 export interface WachtwoordWijzigenModalProps {
 	show: boolean;

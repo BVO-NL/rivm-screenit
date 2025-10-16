@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import ActieBasePage from "../ActieBasePage"
 import * as Yup from "yup"
 import {saveTelefoonNummers} from "../../api/TelefoonnummerWijzigenThunkAction"

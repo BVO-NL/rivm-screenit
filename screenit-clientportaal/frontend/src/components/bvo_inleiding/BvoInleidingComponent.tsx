@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import {Bevolkingsonderzoek, BevolkingsonderzoekNaam} from "../../datatypes/Bevolkingsonderzoek"
-import React, {useEffect, useState} from "react"
+import {useEffect, useState} from "react"
 import {useSelectedBvo} from "../../utils/Hooks"
 import InleidingComponent from "./InleidingComponent"
 import {getBevolkingsonderzoekNederlandUrl} from "../../utils/UrlUtil"
@@ -86,7 +86,7 @@ const BvoInleidingComponent = () => {
 	}
 
 	const toonStandaardTekst = (bvo === Bevolkingsonderzoek.MAMMA && !toonVervangendeTekstMamma) || (bvo === Bevolkingsonderzoek.CERVIX && !toonVervangendeTekstCervix) || (bvo === Bevolkingsonderzoek.COLON && !toonVervangendeTekstColon)
-	const link = toonStandaardTekst ? getBevolkingsonderzoekNederlandUrl() + "/" + BevolkingsonderzoekNaam[bvo] : ""
+	const link = toonStandaardTekst ? `${getBevolkingsonderzoekNederlandUrl()  }/${  BevolkingsonderzoekNaam[bvo]}` : ""
 	const linkTekst = toonStandaardTekst ? getString(properties.linkTekst, [BevolkingsonderzoekNaam[bvo]]) : ""
 
 	return <InleidingComponent bvoNaam={""}

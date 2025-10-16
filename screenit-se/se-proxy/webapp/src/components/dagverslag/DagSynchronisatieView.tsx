@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 import {Table} from "reactstrap"
 import Paneel from "../generic/Paneel"
 import type {Dagverslag} from "../../datatypes/Dagverslag"
@@ -28,7 +28,7 @@ export type DagSynchronisatieViewStateProps = {
 	dagverslag: Map<string, Dagverslag>;
 };
 
-export default class DagSynchronisatieView extends React.Component<DagSynchronisatieViewStateProps> {
+export default class DagSynchronisatieView extends Component<DagSynchronisatieViewStateProps> {
 	render(): JSX.Element {
 		const dagverslag = this.props.dagverslag.get(this.props.daglijstDatum)
 

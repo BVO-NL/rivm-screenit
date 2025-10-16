@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "./scss/style.scss"
 import styles from "./App.module.scss"

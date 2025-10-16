@@ -19,7 +19,6 @@
  * =========================LICENSE_END==================================
  */
 import {Link, useLocation} from "react-router"
-import React from "react"
 import classNames from "classnames"
 import styles from "./NavigationLinkComponent.module.scss"
 import bvoStyle from "../BvoStyle.module.scss"

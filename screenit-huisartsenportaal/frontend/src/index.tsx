@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import "./styling/scss/style.scss"
-import React from "react"
+import "bootstrap-icons/font/bootstrap-icons.css"
 import {Provider, TypedUseSelectorHook, useDispatch, useSelector} from "react-redux"
 import {configureStore, ThunkDispatch} from "@reduxjs/toolkit"
 import {AnyAction} from "redux"

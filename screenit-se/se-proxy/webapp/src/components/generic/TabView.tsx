@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 import {NavItem, NavLink} from "reactstrap"
 import type {Tab} from "../../datatypes/Navigation"
 
@@ -29,7 +29,7 @@ export type TabViewProps = {
 	clickable: boolean;
 };
 
-export default class TabView extends React.Component<TabViewProps> {
+export default class TabView extends Component<TabViewProps> {
 
 	render(): JSX.Element {
 		const isActive = this.props.activeTabName === this.props.name

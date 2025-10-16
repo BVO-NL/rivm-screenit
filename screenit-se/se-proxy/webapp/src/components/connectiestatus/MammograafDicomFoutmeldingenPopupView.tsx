@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 import type {MammograafDicomMessageError, MammograafDicomMessageType} from "../../datatypes/connectiestatus/MammograafDicomMessageError"
 import moment from "moment"
 
@@ -27,7 +27,7 @@ export type MammograafDicomFoutmeldingenPopupViewProps = {
 	errors: Array<MammograafDicomMessageError>;
 };
 
-export default class MammograafDicomFoutmeldingenPopupView extends React.Component<MammograafDicomFoutmeldingenPopupViewProps> {
+export default class MammograafDicomFoutmeldingenPopupView extends Component<MammograafDicomFoutmeldingenPopupViewProps> {
 	render(): JSX.Element {
 		return <div>
 			{this.props.messageType === "MPPS" ? <div>

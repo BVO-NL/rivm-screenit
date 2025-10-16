@@ -24,7 +24,7 @@ import baseStyles from "../BasePage.module.scss"
 import styles from "./BezwaarWijzigenPage.module.scss"
 import KruimelpadComponent from "../../components/kruimelpad/KruimelpadComponent"
 import SpanWithHtml from "../../components/span/SpanWithHtml"
-import React, {useEffect} from "react"
+import {useEffect} from "react"
 import {Container} from "react-bootstrap"
 import {Bezwaar, BezwaarMoment} from "../../datatypes/Bezwaar"
 import {getLaatsteBezwaarMoment, saveNieuwBezwaarMoment} from "../../api/BezwaarThunkAction"
@@ -40,18 +40,18 @@ import BezwaarBlok from "./BezwaarBlok"
 import BezwaarInformatieBlok from "./BezwaarInformatieBlok"
 import {BezwaarType} from "../../datatypes/BezwaarType"
 import {useNavigate} from "react-router"
+import properties from "./BezwaarWijzigenPage.json"
 
 const BezwaarWijzigenPage = () => {
 	const dispatch = useThunkDispatch()
 	const navigate = useNavigate()
-	const properties = require("./BezwaarWijzigenPage.json")
 	const behoortTotMammaDoelgroep = useSelector(selectBehoortTotMammaDoelgroep)
 	const behoortTotColonDoelgroep = useSelector(selectBehoortTotColonDoelgroep)
 	const behoortTotCervixDoelgroep = useSelector(selectBehoortTotCervixDoelgroep)
 	const alleBezwaren = useSelector(selectBezwaren)
 	const andereZorgverlenersBezwaarTypes: Array<BezwaarType> = [BezwaarType.GEEN_DIGITALE_UITWISSELING_MET_HET_ZIEKENHUIS, BezwaarType.GEEN_SIGNALERING_VERWIJSADVIES]
-	let bvoSpecifiekeBezwaren: Bezwaar[] = []
-	let zorgverlenerBezwaren: Bezwaar[] = []
+	const bvoSpecifiekeBezwaren: Bezwaar[] = []
+	const zorgverlenerBezwaren: Bezwaar[] = []
 	laadBezwaren()
 
 	useEffect(() => {
@@ -76,8 +76,12 @@ const BezwaarWijzigenPage = () => {
 		})
 	}
 
-	function getBezwaarString(key: string, subkey: string): string {
-		return getString(properties[key][subkey])
+	function getBezwaarString(key: BezwaarType, subkey: "title" | "abstract" | "meer"): string {
+		const bezwarenProperties = properties[key]
+		if (bezwarenProperties) {
+			return getString(bezwarenProperties[subkey])
+		}
+		return ""
 	}
 
 	function opslaan(bezwaren: BezwaarMoment) {
@@ -101,7 +105,7 @@ const BezwaarWijzigenPage = () => {
 																buttonLabel={properties.opslaan.button.label}>
 
 						{bvoSpecifiekeBezwaren.length > 0 && bvoSpecifiekeBezwaren.map((b, index) =>
-							<BezwaarBlok bezwaar={b} key={b.type + "_" + index}
+							<BezwaarBlok bezwaar={b} key={`${b.type  }_${  index}`}
 										 onChange={(event) => formikProps.setFieldValue(String(alleBezwaren.indexOf(b)), event)}
 										 abstract={getBezwaarString(b.type, "abstract")}
 										 meer={getBezwaarString(b.type, "meer")} standalone={false}
@@ -115,7 +119,7 @@ const BezwaarWijzigenPage = () => {
 
 						{zorgverlenerBezwaren.length > 0 && zorgverlenerBezwaren.map((b, index) =>
 							<BezwaarBlok bezwaar={b}
-										 key={b.type + "_" + index}
+										 key={`${b.type  }_${  index}`}
 										 onChange={(event) => formikProps.setFieldValue(String(alleBezwaren.indexOf(b)), event)}
 										 abstract={getBezwaarString(b.type, "abstract")}
 										 meer={getBezwaarString(b.type, "meer")} standalone={false}

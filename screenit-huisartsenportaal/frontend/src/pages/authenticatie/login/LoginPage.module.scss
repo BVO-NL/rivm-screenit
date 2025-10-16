@@ -18,13 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "../../../styling/scss/colors";
-
 .style {
 
 	a {
 		font-weight: bold;
-		color: $blauw;
+		color: var(--blauw);
 		font-size: 0.85rem;
 		text-decoration: none;
 	}

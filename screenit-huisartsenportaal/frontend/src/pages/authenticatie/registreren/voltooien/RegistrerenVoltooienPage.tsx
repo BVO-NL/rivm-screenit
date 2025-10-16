@@ -21,7 +21,6 @@
 import BasePage from "../../../BasePage"
 import properties from "./RegistrerenVoltooienPage.json"
 import {getString} from "../../../../util/TekstPropertyUtil"
-import React from "react"
 import GegevensWijzigenFormComponent from "../../../../components/gegevens/GegevensWijzigenFormComponent"
 
 const RegistrerenVoltooienPage = () => {

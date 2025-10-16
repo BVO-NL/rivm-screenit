@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useCallback, useState} from "react"
+import {useCallback, useState} from "react"
 import {BevolkingsonderzoekNaam} from "../../../../datatypes/Bevolkingsonderzoek"
 import {Col, Row} from "react-bootstrap"
 import styles from "./MammaAfspraakUitstellenPage.module.scss"
@@ -35,7 +35,6 @@ import {maakUitstel} from "../../../../api/MammaUitstelThunkAction"
 import {concatWithSpace} from "../../../../utils/StringUtil"
 import properties from "./MammaAfspraakUitstellenPage.json"
 import {getContactUrl} from "../../../../utils/UrlUtil"
-import {useRegio} from "../../../../utils/Hooks"
 import BigUrlButton from "../../../../components/bigUrlButton/BigUrlButton"
 import * as Yup from "yup"
 import {Formik} from "formik"
@@ -54,7 +53,6 @@ export type UitstelZoekFilter = {
 
 const MammaAfspraakUitstellenPage = () => {
 	const dispatch = useThunkDispatch()
-	const regio = useRegio()
 	const navigate = useNavigate()
 	const [gezocht, setGezocht] = useState<boolean>(false)
 	const [geenResultaten, setGeenResultaten] = useState<boolean>(false)
@@ -65,7 +63,7 @@ const MammaAfspraakUitstellenPage = () => {
 	})
 
 	const zoekStandplaatsPeriodes = useCallback((filter: UitstelZoekFilter) => {
-		return ScreenitBackend.post<KandidaatStandplaatsPeriode[]>(`mamma/uitstel/zoeken`, {json: filter}).json()
+		return ScreenitBackend.post<KandidaatStandplaatsPeriode[]>("mamma/uitstel/zoeken", {json: filter}).json()
 			.then(response => {
 				setGeenResultaten(response.length === 0)
 				setZoekResultaten(response)
@@ -148,7 +146,7 @@ const MammaAfspraakUitstellenPage = () => {
 					{(gezocht && geenResultaten) &&
 						<BigUrlButton title={getString(properties.navigation.contact.header)}
 									  text={getString(properties.navigation.contact.text)}
-									  link={getContactUrl(regio)}/>}
+									  link={getContactUrl()}/>}
 				</Col>
 			</Row>
 		</BasePage>

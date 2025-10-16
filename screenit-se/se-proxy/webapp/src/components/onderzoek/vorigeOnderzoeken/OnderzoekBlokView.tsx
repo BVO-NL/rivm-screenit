@@ -18,7 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {Component} from "react"
+import {Component, JSX} from "react"
+import * as React from "react"
 import {Col, Row, Table} from "reactstrap"
 import Paneel from "../../generic/Paneel"
 import LabelValue from "../../generic/LabelValue"

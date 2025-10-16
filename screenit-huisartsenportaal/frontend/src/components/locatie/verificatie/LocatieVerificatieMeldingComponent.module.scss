@@ -18,11 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "../../../styling/scss/colors";
-
 .style {
-	background-color: $rood;
-	color: $wit;
+	background-color: var(--rood);
+	color: var(--wit);
 	font-size: 0.9rem;
 
 	p {

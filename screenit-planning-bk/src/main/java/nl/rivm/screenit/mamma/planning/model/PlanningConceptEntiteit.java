@@ -23,14 +23,22 @@ package nl.rivm.screenit.mamma.planning.model;
 
 import java.util.UUID;
 
+import static java.util.Objects.requireNonNull;
+
 public class PlanningConceptEntiteit extends PlanningEntiteit
 {
 	private final UUID conceptId;
 
 	public PlanningConceptEntiteit(Long id)
 	{
+		this(id, UUID.randomUUID());
+	}
+
+	public PlanningConceptEntiteit(Long id, UUID conceptID)
+	{
 		super(id);
-		this.conceptId = UUID.randomUUID();
+		requireNonNull(conceptID);
+		this.conceptId = conceptID;
 	}
 
 	public UUID getConceptId()
@@ -50,8 +58,7 @@ public class PlanningConceptEntiteit extends PlanningEntiteit
 			return false;
 		}
 
-		PlanningConceptEntiteit that = (PlanningConceptEntiteit) o;
-		return conceptId.equals(that.conceptId);
+		return conceptId.equals(((PlanningConceptEntiteit) o).conceptId);
 	}
 
 	@Override

@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import {DatePicker, DateValidationError, LocalizationProvider} from "@mui/x-date-pickers"
 import styles from "./ScreenitDatePicker.module.scss"
 import {FormikErrors} from "formik"
@@ -45,7 +44,7 @@ const ScreenitDatePicker = (props: ScreenitDatePickerProps) => {
 	const bovengrens = getBovengrensUitLijst(props.beschikbareDagen)
 
 	return (
-		<div ref={React.createRef}>
+		<div>
 			<p>{props.title}</p>
 			<div className={props.errorLabel ? styles.inputDivError : styles.inputDiv}>
 				<LocalizationProvider adapterLocale={nl} dateAdapter={AdapterDateFns}>
@@ -57,11 +56,11 @@ const ScreenitDatePicker = (props: ScreenitDatePickerProps) => {
 						value={props.value}
 						onChange={props.onChange}
 						shouldDisableDate={(date) => shouldDisableDate(date, ondergrens, bovengrens, props.beschikbareDagen, props.alleenWerkdagen)}
-						slotProps={{textField: {variant: "standard", inputProps: {"data-testid": "input_" + props.propertyName}}}}
+						slotProps={{textField: {variant: "standard", inputProps: {"data-testid": `input_${props.propertyName}`}}}}
 					/>
 
 				</LocalizationProvider>
-				<p data-testid={"error_" + props.propertyName} className={styles.errorLabel}>{props.errorLabel && String(props.errorLabel)}</p>
+				<p data-testid={`error_${props.propertyName}`} className={styles.errorLabel}>{props.errorLabel && String(props.errorLabel)}</p>
 			</div>
 		</div>
 	)

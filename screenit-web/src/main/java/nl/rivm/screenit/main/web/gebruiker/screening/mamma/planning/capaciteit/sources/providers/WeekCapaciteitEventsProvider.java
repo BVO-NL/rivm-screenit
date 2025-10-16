@@ -53,13 +53,16 @@ public class WeekCapaciteitEventsProvider extends AbstractScreenITEventProvider
 			switch (blok.blokType)
 			{
 			case SCREENING:
-				topRight = "<span class=\"label pull-right background-paars\" >" + blok.aantalOnderzoeken + "</span>";
+				topRight += "<span class=\"label pull-right background-paars float-right\" >" + blok.aantalOnderzoeken + "</span>";
 				break;
 			case GEEN_SCREENING:
 				title = blok.opmerkingen;
 				break;
 			}
-
+			if (!blok.getMinderValideReserveringen().isEmpty())
+			{
+				topRight += "<i class=\"fa-lg fa fa-wheelchair fa-purple line-height-14px width-14px float-right\"></i>";
+			}
 			boolean inConcept = blok.conceptId != null;
 
 			event.setStart(DateUtil.toLocalDateTime(blok.vanaf));

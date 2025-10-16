@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import "@testing-library/jest-dom"
-import {TextEncoder} from "util"
+import {TextDecoder, TextEncoder} from "util"
 
 let isReactActEnvironment = true
 Object.defineProperty(window, "IS_REACT_ACT_ENVIRONMENT", {
@@ -31,4 +31,12 @@ Object.defineProperty(window, "IS_REACT_ACT_ENVIRONMENT", {
 	},
 })
 
-global.TextEncoder = TextEncoder
+Object.defineProperty(window, "TextEncoder", {
+	writable: true,
+	value: TextEncoder,
+})
+
+Object.defineProperty(window, "TextDecoder", {
+	writable: true,
+	value: TextDecoder,
+})

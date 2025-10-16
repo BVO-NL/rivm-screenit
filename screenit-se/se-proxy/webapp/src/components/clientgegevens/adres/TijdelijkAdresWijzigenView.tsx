@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {ChangeEvent, Component} from "react"
+import {ChangeEvent, Component, JSX} from "react"
 import {Button, Col, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader} from "reactstrap"
 import DatePicker, {registerLocale} from "react-datepicker"
 import {isValideDatum, vandaagDate} from "../../../util/DateUtil"
@@ -26,7 +26,7 @@ import {store} from "../../../Store"
 import {createActionSetTijdelijkAdres} from "../../../actions/ClientActions"
 import type {TijdelijkAdres} from "../../../datatypes/TijdelijkAdres"
 import {getMandatory} from "../../../util/MapUtil"
-import nl from "date-fns/locale/nl"
+import {nl} from "date-fns/locale/nl"
 
 registerLocale("nl", nl)
 

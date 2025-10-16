@@ -468,6 +468,15 @@ public final class DateUtil
 		return "";
 	}
 
+	public static String formatLocalTime(LocalTime time)
+	{
+		if (time != null)
+		{
+			return time.format(LOCAL_TIME_FORMAT);
+		}
+		return "";
+	}
+
 	public static boolean isZelfdeDag(Date date1, Date date2)
 	{
 		return DateUtil.toUtilDateMidnight(date1).compareTo(DateUtil.toUtilDateMidnight(date2)) == 0;

@@ -24,7 +24,7 @@ import { FormControl, NonNullableFormBuilder, ReactiveFormsModule, Validators } 
 import { formatDate } from '@shared/date-utils'
 import { valideDatumValidator } from '@shared/validators/datum/datum.validator'
 import { bsnValidator } from '@shared/validators/bsn/bsn.validator'
-import { ToastService } from '@/toast/service/toast.service'
+import { ToastService } from '@shared/toast/service/toast.service'
 import { ExtraBeveiligdeOmgevingService } from '@/algemeen/extra-beveiligde-omgeving/services/extra-beveiligde-omgeving/extra-beveiligde-omgeving.service'
 import { take } from 'rxjs'
 

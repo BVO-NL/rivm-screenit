@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 import {Container, Row} from "reactstrap"
 import type {ErrorDto} from "../../datatypes/ErrorDto"
 
@@ -26,7 +26,7 @@ type ErrorProps = {
 	error: ErrorDto;
 };
 
-export default class ErrorView extends React.Component<ErrorProps> {
+export default class ErrorView extends Component<ErrorProps> {
 	render(): JSX.Element {
 		return <Container fluid>
 			<Row>

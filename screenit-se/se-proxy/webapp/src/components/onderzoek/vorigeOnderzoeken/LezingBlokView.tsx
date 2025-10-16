@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {Component} from "react"
+import {Component, JSX} from "react"
 import AfwijkingenAfbeeldingenView from "../signaleren/AfwijkingenAfbeeldingenView"
 import type {Lezing} from "../../../datatypes/Lezing"
 import {Col} from "reactstrap"

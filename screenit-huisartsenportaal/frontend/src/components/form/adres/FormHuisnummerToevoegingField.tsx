@@ -23,7 +23,6 @@ import styles from "../BaseFormField.module.scss"
 import {Col, FormGroup, Row} from "react-bootstrap"
 import {SharedFormFieldProps} from "../BaseFormField"
 import {Field} from "formik"
-import React from "react"
 
 export interface FormHuisnummerToevoegingFieldProps extends SharedFormFieldProps {
 	toevoegingProperty: string;

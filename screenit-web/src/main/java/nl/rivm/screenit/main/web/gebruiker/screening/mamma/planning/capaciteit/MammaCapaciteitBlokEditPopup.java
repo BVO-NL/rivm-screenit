@@ -24,13 +24,13 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit;
 import java.util.Arrays;
 
 import nl.rivm.screenit.Constants;
+import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxLink;
 import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxSubmitLink;
 import nl.rivm.screenit.main.web.component.DateTimeField;
-import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.form.ScreenITDateTimeField;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.model.enums.Actie;
@@ -40,6 +40,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.wicket.input.timefield.TimeField;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -48,10 +49,8 @@ import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -69,6 +68,8 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 
 	private WebMarkupContainer opmerkingenContainer;
 
+	private MammaMinderValideReserveringEditPanel minderValideReserveringenPanel;
+
 	private WebMarkupContainer minderValideAfspraakMogelijkContainer;
 
 	@SpringBean
@@ -77,12 +78,18 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 	@SpringBean
 	private MammaBaseCapaciteitsBlokService baseCapaciteitsBlokService;
 
+	@SpringBean
+	private SimplePreferenceService preferenceService;
+
+	private final boolean staatNieuweMinderValideReserveringAan;
+
 	private final TimeField endTime = new TimeField("tot", true);
 
 	public MammaCapaciteitBlokEditPopup(String id, IModel<PlanningCapaciteitBlokDto> model)
 	{
 		super(id, model);
 		this.magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
+		this.staatNieuweMinderValideReserveringAan = preferenceService.getBoolean(PreferenceKey.MAMMA_MINDERVALIDE_RESERVERING_ACTIEF.name(), false);
 	}
 
 	@Override
@@ -94,7 +101,7 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 		confirmPopup.setOutputMarkupPlaceholderTag(true);
 		add(confirmPopup);
 
-		final Form<PlanningCapaciteitBlokDto> editForm = new Form<>("editForm", getModel());
+		final var editForm = new Form<>("editForm", getModel());
 		add(editForm);
 
 		initForm(editForm);
@@ -105,17 +112,17 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 
 	private void initForm(Form<PlanningCapaciteitBlokDto> form)
 	{
-		PlanningCapaciteitBlokDto blok = form.getModelObject();
-		boolean isNieuw = blok.conceptId == null;
+		var blok = form.getModelObject();
+		var isNieuw = blok.conceptId == null;
 
-		String wijzigOfNieuw = "Wijzig";
+		var wijzigOfNieuw = "Wijzig";
 
 		if (isNieuw)
 		{
 			wijzigOfNieuw = "Nieuw";
 		}
 
-		String tijdString = Constants.getDateTimeFormat().format(blok.vanaf) + "-" + Constants.getTimeFormat().format(blok.tot);
+		var tijdString = Constants.getDateTimeFormat().format(blok.vanaf) + "-" + Constants.getTimeFormat().format(blok.tot);
 
 		aantalOnderzoekenContainer = new WebMarkupContainer("aantalOnderzoekenContainer")
 		{
@@ -145,29 +152,21 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 
 		ComponentHelper.addTextField(aantalOnderzoekenContainer, "aantalOnderzoeken", true, 10, Integer.class, false).add(RangeValidator.minimum(0));
 
-		TextArea<String> opmerkingen = ComponentHelper.addTextArea(opmerkingenContainer, "opmerkingen", true, 255,
+		var opmerkingen = ComponentHelper.addTextArea(opmerkingenContainer, "opmerkingen", true, 255,
 			false);
 		opmerkingenContainer.add(opmerkingen);
 
 		form.add(opmerkingenContainer);
 
-		CheckBox minderValideAfspraakMogelijk = ComponentHelper.newCheckBox("minderValideAfspraakMogelijk");
-
-		minderValideAfspraakMogelijkContainer = new WebMarkupContainer("minderValideAfspraakMogelijkContainer")
-		{
-			@Override
-			protected void onConfigure()
-			{
-				super.onConfigure();
-				setVisible(getModelObject().blokType != null && !getModelObject().blokType.equals(MammaCapaciteitBlokType.GEEN_SCREENING));
-			}
-		};
-		minderValideAfspraakMogelijkContainer.add(minderValideAfspraakMogelijk);
-		minderValideAfspraakMogelijkContainer.setOutputMarkupId(true);
-		minderValideAfspraakMogelijkContainer.setOutputMarkupPlaceholderTag(true);
+		maakMinderValideMogelijkContainer();
 		form.add(minderValideAfspraakMogelijkContainer);
 
-		ScreenitDropdown<MammaCapaciteitBlokType> bloktypen = ComponentHelper.newDropDownChoice("blokType",
+		minderValideReserveringenPanel = new MammaMinderValideReserveringEditPanel("minderValideReserveringenPanel", getModel());
+		minderValideReserveringenPanel.setOutputMarkupPlaceholderTag(true);
+		updateMinderValideAfspraakReserveringContainerVisibility();
+		form.add(minderValideReserveringenPanel);
+
+		var bloktypen = ComponentHelper.newDropDownChoice("blokType",
 			new ListModel<>(Arrays.asList(MammaCapaciteitBlokType.values())), new EnumChoiceRenderer<>(), true);
 
 		bloktypen.add(new AjaxFormComponentUpdatingBehavior("change")
@@ -175,9 +174,9 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				target.add(aantalOnderzoekenContainer);
-				target.add(opmerkingenContainer);
-				target.add(minderValideAfspraakMogelijkContainer);
+				updateMinderValideAfspraakMogelijkContainerVisibility();
+				updateMinderValideAfspraakReserveringContainerVisibility();
+				target.add(aantalOnderzoekenContainer, opmerkingenContainer, minderValideAfspraakMogelijkContainer, minderValideReserveringenPanel);
 			}
 		});
 
@@ -213,6 +212,26 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 		form.add(startTime);
 	}
 
+	private void maakMinderValideMogelijkContainer()
+	{
+		var minderValideAfspraakMogelijk = ComponentHelper.newCheckBox("minderValideAfspraakMogelijk");
+		minderValideAfspraakMogelijkContainer = new WebMarkupContainer("minderValideAfspraakMogelijkContainer");
+		minderValideAfspraakMogelijkContainer.add(minderValideAfspraakMogelijk);
+		minderValideAfspraakMogelijkContainer.setOutputMarkupId(true);
+		minderValideAfspraakMogelijkContainer.setOutputMarkupPlaceholderTag(true);
+		updateMinderValideAfspraakMogelijkContainerVisibility();
+	}
+
+	private void updateMinderValideAfspraakMogelijkContainerVisibility()
+	{
+		minderValideAfspraakMogelijkContainer.setVisible(getModelObject().blokType.equals(MammaCapaciteitBlokType.SCREENING) && !staatNieuweMinderValideReserveringAan);
+	}
+
+	private void updateMinderValideAfspraakReserveringContainerVisibility()
+	{
+		minderValideReserveringenPanel.setVisible(getModelObject().blokType.equals(MammaCapaciteitBlokType.SCREENING) && staatNieuweMinderValideReserveringAan);
+	}
+
 	private void setDateForEndTimeField()
 	{
 
@@ -239,7 +258,7 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 			@Override
 			protected boolean skipConfirmation()
 			{
-				IModel<PlanningCapaciteitBlokDto> blokModel = MammaCapaciteitBlokEditPopup.this.getModel();
+				var blokModel = MammaCapaciteitBlokEditPopup.this.getModel();
 				aantalAfspraken = baseCapaciteitsBlokService.getAantalAfsprakenOpBlok(blokModel.getObject(), false);
 				return aantalAfspraken == 0;
 			}
@@ -281,8 +300,8 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 			@Override
 			protected IModel<String> getContentStringModel()
 			{
-				IModel<PlanningCapaciteitBlokDto> blokModel = MammaCapaciteitBlokEditPopup.this.getModel();
-				int aantalAfspraken = baseCapaciteitsBlokService.getAantalAfsprakenOpBlok(blokModel.getObject(), true);
+				var blokModel = MammaCapaciteitBlokEditPopup.this.getModel();
+				var aantalAfspraken = baseCapaciteitsBlokService.getAantalAfsprakenOpBlok(blokModel.getObject(), true);
 				if (aantalAfspraken > 0)
 				{
 					return Model.of(String.format(getString("verwijder.popup.content"), aantalAfspraken));
@@ -302,7 +321,7 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 		};
 		add(deleteSubmit);
 
-		PlanningCapaciteitBlokDto blok = getModelObject();
+		var blok = getModelObject();
 		deleteSubmit.setVisible(blok.conceptId != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.VERWIJDEREN));
 		deleteSubmit.add(new Label("verwijderenTekst", getDeleteTekst()));
 	}

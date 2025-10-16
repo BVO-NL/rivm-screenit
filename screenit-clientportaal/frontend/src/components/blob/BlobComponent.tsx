@@ -20,14 +20,14 @@
  */
 import {useSelectedBvo} from "../../utils/Hooks"
 import {BevolkingsonderzoekStyle} from "../../datatypes/Bevolkingsonderzoek"
-import React from "react"
+import {ReactNode} from "react"
 import styles from "./BlobComponent.module.scss"
 
 export type BlobComponentProps = {
-	children?: React.ReactNode
+	children?: ReactNode
 }
 
-const BlobComponent = (props: BlobComponentProps) => {
+const BlobComponent = (props: BlobComponentProps): ReactNode => {
 	const selectedBvo = useSelectedBvo()
 
 	return (

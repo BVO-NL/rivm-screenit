@@ -20,7 +20,6 @@
  */
 import classNames from "classnames"
 import styles from "./TabelPagineringComponent.module.scss"
-import React from "react"
 
 export interface TabelPagineringComponentProps {
 	pageCount: number;

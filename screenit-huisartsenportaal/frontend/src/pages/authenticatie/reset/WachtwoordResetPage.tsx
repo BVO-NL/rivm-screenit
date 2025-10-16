@@ -28,7 +28,6 @@ import FormTextField from "../../../components/form/text/FormTextField"
 import {WachtwoordVergetenDto} from "../../../state/datatypes/dto/WachtwoordVergetenDto"
 import {wachtwoordVergeten} from "../../../api/WachtwoordThunkAction"
 import {loadingThunkAction} from "../../../api/LoadingThunkAction"
-import React from "react"
 
 const WachtwoordResetPage = () => {
 	const dispatch = useAppThunkDispatch()

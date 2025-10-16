@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {ReactNode} from "react"
 import {Col, Container, Row} from "react-bootstrap"
 import styles from "./BasePage.module.scss"
 import {useSelectedBvo} from "../utils/Hooks"
@@ -40,23 +40,23 @@ export type BasePageProps = {
 	blobAdresLocatie?: string,
 	onBlobLinkClick?: () => void,
 	blobLinkText?: string,
-	children: React.ReactNode,
+	children: ReactNode,
 }
 
 const BasePage = (props: BasePageProps) => {
 
-    const selectedBvo = useSelectedBvo()
+	const selectedBvo = useSelectedBvo()
 
-    return (
-        <Container fluid className={classNames(styles.content, selectedBvo && BevolkingsonderzoekStyle[selectedBvo])}>
-            <KruimelpadComponent/>
-            <Row>
-                <Col md={8}>
-                    <InleidingComponent bvoNaam={props.bvoName} groteTitel={props.title}
-                                        inleidingBvoTekst={props.description}
-                                        toonAlgemeneInleidingTekst={false}/>
-                </Col>
-                <Col md={4}>
+	return (
+		<Container fluid className={classNames(styles.content, selectedBvo && BevolkingsonderzoekStyle[selectedBvo])}>
+			<KruimelpadComponent/>
+			<Row>
+				<Col md={8}>
+					<InleidingComponent bvoNaam={props.bvoName} groteTitel={props.title}
+										inleidingBvoTekst={props.description}
+										toonAlgemeneInleidingTekst={false}/>
+				</Col>
+				<Col md={4}>
 					{props.toonBlob &&
 						<TextBlobComponent
 							titel={props.blobTitle ? props.blobTitle : ""}
@@ -65,13 +65,13 @@ const BasePage = (props: BasePageProps) => {
 							adresLocatie={props.blobAdresLocatie}
 							onLinkClick={props.onBlobLinkClick}
 							linkTekst={props.blobLinkText}/>}
-                </Col>
-            </Row>
-            <div className={styles.childrenContainer}>
-                {props.children}
-            </div>
-        </Container>
-    )
+				</Col>
+			</Row>
+			<div className={styles.childrenContainer}>
+				{props.children}
+			</div>
+		</Container>
+	)
 
 }
 

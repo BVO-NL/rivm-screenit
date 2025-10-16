@@ -44,6 +44,7 @@ public class MammaPlanningUtil
 
 	public static long minimumTijdvak(BigDecimal factor)
 	{
+
 		return factor.setScale(0, RoundingMode.HALF_DOWN).multiply(new BigDecimal(Constants.BK_TIJDVAK_MIN)).longValue();
 	}
 }

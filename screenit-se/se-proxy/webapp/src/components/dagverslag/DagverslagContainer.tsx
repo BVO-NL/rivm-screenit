@@ -19,7 +19,6 @@
  * =========================LICENSE_END==================================
  */
 import {connect} from "react-redux"
-import React from "react"
 import DagverslagView, {DagverslagViewDispatchProps, DagverslagViewStateProps} from "./DagverslagView"
 import {createActionShowPopup} from "../../actions/PopupActions"
 import AfsprakenDoorvoerenView from "./AfsprakenDoorvoerenView"

@@ -20,7 +20,7 @@
  */
 import { Component, inject } from '@angular/core'
 import { CardComponent } from '@shared/components/card/card.component'
-import { ToastService } from '@/toast/service/toast.service'
+import { ToastService } from '@shared/toast/service/toast.service'
 import { FormsModule } from '@angular/forms'
 import { Dense2Service } from '@/mamma/mamma-dense2-uitwisseling-page/services/dense2/dense2.service'
 import { catchError, of, throwError } from 'rxjs'

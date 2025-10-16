@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {ReactNode} from "react"
 import {Container} from "react-bootstrap"
 import styles from "./BasePage.module.scss"
 import bvoStyle from "../components/BvoStyle.module.scss"
@@ -32,23 +32,23 @@ import properties from "./ActieBasePage.json"
 import {getString} from "../utils/TekstPropertyUtil"
 
 export type ActieBasePageProps = {
-    className?: string,
-    bvoName: string,
-    title: string,
-    description?: string,
-    hintBegin?: string,
-    hintBeginClassName?: string,
-    children: React.ReactNode,
-    hintEinde?: string
-    hintEindeClassName?: string,
+	className?: string,
+	bvoName: string,
+	title: string,
+	description?: string,
+	hintBegin?: string,
+	hintBeginClassName?: string,
+	children: ReactNode,
+	hintEinde?: string
+	hintEindeClassName?: string,
 }
 
 const ActieBasePage = (props: ActieBasePageProps) => {
 
-    const selectedBvo = useSelectedBvo()
+	const selectedBvo = useSelectedBvo()
 
-    return (
-        <Container fluid
+	return (
+		<Container fluid
 				   className={classNames(styles.content, styles.slim, selectedBvo && BevolkingsonderzoekStyle[selectedBvo], props.className)}>
 			<KruimelpadComponent/>
 			<h4 className={bvoStyle.bvoText}>{getString(properties.title, [props.bvoName])}</h4>
@@ -60,13 +60,13 @@ const ActieBasePage = (props: ActieBasePageProps) => {
 			{props.hintBegin && <HintComponent className={props.hintBeginClassName}><SpanWithHtml value={props.hintBegin}/></HintComponent>}
 
 			<div className={styles.childrenContainer}>
-                {props.children}
-            </div>
+				{props.children}
+			</div>
 
-            {props.hintEinde && <HintComponent className={props.hintEindeClassName}><SpanWithHtml value={props.hintEinde}/></HintComponent>}
+			{props.hintEinde && <HintComponent className={props.hintEindeClassName}><SpanWithHtml value={props.hintEinde}/></HintComponent>}
 
-        </Container>
-    )
+		</Container>
+	)
 
 }
 

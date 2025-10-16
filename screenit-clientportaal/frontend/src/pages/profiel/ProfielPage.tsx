@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import styles from "./ProfielPage.module.scss"
 import {Col, Container, Row} from "react-bootstrap"
 import TopTaakComponent from "../../components/taken/TopTaakComponent"

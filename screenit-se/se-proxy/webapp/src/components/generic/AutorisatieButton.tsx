@@ -20,6 +20,7 @@
  */
 import type {AlleenOnlineButtonProps} from "./AlleenOnlineButton"
 import AlleenOnlineButton from "./AlleenOnlineButton"
+import {JSX} from "react"
 
 export type AutorisatieButtonProps = AlleenOnlineButtonProps & {
 	heeftRecht: boolean;

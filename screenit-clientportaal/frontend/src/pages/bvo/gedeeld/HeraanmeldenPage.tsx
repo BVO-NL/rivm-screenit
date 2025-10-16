@@ -20,7 +20,7 @@
  */
 import {useThunkDispatch} from "../../../index"
 import {useSelectedBvo} from "../../../utils/Hooks"
-import React, {useEffect, useState} from "react"
+import {useEffect, useState} from "react"
 import ActieBasePage from "../../ActieBasePage"
 import {Bevolkingsonderzoek, BevolkingsonderzoekNaam} from "../../../datatypes/Bevolkingsonderzoek"
 import bvoStyle from "../../../components/BvoStyle.module.scss"
@@ -37,9 +37,9 @@ import SubmitButton from "../../../components/input/SubmitButton"
 import {ClientContactActieType} from "../../../datatypes/ClientContactActieType"
 import {useNavigate} from "react-router"
 import {showToast} from "../../../utils/ToastUtil"
+import properties from "./HeraanmeldenPage.json"
 
 const HeraanmeldenPage = () => {
-	const properties = require("./HeraanmeldenPage.json")
 	const dispatch = useThunkDispatch()
 	const selectedBvo = useSelectedBvo()!
 	const navigate = useNavigate()
@@ -53,6 +53,18 @@ const HeraanmeldenPage = () => {
 				setOptiesZijnOpgehaald(true)
 			})
 	}, [selectedBvo])
+
+	function getToastTekst(afspraakMaken: boolean, selectedBvo: Bevolkingsonderzoek): string {
+		if (!afspraakMaken) {
+			return getString(properties.toast[selectedBvo].algemeen)
+		}
+		if (selectedBvo === Bevolkingsonderzoek.MAMMA) {
+			return getString(properties.toast.MAMMA.afspraak)
+		} else if (selectedBvo === Bevolkingsonderzoek.COLON) {
+			return getString(properties.toast.COLON.afspraak)
+		}
+		return ""
+	}
 
 	return (
 		<ActieBasePage
@@ -75,7 +87,7 @@ const HeraanmeldenPage = () => {
 				<HeraanmeldenAfspraakMakenForm onSubmitSucces={(afspraakMaken) => {
 					dispatch(saveHeraanmeldVerzoekEnGeefBeschikbareActies(selectedBvo, false, dispatch))
 						.then(() => {
-							showToast(undefined, afspraakMaken ? getString(properties["toast"][selectedBvo]["afspraak"]) : getString(properties["toast"][selectedBvo]["algemeen"]))
+							showToast(undefined, getToastTekst(afspraakMaken, selectedBvo))
 							navigate(afspraakMaken ? "/colon/afspraak-maken-heraanmelding/" : getBvoBaseUrl(selectedBvo))
 						})
 				}}/>}
@@ -84,7 +96,7 @@ const HeraanmeldenPage = () => {
 				<SubmitButton className={bvoStyle.baseBackgroundColor} label={getString(properties.form.button)} displayArrow={ArrowType.ARROW_RIGHT} onClick={() => {
 					dispatch(saveHeraanmeldVerzoekEnGeefBeschikbareActies(selectedBvo, false, dispatch)).then((beschikbareActies) => {
 						const kanDirectMammaAfspraakMaken = selectedBvo === Bevolkingsonderzoek.MAMMA && beschikbareActies && beschikbareActies.beschikbareActies.includes(ClientContactActieType.MAMMA_AFSPRAAK_MAKEN)
-						showToast(undefined, kanDirectMammaAfspraakMaken ? getString(properties.toast.MAMMA.afspraak) : getString(properties["toast"][selectedBvo]["algemeen"]))
+						showToast(undefined, getToastTekst(kanDirectMammaAfspraakMaken, Bevolkingsonderzoek.MAMMA))
 						navigate(kanDirectMammaAfspraakMaken ? "/mamma/afspraak" : getBvoBaseUrl(selectedBvo))
 					})
 				}}/>}
@@ -94,15 +106,15 @@ const HeraanmeldenPage = () => {
 
 	function getDescription(): string {
 		if (heraanmeldenOpties.magColonUitnodigingAanvragen) {
-			return getString(properties.afmeldenText) + "<br><br>" + getString(properties.COLON.uitnodiging.infoText) + getString(properties.COLON.uitnodiging.hintText)
+			return `${getString(properties.afmeldenText)}<br><br>${getString(properties.COLON.uitnodiging.infoText)}${getString(properties.COLON.uitnodiging.hintText)}`
 		}
 		if (heraanmeldenOpties.magColonIntakAfspraakInplannen) {
-			return getString(properties.afmeldenText) + "<br><br>" + getString(properties.COLON.afspraak.infoText) + "<br><br>" + getString(properties.COLON.afspraak.hintText)
+			return `${getString(properties.afmeldenText)}<br><br>${getString(properties.COLON.afspraak.infoText)}<br><br>${getString(properties.COLON.afspraak.hintText)}`
 		}
 		if (selectedBvo === Bevolkingsonderzoek.MAMMA) {
 			return getString(properties.afmeldenText)
 		} else {
-			return getString(properties.afmeldenText) + "<br><br>" + getString(selectedBvo === Bevolkingsonderzoek.CERVIX ? properties.uitnodigingText_bmhk : properties.uitnodigingText_dk_bk)
+			return `${getString(properties.afmeldenText)}<br><br>${getString(selectedBvo === Bevolkingsonderzoek.CERVIX ? properties.uitnodigingText_bmhk : properties.uitnodigingText_dk_bk)}`
 		}
 	}
 }

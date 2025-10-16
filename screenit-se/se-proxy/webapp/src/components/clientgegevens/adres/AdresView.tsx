@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {Component} from "react"
+import {Component, JSX} from "react"
 import {Button, Col, Row} from "reactstrap"
 import type {Adres} from "../../../datatypes/Adres"
 import Paneel from "../../generic/Paneel"
@@ -70,8 +70,8 @@ export default class AdresView extends Component<AdresViewProps, AdresViewState>
 					clientId={this.props.clientId}/>
 				<div className={"col-2"}>
 					{!this.props.disabled &&
-					<Button className={"float-right btn-secondary-se"} onClick={this.toggleTijdelijkAdresWijzigen}>Wijzig
-						tijdelijk adres</Button>}
+						<Button className={"float-right btn-secondary-se"} onClick={this.toggleTijdelijkAdresWijzigen}>Wijzig
+							tijdelijk adres</Button>}
 				</div>
 			</Row>
 			<Row>

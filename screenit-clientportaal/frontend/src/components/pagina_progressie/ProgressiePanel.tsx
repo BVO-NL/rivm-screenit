@@ -19,7 +19,6 @@
  * =========================LICENSE_END==================================
  */
 import styles from "./PaginaProgressie.module.scss"
-import React from "react"
 import classNames from "classnames"
 import ArrowIconComponent, {ArrowType} from "../vectors/ArrowIconComponent"
 

@@ -153,7 +153,7 @@ export class RoosterService extends BaseService<RoosterState> {
       dagen: filter.dagen.join(','),
     }
     if (filter.kamerId) {
-      params.kamerId = filter.kamerId.toString()
+      params['kamerId'] = filter.kamerId.toString()
     }
     if (type === 'afspraakslots') {
       return this.searchAfspraakslots(params)

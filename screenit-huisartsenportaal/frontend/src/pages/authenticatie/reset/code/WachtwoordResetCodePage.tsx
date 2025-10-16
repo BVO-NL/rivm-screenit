@@ -31,7 +31,6 @@ import {ToastType} from "../../../../state/datatypes/Toast"
 import FormTextField from "../../../../components/form/text/FormTextField"
 import {useNavigate} from "react-router"
 import * as Yup from "yup"
-import React from "react"
 import {wachtwoordAanvragen} from "../../../../api/WachtwoordThunkAction"
 
 const WachtwoordResetCodePage = () => {

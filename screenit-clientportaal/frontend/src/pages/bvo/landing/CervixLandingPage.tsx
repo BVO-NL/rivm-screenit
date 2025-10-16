@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import {Col, Container, Row} from "react-bootstrap"
 import styles from "./BvoLandingPage.module.scss"
 import landingPageStyle from "../../landing/LandingPage.module.scss"

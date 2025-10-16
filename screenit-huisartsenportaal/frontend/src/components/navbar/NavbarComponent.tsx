@@ -32,7 +32,6 @@ import {loadingThunkAction} from "../../api/LoadingThunkAction"
 import {useNavigate} from "react-router"
 import {createActionPushToast} from "../../state/ToastsState"
 import {ToastType} from "../../state/datatypes/Toast"
-import React from "react"
 
 const NavbarComponent = () => {
 	const auth = useAppSelector(state => state.auth)

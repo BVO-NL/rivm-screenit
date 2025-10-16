@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import {ArrowType} from "../vectors/ArrowIconComponent"
 import {Formik} from "formik"
 import Button from "./Button"

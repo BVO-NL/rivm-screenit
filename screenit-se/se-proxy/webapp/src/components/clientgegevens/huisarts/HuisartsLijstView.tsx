@@ -18,13 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {Component} from "react"
+import {Component, JSX} from "react"
 import type {Huisarts} from "../../../datatypes/Huisarts"
 import {Afspraak} from "../../../datatypes/Afspraak"
-import paginationFactory from "react-bootstrap-table2-paginator"
-import BootstrapTable, {SelectRowProps} from "react-bootstrap-table-next"
 import {getMandatory} from "../../../util/MapUtil"
 import type {HuisartsZoekFilter} from "./HuisartsZoekenView"
+import DataTable from "react-data-table-component"
 
 export type HuisartsListItem = {
 	id: number;
@@ -53,65 +52,36 @@ export type HuisartsLijstState = {
 };
 
 const huisartsTableColumns = [{
-	dataField: "naam",
-	text: "Naam",
-	sort: true,
+	selector: (row: HuisartsListItem): string => row.naam,
+	name: "Naam",
+	sortable: true,
 }, {
-	dataField: "type",
-	text: "Type",
-	sort: true,
-	headerClasses: "w-20",
+	selector: (row: HuisartsListItem): string => row.type,
+	name: "Type",
+	sortable: true,
+	width: "200px",
 }, {
-	dataField: "adres",
-	text: "Adres",
-	sort: true,
+	selector: (row: HuisartsListItem): string => row.adres,
+	name: "Adres",
+	sortable: true,
 }, {
-	dataField: "praktijknaam",
-	text: "Praktijknaam",
-	sort: true,
+	selector: (row: HuisartsListItem): string => row.praktijknaam,
+	name: "Praktijknaam",
+	sortable: true,
 }]
-const pagination = paginationFactory({
-	page: 1,
-	sizePerPage: 5,
-	alwaysShowAllBtns: true,
-	hideSizePerPage: true,
-	prePageText: "Vorige",
-	nextPageText: "Volgende",
-	withFirstAndLast: false,
-	showTotal: true,
-	paginationTotalRenderer: (from: number, to: number, size: number) => {
-		return <span
-			className="react-bootstrap-table-pagination-total">
-            Totaal: <strong>{size} huisarts(en)</strong>
-		</span>
-	},
-})
-export default class HuisartsLijstView extends Component<HuisartsLijstStateProps & HuisartsLijstDispatchProps> {
-	selectRow: SelectRowProps<HuisartsListItem> = {
-		mode: "checkbox",
-		clickToSelect: true,
-		hideSelectColumn: true,
-		onSelect: (row: HuisartsListItem) => {
-			this.props.onKiesHuisarts(getMandatory(this.props.huisartsen, row.id))
-			this.props.toggle()
-		},
-	}
 
-	constructor(props: HuisartsLijstStateProps & HuisartsLijstDispatchProps) {
-		super(props)
-		this.selectRow.onSelect && this.selectRow.onSelect.bind(this)
+export default class HuisartsLijstView extends Component<HuisartsLijstStateProps & HuisartsLijstDispatchProps> {
+
+	onSelect(row: HuisartsListItem): void {
+		this.props.onKiesHuisarts(getMandatory(this.props.huisartsen, row.id))
+		this.props.toggle()
 	}
 
 	render(): JSX.Element {
 		return <div className={"huisarts-table"}>
 			<h5 className={"ml-2"}>Er zijn {this.props.huisartsItems.length} huisartsen gevonden</h5>
-			{}
-			<BootstrapTable
-				condensed hover bordered
-				rowStyle={{
-					cursor: "pointer",
-				}}
-				pagination={pagination} keyField="id" data={this.props.huisartsItems} columns={huisartsTableColumns} selectRow={this.selectRow}/>
+			<DataTable data={this.props.huisartsItems} columns={huisartsTableColumns} pagination onRowClicked={row => this.onSelect(row)}
+					   paginationPerPage={5} paginationComponentOptions={{noRowsPerPage: true, rangeSeparatorText: "van"}} pointerOnHover={true}/>
 		</div>
 	}
 

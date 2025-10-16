@@ -46,7 +46,7 @@ import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.
 import { formatDate, formatDateStringAsTime, formatNLDate, formatTimeAsISO, parseDate } from '@shared/date-utils'
 import { positiveIntegerValidator } from '@shared/validators/common-validators'
 import { createDatumTijdInVerledenValidator, valideDatumValidator } from '@shared/validators/datum/datum.validator'
-import { ToastService } from '@/toast/service/toast.service'
+import { ToastService } from '@shared/toast/service/toast.service'
 import { HttpErrorResponse } from '@angular/common/http'
 import { BulkAanmakenFormComponent } from '@/colon/colon-rooster-page/components/bulk-aanmaken-form/bulk-aanmaken-form.component'
 import { BulkAanmakenBevestigingsPopupComponent } from '@/colon/colon-rooster-page/components/bulk-aanmaken-bevestigings-popup/bulk-aanmaken-bevestigings-popup.component'

@@ -18,14 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 import type {EnvironmentInfo} from "../../datatypes/EnvironmentInfo"
 
 export type FooterViewProps = {
 	environmentInfo: EnvironmentInfo | null;
 };
 
-export default class FooterView extends React.Component<FooterViewProps> {
+export default class FooterView extends Component<FooterViewProps> {
 	render(): JSX.Element {
 		return <footer className={"footer"}>
 			<div className={"footer-right"}>
@@ -34,9 +34,9 @@ export default class FooterView extends React.Component<FooterViewProps> {
 					ScreenIT-SE
 				</div>
 				{this.props.environmentInfo &&
-				<div className={"footer-omgeving"}>{`Omgeving: ${this.props.environmentInfo.environment}`}
-					{this.props.environmentInfo.nfcEnabled ? "" : ", verplichte NFC authenticatie staat uit."}
-				</div>}
+					<div className={"footer-omgeving"}>{`Omgeving: ${this.props.environmentInfo.environment}`}
+						{this.props.environmentInfo.nfcEnabled ? "" : ", verplichte NFC authenticatie staat uit."}
+					</div>}
 			</div>
 		</footer>
 	}

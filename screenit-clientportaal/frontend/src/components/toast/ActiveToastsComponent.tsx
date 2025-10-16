@@ -20,7 +20,6 @@
  */
 import {useDispatch, useSelector} from "react-redux"
 import {State} from "../../datatypes/State"
-import React from "react"
 import styles from "./ActiveToastsComponent.module.scss"
 import classNames from "classnames"
 import {createHideToastAction} from "../../actions/ToastAction"

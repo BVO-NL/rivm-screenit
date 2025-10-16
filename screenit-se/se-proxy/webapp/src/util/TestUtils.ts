@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import renderer, {ReactTestRenderer} from "react-test-renderer"
+import {RenderResult} from "@testing-library/react"
 
-export function rerender(component: ReactTestRenderer): renderer.ReactTestRendererJSON {
-	return component.toJSON() as renderer.ReactTestRendererJSON
+export function rerender(component: RenderResult): DocumentFragment {
+	return component.asFragment()
 }

@@ -23,12 +23,12 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http'
 import { provideAnimations } from '@angular/platform-browser/animations'
 import { ClarityModule, ClrCommonStringsService } from '@clr/angular'
 import { DEFAULT_DIALOG_CONFIG, DialogModule } from '@angular/cdk/dialog'
-import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
-import { WINDOW } from '@shared/tokens/window.token'
-import { GlobalErrorHandler } from '@shared/services/global-error-handler/global-error-handler'
 import { clarityTranslations } from './clarity-translations'
-import { httpInterceptor } from '@shared/interceptors/http.interceptor'
 import { NoopScrollStrategy } from '@angular/cdk/overlay'
+import { WINDOW } from '@shared/tokens/window.token'
+import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
+import { GlobalErrorHandler } from '@shared/services/global-error-handler/global-error-handler'
+import { httpInterceptor } from '@shared/interceptors/http.interceptor'
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -37,9 +37,8 @@ export const appConfig: ApplicationConfig = {
     { provide: LOCALE_ID, useValue: 'nl' },
     importProvidersFrom(ClarityModule, DialogModule),
     provideAppInitializer(() => {
-      const autorisatieService = inject(AutorisatieService)
       const commonStrings = inject(ClrCommonStringsService)
-
+      const autorisatieService = inject(AutorisatieService)
       commonStrings.localize(clarityTranslations)
       return autorisatieService.getMedewerker()
     }),

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 import {Col, Row} from "reactstrap"
 
 export type LabelValueProps = {
@@ -28,7 +28,7 @@ export type LabelValueProps = {
 	mdValue?: number;
 };
 
-export default class LabelValue extends React.Component<LabelValueProps> {
+export default class LabelValue extends Component<LabelValueProps> {
 	render(): JSX.Element {
 		return <Row>
 			<Col md={this.props.mdLabel && this.props.mdLabel}>{this.props.label}</Col>

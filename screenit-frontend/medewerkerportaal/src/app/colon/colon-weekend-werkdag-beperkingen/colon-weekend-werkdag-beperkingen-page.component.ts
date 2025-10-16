@@ -23,7 +23,7 @@ import { Component, inject } from '@angular/core'
 import { ClrAlertModule, ClrCheckboxModule, ClrCommonFormsModule, ClrDatepickerModule, ClrIconModule, ClrInputModule, ClrRadioModule } from '@clr/angular'
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ColonRoosterBeperking } from '@shared/types/colon/colon-rooster-beperking'
-import { ColonRoosterBeperkingComponent } from '@shared/components/colon/colon-rooster-beperking/colon-rooster-beperking.component'
+import { ColonRoosterBeperkingComponent } from '@/colon/components/colon-rooster-beperking/colon-rooster-beperking.component'
 import { RoosterService } from '@/colon/colon-rooster-page/services/rooster.service'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ColonRoosterBeperkingenDto } from '@shared/types/colon/colon-rooster-beperkingen-dto'
@@ -36,7 +36,7 @@ import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { OrganisatieType } from '@shared/types/autorisatie/organisatie-type'
 import { Required } from '@shared/types/autorisatie/required'
 import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
-import { ToastService } from '@/toast/service/toast.service'
+import { ToastService } from '@shared/toast/service/toast.service'
 
 @Component({
   selector: 'app-colon-weekend-werkdag-beperkingen-page',

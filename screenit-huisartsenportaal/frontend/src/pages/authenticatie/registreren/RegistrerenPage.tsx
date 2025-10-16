@@ -30,7 +30,6 @@ import {createActionPushToast} from "../../../state/ToastsState"
 import {ToastType} from "../../../state/datatypes/Toast"
 import FormTextField from "../../../components/form/text/FormTextField"
 import * as Yup from "yup"
-import React from "react"
 import {registreren} from "../../../api/RegistrerenThunkAction"
 
 const RegistrerenPage = () => {

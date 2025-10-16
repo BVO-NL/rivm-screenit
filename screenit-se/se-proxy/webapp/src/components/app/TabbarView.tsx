@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 import {Nav, Spinner, TabContent, TabPane} from "reactstrap"
 import ClientgegevensContainer from "../clientgegevens/ClientgegevensContainer"
 import DaglijstView from "../daglijst/DaglijstView"
@@ -57,7 +57,7 @@ export type TabbarViewDispatchProps = {
 	onClickTab: (tab: Tab, props: TabbarViewStateProps) => void;
 }
 
-export default class TabbarView extends React.Component<TabbarViewStateProps & TabbarViewDispatchProps> {
+export default class TabbarView extends Component<TabbarViewStateProps & TabbarViewDispatchProps> {
 	render(): JSX.Element {
 		const activeTab = this.props.activeTab
 

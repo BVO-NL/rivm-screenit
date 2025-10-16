@@ -631,6 +631,18 @@ button {
 	cursor: pointer;
 }
 
+.btn-close {
+	box-sizing: content-box;
+	width: 1em;
+	height: 1em;
+	padding: .25em .25em;
+	color: #fff;
+	background: transparent url("data:image/svg+xml,%3csvg xmlns='http:
+	border: 0;
+	border-radius: .25rem;
+	opacity: .5;
+}
+
 .btn-secondary-se {
 	background-color: #808080;
 }
@@ -783,26 +795,34 @@ thead {
 	min-height: 410px;
 }
 
-.huisarts-table .pagination.react-bootstrap-table-page-btns-ul {
-	position: absolute;
-	right: 20px;
-}
+.rdt_Table {
+	.rdt_TableHeadRow {
+		min-height: 36px;
+		font-size: 1rem;
+		background-color: #EEEEEE;
 
-.react-bootstrap-table-page-btns-ul .page-item.active {
-	background-color: var(--middel-paars);
-}
+		.rdt_TableCol {
+			font-weight: 700;
+			padding-left: 5px;
+		}
+	}
+	.rdt_TableBody {
+		.rdt_TableRow {
+			align-items: flex-start;
+			font-size: 1rem;
+			&:hover {
+				background-color: var(--tabel-hover-paars) !important;
+			}
 
-.react-bootstrap-table-page-btns-ul .page-item, .react-bootstrap-table-page-btns-ul .page-link {
-	color: var(--middel-paars);
-}
-
-.react-bootstrap-table-page-btns-ul .page-item.active .page-link {
-	background-color: var(--middel-paars);
-	border-color: var(--middel-paars);
-}
-
-.react-bootstrap-table-pagination {
-	margin: 20px 20px;
+			.rdt_TableCell {
+				padding: 5px;
+				line-height: 24px;
+				div:first-child {
+					white-space: normal;
+				}
+			}
+		}
+	}
 }
 
 .non-selectable {
@@ -1115,5 +1135,9 @@ p.mammograafDicomMessageErrorText {
 
 .Toastify {
 	white-space: pre-line;
+}
+
+.visually-hidden {
+	visibility: hidden;
 }
 

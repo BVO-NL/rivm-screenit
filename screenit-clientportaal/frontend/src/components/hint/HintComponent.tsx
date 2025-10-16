@@ -20,20 +20,20 @@
  */
 import classNames from "classnames"
 import styles from "../../components/hint/HintComponent.module.scss"
-import React from "react"
+import {ReactNode} from "react"
 
 export type HintComponentProps = {
-    className?: string,
-    children?: React.ReactNode
+	className?: string,
+	children?: ReactNode
 }
 
-const HintComponent = (props: HintComponentProps) => {
+const HintComponent = (props: HintComponentProps): ReactNode => {
 
-    return (
-        <div className={classNames(styles.hintContainer, props.className)} style={{display: props.children ? "block" : "none"}}>
-            {props.children}
-        </div>
-    )
+	return (
+		<div className={classNames(styles.hintContainer, props.className)} style={{display: props.children ? "block" : "none"}}>
+			{props.children}
+		</div>
+	)
 }
 
 export default HintComponent

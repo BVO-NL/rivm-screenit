@@ -18,7 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useCallback, useEffect, useState} from "react"
+import {useCallback, useEffect, useState} from "react"
+import * as React from "react"
 import ScreenitBackend from "../../util/Backend"
 import {PaginationDto, SortOptionsDto, SortOrder} from "../../state/datatypes/dto/TabelRequestDto"
 import {useAppThunkDispatch} from "../../index"

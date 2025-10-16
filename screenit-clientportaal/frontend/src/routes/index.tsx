@@ -18,8 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import * as React from "react"
-import {useContext} from "react"
+import {JSX, useContext} from "react"
 import {Navigate, Route, Routes} from "react-router"
 import NotFound from "../pages/NotFoundPage"
 import {ClientContactActieType} from "../datatypes/ClientContactActieType"

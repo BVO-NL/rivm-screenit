@@ -18,28 +18,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/colors";
-@import "src/scss/media-mixins";
-@import "src/scss/mixins";
+@import "../../scss/mixins";
 
 .overlay {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 2000;
-  background-color: rgba(44, 66, 88, 0.7);
-  opacity: 0;
-  visibility: hidden;
-  transition: visibility 0.3s linear, opacity 0.3s linear;
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 2000;
+	background-color: rgba(44, 66, 88, 0.7);
+	opacity: 0;
+	visibility: hidden;
+	transition: visibility 0.3s linear, opacity 0.3s linear;
 
-  &.visible {
-    opacity: 1;
-    visibility: visible;
-  }
+	&.visible {
+		opacity: 1;
+		visibility: visible;
+	}
 
-  .content {
+	.content {
 		@include center-in-div(40%);
 		z-index: 2001;
 		width: 560px;

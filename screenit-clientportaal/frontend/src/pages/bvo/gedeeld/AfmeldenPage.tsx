@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useEffect, useState} from "react"
+import {useEffect, useState} from "react"
 import ActieBasePage from "../../ActieBasePage"
 import styles from "./AfmeldenPage.module.scss"
 import {Bevolkingsonderzoek, BevolkingsonderzoekNaam} from "../../../datatypes/Bevolkingsonderzoek"
@@ -42,6 +42,7 @@ import {CervixAfmeldingReden} from "../../../datatypes/afmelden/CervixAfmeldingR
 import {getBvoBaseUrl} from "../../../utils/UrlUtil"
 import {useNavigate} from "react-router"
 import {showToast} from "../../../utils/ToastUtil"
+import properties from "./AfmeldenPage.json"
 import datadogService from "../../../services/DatadogService"
 import {AnalyticsCategorie} from "../../../datatypes/AnalyticsCategorie"
 
@@ -49,7 +50,6 @@ const AfmeldenPage = () => {
 	const selectedBvo = useSelectedBvo()!
 	const dispatch = useThunkDispatch()
 	const navigate = useNavigate()
-	const properties = require("./AfmeldenPage.json")
 	const [afmeldOpties, setAfmeldOpties] = useState<AfmeldOptiesDto>(geenAfmeldOpties)
 
 	useEffect(() => {
@@ -89,6 +89,33 @@ const AfmeldenPage = () => {
 			then: (schema) => schema.required(getString(properties.form.uitlegJaartal)),
 		}),
 	})
+
+	function getAfmeldRedenString(reden: string): string {
+		switch (reden) {
+			case "MammaAfmeldingReden.MEDISCHE_REDEN":
+				return getString(properties["MammaAfmeldingReden.MEDISCHE_REDEN"])
+			case "MammaAfmeldingReden.ANGST_VOOR_KANKER":
+				return getString(properties["MammaAfmeldingReden.ANGST_VOOR_KANKER"])
+			case "MammaAfmeldingReden.ANGST_VOOR_STRALING":
+				return getString(properties["MammaAfmeldingReden.ANGST_VOOR_STRALING"])
+			case "MammaAfmeldingReden.NARE_ERVARING_MET_ONDERZOEK":
+				return getString(properties["MammaAfmeldingReden.NARE_ERVARING_MET_ONDERZOEK"])
+			case "MammaAfmeldingReden.ONDERZOEK_NIET_NUTTIG":
+				return getString(properties["MammaAfmeldingReden.ONDERZOEK_NIET_NUTTIG"])
+			case "MammaAfmeldingReden.PIJNLIJKHEID_VORIG_ONDERZOEK":
+				return getString(properties["MammaAfmeldingReden.PIJNLIJKHEID_VORIG_ONDERZOEK"])
+			case "MammaAfmeldingReden.VERHINDERD":
+				return getString(properties["MammaAfmeldingReden.VERHINDERD"])
+			case "MammaAfmeldingReden.OVERIGE_REDENEN":
+				return getString(properties["MammaAfmeldingReden.OVERIGE_REDENEN"])
+			case "CervixAfmeldingReden.UE":
+				return getString(properties["CervixAfmeldingReden.UE"])
+			case "CervixAfmeldingReden.ANDERS":
+				return getString(properties["CervixAfmeldingReden.ANDERS"])
+			default:
+				return ""
+		}
+	}
 
 	return (
 		<ActieBasePage
@@ -182,7 +209,7 @@ const AfmeldenPage = () => {
 													.map((jaar: any, index) => {
 														return <li key={index}>
 															<FormControlLabel key={index}
-																			  data-testid={"radio_" + jaar}
+																			  data-testid={`radio_${  jaar}`}
 																			  control={<Radio/>}
 																			  className={styles.afmeldRedenRadioButton}
 																			  value={jaar}
@@ -204,14 +231,14 @@ const AfmeldenPage = () => {
 											onChange={formikProps.handleChange}>
 											<ul>
 												{getAfmeldRedenen(formikProps.values.afmeldType)
-													.map((reden: any, index) => {
+													.map((reden: string, index) => {
 														return <li key={index}>
 															<FormControlLabel key={index}
-																			  data-testid={"radio_" + reden}
+																			  data-testid={`radio_${  reden}`}
 																			  control={<Radio/>}
 																			  className={styles.afmeldRedenRadioButton}
 																			  value={splitEnumString(reden) ?? ""}
-																			  label={getString(properties[reden]) ?? ""}/>
+																			  label={getAfmeldRedenString(reden)}/>
 														</li>
 													})}
 											</ul>

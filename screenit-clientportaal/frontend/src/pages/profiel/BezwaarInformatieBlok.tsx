@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useState} from "react"
+import {useState} from "react"
 import styles from "./BezwaarInformatieBlok.module.scss"
 import ArrowIconComponent, {ArrowType} from "../../components/vectors/ArrowIconComponent"
 import classNames from "classnames"
@@ -32,28 +32,29 @@ export type BezwaarInformatieBlokProps = {
 
 const BezwaarInformatieBlok = (props: BezwaarInformatieBlokProps) => {
 	const [toonMeerInformatie, setToonMeerInformatie] = useState<boolean>(false)
-	function toggleMeerInformatie() {
-        setToonMeerInformatie(!toonMeerInformatie)
-    }
 
-    return (
+	function toggleMeerInformatie() {
+		setToonMeerInformatie(!toonMeerInformatie)
+	}
+
+	return (
 		<div className={classNames(styles.informatie, props.standalone ? styles.standalone : "")}>
-            {props.abstract && <div className={styles.abstract} dangerouslySetInnerHTML={{__html: props.abstract}}/>}
+			{props.abstract && <div className={styles.abstract} dangerouslySetInnerHTML={{__html: props.abstract}}/>}
 			{props.meer &&
-            <>
-                {!toonMeerInformatie &&
-					<div className={styles.toonVerbergInformatie} onClick={toggleMeerInformatie}>Toon informatie<ArrowIconComponent type={ArrowType.ARROW_DOWN}
-																																	className={styles.arrow}/></div>}
-                {toonMeerInformatie && <>
-					<div className={styles.toonVerbergInformatie} onClick={toggleMeerInformatie}>Verberg informatie<ArrowIconComponent type={ArrowType.ARROW_UP}
-																																	   className={styles.arrow}/></div>
-					<div>
-						{props.meer && <SpanWithHtml className={styles.meerTekst} value={props.meer}/>}
-					</div>
-                </>}
-            </>}
-        </div>
-    )
+				<>
+					{!toonMeerInformatie &&
+						<div className={styles.toonVerbergInformatie} onClick={toggleMeerInformatie}>Toon informatie<ArrowIconComponent type={ArrowType.ARROW_DOWN}
+																																		className={styles.arrow}/></div>}
+					{toonMeerInformatie && <>
+						<div className={styles.toonVerbergInformatie} onClick={toggleMeerInformatie}>Verberg informatie<ArrowIconComponent type={ArrowType.ARROW_UP}
+																																		   className={styles.arrow}/></div>
+						<div>
+							{props.meer && <SpanWithHtml className={styles.meerTekst} value={props.meer}/>}
+						</div>
+					</>}
+				</>}
+		</div>
+	)
 }
 
 export default BezwaarInformatieBlok

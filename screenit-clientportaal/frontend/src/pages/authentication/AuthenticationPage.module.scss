@@ -18,9 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/colors";
-@import "src/scss/media-mixins";
-
 .style {
 	margin-top: 50px;
 
@@ -43,12 +40,12 @@
 
 	}
 
-  .blob {
+	.blob {
 
-    @include respond-below(md) {
-      display: none;
-    }
+		@include respond-below(md) {
+			display: none;
+		}
 
-  }
+	}
 
 }

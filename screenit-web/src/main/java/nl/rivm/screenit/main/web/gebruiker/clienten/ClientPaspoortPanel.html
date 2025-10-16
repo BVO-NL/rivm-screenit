@@ -53,6 +53,13 @@
 				Geboortedatum: <strong wicket:id="persoon.geboortedatum">dd-mm-jaar</strong>
 			</div>
 		</div>
+		<wicket:enclosure child="persoon.geslacht">
+			<div class="row-fluid">
+				<div class="span12">
+					Genderidentiteit: <strong wicket:id="persoon.geslacht">Genderidentiteit</strong>
+				</div>
+			</div>
+		</wicket:enclosure>
 		<div class="row-fluid">
 			<div class="span12">
 				Straat/Loc.: <strong wicket:id="gbaLocatiebeschrijving">Straatlaan 12</strong>
@@ -95,6 +102,11 @@
 		<div class="row-fluid">
 			<div class="span12">
 				Extra telefoonnummer: <strong wicket:id="persoon.telefoonnummer2"></strong>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span12">
+				E-mailadres: <strong wicket:id="persoon.emailadres"></strong>
 			</div>
 		</div>
 		<wicket:enclosure child="mammaDossier.dubbeleTijdReden">

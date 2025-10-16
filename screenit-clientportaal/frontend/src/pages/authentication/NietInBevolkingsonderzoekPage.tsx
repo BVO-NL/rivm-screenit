@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import authenticationStyle from "./AuthenticationPage.module.scss"
-import React, {useCallback} from "react"
+import {useCallback} from "react"
 import {Col, Row} from "react-bootstrap"
 import {getString} from "../../utils/TekstPropertyUtil"
 import SpanWithHtml from "../../components/span/SpanWithHtml"

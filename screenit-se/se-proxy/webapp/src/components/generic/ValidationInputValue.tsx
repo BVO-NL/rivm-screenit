@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {ChangeEvent} from "react"
+import {ChangeEvent, Component, JSX} from "react"
 import {FormFeedback, Input} from "reactstrap"
 import type {Form, FormField} from "../../datatypes/Form"
 import {FORM_FIELD_ID} from "../../datatypes/Form"
@@ -33,7 +33,7 @@ export type ValidationInputValueDispatchProps<T> = {
 	updateField: (value: T | string, fieldId: FORM_FIELD_ID, form: Form, showError?: boolean) => void;
 }
 
-export default class ValidationInputValue<T> extends React.Component<ValidationInputValueStateProps<T> & ValidationInputValueDispatchProps<T>> {
+export default class ValidationInputValue<T> extends Component<ValidationInputValueStateProps<T> & ValidationInputValueDispatchProps<T>> {
 	constructor(props: ValidationInputValueStateProps<T> & ValidationInputValueDispatchProps<T>) {
 		super(props)
 		this.updateValue = this.updateValue.bind(this)

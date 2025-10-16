@@ -22,12 +22,16 @@ package nl.rivm.screenit.mamma.planning.service.impl;
  */
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
+import nl.rivm.screenit.dto.mamma.planning.PlanningMindervalideReserveringDto;
 import nl.rivm.screenit.exceptions.OpslaanVerwijderenTijdBlokException;
 import nl.rivm.screenit.mamma.planning.controller.PlanningCapaciteitChangeChecker;
 import nl.rivm.screenit.mamma.planning.controller.PlanningMapper;
@@ -35,8 +39,10 @@ import nl.rivm.screenit.mamma.planning.index.PlanningBlokIndex;
 import nl.rivm.screenit.mamma.planning.index.PlanningScreeningsEenheidIndex;
 import nl.rivm.screenit.mamma.planning.model.PlanningBlok;
 import nl.rivm.screenit.mamma.planning.model.PlanningConstanten;
+import nl.rivm.screenit.mamma.planning.model.PlanningMinderValideReservering;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
 import nl.rivm.screenit.mamma.planning.repository.PlanningCapaciteitBlokRepository;
+import nl.rivm.screenit.mamma.planning.repository.projectie.PlanningCapaciteitBlokProjectie;
 import nl.rivm.screenit.mamma.planning.service.PlanningCapaciteitBlokService;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningWijzigingen;
 import nl.rivm.screenit.util.DateUtil;
@@ -57,13 +63,36 @@ public class PlanningCapaciteitBlokServiceImpl implements PlanningCapaciteitBlok
 	{
 		if (bronDate.isBefore(PlanningConstanten.prognoseVanafDatum))
 		{
-			return capaciteitBlokRepository.leesCapaciteitBlokken(screeningsEenheid, bronDate, bronDate);
+			return leesCapaciteitBlokken(screeningsEenheid, bronDate, bronDate);
 		}
 		else
 		{
 			var dag = screeningsEenheid.getDag(bronDate);
 			return dag == null ? Collections.emptySet() : dag.getBlokSet();
 		}
+	}
+
+	@Override
+	public Set<PlanningBlok> leesCapaciteitBlokken(PlanningScreeningsEenheid screeningsEenheid, LocalDate vanafDatum, LocalDate totEnMetDatum)
+	{
+		var planningBlokken = capaciteitBlokRepository.leesCapaciteitBlokken(screeningsEenheid, vanafDatum, totEnMetDatum);
+		return planningBlokken.stream()
+			.map(blokProjectie -> mapNaarPlanningBlok(screeningsEenheid, blokProjectie))
+			.collect(Collectors.toSet());
+	}
+
+	private PlanningBlok mapNaarPlanningBlok(PlanningScreeningsEenheid screeningsEenheid, PlanningCapaciteitBlokProjectie blokProjectie)
+	{
+		var vanaf = blokProjectie.getVanaf();
+		var mindervalideReserveringenByCapaciteitBlokId = capaciteitBlokRepository.findMindervalideReserveringenByCapaciteitBlokId(
+			blokProjectie.getId()).stream().map(projectie -> new PlanningMinderValideReservering(projectie.getId(), projectie.getVanaf())).toList();
+
+		var blok = new PlanningBlok(blokProjectie.getId(), vanaf.toLocalTime(), blokProjectie.getTot().toLocalTime(), blokProjectie.getAantalOnderzoeken(),
+			blokProjectie.getBlokType(), blokProjectie.getOpmerkingen(), blokProjectie.isMinderValideAfspraakMogelijk(), mindervalideReserveringenByCapaciteitBlokId);
+		var dag = screeningsEenheid.getDagNavigableMap().get(vanaf.toLocalDate());
+		blok.setDag(dag);
+		blok.setScreeningsEenheid(screeningsEenheid);
+		return blok;
 	}
 
 	@Override
@@ -74,8 +103,9 @@ public class PlanningCapaciteitBlokServiceImpl implements PlanningCapaciteitBlok
 		PlanningCapaciteitChangeChecker.magCapaciteitOpslaanVerwijderen(blokDto, true);
 
 		var vanaf = DateUtil.toLocalDateTime(blokDto.vanaf);
+		var minderValideReserveringen = maakMinderValideReserveringen(blokDto, vanaf);
 		var blok = new PlanningBlok(null, vanaf.toLocalTime(), DateUtil.toLocalTime(blokDto.tot),
-			blokDto.aantalOnderzoeken, blokDto.blokType, blokDto.opmerkingen, blokDto.minderValideAfspraakMogelijk);
+			blokDto.aantalOnderzoeken, blokDto.blokType, blokDto.opmerkingen, blokDto.minderValideAfspraakMogelijk, minderValideReserveringen);
 		blok.setScreeningsEenheid(screeningsEenheid);
 		screeningsEenheid.getBlokSet().add(blok);
 
@@ -89,6 +119,12 @@ public class PlanningCapaciteitBlokServiceImpl implements PlanningCapaciteitBlok
 		return blok;
 	}
 
+	private List<PlanningMinderValideReservering> maakMinderValideReserveringen(PlanningCapaciteitBlokDto blokDto, LocalDateTime blokVanaf)
+	{
+		return blokDto.getMinderValideReserveringen().stream().map(dto ->
+			new PlanningMinderValideReservering(null, LocalDateTime.of(blokVanaf.toLocalDate(), dto.getVanaf()))).toList();
+	}
+
 	@Override
 	public void verwijderBlok(PlanningBlok blok) throws OpslaanVerwijderenTijdBlokException
 	{
@@ -97,5 +133,23 @@ public class PlanningCapaciteitBlokServiceImpl implements PlanningCapaciteitBlok
 
 		var dag = blok.getDag();
 		dag.getBlokSet().remove(blok);
+	}
+
+	@Override
+	public void updateMinderValideReserveringenVoorCapaciteitBlok(List<PlanningMindervalideReserveringDto> mindervalideReserveringDtos, PlanningBlok capaciteitBlok,
+		LocalDate datumVanReserveringen)
+	{
+		var nieuweReserveringen = mindervalideReserveringDtos.stream().map(
+			dto ->
+			{
+				var reserveringVanaf = LocalDateTime.of(datumVanReserveringen, dto.getVanaf());
+				return dto.conceptId == null ?
+					new PlanningMinderValideReservering(dto.getId(), reserveringVanaf) :
+					new PlanningMinderValideReservering(dto.getId(), reserveringVanaf, dto.conceptId);
+			}
+		).toList();
+		var planningMinderValideReserveringen = capaciteitBlok.getMindervalideReserveringen();
+		planningMinderValideReserveringen.clear();
+		planningMinderValideReserveringen.addAll(nieuweReserveringen);
 	}
 }

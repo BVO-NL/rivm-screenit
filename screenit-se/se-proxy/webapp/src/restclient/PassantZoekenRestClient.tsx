@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import {fetchApiPromise} from "../util/ApiUtil"
 import type {ClientDto} from "../datatypes/Client"
 import type {PassantDto} from "../datatypes/Passant"

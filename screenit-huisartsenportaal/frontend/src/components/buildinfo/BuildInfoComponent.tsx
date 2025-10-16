@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useEffect} from "react"
+import {useEffect} from "react"
 import styles from "./BuildInfoComponent.module.scss"
 import {useAppSelector, useAppThunkDispatch} from "../../index"
 import {fetchBuildInfo} from "../../api/BuildInfoThunkAction"

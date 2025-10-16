@@ -22,9 +22,19 @@ package nl.rivm.screenit.dto.mamma.planning;
  */
 
 import java.io.Serial;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
+
+import com.google.common.collect.Range;
+
+import static nl.rivm.screenit.util.DateUtil.toLocalTime;
 
 public class PlanningCapaciteitBlokDto extends PlanningConceptEntiteitDto
 {
@@ -47,4 +57,12 @@ public class PlanningCapaciteitBlokDto extends PlanningConceptEntiteitDto
 
 	public boolean minderValideAfspraakMogelijk;
 
+	@Getter
+	@Setter
+	private List<PlanningMindervalideReserveringDto> minderValideReserveringen = new ArrayList<>();
+
+	public Range<LocalTime> getOpenCapaciteitBlokRange()
+	{
+		return Range.open(toLocalTime(vanaf), toLocalTime(tot));
+	}
 }

@@ -26,6 +26,7 @@ import java.math.BigDecimal;
 import nl.rivm.screenit.dto.mamma.planning.PlanningBlokkadeDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningMeldingenDto;
+import nl.rivm.screenit.dto.mamma.planning.PlanningMindervalideReserveringDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningScreeningsEenheidMetaDataDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningStandplaatsPeriodeDto;
 import nl.rivm.screenit.mamma.planning.index.PlanningScreeningsEenheidIndex;
@@ -83,6 +84,11 @@ public class PlanningMapper
 		dto.opmerkingen = blok.getOpmerkingen();
 		dto.conceptId = blok.getConceptId();
 		dto.minderValideAfspraakMogelijk = blok.isMinderValideAfspraakMogelijk();
+		dto.getMinderValideReserveringen().addAll(
+			blok.getMindervalideReserveringen().stream()
+				.map(teMappenReservering -> new PlanningMindervalideReserveringDto(teMappenReservering.getId(), teMappenReservering.getConceptId(),
+					teMappenReservering.getVanaf().toLocalTime()))
+				.toList());
 		return dto;
 	}
 

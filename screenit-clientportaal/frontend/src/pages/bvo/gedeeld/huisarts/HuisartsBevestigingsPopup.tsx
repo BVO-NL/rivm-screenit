@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import BasePopup from "../../../../components/popup/BasePopup"
 import {Col, NavLink, Row} from "react-bootstrap"
 import classNames from "classnames"
@@ -87,50 +86,48 @@ export const HuisartsBevestigingsPopup = (props: HuisartsBevestigingsPopupProps)
 	}
 
 	return (
-		<BasePopup title={bepaalTitel()}
-				   description={bepaalOmschrijving()}
-				   children={
-					   <div>
-						   <div className={classNames(BevolkingsonderzoekStyle[bvo!], styles.huisartsDiv)}>
-							   <VerticalDividerComponent className={styles.verticalRectangle} heightSubtraction={1}/>
-							   {props.huisarts ? <Row className={styles.huisartsGegevens}>
-									   <Col sm={6}>
-										   <span className={classNames(bvoStyles.bvoText)}>Naam</span>
-										   <span>{props.huisarts.praktijknaam}</span>
-										   <span>{concatWithSpace(props.huisarts.voorletters, props.huisarts.achternaam)}</span>
-									   </Col>
-									   <Col sm={6} className={styles.locatieColumn}>
-										   <span className={classNames(bvoStyles.bvoText)}>Locatie</span>
-										   <span>{concatWithSpace(props.huisarts.adres.straat, props.huisarts.adres.huisnummer, props.huisarts.adres.huisnummerToevoeging, props.huisarts.adres.huisletter)}</span>
-										   <span>{concatWithSpace(props.huisarts.adres.postcode, props.huisarts.adres.plaats)}</span>
-									   </Col>
-								   </Row> :
-								   <div className={styles.huisartsRow}>
-									   <span>{props.geenHuisartsOpie}</span>
-								   </div>
-							   }
-						   </div>
-						   <div className={styles.buttons}>
-							   <SubmitButton displayArrow={ArrowType.ARROW_RIGHT}
-											 label={bepaalHoofdKnopTekst()}
-											 onClick={() => {
-												 datadogService.stuurEvent("huisartsBevestigd", AnalyticsCategorie.MAMMA_HUISARTS)
-												 bevestigHuisarts()
-											 }}/>
-							   <NavLink onClick={() => {
-								   datadogService.stuurEvent("andereHuisartsKiezen", AnalyticsCategorie.MAMMA_HUISARTS)
-								   props.onSecundaireKnop()
-							   }}
-										className={styles.andereHuisarts}>
-								   {bepaalAlternatieveLinkTekst()}
-							   </NavLink>
-							   {HuisartsBevestigingsPopupType.DOORGEVEN === props.type && props.huisarts &&
-								   <NavLink onClick={props.onTertiaireKnop} className={styles.andereHuisarts}>
-									   {properties.doorgeven.bekend.button_annuleren}
-								   </NavLink>}
-						   </div>
-					   </div>
-				   }/>
+		<BasePopup title={bepaalTitel()} description={bepaalOmschrijving()}>
+			<div>
+				<div className={classNames(BevolkingsonderzoekStyle[bvo!], styles.huisartsDiv)}>
+					<VerticalDividerComponent className={styles.verticalRectangle} heightSubtraction={1}/>
+					{props.huisarts ? <Row className={styles.huisartsGegevens}>
+							<Col sm={6}>
+								<span className={classNames(bvoStyles.bvoText)}>Naam</span>
+								<span>{props.huisarts.praktijknaam}</span>
+								<span>{concatWithSpace(props.huisarts.voorletters, props.huisarts.achternaam)}</span>
+							</Col>
+							<Col sm={6} className={styles.locatieColumn}>
+								<span className={classNames(bvoStyles.bvoText)}>Locatie</span>
+								<span>{concatWithSpace(props.huisarts.adres.straat, props.huisarts.adres.huisnummer, props.huisarts.adres.huisnummerToevoeging, props.huisarts.adres.huisletter)}</span>
+								<span>{concatWithSpace(props.huisarts.adres.postcode, props.huisarts.adres.plaats)}</span>
+							</Col>
+						</Row> :
+						<div className={styles.huisartsRow}>
+							<span>{props.geenHuisartsOpie}</span>
+						</div>
+					}
+				</div>
+				<div className={styles.buttons}>
+					<SubmitButton displayArrow={ArrowType.ARROW_RIGHT}
+								  label={bepaalHoofdKnopTekst()}
+								  onClick={() => {
+									  datadogService.stuurEvent("huisartsBevestigd", AnalyticsCategorie.MAMMA_HUISARTS)
+									  bevestigHuisarts()
+								  }}/>
+					<NavLink onClick={() => {
+						datadogService.stuurEvent("andereHuisartsKiezen", AnalyticsCategorie.MAMMA_HUISARTS)
+						props.onSecundaireKnop()
+					}}
+							 className={styles.andereHuisarts}>
+						{bepaalAlternatieveLinkTekst()}
+					</NavLink>
+					{HuisartsBevestigingsPopupType.DOORGEVEN === props.type && props.huisarts &&
+						<NavLink onClick={props.onTertiaireKnop} className={styles.andereHuisarts}>
+							{properties.doorgeven.bekend.button_annuleren}
+						</NavLink>}
+				</div>
+			</div>
+		</BasePopup>
 
 	)
 

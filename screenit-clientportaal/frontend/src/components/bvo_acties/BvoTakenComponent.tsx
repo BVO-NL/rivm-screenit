@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useEffect, useState} from "react"
+import {useEffect, useState} from "react"
 import {Col, Row} from "react-bootstrap"
 import styles from "./BvoTakenComponent.module.scss"
 import TaakComponent from "../taken/TaakComponent"

@@ -28,7 +28,7 @@ import {dispatchActions} from "../../util/DispatchUtil"
 import {Dispatch} from "redux"
 import {RootState} from "../../Store"
 import {Validation} from "../../validation/Validation"
-import {InputType} from "reactstrap/es/Input"
+import {InputType} from "reactstrap/types/lib/Input"
 
 export type ValidationInputContainerProps<T> = {
 	id?: string;

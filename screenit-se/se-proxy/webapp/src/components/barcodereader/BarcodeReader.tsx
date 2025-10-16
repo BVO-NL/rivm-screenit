@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {ReactNode} from "react"
+import {Component, ReactNode} from "react"
 
 interface BarcodeScannerState {
 	maximaleInputtijdTussenCharsInMs: number,
@@ -33,7 +33,7 @@ interface BarcodeScannerProps {
 	minimaleLengte: number,
 }
 
-class BarcodeReader extends React.Component<BarcodeScannerProps, BarcodeScannerState> {
+class BarcodeReader extends Component<BarcodeScannerProps, BarcodeScannerState> {
 	constructor(props: BarcodeScannerProps) {
 		super(props)
 

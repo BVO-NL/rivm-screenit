@@ -18,22 +18,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/colors";
-
 .results {
-  svg {
-    fill: $wit-base;
-  }
+	svg {
+		fill: var(--wit-base);
+	}
 
-  .seperateButtonArea {
-    text-align: center;
-  }
+	.seperateButtonArea {
+		text-align: center;
+	}
 }
 
 .datepicker {
-  width: 100%;
+	width: 100%;
 }
 
 .button {
-  margin-top: 20px;
+	margin-top: 20px;
 }

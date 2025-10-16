@@ -1560,8 +1560,7 @@ public enum MergeField
 			public Object getFieldValue(MailMergeContext context)
 			{
 				var intakeAfspraak = context.getIntakeAfspraak();
-
-				if (intakeAfspraak != null && intakeAfspraak.getId() != null)
+				if (intakeAfspraak != null)
 				{
 					return getOrganisatieParameterService().getOrganisatieParameter(intakeAfspraak.getKamer().getIntakelocatie(),
 						OrganisatieParameterKey.COLON_INTAKELOCATIE_BESCHRIJVING);
@@ -3956,6 +3955,8 @@ public enum MergeField
 	@Getter
 	private MergeFieldTestType type; 
 
+	@Setter
+	@Getter
 	private String currentValue; 
 
 	private Supplier<String> initialTestValueSupplier; 

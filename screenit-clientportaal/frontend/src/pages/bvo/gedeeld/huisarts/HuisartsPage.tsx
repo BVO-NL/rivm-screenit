@@ -18,12 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useCallback, useEffect, useState} from "react"
+import * as React from "react"
+import {useCallback, useEffect, useState} from "react"
 import {Bevolkingsonderzoek, BevolkingsonderzoekNaam} from "../../../../datatypes/Bevolkingsonderzoek"
 import BasePage from "../../../BasePage"
 import styles from "./HuisartsPage.module.scss"
-import type {Huisarts, HuisartsZoekobject} from "../../../../datatypes/Huisarts"
-import {geenHuisartsZoekresultaten, leegHuisartsZoekobject, MammaGeenHuisartsOptie} from "../../../../datatypes/Huisarts"
+import {geenHuisartsZoekresultaten, Huisarts, HuisartsZoekobject, leegHuisartsZoekobject, MammaGeenHuisartsOptie} from "../../../../datatypes/Huisarts"
 import {Col, Row} from "react-bootstrap"
 import {useSelector} from "react-redux"
 import {State} from "../../../../datatypes/State"
@@ -40,7 +40,7 @@ import {useThunkDispatch} from "../../../../index"
 import {ArrowType} from "../../../../components/vectors/ArrowIconComponent"
 import {createShowToastAction} from "../../../../actions/ToastAction"
 import {getString} from "../../../../utils/TekstPropertyUtil"
-import {useRegio, useSelectedBvo} from "../../../../utils/Hooks"
+import {useSelectedBvo} from "../../../../utils/Hooks"
 import {getBvoBaseUrl, getContactUrl} from "../../../../utils/UrlUtil"
 import ActieBasePage from "../../../ActieBasePage"
 import {Formik, FormikValues} from "formik"
@@ -61,14 +61,13 @@ import {FormControl, FormControlLabel, Radio, RadioGroup} from "@mui/material"
 import SearchForm from "../../../../components/form/SearchForm"
 import {useLocation, useNavigate} from "react-router"
 import {showToast} from "../../../../utils/ToastUtil"
+import properties from "./HuisartsPage.json"
 import datadogService from "../../../../services/DatadogService"
 import {AnalyticsCategorie} from "../../../../datatypes/AnalyticsCategorie"
 
 const HuisartsPage = () => {
 	const dispatch = useThunkDispatch()
 	const bvo = useSelectedBvo()
-	const regio = useRegio()
-	const properties = require("./HuisartsPage.json")
 	const navigate = useNavigate()
 	const location = useLocation()
 
@@ -147,7 +146,7 @@ const HuisartsPage = () => {
 		zoekHuisartsen(zoekObject, paginaNummer)
 	}, [zoekResultaten, zoekHuisartsen, zoekObject])
 
-	function kiesHuisarts(huisarts: Huisarts) {
+	function kiesHuisarts(huisarts: Huisarts): void {
 		datadogService.stuurEvent("huisartsOptieGekozen", AnalyticsCategorie.MAMMA_HUISARTS)
 		if (huidigeHuisarts && huidigeHuisarts.id === huisarts.id) {
 			dispatch(createShowToastAction({
@@ -157,6 +156,21 @@ const HuisartsPage = () => {
 			}))
 		} else {
 			setGekozenHuisarts(huisarts)
+		}
+	}
+
+	function getGeenHuisartsOptieTekst(optie?: MammaGeenHuisartsOptie): string {
+		switch (optie) {
+			case MammaGeenHuisartsOptie.HUISARTS_IN_HET_BUITENLAND:
+				return properties.HUISARTS_IN_HET_BUITENLAND
+			case MammaGeenHuisartsOptie.TEHUIS_HUISARTS:
+				return properties.TEHUIS_HUISARTS
+			case MammaGeenHuisartsOptie.CLIENT_WIL_HUISARTS_NIET_OPGEVEN:
+				return properties.CLIENT_WIL_HUISARTS_NIET_OPGEVEN
+			case MammaGeenHuisartsOptie.HUISARTS_STAAT_ER_NIET_TUSSEN:
+				return properties.HUISARTS_STAAT_ER_NIET_TUSSEN
+			default:
+				return ""
 		}
 	}
 
@@ -197,7 +211,7 @@ const HuisartsPage = () => {
 								   bvo === Bevolkingsonderzoek.MAMMA ? getString(properties.mamma.tussenpagina.description)
 									   : getString(properties.colon.tussenpagina.description)
 							   }>
-					<HuisartsHintComponent geenHuisartsOptie={mammaVorigeGeenHuisartsOptie ? properties[mammaVorigeGeenHuisartsOptie] : undefined}
+					<HuisartsHintComponent geenHuisartsOptie={mammaVorigeGeenHuisartsOptie ? getGeenHuisartsOptieTekst(mammaVorigeGeenHuisartsOptie) : undefined}
 										   huisarts={vorigeHuisarts}
 										   isBold={true}/>
 
@@ -263,7 +277,7 @@ const HuisartsPage = () => {
 				}
 				toonBlob={!!huidigeHuisarts || !!mammaHuidigeGeenHuisartsOptie}
 				blobTitle={getString(properties.gedeeld.blob.title)}
-				blobText={(huidigeHuisarts && concatWithSpace(huidigeHuisarts.voorletters, huidigeHuisarts.achternaam)) || (mammaHuidigeGeenHuisartsOptie && properties[mammaHuidigeGeenHuisartsOptie])}
+				blobText={(huidigeHuisarts && concatWithSpace(huidigeHuisarts.voorletters, huidigeHuisarts.achternaam)) || getGeenHuisartsOptieTekst(mammaHuidigeGeenHuisartsOptie)}
 				blobAdresLocatie={huidigeHuisarts && getString(properties.gedeeld.blob.locatie, huidigeHuisarts && [huidigeHuisarts.praktijknaam, concatWithSpace(huidigeHuisarts.adres.straat, huidigeHuisarts.adres.huisnummer), concatWithSpace(huidigeHuisarts.adres.postcode, huidigeHuisarts.adres.plaats)])}
 				onBlobLinkClick={() => {
 					if (!magHuisartsOntkoppelen) {
@@ -328,7 +342,7 @@ const HuisartsPage = () => {
 						{geenResultaten &&
 							<BigUrlButton title={getString(properties.gedeeld.zoekpagina.resultaten.button.header)}
 										  text={getString(properties.gedeeld.zoekpagina.resultaten.button.text)}
-										  link={getContactUrl(regio)}/>}
+										  link={getContactUrl()}/>}
 
 						{zoekResultaten.map((resultaat) =>
 							<SearchResultHuisarts
@@ -363,7 +377,7 @@ const HuisartsPage = () => {
 					|| (wiltHuisartsVerwijderen && (huidigeHuisarts || mammaHuidigeGeenHuisartsOptie) &&
 						<HuisartsBevestigingsPopup
 							huisarts={huidigeHuisarts}
-							geenHuisartsOpie={mammaHuidigeGeenHuisartsOptie ? properties[mammaHuidigeGeenHuisartsOptie] : undefined}
+							geenHuisartsOpie={mammaHuidigeGeenHuisartsOptie ? getGeenHuisartsOptieTekst(mammaHuidigeGeenHuisartsOptie) : undefined}
 							type={HuisartsBevestigingsPopupType.VERWIJDEREN}
 							onPrimaireKnop={() => {
 								showToast(getString(properties.gedeeld.toasts.geen.title), getString(properties.gedeeld.toasts.geen.description))

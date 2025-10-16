@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import * as React from "react"
 import BasePopup from "../../../../../../components/popup/BasePopup"
 import properties from "./MammaAfspraakMakenWizardModuleProperties.json"
 import styles from "./MammaAfspraakMakenWizardModuleStyles.module.scss"
@@ -41,44 +41,44 @@ export type MammaHerinneringSmsPopupProps = {
 const MammaHerinneringSmsPopup = (props: MammaHerinneringSmsPopupProps) => {
 	const validatieSchema: Yup.AnyObjectSchema = Yup.object().shape({
 		clientNieuwMobielNummer: Yup.string().required(getString(properties.sms.sms_validatie.niet_aanwezig))
-			.test("telefoonnummerValidatie", getString(properties.sms.sms_validatie.fout), function (value) {
+			.test("telefoonnummerValidatie", getString(properties.sms.sms_validatie.fout), (value) => {
 				return isMobielnummerValid(value)
 			}),
 	})
 
 	return (<BasePopup
 		title={properties.sms.titel}
-		description={properties.sms.controleer_mobiel_tekst}
-		children={
-			<div>
-				<h3>{properties.sms.boven_invoerveld}</h3>
-				<div className={styles.bevestigenForm}>
-					<Formik
-						initialValues={props.afspraakBevestiging}
-						validationSchema={validatieSchema}
-						onSubmit={() => {
-							props.afspraakBevestiging.wilHerinneringsSms = true
-							props.onVolgende()
-						}}>
-						{({errors, values, isSubmitting, setFieldValue, handleSubmit}) => (
-							<><ScreenitTextfield
-								name={"mobielnummer"}
-								placeholder={"Mobiel nummer"}
-								value={values.clientNieuwMobielNummer}
-								invalidMessage={errors.clientNieuwMobielNummer}
-								onChange={value => setFieldValue("clientNieuwMobielNummer", value)}/>
-								<Button label={properties.sms.sms_knop_tekst}
-										disableButton={isSubmitting}
-										onClick={() => {
-											props.afspraakBevestiging.clientNieuwMobielNummer = values.clientNieuwMobielNummer
-											handleSubmit()
-										}}
-										displayArrow={ArrowType.ARROW_RIGHT}/></>)}
-					</Formik>
-					<NavLink onClick={props.onVolgende}>{properties.sms.geen_sms_tekst}</NavLink>
-				</div>
-				{props.children}
-			</div>}/>)
+		description={properties.sms.controleer_mobiel_tekst}>
+		<div>
+			<h3>{properties.sms.boven_invoerveld}</h3>
+			<div className={styles.bevestigenForm}>
+				<Formik
+					initialValues={props.afspraakBevestiging}
+					validationSchema={validatieSchema}
+					onSubmit={() => {
+						props.afspraakBevestiging.wilHerinneringsSms = true
+						props.onVolgende()
+					}}>
+					{({errors, values, isSubmitting, setFieldValue, handleSubmit}) => (
+						<><ScreenitTextfield
+							name={"mobielnummer"}
+							placeholder={"Mobiel nummer"}
+							value={values.clientNieuwMobielNummer}
+							invalidMessage={errors.clientNieuwMobielNummer}
+							onChange={value => setFieldValue("clientNieuwMobielNummer", value)}/>
+							<Button label={properties.sms.sms_knop_tekst}
+									disableButton={isSubmitting}
+									onClick={() => {
+										props.afspraakBevestiging.clientNieuwMobielNummer = values.clientNieuwMobielNummer
+										handleSubmit()
+									}}
+									displayArrow={ArrowType.ARROW_RIGHT}/></>)}
+				</Formik>
+				<NavLink onClick={props.onVolgende}>{properties.sms.geen_sms_tekst}</NavLink>
+			</div>
+			{props.children}
+		</div>
+	</BasePopup>)
 }
 
 export default MammaHerinneringSmsPopup

@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import {KandidaatAfspraak} from "../../../../../datatypes/mamma/KandidaatAfspraak"
-import React from "react"
+import {Dispatch, SetStateAction, useState} from "react"
 import {AfspraakZoekFilter} from "../MammaAfspraakMakenPage"
 import MammaAfspraakMakenPopup from "./wizard_componenten/MammaAfspraakMakenPopup"
 import ProgressiePanel from "../../../../../components/pagina_progressie/ProgressiePanel"
@@ -46,7 +46,7 @@ import {useNavigate} from "react-router"
 import {Bevolkingsonderzoek} from "../../../../../datatypes/Bevolkingsonderzoek"
 
 export type MammaAfspraakBevestigingsWizardProps = {
-	setGekozenAfspraak: React.Dispatch<React.SetStateAction<KandidaatAfspraak | undefined>>,
+	setGekozenAfspraak: Dispatch<SetStateAction<KandidaatAfspraak | undefined>>,
 	gekozenAfspraak: KandidaatAfspraak | undefined,
 	zoekAfspraken: (zoekFilter: AfspraakZoekFilter) => void,
 	zoekFilter: AfspraakZoekFilter
@@ -57,8 +57,8 @@ const MammaAfspraakBevestigingsWizard = (props: MammaAfspraakBevestigingsWizardP
 	const bvo = useSelectedBvo()
 	const navigate = useNavigate()
 
-	const [afspraakBevestiging, setAfspraakBevestiging] = React.useState<AfspraakBevestigingOpties | undefined>(undefined)
-	const [wizardStap, setWizardStap] = React.useState<AfspraakBevestigingsWizardStap>(AfspraakBevestigingsWizardStap.AFSPRAAK_MAKEN)
+	const [afspraakBevestiging, setAfspraakBevestiging] = useState<AfspraakBevestigingOpties | undefined>(undefined)
+	const [wizardStap, setWizardStap] = useState<AfspraakBevestigingsWizardStap>(AfspraakBevestigingsWizardStap.AFSPRAAK_MAKEN)
 
 	const huidigeHuisarts = useSelector((state: State) => state.client.mammaDossier.huisartsHuidigeRonde)
 	const vorigeHuisarts = useSelector((state: State) => state.client.mammaDossier.huisartsVorigeRonde)
@@ -68,7 +68,7 @@ const MammaAfspraakBevestigingsWizard = (props: MammaAfspraakBevestigingsWizardP
 	const huisartsVanClientBekend: boolean = !!geefMeestRecenteHuisarts()
 
 	function maakBevestiging(afspraakBevestiging: AfspraakBevestigingOpties) {
-		ScreenitBackend.post(`mamma/afspraak/bevestiging`, {json: afspraakBevestiging})
+		ScreenitBackend.post("mamma/afspraak/bevestiging", {json: afspraakBevestiging})
 			.catch((error) => {
 				if (error.response.data === "afspraak.bevestiging.niet.mogelijk") {
 					showToast(getString(properties.afspraak_maken.toast.geen_bevestiging), getString(properties.afspraak_maken.toast.error.algemeen), ToastMessageType.ERROR)
@@ -143,8 +143,9 @@ const MammaAfspraakBevestigingsWizard = (props: MammaAfspraakBevestigingsWizardP
 											props.zoekAfspraken(props.zoekFilter)
 											props.setGekozenAfspraak(undefined)
 										}}
-										setAfspraakBevestiging={setAfspraakBevestiging}
-										children={geefProgressiePanel()}/>
+										setAfspraakBevestiging={setAfspraakBevestiging}>
+			{geefProgressiePanel()}
+		</MammaAfspraakMakenPopup>
 	}
 
 	function toonAfspraakBevestigingsOptieKiezenPopup() {
@@ -154,9 +155,9 @@ const MammaAfspraakBevestigingsWizard = (props: MammaAfspraakBevestigingsWizardP
 													maakBevestiging(afspraakBevestiging!)
 												}
 												gaNaarVolgendePopup()
-											}}
-											children={geefProgressiePanel()}
-		/>
+											}}>
+			{geefProgressiePanel()}
+		</MammaBevestigingsOptiePopup>
 	}
 
 	function toonSMSHerinneringPopup() {
@@ -164,19 +165,19 @@ const MammaAfspraakBevestigingsWizard = (props: MammaAfspraakBevestigingsWizardP
 										 onVolgende={() => {
 											 maakBevestiging(afspraakBevestiging!)
 											 gaNaarVolgendePopup()
-										 }}
-										 children={geefProgressiePanel(() => {
-											 afspraakBevestiging!.resetKeuzes()
-											 gaNaarVorigePopup()
-										 })}
-		/>
+										 }}>
+			{geefProgressiePanel(() => {
+				afspraakBevestiging!.resetKeuzes()
+				gaNaarVorigePopup()
+			})}
+		</MammaHerinneringSmsPopup>
 	}
 
 	function toonAfspraakAfsluitendOverzichtPopup() {
 		return <MammaAfspraakAfsluitendPopup afspraakBevestiging={afspraakBevestiging!}
-											 onHuisartsControleren={() => gaNaarVolgendePopup()}
-											 children={geefProgressiePanel()}
-		/>
+											 onHuisartsControleren={() => gaNaarVolgendePopup()}>
+			{geefProgressiePanel()}
+		</MammaAfspraakAfsluitendPopup>
 	}
 
 	function toonHuisartsDoorgevenPopup() {

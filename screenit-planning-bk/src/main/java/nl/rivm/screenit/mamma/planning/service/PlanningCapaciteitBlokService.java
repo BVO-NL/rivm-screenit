@@ -22,9 +22,11 @@ package nl.rivm.screenit.mamma.planning.service;
  */
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
+import nl.rivm.screenit.dto.mamma.planning.PlanningMindervalideReserveringDto;
 import nl.rivm.screenit.exceptions.OpslaanVerwijderenTijdBlokException;
 import nl.rivm.screenit.mamma.planning.model.PlanningBlok;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
@@ -34,8 +36,12 @@ public interface PlanningCapaciteitBlokService
 
 	Set<PlanningBlok> getCapaciteitsBlokkenVanDag(PlanningScreeningsEenheid screeningsEenheid, LocalDate bronDate);
 
+	Set<PlanningBlok> leesCapaciteitBlokken(PlanningScreeningsEenheid screeningsEenheid, LocalDate vanafDatum, LocalDate totEnMetDatum);
+
 	PlanningBlok maakBlok(PlanningCapaciteitBlokDto blokDto) throws OpslaanVerwijderenTijdBlokException;
 
 	void verwijderBlok(PlanningBlok blok) throws OpslaanVerwijderenTijdBlokException;
 
+	void updateMinderValideReserveringenVoorCapaciteitBlok(List<PlanningMindervalideReserveringDto> minderValideReserveringDtos, PlanningBlok blok,
+		LocalDate datumVanReserveringen);
 }

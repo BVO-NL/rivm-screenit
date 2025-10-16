@@ -48,7 +48,6 @@ export const legeState: State = {
 		laatsteBezwaarMoment: [],
 		mammaDossier: leegMammaDossier,
 		persoon: legePersoon,
-		regio: "",
 	},
 	landingOverzicht: legeLandingOverzicht,
 	toasts: [],

@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import ActieBasePage from "../ActieBasePage"
 import {getString} from "../../utils/TekstPropertyUtil"
 import {useThunkDispatch} from "../../index"

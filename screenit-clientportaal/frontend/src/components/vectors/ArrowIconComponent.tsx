@@ -18,85 +18,84 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import styles from "./ArrowIconComponent.module.scss"
 import classNames from "classnames"
-import {ReactComponent as ArrowDown} from "../../scss/media/ArrowDown.svg"
-import {ReactComponent as ArrowRight} from "../../scss/media/ArrowRight.svg"
-import {ReactComponent as ArrowUp} from "../../scss/media/ArrowUp.svg"
-import {ReactComponent as ArrowLeft} from "../../scss/media/ArrowLeft.svg"
 import {assertUnreachable} from "../../utils/EnumUtil"
+import ArrowDown from "../../scss/media/ArrowDown.svg"
+import ArrowRight from "../../scss/media/ArrowRight.svg"
+import ArrowUp from "../../scss/media/ArrowUp.svg"
+import ArrowLeft from "../../scss/media/ArrowLeft.svg"
 
 export type ArrowIconProps = {
-    className?: string,
-    type: ArrowType,
+	className?: string,
+	type: ArrowType,
 }
 
 export enum ArrowType {
-    "ARROW_UP",
-    "ARROW_DOWN",
-    "ARROW_LEFT",
-    "ARROW_RIGHT",
-    "CHEVRON_UP",
-    "CHEVRON_DOWN",
-    "CHEVRON_LEFT",
-    "CHEVRON_RIGHT",
+	"ARROW_UP",
+	"ARROW_DOWN",
+	"ARROW_LEFT",
+	"ARROW_RIGHT",
+	"CHEVRON_UP",
+	"CHEVRON_DOWN",
+	"CHEVRON_LEFT",
+	"CHEVRON_RIGHT",
 }
 
 const ArrowIconComponent = (props: ArrowIconProps) => {
 
-    switch (props.type) {
-        case ArrowType.ARROW_UP:
-            return (
-                <div className={classNames(styles.svg_icon, props.className)}>
-                    <ArrowUp/>
-                </div>
-            )
-        case ArrowType.ARROW_DOWN:
-            return (
-                <div className={classNames(styles.svg_icon, props.className)}>
-                    <ArrowDown/>
-                </div>
-            )
-        case ArrowType.ARROW_LEFT:
-            return (
-                <div className={classNames(styles.svg_icon, props.className, styles.left)}>
-                    <ArrowLeft/>
-                </div>
-            )
-        case ArrowType.ARROW_RIGHT:
-            return (
-                <div className={classNames(styles.svg_icon, props.className)}>
-                    <ArrowRight/>
-                </div>
-            )
-        case ArrowType.CHEVRON_UP:
-            return (
-                <div className={classNames(styles.icon, props.className)}>
-                    <i className={classNames(props.className, "material-icons")}>chevron_up</i>
-                </div>
-            )
-        case ArrowType.CHEVRON_DOWN:
-            return (
-                <div className={classNames(styles.icon, props.className)}>
-                    <i className={classNames(props.className, "material-icons")}>chevron_down</i>
-                </div>
-            )
-        case ArrowType.CHEVRON_LEFT:
-            return (
-                <div className={classNames(styles.icon, props.className)}>
-                    <i className="material-icons">chevron_left</i>
-                </div>
-            )
-        case ArrowType.CHEVRON_RIGHT:
-            return (
-                <div className={classNames(styles.icon, props.className)}>
-                    <i className="material-icons">chevron_right</i>
-                </div>
-            )
-        default:
-            assertUnreachable(props.type)
-    }
+	switch (props.type) {
+		case ArrowType.ARROW_UP:
+			return (
+				<div className={classNames(styles.svg_icon, props.className)}>
+					<ArrowUp/>
+				</div>
+			)
+		case ArrowType.ARROW_DOWN:
+			return (
+				<div className={classNames(styles.svg_icon, props.className)}>
+					<ArrowDown/>
+				</div>
+			)
+		case ArrowType.ARROW_LEFT:
+			return (
+				<div className={classNames(styles.svg_icon, props.className, styles.left)}>
+					<ArrowLeft/>
+				</div>
+			)
+		case ArrowType.ARROW_RIGHT:
+			return (
+				<div className={classNames(styles.svg_icon, props.className)}>
+					<ArrowRight/>
+				</div>
+			)
+		case ArrowType.CHEVRON_UP:
+			return (
+				<div className={classNames(styles.icon, props.className)}>
+					<i className={classNames(props.className, "material-icons")}>chevron_up</i>
+				</div>
+			)
+		case ArrowType.CHEVRON_DOWN:
+			return (
+				<div className={classNames(styles.icon, props.className)}>
+					<i className={classNames(props.className, "material-icons")}>chevron_down</i>
+				</div>
+			)
+		case ArrowType.CHEVRON_LEFT:
+			return (
+				<div className={classNames(styles.icon, props.className)}>
+					<i className="material-icons">chevron_left</i>
+				</div>
+			)
+		case ArrowType.CHEVRON_RIGHT:
+			return (
+				<div className={classNames(styles.icon, props.className)}>
+					<i className="material-icons">chevron_right</i>
+				</div>
+			)
+		default:
+			assertUnreachable(props.type)
+	}
 
 }
 

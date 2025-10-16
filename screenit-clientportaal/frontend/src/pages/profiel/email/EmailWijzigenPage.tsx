@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import {useThunkDispatch} from "../../.."
 import {useNavigate} from "react-router"
 import {useSelector} from "react-redux"

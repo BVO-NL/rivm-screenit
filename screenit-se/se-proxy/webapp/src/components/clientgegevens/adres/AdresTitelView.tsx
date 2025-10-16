@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import classNames from "classnames"
-import React, {Component} from "react"
+import {Component, JSX} from "react"
 import {Col} from "reactstrap"
 
 type AdresTitelViewProps = {

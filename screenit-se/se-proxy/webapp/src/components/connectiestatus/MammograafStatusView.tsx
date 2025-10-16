@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 import type {MammograafStatus} from "../../datatypes/connectiestatus/MammograafStatus"
 import type {ConnectieStatusLevel} from "../../datatypes/connectiestatus/ConnectieStatus"
 import {connectieStatusLevels, getMostCriticalStatusLevel} from "../../datatypes/connectiestatus/ConnectieStatus"
@@ -39,7 +39,7 @@ export type MammograafStatusViewDispatchProps = {
 	toonDicomFouten: (messageType: MammograafDicomMessageType, mammograafStatus: MammograafStatus) => void;
 }
 
-export default class MammograafStatusView extends React.Component<MammograafStatusViewStateProps & MammograafStatusViewDispatchProps> implements ConnectieStatusItem {
+export default class MammograafStatusView extends Component<MammograafStatusViewStateProps & MammograafStatusViewDispatchProps> implements ConnectieStatusItem {
 
 	constructor(props: MammograafStatusViewStateProps & MammograafStatusViewDispatchProps) {
 		super(props)

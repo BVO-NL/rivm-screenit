@@ -23,8 +23,7 @@ import Select from "react-select"
 import classNames from "classnames"
 import styles from "./FormSelectField.module.scss"
 import {SelectOption} from "../../../state/datatypes/dto/SelectOption"
-
-import React from "react"
+import {JSX} from "react"
 
 export interface FormSelectFieldProps<T> extends SharedFormFieldProps {
 	clearable?: boolean;

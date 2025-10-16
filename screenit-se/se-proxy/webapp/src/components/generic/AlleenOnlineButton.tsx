@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {MouseEvent} from "react"
+import {Component, JSX, MouseEvent} from "react"
 import {Button, Popover, PopoverBody, PopoverHeader} from "reactstrap"
 import {Placement} from "popper.js"
 import classNames from "classnames"
@@ -39,7 +39,7 @@ export type AlleenOnlineButtonState = {
 	popoverOpen: boolean;
 };
 
-export default class AlleenOnlineButton<P extends AlleenOnlineButtonProps> extends React.Component<P, AlleenOnlineButtonState> {
+export default class AlleenOnlineButton<P extends AlleenOnlineButtonProps> extends Component<P, AlleenOnlineButtonState> {
 
 	public readonly state: AlleenOnlineButtonState = {
 		popoverOpen: false,

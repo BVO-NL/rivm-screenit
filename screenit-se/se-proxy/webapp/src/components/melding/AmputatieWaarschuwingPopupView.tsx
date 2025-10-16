@@ -18,9 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 
-export default class AmputatieWaarschuwingPopup extends React.Component {
+export default class AmputatieWaarschuwingPopup extends Component {
 
 	render(): JSX.Element {
 		return <div>

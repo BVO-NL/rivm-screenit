@@ -24,7 +24,8 @@ import {createActionClearPopup} from "../../actions/PopupActions"
 import {store} from "../../Store"
 import {showErrorToast} from "../../util/ToastUtil"
 import {verstuurAdHocVerzoek} from "../../restclient/AdhocMeekijkverzoekRestClient"
-import React from "react"
+import * as React from "react"
+import {JSX} from "react"
 
 type AdhocKwaliteitscontrolePopupProps = {
 	afspraakId: number;

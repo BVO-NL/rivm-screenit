@@ -18,9 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/colors";
-@import "src/scss/mixins";
-@import "src/scss/media-mixins";
+@import "../../scss/mixins";
 
 .inputDiv {
 	transition: 0.2s;
@@ -29,10 +27,10 @@
 	border-radius: 4px;
 	width: 100%;
 	min-height: 64px;
-	border: 2px solid $grijs-700;
+	border: 2px solid var(--grijs-700);
 	margin-right: 5px;
 	margin-bottom: 20px;
-	background-color: $wit-base;
+	background-color: var(--wit-base);
 	box-sizing: border-box;
 	vertical-align: top;
 
@@ -41,7 +39,7 @@
 	}
 
 	&.inputInvalid {
-		border: 2px solid $rood-base;
+		border: 2px solid var(-rood-base);
 	}
 
 	@include respond-below(xs) {
@@ -76,7 +74,7 @@
 
 	.labelInactive,
 	.labelActive {
-		color: $grijs-900;
+		color: var(--grijs-900);
 		letter-spacing: 0;
 		margin-left: 20px;
 		margin-bottom: 0;
@@ -116,7 +114,7 @@
 	}
 
 	.errorLabel {
-		color: $rood-base;
+		color: var(-rood-base);
 		line-height: 10px;
 		font-size: 0.7rem;
 		margin-left: 17px;

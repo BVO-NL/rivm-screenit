@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {ChangeEvent, Component, FormEvent} from "react"
+import {ChangeEvent, Component, FormEvent, JSX} from "react"
 import {Spinner} from "reactstrap"
 import {login} from "../../restclient/AuthenticatieRestclient"
 import {NfcOtpResponse, readNFC} from "../../restclient/NfcRestClient"
@@ -87,8 +87,9 @@ export default class LoginView extends Component<LoginProps, any> {
 
 	render(): JSX.Element {
 		return <form className="login" onSubmit={this.handleSubmit}>
-			<Spinner className={this.props.inlogActief ? "login-spinner" : "login-spinner-disabled"}/>
-			{this.props.inlogActief ? <div className={"laad-block-grijs"}/> : null}
+			{this.props.inlogActief ? <><Spinner className="login-spinner"/>
+				<div className={"laad-block-grijs"}/>
+			</> : null}
 			<div className="form-group row no-gutters">
 				<div className="offset-3 col-2">
 					<label htmlFor="gebruikersnaam" className="col-11 col-form-label text-right">Gebruikersnaam</label>

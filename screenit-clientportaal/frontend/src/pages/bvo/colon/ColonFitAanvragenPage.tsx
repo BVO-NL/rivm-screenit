@@ -20,7 +20,7 @@
  */
 import ActieBasePage from "../../ActieBasePage"
 import {Bevolkingsonderzoek, BevolkingsonderzoekNaam} from "../../../datatypes/Bevolkingsonderzoek"
-import React, {useEffect} from "react"
+import {useEffect} from "react"
 import bvoStyle from "../../../components/BvoStyle.module.scss"
 import {useThunkDispatch} from "../../../index"
 import {getHuidigeFitStatus, saveFitAanvraag} from "../../../api/ColonFitThunkAction"

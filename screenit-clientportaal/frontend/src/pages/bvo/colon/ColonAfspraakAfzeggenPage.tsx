@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import {useThunkDispatch} from "../../../index"
-import React, {useEffect} from "react"
+import {useEffect} from "react"
 import ActieBasePage from "../../ActieBasePage"
 import {Bevolkingsonderzoek, BevolkingsonderzoekNaam} from "../../../datatypes/Bevolkingsonderzoek"
 import {getString} from "../../../utils/TekstPropertyUtil"

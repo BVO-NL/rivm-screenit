@@ -18,56 +18,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/colors";
-@import "src/scss/media-mixins";
-
 .form {
-  margin-top: 15px;
+	margin-top: 15px;
 
-  .huisnummer {
-    display: inline-block;
-    width: 24%;
-  }
+	.huisnummer {
+		display: inline-block;
+		width: 24%;
+	}
 
-  .huisletter {
-    display: inline-block;
-    width: 15%;
-    margin-left: 2.5%;
-    margin-right: 2.5%;
-  }
+	.huisletter {
+		display: inline-block;
+		width: 15%;
+		margin-left: 2.5%;
+		margin-right: 2.5%;
+	}
 
-  .huisnummerToevoeging {
-    display: inline-block;
-    width: 25%;
-    margin-right: 2.5%;
-  }
+	.huisnummerToevoeging {
+		display: inline-block;
+		width: 25%;
+		margin-right: 2.5%;
+	}
 
-  .huisnummerAanduiding {
-    display: inline-block;
-    width: 28.5%;
-  }
+	.huisnummerAanduiding {
+		display: inline-block;
+		width: 28.5%;
+	}
 
-  .postcode {
-    display: inline-block;
-    width: 25%;
-  }
+	.postcode {
+		display: inline-block;
+		width: 25%;
+	}
 
-  .plaats {
-    display: inline-block;
-    width: 72.5%;
-    margin-left: 2.5%;
-    margin-bottom: 46px;
-  }
+	.plaats {
+		display: inline-block;
+		width: 72.5%;
+		margin-left: 2.5%;
+		margin-bottom: 46px;
+	}
 
-  .datumPicker {
-    margin-top: 20px;
-    display: inline-block;
-    width: 48%;
+	.datumPicker {
+		margin-top: 20px;
+		display: inline-block;
+		width: 48%;
 
-    &:first-of-type {
-      margin-right: 3%;
-    }
+		&:first-of-type {
+			margin-right: 3%;
+		}
 
-  }
+	}
 }
 

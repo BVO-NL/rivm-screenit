@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import {FormikProps} from "formik"
-import React, {ChangeEvent} from "react"
+import {ChangeEvent} from "react"
 import {WoonplaatsDto} from "../../../state/datatypes/dto/WoonplaatsDto"
 import styles from "./FormWoonplaatsSelectField.module.scss"
 import AsyncSelect from "react-select/async"
@@ -53,7 +53,7 @@ function FormWoonplaatsSelectField<T>(props: FormWoonplaatsSelectFieldProps<T>) 
 			placeholder={getString(properties.placeholder)}
 			noOptionsMessage={() => getString(properties.geenOpties)}
 			loadingMessage={() => getString(properties.laden)}
-			getOptionLabel={v => v ? (v.naam + " (Gemeente " + v.gemeente + ")") : ""}
+			getOptionLabel={v => v ? (`${v.naam  } (Gemeente ${  v.gemeente  })`) : ""}
 			getOptionValue={v => v ? String(v.huisartsportaalId) : ""}
 			loadOptions={(value: string) => loadWoonplaatsen(value)}
 			onChange={(value) => {

@@ -23,6 +23,7 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.ThreadLocalRandom;
 
 import nl.rivm.screenit.model.Aanhef;
@@ -139,6 +140,7 @@ public class DocumentTemplateTestUtil
 		screeningRonde.setLaatsteUitnodiging(uitnodiging);
 
 		var afspraak = new MammaAfspraak();
+		afspraak.setVanaf(new Date());
 		afspraak.setUitnodiging(uitnodiging);
 		uitnodiging.getAfspraken().add(afspraak);
 		uitnodiging.setLaatsteAfspraak(afspraak);

@@ -27,7 +27,6 @@ import {createActionPutMammograafConnectieStatus} from "../../actions/ConnectieS
 import {getMandatory} from "../../util/MapUtil"
 import {createActionShowPopup} from "../../actions/PopupActions"
 import MammograafDicomFoutmeldingenPopupView from "./MammograafDicomFoutmeldingenPopupView"
-import React from "react"
 import type {MammograafDicomMessageType} from "../../datatypes/connectiestatus/MammograafDicomMessageError"
 import {RootState} from "../../Store"
 

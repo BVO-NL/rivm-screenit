@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import { Dense2Service } from '@/mamma/mamma-dense2-uitwisseling-page/services/dense2/dense2.service'
-import { ToastService } from '@/toast/service/toast.service'
+import { ToastService } from '@shared/toast/service/toast.service'
 import { Component, inject, input } from '@angular/core'
 import { CardComponent } from '@shared/components/card/card.component'
 import { take } from 'rxjs'
@@ -28,7 +28,7 @@ export { Component, inject, input } from '@angular/core'
 export { CardComponent } from '@shared/components/card/card.component'
 export { take } from 'rxjs'
 export { Dense2Service } from '@/mamma/mamma-dense2-uitwisseling-page/services/dense2/dense2.service'
-export { ToastService } from '@/toast/service/toast.service'
+export { ToastService } from '@shared/toast/service/toast.service'
 
 @Component({
   selector: 'app-dense2-export',

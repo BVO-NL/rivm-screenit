@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {ChangeEvent} from "react"
+import {ChangeEvent, Component, JSX} from "react"
 import {Form, FormGroup, Input, Label} from "reactstrap"
 
 export type CheckboxValueProps = {
@@ -28,7 +28,7 @@ export type CheckboxValueProps = {
 	handleChange: (value: boolean) => void;
 };
 
-export default class CheckboxValue extends React.Component<CheckboxValueProps> {
+export default class CheckboxValue extends Component<CheckboxValueProps> {
 
 	constructor(props: CheckboxValueProps) {
 		super(props)

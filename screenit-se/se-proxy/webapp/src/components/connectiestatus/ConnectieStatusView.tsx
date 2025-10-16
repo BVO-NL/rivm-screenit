@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {Component} from "react"
+import {Component, JSX} from "react"
 import {readMammografenStatus} from "../../restclient/MammografenStatusRestclient"
 import MammograafStatusContainer from "./MammograafStatusContainer"
 import type {ConnectieStatus, ConnectieStatusLevel} from "../../datatypes/connectiestatus/ConnectieStatus"

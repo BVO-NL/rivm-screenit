@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import styles from "./ScreenitTextfield.module.scss"
-import React, {ChangeEvent, useEffect, useState} from "react"
+import {ChangeEvent, useEffect, useState} from "react"
 import classNames from "classnames"
 
 export type TextfieldProps = {
@@ -59,7 +59,7 @@ const ScreenitTextfield = (props: TextfieldProps) => {
 		<div className={classNames(props.className, styles.inputDiv, props.invalidMessage && styles.inputInvalid)}>
 			<label className={active ? styles.labelActive : styles.labelInactive} htmlFor={props.name}>{props.placeholder}</label>
 
-			<input data-testid={"input_" + props.name}
+			<input data-testid={`input_${  props.name}`}
 				   className={styles.inputField} type="text" id={props.name} name={props.name}
 				   autoComplete={"off"}
 				   value={props.value}
@@ -67,7 +67,7 @@ const ScreenitTextfield = (props: TextfieldProps) => {
 				   onBlur={disableField}
 				   onChange={updateInputValue}/>
 
-			{props.invalidMessage && <label data-testid={"error_" + props.name} className={styles.errorLabel}>{props.invalidMessage}</label>}
+			{props.invalidMessage && <label data-testid={`error_${  props.name}`} className={styles.errorLabel}>{props.invalidMessage}</label>}
 		</div>
 	)
 

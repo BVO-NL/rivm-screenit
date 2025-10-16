@@ -20,7 +20,7 @@
  */
 import {Field} from "formik"
 import BaseFormField from "../BaseFormField"
-import React, {useState} from "react"
+import {useState} from "react"
 import {FormTextFieldProps} from "./FormTextField"
 import styles from "./FormPasswordTextField.module.scss"
 
@@ -29,7 +29,7 @@ const FormPasswordTextField = (props: FormTextFieldProps) => {
 
 	return <BaseFormField {...props}>
 		<div className={styles.style}>
-			<i className={"bi bi-eye-" + (visible ? "slash-" : "") + "fill"} onMouseDown={() => setVisible(true)} onMouseUp={() => setVisible(false)}
+			<i className={`bi bi-eye-${  visible ? "slash-" : ""  }fill`} onMouseDown={() => setVisible(true)} onMouseUp={() => setVisible(false)}
 			   onMouseLeave={() => setVisible(false)}/>
 			<Field className="form-control" id={props.property} min={props.min} required={props.required} max={props.max} maxLength={props.maxLength} name={props.property}
 				   type={visible ? "text" : "password"} placeholder={props.placeholder ? props.placeholder : props.label} disabled={props.disabled}/>

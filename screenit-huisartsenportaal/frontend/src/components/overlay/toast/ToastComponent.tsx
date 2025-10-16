@@ -22,7 +22,7 @@ import classNames from "classnames"
 import styles from "./ToastComponent.module.scss"
 import {Toast, ToastType} from "../../../state/datatypes/Toast"
 import {useDispatch} from "react-redux"
-import React, {useCallback, useEffect, useState} from "react"
+import {useCallback, useEffect, useState} from "react"
 import {createActionHideToast} from "../../../state/ToastsState"
 
 export interface ToastComponentProps {

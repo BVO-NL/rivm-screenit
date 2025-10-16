@@ -18,7 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {ChangeEvent, Component} from "react"
+import * as React from "react"
+import {ChangeEvent, Component, createRef, JSX} from "react"
 import type {AnnotatieIcoon, AnnotatieIcoonType} from "../../../datatypes/AnnotatieIcoon"
 import {
 	convertXCoordinateToXPixels,
@@ -81,7 +82,7 @@ type Coordinates = {
 
 export default class AnnotatieIcoonView extends Component<AnnotatieIcoonViewStateProps & AnnotatieIcoonViewDispatchProps, AnnotatieIcoonViewState> {
 
-	textboxRef: React.RefObject<HTMLInputElement>
+	textboxRef: React.RefObject<HTMLInputElement | null>
 
 	constructor(props: AnnotatieIcoonViewStateProps & AnnotatieIcoonViewDispatchProps) {
 		super(props)
@@ -241,11 +242,12 @@ export default class AnnotatieIcoonView extends Component<AnnotatieIcoonViewStat
 
 	render(): JSX.Element {
 		const icoon = this.props.icoon
+		const nodeRef = createRef<HTMLDivElement>()
 		const icoonAfbeelding: IcoonAfbeelding = getAfbeeldingByType(icoon.type, this.props.isNietVisueleInspectie)
-		return <Draggable position={this.getPixelsFromCoordinates(icoonAfbeelding)} onStop={this.onStop}
+		return <Draggable position={this.getPixelsFromCoordinates(icoonAfbeelding)} onStop={this.onStop} nodeRef={nodeRef}
 						  onDrag={this.onDrag} enableUserSelectHack={false} disabled={!this.props.isDraggable}>
 			{this.state.isOutsideCanvas && this.state.hasBeenOnCanvas ? <div/> :
-				<div className={`visuele-inspectie-icoon${this.notSelectable()}`} title={annotatieTitle(icoon.type)}
+				<div className={`visuele-inspectie-icoon${this.notSelectable()}`} title={annotatieTitle(icoon.type)} ref={nodeRef}
 					 style={{
 						 backgroundImage: `url(${icoonAfbeelding.afbeelding})`,
 						 backgroundRepeat: "no-repeat",
@@ -254,16 +256,16 @@ export default class AnnotatieIcoonView extends Component<AnnotatieIcoonViewStat
 						 height: this.icoonHeight(),
 					 }}>
 					{this.props.metTextbox &&
-					<input
-						ref={this.textboxRef} type="text" disabled={!this.props.isDraggable}
-						defaultValue={icoon.tekst} maxLength={12}
-						className={`icoontext${this.notSelectable()}`}
-						onChange={this.textChange}
-						style={{
-							marginTop: this.icoonHeight(),
-							width: tekstvakbreedte,
-							marginLeft: (this.icoonWidth() - tekstvakbreedte) / 2,
-						}}/>}
+						<input
+							ref={this.textboxRef} type="text" disabled={!this.props.isDraggable}
+							defaultValue={icoon.tekst} maxLength={12}
+							className={`icoontext${this.notSelectable()}`}
+							onChange={this.textChange}
+							style={{
+								marginTop: this.icoonHeight(),
+								width: tekstvakbreedte,
+								marginLeft: (this.icoonWidth() - tekstvakbreedte) / 2,
+							}}/>}
 				</div>}
 		</Draggable>
 	}

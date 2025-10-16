@@ -18,11 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import * as React from "react"
+import {JSX} from "react"
 import DatePicker, {registerLocale} from "react-datepicker"
 import moment from "moment"
 import "react-datepicker/dist/react-datepicker.css"
-import nl from "date-fns/locale/nl"
+import {nl} from "date-fns/locale/nl"
 import {vandaagPlusDagen} from "../../util/DatePickerUtil"
 
 registerLocale("nl", nl)
@@ -53,10 +54,12 @@ const DatumkiezerView = (props: DatumkiezerViewStateProps & DatumkiezerViewDispa
 				locale="nl"
 				value={getDatumkiezerValue(props)}
 				highlightDates={getHighlightDates(props)}
-				onChange={(newDate: Date): void => {
-					props.onChooseDate(moment(newDate).format("YYYY-MM-DD"), props.online, props.dagenDaglijstOphalenLimiet)
+				onChange={(newDate: Date | null): void => {
+					if (newDate) {
+						props.onChooseDate(moment(newDate).format("YYYY-MM-DD"), props.online, props.dagenDaglijstOphalenLimiet)
+					}
 				}}
-				onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>): void => event.preventDefault()}
+				onKeyDown={(event: React.KeyboardEvent<HTMLElement>): void => event.preventDefault()}
 			/>
 		</div>
 		<div className="col-2 datumkiezer-icon">

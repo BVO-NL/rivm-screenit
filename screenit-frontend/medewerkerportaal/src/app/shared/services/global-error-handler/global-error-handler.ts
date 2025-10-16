@@ -20,7 +20,7 @@
  */
 import { ErrorHandler, inject, Injectable, isDevMode, NgZone } from '@angular/core'
 import { HttpErrorResponse } from '@angular/common/http'
-import { ToastService } from '@/toast/service/toast.service'
+import { ToastService } from '@shared/toast/service/toast.service'
 
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {

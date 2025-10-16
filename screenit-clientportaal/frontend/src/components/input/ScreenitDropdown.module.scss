@@ -18,25 +18,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/colors";
 
 .container {
-  vertical-align: top;
-  margin-bottom: 15px;
-  width: 100%;
+	vertical-align: top;
+	margin-bottom: 15px;
+	width: 100%;
 
-  .inputContainer {
+	.inputContainer {
 		position: relative;
-		border: 1px solid $grijs-700;
+		border: 1px solid var(--grijs-700);
 		border-radius: 4px;
-		background-color: $wit-base;
+		background-color: var(--wit-base);
 		margin-bottom: 5px;
 		padding: 0 12px 8px;
 		width: 100%;
 
 
 		&.invalid {
-			border: 1px solid $rood-base;
+			border: 1px solid var(-rood-base);
 		}
 
 		label {
@@ -53,20 +52,20 @@
 		}
 	}
 
-  .dropdown {
-    border: none;
-    padding-top: 3px;
+	.dropdown {
+		border: none;
+		padding-top: 3px;
 
-    :focus {
-      background-color: white;
-    }
-  }
+		:focus {
+			background-color: white;
+		}
+	}
 
-  .errorLabel {
-    position: relative;
-    color: $rood-base;
-    font-size: 0.7rem;
-    width: 100%;
-    margin-bottom: 0;
-  }
+	.errorLabel {
+		position: relative;
+		color: var(-rood-base);
+		font-size: 0.7rem;
+		width: 100%;
+		margin-bottom: 0;
+	}
 }

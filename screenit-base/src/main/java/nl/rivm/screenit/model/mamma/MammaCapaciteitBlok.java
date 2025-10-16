@@ -111,6 +111,9 @@ public class MammaCapaciteitBlok extends AbstractHibernateObject
 	@OneToMany(mappedBy = "capaciteitBlok", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE)
 	@NotAudited
-	private List<MammaAfspraakReservering> afspraakReserveringen;
+	private List<MammaAfspraakReservering> afspraakReserveringen = new ArrayList<>();
 
+	@OneToMany(mappedBy = "capaciteitBlok", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@Cascade(org.hibernate.annotations.CascadeType.DELETE)
+	private List<MammaMinderValideReservering> minderValideReserveringen = new ArrayList<>();
 }

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 import {Button, Col, Row} from "reactstrap"
 import {Mammograaf} from "../../datatypes/Mammograaf"
 import {gaOffline, gaOnline} from "../../restclient/TestRestclient"
@@ -38,7 +38,7 @@ export type HeaderViewDispatchProps = {
 	afmelden: () => void;
 }
 
-export default class HeaderView extends React.Component<HeaderViewStateProps & HeaderViewDispatchProps> {
+export default class HeaderView extends Component<HeaderViewStateProps & HeaderViewDispatchProps> {
 	render(): JSX.Element | null {
 		return this.props.aangemeld ? <Col md={10} className={"float-right medewerker-view"}>
 			{!this.props.online ?

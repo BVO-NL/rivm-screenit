@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import {Col, Row} from "react-bootstrap"
 import TopTaakComponent from "../taken/TopTaakComponent"
 import {ClientContactActieType} from "../../datatypes/ClientContactActieType"

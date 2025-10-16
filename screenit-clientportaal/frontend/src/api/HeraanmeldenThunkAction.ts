@@ -29,7 +29,7 @@ import properties from "../pages/bvo/gedeeld/HeraanmeldenPage.json"
 import {getString} from "../utils/TekstPropertyUtil"
 import HttpStatusCode from "../datatypes/HttpStatus"
 
-export const saveHeraanmeldVerzoekEnGeefBeschikbareActies = (bvo: Bevolkingsonderzoek, wilNieuweUitnodigingOntvangen: boolean, dispatch: Dispatch<ResetBeschikbareContactActies>) => (): Promise<ContactActiesDto | void> => {
+export const saveHeraanmeldVerzoekEnGeefBeschikbareActies = (bvo: Bevolkingsonderzoek, wilNieuweUitnodigingOntvangen: boolean, dispatch: Dispatch<ResetBeschikbareContactActies>) => (): Promise<ContactActiesDto> => {
 	return ScreenitBackend.post(`heraanmelden/${bvo}/${wilNieuweUitnodigingOntvangen}`)
 		.then(() => ScreenitBackend.get<ContactActiesDto>(`acties/beschikbaar`).json())
 		.then(response => {
@@ -40,5 +40,6 @@ export const saveHeraanmeldVerzoekEnGeefBeschikbareActies = (bvo: Bevolkingsonde
 			if (error.response.status === HttpStatusCode.CONFLICT && error.response.data === "mamma.standplaats.postcode.onbekend") {
 				showToast(undefined, getString(properties.toast.MAMMA.postcode), ToastMessageType.ERROR)
 			}
+			return {beschikbareActies: []}
 		})
 }

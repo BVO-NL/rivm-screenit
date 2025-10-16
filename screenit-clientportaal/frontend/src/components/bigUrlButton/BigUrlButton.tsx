@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import classNames from "classnames"
 import styles from "./BigUrlButton.module.scss"
 import {BevolkingsonderzoekStyle} from "../../datatypes/Bevolkingsonderzoek"

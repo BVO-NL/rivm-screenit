@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useEffect} from "react"
+import {useEffect} from "react"
 import {Col, Container, Row} from "react-bootstrap"
 import styles from "./BvoLandingPage.module.scss"
 import bvoStyles from "../../../components/BvoStyle.module.scss"
@@ -74,32 +74,32 @@ const MammaLandingPage = (props: Props) => {
 				</Col>
 			</Row>
 			{!beschikbareActies.includes(ClientContactActieType.GEEN) &&
-			<MammaTopTakenComponent className={styles.topTaak}
-									beschikbareActies={beschikbareActies}
-									getTekstHuisartsToptaak={getHuisartsTekst}/>
+				<MammaTopTakenComponent className={styles.topTaak}
+										beschikbareActies={beschikbareActies}
+										getTekstHuisartsToptaak={getHuisartsTekst}/>
 			}
 
 			{!beschikbareActies.includes(ClientContactActieType.GEEN) &&
-            <BvoTakenComponent beschikbareActies={beschikbareActies}
-                               toonVervangendeTekst={toonVervangendeTekst}/>
-            }
+				<BvoTakenComponent beschikbareActies={beschikbareActies}
+								   toonVervangendeTekst={toonVervangendeTekst}/>
+			}
 
-            {!toonVervangendeTekst && <BvoHistorieComponent gebeurtenissen={props.dossier.gebeurtenissenLaatsteRonde}/>}
-            <h5 className={landingPageStyle.sectieHeader}>Mijn onderzoeken</h5>
-            <BvoSelectieComponent/>
-        </Container>
-    )
+			{!toonVervangendeTekst && <BvoHistorieComponent gebeurtenissen={props.dossier.gebeurtenissenLaatsteRonde}/>}
+			<h5 className={landingPageStyle.sectieHeader}>Mijn onderzoeken</h5>
+			<BvoSelectieComponent/>
+		</Container>
+	)
 
-    function getHuisartsTekst(huisartsHuidigeRondeIsBekend: boolean, huisartsVorigeRondeIsBekend: boolean): "controleren" | "wijzigen" | "opgeven" {
-        if (huisartsVorigeRondeIsBekend && !huisartsHuidigeRondeIsBekend) {
-            return "controleren"
-        }
-        if (huisartsHuidigeRondeIsBekend) {
-            return "wijzigen"
-        } else {
-            return "opgeven"
-        }
-    }
+	function getHuisartsTekst(huisartsHuidigeRondeIsBekend: boolean, huisartsVorigeRondeIsBekend: boolean): "controleren" | "wijzigen" | "opgeven" {
+		if (huisartsVorigeRondeIsBekend && !huisartsHuidigeRondeIsBekend) {
+			return "controleren"
+		}
+		if (huisartsHuidigeRondeIsBekend) {
+			return "wijzigen"
+		} else {
+			return "opgeven"
+		}
+	}
 }
 
 export default MammaLandingPage

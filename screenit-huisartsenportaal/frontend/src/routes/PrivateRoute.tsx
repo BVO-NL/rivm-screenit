@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import * as React from "react"
 import {Navigate, RouteProps} from "react-router"
 import {useAppSelector, useAppThunkDispatch} from "../index"
 import {AuthenticationScope} from "../state/datatypes/enums/AuthenticationScope"

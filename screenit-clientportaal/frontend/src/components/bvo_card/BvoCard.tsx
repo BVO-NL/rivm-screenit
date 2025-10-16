@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import {Bevolkingsonderzoek, BevolkingsonderzoekNaam, BevolkingsonderzoekStyle} from "../../datatypes/Bevolkingsonderzoek"
 import styles from "./BvoCard.module.scss"
 import bvoStyle from "../BvoStyle.module.scss"
@@ -33,6 +32,7 @@ import properties from "./BvoCard.json"
 import VerticalDividerComponent from "../vectors/VerticalDividerComponent"
 import SpanWithHtml from "../span/SpanWithHtml"
 import {useWindowDimensions} from "../../utils/Hooks"
+import {JSX} from "react"
 
 export type BvoCardProps = {
 	bvo: Bevolkingsonderzoek;

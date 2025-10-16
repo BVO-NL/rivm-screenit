@@ -19,6 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import * as React from "react"
+import {JSX} from "react"
 import {Col, Row} from "reactstrap"
 
 export type PaneelNaamProps = {

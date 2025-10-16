@@ -18,14 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "../../styling/scss/colors";
-
 .style {
 	padding-top: 20px;
 
 	.panel {
 		max-width: 500px;
-		background-color: $wit-doorzichtig;
+		background-color: var(--wit-doorzichtig);
 
 		h3 {
 			text-align: center;

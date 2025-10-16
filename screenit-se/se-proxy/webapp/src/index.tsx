@@ -18,12 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import {Provider} from "react-redux"
 import {unregister} from "./registerServiceWorker"
 import "./index.css"
 import "bootstrap/dist/css/bootstrap.min.css"
-import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css"
 import "./screenit_se.scss"
 import BuitensteView from "./components/app/BuitensteView"
 import {store} from "./Store"

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {Component} from "react"
+import {Component, JSX} from "react"
 import type {VorigOnderzoek} from "../../../datatypes/VorigOnderzoek"
 import {Button} from "reactstrap"
 import type {Client} from "../../../datatypes/Client"
@@ -70,12 +70,12 @@ export default class VorigOnderzoekView extends Component<VorigOnderzoekViewStat
 					<OnderzoekBlokView vorigOnderzoek={this.props.vorigOnderzoek}/>
 					<LezingenBlokView vorigOnderzoek={this.props.vorigOnderzoek}/>
 					{(!this.props.meestRecent && this.props.vorigOnderzoek.beeldenBeschikbaar) &&
-					<Button color={"link"} className={"float-right gray-link"} onClick={(): void => {
-						if (this.props.gebruikersnaam) {
-							this.props.vorigeOnderzoekOphalen(this.props.client.id, this.props.vorigOnderzoek.uitnodigingsNr, this.props.gebruikersnaam, this.props.client.bsn)
-							this.props.setHeeftOudeBeeldenOpgevraagd()
-						}
-					}}>Ophalen beelden</Button>}
+						<Button color={"link"} className={"float-right gray-link"} onClick={(): void => {
+							if (this.props.gebruikersnaam) {
+								this.props.vorigeOnderzoekOphalen(this.props.client.id, this.props.vorigOnderzoek.uitnodigingsNr, this.props.gebruikersnaam, this.props.client.bsn)
+								this.props.setHeeftOudeBeeldenOpgevraagd()
+							}
+						}}>Ophalen beelden</Button>}
 				</div>
 			</div> : <VorigOnderzoekUitklapBalkView
 				eersteBeeindigdeAfspraakOp={this.props.vorigOnderzoek.eersteBeeindigdeAfspraakOp}

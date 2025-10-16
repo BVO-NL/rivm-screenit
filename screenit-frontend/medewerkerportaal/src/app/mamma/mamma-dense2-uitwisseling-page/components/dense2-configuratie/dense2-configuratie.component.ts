@@ -19,7 +19,6 @@
  * =========================LICENSE_END==================================
  */
 import { Component, effect, inject, input, InputSignal } from '@angular/core'
-import { ProjectType } from '@shared/types/algemeen/project-type'
 import { CardComponent } from '@shared/components/card/card.component'
 import { ClrCheckboxModule, ClrCommonFormsModule, ClrInputModule } from '@clr/angular'
 import { FormControl, FormGroup, FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -27,7 +26,7 @@ import { ProjectSelectorComponent } from '@/algemeen/components/project-selector
 import { filter, take } from 'rxjs'
 import { MammaDense2Configuratie } from '@shared/types/mamma/mamma-dense2-configuratie'
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component'
-import { ToastService } from '@/toast/service/toast.service'
+import { ToastService } from '@shared/toast/service/toast.service'
 import { Dialog } from '@angular/cdk/dialog'
 import { Dense2Service } from '@/mamma/mamma-dense2-uitwisseling-page/services/dense2/dense2.service'
 
@@ -93,6 +92,4 @@ export class Dense2ConfiguratieComponent {
         this.toastService.success('Configuratie is opgeslagen')
       })
   }
-
-  protected readonly ProjectType = ProjectType
 }

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {ReactNode} from "react"
 import classNames from "classnames"
 import styles from "./TaakComponent.module.scss"
 import {Bevolkingsonderzoek, BevolkingsonderzoekStyle, BevolkingsonderzoekToptaakStyle} from "../../datatypes/Bevolkingsonderzoek"
@@ -32,14 +32,14 @@ import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 export type TaakComponentProps = {
 	tekst: string,
 	link: RoutePath,
-	icon?: React.ReactNode,
+	icon?: ReactNode,
 }
 
-const TaakComponent = (props: TaakComponentProps) => {
+const TaakComponent = (props: TaakComponentProps): ReactNode => {
 	const selectedBvo = useSelectedBvo()
 	const navigate = useNavigate()
 
-	const stuurDatadogEventEnNavigeer = () => {
+	const stuurDatadogEventEnNavigeer = (): void => {
 		if (selectedBvo === Bevolkingsonderzoek.MAMMA) {
 			datadogService.stuurEvent(
 				" secundaireActietegelGeklikt",

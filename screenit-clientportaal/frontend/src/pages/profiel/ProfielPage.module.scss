@@ -18,9 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/colors";
-@import "src/scss/media-mixins";
-
 .content {
 	padding-bottom: 30px;
 
@@ -29,7 +26,7 @@
 		max-width: 320px;
 		min-height: 240px;
 		border-radius: 10px;
-		background-color: $grijs-600;
+		background-color: var(--grijs-600);
 		padding: 1rem;
 
 		@include respond-below(lg) {
@@ -43,7 +40,7 @@
 
 		h6 {
 			font-size: 0.8rem;
-			color: $blauw-700;
+			color: var(--blauw-700);
 			line-height: 22px;
 
 			&.adres {
@@ -62,7 +59,7 @@
 			font-size: 0.9rem;
 
 			&.lichtGrijs {
-				color: $grijs-900;
+				color: var(--grijs-900);
 			}
 
 		}

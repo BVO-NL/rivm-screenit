@@ -40,6 +40,6 @@ public class BetalingFilterDto
 
 	private Date betalingsdatumTotenMet;
 
-	private boolean isAlleenZonderBetalingskenmerk;
+	private boolean alleenZonderBetalingskenmerk;
 
 }

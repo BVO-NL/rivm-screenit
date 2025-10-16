@@ -22,7 +22,7 @@ import styles from "./BaseAuthenticationPage.module.scss"
 import classNames from "classnames"
 import {Button, Row} from "react-bootstrap"
 import {Form, Formik, FormikProps, FormikValues} from "formik"
-import React from "react"
+import * as React from "react"
 
 export interface BaseAuthenticationPageProps<T> {
 	title: string;

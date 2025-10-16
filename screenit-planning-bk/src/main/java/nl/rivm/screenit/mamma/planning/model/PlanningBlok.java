@@ -22,11 +22,19 @@ package nl.rivm.screenit.mamma.planning.model;
  */
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.util.DateUtil;
 
+@Getter
+@Setter
 public class PlanningBlok extends PlanningConceptEntiteit
 {
 	private LocalTime vanaf;
@@ -35,6 +43,7 @@ public class PlanningBlok extends PlanningConceptEntiteit
 
 	private int aantalOnderzoeken;
 
+	@Setter(AccessLevel.NONE)
 	private final PlanningBeschikbaar beschikbaar = new PlanningBeschikbaar();
 
 	private MammaCapaciteitBlokType capaciteitBlokType;
@@ -47,8 +56,11 @@ public class PlanningBlok extends PlanningConceptEntiteit
 
 	private boolean minderValideAfspraakMogelijk;
 
+	@Setter(AccessLevel.NONE)
+	private List<PlanningMinderValideReservering> mindervalideReserveringen = new ArrayList<>();
+
 	public PlanningBlok(Long id, LocalTime vanaf, LocalTime tot, int aantalOnderzoeken, MammaCapaciteitBlokType capaciteitBlokType, String opmerkingen,
-		boolean minderValideAfspraakMogelijk)
+		boolean minderValideAfspraakMogelijk, List<PlanningMinderValideReservering> mindervalideReserveringen)
 	{
 		super(id);
 		this.vanaf = vanaf;
@@ -57,21 +69,7 @@ public class PlanningBlok extends PlanningConceptEntiteit
 		this.capaciteitBlokType = capaciteitBlokType;
 		this.opmerkingen = opmerkingen;
 		this.minderValideAfspraakMogelijk = minderValideAfspraakMogelijk;
-	}
-
-	public void setScreeningsEenheid(PlanningScreeningsEenheid screeningsEenheid)
-	{
-		this.screeningsEenheid = screeningsEenheid;
-	}
-
-	public PlanningScreeningsEenheid getScreeningsEenheid()
-	{
-		return screeningsEenheid;
-	}
-
-	public LocalTime getVanaf()
-	{
-		return vanaf;
+		this.mindervalideReserveringen.addAll(mindervalideReserveringen);
 	}
 
 	public Date getDateVanaf()
@@ -79,78 +77,9 @@ public class PlanningBlok extends PlanningConceptEntiteit
 		return DateUtil.toUtilDate(vanaf, dag.getDatum());
 	}
 
-	public void setVanaf(LocalTime vanaf)
-	{
-		this.vanaf = vanaf;
-	}
-
-	public LocalTime getTot()
-	{
-		return tot;
-	}
-
 	public Date getDateTot()
 	{
 		return DateUtil.toUtilDate(tot, dag.getDatum());
 	}
 
-	public void setTot(LocalTime tot)
-	{
-		this.tot = tot;
-	}
-
-	public PlanningBeschikbaar getBeschikbaar()
-	{
-		return beschikbaar;
-	}
-
-	public MammaCapaciteitBlokType getCapaciteitBlokType()
-	{
-		return capaciteitBlokType;
-	}
-
-	public void setCapaciteitBlokType(MammaCapaciteitBlokType capaciteitBlokType)
-	{
-		this.capaciteitBlokType = capaciteitBlokType;
-	}
-
-	public void setAantalOnderzoeken(int aantalOnderzoeken)
-	{
-		this.aantalOnderzoeken = aantalOnderzoeken;
-	}
-
-	public PlanningDag getDag()
-	{
-		return dag;
-	}
-
-	public void setDag(PlanningDag dag)
-	{
-		this.dag = dag;
-	}
-
-	public String getOpmerkingen()
-	{
-		return opmerkingen;
-	}
-
-	public void setOpmerkingen(String opmerkingen)
-	{
-		this.opmerkingen = opmerkingen;
-	}
-
-	public int getAantalOnderzoeken()
-	{
-		return aantalOnderzoeken;
-	}
-
-	public boolean isMinderValideAfspraakMogelijk()
-	{
-		return minderValideAfspraakMogelijk;
-	}
-
-	public void setMinderValideAfspraakMogelijk(boolean minderValideAfspraakMogelijk)
-	{
-		this.minderValideAfspraakMogelijk = minderValideAfspraakMogelijk;
-	}
 }

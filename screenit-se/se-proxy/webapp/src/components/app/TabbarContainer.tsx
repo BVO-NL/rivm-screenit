@@ -101,7 +101,6 @@ const navigeerNaarTab = (dispatch: Dispatch, tab: Tab, props: TabbarViewStatePro
 			}
 			break
 		case "Cliëntgegevens":
-		case "Cli\xEBntgegevens":
 			if (afspraak) {
 				navigateToClientgegevens(dispatch, afspraak.clientId, afspraak.id)
 			} else {

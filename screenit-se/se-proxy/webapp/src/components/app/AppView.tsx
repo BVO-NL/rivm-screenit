@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {KeyboardEvent} from "react"
+import {JSX, KeyboardEvent} from "react"
 import {BrowserRouter} from "react-router"
 import TabbarContainer from "./TabbarContainer"
 import type {Session} from "../../datatypes/Session"

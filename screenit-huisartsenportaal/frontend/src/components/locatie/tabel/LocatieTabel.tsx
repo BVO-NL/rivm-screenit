@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useState} from "react"
+import {useState} from "react"
 import styles from "./LocatieTabel.module.scss"
 import properties from "./LocatieTabel.json"
 import {getString} from "../../../util/TekstPropertyUtil"

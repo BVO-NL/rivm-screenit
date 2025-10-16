@@ -33,8 +33,8 @@ export function getBezwaarUrl(bvo: Bevolkingsonderzoek): RoutePath {
 	return `/${bvo.toLowerCase()}/bezwaar` as RoutePath
 }
 
-export function getContactUrl(regio: string) {
-	return regio ? `${getBevolkingsonderzoekNederlandUrl()}/over-ons/${regio.replace(" ", "-").toLowerCase()}` : `${getBevolkingsonderzoekNederlandUrl()}/over-ons/`
+export function getContactUrl() {
+	return `${getBevolkingsonderzoekNederlandUrl()}/contact/`
 }
 
 export function getBevolkingsonderzoekNederlandUrl() {

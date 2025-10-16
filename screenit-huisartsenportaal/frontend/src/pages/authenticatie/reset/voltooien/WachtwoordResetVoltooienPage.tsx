@@ -32,7 +32,6 @@ import {WachtwoordWijzigenDto} from "../../../../state/datatypes/dto/WachtwoordW
 import {wachtwoordWijzigen} from "../../../../api/WachtwoordThunkAction"
 import * as Yup from "yup"
 import {afmelden} from "../../../../api/AfmeldenThunkAction"
-import React from "react"
 import {wachtwoordValidatie} from "../../../../util/ValidatieUtil"
 
 const WachtwoordResetVoltooienPage = () => {

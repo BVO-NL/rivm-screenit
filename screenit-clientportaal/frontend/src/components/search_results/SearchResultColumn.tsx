@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import bvoStyles from "../BvoStyle.module.scss"
 import styles from "./SearchResultColumn.module.scss"
 import classNames from "classnames"

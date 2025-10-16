@@ -25,6 +25,7 @@ import nl.rivm.screenit.model.Brief;
 
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.model.Model;
 
 public class GebeurtenisUtil
 {
@@ -34,8 +35,9 @@ public class GebeurtenisUtil
 		templateNaam.setVisible(brief.getBriefType() == null);
 		container.add(templateNaam);
 
-		var briefTypeLabel = new Label("brief.briefType", brief.getBriefType().getWeergaveNaam());
-		briefTypeLabel.setVisible(brief.getBriefType() != null);
+        var heeftBriefType = brief.getBriefType() != null;		
+		var briefTypeLabel = new Label("brief.briefType", heeftBriefType ? brief.getBriefType().getWeergaveNaam() : "");		
+		briefTypeLabel.setVisible(heeftBriefType);
 		container.add(briefTypeLabel);
 	}
 }

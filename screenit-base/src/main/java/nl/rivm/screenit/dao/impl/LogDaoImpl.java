@@ -162,7 +162,7 @@ public class LogDaoImpl extends AbstractAutowiredDao implements LogDao
 			if (!joinPpe)
 			{
 				from += "left outer join gedeeld.client c on lr.client = c.id ";
-				from += "left outer join gedeeld.pers pers on pers.client = c.id ";
+				from += "left outer join gedeeld.persoon pers on pers.client = c.id ";
 				joinPpe = true;
 			}
 			from += "left outer join gedeeld.org_adres aga on pers.gba_adres = aga.id ";

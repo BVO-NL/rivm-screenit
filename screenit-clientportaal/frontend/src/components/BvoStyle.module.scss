@@ -18,262 +18,260 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/colors";
-
 *:not(.mamma, .cervix, .colon) {
 
-  svg {
-    fill: $blauw-base;
-  }
+	svg {
+		fill: var(--blauw-base);
+	}
 
-  input[type=checkbox]:checked {
-    border: none;
-    background-color: $blauw-base;
-  }
+	input[type=checkbox]:checked {
+		border: none;
+		background-color: var(--blauw-base);
+	}
 
-  .datePicker {
+	.datePicker {
 
-    & * {
-      border-color: $blauw-base;
-    }
+		& * {
+			border-color: var(--blauw-base);
+		}
 
-  }
+	}
 }
 
 .mamma {
 
-  svg {
-    fill: $oranje-base;
-  }
+	svg {
+		fill: var(--oranje-base);
+	}
 
-  .bvoText {
-    color: $oranje-base;
-    fill: $oranje-base;
-  }
+	.bvoText {
+		color: var(--oranje-base);
+		fill: var(--oranje-base);
+	}
 
-  input[type=checkbox]:checked {
-    border: none;
-    background-color: $oranje-base;
-  }
+	input[type=checkbox]:checked {
+		border: none;
+		background-color: var(--oranje-base);
+	}
 
-  input[type=radio]:checked {
-    border-color: $oranje-base;
-  }
+	input[type=radio]:checked {
+		border-color: var(--oranje-base);
+	}
 
-  &.bvoNav {
-    border-color: $oranje-base !important;
-  }
+	&.bvoNav {
+		border-color: var(--oranje-base) !important;
+	}
 
-  .baseBackgroundColor {
-    background-color: $oranje-base;
-    color: $wit-base;
+	.baseBackgroundColor {
+		background-color: var(--oranje-base);
+		color: var(--wit-base);
 
-    svg {
-      fill: $oranje-base;
-    }
+		svg {
+			fill: var(--oranje-base);
+		}
 
-    &:disabled {
-      background-color: $grijs-600;
-      color: $grijs-900;
-      box-shadow: none;
-    }
-  }
+		&:disabled {
+			background-color: var(--grijs-600);
+			color: var(--grijs-900);
+			box-shadow: none;
+		}
+	}
 
-  .darkBackgroundColor {
-    background-color: $oranje-700;
-    color: $wit-base;
+	.darkBackgroundColor {
+		background-color: var(--oranje-700);
+		color: var(--wit-base);
 
-    svg {
-      fill: $oranje-700;
-    }
+		svg {
+			fill: var(--oranje-700);
+		}
 
-    &:disabled {
-      background-color: $grijs-600;
-      color: $grijs-900;
-      box-shadow: none;
-    }
-  }
+		&:disabled {
+			background-color: var(--grijs-600);
+			color: var(--grijs-900);
+			box-shadow: none;
+		}
+	}
 
-  .datePicker {
-    border-color: $oranje-base;
-  }
+	.datePicker {
+		border-color: var(--oranje-base);
+	}
 
-  .light {
-    border-color: $oranje-base;
-    color: $oranje-base;
-  }
+	.light {
+		border-color: var(--oranje-base);
+		color: var(--oranje-base);
+	}
 
 }
 
 .mammaIcon {
-  rect, polyline, path, polygon, line, circle, ellipse {
-    stroke: $oranje-base;
-  }
+	rect, polyline, path, polygon, line, circle, ellipse {
+		stroke: var(--oranje-base);
+	}
 }
 
 .cervix {
-  svg {
-    fill: $roze-base;
-  }
+	svg {
+		fill: var(--roze-base);
+	}
 
-  .bvoText {
-    color: $roze-base;
-    fill: $roze-base;
+	.bvoText {
+		color: var(--roze-base);
+		fill: var(--roze-base);
 
-  }
+	}
 
-  input[type=checkbox]:checked {
-    background-color: $roze-base;
-  }
+	input[type=checkbox]:checked {
+		background-color: var(--roze-base);
+	}
 
-  input[type=radio]:checked {
-    border-color: $roze-base;
-  }
+	input[type=radio]:checked {
+		border-color: var(--roze-base);
+	}
 
-  &.bvoNav {
-    color: red;
-    border-color: $roze-base !important;
-  }
+	&.bvoNav {
+		color: red;
+		border-color: var(--roze-base) !important;
+	}
 
-  .darkBackgroundColor {
-    background-color: $roze-700 !important;
-    color: $wit-base;
+	.darkBackgroundColor {
+		background-color: var(--roze-700) !important;
+		color: var(--wit-base);
 
-    svg {
-      fill: $roze-700;
-    }
+		svg {
+			fill: var(--roze-700);
+		}
 
-    &:disabled {
-      background-color: $grijs-600;
-      color: $grijs-900;
-      box-shadow: none;
-    }
-  }
+		&:disabled {
+			background-color: var(--grijs-600);
+			color: var(--grijs-900);
+			box-shadow: none;
+		}
+	}
 
-  .baseBackgroundColor {
-    background-color: $roze-base !important;
-    color: $wit-base;
+	.baseBackgroundColor {
+		background-color: var(--roze-base) !important;
+		color: var(--wit-base);
 
-    svg {
-      fill: $roze-base;
-    }
+		svg {
+			fill: var(--roze-base);
+		}
 
-    &:disabled {
-      background-color: $grijs-600;
-      color: $grijs-900;
-      box-shadow: none;
-    }
-  }
+		&:disabled {
+			background-color: var(--grijs-600);
+			color: var(--grijs-900);
+			box-shadow: none;
+		}
+	}
 
-  .datePicker {
-    border-color: $roze-base;
-  }
+	.datePicker {
+		border-color: var(--roze-base);
+	}
 
-  .light {
-    border-color: $roze-base;
-    color: $roze-base;
-  }
+	.light {
+		border-color: var(--roze-base);
+		color: var(--roze-base);
+	}
 
 }
 
 .cervixIcon {
-  rect, polyline, path, polygon, line, circle, ellipse {
-    stroke: $roze-base;
-  }
+	rect, polyline, path, polygon, line, circle, ellipse {
+		stroke: var(--roze-base);
+	}
 }
 
 .colon {
-  svg {
-    fill: $paars-base;
-  }
+	svg {
+		fill: var(--paars-base);
+	}
 
-  .bvoText {
-    color: $paars-base;
-    fill: $paars-base;
+	.bvoText {
+		color: var(--paars-base);
+		fill: var(--paars-base);
 
-  }
+	}
 
-  input[type=checkbox]:checked {
-    background-color: $paars-base;
-  }
+	input[type=checkbox]:checked {
+		background-color: var(--paars-base);
+	}
 
-  input[type=radio]:checked {
-    border-color: $paars-base;
-  }
+	input[type=radio]:checked {
+		border-color: var(--paars-base);
+	}
 
-  &.bvoNav {
-    border-color: $paars-base !important;
-  }
+	&.bvoNav {
+		border-color: var(--paars-base) !important;
+	}
 
-  .baseBackgroundColor {
-    background-color: $paars-base !important;
-    color: $wit-base;
+	.baseBackgroundColor {
+		background-color: var(--paars-base) !important;
+		color: var(--wit-base);
 
-    svg {
-      fill: $paars-base;
-    }
+		svg {
+			fill: var(--paars-base);
+		}
 
-    &:disabled {
-      background-color: $grijs-600;
-      color: $grijs-900;
-      box-shadow: none;
-    }
-  }
+		&:disabled {
+			background-color: var(--grijs-600);
+			color: var(--grijs-900);
+			box-shadow: none;
+		}
+	}
 
-  .darkBackgroundColor {
-    background-color: $paars-900 !important;
-    color: $wit-base;
+	.darkBackgroundColor {
+		background-color: var(--paars-900) !important;
+		color: var(--wit-base);
 
-    svg {
-      fill: $paars-900;
-    }
+		svg {
+			fill: var(--paars-900);
+		}
 
-    &:disabled {
-      background-color: $grijs-600;
-      color: $grijs-900;
-      box-shadow: none;
-    }
-  }
+		&:disabled {
+			background-color: var(--grijs-600);
+			color: var(--grijs-900);
+			box-shadow: none;
+		}
+	}
 
-  .datePicker {
-    border-color: $paars-base;
-  }
+	.datePicker {
+		border-color: var(--paars-base);
+	}
 
-  .light {
-    border-color: $paars-base;
-    color: $paars-base;
-  }
+	.light {
+		border-color: var(--paars-base);
+		color: var(--paars-base);
+	}
 
 }
 
 .colonIcon {
-  rect, polyline, path, polygon, line, circle, ellipse {
-    stroke: $paars-base;
-  }
+	rect, polyline, path, polygon, line, circle, ellipse {
+		stroke: var(--paars-base);
+	}
 }
 
 .baseBackgroundColor {
-  background-color: $blauw-base;
+	background-color: var(--blauw-base);
 
-  svg {
-    fill: $blauw-base;
-  }
+	svg {
+		fill: var(--blauw-base);
+	}
 
-  &:disabled {
-    background-color: $grijs-600;
-    color: $grijs-900;
-    box-shadow: none;
-  }
+	&:disabled {
+		background-color: var(--grijs-600);
+		color: var(--grijs-900);
+		box-shadow: none;
+	}
 }
 
 .bvoNav {
-  border-color: $blauw-base !important;
+	border-color: var(--blauw-base) !important;
 }
 
 .bvoText {
-  color: $blauw-base;
+	color: var(--blauw-base);
 }
 
 svg {
-  fill: $blauw-base;
+	fill: var(--blauw-base);
 }

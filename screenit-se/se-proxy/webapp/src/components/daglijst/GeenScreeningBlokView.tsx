@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {Component} from "react"
+import {Component, JSX} from "react"
 import {GeenScreeningBlok} from "../../datatypes/Planning"
 import {getTime} from "../../util/DateUtil"
 

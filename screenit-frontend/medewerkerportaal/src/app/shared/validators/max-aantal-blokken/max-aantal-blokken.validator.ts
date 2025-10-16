@@ -20,7 +20,7 @@
  */
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms'
 import { parse } from 'date-fns'
-import { ToastService } from '@/toast/service/toast.service'
+import { ToastService } from '@shared/toast/service/toast.service'
 
 export const createMaxAantalBlokkenValidator = (duurAfspraakInMinuten: number, toastService?: ToastService): ValidatorFn => {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -53,7 +53,7 @@ export const createMaxAantalBlokkenValidator = (duurAfspraakInMinuten: number, t
 
     if (toastService) {
       if (validationError) {
-        toastService.error(validationError.maxAantalBlokken)
+        toastService.error(validationError['maxAantalBlokken'])
       } else {
         toastService.hide(validatieBericht)
       }

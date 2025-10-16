@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 import Switch from "react-switch"
 import {dispatchActions} from "../../util/DispatchUtil"
 import {createActionUpdateHeeftAfwijkingen} from "../../actions/SignalerenActions"
@@ -39,7 +39,7 @@ type AfwijkingenSwitchState = {
 	popoverOpen: boolean;
 };
 
-export default class AfwijkingenSwitch extends React.Component<AfwijkingenSwitchProps, AfwijkingenSwitchState> {
+export default class AfwijkingenSwitch extends Component<AfwijkingenSwitchProps, AfwijkingenSwitchState> {
 
 	constructor(props: AfwijkingenSwitchProps) {
 		super(props)

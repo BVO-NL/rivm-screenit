@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "../../../styling/scss/colors";
 @import "../../../styling/scss/mixins";
 
 .style {
@@ -43,7 +42,7 @@
 		@include center-in-div(50%);
 
 		.spinner {
-			border: 0.5em solid $paars;
+			border: 0.5em solid var(--paars);
 			border-right-color: transparent;
 			width: 100%;
 			height: 100%;

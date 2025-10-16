@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import * as React from "react"
 import DOMPurify from "dompurify"
 
 export type SpanWithHtmlProps = {

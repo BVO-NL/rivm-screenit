@@ -18,11 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
 import DatumkiezerContainer from "./DatumkiezerContainer"
 import AfspraakOverzichtContainer from "./AfspraakOverzichtContainer"
 import DagStatistiekenContainer from "../dagverslag/DagStatistiekenContainer"
 import PassantAfspraakMakenContainer from "./PassantAfspraakMakenContainer"
+import {JSX} from "react"
 
 const DaglijstView = (): JSX.Element => {
 	return <div className="daglijst">

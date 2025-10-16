@@ -18,13 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/colors";
-@import "src/scss/media-mixins";
-
 .bezwaarBlok {
 	width: 100%;
 	border-radius: 0.625rem;
-	background-color: $wit-base;
+	background-color: var(--wit-base);
 	box-shadow: 0 0.625rem 1.25rem -0.625rem rgba(0, 0, 0, 0.25);
 	padding: 1.875rem;
 	margin-bottom: 0.938rem;

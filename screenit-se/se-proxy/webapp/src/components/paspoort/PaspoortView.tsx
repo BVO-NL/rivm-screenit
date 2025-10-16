@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {Component} from "react"
+import {Component, JSX} from "react"
 import type {Client} from "../../datatypes/Client"
 import {datumFormaat, nu} from "../../util/DateUtil"
 import {Col, Row} from "reactstrap"

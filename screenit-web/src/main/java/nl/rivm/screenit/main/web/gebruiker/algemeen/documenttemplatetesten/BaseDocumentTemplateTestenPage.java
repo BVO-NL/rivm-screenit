@@ -249,6 +249,14 @@ public abstract class BaseDocumentTemplateTestenPage extends AlgemeenPage
 		addMergFieldSelector(form);
 	}
 
+	private void setEmptyStringForNullValue(MergeField mergeField)
+	{
+		if (mergeField.getCurrentValue() == null)
+		{
+			mergeField.setCurrentValue("");
+		}
+	}
+
 	private void addMergFieldSelector(Form form)
 	{
 		var mergeFieldForm = new ScreenitForm<>("mergeFieldForm");
@@ -370,8 +378,18 @@ public abstract class BaseDocumentTemplateTestenPage extends AlgemeenPage
 						laatsteBeoordelingMetUitslag.getEersteLezing().getBeoordelaar().setMedewerker(wrapper.getRadioloog1());
 						laatsteBeoordelingMetUitslag.getTweedeLezing().getBeoordelaar().setMedewerker(wrapper.getRadioloog2());
 					}
+
+					if (!wrapper.isFromDBINTAKELOCATIE())
+					{
+						setEmptyStringForNullValue(MergeField.IL_LOKATIE);
+						setEmptyStringForNullValue(MergeField.IL_DIGITALE_INTAKE);
+					}
 					if (wrapper.isFromDBINTAKELOCATIE())
 					{
+
+						MergeField.IL_LOKATIE.setCurrentValue(null);
+						MergeField.IL_DIGITALE_INTAKE.setCurrentValue(null);
+
 						List<ColonIntakelocatie> intakeLocaties = organisatieService.getActieveIntakelocatiesBinnenRegio(screeningOrganisatie);
 						var kamer = wrapper.getIntakeAfspraak().getKamer();
 						ColonIntakelocatie handmatigeIntakeLocatie = kamer.getIntakelocatie();

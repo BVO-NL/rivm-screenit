@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useContext, useEffect} from "react"
+import {useContext, useEffect} from "react"
 import classNames from "classnames"
 import authenticationStyle from "./AuthenticationPage.module.scss"
 import styles from "./LogoutPage.module.scss"

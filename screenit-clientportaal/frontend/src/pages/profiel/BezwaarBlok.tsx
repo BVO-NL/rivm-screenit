@@ -19,7 +19,6 @@
  * =========================LICENSE_END==================================
  */
 import {Checkbox} from "@mui/material"
-import React from "react"
 import {Bezwaar} from "../../datatypes/Bezwaar"
 import BezwaarInformatieBlok from "./BezwaarInformatieBlok"
 import styles from "./BezwaarBlok.module.scss"

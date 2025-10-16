@@ -22,7 +22,6 @@ import {Button, Col, Modal, Row} from "react-bootstrap"
 import {getString} from "../../../util/TekstPropertyUtil"
 import properties from "./LocatieVerwijderenModal.json"
 import {LocatieDto} from "../../../state/datatypes/dto/LocatieDto"
-import React from "react"
 
 export interface LocatieVerwijderenModalProps {
 	locatie?: LocatieDto;

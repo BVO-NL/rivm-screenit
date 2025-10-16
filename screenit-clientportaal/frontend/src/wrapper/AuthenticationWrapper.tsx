@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useContext, useEffect} from "react"
+import {JSX, useContext, useEffect} from "react"
 import {useSelector} from "react-redux"
 import {State} from "../datatypes/State"
 import {setLoggingInAction, setSessionExpiredAction} from "../actions/AuthenticatieAction"

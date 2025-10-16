@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {useContext} from "react"
+import {useContext} from "react"
 import {Link} from "react-router"
 import properties from "./NotFoundPage.json"
 import SpanWithHtml from "../components/span/SpanWithHtml"

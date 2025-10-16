@@ -18,11 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {Component} from "react"
-import RechterborstVerticaleDoorsnede from "./beoordeling/RechterborstVerticaleDoorsnede.svg"
-import LinkerborstVerticaleDoorsnede from "./beoordeling/LinkerborstVerticaleDoorsnede.svg"
-import RechterborstHorizontaleDoorsnede from "./beoordeling/RechterborstHorizontaleDoorsnede.svg"
-import LinkerborstHorizontaleDoorsnede from "./beoordeling/LinkerborstHorizontaleDoorsnede.svg"
+import {Component, JSX} from "react"
+import * as React from "react"
 import {Col, Row} from "reactstrap"
 import type {Aanzicht} from "../afbeelding/AnnotatieIcoonContainer"
 import AnnotatieIcoonContainer from "../afbeelding/AnnotatieIcoonContainer"
@@ -153,6 +150,7 @@ export default class AfwijkingenAfbeeldingenView extends Component<AfwijkingenAf
 	}
 
 	render(): JSX.Element {
+		const beoordelingFolder = "./images/beoordeling"
 		return <Row noGutters id={`col-afwijking-afbeelding-container${this.props.afwijkingenAfbeeldingId}`}>
 			<Col md={6} id={`verticaal_aanzicht_container${this.props.afwijkingenAfbeeldingId}`}
 				 className={"form-horizontal px-1"}>
@@ -162,7 +160,7 @@ export default class AfwijkingenAfbeeldingenView extends Component<AfwijkingenAf
 						<div id={`img_container_rechts_verticaal${this.props.afwijkingenAfbeeldingId}`}
 							 className="pr-1 non-selectable">
 							<img id={`rechts_verticaal${this.props.afwijkingenAfbeeldingId}`}
-								 className={"aanzicht-afbeelding"} src={RechterborstVerticaleDoorsnede}
+								 className={"aanzicht-afbeelding"} src={`${beoordelingFolder}/RechterborstVerticaleDoorsnede.svg`}
 								 draggable="false" alt="" onLoad={(): void => {
 								this.props.onLoad()
 							}}/>
@@ -181,7 +179,7 @@ export default class AfwijkingenAfbeeldingenView extends Component<AfwijkingenAf
 						<div id={`img_container_links_verticaal${this.props.afwijkingenAfbeeldingId}`}
 							 className="pl-1 non-selectable">
 							<img id={`links_verticaal${this.props.afwijkingenAfbeeldingId}`}
-								 className={"aanzicht-afbeelding"} src={LinkerborstVerticaleDoorsnede} draggable="false"
+								 className={"aanzicht-afbeelding"} src={`${beoordelingFolder}/LinkerborstVerticaleDoorsnede.svg`} draggable="false"
 								 alt="" onLoad={(): void => {
 								this.props.onLoad()
 							}}/>
@@ -207,7 +205,7 @@ export default class AfwijkingenAfbeeldingenView extends Component<AfwijkingenAf
 						<div id={`img_container_rechts_horizontaal${this.props.afwijkingenAfbeeldingId}`}
 							 className="margin-right-correction padding-left-correction non-selectable">
 							<img id={`rechts_horizontaal${this.props.afwijkingenAfbeeldingId}`}
-								 className={"aanzicht-afbeelding"} src={RechterborstHorizontaleDoorsnede}
+								 className={"aanzicht-afbeelding"} src={`${beoordelingFolder}/RechterborstHorizontaleDoorsnede.svg`}
 								 draggable="false" alt="" onLoad={(): void => {
 								this.props.onLoad()
 							}}/>
@@ -226,7 +224,7 @@ export default class AfwijkingenAfbeeldingenView extends Component<AfwijkingenAf
 						<div id={`img_container_holder_links_horizontaal${this.props.afwijkingenAfbeeldingId}`}
 							 className="margin-left-correction padding-right-correction  non-selectable">
 							<img id={`links_horizontaal${this.props.afwijkingenAfbeeldingId}`}
-								 className={"aanzicht-afbeelding"} src={LinkerborstHorizontaleDoorsnede}
+								 className={"aanzicht-afbeelding"} src={`${beoordelingFolder}/LinkerborstHorizontaleDoorsnede.svg`}
 								 draggable="false" alt="" onLoad={(): void => {
 								this.props.onLoad()
 							}}/>

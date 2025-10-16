@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {Component} from "react"
+import {Component, JSX} from "react"
 import type {GeenHuisartsOption, Huisarts} from "../../../datatypes/Huisarts"
 import {getGeenHuisartsLabel, getHuisartsVolledigAdres} from "../../../datatypes/Huisarts"
 import LabelValue from "../../generic/LabelValue"
@@ -88,8 +88,8 @@ export default class HuisartsView extends Component<HuisartsViewStateProps & Hui
 		return <Paneel>
 			<PaneelNaam titel={"Huisarts*"}>
 				{!this.props.disabled &&
-				<Button className={"float-right btn-secondary-se"} onClick={this.toggleHuisartsZoekenPopup}>Zoek
-					huisarts</Button>}
+					<Button className={"float-right btn-secondary-se"} onClick={this.toggleHuisartsZoekenPopup}>Zoek
+						huisarts</Button>}
 			</PaneelNaam>
 			{!this.props.isValid && <div className={"invalid-feedback"} style={{
 				display: "block",

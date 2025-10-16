@@ -35,7 +35,6 @@ import FormTextField from "../../components/form/text/FormTextField"
 import classNames from "classnames"
 import LocatieStatusComponent from "../../components/locatie/status/LocatieStatusComponent"
 import TabelPagineringComponent from "../../components/tabel/TabelPagineringComponent"
-import React from "react"
 
 const VerrichtingenOverzichtPage = () => {
 	const locaties = useAppSelector((state) => state.locaties)?.values.locaties || []

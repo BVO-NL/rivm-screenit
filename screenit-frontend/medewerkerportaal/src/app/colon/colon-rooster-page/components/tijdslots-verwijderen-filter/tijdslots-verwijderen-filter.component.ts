@@ -30,7 +30,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ColonTijdslotFilter } from '@shared/types/colon/colon-tijdslot-filter'
 import { dagenSelectieSelectValidator } from '@shared/validators/dagen-selectie/dagen-selectie.validator'
 import { WEEK_DAGEN } from '@shared/constants'
-import { ToastService } from '@/toast/service/toast.service'
+import { ToastService } from '@shared/toast/service/toast.service'
 
 @Component({
   selector: 'app-tijdslots-verwijderen-filter',

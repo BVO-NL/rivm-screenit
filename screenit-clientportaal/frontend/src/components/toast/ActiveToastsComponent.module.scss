@@ -18,9 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/mixins";
-@import "src/scss/colors";
-@import "src/scss/media-mixins";
+@import "../../scss/mixins";
 
 .overlay {
 	opacity: 1;
@@ -65,10 +63,10 @@
 
 		&.error {
 			padding-left: 20px;
-			background: $rood-300;
+			background: var(--rood-300);
 
 			i {
-				color: $rood-600;
+				color: var(--rood-600);
 			}
 
 			span {
@@ -150,17 +148,17 @@
 		}
 
 		.toastClear {
-			border-left: solid $grijs-800 2px;
+			border-left: solid var(--grijs-800) 2px;
 			cursor: pointer;
 
 			&.error {
-				border-left: solid $wit-base 2px;
+				border-left: solid var(--wit-base) 2px;
 			}
 
 			i {
 				font-size: 1.5rem;
 				@include center-in-div(50%);
-				color: $zwart;
+				color: var(--zwart);
 
 				@include respond-below(xs) {
 					font-size: 1.3rem;

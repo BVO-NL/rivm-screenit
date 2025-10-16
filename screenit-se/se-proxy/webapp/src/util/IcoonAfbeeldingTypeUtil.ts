@@ -18,36 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import amputatie from "../components/onderzoek/inspectie/icoonAfbeeldingen/amputatie.svg"
-import amputatieVorigeOnderzoek from "../components/onderzoek/inspectie/icoonAfbeeldingen/amputatieVorigeOnderzoek.svg"
-import borstvergroting from "../components/onderzoek/inspectie/icoonAfbeeldingen/borstvergroting.svg"
-import dubbelzijdigeBorstverkleining from "../components/onderzoek/inspectie/icoonAfbeeldingen/dubbelzijdige-borstverkleining.svg"
-import eenzijdigeBorstverkleining from "../components/onderzoek/inspectie/icoonAfbeeldingen/eenzijdige-borstverkleining.svg"
-import groterDan from "../components/onderzoek/inspectie/icoonAfbeeldingen/groter-dan.svg"
-import ingetrokkenTepel from "../components/onderzoek/inspectie/icoonAfbeeldingen/ingetrokken-tepel.svg"
-import kleinerDan from "../components/onderzoek/inspectie/icoonAfbeeldingen/kleiner-dan.svg"
-import littekenHorizontaal from "../components/onderzoek/inspectie/icoonAfbeeldingen/litteken-horizontaal.svg"
-import littekenLoRb from "../components/onderzoek/inspectie/icoonAfbeeldingen/litteken-lo-rb.svg"
-import littekenRbLo from "../components/onderzoek/inspectie/icoonAfbeeldingen/litteken-rb-lo.svg"
-import littekenVerticaal from "../components/onderzoek/inspectie/icoonAfbeeldingen/litteken-verticaal.svg"
-import visueleInspectieMassa from "../components/onderzoek/inspectie/icoonAfbeeldingen/massa.svg"
-import uitwendigeAfwijking from "../components/onderzoek/inspectie/icoonAfbeeldingen/uitwendige-afwijking.svg"
-import plus from "../components/onderzoek/signaleren/iconen_beoordeling/LEGACY_PLUS.svg"
-import asymmetrie from "../components/onderzoek/signaleren/iconen_beoordeling/ASYMMETRIE.svg"
-import architectuurVerstoring from "../components/onderzoek/signaleren/iconen_beoordeling/ARCHITECTUURVERSTORING.svg"
-import calcificaties from "../components/onderzoek/signaleren/iconen_beoordeling/CALCIFICATIES.svg"
-import signaleringMassa from "../components/onderzoek/signaleren/iconen_beoordeling/MASSA.svg"
-import architectuurVerstoringCalcificaties from "../components/onderzoek/signaleren/iconen_beoordeling/LEGACY_ARCHITECTUURVERSTORING_MET_CALCIFICATIES.svg"
-import architectuurVerstoringMassa from "../components/onderzoek/signaleren/iconen_beoordeling/LEGACY_MASSA_MET_ARCHITECTUURVERSTORING.svg"
-import conform from "../components/onderzoek/signaleren/iconen_beoordeling/LEGACY_CONFORM.svg"
-import geenBijzonderheden from "../components/onderzoek/signaleren/iconen_beoordeling/LEGACY_GEEN_BIJZONDERHEDEN.svg"
-import massaMetUitlopers from "../components/onderzoek/signaleren/iconen_beoordeling/LEGACY_MASSA_MET_SPICULAE.svg"
-import projectiesLinks from "../components/onderzoek/signaleren/iconen_beoordeling/LEGACY_PROJECTIE_NAAR_LINKS.svg"
-import projectiesRechts from "../components/onderzoek/signaleren/iconen_beoordeling/LEGACY_PROJECTIE_NAAR_RECHTS.svg"
-import verdichtingMicrokalk from "../components/onderzoek/signaleren/iconen_beoordeling/LEGACY_MASSA_MET_CALCIFICATIES.svg"
-import markering from "../components/onderzoek/signaleren/iconen_beoordeling/LEGACY_MARKERING.svg"
-import begine from "../components/onderzoek/signaleren/iconen_beoordeling/LEGACY_BENIGNE_KALK.svg"
-import verdichtingUitlopendMicrokalk from "../components/onderzoek/signaleren/iconen_beoordeling/LEGACY_MASSA_MET_SPICULAE_EN_CALCIFICATIES.svg"
 import type {AnnotatieIcoonType, LegacyIcoonType} from "../datatypes/AnnotatieIcoon"
 import type {IcoonAfbeelding} from "../datatypes/IcoonAfbeelding"
 
@@ -148,154 +118,157 @@ export const getAfbeeldingByType = (type: AnnotatieIcoonType | LegacyIcoonType, 
 			throw Error("Supplied value isn't valid")
 	}
 }
+const iconenInspectieFolder = "./images/iconen_inspectie"
 const amputatieProps: IcoonAfbeelding = {
-	afbeelding: amputatie,
+	afbeelding: `${iconenInspectieFolder}/amputatie.svg`,
 	width: 20,
 	height: 21,
 }
 const amputatieVorigeOnderzoekProps: IcoonAfbeelding = {
-	afbeelding: amputatieVorigeOnderzoek,
+	afbeelding: `${iconenInspectieFolder}/amputatieVorigeOnderzoek.svg`,
 	width: 20,
 	height: 21,
 }
 const borstvergrotingProps: IcoonAfbeelding = {
-	afbeelding: borstvergroting,
+	afbeelding: `${iconenInspectieFolder}/borstvergroting.svg`,
 	width: 25,
 	height: 25,
 }
 const dubbelzijdigeBorstverkleiningProps: IcoonAfbeelding = {
-	afbeelding: dubbelzijdigeBorstverkleining,
+	afbeelding: `${iconenInspectieFolder}/dubbelzijdige-borstverkleining.svg`,
 	width: 38,
 	height: 26,
 }
 const eenzijdigeBorstverkleiningProps: IcoonAfbeelding = {
-	afbeelding: eenzijdigeBorstverkleining,
+	afbeelding: `${iconenInspectieFolder}/eenzijdige-borstverkleining.svg`,
 	width: 18,
 	height: 26,
 }
 const groterDanProps: IcoonAfbeelding = {
-	afbeelding: groterDan,
+	afbeelding: `${iconenInspectieFolder}/groter-dan.svg`,
 	width: 25,
 	height: 25,
 }
 const ingetrokkenTepelProps: IcoonAfbeelding = {
-	afbeelding: ingetrokkenTepel,
+	afbeelding: `${iconenInspectieFolder}/ingetrokken-tepel.svg`,
 	width: 25,
 	height: 25,
 }
 const kleinerDanProps: IcoonAfbeelding = {
-	afbeelding: kleinerDan,
+	afbeelding: `${iconenInspectieFolder}/kleiner-dan.svg`,
 	width: 25,
 	height: 25,
 }
 const littekenHorizontaalProps: IcoonAfbeelding = {
-	afbeelding: littekenHorizontaal,
+	afbeelding: `${iconenInspectieFolder}/litteken-horizontaal.svg`,
 	width: 37,
 	height: 9,
 }
 const littekenLbRoProps: IcoonAfbeelding = {
-	afbeelding: littekenLoRb,
+	afbeelding: `${iconenInspectieFolder}/litteken-lo-rb.svg`,
 	width: 25,
 	height: 25,
 }
 const littekenRbLoProps: IcoonAfbeelding = {
-	afbeelding: littekenRbLo,
+	afbeelding: `${iconenInspectieFolder}/litteken-rb-lo.svg`,
 	width: 25,
 	height: 25,
 }
 const littekenVerticaalProps: IcoonAfbeelding = {
-	afbeelding: littekenVerticaal,
+	afbeelding: `${iconenInspectieFolder}/litteken-verticaal.svg`,
 	width: 9,
 	height: 33,
 }
 const massaProps: IcoonAfbeelding = {
-	afbeelding: visueleInspectieMassa,
+	afbeelding: `${iconenInspectieFolder}/massa.svg`,
 	width: 25,
 	height: 25,
 }
 const uitwendigeAfwijkingProps: IcoonAfbeelding = {
-	afbeelding: uitwendigeAfwijking,
+	afbeelding: `${iconenInspectieFolder}/uitwendige-afwijking.svg`,
 	width: 25,
 	height: 25,
 	isRightUpperCornerOrigin: true,
 }
+
+const iconenBeoordelingFolder = "./images/iconen_beoordeling"
 const plusProps: IcoonAfbeelding = {
-	afbeelding: plus,
+	afbeelding: `${iconenBeoordelingFolder}/LEGACY_PLUS.svg`,
 	width: 25,
 	height: 25,
 }
 const architectuurVerstoringProps: IcoonAfbeelding = {
-	afbeelding: architectuurVerstoring,
+	afbeelding: `${iconenBeoordelingFolder}/ARCHITECTUURVERSTORING.svg`,
 	width: 26,
 	height: 26,
 }
 const asymmetrieProps: IcoonAfbeelding = {
-	afbeelding: asymmetrie,
+	afbeelding: `${iconenBeoordelingFolder}/ASYMMETRIE.svg`,
 	width: 26,
 	height: 26,
 }
 const calcificatiesProps: IcoonAfbeelding = {
-	afbeelding: calcificaties,
+	afbeelding: `${iconenBeoordelingFolder}/CALCIFICATIES.svg`,
 	width: 30,
 	height: 33,
 }
 const signaleringMassaProps: IcoonAfbeelding = {
-	afbeelding: signaleringMassa,
+	afbeelding: `${iconenBeoordelingFolder}/MASSA.svg`,
 	width: 26,
 	height: 26,
 }
 const architectuurVerstoringCalcificatiesProps: IcoonAfbeelding = {
-	afbeelding: architectuurVerstoringCalcificaties,
+	afbeelding: `${iconenBeoordelingFolder}/LEGACY_ARCHITECTUURVERSTORING_MET_CALCIFICATIES.svg`,
 	width: 26,
 	height: 26,
 }
 const architectuurVerstoringMassaProps: IcoonAfbeelding = {
-	afbeelding: architectuurVerstoringMassa,
+	afbeelding: `${iconenBeoordelingFolder}/LEGACY_MASSA_MET_ARCHITECTUURVERSTORING.svg`,
 	width: 26,
 	height: 26,
 }
 const conformProps: IcoonAfbeelding = {
-	afbeelding: conform,
+	afbeelding: `${iconenBeoordelingFolder}/LEGACY_CONFORM.svg`,
 	width: 26,
 	height: 26,
 }
 const geenBijzonderhedenProps: IcoonAfbeelding = {
-	afbeelding: geenBijzonderheden,
+	afbeelding: `${iconenBeoordelingFolder}/LEGACY_GEEN_BIJZONDERHEDEN.svg`,
 	width: 26,
 	height: 26,
 }
 const massaMetUitlopersProps: IcoonAfbeelding = {
-	afbeelding: massaMetUitlopers,
+	afbeelding: `${iconenBeoordelingFolder}/LEGACY_MASSA_MET_SPICULAE.svg`,
 	width: 26,
 	height: 26,
 }
 const projectiesLinksProps: IcoonAfbeelding = {
-	afbeelding: projectiesLinks,
+	afbeelding: `${iconenBeoordelingFolder}/LEGACY_PROJECTIE_NAAR_LINKS.svg`,
 	width: 26,
 	height: 26,
 }
 const projectiesRechtsProps: IcoonAfbeelding = {
-	afbeelding: projectiesRechts,
+	afbeelding: `${iconenBeoordelingFolder}/LEGACY_PROJECTIE_NAAR_RECHTS.svg`,
 	width: 26,
 	height: 26,
 }
 const verdichtingMicrokalkProps: IcoonAfbeelding = {
-	afbeelding: verdichtingMicrokalk,
+	afbeelding: `${iconenBeoordelingFolder}/LEGACY_MASSA_MET_CALCIFICATIES.svg`,
 	width: 26,
 	height: 26,
 }
 const verdichtingUitlopendMicrokalkProps: IcoonAfbeelding = {
-	afbeelding: verdichtingUitlopendMicrokalk,
+	afbeelding: `${iconenBeoordelingFolder}/LEGACY_MASSA_MET_SPICULAE_EN_CALCIFICATIES.svg`,
 	width: 26,
 	height: 26,
 }
 const markeringProps: IcoonAfbeelding = {
-	afbeelding: markering,
+	afbeelding: `${iconenBeoordelingFolder}/LEGACY_MARKERING.svg`,
 	width: 26,
 	height: 26,
 }
 const begineProps: IcoonAfbeelding = {
-	afbeelding: begine,
+	afbeelding: `${iconenBeoordelingFolder}/LEGACY_BENIGNE_KALK.svg`,
 	width: 26,
 	height: 26,
 }

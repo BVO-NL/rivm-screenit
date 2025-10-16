@@ -18,11 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "src/scss/colors";
-@import "src/scss/media-mixins";
-
 .hintContainer {
-	background-color: $grijs-600;
+	background-color: var(--grijs-600);
 	border-radius: 10px;
 	width: 100%;
 	padding: 25px;

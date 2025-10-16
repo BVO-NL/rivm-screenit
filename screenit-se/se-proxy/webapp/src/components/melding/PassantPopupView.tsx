@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import {Component, JSX} from "react"
 import {Table} from "reactstrap"
 
 export type PassantPopupViewProps = {
@@ -31,7 +31,7 @@ export type PassantPopupViewProps = {
 	eenmaligeAfmelding: boolean;
 };
 
-export default class PassantPopupView extends React.Component<PassantPopupViewProps> {
+export default class PassantPopupView extends Component<PassantPopupViewProps> {
 
 	render(): JSX.Element {
 		return <div>

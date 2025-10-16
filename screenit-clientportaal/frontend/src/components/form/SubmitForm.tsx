@@ -20,7 +20,7 @@
  */
 import styles from "./SubmitForm.module.scss"
 import bvoStyle from "../BvoStyle.module.scss"
-import React from "react"
+import {ReactNode} from "react"
 import Button from "../input/Button"
 import {useSelectedBvo} from "../../utils/Hooks"
 import classNames from "classnames"
@@ -34,10 +34,10 @@ export type FormProps<T> = {
 	title: string
 	formikProps: FormikProps<T>
 	buttonLabel: string
-	children: React.ReactNode
+	children: ReactNode
 }
 
-const SubmitForm = <T extends any>(props: FormProps<T>) => {
+const SubmitForm = <T, >(props: FormProps<T>): ReactNode => {
 	const selectedBvo = useSelectedBvo()
 
 	return (
