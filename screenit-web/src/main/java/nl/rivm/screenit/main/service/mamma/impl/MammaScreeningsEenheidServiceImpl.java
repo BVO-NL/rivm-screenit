@@ -78,7 +78,6 @@ import static nl.rivm.screenit.specification.mamma.MammaScreeningsEenheidSpecifi
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheidService
 {
-
 	@Autowired
 	private HibernateService hibernateService;
 

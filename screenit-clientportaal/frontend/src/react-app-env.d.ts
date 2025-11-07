@@ -23,10 +23,10 @@ declare namespace NodeJS {
 	interface ProcessEnv {
 		readonly NODE_ENV: "development" | "production" | "test";
 		readonly PUBLIC_URL: string;
-		readonly REACT_APP_DD_RUM_APPLICATION_ID_ACC: string;
-		readonly REACT_APP_DD_RUM_APPLICATION_ID_PROD: string;
-		readonly REACT_APP_DD_RUM_CLIENT_TOKEN_ACC: string;
-		readonly REACT_APP_DD_RUM_CLIENT_TOKEN_PROD: string;
+		readonly VITE_DD_RUM_APPLICATION_ID_ACC: string;
+		readonly VITE_DD_RUM_APPLICATION_ID_PROD: string;
+		readonly VITE_DD_RUM_CLIENT_TOKEN_ACC: string;
+		readonly VITE_DD_RUM_CLIENT_TOKEN_PROD: string;
 	}
 }
 

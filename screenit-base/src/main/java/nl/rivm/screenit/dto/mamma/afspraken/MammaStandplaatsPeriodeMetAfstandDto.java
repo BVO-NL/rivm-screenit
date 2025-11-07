@@ -23,6 +23,9 @@ package nl.rivm.screenit.dto.mamma.afspraken;
 
 import java.io.Serializable;
 
+import lombok.Getter;
+
+@Getter
 public class MammaStandplaatsPeriodeMetAfstandDto implements Serializable
 {
 	private final Long standplaatsPeriodeId;
@@ -35,18 +38,8 @@ public class MammaStandplaatsPeriodeMetAfstandDto implements Serializable
 		this.afstand = afstand;
 	}
 
-	public Long getStandplaatsPeriodeId()
-	{
-		return standplaatsPeriodeId;
-	}
-
-	public Double getAfstand()
-	{
-		return afstand;
-	}
-
 	public boolean isOnbekendeAfstand()
 	{
-		return afstand.equals(MammaKandidaatAfspraakDto.ONBEKENDE_AFSTAND);
+		return afstand.equals(MammaBaseAfspraakOptieDto.ONBEKENDE_AFSTAND);
 	}
 }

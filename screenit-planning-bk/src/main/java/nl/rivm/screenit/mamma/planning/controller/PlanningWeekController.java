@@ -101,7 +101,6 @@ public class PlanningWeekController
 	@PutMapping
 	public void herhalen(@RequestBody PlanningHerhalenDto herhalenDto)
 	{
-
 		PlanningScreeningsEenheid screeningsEenheidVan = PlanningScreeningsEenheidIndex.get(herhalenDto.screeningsEenheidIdVan);
 		capaciteitAgendaService.herhalen(screeningsEenheidVan,
 			PlanningScreeningsEenheidIndex.get(herhalenDto.screeningsEenheidIdNaar),

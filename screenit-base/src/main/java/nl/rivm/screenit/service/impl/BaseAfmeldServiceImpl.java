@@ -394,7 +394,15 @@ public class BaseAfmeldServiceImpl implements BaseAfmeldService
 		var ronde = afmelding.getScreeningRonde();
 		var dossier = ronde.getDossier();
 		var laatstePeildatum = DateUtil.toLocalDate(ronde.getCreatieDatum());
-		var ingangsDatumRondeNaTijdelijkAfmelden = laatstePeildatum.withYear(afmelding.getTijdelijkAfmeldenTotJaartal());
+		var tijdelijkAfmeldenTotJaartal = afmelding.getTijdelijkAfmeldenTotJaartal();
+		if (tijdelijkAfmeldenTotJaartal == 0)
+		{
+
+			tijdelijkAfmeldenTotJaartal = laatstePeildatum.getYear() + 2;
+			LOG.warn("Geen jaartal voor tijdelijk afmelden opgegeven voor afmelding(id: '{}'), jaar van start laatste ronde + 2: {}", afmelding.getId(),
+				tijdelijkAfmeldenTotJaartal);
+		}
+		var ingangsDatumRondeNaTijdelijkAfmelden = laatstePeildatum.withYear(tijdelijkAfmeldenTotJaartal);
 
 		dossier.getVolgendeUitnodiging().setDatumVolgendeRonde(ingangsDatumRondeNaTijdelijkAfmelden);
 	}

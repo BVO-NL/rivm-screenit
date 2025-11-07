@@ -62,15 +62,13 @@ import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsRondeRappo
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBaseFactory;
-import nl.rivm.screenit.service.mamma.MammaBaseKandidaatAfsprakenDeterminatiePeriode;
 import nl.rivm.screenit.service.mamma.MammaBaseKansberekeningService;
 import nl.rivm.screenit.service.mamma.MammaBaseScreeningrondeService;
 import nl.rivm.screenit.service.mamma.MammaBaseUitstelService;
-import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaKandidaatAfspraak;
-import nl.rivm.screenit.service.mamma.impl.MammaOnvoldoendeVrijeCapaciteitException;
+import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaAfspraakOptie;
+import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaOnvoldoendeVrijeCapaciteitException;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -123,12 +121,10 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 			BigDecimal voorlopigeOpkomstkans = baseKansberekeningService
 				.getVoorlopigeOpkomstkans(dossier, eersteMammaStandplaatsPeriode, null, briefType);
 
-			MammaKandidaatAfspraak kandidaatAfspraak;
+			MammaAfspraakOptie afspraakOptie;
 			try
 			{
-				MammaBaseKandidaatAfsprakenDeterminatiePeriode baseKandidaatAfsprakenDeterminatiePeriode = ApplicationContextProvider.getApplicationContext()
-					.getBean(MammaBaseKandidaatAfsprakenDeterminatiePeriode.class);
-				kandidaatAfspraak = baseKandidaatAfsprakenDeterminatiePeriode.getKandidaatAfspraakUitnodiging(dossier, mammaStandplaatsRonde, voorlopigeOpkomstkans,
+				afspraakOptie = baseAfspraakService.getAfspraakOptieUitnodiging(dossier, mammaStandplaatsRonde, voorlopigeOpkomstkans,
 					context.capaciteitVolledigBenutTotEnMetAantalWerkdagen, context.afspraakBijUitnodigenVanafAantalWerkdagen);
 			}
 			catch (MammaOnvoldoendeVrijeCapaciteitException e)
@@ -141,9 +137,9 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 			}
 
 			MammaScreeningRonde mammaScreeningRonde = maakRondeEnUitnodiging(dossier, briefType, mammaStandplaatsRonde, false);
-			MammaCapaciteitBlok capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, kandidaatAfspraak.getCapaciteitBlokDto().id);
-			MammaStandplaatsPeriode standplaatsPeriode = kandidaatAfspraak.getCapaciteitBlokDto().standplaatsPeriode;
-			baseAfspraakService.maakAfspraak(mammaScreeningRonde, capaciteitBlok, DateUtil.toUtilDate(kandidaatAfspraak.getVanaf().atDate(kandidaatAfspraak.getDatum())),
+			MammaCapaciteitBlok capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, afspraakOptie.getCapaciteitBlokDto().id);
+			MammaStandplaatsPeriode standplaatsPeriode = afspraakOptie.getCapaciteitBlokDto().standplaatsPeriode;
+			baseAfspraakService.maakAfspraak(mammaScreeningRonde, capaciteitBlok, DateUtil.toUtilDate(afspraakOptie.getVanaf().atDate(afspraakOptie.getDatum())),
 				standplaatsPeriode, null, false, true, false, true, false, null, false);
 
 			voegToe(getStandplaatsPeriodeUitnodigenRapportage(rapportageDto, standplaatsPeriode), briefType, client);

@@ -34,6 +34,7 @@ import nl.rivm.screenit.main.exception.MammaMinderValideReserveringException;
 import nl.rivm.screenit.main.service.mamma.MammaMinderValideReserveringService;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.repository.mamma.MammaScreeningsEenheidRepository;
+import nl.rivm.screenit.util.RangeUtil;
 import nl.rivm.screenit.util.mamma.MammaPlanningUtil;
 
 import org.hibernate.Hibernate;
@@ -61,7 +62,12 @@ public class MammaMinderValideReserveringServiceImpl implements MammaMinderValid
 	public int getBenodigdeMinutenVoorReservering(PlanningCapaciteitBlokDto planningCapaciteitBlokDto)
 	{
 		var factorMinderValide = getFactorMinderValideBijBlok(planningCapaciteitBlokDto);
-		return (int) MammaPlanningUtil.minimumTijdvak(factorMinderValide);
+		return getBenodigdeMinutenVoorReservering(factorMinderValide);
+	}
+
+	private int getBenodigdeMinutenVoorReservering(BigDecimal factorMinderValide)
+	{
+		return MammaPlanningUtil.minimumTijdvak(factorMinderValide);
 	}
 
 	@Override
@@ -71,35 +77,24 @@ public class MammaMinderValideReserveringServiceImpl implements MammaMinderValid
 		var mindervalideReserveringDtos = capaciteitBlokDto.getMinderValideReserveringen();
 
 		var factorMinderValide = getFactorMinderValideBijBlok(capaciteitBlokDto);
-		valideerVoldoendeCapaciteitVoorReserveringen(capaciteitBlokDto, mindervalideReserveringDtos, factorMinderValide);
+		valideerVoldoendeCapaciteitVoorReserveringen(capaciteitBlokDto, mindervalideReserveringDtos, factorMinderValide, false);
 
-		var benodigdeMinutenVoorReservering = (int) MammaPlanningUtil.minimumTijdvak(factorMinderValide);
-		var reserveringRanges = maakLijstMetOpenReserveringRangesVoorReserveringen(mindervalideReserveringDtos, benodigdeMinutenVoorReservering);
+		var benodigdeMinutenVoorReservering = getBenodigdeMinutenVoorReservering(factorMinderValide);
+		var reserveringRanges = maakLijstMetReserveringRangesVoorReserveringen(mindervalideReserveringDtos, benodigdeMinutenVoorReservering);
 
 		var isErOverlap = reserveringRanges.stream()
 			.anyMatch(range1 -> reserveringRanges.stream()
-				.anyMatch(range2 -> range1 != range2 && range1.isConnected(range2)));
+				.anyMatch(range2 -> range1 != range2 && RangeUtil.isOverlap(range1, range2)));
 
 		if (isErOverlap)
 		{
 			throw new MammaMinderValideReserveringException("overlap.tussen.mindervalide.reserveringen");
 		}
 
-		var capaciteitBlokRange = capaciteitBlokDto.getOpenCapaciteitBlokRange();
+		var capaciteitBlokRange = capaciteitBlokDto.getCapaciteitBlokRange();
 		if (reserveringRanges.stream().anyMatch(range -> !capaciteitBlokRange.encloses(range)))
 		{
 			throw new MammaMinderValideReserveringException("mindervalide.reservering.buiten.capaciteit.blok");
-		}
-	}
-
-	private static void valideerVoldoendeCapaciteitVoorReserveringen(PlanningCapaciteitBlokDto capaciteitBlokDto,
-		List<PlanningMindervalideReserveringDto> mindervalideReserveringDtos, BigDecimal factorMinderValide)
-		throws MammaMinderValideReserveringException
-	{
-		var capaciteitBenodigd = BigDecimal.valueOf(mindervalideReserveringDtos.size()).multiply(factorMinderValide);
-		if (capaciteitBenodigd.compareTo(BigDecimal.valueOf(capaciteitBlokDto.aantalOnderzoeken)) > 0)
-		{
-			throw new MammaMinderValideReserveringException("te.veel.mindervalide.reserveringen.voor.capaciteit");
 		}
 	}
 
@@ -107,7 +102,9 @@ public class MammaMinderValideReserveringServiceImpl implements MammaMinderValid
 		throws MammaMinderValideReserveringException
 	{
 		var mindervalideReserveringDtos = planningCapaciteitBlokDto.getMinderValideReserveringen();
-		var benodigdeAantalMinutenVoorReservering = getBenodigdeMinutenVoorReservering(planningCapaciteitBlokDto);
+		var factorMinderValide = getFactorMinderValideBijBlok(planningCapaciteitBlokDto);
+		var benodigdeAantalMinutenVoorReservering = getBenodigdeMinutenVoorReservering(factorMinderValide);
+		valideerVoldoendeCapaciteitVoorReserveringen(planningCapaciteitBlokDto, mindervalideReserveringDtos, factorMinderValide, true);
 		if (mindervalideReserveringDtos.isEmpty())
 		{
 			var vanaf = toLocalDateTime(planningCapaciteitBlokDto.vanaf);
@@ -124,18 +121,29 @@ public class MammaMinderValideReserveringServiceImpl implements MammaMinderValid
 		return berekenEerstVolgendeVrijeMomentVoorReservering(planningCapaciteitBlokDto, mindervalideReserveringDtos, benodigdeAantalMinutenVoorReservering);
 	}
 
+	private static void valideerVoldoendeCapaciteitVoorReserveringen(PlanningCapaciteitBlokDto capaciteitBlokDto,
+		List<PlanningMindervalideReserveringDto> mindervalideReserveringDtos, BigDecimal factorMinderValide, boolean isVoorNieuweReservering)
+		throws MammaMinderValideReserveringException
+	{
+		var correctieVoorAanmakenNieuweMinderValideReservering = isVoorNieuweReservering ? 1 : 0;
+		var capaciteitBenodigd = BigDecimal.valueOf(mindervalideReserveringDtos.size() + correctieVoorAanmakenNieuweMinderValideReservering).multiply(factorMinderValide);
+		if (capaciteitBenodigd.compareTo(BigDecimal.valueOf(capaciteitBlokDto.aantalOnderzoeken)) > 0)
+		{
+			throw new MammaMinderValideReserveringException("te.veel.mindervalide.reserveringen.voor.capaciteit");
+		}
+	}
+
 	private LocalTime berekenEerstVolgendeVrijeMomentVoorReservering(PlanningCapaciteitBlokDto planningCapaciteitBlokDto,
 		List<PlanningMindervalideReserveringDto> mindervalideReserveringDtos, int benodigdeMinutenVoorReservering)
 		throws MammaMinderValideReserveringException
 	{
-
-		var bezetteRanges = maakLijstMetOpenReserveringRangesVoorReserveringen(mindervalideReserveringDtos, benodigdeMinutenVoorReservering);
+		var bezetteRanges = maakLijstMetReserveringRangesVoorReserveringen(mindervalideReserveringDtos, benodigdeMinutenVoorReservering);
 
 		var zoekVoorRuimteVanaf = toLocalTime(planningCapaciteitBlokDto.vanaf);
 		for (var bezetteRange : bezetteRanges)
 		{
-			var potentieelEersteMoment = Range.open(zoekVoorRuimteVanaf, zoekVoorRuimteVanaf.plusMinutes(benodigdeMinutenVoorReservering));
-			if (bezetteRange.isConnected(potentieelEersteMoment))
+			var potentieelEersteMoment = Range.closedOpen(zoekVoorRuimteVanaf, zoekVoorRuimteVanaf.plusMinutes(benodigdeMinutenVoorReservering));
+			if (RangeUtil.isOverlap(bezetteRange, potentieelEersteMoment))
 			{
 				zoekVoorRuimteVanaf = bezetteRange.upperEndpoint();
 			}
@@ -151,11 +159,11 @@ public class MammaMinderValideReserveringServiceImpl implements MammaMinderValid
 		throw new MammaMinderValideReserveringException("geen.plaats.voor.mindervalide.reservering");
 	}
 
-	private List<Range<LocalTime>> maakLijstMetOpenReserveringRangesVoorReserveringen(List<PlanningMindervalideReserveringDto> mindervalideReserveringDtos,
+	private List<Range<LocalTime>> maakLijstMetReserveringRangesVoorReserveringen(List<PlanningMindervalideReserveringDto> mindervalideReserveringDtos,
 		int benodigdeMinutenVoorReservering)
 	{
 		return mindervalideReserveringDtos.stream().sorted(Comparator.comparing(PlanningMindervalideReserveringDto::getVanaf)).map(dto ->
-			Range.open(dto.getVanaf(), dto.getVanaf().plusMinutes(benodigdeMinutenVoorReservering))
+			Range.closedOpen(dto.getVanaf(), dto.getVanaf().plusMinutes(benodigdeMinutenVoorReservering))
 		).toList();
 	}
 

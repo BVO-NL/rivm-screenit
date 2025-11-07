@@ -167,15 +167,14 @@ public final class FITTestUtil
 		return uitgevoerdeIfobtTesten.stream().map(IFOBTTest::getStatusDatum).filter(Objects::nonNull).max(Date::compareTo).orElse(null);
 	}
 
-	public static boolean heeftUitslag(ColonScreeningRonde ronde)
+	public static boolean heeftSuccesvolleAnalyse(ColonScreeningRonde ronde)
 	{
-		return ronde.getIfobtTesten().stream().filter(fit -> !List.of(IFOBTTestStatus.NIETTEBEOORDELEN, IFOBTTestStatus.VERVALDATUMVERLOPEN).contains(fit.getStatus()))
-			.anyMatch(FITTestUtil::heeftUitslag);
+		return ronde.getIfobtTesten().stream().anyMatch(FITTestUtil::heeftSuccesvolleAnalyse);
 	}
 
-	public static boolean heeftUitslag(IFOBTTest buis)
+	public static boolean heeftSuccesvolleAnalyse(IFOBTTest fit)
 	{
-		return buis.getUitslag() != null || buis.getGeinterpreteerdeUitslag() != null;
+		return fit.getStatus() == IFOBTTestStatus.UITGEVOERD && (FITTestUtil.isGunstig(fit) || FITTestUtil.isOngunstig(fit));
 	}
 
 	public static boolean heeftOngunstigeUitslagInLaatsteRonde(ColonDossier dossier)

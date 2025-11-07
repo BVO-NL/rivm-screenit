@@ -66,6 +66,7 @@ public class FilterConfig
 		var filter = new FilterRegistrationBean<WsbRestControllerLoggingFilter>();
 		filter.setFilter(restControllerLoggingFilter);
 		filter.addUrlPatterns("/services/rest/*");
+		filter.addUrlPatterns("/api/inpakcentrum/v2/*");
 		filter.setOrder(FilterOrder.LOG.ordinal());
 		return filter;
 	}

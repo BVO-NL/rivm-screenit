@@ -37,8 +37,8 @@ class DatadogService {
 		if (isAcceptatie || isProductie) {
 			datadogRum.init({
 				...defaultRumInitConfiguration,
-				applicationId: isAcceptatie ? process.env.REACT_APP_DD_RUM_APPLICATION_ID_ACC : process.env.REACT_APP_DD_RUM_APPLICATION_ID_PROD,
-				clientToken: isAcceptatie ? process.env.REACT_APP_DD_RUM_CLIENT_TOKEN_ACC : process.env.REACT_APP_DD_RUM_CLIENT_TOKEN_PROD,
+				applicationId: isAcceptatie ? import.meta.env.VITE_DD_RUM_APPLICATION_ID_ACC : import.meta.env.VITE_DD_RUM_APPLICATION_ID_PROD,
+				clientToken: isAcceptatie ? import.meta.env.VITE_DD_RUM_CLIENT_TOKEN_ACC : import.meta.env.VITE_DD_RUM_CLIENT_TOKEN_PROD,
 			})
 		}
 	}

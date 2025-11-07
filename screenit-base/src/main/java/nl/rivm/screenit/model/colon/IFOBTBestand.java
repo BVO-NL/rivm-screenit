@@ -58,8 +58,6 @@ public class IFOBTBestand extends AbstractHibernateObject
 	@OneToMany(mappedBy = "bestand")
 	private List<IFOBTUitslag> uitslagen = new ArrayList<>();
 
-	private String instumentId;
-
 	private String naamBestand;
 
 	private String pathBestand;

@@ -65,6 +65,8 @@ public class IFOBTUitslag extends AbstractHibernateObject
 
 	private String flag;
 
+	private String instrumentId;
+
 	@Enumerated(EnumType.STRING)
 	private RedenNietTeBeoordelen onbeoordeelbaarReden;
 }

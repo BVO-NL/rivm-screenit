@@ -47,6 +47,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -92,8 +93,17 @@ public class JwtSecurityConfig
 		{
 			httpSecurity.oauth2ResourceServer(oauth2ResourceServer ->
 				oauth2ResourceServer.jwt(jwt ->
-					jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())
-				)
+						jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())
+					)
+					.bearerTokenResolver(request ->
+					{
+						var path = request.getRequestURI();
+						if (path != null && path.startsWith("/services/"))
+						{
+							return null; 
+						}
+						return new DefaultBearerTokenResolver().resolve(request);
+					})
 			);
 		}
 		return http.build();

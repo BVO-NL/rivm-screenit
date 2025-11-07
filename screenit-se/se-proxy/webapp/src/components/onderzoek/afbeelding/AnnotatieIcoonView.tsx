@@ -80,6 +80,11 @@ type Coordinates = {
 	aanzicht?: Aanzicht;
 };
 
+type Position = {
+	x: number;
+	y: number;
+}
+
 export default class AnnotatieIcoonView extends Component<AnnotatieIcoonViewStateProps & AnnotatieIcoonViewDispatchProps, AnnotatieIcoonViewState> {
 
 	textboxRef: React.RefObject<HTMLInputElement | null>
@@ -116,16 +121,13 @@ export default class AnnotatieIcoonView extends Component<AnnotatieIcoonViewStat
 		}
 
 		const outsideLeft = coord.x < 0.0
-		const outsideRight = coord.x > 100.0
-		const outsideTop = coord.y < 0.0
+		const outsideRight = coord.x > 110.0
+		const outsideTop = coord.y < -10.0
 		const outsideBottom = yBottom && coord.y > yBottom
 		return !!(outsideLeft || outsideRight || outsideTop || outsideBottom)
 	}
 
-	onStop = (e: DraggableEvent, position: {
-		x: number;
-		y: number;
-	}): void => {
+	onStop = (e: DraggableEvent, position: Position): void => {
 		const coordinates = this.convertPixelsToCoordinates(position)
 
 		if (coordinates && this.props.afspraakId) {
@@ -246,27 +248,27 @@ export default class AnnotatieIcoonView extends Component<AnnotatieIcoonViewStat
 		const icoonAfbeelding: IcoonAfbeelding = getAfbeeldingByType(icoon.type, this.props.isNietVisueleInspectie)
 		return <Draggable position={this.getPixelsFromCoordinates(icoonAfbeelding)} onStop={this.onStop} nodeRef={nodeRef}
 						  onDrag={this.onDrag} enableUserSelectHack={false} disabled={!this.props.isDraggable}>
-			{this.state.isOutsideCanvas && this.state.hasBeenOnCanvas ? <div/> :
-				<div className={`visuele-inspectie-icoon${this.notSelectable()}`} title={annotatieTitle(icoon.type)} ref={nodeRef}
-					 style={{
-						 backgroundImage: `url(${icoonAfbeelding.afbeelding})`,
-						 backgroundRepeat: "no-repeat",
-						 backgroundSize: "cover",
-						 width: this.icoonWidth(),
-						 height: this.icoonHeight(),
-					 }}>
-					{this.props.metTextbox &&
-						<input
-							ref={this.textboxRef} type="text" disabled={!this.props.isDraggable}
-							defaultValue={icoon.tekst} maxLength={12}
-							className={`icoontext${this.notSelectable()}`}
-							onChange={this.textChange}
-							style={{
-								marginTop: this.icoonHeight(),
-								width: tekstvakbreedte,
-								marginLeft: (this.icoonWidth() - tekstvakbreedte) / 2,
-							}}/>}
-				</div>}
+			<div className={`visuele-inspectie-icoon${this.notSelectable()}`} title={annotatieTitle(icoon.type)} ref={nodeRef}
+				 style={{
+					 backgroundImage: `url(${icoonAfbeelding.afbeelding})`,
+					 backgroundRepeat: "no-repeat",
+					 backgroundSize: "cover",
+					 width: this.icoonWidth(),
+					 height: this.icoonHeight(),
+					 display: this.state.isOutsideCanvas && this.state.hasBeenOnCanvas ? "none" : "block",
+				 }}>
+				{this.props.metTextbox &&
+					<input
+						ref={this.textboxRef} type="text" disabled={!this.props.isDraggable}
+						defaultValue={icoon.tekst} maxLength={12}
+						className={`icoontext${this.notSelectable()}`}
+						onChange={this.textChange}
+						style={{
+							marginTop: this.icoonHeight(),
+							width: tekstvakbreedte,
+							marginLeft: (this.icoonWidth() - tekstvakbreedte) / 2,
+						}}/>}
+			</div>
 		</Draggable>
 	}
 

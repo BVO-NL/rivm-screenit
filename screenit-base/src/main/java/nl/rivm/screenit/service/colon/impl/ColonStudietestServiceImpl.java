@@ -85,7 +85,7 @@ public class ColonStudietestServiceImpl implements ColonStudietestService
 				fitService.bepaalEnSetHeraanmeldenTekstKey(studietest);
 				if (studietest.getHeraanmeldenTekstKey() != null)
 				{
-					fitService.heraanmelden(studietest.getColonScreeningRonde(), currentDateSupplier.getLocalDateTime());
+					fitService.heraanmelden(studietest.getColonScreeningRonde());
 					clientIsHeraangemeld = true;
 				}
 			}

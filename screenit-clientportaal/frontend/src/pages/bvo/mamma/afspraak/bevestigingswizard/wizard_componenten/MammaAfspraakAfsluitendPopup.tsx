@@ -30,6 +30,8 @@ import {getBvoBaseUrl} from "../../../../../../utils/UrlUtil"
 import {useSelectedBvo} from "../../../../../../utils/Hooks"
 import {AfspraakBevestigingOpties} from "../../../../../../datatypes/mamma/AfspraakBevestigingOpties"
 import {BevestigingsType} from "../../../../../../datatypes/BevestigingsType"
+import datadogService from "../../../../../../services/DatadogService"
+import {AnalyticsCategorie} from "../../../../../../datatypes/AnalyticsCategorie"
 
 export type MammaAfspraakAfsluitendPopupProps = {
 	afspraakBevestiging: AfspraakBevestigingOpties,
@@ -48,12 +50,14 @@ const MammaAfspraakAfsluitendPopup = (props: MammaAfspraakAfsluitendPopupProps) 
 				<div className={styles.bevestigenForm}>
 					<Button label={properties.bevestiging.controleer_ha}
 							onClick={() => {
+								datadogService.stuurEvent("AfspraakSamenvattingEnHuisartsControle", AnalyticsCategorie.MAMMA_AFSPRAAK)
 								props.onHuisartsControleren()
 							}}
 							displayArrow={ArrowType.ARROW_RIGHT}
 					/>
 
 					<NavLink onClick={() => {
+						datadogService.stuurEvent("AfspraakSamenvattingEnSluiten", AnalyticsCategorie.MAMMA_AFSPRAAK)
 						navigate(getBvoBaseUrl(bvo))
 					}}>{properties.bevestiging.sla_over}</NavLink>
 				</div>

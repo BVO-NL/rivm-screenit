@@ -1,8 +1,8 @@
-package nl.rivm.screenit.service.mamma.impl;
+package nl.rivm.screenit.main.service.colon;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-base
+ * screenit-web
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,6 +21,17 @@ package nl.rivm.screenit.service.mamma.impl;
  * =========================LICENSE_END==================================
  */
 
-public class MammaOnvoldoendeVrijeCapaciteitException extends Exception
+import java.util.Date;
+
+import nl.rivm.screenit.main.model.testen.TestTimeLineDossierTijdstip;
+import nl.rivm.screenit.model.colon.ColonDossier;
+
+public interface ColonTestTimelineTimeService
 {
+
+	boolean calculateBackwards(ColonDossier dossier, TestTimeLineDossierTijdstip tijdstip);
+
+	boolean calculateBackwards(ColonDossier dossier, int aantalDagen);
+
+	Date getVooraankondigingsPeriodeDatum();
 }

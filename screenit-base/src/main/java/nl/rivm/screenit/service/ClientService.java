@@ -69,7 +69,7 @@ public interface ClientService
 
 	Dossier getDossier(Client client, Bevolkingsonderzoek bevolkingsonderzoek);
 
-	boolean isHandtekeningBriefGebruiktBijMeedereColonAfmeldingen(UploadDocument handtekeningBrief, String handtekeningProperty);
+	boolean isHandtekeningBriefGebruiktBijMeerdereColonAfmeldingen(UploadDocument handtekeningBrief, String handtekeningProperty);
 
 	Client getClientByAnummer(String stringUitBericht);
 

@@ -98,6 +98,7 @@ public class MammaCeGeenBeoordelingMogelijkWerklijstPage extends AbstractMammaCe
 		columns.add(new PropertyColumn<>(Model.of("CE"),
 			propertyChain(MammaOnderzoek_.LAATSTE_BEOORDELING, MammaBeoordeling_.BEOORDELINGS_EENHEID, Organisatie_.PARENT, Organisatie_.NAAM),
 			"onderzoek.screeningsEenheid.beoordelingsEenheid.parent.naam"));
+		columns.add(getHuisartsClientColumn());
 
 		resultatenContainer.add(new ScreenitDataTable<>("resultaten", columns, geenBeoordelingMogelijkDataProvider, 10,
 			Model.of("onderzoek(en) waarbij geen beoordeling mogelijk is"))

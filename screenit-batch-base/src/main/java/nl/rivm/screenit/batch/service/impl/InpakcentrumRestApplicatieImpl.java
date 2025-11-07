@@ -68,7 +68,7 @@ public class InpakcentrumRestApplicatieImpl implements InpakcentrumRestApplicati
 	private <T extends InpakcentrumRequestDto, S> ResponseEntity<S> sendToInpakcentrumRestApplicatie(String context, T payload, Class<S> responseClass, HttpMethod method,
 		Duration readTimeout)
 	{
-		var restClient = RestApiFactory.createClient(readTimeout, technischeBerichtenLoggingSaverService);
+		var restClient = RestApiFactory.createClient(readTimeout, null, technischeBerichtenLoggingSaverService);
 
 		var url = context.startsWith("/") ? context : "/" + context;
 		url = StringUtils.defaultIfBlank(vanScreenitNaarInpakcentrumUrl, "") + url;

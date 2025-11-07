@@ -21,32 +21,32 @@
 import {ClientGebeurtenis} from "./ClientGebeurtenis"
 import {Huisarts, MammaGeenHuisartsOptie} from "./Huisarts"
 import {HuidigeAfspraak} from "./mamma/HuidigeAfspraak"
-import {KandidaatAfspraak} from "./mamma/KandidaatAfspraak"
+import {AfspraakOptie} from "./mamma/AfspraakOptie"
 import {BackendObject} from "./BackendObject"
 
 export type MammaDossier = BackendObject & {
-    id: number,
-    status: string
-    aangemeld: boolean;
-    laatsteStandplaatsPlaats?: string,
-    gebeurtenissenLaatsteRonde: ClientGebeurtenis[],
-    huisartsVorigeRonde?: Huisarts,
-    huisartsHuidigeRonde?: Huisarts,
-    magHuisartsOntkoppelen: boolean,
-    geenHuisartsOptieHuidigeRonde?: MammaGeenHuisartsOptie,
-    geenHuisartsOptieVorigeRonde?: MammaGeenHuisartsOptie,
-    huidigeAfspraak?: HuidigeAfspraak,
-    laatsteMammaAfspraakZoekResultaten: KandidaatAfspraak[],
-    laatsteMammaStandplaatsPlaatsZoekFilter: string[],
+	id: number,
+	status: string
+	aangemeld: boolean;
+	laatsteStandplaatsPlaats?: string,
+	gebeurtenissenLaatsteRonde: ClientGebeurtenis[],
+	huisartsVorigeRonde?: Huisarts,
+	huisartsHuidigeRonde?: Huisarts,
+	magHuisartsOntkoppelen: boolean,
+	geenHuisartsOptieHuidigeRonde?: MammaGeenHuisartsOptie,
+	geenHuisartsOptieVorigeRonde?: MammaGeenHuisartsOptie,
+	huidigeAfspraak?: HuidigeAfspraak,
+	laatsteMammaAfspraakZoekResultaten: AfspraakOptie[],
+	laatsteMammaStandplaatsPlaatsZoekFilter: string[],
 }
 
 export const leegMammaDossier: MammaDossier = {
-    id: -1,
-    status: "",
-    aangemeld: false,
-    gebeurtenissenLaatsteRonde: [],
-    magHuisartsOntkoppelen: false,
-    laatsteMammaAfspraakZoekResultaten: [],
-    laatsteMammaStandplaatsPlaatsZoekFilter: [],
-    isInSync: false,
+	id: -1,
+	status: "",
+	aangemeld: false,
+	gebeurtenissenLaatsteRonde: [],
+	magHuisartsOntkoppelen: false,
+	laatsteMammaAfspraakZoekResultaten: [],
+	laatsteMammaStandplaatsPlaatsZoekFilter: [],
+	isInSync: false,
 }

@@ -116,7 +116,6 @@ public class IFobtVerslagPanel extends AbstractGebeurtenisDetailPanel
 		uploadForm.add(DateLabel.forDatePattern("buis.statusDatum", "dd-MM-yyyy"));
 		uploadForm.add(DateLabel.forDatePattern("buis.afnameDatum", "dd-MM-yyyy"));
 		uploadForm.add(DateLabel.forDatePattern("buis.analyseDatum", "dd-MM-yyyy"));
-		uploadForm.add(new Label("buis.instumentId"));
 		uploadForm.add(new Label("buis.ifobtLaboratorium.naam"));
 		uploadForm.add(new EnumLabel<IFOBTType>("buis.type"));
 

@@ -102,7 +102,7 @@ public class TestIfobtTestPopup extends AbstractTestBasePopupPanel
 		{
 			for (var buis : ronde.getIfobtTesten())
 			{
-				if (!FITTestUtil.heeftUitslag(buis))
+				if (heeftGeenAnalyseResultaat(buis))
 				{
 					buizenZonderUitslag.add(buis);
 					var buizen = new ArrayList<IFOBTTest>();
@@ -123,7 +123,7 @@ public class TestIfobtTestPopup extends AbstractTestBasePopupPanel
 					for (var i = 0; i < ronde.getIfobtTesten().size(); i++)
 					{
 						var test = ronde.getIfobtTesten().get(i);
-						if (!FITTestUtil.heeftUitslag(test))
+						if (heeftGeenAnalyseResultaat(test))
 						{
 							var testBuizen = buizenMap.get(buizenZonderUitslag.get(i).getId());
 							testBuizen.add(test);
@@ -192,6 +192,11 @@ public class TestIfobtTestPopup extends AbstractTestBasePopupPanel
 		});
 		add(buisDropDown);
 
+	}
+
+	private boolean heeftGeenAnalyseResultaat(IFOBTTest buis)
+	{
+		return buis.getUitslag() == null && buis.getGeinterpreteerdeUitslag() == null;
 	}
 
 	private WebMarkupContainer getFitContainer()

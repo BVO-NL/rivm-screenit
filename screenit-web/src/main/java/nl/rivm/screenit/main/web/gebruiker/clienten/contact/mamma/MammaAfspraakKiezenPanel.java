@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
-import nl.rivm.screenit.dto.mamma.afspraken.MammaKandidaatAfspraakDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
 import nl.rivm.screenit.exceptions.MammaTijdNietBeschikbaarException;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContactActiePanel;
@@ -81,17 +81,17 @@ public class MammaAfspraakKiezenPanel extends AbstractClientContactActiePanel<Cl
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			protected void nieuweAfspraak(AjaxRequestTarget target, MammaKandidaatAfspraakDto kandidaatAfspraakDto, MammaVerzettenReden verzettenReden)
+			protected void nieuweAfspraak(AjaxRequestTarget target, MammaBaseAfspraakOptieDto afspraakOptieDto, MammaVerzettenReden verzettenReden)
 			{
-				if (!checkBestaatCapaciteitBlokNog(target, kandidaatAfspraakDto.getCapaciteitBlokId()))
+				if (!checkBestaatCapaciteitBlokNog(target, afspraakOptieDto.getCapaciteitBlokId()))
 				{
 					return;
 				}
-				var capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, kandidaatAfspraakDto.getCapaciteitBlokId());
-				var standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class, kandidaatAfspraakDto.getStandplaatsPeriodeId());
+				var capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, afspraakOptieDto.getCapaciteitBlokId());
+				var standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class, afspraakOptieDto.getStandplaatsPeriodeId());
 				var uitnodiging = getModelObject().getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging();
 
-				var vanaf = DateUtil.toUtilDate(kandidaatAfspraakDto.getTijd(), kandidaatAfspraakDto.getDatum());
+				var vanaf = DateUtil.toUtilDate(afspraakOptieDto.getTijd(), afspraakOptieDto.getDatum());
 				var dummyAfspraak = baseFactory.maakDummyAfspraak(uitnodiging, vanaf, capaciteitBlok, standplaatsPeriode, verzettenReden);
 
 				if (clientContactService.isAfspraakTijdBezet(dummyAfspraak, ((MammaAfspraakZoekenPanel) afspraakZoekenPanel).getFilterModel().getObject()))

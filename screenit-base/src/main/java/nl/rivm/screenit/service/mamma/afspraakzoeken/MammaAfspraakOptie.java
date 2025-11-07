@@ -1,8 +1,8 @@
-package nl.rivm.screenit.main.service;
+package nl.rivm.screenit.service.mamma.afspraakzoeken;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-web
+ * screenit-base
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,17 +21,22 @@ package nl.rivm.screenit.main.service;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
-import nl.rivm.screenit.main.model.testen.TestTimeLineDossierTijdstip;
-import nl.rivm.screenit.model.colon.ColonDossier;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaCapaciteitBlokDto;
 
-public interface TestTimelineTimeService
+public interface MammaAfspraakOptie
 {
+	MammaCapaciteitBlokDto getCapaciteitBlokDto();
 
-	boolean calculateBackwards(ColonDossier dossier, TestTimeLineDossierTijdstip tijdstip);
+	LocalDate getDatum();
 
-	boolean calculateBackwards(ColonDossier dossier, int aantalDagen);
+	LocalTime getVanaf();
 
-	Date getVooraankondigingsPeriodeDatum();
+	default LocalDateTime getDatumTijd()
+	{
+		return getDatum().atTime(getVanaf());
+	}
 }

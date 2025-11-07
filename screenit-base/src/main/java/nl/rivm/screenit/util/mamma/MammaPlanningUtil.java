@@ -42,9 +42,9 @@ public class MammaPlanningUtil
 		return !teCheckenDatum.isAfter(grensDatum) && werkdagenTussenData > AANTAL_WERKDAGEN_TUSSEN_DATA_GRENS;
 	}
 
-	public static long minimumTijdvak(BigDecimal factor)
+	public static int minimumTijdvak(BigDecimal factor)
 	{
 
-		return factor.setScale(0, RoundingMode.HALF_DOWN).multiply(new BigDecimal(Constants.BK_TIJDVAK_MIN)).longValue();
+		return factor.setScale(0, RoundingMode.HALF_DOWN).multiply(new BigDecimal(Constants.BK_TIJDVAK_MIN)).intValue();
 	}
 }

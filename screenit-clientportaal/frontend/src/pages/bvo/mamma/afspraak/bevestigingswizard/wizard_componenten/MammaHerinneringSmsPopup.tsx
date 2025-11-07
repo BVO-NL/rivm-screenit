@@ -35,7 +35,7 @@ import {AfspraakBevestigingOpties} from "../../../../../../datatypes/mamma/Afspr
 export type MammaHerinneringSmsPopupProps = {
 	afspraakBevestiging: AfspraakBevestigingOpties,
 	children: React.ReactNode
-	onVolgende: () => void;
+	onVolgende: (eventNaam: string) => void;
 }
 
 const MammaHerinneringSmsPopup = (props: MammaHerinneringSmsPopupProps) => {
@@ -57,7 +57,7 @@ const MammaHerinneringSmsPopup = (props: MammaHerinneringSmsPopupProps) => {
 					validationSchema={validatieSchema}
 					onSubmit={() => {
 						props.afspraakBevestiging.wilHerinneringsSms = true
-						props.onVolgende()
+						props.onVolgende("SmsHerinneringSturen")
 					}}>
 					{({errors, values, isSubmitting, setFieldValue, handleSubmit}) => (
 						<><ScreenitTextfield
@@ -74,7 +74,7 @@ const MammaHerinneringSmsPopup = (props: MammaHerinneringSmsPopupProps) => {
 									}}
 									displayArrow={ArrowType.ARROW_RIGHT}/></>)}
 				</Formik>
-				<NavLink onClick={props.onVolgende}>{properties.sms.geen_sms_tekst}</NavLink>
+				<NavLink onClick={() => props.onVolgende("GeenHerinneringSturen")}>{properties.sms.geen_sms_tekst}</NavLink>
 			</div>
 			{props.children}
 		</div>

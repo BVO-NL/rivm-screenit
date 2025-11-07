@@ -42,6 +42,7 @@ import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
+import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
@@ -65,7 +66,7 @@ public class MammaCapaciteitBlokSpecification
 		return (r, q, cb) -> cb.equal(r.get(MammaCapaciteitBlok_.screeningsEenheid), screeningsEenheid);
 	}
 
-	public static Specification<MammaCapaciteitBlok> heeftScreeningsEenheidId(long screeningsEenheidId)
+	public static ExtendedSpecification<MammaCapaciteitBlok> heeftScreeningsEenheidId(long screeningsEenheidId)
 	{
 		return (r, q, cb) -> cb.equal(r.get(MammaCapaciteitBlok_.screeningsEenheid).get(AbstractHibernateObject_.id), screeningsEenheidId);
 	}

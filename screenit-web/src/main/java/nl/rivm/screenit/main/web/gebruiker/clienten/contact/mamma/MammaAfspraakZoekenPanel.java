@@ -21,24 +21,21 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.contact.mamma;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaKandidaatAfspraakDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
 import nl.rivm.screenit.main.service.mamma.MammaAfspraakService;
 import nl.rivm.screenit.main.web.component.SimpleStringResourceModel;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.MammaDagEnDagdeelFilter;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
-import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.model.mamma.enums.MammaVerzettenReden;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
@@ -93,20 +90,20 @@ public abstract class MammaAfspraakZoekenPanel extends GenericPanel<Client>
 	{
 		super(id, clientModel);
 
-		Client client = clientModel.getObject();
+		var client = clientModel.getObject();
 
-		LocalDate minimaleVanaf = dateSupplier.getLocalDate();
-		Integer minimaleIntervalMammografieOnderzoeken = preferenceService.getInteger(PreferenceKey.MAMMA_MINIMALE_INTERVAL_MAMMOGRAFIE_ONDERZOEKEN.name());
+		var minimaleVanaf = dateSupplier.getLocalDate();
+		var minimaleIntervalMammografieOnderzoeken = preferenceService.getInteger(PreferenceKey.MAMMA_MINIMALE_INTERVAL_MAMMOGRAFIE_ONDERZOEKEN.name());
 
-		LocalDate vanaf = baseAfspraakService.vroegstMogelijkeUitnodigingsDatum(client.getMammaDossier(), minimaleVanaf, minimaleIntervalMammografieOnderzoeken);
-		LocalDate totEnmet = currentDateSupplier.getLocalDate()
+		var vanaf = baseAfspraakService.vroegstMogelijkeUitnodigingsDatum(client.getMammaDossier(), minimaleVanaf, minimaleIntervalMammografieOnderzoeken);
+		var totEnmet = currentDateSupplier.getLocalDate()
 			.plusDays(preferenceService.getInteger(MAMMA_AFSPRAAK_ZOEKEN_STANDAARD_FILTER_EINDDATUM_DAGEN_IN_TOEKOMST.toString()));
 
 		MammaStandplaats standplaats;
 		MammaScreeningsEenheid screeningsEenheid = null;
 
-		MammaScreeningRonde screeningRonde = clientModel.getObject().getMammaDossier().getLaatsteScreeningRonde();
-		MammaUitnodiging laatsteUitnodiging = screeningRonde != null ? screeningRonde.getLaatsteUitnodiging() : null;
+		var screeningRonde = clientModel.getObject().getMammaDossier().getLaatsteScreeningRonde();
+		var laatsteUitnodiging = screeningRonde != null ? screeningRonde.getLaatsteUitnodiging() : null;
 		if (laatsteUitnodiging != null && laatsteUitnodiging.getLaatsteAfspraak() == null)
 		{
 
@@ -123,17 +120,17 @@ public abstract class MammaAfspraakZoekenPanel extends GenericPanel<Client>
 		filterModel = new CompoundPropertyModel<>(new MammaAfspraakWijzigenFilter(vanaf, totEnmet, standplaats, screeningsEenheid));
 		filterModel.getObject().setClient(client);
 
-		List<IColumn<MammaKandidaatAfspraakDto, String>> columns = new ArrayList<>();
+		List<IColumn<MammaBaseAfspraakOptieDto, String>> columns = new ArrayList<>();
 		columns.add(new AbstractColumn<>(Model.of("SE"))
 		{
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void populateItem(Item<ICellPopulator<MammaKandidaatAfspraakDto>> cell, String id, IModel<MammaKandidaatAfspraakDto> kandidaatAfspraakDtoModel)
+			public void populateItem(Item<ICellPopulator<MammaBaseAfspraakOptieDto>> cell, String id, IModel<MammaBaseAfspraakOptieDto> afspraakOptieDtoModel)
 			{
 				cell.add(
 					new Label(id,
-						hibernateService.load(MammaCapaciteitBlok.class, kandidaatAfspraakDtoModel.getObject().getCapaciteitBlokId()).getScreeningsEenheid().getNaam()));
+						hibernateService.load(MammaCapaciteitBlok.class, afspraakOptieDtoModel.getObject().getCapaciteitBlokId()).getScreeningsEenheid().getNaam()));
 			}
 		});
 
@@ -142,10 +139,10 @@ public abstract class MammaAfspraakZoekenPanel extends GenericPanel<Client>
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void populateItem(Item<ICellPopulator<MammaKandidaatAfspraakDto>> cell, String id, IModel<MammaKandidaatAfspraakDto> kandidaatAfspraakDtoModel)
+			public void populateItem(Item<ICellPopulator<MammaBaseAfspraakOptieDto>> cell, String id, IModel<MammaBaseAfspraakOptieDto> afspraakOptieDtoModel)
 			{
 				cell.add(
-					new Label(id, hibernateService.load(MammaStandplaatsPeriode.class, kandidaatAfspraakDtoModel.getObject().getStandplaatsPeriodeId()).getStandplaatsRonde()
+					new Label(id, hibernateService.load(MammaStandplaatsPeriode.class, afspraakOptieDtoModel.getObject().getStandplaatsPeriodeId()).getStandplaatsRonde()
 						.getStandplaats().getNaam()));
 			}
 		});
@@ -154,10 +151,10 @@ public abstract class MammaAfspraakZoekenPanel extends GenericPanel<Client>
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void populateItem(Item<ICellPopulator<MammaKandidaatAfspraakDto>> cell, String id, IModel<MammaKandidaatAfspraakDto> kandidaatAfspraakDtoModel)
+			public void populateItem(Item<ICellPopulator<MammaBaseAfspraakOptieDto>> cell, String id, IModel<MammaBaseAfspraakOptieDto> afspraakOptieDtoModel)
 			{
-				MammaKandidaatAfspraakDto afspraakDto = kandidaatAfspraakDtoModel.getObject();
-				Double afstand = afspraakDto.getAfstand();
+				var afspraakDto = afspraakOptieDtoModel.getObject();
+				var afstand = afspraakDto.getAfstand();
 				if (afspraakDto.isAfstandOnbekend())
 				{
 					cell.add(new Label(id, "onbekend"));
@@ -173,9 +170,9 @@ public abstract class MammaAfspraakZoekenPanel extends GenericPanel<Client>
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void populateItem(Item<ICellPopulator<MammaKandidaatAfspraakDto>> cell, String id, IModel<MammaKandidaatAfspraakDto> kandidaatAfspraakDtoModel)
+			public void populateItem(Item<ICellPopulator<MammaBaseAfspraakOptieDto>> cell, String id, IModel<MammaBaseAfspraakOptieDto> afspraakOptieDtoModel)
 			{
-				cell.add(DateLabel.forDatePattern(id, Model.of(DateUtil.toUtilDate(kandidaatAfspraakDtoModel.getObject().getDatum())), "EEEE dd-MM-yyyy"));
+				cell.add(DateLabel.forDatePattern(id, Model.of(DateUtil.toUtilDate(afspraakOptieDtoModel.getObject().getDatum())), "EEEE dd-MM-yyyy"));
 			}
 		});
 		columns.add(new AbstractColumn<>(new SimpleStringResourceModel("label.tijd"))
@@ -183,27 +180,26 @@ public abstract class MammaAfspraakZoekenPanel extends GenericPanel<Client>
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void populateItem(Item<ICellPopulator<MammaKandidaatAfspraakDto>> cell, String id, IModel<MammaKandidaatAfspraakDto> kandidaatAfspraakDtoModel)
+			public void populateItem(Item<ICellPopulator<MammaBaseAfspraakOptieDto>> cell, String id, IModel<MammaBaseAfspraakOptieDto> afspraakOptieDtoModel)
 			{
-				MammaKandidaatAfspraakDto kandidaatAfspraakDto = kandidaatAfspraakDtoModel.getObject();
-				cell.add(DateLabel.forDatePattern(id, Model.of(DateUtil.toUtilDate(kandidaatAfspraakDto.getTijd(), kandidaatAfspraakDto.getDatum())), "HH:mm"));
+				var afspraakOptieDto = afspraakOptieDtoModel.getObject();
+				cell.add(DateLabel.forDatePattern(id, Model.of(DateUtil.toUtilDate(afspraakOptieDto.getTijd(), afspraakOptieDto.getDatum())), "HH:mm"));
 			}
 		});
 
 		var dagEnDagdeelFilter = new MammaDagEnDagdeelFilter();
-		MammaKandidaatAfsprakenProvider kandidaatAfspraakProvider = new MammaKandidaatAfsprakenProvider(clientModel, filterModel, dagEnDagdeelFilter);
+		var afspraakOptiesProvider = new MammaAfspraakOptiesProvider(clientModel, filterModel, dagEnDagdeelFilter);
 
-		ScreenitDataTable<MammaKandidaatAfspraakDto, String> kandidaatAfspraken = new ScreenitDataTable<>("kandidaatAfspraken", columns,
-			kandidaatAfspraakProvider, 10, Model.of("opties"))
+		var afspraakOpties = new ScreenitDataTable<>("afspraakOpties", columns, afspraakOptiesProvider, 10, Model.of("opties"))
 		{
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void onClick(AjaxRequestTarget target, IModel<MammaKandidaatAfspraakDto> kandidaatAfspraakDtoModel)
+			public void onClick(AjaxRequestTarget target, IModel<MammaBaseAfspraakOptieDto> afspraakOptieDtoModel)
 			{
-				nieuweAfspraak(target, kandidaatAfspraakDtoModel.getObject(), filterModel.getObject().getVerzettenReden());
+				nieuweAfspraak(target, afspraakOptieDtoModel.getObject(), filterModel.getObject().getVerzettenReden());
 
-				String waarschuwing = afspraakService.controleerAfspraakInAndereLocatie(kandidaatAfspraakDtoModel.getObject(), clientModel.getObject().getMammaDossier());
+				var waarschuwing = afspraakService.controleerAfspraakInAndereLocatie(afspraakOptieDtoModel.getObject(), clientModel.getObject().getMammaDossier());
 
 				if (StringUtils.isNotBlank(waarschuwing))
 				{
@@ -216,9 +212,9 @@ public abstract class MammaAfspraakZoekenPanel extends GenericPanel<Client>
 				target.add(this);
 			}
 		};
-		kandidaatAfspraken.setVisible(false);
-		kandidaatAfspraken.setOutputMarkupPlaceholderTag(true);
-		add(kandidaatAfspraken);
+		afspraakOpties.setVisible(false);
+		afspraakOpties.setOutputMarkupPlaceholderTag(true);
+		add(afspraakOpties);
 
 		add(new MammaAfspraakWijzigenFilterPanel("filter", filterModel, false, ModelUtil.sModel(standplaats))
 		{
@@ -227,9 +223,9 @@ public abstract class MammaAfspraakZoekenPanel extends GenericPanel<Client>
 			@Override
 			protected void zoeken(AjaxRequestTarget target)
 			{
-				kandidaatAfspraakProvider.setLijstBehouden(false);
-				kandidaatAfspraken.setVisible(true);
-				target.add(kandidaatAfspraken);
+				afspraakOptiesProvider.setLijstBehouden(false);
+				afspraakOpties.setVisible(true);
+				target.add(afspraakOpties);
 			}
 		});
 		add(new DagEnDagdeelFilterPanel("dagEnDagdeelFilter", dagEnDagdeelFilter)
@@ -237,13 +233,13 @@ public abstract class MammaAfspraakZoekenPanel extends GenericPanel<Client>
 			@Override
 			protected void onCheckBoxChange(AjaxRequestTarget target)
 			{
-				kandidaatAfspraakProvider.setLijstBehouden(true);
-				target.add(kandidaatAfspraken);
+				afspraakOptiesProvider.setLijstBehouden(true);
+				target.add(afspraakOpties);
 			}
 		});
 	}
 
-	protected abstract void nieuweAfspraak(AjaxRequestTarget target, MammaKandidaatAfspraakDto kandidaatAfspraakDto, MammaVerzettenReden mammaVerzettenReden);
+	protected abstract void nieuweAfspraak(AjaxRequestTarget target, MammaBaseAfspraakOptieDto afspraakOptieDto, MammaVerzettenReden mammaVerzettenReden);
 
 	protected IModel<MammaAfspraakWijzigenFilter> getFilterModel()
 	{

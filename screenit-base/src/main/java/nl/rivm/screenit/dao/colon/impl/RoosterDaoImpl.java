@@ -276,7 +276,7 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 			querySB.append(" from colon.intakekamer k");
 		}
 		querySB.append(" join algemeen.organisatie il on k.intakelocatie=il.id");
-		querySB.append(" join gedeeld.org_adres a on il.adres=a.id");
+		querySB.append(" join gedeeld.adres a on il.adres=a.id");
 
 		var params = new HashMap<String, Object>();
 		querySB.append(" where il.actief = true");
@@ -365,7 +365,7 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 		querySB.append(" join colon.tijdslot ts on afs.id=ts.id");
 		querySB.append(" join colon.intakekamer k on ts.kamer=k.id");
 
-//237f6452-0672-487d-b547-bc77a42905c6
+//a0059b31-a899-49d2-b4f9-4646e875101c
 		var params = new HashMap<String, Object>();
 		querySB.append(" and k.actief = true");
 		querySB.append(" and not exists(select id from colon.intakeafspraak ia where ia.afspraakslot = afs.id and (ia.status=:status1 or ia.status=:status2))");

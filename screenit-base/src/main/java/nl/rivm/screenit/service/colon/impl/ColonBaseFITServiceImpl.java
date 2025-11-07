@@ -25,7 +25,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
@@ -58,6 +57,7 @@ import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.repository.colon.ColonFITBestandRepository;
 import nl.rivm.screenit.repository.colon.ColonFITRepository;
+import nl.rivm.screenit.repository.colon.ColonUitnodigingRepository;
 import nl.rivm.screenit.service.BaseAfmeldService;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BaseHoudbaarheidService;
@@ -141,6 +141,9 @@ public class ColonBaseFITServiceImpl implements ColonBaseFITService
 	@Autowired
 	private SessionFactory sessionFactory;
 
+	@Autowired
+	private ColonUitnodigingRepository uitnodigingRepository;
+
 	private void rondeSluitenIndienMogelijk(LocalDateTime nu, ColonScreeningRonde ronde)
 	{
 		var allesAfgerondEnGunstig = true;
@@ -161,16 +164,6 @@ public class ColonBaseFITServiceImpl implements ColonBaseFITService
 			ronde.setStatus(ScreeningRondeStatus.AFGEROND);
 			ronde.setStatusDatum(DateUtil.toUtilDate(nu.plus(150, ChronoUnit.MILLIS)));
 		}
-		var laatsteUitnodiging = ronde.getLaatsteUitnodiging();
-		if (laatsteUitnodiging != null && !laatsteUitnodiging.isVerstuurd())
-		{
-			ronde.getUitnodigingen().remove(laatsteUitnodiging);
-			ronde.setLaatsteUitnodiging(null);
-			hibernateService.delete(laatsteUitnodiging);
-
-			ronde.setLaatsteUitnodiging(ronde.getUitnodigingen().stream().max(Comparator.comparing(ColonUitnodiging::getUitnodigingsId)).orElse(null));
-		}
-
 	}
 
 	private void setNormWaarde(IFOBTTest buis, BigDecimal normWaarde)
@@ -187,162 +180,154 @@ public class ColonBaseFITServiceImpl implements ColonBaseFITService
 
 	@Override
 	@Transactional
-	public void uitslagFitOntvangen(IFOBTTest fitMetUitslag)
+	public void verwerkAnalyseResultaat(IFOBTTest teVerwerkenFit)
 	{
 		if (LOG.isTraceEnabled())
 		{
-			LOG.trace("uitslagOntvangen " + fitMetUitslag.getBarcode());
+			LOG.trace("verwerkAnalyseResultaat {}", teVerwerkenFit.getBarcode());
 		}
 
-		var dossier = fitMetUitslag.getColonScreeningRonde().getDossier();
+		var nu = currentDateSupplier.getLocalDateTime();
+		var screeningRonde = teVerwerkenFit.getColonScreeningRonde();
+		var dossier = screeningRonde.getDossier();
 		var projectClient = ProjectUtil.getHuidigeProjectClient(dossier.getClient(), currentDateSupplier.getDate());
 		var normWaardeGold = getFitNormWaarde(projectClient);
-		var uitnodiging = FITTestUtil.getUitnodiging(fitMetUitslag);
+		var uitnodiging = FITTestUtil.getUitnodiging(teVerwerkenFit);
 
-		if (!fitMetUitslag.getColonScreeningRonde().equals(dossier.getLaatsteScreeningRonde()))
+		if (!teVerwerkenFit.getColonScreeningRonde().equals(dossier.getLaatsteScreeningRonde()))
 		{
-			studietestService.projectClientInactiverenBijVergelijkendOnderzoek(fitMetUitslag.getColonScreeningRonde());
+			studietestService.projectClientInactiverenBijVergelijkendOnderzoek(teVerwerkenFit.getColonScreeningRonde());
 		}
 		uitnodigingService.berekenEnSetUitgesteldeUitslagDatum(uitnodiging);
 
-		var screeningRonde = uitslagNaarJuisteRonde(fitMetUitslag);
-		var nu = currentDateSupplier.getLocalDateTime();
-		setNormWaarde(fitMetUitslag, normWaardeGold);
-		bepaalEnSetHeraanmeldenTekstKey(fitMetUitslag);
-		heraanmelden(screeningRonde, nu);
-		var briefGemaakt = maakBuitenDoelgroepBriefIndienNodig(screeningRonde, fitMetUitslag);
-		if (fitMetUitslag.getStatus() != IFOBTTestStatus.VERVALDATUMVERLOPEN)
+		setNormWaarde(teVerwerkenFit, normWaardeGold);
+		var isNietVerlopen = teVerwerkenFit.getStatus() != IFOBTTestStatus.VERVALDATUMVERLOPEN;
+		var isOngunstigOfNietVerwijderd = FITTestUtil.isOngunstig(teVerwerkenFit) || teVerwerkenFit.getStatus() != IFOBTTestStatus.VERWIJDERD;
+		if (isNietVerlopen && isOngunstigOfNietVerwijderd)
 		{
-			if (FITTestUtil.isOngunstig(fitMetUitslag) || fitMetUitslag.getStatus() != IFOBTTestStatus.VERWIJDERD)
-			{
-				setStatus(uitnodiging, IFOBTTestStatus.UITGEVOERD);
-			}
-			if (!briefGemaakt)
-			{
-				alsClientEerderUitslagHeeftGehadDanExtraUitslagBriefMaken(fitMetUitslag, screeningRonde);
-			}
-			rondeSluitenIndienMogelijk(nu, screeningRonde);
+			setStatus(uitnodiging, IFOBTTestStatus.UITGEVOERD);
+		}
+
+		vervolgVerwerkingUitslag(teVerwerkenFit);
+
+		if (isNietVerlopen)
+		{
+			rondeSluitenIndienMogelijk(nu, dossier.getLaatsteScreeningRonde());
 			saveOrUpdateBuis(uitnodiging);
 		}
-		else
+	}
+
+	private void vervolgVerwerkingUitslag(IFOBTTest teVerwerkenFit)
+	{
+		var screeningRonde = fitNaarLaatsteRondeIndienNodig(teVerwerkenFit);
+		if (IFOBTTestStatus.isMislukteAnalyse(teVerwerkenFit.getStatus()))
 		{
 			studietestService.projectClientInactiverenBijVergelijkendOnderzoek(screeningRonde);
-			saveOrUpdateBuis(uitnodiging);
-			if (!briefGemaakt)
-			{
-				var nieuweUitnodiging = screeningsrondeService.createNieuweUitnodiging(screeningRonde, ColonUitnodigingCategorie.U6);
-				alsGeenPakketGemaaktDanExtraUitslagBriefMaken(fitMetUitslag, screeningRonde, nieuweUitnodiging);
-			}
 		}
-		hibernateService.saveOrUpdateAll(uitnodiging, screeningRonde);
+		bepaalEnSetHeraanmeldenTekstKey(teVerwerkenFit);
+		heraanmelden(screeningRonde);
+		maakBuitenDoelgroepIndienNodig(teVerwerkenFit);
+		verwijderNogNietVerstuurdeUitnodigingIndienNodig(teVerwerkenFit);
+		maakExtraMonsterBriefIndienNodig(teVerwerkenFit);
+		maakNieuweUitnodigingNavMislukteAnalyseIndienNodig(teVerwerkenFit);
 	}
 
-	private void alsGeenPakketGemaaktDanExtraUitslagBriefMaken(IFOBTTest test, ColonScreeningRonde screeningRonde, ColonUitnodiging nieuweUitnodiging)
+	private void verwijderNogNietVerstuurdeUitnodigingIndienNodig(IFOBTTest teVerwerkenFit)
 	{
-		if (nieuweUitnodiging == null
-			&& (ColonScreeningRondeUtil.getEersteGunstigeTest(screeningRonde) != null || ColonScreeningRondeUtil.getEersteOngunstigeTest(screeningRonde) != null))
+		var screeningRonde = teVerwerkenFit.getColonScreeningRonde();
+		boolean teVerwerkenFitHeeftSuccesvolleAnalyse = FITTestUtil.heeftSuccesvolleAnalyse(teVerwerkenFit);
+		var rondeHeeftFitMetMislukteAnalyse = screeningRonde.getIfobtTesten()
+			.stream()
+			.filter(fit -> !fit.equals(teVerwerkenFit))
+			.anyMatch(fit -> IFOBTTestStatus.isMislukteAnalyse(fit.getStatus()));
+		if (laatsteUitnodigingNietVerstuurd(screeningRonde) && (rondeHeeftFitMetMislukteAnalyse || teVerwerkenFitHeeftSuccesvolleAnalyse))
 		{
-			maakUitslagBriefExtraMonster(screeningRonde, test);
-		}
-	}
-
-	private void alsClientEerderUitslagHeeftGehadDanExtraUitslagBriefMaken(IFOBTTest nieuweBuisMetUitslag, ColonScreeningRonde ronde)
-	{
-
-		var heeftEerderUitslagGehad = ronde.getOpenUitnodiging() != null;
-		var buisVoorBrief = nieuweBuisMetUitslag;
-		if (!heeftEerderUitslagGehad)
-		{
-			List<IFOBTTest> testen = new ArrayList<>(ronde.getIfobtTesten());
-			testen.remove(nieuweBuisMetUitslag);
-			if (testen.size() > 0)
-			{
-				var hadGunstigeUitslag = false;
-				var hadOngunstigeUitslag = false;
-
-				for (var test : testen)
-				{
-					if (test.getStatus() == IFOBTTestStatus.UITGEVOERD)
-					{
-						if (FITTestUtil.isGunstig(test) && test.getType().equals(IFOBTType.GOLD))
-						{
-							hadGunstigeUitslag = true;
-						}
-						if (FITTestUtil.isOngunstig(test))
-						{
-							hadOngunstigeUitslag = true;
-						}
-					}
-				}
-
-				if (hadOngunstigeUitslag || hadGunstigeUitslag)
-				{
-
-					heeftEerderUitslagGehad = hadGunstigeUitslag && hadOngunstigeUitslag;
-					if (!heeftEerderUitslagGehad)
-					{
-
-						heeftEerderUitslagGehad = hadGunstigeUitslag && FITTestUtil.isGunstig(nieuweBuisMetUitslag)
-							|| hadOngunstigeUitslag && FITTestUtil.isOngunstig(nieuweBuisMetUitslag);
-					}
-					if (!heeftEerderUitslagGehad)
-					{
-
-						var hadOngunstigeUitslagBrief = hadOngunstigeUitslag
-							&& ronde.getBrieven().stream().anyMatch(b -> b.getBriefType() == BriefType.COLON_UITNODIGING_INTAKE);
-						heeftEerderUitslagGehad = hadOngunstigeUitslagBrief;
-					}
-					if (!heeftEerderUitslagGehad)
-					{
-
-						var hadGunstigeUitslagZonderBrief = hadGunstigeUitslag && FITTestUtil.isOngunstig(nieuweBuisMetUitslag)
-							&& ronde.getBrieven().stream().noneMatch(b -> b.getBriefType() == BriefType.COLON_GUNSTIGE_UITSLAG);
-						heeftEerderUitslagGehad = hadGunstigeUitslagZonderBrief;
-						buisVoorBrief = ColonScreeningRondeUtil.getEersteGunstigeTest(ronde);
-					}
-				}
-			}
-		}
-		if (heeftEerderUitslagGehad)
-		{
-
-			maakUitslagBriefExtraMonster(ronde, buisVoorBrief);
+			verwijderLaatsteUitnodiging(screeningRonde);
 		}
 	}
 
-	private boolean maakBuitenDoelgroepBriefIndienNodig(ColonScreeningRonde ronde, IFOBTTest buisVoorBrief)
+	private void maakExtraMonsterBriefIndienNodig(IFOBTTest teVerwerkenFit)
 	{
-		var briefGemaakt = false;
 
+		var ronde = teVerwerkenFit.getColonScreeningRonde();
+		var heeftRondeSuccesvolleFitMetBrief = ronde.getBrieven().stream().anyMatch(brief -> BriefType.COLON_SUCCESVOLLE_ANALYSE_BRIEVEN.contains(brief.getBriefType()));
+		var heeftRondeGunstigeUitslagMetBrief = ronde.getBrieven().stream().anyMatch(brief -> brief.getBriefType() == BriefType.COLON_GUNSTIGE_UITSLAG);
+		var mislukteAnalyseEnUitnodigingNietVerstuurd =
+			IFOBTTestStatus.isMislukteAnalyse(teVerwerkenFit.getStatus()) && laatsteUitnodigingNietVerstuurd(ronde);
+		var heeftExtraMonsterBrief = ronde.getBrieven().stream().anyMatch(brief -> !brief.isGegenereerd() && brief.getBriefType() == BriefType.COLON_UITSLAGBRIEF_EXTRA_MONSTER);
+		var heeftGeenFitMetZelfdeStatusdatum = ronde.getIfobtTesten().stream()
+			.filter(fit -> !fit.equals(teVerwerkenFit))
+			.map(fit -> DateUtil.toLocalDate(fit.getStatusDatum()))
+			.noneMatch(verwerkingsdatum -> DateUtil.toLocalDate(teVerwerkenFit.getStatusDatum()).equals(verwerkingsdatum));
+		var isBuitenDoelgroep = screeningsrondeService.isRondeStatusBuitenDoelgroep(ronde);
+		var rondeHeeftAlGunstigeUitslag = !(FITTestUtil.isOngunstig(teVerwerkenFit) && heeftRondeGunstigeUitslagMetBrief);
+		var rondeHeeftAlUitslag = rondeHeeftAlGunstigeUitslag || mislukteAnalyseEnUitnodigingNietVerstuurd;
+		if (heeftRondeSuccesvolleFitMetBrief
+			&& rondeHeeftAlUitslag
+			&& !heeftExtraMonsterBrief
+			&& heeftGeenFitMetZelfdeStatusdatum
+			&& !isBuitenDoelgroep)
+		{
+			maakBriefEnKoppelAanTest(ronde, teVerwerkenFit, BriefType.COLON_UITSLAGBRIEF_EXTRA_MONSTER);
+		}
+	}
+
+	private void maakNieuweUitnodigingNavMislukteAnalyseIndienNodig(IFOBTTest teVerwerkenFit)
+	{
+
+		var ronde = teVerwerkenFit.getColonScreeningRonde();
+		if (!FITTestUtil.heeftSuccesvolleAnalyse(ronde))
+		{
+			var nietTeBeoordelen = teVerwerkenFit.getStatus() == IFOBTTestStatus.NIETTEBEOORDELEN;
+			var categorie = nietTeBeoordelen ? ColonUitnodigingCategorie.U3 : ColonUitnodigingCategorie.U6;
+			screeningsrondeService.createNieuweUitnodiging(ronde, categorie);
+		}
+	}
+
+	private boolean laatsteUitnodigingNietVerstuurd(ColonScreeningRonde screeningRonde)
+	{
+		var uitnodiging = screeningRonde.getLaatsteUitnodiging();
+		return uitnodiging == null || uitnodiging.getVerstuurdDatum() == null;
+	}
+
+	private void verwijderLaatsteUitnodiging(ColonScreeningRonde ronde)
+	{
+		var laatsteUitnodiging = ronde.getLaatsteUitnodiging();
+		if (laatsteUitnodiging == null || laatsteUitnodiging.getGekoppeldeTest() != null || laatsteUitnodiging.getGekoppeldeExtraTest() != null)
+		{
+			return;
+		}
+
+		ronde.getUitnodigingen().remove(laatsteUitnodiging);
+		uitnodigingRepository.delete(laatsteUitnodiging);
+
+		ronde.setLaatsteUitnodiging(ronde.getUitnodigingen().stream().max(Comparator.comparing(ColonUitnodiging::getUitnodigingsId)).orElse(null));
+	}
+
+	private void maakBuitenDoelgroepIndienNodig(IFOBTTest fitVoorBrief)
+	{
+		var ronde = fitVoorBrief.getColonScreeningRonde();
 		if (screeningsrondeService.isRondeStatusBuitenDoelgroep(ronde))
 		{
-			if (FITTestUtil.isOngunstig(buisVoorBrief))
+			if (FITTestUtil.isOngunstig(fitVoorBrief))
 			{
-				maakBriefEnKoppelAanTest(ronde, buisVoorBrief, BriefType.COLON_UITSLAGBRIEF_ONGUNSTIGE_BUITEN_DOELGROEP);
-				briefGemaakt = true;
+				maakBriefEnKoppelAanTest(ronde, fitVoorBrief, BriefType.COLON_UITSLAGBRIEF_ONGUNSTIGE_BUITEN_DOELGROEP);
 			}
-			else if (buisVoorBrief.getStatus() == IFOBTTestStatus.VERVALDATUMVERLOPEN || buisVoorBrief.getStatus() == IFOBTTestStatus.NIETTEBEOORDELEN)
+			else if (IFOBTTestStatus.isMislukteAnalyse(fitVoorBrief.getStatus()))
 			{
-				maakBriefEnKoppelAanTest(ronde, buisVoorBrief, BriefType.COLON_UITSLAGBRIEF_ONBEOORDEELBAAR_BUITEN_DOELGROEP);
-				briefGemaakt = true;
+				maakBriefEnKoppelAanTest(ronde, fitVoorBrief, BriefType.COLON_UITSLAGBRIEF_ONBEOORDEELBAAR_BUITEN_DOELGROEP);
 			}
 		}
-		return briefGemaakt;
 	}
 
-	private void maakUitslagBriefExtraMonster(ColonScreeningRonde ronde, IFOBTTest buisVoorBrief)
-	{
-		maakBriefEnKoppelAanTest(ronde, buisVoorBrief, BriefType.COLON_UITSLAGBRIEF_EXTRA_MONSTER);
-	}
-
-	private void maakBriefEnKoppelAanTest(ColonScreeningRonde ronde, IFOBTTest buisVoorBrief, BriefType briefType)
+	private void maakBriefEnKoppelAanTest(ColonScreeningRonde ronde, IFOBTTest fitVoorBrief, BriefType briefType)
 	{
 		var brief = briefService.maakBvoBrief(ronde, briefType);
-		brief.setIfobtTest(buisVoorBrief);
+		brief.setIfobtTest(fitVoorBrief);
 		hibernateService.saveOrUpdate(brief);
 	}
 
-	private ColonScreeningRonde uitslagNaarJuisteRonde(IFOBTTest buisMetUitslag)
+	private ColonScreeningRonde fitNaarLaatsteRondeIndienNodig(IFOBTTest buisMetUitslag)
 	{
 		var uitnodiging = buisMetUitslag.getColonUitnodiging();
 		var screeningRonde = uitnodiging.getScreeningRonde();
@@ -463,7 +448,7 @@ public class ColonBaseFITServiceImpl implements ColonBaseFITService
 	}
 
 	@Override
-	public void heraanmelden(ColonScreeningRonde screeningRonde, LocalDateTime nu)
+	public void heraanmelden(ColonScreeningRonde screeningRonde)
 	{
 
 		var dossier = screeningRonde.getDossier();
@@ -479,7 +464,7 @@ public class ColonBaseFITServiceImpl implements ColonBaseFITService
 		if (ScreeningRondeStatus.AFGEROND.equals(screeningRonde.getStatus()))
 		{
 			screeningRonde.setStatus(ScreeningRondeStatus.LOPEND);
-			screeningRonde.setStatusDatum(DateUtil.toUtilDate(nu));
+			screeningRonde.setStatusDatum(currentDateSupplier.getDate());
 			screeningRonde.setAfgerondReden(null);
 			hibernateService.saveOrUpdate(screeningRonde);
 		}
@@ -602,22 +587,12 @@ public class ColonBaseFITServiceImpl implements ColonBaseFITService
 		{
 			LOG.trace("monsterNietBeoordeelbaar id: '{}'", fit.getId());
 		}
-		var screeningRonde = uitslagNaarJuisteRonde(fit);
-		bepaalEnSetHeraanmeldenTekstKey(fit);
-		if (fit.getHeraanmeldenTekstKey() != null)
-		{
-			heraanmelden(screeningRonde, currentDateSupplier.getLocalDateTime());
-		}
+
 		setStatusEnDatum(fit, IFOBTTestStatus.NIETTEBEOORDELEN, currentDateSupplier.getDate());
 
-		studietestService.projectClientInactiverenBijVergelijkendOnderzoek(screeningRonde);
+		studietestService.projectClientInactiverenBijVergelijkendOnderzoek(fit.getColonScreeningRonde());
 
-		var briefGemaakt = maakBuitenDoelgroepBriefIndienNodig(screeningRonde, fit);
-		if (!briefGemaakt)
-		{
-			var nieuweUitnodiging = screeningsrondeService.createNieuweUitnodiging(screeningRonde, ColonUitnodigingCategorie.U3);
-			alsGeenPakketGemaaktDanExtraUitslagBriefMaken(fit, screeningRonde, nieuweUitnodiging);
-		}
+		vervolgVerwerkingUitslag(fit);
 	}
 
 	@Override

@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import nl.rivm.screenit.dto.mamma.afspraken.MammaKandidaatAfspraakDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.MammaDagEnDagdeelFilter;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
@@ -38,7 +38,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-public class MammaKandidaatAfsprakenProvider extends SortableDataProvider<MammaKandidaatAfspraakDto, String>
+public class MammaAfspraakOptiesProvider extends SortableDataProvider<MammaBaseAfspraakOptieDto, String>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -52,13 +52,13 @@ public class MammaKandidaatAfsprakenProvider extends SortableDataProvider<MammaK
 
 	private final MammaDagEnDagdeelFilter dagEnDagdeelFilter;
 
-	private List<MammaKandidaatAfspraakDto> kandidaatAfspraken;
+	private List<MammaBaseAfspraakOptieDto> afspraakOpties;
 
-	private List<MammaKandidaatAfspraakDto> kandidaatAfsprakenCache = new ArrayList<>();
+	private List<MammaBaseAfspraakOptieDto> afspraakOptiesCache = new ArrayList<>();
 
 	private boolean lijstBehouden = false;
 
-	public MammaKandidaatAfsprakenProvider(IModel<Client> clientModel, IModel<MammaAfspraakWijzigenFilter> filterModel, MammaDagEnDagdeelFilter dagEnDagdeelFilter)
+	public MammaAfspraakOptiesProvider(IModel<Client> clientModel, IModel<MammaAfspraakWijzigenFilter> filterModel, MammaDagEnDagdeelFilter dagEnDagdeelFilter)
 	{
 		Injector.get().inject(this);
 		this.filterModel = filterModel;
@@ -67,9 +67,9 @@ public class MammaKandidaatAfsprakenProvider extends SortableDataProvider<MammaK
 	}
 
 	@Override
-	public Iterator<? extends MammaKandidaatAfspraakDto> iterator(long first, long count)
+	public Iterator<? extends MammaBaseAfspraakOptieDto> iterator(long first, long count)
 	{
-		return kandidaatAfspraken.subList((int) first, (int) (first + count)).iterator();
+		return afspraakOpties.subList((int) first, (int) (first + count)).iterator();
 	}
 
 	@Override
@@ -77,18 +77,18 @@ public class MammaKandidaatAfsprakenProvider extends SortableDataProvider<MammaK
 	{
 		if (!lijstBehouden)
 		{
-			kandidaatAfsprakenCache = baseAfspraakService.getKandidaatAfspraken(clientModel.getObject(), filterModel.getObject()).stream().distinct().sorted()
+			afspraakOptiesCache = baseAfspraakService.getAfspraakOpties(clientModel.getObject(), filterModel.getObject()).stream().distinct().sorted()
 				.collect(Collectors.toList());
 		}
 		lijstBehouden = false;
-		kandidaatAfspraken = baseAfspraakService.filterKandidaatAfsprakenOpDagEnDagdeel(kandidaatAfsprakenCache, dagEnDagdeelFilter);
-		return kandidaatAfspraken.size();
+		afspraakOpties = baseAfspraakService.filterAfspraakOptiesOpDagEnDagdeel(afspraakOptiesCache, dagEnDagdeelFilter);
+		return afspraakOpties.size();
 	}
 
 	@Override
-	public IModel<MammaKandidaatAfspraakDto> model(MammaKandidaatAfspraakDto kandidaatAfspraakDto)
+	public IModel<MammaBaseAfspraakOptieDto> model(MammaBaseAfspraakOptieDto afspraakOptieDto)
 	{
-		return Model.of(kandidaatAfspraakDto);
+		return Model.of(afspraakOptieDto);
 	}
 
 	@Override

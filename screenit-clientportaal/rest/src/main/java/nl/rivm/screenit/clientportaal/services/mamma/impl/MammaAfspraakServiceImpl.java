@@ -22,7 +22,6 @@ package nl.rivm.screenit.clientportaal.services.mamma.impl;
  */
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,14 +32,12 @@ import nl.rivm.screenit.clientportaal.model.mamma.MammaAfspraakOptieDto;
 import nl.rivm.screenit.clientportaal.model.mamma.MammaAfspraakWijzigenFilterDto;
 import nl.rivm.screenit.clientportaal.model.mamma.MammaAfspraakZoekFilterDto;
 import nl.rivm.screenit.clientportaal.services.mamma.MammaAfspraakService;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaHuidigeAfspraakDto;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaKandidaatAfspraakDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
-import nl.rivm.screenit.model.mamma.MammaStandplaatsLocatie;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
-import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.model.mamma.enums.MammaVerzettenReden;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
@@ -77,15 +74,14 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 	@Override
 	public List<LocalDate> getAlleDatumsMetBeschikbareAfspraken(Client client, String plaats, String afstand)
 	{
-		LocalDate vandaag = currentDateSupplier.getLocalDate();
+		var vandaag = currentDateSupplier.getLocalDate();
 
-		MammaAfspraakWijzigenFilterDto filterVoorOphalenKandidaatAfspraken = MammaAfspraakWijzigenFilterDto.filterVoorOphalenAfsprakenBinnenPeriode(client, plaats,
+		var filterVoorOphalenAfspraakOpties = MammaAfspraakWijzigenFilterDto.filterVoorOphalenAfsprakenBinnenPeriode(client, plaats,
 			afstand, vandaag,
 			maximaalAfspraakDagVoorPlaats(client, plaats, afstand));
-		List<MammaKandidaatAfspraakDto> kandidaatAfspraken = baseAfspraakService.getKandidaatAfspraken(client,
-			filterVoorOphalenKandidaatAfspraken);
+		var afspraakOpties = baseAfspraakService.getAfspraakOpties(client, filterVoorOphalenAfspraakOpties);
 
-		return kandidaatAfspraken.stream().map(MammaKandidaatAfspraakDto::getDatum).sorted().distinct().collect(Collectors.toList());
+		return afspraakOpties.stream().map(MammaBaseAfspraakOptieDto::getDatum).sorted().distinct().collect(Collectors.toList());
 	}
 
 	private LocalDate maximaalAfspraakDagVoorPlaats(Client client, String plaats, String afstand)
@@ -102,11 +98,11 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 
 	private LocalDate getMaximaleVrijgegevenTotEnMetDatumBijPlaats(String plaats, String afstand)
 	{
-		LocalDate vandaag = currentDateSupplier.getLocalDate();
+		var vandaag = currentDateSupplier.getLocalDate();
 
-		MammaAfspraakWijzigenFilterDto filterOphalenStandplaatsPerioden = MammaAfspraakWijzigenFilterDto.filterVoorOphalenStandplaatsenViaPlaatsOfAfstand(plaats, afstand, vandaag,
+		var filterOphalenStandplaatsPerioden = MammaAfspraakWijzigenFilterDto.filterVoorOphalenStandplaatsenViaPlaatsOfAfstand(plaats, afstand, vandaag,
 			vandaag.plusYears(2));
-		List<MammaStandplaatsPeriode> standplaatsPerioden = standplaatsPeriodeService.getStandplaatsPerioden(filterOphalenStandplaatsPerioden);
+		var standplaatsPerioden = standplaatsPeriodeService.getStandplaatsPerioden(filterOphalenStandplaatsPerioden);
 
 		return DateUtil.toLocalDate(standplaatsService.getMaximaleVrijgegevenTotEnMetDatum(standplaatsPerioden));
 	}
@@ -114,41 +110,41 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 	@Override
 	public MammaAfspraakWijzigenFilterDto toAfspraakFilter(MammaAfspraakZoekFilterDto body, Client client, boolean buitenRegio)
 	{
-		MammaAfspraakWijzigenFilterDto filter = afspraakZoekFilterMapper.afspraakZoekFilterToAfspraakWijzigenFilterDto(body, client);
+		var filter = afspraakZoekFilterMapper.afspraakZoekFilterToAfspraakWijzigenFilterDto(body, client);
 		filter.setVerzettenReden(MammaVerzettenReden.CLIENTEN_PORTAAL);
 		filter.setBuitenRegio(buitenRegio);
 		return filter;
 	}
 
 	@Override
-	public MammaAfspraak toAfspraak(MammaAfspraakOptieDto kandidaatAfspraakDto, Client client)
+	public MammaAfspraak toAfspraak(MammaAfspraakOptieDto afspraakOptieDto, Client client)
 	{
-		MammaCapaciteitBlok capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, kandidaatAfspraakDto.getCapaciteitBlokId());
-		MammaStandplaatsPeriode standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class,
-			kandidaatAfspraakDto.getStandplaatsPeriodeId());
-		MammaUitnodiging uitnodiging = client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging();
-		Date vanaf = DateUtil.toUtilDate(kandidaatAfspraakDto.getDatumTijd());
+		var capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, afspraakOptieDto.getCapaciteitBlokId());
+		var standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class,
+			afspraakOptieDto.getStandplaatsPeriodeId());
+		var uitnodiging = client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging();
+		var vanaf = DateUtil.toUtilDate(afspraakOptieDto.getDatumTijd());
 
 		return baseFactory.maakDummyAfspraak(uitnodiging, vanaf, capaciteitBlok, standplaatsPeriode, MammaVerzettenReden.CLIENTEN_PORTAAL);
 	}
 
 	@Override
-	public MammaAfspraakOptieDto toMammaKandidaatOptie(MammaKandidaatAfspraakDto kandidaatAfspraakDto, Client client)
+	public MammaAfspraakOptieDto toAfspraakOptieDto(MammaBaseAfspraakOptieDto baseAfspraakOptieDto, Client client)
 	{
-		MammaAfspraakOptieDto mammaAfspraakOptieDto = new MammaAfspraakOptieDto(kandidaatAfspraakDto);
-		MammaStandplaatsPeriode standplaatsPeriode = hibernateService.get(MammaStandplaatsPeriode.class,
-			kandidaatAfspraakDto.getStandplaatsPeriodeId());
-		MammaStandplaatsLocatie locatie = standplaatsService.getStandplaatsLocatie(standplaatsPeriode.getStandplaatsRonde().getStandplaats(),
-			DateUtil.toUtilDate(kandidaatAfspraakDto.getDatum()));
+		var mammaAfspraakOptieDto = new MammaAfspraakOptieDto(baseAfspraakOptieDto);
+		var standplaatsPeriode = hibernateService.get(MammaStandplaatsPeriode.class,
+			baseAfspraakOptieDto.getStandplaatsPeriodeId());
+		var locatie = standplaatsService.getStandplaatsLocatie(standplaatsPeriode.getStandplaatsRonde().getStandplaats(),
+			DateUtil.toUtilDate(baseAfspraakOptieDto.getDatum()));
 
 		mammaAfspraakOptieDto.setAdres(AdresUtil.getStraatMetHuisnummerVoorStandplaatsLocatie(locatie, false));
 		mammaAfspraakOptieDto.setPostcode(locatie.getPostcode());
 		mammaAfspraakOptieDto.setPlaats(locatie.getPlaats());
 
-		boolean briefKanVerzondenWorden = baseAfspraakService.briefKanNogVerzondenWorden(DateUtil.toUtilDate(kandidaatAfspraakDto.getDatum()));
+		var briefKanVerzondenWorden = baseAfspraakService.briefKanNogVerzondenWorden(DateUtil.toUtilDate(baseAfspraakOptieDto.getDatum()));
 		mammaAfspraakOptieDto.setToonBevestigingsBriefOptie(briefKanVerzondenWorden);
 
-		boolean smsKanVerzondenWorden = baseAfspraakService.smsKanNogVerzondenWorden(kandidaatAfspraakDto.getDatumTijd());
+		var smsKanVerzondenWorden = baseAfspraakService.smsKanNogVerzondenWorden(baseAfspraakOptieDto.getDatumTijd());
 		mammaAfspraakOptieDto.setToonSmsHerinneringOptie(smsKanVerzondenWorden);
 
 		mammaAfspraakOptieDto.setClientEmailAdres(client.getPersoon().getEmailadres());
@@ -160,10 +156,10 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 	@Override
 	public MammaHuidigeAfspraakDto toHuidigeAfspraakDto(MammaAfspraak huidigeAfspraak)
 	{
-		String naamStandplaats = huidigeAfspraak.getStandplaatsPeriode().getStandplaatsRonde().getStandplaats().getNaam();
-		String adresStandplaats = AdresUtil.getAdresVoorStandplaatsLocatie(baseAfspraakService.getMammaStandplaatsLocatieAfspraak(huidigeAfspraak));
+		var naamStandplaats = huidigeAfspraak.getStandplaatsPeriode().getStandplaatsRonde().getStandplaats().getNaam();
+		var adresStandplaats = AdresUtil.getAdresVoorStandplaatsLocatie(baseAfspraakService.getMammaStandplaatsLocatieAfspraak(huidigeAfspraak));
 
-		MammaHuidigeAfspraakDto huidigeAfspraakDto = new MammaHuidigeAfspraakDto();
+		var huidigeAfspraakDto = new MammaHuidigeAfspraakDto();
 		huidigeAfspraakDto.setWeergaveAfspraakMoment(DateUtil.getWeergaveDatumClientportaal(DateUtil.toLocalDateTime(huidigeAfspraak.getVanaf())));
 		huidigeAfspraakDto.setNaamStandplaats(naamStandplaats);
 		huidigeAfspraakDto.setAdresStandplaats(adresStandplaats);

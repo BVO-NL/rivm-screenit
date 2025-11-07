@@ -178,8 +178,8 @@ public class AfspraakController extends AbstractController
 			try
 			{
 				return ResponseEntity.ok()
-					.body(baseAfspraakService.getKandidaatAfspraken(client, filter).stream().distinct()
-						.map(afspraakDto -> afspraakService.toMammaKandidaatOptie(afspraakDto, client))
+					.body(baseAfspraakService.getAfspraakOpties(client, filter).stream().distinct()
+						.map(afspraakDto -> afspraakService.toAfspraakOptieDto(afspraakDto, client))
 						.sorted(Comparator.comparing(MammaAfspraakOptieDto::getDatumTijd)).collect(Collectors.toList()));
 			}
 			finally

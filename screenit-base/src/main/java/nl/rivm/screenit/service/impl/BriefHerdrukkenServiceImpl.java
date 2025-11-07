@@ -51,6 +51,7 @@ import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.cervix.CervixFactory;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
+import nl.rivm.screenit.util.ProjectUtil;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
@@ -160,7 +161,15 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 		ClientBrief<?, ?, ?> oudeBrief = (ClientBrief<?, ?, ?>) BriefUtil.getOrigineleBrief(oudeProjectBrief);
 
 		ProjectBrief nieuweProjectBrief = new ProjectBrief();
-		nieuweProjectBrief.setDefinitie(oudeProjectBrief.getDefinitie());
+		if (oudeProjectBrief.getDefinitie().getType() == ProjectBriefActieType.VERVANGENDEBRIEF)
+		{
+			var projectBriefActie = ProjectUtil.getProjectBriefActieDefinitie(oudeProjectBrief.getProjectClient(), oudeProjectBrief.getDefinitie().getBriefType());
+			nieuweProjectBrief.setDefinitie(projectBriefActie);
+		}
+		else
+		{
+			nieuweProjectBrief.setDefinitie(oudeProjectBrief.getDefinitie());
+		}
 		nieuweProjectBrief.setProjectClient(oudeProjectBrief.getProjectClient());
 		nieuweProjectBrief.setTeHerinnerenBrief(oudeProjectBrief.getTeHerinnerenBrief());
 		nieuweProjectBrief.setTemplateNaam(oudeProjectBrief.getTemplateNaam());

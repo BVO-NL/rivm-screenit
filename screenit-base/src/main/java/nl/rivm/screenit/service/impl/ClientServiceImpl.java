@@ -708,7 +708,7 @@ public class ClientServiceImpl implements ClientService
 	}
 
 	@Override
-	public boolean isHandtekeningBriefGebruiktBijMeedereColonAfmeldingen(UploadDocument handtekeningBrief, String handtekeningProperty)
+	public boolean isHandtekeningBriefGebruiktBijMeerdereColonAfmeldingen(UploadDocument handtekeningBrief, String handtekeningProperty)
 	{
 		return countUsedColonHandtekeningBrief(handtekeningBrief, handtekeningProperty) > 1;
 	}

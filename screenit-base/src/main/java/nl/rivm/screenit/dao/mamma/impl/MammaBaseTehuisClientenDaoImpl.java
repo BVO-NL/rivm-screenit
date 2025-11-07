@@ -101,8 +101,8 @@ public class MammaBaseTehuisClientenDaoImpl extends AbstractAutowiredDao impleme
 
 		String fromString = "";
 		fromString += " from gedeeld.persoon persoon";
-		fromString += " join gedeeld.org_adres adres on (persoon.gba_adres = adres.id or persoon.tijdelijk_gba_adres = adres.id)";
-		fromString += " join gedeeld.org_adres gba_adres on persoon.gba_adres = gba_adres.id";
+		fromString += " join gedeeld.adres adres on (persoon.gba_adres = adres.id or persoon.tijdelijk_gba_adres = adres.id)";
+		fromString += " join gedeeld.adres gba_adres on persoon.gba_adres = gba_adres.id";
 		fromString += " join gedeeld.client client on persoon.client = client.id";
 		fromString += " left join gedeeld.gba_mutatie laatste_gba_mutatie on client.laatste_gba_mutatie = laatste_gba_mutatie.id";
 		fromString += " join mamma.dossier dossier on client.mamma_dossier = dossier.id";

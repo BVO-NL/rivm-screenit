@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.werklijst.verwijs
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,6 +93,7 @@ public class MammaCeVerwijsVerslagenWerklijstPage extends AbstractMammaCeWerklij
 		columns.add(getBsnColumn());
 		columns.add(getSeColumn());
 		columns.add(getBeColumn());
+		columns.add(getHuisartsClientColumn());
 		columns.add(getStatusColumn());
 
 		resultatenContainer.add(new ScreenitDataTable<>("resultaten", columns, onderzoekDataProvider, 10, null)
@@ -101,10 +101,10 @@ public class MammaCeVerwijsVerslagenWerklijstPage extends AbstractMammaCeWerklij
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<MammaBeoordeling> beoordelingModel)
 			{
-				MammaBeoordeling beoordeling = beoordelingModel.getObject();
+				var beoordeling = beoordelingModel.getObject();
 				if (beoordeling.getStatus() == MammaBeoordelingStatus.UITSLAG_ONGUNSTIG)
 				{
-					File file = beoordelingsService.genereerPdfVoorOngunstigeUitslagBrief(beoordeling);
+					var file = beoordelingsService.genereerPdfVoorOngunstigeUitslagBrief(beoordeling);
 					dialog.openWith(target, new PdfViewerPanel(IDialog.CONTENT_ID, file)
 					{
 						@Override

@@ -28,7 +28,6 @@ import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.dto.mamma.planning.PlanningMeldingenDto.PlanningMeldingDto;
-import nl.rivm.screenit.dto.mamma.planning.PlanningScreeningsEenheidMetaDataDto;
 import nl.rivm.screenit.main.service.mamma.MammaScreeningsEenheidService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
@@ -40,7 +39,6 @@ import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaPlanningBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.dashboard.MammaPlanningDashboardPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -115,14 +113,14 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 
 	public MammaSECapaciteitEditPage(MammaScreeningsEenheid screeningsEenheidInit, Date startWeek)
 	{
-		ScreeningOrganisatie sessionSO = ScreenitSession.get().getScreeningOrganisatie();
+		var sessionSO = ScreenitSession.get().getScreeningOrganisatie();
 
 		this.screeningsEenheidModel = ModelUtil.cModel(screeningsEenheidInit);
 		this.screeningsEenhedenModel = ModelUtil.listRModel(screeningsEenheidService.getActieveScreeningsEenhedenVoorScreeningOrganisatie(sessionSO));
 
 		addNavigation();
 
-		ScreenitDropdown<MammaScreeningsEenheid> screeningsEenheid = new ScreenitDropdown<>("screeningsEenheid", this.screeningsEenheidModel, screeningsEenhedenModel,
+		var screeningsEenheid = new ScreenitDropdown<>("screeningsEenheid", this.screeningsEenheidModel, screeningsEenhedenModel,
 			new ChoiceRenderer<>("naam"));
 		add(screeningsEenheid);
 		screeningsEenheid.add(new AjaxFormComponentUpdatingBehavior("change")
@@ -146,9 +144,8 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 
 		isGrootOverzicht = new Model<>(true);
 
-		AjaxCheckBox grootOverzicht = new AjaxCheckBox("grootOverzicht", isGrootOverzicht)
+		var grootOverzicht = new AjaxCheckBox("grootOverzicht", isGrootOverzicht)
 		{
-
 			@Override
 			protected void onUpdate(AjaxRequestTarget ajaxRequestTarget)
 			{
@@ -227,7 +224,6 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 				dialog.openWith(target,
 					new MammaWeekHerhalenPopup(IDialog.CONTENT_ID, calenderPanel.getModel(), DateUtil.toLocalDate(calenderPanel.getHuidigeStartVanWeek()))
 					{
-
 						@Override
 						void herhalingOpgeslagen(AjaxRequestTarget target)
 						{
@@ -235,7 +231,6 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 							refreshKalender(target, huidigeDatum);
 							dialog.close(target);
 						}
-
 					});
 			}
 		};
@@ -252,7 +247,6 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 				dialog.openWith(target,
 					new MammaDagKopierenPopup(IDialog.CONTENT_ID, calenderPanel.getModel(), calenderPanel.getHuidigeStartVanWeek())
 					{
-
 						@Override
 						protected void onOpgeslagen(AjaxRequestTarget target)
 						{
@@ -260,7 +254,6 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 							refreshKalender(target, huidigeDatum);
 							dialog.close(target);
 						}
-
 					});
 			}
 		};
@@ -281,7 +274,7 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 
 	private void refreshCalendarNavInfo(AjaxRequestTarget target)
 	{
-		PlanningScreeningsEenheidMetaDataDto metaData = baseConceptPlanningsApplicatie.getScreeningsEenheidMetaData(screeningsEenheidModel.getObject());
+		var metaData = baseConceptPlanningsApplicatie.getScreeningsEenheidMetaData(screeningsEenheidModel.getObject());
 		if (metaData.herhalingsWeek != null)
 		{
 			herhalingsWeek.setDefaultModelObject(DateUtil.getWeekNr(metaData.herhalingsWeek) + "-" + metaData.herhalingsWeek.getYear());
@@ -301,11 +294,10 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 		target.add(weekHerhalenLink);
 	}
 
-	private MammaCapaciteitOverviewPanel refreshKalender(AjaxRequestTarget target, Date date)
+	private void refreshKalender(AjaxRequestTarget target, Date date)
 	{
 		calenderPanel = new MammaCapaciteitOverviewPanel("calendar", screeningsEenheidModel, DateUtil.toLocalDate(date), isGrootOverzicht.getObject())
 		{
-
 			@Override
 			protected void onCalenderRendered(AjaxRequestTarget target)
 			{
@@ -320,8 +312,6 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 		{
 			target.add(calenderPanel);
 		}
-
-		return calenderPanel;
 	}
 
 	public void successMelding(String melding)
@@ -336,7 +326,7 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 
 	private void addMelding(String melding, MammaMeldingNiveau niveau)
 	{
-		PlanningMeldingDto meldingDto = new PlanningMeldingDto();
+		var meldingDto = new PlanningMeldingDto();
 		meldingDto.tekst = melding;
 		meldingDto.niveau = niveau;
 		meldingen.add(meldingDto);
@@ -344,7 +334,7 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 
 	public void showMeldingen()
 	{
-		for (PlanningMeldingDto melding : meldingen)
+		for (var melding : meldingen)
 		{
 			switch (melding.niveau)
 			{
@@ -359,7 +349,6 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 				break;
 			default:
 				break;
-
 			}
 		}
 		meldingen.clear();
@@ -389,5 +378,4 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 	{
 		return MammaPlanningDashboardPage.class;
 	}
-
 }

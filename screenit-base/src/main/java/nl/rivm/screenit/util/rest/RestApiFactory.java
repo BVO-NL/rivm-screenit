@@ -73,22 +73,29 @@ public final class RestApiFactory
 
 	public static RestClient createClient(Duration readTimeout)
 	{
-		return createClient(readTimeout, null);
+		return createClient(readTimeout, null, null);
 	}
 
-	public static RestClient createClient(Duration readTimeout, TechnischeBerichtenLoggingSaverService technischeBerichtenLoggingSaverService)
+	public static RestClient createClient(Duration readTimeout, Duration connectTimeout, TechnischeBerichtenLoggingSaverService technischeBerichtenLoggingSaverService)
 	{
 		if (readTimeout == null)
 		{
-			readTimeout = Duration.ofMinutes(150); 
+			readTimeout = Duration.ofMinutes(12);
+		}
+
+		if (connectTimeout == null)
+		{
+			connectTimeout = Duration.ofSeconds(30);
 		}
 
 		var httpClient = HttpClient.newBuilder()
-			.connectTimeout(readTimeout)
+			.connectTimeout(connectTimeout)
 			.build();
 
-		var builder = RestClient.builder()
-			.requestFactory(new JdkClientHttpRequestFactory(httpClient));
+		var requestFactory = new JdkClientHttpRequestFactory(httpClient);
+		requestFactory.setReadTimeout(readTimeout);
+
+		var builder = RestClient.builder().requestFactory(requestFactory);
 		if (technischeBerichtenLoggingSaverService != null)
 		{
 			builder.requestInterceptor(new TechnischeLoggingRequestOutInterceptor(technischeBerichtenLoggingSaverService));

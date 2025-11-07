@@ -29,6 +29,8 @@ import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
 import nl.rivm.screenit.main.web.component.table.GeboortedatumColumn;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.AbstractMammaCePage;
 import nl.rivm.screenit.model.Client_;
+import nl.rivm.screenit.model.Huisarts;
+import nl.rivm.screenit.model.Huisarts_;
 import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
@@ -40,6 +42,7 @@ import nl.rivm.screenit.model.mamma.MammaOnderzoek_;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde_;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid_;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
+import nl.rivm.screenit.util.NaamUtil;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
 
@@ -54,7 +57,6 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
 public abstract class AbstractMammaCeWerklijst extends AbstractMammaCePage
 {
-
 	protected IModel<MammaCeWerklijstZoekObject> zoekObjectModel;
 
 	protected MammaCeVerwijsVerslagenDataProvider onderzoekDataProvider;
@@ -101,6 +103,21 @@ public abstract class AbstractMammaCeWerklijst extends AbstractMammaCePage
 			"beoordelingsEenheid.naam");
 	}
 
+	protected IColumn<MammaBeoordeling, String> getHuisartsClientColumn()
+	{
+		return new PropertyColumn<>(Model.of("Huisarts cliënt"),
+			huisartsSortProperty(),
+			"onderzoek.afspraak.uitnodiging.screeningRonde.huisarts")
+		{
+			@Override
+			public IModel<?> getDataModel(IModel<MammaBeoordeling> rowModel)
+			{
+				var huisarts = (Huisarts) super.getDataModel(rowModel).getObject();
+				return Model.of(NaamUtil.getHuisartsWeergavenaamMetPlaats(huisarts));
+			}
+		};
+	}
+
 	protected IColumn<MammaBeoordeling, String> getSeColumn()
 	{
 		return new PropertyColumn<>(Model.of("SE"), propertyChain(MammaOnderzoek_.SCREENINGS_EENHEID, MammaScreeningsEenheid_.CODE), "onderzoek.screeningsEenheid.code");
@@ -141,5 +158,10 @@ public abstract class AbstractMammaCeWerklijst extends AbstractMammaCePage
 	protected String rondeSortProperty()
 	{
 		return propertyChain(propertyChain(MammaOnderzoek_.AFSPRAAK, MammaAfspraak_.UITNODIGING, MammaUitnodiging_.SCREENING_RONDE));
+	}
+
+	protected String huisartsSortProperty()
+	{
+		return propertyChain(rondeSortProperty(), MammaScreeningRonde_.HUISARTS, Huisarts_.WEERGAVENAAM);
 	}
 }

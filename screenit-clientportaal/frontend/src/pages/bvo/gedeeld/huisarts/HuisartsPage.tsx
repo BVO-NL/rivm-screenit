@@ -283,6 +283,7 @@ const HuisartsPage = () => {
 					if (!magHuisartsOntkoppelen) {
 						showToast(getString(properties.gedeeld.toasts.geen.title), getString(properties.gedeeld.toasts.geen.description))
 					} else if (huidigeHuisarts || mammaHuidigeGeenHuisartsOptie) {
+						datadogService.stuurEvent("HuisartsVerwijderen", AnalyticsCategorie.MAMMA)
 						setWiltHuisartsVerwijderen(true)
 					}
 				}}
@@ -381,9 +382,13 @@ const HuisartsPage = () => {
 							type={HuisartsBevestigingsPopupType.VERWIJDEREN}
 							onPrimaireKnop={() => {
 								showToast(getString(properties.gedeeld.toasts.geen.title), getString(properties.gedeeld.toasts.geen.description))
+								datadogService.stuurEvent("HuisartsVerwijderd", AnalyticsCategorie.MAMMA)
 								navigate(getBvoBaseUrl(bvo))
 							}}
-							onSecundaireKnop={() => setWiltHuisartsVerwijderen(false)}
+							onSecundaireKnop={() => {
+								datadogService.stuurEvent("HuisartsVerwijderenAnnuleren", AnalyticsCategorie.MAMMA)
+								setWiltHuisartsVerwijderen(false)
+							}}
 						/>)
 				}
 			</BasePage>

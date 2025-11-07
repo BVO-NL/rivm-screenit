@@ -1141,3 +1141,16 @@ p.mammograafDicomMessageErrorText {
 	visibility: hidden;
 }
 
+.g-0,
+.gx-0 {
+	margin-right: 0;
+	margin-left: 0;
+}
+
+.g-0 > [class*="col-"],
+.gx-0 > [class*="col-"] {
+	padding-right: 0;
+	padding-left: 0;
+}
+
+

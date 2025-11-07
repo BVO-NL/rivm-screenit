@@ -20,16 +20,16 @@
  */
 import {Dispatch} from "redux"
 import ScreenitBackend from "../utils/Backend"
-import {KandidaatAfspraak} from "../datatypes/mamma/KandidaatAfspraak"
+import {AfspraakOptie} from "../datatypes/mamma/AfspraakOptie"
 import {setHuidigeMammaAfspraakReduxAction} from "../actions/MammaDossierAction"
 import {Bevolkingsonderzoek} from "../datatypes/Bevolkingsonderzoek"
 import {HuidigeAfspraak} from "../datatypes/mamma/HuidigeAfspraak"
 
-export const maakAfspraak = (bvo: Bevolkingsonderzoek, afspraak: KandidaatAfspraak): () => Promise<string> => () => {
+export const maakAfspraak = (bvo: Bevolkingsonderzoek, afspraak: AfspraakOptie): () => Promise<string> => () => {
 	return ScreenitBackend.post<string>("mamma/afspraak/maak", {json: afspraak}).json()
 }
 
 export const getHuidigeAfspraak = () => (dispatch: Dispatch) => {
-	return ScreenitBackend.get<HuidigeAfspraak>(`mamma/afspraak/huidige`).json()
+	return ScreenitBackend.get<HuidigeAfspraak>("mamma/afspraak/huidige").json()
 		.then(response => dispatch(setHuidigeMammaAfspraakReduxAction(response)))
 }

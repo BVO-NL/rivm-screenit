@@ -36,7 +36,7 @@ import {BevestigingsType} from "../../../../../../datatypes/BevestigingsType"
 export type MammaBevestigingsOptiePopupProps = {
 	afspraakBevestiging: AfspraakBevestigingOpties,
 	children: ReactNode
-	onVolgende: () => void;
+	onVolgende: (eventNaam: string) => void;
 }
 
 const MammaBevestigingsOptiePopup = (props: MammaBevestigingsOptiePopupProps) => {
@@ -59,7 +59,7 @@ const MammaBevestigingsOptiePopup = (props: MammaBevestigingsOptiePopupProps) =>
 						validationSchema={validatieSchema}
 						onSubmit={() => {
 							props.afspraakBevestiging.bevestigingsType = BevestigingsType.MAIL
-							props.onVolgende()
+							props.onVolgende("BevestigingSturenMail")
 						}}>
 					{({errors, values, isSubmitting, setFieldValue, handleSubmit}) => (
 						<><ScreenitTextfield name={"mail"}
@@ -78,10 +78,10 @@ const MammaBevestigingsOptiePopup = (props: MammaBevestigingsOptiePopupProps) =>
 				{props.afspraakBevestiging.toonBriefOptie &&
 					<NavLink onClick={() => {
 						props.afspraakBevestiging.bevestigingsType = BevestigingsType.BRIEF
-						props.onVolgende()
+						props.onVolgende("BevestigingSturenPost")
 					}}>{properties.mail.brief_link_tekst}</NavLink>}
 
-				<NavLink onClick={props.onVolgende}>{properties.mail.geen_bevestiging_tekst}</NavLink>
+				<NavLink onClick={() => props.onVolgende("GeenBevestigingSturen")}>{properties.mail.geen_bevestiging_tekst}</NavLink>
 			</div>
 			{props.children}
 		</div>

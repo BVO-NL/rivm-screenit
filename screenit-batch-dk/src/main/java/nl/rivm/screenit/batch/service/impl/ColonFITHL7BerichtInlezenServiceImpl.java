@@ -180,6 +180,7 @@ public class ColonFITHL7BerichtInlezenServiceImpl implements ColonFITHL7BerichtI
 					uitslag.setAnalyseDatum(result.getDateTimeResult());
 					uitslag.setBarcode(barcode);
 					uitslag.setType(uitslagType);
+					uitslag.setInstrumentId(result.getInstrumentID());
 					fitUitslagVerwerking(result, uitslag);
 					uitslag.setBestand(bestand);
 					fitUitslagRepository.save(uitslag);
@@ -300,7 +301,6 @@ public class ColonFITHL7BerichtInlezenServiceImpl implements ColonFITHL7BerichtI
 			var bestand = new IFOBTBestand();
 			bestand.setStatus(IFOBTBestandStatus.NIEUW);
 			bestand.setStatusDatum(currentDateSupplier.getDate());
-			bestand.setInstumentId(result.getInstrumentID());
 			var labID = result.getLabID();
 			var iFobtLaboratorium = fitLaboratoriumRepository.findByLabId(labID);
 			if (iFobtLaboratorium == null)

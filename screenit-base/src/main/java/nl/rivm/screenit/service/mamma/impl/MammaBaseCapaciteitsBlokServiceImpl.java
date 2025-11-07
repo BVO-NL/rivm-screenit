@@ -102,6 +102,7 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 		{
 			blok.aantalOnderzoeken = 0;
 			blok.minderValideAfspraakMogelijk = false;
+			blok.getMinderValideReserveringen().clear();
 		}
 
 		boolean isNieuw = blok.conceptId == null;

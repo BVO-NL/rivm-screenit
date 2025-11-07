@@ -163,7 +163,6 @@ public class PlanningCapaciteitAgendaServiceImpl implements PlanningCapaciteitAg
 		var nieuwBlok = PlanningMapper.from(bronBlok);
 		var huidigeVanafDatumTijd = DateUtil.toLocalDateTime(bronBlok.getDateVanaf());
 		var huidigeTotDatumTijd = DateUtil.toLocalDateTime(bronBlok.getDateTot());
-
 		nieuwBlok.vanaf = DateUtil.toUtilDate(huidigeVanafDatumTijd.with(doelDate));
 		nieuwBlok.tot = DateUtil.toUtilDate(huidigeTotDatumTijd.with(doelDate));
 		nieuwBlok.id = null;
@@ -205,9 +204,9 @@ public class PlanningCapaciteitAgendaServiceImpl implements PlanningCapaciteitAg
 
 					for (PlanningBlok teHerhalenBlok : teHerhalenDag.getBlokSet())
 					{
-						var teHerhalenReserveringen = teHerhalenBlok.getMindervalideReserveringen().stream().map(r -> new PlanningMinderValideReservering(null, r.getVanaf()))
+						var teHerhalenReserveringen = teHerhalenBlok.getMindervalideReserveringen().stream()
+							.map(r -> new PlanningMinderValideReservering(null, naarDag.getDatum().atTime(r.getVanaf().toLocalTime())))
 							.toList();
-
 						PlanningBlok naarBlok = new PlanningBlok(null,
 							teHerhalenBlok.getVanaf(),
 							teHerhalenBlok.getTot(),

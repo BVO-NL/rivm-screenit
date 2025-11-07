@@ -66,9 +66,8 @@ public class MammaCeProcesmonitoringWerklijstPage extends AbstractMammaCeWerklij
 		dialog = new BootstrapDialog("dialog");
 		add(dialog);
 		createResultTable();
-		MammaCeZoekPanel zoekPanel = new MammaCeZoekPanel("zoekContainer", zoekObjectModel, this, resultatenContainer)
+		var zoekPanel = new MammaCeZoekPanel("zoekContainer", zoekObjectModel, this, resultatenContainer)
 		{
-
 			@Override
 			protected List<MammaBeoordelingStatus> getRemoveFromDefaultFilter()
 			{
@@ -95,6 +94,7 @@ public class MammaCeProcesmonitoringWerklijstPage extends AbstractMammaCeWerklij
 		columns.add(getBsnColumn());
 		columns.add(getSeColumn());
 		columns.add(getBeColumn());
+		columns.add(getHuisartsClientColumn());
 		columns.add(getStatusColumn());
 		columns.add(getTypeOnderzoekColumn());
 
@@ -104,7 +104,7 @@ public class MammaCeProcesmonitoringWerklijstPage extends AbstractMammaCeWerklij
 			public void onClick(AjaxRequestTarget target, IModel<MammaBeoordeling> model)
 			{
 				super.onClick(target, model);
-				MammaBeoordeling beoordeling = model.getObject();
+				var beoordeling = model.getObject();
 				switch (beoordeling.getStatus())
 				{
 				case VERSLAG_MAKEN:
@@ -137,5 +137,4 @@ public class MammaCeProcesmonitoringWerklijstPage extends AbstractMammaCeWerklij
 			}
 		});
 	}
-
 }

@@ -85,11 +85,21 @@ public class BaseTestTimelineServiceImpl implements BaseTestTimelineService
 	}
 
 	@Override
-	public boolean rekenObjectTerug(HibernateObject object, int aantalDagen)
+	public void rekenObjectTerug(List<? extends HibernateObject> objecten, int aantalDagen)
+	{
+		if (objecten == null) 
+		{
+			return;
+		}
+		objecten.forEach(object -> rekenObjectTerug(object, aantalDagen));
+	}
+
+	@Override
+	public void rekenObjectTerug(HibernateObject object, int aantalDagen)
 	{
 		if (!terugrekenenEnabled)
 		{
-			return true;
+			return;
 		}
 		try
 		{
@@ -144,10 +154,7 @@ public class BaseTestTimelineServiceImpl implements BaseTestTimelineService
 		catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e)
 		{
 			LOG.error("Er is een fout opgetreden in de reflection voor het terug zetten van het dossier", e);
-			return false;
 		}
-
-		return true;
 	}
 
 	private List<Field> getAllDateFieldsFrom(Object object)

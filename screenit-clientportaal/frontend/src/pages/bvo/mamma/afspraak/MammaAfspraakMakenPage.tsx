@@ -18,11 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useState, useEffect, useRef} from "react"
+import {useEffect, useRef, useState} from "react"
 import {BevolkingsonderzoekNaam} from "../../../../datatypes/Bevolkingsonderzoek"
 import {Col, Row} from "react-bootstrap"
 import styles from "./MammaAfspraakMakenPage.module.scss"
-import {AfspraakZoekResultaten, geenAfspraakZoekResultaten, KandidaatAfspraak} from "../../../../datatypes/mamma/KandidaatAfspraak"
+import {AfspraakOptie, AfspraakZoekResultaten, geenAfspraakZoekResultaten} from "../../../../datatypes/mamma/AfspraakOptie"
 import {useThunkDispatch} from "../../../../index"
 import {useSelectedBvo, useWindowDimensions} from "../../../../utils/Hooks"
 import {getHuidigeAfspraak} from "../../../../api/MammaAfspraakMakenThunkAction"
@@ -61,7 +61,7 @@ const MammaAfspraakMakenPage = () => {
 	const {width} = useWindowDimensions()
 	const gevondenAfsprakenDiv = useRef<HTMLDivElement | null>(null)
 	const [dagenBeschikbaar, setDagenBeschikbaar] = useState<boolean>(true)
-	const [gekozenAfspraak, setGekozenAfspraak] = useState<KandidaatAfspraak | undefined>(undefined)
+	const [gekozenAfspraak, setGekozenAfspraak] = useState<AfspraakOptie | undefined>(undefined)
 	const [zoekFilter, setZoekFilter] = useState<AfspraakZoekFilter>({
 		vanaf: undefined,
 		plaats: undefined,
@@ -106,18 +106,18 @@ const MammaAfspraakMakenPage = () => {
 		)
 	}
 
-	const afspraakGekozen = (kandidaatAfspraak: KandidaatAfspraak) => {
+	const afspraakGekozen = (afspraakOptie: AfspraakOptie) => {
 		datadogService.stuurEvent(
 			"mammaAfspraakOptieGekozen",
 			AnalyticsCategorie.MAMMA_AFSPRAAK,
 			{
 				client: client.persoon.id,
-				datumTijd: formatDateTime(kandidaatAfspraak.datumTijd),
-				standplaatsPeriode: kandidaatAfspraak.standplaatsPeriodeId,
+				datum: formatDateTime(afspraakOptie.datumTijd),
+				standplaatsPeriode: afspraakOptie.standplaatsPeriodeId,
 			},
 		)
-		kandidaatAfspraak.filter = zoekFilter
-		setGekozenAfspraak(kandidaatAfspraak)
+		afspraakOptie.filter = zoekFilter
+		setGekozenAfspraak(afspraakOptie)
 	}
 
 	return (
@@ -167,16 +167,16 @@ const MammaAfspraakMakenPage = () => {
 					/>
 				</Col>
 				<Col md={7} className={styles.results} ref={gevondenAfsprakenDiv}>
-					{laatsteAfspraakZoekResultaten && laatsteAfspraakZoekResultaten.map((kandidaatAfspraak, index) =>
+					{laatsteAfspraakZoekResultaten && laatsteAfspraakZoekResultaten.map((afspraakOptie, index) =>
 						<SearchResultAfspraken
 							key={index}
 							className={styles.result}
 
-							col1={["", placeNonBreakingSpaceInDate(formatDateWithDayName(kandidaatAfspraak.datumTijd)), `${formatTime(kandidaatAfspraak.datumTijd)  } uur`]}
-							col3={["Locatie", kandidaatAfspraak.adres, `${kandidaatAfspraak.postcode  } ${  kandidaatAfspraak.plaats}`]}
+							col1={["", placeNonBreakingSpaceInDate(formatDateWithDayName(afspraakOptie.datumTijd)), `${formatTime(afspraakOptie.datumTijd)} uur`]}
+							col3={["Locatie", afspraakOptie.adres, `${afspraakOptie.postcode} ${afspraakOptie.plaats}`]}
 
 							onHoverText={getString(properties.searchresult.hovertext)}
-							onClickAction={() => afspraakGekozen(kandidaatAfspraak)}
+							onClickAction={() => afspraakGekozen(afspraakOptie)}
 						/>,
 					)}
 

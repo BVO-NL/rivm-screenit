@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import lombok.Getter;
+
+import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningMeldingenDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningStandplaatsPeriodeDto;
@@ -53,12 +56,10 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
-import nl.rivm.screenit.model.mamma.enums.MammaFactorType;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
 import nl.rivm.screenit.util.DateUtil;
-import nl.rivm.screenit.util.mamma.MammaPlanningUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -79,7 +80,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEenheid>
 {
-
 	public static final LocalTime MINIMALE_TIJD = LocalTime.of(7, 30);
 
 	public static final LocalTime MAXIMALE_TIJD = LocalTime.of(21, 0);
@@ -98,6 +98,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 
 	private Date origStartTijd;
 
+	@Getter
 	private Date huidigeStartVanWeek;
 
 	private final BootstrapDialog dialog;
@@ -248,12 +249,6 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 
 	protected void onCalenderRendered(AjaxRequestTarget target)
 	{
-
-	}
-
-	public Date getHuidigeStartVanWeek()
-	{
-		return huidigeStartVanWeek;
 	}
 
 	private void openEventPopup(CalendarResponse response, IModel<PlanningCapaciteitBlokDto> blokModel)
@@ -264,7 +259,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 			@Override
 			protected void onVerwijderen(AjaxRequestTarget target, IModel<PlanningCapaciteitBlokDto> model)
 			{
-				PlanningCapaciteitBlokDto abstractAppointmentToDelete = model.getObject();
+				var abstractAppointmentToDelete = model.getObject();
 				String melding = baseCapaciteitsBlokService.delete(abstractAppointmentToDelete, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				if (StringUtils.isBlank(melding))
 				{
@@ -279,7 +274,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 			@Override
 			protected void onOpslaan(AjaxRequestTarget target, IModel<PlanningCapaciteitBlokDto> model)
 			{
-				PlanningCapaciteitBlokDto blokDto = model.getObject();
+				var blokDto = model.getObject();
 				onBeforeOpslaan(blokDto);
 				if (!getThisPage().hasMeldingen())
 				{
@@ -307,7 +302,6 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 				dialog.close(target);
 				getThisPage().successMelding(getString("message.gegevens.onthouden"));
 			}
-
 		});
 	}
 
@@ -338,10 +332,9 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 			getThisPage().errorMelding(getString("CapaciteitKalender.eindtijd.minuten.geen.factor.vijf"));
 		}
 
-		Long minimumTijdvak = MammaPlanningUtil.minimumTijdvak(MammaFactorType.GEEN.getFactor(ScreenitSession.get().getScreeningOrganisatie()));
-		if (startTime.plusMinutes(minimumTijdvak.intValue()).isAfter(totTime))
+		if (startTime.plusMinutes(Constants.BK_TIJDVAK_MIN).isAfter(totTime))
 		{
-			getThisPage().errorMelding(String.format(getString("CapaciteitKalender.starttijd.na.eindtijd"), minimumTijdvak));
+			getThisPage().errorMelding(String.format(getString("CapaciteitKalender.starttijd.na.eindtijd"), Constants.BK_TIJDVAK_MIN));
 		}
 		if (blok.conceptId != null && !origStartTijd.equals(start) && start.before(dateSupplier.getDateMidnight()))
 		{
@@ -381,7 +374,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 
 		if (!(event instanceof DroppedEvent) || !((DroppedEvent) event).isAllDay())
 		{
-			PlanningCapaciteitBlokDto blok = sourceFactory.getBlok(event.getEvent().getConceptId());
+			var blok = sourceFactory.getBlok(event.getEvent().getConceptId());
 			origStartTijd = blok.vanaf;
 
 			if (event.getNewEndTime().getDayOfYear() > event.getNewStartTime().getDayOfYear())
@@ -429,11 +422,10 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 
 	private class MeldingenTooltip extends Fragment
 	{
-
 		public MeldingenTooltip(String id, IModel<PlanningStandplaatsPeriodeDto> model)
 		{
 			super(id, "meldingenFragment", MammaCapaciteitOverviewPanel.this);
-			PlanningStandplaatsPeriodeDto standplaatsPeriodeDto = model.getObject();
+			var standplaatsPeriodeDto = model.getObject();
 			add(new AttributeAppender("class", Model.of(" tooltip-m" + standplaatsPeriodeDto.conceptId)));
 			add(new ListView<>("meldingen", standplaatsPeriodeDto.meldingenDto.meldingen)
 			{
@@ -449,5 +441,4 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 			});
 		}
 	}
-
 }

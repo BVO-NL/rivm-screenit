@@ -20,7 +20,7 @@
  */
 import {AfspraakZoekFilter} from "../../pages/bvo/mamma/afspraak/MammaAfspraakMakenPage"
 
-export type KandidaatAfspraak = {
+export type AfspraakOptie = {
 	capaciteitBlokId: number,
 	datumTijd: Date,
 	standplaatsPeriodeId: number,
@@ -35,6 +35,6 @@ export type KandidaatAfspraak = {
 	filter: AfspraakZoekFilter
 }
 
-export type AfspraakZoekResultaten = KandidaatAfspraak[]
+export type AfspraakZoekResultaten = AfspraakOptie[]
 
-export const geenAfspraakZoekResultaten = [] as AfspraakZoekResultaten;
+export const geenAfspraakZoekResultaten = [] as AfspraakZoekResultaten

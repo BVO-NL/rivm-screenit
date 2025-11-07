@@ -32,7 +32,6 @@ import nl.rivm.screenit.main.web.gebruiker.clienten.ClientContactActieTypeWrappe
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.panels.MammaCeZoekPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.werklijst.AbstractMammaCeWerklijst;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -76,7 +75,7 @@ public class MammaCeOpgeschorteBeoordelingenWerklijstPage extends AbstractMammaC
 	{
 		super();
 		createResultTable();
-		MammaCeZoekPanel zoekPanel = new MammaCeZoekPanel("zoekContainer", zoekObjectModel, this, resultatenContainer)
+		var zoekPanel = new MammaCeZoekPanel("zoekContainer", zoekObjectModel, this, resultatenContainer)
 		{
 			@Override
 			protected List<MammaBeoordelingStatus> getRemoveFromDefaultFilter()
@@ -104,12 +103,13 @@ public class MammaCeOpgeschorteBeoordelingenWerklijstPage extends AbstractMammaC
 		columns.add(getBsnColumn());
 		columns.add(getSeColumn());
 		columns.add(getBeColumn());
+		columns.add(getHuisartsClientColumn());
 		columns.add(getStatusColumn());
 		columns.add(getOpschortredenColumn());
 		columns.add(getOpschortOpmerkingRadioloog());
 		columns.add(getAfspraakMakenMetClientKnopColumn());
 		columns.add(getOpschortenTerugNaarWerklijstKnopColumn());
-		ScreenitDataTable<MammaBeoordeling, String> resultatenTable = new ScreenitDataTable<>("resultaten", columns, onderzoekDataProvider, 10, null);
+		var resultatenTable = new ScreenitDataTable<MammaBeoordeling, String>("resultaten", columns, onderzoekDataProvider, 10, null);
 		resultatenContainer.add(resultatenTable);
 	}
 
@@ -138,11 +138,11 @@ public class MammaCeOpgeschorteBeoordelingenWerklijstPage extends AbstractMammaC
 						@Override
 						protected void onClick(AjaxRequestTarget target, IModel<MammaBeoordeling> model)
 						{
-							List<Object> extraParameters = new ArrayList<>();
+							var extraParameters = new ArrayList<>();
 							extraParameters.add(Constants.CONTACT_EXTRA_PARAMETER_VANUIT_BK_PLANNING);
 							extraParameters.add(Constants.CONTACT_EXTRA_PARAMETER_ALLEEN_CLIENT_CONTACT);
-							Client client = model.getObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient();
-							ClientContactActieTypeWrapper actie = ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN;
+							var client = model.getObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient();
+							var actie = ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN;
 							setResponsePage(new MammaClientContactNaOpgeschortOnderzoekPage(ModelUtil.ccModel(client), extraParameters, actie));
 						}
 					});

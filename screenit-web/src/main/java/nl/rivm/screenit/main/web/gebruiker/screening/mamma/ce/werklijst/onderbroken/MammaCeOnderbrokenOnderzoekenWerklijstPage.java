@@ -44,6 +44,7 @@ import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.CentraleEenheid;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
+import nl.rivm.screenit.model.Huisarts;
 import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -51,7 +52,6 @@ import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaDossier_;
-import nl.rivm.screenit.model.mamma.MammaMammografie;
 import nl.rivm.screenit.model.mamma.MammaMammografie_;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek_;
@@ -62,6 +62,7 @@ import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid_;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
 import nl.rivm.screenit.service.OrganisatieService;
+import nl.rivm.screenit.util.NaamUtil;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
@@ -106,7 +107,7 @@ public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeW
 	{
 		super();
 		onderbrokenOnderzoekDataProvider = new MammaCeOnderbrokenOnderzoekenDataProvider("creatieDatum", zoekObjectModel);
-		List<CentraleEenheid> alleMogelijkeCentraleEenheden = getAlleMogelijkeCentraleEenheden();
+		var alleMogelijkeCentraleEenheden = getAlleMogelijkeCentraleEenheden();
 		showCentraleEenheidSelector = alleMogelijkeCentraleEenheden.size() > 1;
 		MammaCeWerklijstZoekObject zoekObject = zoekObjectModel.getObject();
 		if (zoekObject.getCentraleEenheden() == null)
@@ -139,7 +140,6 @@ public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeW
 
 	class ZoekForm extends Form<MammaCeWerklijstZoekObject>
 	{
-
 		public ZoekForm(String id, IModel<MammaCeWerklijstZoekObject> model)
 		{
 			super(id, model);
@@ -163,7 +163,7 @@ public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeW
 
 		private void addOrReplaceSeSelector()
 		{
-			ScreenitListMultipleChoice<MammaScreeningsEenheid> screeningsEenheden = new ScreenitListMultipleChoice<>("screeningsEenheden",
+			var screeningsEenheden = new ScreenitListMultipleChoice<>("screeningsEenheden",
 				ModelUtil.listRModel(getAlleMogelijkeScreeningsEenheden()), new ChoiceRenderer<>("code"));
 			screeningsEenheden.setOutputMarkupId(true);
 			addOrReplace(screeningsEenheden);
@@ -171,7 +171,7 @@ public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeW
 
 		private void addCeSelector()
 		{
-			ScreenitListMultipleChoice<CentraleEenheid> centraleEenhedenSelector = new ScreenitListMultipleChoice<>("centraleEenheden",
+			var centraleEenhedenSelector = new ScreenitListMultipleChoice<>("centraleEenheden",
 				ModelUtil.listRModel(getAlleMogelijkeCentraleEenheden()), new ChoiceRenderer<>("naam"));
 			centraleEenhedenSelector.add(new AjaxFormComponentUpdatingBehavior("change")
 			{
@@ -198,7 +198,7 @@ public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeW
 				protected void onSubmit(AjaxRequestTarget target)
 				{
 					super.onSubmit(target);
-					MammaCeWerklijstZoekObject zoekObject = getModelObject();
+					var zoekObject = getModelObject();
 					if (CollectionUtils.isEmpty(zoekObject.getCentraleEenheden()))
 					{
 						zoekObject.setCentraleEenheden(getAlleMogelijkeCentraleEenheden());
@@ -216,7 +216,6 @@ public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeW
 			setDefaultButton(zoekenButton);
 			add(zoekenButton);
 		}
-
 	}
 
 	private void createResultTable()
@@ -234,8 +233,8 @@ public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeW
 			@Override
 			public void populateItem(Item<ICellPopulator<MammaOnderzoek>> item, String componentId, IModel<MammaOnderzoek> rowModel)
 			{
-				MammaMammografie mammografie = rowModel.getObject().getMammografie();
-				MammaMammografieIlmStatus status = mammografie != null ? mammografie.getIlmStatus() : null;
+				var mammografie = rowModel.getObject().getMammografie();
+				var status = mammografie != null ? mammografie.getIlmStatus() : null;
 				item.add(new Label(componentId, MammaMammografieIlmStatus.beeldenBeschikbaar(status) ? "Ja" : "Nee"));
 			}
 		});
@@ -245,13 +244,23 @@ public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeW
 			new PropertyColumn<>(Model.of("CE"),
 				propertyChain(MammaOnderzoek_.SCREENINGS_EENHEID, MammaScreeningsEenheid_.BEOORDELINGS_EENHEID, Organisatie_.PARENT, Organisatie_.NAAM),
 				"screeningsEenheid.beoordelingsEenheid.parent.naam"));
-		columns.add(new PropertyColumn<>(Model.of("Datum brief oproep"), "afspraak.uitnodiging.screeningRonde")
+		columns.add(new PropertyColumn<>(Model.of("Huisarts cliënt"),
+			huisartsSortProperty(),
+			"afspraak.uitnodiging.screeningRonde.huisarts")
 		{
-
 			@Override
 			public IModel<?> getDataModel(IModel<MammaOnderzoek> rowModel)
 			{
-				MammaScreeningRonde ronde = (MammaScreeningRonde) super.getDataModel(rowModel).getObject();
+				var huisarts = (Huisarts) super.getDataModel(rowModel).getObject();
+				return Model.of(NaamUtil.getHuisartsWeergavenaamMetPlaats(huisarts));
+			}
+		});
+		columns.add(new PropertyColumn<>(Model.of("Datum brief oproep"), "afspraak.uitnodiging.screeningRonde")
+		{
+			@Override
+			public IModel<?> getDataModel(IModel<MammaOnderzoek> rowModel)
+			{
+				var ronde = (MammaScreeningRonde) super.getDataModel(rowModel).getObject();
 				if (ronde.getLaatsteBrief().getBriefType() == BriefType.MAMMA_OPROEP_OPNEMEN_CONTACT)
 				{
 					return new Model<>(Constants.getDateFormat().format(ronde.getLaatsteBrief().getCreatieDatum()));
@@ -276,5 +285,4 @@ public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeW
 			}
 		});
 	}
-
 }

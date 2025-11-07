@@ -111,7 +111,7 @@ export const HuisartsBevestigingsPopup = (props: HuisartsBevestigingsPopupProps)
 					<SubmitButton displayArrow={ArrowType.ARROW_RIGHT}
 								  label={bepaalHoofdKnopTekst()}
 								  onClick={() => {
-									  datadogService.stuurEvent("huisartsBevestigd", AnalyticsCategorie.MAMMA_HUISARTS)
+									  verstuurAnalyticsEvent()
 									  bevestigHuisarts()
 								  }}/>
 					<NavLink onClick={() => {
@@ -122,7 +122,12 @@ export const HuisartsBevestigingsPopup = (props: HuisartsBevestigingsPopupProps)
 						{bepaalAlternatieveLinkTekst()}
 					</NavLink>
 					{HuisartsBevestigingsPopupType.DOORGEVEN === props.type && props.huisarts &&
-						<NavLink onClick={props.onTertiaireKnop} className={styles.andereHuisarts}>
+						<NavLink onClick={() => {
+									   datadogService.stuurEvent("GeenHuisartsDoorgeven", AnalyticsCategorie.MAMMA_AFSPRAAK)
+									   if (props.onTertiaireKnop) {
+										   props.onTertiaireKnop()
+									   }
+								   }} className={styles.andereHuisarts}>
 							{properties.doorgeven.bekend.button_annuleren}
 						</NavLink>}
 				</div>
@@ -161,6 +166,24 @@ export const HuisartsBevestigingsPopup = (props: HuisartsBevestigingsPopupProps)
 				return properties.verwijderen.button_bevestigen
 			case HuisartsBevestigingsPopupType.DOORGEVEN:
 				return props.huisarts ? properties.doorgeven.bekend.button_bevestigen : properties.doorgeven.onbekend.button_bevestigen
+		}
+	}
+
+	function verstuurAnalyticsEvent(): void {
+		switch (props.type) {
+			case HuisartsBevestigingsPopupType.BEVESTIGEN:
+				datadogService.stuurEvent("HuisartsBevestigd", AnalyticsCategorie.MAMMA_HUISARTS)
+				break
+			case HuisartsBevestigingsPopupType.VERWIJDEREN:
+				datadogService.stuurEvent("HuisartsVerwijderd", AnalyticsCategorie.MAMMA_HUISARTS)
+				break
+			case HuisartsBevestigingsPopupType.DOORGEVEN:
+				if (props.huisarts) {
+					datadogService.stuurEvent("HuisartsBevestigd", AnalyticsCategorie.MAMMA_HUISARTS)
+				} else {
+					datadogService.stuurEvent("HuisartsDoorgeven", AnalyticsCategorie.MAMMA_AFSPRAAK)
+				}
+				break
 		}
 	}
 

@@ -1,8 +1,8 @@
-package nl.rivm.screenit.mamma.planning.repository.projectie;
+package nl.rivm.screenit.service.mamma.afspraakzoeken;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-planning-bk
+ * screenit-base
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,18 +21,6 @@ package nl.rivm.screenit.mamma.planning.repository.projectie;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDateTime;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-@Getter
-@AllArgsConstructor
-public class PlanningMinderValideReserveringProjectie
+public class MammaOnvoldoendeVrijeCapaciteitException extends Exception
 {
-	private Long id;
-
-	private Long capaciteitBlokId;
-
-	private LocalDateTime vanaf;
 }

@@ -640,7 +640,7 @@ public class ClientContactServiceImpl implements ClientContactService
 
 		if (isAfspraakInZelfdeCapaciteitBlokMetZelfdeVanafAanwezig || reserveringAanwezigOpMoment)
 		{
-			return isAfspraakTijdBeschikbaarVanuitKandidaatAfspraakOpties(nieuweAfspraak, afspraakWijzigenFilter, nieuweVanaf, capaciteitBlok);
+			return isAfspraakTijdBeschikbaarVanuitAfspraakOpties(nieuweAfspraak, afspraakWijzigenFilter, nieuweVanaf, capaciteitBlok);
 		}
 		else if (LOG.isTraceEnabled())
 		{
@@ -670,25 +670,25 @@ public class ClientContactServiceImpl implements ClientContactService
 			|| !DateUtil.compareBefore(nieuweVanaf, capaciteitBlok.getTot());
 	}
 
-	private boolean isAfspraakTijdBeschikbaarVanuitKandidaatAfspraakOpties(MammaAfspraak nieuweAfspraak, IMammaAfspraakWijzigenFilter afspraakWijzigenFilter, Date nieuweVanaf,
+	private boolean isAfspraakTijdBeschikbaarVanuitAfspraakOpties(MammaAfspraak nieuweAfspraak, IMammaAfspraakWijzigenFilter afspraakWijzigenFilter, Date nieuweVanaf,
 		MammaCapaciteitBlok capaciteitBlok)
 	{
 		afspraakWijzigenFilter.setBuitenRegio(true);
 		afspraakWijzigenFilter.setExtraOpties(true);
-		var kandidaatAfspraken = mammaBaseAfspraakService
-			.getKandidaatAfspraken(nieuweAfspraak.getUitnodiging().getScreeningRonde().getDossier().getClient(), afspraakWijzigenFilter);
+		var afspraakOpties = mammaBaseAfspraakService
+			.getAfspraakOpties(nieuweAfspraak.getUitnodiging().getScreeningRonde().getDossier().getClient(), afspraakWijzigenFilter);
 
 		if (LOG.isTraceEnabled())
 		{
 			var afspraken = new StringBuilder();
-			kandidaatAfspraken.forEach(a -> afspraken.append(a.getDatum() + " " + a.getTijd() + " " + a.getCapaciteitBlokId() + ", "));
+			afspraakOpties.forEach(a -> afspraken.append(a.getDatum() + " " + a.getTijd() + " " + a.getCapaciteitBlokId() + ", "));
 			LOG.trace("isAfspraakTijdBezet: Kandaten {}", afspraken);
 		}
 		var tijd = DateUtil.toLocalTime(nieuweVanaf);
 		var datum = DateUtil.toLocalDate(nieuweVanaf);
 
-		return kandidaatAfspraken.stream().noneMatch(kandidaatAfspraakDto -> tijd.equals(kandidaatAfspraakDto.getTijd()) && datum.equals(kandidaatAfspraakDto.getDatum())
-			&& capaciteitBlok.getId().equals(kandidaatAfspraakDto.getCapaciteitBlokId()));
+		return afspraakOpties.stream().noneMatch(afspraakOptie -> tijd.equals(afspraakOptie.getTijd()) && datum.equals(afspraakOptie.getDatum())
+			&& capaciteitBlok.getId().equals(afspraakOptie.getCapaciteitBlokId()));
 	}
 
 	private boolean afspraakHeeftBestaandeReservering(List<MammaAfspraakReservering> reserveringenVoorBlok, Client client, MammaAfspraak afspraak)
@@ -980,7 +980,6 @@ public class ClientContactServiceImpl implements ClientContactService
 					var groupWrappers = (List<BezwaarGroupViewWrapper>) extraOpslaanParams.get(ExtraOpslaanKey.BEZWAAR_WRAPPERS);
 					bezwaarService.bezwaarAfronden(toegevoegdeBezwaar, account, groupWrappers);
 				}
-
 			}
 			else if (extraOpslaanParams.get(ExtraOpslaanKey.ONDERZOEKSRESULTATEN_ACTIE) != null)
 			{
@@ -1458,7 +1457,7 @@ public class ClientContactServiceImpl implements ClientContactService
 		{
 			resultaat = false;
 		}
-		else if (FITTestUtil.heeftUitslag(laatsteScreeningRonde))
+		else if (FITTestUtil.heeftSuccesvolleAnalyse(laatsteScreeningRonde))
 		{
 			resultaat = false;
 		}

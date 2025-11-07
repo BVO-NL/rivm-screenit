@@ -21,6 +21,8 @@ package nl.rivm.screenit.service;
  * =========================LICENSE_END==================================
  */
 
+import java.util.List;
+
 import nl.rivm.screenit.model.Persoon;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 
@@ -30,5 +32,7 @@ public interface BaseTestTimelineService
 
 	void rekenAllePersoonsDatumTerug(Persoon persoon, int aantalDagen);
 
-	boolean rekenObjectTerug(HibernateObject object, int aantalDagen);
+	void rekenObjectTerug(List<? extends HibernateObject> objecten, int aantalDagen);
+
+	void rekenObjectTerug(HibernateObject object, int aantalDagen);
 }

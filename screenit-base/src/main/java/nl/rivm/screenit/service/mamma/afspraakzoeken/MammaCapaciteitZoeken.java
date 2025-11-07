@@ -21,7 +21,6 @@ package nl.rivm.screenit.service.mamma.afspraakzoeken;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,11 +34,12 @@ public class MammaCapaciteitZoeken
 	{
 		if (list.size() > 2)
 		{
-			int middle = list.size() / 2;
+			var middle = list.size() / 2;
 
-			if (list.get(0) instanceof MammaKandidaatAfspraak)
+			if (list.get(0) instanceof MammaAfspraakOptie)
 			{
-				Integer midden = gecorrigeerdMidden((List<MammaKandidaatAfspraak>) list, middle);
+				var afspraakOpties = list.stream().map(MammaAfspraakOptie.class::cast).toList();
+				var midden = gecorrigeerdMidden(afspraakOpties, middle);
 				if (midden != null)
 				{
 					middle = midden;
@@ -50,11 +50,11 @@ public class MammaCapaciteitZoeken
 				}
 			}
 
-			List<R> list1 = list.subList(0, middle);
-			List<R> list2 = list.subList(middle, list.size());
+			var list1 = list.subList(0, middle);
+			var list2 = list.subList(middle, list.size());
 
-			MammaRationaal rationaal1 = MammaRationaal.getRationaal(list1);
-			MammaRationaal rationaal2 = MammaRationaal.getRationaal(list2);
+			var rationaal1 = MammaRationaal.getRationaal(list1);
+			var rationaal2 = MammaRationaal.getRationaal(list2);
 
 			if (rationaal1.compareTo(rationaal2) <= 0)
 			{
@@ -71,14 +71,14 @@ public class MammaCapaciteitZoeken
 		}
 	}
 
-	private static Integer gecorrigeerdMidden(List<MammaKandidaatAfspraak> afspraken, int middle)
+	private static Integer gecorrigeerdMidden(List<MammaAfspraakOptie> afspraken, int middle)
 	{
-		LocalTime vanafMiddle = afspraken.get(middle).getVanaf();
-		int index = middle - 1;
-		boolean forward = true;
-		for (int i = 2; 0 <= index && index < afspraken.size(); i++)
+		var vanafMiddle = afspraken.get(middle).getVanaf();
+		var index = middle - 1;
+		var forward = true;
+		for (var i = 2; 0 <= index && index < afspraken.size(); i++)
 		{
-			LocalTime vanafIndex = afspraken.get(index).getVanaf();
+			var vanafIndex = afspraken.get(index).getVanaf();
 			if (!vanafMiddle.equals(vanafIndex))
 			{
 				return forward ? index + 1 : index;

@@ -123,7 +123,7 @@ public class IFOBTVerwerkingWriter implements ItemWriter<IFOBTUitslag>
 					}
 					else
 					{
-						fitService.uitslagFitOntvangen(ifobtTest);
+						fitService.verwerkAnalyseResultaat(ifobtTest);
 					}
 					verslagEntry.setAantalVerwerkingen(verslagEntry.getAantalVerwerkingen() + 1);
 
@@ -173,7 +173,7 @@ public class IFOBTVerwerkingWriter implements ItemWriter<IFOBTUitslag>
 		}
 
 		ifobtTest.setIfobtLaboratorium(bestand.getLaboratorium());
-		ifobtTest.setInstumentId(bestand.getInstumentId());
+		ifobtTest.setInstrumentId(ifobtResult.getInstrumentId());
 	}
 
 	private boolean correctForInpakcentrumIncident(IFOBTTest ifobtTest)

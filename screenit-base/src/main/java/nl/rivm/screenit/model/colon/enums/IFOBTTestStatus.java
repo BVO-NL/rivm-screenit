@@ -22,6 +22,7 @@ package nl.rivm.screenit.model.colon.enums;
  */
 
 import java.util.Arrays;
+import java.util.List;
 
 import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.colon.IFOBTType;
@@ -31,38 +32,38 @@ public enum IFOBTTestStatus
 {
 
 	ACTIEF
-	{
-		@Override
-		public boolean magWijzigenNaarStatus(IFOBTTestStatus nieuweStatus, IFOBTTest buis)
 		{
-			if (!buis.getType().equals(IFOBTType.STUDIE))
+			@Override
+			public boolean magWijzigenNaarStatus(IFOBTTestStatus nieuweStatus, IFOBTTest buis)
 			{
-				return Arrays.asList(VERLOREN, UITGEVOERD, VERVALDATUMVERLOPEN, NIETTEBEOORDELEN).contains(nieuweStatus) && uitgevoerdEnUitslag(nieuweStatus, buis);
+				if (!buis.getType().equals(IFOBTType.STUDIE))
+				{
+					return Arrays.asList(VERLOREN, UITGEVOERD, VERVALDATUMVERLOPEN, NIETTEBEOORDELEN).contains(nieuweStatus) && uitgevoerdEnUitslag(nieuweStatus, buis);
+				}
+				else
+				{
+					return Arrays.asList(VERLOREN, UITGEVOERD, VERVALDATUMVERLOPEN, NIETTEBEOORDELEN, VERWIJDERD).contains(nieuweStatus);
+				}
 			}
-			else
-			{
-				return Arrays.asList(VERLOREN, UITGEVOERD, VERVALDATUMVERLOPEN, NIETTEBEOORDELEN, VERWIJDERD).contains(nieuweStatus);
-			}
-		}
-	},
+		},
 
 	VERLOREN
-	{
-		@Override
-		public boolean magWijzigenNaarStatus(IFOBTTestStatus nieuweStatus, IFOBTTest buis)
 		{
-			return Arrays.asList(UITGEVOERD, VERVALDATUMVERLOPEN, NIETTEBEOORDELEN).contains(nieuweStatus) && uitgevoerdEnUitslag(nieuweStatus, buis);
-		}
-	},
+			@Override
+			public boolean magWijzigenNaarStatus(IFOBTTestStatus nieuweStatus, IFOBTTest buis)
+			{
+				return Arrays.asList(UITGEVOERD, VERVALDATUMVERLOPEN, NIETTEBEOORDELEN).contains(nieuweStatus) && uitgevoerdEnUitslag(nieuweStatus, buis);
+			}
+		},
 
 	DOETNIETMEE
-	{
-		@Override
-		public boolean magWijzigenNaarStatus(IFOBTTestStatus nieuweStatus, IFOBTTest buis)
 		{
-			return Arrays.asList(UITGEVOERD, VERVALDATUMVERLOPEN, NIETTEBEOORDELEN).contains(nieuweStatus) && uitgevoerdEnUitslag(nieuweStatus, buis);
-		}
-	},
+			@Override
+			public boolean magWijzigenNaarStatus(IFOBTTestStatus nieuweStatus, IFOBTTest buis)
+			{
+				return Arrays.asList(UITGEVOERD, VERVALDATUMVERLOPEN, NIETTEBEOORDELEN).contains(nieuweStatus) && uitgevoerdEnUitslag(nieuweStatus, buis);
+			}
+		},
 
 	WACHTOPTEST,
 
@@ -142,6 +143,8 @@ public enum IFOBTTestStatus
 
 	public static final IFOBTTestStatus[] UNMUTABLE_EIND_STATUSSEN = new IFOBTTestStatus[] { VERWIJDERD };
 
+	private static final List<IFOBTTestStatus> STATUSSEN_MISLUKTE_ANALYSE = List.of(IFOBTTestStatus.NIETTEBEOORDELEN, IFOBTTestStatus.VERVALDATUMVERLOPEN);
+
 	public boolean magWijzigenNaarStatus(IFOBTTestStatus nieuweStatus, IFOBTTest buis)
 	{
 		return false;
@@ -160,6 +163,11 @@ public enum IFOBTTestStatus
 	public static boolean isUnmutableEindStatus(IFOBTTestStatus status)
 	{
 		return Arrays.asList(UNMUTABLE_EIND_STATUSSEN).contains(status);
+	}
+
+	public static boolean isMislukteAnalyse(IFOBTTestStatus status)
+	{
+		return STATUSSEN_MISLUKTE_ANALYSE.contains(status);
 	}
 
 }

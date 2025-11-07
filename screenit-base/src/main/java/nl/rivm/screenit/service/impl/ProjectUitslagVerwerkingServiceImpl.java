@@ -209,7 +209,7 @@ public class ProjectUitslagVerwerkingServiceImpl implements ProjectUitslagVerwer
 		{
 			throw new ProjectUitslagenUploadException("De tekst van de bron is te lang. Gebruik maximaal 255 karakters");
 		}
-		studietest.setInstumentId(bron);
+		studietest.setInstrumentId(bron);
 	}
 
 	private void checkVervaldatumStudietest(IFOBTTest studietest) throws ProjectUitslagenUploadException

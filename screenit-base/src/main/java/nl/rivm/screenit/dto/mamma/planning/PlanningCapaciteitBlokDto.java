@@ -61,8 +61,8 @@ public class PlanningCapaciteitBlokDto extends PlanningConceptEntiteitDto
 	@Setter
 	private List<PlanningMindervalideReserveringDto> minderValideReserveringen = new ArrayList<>();
 
-	public Range<LocalTime> getOpenCapaciteitBlokRange()
+	public Range<LocalTime> getCapaciteitBlokRange()
 	{
-		return Range.open(toLocalTime(vanaf), toLocalTime(tot));
+		return Range.closedOpen(toLocalTime(vanaf), toLocalTime(tot));
 	}
 }

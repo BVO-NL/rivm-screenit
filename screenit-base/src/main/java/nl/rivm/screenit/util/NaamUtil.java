@@ -413,6 +413,22 @@ public abstract class NaamUtil
 		return naam.toString();
 	}
 
+	public static String getHuisartsWeergavenaamMetPlaats(Huisarts huisarts)
+	{
+		if (huisarts == null || StringUtils.isBlank(huisarts.getWeergavenaam()))
+		{
+			return "";
+		}
+		var weergavenaamMetPlaats = new StringBuilder();
+		var adres = huisarts.getAdres();
+		weergavenaamMetPlaats.append(huisarts.getWeergavenaam());
+		if (adres != null && StringUtils.isNotBlank(adres.getPlaats()))
+		{
+			weergavenaamMetPlaats.append(" (").append(adres.getPlaats()).append(")");
+		}
+		return weergavenaamMetPlaats.toString();
+	}
+
 	public static String getGeboorteTussenvoegselEnAchternaam(Persoon persoon)
 	{
 		return getEigennaam(persoon);

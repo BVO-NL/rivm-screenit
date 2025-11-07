@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.inzien.popup.afmelding;
  */
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,7 +45,6 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileType;
-import nl.rivm.screenit.model.enums.GebeurtenisBron;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.enums.MammaAfmeldingReden;
@@ -56,7 +54,7 @@ import nl.rivm.screenit.service.BriefHerdrukkenService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.colon.ColonTijdelijkAfmeldenJaartallenService;
 import nl.rivm.screenit.util.BriefUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
+import nl.rivm.screenit.util.DateUtil;
 
 import org.apache.shiro.util.CollectionUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -78,6 +76,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 
 @Slf4j
 public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> extends GenericPanel<A>
@@ -115,7 +114,7 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 	{
 		super.onInitialize();
 
-		boolean magTegenhouden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
+		var magTegenhouden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
 
 		var dossier = getModelObject().getDossier();
 
@@ -126,14 +125,14 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 
 		IModel<List<FileUpload>> files = new ListModel<>();
 
-		Form<Void> uploadForm = new Form<>("uploadForm");
+		var uploadForm = new Form<Void>("uploadForm");
 
 		uploadForm.add(new Label("title", getString(getTitleResourceString())));
 
 		formulierAanwezig = new WebMarkupContainer("formulierAanwezigContainer");
 		uploadForm.add(formulierAanwezig);
 
-		FileUploadField upload = new FileUploadField("fileUpload", files);
+		var upload = new FileUploadField("fileUpload", files);
 		upload.add(new FileValidator(FileType.PDF));
 		upload.setRequired(true);
 		upload.setEnabled(DossierStatus.ACTIEF == dossier.getStatus());
@@ -149,10 +148,10 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 				if (files.getObject().size() == 1)
 				{
 
-					FileUpload fileUpload = files.getObject().get(0);
+					var fileUpload = files.getObject().get(0);
 					try
 					{
-						A afmelding = UploadAfmeldformulierPopupPanel.this.getModelObject();
+						var afmelding = UploadAfmeldformulierPopupPanel.this.getModelObject();
 						var dossier = afmelding.getDossier();
 						if (dossier == null)
 						{
@@ -180,7 +179,6 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 					error(getString("error.onjuistaantalfiles"));
 				}
 			}
-
 		}.setVisible(DossierStatus.ACTIEF == dossier.getStatus()));
 		uploadForm.add(new Label("wijzeAfmelding", Model.of(getWijzeVanAfmeldingTekst(getModelObject()))));
 		uploadForm.add(new AjaxLink<Void>("nogmaalsVersturen")
@@ -188,7 +186,7 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				ClientBrief brief = getOrgineleLaatsteBrief();
+				var brief = getOrgineleLaatsteBrief();
 				briefHerdrukkenService.opnieuwAanmaken(brief, ScreenitSession.get().getIngelogdAccount());
 
 				info(getString("info.afmeldingnogmaalsverstuurd"));
@@ -197,7 +195,7 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 
 		}.setVisible(DossierStatus.ACTIEF == dossier.getStatus()));
 
-		ClientBrief laatsteBrief = getLaatsteBrief();
+		var laatsteBrief = getLaatsteBrief();
 		uploadForm.add(new AjaxLink<Void>("tegenhouden")
 		{
 			@Override
@@ -223,7 +221,7 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 			@Override
 			protected void populateItem(ListItem<String> item)
 			{
-				String tekst = item.getModelObject();
+				var tekst = item.getModelObject();
 				item.add(new Label("brief", Model.of(tekst)));
 			}
 		});
@@ -232,16 +230,17 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				A afmelding = UploadAfmeldformulierPopupPanel.this.getModelObject();
+				var afmelding = UploadAfmeldformulierPopupPanel.this.getModelObject();
 				var dossier = afmelding.getDossier();
+				var ingelogdeOrganisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 				if (dossier != null)
 				{
-					baseAfmeldService.definitieveAfmeldingAanvragen(dossier.getClient(), afmelding, true, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+					baseAfmeldService.definitieveAfmeldingAanvragen(dossier.getClient(), afmelding, true, ingelogdeOrganisatieMedewerker);
 				}
 				else
 				{
 					dossier = afmelding.getScreeningRonde().getDossier();
-					baseAfmeldService.tijdelijkeAfmeldingAanvragen(dossier.getClient(), afmelding, true, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+					baseAfmeldService.tijdelijkeAfmeldingAanvragen(dossier.getClient(), afmelding, true, ingelogdeOrganisatieMedewerker);
 				}
 
 				info(getString("info.afmeldinghandtekeningverstuurd"));
@@ -251,7 +250,7 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 			@Override
 			public boolean isVisible()
 			{
-				Afmelding afmelding = UploadAfmeldformulierPopupPanel.this.getModelObject();
+				var afmelding = UploadAfmeldformulierPopupPanel.this.getModelObject();
 				return BriefType.COLON_AFMELDING_AANVRAAG.equals(afmelding.getAfmeldingAanvraag().getBriefType())
 					|| BriefType.CERVIX_AFMELDING_AANVRAAG.equals(afmelding.getAfmeldingAanvraag().getBriefType())
 					|| BriefType.MAMMA_AFMELDING_AANVRAAG.equals(afmelding.getAfmeldingAanvraag().getBriefType());
@@ -261,10 +260,10 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 		switch (getModelObject().getBevolkingsonderzoek())
 		{
 		case COLON:
-			List<ColonAfmeldingReden> colonAfmeldingRedenen = new ArrayList<>(Arrays.asList(ColonAfmeldingReden.values()));
+			var colonAfmeldingRedenen = new ArrayList<>(List.of(ColonAfmeldingReden.values()));
 			colonAfmeldingRedenen.remove(ColonAfmeldingReden.PROEF_BEVOLKINGSONDERZOEK);
 			colonAfmeldingRedenen.remove(ColonAfmeldingReden.ONTERECHT);
-			RadioChoice<ColonAfmeldingReden> colonAfmeldingReden = new RadioChoice<>("reden", colonAfmeldingRedenen, new EnumChoiceRenderer<>(this));
+			var colonAfmeldingReden = new RadioChoice<>("reden", colonAfmeldingRedenen, new EnumChoiceRenderer<>(this));
 			colonAfmeldingReden.setPrefix("<label class=\"radio\">");
 			colonAfmeldingReden.setSuffix("</label>");
 			colonAfmeldingReden.setOutputMarkupId(true);
@@ -275,8 +274,8 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 
 			break;
 		case CERVIX:
-			List<CervixAfmeldingReden> cervixAfmeldingRedenen = new ArrayList<>(Arrays.asList(CervixAfmeldingReden.values()));
-			RadioChoice<CervixAfmeldingReden> cervixAfmeldingReden = new RadioChoice<>("reden", cervixAfmeldingRedenen, new EnumChoiceRenderer<>(this));
+			var cervixAfmeldingRedenen = List.of(CervixAfmeldingReden.values());
+			var cervixAfmeldingReden = new RadioChoice<>("reden", cervixAfmeldingRedenen, new EnumChoiceRenderer<>(this));
 			cervixAfmeldingReden.setPrefix("<label class=\"radio\">");
 			cervixAfmeldingReden.setSuffix("</label>");
 			cervixAfmeldingReden.setOutputMarkupId(true);
@@ -286,7 +285,7 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 
 			break;
 		case MAMMA:
-			RadioChoice<MammaAfmeldingReden> mammaAfmeldingReden = new RadioChoice<>("reden", MammaAfmeldingReden.definitieveRedenen(), new EnumChoiceRenderer<>(this));
+			var mammaAfmeldingReden = new RadioChoice<>("reden", MammaAfmeldingReden.definitieveRedenen(), new EnumChoiceRenderer<>(this));
 			mammaAfmeldingReden.setPrefix("<label class=\"radio\">");
 			mammaAfmeldingReden.setSuffix("</label>");
 			mammaAfmeldingReden.setOutputMarkupId(true);
@@ -302,20 +301,27 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 		add(uploadForm);
 	}
 
+	private static <A extends Afmelding<?, ?, ?>> ColonAfmelding getColonAfmelding(A afmelding)
+	{
+		return (ColonAfmelding) Hibernate.unproxy(afmelding);
+	}
+
 	private void addTeKiezenAfmeldingChoiceEnTijdelijkAfmeldJaartallen(Dossier<?, ?> dossier)
 	{
 		var tijdelijkAfmeldenJaartallenContainer = new WebMarkupContainer("tijdelijkAfmeldenTotJaartalContainer");
 
-		var beschikbareJaartallenTijdelijkAfmelden = colonTijdelijkAfmeldenJaartallenService.bepaalMogelijkeAfmeldJaren(dossier.getClient());
-		boolean kanTijdelijkeAfmeldingAanvragen = !beschikbareJaartallenTijdelijkAfmelden.isEmpty();
+		var beschikbareJaartallenTijdelijkAfmelden = colonTijdelijkAfmeldenJaartallenService.bepaalMogelijkeAfmeldJaren(dossier.getClient(),
+			DateUtil.toLocalDate(getModelObject().getStatusAfmeldDatum()));
+		var kanTijdelijkeAfmeldingAanvragen = !beschikbareJaartallenTijdelijkAfmelden.isEmpty();
 
-		tijdelijkAfmeldenJaartallenContainer.setVisible(AfmeldingType.TIJDELIJK.equals(getModelObject().getType()) && kanTijdelijkeAfmeldingAanvragen);
+		var afmeldingType = getModelObject().getType();
+		tijdelijkAfmeldenJaartallenContainer.setVisible(AfmeldingType.TIJDELIJK == afmeldingType && kanTijdelijkeAfmeldingAanvragen);
 		tijdelijkAfmeldenJaartallenContainer.setOutputMarkupPlaceholderTag(true);
 		tijdelijkAfmeldenJaartallenContainer.setOutputMarkupId(true);
 
 		formulierAanwezig.add(tijdelijkAfmeldenJaartallenContainer);
 
-		RadioChoice<Integer> tijdelijkAfmeldenJaartallen = new RadioChoice<>("tijdelijkAfmeldenTotJaartal", beschikbareJaartallenTijdelijkAfmelden);
+		var tijdelijkAfmeldenJaartallen = new RadioChoice<>("tijdelijkAfmeldenTotJaartal", beschikbareJaartallenTijdelijkAfmelden);
 
 		tijdelijkAfmeldenJaartallen.setPrefix("<label class=\"radio\">");
 		tijdelijkAfmeldenJaartallen.setSuffix("</label>");
@@ -325,26 +331,24 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 
 		var typeContainer = new WebMarkupContainer("typeContainer");
 		typeContainer.setVisible(kanTijdelijkeAfmeldingAanvragen);
+		var teKiezenAfmeldingTypen = List.of(AfmeldingType.DEFINITIEF, AfmeldingType.TIJDELIJK);
+		var afmeldingTypeChoice = new RadioChoice<>("type", teKiezenAfmeldingTypen, new EnumChoiceRenderer<>(this));
 
-		List<AfmeldingType> teKiezenAfmeldingTypen = new ArrayList<>(List.of(AfmeldingType.DEFINITIEF, AfmeldingType.TIJDELIJK));
-
-		RadioChoice<AfmeldingType> afmeldingType = new RadioChoice<>("type", teKiezenAfmeldingTypen, new EnumChoiceRenderer<>(this));
-
-		afmeldingType.add(new AjaxFormChoiceComponentUpdatingBehavior()
+		afmeldingTypeChoice.add(new AjaxFormChoiceComponentUpdatingBehavior()
 		{
 			@Override
 			protected void onUpdate(AjaxRequestTarget ajaxRequestTarget)
 			{
-				tijdelijkAfmeldenJaartallenContainer.setVisible(AfmeldingType.TIJDELIJK.equals(getModel().getObject().getType()) && kanTijdelijkeAfmeldingAanvragen);
+				tijdelijkAfmeldenJaartallenContainer.setVisible(AfmeldingType.TIJDELIJK == getModelObject().getType() && kanTijdelijkeAfmeldingAanvragen);
 				ajaxRequestTarget.add(tijdelijkAfmeldenJaartallenContainer);
 			}
 		});
-		afmeldingType.setPrefix("<label class=\"radio\">");
-		afmeldingType.setSuffix("</label>");
-		afmeldingType.setOutputMarkupId(true);
-		afmeldingType.setEnabled(DossierStatus.ACTIEF == dossier.getStatus());
+		afmeldingTypeChoice.setPrefix("<label class=\"radio\">");
+		afmeldingTypeChoice.setSuffix("</label>");
+		afmeldingTypeChoice.setOutputMarkupId(true);
+		afmeldingTypeChoice.setEnabled(DossierStatus.ACTIEF == dossier.getStatus());
 
-		typeContainer.add(afmeldingType);
+		typeContainer.add(afmeldingTypeChoice);
 		formulierAanwezig.add(typeContainer);
 	}
 
@@ -360,7 +364,7 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 
 	private String getTitleResourceString()
 	{
-		if (AfmeldingType.DEFINITIEF.equals(getModelObject().getType()))
+		if (AfmeldingType.DEFINITIEF == getModelObject().getType())
 		{
 			return "title.aanvraag.afmelden.definitief";
 		}
@@ -372,16 +376,16 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 
 	private String getWijzeVanAfmeldingTekst(A afmelding)
 	{
-		String wijzeAfmelding = "";
-		GebeurtenisBron bron = dossierService.bepaalGebeurtenisBron(afmelding);
+		var wijzeAfmelding = "";
+		var bron = dossierService.bepaalGebeurtenisBron(afmelding);
 		if (bron != null)
 		{
 			switch (bron)
 			{
 			case MEDEWERKER:
-				if (Bevolkingsonderzoek.COLON.equals(afmelding.getBevolkingsonderzoek())
-					&& (ColonAfmeldingReden.ONTERECHT.equals(((ColonAfmelding) HibernateHelper.deproxy(afmelding)).getReden())
-					|| ((ColonAfmelding) HibernateHelper.deproxy(afmelding)).getReden() == null))
+				if (Bevolkingsonderzoek.COLON == afmelding.getBevolkingsonderzoek()
+					&& (getColonAfmelding(afmelding).getReden() == null ||
+					ColonAfmeldingReden.ONTERECHT == getColonAfmelding(afmelding).getReden()))
 				{
 					wijzeAfmelding = "correctieantwoordformulier";
 				}
@@ -391,8 +395,8 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 				}
 				break;
 			case AUTOMATISCH:
-				if (Bevolkingsonderzoek.COLON.equals(afmelding.getBevolkingsonderzoek())
-					&& ColonAfmeldingReden.ONTERECHT.equals(((ColonAfmelding) HibernateHelper.deproxy(afmelding)).getReden()))
+				if (Bevolkingsonderzoek.COLON == afmelding.getBevolkingsonderzoek()
+					&& ColonAfmeldingReden.ONTERECHT == getColonAfmelding(afmelding).getReden())
 				{
 					wijzeAfmelding = "correctieantwoordformulier";
 				}
@@ -409,7 +413,7 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 			}
 		}
 
-		if (wijzeAfmelding.equals(""))
+		if (wijzeAfmelding.isEmpty())
 		{
 			return "";
 		}
@@ -417,10 +421,10 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 		return getString("label.wijzevanafmelding." + wijzeAfmelding);
 	}
 
-	private ClientBrief getOrgineleLaatsteBrief()
+	private ClientBrief<?, ?, ?> getOrgineleLaatsteBrief()
 	{
-		ClientBrief brief = null;
-		A afmelding = UploadAfmeldformulierPopupPanel.this.getModelObject();
+		ClientBrief<?, ?, ?> brief = null;
+		var afmelding = UploadAfmeldformulierPopupPanel.this.getModelObject();
 		if (afmelding.getAfmeldingAanvraag() != null)
 		{
 			brief = afmelding.getAfmeldingAanvraag();
@@ -429,9 +433,9 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 		return brief;
 	}
 
-	private ClientBrief getLaatsteBrief()
+	private ClientBrief<?, ?, ?> getLaatsteBrief()
 	{
-		List<? extends ClientBrief> brieven = briefService.getBrievenVanAfmelding(getModelObject(), false);
+		List<? extends ClientBrief<?, ?, ?>> brieven = briefService.getBrievenVanAfmelding(getModelObject(), false);
 		Collections.sort(brieven, new BriefCreatieDatumComparator().reversed());
 		if (!CollectionUtils.isEmpty(brieven))
 		{
@@ -442,7 +446,7 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 
 	private List<String> creatieDatumCreaterAfmelding(A afmelding)
 	{
-		List<? extends ClientBrief> brieven = briefService.getBrievenVanAfmelding(afmelding, false);
+		List<? extends ClientBrief<?, ?, ?>> brieven = briefService.getBrievenVanAfmelding(afmelding, false);
 		return BriefOmschrijvingUtil.getBrievenOmschrijvingen(brieven);
 	}
 

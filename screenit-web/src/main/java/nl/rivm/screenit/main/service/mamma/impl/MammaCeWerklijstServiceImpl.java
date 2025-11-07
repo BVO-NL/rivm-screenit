@@ -29,6 +29,7 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.model.mamma.beoordeling.MammaCeWerklijstZoekObject;
 import nl.rivm.screenit.main.service.mamma.MammaCeWerklijstService;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
+import nl.rivm.screenit.model.Huisarts_;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
@@ -99,6 +100,14 @@ public class MammaCeWerklijstServiceImpl implements MammaCeWerklijstService
 
 	private Sort werklijstSortering(Sort sort)
 	{
+		var huisartsProperty = propertyChain(MammaOnderzoek_.AFSPRAAK, MammaAfspraak_.UITNODIGING, MammaUitnodiging_.SCREENING_RONDE, MammaScreeningRonde_.HUISARTS);
+		var orderByHuisartsWeergavenaam = sort.getOrderFor(propertyChain(huisartsProperty, Huisarts_.WEERGAVENAAM));
+
+		if (orderByHuisartsWeergavenaam != null)
+		{
+			var direction = orderByHuisartsWeergavenaam.getDirection();
+			sort = sort.and(Sort.by(direction, propertyChain(huisartsProperty, Huisarts_.ID)));
+		}
 		if (sort.getOrderFor(MammaOnderzoek_.CREATIE_DATUM) == null)
 		{
 			sort = sort.and(Sort.by(MammaOnderzoek_.CREATIE_DATUM)); 

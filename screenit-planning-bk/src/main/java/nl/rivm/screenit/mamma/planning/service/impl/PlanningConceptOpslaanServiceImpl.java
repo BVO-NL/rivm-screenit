@@ -483,6 +483,7 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 		List<PlanningMinderValideReservering> conceptMvReserveringenMetWijzigingen, MammaCapaciteitBlok persistentBlok)
 	{
 		teVerwijderenMvReserveringen.forEach(hibernateService::delete);
+		persistentBlok.getMinderValideReserveringen().removeAll(teVerwijderenMvReserveringen);
 		slaNieuweConceptMvReserveringenOp(conceptNieuweMvReserveringen, persistentBlok);
 		slaConceptMvReserveringWijzigingenOp(conceptMvReserveringenMetWijzigingen);
 	}
@@ -554,6 +555,7 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 			nieuweReservering.setCapaciteitBlok(persistentBlok);
 			nieuweReservering.setVanaf(reservering.getVanaf());
 			hibernateService.save(nieuweReservering);
+			persistentBlok.getMinderValideReserveringen().add(nieuweReservering);
 			reservering.setId(nieuweReservering.getId());
 		});
 	}

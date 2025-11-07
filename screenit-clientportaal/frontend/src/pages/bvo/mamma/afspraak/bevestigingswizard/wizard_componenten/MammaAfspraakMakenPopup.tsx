@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import * as React from "react"
-import {KandidaatAfspraak} from "../../../../../../datatypes/mamma/KandidaatAfspraak"
+import {AfspraakOptie} from "../../../../../../datatypes/mamma/AfspraakOptie"
 import BasePopup from "../../../../../../components/popup/BasePopup"
 import {Col, NavLink, Row} from "react-bootstrap"
 import classNames from "classnames"
@@ -44,7 +44,7 @@ import datadogService from "../../../../../../services/DatadogService"
 import {AnalyticsCategorie} from "../../../../../../datatypes/AnalyticsCategorie"
 
 export type MammaAfspraakMakenPopupProps = {
-	afspraak: KandidaatAfspraak,
+	afspraak: AfspraakOptie,
 	isBevestigingsPopup: boolean,
 	onFailure?: () => void,
 	onNext?: () => void,
@@ -56,7 +56,7 @@ export type MammaAfspraakMakenPopupProps = {
 const MammaAfspraakMakenPopup = (props: MammaAfspraakMakenPopupProps) => {
 	const bvo = useSelectedBvo()!
 	const dispatch = useThunkDispatch()
-	const kandidaatAfspraak = props.afspraak
+	const afspraakOptie = props.afspraak
 	const client = useSelector((state: State) => state.client)
 
 	const afspraakMaken = () => {
@@ -65,14 +65,14 @@ const MammaAfspraakMakenPopup = (props: MammaAfspraakMakenPopupProps) => {
 			AnalyticsCategorie.MAMMA_AFSPRAAK,
 			{
 				client: client.persoon.id,
-				datumTijd: formatDateTime(kandidaatAfspraak.datumTijd),
-				standplaatsPeriode: kandidaatAfspraak.standplaatsPeriodeId,
+				datum: formatDateTime(afspraakOptie.datumTijd),
+				standplaatsPeriode: afspraakOptie.standplaatsPeriodeId,
 			},
 		)
 
-		dispatch(maakAfspraak(bvo, kandidaatAfspraak)).then(
+		dispatch(maakAfspraak(bvo, afspraakOptie)).then(
 			(response) => {
-				props.setAfspraakBevestiging!(new AfspraakBevestigingOpties(response, kandidaatAfspraak))
+				props.setAfspraakBevestiging!(new AfspraakBevestigingOpties(response, afspraakOptie))
 				props.onNext!()
 			},
 		).catch((error) => {
@@ -90,8 +90,8 @@ const MammaAfspraakMakenPopup = (props: MammaAfspraakMakenPopupProps) => {
 			AnalyticsCategorie.MAMMA_AFSPRAAK,
 			{
 				client: client.persoon.id,
-				datumTijd: formatDateTime(kandidaatAfspraak.datumTijd),
-				standplaatsPeriode: kandidaatAfspraak.standplaatsPeriodeId,
+				datum: formatDateTime(afspraakOptie.datumTijd),
+				standplaatsPeriode: afspraakOptie.standplaatsPeriodeId,
 				redenTijdNietMeerBeschikbaar: !props.isBevestigingsPopup,
 			},
 		)

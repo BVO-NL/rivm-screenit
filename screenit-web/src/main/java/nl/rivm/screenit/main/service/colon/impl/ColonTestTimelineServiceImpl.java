@@ -42,10 +42,10 @@ import nl.rivm.screenit.main.model.testen.TestTimelineRonde;
 import nl.rivm.screenit.main.service.ClientDossierFilter;
 import nl.rivm.screenit.main.service.DossierService;
 import nl.rivm.screenit.main.service.RetourzendingService;
-import nl.rivm.screenit.main.service.TestTimelineTimeService;
 import nl.rivm.screenit.main.service.colon.ColonAfspraakslotService;
 import nl.rivm.screenit.main.service.colon.ColonDossierService;
 import nl.rivm.screenit.main.service.colon.ColonTestTimelineService;
+import nl.rivm.screenit.main.service.colon.ColonTestTimelineTimeService;
 import nl.rivm.screenit.main.service.colon.ColonVervolgonderzoekKeuzesDto;
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.TestVervolgKeuzeOptie;
 import nl.rivm.screenit.model.BagAdres;
@@ -117,7 +117,7 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 	private TestService testService;
 
 	@Autowired
-	private TestTimelineTimeService testTimelineTimeService;
+	private ColonTestTimelineTimeService testTimelineTimeService;
 
 	@Autowired
 	private ColonBaseFITService fitService;
@@ -672,7 +672,7 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 
 		var vandaag = currentDateSupplier.getLocalDate();
 
-		if (FITTestUtil.heeftUitslag(buis))
+		if (buis.getUitslag() != null || buis.getGeinterpreteerdeUitslag() != null)
 		{
 			var fitVervaldatum = houdbaarheidService.getFitHoudbaarheidVoor(buis.getBarcode());
 			IFOBTVervaldatum tijdelijkVervaldatum = null;
@@ -708,7 +708,7 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 	{
 		if (buis.getType() != IFOBTType.STUDIE)
 		{
-			fitService.uitslagFitOntvangen(buis);
+			fitService.verwerkAnalyseResultaat(buis);
 		}
 		else
 		{

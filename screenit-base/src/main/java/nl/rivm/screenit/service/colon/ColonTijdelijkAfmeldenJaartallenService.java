@@ -21,6 +21,7 @@ package nl.rivm.screenit.service.colon;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDate;
 import java.util.List;
 
 import nl.rivm.screenit.model.Client;
@@ -28,4 +29,6 @@ import nl.rivm.screenit.model.Client;
 public interface ColonTijdelijkAfmeldenJaartallenService
 {
 	List<Integer> bepaalMogelijkeAfmeldJaren(Client client);
+
+	List<Integer> bepaalMogelijkeAfmeldJaren(Client client, LocalDate peildatum);
 }

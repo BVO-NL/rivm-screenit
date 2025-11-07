@@ -22,7 +22,6 @@ package nl.rivm.screenit.service.colon;
  */
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -41,11 +40,11 @@ public interface ColonBaseFITService
 {
 	Optional<IFOBTTest> getFit(String barcode);
 
-	void uitslagFitOntvangen(IFOBTTest buis);
+	void verwerkAnalyseResultaat(IFOBTTest buis);
 
 	void setStatus(IFOBTTest buis, IFOBTTestStatus nieuweStatus);
 
-	void heraanmelden(ColonScreeningRonde screeningRonde, LocalDateTime nu);
+	void heraanmelden(ColonScreeningRonde screeningRonde);
 
 	void verwijderScannedAntwoordFormulier(ColonUitnodiging uitnodiging);
 

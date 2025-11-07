@@ -1,4 +1,4 @@
-package nl.rivm.screenit.service.mamma;
+package nl.rivm.screenit.service.mamma.afspraakzoeken;
 
 /*-
  * ========================LICENSE_START=================================
@@ -28,21 +28,13 @@ import java.util.List;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
-import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaKandidaatAfspraak;
-import nl.rivm.screenit.service.mamma.impl.MammaOnvoldoendeVrijeCapaciteitException;
 
-public interface MammaBaseKandidaatAfsprakenDeterminatiePeriode
+public interface MammaAfspraakOptieAlgoritme
 {
-
-	LocalDate getHuidigeDagVoorPlannenAfspraken();
-
-	List<MammaKandidaatAfspraak> getKandidaatAfspraken(MammaDossier dossier, MammaStandplaatsPeriode standplaatsPeriode, LocalDate vanaf, LocalDate totEnMet,
+	List<MammaAfspraakOptie> getAfspraakOpties(MammaDossier dossier, MammaStandplaatsPeriode standplaatsPeriode, LocalDate vanaf, LocalDate totEnMet,
 		boolean extraOpties, BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen, boolean corrigeerNegatieveVrijeCapaciteit);
 
-	MammaKandidaatAfspraak getKandidaatAfspraakBulkVerzetten(MammaDossier dossier, MammaStandplaatsPeriode standplaatsPeriode, LocalDate vanaf, LocalDate totEnMet,
-		BigDecimal opkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen);
-
-	MammaKandidaatAfspraak getKandidaatAfspraakUitnodiging(MammaDossier dossier, MammaStandplaatsRonde standplaatsRonde, BigDecimal voorlopigeOpkomstkans,
+	MammaAfspraakOptie getAfspraakOptieUitnodiging(MammaDossier dossier, MammaStandplaatsRonde standplaatsRonde, BigDecimal voorlopigeOpkomstkans,
 		Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen, Integer afspraakBijUitnodigenVanafAantalWerkdagen)
 		throws MammaOnvoldoendeVrijeCapaciteitException;
 }

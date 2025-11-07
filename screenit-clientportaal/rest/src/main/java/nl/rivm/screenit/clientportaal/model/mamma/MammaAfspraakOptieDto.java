@@ -29,16 +29,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import nl.rivm.screenit.clientportaal.model.ClientportaalBaseDto;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaKandidaatAfspraakDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
 
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MammaAfspraakOptieDto extends ClientportaalBaseDto
 {
-    private Long capaciteitBlokId;
+	private Long capaciteitBlokId;
 
-    private LocalDateTime datumTijd;
+	private LocalDateTime datumTijd;
 
 	private Long standplaatsPeriodeId;
 
@@ -60,11 +60,11 @@ public class MammaAfspraakOptieDto extends ClientportaalBaseDto
 
 	private MammaAfspraakZoekFilterDto filter;
 
-	public MammaAfspraakOptieDto(MammaKandidaatAfspraakDto kandidaatAfspraakDto)
+	public MammaAfspraakOptieDto(MammaBaseAfspraakOptieDto baseAfspraakOptieDto)
 	{
-		this.capaciteitBlokId = kandidaatAfspraakDto.getCapaciteitBlokId();
-		this.datumTijd = kandidaatAfspraakDto.getTijd().atDate(kandidaatAfspraakDto.getDatum());
-		this.standplaatsPeriodeId = kandidaatAfspraakDto.getStandplaatsPeriodeId();
-		this.afstand = kandidaatAfspraakDto.getAfstand();
+		this.capaciteitBlokId = baseAfspraakOptieDto.getCapaciteitBlokId();
+		this.datumTijd = baseAfspraakOptieDto.getTijd().atDate(baseAfspraakOptieDto.getDatum());
+		this.standplaatsPeriodeId = baseAfspraakOptieDto.getStandplaatsPeriodeId();
+		this.afstand = baseAfspraakOptieDto.getAfstand();
 	}
 }

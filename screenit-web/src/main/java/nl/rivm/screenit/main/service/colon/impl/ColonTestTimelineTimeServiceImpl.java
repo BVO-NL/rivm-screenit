@@ -1,4 +1,4 @@
-package nl.rivm.screenit.main.service.impl;
+package nl.rivm.screenit.main.service.colon.impl;
 
 /*-
  * ========================LICENSE_START=================================
@@ -23,23 +23,16 @@ package nl.rivm.screenit.main.service.impl;
 
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.model.testen.TestTimeLineDossierTijdstip;
-import nl.rivm.screenit.main.service.TestTimelineTimeService;
+import nl.rivm.screenit.main.service.colon.ColonTestTimelineTimeService;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
-import nl.rivm.screenit.model.colon.ColonBrief;
-import nl.rivm.screenit.model.colon.ColonConclusie;
 import nl.rivm.screenit.model.colon.ColonDossier;
-import nl.rivm.screenit.model.colon.ColonHuisartsBericht;
-import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
-import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.ColonVerslag;
-import nl.rivm.screenit.model.colon.ColonVooraankondiging;
 import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.service.BaseTestTimelineService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -54,7 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
 @Slf4j
-public class TestTimelineTimeServiceImpl implements TestTimelineTimeService
+public class ColonTestTimelineTimeServiceImpl implements ColonTestTimelineTimeService
 {
 	@Autowired
 	private SimplePreferenceService preferenceService;
@@ -68,7 +61,7 @@ public class TestTimelineTimeServiceImpl implements TestTimelineTimeService
 	@Override
 	public boolean calculateBackwards(ColonDossier dossier, TestTimeLineDossierTijdstip tijdstip)
 	{
-		int dagen = aantalDagenCalculator(dossier, tijdstip);
+		var dagen = aantalDagenCalculator(dossier, tijdstip);
 		calculateBackwards(dossier, dagen);
 		return true;
 	}
@@ -80,7 +73,8 @@ public class TestTimelineTimeServiceImpl implements TestTimelineTimeService
 		baseTestTimelineService.rekenObjectTerug(dossier, dagen);
 		baseTestTimelineService.rekenObjectTerug(dossier.getColonVooraankondiging(), dagen);
 		baseTestTimelineService.rekenObjectTerug(dossier.getVolgendeUitnodiging(), dagen);
-		rekenAlleColonScreeningRondesTerug(dossier, dagen);
+		baseTestTimelineService.rekenObjectTerug(dossier.getAfmeldingen(), dagen);
+		rekenAlleScreeningRondesTerug(dossier, dagen);
 		baseTestTimelineService.rekenAllePersoonsDatumTerug(dossier.getClient().getPersoon(), dagen);
 		return true;
 	}
@@ -94,12 +88,12 @@ public class TestTimelineTimeServiceImpl implements TestTimelineTimeService
 
 	private int aantalDagenCalculator(ColonDossier dossier, TestTimeLineDossierTijdstip tijdstip)
 	{
-		int aantalDagen = 0;
+		var aantalDagen = 0;
 		switch (tijdstip)
 		{
 		case DAG_UITNODIGING_VERSTUREN:
 			aantalDagen = preferenceService.getInteger(PreferenceKey.VOORAANKONDIGINSPERIODE.name());
-			ColonVooraankondiging vooraankondiging = dossier.getColonVooraankondiging();
+			var vooraankondiging = dossier.getColonVooraankondiging();
 			return overgeblevenDagen(vooraankondiging.getCreatieDatum(), aantalDagen);
 		case DAG_NA_UITNODIGING_KOPPELEN:
 			aantalDagen = preferenceService.getInteger(PreferenceKey.VOORAANKONDIGINSPERIODE.name());
@@ -121,8 +115,8 @@ public class TestTimelineTimeServiceImpl implements TestTimelineTimeService
 			aantalDagen = aantalDagen + 1;
 			return overgeblevenDagen(getTestMetEersteStatusDatum(dossier).getStatusDatum(), aantalDagen);
 		case INTAKE_AFSPRAAK_CONCLUSIE:
-			ColonScreeningRonde ronde = dossier.getLaatsteScreeningRonde();
-			ColonIntakeAfspraak afspraak = ronde.getLaatsteAfspraak();
+			var ronde = dossier.getLaatsteScreeningRonde();
+			var afspraak = ronde.getLaatsteAfspraak();
 			return 3 + DateUtil.getPeriodeTussenTweeDatums(currentDateSupplier.getLocalDate(), afspraak.getVanaf(), ChronoUnit.DAYS);
 		case MDL_VERSLAG:
 			return 30;
@@ -134,8 +128,8 @@ public class TestTimelineTimeServiceImpl implements TestTimelineTimeService
 	private IFOBTTest getTestMetEersteStatusDatum(ColonDossier dossier)
 	{
 		IFOBTTest eersteTest = null;
-		ColonScreeningRonde ronde = dossier.getLaatsteScreeningRonde();
-		for (IFOBTTest test : ronde.getIfobtTesten())
+		var ronde = dossier.getLaatsteScreeningRonde();
+		for (var test : ronde.getIfobtTesten())
 		{
 			if (!test.isHerinnering() && (eersteTest == null || test.getStatusDatum().before(eersteTest.getStatusDatum())))
 			{
@@ -152,70 +146,45 @@ public class TestTimelineTimeServiceImpl implements TestTimelineTimeService
 		return Math.max(dagen, 0);
 	}
 
-	private void rekenAlleColonScreeningRondesTerug(ColonDossier dossier, int dagen)
+	private void rekenAlleScreeningRondesTerug(ColonDossier dossier, int dagen)
 	{
-		List<ColonScreeningRonde> rondes = dossier.getScreeningRondes();
-		for (ColonScreeningRonde ronde : rondes)
+		var rondes = dossier.getScreeningRondes();
+		for (var ronde : rondes)
 		{
 			baseTestTimelineService.rekenObjectTerug(ronde, dagen);
 
-			rekenAlleColonUitnodigingenTerug(ronde, dagen);
-			rekenAlleColonBrievenTerug(ronde, dagen);
-			rekenAlleColonIntakeAfsprakenTerug(ronde, dagen);
-			rekenAlleColonVerslagenTerug(ronde, dagen);
-			rekenAlleColonHuisartsberichtenTerug(ronde, dagen);
+			rekenAlleUitnodigingenTerug(ronde, dagen);
+			baseTestTimelineService.rekenObjectTerug(ronde.getBrieven(), dagen); 
+			rekenAlleIntakeAfsprakenTerug(ronde, dagen);
+			rekenAlleVerslagenTerug(ronde, dagen);
+			baseTestTimelineService.rekenObjectTerug(ronde.getHuisartsBerichten(), dagen);
+			baseTestTimelineService.rekenObjectTerug(ronde.getAfmeldingen(), dagen);
 		}
 	}
 
-	private void rekenAlleColonHuisartsberichtenTerug(ColonScreeningRonde ronde, int dagen)
-	{
-		for (ColonHuisartsBericht bericht : ronde.getHuisartsBerichten())
-		{
-
-			baseTestTimelineService.rekenObjectTerug(bericht, dagen);
-		}
-	}
-
-	private void rekenAlleColonVerslagenTerug(ColonScreeningRonde ronde, int dagen)
+	private void rekenAlleVerslagenTerug(ColonScreeningRonde ronde, int dagen)
 	{
 		for (ColonVerslag<?> verslag : ronde.getVerslagen())
 		{
-			if (VerslagType.MDL.equals(verslag.getType()))
-			{
-				baseTestTimelineService.rekenObjectTerug(verslag, dagen);
-			}
-			else if (VerslagType.PA_LAB.equals(verslag.getType()))
+			if (VerslagType.MDL == verslag.getType() || VerslagType.PA_LAB == verslag.getType())
 			{
 				baseTestTimelineService.rekenObjectTerug(verslag, dagen);
 			}
 		}
 	}
 
-	private void rekenAlleColonIntakeAfsprakenTerug(ColonScreeningRonde ronde, int dagen)
+	private void rekenAlleIntakeAfsprakenTerug(ColonScreeningRonde ronde, int dagen)
 	{
-		for (ColonIntakeAfspraak afspraak : ronde.getAfspraken())
+		for (var afspraak : ronde.getAfspraken())
 		{
-			ColonConclusie conclusie = afspraak.getConclusie();
-			if (conclusie != null)
-			{
-				baseTestTimelineService.rekenObjectTerug(conclusie, dagen);
-			}
+			baseTestTimelineService.rekenObjectTerug(afspraak.getConclusie(), dagen);
 			baseTestTimelineService.rekenObjectTerug(afspraak, dagen);
 		}
 	}
 
-	private void rekenAlleColonBrievenTerug(ColonScreeningRonde ronde, int dagen)
+	private void rekenAlleUitnodigingenTerug(ColonScreeningRonde ronde, int dagen)
 	{
-		for (ColonBrief brief : ronde.getBrieven())
-		{
-			baseTestTimelineService.rekenObjectTerug(brief, dagen);
-
-		}
-	}
-
-	private void rekenAlleColonUitnodigingenTerug(ColonScreeningRonde ronde, int dagen)
-	{
-		for (ColonUitnodiging uitnodiging : ronde.getUitnodigingen())
+		for (var uitnodiging : ronde.getUitnodigingen())
 		{
 			baseTestTimelineService.rekenObjectTerug(uitnodiging, dagen);
 			baseTestTimelineService.rekenObjectTerug(uitnodiging.getGekoppeldeTest(), dagen);

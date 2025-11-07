@@ -27,8 +27,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
 
-public class MammaKandidaatAfspraakDto implements Serializable, Comparable<MammaKandidaatAfspraakDto>
+import lombok.Getter;
+
+@Getter
+public class MammaBaseAfspraakOptieDto implements Serializable, Comparable<MammaBaseAfspraakOptieDto>
 {
+	public static final Double ONBEKENDE_AFSTAND = -1.0;
+
 	private final Long capaciteitBlokId;
 
 	private final LocalDate datum;
@@ -39,9 +44,7 @@ public class MammaKandidaatAfspraakDto implements Serializable, Comparable<Mamma
 
 	private final Double afstand;
 
-	public static final Double ONBEKENDE_AFSTAND = -1.0;
-
-	public MammaKandidaatAfspraakDto(Long capaciteitBlokId, LocalDate datum, LocalTime tijd, Long standplaatsPeriodeId, Double afstand)
+	public MammaBaseAfspraakOptieDto(Long capaciteitBlokId, LocalDate datum, LocalTime tijd, Long standplaatsPeriodeId, Double afstand)
 	{
 		this.capaciteitBlokId = capaciteitBlokId;
 		this.datum = datum;
@@ -50,41 +53,16 @@ public class MammaKandidaatAfspraakDto implements Serializable, Comparable<Mamma
 		this.afstand = afstand;
 	}
 
-	public Long getCapaciteitBlokId()
-	{
-		return capaciteitBlokId;
-	}
-
-	public LocalDate getDatum()
-	{
-		return datum;
-	}
-
-	public LocalTime getTijd()
-	{
-		return tijd;
-	}
-
-	public Long getStandplaatsPeriodeId()
-	{
-		return standplaatsPeriodeId;
-	}
-
-	public Double getAfstand()
-	{
-		return afstand;
-	}
-
 	@Override
-	public int compareTo(MammaKandidaatAfspraakDto kandidaatAfspraakDto)
+	public int compareTo(MammaBaseAfspraakOptieDto afspraakOptieDto)
 	{
-		int compareTo = this.afstand.compareTo(kandidaatAfspraakDto.afstand);
+		int compareTo = this.afstand.compareTo(afspraakOptieDto.afstand);
 		if (compareTo == 0)
 		{
-			compareTo = this.datum.compareTo(kandidaatAfspraakDto.datum);
+			compareTo = this.datum.compareTo(afspraakOptieDto.datum);
 			if (compareTo == 0)
 			{
-				compareTo = this.tijd.compareTo(kandidaatAfspraakDto.tijd);
+				compareTo = this.tijd.compareTo(afspraakOptieDto.tijd);
 			}
 		}
 		return compareTo;
@@ -101,7 +79,7 @@ public class MammaKandidaatAfspraakDto implements Serializable, Comparable<Mamma
 		{
 			return false;
 		}
-		MammaKandidaatAfspraakDto that = (MammaKandidaatAfspraakDto) o;
+		MammaBaseAfspraakOptieDto that = (MammaBaseAfspraakOptieDto) o;
 		return Objects.equals(capaciteitBlokId, that.capaciteitBlokId) &&
 			Objects.equals(datum, that.datum) &&
 			Objects.equals(tijd, that.tijd) &&

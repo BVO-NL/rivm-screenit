@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {KandidaatAfspraak} from "./KandidaatAfspraak"
+import {AfspraakOptie} from "./AfspraakOptie"
 import {BevestigingsType} from "../BevestigingsType"
 
 export class AfspraakBevestigingOpties {
@@ -30,7 +30,7 @@ export class AfspraakBevestigingOpties {
 	clientNieuwEmailAdres: string = ""
 	clientNieuwMobielNummer: string = ""
 
-	constructor(id: string, gemaakteAfspraak: KandidaatAfspraak) {
+	constructor(id: string, gemaakteAfspraak: AfspraakOptie) {
 		this.afspraakId = id
 		this.toonBriefOptie = gemaakteAfspraak.toonBevestigingsBriefOptie
 		this.toonSmsOptie = gemaakteAfspraak.toonSmsHerinneringOptie

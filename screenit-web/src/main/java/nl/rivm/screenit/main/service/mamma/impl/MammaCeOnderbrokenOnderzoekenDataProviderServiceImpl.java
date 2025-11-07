@@ -26,7 +26,12 @@ import java.util.List;
 
 import nl.rivm.screenit.main.model.mamma.beoordeling.MammaCeWerklijstZoekObject;
 import nl.rivm.screenit.main.service.RepositoryDataProviderService;
+import nl.rivm.screenit.model.Huisarts_;
+import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
+import nl.rivm.screenit.model.mamma.MammaOnderzoek_;
+import nl.rivm.screenit.model.mamma.MammaScreeningRonde_;
+import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekStatus;
 import nl.rivm.screenit.repository.mamma.MammaOnderzoekRepository;
 
@@ -43,6 +48,7 @@ import static nl.rivm.screenit.specification.mamma.MammaOnderzoekSpecification.h
 import static nl.rivm.screenit.specification.mamma.MammaOnderzoekSpecification.heeftPersoonIsNietOverledenEnWoontInNederland;
 import static nl.rivm.screenit.specification.mamma.MammaOnderzoekSpecification.heeftStatus;
 import static nl.rivm.screenit.specification.mamma.MammaOnderzoekSpecification.isDoorgevoerd;
+import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
 @Service("MammaCeOnderbrokenOnderzoekenDataProviderService")
 public class MammaCeOnderbrokenOnderzoekenDataProviderServiceImpl extends RepositoryDataProviderService<MammaOnderzoek, MammaOnderzoekRepository, MammaCeWerklijstZoekObject>
@@ -61,6 +67,17 @@ public class MammaCeOnderbrokenOnderzoekenDataProviderServiceImpl extends Reposi
 		if (CollectionUtils.isEmpty(filter.getScreeningsEenheden()))
 		{
 			return Collections.emptyList();
+		}
+
+		if (sortParam.getProperty().equals(
+			propertyChain(MammaOnderzoek_.AFSPRAAK, MammaAfspraak_.UITNODIGING, MammaUitnodiging_.SCREENING_RONDE, MammaScreeningRonde_.HUISARTS, Huisarts_.WEERGAVENAAM)))
+		{
+			var direction = sortParam.isAscending() ? Sort.Direction.ASC : Sort.Direction.DESC;
+			var sortByHuisartsWeergavenaam = Sort.by(direction, sortParam.getProperty());
+			var sortByHuisartsId = Sort.by(direction,
+				propertyChain(MammaOnderzoek_.AFSPRAAK, MammaAfspraak_.UITNODIGING, MammaUitnodiging_.SCREENING_RONDE, MammaScreeningRonde_.HUISARTS, Huisarts_.ID));
+			var sortByHuisarts = sortByHuisartsWeergavenaam.and(sortByHuisartsId);
+			return super.findPage(first, count, filter, sortByHuisarts);
 		}
 		return super.findPage(first, count, filter, sortParam);
 	}

@@ -19,6 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import {Link, useLocation} from "react-router"
+import {MouseEvent} from "react"
 import classNames from "classnames"
 import styles from "./NavigationLinkComponent.module.scss"
 import bvoStyle from "../BvoStyle.module.scss"
@@ -30,7 +31,7 @@ export type NavigationLinkComponentProps = {
 	url: string;
 	text: string;
 	bold: boolean,
-	onClick?: () => void;
+	onClick?: (event: MouseEvent) => void;
 }
 
 const NavigationLinkComponent = (props: NavigationLinkComponentProps) => {
@@ -44,6 +45,7 @@ const NavigationLinkComponent = (props: NavigationLinkComponentProps) => {
 			   aria-controls={"navbar-collapse"}
 			   className={classNames(selectedBvo && BevolkingsonderzoekStyle[selectedBvo], bvoStyle.bvoNav, styles.navItem, props.bold && styles.navItemBvo, "nav-link", location.pathname.startsWith(props.url) && styles.navItemActive)}
 			   rel="noopener noreferrer"
+			   onClick={props.onClick}
 			   target="_blank">
 				{props.text}
 			</a> :

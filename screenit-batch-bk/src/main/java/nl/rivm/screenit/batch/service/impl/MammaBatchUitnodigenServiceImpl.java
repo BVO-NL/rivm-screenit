@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.batch.model.MammaAfspraakWijzigenFilter;
 import nl.rivm.screenit.batch.model.UitstelUitnodigingRaportageEntry;
 import nl.rivm.screenit.batch.service.MammaBatchUitnodigenService;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaKandidaatAfspraakDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -151,15 +151,15 @@ public class MammaBatchUitnodigenServiceImpl implements MammaBatchUitnodigenServ
 			return maakOpenUitnodigingVoorUitstel(uitstel, huidigeStandplaatsPeriodeInRouteVanStandplaats);
 		}
 
-		var kandidaatAfspraken = afspraakService.getKandidaatAfspraken(client, MammaAfspraakWijzigenFilter.opStreefDatum(uitstel, screeningsEenheid));
-		if (kandidaatAfspraken.isEmpty())
+		var afspraakOpties = afspraakService.getAfspraakOpties(client, MammaAfspraakWijzigenFilter.opStreefDatum(uitstel, screeningsEenheid));
+		if (afspraakOpties.isEmpty())
 		{
 			LOG.info("Geen afspraakmogelijkheid gevonden voor client-id '{}' met uitstelstandplaats-id '{}' op streefdatum '{}' in route van se-id '{}' "
 				+ "-> geef open uitnodiging o.b.v. gevonden SE", client.getId(), uitstel.getStandplaats().getId(), streefDatum, screeningsEenheid.getId());
 			return maakOpenUitnodigingVoorUitstel(uitstel, huidigeStandplaatsPeriodeInRouteVanStandplaats);
 		}
 
-		return maakUitnodigingMetAfspraak(uitstel, kandidaatAfspraken.get(0));
+		return maakUitnodigingMetAfspraak(uitstel, afspraakOpties.get(0));
 	}
 
 	private boolean streefDatumTeDichtbij(LocalDate streefDatum)
@@ -186,13 +186,13 @@ public class MammaBatchUitnodigenServiceImpl implements MammaBatchUitnodigenServ
 		return UitstelUitnodigingRaportageEntry.maak(standplaatsPeriode, uitnodiging);
 	}
 
-	private UitstelUitnodigingRaportageEntry maakUitnodigingMetAfspraak(MammaUitstel uitstel, MammaKandidaatAfspraakDto kandidaatAfspraak)
+	private UitstelUitnodigingRaportageEntry maakUitnodigingMetAfspraak(MammaUitstel uitstel, MammaBaseAfspraakOptieDto afspraakOptie)
 	{
-		var standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class, kandidaatAfspraak.getStandplaatsPeriodeId());
+		var standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class, afspraakOptie.getStandplaatsPeriodeId());
 		maakAfspraakUitnodiging(uitstel, standplaatsPeriode.getStandplaatsRonde());
 
-		var capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, kandidaatAfspraak.getCapaciteitBlokId());
-		afspraakService.maakAfspraak(uitstel.getScreeningRonde(), capaciteitBlok, DateUtil.toUtilDate(kandidaatAfspraak.getDatumTijd()),
+		var capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, afspraakOptie.getCapaciteitBlokId());
+		afspraakService.maakAfspraak(uitstel.getScreeningRonde(), capaciteitBlok, DateUtil.toUtilDate(afspraakOptie.getDatumTijd()),
 			standplaatsPeriode, null, false, true, false, true, false, null, false);
 
 		return UitstelUitnodigingRaportageEntry.maak(standplaatsPeriode, uitstel.getUitnodiging());

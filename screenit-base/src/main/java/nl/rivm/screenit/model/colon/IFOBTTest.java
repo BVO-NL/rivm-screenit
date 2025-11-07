@@ -105,7 +105,7 @@ public class IFOBTTest extends AbstractHibernateObject
 	@JoinColumn(name = "ifobtLaboratorium_id")
 	private IFobtLaboratorium ifobtLaboratorium;
 
-	private String instumentId;
+	private String instrumentId;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)

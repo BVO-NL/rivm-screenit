@@ -23,44 +23,32 @@ package nl.rivm.screenit.mamma.planning.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
-import nl.rivm.screenit.mamma.planning.repository.projectie.PlanningCapaciteitBlokProjectie;
-import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
+import nl.rivm.screenit.mamma.planning.repository.projectie.PlanningMinderValideReserveringProjectie;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok_;
+import nl.rivm.screenit.model.mamma.MammaMinderValideReservering;
+import nl.rivm.screenit.model.mamma.MammaMinderValideReservering_;
 import nl.rivm.screenit.repository.BaseJpaRepository;
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-
-import org.springframework.data.jpa.repository.Query;
+import nl.rivm.screenit.specification.DateSpecification;
+import nl.rivm.screenit.specification.SpecificationUtil;
 
 import com.google.common.collect.Range;
 
-import static nl.rivm.screenit.specification.DateSpecification.bevatLocalDateToDate;
 import static nl.rivm.screenit.specification.mamma.MammaCapaciteitBlokSpecification.heeftScreeningsEenheidId;
 
-public interface PlanningCapaciteitBlokRepository extends BaseJpaRepository<MammaCapaciteitBlok>
+public interface PlanningMindervalideReserveringRepository extends BaseJpaRepository<MammaMinderValideReservering>
 {
-	@Query("SELECT CAST( MAX(vanaf) as LocalDate) FROM MammaCapaciteitBlok")
-	Optional<LocalDate> findMaxDatumVanAlleCapaciteitBlokken();
-
-	default List<PlanningCapaciteitBlokProjectie> leesCapaciteitBlokken(PlanningScreeningsEenheid screeningsEenheid, Range<LocalDate> zoekPeriode)
+	default List<PlanningMinderValideReserveringProjectie> leesMindervalideReserveringen(PlanningScreeningsEenheid screeningsEenheid, Range<LocalDate> zoekPeriode)
 	{
-
-		return findWith(
-			heeftScreeningsEenheidId(screeningsEenheid.getId())
-				.and(bevatLocalDateToDate(zoekPeriode, r -> r.get(MammaCapaciteitBlok_.vanaf))),
-			PlanningCapaciteitBlokProjectie.class,
-			q -> q.projections((cb, r) -> List.of(
-					r.get(AbstractHibernateObject_.id),
-					r.get(MammaCapaciteitBlok_.vanaf),
-					r.get(MammaCapaciteitBlok_.tot),
-					r.get(MammaCapaciteitBlok_.aantalOnderzoeken),
-					r.get(MammaCapaciteitBlok_.blokType),
-					r.get(MammaCapaciteitBlok_.opmerkingen),
-					r.get(MammaCapaciteitBlok_.minderValideAfspraakMogelijk)))
+		return findWith(heeftScreeningsEenheidId(screeningsEenheid.getId()).with(MammaMinderValideReservering_.capaciteitBlok)
+				.and(DateSpecification.bevatLocalDate(zoekPeriode, r -> r.get(MammaMinderValideReservering_.vanaf))),
+			PlanningMinderValideReserveringProjectie.class,
+			q -> q.projections(
+					(cb, r) -> List.of(
+						r.get(MammaMinderValideReservering_.id),
+						SpecificationUtil.join(r, MammaMinderValideReservering_.capaciteitBlok).get(MammaCapaciteitBlok_.id),
+						r.get(MammaMinderValideReservering_.vanaf)))
 				.all());
-
 	}
-
 }

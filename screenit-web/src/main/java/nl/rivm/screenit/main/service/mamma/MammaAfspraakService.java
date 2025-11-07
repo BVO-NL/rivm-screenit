@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import nl.rivm.screenit.dto.mamma.afspraken.IMammaBulkVerzettenFilter;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaKandidaatAfspraakDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaBlokkade;
@@ -48,7 +48,7 @@ public interface MammaAfspraakService
 
 	boolean kortVoorVolgendeRonde(MammaAfspraak afspraak);
 
-	String controleerAfspraakInAndereLocatie(MammaKandidaatAfspraakDto kandidaatAfspraakDto, MammaDossier dossier);
+	String controleerAfspraakInAndereLocatie(MammaBaseAfspraakOptieDto afspraakOptieDto, MammaDossier dossier);
 
 	boolean magBevestigingsbriefAanmaken(MammaAfspraak afspraak);
 }

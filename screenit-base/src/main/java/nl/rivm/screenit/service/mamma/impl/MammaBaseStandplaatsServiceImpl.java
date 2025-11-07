@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import nl.rivm.screenit.dto.mamma.afspraken.IMammaAfspraakWijzigenFilter;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaKandidaatAfspraakDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaStandplaatsPeriodeMetAfstandDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.IDocument;
@@ -143,7 +143,7 @@ public class MammaBaseStandplaatsServiceImpl implements MammaBaseStandplaatsServ
 					}
 					else
 					{
-						afstand = MammaKandidaatAfspraakDto.ONBEKENDE_AFSTAND;
+						afstand = MammaBaseAfspraakOptieDto.ONBEKENDE_AFSTAND;
 					}
 					afstandenPerStandplaats.put(standplaatsId, afstand);
 				}

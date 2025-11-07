@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {KandidaatAfspraak} from "../../../../../datatypes/mamma/KandidaatAfspraak"
+import {AfspraakOptie} from "../../../../../datatypes/mamma/AfspraakOptie"
 import {Dispatch, SetStateAction, useState} from "react"
 import {AfspraakZoekFilter} from "../MammaAfspraakMakenPage"
 import MammaAfspraakMakenPopup from "./wizard_componenten/MammaAfspraakMakenPopup"
@@ -44,10 +44,12 @@ import {useThunkDispatch} from "../../../../../index"
 import {useSelectedBvo} from "../../../../../utils/Hooks"
 import {useNavigate} from "react-router"
 import {Bevolkingsonderzoek} from "../../../../../datatypes/Bevolkingsonderzoek"
+import datadogService from "../../../../../services/DatadogService"
+import {AnalyticsCategorie} from "../../../../../datatypes/AnalyticsCategorie"
 
 export type MammaAfspraakBevestigingsWizardProps = {
-	setGekozenAfspraak: Dispatch<SetStateAction<KandidaatAfspraak | undefined>>,
-	gekozenAfspraak: KandidaatAfspraak | undefined,
+	setGekozenAfspraak: Dispatch<SetStateAction<AfspraakOptie | undefined>>,
+	gekozenAfspraak: AfspraakOptie | undefined,
 	zoekAfspraken: (zoekFilter: AfspraakZoekFilter) => void,
 	zoekFilter: AfspraakZoekFilter
 }
@@ -150,7 +152,8 @@ const MammaAfspraakBevestigingsWizard = (props: MammaAfspraakBevestigingsWizardP
 
 	function toonAfspraakBevestigingsOptieKiezenPopup() {
 		return <MammaBevestigingsOptiePopup afspraakBevestiging={afspraakBevestiging!}
-											onVolgende={() => {
+											onVolgende={(eventNaam: string) => {
+												datadogService.stuurEvent(eventNaam, AnalyticsCategorie.MAMMA_AFSPRAAK)
 												if (!afspraakBevestiging?.toonSmsOptie) {
 													maakBevestiging(afspraakBevestiging!)
 												}
@@ -162,7 +165,8 @@ const MammaAfspraakBevestigingsWizard = (props: MammaAfspraakBevestigingsWizardP
 
 	function toonSMSHerinneringPopup() {
 		return <MammaHerinneringSmsPopup afspraakBevestiging={afspraakBevestiging!}
-										 onVolgende={() => {
+										 onVolgende={(eventNaam: string) => {
+											 datadogService.stuurEvent(eventNaam, AnalyticsCategorie.MAMMA_AFSPRAAK)
 											 maakBevestiging(afspraakBevestiging!)
 											 gaNaarVolgendePopup()
 										 }}>

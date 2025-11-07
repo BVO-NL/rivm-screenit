@@ -38,7 +38,7 @@ import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dto.mamma.afspraken.IMammaBulkVerzettenFilter;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaKandidaatAfspraakDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningVerzetClientenDto;
 import nl.rivm.screenit.main.service.mamma.MammaAfspraakService;
 import nl.rivm.screenit.main.transformer.MammaScreeningsEenheidMetDatumDto;
@@ -74,7 +74,6 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
-import nl.rivm.screenit.service.mamma.MammaBaseKandidaatAfsprakenDeterminatiePeriode;
 import nl.rivm.screenit.service.mamma.MammaBaseKansberekeningService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.service.mamma.MammaDigitaalContactService;
@@ -82,7 +81,6 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
-import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang.StringUtils;
@@ -224,15 +222,12 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 
 			var voorlopigeOpkomstkans = kansberekeningService.getVoorlopigeOpkomstkans(uitnodiging, standplaatsPeriode, filter.getVerzettenReden());
 
-			MammaBaseKandidaatAfsprakenDeterminatiePeriode baseKandidaatAfsprakenDeterminatiePeriode = ApplicationContextProvider.getApplicationContext()
-				.getBean(MammaBaseKandidaatAfsprakenDeterminatiePeriode.class);
-
-			var kandidaatAfspraak = baseKandidaatAfsprakenDeterminatiePeriode.getKandidaatAfspraakBulkVerzetten(dossier, standplaatsPeriode, vanaf, totEnMet,
-				voorlopigeOpkomstkans, capaciteitVolledigBenutTotEnMetAantalWerkdagen);
+			var afspraakOptie = baseAfspraakService.getAfspraakOptieBulkVerzetten(dossier, standplaatsPeriode, vanaf, totEnMet, voorlopigeOpkomstkans,
+				capaciteitVolledigBenutTotEnMetAantalWerkdagen);
 
 			boolean annuleerVorigeAfspraak = bestaandeAfspraak.getVanaf().compareTo(dateSupplier.getDate()) > 0;
 
-			var capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, kandidaatAfspraak.getCapaciteitBlokDto().id);
+			var capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, afspraakOptie.getCapaciteitBlokDto().id);
 
 			var digitaleBerichten = dossier.getLaatsteScreeningRonde().getBerichten();
 			var emailAdres = dossier.getClient().getPersoon().getEmailadres();
@@ -246,7 +241,7 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 			}
 
 			var nieuweAfspraak = baseAfspraakService.maakAfspraak(uitnodiging.getScreeningRonde(), capaciteitBlok,
-				DateUtil.toUtilDate(kandidaatAfspraak.getVanaf().atDate(kandidaatAfspraak.getDatum())), filter.getStandplaatsPeriode(), filter.getVerzettenReden(),
+				DateUtil.toUtilDate(afspraakOptie.getVanaf().atDate(afspraakOptie.getDatum())), filter.getStandplaatsPeriode(), filter.getVerzettenReden(),
 				annuleerVorigeAfspraak, false, true, true, true, account, false);
 
 			var nieuweAfspraakDate = DateUtil.toLocalDate(nieuweAfspraak.getVanaf());
@@ -363,12 +358,12 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public String controleerAfspraakInAndereLocatie(MammaKandidaatAfspraakDto kandidaatAfspraakDto, MammaDossier dossier)
+	public String controleerAfspraakInAndereLocatie(MammaBaseAfspraakOptieDto afspraakOptieDto, MammaDossier dossier)
 	{
-		MammaStandplaatsPeriode standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class, kandidaatAfspraakDto.getStandplaatsPeriodeId());
+		MammaStandplaatsPeriode standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class, afspraakOptieDto.getStandplaatsPeriodeId());
 		MammaAfspraak laatsteAfspraak = MammaScreeningRondeUtil.getLaatsteAfspraak(dossier.getLaatsteScreeningRonde());
 
-		LocalDate nieuweAfspraakDatum = kandidaatAfspraakDto.getDatum();
+		LocalDate nieuweAfspraakDatum = afspraakOptieDto.getDatum();
 		if (laatsteAfspraak == null)
 		{
 			TijdelijkAdres tijdelijkeLocatie = standplaatsPeriode.getStandplaatsRonde().getStandplaats().getTijdelijkeLocatie();

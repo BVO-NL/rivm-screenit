@@ -21,10 +21,11 @@ package nl.rivm.screenit.service.colon.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.Client;
@@ -37,45 +38,45 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ColonTijdelijkAfmeldenJaartallenServiceImpl implements ColonTijdelijkAfmeldenJaartallenService
 {
+	private final SimplePreferenceService preferenceService;
 
-	private SimplePreferenceService preferenceService;
+	private final ICurrentDateSupplier currentDateSupplier;
 
-	private ICurrentDateSupplier currentDateSupplier;
+	private final ColonDossierBaseService colonDossierBaseService;
 
-	private ColonDossierBaseService colonDossierBaseService;
-
-	@Override
 	public List<Integer> bepaalMogelijkeAfmeldJaren(Client client)
 	{
-		List<Integer> afmeldbaarTotMetJaartallen = new ArrayList<>();
+		return bepaalMogelijkeAfmeldJaren(client, currentDateSupplier.getLocalDate());
+	}
+
+	@Override
+	public List<Integer> bepaalMogelijkeAfmeldJaren(Client client, LocalDate peildatum)
+	{
+		var afmeldbaarTotMetJaartallen = new ArrayList<Integer>();
 		var dossier = client.getColonDossier();
-		boolean laatsteScreeningRondeAanwezig = dossier != null && dossier.getLaatsteScreeningRonde() != null;
+		var laatsteScreeningRondeAanwezig = dossier != null && dossier.getLaatsteScreeningRonde() != null;
 
 		if (laatsteScreeningRondeAanwezig && heeftGeenOngunstigeUitslagInLaatsteRonde(dossier))
 		{
 			var begindatumLaatsteScreeningRonde = DateUtil.toLocalDate(client.getColonDossier().getLaatsteScreeningRonde().getCreatieDatum());
 			var geboortedatumClient = DateUtil.toLocalDate(client.getPersoon().getGeboortedatum());
-			var datumVandaag = currentDateSupplier.getLocalDate();
 			var volgendeUitnodigingsDatum = colonDossierBaseService.getDatumVolgendeUitnodiging(dossier);
 
-			Integer maximumLeeftijd = preferenceService.getInteger(PreferenceKey.MAXIMALE_LEEFTIJD_COLON.name());
-			long leeftijdGeenUitnodigingMeer = maximumLeeftijd + 1L;
+			var maximumLeeftijd = preferenceService.getInteger(PreferenceKey.MAXIMALE_LEEFTIJD_COLON.name());
+			var leeftijdGeenUitnodigingMeer = maximumLeeftijd + 1L;
 
 			for (int toeTeVoegenJaren = 2; toeTeVoegenJaren <= 5; toeTeVoegenJaren++)
 			{
 				var teKiezenJaartal = begindatumLaatsteScreeningRonde.plusYears(toeTeVoegenJaren).getYear();
 
-				boolean nieuweUitnodigingNietInDitJaar = teKiezenJaartal > datumVandaag.getYear();
-				boolean nieuweDatumVoorDatumDatClientTeOudIs = datumVandaag.plusYears(toeTeVoegenJaren).minusYears(leeftijdGeenUitnodigingMeer).isBefore(geboortedatumClient);
-				boolean nieuweDatumNietVoorUitnodigingsdatum =
+				var nieuweUitnodigingNietInDitJaar = teKiezenJaartal > peildatum.getYear();
+				var nieuweDatumVoorDatumDatClientTeOudIs = peildatum.plusYears(toeTeVoegenJaren).minusYears(leeftijdGeenUitnodigingMeer).isBefore(geboortedatumClient);
+				var nieuweDatumNietVoorUitnodigingsdatum =
 					volgendeUitnodigingsDatum == null || !begindatumLaatsteScreeningRonde.plusYears(toeTeVoegenJaren).isBefore(volgendeUitnodigingsDatum);
 
 				if (nieuweUitnodigingNietInDitJaar && nieuweDatumVoorDatumDatClientTeOudIs && nieuweDatumNietVoorUitnodigingsdatum)

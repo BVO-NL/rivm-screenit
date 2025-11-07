@@ -63,4 +63,9 @@ public class RangeUtil
 		}
 		return range;
 	}
+
+	public static <C extends Comparable<?>> boolean isOverlap(Range<C> range1, Range<C> range2)
+	{
+		return range1.isConnected(range2) && !range1.intersection(range2).isEmpty();
+	}
 }

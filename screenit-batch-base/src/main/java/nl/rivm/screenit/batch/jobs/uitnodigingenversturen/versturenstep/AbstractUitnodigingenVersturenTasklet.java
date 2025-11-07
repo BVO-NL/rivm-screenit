@@ -637,8 +637,8 @@ public abstract class AbstractUitnodigingenVersturenTasklet<U extends InpakbareU
 		UploadDocument uploadDocument)
 	{
 		var mergeFields = inpakcentrumUitnodigingDto.getMergeFields();
-		Stream.of(MergeField.SO_ID, MergeField.CLIENT_NAAM, MergeField.CLIENT_ADRES, MergeField.CLIENT_POSTCODE,
-			MergeField.CLIENT_WOONPLAATS, MergeField.KIX_CLIENT, MergeField.UITNODIGINGSID).filter(MergeField::naarInpakcentrum).forEach(mergeField ->
+		Stream.of(MergeField.CLIENT_ADRES, MergeField.CLIENT_POSTCODE,
+			MergeField.CLIENT_WOONPLAATS, MergeField.UITNODIGINGSID).filter(MergeField::naarInpakcentrum).forEach(mergeField ->
 		{
 			Object value = mergeField.getValue(mailMergeContext);
 			addMergeField(mergeFields, mergeField.getFieldName(), value != null ? value.toString() : "");
