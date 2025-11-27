@@ -33,11 +33,11 @@ public class MammaCapaciteit implements Serializable
 {
 	private BigDecimal beschikbareCapaciteit = BigDecimal.ZERO;
 
-	private BigDecimal benutteCapaciteit = BigDecimal.ZERO;
+	private BigDecimal gebruikteCapaciteit = BigDecimal.ZERO;
 
 	private BigDecimal vrijeCapaciteit = BigDecimal.ZERO;
 
-	private BigDecimal negatieveVrijeCapaciteit = BigDecimal.ZERO;
+	private BigDecimal negatieveVrijeCapaciteit = BigDecimal.ZERO; 
 
 	public BigDecimal getVrijeCapaciteit(boolean corrigeerNegatieveVrijeCapaciteit)
 	{

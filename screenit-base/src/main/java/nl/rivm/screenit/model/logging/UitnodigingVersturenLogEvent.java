@@ -25,26 +25,21 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-import nl.rivm.screenit.model.verwerkingverslag.SelectieRapportage;
+import lombok.Getter;
+import lombok.Setter;
+
+import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportage;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 @Entity
 @Table(schema = "gedeeld")
+@Getter
+@Setter
 public class UitnodigingVersturenLogEvent extends LogEvent
 {
 	@OneToOne(cascade = jakarta.persistence.CascadeType.REMOVE)
 	@Cascade(CascadeType.DELETE)
-	private SelectieRapportage rapportage;
-
-	public SelectieRapportage getRapportage()
-	{
-		return rapportage;
-	}
-
-	public void setRapportage(SelectieRapportage rapportage)
-	{
-		this.rapportage = rapportage;
-	}
+	private ColonSelectieRapportage rapportage;
 }

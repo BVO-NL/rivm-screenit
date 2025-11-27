@@ -35,9 +35,9 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.service.KwaliteitscontroleLabService;
 import nl.rivm.screenit.main.service.QbaseService;
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.colon.IFOBTBestand;
-import nl.rivm.screenit.model.colon.IFOBTUitslag;
-import nl.rivm.screenit.model.colon.IFobtLaboratorium;
+import nl.rivm.screenit.model.colon.ColonFitAnalyseResultaat;
+import nl.rivm.screenit.model.colon.ColonFitAnalyseResultaatSet;
+import nl.rivm.screenit.model.colon.ColonFitLaboratorium;
 import nl.rivm.screenit.model.colon.SKMLExterneControleBarcode;
 import nl.rivm.screenit.model.colon.SKMLInterneControleBarcode;
 import nl.rivm.screenit.model.colon.SKMLSentineelControleBarcode;
@@ -84,21 +84,21 @@ public class QbaseServiceImpl implements QbaseService
 	private LogService logService;
 
 	@Override
-	public String maakQbaseBestand(List<IFOBTBestand> bestanden, Account ingelogdAccount)
+	public String maakQbaseBestand(List<ColonFitAnalyseResultaatSet> resultaatSets, Account ingelogdAccount)
 	{
 		StringBuilder qsb = new StringBuilder();
-		maakQbaseHeader(qsb, getLabcode(bestanden, ingelogdAccount));
+		maakQbaseHeader(qsb, getLabcode(resultaatSets, ingelogdAccount));
 		maakM1(qsb);
-		verwerkBestanden(bestanden, qsb);
+		verwerkResultaatSets(resultaatSets, qsb);
 		return qsb.toString();
 	}
 
-	private String getLabcode(List<IFOBTBestand> bestanden, Account ingelogdAccount)
+	private String getLabcode(List<ColonFitAnalyseResultaatSet> bestanden, Account ingelogdAccount)
 	{
 		if (CollectionUtils.isNotEmpty(bestanden))
 		{
-			IFOBTBestand bestand = bestanden.get(0);
-			IFobtLaboratorium laboratorium = bestand.getLaboratorium();
+			ColonFitAnalyseResultaatSet bestand = bestanden.get(0);
+			ColonFitLaboratorium laboratorium = bestand.getLaboratorium();
 			String qbasenummer = laboratorium.getQbasenummer();
 			logService.logGebeurtenis(LogGebeurtenis.QBASE_BESTAND_GEMAAKT, ingelogdAccount, "Labid voor QBASE " + qbasenummer, Bevolkingsonderzoek.COLON);
 			return qbasenummer;
@@ -109,19 +109,18 @@ public class QbaseServiceImpl implements QbaseService
 		}
 	}
 
-	private void verwerkBestanden(List<IFOBTBestand> bestanden, StringBuilder qsb)
+	private void verwerkResultaatSets(List<ColonFitAnalyseResultaatSet> resultaatSets, StringBuilder qsb)
 	{
-		List<IFOBTUitslag> externeUitslagen = new ArrayList<>();
-		List<IFOBTUitslag> clientUitslagen = new ArrayList<>();
-		Map<String, List<IFOBTUitslag>> interneUitslagenMapping = new HashMap<>();
-		Map<String, List<IFOBTUitslag>> sentineelUitslagenMapping = new HashMap<>();
+		List<ColonFitAnalyseResultaat> externeUitslagen = new ArrayList<>();
+		List<ColonFitAnalyseResultaat> clientUitslagen = new ArrayList<>();
+		Map<String, List<ColonFitAnalyseResultaat>> interneUitslagenMapping = new HashMap<>();
+		Map<String, List<ColonFitAnalyseResultaat>> sentineelUitslagenMapping = new HashMap<>();
 
-		if (CollectionUtils.isNotEmpty(bestanden))
+		if (CollectionUtils.isNotEmpty(resultaatSets))
 		{
-
-			for (IFOBTBestand bestand : bestanden)
+			for (var resultaatSet : resultaatSets)
 			{
-				for (IFOBTUitslag uitslag : bestand.getUitslagen())
+				for (ColonFitAnalyseResultaat uitslag : resultaatSet.getUitslagen())
 				{
 					if (uitslag.getType() != null)
 					{
@@ -163,23 +162,23 @@ public class QbaseServiceImpl implements QbaseService
 			List<String> interneHeaders = new ArrayList<>(interneUitslagenMapping.keySet());
 			index = maakMx(qsb, index, interneHeaders);
 
-			for (IFOBTUitslag uitslag : externeUitslagen)
+			for (ColonFitAnalyseResultaat uitslag : externeUitslagen)
 			{
 				SKMLExterneControleBarcode barcode = controleService.getExterneControleBarcode(uitslag.getBarcode());
 				maakSE(qsb, uitslag, barcode.getSchema().getLetter());
 			}
-			Map<Date, List<IFOBTUitslag>> clientUitslagenPerDag = new HashMap<>();
-			for (IFOBTUitslag uitslag : clientUitslagen)
+			Map<Date, List<ColonFitAnalyseResultaat>> clientUitslagenPerDag = new HashMap<>();
+			for (ColonFitAnalyseResultaat uitslag : clientUitslagen)
 			{
 				Date analyseDatum = DateUtil.startDag(uitslag.getAnalyseDatum());
 				if (!clientUitslagenPerDag.containsKey(analyseDatum))
 				{
 					clientUitslagenPerDag.put(analyseDatum, new ArrayList<>());
 				}
-				List<IFOBTUitslag> lijst = clientUitslagenPerDag.get(analyseDatum);
+				List<ColonFitAnalyseResultaat> lijst = clientUitslagenPerDag.get(analyseDatum);
 				lijst.add(uitslag);
 			}
-			for (Map.Entry<Date, List<IFOBTUitslag>> clientUitslagDag : clientUitslagenPerDag.entrySet())
+			for (Map.Entry<Date, List<ColonFitAnalyseResultaat>> clientUitslagDag : clientUitslagenPerDag.entrySet())
 			{
 				maakSI1(qsb, clientUitslagDag.getKey(), berekenClientAantallen(clientUitslagDag.getValue()));
 			}
@@ -190,9 +189,9 @@ public class QbaseServiceImpl implements QbaseService
 		}
 	}
 
-	private static void mapUitslagOpHeader(Map<String, List<IFOBTUitslag>> uitslagenMapping, IFOBTUitslag uitslag, String header)
+	private static void mapUitslagOpHeader(Map<String, List<ColonFitAnalyseResultaat>> uitslagenMapping, ColonFitAnalyseResultaat uitslag, String header)
 	{
-		List<IFOBTUitslag> uitslagen = uitslagenMapping.get(header);
+		List<ColonFitAnalyseResultaat> uitslagen = uitslagenMapping.get(header);
 		if (uitslagen == null)
 		{
 			uitslagen = new ArrayList<>();
@@ -201,7 +200,7 @@ public class QbaseServiceImpl implements QbaseService
 		uitslagen.add(uitslag);
 	}
 
-	private Map<String, BigDecimal> berekenClientAantallen(List<IFOBTUitslag> uitslagen)
+	private Map<String, BigDecimal> berekenClientAantallen(List<ColonFitAnalyseResultaat> uitslagen)
 	{
 		Map<String, BigDecimal> result = new HashMap<String, BigDecimal>();
 
@@ -214,15 +213,15 @@ public class QbaseServiceImpl implements QbaseService
 			int aantalHoog = 0;
 			int aantalLaag = 0;
 
-			Integer detectiegrensI = preferenceService.getInteger(PreferenceKey.IFOBT_DETECTIEGRENS.name());
+			Integer detectiegrensI = preferenceService.getInteger(PreferenceKey.COLON_FIT_DETECTIE_GRENS.name());
 			if (detectiegrensI == null)
 			{
 				detectiegrensI = Integer.valueOf(22);
 			}
 			BigDecimal detectiegrens = BigDecimal.valueOf(detectiegrensI / 100);
-			BigDecimal normwaarde = BigDecimal.valueOf(preferenceService.getInteger(PreferenceKey.IFOBT_NORM_WAARDE.name()) / 100);
+			BigDecimal normwaarde = BigDecimal.valueOf(preferenceService.getInteger(PreferenceKey.COLON_FIT_NORM_WAARDE.name()) / 100);
 
-			for (IFOBTUitslag uitslag : uitslagen)
+			for (ColonFitAnalyseResultaat uitslag : uitslagen)
 			{
 				BigDecimal uitslagWaarde = uitslag.getUitslag();
 				if (uitslagWaarde.compareTo(normwaarde) > 0)
@@ -282,7 +281,7 @@ public class QbaseServiceImpl implements QbaseService
 		return index;
 	}
 
-	private static void maakSE(StringBuilder qsb, IFOBTUitslag uitslag, String letter)
+	private static void maakSE(StringBuilder qsb, ColonFitAnalyseResultaat uitslag, String letter)
 	{
 		qsb.append("SE ");
 		qsb.append(letter);
@@ -314,13 +313,13 @@ public class QbaseServiceImpl implements QbaseService
 		qsb.append(NEWLINE);
 	}
 
-	private static int maakSIx(StringBuilder qsb, Map<String, List<IFOBTUitslag>> uitslagenMapping, int index, List<String> headers)
+	private static int maakSIx(StringBuilder qsb, Map<String, List<ColonFitAnalyseResultaat>> uitslagenMapping, int index, List<String> headers)
 	{
 		for (String header : headers)
 		{
-			List<IFOBTUitslag> uitslagen = uitslagenMapping.get(header);
+			List<ColonFitAnalyseResultaat> uitslagen = uitslagenMapping.get(header);
 			String nummer = "" + index++;
-			for (IFOBTUitslag uitslag : uitslagen)
+			for (ColonFitAnalyseResultaat uitslag : uitslagen)
 			{
 				qsb.append("SI ");
 				qsb.append(nummer);

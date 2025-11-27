@@ -24,14 +24,14 @@ package nl.rivm.screenit.service.impl;
 import java.time.LocalDate;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.model.cervix.CervixZasHoudbaarheid;
-import nl.rivm.screenit.model.colon.IFOBTVervaldatum;
-import nl.rivm.screenit.repository.cervix.CervixZasHoudbaarheidRepository;
-import nl.rivm.screenit.repository.colon.ColonFITHoudbaarheidRepository;
+import nl.rivm.screenit.model.cervix.CervixHoudbaarheidZasReeks;
+import nl.rivm.screenit.model.colon.ColonHoudbaarheidFitReeks;
+import nl.rivm.screenit.repository.cervix.CervixHoudbaarheidZasReeksRepository;
+import nl.rivm.screenit.repository.colon.ColonHoudbaarheidFitReeksRepository;
 import nl.rivm.screenit.service.BaseHoudbaarheidService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.cervix.CervixZasHoudbaarheidSpecification;
-import nl.rivm.screenit.specification.colon.ColonFITHoudbaarheidSpecification;
+import nl.rivm.screenit.specification.colon.ColonHoudbaarheidFitReeksSpecification;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,10 +47,10 @@ public class BaseHoudbaarheidServiceImpl implements BaseHoudbaarheidService
 	private SimplePreferenceService simplePreferenceService;
 
 	@Autowired
-	private CervixZasHoudbaarheidRepository zasHoudbaarheidRepository;
+	private CervixHoudbaarheidZasReeksRepository houdbaarheidZasReeksRepository;
 
 	@Autowired
-	private ColonFITHoudbaarheidRepository fitHoudbaarheidRepository;
+	private ColonHoudbaarheidFitReeksRepository houdbaarheidFitReeksRepository;
 
 	@Override
 	public boolean isZasHoudbaar(String barcode)
@@ -69,29 +69,29 @@ public class BaseHoudbaarheidServiceImpl implements BaseHoudbaarheidService
 	}
 
 	@Override
-	public CervixZasHoudbaarheid getZasHoudbaarheidVoor(String barcode)
+	public CervixHoudbaarheidZasReeks getZasHoudbaarheidVoor(String barcode)
 	{
-		return zasHoudbaarheidRepository.findOne(CervixZasHoudbaarheidSpecification.heeftBarcodeInRange(barcode)).orElse(null);
+		return houdbaarheidZasReeksRepository.findOne(CervixZasHoudbaarheidSpecification.heeftBarcodeInRange(barcode)).orElse(null);
 	}
 
 	@Override
-	public IFOBTVervaldatum getFitHoudbaarheidVoor(String barcode)
+	public ColonHoudbaarheidFitReeks getFitHoudbaarheidVoor(String barcode)
 	{
-		return fitHoudbaarheidRepository.findOne(ColonFITHoudbaarheidSpecification.heeftBarcodeInRange(barcode)).orElse(null);
+		return houdbaarheidFitReeksRepository.findOne(ColonHoudbaarheidFitReeksSpecification.heeftBarcodeInRange(barcode)).orElse(null);
 	}
 
 	@Override
-	public LocalDate getMinstensHoudbaarTotMet(LocalDate vandaag, PreferenceKey minimaleHoudbaarheidMonstersVoorControleKey)
+	public LocalDate getMinstensHoudbaarTotMet(LocalDate vandaag, PreferenceKey preferenceKey)
 	{
-		var periodeMinimaleHoudbaarheidIfobtMonstersVoorControle = simplePreferenceService.getInteger(minimaleHoudbaarheidMonstersVoorControleKey.name());
-		if (periodeMinimaleHoudbaarheidIfobtMonstersVoorControle == null)
+		var periode = simplePreferenceService.getInteger(preferenceKey.name());
+		if (periode == null)
 		{
-			periodeMinimaleHoudbaarheidIfobtMonstersVoorControle = 61;
+			periode = 61;
 		}
 		else
 		{
-			periodeMinimaleHoudbaarheidIfobtMonstersVoorControle++;
+			periode++;
 		}
-		return vandaag.plusDays(periodeMinimaleHoudbaarheidIfobtMonstersVoorControle);
+		return vandaag.plusDays(periode);
 	}
 }

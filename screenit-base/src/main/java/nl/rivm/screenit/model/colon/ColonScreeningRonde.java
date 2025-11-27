@@ -38,6 +38,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.EnovationHuisarts;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.colon.enums.ColonDefinitiefVervolgbeleid;
@@ -49,31 +52,32 @@ import org.hibernate.envers.NotAudited;
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 @Entity
-@Table(schema = "colon", indexes = { @Index(name = "idx_COLON_SCREENING_RONDE_STATUS", columnList = "status"),
-	@Index(name = "idx_COLON_SCREENING_RONDE_definitiefVervolgbeleid", columnList = "definitiefVervolgbeleid") })
+@Table(schema = "colon", name = "screening_ronde", indexes = { @Index(name = "idx_colon_screening_ronde_status", columnList = "status"),
+	@Index(name = "idx_colon_screening_ronde_definitiefvervolgbeleid", columnList = "definitiefvervolgbeleid") })
 @Audited
+@Getter
+@Setter
 public class ColonScreeningRonde extends ScreeningRonde<ColonDossier, ColonBrief, ColonAfmelding, ColonUitnodiging>
 {
+	@OneToMany(mappedBy = "screeningRonde", cascade = CascadeType.ALL)
+	private List<ColonFitRegistratie> fitRegistraties = new ArrayList<>();
 
-	@OneToMany(mappedBy = "colonScreeningRonde", cascade = CascadeType.ALL)
-	private List<IFOBTTest> ifobtTesten = new ArrayList<>();
-
-	@OneToOne(optional = true, cascade = CascadeType.ALL)
-	private IFOBTTest laatsteIFOBTTest;
+	@OneToOne(cascade = CascadeType.ALL)
+	private ColonFitRegistratie laatsteFitRegistratie;
 
 	@Deprecated
-	@OneToOne(optional = true, cascade = CascadeType.ALL)
-	private IFOBTTest laatsteIFOBTTestExtra;
+	@OneToOne(cascade = CascadeType.ALL)
+	private ColonFitRegistratie laatsteExtraFitRegistratie;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
+	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Audited(targetAuditMode = NOT_AUDITED)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	private EnovationHuisarts colonHuisarts;
+	private EnovationHuisarts huisarts;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date datumVastleggenHuisarts;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "colonScreeningRonde")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "screeningRonde")
 	private List<ColonIntakeAfspraak> afspraken = new ArrayList<>();
 
 	@ManyToOne(cascade = CascadeType.ALL)
@@ -100,10 +104,10 @@ public class ColonScreeningRonde extends ScreeningRonde<ColonDossier, ColonBrief
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "screeningRonde")
 	private List<ColonAfmelding> afmeldingen = new ArrayList<>();
 
-	@OneToOne(optional = true, cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL)
 	private ColonAfmelding laatsteAfmelding;
 
-	@OneToOne(optional = true, cascade = CascadeType.ALL, mappedBy = "ronde")
+	@OneToOne(cascade = CascadeType.ALL, mappedBy = "ronde")
 	private OpenUitnodiging openUitnodiging;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "screeningsRonde")
@@ -119,218 +123,4 @@ public class ColonScreeningRonde extends ScreeningRonde<ColonDossier, ColonBrief
 	private List<ColonKoppelresultaatKankerregistratie> koppelresultatenKankerregistratie = new ArrayList<>();
 
 	private boolean gepusht;
-
-	public List<IFOBTTest> getIfobtTesten()
-	{
-		return ifobtTesten;
-	}
-
-	public void setIfobtTesten(List<IFOBTTest> ifobtTesten)
-	{
-		this.ifobtTesten = ifobtTesten;
-	}
-
-	public IFOBTTest getLaatsteIFOBTTest()
-	{
-		return laatsteIFOBTTest;
-	}
-
-	public void setLaatsteIFOBTTest(IFOBTTest laatsteIFOBTTest)
-	{
-		this.laatsteIFOBTTest = laatsteIFOBTTest;
-	}
-
-	public IFOBTTest getLaatsteIFOBTTestExtra()
-	{
-		return laatsteIFOBTTestExtra;
-	}
-
-	public void setLaatsteIFOBTTestExtra(IFOBTTest laatsteIFOBTTestExtra)
-	{
-		this.laatsteIFOBTTestExtra = laatsteIFOBTTestExtra;
-	}
-
-	public List<ColonIntakeAfspraak> getAfspraken()
-	{
-		return afspraken;
-	}
-
-	public void setAfspraken(List<ColonIntakeAfspraak> afspraken)
-	{
-		this.afspraken = afspraken;
-	}
-
-	public ColonIntakeAfspraak getLaatsteAfspraak()
-	{
-		return laatsteAfspraak;
-	}
-
-	public void setLaatsteAfspraak(ColonIntakeAfspraak laatsteAfspraak)
-	{
-		this.laatsteAfspraak = laatsteAfspraak;
-	}
-
-	public List<ColonVerslag> getVerslagen()
-	{
-		return verslagen;
-	}
-
-	public void setVerslagen(List<ColonVerslag> verslagen)
-	{
-		this.verslagen = verslagen;
-	}
-
-	@Override
-	public ColonDossier getDossier()
-	{
-		return dossier;
-	}
-
-	@Override
-	public void setDossier(ColonDossier dossier)
-	{
-		this.dossier = dossier;
-	}
-
-	@Override
-	public List<ColonUitnodiging> getUitnodigingen()
-	{
-		return uitnodigingen;
-	}
-
-	@Override
-	public void setUitnodigingen(List<ColonUitnodiging> uitnodigingen)
-	{
-		this.uitnodigingen = uitnodigingen;
-	}
-
-	@Override
-	public ColonUitnodiging getLaatsteUitnodiging()
-	{
-		return laatsteUitnodiging;
-	}
-
-	@Override
-	public void setLaatsteUitnodiging(ColonUitnodiging laatsteUitnodiging)
-	{
-		this.laatsteUitnodiging = laatsteUitnodiging;
-	}
-
-	@Override
-	public List<ColonBrief> getBrieven()
-	{
-		return brieven;
-	}
-
-	@Override
-	public void setBrieven(List<ColonBrief> brieven)
-	{
-		this.brieven = brieven;
-	}
-
-	@Override
-	public ColonBrief getLaatsteBrief()
-	{
-		return laatsteBrief;
-	}
-
-	@Override
-	public void setLaatsteBrief(ColonBrief laatsteBrief)
-	{
-		this.laatsteBrief = laatsteBrief;
-	}
-
-	@Override
-	public List<ColonAfmelding> getAfmeldingen()
-	{
-		return afmeldingen;
-	}
-
-	@Override
-	public void setAfmeldingen(List<ColonAfmelding> afmeldingen)
-	{
-		this.afmeldingen = afmeldingen;
-	}
-
-	@Override
-	public ColonAfmelding getLaatsteAfmelding()
-	{
-		return laatsteAfmelding;
-	}
-
-	@Override
-	public void setLaatsteAfmelding(ColonAfmelding laatsteAfmelding)
-	{
-		this.laatsteAfmelding = laatsteAfmelding;
-	}
-
-	public OpenUitnodiging getOpenUitnodiging()
-	{
-		return openUitnodiging;
-	}
-
-	public void setOpenUitnodiging(OpenUitnodiging openUitnodiging)
-	{
-		this.openUitnodiging = openUitnodiging;
-	}
-
-	public List<ColonHuisartsBericht> getHuisartsBerichten()
-	{
-		return huisartsBerichten;
-	}
-
-	public void setHuisartsBerichten(List<ColonHuisartsBericht> huisartsBerichten)
-	{
-		this.huisartsBerichten = huisartsBerichten;
-	}
-
-	public ColonDefinitiefVervolgbeleid getDefinitiefVervolgbeleid()
-	{
-		return definitiefVervolgbeleid;
-	}
-
-	public void setDefinitiefVervolgbeleid(ColonDefinitiefVervolgbeleid definitiefVervolgbeleid)
-	{
-		this.definitiefVervolgbeleid = definitiefVervolgbeleid;
-	}
-
-	public boolean isGepusht()
-	{
-		return gepusht;
-	}
-
-	public void setGepusht(boolean gepusht)
-	{
-		this.gepusht = gepusht;
-	}
-
-	public List<ColonKoppelresultaatKankerregistratie> getKoppelresultatenKankerregistratie()
-	{
-		return koppelresultatenKankerregistratie;
-	}
-
-	public void setKoppelresultatenKankerregistratie(List<ColonKoppelresultaatKankerregistratie> koppelresultatenKankerregistratie)
-	{
-		this.koppelresultatenKankerregistratie = koppelresultatenKankerregistratie;
-	}
-
-	public EnovationHuisarts getColonHuisarts()
-	{
-		return colonHuisarts;
-	}
-
-	public void setColonHuisarts(EnovationHuisarts enovationHuisarts)
-	{
-		this.colonHuisarts = enovationHuisarts;
-	}
-
-	public Date getDatumVastleggenHuisarts()
-	{
-		return datumVastleggenHuisarts;
-	}
-
-	public void setDatumVastleggenHuisarts(Date datumVastleggenHuisarts)
-	{
-		this.datumVastleggenHuisarts = datumVastleggenHuisarts;
-	}
 }

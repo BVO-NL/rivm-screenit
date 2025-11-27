@@ -24,17 +24,19 @@ package nl.rivm.screenit.service.colon;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 
 public interface ColonScreeningsrondeService
 {
-	boolean heeftUitslag(ColonUitnodiging uitnodiging, boolean checkAlleenUitslagGecommuiceerd);
+	boolean heeftUitslag(ColonUitnodiging uitnodiging, boolean checkAlleenUitslagGecommuniceerd);
 
-	ColonUitnodiging createNieuweUitnodiging(ColonScreeningRonde ronde, ColonUitnodigingCategorie nieuweUitnodigingsCategorie);
+	ColonUitnodiging createNieuweUitnodiging(ColonScreeningRonde ronde, ColonUitnodigingscategorie nieuweUitnodigingscategorie);
 
 	boolean maakGunstigeUitslagBriefVoorLaatsteRonde(Client client);
 
 	boolean isRondeStatusBuitenDoelgroep(ColonScreeningRonde ronde);
 
 	boolean heeftMaxAantalFitAanvragenBereikt(ColonScreeningRonde laatsteScreeningRonde);
+
+	void sluitRonde(ColonScreeningRonde ronde);
 }

@@ -49,9 +49,9 @@ public enum JobType
 
 	UITNODIGING_VERSTUREN_NAAR_INPAKCENTRUM_JOB_DK(BatchApplicationType.COLON, new Bevolkingsonderzoek[] { COLON }),
 
-	IFOBT_VERWERKING(BatchApplicationType.COLON, new Bevolkingsonderzoek[] { COLON }),
+	COLON_FIT_VERWERKING(BatchApplicationType.COLON, new Bevolkingsonderzoek[] { COLON }),
 
-	IFOBT_HERINNERING(BatchApplicationType.COLON, new Bevolkingsonderzoek[] { COLON }),
+	COLON_HERINNERING(BatchApplicationType.COLON, new Bevolkingsonderzoek[] { COLON }),
 
 	KOPPELDATA_VERWERKING(new JobFlag[] { BLOCK_MANUAL_START, BLOCK_CRON_TRIGGER }, BatchApplicationType.COLON, new Bevolkingsonderzoek[] { COLON }),
 

@@ -207,25 +207,27 @@ public class ColonTestProcesPage extends TestenBasePage
 			}
 		});
 
-		form.add(new AjaxButton("metIfobtOngunstig", form)
+		form.add(new AjaxButton("metFitRegistratieOngunstig", form)
 		{
 			@Override
 			public void onSubmit(AjaxRequestTarget target)
 			{
-				var test = colonTestService.maakHuidigeIFobtOntvangenEnOngunstig(form.getModelObject());
-				info("Deze Client heeft nu een FIT teruggestuurd! Status Ifobttest is " + test.getStatus() + " met normwaarde: " + test.getNormWaarde() + " met uitslag: "
-					+ test.getUitslag());
+				var fitRegistratie = colonTestService.maakHuidigeFitOntvangenEnOngunstig(form.getModelObject());
+				info("Deze Client heeft nu een FIT teruggestuurd! Status FIT Registratie is " + fitRegistratie.getStatus() + " met normwaarde: " + fitRegistratie.getNormWaarde()
+					+ " met uitslag: "
+					+ fitRegistratie.getUitslag());
 			}
 
 		});
-		form.add(new AjaxButton("metIfobtGunstig", form)
+		form.add(new AjaxButton("metFitRegistratieGunstig", form)
 		{
 			@Override
 			public void onSubmit(AjaxRequestTarget target)
 			{
-				var test = colonTestService.maakHuidigeIFobtOntvangenEnGunstig(form.getModelObject());
-				info("Deze Client heeft nu een FIT teruggestuurd! Status Ifobttest is " + test.getStatus() + " met normwaarde: " + test.getNormWaarde() + " met uitslag: "
-					+ test.getUitslag());
+				var fitRegistratie = colonTestService.maakHuidigeFitOntvangenEnGunstig(form.getModelObject());
+				info("Deze Client heeft nu een FIT teruggestuurd! Status FIT Registratie is " + fitRegistratie.getStatus() + " met normwaarde: " + fitRegistratie.getNormWaarde()
+					+ " met uitslag: "
+					+ fitRegistratie.getUitslag());
 			}
 
 		});
@@ -240,34 +242,34 @@ public class ColonTestProcesPage extends TestenBasePage
 			}
 		});
 
-		form.add(new AjaxButton("HuidigeIFOBTvoorRapelDatum", form)
+		form.add(new AjaxButton("HuidigeFitRegistratieVoorHerinneringsdatum", form)
 		{
 			@Override
 			public void onSubmit(AjaxRequestTarget target)
 			{
-				colonTestService.huidigeIFOBTvoorRapelDatum(form.getModelObject());
+				colonTestService.huidigeFitVoorHerinneringDatum(form.getModelObject());
 				info("De huidige datum van FIT is voor de rapel datum gezet");
 			}
 
 		});
 
-		form.add(new AjaxButton("VerlorenIfobtKrijgtUitslagGunstig", form)
+		form.add(new AjaxButton("VerlorenFitRegistratieKrijgtUitslagGunstig", form)
 		{
 			@Override
 			public void onSubmit(AjaxRequestTarget target)
 			{
-				var ifobt = colonTestService.zetVelorenIfobt(form.getModelObject(), Boolean.TRUE, Boolean.TRUE);
+				var ifobt = colonTestService.zetVerlorenFit(form.getModelObject(), Boolean.TRUE, Boolean.TRUE);
 				info("FIT heeft een uitslag gekregen! Status: " + ifobt.getStatus().name());
 			}
 
 		});
 
-		form.add(new AjaxButton("VerlorenIfobtKrijgtUitslagOngunstig", form)
+		form.add(new AjaxButton("VerlorenFitRegistratieKrijgtUitslagOngunstig", form)
 		{
 			@Override
 			public void onSubmit(AjaxRequestTarget target)
 			{
-				var ifobt = colonTestService.zetVelorenIfobt(form.getModelObject(), Boolean.TRUE, Boolean.FALSE);
+				var ifobt = colonTestService.zetVerlorenFit(form.getModelObject(), Boolean.TRUE, Boolean.FALSE);
 				info("FIT heeft een uitslag gekregen! Status: " + ifobt.getStatus().name());
 			}
 
@@ -286,7 +288,7 @@ public class ColonTestProcesPage extends TestenBasePage
 				var clienten = testTimelineService.maakOfVindClienten(model);
 				var client = clienten.get(0);
 				testTimelineService.maakNieuweScreeningRonde(client, TestTimeLineDossierTijdstip.DAG_NA_UITNODIGING_KOPPELEN, ColonOnderzoeksVariant.STANDAARD);
-				int rapelDagen = preferenceService.getInteger(PreferenceKey.IFOBTRAPELPERIODE.name());
+				int rapelDagen = preferenceService.getInteger(PreferenceKey.COLON_HERINNERINGS_PERIODE.name());
 				testTimelineService.verzetDossierAchteruitInTijd(client, rapelDagen);
 				info("Client klaar gezet voor rappeleren");
 			}

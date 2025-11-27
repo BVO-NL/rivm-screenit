@@ -44,7 +44,12 @@ public class MammaPlanningUtil
 
 	public static int minimumTijdvak(BigDecimal factor)
 	{
-
 		return factor.setScale(0, RoundingMode.HALF_DOWN).multiply(new BigDecimal(Constants.BK_TIJDVAK_MIN)).intValue();
+	}
+
+	public static int benodigdeMinutenVoorMindervalideAfspraak(BigDecimal factorMinderValide)
+	{
+
+		return minimumTijdvak(factorMinderValide);
 	}
 }

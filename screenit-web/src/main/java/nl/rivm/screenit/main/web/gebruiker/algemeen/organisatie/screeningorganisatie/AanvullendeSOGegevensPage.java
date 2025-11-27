@@ -43,7 +43,6 @@ import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.Organisatie;
-import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.ZASRetouradres;
 import nl.rivm.screenit.model.enums.Actie;
@@ -65,7 +64,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -99,9 +97,6 @@ public class AanvullendeSOGegevensPage extends OrganisatieBeheer
 	@SpringBean
 	private AutorisatieService autorisatieService;
 
-	@SpringBean(name = "applicationUrl")
-	private String applicationUrl;
-
 	public AanvullendeSOGegevensPage()
 	{
 		var organisatie = getCurrentSelectedOrganisatie();
@@ -123,18 +118,18 @@ public class AanvullendeSOGegevensPage extends OrganisatieBeheer
 			organisatie.setAntwoordnummerAdres(new Adres());
 		}
 
-		ScreenitForm<Organisatie> form = new ScreenitForm<>("form", model);
+		var form = new ScreenitForm<Organisatie>("form", model);
 		add(form);
 
-		OrganisatieType organisatieType = organisatie.getOrganisatieType();
-		Recht recht = organisatieType.getRecht();
+		var organisatieType = organisatie.getOrganisatieType();
+		var recht = organisatieType.getRecht();
 
-		Actie actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie, recht);
+		var actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie, recht);
 
-		boolean inzien = !isMinimumActie(actie, Actie.AANPASSEN);
-		SpecifiekeContactinformatiePanel contactinformatiePanel = new SpecifiekeContactinformatiePanel("specifiekeContactInformatie", model, inzien);
+		var inzien = !isMinimumActie(actie, Actie.AANPASSEN);
+		var contactinformatiePanel = new SpecifiekeContactinformatiePanel("specifiekeContactInformatie", model, inzien);
 		form.add(contactinformatiePanel);
-		PercentageIntegerField percentageIntegerField = new PercentageIntegerField("ifobtRetourPercentage", new PropertyModel<Integer>(model, "ifobtRetourPercentage"), 1);
+		var percentageIntegerField = new PercentageIntegerField("fitRetourPercentage", new PropertyModel<Integer>(model, "fitRetourPercentage"), 1);
 		percentageIntegerField.setEnabled(!inzien);
 		form.add(percentageIntegerField);
 
@@ -149,27 +144,27 @@ public class AanvullendeSOGegevensPage extends OrganisatieBeheer
 		form.add(new UploadOrganisatieImageFormComponent("rcmdlSign", model, UploadOrganisatieImageType.DK_SO_RCMDL).setEnabled(!inzien));
 		form.add(new UploadOrganisatieImageFormComponent("kwaliteitslogo", model, UploadOrganisatieImageType.DK_SO_KWALITEITS_LOGO).setEnabled(!inzien));
 
-		WebMarkupContainer bkGroep = new WebMarkupContainer("borstkankerGegevens");
+		var bkGroep = new WebMarkupContainer("borstkankerGegevens");
 		form.add(bkGroep);
 		bkGroep.add(new GekoppeldeCeBeSePanel("ceBeSeOverzicht", model));
 		bkGroep.setVisible(ScreenitSession.get().getOnderzoeken().contains(Bevolkingsonderzoek.MAMMA));
 
-		FormComponent<String> ibanField = ComponentHelper.addTextField(form, "iban", true, 34, inzien);
+		var ibanField = ComponentHelper.addTextField(form, "iban", true, 34, inzien);
 		ibanField.add(new ScreenITIBANValidator());
 		ComponentHelper.addTextField(form, "ibanTenaamstelling", true, 70, inzien);
 
-		List<Gemeente> allNietGekoppeldeGemeentes = gemeenteService.getNietOfAanScreeningsOrganisatieGekoppeldGemeentes((ScreeningOrganisatie) model.getObject());
+		var allNietGekoppeldeGemeentes = gemeenteService.getNietOfAanScreeningsOrganisatieGekoppeldGemeentes((ScreeningOrganisatie) model.getObject());
 
-		SimpleListHibernateModel<Gemeente> choices = new SimpleListHibernateModel<>(allNietGekoppeldeGemeentes);
-		ChoiceRenderer<Gemeente> choiceRenderer = new ChoiceRenderer<Gemeente>("naam", "code")
+		var choices = new SimpleListHibernateModel<Gemeente>(allNietGekoppeldeGemeentes);
+		var choiceRenderer = new ChoiceRenderer<Gemeente>("naam", "code")
 		{
 			@Override
 			public Object getDisplayValue(Gemeente object)
 			{
-				Object gemeente = super.getDisplayValue(object);
+				var gemeente = super.getDisplayValue(object);
 				if (object.getCode() != null)
 				{
-					StringBuilder sb = new StringBuilder();
+					var sb = new StringBuilder();
 					sb.append(gemeente);
 					sb.append(" (");
 					sb.append(object.getCode());
@@ -181,10 +176,9 @@ public class AanvullendeSOGegevensPage extends OrganisatieBeheer
 					return gemeente;
 				}
 			}
-
 		};
 
-		final PingPongInput<Gemeente> gemeentes = new PingPongInput<Gemeente>("gemeentes", new PropertyModel<List<Gemeente>>(model, "gemeentes"), choices, choiceRenderer)
+		final var gemeentes = new PingPongInput<Gemeente>("gemeentes", new PropertyModel<List<Gemeente>>(model, "gemeentes"), choices, choiceRenderer)
 		{
 			@Override
 			public IModel<Gemeente> model(Gemeente object)
@@ -204,16 +198,15 @@ public class AanvullendeSOGegevensPage extends OrganisatieBeheer
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				ScreeningOrganisatie screeningOrganisatie = (ScreeningOrganisatie) model.getObject();
+				var screeningOrganisatie = (ScreeningOrganisatie) model.getObject();
 				organisatieService.saveOrUpdateScreeningOrganisatie(screeningOrganisatie, gemeentes.getChoices().getObject(),
 					getIngelogdeOrganisatieMedewerker());
 				BasePage.markeerFormulierenOpgeslagen(target);
 				this.info("Gegevens zijn succesvol opgeslagen");
 			}
-
 		});
 
-		AjaxLink<Medewerker> annuleren = new AjaxLink<Medewerker>("annuleren")
+		var annuleren = new AjaxLink<Medewerker>("annuleren")
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target)
@@ -227,15 +220,15 @@ public class AanvullendeSOGegevensPage extends OrganisatieBeheer
 	private void addBmhkLabRetouradressen(ScreenitForm<Organisatie> form, Organisatie organisatie, boolean inzien)
 	{
 		IModel<List<ZASRetouradres>> retouradressenModel = new PropertyModel<List<ZASRetouradres>>(getDefaultModel(), "retouradressen");
-		List<ZASRetouradres> retouradressen = retouradressenModel.getObject();
+		var retouradressen = retouradressenModel.getObject();
 
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("actief", true);
-		List<BMHKLaboratorium> labs = hibernateService.getByParameters(BMHKLaboratorium.class, parameters);
-		for (BMHKLaboratorium lab : labs)
+		var labs = hibernateService.getByParameters(BMHKLaboratorium.class, parameters);
+		for (var lab : labs)
 		{
-			boolean found = false;
-			for (ZASRetouradres retouradres : retouradressen)
+			var found = false;
+			for (var retouradres : retouradressen)
 			{
 				if (retouradres.getLaboratorium().equals(lab))
 				{
@@ -245,14 +238,14 @@ public class AanvullendeSOGegevensPage extends OrganisatieBeheer
 			}
 			if (!found)
 			{
-				ZASRetouradres retouradres = new ZASRetouradres();
+				var retouradres = new ZASRetouradres();
 				retouradres.setLaboratorium(lab);
 				retouradres.setAdres(new Adres());
 				retouradres.setRegio((ScreeningOrganisatie) HibernateHelper.deproxy(organisatie));
 				retouradressen.add(retouradres);
 			}
 		}
-		ListView<ZASRetouradres> retouradressenView = new ListView<ZASRetouradres>("retouradressen", retouradressenModel)
+		var retouradressenView = new ListView<ZASRetouradres>("retouradressen", retouradressenModel)
 		{
 			@Override
 			protected void populateItem(ListItem<ZASRetouradres> item)
@@ -264,9 +257,8 @@ public class AanvullendeSOGegevensPage extends OrganisatieBeheer
 				ComponentHelper.newPostcodeTextField(item, "adres.postcode", false, inzien);
 				ComponentHelper.addTextField(item, "adres.plaats", false, 30, inzien);
 			}
-
 		};
-		boolean isBMHK = ScreenitSession.get().getOnderzoeken().contains(Bevolkingsonderzoek.CERVIX);
+		var isBMHK = ScreenitSession.get().getOnderzoeken().contains(Bevolkingsonderzoek.CERVIX);
 		retouradressenView.setVisible(isBMHK);
 		form.add(retouradressenView);
 	}

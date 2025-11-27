@@ -24,8 +24,8 @@ package nl.rivm.screenit.service;
 import java.time.LocalDate;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.model.cervix.CervixZasHoudbaarheid;
-import nl.rivm.screenit.model.colon.IFOBTVervaldatum;
+import nl.rivm.screenit.model.cervix.CervixHoudbaarheidZasReeks;
+import nl.rivm.screenit.model.colon.ColonHoudbaarheidFitReeks;
 
 public interface BaseHoudbaarheidService
 {
@@ -33,9 +33,9 @@ public interface BaseHoudbaarheidService
 
 	boolean isFitHoudbaar(String barcode);
 
-	IFOBTVervaldatum getFitHoudbaarheidVoor(String barcode);
+	ColonHoudbaarheidFitReeks getFitHoudbaarheidVoor(String barcode);
 
-	CervixZasHoudbaarheid getZasHoudbaarheidVoor(String barcode);
+	CervixHoudbaarheidZasReeks getZasHoudbaarheidVoor(String barcode);
 
 	LocalDate getMinstensHoudbaarTotMet(LocalDate vandaag, PreferenceKey minimaleHoudbaarheidMonstersVoorControleKey);
 }

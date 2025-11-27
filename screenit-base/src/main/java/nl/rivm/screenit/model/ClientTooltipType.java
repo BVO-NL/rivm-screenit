@@ -30,7 +30,7 @@ public enum ClientTooltipType
 
 	STATUS,
 
-	NIEUWE_IFOBT_AANVRAGEN,
+	COLON_AANVRAGEN_NIEUWE_FIT,
 
 	GBA_ADRES,
 

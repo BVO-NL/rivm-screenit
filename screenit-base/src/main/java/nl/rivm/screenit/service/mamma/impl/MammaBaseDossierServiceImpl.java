@@ -386,8 +386,6 @@ public class MammaBaseDossierServiceImpl implements MammaBaseDossierService
 				dossier.setDeelnamekans(null);
 			}
 
-			baseIlmService.verwijderIlmBezwaarPogingen(dossier);
-
 			opruimenDossier(dossier);
 
 			if (alleAfmeldingen)

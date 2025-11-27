@@ -23,6 +23,9 @@ package nl.rivm.screenit.batch.jobs.colon.gunstigeuitslag.gunstigestep;
 
 import java.util.List;
 
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
@@ -31,26 +34,23 @@ import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonDossier_;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie_;
+import nl.rivm.screenit.model.colon.ColonFitType;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
-import nl.rivm.screenit.model.colon.IFOBTTest;
-import nl.rivm.screenit.model.colon.IFOBTTest_;
-import nl.rivm.screenit.model.colon.IFOBTType;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
+import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.algemeen.ClientSpecification;
 import nl.rivm.screenit.specification.algemeen.DossierSpecification;
-import nl.rivm.screenit.specification.colon.ColonFITSpecification;
+import nl.rivm.screenit.specification.colon.ColonFitRegistratieSpecification;
 import nl.rivm.screenit.specification.colon.ColonScreeningRondeSpecification;
 import nl.rivm.screenit.specification.colon.ColonUitnodigingSpecification;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
@@ -68,9 +68,9 @@ public class GunstigeUitslagBriefReader extends BaseSpecificationScrollableResul
 			return ClientSpecification.heeftActieveClient()
 				.and(DossierSpecification.heeftStatus(DossierStatus.ACTIEF).with(Client_.colonDossier))
 				.and(ColonUitnodigingSpecification.heeftUitgesteldeUitslagDatumVoorOfOp(currentDateSupplier.getDate()).with(r -> uitnodigingJoin(r)))
-				.and(ColonFITSpecification.heeftFitType(IFOBTType.GOLD).with(r -> fitJoin(r)))
-				.and(ColonFITSpecification.heeftStatus(IFOBTTestStatus.UITGEVOERD).with(r -> fitJoin(r)))
-				.and(ColonFITSpecification.heeftGunstigeUitslag().with(r -> fitJoin(r)))
+				.and(ColonFitRegistratieSpecification.heeftFitType(ColonFitType.GOLD).with(r -> fitJoin(r)))
+				.and(ColonFitRegistratieSpecification.heeftStatus(ColonFitRegistratieStatus.UITGEVOERD).with(r -> fitJoin(r)))
+				.and(ColonFitRegistratieSpecification.heeftGunstigeUitslag().with(r -> fitJoin(r)))
 				.and(ColonScreeningRondeSpecification.heeftGeenBriefVanTypeIn(List.of(BriefType.COLON_UITNODIGING_INTAKE, BriefType.COLON_GUNSTIGE_UITSLAG))
 					.with(r -> laatsteScreeningRondeJoin(r)));
 		}
@@ -83,12 +83,12 @@ public class GunstigeUitslagBriefReader extends BaseSpecificationScrollableResul
 
 	private From<?, ? extends ColonUitnodiging> uitnodigingJoin(From<?, ? extends Client> r)
 	{
-		return join(fitJoin(r), IFOBTTest_.colonUitnodiging);
+		return join(fitJoin(r), ColonFitRegistratie_.uitnodiging);
 	}
 
-	private From<?, ? extends IFOBTTest> fitJoin(From<?, ? extends Client> r)
+	private From<?, ? extends ColonFitRegistratie> fitJoin(From<?, ? extends Client> r)
 	{
-		return join(laatsteScreeningRondeJoin(r), ColonScreeningRonde_.ifobtTesten);
+		return join(laatsteScreeningRondeJoin(r), ColonScreeningRonde_.fitRegistraties);
 	}
 
 	private static Join<ColonDossier, ColonScreeningRonde> laatsteScreeningRondeJoin(From<?, ? extends Client> r)

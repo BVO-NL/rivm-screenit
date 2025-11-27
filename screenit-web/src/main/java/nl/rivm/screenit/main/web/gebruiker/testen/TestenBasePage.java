@@ -343,7 +343,7 @@ public class TestenBasePage extends MedewerkerBasePage
 	{
 		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
 		contextMenuItems.add(new MedewerkerMenuItem("menu.testen.bmhk.hpvbericht", TestHpvBerichtPage.class));
-		contextMenuItems.add(new MedewerkerMenuItem("menu.testen.colon.ifobtbericht", TestHL7BerichtPage.class));
+		contextMenuItems.add(new MedewerkerMenuItem("menu.testen.colon.hl7bericht", TestHL7BerichtPage.class));
 		contextMenuItems.add(new MedewerkerMenuItem("menu.postcode.testen.tools", TestPostcodePage.class));
 		contextMenuItems.add(new MedewerkerMenuItem("menu.barcode.testen.tools", TestBarcodePage.class));
 		contextMenuItems.add(new MedewerkerMenuItem("menu.testen.preferences", TestPreferencesPage.class));

@@ -40,7 +40,7 @@ import nl.rivm.screenit.batch.jobs.helpers.BaseTypedScrollableResultReader;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.colon.ClientCategorieEntry;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.repository.algemeen.GemeenteRepository;
 import nl.rivm.screenit.repository.impl.FluentJpaQueryImpl;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -77,9 +77,9 @@ public abstract class AbstractUitnodigingPushReader<T> extends BaseTypedScrollab
 	@Autowired
 	protected ICurrentDateSupplier currentDateSupplier;
 
-	private final ColonUitnodigingCategorie categorie;
+	private final ColonUitnodigingscategorie categorie;
 
-	protected AbstractUitnodigingPushReader(ColonUitnodigingCategorie categorie)
+	protected AbstractUitnodigingPushReader(ColonUitnodigingscategorie categorie)
 	{
 		this.categorie = categorie;
 	}
@@ -141,7 +141,7 @@ public abstract class AbstractUitnodigingPushReader<T> extends BaseTypedScrollab
 		ExtendedSpecification<Client> specification;
 		var vandaag = currentDateSupplier.getLocalDate();
 		var peildatum = getPeildatum();
-		if (categorie == ColonUitnodigingCategorie.U2)
+		if (categorie == ColonUitnodigingscategorie.U2)
 		{
 			specification = ColonUitnodigingBaseSpecification.u2Base(peildatum, vandaag, JoinType.INNER).with(r -> join(r, Client_.colonDossier));
 		}

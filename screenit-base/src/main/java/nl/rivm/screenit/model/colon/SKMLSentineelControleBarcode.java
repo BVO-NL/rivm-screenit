@@ -28,7 +28,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 
-import nl.rivm.screenit.model.colon.enums.IFOBTUitslagType;
+import nl.rivm.screenit.model.colon.enums.ColonFitAnalyseResultaatType;
 import nl.rivm.screenit.model.colon.enums.SKMLSentineelControleType;
 
 @Entity
@@ -45,7 +45,7 @@ public class SKMLSentineelControleBarcode extends SKMLControleBarcode
 	public SKMLSentineelControleBarcode()
 	{
 		super();
-		setType(IFOBTUitslagType.SENTINEEL);
+		setType(ColonFitAnalyseResultaatType.SENTINEEL);
 	}
 
 	public SKMLSentineelControleType getSentineelType()

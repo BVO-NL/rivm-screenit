@@ -44,7 +44,7 @@ import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.ColoscopieCentrumColonCapaciteitVerdeling;
 import nl.rivm.screenit.model.colon.UitnodigingsGebied;
 import nl.rivm.screenit.model.colon.dto.VrijSlot;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -432,7 +432,7 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 	}
 
 	@Override
-	public int bepaalProjectGroepPopulatie(long uitnodigingsGebiedId, ColonUitnodigingCategorie categorie, long projectGroupId, Integer minimaleLeeftijd, Integer maximaleLeeftijd)
+	public int bepaalProjectGroepPopulatie(long uitnodigingsGebiedId, ColonUitnodigingscategorie categorie, long projectGroupId, Integer minimaleLeeftijd, Integer maximaleLeeftijd)
 	{
 		int maxAantalClienten = 0;
 		UitnodigingsGebied uitnodigingsGebied = hibernateService.load(UitnodigingsGebied.class, uitnodigingsGebiedId);
@@ -446,7 +446,7 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 
 		Specification<Client> specification;
 		var vandaag = currentDateSupplier.getLocalDate();
-		if (categorie == ColonUitnodigingCategorie.U2)
+		if (categorie == ColonUitnodigingscategorie.U2)
 		{
 			specification = getSpecificationU2(minimaleLeeftijd, maximaleLeeftijd, vandaag, uitnodigingsGebied, projectGroupId, null, vandaag);
 		}

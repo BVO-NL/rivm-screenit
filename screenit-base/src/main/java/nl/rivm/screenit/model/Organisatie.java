@@ -146,7 +146,7 @@ public class Organisatie extends AbstractHibernateObject implements IActief
 	@NotAudited
 	private List<AfgeslotenOrganisatieOvereenkomst> afgeslotenOvereenkomsten;
 
-	@Column(nullable = true)
+	@Column
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date mammaRadiologieGebeld;
 

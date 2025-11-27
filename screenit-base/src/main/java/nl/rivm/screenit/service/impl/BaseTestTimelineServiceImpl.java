@@ -87,7 +87,7 @@ public class BaseTestTimelineServiceImpl implements BaseTestTimelineService
 	@Override
 	public void rekenObjectTerug(List<? extends HibernateObject> objecten, int aantalDagen)
 	{
-		if (objecten == null) 
+		if (objecten == null)
 		{
 			return;
 		}

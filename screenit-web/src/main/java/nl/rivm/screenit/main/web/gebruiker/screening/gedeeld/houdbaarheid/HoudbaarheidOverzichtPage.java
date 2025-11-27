@@ -67,7 +67,7 @@ public abstract class HoudbaarheidOverzichtPage<H extends AbstractHoudbaarheid> 
 			@Override
 			protected boolean isRowClickable(IModel<H> model)
 			{
-				return ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_IFOBT_BATCH, Actie.AANPASSEN) ||
+				return ScreenitSession.get().checkPermission(Recht.COLON_BEHEER_HOUDBAARHEID_FIT_REEKSEN, Actie.AANPASSEN) ||
 					ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_ZAS_BATCH, Actie.AANPASSEN);
 			}
 		});
@@ -87,7 +87,7 @@ public abstract class HoudbaarheidOverzichtPage<H extends AbstractHoudbaarheid> 
 			protected void onConfigure()
 			{
 				super.onConfigure();
-				setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_IFOBT_BATCH, Actie.TOEVOEGEN) ||
+				setVisible(ScreenitSession.get().checkPermission(Recht.COLON_BEHEER_HOUDBAARHEID_FIT_REEKSEN, Actie.TOEVOEGEN) ||
 					ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_ZAS_BATCH, Actie.TOEVOEGEN));
 			}
 

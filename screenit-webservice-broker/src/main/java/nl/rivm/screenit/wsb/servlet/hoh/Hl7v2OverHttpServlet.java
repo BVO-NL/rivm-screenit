@@ -23,7 +23,7 @@ package nl.rivm.screenit.wsb.servlet.hoh;
 
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.handler.ColonFITHL7v251Handler;
+import nl.rivm.screenit.handler.ColonFitHl7v251Handler;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.ApplicationException;
@@ -52,7 +52,7 @@ public class Hl7v2OverHttpServlet extends HohRawServlet
 		public IResponseSendable<String> messageReceived(IReceivable<String> theReceived)
 			throws UnsupportedOperationException
 		{
-			var fithl7v251Handler = new ColonFITHL7v251Handler(OUL_R22.class);
+			var fithl7v251Handler = new ColonFitHl7v251Handler(OUL_R22.class);
 			var incomingRawMsg = theReceived.getMessage();
 			String ack;
 			try

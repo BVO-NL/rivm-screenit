@@ -262,8 +262,8 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void resetWachtOpStartProject(Bevolkingsonderzoek bvo)
 	{
-		var sql = "update %s.%s set wacht_op_start_project = false where wacht_op_start_project = true or wacht_op_start_project is null".formatted(
-			getSchema(bvo), getDossierTable(bvo));
+		var sql = "update %s.dossier set wacht_op_start_project = false where wacht_op_start_project = true or wacht_op_start_project is null".formatted(
+			getSchema(bvo));
 		var query = getSession().createNativeQuery(sql);
 		var aantal = query.executeUpdate();
 		LOG.debug("Aantal gereset {}", aantal);
@@ -273,11 +273,11 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void setNieuwWachtOpStartProject(Bevolkingsonderzoek bvo, Date nu)
 	{
-		var sql = ("update %s.%s set wacht_op_start_project = true WHERE id in "
+		var sql = ("update %s.dossier set wacht_op_start_project = true WHERE id in "
 			+ "(select dossier_.id as y0_ " +
 			"from gedeeld.project_client projectClient_ " +
 			"inner join gedeeld.client client_ on projectClient_.client=client_.id " +
-			"inner join %s.%s dossier_ on client_.%s=dossier_.id " +
+			"inner join %s.dossier dossier_ on client_.%s=dossier_.id " +
 			"inner join gedeeld.project_groep groep1_ on projectClient_.groep=groep1_.id " +
 			"inner join algemeen.project project2_ on groep1_.project=project2_.id " +
 			"inner join algemeen.project_bevolkingsonderzoeken projectBevolkingsonderzoeken3_ on project2_.id=projectBevolkingsonderzoeken3_.project " +
@@ -285,7 +285,7 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 			"and (project2_.start_datum>:startDatum or (project2_.eind_datum>:eindDatum and groep1_.actief=false)) " +
 			"and projectClient_.actief=true " +
 			"and projectBevolkingsonderzoeken3_.bevolkingsonderzoeken='%s')").formatted(
-			getSchema(bvo), getDossierTable(bvo), getSchema(bvo), getDossierTable(bvo), getJoinColumn(bvo), bvo.name());
+			getSchema(bvo), getSchema(bvo), getJoinColumn(bvo), bvo.name());
 		var query = getSession().createNativeQuery(sql);
 		query.setParameter("startDatum", nu, Date.class);
 		query.setParameter("eindDatum", nu, Date.class);
@@ -303,21 +303,6 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 			return "colon";
 		case MAMMA:
 			return "mamma";
-		default:
-			throw new IllegalStateException();
-		}
-	}
-
-	private String getDossierTable(Bevolkingsonderzoek bvo)
-	{
-		switch (bvo)
-		{
-		case CERVIX:
-			return "dossier";
-		case COLON:
-			return "colon_dossier";
-		case MAMMA:
-			return "dossier";
 		default:
 			throw new IllegalStateException();
 		}

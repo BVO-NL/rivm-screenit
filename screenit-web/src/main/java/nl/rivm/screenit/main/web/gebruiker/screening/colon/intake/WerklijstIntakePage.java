@@ -402,7 +402,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 					var isTermijnVerlopen =
 						conclusie != null && !dateSupplier.getLocalDate().minusMonths(handmatigInvoerenTermijn).isBefore(DateUtil.toLocalDate(conclusie.getDatum()));
 					var conclusieColoscopie = conclusie != null && conclusie.getType().equals(ColonConclusieType.COLOSCOPIE);
-					var isLaatsteRonde = afspraak.getColonScreeningRonde().equals(afspraak.getClient().getColonDossier().getLaatsteScreeningRonde());
+					var isLaatsteRonde = afspraak.getScreeningRonde().equals(afspraak.getClient().getColonDossier().getLaatsteScreeningRonde());
 
 					if (isTermijnVerlopen && conclusieColoscopie && isLaatsteRonde)
 					{
@@ -435,7 +435,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 
 	private MdlVerslag zoekOfMaakMdlVerslag(ColonIntakeAfspraak afspraak)
 	{
-		var ronde = afspraak.getColonScreeningRonde();
+		var ronde = afspraak.getScreeningRonde();
 
 		return verwerkVerslagService.getMdlVerslagUitRonde(ronde).orElseGet(() -> verwerkVerslagService.maakMdlVerslagVoorAfspraak(afspraak));
 	}
@@ -454,7 +454,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 			private String getBriefAfgedrukt(IModel<ColonIntakeAfspraak> rowModel)
 			{
 				String briefAfgedrukt = "";
-				ColonScreeningRonde ronde = rowModel.getObject().getColonScreeningRonde();
+				ColonScreeningRonde ronde = rowModel.getObject().getScreeningRonde();
 				if (ronde != null)
 				{
 					ClientBrief<?, ?, ?> laatsteBrief = null;
@@ -514,10 +514,10 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 			{
 				String huisarts = "";
 
-				ColonScreeningRonde ronde = rowModel.getObject().getColonScreeningRonde();
-				if (ronde != null && ronde.getColonHuisarts() != null)
+				ColonScreeningRonde ronde = rowModel.getObject().getScreeningRonde();
+				if (ronde != null && ronde.getHuisarts() != null)
 				{
-					huisarts = NaamUtil.getNaamHuisarts(ronde.getColonHuisarts());
+					huisarts = NaamUtil.getNaamHuisarts(ronde.getHuisarts());
 				}
 
 				return new Model<>(huisarts);

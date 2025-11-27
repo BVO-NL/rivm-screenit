@@ -74,9 +74,9 @@ public class ColonHuisartsServiceImpl implements ColonHuisartsService
 				melding = "Huisarts verwijderd";
 			}
 
-			ronde.setColonHuisarts(huisarts);
+			ronde.setHuisarts(huisarts);
 			boolean diffColonHuisarts = StringUtils
-				.isNotBlank(EntityAuditUtil.getDiffFieldsToLatestVersion(ronde, hibernateService.getHibernateSession(), "colonHuisarts"));
+				.isNotBlank(EntityAuditUtil.getDiffFieldsToLatestVersion(ronde, hibernateService.getHibernateSession(), "huisarts"));
 
 			if (diffColonHuisarts)
 			{
@@ -121,7 +121,7 @@ public class ColonHuisartsServiceImpl implements ColonHuisartsService
 	{
 		if (ronde != null)
 		{
-			EnovationHuisarts huisarts = ronde.getColonHuisarts();
+			EnovationHuisarts huisarts = ronde.getHuisarts();
 			if (huisarts != null && !huisarts.isVerwijderd())
 			{
 				return huisarts;

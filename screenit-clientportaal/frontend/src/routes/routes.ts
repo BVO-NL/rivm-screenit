@@ -220,7 +220,7 @@ const routes: RouteDef[] = [
 		name: "Nieuwe ontlastingstest aanvragen",
 		component: ColonFitAanvragenPage,
 		bvo: Bevolkingsonderzoek.COLON,
-		requiredContactActions: [ClientContactActieType.COLON_AANVRAGEN_NIEUWE_IFOBT],
+		requiredContactActions: [ClientContactActieType.COLON_AANVRAGEN_NIEUWE_FIT],
 		redirectPage: "/colon/",
 	},
 	{

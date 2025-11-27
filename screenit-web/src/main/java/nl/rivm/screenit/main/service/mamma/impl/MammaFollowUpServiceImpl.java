@@ -397,7 +397,7 @@ public class MammaFollowUpServiceImpl implements MammaFollowUpService
 		if (MammaFollowUpConclusieStatus.TRUE_NEGATIVE == screeningRonde.getFollowUpConclusieStatus())
 		{
 			getAfgerondeFollowUpPathologieVerslagen(screeningRonde).stream()
-				.filter(verslagService::isElektronischPalgaVerslag)
+				.filter(verslagService::isDigitaalPalgaVerslag)
 				.forEach(verslag -> verslagService.verwijderVerslag(verslag, null, false));
 		}
 	}

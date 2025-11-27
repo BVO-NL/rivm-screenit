@@ -41,21 +41,21 @@ public enum PreferenceKey
 
 	UITNODIGINGSINTERVAL("Spreidingsperiode (interval)", Integer.class),
 
-	IFOBTRETOURPERIODE("FIT retour-periode", Integer.class),
+	COLON_FIT_RETOUR_PERIODE("FIT retour-periode", Integer.class),
 
-	IFOBTRAPELPERIODE("FIT herinnering-periode", Integer.class),
+	COLON_HERINNERINGS_PERIODE("FIT herinnering-periode", Integer.class),
 
-	IFOBTANALYSEPERIODE("FIT analyse-periode", Integer.class),
+	COLON_FIT_ANALYSE_PERIODE("FIT analyse-periode", Integer.class),
 
 	INTAKEAFSPRAAKPERIODE("Intake afspraak-periode", Integer.class),
 
-	PERCENTGAGEIFOBTONGUSTIG("FIT ongunstig percentage", Double.class),
+	COLON_FIT_ONGUNSTIG_PERCENTAGE("FIT ongunstig percentage", Double.class),
 
-	PERCENTAGEIFOBTRETOUR("FIT retour percentage", Double.class),
+	COLON_FIT_RETOUR_PERCENTAGE("FIT retour percentage", Double.class),
 
-	WAARSCHUWINGAANTALIFOBTS("Waarschuwingslimiet aantal FIT's", Integer.class),
+	COLON_AANTAL_FITS_WAARSCHUWING("Waarschuwingslimiet aantal FIT's", Integer.class),
 
-	MAXIMUMAANTALIFOBTS("Maximale aantal FIT's", Integer.class),
+	COLON_MAX_AANTAL_FITS("Maximale aantal FIT's", Integer.class),
 
 	WACHTWOORDEMAIL("Wachtwoordaanvragen e-mail", String.class),
 
@@ -95,9 +95,9 @@ public enum PreferenceKey
 
 	WACHTWOORD_VERLOOPT_HERINNERINGS_TERMIJN("Herinneringstermijn voor wachtwoord verloopt", Integer.class),
 
-	IFOBT_NORM_WAARDE("FIT norm waarde", Double.class),
+	COLON_FIT_NORM_WAARDE("FIT norm waarde", Double.class),
 
-	IFOBT_DETECTIEGRENS("FIT detectiegrens", Double.class),
+	COLON_FIT_DETECTIE_GRENS("FIT detectiegrens", Double.class),
 
 	ONGUNSTIG_TEKST_HUISARTS("Ongunstige tekst huisarts", String.class),
 
@@ -137,7 +137,7 @@ public enum PreferenceKey
 
 	HUISARTS_NO_SHOW_PERIODE("Huisarts bericht op no show", Integer.class),
 
-	PERIODE_MINIMALE_HOUDBAARHEID_IFOBT_MONSTERS_VOOR_CONTROLE("Periode minimale houdbaarheid FIT monsters voor controle", Integer.class),
+	COLON_PERIODE_MINIMALE_HOUDBAARHEID_FIT_MONSTERS_VOOR_CONTROLE("Periode minimale houdbaarheid FIT monsters voor controle", Integer.class),
 
 	PERIODE_MINIMALE_HOUDBAARHEID_ZAS_MONSTERS_VOOR_CONTROLE("Periode minimale houdbaarheid ZAS bij verzending inpakcentrum", Integer.class),
 

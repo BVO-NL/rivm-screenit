@@ -38,8 +38,6 @@ import org.apache.wicket.validation.validator.RangeValidator;
 public class ColonPrimaireParametersPanel extends BasePrimaireParametersPanel
 {
 
-	private static final long serialVersionUID = 1L;
-
 	public ColonPrimaireParametersPanel(String id, Model<Parameterisatie> model)
 	{
 		super(id, model);
@@ -52,16 +50,16 @@ public class ColonPrimaireParametersPanel extends BasePrimaireParametersPanel
 		form.add(new TextField<>("uitnodigingsinterval", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
 		form.add(new TextField<>("vooraankondiginsperiode", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
 		form.add(new TextField<>("colonVooraankondigingNaVervolgonderzoek", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
-		form.add(createDoubleTextField("percentgageifobtongustig").setRequired(true).add(new RangeValidator<>(0.01, 100.0)));
-		form.add(createDoubleTextField("percentageifobtretour").setRequired(true).add(new RangeValidator<>(0.01, 100.0)));
+		form.add(createDoubleTextField("colonFitOngunstigPercentage").setRequired(true).add(new RangeValidator<>(0.01, 100.0)));
+		form.add(createDoubleTextField("colonFitRetourPercentage").setRequired(true).add(new RangeValidator<>(0.01, 100.0)));
 		form.add(new TextField<>("intakeafspraakperiode", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
-		form.add(new TextField<>("ifobtanalyseperiode", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
-		form.add(new TextField<>("waarschuwingaantalifobts", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
-		form.add(new TextField<>("maximumaantalifobts", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
-		form.add(new TextField<>("ifobtrapelperiode", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
-		form.add(new TextField<>("ifobtretourperiode", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
-		form.add(createDoubleTextField("ifobtNormWaarde").setRequired(true));
-		form.add(createDoubleTextField("ifobtDetectiegrens").setRequired(true));
+		form.add(new TextField<>("colonFitAnalysePeriode", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
+		form.add(new TextField<>("colonAantalFitsWaarschuwing", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
+		form.add(new TextField<>("colonMaxAantalFits", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
+		form.add(new TextField<>("colonHerinneringsPeriode", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
+		form.add(new TextField<>("colonFitRetourPeriode", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
+		form.add(createDoubleTextField("colonFitNormWaarde").setRequired(true));
+		form.add(createDoubleTextField("colonFitDetectieGrens").setRequired(true));
 		form.add(new TextField<>("minimaleLeeftijdColon", Integer.class).setRequired(true).add(RangeValidator.minimum(0)));
 		form.add(new TextField<>("maximaleLeeftijdColon", Integer.class).setRequired(true).add(RangeValidator.minimum(0)));
 		form.add(new TextField<>("ongunstigeUitslagWachtPeriode", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
@@ -76,7 +74,7 @@ public class ColonPrimaireParametersPanel extends BasePrimaireParametersPanel
 		form.add(new TextField<>("intakeNietWijzigbaar", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
 		form.add(new TextField<>("huisartsNoShowPeriode", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
 		form.add(new TextField<>("edifactadres", String.class).add(EmailAddressValidator.getInstance()).setRequired(false));
-		form.add(new TextField<>("periodeMinimaleHoudbaarheidIfobtMonstersVoorControle", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
+		form.add(new TextField<>("colonPeriodeMinimaleHoudbaarheidFitMonstersVoorControle", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
 		form.add(new TextField<>("wachttijdVerzendenPakketTweeOpEenAdres", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
 		form.add(new TextField<>("colonAantalRondesUitnodigingsbriefZonderFit", Integer.class).add(RangeValidator.minimum(1)).setRequired(true));
 		form.add(new TextField<>("colonSignaleringstermijnGeenCapaciteit", Integer.class).add(RangeValidator.minimum(1)).setRequired(true));
@@ -102,9 +100,6 @@ public class ColonPrimaireParametersPanel extends BasePrimaireParametersPanel
 	{
 		return new IndicatingAjaxSubmitLink("landelijkeParametersOpslaan")
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{

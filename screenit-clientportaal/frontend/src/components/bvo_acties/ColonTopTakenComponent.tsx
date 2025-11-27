@@ -85,7 +85,7 @@ const ColonTopTakenComponent = (props: ColonTopTakenComponentProps) => {
 								  link="/colon/huisarts/"
 								  titel={getString(properties.huisarts[props.getTekstHuisartsToptaak(huisartsHuidigeRondeIsBekend, huisartsVorigeRondeIsBekend)])}/>
 			</Col>}
-			{props.beschikbareActies.includes(ClientContactActieType.COLON_AANVRAGEN_NIEUWE_IFOBT) && <Col lg={4}>
+			{props.beschikbareActies.includes(ClientContactActieType.COLON_AANVRAGEN_NIEUWE_FIT) && <Col lg={4}>
 				<TopTaakComponent icon={<FitAanvragenIcon/>}
 								  link="/colon/fit/"
 								  titel={getString(properties.fit_aanvragen)}/>

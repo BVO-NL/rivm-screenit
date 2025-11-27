@@ -37,13 +37,13 @@ import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
+import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.service.colon.ColonVerwerkVerslagService;
 import nl.rivm.screenit.util.AfmeldingUtil;
 import nl.rivm.screenit.util.DateUtil;
-import nl.rivm.screenit.util.FITTestUtil;
+import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Service;
@@ -146,8 +146,8 @@ public class ColonVolgendeUitnodigingDatumTekstServiceImpl implements ColonVolge
 
 	private boolean heeftGunstigOfOngunstigeUitslagMetConclusie(ColonDossier dossier)
 	{
-		var heeftOngunstigeUitslag = FITTestUtil.heeftOngunstigeUitslagInLaatsteRonde(dossier);
-		var heeftGunstigeUitslag = FITTestUtil.heeftGunstigeUitslagInLaatsteRonde(dossier);
+		var heeftOngunstigeUitslag = ColonFitRegistratieUtil.heeftOngunstigeUitslagInLaatsteRonde(dossier);
+		var heeftGunstigeUitslag = ColonFitRegistratieUtil.heeftGunstigeUitslagInLaatsteRonde(dossier);
 
 		if (!heeftGunstigeUitslag && !heeftOngunstigeUitslag)
 		{
@@ -167,7 +167,7 @@ public class ColonVolgendeUitnodigingDatumTekstServiceImpl implements ColonVolge
 
 	private boolean heefOngunstigeUitslagZonderConclusie(ColonDossier dossier)
 	{
-		return FITTestUtil.heeftOngunstigeUitslagInLaatsteRonde(dossier) && !afspraakService.laatsteAfspraakHeeftDefinitieveIntakeconclusie(dossier.getClient());
+		return ColonFitRegistratieUtil.heeftOngunstigeUitslagInLaatsteRonde(dossier) && !afspraakService.laatsteAfspraakHeeftDefinitieveIntakeconclusie(dossier.getClient());
 	}
 
 	private boolean isEenmaligOfTijdelijkAfgemeld(ColonScreeningRonde screeningRonde)
@@ -199,7 +199,7 @@ public class ColonVolgendeUitnodigingDatumTekstServiceImpl implements ColonVolge
 
 	private boolean clientHeeftNogGeenFitIngestuurd(ColonDossier dossier)
 	{
-		return dossier.getLaatsteScreeningRonde().getIfobtTesten().stream().noneMatch(
-			fit -> fit.getStatus() != IFOBTTestStatus.ACTIEF);
+		return dossier.getLaatsteScreeningRonde().getFitRegistraties().stream().noneMatch(
+			fit -> fit.getStatus() != ColonFitRegistratieStatus.ACTIEF);
 	}
 }

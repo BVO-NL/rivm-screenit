@@ -67,7 +67,7 @@ public enum Recht implements INaam
 
 	MEDEWERKER_GBA_VERWERKING_VERSLAG("Gba verwerking", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA }),
 
-	MEDEWERKER_IFOBT_VERWERKING_VERSLAG("FIT verwerking", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }),
+	COLON_FIT_VERWERKING_VERSLAG_INZIEN("FIT verwerking", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }),
 
 	MEDEWERKER_BRIEVEN_VERWERKING_VERSLAG(
 		"Brieven genereren verwerking",
@@ -149,7 +149,7 @@ public enum Recht implements INaam
 
 		},
 
-	MEDEWERKER_BEHEER_GEBIEDEN_PERC_IFOBT_RETOUR(
+	COLON_BEHEER_GEBIEDEN_FIT_RETOUR_PERC(
 		"Beheer gebieden FIT retourpercentage",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON },
 		new ToegangLevel[] { ToegangLevel.REGIO, ToegangLevel.LANDELIJK },
@@ -158,7 +158,7 @@ public enum Recht implements INaam
 		Actie.TOEVOEGEN,
 		Actie.VERWIJDEREN),
 
-	MEDEWERKER_BEHEER_GEBIEDEN_PERC_ONGUNSTIGE_IFOBT(
+	COLON_BEHEER_GEBIEDEN_FIT_ONGUNSTIG_PERC(
 		"Beheer gebieden FIT ongunstigepercentage",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON },
 		new ToegangLevel[] { ToegangLevel.REGIO, ToegangLevel.LANDELIJK },
@@ -362,7 +362,7 @@ public enum Recht implements INaam
 
 	MEDEWERKER_CLIENT_SR_AANVRAAGFORMULIER_ONTVANGEN("Antwoordformulier cli\u00EBnt", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }),
 
-	MEDEWERKER_CLIENT_SR_UITSLAGIFOBTONTVANGEN("Uitslag FIT cli\u00EBnt", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }),
+	COLON_CLIENT_SR_FIT_ANALYSE_RESULTAAT_INZIEN("Uitslag FIT cli\u00EBnt", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }),
 
 	MEDEWERKER_CLIENT_SR_INTAKEAFSPRAAKGEMAAKT("Afspraak intake cli\u00EBnt", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }),
 
@@ -392,7 +392,7 @@ public enum Recht implements INaam
 
 	MEDEWERKER_CLIENT_SR_UITSLAGPATHOLOGIEONTVANGEN("Uitslag Pathologie cli\u00EBnt", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }),
 
-	MEDEWERKER_CLIENT_SR_NIEUWE_IFOBT_AANVRAGEN("Status cli\u00EBnt", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }),
+	COLON_CLIENT_SR_NIEUWE_FIT_AANVRAGEN("Status cli\u00EBnt", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }),
 
 	MEDEWERKER_CLIENT_SR_CONCLUSIE("Conclusie intake", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }),
 
@@ -444,7 +444,7 @@ public enum Recht implements INaam
 		"Verwerken ongeldige berichten",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA }),
 
-	MEDEWERKER_SCREENING_IFOBT_BATCH("FIT batch registratie", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }, new ToegangLevel[] { ToegangLevel.LANDELIJK }),
+	COLON_BEHEER_HOUDBAARHEID_FIT_REEKSEN("FIT reeks registratie", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }, new ToegangLevel[] { ToegangLevel.LANDELIJK }),
 
 	MEDEWERKER_SCREENING_INTAKE_WERKLIJST("Werklijst intake", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }),
 
@@ -567,19 +567,19 @@ public enum Recht implements INaam
 		Actie.AANPASSEN,
 		Actie.TOEVOEGEN),
 
-	MEDEWERKER_SCREENING_BEOORDELING_IFOBT(
+	COLON_KWALITEITSCONTROLE_FIT_ANALYSE_RESULTATEN_AANLEVERING(
 		"Beoordeling FIT",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON },
 		new ToegangLevel[] { ToegangLevel.LANDELIJK },
 		Actie.INZIEN),
 
-	MEDEWERKER_SCREENING_AUTORISATIE_IFOBT(
+	COLON_AUTORISATIE_FIT_ANALYSE_RESULTATEN_AANLEVERING(
 		"Autorisatie FIT",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON },
 		new ToegangLevel[] { ToegangLevel.ORGANISATIE },
 		Actie.AANPASSEN),
 
-	MEDEWERKER_SCREENING_VERWIJDEREN_BATCHES_IFOBT(
+	COLON_VERWIJDEREN_FIT_ANALYSE_RESULTATEN_AANLEVERING(
 		"Verwijderen batches FIT",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON },
 		new ToegangLevel[] { ToegangLevel.ORGANISATIE },

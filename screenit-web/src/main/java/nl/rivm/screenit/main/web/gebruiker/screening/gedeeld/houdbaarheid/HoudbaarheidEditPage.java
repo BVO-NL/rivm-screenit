@@ -49,7 +49,7 @@ public abstract class HoudbaarheidEditPage<H extends AbstractHoudbaarheid> exten
 	private HibernateService hibernateService;
 
 	@SpringBean
-	private HoudbaarheidService ifobtVervaldatumService;
+	private HoudbaarheidService houdbaarheidService;
 
 	@SpringBean
 	private ICurrentDateSupplier currentDateSupplier;
@@ -100,7 +100,7 @@ public abstract class HoudbaarheidEditPage<H extends AbstractHoudbaarheid> exten
 			{
 				var nu = currentDateSupplier.getLocalDateTime();
 				H vervalDatum = model.getObject();
-				if (ifobtVervaldatumService.overlaptBestaandeReeks(ModelProxyHelper.deproxy(vervalDatum)))
+				if (houdbaarheidService.overlaptBestaandeReeks(ModelProxyHelper.deproxy(vervalDatum)))
 				{
 					ScreenitSession.get().error(getString("error.overlappendereeks"));
 				}

@@ -101,7 +101,7 @@ public class ColonHuisartsWijzigenPanel extends AbstractClientContactActiePanel<
 		ColonScreeningRonde screeningRonde = colonScreeningRonde.getObject();
 		if (Boolean.TRUE.equals(huisartsBerichtenVerzenden.getObject())
 			&& BezwaarUtil.isBezwaarActiefVoor(screeningRonde.getDossier().getClient(), BezwaarType.GEEN_UITWISSELING_MET_DE_HUISARTS, Bevolkingsonderzoek.COLON)
-			&& screeningRonde.getColonHuisarts() != null)
+			&& screeningRonde.getHuisarts() != null)
 		{
 			opslaanMeldingen.add("Er is nog een bezwaar voor uitwisseling met de huisarts voor deze client actief. Huisartsbericht wordt niet verstuurd.");
 		}
@@ -115,7 +115,7 @@ public class ColonHuisartsWijzigenPanel extends AbstractClientContactActiePanel<
 		ColonScreeningRonde screeningRonde = colonScreeningRonde.getObject();
 
 		var isHuisartsGewijzigd = StringUtils.isNotBlank(
-			EntityAuditUtil.getDiffFieldsToLatestVersion(screeningRonde, hibernateService.getHibernateSession(), "colonHuisarts"));
+			EntityAuditUtil.getDiffFieldsToLatestVersion(screeningRonde, hibernateService.getHibernateSession(), "huisarts"));
 
 		if (!isHuisartsGewijzigd)
 		{

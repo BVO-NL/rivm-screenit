@@ -42,15 +42,15 @@ import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.ScreeningRonde_;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonDossier_;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie_;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.ColonVolgendeUitnodiging;
-import nl.rivm.screenit.model.colon.IFOBTTest;
-import nl.rivm.screenit.model.colon.IFOBTTest_;
 import nl.rivm.screenit.model.colon.UitnodigingsGebied;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
+import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.specification.ExtendedSpecification;
@@ -146,7 +146,7 @@ public class ColonUitnodigingBaseSpecification
 	{
 		return clientUitnodigingBase(null, null, peildatum, null)
 			.and(heeftGeenUitnodiging().or(isVerstuurd()).with(r -> laatsteUitnodigingJoin(r)))
-			.and(getFitStatusSpecifications(IFOBTTestStatus.NIETTEBEOORDELEN))
+			.and(getFitStatusSpecifications(ColonFitRegistratieStatus.NIETTEBEOORDELEN))
 			.and(heeftColonUitslagBrieven());
 	}
 
@@ -154,7 +154,7 @@ public class ColonUitnodigingBaseSpecification
 	{
 		return clientUitnodigingBase(null, null, peildatum, null)
 			.and(heeftGeenUitnodiging().or(isVerstuurd()).with(r -> laatsteUitnodigingJoin(r)))
-			.and(getFitStatusSpecifications(IFOBTTestStatus.VERLOREN))
+			.and(getFitStatusSpecifications(ColonFitRegistratieStatus.VERLOREN))
 			.and(heeftColonUitslagBrieven())
 			.and(ColonUitnodigingSpecification.heeftGeenRetourzendingReden().with(r -> fitUitnodigingJoin(r)))
 			.and(ColonUitnodigingSpecification.heeftGeenRetourzendingReden().with(r -> fitExtraUitnodigingJoin(r)));
@@ -164,7 +164,7 @@ public class ColonUitnodigingBaseSpecification
 	{
 		return clientUitnodigingBase(null, null, peildatum, null)
 			.and(heeftGeenUitnodiging().or(isVerstuurd()).with(r -> laatsteUitnodigingJoin(r)))
-			.and(getFitStatusSpecifications(IFOBTTestStatus.VERVALDATUMVERLOPEN))
+			.and(getFitStatusSpecifications(ColonFitRegistratieStatus.VERVALDATUMVERLOPEN))
 			.and(heeftColonUitslagBrieven());
 	}
 
@@ -181,12 +181,12 @@ public class ColonUitnodigingBaseSpecification
 		return specification;
 	}
 
-	private static ExtendedSpecification<Client> getFitStatusSpecifications(IFOBTTestStatus status)
+	private static ExtendedSpecification<Client> getFitStatusSpecifications(ColonFitRegistratieStatus status)
 	{
 		return ScreeningRondeSpecification.isLopend().with((From<?, ? extends Client> r) -> laatsteScreeningRondeJoin(r, INNER))
-			.and(ColonFITSpecification.heeftStatus(status).with(r -> laatsteFitJoin(r)))
-			.and(ColonFITSpecification.heeftGeenStatus()
-				.or(ColonFITSpecification.heeftStatusIn(List.of(IFOBTTestStatus.UNMUTABLE_EIND_STATUSSEN))).with(r -> laatsteFitExtraJoin(r)))
+			.and(ColonFitRegistratieSpecification.heeftStatus(status).with(r -> laatsteFitJoin(r)))
+			.and(ColonFitRegistratieSpecification.heeftGeenStatus()
+				.or(ColonFitRegistratieSpecification.heeftStatusIn(List.of(ColonFitRegistratieStatus.UNMUTABLE_EIND_STATUSSEN))).with(r -> laatsteFitExtraJoin(r)))
 			;
 	}
 
@@ -241,24 +241,24 @@ public class ColonUitnodigingBaseSpecification
 	private static Join<?, ? extends ColonUitnodiging> fitUitnodigingJoin(From<?, ? extends Client> r)
 	{
 		var laatsteFitJoin = laatsteFitJoin(r);
-		return join(laatsteFitJoin, IFOBTTest_.colonUitnodiging, LEFT);
+		return join(laatsteFitJoin, ColonFitRegistratie_.uitnodiging, LEFT);
 	}
 
 	private static Join<?, ? extends ColonUitnodiging> fitExtraUitnodigingJoin(From<?, ? extends Client> r)
 	{
 		var laatsteFitJoin = laatsteFitExtraJoin(r);
-		return join(laatsteFitJoin, IFOBTTest_.colonUitnodigingExtra, LEFT);
+		return join(laatsteFitJoin, ColonFitRegistratie_.uitnodigingExtra, LEFT);
 	}
 
-	private static Join<ColonScreeningRonde, IFOBTTest> laatsteFitJoin(From<?, ? extends Client> r)
+	private static Join<ColonScreeningRonde, ColonFitRegistratie> laatsteFitJoin(From<?, ? extends Client> r)
 	{
 		var screeningRondeJoin = laatsteScreeningRondeJoin(r, INNER);
-		return join(screeningRondeJoin, ColonScreeningRonde_.laatsteIFOBTTest, LEFT);
+		return join(screeningRondeJoin, ColonScreeningRonde_.laatsteFitRegistratie, LEFT);
 	}
 
-	private static Join<ColonScreeningRonde, IFOBTTest> laatsteFitExtraJoin(From<?, ? extends Client> r)
+	private static Join<ColonScreeningRonde, ColonFitRegistratie> laatsteFitExtraJoin(From<?, ? extends Client> r)
 	{
 		var screeningRondeJoin = laatsteScreeningRondeJoin(r, INNER);
-		return join(screeningRondeJoin, ColonScreeningRonde_.laatsteIFOBTTestExtra, LEFT);
+		return join(screeningRondeJoin, ColonScreeningRonde_.laatsteExtraFitRegistratie, LEFT);
 	}
 }

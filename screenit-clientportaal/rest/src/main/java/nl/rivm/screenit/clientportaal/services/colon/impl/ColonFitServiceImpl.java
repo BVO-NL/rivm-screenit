@@ -45,26 +45,26 @@ public class ColonFitServiceImpl implements ColonFitService
 
 	private final ColonScreeningsrondeService screeningsrondeService;
 
-    @Override
-    public ColonFitStatusDto getFitStatus(Client client)
-    {
-        ColonDossier colonDossier = client.getColonDossier();
-        ColonScreeningRonde laatsteScreeningRonde = colonDossier.getLaatsteScreeningRonde();
+	@Override
+	public ColonFitStatusDto getFitStatus(Client client)
+	{
+		ColonDossier colonDossier = client.getColonDossier();
+		ColonScreeningRonde laatsteScreeningRonde = colonDossier.getLaatsteScreeningRonde();
 
-        if (laatsteScreeningRonde == null)
-        {
-            return null;
-        }
+		if (laatsteScreeningRonde == null)
+		{
+			return null;
+		}
 
-        boolean maxAantalFitAanvragenBereikt = screeningsrondeService.heeftMaxAantalFitAanvragenBereikt(laatsteScreeningRonde);
+		boolean maxAantalFitAanvragenBereikt = screeningsrondeService.heeftMaxAantalFitAanvragenBereikt(laatsteScreeningRonde);
 
-        return new ColonFitStatusDto(maxAantalFitAanvragenBereikt);
-    }
+		return new ColonFitStatusDto(maxAantalFitAanvragenBereikt);
+	}
 
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED)
-    public void vraagFitAan(Client client)
-    {
-        clientContactService.vraagNieuweIfobtAan(client, client);
-    }
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void vraagFitAan(Client client)
+	{
+		clientContactService.vraagNieuweFitAan(client, client);
+	}
 }

@@ -25,7 +25,7 @@ import java.util.Arrays;
 
 import nl.rivm.screenit.main.service.colon.ColonDossierService;
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.main.web.component.ZoekIfobtMetBarcodePanel;
+import nl.rivm.screenit.main.web.component.ColonZoekFitRegistratieMetBarcodePanel;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.ColonScreeningBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
@@ -33,10 +33,10 @@ import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
-import nl.rivm.screenit.model.colon.IFOBTTest;
-import nl.rivm.screenit.model.colon.IFOBTType;
-import nl.rivm.screenit.model.colon.IFobtLaboratorium;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
+import nl.rivm.screenit.model.colon.ColonFitLaboratorium;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
+import nl.rivm.screenit.model.colon.ColonFitType;
+import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -44,7 +44,7 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.RedenNietTeBeoordelen;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieService;
-import nl.rivm.screenit.service.colon.ColonBaseFITService;
+import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.topicuszorg.wicket.hibernate.CglibHibernateModel;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
 import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
@@ -81,34 +81,34 @@ public class NietTeBeoordelenMonstersPage extends ColonScreeningBasePage
 	private OrganisatieService organisatieService;
 
 	@SpringBean
-	private ColonBaseFITService fitService;
+	private ColonBaseFitService fitService;
 
-	private final IModel<IFOBTTest> ifobtTestModel = new CglibHibernateModel<>();
+	private final IModel<ColonFitRegistratie> ifobtTestModel = new CglibHibernateModel<>();
 
 	private final WebMarkupContainer uitnodigingContainer;
 
-	private final ZoekIfobtMetBarcodePanel panel;
+	private final ColonZoekFitRegistratieMetBarcodePanel panel;
 
 	public NietTeBeoordelenMonstersPage()
 	{
-		panel = new ZoekIfobtMetBarcodePanel("scanForIfobttest")
+		panel = new ColonZoekFitRegistratieMetBarcodePanel("scanForIfobttest")
 		{
 
 			@Override
-			protected void ifobtFound(IFOBTTest ifobtTest, AjaxRequestTarget target)
+			protected void fitRegistratieGevonden(ColonFitRegistratie fitRegistratie, AjaxRequestTarget target)
 			{
-				super.ifobtFound(ifobtTest, target);
-				if (ifobtTest != null)
+				super.fitRegistratieGevonden(fitRegistratie, target);
+				if (fitRegistratie != null)
 				{
-					if (ifobtTest.getUitslag() == null && ifobtTest.getStatus().magWijzigenNaarStatus(IFOBTTestStatus.NIETTEBEOORDELEN, ifobtTest)
-						&& ifobtTest.getType() == IFOBTType.GOLD)
+					if (fitRegistratie.getUitslag() == null && fitRegistratie.getStatus().magWijzigenNaarStatus(ColonFitRegistratieStatus.NIETTEBEOORDELEN, fitRegistratie)
+						&& fitRegistratie.getType() == ColonFitType.GOLD)
 					{
 						Organisatie ingelogdVoorOrganisatie = ScreenitSession.get().getOrganisatie();
 						if (ingelogdVoorOrganisatie.getOrganisatieType().equals(OrganisatieType.LABORATORIUM))
 						{
-							ifobtTest.setIfobtLaboratorium((IFobtLaboratorium) ingelogdVoorOrganisatie);
+							fitRegistratie.setFitLaboratorium((ColonFitLaboratorium) ingelogdVoorOrganisatie);
 						}
-						ifobtTestModel.setObject(ifobtTest);
+						ifobtTestModel.setObject(fitRegistratie);
 						target.add(uitnodigingContainer);
 					}
 					else
@@ -169,8 +169,8 @@ public class NietTeBeoordelenMonstersPage extends ColonScreeningBasePage
 
 		Organisatie ingelogdVoorOrganisatie = ScreenitSession.get().getOrganisatie();
 		statusForm.add(new ScreenitDropdown<>( 
-			"ifobtLaboratorium", 
-			new SimpleListHibernateModel<>(organisatieService.getActieveOrganisaties(IFobtLaboratorium.class)), 
+			"fitLaboratorium", 
+			new SimpleListHibernateModel<>(organisatieService.getActieveOrganisaties(ColonFitLaboratorium.class)), 
 			new ChoiceRenderer<>("naam", "id") 
 		) 
 			.setNullValid(false).setRequired(true).setEnabled(!ingelogdVoorOrganisatie.getOrganisatieType().equals(OrganisatieType.LABORATORIUM)));
@@ -182,7 +182,7 @@ public class NietTeBeoordelenMonstersPage extends ColonScreeningBasePage
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				colonDossierService.monsterNietBeoordeelbaar(ModelProxyHelper.deproxy(ifobtTestModel.getObject()));
-				logaction(LogGebeurtenis.IFOBT_NIET_BEOORDEELBAAR, ifobtTestModel.getObject());
+				logaction(LogGebeurtenis.COLON_FIT_ONBEOORDEELBAAR, ifobtTestModel.getObject());
 				reset(target);
 				info(getString("message.gegevensopgeslagen"));
 			}
@@ -205,10 +205,10 @@ public class NietTeBeoordelenMonstersPage extends ColonScreeningBasePage
 		target.add(uitnodigingContainer);
 	}
 
-	private void logaction(LogGebeurtenis gebeurtenis, IFOBTTest ifobt)
+	private void logaction(LogGebeurtenis gebeurtenis, ColonFitRegistratie ifobt)
 	{
 		Account account = ScreenitSession.get().getIngelogdAccount();
-		Client client = ifobt.getColonScreeningRonde().getDossier().getClient();
+		Client client = ifobt.getScreeningRonde().getDossier().getClient();
 		logService.logGebeurtenis(gebeurtenis, account, client, Bevolkingsonderzoek.COLON);
 	}
 }

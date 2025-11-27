@@ -27,15 +27,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.criteria.JoinType;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.colon.selectie.SelectieConstants;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ScreeningRonde_;
 import nl.rivm.screenit.model.colon.ClientCategorieEntry;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
-import nl.rivm.screenit.service.colon.ColonBaseFITService;
+import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification;
 
@@ -44,8 +46,6 @@ import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.springframework.batch.item.ExecutionContext;
 
-import jakarta.persistence.criteria.JoinType;
-
 import static nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification.laatsteScreeningRondeJoin;
 
 @Slf4j
@@ -53,7 +53,7 @@ public class ClientSelectieItemCursor implements ClientSelectieItemIterator
 {
 	private static final String UITNODIGINGSCAT = "key.uitnodigingscat";
 
-	private ColonUitnodigingCategorie colonUitnodigingCategorie = ColonUitnodigingCategorie.U3;
+	private ColonUitnodigingscategorie uitnodigingscategorie = ColonUitnodigingscategorie.U3;
 
 	private ScrollableResults<Object[]> cursor;
 
@@ -71,11 +71,11 @@ public class ClientSelectieItemCursor implements ClientSelectieItemIterator
 
 	private final LocalDate vandaag;
 
-	private final ColonBaseFITService fitService;
+	private final ColonBaseFitService fitService;
 
 	private final ClientRepository clientRepository;
 
-	public ClientSelectieItemCursor(Session hibernateSession, int fetchSize, ExecutionContext context, List<Long> uitgenodigdeClientIds, ColonBaseFITService fitService,
+	public ClientSelectieItemCursor(Session hibernateSession, int fetchSize, ExecutionContext context, List<Long> uitgenodigdeClientIds, ColonBaseFitService fitService,
 		LocalDate vandaag, ClientRepository clientRepository)
 	{
 		this.hibernateSession = hibernateSession;
@@ -93,7 +93,7 @@ public class ClientSelectieItemCursor implements ClientSelectieItemIterator
 	public boolean hasNext()
 	{
 
-		return !cursorClosed && !cursor.isLast() || colonUitnodigingCategorie != ColonUitnodigingCategorie.U6;
+		return !cursorClosed && !cursor.isLast() || uitnodigingscategorie != ColonUitnodigingscategorie.U6;
 	}
 
 	@Override
@@ -133,11 +133,11 @@ public class ClientSelectieItemCursor implements ClientSelectieItemIterator
 
 					if (LOG.isDebugEnabled() && cursor.isLast())
 					{
-						LOG.debug("Categorie: {} aantal clienten geselecteerd: {}", colonUitnodigingCategorie.name(), cursorCount);
+						LOG.debug("Categorie: {} aantal clienten geselecteerd: {}", uitnodigingscategorie.name(), cursorCount);
 					}
 					uitgenodigdeClientIds.add(client.getId());
 
-					return new ClientCategorieEntry(client.getId(), colonUitnodigingCategorie, adres.getGbaGemeente().getScreeningOrganisatie().getId());
+					return new ClientCategorieEntry(client.getId(), uitnodigingscategorie, adres.getGbaGemeente().getScreeningOrganisatie().getId());
 				}
 				else
 				{
@@ -178,15 +178,15 @@ public class ClientSelectieItemCursor implements ClientSelectieItemIterator
 		cursorCount = 0;
 		cursor.close();
 
-		if (colonUitnodigingCategorie != ColonUitnodigingCategorie.U6)
+		if (uitnodigingscategorie != ColonUitnodigingscategorie.U6)
 		{
-			if (ColonUitnodigingCategorie.U3.equals(colonUitnodigingCategorie))
+			if (ColonUitnodigingscategorie.U3.equals(uitnodigingscategorie))
 			{
-				colonUitnodigingCategorie = ColonUitnodigingCategorie.U4;
+				uitnodigingscategorie = ColonUitnodigingscategorie.U4;
 			}
-			else if (ColonUitnodigingCategorie.U4.equals(colonUitnodigingCategorie))
+			else if (ColonUitnodigingscategorie.U4.equals(uitnodigingscategorie))
 			{
-				colonUitnodigingCategorie = ColonUitnodigingCategorie.U6;
+				uitnodigingscategorie = ColonUitnodigingscategorie.U6;
 			}
 			cursorClosed = false;
 			setCursor();
@@ -195,7 +195,7 @@ public class ClientSelectieItemCursor implements ClientSelectieItemIterator
 
 	private void setCursor()
 	{
-		ExtendedSpecification<Client> specification = switch (colonUitnodigingCategorie)
+		ExtendedSpecification<Client> specification = switch (uitnodigingscategorie)
 		{
 			case U3 -> ColonUitnodigingBaseSpecification.getSpecificationU3(vandaag);
 			case U4 -> ColonUitnodigingBaseSpecification.getSpecificationU4(vandaag);
@@ -216,14 +216,14 @@ public class ClientSelectieItemCursor implements ClientSelectieItemIterator
 	@Override
 	public void saveState(ExecutionContext context)
 	{
-		context.put(UITNODIGINGSCAT, colonUitnodigingCategorie);
+		context.put(UITNODIGINGSCAT, uitnodigingscategorie);
 	}
 
 	private void initialiseCursor(ExecutionContext context)
 	{
 		if (context.containsKey(UITNODIGINGSCAT))
 		{
-			colonUitnodigingCategorie = (ColonUitnodigingCategorie) context.get(UITNODIGINGSCAT);
+			uitnodigingscategorie = (ColonUitnodigingscategorie) context.get(UITNODIGINGSCAT);
 		}
 
 		setCursor();

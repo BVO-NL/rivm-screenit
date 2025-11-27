@@ -46,12 +46,12 @@ import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.PostcodeCoordinaten_;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonDossier_;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie_;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
-import nl.rivm.screenit.model.colon.IFOBTTest;
-import nl.rivm.screenit.model.colon.IFOBTTest_;
 import nl.rivm.screenit.model.colon.dto.VrijSlot;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
+import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.LoggingZoekCriteria;
@@ -62,7 +62,7 @@ import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.colon.PlanningService;
 import nl.rivm.screenit.specification.algemeen.DossierSpecification;
 import nl.rivm.screenit.specification.algemeen.ScreeningRondeSpecification;
-import nl.rivm.screenit.specification.colon.ColonFITSpecification;
+import nl.rivm.screenit.specification.colon.ColonFitRegistratieSpecification;
 import nl.rivm.screenit.specification.colon.ColonScreeningRondeSpecification;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
@@ -203,7 +203,7 @@ public class ColonIntakeAfspraakServiceImpl implements ColonIntakeAfspraakServic
 			{
 				var dossierJoin = join(r, Client_.colonDossier);
 				var screeningRondeJoin = join(dossierJoin, ColonDossier_.laatsteScreeningRonde);
-				var testenJoin = join(screeningRondeJoin, ColonScreeningRonde_.ifobtTesten);
+				var testenJoin = join(screeningRondeJoin, ColonScreeningRonde_.fitRegistraties);
 				var persoonJoin = join(r, Client_.persoon);
 				var adresJoin = join(persoonJoin, Persoon_.gbaAdres);
 				var coordinatenJoin = join(adresJoin, BagAdres_.postcodeCoordinaten, JoinType.LEFT);
@@ -214,7 +214,7 @@ public class ColonIntakeAfspraakServiceImpl implements ColonIntakeAfspraakServic
 				return List.of(
 					r.get(AbstractHibernateObject_.id),
 					screeningRondeJoin.get(AbstractHibernateObject_.id),
-					testenJoin.get(IFOBTTest_.analyseDatum),
+					testenJoin.get(ColonFitRegistratie_.analyseDatum),
 					coordinatenJoin.get(PostcodeCoordinaten_.latitude),
 					coordinatenJoin.get(PostcodeCoordinaten_.longitude),
 					gemeenteJoin.get(Gemeente_.latitude),
@@ -233,8 +233,9 @@ public class ColonIntakeAfspraakServiceImpl implements ColonIntakeAfspraakServic
 		return (r, q, cb) -> isNietOverledenOfAfgevoerd()
 			.and(DossierSpecification.heeftStatus(DossierStatus.ACTIEF).with(Client_.colonDossier))
 			.and(ScreeningRondeSpecification.isLopend().with(root -> screeningRondeJoin(root)))
-			.and(ColonFITSpecification.heeftStatusIn(List.of(IFOBTTestStatus.UITGEVOERD, IFOBTTestStatus.DOETNIETMEE)).with(root -> ifobtJoin(root)))
-			.and(ColonFITSpecification.heeftOngunstigeReguliereOfStudieUitslag().with(root -> ifobtJoin(root)))
+			.and(ColonFitRegistratieSpecification.heeftStatusIn(List.of(ColonFitRegistratieStatus.UITGEVOERD, ColonFitRegistratieStatus.DOETNIETMEE))
+				.with(root -> fitRegistratieJoin(root)))
+			.and(ColonFitRegistratieSpecification.heeftOngunstigeReguliereOfStudieUitslag().with(root -> fitRegistratieJoin(root)))
 			.and(ColonScreeningRondeSpecification.heeftGeenBriefVanTypeIn(BriefType.COLON_BRIEVEN_GEEN_INTAKE_NODIG).with(root -> screeningRondeJoin(root)))
 			.and(ColonScreeningRondeSpecification.heeftGeenAfsprakenZonderVervolg(uitnodigingsintervalVerlopen)
 				.with(root -> screeningRondeJoin(root)))
@@ -242,10 +243,10 @@ public class ColonIntakeAfspraakServiceImpl implements ColonIntakeAfspraakServic
 			.toPredicate(r, q, cb);
 	}
 
-	private Join<ColonScreeningRonde, IFOBTTest> ifobtJoin(From<?, ? extends Client> r)
+	private Join<ColonScreeningRonde, ColonFitRegistratie> fitRegistratieJoin(From<?, ? extends Client> r)
 	{
 		var screeningRondeJoin = screeningRondeJoin(r);
-		return join(screeningRondeJoin, ColonScreeningRonde_.ifobtTesten);
+		return join(screeningRondeJoin, ColonScreeningRonde_.fitRegistraties);
 	}
 
 	private Join<ColonDossier, ColonScreeningRonde> screeningRondeJoin(From<?, ? extends Client> r)

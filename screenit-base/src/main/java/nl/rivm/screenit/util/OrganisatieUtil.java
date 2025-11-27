@@ -31,17 +31,17 @@ import lombok.NoArgsConstructor;
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.CentraleEenheid;
-import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.Mammapoli;
+import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.RadiologieAfdeling;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.ZorgInstelling;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
+import nl.rivm.screenit.model.colon.ColonFitLaboratorium;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.ColoscopieLocatie;
-import nl.rivm.screenit.model.colon.IFobtLaboratorium;
 import nl.rivm.screenit.model.colon.PaLaboratorium;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -83,7 +83,7 @@ public class OrganisatieUtil
 			((ScreeningOrganisatie) nieuweOrganisatie).setFactorEersteOnderzoekBk(new BigDecimal("1.1"));
 			break;
 		case LABORATORIUM:
-			nieuweOrganisatie = new IFobtLaboratorium();
+			nieuweOrganisatie = new ColonFitLaboratorium();
 			break;
 		case PA_LABORATORIUM:
 			nieuweOrganisatie = new PaLaboratorium();

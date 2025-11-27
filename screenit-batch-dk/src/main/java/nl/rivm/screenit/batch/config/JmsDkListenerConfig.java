@@ -26,7 +26,7 @@ import lombok.AllArgsConstructor;
 import nl.rivm.screenit.batch.base.config.JmsBatchBaseConfig;
 import nl.rivm.screenit.batch.jms.listener.JMSDossierLegenListener;
 import nl.rivm.screenit.batch.jms.listener.JMSVerwerkCdaBerichtListener;
-import nl.rivm.screenit.batch.jms.listener.JMSVerwerkFITBerichtListener;
+import nl.rivm.screenit.batch.jms.listener.JMSVerwerkFitBerichtListener;
 import nl.rivm.screenit.config.JmsConfig;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
@@ -56,7 +56,7 @@ public class JmsDkListenerConfig
 	}
 
 	@Bean
-	public DefaultMessageListenerContainer verwerkIFobtBerichtListenerContainer(JMSVerwerkFITBerichtListener verwerkIFobtBerichtListener)
+	public DefaultMessageListenerContainer verwerkIFobtBerichtListenerContainer(JMSVerwerkFitBerichtListener verwerkIFobtBerichtListener)
 	{
 		var listenerContainer = new DefaultMessageListenerContainer();
 		listenerContainer.setConnectionFactory(jmsConfig.jmsFactory());

@@ -24,20 +24,18 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon.kwaliteitscontrole;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 import nl.rivm.screenit.main.service.KwaliteitscontroleLabService;
 import nl.rivm.screenit.main.service.SKMLExternSchemaService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Organisatie;
-import nl.rivm.screenit.model.colon.IFobtLaboratorium;
+import nl.rivm.screenit.model.colon.ColonFitLaboratorium;
 import nl.rivm.screenit.model.colon.SKMLExternSchema;
 import nl.rivm.screenit.model.colon.SKMLExterneControleBarcode;
 import nl.rivm.screenit.model.colon.SKMLInterneControleBarcode;
 import nl.rivm.screenit.model.colon.SKMLInterneControleSet;
-import nl.rivm.screenit.model.colon.enums.IFOBTUitslagType;
+import nl.rivm.screenit.model.colon.enums.ColonFitAnalyseResultaatType;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -71,9 +69,6 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class KwaliteitscontroleLabAanmakenPage extends KwaliteitscontroleLabBasePage
 {
-
-	private static final long serialVersionUID = 1L;
-
 	private IModel<BarcodeTypeModel> barcodeTypeModel;
 
 	private WebMarkupContainer controleContainer;
@@ -103,16 +98,13 @@ public class KwaliteitscontroleLabAanmakenPage extends KwaliteitscontroleLabBase
 	{
 		barcodeModel = new CompoundPropertyModel<String>(new String());
 		barcodeTypeModel = new CompoundPropertyModel<BarcodeTypeModel>(new BarcodeTypeModel());
-		List<IFOBTUitslagType> keuzeLijst = new ArrayList<IFOBTUitslagType>();
-		keuzeLijst.add(IFOBTUitslagType.INTERN);
-		keuzeLijst.add(IFOBTUitslagType.EXTERN);
-		ScreenitForm<BarcodeTypeModel> selectieForm = new ScreenitForm<>("selectieForm", barcodeTypeModel);
-		RadioChoice<IFOBTUitslagType> type = new RadioChoice<IFOBTUitslagType>("type", keuzeLijst, new EnumChoiceRenderer<IFOBTUitslagType>());
+		var keuzeLijst = new ArrayList<ColonFitAnalyseResultaatType>();
+		keuzeLijst.add(ColonFitAnalyseResultaatType.INTERN);
+		keuzeLijst.add(ColonFitAnalyseResultaatType.EXTERN);
+		var selectieForm = new ScreenitForm<>("selectieForm", barcodeTypeModel);
+		var type = new RadioChoice<>("type", keuzeLijst, new EnumChoiceRenderer<>());
 		type.add(new AjaxFormChoiceComponentUpdatingBehavior()
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
@@ -127,7 +119,7 @@ public class KwaliteitscontroleLabAanmakenPage extends KwaliteitscontroleLabBase
 		selectieForm.add(type);
 		add(selectieForm);
 
-		ScreenitForm<Void> aanmaakForm = new ScreenitForm<>("aanmaakForm");
+		var aanmaakForm = new ScreenitForm<>("aanmaakForm");
 		TextField<String> barcode = new TextField<String>("barcode", barcodeModel);
 		barcode.setRequired(true);
 		barcode.add(new StringValidator(1, 255));
@@ -138,32 +130,29 @@ public class KwaliteitscontroleLabAanmakenPage extends KwaliteitscontroleLabBase
 
 		add(new AjaxSubmitLink("opslaan", aanmaakForm)
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				Organisatie organisatie = ((ScreenitSession) getSession()).getIngelogdeOrganisatieMedewerker().getOrganisatie();
-				IFobtLaboratorium laboratorium = null;
+				var organisatie = ((ScreenitSession) getSession()).getIngelogdeOrganisatieMedewerker().getOrganisatie();
+				ColonFitLaboratorium laboratorium = null;
 
-				if (organisatie instanceof IFobtLaboratorium)
+				if (organisatie instanceof ColonFitLaboratorium)
 				{
-					laboratorium = (IFobtLaboratorium) organisatie;
+					laboratorium = (ColonFitLaboratorium) organisatie;
 				}
 
 				if (laboratorium != null)
 				{
 					String barcodeString = barcodeModel.getObject();
 
-					if (IFOBTUitslagType.INTERN == barcodeTypeModel.getObject().getType())
+					if (ColonFitAnalyseResultaatType.INTERN == barcodeTypeModel.getObject().getType())
 					{
 						if (!kwaliteitService.checkOfBarcodeAlBestaat(barcodeString))
 						{
-							SKMLInterneControleBarcode barcode = new SKMLInterneControleBarcode();
-							barcode.setType(IFOBTUitslagType.INTERN);
+							var barcode = new SKMLInterneControleBarcode();
+							barcode.setType(ColonFitAnalyseResultaatType.INTERN);
 							barcode.setBarcode(barcodeString);
-							SKMLInterneControleSet controleSet = controleType.getObject();
+							var controleSet = controleType.getObject();
 							barcode.setQbaseId(controleSet.getQbaseId());
 							barcode.setVolgorde(controleSet.getVolgorde());
 							barcode.setControleTekst(controleSet.getControleTekst());
@@ -179,15 +168,15 @@ public class KwaliteitscontroleLabAanmakenPage extends KwaliteitscontroleLabBase
 							error("Deze barcode is reeds geregistreerd.");
 						}
 					}
-					else if (IFOBTUitslagType.EXTERN == barcodeTypeModel.getObject().getType())
+					else if (ColonFitAnalyseResultaatType.EXTERN == barcodeTypeModel.getObject().getType())
 					{
 						if (schema != null && schema.getObject() != null)
 						{
 							if (!kwaliteitService.checkOfBarcodeAlBestaat(barcodeString))
 							{
-								SKMLExterneControleBarcode barcode = new SKMLExterneControleBarcode();
+								var barcode = new SKMLExterneControleBarcode();
 								barcode.setBarcode(barcodeString);
-								barcode.setType(IFOBTUitslagType.EXTERN);
+								barcode.setType(ColonFitAnalyseResultaatType.EXTERN);
 								barcode.setDatum(dateSupplier.getDate());
 								barcode.setSchema(schema.getObject());
 								barcode.setLaboratorium(laboratorium);
@@ -220,9 +209,6 @@ public class KwaliteitscontroleLabAanmakenPage extends KwaliteitscontroleLabBase
 
 		add(new Link<Void>("annuleren")
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void onClick()
 			{
@@ -233,18 +219,18 @@ public class KwaliteitscontroleLabAanmakenPage extends KwaliteitscontroleLabBase
 
 	private WebMarkupContainer maakControleContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("controle");
+		var container = new WebMarkupContainer("controle");
 		container.setOutputMarkupPlaceholderTag(true);
 		if (barcodeTypeModel != null && barcodeTypeModel.getObject() != null && barcodeTypeModel.getObject().getType() != null)
 		{
-			if (IFOBTUitslagType.INTERN.equals(barcodeTypeModel.getObject().getType()))
+			if (ColonFitAnalyseResultaatType.INTERN.equals(barcodeTypeModel.getObject().getType()))
 			{
 				controleType = new Model<SKMLInterneControleSet>(kwaliteitService.laagOfHoogSample(ScreenitSession.get().getOrganisatie()));
 				container.add(new Label("controleTekst", "Controle: " + controleType.getObject().getControleTekst()));
 			}
 			else
 			{
-				SKMLExternSchema eerstVolgendeSchema = schemaService.haalEerstvolgendeSchemaOp(dateSupplier.getDate());
+				var eerstVolgendeSchema = schemaService.haalEerstvolgendeSchemaOp(dateSupplier.getDate());
 				if (eerstVolgendeSchema == null)
 				{
 					container.add(new Label("controleTekst", Model.of("Er is geen schema beschikbaar")));
@@ -295,14 +281,14 @@ class BarcodeTypeModel implements Serializable
 
 	private static final long serialVersionUID = 1L;
 
-	private IFOBTUitslagType type;
+	private ColonFitAnalyseResultaatType type;
 
-	public IFOBTUitslagType getType()
+	public ColonFitAnalyseResultaatType getType()
 	{
 		return type;
 	}
 
-	public void setType(IFOBTUitslagType type)
+	public void setType(ColonFitAnalyseResultaatType type)
 	{
 		this.type = type;
 	}

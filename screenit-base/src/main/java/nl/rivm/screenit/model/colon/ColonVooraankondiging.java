@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.colon;
 
 /*-
@@ -22,7 +21,6 @@ package nl.rivm.screenit.model.colon;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.CascadeType;
@@ -33,17 +31,18 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.Client;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 @Entity
-@Table(schema = "colon")
+@Table(schema = "colon", name = "vooraankondiging")
+@Getter
+@Setter
 public class ColonVooraankondiging extends AbstractHibernateObject
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date creatieDatum;
 
@@ -52,35 +51,4 @@ public class ColonVooraankondiging extends AbstractHibernateObject
 
 	@OneToOne(cascade = CascadeType.ALL)
 	private ColonBrief brief;
-
-	public Date getCreatieDatum()
-	{
-		return creatieDatum;
-	}
-
-	public void setCreatieDatum(Date creatieDatum)
-	{
-		this.creatieDatum = creatieDatum;
-	}
-
-	public Client getClient()
-	{
-		return client;
-	}
-
-	public void setClient(Client client)
-	{
-		this.client = client;
-	}
-
-	public ColonBrief getBrief()
-	{
-		return brief;
-	}
-
-	public void setBrief(ColonBrief brief)
-	{
-		this.brief = brief;
-	}
-
 }

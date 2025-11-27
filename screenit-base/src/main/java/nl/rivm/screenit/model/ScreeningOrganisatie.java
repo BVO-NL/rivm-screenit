@@ -54,7 +54,7 @@ public class ScreeningOrganisatie extends Organisatie
 	@OneToMany(mappedBy = "regio", fetch = FetchType.LAZY)
 	private List<ZASRetouradres> retouradressen = new ArrayList<>();
 
-	private Integer ifobtRetourPercentage;
+	private Integer fitRetourPercentage;
 
 	private String rcmdl;
 

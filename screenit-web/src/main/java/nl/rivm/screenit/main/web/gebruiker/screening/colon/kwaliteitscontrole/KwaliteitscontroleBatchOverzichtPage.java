@@ -33,9 +33,9 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.Constants;
-import nl.rivm.screenit.main.model.colon.IFobtBatchFilter;
+import nl.rivm.screenit.main.model.colon.ColonHoudbaarheidFitReeksFilter;
 import nl.rivm.screenit.main.service.QbaseService;
-import nl.rivm.screenit.main.service.colon.ColonFITBestandService;
+import nl.rivm.screenit.main.service.colon.ColonFitAnalyseResultaatSetService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.AjaxButtonGroup;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
@@ -48,12 +48,12 @@ import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.Organisatie_;
-import nl.rivm.screenit.model.colon.IFOBTBestand;
-import nl.rivm.screenit.model.colon.IFOBTBestand_;
-import nl.rivm.screenit.model.colon.IFOBTUitslag;
-import nl.rivm.screenit.model.colon.IFobtLaboratorium;
-import nl.rivm.screenit.model.colon.IFobtLaboratorium_;
-import nl.rivm.screenit.model.colon.enums.IFOBTBestandStatus;
+import nl.rivm.screenit.model.colon.ColonFitAnalyseResultaat;
+import nl.rivm.screenit.model.colon.ColonFitAnalyseResultaatSet;
+import nl.rivm.screenit.model.colon.ColonFitAnalyseResultaatSet_;
+import nl.rivm.screenit.model.colon.ColonFitLaboratorium;
+import nl.rivm.screenit.model.colon.ColonFitLaboratorium_;
+import nl.rivm.screenit.model.colon.enums.ColonFitAnalyseResultaatSetStatus;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -101,19 +101,19 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.MEDEWERKER_SCREENING_BEOORDELING_IFOBT,
-		Recht.MEDEWERKER_SCREENING_AUTORISATIE_IFOBT, Recht.MEDEWERKER_SCREENING_VERWIJDEREN_BATCHES_IFOBT },
+	recht = { Recht.COLON_VERWIJDEREN_FIT_ANALYSE_RESULTATEN_AANLEVERING,
+		Recht.COLON_AUTORISATIE_FIT_ANALYSE_RESULTATEN_AANLEVERING, Recht.COLON_VERWIJDEREN_FIT_ANALYSE_RESULTATEN_AANLEVERING },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON },
 	organisatieTypeScopes = { OrganisatieType.LABORATORIUM, OrganisatieType.KWALITEITSPLATFORM, OrganisatieType.RIVM })
 public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabBasePage
 {
-	private final ScreenitDataTable<IFOBTBestand, String> table;
+	private final ScreenitDataTable<ColonFitAnalyseResultaatSet, String> table;
 
 	@SpringBean
 	private OrganisatieService organisatieService;
 
 	@SpringBean
-	private ColonFITBestandService fitBestandService;
+	private ColonFitAnalyseResultaatSetService fitBestandService;
 
 	@SpringBean
 	private QbaseService qbaseService;
@@ -121,24 +121,24 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 	@SpringBean
 	private ICurrentDateSupplier currentDateSupplier;
 
-	private final IModel<HibernateCheckBoxListContainer<IFOBTBestand>> checkBoxListContainer = Model.of(new HibernateCheckBoxListContainer<>());
+	private final IModel<HibernateCheckBoxListContainer<ColonFitAnalyseResultaatSet>> checkBoxListContainer = Model.of(new HibernateCheckBoxListContainer<>());
 
 	private final TransparentWebMarkupContainer statusIconFragmentContainer;
 
-	private final FITBestandenDataProvider fitBestandenDataProvider;
+	private final ColonFitAnalyseResultaatSetDataProvider fitAnalyseResultaatSetDataProvider;
 
 	public KwaliteitscontroleBatchOverzichtPage()
 	{
-		final IModel<IFobtBatchFilter> zoekModel = new CompoundPropertyModel<>(new IFobtBatchFilter());
-		IFobtBatchFilter filter = zoekModel.getObject();
-		filter.setStatus(IFOBTBestandStatus.INGELEZEN);
+		final IModel<ColonHoudbaarheidFitReeksFilter> zoekModel = new CompoundPropertyModel<>(new ColonHoudbaarheidFitReeksFilter());
+		ColonHoudbaarheidFitReeksFilter filter = zoekModel.getObject();
+		filter.setStatus(ColonFitAnalyseResultaatSetStatus.INGELEZEN);
 		filter.setDatumTot(currentDateSupplier.getDate());
 		filter.setDatumVan(DateUtil.minDagen(currentDateSupplier.getDate(), 7));
 		filter.setAnalyseDatum(true);
 
-		fitBestandenDataProvider = new FITBestandenDataProvider(zoekModel);
+		fitAnalyseResultaatSetDataProvider = new ColonFitAnalyseResultaatSetDataProvider(zoekModel);
 
-		table = new ScreenitDataTable<>("tabel", createColumns(), fitBestandenDataProvider, 30, Model.of(""))
+		table = new ScreenitDataTable<>("tabel", createColumns(), fitAnalyseResultaatSetDataProvider, 30, Model.of(""))
 		{
 
 			@Override
@@ -150,19 +150,19 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 			}
 
 			@Override
-			public void onClick(AjaxRequestTarget target, IModel<IFOBTBestand> model)
+			public void onClick(AjaxRequestTarget target, IModel<ColonFitAnalyseResultaatSet> model)
 			{
 
 			}
 
 			@Override
-			protected boolean isRowClickable(IModel<IFOBTBestand> model)
+			protected boolean isRowClickable(IModel<ColonFitAnalyseResultaatSet> model)
 			{
 				return false;
 			}
 		};
 
-		Form<IFobtBatchFilter> form = new Form<IFobtBatchFilter>("form", new CompoundPropertyModel<>(zoekModel));
+		Form<ColonHoudbaarheidFitReeksFilter> form = new Form<ColonHoudbaarheidFitReeksFilter>("form", new CompoundPropertyModel<>(zoekModel));
 		add(form);
 		BooleanRadioChoice analyseDatum = new BooleanRadioChoice("analyseDatum");
 		analyseDatum.setPrefix("<label class=\"radio inline\">");
@@ -178,12 +178,12 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 		});
 		form.add(analyseDatum);
 		form.add(new AjaxButtonGroup<>("status",
-			new ListModel<>(Arrays.asList(null, IFOBTBestandStatus.INGELEZEN)), new SimpleChoiceRenderer<>()
+			new ListModel<>(Arrays.asList(null, ColonFitAnalyseResultaatSetStatus.INGELEZEN)), new SimpleChoiceRenderer<>()
 		{
 			@Override
-			public Object getDisplayValue(IFOBTBestandStatus object)
+			public Object getDisplayValue(ColonFitAnalyseResultaatSetStatus object)
 			{
-				if (IFOBTBestandStatus.INGELEZEN.equals(object))
+				if (ColonFitAnalyseResultaatSetStatus.INGELEZEN.equals(object))
 				{
 					return "Niet geautoriseerd";
 				}
@@ -193,7 +193,7 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 		})
 		{
 			@Override
-			protected void onSelectionChanged(IFOBTBestandStatus selection, AjaxRequestTarget target, String markupId)
+			protected void onSelectionChanged(ColonFitAnalyseResultaatSetStatus selection, AjaxRequestTarget target, String markupId)
 			{
 				target.add(table);
 			}
@@ -227,7 +227,7 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 		final boolean isLabMedewerker = organisatie.getOrganisatieType().equals(OrganisatieType.LABORATORIUM);
 		if (isLabMedewerker)
 		{
-			filter.setLab((IFobtLaboratorium) organisatie);
+			filter.setLab((ColonFitLaboratorium) organisatie);
 		}
 
 		BootstrapDialog dialog = new BootstrapDialog("dialog");
@@ -247,9 +247,9 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 		add(statusIconFragmentContainer);
 	}
 
-	protected void maakLabDropDown(Form<IFobtBatchFilter> form, final boolean isLabMedewerker, final WebMarkupContainer beoordelenContainer)
+	protected void maakLabDropDown(Form<ColonHoudbaarheidFitReeksFilter> form, final boolean isLabMedewerker, final WebMarkupContainer beoordelenContainer)
 	{
-		Component labDropDown = new ScreenitDropdown<>("lab", ModelUtil.listRModel(organisatieService.getActieveOrganisaties(IFobtLaboratorium.class)),
+		Component labDropDown = new ScreenitDropdown<>("lab", ModelUtil.listRModel(organisatieService.getActieveOrganisaties(ColonFitLaboratorium.class)),
 			new ChoiceRenderer<>("naam"))
 			.setNullValid(true).setVisible(!isLabMedewerker);
 		labDropDown.add(new AjaxFormComponentUpdatingBehavior("change")
@@ -264,7 +264,7 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 		form.add(labDropDown);
 	}
 
-	protected WebMarkupContainer maakBeoordelenButton(final IModel<IFobtBatchFilter> zoekModel, Form<?> buttonForm)
+	protected WebMarkupContainer maakBeoordelenButton(final IModel<ColonHoudbaarheidFitReeksFilter> zoekModel, Form<?> buttonForm)
 	{
 		final Component beoordelen = new ResourceLink<Void>("beoordelen", new AbstractResource()
 		{
@@ -284,8 +284,8 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 					{
 						try
 						{
-							Iterator<? extends IFOBTBestand> iterator = fitBestandenDataProvider.iterator(-1, -1);
-							List<IFOBTBestand> lijst = new ArrayList<>();
+							Iterator<? extends ColonFitAnalyseResultaatSet> iterator = fitAnalyseResultaatSetDataProvider.iterator(-1, -1);
+							List<ColonFitAnalyseResultaatSet> lijst = new ArrayList<>();
 							while (iterator.hasNext())
 							{
 								lijst.add(iterator.next());
@@ -310,7 +310,8 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 			protected void onConfigure()
 			{
 				super.onConfigure();
-				setVisible(zoekModel.getObject().getLab() != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_BEOORDELING_IFOBT, Actie.INZIEN));
+				setVisible(
+					zoekModel.getObject().getLab() != null && ScreenitSession.get().checkPermission(Recht.COLON_VERWIJDEREN_FIT_ANALYSE_RESULTATEN_AANLEVERING, Actie.INZIEN));
 			}
 
 		};
@@ -329,15 +330,15 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				List<IFOBTBestand> list = checkBoxListContainer.getObject().getList();
-				fitBestandService.verwijderBestanden(list, ScreenitSession.get().getIngelogdAccount());
+				List<ColonFitAnalyseResultaatSet> list = checkBoxListContainer.getObject().getList();
+				fitBestandService.verwijderResultaatSets(list, ScreenitSession.get().getIngelogdAccount());
 				success("Bestanden zijn verwijderd.");
 				target.add(table);
 			}
 
 		};
 		buttonForm.add(verwijderen);
-		verwijderen.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_VERWIJDEREN_BATCHES_IFOBT, Actie.INZIEN));
+		verwijderen.setVisible(ScreenitSession.get().checkPermission(Recht.COLON_VERWIJDEREN_FIT_ANALYSE_RESULTATEN_AANLEVERING, Actie.INZIEN));
 		verwijderen.setOutputMarkupId(true);
 	}
 
@@ -348,29 +349,29 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				List<IFOBTBestand> list = IteratorUtils.toList(fitBestandenDataProvider.iterator(-1L, -1L));
-				fitBestandService.autoriseerBestanden(list, ScreenitSession.get().getIngelogdAccount());
+				List<ColonFitAnalyseResultaatSet> list = IteratorUtils.toList(fitAnalyseResultaatSetDataProvider.iterator(-1L, -1L));
+				fitBestandService.autoriseerResultaatSets(list, ScreenitSession.get().getIngelogdAccount());
 				success("Bestanden zijn geautoriseerd.");
 				target.add(table);
 			}
 
 		};
 		buttonForm.add(autoriseer);
-		autoriseer.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_AUTORISATIE_IFOBT, Actie.INZIEN));
+		autoriseer.setVisible(ScreenitSession.get().checkPermission(Recht.COLON_AUTORISATIE_FIT_ANALYSE_RESULTATEN_AANLEVERING, Actie.INZIEN));
 		autoriseer.setOutputMarkupId(true);
 	}
 
-	private List<IColumn<IFOBTBestand, String>> createColumns()
+	private List<IColumn<ColonFitAnalyseResultaatSet, String>> createColumns()
 	{
-		List<IColumn<IFOBTBestand, String>> columns = new ArrayList<>();
+		List<IColumn<ColonFitAnalyseResultaatSet, String>> columns = new ArrayList<>();
 		ScreenitSession screenitSession = ScreenitSession.get();
-		if (screenitSession.checkPermission(Recht.MEDEWERKER_SCREENING_VERWIJDEREN_BATCHES_IFOBT, Actie.INZIEN))
+		if (screenitSession.checkPermission(Recht.COLON_VERWIJDEREN_FIT_ANALYSE_RESULTATEN_AANLEVERING, Actie.INZIEN))
 		{
 			columns.add(new HibernateObjectCheckBoxUpdatingColumn<>(Model.of(""), "", checkBoxListContainer.getObject(), true, false)
 			{
 				@Override
 
-				public boolean checkBoxVisible(IModel<IFOBTBestand> rowModel)
+				public boolean checkBoxVisible(IModel<ColonFitAnalyseResultaatSet> rowModel)
 				{
 					if (rowModel != null)
 					{
@@ -380,7 +381,7 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 				}
 
 				@Override
-				protected boolean isRowInitialChecked(IModel<IFOBTBestand> rowModel)
+				protected boolean isRowInitialChecked(IModel<ColonFitAnalyseResultaatSet> rowModel)
 				{
 					if (rowModel != null)
 					{
@@ -389,26 +390,27 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 					return true;
 				}
 
-				private boolean magVerwijderen(IModel<IFOBTBestand> rowModel)
+				private boolean magVerwijderen(IModel<ColonFitAnalyseResultaatSet> rowModel)
 				{
-					IFOBTBestand bestand = rowModel.getObject();
+					ColonFitAnalyseResultaatSet bestand = rowModel.getObject();
 					String naamBestand = bestand.getNaamBestand();
 					boolean isSentinelBestand = naamBestand.startsWith("QC");
-					boolean magNogAutoriseren = IFOBTBestandStatus.INGELEZEN.equals(bestand.getStatus());
+					boolean magNogAutoriseren = ColonFitAnalyseResultaatSetStatus.INGELEZEN.equals(bestand.getStatus());
 					return !isSentinelBestand && magNogAutoriseren;
 				}
 			});
 		}
-		columns.add(new DateTimePropertyColumn<IFOBTBestand, String>(Model.of("Datum ingelezen"), IFOBTBestand_.STATUS_DATUM, IFOBTBestand_.STATUS_DATUM,
+		columns.add(new DateTimePropertyColumn<ColonFitAnalyseResultaatSet, String>(Model.of("Datum ingelezen"), ColonFitAnalyseResultaatSet_.STATUS_DATUM,
+			ColonFitAnalyseResultaatSet_.STATUS_DATUM,
 			new SimpleDateFormat("dd-MM-yyyy"))
 			.setCssClass("table-col-datum"));
-		columns.add(new ClickablePropertyColumn<>(Model.of("Datum/tijd van"), IFOBTBestand_.STATUS_DATUM)
+		columns.add(new ClickablePropertyColumn<>(Model.of("Datum/tijd van"), ColonFitAnalyseResultaatSet_.STATUS_DATUM)
 		{
 			@Override
-			public IModel<Object> getDataModel(IModel<IFOBTBestand> rowModel)
+			public IModel<Object> getDataModel(IModel<ColonFitAnalyseResultaatSet> rowModel)
 			{
 				Date datumFrom = null;
-				for (IFOBTUitslag uitslag : rowModel.getObject().getUitslagen())
+				for (ColonFitAnalyseResultaat uitslag : rowModel.getObject().getUitslagen())
 				{
 					if (datumFrom == null || uitslag.getAnalyseDatum().before(datumFrom))
 					{
@@ -430,13 +432,13 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 			}
 
 		});
-		columns.add(new ClickablePropertyColumn<>(Model.of("Datum/tijd tot"), IFOBTBestand_.STATUS_DATUM)
+		columns.add(new ClickablePropertyColumn<>(Model.of("Datum/tijd tot"), ColonFitAnalyseResultaatSet_.STATUS_DATUM)
 		{
 			@Override
-			public IModel<Object> getDataModel(IModel<IFOBTBestand> rowModel)
+			public IModel<Object> getDataModel(IModel<ColonFitAnalyseResultaatSet> rowModel)
 			{
 				Date datumTot = null;
-				for (IFOBTUitslag uitslag : rowModel.getObject().getUitslagen())
+				for (ColonFitAnalyseResultaat uitslag : rowModel.getObject().getUitslagen())
 				{
 					if (datumTot == null || uitslag.getAnalyseDatum().after(datumTot))
 					{
@@ -458,12 +460,12 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 			}
 
 		});
-		columns.add(new ClickablePropertyColumn<>(Model.of("Aantal client uitslagen"), propertyChain(IFOBTBestand_.UITSLAGEN, "size"))
+		columns.add(new ClickablePropertyColumn<>(Model.of("Aantal client uitslagen"), propertyChain(ColonFitAnalyseResultaatSet_.UITSLAGEN, "size"))
 		{
 			@Override
-			public IModel<Object> getDataModel(IModel<IFOBTBestand> rowModel)
+			public IModel<Object> getDataModel(IModel<ColonFitAnalyseResultaatSet> rowModel)
 			{
-				IFOBTBestand bestand = rowModel.getObject();
+				ColonFitAnalyseResultaatSet bestand = rowModel.getObject();
 				Integer aantalControleUitslagen = bestand.getAantalControleUitslagen();
 				int aantal = bestand.getUitslagen().size() - (aantalControleUitslagen == null ? 0 : aantalControleUitslagen);
 				return new Model(aantal);
@@ -477,14 +479,16 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 
 		});
 		columns.add(
-			new ClickablePropertyColumn<IFOBTBestand, String>(Model.of("Aantal controle uitslagen"), IFOBTBestand_.AANTAL_CONTROLE_UITSLAGEN).setCssClass("table-col-aantal"));
-		columns.add(new ClickablePropertyColumn<>(Model.of("Lab"), propertyChain(IFOBTBestand_.LABORATORIUM, Organisatie_.NAAM),
-			propertyChain(IFOBTBestand_.LABORATORIUM, IFobtLaboratorium_.NAAM)));
-		columns.add(new ClickablePropertyColumn<>(Model.of("Bestand"), IFOBTBestand_.NAAM_BESTAND, IFOBTBestand_.NAAM_BESTAND));
-		columns.add(new ClickablePropertyColumn<>(Model.of("Geautoriseerd"), IFOBTBestand_.STATUS, IFOBTBestand_.STATUS)
+			new ClickablePropertyColumn<ColonFitAnalyseResultaatSet, String>(Model.of("Aantal controle uitslagen"),
+				ColonFitAnalyseResultaatSet_.AANTAL_CONTROLE_UITSLAGEN).setCssClass(
+				"table-col-aantal"));
+		columns.add(new ClickablePropertyColumn<>(Model.of("Lab"), propertyChain(ColonFitAnalyseResultaatSet_.LABORATORIUM, Organisatie_.NAAM),
+			propertyChain(ColonFitAnalyseResultaatSet_.LABORATORIUM, ColonFitLaboratorium_.NAAM)));
+		columns.add(new ClickablePropertyColumn<>(Model.of("Bestand"), ColonFitAnalyseResultaatSet_.NAAM_BESTAND, ColonFitAnalyseResultaatSet_.NAAM_BESTAND));
+		columns.add(new ClickablePropertyColumn<>(Model.of("Geautoriseerd"), ColonFitAnalyseResultaatSet_.STATUS, ColonFitAnalyseResultaatSet_.STATUS)
 		{
 			@Override
-			public void populateItem(Item<ICellPopulator<IFOBTBestand>> cellItem, String componentId, IModel<IFOBTBestand> rowModel)
+			public void populateItem(Item<ICellPopulator<ColonFitAnalyseResultaatSet>> cellItem, String componentId, IModel<ColonFitAnalyseResultaatSet> rowModel)
 			{
 				cellItem.add(new StatusIconFragment(componentId, rowModel.getObject().getStatus()));
 			}
@@ -502,17 +506,17 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 	protected void onDetach()
 	{
 		super.onDetach();
-		ModelUtil.nullSafeDetach(fitBestandenDataProvider);
+		ModelUtil.nullSafeDetach(fitAnalyseResultaatSetDataProvider);
 	}
 
 	private class StatusIconFragment extends Fragment
 	{
-		public StatusIconFragment(String id, IFOBTBestandStatus status)
+		public StatusIconFragment(String id, ColonFitAnalyseResultaatSetStatus status)
 		{
 			super(id, "statusIconFragment", statusIconFragmentContainer);
 
 			WebMarkupContainer icon = new WebMarkupContainer("icon");
-			if (IFOBTBestandStatus.INGELEZEN.equals(status))
+			if (ColonFitAnalyseResultaatSetStatus.INGELEZEN.equals(status))
 			{
 				icon.add(new AttributeAppender("class", Model.of("icon-ban-circle")));
 			}

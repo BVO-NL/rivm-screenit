@@ -25,7 +25,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.AbstractHoudbaarheid_;
-import nl.rivm.screenit.model.cervix.CervixZasHoudbaarheid;
+import nl.rivm.screenit.model.cervix.CervixHoudbaarheidZasReeks;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 
 import org.springframework.data.jpa.domain.Specification;
@@ -37,7 +37,7 @@ import static nl.rivm.screenit.specification.RangeSpecification.overlapt;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CervixZasHoudbaarheidSpecification
 {
-	public static Specification<CervixZasHoudbaarheid> heeftBarcodeInRange(String barcode)
+	public static Specification<CervixHoudbaarheidZasReeks> heeftBarcodeInRange(String barcode)
 	{
 		return (r, q, cb) -> cb.and(
 			cb.lessThanOrEqualTo(r.get(AbstractHoudbaarheid_.barcodeStart), barcode),
@@ -45,12 +45,12 @@ public class CervixZasHoudbaarheidSpecification
 			cb.equal(r.get(AbstractHoudbaarheid_.lengthBarcode), barcode.length()));
 	}
 
-	public static ExtendedSpecification<CervixZasHoudbaarheid> overlaptBarcode(Range<String> barcodeRange)
+	public static ExtendedSpecification<CervixHoudbaarheidZasReeks> overlaptBarcode(Range<String> barcodeRange)
 	{
 		return overlapt(barcodeRange, r -> r.get(AbstractHoudbaarheid_.barcodeStart), r -> r.get(AbstractHoudbaarheid_.barcodeEnd));
 	}
 
-	public static ExtendedSpecification<CervixZasHoudbaarheid> heeftBarcodeLengte(int lengte)
+	public static ExtendedSpecification<CervixHoudbaarheidZasReeks> heeftBarcodeLengte(int lengte)
 	{
 		return (r, q, cb) -> cb.equal(r.get(AbstractHoudbaarheid_.lengthBarcode), lengte);
 	}

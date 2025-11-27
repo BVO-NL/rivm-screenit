@@ -24,15 +24,15 @@ package nl.rivm.screenit.main.model;
 import lombok.Getter;
 
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.AbstractGebeurtenisDetailPanel;
-import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.AntwoordformulierOntvangenPanel;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.BriefKlaargezetPanel;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.DigitaalClientBerichtVerzondenPanel;
-import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.IFobtVerslagPanel;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.cervix.CervixCytologieVerslagInzienPanel;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.cervix.CervixExtraHuisartsberichtDetailsPanel;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.cervix.CervixHpvInzienPanel;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.cervix.CervixHuisartsberichtDetailsPanel;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.cervix.CervixLabformulierInzienPanel;
+import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.colon.AntwoordformulierOntvangenPanel;
+import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.colon.ColonFitRegistratieInzienPanel;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.colon.ColonHuisartsInzienPanel;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.colon.ColonHuisartsberichtDetailsPanel;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.colon.ConclusieInzienPanel;
@@ -80,17 +80,17 @@ public enum TypeGebeurtenis
 
 	AFNAMEDATUM_INGEVULD_OP_PORTAAL(),
 
-	IFOBTVERLOREN(),
+	COLON_NIEUWE_FIT_AANGEVRAAGD(),
 
-	RETOURPERIODEIFOBTVERSTREKEN(),
+	COLON_FIT_RETOUR_PERIODE_VERSTREKEN(),
 
-	IFOBTNIETTEBEOORDELEN(),
+	COLON_FIT_ONBEOORDEELBAAR(),
 
-	VERVALDATUMIFOBTVERLOPEN(),
+	COLON_FIT_VERVALDATUM_VERLOPEN(),
 
-	UITSLAGIFOBTONTVANGEN(IFobtVerslagPanel.class),
+	COLON_FIT_UITSLAG_ONTVANGEN(ColonFitRegistratieInzienPanel.class),
 
-	UITSLAGIFOBTONBETROUWBAAR(),
+	COLON_FIT_UITSLAG_ONBETROUWBAAR(),
 
 	INTAKEAFSPRAAKGEMAAKT(),
 

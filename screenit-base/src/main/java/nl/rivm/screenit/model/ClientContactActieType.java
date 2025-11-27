@@ -40,7 +40,7 @@ public enum ClientContactActieType
 
 	CERVIX_DEELNAME_BUITEN_BVO_BMHK(new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA }),
 
-	COLON_AANVRAGEN_NIEUWE_IFOBT(new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }),
+	COLON_AANVRAGEN_NIEUWE_FIT(new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }),
 
 	COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN(new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }),
 

@@ -25,13 +25,13 @@ import java.util.List;
 
 import nl.rivm.screenit.batch.jobs.colon.selectie.selectiestep.ColonClientSelectieContext;
 import nl.rivm.screenit.model.colon.UitnodigingsGebied;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 
 import org.hibernate.ScrollableResults;
 
 public interface ColonUitnodigingSelectieService
 {
-
-	ScrollableResults getUitnodigingsCursor(ColonClientSelectieContext selectieContext, ColonUitnodigingCategorie colonUitnodigingCategorie, UitnodigingsGebied uitnodigingsgebied,
+	ScrollableResults getUitnodigingsCursor(ColonClientSelectieContext selectieContext, ColonUitnodigingscategorie uitnodigingscategorie,
+		UitnodigingsGebied uitnodigingsgebied,
 		List<Integer> geboorteJaren, Long projectGroupId, List<Long> exclusieGroepIds);
 }

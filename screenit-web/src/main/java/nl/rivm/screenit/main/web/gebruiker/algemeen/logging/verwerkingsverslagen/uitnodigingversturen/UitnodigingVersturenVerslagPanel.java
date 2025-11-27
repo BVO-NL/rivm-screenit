@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen.uitnodigingversturen;
 
 /*-
@@ -27,11 +26,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import jakarta.annotation.Nullable;
+
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.model.enums.SelectieType;
-import nl.rivm.screenit.model.verwerkingverslag.SelectieRapportage;
-import nl.rivm.screenit.model.verwerkingverslag.SelectieRapportageEntry;
-import nl.rivm.screenit.model.verwerkingverslag.SelectieRapportageProjectGroepEntry;
+import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportage;
+import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageEntry;
+import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageProjectGroepEntry;
 
 import org.apache.wicket.markup.html.basic.EnumLabel;
 import org.apache.wicket.markup.html.basic.Label;
@@ -45,86 +46,69 @@ import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
-import jakarta.annotation.Nullable;
-
-public class UitnodigingVersturenVerslagPanel extends GenericPanel<SelectieRapportage>
+public class UitnodigingVersturenVerslagPanel extends GenericPanel<ColonSelectieRapportage>
 {
-
-	private static final long serialVersionUID = 1L;
-
-	public UitnodigingVersturenVerslagPanel(String id, final IModel<SelectieRapportage> model)
+	public UitnodigingVersturenVerslagPanel(String id, final IModel<ColonSelectieRapportage> model)
 	{
 		super(id, new CompoundPropertyModel<>(model));
 
 		add(DateLabel.forDatePattern("datumVerwerking", "dd-MM-yyyy HH:mm:ss"));
 
-		add(new PropertyListView<SelectieRapportageEntry>("verstuurd", new IModel<List<SelectieRapportageEntry>>()
+		add(new PropertyListView<ColonSelectieRapportageEntry>("verstuurd", new IModel<List<ColonSelectieRapportageEntry>>()
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
-			public List<SelectieRapportageEntry> getObject()
+			public List<ColonSelectieRapportageEntry> getObject()
 			{
-				List<SelectieRapportageEntry> selectieRapportageEntries = model.getObject().getEntries();
+				List<ColonSelectieRapportageEntry> selectieRapportageEntries = model.getObject().getEntries();
 
-				selectieRapportageEntries = new ArrayList<>(Collections2.filter(selectieRapportageEntries, new Predicate<SelectieRapportageEntry>()
+				selectieRapportageEntries = new ArrayList<>(Collections2.filter(selectieRapportageEntries, new Predicate<ColonSelectieRapportageEntry>()
 				{
 					@Override
-					public boolean apply(@Nullable SelectieRapportageEntry input)
+					public boolean apply(@Nullable ColonSelectieRapportageEntry input)
 					{
 						return SelectieType.UITNODIGING_VERSTUURD == input.getSelectieType();
 					}
 				}));
-				Collections.sort(selectieRapportageEntries, new Comparator<SelectieRapportageEntry>()
+				Collections.sort(selectieRapportageEntries, new Comparator<ColonSelectieRapportageEntry>()
 				{
-
 					@Override
-					public int compare(SelectieRapportageEntry o1, SelectieRapportageEntry o2)
+					public int compare(ColonSelectieRapportageEntry o1, ColonSelectieRapportageEntry o2)
 					{
-						return o1.getColonUitnodigingCategorie().name().compareTo(o2.getColonUitnodigingCategorie().name());
+						return o1.getUitnodigingscategorie().name().compareTo(o2.getUitnodigingscategorie().name());
 					}
 				});
 				return selectieRapportageEntries;
 			}
 		})
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
-			protected void populateItem(ListItem<SelectieRapportageEntry> item)
+			protected void populateItem(ListItem<ColonSelectieRapportageEntry> item)
 			{
-				SelectieRapportageEntry entry = item.getModelObject();
-				item.add(new EnumLabel<ColonUitnodigingCategorie>("colonUitnodigingCategorie"));
+				item.add(new EnumLabel<ColonUitnodigingscategorie>("uitnodigingscategorie"));
 				item.add(new Label("aantal"));
 			}
 		});
 
-		add(new PropertyListView<SelectieRapportageProjectGroepEntry>("groep", new IModel<List<SelectieRapportageProjectGroepEntry>>()
+		add(new PropertyListView<ColonSelectieRapportageProjectGroepEntry>("groep", new IModel<List<ColonSelectieRapportageProjectGroepEntry>>()
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
-			public List<SelectieRapportageProjectGroepEntry> getObject()
+			public List<ColonSelectieRapportageProjectGroepEntry> getObject()
 			{
-				List<SelectieRapportageProjectGroepEntry> selectieRapportageEntries = model.getObject().getProjectGroepen();
+				List<ColonSelectieRapportageProjectGroepEntry> selectieRapportageEntries = model.getObject().getProjectGroepen();
 				selectieRapportageEntries = new ArrayList<>(selectieRapportageEntries);
 
-				selectieRapportageEntries = new ArrayList<>(Collections2.filter(selectieRapportageEntries, new Predicate<SelectieRapportageProjectGroepEntry>()
+				selectieRapportageEntries = new ArrayList<>(Collections2.filter(selectieRapportageEntries, new Predicate<ColonSelectieRapportageProjectGroepEntry>()
 				{
 					@Override
-					public boolean apply(@Nullable SelectieRapportageProjectGroepEntry input)
+					public boolean apply(@Nullable ColonSelectieRapportageProjectGroepEntry input)
 					{
 						return input.getProjectGroep() != null;
 					}
 				}));
-				Collections.sort(selectieRapportageEntries, new Comparator<SelectieRapportageProjectGroepEntry>()
+				Collections.sort(selectieRapportageEntries, new Comparator<ColonSelectieRapportageProjectGroepEntry>()
 				{
-
 					@Override
-					public int compare(SelectieRapportageProjectGroepEntry o1, SelectieRapportageProjectGroepEntry o2)
+					public int compare(ColonSelectieRapportageProjectGroepEntry o1, ColonSelectieRapportageProjectGroepEntry o2)
 					{
 						return o1.getProjectGroep().getProject().getNaam().compareTo(o2.getProjectGroep().getProject().getNaam());
 					}
@@ -133,11 +117,8 @@ public class UitnodigingVersturenVerslagPanel extends GenericPanel<SelectieRappo
 			}
 		})
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
-			protected void populateItem(ListItem<SelectieRapportageProjectGroepEntry> item)
+			protected void populateItem(ListItem<ColonSelectieRapportageProjectGroepEntry> item)
 			{
 				item.add(new Label("projectGroep.project.naam"));
 				item.add(new Label("projectGroep.naam"));

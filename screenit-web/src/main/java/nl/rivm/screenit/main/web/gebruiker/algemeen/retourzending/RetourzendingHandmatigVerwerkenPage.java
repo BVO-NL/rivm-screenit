@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import nl.rivm.screenit.main.service.RetourzendingService;
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ZoekMetScannedInputPanel;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
@@ -113,8 +112,8 @@ public class RetourzendingHandmatigVerwerkenPage extends RetourzendingBasePage
 				String uitnodigingId = getScanInput();
 				if (StringUtils.isNotBlank(uitnodigingId) && StringUtils.isNumeric(uitnodigingId))
 				{
-					if (!new IFOBTUitnodigingsIdValidator().valideerUitnodiging(target, uitnodigingId)
-						&& !new ZASUitnodigingsIdValidator().valideerUitnodiging(target, uitnodigingId))
+					if (!new ColonUitnodigingsIdValidator().valideerUitnodiging(target, uitnodigingId)
+						&& !new CervixUitnodigingsIdValidator().valideerUitnodiging(target, uitnodigingId))
 					{
 						error(getString("geen.uitnodiging.gevonden"));
 					}
@@ -173,7 +172,7 @@ public class RetourzendingHandmatigVerwerkenPage extends RetourzendingBasePage
 
 	}
 
-	protected class IFOBTUitnodigingsIdValidator extends UitnodigingsIdValidator<ColonUitnodiging, ColonScreeningRonde>
+	protected class ColonUitnodigingsIdValidator extends UitnodigingsIdValidator<ColonUitnodiging, ColonScreeningRonde>
 	{
 
 		@Override
@@ -192,7 +191,7 @@ public class RetourzendingHandmatigVerwerkenPage extends RetourzendingBasePage
 		}
 	}
 
-	protected class ZASUitnodigingsIdValidator extends UitnodigingsIdValidator<CervixUitnodiging, CervixScreeningRonde>
+	protected class CervixUitnodigingsIdValidator extends UitnodigingsIdValidator<CervixUitnodiging, CervixScreeningRonde>
 	{
 
 		@Override

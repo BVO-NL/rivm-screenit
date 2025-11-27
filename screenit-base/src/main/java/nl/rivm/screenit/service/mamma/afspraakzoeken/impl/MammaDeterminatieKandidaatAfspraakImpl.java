@@ -35,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaCapaciteitBlokDto;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaScreeningsEenheidDto;
 import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaAfspraakOptie;
-import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaRationaal;
 import nl.rivm.screenit.util.TimeRange;
 import nl.rivm.screenit.util.mamma.MammaPlanningUtil;
 
@@ -83,7 +82,7 @@ public class MammaDeterminatieKandidaatAfspraakImpl extends MammaRationaal imple
 		capaciteitBlokDto = capaciteitBlok;
 		minimaleAfspraakVanaf = mogelijkeAfspraakPeriode.getVanaf();
 		maximaleAfspraakTot = mogelijkeAfspraakPeriode.getTot();
-		datum = capaciteitBlok.vanaf.toLocalDate();
+		datum = capaciteitBlok.getVanaf().toLocalDate();
 		vanaf = afspraakPeriode.getVanaf();
 		tot = afspraakPeriode.getTot().isAfter(mogelijkeAfspraakPeriode.getTot()) ? mogelijkeAfspraakPeriode.getTot() : afspraakPeriode.getTot();
 		this.minderValide = minderValide;
@@ -133,7 +132,7 @@ public class MammaDeterminatieKandidaatAfspraakImpl extends MammaRationaal imple
 		LOG.debug(
 			"Kandidaatafspraak {}-{} MV={}, DT={}, geldig={}, afgesplitsteOngeldig={} gesplitst naar {}-{}, MV={}, DT={}, geldig={}, afgesplitsteOngeldig={}, capaciteitBlokId={}",
 			vanaf, tot, minderValide, dubbeleTijd, geldigeAfspraak, afgesplitsteKandidatenZijnOngeldig, nieuweKandidaat.vanaf, nieuweKandidaat.tot, nieuweKandidaat.minderValide,
-			nieuweKandidaat.dubbeleTijd, nieuweKandidaat.geldigeAfspraak, nieuweKandidaat.afgesplitsteKandidatenZijnOngeldig, capaciteitBlokDto.id);
+			nieuweKandidaat.dubbeleTijd, nieuweKandidaat.geldigeAfspraak, nieuweKandidaat.afgesplitsteKandidatenZijnOngeldig, capaciteitBlokDto.getId());
 
 		tot = nieuweKandidaat.vanaf;
 		return nieuweKandidaat;
@@ -269,13 +268,13 @@ public class MammaDeterminatieKandidaatAfspraakImpl extends MammaRationaal imple
 	}
 
 	@Override
-	public BigDecimal getDeeltal()
+	public BigDecimal getTeller()
 	{
 		return benodigdeCapaciteit;
 	}
 
 	@Override
-	public BigDecimal getDeler()
+	public BigDecimal getNoemer()
 	{
 		return getDuurInSeconden();
 	}

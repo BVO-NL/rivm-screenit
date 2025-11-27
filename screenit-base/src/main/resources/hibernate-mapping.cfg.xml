@@ -86,14 +86,14 @@
         <mapping class="nl.rivm.screenit.model.logging.LogRegel"/>
         <mapping class="nl.rivm.screenit.model.logging.LogEvent"/>
         <mapping class="nl.rivm.screenit.model.logging.TechnischeBerichtenLogRegel"/>
-        <mapping class="nl.rivm.screenit.model.logging.SelectieRondeBeeindigdLogEvent"/>
+        <mapping class="nl.rivm.screenit.model.logging.colon.ColonSelectieRondeBeeindigdLogEvent"/>
         <mapping class="nl.rivm.screenit.model.logging.BrievenGenererenBeeindigdLogEvent"/>
-        <mapping class="nl.rivm.screenit.model.logging.IfobtHerinneringBeeindigdLogEvent"/>
-        <mapping class="nl.rivm.screenit.model.logging.IfobtVerwerkingBeeindigdLogEvent"/>
-        <mapping class="nl.rivm.screenit.model.logging.IfobtKoppelingBeeindigdLogEvent"/>
+        <mapping class="nl.rivm.screenit.model.logging.colon.ColonFitRegistratieHerinneringBeeindigdLogEvent"/>
+        <mapping class="nl.rivm.screenit.model.logging.colon.ColonFitAnalyseResultaatSetVerwerkingBeeindigdLogEvent"/>
+        <mapping class="nl.rivm.screenit.model.logging.colon.ColonFitRegistratieKoppelenBeeindigdLogEvent"/>
         <mapping class="nl.rivm.screenit.model.logging.ScannedAntwoordBeeindigdLogEvent"/>
         <mapping class="nl.rivm.screenit.model.logging.BerichtOntvangenLogEvent"/>
-        <mapping class="nl.rivm.screenit.model.logging.NieuweIFobtAanvraagLogEvent"/>
+        <mapping class="nl.rivm.screenit.model.logging.colon.ColonNieuwFitAanvraagLogEvent"/>
         <mapping class="nl.rivm.screenit.model.logging.GbaVerwerkingBeeindigdLogEvent"/>
         <mapping class="nl.rivm.screenit.model.logging.IntakeMakenLogEvent"/>
         <mapping class="nl.rivm.screenit.model.logging.RetourzendingLogEvent"/>
@@ -120,13 +120,13 @@
         <mapping class="nl.rivm.screenit.model.colon.ColonVerslag"/>
         <mapping class="nl.rivm.screenit.model.colon.MdlVerslag"/>
         <mapping class="nl.rivm.screenit.model.colon.PaVerslag"/>
-        <mapping class="nl.rivm.screenit.model.colon.IFOBTTest"/>
-        <mapping class="nl.rivm.screenit.model.colon.IFOBTVervaldatum"/>
+        <mapping class="nl.rivm.screenit.model.colon.ColonFitRegistratie"/>
+        <mapping class="nl.rivm.screenit.model.colon.ColonHoudbaarheidFitReeks"/>
         <mapping class="nl.rivm.screenit.model.colon.ColonVooraankondiging"/>
         <mapping class="nl.rivm.screenit.model.colon.ColonUitnodiging"/>
         <mapping class="nl.rivm.screenit.model.colon.ColonIntakelocatie"/>
         <mapping class="nl.rivm.screenit.model.colon.ColoscopieLocatie"/>
-        <mapping class="nl.rivm.screenit.model.colon.IFobtLaboratorium"/>
+        <mapping class="nl.rivm.screenit.model.colon.ColonFitLaboratorium"/>
         <mapping class="nl.rivm.screenit.model.colon.PaLaboratorium"/>
         <mapping class="nl.rivm.screenit.model.colon.ColoscopieCentrumColonCapaciteitVerdeling"/>
         <mapping class="nl.rivm.screenit.model.colon.UitnodigingCohort"/>
@@ -140,8 +140,8 @@
         <mapping class="nl.rivm.screenit.model.colon.SKMLInterneControleSet"/>
         <mapping class="nl.rivm.screenit.model.colon.SKMLExterneControleBarcode"/>
         <mapping class="nl.rivm.screenit.model.colon.SKMLExternSchema"/>
-        <mapping class="nl.rivm.screenit.model.colon.IFOBTUitslag"/>
-        <mapping class="nl.rivm.screenit.model.colon.IFOBTBestand"/>
+        <mapping class="nl.rivm.screenit.model.colon.ColonFitAnalyseResultaat"/>
+        <mapping class="nl.rivm.screenit.model.colon.ColonFitAnalyseResultaatSet"/>
         <mapping class="nl.rivm.screenit.model.colon.ColonMergedBrieven"/>
         <mapping class="nl.rivm.screenit.model.colon.OpenUitnodiging"/>
         <mapping class="nl.rivm.screenit.model.colon.ColonKoppelresultaatKankerregistratie"/>
@@ -177,7 +177,7 @@
         <mapping class="nl.rivm.screenit.model.cervix.CervixCytologieOrder"/>
         <mapping class="nl.rivm.screenit.model.cervix.verslag.CervixVerslag"/>
         <mapping class="nl.rivm.screenit.model.cervix.CervixCytologieVerslag"/>
-        <mapping class="nl.rivm.screenit.model.cervix.CervixZasHoudbaarheid"/>
+        <mapping class="nl.rivm.screenit.model.cervix.CervixHoudbaarheidZasReeks"/>
         <mapping class="nl.rivm.screenit.model.cervix.CervixBulkUpload"/>
         <mapping class="nl.rivm.screenit.model.cervix.berichten.CervixFoutHL7v2Bericht"/>
 
@@ -201,14 +201,14 @@
         <mapping class="nl.rivm.screenit.model.cervix.cis.CervixCISHistorieOngestructureerdRegel"/>
 
         
-        <mapping class="nl.rivm.screenit.model.verwerkingverslag.SelectieRapportage"/>
-        <mapping class="nl.rivm.screenit.model.verwerkingverslag.SelectieRapportageEntry"/>
-        <mapping class="nl.rivm.screenit.model.verwerkingverslag.SelectieRapportageGewijzigdGebiedEntry"/>
-        <mapping class="nl.rivm.screenit.model.verwerkingverslag.SelectieRapportageProjectGroepEntry"/>
+        <mapping class="nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportage"/>
+        <mapping class="nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageEntry"/>
+        <mapping class="nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageGewijzigdGebiedEntry"/>
+        <mapping class="nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageProjectGroepEntry"/>
         <mapping class="nl.rivm.screenit.model.verwerkingverslag.BrievenGenererenRapportage"/>
         <mapping class="nl.rivm.screenit.model.verwerkingverslag.BrievenGenererenRapportageEntry"/>
-        <mapping class="nl.rivm.screenit.model.verwerkingverslag.IfobtVerwerkingRapportage"/>
-        <mapping class="nl.rivm.screenit.model.verwerkingverslag.IfobtVerwerkingRapportageEntry"/>
+        <mapping class="nl.rivm.screenit.model.verwerkingverslag.colon.ColonFitAnalyseResultaatSetVerwerkingRapportage"/>
+        <mapping class="nl.rivm.screenit.model.verwerkingverslag.colon.ColonFitAnalyseResultaatSetVerwerkingRapportageEntry"/>
         <mapping class="nl.rivm.screenit.model.verwerkingverslag.cervix.CervixSelectieRapportage"/>
         <mapping class="nl.rivm.screenit.model.verwerkingverslag.cervix.CervixGevolgenLabprocesVerwerkenRapportage"/>
         <mapping class="nl.rivm.screenit.model.verwerkingverslag.cervix.CervixZasVersturenRapportageProjectEntry"/>
@@ -238,7 +238,7 @@
 
         
         <mapping class="nl.rivm.screenit.model.cervix.CervixHpvBericht"/>
-        <mapping class="nl.rivm.screenit.model.colon.berichten.ColonIFobtUitslagBericht"/>
+        <mapping class="nl.rivm.screenit.model.colon.berichten.ColonFitAnalyseResultatenBericht"/>
 
         
         <mapping class="nl.rivm.screenit.model.UploadDocument"/>

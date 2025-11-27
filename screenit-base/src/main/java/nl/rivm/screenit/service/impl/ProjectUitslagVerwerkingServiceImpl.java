@@ -25,16 +25,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
 import nl.rivm.screenit.model.colon.ColonGeinterpreteerdeUitslag;
-import nl.rivm.screenit.model.colon.IFOBTTest;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
+import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.enums.BestandStatus;
 import nl.rivm.screenit.model.project.ProjectBestand;
 import nl.rivm.screenit.model.project.ProjectBestandVerwerking;
 import nl.rivm.screenit.model.project.ProjectBestandVerwerkingEntry;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.colon.ColonBaseFITService;
-import nl.rivm.screenit.service.colon.ColonStudietestService;
+import nl.rivm.screenit.service.colon.ColonBaseFitService;
+import nl.rivm.screenit.service.colon.ColonStudieRegistratieService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.slf4j.Logger;
@@ -51,10 +51,10 @@ public class ProjectUitslagVerwerkingServiceImpl implements ProjectUitslagVerwer
 	private static final Logger LOG = LoggerFactory.getLogger(ProjectUitslagVerwerkingServiceImpl.class);
 
 	@Autowired
-	private ColonBaseFITService fitService;
+	private ColonBaseFitService fitService;
 
 	@Autowired
-	private ColonStudietestService studietestService;
+	private ColonStudieRegistratieService studieRegistratieService;
 
 	@Autowired
 	private ICurrentDateSupplier currentDateSupplier;
@@ -132,11 +132,11 @@ public class ProjectUitslagVerwerkingServiceImpl implements ProjectUitslagVerwer
 				return new ProjectUitslagenUploadException("Aan deze barcode zijn geen clientgegevens %sgekoppeld".formatted(isVerwijderdeBarcode ? "meer " : ""));
 			});
 
-			clientIsHeraangemeld = studietestService.studietestHeraanmeldenIndienNodig(studietest);
+			clientIsHeraangemeld = studieRegistratieService.heraanmeldenIndienNodig(studietest);
 
-			studietestService.controleerUitslagenbestandOpFouten(studietest, uitslagenBestand);
+			studieRegistratieService.controleerUitslagenbestandOpFouten(studietest, uitslagenBestand);
 			checkEnSetWaardesUitslagenbestand(context, studietest);
-			studietestService.verwerkUitslag(studietest);
+			studieRegistratieService.verwerkRegistratie(studietest);
 
 			ProjectBestandVerwerking verwerking = uitslagenBestand.getVerwerking();
 			verwerking.setRegelsVerwerkt(verwerking.getRegelsVerwerkt() + 1);
@@ -155,15 +155,15 @@ public class ProjectUitslagVerwerkingServiceImpl implements ProjectUitslagVerwer
 		}
 	}
 
-	private void checkEnSetWaardesUitslagenbestand(ProjectUitslagVerwerkingContext context, IFOBTTest studietest) throws ProjectUitslagenUploadException
+	private void checkEnSetWaardesUitslagenbestand(ProjectUitslagVerwerkingContext context, ColonFitRegistratie studietest) throws ProjectUitslagenUploadException
 	{
 		checkEnSetGeinterpreteerdeUitslag(context, studietest);
 		checkEnSetAnalysedatum(context, studietest);
 		checkEnSetBron(context, studietest);
-		checkVervaldatumStudietest(studietest);
+		checkVervaldatumStudieRegistratie(studietest);
 	}
 
-	private void checkEnSetGeinterpreteerdeUitslag(ProjectUitslagVerwerkingContext context, IFOBTTest studietest) throws ProjectUitslagenUploadException
+	private void checkEnSetGeinterpreteerdeUitslag(ProjectUitslagVerwerkingContext context, ColonFitRegistratie studietest) throws ProjectUitslagenUploadException
 	{
 		String uitslagInCSV = context.getUitslagVanHuidigeRegel().toUpperCase().trim();
 		ColonGeinterpreteerdeUitslag geinterpreteerdeUitslag;
@@ -178,7 +178,7 @@ public class ProjectUitslagVerwerkingServiceImpl implements ProjectUitslagVerwer
 		studietest.setGeinterpreteerdeUitslag(geinterpreteerdeUitslag);
 	}
 
-	private void checkEnSetAnalysedatum(ProjectUitslagVerwerkingContext context, IFOBTTest studietest) throws ProjectUitslagenUploadException
+	private void checkEnSetAnalysedatum(ProjectUitslagVerwerkingContext context, ColonFitRegistratie studieRegistratie) throws ProjectUitslagenUploadException
 	{
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 		formatter.setLenient(false);
@@ -199,23 +199,23 @@ public class ProjectUitslagVerwerkingServiceImpl implements ProjectUitslagVerwer
 			throw new ProjectUitslagenUploadException("De analysedatum ligt niet in het verleden");
 		}
 
-		studietest.setAnalyseDatum(analysedatum);
+		studieRegistratie.setAnalyseDatum(analysedatum);
 	}
 
-	private void checkEnSetBron(ProjectUitslagVerwerkingContext context, IFOBTTest studietest) throws ProjectUitslagenUploadException
+	private void checkEnSetBron(ProjectUitslagVerwerkingContext context, ColonFitRegistratie studieRegistratie) throws ProjectUitslagenUploadException
 	{
 		String bron = context.getBron().trim();
 		if (bron.length() > 255)
 		{
 			throw new ProjectUitslagenUploadException("De tekst van de bron is te lang. Gebruik maximaal 255 karakters");
 		}
-		studietest.setInstrumentId(bron);
+		studieRegistratie.setInstrumentId(bron);
 	}
 
-	private void checkVervaldatumStudietest(IFOBTTest studietest) throws ProjectUitslagenUploadException
+	private void checkVervaldatumStudieRegistratie(ColonFitRegistratie studieRegistratie) throws ProjectUitslagenUploadException
 	{
-		fitService.checkVervaldatumVerlopen(studietest);
-		if (studietest.getStatus().equals(IFOBTTestStatus.VERVALDATUMVERLOPEN))
+		fitService.checkVervaldatumVerlopen(studieRegistratie);
+		if (studieRegistratie.getStatus().equals(ColonFitRegistratieStatus.VERVALDATUMVERLOPEN))
 		{
 			throw new ProjectUitslagenUploadException("De houdbaarheidsdatum van de studietest is verlopen");
 		}

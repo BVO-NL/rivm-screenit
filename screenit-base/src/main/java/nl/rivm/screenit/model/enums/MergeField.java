@@ -1636,7 +1636,7 @@ public enum MergeField
 			{
 				if (context.getColonUitnodiging() != null)
 				{
-					switch (context.getColonUitnodiging().getColonUitnodigingCategorie())
+					switch (context.getColonUitnodiging().getUitnodigingscategorie())
 					{
 					case U4:
 						return getStringValueFromPreference(PreferenceKey.COLON_NIEUWE_FIT_AANGEVRAAGD_TEKST);
@@ -4605,9 +4605,9 @@ public enum MergeField
 			colonUitnodigingen = new ArrayList<>(colonUitnodigingen);
 			colonUitnodigingen.sort(new PropertyComparator<>("creatieDatum", false, false));
 			var eenNaLaatsteUitnodiging = colonUitnodigingen.get(1);
-			if (eenNaLaatsteUitnodiging.getGekoppeldeTest() != null)
+			if (eenNaLaatsteUitnodiging.getGekoppeldeFitRegistratie() != null)
 			{
-				var heraanmeldenTekstKey = eenNaLaatsteUitnodiging.getGekoppeldeTest().getHeraanmeldenTekstKey();
+				var heraanmeldenTekstKey = eenNaLaatsteUitnodiging.getGekoppeldeFitRegistratie().getHeraanmeldenTekstKey();
 				if (heraanmeldenTekstKey != null)
 				{
 					return getStringValueFromPreference(heraanmeldenTekstKey);

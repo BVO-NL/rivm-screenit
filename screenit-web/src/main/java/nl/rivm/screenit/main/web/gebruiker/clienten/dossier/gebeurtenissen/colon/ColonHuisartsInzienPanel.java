@@ -45,7 +45,7 @@ public class ColonHuisartsInzienPanel extends AbstractGebeurtenisDetailPanel
 	{
 		super.onInitialize();
 		ColonScreeningRonde ronde = getModelObject().getScreeningsRonde();
-		EnovationHuisarts enovationHuisarts = ronde.getColonHuisarts();
+		EnovationHuisarts enovationHuisarts = ronde.getHuisarts();
 
 		if (enovationHuisarts != null)
 		{

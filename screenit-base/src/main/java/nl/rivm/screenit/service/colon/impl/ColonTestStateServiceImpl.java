@@ -42,19 +42,19 @@ import nl.rivm.screenit.model.TestModel;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonConclusie;
 import nl.rivm.screenit.model.colon.ColonDossier;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
+import nl.rivm.screenit.model.colon.ColonFitType;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonMergedBrieven;
 import nl.rivm.screenit.model.colon.ColonOnderzoeksVariant;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.ColonVooraankondiging;
-import nl.rivm.screenit.model.colon.IFOBTTest;
-import nl.rivm.screenit.model.colon.IFOBTType;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.GbaStatus;
@@ -68,7 +68,7 @@ import nl.rivm.screenit.service.TestService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.service.colon.ColonTestStateService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.rivm.screenit.util.FITTestUtil;
+import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
@@ -136,18 +136,18 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 			switch (model.getColonTestActies())
 			{
 			case U1:
-				setClientInU1(dossier, false, nu, ColonUitnodigingCategorie.U1);
+				setClientInU1(dossier, false, nu, ColonUitnodigingscategorie.U1);
 				break;
 			case U2_1:
-				setClientInU1(dossier, true, nu, ColonUitnodigingCategorie.U1);
+				setClientInU1(dossier, true, nu, ColonUitnodigingscategorie.U1);
 				break;
 			case U2_2:
 				dossier = setClientInU1(dossier, true, nuMinAantalDagenUitnodiging, null);
 				uitnodigingVerstuurd(dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging(), nuMinAantalDagenUitnodiging);
-				setClientInU2_2(dossier, ColonUitnodigingCategorie.U2);
+				setClientInU2_2(dossier, ColonUitnodigingscategorie.U2);
 				break;
 			case U2_3:
-				setClientInU2_3(dossier, ColonUitnodigingCategorie.U2);
+				setClientInU2_3(dossier, ColonUitnodigingscategorie.U2);
 				break;
 			case U3_1:
 				dossier = setClientInU1(dossier, true, nuMinAantalDagenUitnodiging, null);
@@ -199,7 +199,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 		return melding;
 	}
 
-	private ColonDossier setClientInU1(ColonDossier dossier, boolean totUitnodiging, Date nu, ColonUitnodigingCategorie u)
+	private ColonDossier setClientInU1(ColonDossier dossier, boolean totUitnodiging, Date nu, ColonUitnodigingscategorie u)
 	{
 		Client client = dossier.getClient();
 		Date vooraankondigingdate;
@@ -216,7 +216,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 			uitnodigingsdate = DateUtil.plusDagen(nu, dagen);
 		}
 
-		ColonVooraankondiging voor = dossier.getColonVooraankondiging();
+		ColonVooraankondiging voor = dossier.getVooraankondiging();
 		if (voor == null)
 		{
 			voor = new ColonVooraankondiging();
@@ -224,7 +224,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 			voor.setCreatieDatum(vooraankondigingdate);
 			voor.setBrief(maakBrief("vooraankondigingbrief.docx", BriefType.COLON_VOORAANKONDIGING, client, vooraankondigingdate));
 		}
-		dossier.setColonVooraankondiging(voor);
+		dossier.setVooraankondiging(voor);
 		hibernateService.saveOrUpdate(voor);
 		hibernateService.saveOrUpdate(dossier);
 
@@ -235,7 +235,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 		return dossier;
 	}
 
-	private ColonDossier setClientInU2_2(ColonDossier dossier, ColonUitnodigingCategorie u)
+	private ColonDossier setClientInU2_2(ColonDossier dossier, ColonUitnodigingscategorie u)
 	{
 		var nu = currentDateSupplier.getDate();
 		fixU2_2Dossier(dossier, nu);
@@ -245,12 +245,12 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 		return dossier;
 	}
 
-	private ColonDossier setClientInU2_3(ColonDossier dossier, ColonUitnodigingCategorie u)
+	private ColonDossier setClientInU2_3(ColonDossier dossier, ColonUitnodigingscategorie u)
 	{
 		var nu = currentDateSupplier.getDate();
 		ColonScreeningRonde ronde = newScreeningRonde(dossier, nu);
 		ColonUitnodiging uitnodiging = nieuweUitnodiging(ronde, nu, u);
-		dossier.setColonVooraankondiging(null);
+		dossier.setVooraankondiging(null);
 		hibernateService.saveOrUpdateAll(ronde, dossier, uitnodiging);
 		return dossier;
 	}
@@ -300,7 +300,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 		}
 	}
 
-	private ColonUitnodiging nieuweUitnodiging(ColonScreeningRonde screeningRonde, Date nu, ColonUitnodigingCategorie u)
+	private ColonUitnodiging nieuweUitnodiging(ColonScreeningRonde screeningRonde, Date nu, ColonUitnodigingscategorie u)
 	{
 		ColonUitnodiging uitnodiging = new ColonUitnodiging();
 		uitnodiging.setUitnodigingsId(uitnodigingsDao.getNextUitnodigingsId());
@@ -312,29 +312,28 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 
 		if (u == null)
 		{
-			u = ColonUitnodigingCategorie.U1;
+			u = ColonUitnodigingscategorie.U1;
+			var fitRegistratie = new ColonFitRegistratie();
+			fitRegistratie.setBarcode(ColonFitRegistratieUtil.getFitRegistratieBarcode());
+			fitRegistratie.setType(ColonFitType.GOLD);
+			fitRegistratie.setStatus(ColonFitRegistratieStatus.ACTIEF);
+			fitRegistratie.setHerinnering(Boolean.FALSE);
+			fitRegistratie.setDatumVerstuurd(nu);
+			fitRegistratie.setStatusDatum(nu);
+			fitRegistratie.setScreeningRonde(screeningRonde);
+			fitRegistratie.setUitnodiging(uitnodiging);
 
-			IFOBTTest ifobt = new IFOBTTest();
-			ifobt.setBarcode(FITTestUtil.getFITTestBarcode());
-			ifobt.setType(IFOBTType.GOLD);
-			ifobt.setStatus(IFOBTTestStatus.ACTIEF);
-			ifobt.setHerinnering(Boolean.FALSE);
-			ifobt.setDatumVerstuurd(nu);
-			ifobt.setStatusDatum(nu);
-			ifobt.setColonScreeningRonde(screeningRonde);
-			ifobt.setColonUitnodiging(uitnodiging);
-
-			uitnodiging.setGekoppeldeTest(ifobt);
+			uitnodiging.setGekoppeldeFitRegistratie(fitRegistratie);
 			uitnodiging.setVerstuurd(true);
 			uitnodiging.setVerstuurdDatum(currentDateSupplier.getDate());
 			uitnodiging.setVerstuurdDoorInpakcentrum(true);
 
-			screeningRonde.setLaatsteIFOBTTest(ifobt);
-			screeningRonde.getIfobtTesten().add(ifobt);
-			hibernateService.saveOrUpdate(ifobt);
+			screeningRonde.setLaatsteFitRegistratie(fitRegistratie);
+			screeningRonde.getFitRegistraties().add(fitRegistratie);
+			hibernateService.saveOrUpdate(fitRegistratie);
 		}
 
-		uitnodiging.setColonUitnodigingCategorie(u);
+		uitnodiging.setUitnodigingscategorie(u);
 		uitnodiging.setOnderzoeksVariant(ColonOnderzoeksVariant.STANDAARD);
 
 		screeningRonde.setLaatsteUitnodiging(uitnodiging);
@@ -346,17 +345,16 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 
 	private ColonDossier fixU2_2Dossier(ColonDossier dossier, Date nu)
 	{
-		if (dossier.getLaatsteScreeningRonde() != null && dossier.getLaatsteScreeningRonde().getLaatsteIFOBTTest() != null
+		if (dossier.getLaatsteScreeningRonde() != null && dossier.getLaatsteScreeningRonde().getLaatsteFitRegistratie() != null
 			&& dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging() != null)
 		{
-
-			IFOBTTest test = dossier.getLaatsteScreeningRonde().getLaatsteIFOBTTest();
-			test.setStatus(IFOBTTestStatus.UITGEVOERD);
-			test.setStatusDatum(DateUtil.minDagen(nu, 8));
-			test.setVerwerkingsDatum(DateUtil.minDagen(nu, 15));
-			test.setNormWaarde(new BigDecimal("25.5"));
-			test.setUitslag(new BigDecimal("100.5"));
-			hibernateService.saveOrUpdate(test);
+			var fitRegistratie = dossier.getLaatsteScreeningRonde().getLaatsteFitRegistratie();
+			fitRegistratie.setStatus(ColonFitRegistratieStatus.UITGEVOERD);
+			fitRegistratie.setStatusDatum(DateUtil.minDagen(nu, 8));
+			fitRegistratie.setVerwerkingsDatum(DateUtil.minDagen(nu, 15));
+			fitRegistratie.setNormWaarde(new BigDecimal("25.5"));
+			fitRegistratie.setUitslag(new BigDecimal("100.5"));
+			hibernateService.saveOrUpdate(fitRegistratie);
 
 			maakAfspraakEnConclusie(dossier);
 
@@ -370,24 +368,23 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 
 	private ColonDossier fixU3Dossier(ColonDossier dossier, RedenNietTeBeoordelen reden, Date nu)
 	{
-		if (dossier.getLaatsteScreeningRonde() != null && dossier.getLaatsteScreeningRonde().getLaatsteIFOBTTest() != null
+		if (dossier.getLaatsteScreeningRonde() != null && dossier.getLaatsteScreeningRonde().getLaatsteFitRegistratie() != null
 			&& dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging() != null)
 		{
-
 			ColonUitnodiging uitnodiging = dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging();
 			uitnodiging.setVerstuurdDatum(DateUtil.minDagen(uitnodiging.getVerstuurdDatum(), 5));
 
 			hibernateService.saveOrUpdate(uitnodiging);
 
-			IFOBTTest test = dossier.getLaatsteScreeningRonde().getLaatsteIFOBTTest();
-			test.setStatus(IFOBTTestStatus.NIETTEBEOORDELEN);
-			test.setRedenNietTeBeoordelen(reden);
-			test.setStatusDatum(nu);
-			test.setVerwerkingsDatum(nu);
+			var fitRegistratie = dossier.getLaatsteScreeningRonde().getLaatsteFitRegistratie();
+			fitRegistratie.setStatus(ColonFitRegistratieStatus.NIETTEBEOORDELEN);
+			fitRegistratie.setRedenNietTeBeoordelen(reden);
+			fitRegistratie.setStatusDatum(nu);
+			fitRegistratie.setVerwerkingsDatum(nu);
 
-			hibernateService.saveOrUpdate(test);
+			hibernateService.saveOrUpdate(fitRegistratie);
 
-			ColonVooraankondiging voor = dossier.getColonVooraankondiging();
+			ColonVooraankondiging voor = dossier.getVooraankondiging();
 			voor.setCreatieDatum(DateUtil.minDagen(voor.getCreatieDatum(), 5));
 			hibernateService.saveOrUpdate(voor);
 		}
@@ -396,29 +393,28 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 
 	private ColonDossier fixU4Dossier(ColonDossier dossier, Date nu)
 	{
-		if (dossier.getLaatsteScreeningRonde() != null && dossier.getLaatsteScreeningRonde().getLaatsteIFOBTTest() != null
+		if (dossier.getLaatsteScreeningRonde() != null && dossier.getLaatsteScreeningRonde().getLaatsteFitRegistratie() != null
 			&& dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging() != null)
 		{
+			var fitRegistratie = dossier.getLaatsteScreeningRonde().getLaatsteFitRegistratie();
+			fitRegistratie.setStatus(ColonFitRegistratieStatus.VERLOREN);
+			fitRegistratie.setStatusDatum(nu);
+			hibernateService.saveOrUpdate(fitRegistratie);
 
-			IFOBTTest test = dossier.getLaatsteScreeningRonde().getLaatsteIFOBTTest();
-			test.setStatus(IFOBTTestStatus.VERLOREN);
-			test.setStatusDatum(nu);
-			hibernateService.saveOrUpdate(test);
-
-			ColonUitnodiging uitnodigingIFOBTEN = FITTestUtil.getUitnodiging(test);
-			IFOBTTest studietest = uitnodigingIFOBTEN.getGekoppeldeExtraTest();
-			if (studietest != null && studietest.getType().equals(IFOBTType.STUDIE))
+			var registratieUitnodiging = ColonFitRegistratieUtil.getUitnodiging(fitRegistratie);
+			var studieRegistratie = registratieUitnodiging.getGekoppeldeExtraFitRegistratie();
+			if (studieRegistratie != null && studieRegistratie.getType().equals(ColonFitType.STUDIE))
 			{
-				studietest.setStatus(IFOBTTestStatus.VERLOREN);
-				studietest.setStatusDatum(nu);
-				hibernateService.saveOrUpdate(studietest);
+				studieRegistratie.setStatus(ColonFitRegistratieStatus.VERLOREN);
+				studieRegistratie.setStatusDatum(nu);
+				hibernateService.saveOrUpdate(studieRegistratie);
 			}
 
-			ColonVooraankondiging voor = dossier.getColonVooraankondiging();
-			voor.setCreatieDatum(DateUtil.minDagen(voor.getCreatieDatum(), 5));
-			hibernateService.saveOrUpdate(voor);
+			var vooraankondiging = dossier.getVooraankondiging();
+			vooraankondiging.setCreatieDatum(DateUtil.minDagen(vooraankondiging.getCreatieDatum(), 5));
+			hibernateService.saveOrUpdate(vooraankondiging);
 
-			ColonUitnodiging uitnodiging = dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging();
+			var uitnodiging = dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging();
 			uitnodiging.setVerstuurdDatum(DateUtil.minDagen(uitnodiging.getVerstuurdDatum(), 5));
 
 			hibernateService.saveOrUpdate(uitnodiging);
@@ -428,21 +424,20 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 
 	private ColonDossier fixU6Dossier(ColonDossier dossier, Date nu)
 	{
-		if (dossier.getLaatsteScreeningRonde() != null && dossier.getLaatsteScreeningRonde().getLaatsteIFOBTTest() != null
+		if (dossier.getLaatsteScreeningRonde() != null && dossier.getLaatsteScreeningRonde().getLaatsteFitRegistratie() != null
 			&& dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging() != null)
 		{
+			var fitRegistratie = dossier.getLaatsteScreeningRonde().getLaatsteFitRegistratie();
+			fitRegistratie.setStatus(ColonFitRegistratieStatus.VERVALDATUMVERLOPEN);
+			fitRegistratie.setStatusDatum(nu);
+			hibernateService.saveOrUpdate(fitRegistratie);
 
-			IFOBTTest test = dossier.getLaatsteScreeningRonde().getLaatsteIFOBTTest();
-			test.setStatus(IFOBTTestStatus.VERVALDATUMVERLOPEN);
-			test.setStatusDatum(nu);
-			hibernateService.saveOrUpdate(test);
+			var vooraankondiging = dossier.getVooraankondiging();
+			vooraankondiging.setCreatieDatum(DateUtil.minDagen(vooraankondiging.getCreatieDatum(), 5));
 
-			ColonVooraankondiging voor = dossier.getColonVooraankondiging();
-			voor.setCreatieDatum(DateUtil.minDagen(voor.getCreatieDatum(), 5));
+			hibernateService.saveOrUpdate(vooraankondiging);
 
-			hibernateService.saveOrUpdate(voor);
-
-			ColonUitnodiging uitnodiging = dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging();
+			var uitnodiging = dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging();
 			uitnodiging.setVerstuurdDatum(DateUtil.minDagen(uitnodiging.getVerstuurdDatum(), 5));
 			hibernateService.saveOrUpdate(uitnodiging);
 		}
@@ -555,7 +550,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 			client.getAfspraken().add(intakeAfspraak);
 			screeningRonde.setLaatsteAfspraak(intakeAfspraak);
 			screeningRonde.getAfspraken().add(intakeAfspraak);
-			intakeAfspraak.setColonScreeningRonde(screeningRonde);
+			intakeAfspraak.setScreeningRonde(screeningRonde);
 
 		}
 		intakeAfspraak.setBezwaar(false);

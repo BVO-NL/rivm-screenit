@@ -41,8 +41,10 @@ import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht_;
 import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
+import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.PaVerslag;
+import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.MdlVervolgbeleid;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlTnummerPathologieVerslag;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerslagContent;
@@ -137,27 +139,45 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 			logService.logGebeurtenis(type.getVerwijderdVerslagLogGebeurtenis(), client, melding, type.getBevolkingsonderzoek());
 		}
 
-		removeVerslagUitRonde(verslag, type);
+		colonHerstelIntakeafspraakIndienNodig(verslag);
+		removeVerslagUitRonde(verslag);
 		verslag.setScreeningRonde(null);
 		verslag.setUitvoerderMedewerker(null);
 		verslag.setUitvoerderOrganisatie(null);
-		verslag.setOntvangenBericht(null);
-
 		var ontvangenBericht = verslag.getOntvangenBericht();
 		if (ontvangenBericht != null)
 		{
 			ontvangenBericht.setStatus(BerichtStatus.VERWIJDERD);
 			hibernateService.saveOrUpdate(ontvangenBericht);
 		}
+		verslag.setOntvangenBericht(null);
 
 		hibernateService.saveOrUpdate(screeningRonde);
 		hibernateService.delete(verslag);
 		hibernateService.delete(verslag.getVerslagContent());
-
 	}
 
-	private void removeVerslagUitRonde(Verslag<?, ?> verslag, VerslagType type)
+	private void colonHerstelIntakeafspraakIndienNodig(Verslag<?, ?> verslag)
 	{
+		var type = verslag.getType();
+		if (type == VerslagType.MDL && VerslagStatus.AFGEROND == verslag.getStatus())
+		{
+			var laatsteScreeningRonde = verslag.getScreeningRonde().getDossier().getLaatsteScreeningRonde();
+			if (laatsteScreeningRonde instanceof ColonScreeningRonde colonScreeningRonde)
+			{
+				var laatsteAfspraak = colonScreeningRonde.getLaatsteAfspraak();
+				if (colonScreeningRonde.getVerslagen().size() == 1 && laatsteAfspraak != null && laatsteAfspraak.getConclusie() == null
+					&& laatsteAfspraak.getStatus() == ColonAfspraakStatus.UITGEVOERD)
+				{
+					laatsteAfspraak.setStatus(ColonAfspraakStatus.GEPLAND);
+				}
+			}
+		}
+	}
+
+	private void removeVerslagUitRonde(Verslag<?, ?> verslag)
+	{
+		var type = verslag.getType();
 		if (type == VerslagType.MDL && VerslagStatus.AFGEROND == verslag.getStatus())
 		{
 			var mdlVerslag = (MdlVerslag) HibernateHelper.deproxy(verslag);
@@ -234,7 +254,7 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 				var laatsteAfspraak = screeningRonde.getLaatsteAfspraak();
 				if (laatsteAfspraak != null)
 				{
-					colonDossierService.setVolgendeUitnodingVoorConclusie(laatsteAfspraak);
+					colonDossierService.setVolgendeUitnodigingVoorConclusie(laatsteAfspraak);
 				}
 			}
 		}
@@ -265,7 +285,7 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 			melding = "Elektronisch bericht: berichtId: " + ontvangenBericht.getBerichtId() + ", setId: " + ontvangenBericht.getSetId() + ", versie: "
 				+ ontvangenBericht.getVersie() + ",";
 		}
-		else if (verwerktVerslag instanceof MammaFollowUpVerslag upVerslag && isElektronischPalgaVerslag(upVerslag))
+		else if (verwerktVerslag instanceof MammaFollowUpVerslag upVerslag && isDigitaalPalgaVerslag(upVerslag))
 		{
 			melding = "Elektronische invoer: ";
 		}
@@ -286,7 +306,7 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 	}
 
 	@Override
-	public boolean isElektronischPalgaVerslag(MammaFollowUpVerslag followUpVerslag)
+	public boolean isDigitaalPalgaVerslag(MammaFollowUpVerslag followUpVerslag)
 	{
 		return followUpVerslag.getInvoerder() == null && followUpVerslag.getVerslagContent() != null
 			&& followUpVerslag.getVerslagContent().getPathologieMedischeObservatie() != null

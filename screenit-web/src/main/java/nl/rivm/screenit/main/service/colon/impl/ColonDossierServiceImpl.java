@@ -49,11 +49,11 @@ import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.colon.ColonAfmelding;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonConclusie;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
 import nl.rivm.screenit.model.colon.ColonHuisartsBericht;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
-import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
 import nl.rivm.screenit.model.colon.enums.ColonGeenOnderzoekReden;
@@ -71,15 +71,15 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
-import nl.rivm.screenit.service.colon.ColonBaseFITService;
+import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.util.AfmeldingUtil;
 import nl.rivm.screenit.util.BriefUtil;
-import nl.rivm.screenit.util.ColonScreeningRondeUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EntityAuditUtil;
-import nl.rivm.screenit.util.FITTestUtil;
 import nl.rivm.screenit.util.NaamUtil;
+import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
+import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
@@ -115,7 +115,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 
 	private final ColonBaseAfspraakService afspraakService;
 
-	private final ColonBaseFITService fitService;
+	private final ColonBaseFitService fitService;
 
 	private final ColonDossierBaseService dossierBaseService;
 
@@ -125,9 +125,9 @@ public class ColonDossierServiceImpl implements ColonDossierService
 
 	@Override
 	@Transactional
-	public void monsterNietBeoordeelbaar(IFOBTTest ifobtTest)
+	public void monsterNietBeoordeelbaar(ColonFitRegistratie fitRegistratie)
 	{
-		fitService.monsterNietBeoordeelbaar(ifobtTest);
+		fitService.monsterNietBeoordeelbaar(fitRegistratie);
 	}
 
 	@Override
@@ -159,7 +159,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 			}
 
 		}
-		var screeningRonde = afspraak.getColonScreeningRonde();
+		var screeningRonde = afspraak.getScreeningRonde();
 		if (!nieuweConclusie)
 		{
 			ColonConclusie oldAfspraakConclusie = null;
@@ -276,7 +276,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 		}
 
 		hibernateService.saveOrUpdate(afspraak);
-		dossierBaseService.setVolgendeUitnodingVoorConclusie(afspraak);
+		dossierBaseService.setVolgendeUitnodigingVoorConclusie(afspraak);
 		logService.logGebeurtenis(LogGebeurtenis.CONCLUSIE_VASTLEGGEN_WIJZIGEN, ingelogdeOrganisatieMedewerker, client, nieuweConclusie ? "Nieuw" : " Gewijzigd" + conclusieDiff,
 			Bevolkingsonderzoek.COLON);
 	}
@@ -451,7 +451,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 		brief.setClient(null);
 		brief.setScreeningRonde(null);
 		brief.setIntakeAfspraak(null);
-		brief.setIfobtTest(null);
+		brief.setFitRegistratie(null);
 		var mergedBrieven = brief.getMergedBrieven();
 		brief.setMergedBrieven(null);
 		if (mergedBrieven != null)
@@ -502,7 +502,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public boolean magConclusieAanpassenVerwijderen(ColonIntakeAfspraak afspraak, ColonConclusieType origConclusie)
 	{
-		var screeningRonde = afspraak.getColonScreeningRonde();
+		var screeningRonde = afspraak.getScreeningRonde();
 		var heeftMdlVerslag = ColonScreeningRondeUtil.heeftAfgerondeVerslag(screeningRonde, VerslagType.MDL);
 		return origConclusie != null
 			&& !ColonAfspraakStatus.isGeannuleerd(afspraak.getStatus())
@@ -515,7 +515,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 	@Transactional
 	public void conclusieVerwijderen(ColonIntakeAfspraak afspraak, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, ColonConclusieType origConclusie)
 	{
-		var screeningRonde = afspraak.getColonScreeningRonde();
+		var screeningRonde = afspraak.getScreeningRonde();
 		var dossier = screeningRonde.getDossier();
 		var client = dossier.getClient();
 		var conclusie = afspraak.getConclusie();
@@ -591,18 +591,18 @@ public class ColonDossierServiceImpl implements ColonDossierService
 
 	@Override
 	@Transactional
-	public void verwijderIfobtUitslag(IFOBTTest buis, UploadDocument uploadDocument, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	public void verwijderFitAnalyseResultaat(ColonFitRegistratie fitRegistratie, UploadDocument uploadDocument, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		var uitnodiging = (ColonUitnodiging) HibernateHelper.deproxy(ModelProxyHelper.deproxy(FITTestUtil.getUitnodiging(buis)));
+		var uitnodiging = (ColonUitnodiging) HibernateHelper.deproxy(ModelProxyHelper.deproxy(ColonFitRegistratieUtil.getUitnodiging(fitRegistratie)));
 
-		var screeningRonde = buis.getColonScreeningRonde();
+		var screeningRonde = fitRegistratie.getScreeningRonde();
 		var client = screeningRonde.getDossier().getClient();
 
 		var teVerwijderenBrieven = new ArrayList<ColonBrief>();
 
 		for (var bestaandeBrief : screeningRonde.getBrieven())
 		{
-			if (isBriefTeVerwijderen(buis, bestaandeBrief))
+			if (isBriefTeVerwijderen(fitRegistratie, bestaandeBrief))
 			{
 				teVerwijderenBrieven.add(bestaandeBrief);
 			}
@@ -611,7 +611,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 		var teVerwijderenAfspraken = new ArrayList<ColonIntakeAfspraak>();
 		var teVerwijderenHuisartsberichten = new ArrayList<ColonHuisartsBericht>();
 
-		if (FITTestUtil.isOngunstig(buis) && !FITTestUtil.heeftMeerdereOngunstigeUitslagenInZelfdeRonde(buis))
+		if (ColonFitRegistratieUtil.isOngunstig(fitRegistratie) && !ColonFitRegistratieUtil.heeftMeerdereOngunstigeUitslagenInZelfdeRonde(fitRegistratie))
 		{
 			for (var afspraak : screeningRonde.getAfspraken())
 			{
@@ -628,7 +628,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 			teVerwijderenHuisartsberichten.addAll(screeningRonde.getHuisartsBerichten());
 		}
 
-		fitService.verwijderUitslag(buis, uploadDocument);
+		fitService.verwijderFitAnalyseResultaat(fitRegistratie, uploadDocument);
 		clientService.projectClientInactiveren(client, ProjectInactiefReden.VALT_UIT_2DE_BUIS_PROJECT, Bevolkingsonderzoek.COLON);
 
 		verwijderVervolgStappen(screeningRonde, teVerwijderenBrieven);
@@ -663,29 +663,30 @@ public class ColonDossierServiceImpl implements ColonDossierService
 		hibernateService.saveOrUpdate(client);
 		hibernateService.saveOrUpdate(screeningRonde);
 
-		logService.logGebeurtenis(LogGebeurtenis.IFOBT_UITSLAG_VERWIJDERD, ingelogdeOrganisatieMedewerker, client, "UitnodigingsId: " + uitnodiging.getUitnodigingsId(),
+		logService.logGebeurtenis(LogGebeurtenis.COLON_FIT_ANALYSE_RESULTAAT_VERWIJDERD, ingelogdeOrganisatieMedewerker, client,
+			"UitnodigingsId: " + uitnodiging.getUitnodigingsId(),
 			Bevolkingsonderzoek.COLON);
 	}
 
-	private boolean isBriefTeVerwijderen(IFOBTTest buis, ColonBrief bestaandeBrief)
+	private boolean isBriefTeVerwijderen(ColonFitRegistratie fitRegistratie, ColonBrief bestaandeBrief)
 	{
-		return FITTestUtil.isEnigeUitgevoerdeFITInZelfdeRonde(buis) && BriefUtil.isUitslagBrief(bestaandeBrief)
-			|| FITTestUtil.isOngunstig(buis) && BriefUtil.isOngunstigeUitslagBrief(bestaandeBrief)
-			&& !FITTestUtil.heeftMeerdereOngunstigeUitslagenInZelfdeRonde(buis);
+		return ColonFitRegistratieUtil.isEnigeUitgevoerdeFitInZelfdeRonde(fitRegistratie) && BriefUtil.isUitslagBrief(bestaandeBrief)
+			|| ColonFitRegistratieUtil.isOngunstig(fitRegistratie) && BriefUtil.isOngunstigeUitslagBrief(bestaandeBrief)
+			&& !ColonFitRegistratieUtil.heeftMeerdereOngunstigeUitslagenInZelfdeRonde(fitRegistratie);
 	}
 
 	@Override
 	@Transactional
-	public void vervangUitslagVerwijderenDocument(IFOBTTest buis, UploadDocument uploadDocument)
+	public void vervangUitslagVerwijderenDocument(ColonFitRegistratie fitRegistratie, UploadDocument uploadDocument)
 	{
 		if (uploadDocument != null)
 		{
-			var uitnodiging = FITTestUtil.getUitnodiging(buis);
-			var gekoppeldeTest = uitnodiging.getGekoppeldeTest();
-			if (gekoppeldeTest != null)
+			var uitnodiging = ColonFitRegistratieUtil.getUitnodiging(fitRegistratie);
+			var gekoppeldeFitRegistratie = uitnodiging.getGekoppeldeFitRegistratie();
+			if (gekoppeldeFitRegistratie != null)
 			{
-				gekoppeldeTest.setVerwijderbrief(uploadDocument);
-				hibernateService.saveOrUpdateAll(uploadDocument, gekoppeldeTest);
+				gekoppeldeFitRegistratie.setVerwijderbrief(uploadDocument);
+				hibernateService.saveOrUpdateAll(uploadDocument, gekoppeldeFitRegistratie);
 			}
 		}
 		else

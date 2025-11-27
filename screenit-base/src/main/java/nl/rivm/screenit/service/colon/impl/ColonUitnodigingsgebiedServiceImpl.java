@@ -73,7 +73,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import static jakarta.persistence.criteria.JoinType.LEFT;
@@ -185,13 +184,13 @@ public class ColonUitnodigingsgebiedServiceImpl implements ColonUitnodigingsgebi
 	@Override
 	public BigDecimal getFitFactorVoorGebied(UitnodigingsGebied uitnodigingsGebied)
 	{
-		var percLandelijkFitRetour = simplePreferenceService.getInteger(PreferenceKey.PERCENTAGEIFOBTRETOUR.name());
+		var percLandelijkFitRetour = simplePreferenceService.getInteger(PreferenceKey.COLON_FIT_RETOUR_PERCENTAGE.name());
 		if (percLandelijkFitRetour == null)
 		{
 			throw new IllegalStateException("Landelijk IfobtRetourPercentage is niet gezet");
 		}
 
-		var percLandelijkFitOngunstige = simplePreferenceService.getInteger(PreferenceKey.PERCENTGAGEIFOBTONGUSTIG.name());
+		var percLandelijkFitOngunstige = simplePreferenceService.getInteger(PreferenceKey.COLON_FIT_ONGUNSTIG_PERCENTAGE.name());
 		if (percLandelijkFitOngunstige == null)
 		{
 			throw new IllegalStateException("Landelijk IfobtOngunstigePercentage is niet gezet");
@@ -199,9 +198,9 @@ public class ColonUitnodigingsgebiedServiceImpl implements ColonUitnodigingsgebi
 
 		var percFitRetour = percLandelijkFitRetour;
 
-		if (uitnodigingsGebied.getGemeente().getScreeningOrganisatie() != null && uitnodigingsGebied.getGemeente().getScreeningOrganisatie().getIfobtRetourPercentage() != null)
+		if (uitnodigingsGebied.getGemeente().getScreeningOrganisatie() != null && uitnodigingsGebied.getGemeente().getScreeningOrganisatie().getFitRetourPercentage() != null)
 		{
-			percFitRetour = uitnodigingsGebied.getGemeente().getScreeningOrganisatie().getIfobtRetourPercentage();
+			percFitRetour = uitnodigingsGebied.getGemeente().getScreeningOrganisatie().getFitRetourPercentage();
 		}
 
 		if (uitnodigingsGebied.getPercentageIFobtRetour() != null)
@@ -212,7 +211,7 @@ public class ColonUitnodigingsgebiedServiceImpl implements ColonUitnodigingsgebi
 		var fitRetourFactor = BigDecimal.ZERO;
 		if (percFitRetour != null && percFitRetour > 0)
 		{
-			fitRetourFactor = berekenFITFactor(percFitRetour);
+			fitRetourFactor = berekenFitRetourFactor(percFitRetour);
 		}
 
 		LOG.info("Uitnodigingsgebied {}: FIT Retour {} => factor {}", uitnodigingsGebied.getNaam(),
@@ -229,7 +228,7 @@ public class ColonUitnodigingsgebiedServiceImpl implements ColonUitnodigingsgebi
 		var fitOngunstigFactor = BigDecimal.ZERO;
 		if (percFitOngunstig != null && percFitOngunstig > 0)
 		{
-			fitOngunstigFactor = berekenFITFactor(percFitOngunstig);
+			fitOngunstigFactor = berekenFitRetourFactor(percFitOngunstig);
 		}
 
 		LOG.info("Uitnodigingsgebied {}: FIT Ongunstig {} => factor {}", uitnodigingsGebied.getNaam(),
@@ -243,13 +242,13 @@ public class ColonUitnodigingsgebiedServiceImpl implements ColonUitnodigingsgebi
 	}
 
 	@NotNull
-	private static BigDecimal berekenFITFactor(Integer percFitRetour)
+	private static BigDecimal berekenFitRetourFactor(Integer percFitRetour)
 	{
 		return BigDecimal.valueOf(10000).divide(BigDecimal.valueOf(percFitRetour), 4, RoundingMode.HALF_UP);
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void wijzigingenDoorvoeren(UitnodigingsGebied uitnodigingsgebied, Map<String, Integer> nieuweAdherentiePercentages,
 		List<ColoscopieCentrumColonCapaciteitVerdeling> verwijderdeKoppelingen, List<CapaciteitsPercWijziging> wijzigingen, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
@@ -348,7 +347,7 @@ public class ColonUitnodigingsgebiedServiceImpl implements ColonUitnodigingsgebi
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void wijzigingenDoorvoeren(ColonIntakelocatie intakelocatie, List<ColoscopieCentrumColonCapaciteitVerdeling> verwijderdeKoppelingen,
 		List<CapaciteitsPercWijziging> wijzigingen, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{

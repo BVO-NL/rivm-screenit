@@ -34,7 +34,7 @@ import nl.rivm.screenit.model.algemeen.AlgemeneBrief;
 import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
 import nl.rivm.screenit.model.exception.VerwijderClientException;
 import nl.rivm.screenit.model.gba.GbaVraag;
-import nl.rivm.screenit.model.logging.NieuweIFobtAanvraagLogEvent;
+import nl.rivm.screenit.model.logging.colon.ColonNieuwFitAanvraagLogEvent;
 import nl.rivm.screenit.model.mamma.MammaDeelnamekans;
 import nl.rivm.screenit.service.BaseProjectService;
 import nl.rivm.screenit.service.BezwaarService;
@@ -129,7 +129,7 @@ public class ClientenVerwijderenTestServiceImpl implements ClientenVerwijderenTe
 
 				logService.verwijderLogRegelsVanClient(client);
 
-				List<NieuweIFobtAanvraagLogEvent> logEvents = hibernateService.getByParameters(NieuweIFobtAanvraagLogEvent.class, ImmutableMap.of("client", client));
+				List<ColonNieuwFitAanvraagLogEvent> logEvents = hibernateService.getByParameters(ColonNieuwFitAanvraagLogEvent.class, ImmutableMap.of("client", client));
 				logEvents.forEach(le -> hibernateService.delete(le.getLogRegel()));
 
 				bezwaarService.verwijderBezwaarMomenten(client);

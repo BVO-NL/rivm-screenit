@@ -30,27 +30,34 @@ import java.util.List;
 
 import jakarta.persistence.Transient;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 
+@Setter
+@Getter
 public class MammaCapaciteitBlokDto implements Serializable
 {
-	public Long id;
+	private Long id;
 
-	public LocalDateTime vanaf;
+	private LocalDateTime vanaf;
 
-	public LocalTime tot;
+	private LocalTime tot;
 
-	public BigDecimal vrijeCapaciteit;
+	private BigDecimal vrijeCapaciteit;
 
-	public BigDecimal beschikbareCapaciteit;
+	private BigDecimal beschikbareCapaciteit;
 
-	public List<MammaAfspraakDto> afspraakDtos = new ArrayList<>();
+	private List<MammaAfspraakDto> afspraakDtos = new ArrayList<>();
 
-	public Integer aantalOnderzoeken;
+	private List<LocalTime> mindervalideReserveringen = new ArrayList<>();
+
+	private Integer aantalOnderzoeken;
 
 	@Transient
-	public MammaStandplaatsPeriode standplaatsPeriode;
+	private MammaStandplaatsPeriode standplaatsPeriode;
 
-	public boolean minderValideAfspraakMogelijk;
+	private boolean minderValideAfspraakMogelijk;
 
 }

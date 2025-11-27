@@ -203,7 +203,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 	private List<BriefType> getBriefTypes()
 	{
 		var afspraak = getModelObject();
-		var ronde = afspraak.getColonScreeningRonde();
+		var ronde = afspraak.getScreeningRonde();
 
 		var choices = new ArrayList<BriefType>();
 		if (ronde.getOpenUitnodiging() != null && ronde.getLaatsteAfspraak() == null)
@@ -654,7 +654,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 			}
 
 			var oudeAfspraak = getModelObject();
-			nieuweAfspraak.setColonScreeningRonde(oudeAfspraak.getColonScreeningRonde());
+			nieuweAfspraak.setScreeningRonde(oudeAfspraak.getScreeningRonde());
 			var client = oudeAfspraak.getClient();
 			nieuweAfspraak.setClient(client);
 			client.getAfspraken().add(nieuweAfspraak);
@@ -672,7 +672,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 			}
 
 			var format = DateUtil.LOCAL_DATE_TIME_FORMAT;
-			var laatsteAfspraak = nieuweAfspraak.getColonScreeningRonde().getLaatsteAfspraak();
+			var laatsteAfspraak = nieuweAfspraak.getScreeningRonde().getLaatsteAfspraak();
 			if (laatsteAfspraak != null)
 			{
 				return List.of(String.format("coloscopie intake afspraak van %1$s in %2$s van %3$s verplaatsen naar %4$s in %5$s van %6$s",

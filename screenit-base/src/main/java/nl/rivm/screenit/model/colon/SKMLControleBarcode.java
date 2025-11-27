@@ -23,12 +23,6 @@ package nl.rivm.screenit.model.colon;
 
 import java.util.Date;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import nl.rivm.screenit.model.colon.enums.IFOBTUitslagType;
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -38,6 +32,12 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import nl.rivm.screenit.model.colon.enums.ColonFitAnalyseResultaatType;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 @Entity
 @Getter
@@ -51,7 +51,7 @@ public class SKMLControleBarcode extends AbstractHibernateObject implements Comp
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private IFOBTUitslagType type;
+	private ColonFitAnalyseResultaatType type;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = true)

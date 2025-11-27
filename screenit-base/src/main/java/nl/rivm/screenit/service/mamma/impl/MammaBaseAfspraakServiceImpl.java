@@ -210,7 +210,7 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 					if (minimaleTijdstip.isBefore(afspraakOptie.getDatumTijd()))
 					{
 						afspraakOptieDtos
-							.add(new MammaBaseAfspraakOptieDto(afspraakOptie.getCapaciteitBlokDto().id, afspraakOptie.getDatum(), afspraakOptie.getVanaf(),
+							.add(new MammaBaseAfspraakOptieDto(afspraakOptie.getCapaciteitBlokDto().getId(), afspraakOptie.getDatum(), afspraakOptie.getVanaf(),
 								standplaatsPeriode.getId(), standplaatsPeriodeMetAfstandDto.getAfstand()));
 					}
 				});
@@ -224,7 +224,8 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 		BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen)
 	{
 		return maakAfspraakOptieZoekAlgoritme()
-			.getAfspraakOpties(dossier, standplaatsPeriode, vanaf, totEnMet, false, voorlopigeOpkomstkans, capaciteitVolledigBenutTotEnMetAantalWerkdagen, false).get(0);
+			.getAfspraakOpties(dossier, standplaatsPeriode, vanaf, totEnMet, false, voorlopigeOpkomstkans, capaciteitVolledigBenutTotEnMetAantalWerkdagen, false)
+			.get(0); 
 	}
 
 	@Override

@@ -38,22 +38,20 @@ import nl.rivm.screenit.model.berichten.enums.VerslagGeneratie;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.colon.ColonDossier;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonVerslag;
 import nl.rivm.screenit.model.colon.ColonVerslag_;
-import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.MdlVerslag_;
 import nl.rivm.screenit.model.colon.PaVerslag;
+import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.MdlVervolgbeleid;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlColoscopieMedischeObservatie;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg;
-import nl.rivm.screenit.model.colon.verslag.mdl.MdlLaesiecoloscopiecentrum;
-import nl.rivm.screenit.model.colon.verslag.mdl.MdlPoliep;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerrichting;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerslagContent;
-import nl.rivm.screenit.model.colon.verslag.pa.PaVerslagContent;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.verslag.DSValue;
@@ -63,8 +61,8 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.service.colon.ColonVerwerkVerslagService;
-import nl.rivm.screenit.util.ColonScreeningRondeUtil;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,19 +105,24 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 	public void verwerkInDossier(MdlVerslag verslag)
 	{
 		verslag.setVervolgbeleid(dossierBaseService.getVervolgbeleid(verslag));
-		hibernateService.saveOrUpdate(verslag);
+		mdlVerslagRepository.save(verslag);
 
-		ColonScreeningRonde screeningRonde = verslag.getScreeningRonde();
-		Date nu = currentDateSupplier.getDate();
+		var screeningRonde = verslag.getScreeningRonde();
+		var nu = currentDateSupplier.getDate();
 		screeningRonde.setStatusDatum(nu);
 		screeningRonde.setDefinitiefVervolgbeleid(null);
-		ColonDossier dossier = screeningRonde.getDossier();
+		var dossier = screeningRonde.getDossier();
 
+		var laatsteAfspraak = screeningRonde.getLaatsteAfspraak();
+		if (laatsteAfspraak != null && laatsteAfspraak.getStatus() == ColonAfspraakStatus.GEPLAND)
+		{
+			laatsteAfspraak.setStatus(ColonAfspraakStatus.UITGEVOERD);
+		}
 		if (dossier.getLaatsteScreeningRonde().equals(screeningRonde))
 		{
 			if (rondeHeeftDefinitiefMdlVervolgbeleid(screeningRonde))
 			{
-				if (!ScreeningRondeStatus.AFGEROND.equals(screeningRonde.getStatus()))
+				if (ScreeningRondeStatus.AFGEROND != screeningRonde.getStatus())
 				{
 					screeningRonde.setStatus(ScreeningRondeStatus.AFGEROND);
 					screeningRonde.setAfgerondReden("definitieve diagnose");
@@ -131,7 +134,6 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 				dossier.setInactiveerReden(null);
 				dossier.setInactiefVanaf(null);
 			}
-			hibernateService.saveOrUpdate(screeningRonde);
 		}
 	}
 
@@ -206,7 +208,7 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 	public void onAfterVerwerkVerslagContent(PaVerslag verslag)
 	{
 
-		PaVerslagContent content = verslag.getVerslagContent();
+		var content = verslag.getVerslagContent();
 		if (content.getVerrichting() != null)
 		{
 			verslag.setDatumOnderzoek(content.getVerrichting().getAanvangVerrichting());
@@ -234,7 +236,7 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 	@Override
 	public MdlVerslag maakMdlVerslagVoorAfspraak(ColonIntakeAfspraak afspraak)
 	{
-		var ronde = afspraak.getColonScreeningRonde();
+		var ronde = afspraak.getScreeningRonde();
 
 		var verslag = new MdlVerslag();
 		verslag.setDatumVerwerkt(currentDateSupplier.getDate());
@@ -284,18 +286,18 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 	{
 		if (mdlVerslag.getVerslagContent().getVersie().ordinal() < VerslagGeneratie.V4.ordinal())
 		{
-			DSValue inTotoCompleet = verslagService.getDsValue("255619001", "2.16.840.1.113883.6.96", "vs_verwijdering_compleet");
-			DSValue piecemealCompleet = verslagService.getDsValue("2", "2.16.840.1.113883.2.4.3.36.77.5.35", "vs_verwijdering_compleet");
-			DSValue incompleet = verslagService.getDsValue("255599008", "2.16.840.1.113883.6.96", "vs_verwijdering_compleet");
+			var inTotoCompleet = verslagService.getDsValue("255619001", "2.16.840.1.113883.6.96", "vs_verwijdering_compleet");
+			var piecemealCompleet = verslagService.getDsValue("2", "2.16.840.1.113883.2.4.3.36.77.5.35", "vs_verwijdering_compleet");
+			var incompleet = verslagService.getDsValue("255599008", "2.16.840.1.113883.6.96", "vs_verwijdering_compleet");
 
-			DSValue inToto = verslagService.getDsValue("255619001", "2.16.840.1.113883.6.96", "vs_method_of_excision");
-			DSValue piecemeal = verslagService.getDsValue("2", "2.16.840.1.113883.2.4.3.36.77.5.35", "vs_method_of_excision");
-			DSValue radicaal = verslagService.getDsValue("255612005", "2.16.840.1.113883.6.96", "vs_extent");
-			DSValue irradicaal = verslagService.getDsValue("255599008", "2.16.840.1.113883.6.96", "vs_extent");
-			for (MdlLaesiecoloscopiecentrum mdlLaesiecoloscopiecentrum : mdlVerslag.getVerslagContent().getLaesiecoloscopiecentrum())
+			var inToto = verslagService.getDsValue("255619001", "2.16.840.1.113883.6.96", "vs_method_of_excision");
+			var piecemeal = verslagService.getDsValue("2", "2.16.840.1.113883.2.4.3.36.77.5.35", "vs_method_of_excision");
+			var radicaal = verslagService.getDsValue("255612005", "2.16.840.1.113883.6.96", "vs_extent");
+			var irradicaal = verslagService.getDsValue("255599008", "2.16.840.1.113883.6.96", "vs_extent");
+			for (var mdlLaesiecoloscopiecentrum : mdlVerslag.getVerslagContent().getLaesiecoloscopiecentrum())
 			{
-				MdlPoliep poliep = mdlLaesiecoloscopiecentrum.getPoliep();
-				DSValue volledigheidWegnameMateriaal = poliep.getVolledigheidWegnameMateriaal();
+				var poliep = mdlLaesiecoloscopiecentrum.getPoliep();
+				var volledigheidWegnameMateriaal = poliep.getVolledigheidWegnameMateriaal();
 				if (volledigheidWegnameMateriaal != null)
 				{
 					if (volledigheidWegnameMateriaal.equals(inTotoCompleet))
@@ -323,7 +325,7 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 		if (coloscopieMedischeObservatie.getRedenAfbrekingColoscopie() != null)
 		{
 			List<DSValue> oudeWaarden = new ArrayList<>();
-			for (DSValue afbrekenColoscopie : coloscopieMedischeObservatie.getRedenAfbrekingColoscopie())
+			for (var afbrekenColoscopie : coloscopieMedischeObservatie.getRedenAfbrekingColoscopie())
 			{
 				if (afbrekenColoscopie.getCode().equals("6") || afbrekenColoscopie.getCode().equals("7"))
 				{
@@ -337,7 +339,7 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 			}
 
 		}
-		DSValue redenCoecumNietBereikt = coloscopieMedischeObservatie.getRedenCoecumNietBereikt();
+		var redenCoecumNietBereikt = coloscopieMedischeObservatie.getRedenCoecumNietBereikt();
 		if (redenCoecumNietBereikt != null && (redenCoecumNietBereikt.getCode().equals("6") || redenCoecumNietBereikt.getCode().equals("7")))
 		{
 			coloscopieMedischeObservatie.setRedenCoecumNietBereikt(verslagService.getDsValue("12", "2.16.840.1.113883.2.4.3.36.77.5.37", "vs_afbreken_coloscopie"));
@@ -347,7 +349,7 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 	@Override
 	public ColonScreeningRonde getValideScreeningsRonde(Client client, Verslag oudeVersieVerslag, Date onderzoeksdatum)
 	{
-		ColonDossier dossier = client.getColonDossier();
+		var dossier = client.getColonDossier();
 		ColonScreeningRonde rondeVoorVerslag = null;
 		if (oudeVersieVerslag instanceof ColonVerslag<?> verslag)
 		{
@@ -356,15 +358,16 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 		}
 		if (rondeVoorVerslag == null)
 		{
-			List<ColonScreeningRonde> screeningRondes = new ArrayList<>(dossier.getScreeningRondes());
-			Collections.sort(screeningRondes, new PropertyComparator<ColonScreeningRonde>("creatieDatum", false, false));
+			var screeningRondes = new ArrayList<>(dossier.getScreeningRondes());
+			Collections.sort(screeningRondes, new PropertyComparator<>("creatieDatum", false, false));
 
-			boolean heeftOngunstigeUitslagOuderDanOnderzoeksdatum = onderzoeksdatum == null
+			var heeftOngunstigeUitslagOuderDanOnderzoeksdatum = onderzoeksdatum == null
 				|| screeningRondes.stream().anyMatch(r -> isOngunstigeUitslagVerwerktVoorOnderzoeksdatum(r, onderzoeksdatum));
 
 			if (heeftOngunstigeUitslagOuderDanOnderzoeksdatum)
 			{
-				rondeVoorVerslag = screeningRondes.stream().filter(r -> ColonScreeningRondeUtil.getEersteOngunstigeTest(r) != null || r.getOpenUitnodiging() != null).findFirst()
+				rondeVoorVerslag = screeningRondes.stream().filter(r -> ColonScreeningRondeUtil.getEersteOngunstigeFitRegistratie(r) != null || r.getOpenUitnodiging() != null)
+					.findFirst()
 					.orElse(null);
 			}
 		}
@@ -373,7 +376,7 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 
 	private boolean isOngunstigeUitslagVerwerktVoorOnderzoeksdatum(ColonScreeningRonde ronde, Date onderzoeksdatum)
 	{
-		IFOBTTest eersteOngunstigeTest = ColonScreeningRondeUtil.getEersteOngunstigeTest(ronde);
+		var eersteOngunstigeTest = ColonScreeningRondeUtil.getEersteOngunstigeFitRegistratie(ronde);
 		return eersteOngunstigeTest != null && eersteOngunstigeTest.getVerwerkingsDatum().compareTo(onderzoeksdatum) < 0;
 	}
 }

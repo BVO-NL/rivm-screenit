@@ -37,7 +37,7 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.colon.UitnodigingsGebied;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification;
@@ -56,10 +56,10 @@ public class ColonUitnodigingSelectieServiceImpl implements ColonUitnodigingSele
 	private final ClientRepository clientRepository;
 
 	@Override
-	public ScrollableResults getUitnodigingsCursor(ColonClientSelectieContext selectieContext, ColonUitnodigingCategorie colonUitnodigingCategorie,
+	public ScrollableResults getUitnodigingsCursor(ColonClientSelectieContext selectieContext, ColonUitnodigingscategorie uitnodigingscategorie,
 		UitnodigingsGebied uitnodigingsgebied, List<Integer> geboorteJaren, Long projectGroupId, List<Long> exclusieGroepIds)
 	{
-		return switch (colonUitnodigingCategorie)
+		return switch (uitnodigingscategorie)
 		{
 			case U1 ->
 			{

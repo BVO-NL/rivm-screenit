@@ -45,30 +45,30 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Entity
-@Table(schema = "colon")
+@Table(schema = "colon", name = "afmelding")
 @Audited
 @Getter
 @Setter
 public class ColonAfmelding extends Afmelding<ColonScreeningRonde, ColonDossier, ColonBrief>
 {
-	@ManyToOne(optional = true, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
+	@ManyToOne(cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private ColonScreeningRonde screeningRonde;
 
-	@ManyToOne(optional = true, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
+	@ManyToOne(cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private ColonDossier dossier;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = jakarta.persistence.CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.ALL)
 	private ColonBrief afmeldingAanvraag;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = jakarta.persistence.CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.ALL)
 	private ColonBrief afmeldingBevestiging;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = jakarta.persistence.CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.ALL)
 	private ColonBrief heraanmeldAanvraag;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = jakarta.persistence.CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.ALL)
 	private ColonBrief heraanmeldBevestiging;
 
 	@OneToMany(mappedBy = "afmelding", fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.ALL)

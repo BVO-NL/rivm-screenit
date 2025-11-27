@@ -119,7 +119,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 		add(dialog);
 		setOutputMarkupId(true);
 
-		Config config = new Config();
+		var config = new Config();
 		config.setFirstDay(1);
 		config.setSelectable(true);
 		config.setSelectHelper(false);
@@ -158,10 +158,10 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 		var toVrijgegevenTmButton = new DateShortcut(vrijgevenTmButtonText, DateUtil.toLocalDate(getModelObject().getVrijgegevenTotEnMet()));
 		config.getDateShortcuts().put("vrijgegevenTotEnMet", toVrijgegevenTmButton);
 
-		DateShortcut toHerhalingsWeekButton = new DateShortcut("Herhalingsweek", baseConceptPlanningsApplicatie.getScreeningsEenheidMetaData(model.getObject()).herhalingsWeek);
+		var toHerhalingsWeekButton = new DateShortcut("Herhalingsweek", baseConceptPlanningsApplicatie.getScreeningsEenheidMetaData(model.getObject()).herhalingsWeek);
 		config.getDateShortcuts().put("herhalingsWeek", toHerhalingsWeekButton);
 
-		DateShortcut huidigeWeek = new DateShortcut("Huidige week", dateSupplier.getLocalDate());
+		var huidigeWeek = new DateShortcut("Huidige week", dateSupplier.getLocalDate());
 		config.getDateShortcuts().put("huidigeWeek", huidigeWeek);
 
 		config.setAllDaySlot(true);
@@ -174,7 +174,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 
 		config.setDefaultView("agendaWeek");
 
-		boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN)
+		var magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN)
 			&& ScreenitSession.get().getScreeningOrganisatie() != null;
 		config.setDisableDragging(!magAanpassen);
 		config.setDisableResizing(true);
@@ -187,7 +187,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 				if (!range.isAllDay() && magAanpassen)
 				{
 					IModel<PlanningCapaciteitBlokDto> blokModel = new CompoundPropertyModel<>(new PlanningCapaciteitBlokDto());
-					PlanningCapaciteitBlokDto blok = blokModel.getObject();
+					var blok = blokModel.getObject();
 					blok.blokType = MammaCapaciteitBlokType.SCREENING;
 					blok.screeningsEenheidId = getModelObject().getId();
 					blok.vanaf = range.getStart();
@@ -233,7 +233,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 		add(calendar);
 		add(new EventSourceSelector("selector", calendar));
 
-		final WebMarkupContainer tooltipContainer = new WebMarkupContainer("tooltipContainer");
+		final var tooltipContainer = new WebMarkupContainer("tooltipContainer");
 		add(tooltipContainer);
 		tooltipContainer.setOutputMarkupId(true);
 		tooltips = new RepeatingView("tooltip");
@@ -251,16 +251,19 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 	{
 	}
 
-	private void openEventPopup(CalendarResponse response, IModel<PlanningCapaciteitBlokDto> blokModel)
+	private void openEventPopup(CalendarResponse response, IModel<PlanningCapaciteitBlokDto> origineelBlokModel)
 	{
-		origStartTijd = blokModel.getObject().vanaf;
-		dialog.openWith(response.getTarget(), new MammaCapaciteitBlokEditPopup(IDialog.CONTENT_ID, blokModel)
+		var origineelBlok = origineelBlokModel.getObject();
+		origStartTijd = origineelBlok.vanaf;
+		IModel<PlanningCapaciteitBlokDto> editModel = new CompoundPropertyModel<>(origineelBlok.maakKopie());
+
+		dialog.openWith(response.getTarget(), new MammaCapaciteitBlokEditPopup(IDialog.CONTENT_ID, editModel)
 		{
 			@Override
-			protected void onVerwijderen(AjaxRequestTarget target, IModel<PlanningCapaciteitBlokDto> model)
+			protected void onVerwijderen(AjaxRequestTarget target, IModel<PlanningCapaciteitBlokDto> editBlokModel)
 			{
-				var abstractAppointmentToDelete = model.getObject();
-				String melding = baseCapaciteitsBlokService.delete(abstractAppointmentToDelete, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+				var blok = editBlokModel.getObject();
+				var melding = baseCapaciteitsBlokService.delete(blok, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				if (StringUtils.isBlank(melding))
 				{
 					blokSuccesvolChanged(response, target);
@@ -272,13 +275,14 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 			}
 
 			@Override
-			protected void onOpslaan(AjaxRequestTarget target, IModel<PlanningCapaciteitBlokDto> model)
+			protected void onOpslaan(AjaxRequestTarget target, IModel<PlanningCapaciteitBlokDto> editBlokModel)
 			{
-				var blokDto = model.getObject();
-				onBeforeOpslaan(blokDto);
+				origineelBlok.verwerkWijzigingenUit(editBlokModel.getObject());
+
+				onBeforeOpslaan(origineelBlok);
 				if (!getThisPage().hasMeldingen())
 				{
-					String melding = baseCapaciteitsBlokService.saveOrUpdate(blokDto, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+					var melding = baseCapaciteitsBlokService.saveOrUpdate(origineelBlok, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 					if (StringUtils.isBlank(melding))
 					{
 						blokSuccesvolChanged(response, target);
@@ -318,10 +322,10 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 
 	private void onBeforeOpslaan(PlanningCapaciteitBlokDto blok)
 	{
-		Date start = blok.vanaf;
-		Date tot = blok.tot;
-		LocalTime startTime = DateUtil.toLocalTime(start);
-		LocalTime totTime = DateUtil.toLocalTime(tot);
+		var start = blok.vanaf;
+		var tot = blok.tot;
+		var startTime = DateUtil.toLocalTime(start);
+		var totTime = DateUtil.toLocalTime(tot);
 
 		if (startTime.getMinute() % 5 != 0)
 		{
@@ -379,7 +383,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 
 			if (event.getNewEndTime().getDayOfYear() > event.getNewStartTime().getDayOfYear())
 			{
-				long millisDifference = Duration.between(event.getNewStartTime(), event.getNewEndTime()).toMillis();
+				var millisDifference = Duration.between(event.getNewStartTime(), event.getNewEndTime()).toMillis();
 				var newEndDate = DateUtil.startDag(DateUtil.toUtilDate(event.getNewEndTime()));
 				blok.tot = newEndDate;
 				blok.vanaf = DateUtil.minusTijdseenheid(newEndDate, millisDifference, ChronoUnit.MILLIS);
@@ -393,7 +397,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 
 			if (!getThisPage().hasMeldingen())
 			{
-				String melding = baseCapaciteitsBlokService.saveOrUpdate(blok, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+				var melding = baseCapaciteitsBlokService.saveOrUpdate(blok, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 
 				if (StringUtils.isBlank(melding))
 				{
@@ -412,7 +416,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 
 	public void addMeldingTooltip(IModel<PlanningStandplaatsPeriodeDto> standplaatsPeriodeModel)
 	{
-		String tooltipId = "tooltip-m" + standplaatsPeriodeModel.getObject().conceptId;
+		var tooltipId = "tooltip-m" + standplaatsPeriodeModel.getObject().conceptId;
 		if (!addedTooltips.contains(tooltipId))
 		{
 			tooltips.add(new MeldingenTooltip(tooltips.newChildId(), standplaatsPeriodeModel));
@@ -433,7 +437,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 				protected void populateItem(ListItem<PlanningMeldingenDto.PlanningMeldingDto> item)
 				{
 					item.setDefaultModel(new CompoundPropertyModel<>(item.getModel()));
-					Label niveau = new Label("niveau", "");
+					var niveau = new Label("niveau", "");
 					niveau.add(new AttributeAppender("class", " " + item.getModelObject().niveau.getCssClass()));
 					item.add(niveau);
 					item.add(new Label("tekst"));

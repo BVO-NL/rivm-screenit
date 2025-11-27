@@ -85,9 +85,9 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 
 	private final TimeField endTime = new TimeField("tot", true);
 
-	public MammaCapaciteitBlokEditPopup(String id, IModel<PlanningCapaciteitBlokDto> model)
+	public MammaCapaciteitBlokEditPopup(String id, IModel<PlanningCapaciteitBlokDto> editBlokModel)
 	{
-		super(id, model);
+		super(id, editBlokModel);
 		this.magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
 		this.staatNieuweMinderValideReserveringAan = preferenceService.getBoolean(PreferenceKey.MAMMA_MINDERVALIDE_RESERVERING_ACTIEF.name(), false);
 	}
@@ -283,7 +283,6 @@ public abstract class MammaCapaciteitBlokEditPopup extends GenericPanel<Planning
 				setDateForEndTimeField();
 				onOpslaan(target, MammaCapaciteitBlokEditPopup.this.getModel());
 			}
-
 		};
 
 		add(opslaanLink);

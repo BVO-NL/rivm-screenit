@@ -62,12 +62,7 @@ public class MammaMinderValideReserveringServiceImpl implements MammaMinderValid
 	public int getBenodigdeMinutenVoorReservering(PlanningCapaciteitBlokDto planningCapaciteitBlokDto)
 	{
 		var factorMinderValide = getFactorMinderValideBijBlok(planningCapaciteitBlokDto);
-		return getBenodigdeMinutenVoorReservering(factorMinderValide);
-	}
-
-	private int getBenodigdeMinutenVoorReservering(BigDecimal factorMinderValide)
-	{
-		return MammaPlanningUtil.minimumTijdvak(factorMinderValide);
+		return MammaPlanningUtil.benodigdeMinutenVoorMindervalideAfspraak(factorMinderValide);
 	}
 
 	@Override
@@ -79,7 +74,7 @@ public class MammaMinderValideReserveringServiceImpl implements MammaMinderValid
 		var factorMinderValide = getFactorMinderValideBijBlok(capaciteitBlokDto);
 		valideerVoldoendeCapaciteitVoorReserveringen(capaciteitBlokDto, mindervalideReserveringDtos, factorMinderValide, false);
 
-		var benodigdeMinutenVoorReservering = getBenodigdeMinutenVoorReservering(factorMinderValide);
+		var benodigdeMinutenVoorReservering = MammaPlanningUtil.benodigdeMinutenVoorMindervalideAfspraak(factorMinderValide);
 		var reserveringRanges = maakLijstMetReserveringRangesVoorReserveringen(mindervalideReserveringDtos, benodigdeMinutenVoorReservering);
 
 		var isErOverlap = reserveringRanges.stream()
@@ -103,7 +98,7 @@ public class MammaMinderValideReserveringServiceImpl implements MammaMinderValid
 	{
 		var mindervalideReserveringDtos = planningCapaciteitBlokDto.getMinderValideReserveringen();
 		var factorMinderValide = getFactorMinderValideBijBlok(planningCapaciteitBlokDto);
-		var benodigdeAantalMinutenVoorReservering = getBenodigdeMinutenVoorReservering(factorMinderValide);
+		var benodigdeAantalMinutenVoorReservering = MammaPlanningUtil.benodigdeMinutenVoorMindervalideAfspraak(factorMinderValide);
 		valideerVoldoendeCapaciteitVoorReserveringen(planningCapaciteitBlokDto, mindervalideReserveringDtos, factorMinderValide, true);
 		if (mindervalideReserveringDtos.isEmpty())
 		{

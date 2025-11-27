@@ -33,16 +33,16 @@ import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonConclusie;
 import nl.rivm.screenit.model.colon.ColonDossier;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
-import nl.rivm.screenit.model.colon.IFOBTTest;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.HuisartsBerichtType;
 
 public interface ColonTestService
 {
-	void importColonClientenViaCsv(File file, Map<String, ColonUitnodigingCategorie> categoriePerPatient, int startRondeCorrectie) throws IOException, ParseException;
+	void importColonClientenViaCsv(File file, Map<String, ColonUitnodigingscategorie> categoriePerPatient, int startRondeCorrectie) throws IOException, ParseException;
 
 	ColonBrief maakBrief(Client client, ColonScreeningRonde screeningRonde, BriefType briefType);
 
@@ -54,7 +54,7 @@ public interface ColonTestService
 
 	void maakClientKlaarVoorRappeleren(Persoon persoon);
 
-	IFOBTTest maakHuidigeIFobtOntvangenInclUitslag(Persoon filter, BigDecimal normwaarde, BigDecimal uitslag);
+	ColonFitRegistratie maakHuidigeFitOntvangenInclUitslag(Persoon filter, BigDecimal normwaarde, BigDecimal uitslag);
 
 	void maakUitnodigingEnTestenVergelijkendOnderzoek(Persoon filter);
 
@@ -62,15 +62,15 @@ public interface ColonTestService
 
 	void huisartsBerichtKlaarzetten(Persoon filter, HuisartsBerichtType berichtType);
 
-	IFOBTTest maakHuidigeIFobtOntvangenEnGunstig(Persoon persoon);
+	ColonFitRegistratie maakHuidigeFitOntvangenEnGunstig(Persoon persoon);
 
-	IFOBTTest maakHuidigeIFobtOntvangenEnOngunstig(Persoon persoon);
+	ColonFitRegistratie maakHuidigeFitOntvangenEnOngunstig(Persoon persoon);
 
-	void maakClientKlaarVoorAfronden(Persoon modelObject);
+	void maakClientKlaarVoorAfronden(Persoon persoon);
 
-	void huidigeIFOBTvoorRapelDatum(Persoon modelObject);
+	void huidigeFitVoorHerinneringDatum(Persoon persoon);
 
-	IFOBTTest zetVelorenIfobt(Persoon modelObject, boolean zetUitslag, boolean gunstig);
+	ColonFitRegistratie zetVerlorenFit(Persoon persoon, boolean zetUitslag, boolean gunstig);
 
 	void brievenKlaarzetten(int aantal);
 
@@ -82,5 +82,5 @@ public interface ColonTestService
 
 	int verwijderAfspraakslots();
 
-	ColonUitnodigingCategorie getUitnodigingCategorie(Client client);
+	ColonUitnodigingscategorie getUitnodigingscategorie(Client client);
 }

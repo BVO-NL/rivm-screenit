@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.util;
 
 /*-
@@ -27,18 +26,16 @@ import java.math.RoundingMode;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.model.IGeografischeCoordinaten;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BigDecimalUtil
 {
-
-	private static final BigDecimal HALF = new BigDecimal(.5);
-
-	private BigDecimalUtil()
-	{
-
-	}
+	private static final BigDecimal HALF = new BigDecimal(".5");
 
 	public static double berekenDistance(IGeografischeCoordinaten from, IGeografischeCoordinaten to)
 	{
@@ -71,7 +68,7 @@ public final class BigDecimalUtil
 		{
 			return "<geen waarde>";
 		}
-		else if (decimal.compareTo(BigDecimal.ZERO) == 0)
+		else if (isZero(decimal))
 		{
 			return decimal.scale() <= 0 ? "0" : "0.0";
 		}
@@ -92,7 +89,7 @@ public final class BigDecimalUtil
 			return null;
 		}
 		BigDecimal roundedCapaciteit = capaciteit.setScale(0, RoundingMode.HALF_UP);
-		if (capaciteit.compareTo(BigDecimal.ZERO) > 0 && capaciteit.compareTo(new BigDecimal("0.5")) < 0)
+		if (isPositive(capaciteit) && capaciteit.compareTo(new BigDecimal("0.5")) < 0)
 		{
 			roundedCapaciteit = BigDecimal.ONE;
 		}
@@ -140,4 +137,18 @@ public final class BigDecimalUtil
 		return new BigDecimal(fixedString);
 	}
 
+	public static boolean isPositive(BigDecimal decimal)
+	{
+		return decimal != null && decimal.compareTo(BigDecimal.ZERO) > 0;
+	}
+
+	public static boolean isNegative(BigDecimal decimal)
+	{
+		return decimal != null && decimal.compareTo(BigDecimal.ZERO) < 0;
+	}
+
+	public static boolean isZero(BigDecimal decimal)
+	{
+		return decimal != null && decimal.compareTo(BigDecimal.ZERO) == 0;
+	}
 }

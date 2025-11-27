@@ -36,8 +36,8 @@ import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.colon.ColonDossier;
+import nl.rivm.screenit.model.enums.ColonNieuwFitResultaat;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
-import nl.rivm.screenit.model.enums.NieuweIfobtResultaat;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 
 public interface ClientContactService
@@ -50,15 +50,17 @@ public interface ClientContactService
 
 	void mammaAfspraakBevestigingMakenVanuitClientPortaal(Client client, Map<ExtraOpslaanKey, Object> extraOpslaanParams);
 
+	void verstuurBevestigingsmail(MammaAfspraak afspraak, Account account, String emailAdres);
+
 	List<ClientContactActieType> getAvailableActies(Client client);
 
 	List<ClientContactActieType> getAvailableActies(Client client, boolean viaClientPortaal);
 
 	boolean availableActiesBevatBenodigdeActie(Client client, ClientContactActieType benodigdeActie);
 
-	NieuweIfobtResultaat vraagNieuweIfobtAan(Client client, Account account);
+	ColonNieuwFitResultaat vraagNieuweFitAan(Client client, Account account);
 
-	boolean magNieuweIfobtAanvragen(Client client);
+	boolean magNieuweFitAanvragen(Client client);
 
 	void saveTijdelijkAdres(Account account, Client client, TijdelijkAdres tijdelijkAdres);
 

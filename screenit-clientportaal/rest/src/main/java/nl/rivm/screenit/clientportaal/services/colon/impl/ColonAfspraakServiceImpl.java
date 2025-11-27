@@ -138,7 +138,7 @@ public class ColonAfspraakServiceImpl implements ColonAfspraakService
 				nieuweAfspraak.setAfstand(BigDecimal.valueOf(45));
 			}
 
-			nieuweAfspraak.setColonScreeningRonde(oudeAfspraak.getColonScreeningRonde());
+			nieuweAfspraak.setScreeningRonde(oudeAfspraak.getScreeningRonde());
 			nieuweAfspraak.setClient(oudeAfspraak.getClient());
 			nieuweAfspraak.setVanaf(DateUtil.toLocalDateTime(gekozenVrijSlotZonderKamer.getStartTijd()));
 			nieuweAfspraak.setTot(DateUtil.toLocalDateTime(gekozenVrijSlotZonderKamer.getEindTijd()));

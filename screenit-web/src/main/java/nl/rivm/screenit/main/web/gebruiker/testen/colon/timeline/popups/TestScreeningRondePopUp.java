@@ -37,7 +37,7 @@ import nl.rivm.screenit.model.colon.ColonOnderzoeksVariant;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.util.ColonScreeningRondeUtil;
+import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -117,7 +117,7 @@ public class TestScreeningRondePopUp extends AbstractTestBasePopupPanel
 	private boolean isErEenVooraankondiging()
 	{
 		ColonDossier dossier = getModelObject().get(0).getColonDossier();
-		return dossier.getColonVooraankondiging() != null;
+		return dossier.getVooraankondiging() != null;
 	}
 
 	@Override

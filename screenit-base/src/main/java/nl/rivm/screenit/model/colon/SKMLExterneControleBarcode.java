@@ -28,7 +28,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.colon.enums.IFOBTUitslagType;
+import nl.rivm.screenit.model.colon.enums.ColonFitAnalyseResultaatType;
 
 @Entity
 @Table(schema = "colon")
@@ -40,11 +40,11 @@ public class SKMLExterneControleBarcode extends SKMLControleBarcode
 	private SKMLExternSchema schema;
 
 	@ManyToOne(optional = false)
-	private IFobtLaboratorium laboratorium;
+	private ColonFitLaboratorium laboratorium;
 
 	public SKMLExterneControleBarcode()
 	{
 		super();
-		setType(IFOBTUitslagType.EXTERN);
+		setType(ColonFitAnalyseResultaatType.EXTERN);
 	}
 }

@@ -26,8 +26,6 @@ import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -41,10 +39,10 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Entity
-@Table(schema = "colon", indexes = {
+@Table(schema = "colon", name = "merged_brieven", indexes = {
 	@Index(name = "IDX_MERGEDBRIEVENVERSTUURD", columnList = "geprint"),
 	@Index(name = "IDX_MERGEDBRIEVENCONTROLE", columnList = "controle"),
-	@Index(name = "IDX_MERGEDBRIEVENVERWIJDERD", columnList = "verwijderd")})
+	@Index(name = "IDX_MERGEDBRIEVENVERWIJDERD", columnList = "verwijderd") })
 @Audited
 @Getter
 @Setter

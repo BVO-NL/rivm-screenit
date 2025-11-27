@@ -49,7 +49,7 @@ import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
+import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.GebeurtenisBron;
@@ -358,7 +358,8 @@ public class ColonTestTimelinePage extends TestenBasePage
 					{
 						for (ColonUitnodiging uitnodiging : colonRonde.getUitnodigingen())
 						{
-							if (uitnodiging.getGekoppeldeTest() != null && IFOBTTestStatus.isMutableEindStatus(uitnodiging.getGekoppeldeTest().getStatus()))
+							if (uitnodiging.getGekoppeldeFitRegistratie() != null && ColonFitRegistratieStatus.isMutableEindStatus(
+								uitnodiging.getGekoppeldeFitRegistratie().getStatus()))
 							{
 								return true;
 							}

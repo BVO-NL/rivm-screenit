@@ -30,15 +30,15 @@ import java.util.Map.Entry;
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseLogListener;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.SelectieType;
 import nl.rivm.screenit.model.logging.LogEvent;
-import nl.rivm.screenit.model.logging.SelectieRondeBeeindigdLogEvent;
-import nl.rivm.screenit.model.verwerkingverslag.SelectieRapportage;
-import nl.rivm.screenit.model.verwerkingverslag.SelectieRapportageEntry;
+import nl.rivm.screenit.model.logging.colon.ColonSelectieRondeBeeindigdLogEvent;
+import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportage;
+import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageEntry;
 import nl.rivm.screenit.repository.colon.ColonScreeningRondeRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
@@ -70,24 +70,24 @@ public class SelectieListener extends BaseLogListener
 	@Override
 	protected void beforeStarting(JobExecution jobExecution)
 	{
-		var selectieRapportage = new SelectieRapportage();
+		var selectieRapportage = new ColonSelectieRapportage();
 		selectieRapportage.setDatumVerwerking(currentDateSupplier.getDate());
 
-		var selectieRapportageEntry = new SelectieRapportageEntry();
+		var selectieRapportageEntry = new ColonSelectieRapportageEntry();
 		selectieRapportageEntry.setAantal(0L);
 		selectieRapportageEntry.setWaarvanGepusht(0L);
 		selectieRapportageEntry.setRapportage(selectieRapportage);
-		selectieRapportageEntry.setColonUitnodigingCategorie(ColonUitnodigingCategorie.U2_4);
+		selectieRapportageEntry.setUitnodigingscategorie(ColonUitnodigingscategorie.U2_4);
 		selectieRapportageEntry.setSelectieType(SelectieType.UITNODIGING_GEMAAKT);
 		selectieRapportage.getEntries().add(selectieRapportageEntry);
 
-		for (var colonUitnodigingCategorie : ColonUitnodigingCategorie.getCategorieen())
+		for (var colonUitnodigingCategorie : ColonUitnodigingscategorie.getCategorieen())
 		{
-			selectieRapportageEntry = new SelectieRapportageEntry();
+			selectieRapportageEntry = new ColonSelectieRapportageEntry();
 			selectieRapportageEntry.setAantal(0L);
 			selectieRapportageEntry.setWaarvanGepusht(0L);
 			selectieRapportageEntry.setRapportage(selectieRapportage);
-			selectieRapportageEntry.setColonUitnodigingCategorie(colonUitnodigingCategorie);
+			selectieRapportageEntry.setUitnodigingscategorie(colonUitnodigingCategorie);
 			selectieRapportageEntry.setSelectieType(SelectieType.UITNODIGING_GEMAAKT);
 			selectieRapportage.getEntries().add(selectieRapportageEntry);
 		}
@@ -193,12 +193,12 @@ public class SelectieListener extends BaseLogListener
 	@Override
 	protected LogEvent getEindLogEvent()
 	{
-		var result = new SelectieRondeBeeindigdLogEvent();
+		var result = new ColonSelectieRondeBeeindigdLogEvent();
 		result.setResultaat(jobHasExitCode(ExitStatus.COMPLETED));
 		result.setLevel(Level.INFO);
 		if (getJobExecution().getExecutionContext().containsKey(SelectieConstants.RAPPORTAGEKEYSELECTIE))
 		{
-			result.setRapportage(hibernateService.load(SelectieRapportage.class, getJobExecution().getExecutionContext().getLong(SelectieConstants.RAPPORTAGEKEYSELECTIE)));
+			result.setRapportage(hibernateService.load(ColonSelectieRapportage.class, getJobExecution().getExecutionContext().getLong(SelectieConstants.RAPPORTAGEKEYSELECTIE)));
 		}
 		return result;
 	}
@@ -209,7 +209,7 @@ public class SelectieListener extends BaseLogListener
 		var logEvent = getEindLogEvent();
 		if (logEvent != null)
 		{
-			SelectieRondeBeeindigdLogEvent result = (SelectieRondeBeeindigdLogEvent) logEvent;
+			ColonSelectieRondeBeeindigdLogEvent result = (ColonSelectieRondeBeeindigdLogEvent) logEvent;
 
 			if (!jobExecution.getAllFailureExceptions().isEmpty())
 			{
@@ -228,9 +228,9 @@ public class SelectieListener extends BaseLogListener
 
 			if (!Level.ERROR.equals(result.getLevel()))
 			{
-				SelectieRapportage rapportage = result.getRapportage();
+				ColonSelectieRapportage rapportage = result.getRapportage();
 				Long totaalAantalUitnodigingen = (long) 0;
-				for (SelectieRapportageEntry entry : rapportage.getEntries())
+				for (ColonSelectieRapportageEntry entry : rapportage.getEntries())
 				{
 					if (SelectieType.UITNODIGING_GEMAAKT.equals(entry.getSelectieType()))
 					{

@@ -44,10 +44,10 @@ public class ColonHuisartsBerichtServiceImpl implements ColonHuisartsBerichtServ
 	private ColonEdiService ediService;
 
 	@Override
-	public void verstuurColonHuisartsBericht(Client client, ColonScreeningRonde colonScreeningRonde, HuisartsBerichtType berichtType,
+	public void verstuurColonHuisartsBericht(Client client, ColonScreeningRonde screeningRonde, HuisartsBerichtType berichtType,
 		MailMergeContext context)
 	{
-		verstuurColonHuisartsBericht(client, colonScreeningRonde, colonScreeningRonde.getColonHuisarts(), berichtType, context, false);
+		verstuurColonHuisartsBericht(client, screeningRonde, screeningRonde.getHuisarts(), berichtType, context, false);
 	}
 
 	@Override
@@ -59,10 +59,10 @@ public class ColonHuisartsBerichtServiceImpl implements ColonHuisartsBerichtServ
 	}
 
 	@Override
-	public ColonHuisartsBericht verstuurColonHuisartsBericht(Client client, ColonScreeningRonde colonScreeningRonde, EnovationHuisarts huisarts, HuisartsBerichtType berichtType,
+	public ColonHuisartsBericht verstuurColonHuisartsBericht(Client client, ColonScreeningRonde screeningRonde, EnovationHuisarts huisarts, HuisartsBerichtType berichtType,
 		MailMergeContext context, boolean opnieuwVerzonden)
 	{
-		if (colonScreeningRonde == null
+		if (screeningRonde == null
 			|| BezwaarUtil.isBezwaarActiefVoor(client, BezwaarType.GEEN_UITWISSELING_MET_DE_HUISARTS, Bevolkingsonderzoek.COLON))
 		{
 			return null;

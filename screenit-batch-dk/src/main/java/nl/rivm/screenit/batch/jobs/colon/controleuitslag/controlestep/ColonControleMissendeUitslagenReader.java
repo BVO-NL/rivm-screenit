@@ -31,10 +31,10 @@ import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie_;
+import nl.rivm.screenit.model.colon.ColonFitType;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
-import nl.rivm.screenit.model.colon.IFOBTTest;
-import nl.rivm.screenit.model.colon.IFOBTTest_;
-import nl.rivm.screenit.model.colon.IFOBTType;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
@@ -44,21 +44,21 @@ import org.springframework.stereotype.Component;
 
 import static nl.rivm.screenit.Constants.MAX_AANTAL_DAGEN_TERUGKIJKEN_CONTROLE_MISSENDE_UITSLAGEN;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
-import static nl.rivm.screenit.specification.colon.ColonFITSpecification.heeftActieveClient;
-import static nl.rivm.screenit.specification.colon.ColonFITSpecification.heeftFitType;
-import static nl.rivm.screenit.specification.colon.ColonFITSpecification.heeftStatusDatumVoorOfOp;
-import static nl.rivm.screenit.specification.colon.ColonFITSpecification.valideerFitUitslagStatus;
+import static nl.rivm.screenit.specification.colon.ColonFitRegistratieSpecification.heeftActieveClient;
+import static nl.rivm.screenit.specification.colon.ColonFitRegistratieSpecification.heeftFitType;
+import static nl.rivm.screenit.specification.colon.ColonFitRegistratieSpecification.heeftStatusDatumVoorOfOp;
+import static nl.rivm.screenit.specification.colon.ColonFitRegistratieSpecification.valideerFitUitslagStatus;
 
 @Component
 @AllArgsConstructor
-public class ColonControleMissendeUitslagenReader extends BaseSpecificationScrollableResultReader<IFOBTTest>
+public class ColonControleMissendeUitslagenReader extends BaseSpecificationScrollableResultReader<ColonFitRegistratie>
 {
 	private final ICurrentDateSupplier currentDateSupplier;
 
 	private final OrganisatieParameterService organisatieParameterService;
 
 	@Override
-	protected Specification<IFOBTTest> createSpecification()
+	protected Specification<ColonFitRegistratie> createSpecification()
 	{
 		var signaleringstermijn = organisatieParameterService.getOrganisatieParameter(null, OrganisatieParameterKey.COLON_SIGNALERINGSTERMIJN_MISSENDE_UITSLAGEN, 30);
 		var vandaag = currentDateSupplier.getLocalDate();
@@ -66,25 +66,24 @@ public class ColonControleMissendeUitslagenReader extends BaseSpecificationScrol
 		var minimaleSignaleringsdatum = vandaag.minusDays(signaleringstermijn);
 		return valideerFitUitslagStatus(signalerenVanaf)
 			.and(heeftStatusDatumVoorOfOp(minimaleSignaleringsdatum.atStartOfDay()))
-			.and(heeftFitType(IFOBTType.GOLD))
+			.and(heeftFitType(ColonFitType.GOLD))
 			.and(heeftActieveClient());
 	}
 
 	@Override
-	protected Expression<Long> createProjection(Root<IFOBTTest> r, CriteriaBuilder cb)
+	protected Expression<Long> createProjection(Root<ColonFitRegistratie> r, CriteriaBuilder cb)
 	{
 		return dossierAttribuut(r);
 	}
 
 	@Override
-	protected Order getOrder(Root<IFOBTTest> r, CriteriaBuilder cb)
+	protected Order getOrder(Root<ColonFitRegistratie> r, CriteriaBuilder cb)
 	{
 		return cb.asc(createProjection(r, cb));
 	}
 
-	private static Path<Long> dossierAttribuut(Root<IFOBTTest> r)
+	private static Path<Long> dossierAttribuut(Root<ColonFitRegistratie> r)
 	{
-		return join(join(r, IFOBTTest_.colonScreeningRonde), ColonScreeningRonde_.dossier).get(AbstractHibernateObject_.id);
+		return join(join(r, ColonFitRegistratie_.screeningRonde), ColonScreeningRonde_.dossier).get(AbstractHibernateObject_.id);
 	}
-
 }

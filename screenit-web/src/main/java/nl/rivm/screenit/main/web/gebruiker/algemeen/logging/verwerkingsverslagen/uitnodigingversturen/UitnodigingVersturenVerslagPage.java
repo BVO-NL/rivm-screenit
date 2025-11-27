@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen.uitnodigingversturen;
 
 /*-
@@ -29,7 +28,7 @@ import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.model.verwerkingverslag.SelectieRapportage;
+import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportage;
 
 import org.apache.wicket.model.IModel;
 import org.wicketstuff.shiro.ShiroConstraint;
@@ -42,10 +41,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON })
 public class UitnodigingVersturenVerslagPage extends AlgemeenPage
 {
-
-	private static final long serialVersionUID = 1L;
-
-	public UitnodigingVersturenVerslagPage(IModel<SelectieRapportage> model)
+	public UitnodigingVersturenVerslagPage(IModel<ColonSelectieRapportage> model)
 	{
 		add(new UitnodigingVersturenVerslagPanel("panel", model));
 	}

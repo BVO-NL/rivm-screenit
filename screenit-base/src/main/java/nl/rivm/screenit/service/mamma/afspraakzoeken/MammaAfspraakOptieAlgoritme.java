@@ -37,4 +37,5 @@ public interface MammaAfspraakOptieAlgoritme
 	MammaAfspraakOptie getAfspraakOptieUitnodiging(MammaDossier dossier, MammaStandplaatsRonde standplaatsRonde, BigDecimal voorlopigeOpkomstkans,
 		Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen, Integer afspraakBijUitnodigenVanafAantalWerkdagen)
 		throws MammaOnvoldoendeVrijeCapaciteitException;
+
 }

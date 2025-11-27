@@ -45,8 +45,8 @@ import nl.rivm.screenit.main.web.gebruiker.testen.cervix.timeline.popups.TestCer
 import nl.rivm.screenit.main.web.gebruiker.testen.colon.timeline.popups.TestBewerkHuidigeUitnodigingPopUp;
 import nl.rivm.screenit.main.web.gebruiker.testen.colon.timeline.popups.TestColonVerzetDatumPopup;
 import nl.rivm.screenit.main.web.gebruiker.testen.colon.timeline.popups.TestEindeScreeningRondePopUp;
+import nl.rivm.screenit.main.web.gebruiker.testen.colon.timeline.popups.TestFitRegistratiePopup;
 import nl.rivm.screenit.main.web.gebruiker.testen.colon.timeline.popups.TestHerinneringPopup;
-import nl.rivm.screenit.main.web.gebruiker.testen.colon.timeline.popups.TestIfobtTestPopup;
 import nl.rivm.screenit.main.web.gebruiker.testen.colon.timeline.popups.TestIntakeAfspraakBinnenRoosterPopup;
 import nl.rivm.screenit.main.web.gebruiker.testen.colon.timeline.popups.TestIntakeAfspraakBuitenRoosterPopup;
 import nl.rivm.screenit.main.web.gebruiker.testen.colon.timeline.popups.TestIntakeAfspraakConclusiePopup;
@@ -78,7 +78,7 @@ public enum TestVervolgKeuzeOptie implements INaam
 
 	UITNODIGING_POPUP("Bewerk uitnodiging", TestBewerkHuidigeUitnodigingPopUp.class),
 
-	IFOBT("Uitslag verwerken", TestIfobtTestPopup.class),
+	FITREGISTRATIE("Uitslag verwerken", TestFitRegistratiePopup.class),
 
 	HERINNERING("Herinnering versturen", TestHerinneringPopup.class),
 

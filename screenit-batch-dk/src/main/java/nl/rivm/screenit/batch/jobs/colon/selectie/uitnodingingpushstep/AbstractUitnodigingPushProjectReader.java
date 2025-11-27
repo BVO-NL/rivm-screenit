@@ -37,7 +37,7 @@ import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Gemeente_;
 import nl.rivm.screenit.model.Persoon_;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectClient_;
 import nl.rivm.screenit.specification.algemeen.ProjectGroepSpecification;
@@ -52,7 +52,7 @@ import static nl.rivm.screenit.specification.algemeen.ProjectClientSpecification
 abstract class AbstractUitnodigingPushProjectReader extends AbstractUitnodigingPushReader<ProjectClient>
 {
 
-	protected AbstractUitnodigingPushProjectReader(ColonUitnodigingCategorie categorie)
+	protected AbstractUitnodigingPushProjectReader(ColonUitnodigingscategorie categorie)
 	{
 		super(categorie);
 	}

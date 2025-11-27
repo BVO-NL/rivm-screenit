@@ -24,11 +24,10 @@ package nl.rivm.screenit.main.service;
 import java.util.List;
 
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.colon.IFOBTBestand;
+import nl.rivm.screenit.model.colon.ColonFitAnalyseResultaatSet;
 
 public interface QbaseService
 {
-
-	String maakQbaseBestand(List<IFOBTBestand> bestanden, Account ingelogdAccount);
+	String maakQbaseBestand(List<ColonFitAnalyseResultaatSet> resultaatSets, Account ingelogdAccount);
 
 }

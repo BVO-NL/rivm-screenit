@@ -227,7 +227,7 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 
 			boolean annuleerVorigeAfspraak = bestaandeAfspraak.getVanaf().compareTo(dateSupplier.getDate()) > 0;
 
-			var capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, afspraakOptie.getCapaciteitBlokDto().id);
+			var capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, afspraakOptie.getCapaciteitBlokDto().getId());
 
 			var digitaleBerichten = dossier.getLaatsteScreeningRonde().getBerichten();
 			var emailAdres = dossier.getClient().getPersoon().getEmailadres();

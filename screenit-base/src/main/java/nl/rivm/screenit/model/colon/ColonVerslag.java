@@ -53,7 +53,7 @@ import org.hibernate.envers.NotAudited;
 
 @Getter
 @Setter
-@Entity(name = "colon.cda_verslag")
+@Entity
 @Table(schema = "colon", name = "cda_verslag")
 @Proxy
 @Audited

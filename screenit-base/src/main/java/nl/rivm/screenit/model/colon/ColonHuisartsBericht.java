@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.colon;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.CascadeType;
@@ -44,13 +43,10 @@ import org.hibernate.envers.NotAudited;
 @Setter
 @Getter
 @Entity
-@Table(schema = "colon")
+@Table(schema = "colon", name = "huisarts_bericht")
 @Audited
 public class ColonHuisartsBericht extends HuisartsBericht
 {
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, optional = false)
 	@NotAudited
 	private EnovationHuisarts huisarts;
@@ -62,5 +58,4 @@ public class ColonHuisartsBericht extends HuisartsBericht
 	private ColonHuisartsBerichtStatus status;
 
 	private Date verzendDatum;
-
 }

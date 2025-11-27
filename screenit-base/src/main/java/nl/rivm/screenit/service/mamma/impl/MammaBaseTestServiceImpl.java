@@ -170,6 +170,8 @@ public class MammaBaseTestServiceImpl implements MammaBaseTestService
 
 		baseIlmService.verwijderIlmRapportageEntriesVoorClient(client);
 
+		baseIlmService.verwijderIlmBezwaarPogingen(dossier);
+
 		var deelnamekans = dossier.getDeelnamekans();
 		if (deelnamekans != null)
 		{

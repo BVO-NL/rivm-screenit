@@ -35,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation = Propagation.SUPPORTS)
 public class ClientDaoImpl extends AbstractAutowiredDao implements ClientDao
 {
-
 	@Autowired
 	private ICurrentDateSupplier currentDateSupplier;
 
@@ -53,7 +52,7 @@ public class ClientDaoImpl extends AbstractAutowiredDao implements ClientDao
 	{
 		var query = getSession().createNativeQuery("SELECT 1"
 			+ " FROM gedeeld.client client"
-			+ "  LEFT JOIN colon.colon_dossier co ON client.colon_dossier = co.id"
+			+ "  LEFT JOIN colon.dossier co ON client.colon_dossier = co.id"
 			+ "  LEFT JOIN cervix.dossier ce ON client.cervix_dossier = ce.id"
 			+ "  LEFT JOIN mamma.dossier ma ON client.mamma_dossier = ma.id"
 			+ " WHERE client.id = :clientId"

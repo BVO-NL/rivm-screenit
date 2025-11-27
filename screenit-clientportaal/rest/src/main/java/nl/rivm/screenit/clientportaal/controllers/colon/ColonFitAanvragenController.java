@@ -54,7 +54,7 @@ public class ColonFitAanvragenController extends AbstractController
 	{
 		Client client = getClient(authentication);
 
-		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AANVRAGEN_NIEUWE_IFOBT))
+		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AANVRAGEN_NIEUWE_FIT))
 		{
 			return ResponseEntity.ok(fitService.getFitStatus(client));
 		}
@@ -67,7 +67,7 @@ public class ColonFitAanvragenController extends AbstractController
 	{
 		Client client = getClient(authentication);
 
-		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AANVRAGEN_NIEUWE_IFOBT))
+		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AANVRAGEN_NIEUWE_FIT))
 		{
 			fitService.vraagFitAan(client);
 			return ResponseEntity.ok().build();

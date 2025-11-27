@@ -73,8 +73,8 @@ public class ColonIntakeAfspraakSpecification
 	{
 		return (r, q, cb) ->
 		{
-			var colonScreeningRondePath = r
-				.get(ColonIntakeAfspraak_.colonScreeningRonde);
+			var screeningRondePath = r
+				.get(ColonIntakeAfspraak_.screeningRonde);
 
 			var subquery = q.subquery(ColonVerslag.class);
 			var subqueryRoot = subquery.from(ColonVerslag.class);
@@ -82,7 +82,7 @@ public class ColonIntakeAfspraakSpecification
 			subquery.select(subqueryRoot).where(
 				cb.and(
 					cb.equal(subqueryRoot.get(ColonVerslag_.type), VerslagType.MDL),
-					cb.equal(subqueryRoot.get(ColonVerslag_.screeningRonde), colonScreeningRondePath),
+					cb.equal(subqueryRoot.get(ColonVerslag_.screeningRonde), screeningRondePath),
 					cb.equal(subqueryRoot.get(ColonVerslag_.status), VerslagStatus.AFGEROND)
 				)
 			);
@@ -99,7 +99,7 @@ public class ColonIntakeAfspraakSpecification
 
 			var persoonAlias = cb.treat(subqueryRoot.join(Client_.persoon), Persoon.class);
 			var datumColoscopiePath = r.join(ColonIntakeAfspraak_.conclusie).get(ColonConclusie_.datumColoscopie);
-			var dossierPath = r.join(ColonIntakeAfspraak_.colonScreeningRonde).get(ColonScreeningRonde_.dossier);
+			var dossierPath = r.join(ColonIntakeAfspraak_.screeningRonde).get(ColonScreeningRonde_.dossier);
 
 			return cb.exists(subquery.select(subqueryRoot).where(
 				cb.equal(dossierPath, subqueryRoot.get(Client_.colonDossier)),
@@ -115,7 +115,6 @@ public class ColonIntakeAfspraakSpecification
 					)
 				))
 			);
-
 		};
 	}
 
@@ -140,13 +139,13 @@ public class ColonIntakeAfspraakSpecification
 	{
 		return (r, q, cb) ->
 		{
-			var colonScreeningRondePath = r
-				.get(ColonIntakeAfspraak_.colonScreeningRonde);
+			var screeningRondePath = r
+				.get(ColonIntakeAfspraak_.screeningRonde);
 
 			var conclusiePath = r
 				.get(ColonIntakeAfspraak_.conclusie);
 
-			var persoonPath = colonScreeningRondePath
+			var persoonPath = screeningRondePath
 				.get(ColonScreeningRonde_.dossier)
 				.get(ColonDossier_.client)
 				.get(Client_.persoon);
@@ -246,9 +245,9 @@ public class ColonIntakeAfspraakSpecification
 	{
 		return (r, q, cb) ->
 		{
-			var screeningRonde = join(r, ColonIntakeAfspraak_.colonScreeningRonde);
+			var screeningRonde = join(r, ColonIntakeAfspraak_.screeningRonde);
 			var dossierJoin = join(screeningRonde, ColonScreeningRonde_.dossier);
-			return cb.equal(r.get(ColonIntakeAfspraak_.colonScreeningRonde), dossierJoin.get(ColonDossier_.laatsteScreeningRonde));
+			return cb.equal(r.get(ColonIntakeAfspraak_.screeningRonde), dossierJoin.get(ColonDossier_.laatsteScreeningRonde));
 		};
 	}
 

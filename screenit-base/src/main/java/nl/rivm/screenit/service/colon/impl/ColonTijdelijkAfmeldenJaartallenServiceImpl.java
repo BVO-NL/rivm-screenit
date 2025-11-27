@@ -33,8 +33,8 @@ import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.service.colon.ColonTijdelijkAfmeldenJaartallenService;
-import nl.rivm.screenit.util.ColonScreeningRondeUtil;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Service;
@@ -91,6 +91,6 @@ public class ColonTijdelijkAfmeldenJaartallenServiceImpl implements ColonTijdeli
 	private boolean heeftGeenOngunstigeUitslagInLaatsteRonde(ColonDossier dossier)
 	{
 		var laatsteRonde = dossier.getLaatsteScreeningRonde();
-		return ColonScreeningRondeUtil.getEersteOngunstigeTest(laatsteRonde) == null;
+		return ColonScreeningRondeUtil.getEersteOngunstigeFitRegistratie(laatsteRonde) == null;
 	}
 }

@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -54,10 +55,14 @@ import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
+import nl.rivm.screenit.model.berichten.enums.VerslagGeneratie;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.colon.ColonConclusie;
 import nl.rivm.screenit.model.colon.ColonDossier;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
+import nl.rivm.screenit.model.colon.ColonFitType;
+import nl.rivm.screenit.model.colon.ColonHoudbaarheidFitReeks;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.ColonOnderzoeksVariant;
@@ -65,21 +70,19 @@ import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.ColonVooraankondiging;
 import nl.rivm.screenit.model.colon.ColoscopieLocatie;
-import nl.rivm.screenit.model.colon.IFOBTTest;
-import nl.rivm.screenit.model.colon.IFOBTType;
-import nl.rivm.screenit.model.colon.IFOBTVervaldatum;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakslotStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
 import nl.rivm.screenit.model.colon.enums.MdlVervolgbeleid;
 import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlColoscopieMedischeObservatie;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg;
+import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerrichting;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerslagContent;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -89,80 +92,65 @@ import nl.rivm.screenit.service.BaseVerslagService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.TestService;
-import nl.rivm.screenit.service.colon.ColonBaseFITService;
+import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
-import nl.rivm.screenit.service.colon.ColonStudietestService;
+import nl.rivm.screenit.service.colon.ColonScreeningsrondeService;
+import nl.rivm.screenit.service.colon.ColonStudieRegistratieService;
 import nl.rivm.screenit.service.colon.ColonVerwerkVerslagService;
-import nl.rivm.screenit.util.ColonScreeningRondeUtil;
 import nl.rivm.screenit.util.DateUtil;
-import nl.rivm.screenit.util.FITTestUtil;
+import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
+import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
 @Slf4j
+@RequiredArgsConstructor
+@Service
 public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 {
 
 	public static final int DEFAULT_TIJD_TUSSEN_VERSTUURD_EN_UITSLAG_ONTVANGEN = 8;
 
-	@Autowired
-	private HibernateService hibernateService;
+	private final HibernateService hibernateService;
 
-	@Autowired
-	private TestService testService;
+	private final TestService testService;
 
-	@Autowired
-	private ColonTestTimelineTimeService testTimelineTimeService;
+	private final ColonTestTimelineTimeService testTimelineTimeService;
 
-	@Autowired
-	private ColonBaseFITService fitService;
+	private final ColonBaseFitService fitService;
 
-	@Autowired
-	private ColonStudietestService studietestService;
+	private final ColonStudieRegistratieService studieRegistratieService;
 
-	@Autowired
-	private BaseBriefService briefService;
+	private final BaseBriefService briefService;
 
-	@Autowired
-	private ICurrentDateSupplier currentDateSupplier;
+	private final ICurrentDateSupplier currentDateSupplier;
 
-	@Autowired
-	private DossierService dossierService;
+	private final DossierService dossierService;
 
-	@Autowired
-	private SimplePreferenceService preferenceService;
+	private final SimplePreferenceService preferenceService;
 
-	@Autowired
-	private BaseHoudbaarheidService houdbaarheidService;
+	private final BaseHoudbaarheidService houdbaarheidService;
 
-	@Autowired
-	private RetourzendingService retourzendingService;
+	private final RetourzendingService retourzendingService;
 
-	@Autowired
-	private UitnodigingsDao uitnodigingsDao;
+	private final UitnodigingsDao uitnodigingsDao;
 
-	@Autowired
-	private ColonVerwerkVerslagService verwerkVerslagService;
+	private final ColonVerwerkVerslagService verwerkVerslagService;
 
-	@Autowired
-	private BaseVerslagService verslagService;
+	private final BaseVerslagService verslagService;
 
-	@Autowired
-	private ColonDossierBaseService colonDossierBaseService;
+	private final ColonDossierBaseService colonDossierBaseService;
 
-	@Autowired
-	private ColonDossierService colonDossierService;
+	private final ColonDossierService colonDossierService;
 
-	@Autowired
-	private OrganisatieParameterService organisatieParameterService;
+	private final OrganisatieParameterService organisatieParameterService;
 
-	@Autowired
-	private ColonAfspraakslotService afspraakslotService;
+	private final ColonAfspraakslotService afspraakslotService;
+
+	private final ColonScreeningsrondeService screeningsrondeService;
 
 	@Override
 	public List<TestVervolgKeuzeOptie> getSnelKeuzeOpties(Client client)
@@ -182,7 +170,7 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 					keuzeRetourZending(keuzes, ronde);
 				}
 			}
-			if (client.getColonDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getGekoppeldeTest() == null)
+			if (client.getColonDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getGekoppeldeFitRegistratie() == null)
 			{
 				keuzes.add(TestVervolgKeuzeOptie.UITNODIGING_POPUP);
 			}
@@ -196,9 +184,9 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 	{
 		if (!keuzes.contains(TestVervolgKeuzeOptie.HERINNERING))
 		{
-			for (var test : ronde.getIfobtTesten())
+			for (var test : ronde.getFitRegistraties())
 			{
-				if (!test.isHerinnering() && test.getStatus().equals(IFOBTTestStatus.ACTIEF))
+				if (!test.isHerinnering() && test.getStatus().equals(ColonFitRegistratieStatus.ACTIEF))
 				{
 					keuzes.add(TestVervolgKeuzeOptie.HERINNERING);
 					return;
@@ -209,13 +197,13 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 
 	private void keuzeAntwoordFormulierEnFit(List<TestVervolgKeuzeOptie> keuzes, ColonScreeningRonde ronde)
 	{
-		if (!keuzes.contains(TestVervolgKeuzeOptie.IFOBT))
+		if (!keuzes.contains(TestVervolgKeuzeOptie.FITREGISTRATIE))
 		{
-			for (var test : ronde.getIfobtTesten())
+			for (var fitRegistratie : ronde.getFitRegistraties())
 			{
-				if (test.getUitslag() == null)
+				if (fitRegistratie.getUitslag() == null)
 				{
-					keuzes.add(TestVervolgKeuzeOptie.IFOBT);
+					keuzes.add(TestVervolgKeuzeOptie.FITREGISTRATIE);
 					return;
 				}
 			}
@@ -226,9 +214,9 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 	{
 		if (!keuzes.contains(TestVervolgKeuzeOptie.RETOURZENDING))
 		{
-			for (var test : ronde.getIfobtTesten())
+			for (var test : ronde.getFitRegistraties())
 			{
-				if (test.getType().equals(IFOBTType.GOLD) && retourzendingService.isValideColonUitnodiging(test.getColonUitnodiging()) == null)
+				if (test.getType().equals(ColonFitType.GOLD) && retourzendingService.isValideColonUitnodiging(test.getUitnodiging()) == null)
 				{
 					keuzes.add(TestVervolgKeuzeOptie.RETOURZENDING);
 					return;
@@ -239,7 +227,7 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 
 	private void keuzeIntakeAfspraak(List<TestVervolgKeuzeOptie> keuzes, ColonScreeningRonde ronde)
 	{
-		if (ColonScreeningRondeUtil.zijnErOngunstigeIfobts(ronde))
+		if (ColonScreeningRondeUtil.zijnErOngunstigeFitRegistraties(ronde))
 		{
 			if (ronde.getAfspraken().isEmpty())
 			{
@@ -329,9 +317,9 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 		if (heeftLaatsteScreeningsRonde(client))
 		{
 			var screeningRonde = client.getColonDossier().getLaatsteScreeningRonde();
-			if (screeningRonde.getIfobtTesten() != null && screeningRonde.getIfobtTesten().size() > 0)
+			if (screeningRonde.getFitRegistraties() != null && screeningRonde.getFitRegistraties().size() > 0)
 			{
-				aantalBuizen = screeningRonde.getIfobtTesten().size();
+				aantalBuizen = screeningRonde.getFitRegistraties().size();
 			}
 		}
 		return aantalBuizen;
@@ -389,8 +377,8 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 		}
 
 		var dossier = client.getColonDossier();
-		var ronde = newColonScreeningRonde(dossier);
-		geefColonVooraankondiging(ronde);
+		var ronde = newScreeningronde(dossier);
+		maakOfGeefVooraankondiging(ronde);
 
 		if (tijdstip == TestTimeLineDossierTijdstip.DAG_NA_UITNODIGING_ZONDER_FIT)
 		{
@@ -400,11 +388,11 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 		{
 			if (new ArrayList<>(dossier.getScreeningRondes()).size() == 1)
 			{
-				newColonUitnodiging(ronde, ColonUitnodigingCategorie.U1, onderzoeksVariant);
+				maakUitnodiging(ronde, ColonUitnodigingscategorie.U1, onderzoeksVariant);
 			}
 			else
 			{
-				newColonUitnodiging(ronde, ColonUitnodigingCategorie.U2, onderzoeksVariant);
+				maakUitnodiging(ronde, ColonUitnodigingscategorie.U2, onderzoeksVariant);
 			}
 
 			bewerkUitnodiging(client, tijdstip);
@@ -417,8 +405,8 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 	public ColonDossier bewerkUitnodiging(Client client, TestTimeLineDossierTijdstip tijdstip)
 	{
 		var dossier = client.getColonDossier();
-		var ronde = geefLaatsteColonScreeningRonde(dossier);
-		var uitnodiging = geefColonUitnodiging(ronde);
+		var ronde = maakOfGeefLaatsteScreeningronde(dossier);
+		var uitnodiging = maakOfGeefUitnodiging(ronde);
 
 		if (TestTimeLineDossierTijdstip.DAG_UITNODIGING_VERSTUREN.equals(tijdstip) || TestTimeLineDossierTijdstip.DAG_NA_UITNODIGING_KOPPELEN.equals(tijdstip))
 		{
@@ -451,8 +439,8 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 	private int bepaalAantalDagenVoorOntvangenAntwoordformulierOfFit(ColonUitnodiging uitnodiging)
 	{
 
-		var gold = uitnodiging.getGekoppeldeTest();
-		if (gold != null && (gold.getAnalyseDatum() != null || IFOBTTestStatus.isUnmutableEindStatus(gold.getStatus()))
+		var gold = uitnodiging.getGekoppeldeFitRegistratie();
+		if (gold != null && (gold.getAnalyseDatum() != null || ColonFitRegistratieStatus.isUnmutableEindStatus(gold.getStatus()))
 			|| uitnodiging.getAntwoordFormulier() != null && uitnodiging.getAntwoordFormulier().getScanDatum() != null)
 		{
 			return 0;
@@ -467,14 +455,13 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 		return (int) ChronoUnit.DAYS.between(datumVerstuurd, currentDateSupplier.getLocalDate());
 	}
 
-	private ColonScreeningRonde newColonScreeningRonde(ColonDossier dossier)
+	private ColonScreeningRonde newScreeningronde(ColonDossier dossier)
 	{
 		var ronde = dossier.getLaatsteScreeningRonde();
 		var nu = currentDateSupplier.getDate();
 		if (ronde != null)
 		{
-			ronde.setStatus(ScreeningRondeStatus.AFGEROND);
-			ronde.setStatusDatum(nu);
+			screeningsrondeService.sluitRonde(ronde);
 		}
 		ronde = new ColonScreeningRonde();
 		ronde.setStatus(ScreeningRondeStatus.LOPEND);
@@ -489,27 +476,27 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 		return ronde;
 	}
 
-	private ColonScreeningRonde geefLaatsteColonScreeningRonde(ColonDossier dossier)
+	private ColonScreeningRonde maakOfGeefLaatsteScreeningronde(ColonDossier dossier)
 	{
 		var ronde = dossier.getLaatsteScreeningRonde();
 		if (ronde == null)
 		{
-			ronde = newColonScreeningRonde(dossier);
+			ronde = newScreeningronde(dossier);
 		}
 		return ronde;
 	}
 
-	private ColonVooraankondiging geefColonVooraankondiging(ColonScreeningRonde ronde)
+	private ColonVooraankondiging maakOfGeefVooraankondiging(ColonScreeningRonde ronde)
 	{
 		var dossier = ronde.getDossier();
-		var vooraankondiging = dossier.getColonVooraankondiging();
+		var vooraankondiging = dossier.getVooraankondiging();
 		if (vooraankondiging == null)
 		{
 			vooraankondiging = new ColonVooraankondiging();
 			vooraankondiging.setClient(dossier.getClient());
 			var nu = currentDateSupplier.getDate();
 			vooraankondiging.setCreatieDatum(nu);
-			dossier.setColonVooraankondiging(vooraankondiging);
+			dossier.setVooraankondiging(vooraankondiging);
 			var brief = briefService.maakBvoBrief(ronde, BriefType.COLON_VOORAANKONDIGING);
 			vooraankondiging.setBrief(brief);
 			hibernateService.saveOrUpdateAll(vooraankondiging);
@@ -519,88 +506,88 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 
 	private void koppelFit(ColonUitnodiging uitnodiging)
 	{
-		if (uitnodiging != null && uitnodiging.getGekoppeldeTest() == null)
+		if (uitnodiging != null && uitnodiging.getGekoppeldeFitRegistratie() == null)
 		{
-			var baseTestBarcode = FITTestUtil.getFITTestBarcode(uitnodiging.getUitnodigingsId());
+			var baseTestBarcode = ColonFitRegistratieUtil.getFitRegistratieBarcode(uitnodiging.getUitnodigingsId());
 			var nu = currentDateSupplier.getDate();
-			if (ColonOnderzoeksVariant.isOfType(uitnodiging.getOnderzoeksVariant(), IFOBTType.GOLD))
+			if (ColonOnderzoeksVariant.isOfType(uitnodiging.getOnderzoeksVariant(), ColonFitType.GOLD))
 			{
 				var ronde = uitnodiging.getScreeningRonde();
-				var test = new IFOBTTest();
-				test.setDatumVerstuurd(nu);
-				test.setStatus(IFOBTTestStatus.ACTIEF);
-				test.setStatusDatum(nu);
-				test.setBarcode("TGD" + baseTestBarcode);
-				test.setColonScreeningRonde(ronde);
-				test.setColonUitnodiging(uitnodiging);
-				test.setType(IFOBTType.GOLD);
-				ronde.getIfobtTesten().add(test);
-				ronde.setLaatsteIFOBTTest(test);
-				ronde.setLaatsteIFOBTTestExtra(null);
-				test.setColonUitnodiging(uitnodiging);
-				uitnodiging.setGekoppeldeTest(test);
+				var fitRegistratie = new ColonFitRegistratie();
+				fitRegistratie.setDatumVerstuurd(nu);
+				fitRegistratie.setStatus(ColonFitRegistratieStatus.ACTIEF);
+				fitRegistratie.setStatusDatum(nu);
+				fitRegistratie.setBarcode("TGD" + baseTestBarcode);
+				fitRegistratie.setScreeningRonde(ronde);
+				fitRegistratie.setUitnodiging(uitnodiging);
+				fitRegistratie.setType(ColonFitType.GOLD);
+				ronde.getFitRegistraties().add(fitRegistratie);
+				ronde.setLaatsteFitRegistratie(fitRegistratie);
+				ronde.setLaatsteExtraFitRegistratie(null);
+				fitRegistratie.setUitnodiging(uitnodiging);
+				uitnodiging.setGekoppeldeFitRegistratie(fitRegistratie);
 				uitnodiging.setVerstuurdDoorInpakcentrum(true);
-				hibernateService.saveOrUpdateAll(test, uitnodiging, ronde);
+				hibernateService.saveOrUpdateAll(fitRegistratie, uitnodiging, ronde);
 			}
-			if (ColonOnderzoeksVariant.isOfType(uitnodiging.getOnderzoeksVariant(), IFOBTType.STUDIE))
+			if (ColonOnderzoeksVariant.isOfType(uitnodiging.getOnderzoeksVariant(), ColonFitType.STUDIE))
 			{
 				var ronde = uitnodiging.getScreeningRonde();
-				var test = new IFOBTTest();
-				test.setDatumVerstuurd(nu);
-				test.setStatus(IFOBTTestStatus.ACTIEF);
-				test.setStatusDatum(nu);
-				test.setBarcode("TST" + baseTestBarcode);
-				test.setColonScreeningRonde(ronde);
-				test.setColonUitnodiging(uitnodiging);
-				test.setType(IFOBTType.STUDIE);
-				ronde.getIfobtTesten().add(test);
-				ronde.setLaatsteIFOBTTestExtra(test);
-				test.setColonUitnodiging(uitnodiging);
-				uitnodiging.setGekoppeldeExtraTest(test);
+				var fitRegistratie = new ColonFitRegistratie();
+				fitRegistratie.setDatumVerstuurd(nu);
+				fitRegistratie.setStatus(ColonFitRegistratieStatus.ACTIEF);
+				fitRegistratie.setStatusDatum(nu);
+				fitRegistratie.setBarcode("TST" + baseTestBarcode);
+				fitRegistratie.setScreeningRonde(ronde);
+				fitRegistratie.setUitnodiging(uitnodiging);
+				fitRegistratie.setType(ColonFitType.STUDIE);
+				ronde.getFitRegistraties().add(fitRegistratie);
+				ronde.setLaatsteExtraFitRegistratie(fitRegistratie);
+				fitRegistratie.setUitnodiging(uitnodiging);
+				uitnodiging.setGekoppeldeExtraFitRegistratie(fitRegistratie);
 				uitnodiging.setVerstuurdDoorInpakcentrum(true);
-				hibernateService.saveOrUpdateAll(test, uitnodiging, ronde);
+				hibernateService.saveOrUpdateAll(fitRegistratie, uitnodiging, ronde);
 			}
 		}
 	}
 
-	private ColonUitnodiging newColonUitnodiging(ColonScreeningRonde ronde, ColonUitnodigingCategorie cat, ColonOnderzoeksVariant onderzoeksVariant)
+	private ColonUitnodiging maakUitnodiging(ColonScreeningRonde ronde, ColonUitnodigingscategorie cat, ColonOnderzoeksVariant onderzoeksVariant)
 	{
-		var colonUitnodiging = new ColonUitnodiging();
-		colonUitnodiging.setUitnodigingsId(uitnodigingsDao.getNextUitnodigingsId());
-		if (ColonUitnodigingCategorie.U1.equals(cat) || ColonUitnodigingCategorie.U2.equals(cat))
+		var uitnodiging = new ColonUitnodiging();
+		uitnodiging.setUitnodigingsId(uitnodigingsDao.getNextUitnodigingsId());
+		if (ColonUitnodigingscategorie.U1.equals(cat) || ColonUitnodigingscategorie.U2.equals(cat))
 		{
-			colonUitnodiging.setColonUitnodigingCategorie(cat);
-			colonUitnodiging.setUitnodigingsDatum(testTimelineTimeService.getVooraankondigingsPeriodeDatum());
+			uitnodiging.setUitnodigingscategorie(cat);
+			uitnodiging.setUitnodigingsDatum(testTimelineTimeService.getVooraankondigingsPeriodeDatum());
 		}
 		else
 		{
-			colonUitnodiging.setUitnodigingsDatum(currentDateSupplier.getDate());
+			uitnodiging.setUitnodigingsDatum(currentDateSupplier.getDate());
 		}
-		colonUitnodiging.setCreatieDatum(currentDateSupplier.getDate());
-		colonUitnodiging.setScreeningRonde(ronde);
-		colonUitnodiging.setOnderzoeksVariant(onderzoeksVariant);
-		ronde.getUitnodigingen().add(colonUitnodiging);
-		ronde.setLaatsteUitnodiging(colonUitnodiging);
-		ronde.setLaatsteIFOBTTest(null);
-		ronde.setLaatsteIFOBTTestExtra(null);
-		hibernateService.saveOrUpdateAll(colonUitnodiging, ronde);
+		uitnodiging.setCreatieDatum(currentDateSupplier.getDate());
+		uitnodiging.setScreeningRonde(ronde);
+		uitnodiging.setOnderzoeksVariant(onderzoeksVariant);
+		ronde.getUitnodigingen().add(uitnodiging);
+		ronde.setLaatsteUitnodiging(uitnodiging);
+		ronde.setLaatsteFitRegistratie(null);
+		ronde.setLaatsteExtraFitRegistratie(null);
+		hibernateService.saveOrUpdateAll(uitnodiging, ronde);
 		colonDossierBaseService.setDatumVolgendeUitnodiging(ronde.getDossier(), ColonUitnodigingsintervalType.UITNODIGING_ONTVANGEN);
-		colonUitnodiging = ronde.getLaatsteUitnodiging();
-		return colonUitnodiging;
+		uitnodiging = ronde.getLaatsteUitnodiging();
+		return uitnodiging;
 	}
 
-	private ColonUitnodiging geefColonUitnodiging(ColonScreeningRonde ronde)
+	private ColonUitnodiging maakOfGeefUitnodiging(ColonScreeningRonde ronde)
 	{
 		var uitnodiging = ronde.getLaatsteUitnodiging();
 		if (uitnodiging == null)
 		{
 			if (ronde.getDossier().getScreeningRondes().size() == 1)
 			{
-				uitnodiging = newColonUitnodiging(ronde, ColonUitnodigingCategorie.U1, ColonOnderzoeksVariant.STANDAARD);
+				uitnodiging = maakUitnodiging(ronde, ColonUitnodigingscategorie.U1, ColonOnderzoeksVariant.STANDAARD);
 			}
 			else
 			{
-				uitnodiging = newColonUitnodiging(ronde, ColonUitnodigingCategorie.U1, ColonOnderzoeksVariant.STANDAARD);
+				uitnodiging = maakUitnodiging(ronde, ColonUitnodigingscategorie.U1, ColonOnderzoeksVariant.STANDAARD);
 			}
 		}
 		return uitnodiging;
@@ -660,10 +647,10 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 
 	@Override
 	@Transactional
-	public IFOBTTest fitOntvangen(Client client, Boolean verlopen, IFOBTTest buis, int analyseDatumDiff)
+	public ColonFitRegistratie fitOntvangen(Client client, Boolean verlopen, ColonFitRegistratie fitRegistratie, int analyseDatumDiff)
 	{
 
-		var uitnodiging = FITTestUtil.getUitnodiging(buis);
+		var uitnodiging = ColonFitRegistratieUtil.getUitnodiging(fitRegistratie);
 		var aantalDagen = bepaalAantalDagenVoorOntvangenAntwoordformulierOfFit(uitnodiging);
 		if (aantalDagen >= 0)
 		{
@@ -672,47 +659,47 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 
 		var vandaag = currentDateSupplier.getLocalDate();
 
-		if (buis.getUitslag() != null || buis.getGeinterpreteerdeUitslag() != null)
+		if (fitRegistratie.getUitslag() != null || fitRegistratie.getGeinterpreteerdeUitslag() != null)
 		{
-			var fitVervaldatum = houdbaarheidService.getFitHoudbaarheidVoor(buis.getBarcode());
-			IFOBTVervaldatum tijdelijkVervaldatum = null;
-			if (fitVervaldatum == null && !Boolean.TRUE.equals(verlopen))
+			var fitHoudbaarheid = houdbaarheidService.getFitHoudbaarheidVoor(fitRegistratie.getBarcode());
+			ColonHoudbaarheidFitReeks houdbaarheidFitReeks = null;
+			if (fitHoudbaarheid == null && !Boolean.TRUE.equals(verlopen))
 			{
-				tijdelijkVervaldatum = new IFOBTVervaldatum();
-				tijdelijkVervaldatum.setVervalDatum(DateUtil.toUtilDate(vandaag.plusDays(10)));
-				tijdelijkVervaldatum.setType(buis.getType());
-				tijdelijkVervaldatum.setLengthBarcode(buis.getBarcode().length());
-				tijdelijkVervaldatum.setBarcodeStart(buis.getBarcode());
-				tijdelijkVervaldatum.setBarcodeEnd(buis.getBarcode());
-				hibernateService.saveOrUpdate(tijdelijkVervaldatum);
+				houdbaarheidFitReeks = new ColonHoudbaarheidFitReeks();
+				houdbaarheidFitReeks.setVervalDatum(DateUtil.toUtilDate(vandaag.plusDays(10)));
+				houdbaarheidFitReeks.setType(fitRegistratie.getType());
+				houdbaarheidFitReeks.setLengthBarcode(fitRegistratie.getBarcode().length());
+				houdbaarheidFitReeks.setBarcodeStart(fitRegistratie.getBarcode());
+				houdbaarheidFitReeks.setBarcodeEnd(fitRegistratie.getBarcode());
+				hibernateService.saveOrUpdate(houdbaarheidFitReeks);
 			}
-			else if (fitVervaldatum != null && (buis.getBarcode().startsWith("TGD") || buis.getBarcode().startsWith("TST")))
+			else if (fitHoudbaarheid != null && (fitRegistratie.getBarcode().startsWith("TGD") || fitRegistratie.getBarcode().startsWith("TST")))
 			{
-				fitVervaldatum.setVervalDatum(DateUtil.toUtilDate(vandaag.plusDays(10)));
-				hibernateService.saveOrUpdate(fitVervaldatum);
+				fitHoudbaarheid.setVervalDatum(DateUtil.toUtilDate(vandaag.plusDays(10)));
+				hibernateService.saveOrUpdate(fitHoudbaarheid);
 			}
-			buis.setAnalyseDatum(DateUtil.toUtilDate(vandaag.minusDays(analyseDatumDiff)));
-			buis.setVerwerkingsDatum(DateUtil.toUtilDate(vandaag));
-			uitslagOntvangen(buis);
+			fitRegistratie.setAnalyseDatum(DateUtil.toUtilDate(vandaag.minusDays(analyseDatumDiff)));
+			fitRegistratie.setVerwerkingsDatum(DateUtil.toUtilDate(vandaag));
+			uitslagOntvangen(fitRegistratie);
 
-			if (tijdelijkVervaldatum != null && (buis.getBarcode().startsWith("TGD") || buis.getBarcode().startsWith("TST"))
-				&& (IFOBTTestStatus.isUnmutableEindStatus(buis.getStatus()) || buis.getStatus() == IFOBTTestStatus.UITGEVOERD))
+			if (houdbaarheidFitReeks != null && (fitRegistratie.getBarcode().startsWith("TGD") || fitRegistratie.getBarcode().startsWith("TST"))
+				&& (ColonFitRegistratieStatus.isUnmutableEindStatus(fitRegistratie.getStatus()) || fitRegistratie.getStatus() == ColonFitRegistratieStatus.UITGEVOERD))
 			{
-				hibernateService.delete(tijdelijkVervaldatum);
+				hibernateService.delete(houdbaarheidFitReeks);
 			}
 		}
-		return buis;
+		return fitRegistratie;
 	}
 
-	private void uitslagOntvangen(IFOBTTest buis)
+	private void uitslagOntvangen(ColonFitRegistratie fitRegistratie)
 	{
-		if (buis.getType() != IFOBTType.STUDIE)
+		if (fitRegistratie.getType() != ColonFitType.STUDIE)
 		{
-			fitService.verwerkAnalyseResultaat(buis);
+			fitService.verwerkAnalyseResultaat(fitRegistratie);
 		}
 		else
 		{
-			studietestService.verwerkUitslag(buis);
+			studieRegistratieService.verwerkRegistratie(fitRegistratie);
 		}
 	}
 
@@ -735,26 +722,26 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 		{
 			var csr = dossier.getLaatsteScreeningRonde();
 			var herinneringsBrief = briefService.maakBvoBrief(csr, BriefType.COLON_HERINNERING);
-			for (var iTest : rappelerendeFITs(csr))
+			for (var iTest : fitRegistratiesHerinneren(csr))
 			{
 				iTest.setHerinnering(Boolean.TRUE);
 				hibernateService.saveOrUpdate(iTest);
-				herinneringsBrief.setIfobtTest(iTest);
+				herinneringsBrief.setFitRegistratie(iTest);
 				hibernateService.saveOrUpdate(herinneringsBrief);
 			}
 		}
 	}
 
-	private List<IFOBTTest> rappelerendeFITs(ColonScreeningRonde csr)
+	private List<ColonFitRegistratie> fitRegistratiesHerinneren(ColonScreeningRonde csr)
 	{
-		return csr.getIfobtTesten().stream().filter(fit -> IFOBTTestStatus.ACTIEF.equals(fit.getStatus()) && fit.getStatusDatum().before(getRapelDate()))
+		return csr.getFitRegistraties().stream().filter(fit -> ColonFitRegistratieStatus.ACTIEF.equals(fit.getStatus()) && fit.getStatusDatum().before(getHerinneringspeildatum()))
 			.collect(Collectors.toList());
 	}
 
-	private Date getRapelDate()
+	private Date getHerinneringspeildatum()
 	{
-		var rapelPeriode = preferenceService.getInteger(PreferenceKey.IFOBTRAPELPERIODE.name());
-		return DateUtil.minDagen(currentDateSupplier.getDate(), rapelPeriode);
+		var herinneringsperiode = preferenceService.getInteger(PreferenceKey.COLON_HERINNERINGS_PERIODE.name());
+		return DateUtil.minDagen(currentDateSupplier.getDate(), herinneringsperiode);
 	}
 
 	@Override
@@ -810,7 +797,7 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 			client.getAfspraken().add(intakeAfspraak);
 			ronde.setLaatsteAfspraak(intakeAfspraak);
 			ronde.getAfspraken().add(intakeAfspraak);
-			intakeAfspraak.setColonScreeningRonde(ronde);
+			intakeAfspraak.setScreeningRonde(ronde);
 			intakeAfspraak.setKamer(intakekamer);
 			intakeAfspraak.setVanaf(startDatum);
 			intakeAfspraak.setTot(intakeAfspraak.getVanaf().plusMinutes(duurAfspraakInMinuten));
@@ -927,6 +914,11 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 			definitiefVervolgbeleidVoorBevolkingsonderzoekg.setColoscopieMedischeObservatie(coloscopieMedischeObservatie);
 		}
 		content.setVerslag(verslag);
+		content.setVersie(VerslagGeneratie.getHuidigeGeneratie(VerslagType.MDL));
+		var verrichting = new MdlVerrichting();
+		verrichting.setVerslagContent(content);
+		verrichting.setAanvangVerrichting(currentDateSupplier.getDate());
+		content.setVerrichting(verrichting);
 		ronde.getVerslagen().add(verslag);
 		hibernateService.saveOrUpdate(verslag);
 		hibernateService.saveOrUpdate(ronde);

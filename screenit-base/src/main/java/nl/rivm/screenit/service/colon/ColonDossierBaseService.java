@@ -38,7 +38,7 @@ public interface ColonDossierBaseService extends LeegDossierService
 
 	void updateIntervalReferentieDatums();
 
-	void setVolgendeUitnodingVoorConclusie(ColonIntakeAfspraak afspraak);
+	void setVolgendeUitnodigingVoorConclusie(ColonIntakeAfspraak afspraak);
 
 	LocalDate getTheoretischeDatumVolgendeUitnodiging(ColonDossier dossier, ColonUitnodigingsintervalType interval);
 

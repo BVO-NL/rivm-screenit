@@ -25,12 +25,12 @@ import java.util.List;
 
 import nl.rivm.screenit.main.service.HoudbaarheidService;
 import nl.rivm.screenit.model.AbstractHoudbaarheid;
-import nl.rivm.screenit.model.cervix.CervixZasHoudbaarheid;
-import nl.rivm.screenit.model.colon.IFOBTVervaldatum;
-import nl.rivm.screenit.repository.cervix.CervixZasHoudbaarheidRepository;
-import nl.rivm.screenit.repository.colon.ColonFITVervaldatumRepository;
+import nl.rivm.screenit.model.cervix.CervixHoudbaarheidZasReeks;
+import nl.rivm.screenit.model.colon.ColonHoudbaarheidFitReeks;
+import nl.rivm.screenit.repository.cervix.CervixHoudbaarheidZasReeksRepository;
+import nl.rivm.screenit.repository.colon.ColonHoudbaarheidFitReeksRepository;
 import nl.rivm.screenit.specification.cervix.CervixZasHoudbaarheidSpecification;
-import nl.rivm.screenit.specification.colon.ColonFITHoudbaarheidSpecification;
+import nl.rivm.screenit.specification.colon.ColonHoudbaarheidFitReeksSpecification;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -44,63 +44,63 @@ import static nl.rivm.screenit.specification.HibernateObjectSpecification.heeftN
 public class HoudbaarheidServiceImpl implements HoudbaarheidService
 {
 	@Autowired
-	private CervixZasHoudbaarheidRepository cervixZasHoudbaarheidRepository;
+	private CervixHoudbaarheidZasReeksRepository cervixHoudbaarheidZASReeksRepository;
 
 	@Autowired
-	private ColonFITVervaldatumRepository colonFITVervaldatumRepository;
+	private ColonHoudbaarheidFitReeksRepository colonHoudbaarheidFitReeksRepository;
 
 	@Override
 	public <H extends AbstractHoudbaarheid> List<H> getHoudbaarheidItems(Class<H> clazz, long first, long count, Sort sort)
 	{
-		if (clazz.equals(IFOBTVervaldatum.class))
+		if (clazz.equals(ColonHoudbaarheidFitReeks.class))
 		{
-			return (List<H>) colonFITVervaldatumRepository.findWith(null, q -> q.sortBy(sort)).all(first, count);
+			return (List<H>) colonHoudbaarheidFitReeksRepository.findWith(null, q -> q.sortBy(sort)).all(first, count);
 		}
 		else
 		{
-			return (List<H>) cervixZasHoudbaarheidRepository.findWith(null, q -> q.sortBy(sort)).all(first, count);
+			return (List<H>) cervixHoudbaarheidZASReeksRepository.findWith(null, q -> q.sortBy(sort)).all(first, count);
 		}
 	}
 
 	@Override
 	public <H extends AbstractHoudbaarheid> Long countHoudbaarheidItems(Class<H> clazz)
 	{
-		if (clazz.equals(IFOBTVervaldatum.class))
+		if (clazz.equals(ColonHoudbaarheidFitReeks.class))
 		{
-			return colonFITVervaldatumRepository.count();
+			return colonHoudbaarheidFitReeksRepository.count();
 		}
 		else
 		{
-			return cervixZasHoudbaarheidRepository.count();
+			return cervixHoudbaarheidZASReeksRepository.count();
 		}
 	}
 
 	@Override
 	public <H extends AbstractHoudbaarheid> boolean overlaptBestaandeReeks(H vervalDatum)
 	{
-		if (vervalDatum instanceof IFOBTVervaldatum)
+		if (vervalDatum instanceof ColonHoudbaarheidFitReeks)
 		{
-			return overlaptBestaandeFitReeks((IFOBTVervaldatum) vervalDatum);
+			return overlaptBestaandeFitReeks((ColonHoudbaarheidFitReeks) vervalDatum);
 		}
 		else
 		{
-			return overlaptBestaandeZasReeks((CervixZasHoudbaarheid) vervalDatum);
+			return overlaptBestaandeZasReeks((CervixHoudbaarheidZasReeks) vervalDatum);
 		}
 	}
 
-	private boolean overlaptBestaandeFitReeks(IFOBTVervaldatum vervalDatum)
+	private boolean overlaptBestaandeFitReeks(ColonHoudbaarheidFitReeks vervalDatum)
 	{
 		var barcodeRange = Range.closed(vervalDatum.getBarcodeStart(), vervalDatum.getBarcodeEnd());
-		var specification = ColonFITHoudbaarheidSpecification.overlaptBarcode(barcodeRange)
-			.and(ColonFITHoudbaarheidSpecification.heeftBarcodeLengte(vervalDatum.getBarcodeStart().length()));
+		var specification = ColonHoudbaarheidFitReeksSpecification.overlaptBarcode(barcodeRange)
+			.and(ColonHoudbaarheidFitReeksSpecification.heeftBarcodeLengte(vervalDatum.getBarcodeStart().length()));
 		if (vervalDatum.getId() != null)
 		{
 			specification = specification.and(heeftNietId(vervalDatum.getId()));
 		}
-		return colonFITVervaldatumRepository.exists(specification);
+		return colonHoudbaarheidFitReeksRepository.exists(specification);
 	}
 
-	private boolean overlaptBestaandeZasReeks(CervixZasHoudbaarheid houdbaarheid)
+	private boolean overlaptBestaandeZasReeks(CervixHoudbaarheidZasReeks houdbaarheid)
 	{
 		var barcodeRange = Range.closed(houdbaarheid.getBarcodeStart(), houdbaarheid.getBarcodeEnd());
 		var specification = CervixZasHoudbaarheidSpecification.overlaptBarcode(barcodeRange)
@@ -109,6 +109,6 @@ public class HoudbaarheidServiceImpl implements HoudbaarheidService
 		{
 			specification = specification.and(heeftNietId(houdbaarheid.getId()));
 		}
-		return cervixZasHoudbaarheidRepository.exists(specification);
+		return cervixHoudbaarheidZASReeksRepository.exists(specification);
 	}
 }

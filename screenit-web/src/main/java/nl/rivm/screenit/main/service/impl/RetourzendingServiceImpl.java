@@ -47,8 +47,7 @@ import nl.rivm.screenit.model.cervix.CervixZas;
 import nl.rivm.screenit.model.cervix.enums.CervixZasStatus;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
-import nl.rivm.screenit.model.colon.IFOBTTest;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
+import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.colon.enums.RetourzendingStatus;
 import nl.rivm.screenit.model.colon.enums.RetourzendingWijze;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -65,7 +64,7 @@ import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.service.cervix.CervixBaseScreeningrondeService;
 import nl.rivm.screenit.service.cervix.CervixFactory;
-import nl.rivm.screenit.service.colon.ColonBaseFITService;
+import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.rivm.screenit.service.colon.ColonScreeningsrondeService;
 import nl.rivm.screenit.service.colon.ColonUitnodigingService;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
@@ -117,7 +116,7 @@ public class RetourzendingServiceImpl implements RetourzendingService
 	private HibernateService hibernateService;
 
 	@Autowired
-	private ColonBaseFITService colonFitService;
+	private ColonBaseFitService colonFitService;
 
 	@Autowired
 	private BaseBriefService briefService;
@@ -375,7 +374,7 @@ public class RetourzendingServiceImpl implements RetourzendingService
 		}
 		if (uitnodiging instanceof ColonUitnodiging)
 		{
-			colonFitService.markeerBuisAlsVerloren((ColonUitnodiging) uitnodiging);
+			colonFitService.markeerRegistratieAlsVerloren((ColonUitnodiging) uitnodiging);
 		}
 
 		hibernateService.saveOrUpdate(uitnodiging);
@@ -423,10 +422,10 @@ public class RetourzendingServiceImpl implements RetourzendingService
 		{
 			if (!colonScreeningsrondeService.heeftUitslag(uitnodiging, false))
 			{
-				IFOBTTest test = uitnodiging.getGekoppeldeTest();
-				if (test != null)
+				var fitRegistratie = uitnodiging.getGekoppeldeFitRegistratie();
+				if (fitRegistratie != null)
 				{
-					if (test.getStatus() == IFOBTTestStatus.ACTIEF)
+					if (fitRegistratie.getStatus() == ColonFitRegistratieStatus.ACTIEF)
 					{
 						return null;
 					}

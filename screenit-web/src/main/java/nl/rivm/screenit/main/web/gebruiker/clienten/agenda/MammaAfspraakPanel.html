@@ -29,6 +29,7 @@
 			<th class="input-micro"></th>
 			<th class="input-micro"></th>
 			<th class="input-micro"></th>
+			<th class="input-micro"></th>
 			<wicket:enclosure child="inhoud:uitstellen">
 				<th class="input-micro"></th>
 			</wicket:enclosure>
@@ -43,7 +44,10 @@
 				<wicket:container wicket:id="standplaats"/>
 			</td>
 
-            <td>
+			<td>
+				<a class="btn" wicket:id="email">Email</a>
+			</td>
+			<td>
                 <a class="btn" wicket:id="brief">Brief</a>
             </td>
             <td>
@@ -77,5 +81,6 @@
             </div>
         </address>
     </wicket:fragment>
+	<div wicket:id="dialog"></div>
 </wicket:panel>
 </html>

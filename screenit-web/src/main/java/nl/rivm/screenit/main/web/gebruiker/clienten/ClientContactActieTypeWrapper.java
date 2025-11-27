@@ -130,9 +130,9 @@ public enum ClientContactActieTypeWrapper
 		},
 
 	COLON_AANVRAGEN_NIEUWE_IFOBT(
-		ClientContactActieType.COLON_AANVRAGEN_NIEUWE_IFOBT,
+		ClientContactActieType.COLON_AANVRAGEN_NIEUWE_FIT,
 		ColonClientContactAanvragenNieuweIFOBTPanel.class,
-		Recht.MEDEWERKER_CLIENT_SR_NIEUWE_IFOBT_AANVRAGEN,
+		Recht.COLON_CLIENT_SR_NIEUWE_FIT_AANVRAGEN,
 		"icon-repeat")
 		{
 			@Override

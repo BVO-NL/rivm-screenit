@@ -35,6 +35,6 @@ public class ColonHuisartsOntkoppelenReader extends BaseSpecificationScrollableR
 	@Override
 	protected Specification<ColonScreeningRonde> createSpecification()
 	{
-		return EnovationHuisartsSpecification.isVerwijderd(true).with(ColonScreeningRonde_.colonHuisarts);
+		return EnovationHuisartsSpecification.isVerwijderd(true).with(ColonScreeningRonde_.huisarts);
 	}
 }

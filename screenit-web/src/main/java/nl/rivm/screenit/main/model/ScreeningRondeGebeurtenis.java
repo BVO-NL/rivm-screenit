@@ -31,9 +31,9 @@ import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.cervix.CervixHpvBeoordeling;
 import nl.rivm.screenit.model.cervix.CervixHuisartsBericht;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
 import nl.rivm.screenit.model.colon.ColonHuisartsBericht;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
-import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.enums.GebeurtenisBron;
 import nl.rivm.screenit.model.mamma.berichten.MammaHuisartsBericht;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -52,7 +52,7 @@ public class ScreeningRondeGebeurtenis implements IDetachable
 
 	private IModel<InpakbareUitnodiging<?>> uitnodiging;
 
-	private IModel<IFOBTTest> buis;
+	private IModel<ColonFitRegistratie> registratie;
 
 	private ScreeningRondeGebeurtenissen screeningRondeGebeurtenissen;
 
@@ -109,21 +109,21 @@ public class ScreeningRondeGebeurtenis implements IDetachable
 		this.uitnodiging = ModelUtil.sModel(uitnodiging);
 	}
 
-	public IFOBTTest getBuis()
+	public ColonFitRegistratie getRegistratie()
 	{
-		return ModelUtil.nullSafeGet(buis);
+		return ModelUtil.nullSafeGet(registratie);
 	}
 
-	public void setBuis(IFOBTTest buis)
+	public void setRegistratie(ColonFitRegistratie registratie)
 	{
-		this.buis = ModelUtil.sModel(buis);
+		this.registratie = ModelUtil.sModel(registratie);
 	}
 
 	@Override
 	public void detach()
 	{
 		ModelUtil.nullSafeDetach(uitnodiging);
-		ModelUtil.nullSafeDetach(buis);
+		ModelUtil.nullSafeDetach(registratie);
 		ModelUtil.nullSafeDetach(verslag);
 		ModelUtil.nullSafeDetach(afspraak);
 		ModelUtil.nullSafeDetach(brief);

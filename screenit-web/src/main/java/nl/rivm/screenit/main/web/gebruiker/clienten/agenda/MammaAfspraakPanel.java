@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.web.gebruiker.clienten.agenda;
 
 /*-
@@ -26,21 +25,21 @@ import java.util.Date;
 
 import nl.rivm.screenit.main.service.mamma.MammaAfspraakService;
 import nl.rivm.screenit.main.web.ScreenitSession;
+import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
+import nl.rivm.screenit.main.web.component.modal.IDialog;
+import nl.rivm.screenit.main.web.gebruiker.clienten.contact.mamma.MammaEmailAfspraakBevestigingPanel;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
-import nl.rivm.screenit.model.mamma.MammaDossier;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsLocatie;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -57,8 +56,7 @@ import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 public abstract class MammaAfspraakPanel extends GenericPanel<MammaAfspraak>
 {
-	@SpringBean
-	private HibernateService hibernateService;
+	private final BootstrapDialog dialog;
 
 	@SpringBean
 	private ICurrentDateSupplier dateSupplier;
@@ -75,25 +73,27 @@ public abstract class MammaAfspraakPanel extends GenericPanel<MammaAfspraak>
 	public MammaAfspraakPanel(String id, IModel<Client> model)
 	{
 		super(id);
+		dialog = new BootstrapDialog("dialog");
+		add(dialog);
 
-		Client client = model.getObject();
+		var client = model.getObject();
 
-		MammaDossier dossier = client.getMammaDossier();
+		var dossier = client.getMammaDossier();
 		MammaAfspraak afspraak = null;
 		if (dossier != null)
 		{
-			MammaScreeningRonde screeningRonde = dossier.getLaatsteScreeningRonde();
+			var screeningRonde = dossier.getLaatsteScreeningRonde();
 			if (screeningRonde != null && screeningRonde.getLaatsteUitnodiging() != null)
 			{
 				afspraak = screeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak();
 			}
 		}
 
-		WebMarkupContainer inhoud = new WebMarkupContainer("inhoud");
+		var inhoud = new WebMarkupContainer("inhoud");
 		inhoud.setOutputMarkupId(true);
 		add(inhoud);
 
-		boolean heeftActiveAfspraak = afspraak != null && afspraak.getStatus() == MammaAfspraakStatus.GEPLAND && afspraak.getVanaf().compareTo(dateSupplier.getDate()) >= 0;
+		var heeftActiveAfspraak = afspraak != null && afspraak.getStatus() == MammaAfspraakStatus.GEPLAND && afspraak.getVanaf().compareTo(dateSupplier.getDate()) >= 0;
 
 		setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAKEN, Actie.INZIEN)
 			&& ((client.getMammaDossier() != null && client.getMammaDossier().getDeelnamemodus() != Deelnamemodus.SELECTIEBLOKKADE) || heeftActiveAfspraak));
@@ -104,10 +104,10 @@ public abstract class MammaAfspraakPanel extends GenericPanel<MammaAfspraak>
 			setModel(ModelUtil.csModel(afspraak));
 			inhoud.add(DateLabel.forDatePattern("vanaf", "EEEE dd-MM-yyyy HH:mm"));
 
-			MammaStandplaats standplaats = afspraak.getStandplaatsPeriode().getStandplaatsRonde().getStandplaats();
+			var standplaats = afspraak.getStandplaatsPeriode().getStandplaatsRonde().getStandplaats();
 			inhoud.add(new StandplaatsFragment("standplaats", afspraak.getVanaf(), standplaats));
 
-			AjaxLink<MammaAfspraak> verzetten = new IndicatingAjaxLink<MammaAfspraak>("verzetten", getModel())
+			AjaxLink<MammaAfspraak> verzetten = new IndicatingAjaxLink<>("verzetten", getModel())
 			{
 				@Override
 				public void onClick(AjaxRequestTarget target)
@@ -116,11 +116,11 @@ public abstract class MammaAfspraakPanel extends GenericPanel<MammaAfspraak>
 				}
 
 			};
-			boolean magAfspraakWijzigen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAAK_WIJZIGEN, Actie.INZIEN);
+			var magAfspraakWijzigen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAAK_WIJZIGEN, Actie.INZIEN);
 			verzetten.setVisible(magAfspraakWijzigen);
 			inhoud.add(verzetten);
 
-			AjaxLink<MammaAfspraak> afmelden = new IndicatingAjaxLink<MammaAfspraak>("afmelden", getModel())
+			var afmelden = new IndicatingAjaxLink<>("afmelden", getModel())
 			{
 				@Override
 				public void onClick(AjaxRequestTarget target)
@@ -129,11 +129,11 @@ public abstract class MammaAfspraakPanel extends GenericPanel<MammaAfspraak>
 				}
 
 			};
-			boolean magAfmelden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_MAMMA_AFMELDEN, Actie.INZIEN);
+			var magAfmelden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_MAMMA_AFMELDEN, Actie.INZIEN);
 			afmelden.setVisible(magAfmelden);
 			inhoud.add(afmelden);
 
-			AjaxLink<MammaAfspraak> maakBrief = new IndicatingAjaxLink<MammaAfspraak>("brief", getModel())
+			var maakBrief = new IndicatingAjaxLink<>("brief", getModel())
 			{
 				@Override
 				public void onClick(AjaxRequestTarget target)
@@ -145,6 +145,24 @@ public abstract class MammaAfspraakPanel extends GenericPanel<MammaAfspraak>
 			};
 			maakBrief.setVisible(magAfspraakWijzigen && afspraakService.magBevestigingsbriefAanmaken(getModelObject()));
 			inhoud.add(maakBrief);
+
+			var verstuurEmail = new IndicatingAjaxLink<>("email", getModel())
+			{
+				@Override
+				public void onClick(AjaxRequestTarget target)
+				{
+					dialog.openWith(target, new MammaEmailAfspraakBevestigingPanel(IDialog.CONTENT_ID, getModel())
+					{
+						@Override
+						protected void close(AjaxRequestTarget target)
+						{
+							dialog.close(target);
+						}
+					});
+				}
+			};
+			verstuurEmail.setVisible(magAfspraakWijzigen);
+			inhoud.add(verstuurEmail);
 
 			AjaxLink<MammaAfspraak> uitstellen = new IndicatingAjaxLink<MammaAfspraak>("uitstellen", getModel())
 			{
@@ -187,10 +205,10 @@ public abstract class MammaAfspraakPanel extends GenericPanel<MammaAfspraak>
 			MammaStandplaatsLocatie locatie = null;
 
 			add(new Label("standplaats.naam", standplaats.getNaam()));
-			MammaStandplaatsLocatie tijdelijkeLocatie = standplaats.getTijdelijkeLocatie();
+			var tijdelijkeLocatie = standplaats.getTijdelijkeLocatie();
 			if (tijdelijkeLocatie.getStartDatum() != null)
 			{
-				Date eindDatum = tijdelijkeLocatie.getEindDatum();
+				var eindDatum = tijdelijkeLocatie.getEindDatum();
 				eindDatum.setHours(23);
 				eindDatum.setMinutes(59);
 				if (tijdelijkeLocatie.getStartDatum().compareTo(vanaf) * vanaf.compareTo(eindDatum) > 0)
@@ -203,9 +221,9 @@ public abstract class MammaAfspraakPanel extends GenericPanel<MammaAfspraak>
 				locatie = standplaats.getLocatie();
 			}
 
-			IModel<MammaStandplaatsLocatie> locatieModel = ModelUtil.cRModel(locatie);
+			var locatieModel = ModelUtil.cRModel(locatie);
 
-			WebMarkupContainer locatieContainer = new WebMarkupContainer("locatieContainer", locatieModel);
+			var locatieContainer = new WebMarkupContainer("locatieContainer", locatieModel);
 			add(locatieContainer);
 			locatieContainer.add(new Label("straat"));
 			locatieContainer.add(new Label("huisnummer"));
@@ -213,7 +231,7 @@ public abstract class MammaAfspraakPanel extends GenericPanel<MammaAfspraak>
 			locatieContainer.add(new Label("plaats"));
 			locatieContainer.add(new Label("locatieBeschrijving"));
 
-			WebMarkupContainer tijdelijkContainer = new WebMarkupContainer("tijdelijkContainer");
+			var tijdelijkContainer = new WebMarkupContainer("tijdelijkContainer");
 			locatieContainer.add(tijdelijkContainer);
 			tijdelijkContainer.setVisible(locatie.getTijdelijk());
 			tijdelijkContainer.add(DateLabel.forDatePattern("startDatum", "dd-MM-yyyy"));

@@ -54,12 +54,10 @@ import org.hibernate.envers.Audited;
 @Entity
 @Table(schema = "colon", name = "intakeafspraak",
 	indexes = { @Index(name = "idx_colon_afspraak_bezwaar", columnList = "bezwaar") }
-
 )
 @Audited
 public class ColonIntakeAfspraak extends ColonTijdslot
 {
-
 	public ColonIntakeAfspraak()
 	{
 		setType(ColonTijdslotType.INTAKEAFSPRAAK);
@@ -71,7 +69,7 @@ public class ColonIntakeAfspraak extends ColonTijdslot
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE }, optional = false)
 	@Cascade({ CascadeType.SAVE_UPDATE })
-	private ColonScreeningRonde colonScreeningRonde;
+	private ColonScreeningRonde screeningRonde;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	private ColonConclusie conclusie;

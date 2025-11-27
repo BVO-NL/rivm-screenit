@@ -31,6 +31,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
+
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dao.UitnodigingsDao;
 import nl.rivm.screenit.model.BagAdres;
@@ -45,19 +47,19 @@ import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonConclusie;
 import nl.rivm.screenit.model.colon.ColonDossier;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
+import nl.rivm.screenit.model.colon.ColonFitType;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonMergedBrieven;
 import nl.rivm.screenit.model.colon.ColonOnderzoeksVariant;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.ColonVooraankondiging;
-import nl.rivm.screenit.model.colon.IFOBTTest;
-import nl.rivm.screenit.model.colon.IFOBTType;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
 import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot_;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -79,15 +81,13 @@ import nl.rivm.screenit.service.colon.ColonHuisartsBerichtService;
 import nl.rivm.screenit.service.colon.ColonTestService;
 import nl.rivm.screenit.service.impl.ImportBvoViaCsv;
 import nl.rivm.screenit.util.DateUtil;
-import nl.rivm.screenit.util.FITTestUtil;
 import nl.rivm.screenit.util.TestBsnGenerator;
+import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -95,12 +95,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static nl.rivm.screenit.specification.colon.ColonAfspraakslotSpecification.heeftAfspraak;
 
+@Slf4j
 @Service
 @Transactional
 public class ColonTestServiceImpl implements ColonTestService
 {
-	private static final Logger LOG = LoggerFactory.getLogger(ColonTestServiceImpl.class);
-
 	@Autowired
 	private HibernateService hibernateService;
 
@@ -181,15 +180,15 @@ public class ColonTestServiceImpl implements ColonTestService
 		var b2 = maakBrief(client, screeningRonde, BriefType.COLON_UITNODIGING_INTAKE);
 
 		var uitnodiging = geefUitnodiging(screeningRonde);
-		IFOBTTest fit = null;
-		if (uitnodiging.getGekoppeldeTest() == null)
+		ColonFitRegistratie fit = null;
+		if (uitnodiging.getGekoppeldeFitRegistratie() == null)
 		{
-			fit = maakHuidigeIFobtOntvangenEnOngunstig(filter);
+			fit = maakHuidigeFitOntvangenEnOngunstig(filter);
 		}
-		else if (!FITTestUtil.isOngunstig(uitnodiging.getGekoppeldeTest()))
+		else if (!ColonFitRegistratieUtil.isOngunstig(uitnodiging.getGekoppeldeFitRegistratie()))
 		{
 			uitnodiging = maakNieuweUitnodiging(screeningRonde, ColonOnderzoeksVariant.STANDAARD);
-			fit = maakHuidigeIFobtOntvangenEnOngunstig(filter);
+			fit = maakHuidigeFitOntvangenEnOngunstig(filter);
 		}
 		if (fit != null && fitVerwerkingsDatum != null)
 		{
@@ -220,7 +219,7 @@ public class ColonTestServiceImpl implements ColonTestService
 			client.getAfspraken().add(intakeAfspraak);
 			screeningRonde.setLaatsteAfspraak(intakeAfspraak);
 			screeningRonde.getAfspraken().add(intakeAfspraak);
-			intakeAfspraak.setColonScreeningRonde(screeningRonde);
+			intakeAfspraak.setScreeningRonde(screeningRonde);
 		}
 		intakeAfspraak.setBezwaar(false);
 		intakeAfspraak.setStatus(ColonAfspraakStatus.GEPLAND);
@@ -267,7 +266,7 @@ public class ColonTestServiceImpl implements ColonTestService
 
 	private void maakVooraankonding(Client client, ColonDossier dossier)
 	{
-		if (dossier.getColonVooraankondiging() == null)
+		if (dossier.getVooraankondiging() == null)
 		{
 			var b = new ColonBrief();
 			b.setTemplateNaam("vooraankondigingsbrief.doc");
@@ -278,14 +277,14 @@ public class ColonTestServiceImpl implements ColonTestService
 			var voor = new ColonVooraankondiging();
 			voor.setCreatieDatum(DateUtil.toUtilDate(currentDateSupplier.getLocalDateTime().minusDays(27)));
 			voor.setBrief(b);
-			dossier.setColonVooraankondiging(voor);
+			dossier.setVooraankondiging(voor);
 			hibernateService.saveOrUpdate(voor);
 			hibernateService.saveOrUpdate(b);
 		}
 	}
 
 	@Override
-	public IFOBTTest zetVelorenIfobt(Persoon filter, boolean zetUitslag, boolean gunstig)
+	public ColonFitRegistratie zetVerlorenFit(Persoon filter, boolean zetUitslag, boolean gunstig)
 	{
 		var client = geefClient(filter.getBsn(), filter.getGeboortedatum(), filter.getOverlijdensdatum());
 		geefAdres(client, filter.getGbaAdres().getGbaGemeente());
@@ -299,14 +298,14 @@ public class ColonTestServiceImpl implements ColonTestService
 		ColonUitnodiging uitnodiging = null;
 		for (var uit : uitnodigingen)
 		{
-			var ifobt = uit.getGekoppeldeTest();
-			if (IFOBTTestStatus.VERLOREN.equals(ifobt.getStatus()))
+			var gekoppeldeFitRegistratie = uit.getGekoppeldeFitRegistratie();
+			if (ColonFitRegistratieStatus.VERLOREN.equals(gekoppeldeFitRegistratie.getStatus()))
 			{
 				uitnodiging = uit;
 				break;
 			}
 		}
-		var ifobt = uitnodiging.getGekoppeldeTest();
+		var ifobt = uitnodiging.getGekoppeldeFitRegistratie();
 		if (zetUitslag)
 		{
 			ifobt.setNormWaarde(new BigDecimal(20));
@@ -318,7 +317,7 @@ public class ColonTestServiceImpl implements ColonTestService
 			{
 				ifobt.setUitslag(new BigDecimal(30));
 			}
-			ifobt.setStatus(IFOBTTestStatus.UITGEVOERD);
+			ifobt.setStatus(ColonFitRegistratieStatus.UITGEVOERD);
 		}
 		hibernateService.saveOrUpdate(ifobt);
 
@@ -326,7 +325,7 @@ public class ColonTestServiceImpl implements ColonTestService
 	}
 
 	@Override
-	public void huidigeIFOBTvoorRapelDatum(Persoon filter)
+	public void huidigeFitVoorHerinneringDatum(Persoon filter)
 	{
 		var client = geefClient(filter.getBsn(), filter.getGeboortedatum(), filter.getOverlijdensdatum());
 		geefAdres(client, filter.getGbaAdres().getGbaGemeente());
@@ -336,20 +335,20 @@ public class ColonTestServiceImpl implements ColonTestService
 		hibernateService.saveOrUpdate(dossier);
 		hibernateService.saveOrUpdate(screeningRonde);
 
-		var test = screeningRonde.getLaatsteIFOBTTest();
+		var laatsteFitRegistratie = screeningRonde.getLaatsteFitRegistratie();
 		var date = currentDateSupplier.getDate();
-		int rapelDagen = simplePreferenceService.getInteger(PreferenceKey.IFOBTRAPELPERIODE.name());
+		int rapelDagen = simplePreferenceService.getInteger(PreferenceKey.COLON_HERINNERINGS_PERIODE.name());
 		date = DateUtil.minDagen(date, rapelDagen + 2);
 		var rapelDate = date;
-		test.setStatusDatum(rapelDate);
-		hibernateService.saveOrUpdate(test);
+		laatsteFitRegistratie.setStatusDatum(rapelDate);
+		hibernateService.saveOrUpdate(laatsteFitRegistratie);
 
 		var uitnodiging = screeningRonde.getLaatsteUitnodiging();
 		uitnodiging.setVerstuurdDatum(DateUtil.plusTijdseenheid(date, 20, ChronoUnit.SECONDS));
 		hibernateService.saveOrUpdate(uitnodiging);
 
 		uitnodiging = geefUitnodiging(screeningRonde);
-		geefIFobttest(uitnodiging, screeningRonde);
+		geefFitRegistratie(uitnodiging, screeningRonde);
 		hibernateService.saveOrUpdate(uitnodiging);
 	}
 
@@ -367,7 +366,7 @@ public class ColonTestServiceImpl implements ColonTestService
 		hibernateService.saveOrUpdate(screeningRonde);
 
 		var uitnodiging = geefUitnodiging(screeningRonde);
-		geefIFobttest(uitnodiging, screeningRonde);
+		geefFitRegistratie(uitnodiging, screeningRonde);
 		hibernateService.saveOrUpdate(uitnodiging);
 	}
 
@@ -395,38 +394,37 @@ public class ColonTestServiceImpl implements ColonTestService
 		hibernateService.saveOrUpdate(screeningRonde);
 
 		var uitnodiging = geefUitnodiging(screeningRonde);
-		var test = geefIFobttest(uitnodiging, screeningRonde);
-		test.setNormWaarde(new BigDecimal("20.00"));
-		test.setUitslag(new BigDecimal("10.00"));
-		test.setColonScreeningRonde(screeningRonde);
-		test.setStatusDatum(currentDateSupplier.getDate());
-		test.setVerwerkingsDatum(currentDateSupplier.getDate());
-		test.setAnalyseDatum(currentDateSupplier.getDate());
-		hibernateService.saveOrUpdate(test);
+		var fitRegistratie = geefFitRegistratie(uitnodiging, screeningRonde);
+		fitRegistratie.setNormWaarde(new BigDecimal("20.00"));
+		fitRegistratie.setUitslag(new BigDecimal("10.00"));
+		fitRegistratie.setScreeningRonde(screeningRonde);
+		fitRegistratie.setStatusDatum(currentDateSupplier.getDate());
+		fitRegistratie.setVerwerkingsDatum(currentDateSupplier.getDate());
+		fitRegistratie.setAnalyseDatum(currentDateSupplier.getDate());
+		hibernateService.saveOrUpdate(fitRegistratie);
 		uitnodiging.setVerstuurdDatum(uitnodigingsDate);
 		uitnodiging.setTemplateNaam("2-Brief uitnodiging FIT.doc");
 		uitnodiging.setVerstuurd(Boolean.TRUE);
-		uitnodiging.setColonUitnodigingCategorie(ColonUitnodigingCategorie.U2);
+		uitnodiging.setUitnodigingscategorie(ColonUitnodigingscategorie.U2);
 		hibernateService.saveOrUpdate(uitnodiging);
-
 	}
 
 	@Override
-	public IFOBTTest maakHuidigeIFobtOntvangenEnGunstig(Persoon filter)
+	public ColonFitRegistratie maakHuidigeFitOntvangenEnGunstig(Persoon filter)
 	{
 
-		return maakHuidigeIFobtOntvangenInclUitslag(filter, new BigDecimal(20), BigDecimal.TEN);
+		return maakHuidigeFitOntvangenInclUitslag(filter, new BigDecimal(20), BigDecimal.TEN);
 	}
 
 	@Override
-	public IFOBTTest maakHuidigeIFobtOntvangenEnOngunstig(Persoon filter)
+	public ColonFitRegistratie maakHuidigeFitOntvangenEnOngunstig(Persoon filter)
 	{
 
-		return maakHuidigeIFobtOntvangenInclUitslag(filter, BigDecimal.TEN, new BigDecimal(20));
+		return maakHuidigeFitOntvangenInclUitslag(filter, BigDecimal.TEN, new BigDecimal(20));
 	}
 
 	@Override
-	public IFOBTTest maakHuidigeIFobtOntvangenInclUitslag(Persoon filter, BigDecimal normwaarde, BigDecimal uitslag)
+	public ColonFitRegistratie maakHuidigeFitOntvangenInclUitslag(Persoon filter, BigDecimal normwaarde, BigDecimal uitslag)
 	{
 
 		var client = geefClient(filter.getBsn(), filter.getGeboortedatum(), filter.getOverlijdensdatum());
@@ -439,29 +437,29 @@ public class ColonTestServiceImpl implements ColonTestService
 		hibernateService.saveOrUpdate(screeningRonde);
 		var uitnodiging = geefUitnodiging(screeningRonde);
 
-		if (uitnodiging.getGekoppeldeTest() != null)
+		if (uitnodiging.getGekoppeldeFitRegistratie() != null)
 		{
 			uitnodiging = maakNieuweUitnodiging(screeningRonde, ColonOnderzoeksVariant.STANDAARD);
 		}
 
-		var test = geefIFobttest(uitnodiging, screeningRonde);
+		var fitRegistratie = geefFitRegistratie(uitnodiging, screeningRonde);
 
-		test.setNormWaarde(normwaarde);
-		test.setUitslag(uitslag);
+		fitRegistratie.setNormWaarde(normwaarde);
+		fitRegistratie.setUitslag(uitslag);
 
-		if (test.getStatus() == IFOBTTestStatus.ACTIEF && !FITTestUtil.isOngunstig(test))
+		if (fitRegistratie.getStatus() == ColonFitRegistratieStatus.ACTIEF && !ColonFitRegistratieUtil.isOngunstig(fitRegistratie))
 		{
-			test.setStatus(IFOBTTestStatus.UITGEVOERD);
+			fitRegistratie.setStatus(ColonFitRegistratieStatus.UITGEVOERD);
 		}
-		else if (test.getStatus() == IFOBTTestStatus.ACTIEF || FITTestUtil.isOngunstig(test))
+		else if (fitRegistratie.getStatus() == ColonFitRegistratieStatus.ACTIEF || ColonFitRegistratieUtil.isOngunstig(fitRegistratie))
 		{
-			test.setStatus(IFOBTTestStatus.UITGEVOERD);
+			fitRegistratie.setStatus(ColonFitRegistratieStatus.UITGEVOERD);
 		}
-		test.setStatusDatum(currentDateSupplier.getDate());
-		test.setVerwerkingsDatum(currentDateSupplier.getDate());
-		test.setAnalyseDatum(currentDateSupplier.getDate());
+		fitRegistratie.setStatusDatum(currentDateSupplier.getDate());
+		fitRegistratie.setVerwerkingsDatum(currentDateSupplier.getDate());
+		fitRegistratie.setAnalyseDatum(currentDateSupplier.getDate());
 
-		return test;
+		return fitRegistratie;
 	}
 
 	@Override
@@ -477,10 +475,10 @@ public class ColonTestServiceImpl implements ColonTestService
 
 		var uitnodiging = maakNieuweUitnodiging(screeningRonde, ColonOnderzoeksVariant.VERGELIJKEND);
 		hibernateService.saveOrUpdate(uitnodiging);
-		var test = geefIFobttest(uitnodiging, screeningRonde);
-		hibernateService.saveOrUpdate(test);
-		var studietest = geefStudietest(uitnodiging, screeningRonde);
-		hibernateService.saveOrUpdate(studietest);
+		var fitRegistratie = geefFitRegistratie(uitnodiging, screeningRonde);
+		hibernateService.saveOrUpdate(fitRegistratie);
+		var studieRegistratie = geefStudieRegistratie(uitnodiging, screeningRonde);
+		hibernateService.saveOrUpdate(studieRegistratie);
 		hibernateService.saveOrUpdateAll(dossier, screeningRonde, client);
 	}
 
@@ -495,12 +493,12 @@ public class ColonTestServiceImpl implements ColonTestService
 		if (ColonOnderzoeksVariant.STANDAARD.equals(onderzoeksVariant))
 		{
 			uitnodiging.setTemplateNaam("2-Brief uitnodiging FIT.doc");
-			uitnodiging.setColonUitnodigingCategorie(ColonUitnodigingCategorie.U2);
+			uitnodiging.setUitnodigingscategorie(ColonUitnodigingscategorie.U2);
 			uitnodiging.setOnderzoeksVariant(ColonOnderzoeksVariant.STANDAARD);
 		}
 		if (ColonOnderzoeksVariant.VERGELIJKEND.equals(onderzoeksVariant))
 		{
-			uitnodiging.setColonUitnodigingCategorie(ColonUitnodigingCategorie.U1);
+			uitnodiging.setUitnodigingscategorie(ColonUitnodigingscategorie.U1);
 			uitnodiging.setOnderzoeksVariant(ColonOnderzoeksVariant.VERGELIJKEND);
 		}
 		hibernateService.saveOrUpdate(uitnodiging);
@@ -522,59 +520,59 @@ public class ColonTestServiceImpl implements ColonTestService
 		return uitnodiging;
 	}
 
-	private IFOBTTest geefIFobttest(ColonUitnodiging uitnodiging, ColonScreeningRonde screeningRonde)
+	private ColonFitRegistratie geefFitRegistratie(ColonUitnodiging uitnodiging, ColonScreeningRonde screeningRonde)
 	{
-		var ifobt = uitnodiging.getGekoppeldeTest();
-		if (ifobt == null)
+		var gekoppeldeFitRegistratie = uitnodiging.getGekoppeldeFitRegistratie();
+		if (gekoppeldeFitRegistratie == null)
 		{
-			ifobt = new IFOBTTest();
+			gekoppeldeFitRegistratie = new ColonFitRegistratie();
 			var date = currentDateSupplier.getLocalDateTime();
-			int rapelDagen = simplePreferenceService.getInteger(PreferenceKey.IFOBTRAPELPERIODE.name());
+			int rapelDagen = simplePreferenceService.getInteger(PreferenceKey.COLON_HERINNERINGS_PERIODE.name());
 			date = date.minusDays(rapelDagen + 1);
 			var rapelDate = DateUtil.toUtilDate(date);
-			ifobt.setBarcode("TGD" + FITTestUtil.getFITTestBarcode(uitnodiging.getUitnodigingsId()));
-			ifobt.setStatus(IFOBTTestStatus.ACTIEF);
-			ifobt.setColonScreeningRonde(uitnodiging.getScreeningRonde());
-			ifobt.setHerinnering(Boolean.FALSE);
-			ifobt.setDatumVerstuurd(rapelDate);
-			ifobt.setStatusDatum(rapelDate);
-			ifobt.setColonUitnodiging(uitnodiging);
-			ifobt.setType(IFOBTType.GOLD);
-			hibernateService.saveOrUpdate(ifobt);
-			uitnodiging.setGekoppeldeTest(ifobt);
+			gekoppeldeFitRegistratie.setBarcode("TGD" + ColonFitRegistratieUtil.getFitRegistratieBarcode(uitnodiging.getUitnodigingsId()));
+			gekoppeldeFitRegistratie.setStatus(ColonFitRegistratieStatus.ACTIEF);
+			gekoppeldeFitRegistratie.setScreeningRonde(uitnodiging.getScreeningRonde());
+			gekoppeldeFitRegistratie.setHerinnering(Boolean.FALSE);
+			gekoppeldeFitRegistratie.setDatumVerstuurd(rapelDate);
+			gekoppeldeFitRegistratie.setStatusDatum(rapelDate);
+			gekoppeldeFitRegistratie.setUitnodiging(uitnodiging);
+			gekoppeldeFitRegistratie.setType(ColonFitType.GOLD);
+			hibernateService.saveOrUpdate(gekoppeldeFitRegistratie);
+			uitnodiging.setGekoppeldeFitRegistratie(gekoppeldeFitRegistratie);
 			uitnodiging.setVerstuurdDatum(DateUtil.toUtilDate(date.minusSeconds(20)));
 			uitnodiging.setVerstuurd(Boolean.TRUE);
 			uitnodiging.setVerstuurdDoorInpakcentrum(true);
 			hibernateService.saveOrUpdate(uitnodiging);
-			screeningRonde.setLaatsteIFOBTTest(ifobt);
-			screeningRonde.getIfobtTesten().add(ifobt);
+			screeningRonde.setLaatsteFitRegistratie(gekoppeldeFitRegistratie);
+			screeningRonde.getFitRegistraties().add(gekoppeldeFitRegistratie);
 			hibernateService.saveOrUpdate(screeningRonde);
-			var colonVooraankondiging = screeningRonde.getDossier().getColonVooraankondiging();
+			var colonVooraankondiging = screeningRonde.getDossier().getVooraankondiging();
 			colonVooraankondiging.setCreatieDatum(DateUtil.toUtilDate(date.minusDays(14)));
 			hibernateService.saveOrUpdate(colonVooraankondiging);
 		}
-		return ifobt;
+		return gekoppeldeFitRegistratie;
 	}
 
-	private IFOBTTest geefStudietest(ColonUitnodiging uitnodiging, ColonScreeningRonde screeningRonde)
+	private ColonFitRegistratie geefStudieRegistratie(ColonUitnodiging uitnodiging, ColonScreeningRonde screeningRonde)
 	{
-		var studietest = new IFOBTTest();
-		studietest.setBarcode("TST" + FITTestUtil.getFITTestBarcode(uitnodiging.getUitnodigingsId()));
-		studietest.setStatus(IFOBTTestStatus.ACTIEF);
-		studietest.setColonScreeningRonde(uitnodiging.getScreeningRonde());
-		studietest.setHerinnering(Boolean.FALSE);
-		studietest.setDatumVerstuurd(currentDateSupplier.getDate());
-		studietest.setStatusDatum(currentDateSupplier.getDate());
-		studietest.setColonUitnodigingExtra(uitnodiging);
-		studietest.setType(IFOBTType.STUDIE);
-		hibernateService.saveOrUpdate(studietest);
-		uitnodiging.setGekoppeldeExtraTest(studietest);
+		var studieRegistratie = new ColonFitRegistratie();
+		studieRegistratie.setBarcode("TST" + ColonFitRegistratieUtil.getFitRegistratieBarcode(uitnodiging.getUitnodigingsId()));
+		studieRegistratie.setStatus(ColonFitRegistratieStatus.ACTIEF);
+		studieRegistratie.setScreeningRonde(uitnodiging.getScreeningRonde());
+		studieRegistratie.setHerinnering(Boolean.FALSE);
+		studieRegistratie.setDatumVerstuurd(currentDateSupplier.getDate());
+		studieRegistratie.setStatusDatum(currentDateSupplier.getDate());
+		studieRegistratie.setUitnodigingExtra(uitnodiging);
+		studieRegistratie.setType(ColonFitType.STUDIE);
+		hibernateService.saveOrUpdate(studieRegistratie);
+		uitnodiging.setGekoppeldeExtraFitRegistratie(studieRegistratie);
 		hibernateService.saveOrUpdate(uitnodiging);
-		screeningRonde.setLaatsteIFOBTTestExtra(studietest);
-		screeningRonde.getIfobtTesten().add(studietest);
+		screeningRonde.setLaatsteExtraFitRegistratie(studieRegistratie);
+		screeningRonde.getFitRegistraties().add(studieRegistratie);
 		hibernateService.saveOrUpdate(screeningRonde);
 
-		return studietest;
+		return studieRegistratie;
 	}
 
 	private ColonScreeningRonde geefScreeningRonde(ColonDossier dossier)
@@ -717,7 +715,7 @@ public class ColonTestServiceImpl implements ColonTestService
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void importColonClientenViaCsv(File file, Map<String, ColonUitnodigingCategorie> categoriePerPatient, int startRondeCorrectie) throws IOException, ParseException
+	public void importColonClientenViaCsv(File file, Map<String, ColonUitnodigingscategorie> categoriePerPatient, int startRondeCorrectie) throws IOException, ParseException
 	{
 		testService.importClientenViaCsv(file, new ImportBvoViaCsv()
 		{
@@ -730,11 +728,11 @@ public class ColonTestServiceImpl implements ColonTestService
 				var aantalDagenVooraankondigingCell = columns[headersIndex.get("DatumVooraankondiging")];
 				if (StringUtils.isNotBlank(aantalDagenVooraankondigingCell) && !aantalDagenVooraankondigingCell.equals("0"))
 				{
-					var colonDossier = new ColonDossier();
-					colonDossier.setStatus(DossierStatus.ACTIEF);
-					colonDossier.setAangemeld(true);
-					colonDossier.setClient(client);
-					client.setColonDossier(colonDossier);
+					var dossier = new ColonDossier();
+					dossier.setStatus(DossierStatus.ACTIEF);
+					dossier.setAangemeld(true);
+					dossier.setClient(client);
+					client.setColonDossier(dossier);
 
 					var aantalDagenVooraankondiging = Integer.parseInt(aantalDagenVooraankondigingCell) + startRondeCorrectie;
 					var datumVooraankondiging = DateUtil.plusDagen(currentDateSupplier.getDate(), aantalDagenVooraankondiging);
@@ -742,11 +740,11 @@ public class ColonTestServiceImpl implements ColonTestService
 					var statusRonde = columns[headersIndex.get("StatusRonde")];
 					if (StringUtils.isNotBlank(statusRonde))
 					{
-						var colonVooraankondiging = new ColonVooraankondiging();
+						var vooraankondiging = new ColonVooraankondiging();
 						var brief = new ColonBrief();
-						colonVooraankondiging.setBrief(brief);
-						colonVooraankondiging.setClient(client);
-						colonVooraankondiging.setCreatieDatum(datumVooraankondiging);
+						vooraankondiging.setBrief(brief);
+						vooraankondiging.setClient(client);
+						vooraankondiging.setCreatieDatum(datumVooraankondiging);
 
 						brief.setBriefType(BriefType.COLON_VOORAANKONDIGING);
 						brief.setCreatieDatum(datumVooraankondiging);
@@ -762,55 +760,55 @@ public class ColonTestServiceImpl implements ColonTestService
 						mergedBrieven.setVerwijderd(true);
 						brief.setMergedBrieven(mergedBrieven);
 						mergedBrieven.getBrieven().add(brief);
-						colonDossier.setColonVooraankondiging(colonVooraankondiging);
+						dossier.setVooraankondiging(vooraankondiging);
 
-						ColonUitnodigingCategorie colonUitnodigingCategorie = null;
+						ColonUitnodigingscategorie uitnodigingscategorie = null;
 						var cat = columns[headersIndex.get(" CAT ")];
 						if (StringUtils.isNumeric(cat))
 						{
 							switch (Integer.parseInt(cat.trim()))
 							{
 							case 1:
-								colonUitnodigingCategorie = ColonUitnodigingCategorie.U1;
+								uitnodigingscategorie = ColonUitnodigingscategorie.U1;
 								break;
 							case 2:
-								colonUitnodigingCategorie = ColonUitnodigingCategorie.U2;
+								uitnodigingscategorie = ColonUitnodigingscategorie.U2;
 								break;
 							case 3:
-								colonUitnodigingCategorie = ColonUitnodigingCategorie.U3;
+								uitnodigingscategorie = ColonUitnodigingscategorie.U3;
 								break;
 							case 4:
-								colonUitnodigingCategorie = ColonUitnodigingCategorie.U4;
+								uitnodigingscategorie = ColonUitnodigingscategorie.U4;
 								break;
 							case 6:
-								colonUitnodigingCategorie = ColonUitnodigingCategorie.U6;
+								uitnodigingscategorie = ColonUitnodigingscategorie.U6;
 								break;
 							default:
 								break;
 							}
 						}
 
-						categoriePerPatient.put(client.getPersoon().getBsn(), colonUitnodigingCategorie);
+						categoriePerPatient.put(client.getPersoon().getBsn(), uitnodigingscategorie);
 						var aantalDagendatumRondeDatum = Integer.parseInt(columns[headersIndex.get("DatumRonde")]) + startRondeCorrectie;
 						var datumRondeDatum = DateUtil.plusDagen(currentDateSupplier.getDate(), aantalDagendatumRondeDatum);
 
-						var colonScreeningRonde = new ColonScreeningRonde();
-						colonScreeningRonde.setCreatieDatum(datumRondeDatum);
-						colonScreeningRonde.setStatus(ScreeningRondeStatus.valueOf(statusRonde));
-						colonScreeningRonde.setStatusDatum(datumRondeDatum);
-						colonScreeningRonde.setDossier(colonDossier);
-						colonScreeningRonde.setAangemeld(true);
-						colonDossier.getScreeningRondes().add(colonScreeningRonde);
-						colonDossier.setLaatsteScreeningRonde(colonScreeningRonde);
-						brief.setScreeningRonde(colonScreeningRonde);
+						var screeningRonde = new ColonScreeningRonde();
+						screeningRonde.setCreatieDatum(datumRondeDatum);
+						screeningRonde.setStatus(ScreeningRondeStatus.valueOf(statusRonde));
+						screeningRonde.setStatusDatum(datumRondeDatum);
+						screeningRonde.setDossier(dossier);
+						screeningRonde.setAangemeld(true);
+						dossier.getScreeningRondes().add(screeningRonde);
+						dossier.setLaatsteScreeningRonde(screeningRonde);
+						brief.setScreeningRonde(screeningRonde);
 
 						var uitnodiging = new ColonUitnodiging();
 						uitnodiging.setUitnodigingsId(uitnodigingsDao.getNextUitnodigingsId());
-						uitnodiging.setScreeningRonde(colonScreeningRonde);
-						uitnodiging.setColonUitnodigingCategorie(colonUitnodigingCategorie);
+						uitnodiging.setScreeningRonde(screeningRonde);
+						uitnodiging.setUitnodigingscategorie(uitnodigingscategorie);
 						uitnodiging.setCreatieDatum(datumRondeDatum);
 						uitnodiging.setOnderzoeksVariant(ColonOnderzoeksVariant.STANDAARD);
-						var ifobtOntvangen = columns[headersIndex.get("IFOBT ontvangen")];
+						var fitOntvangen = columns[headersIndex.get("IFOBT ontvangen")];
 						if (StringUtils.isNotBlank(columns[headersIndex.get("Uitnodiging")]))
 						{
 							uitnodiging.setUitnodigingsDatum(datumRondeDatum);
@@ -822,55 +820,54 @@ public class ColonTestServiceImpl implements ColonTestService
 							uitnodiging.setUitnodigingsDatum(DateUtil.plusDagen(datumRondeDatum, 10));
 							uitnodiging.setVerstuurd(false);
 						}
-						colonScreeningRonde.setLaatsteUitnodiging(uitnodiging);
-						colonScreeningRonde.getUitnodigingen().add(uitnodiging);
-						colonScreeningRonde.getBrieven().add(brief);
-						colonScreeningRonde.setLaatsteBrief(brief);
+						screeningRonde.setLaatsteUitnodiging(uitnodiging);
+						screeningRonde.getUitnodigingen().add(uitnodiging);
+						screeningRonde.getBrieven().add(brief);
+						screeningRonde.setLaatsteBrief(brief);
 
 						if (StringUtils.isNotBlank(columns[headersIndex.get("Uitnodiging")]))
 						{
-							var ifobtTest = new IFOBTTest();
-							if (colonUitnodigingCategorie == ColonUitnodigingCategorie.U3)
+							var fitRegistratie = new ColonFitRegistratie();
+							if (uitnodigingscategorie == ColonUitnodigingscategorie.U3)
 							{
-								ifobtTest.setRedenNietTeBeoordelen(RedenNietTeBeoordelen.BARCODE_ONLEESBAAR);
+								fitRegistratie.setRedenNietTeBeoordelen(RedenNietTeBeoordelen.BARCODE_ONLEESBAAR);
 							}
-							colonScreeningRonde.getIfobtTesten().add(ifobtTest);
-							colonScreeningRonde.setLaatsteIFOBTTest(ifobtTest);
-							ifobtTest.setColonScreeningRonde(colonScreeningRonde);
-							ifobtTest.setStatusDatum(DateUtil.minusTijdseenheid(datumRondeDatum, 1, ChronoUnit.SECONDS));
-							ifobtTest.setBarcode("AAB" + StringUtils.leftPad("" + trackTraceId++, 4, "0"));
-							ifobtTest.setDatumVerstuurd(DateUtil.minDagen(datumRondeDatum, 12));
-							ifobtTest.setType(IFOBTType.GOLD);
+							screeningRonde.getFitRegistraties().add(fitRegistratie);
+							screeningRonde.setLaatsteFitRegistratie(fitRegistratie);
+							fitRegistratie.setScreeningRonde(screeningRonde);
+							fitRegistratie.setStatusDatum(DateUtil.minusTijdseenheid(datumRondeDatum, 1, ChronoUnit.SECONDS));
+							fitRegistratie.setBarcode("AAB" + StringUtils.leftPad("" + trackTraceId++, 4, "0"));
+							fitRegistratie.setDatumVerstuurd(DateUtil.minDagen(datumRondeDatum, 12));
+							fitRegistratie.setType(ColonFitType.GOLD);
 							uitnodiging.setVerstuurdDoorInpakcentrum(true);
-							uitnodiging.setGekoppeldeTest(ifobtTest);
+							uitnodiging.setGekoppeldeFitRegistratie(fitRegistratie);
 
 							uitnodiging.setTrackTraceId("" + trackTraceId);
-							ifobtTest.setColonUitnodiging(uitnodiging);
+							fitRegistratie.setUitnodiging(uitnodiging);
 
-							if (StringUtils.isNotBlank(ifobtOntvangen))
+							if (StringUtils.isNotBlank(fitOntvangen))
 							{
-								ifobtTest.setVerwerkingsDatum(DateUtil.minDagen(datumRondeDatum, 12));
-								ifobtTest.setAnalyseDatum(DateUtil.minDagen(datumRondeDatum, 11));
-								ifobtTest.setUitslag(BigDecimal.valueOf(Integer.parseInt(columns[headersIndex.get("IFOBT uitslag")])));
-								ifobtTest.setNormWaarde(BigDecimal.valueOf(Integer.parseInt(columns[headersIndex.get("IFOBT norm")])));
+								fitRegistratie.setVerwerkingsDatum(DateUtil.minDagen(datumRondeDatum, 12));
+								fitRegistratie.setAnalyseDatum(DateUtil.minDagen(datumRondeDatum, 11));
+								fitRegistratie.setUitslag(BigDecimal.valueOf(Integer.parseInt(columns[headersIndex.get("IFOBT uitslag")])));
+								fitRegistratie.setNormWaarde(BigDecimal.valueOf(Integer.parseInt(columns[headersIndex.get("IFOBT norm")])));
 								var statusTest = columns[headersIndex.get("StatusTest")];
 								if (StringUtils.isNotBlank(statusTest))
 								{
-									var testStatus = IFOBTTestStatus.valueOf(statusTest);
-									ifobtTest.setStatus(testStatus);
+									var testStatus = ColonFitRegistratieStatus.valueOf(statusTest);
+									fitRegistratie.setStatus(testStatus);
 								}
 								else
 								{
-									ifobtTest.setStatus(IFOBTTestStatus.UITGEVOERD);
+									fitRegistratie.setStatus(ColonFitRegistratieStatus.UITGEVOERD);
 								}
 							}
 							else
 							{
-								ifobtTest.setStatus(IFOBTTestStatus.ACTIEF);
+								fitRegistratie.setStatus(ColonFitRegistratieStatus.ACTIEF);
 							}
 						}
 					}
-
 				}
 			}
 		});
@@ -961,17 +958,17 @@ public class ColonTestServiceImpl implements ColonTestService
 	}
 
 	@Override
-	public ColonUitnodigingCategorie getUitnodigingCategorie(Client client)
+	public ColonUitnodigingscategorie getUitnodigingscategorie(Client client)
 	{
-		if (client.getPersoon().getOverlijdensdatum() == null && client.getColonDossier().getColonVooraankondiging() != null
+		if (client.getPersoon().getOverlijdensdatum() == null && client.getColonDossier().getVooraankondiging() != null
 			&& client.getPersoon().getDatumVertrokkenUitNederland() == null)
 		{
-			var datumVooraankondiging = client.getColonDossier().getColonVooraankondiging().getCreatieDatum();
+			var datumVooraankondiging = client.getColonDossier().getVooraankondiging().getCreatieDatum();
 			var datumVooraankondigingPlusPeriode = DateUtil.plusDagen(datumVooraankondiging,
 				simplePreferenceService.getInteger(PreferenceKey.VOORAANKONDIGINSPERIODE.name()));
 			if (datumVooraankondigingPlusPeriode.before(currentDateSupplier.getDate()) && client.getColonDossier().getScreeningRondes().isEmpty())
 			{
-				return ColonUitnodigingCategorie.U1;
+				return ColonUitnodigingscategorie.U1;
 			}
 
 			if (client.getColonDossier().getLaatsteScreeningRonde() != null)
@@ -981,43 +978,41 @@ public class ColonTestServiceImpl implements ColonTestService
 				if (client.getColonDossier().getLaatsteScreeningRonde().getStatus() == ScreeningRondeStatus.AFGEROND
 					&& volgendeUitnodigingsDatumBereikt)
 				{
-					return ColonUitnodigingCategorie.U2;
+					return ColonUitnodigingscategorie.U2;
 				}
 
 				if (client.getColonDossier().getLaatsteScreeningRonde().getStatus() == ScreeningRondeStatus.LOPEND
-					&& client.getColonDossier().getLaatsteScreeningRonde().getLaatsteIFOBTTest() != null)
+					&& client.getColonDossier().getLaatsteScreeningRonde().getLaatsteFitRegistratie() != null)
 				{
-					ColonUitnodigingCategorie colonUitnodigingCategorie = null;
-					switch (client.getColonDossier().getLaatsteScreeningRonde().getLaatsteIFOBTTest().getStatus())
+					ColonUitnodigingscategorie uitnodigingscategorie = null;
+					switch (client.getColonDossier().getLaatsteScreeningRonde().getLaatsteFitRegistratie().getStatus())
 					{
 					case NIETTEBEOORDELEN:
-						colonUitnodigingCategorie = ColonUitnodigingCategorie.U3;
+						uitnodigingscategorie = ColonUitnodigingscategorie.U3;
 						break;
 					case VERLOREN:
-						colonUitnodigingCategorie = ColonUitnodigingCategorie.U4;
+						uitnodigingscategorie = ColonUitnodigingscategorie.U4;
 						break;
 					case ONBETROUWBAAR:
-						colonUitnodigingCategorie = ColonUitnodigingCategorie.U5;
+						uitnodigingscategorie = ColonUitnodigingscategorie.U5;
 						break;
 					case VERVALDATUMVERLOPEN:
-						colonUitnodigingCategorie = ColonUitnodigingCategorie.U6;
+						uitnodigingscategorie = ColonUitnodigingscategorie.U6;
 						break;
 					case WELBRIEFGEENTEST:
-						colonUitnodigingCategorie = ColonUitnodigingCategorie.U7;
+						uitnodigingscategorie = ColonUitnodigingscategorie.U7;
 						break;
 					case WELTESTGEENBRIEF:
-						colonUitnodigingCategorie = ColonUitnodigingCategorie.U8;
+						uitnodigingscategorie = ColonUitnodigingscategorie.U8;
 						break;
 					default:
 						break;
 					}
 
-					return colonUitnodigingCategorie;
+					return uitnodigingscategorie;
 				}
 			}
 		}
-
 		return null;
 	}
-
 }

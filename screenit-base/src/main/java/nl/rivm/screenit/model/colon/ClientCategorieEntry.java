@@ -21,20 +21,18 @@ package nl.rivm.screenit.model.colon;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.io.Serializable;
 
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import lombok.Getter;
 
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
+
+@Getter
 public class ClientCategorieEntry implements Serializable
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	private final Long clientId;
 
-	private final ColonUitnodigingCategorie categorie;
+	private final ColonUitnodigingscategorie categorie;
 
 	private final Long screeningOrganisatieId;
 
@@ -47,54 +45,27 @@ public class ClientCategorieEntry implements Serializable
 		this(null, null, null);
 	}
 
-	public ClientCategorieEntry(Long clientId, ColonUitnodigingCategorie categorie, Long screeningOrganisatieId)
+	public ClientCategorieEntry(Long clientId, ColonUitnodigingscategorie categorie, Long screeningOrganisatieId)
 	{
 		this(clientId, categorie, screeningOrganisatieId, null, Boolean.FALSE);
-
 	}
 
-	public ClientCategorieEntry(Long clientId, ColonUitnodigingCategorie categorie, Long screeningOrganisatieId, Boolean gepusht)
+	public ClientCategorieEntry(Long clientId, ColonUitnodigingscategorie categorie, Long screeningOrganisatieId, Boolean gepusht)
 	{
 		this(clientId, categorie, screeningOrganisatieId, null, gepusht);
-
 	}
 
-	public ClientCategorieEntry(Long clientId, ColonUitnodigingCategorie categorie, Long screeningOrganisatieId, Long projectGroepId)
+	public ClientCategorieEntry(Long clientId, ColonUitnodigingscategorie categorie, Long screeningOrganisatieId, Long projectGroepId)
 	{
 		this(clientId, categorie, screeningOrganisatieId, projectGroepId, Boolean.FALSE);
 	}
 
-	public ClientCategorieEntry(Long clientId, ColonUitnodigingCategorie categorie, Long screeningOrganisatieId, Long projectGroepId, Boolean gepusht)
+	public ClientCategorieEntry(Long clientId, ColonUitnodigingscategorie categorie, Long screeningOrganisatieId, Long projectGroepId, Boolean gepusht)
 	{
 		this.clientId = clientId;
 		this.categorie = categorie;
 		this.screeningOrganisatieId = screeningOrganisatieId;
 		this.projectGroepId = projectGroepId;
 		this.gepusht = gepusht;
-	}
-
-	public Long getClientId()
-	{
-		return clientId;
-	}
-
-	public Long getScreeningOrganisatieId()
-	{
-		return screeningOrganisatieId;
-	}
-
-	public ColonUitnodigingCategorie getCategorie()
-	{
-		return categorie;
-	}
-
-	public Long getProjectGroepId()
-	{
-		return projectGroepId;
-	}
-
-	public Boolean getGepusht()
-	{
-		return gepusht;
 	}
 }

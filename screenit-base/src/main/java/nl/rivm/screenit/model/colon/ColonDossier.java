@@ -47,7 +47,7 @@ import org.hibernate.envers.NotAudited;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
-@Table(schema = "colon")
+@Table(schema = "colon", name = "dossier")
 @Audited
 @Getter
 @Setter
@@ -62,7 +62,7 @@ public class ColonDossier extends Dossier<ColonScreeningRonde, ColonAfmelding>
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@NotAudited
-	private ColonVooraankondiging colonVooraankondiging;
+	private ColonVooraankondiging vooraankondiging;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "dossier", cascade = CascadeType.ALL)
 	private List<ColonScreeningRonde> screeningRondes = new ArrayList<>();

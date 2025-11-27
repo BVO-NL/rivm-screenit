@@ -21,7 +21,7 @@ package nl.rivm.screenit.batch.jobs.colon.selectie.uitnodingingpushstep;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 
 import org.springframework.stereotype.Component;
 
@@ -31,7 +31,7 @@ public class UitnodigingU1PushProjectReader extends AbstractUitnodigingPushProje
 
 	public UitnodigingU1PushProjectReader()
 	{
-		super(ColonUitnodigingCategorie.U1);
+		super(ColonUitnodigingscategorie.U1);
 	}
 
 }

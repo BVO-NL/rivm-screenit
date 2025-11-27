@@ -27,7 +27,7 @@ import java.util.List;
 
 import nl.rivm.screenit.model.colon.ClientCategorieEntry;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
-import nl.rivm.screenit.service.colon.ColonBaseFITService;
+import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.hibernate.Session;
@@ -62,7 +62,7 @@ public abstract class AbstractClientSelectieReader implements ItemReader<ClientC
 	protected SimplePreferenceService preferenceService;
 
 	@Autowired
-	protected ColonBaseFITService fitService;
+	protected ColonBaseFitService fitService;
 
 	@Autowired
 	protected ClientRepository clientRepository;

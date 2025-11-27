@@ -27,7 +27,7 @@ import java.time.LocalTime;
 
 import com.google.common.collect.Range;
 
-public class TimeRange
+public class TimeRange 
 {
 	private final Range<LocalTime> range;
 

@@ -21,7 +21,7 @@ package nl.rivm.screenit.batch.jobs.colon.selectie.maxleeftijdpushuitnodigingste
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 
 import org.springframework.stereotype.Component;
 
@@ -31,7 +31,7 @@ public class UitnodigingU1PushMaxLeeftijdReader extends AbstractUitnodigingPushM
 
 	public UitnodigingU1PushMaxLeeftijdReader()
 	{
-		super(ColonUitnodigingCategorie.U1);
+		super(ColonUitnodigingscategorie.U1);
 	}
 
 }

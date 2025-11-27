@@ -79,15 +79,15 @@ public interface PlanningStandplaatsPeriodeRepository extends BaseJpaRepository<
 
 	default List<StandplaatsPeriodeProjectie> findStandplaatsPeriodesVanafVolgnummer(Map<Long, Integer> eersteVolgnummerPerSe)
 	{
-		Specification<MammaStandplaatsPeriode> specs = null;
+		Specification<MammaStandplaatsPeriode> specification = (r, q, cb) -> cb.disjunction();
 
 		for (var entry : eersteVolgnummerPerSe.entrySet())
 		{
-			var spec = heeftScreeningsEenheidId(entry.getKey()).and(MammaStandplaatsPeriodeSpecification.heeftScreeningsEenheidVolgNrVanaf(entry.getValue()));
-			specs = specs == null ? spec : specs.or(spec);
+			specification = specification.or(
+				heeftScreeningsEenheidId(entry.getKey()).and(MammaStandplaatsPeriodeSpecification.heeftScreeningsEenheidVolgNrVanaf(entry.getValue())));
 		}
 
-		return findWith(specs, StandplaatsPeriodeProjectie.class, q -> q
+		return findWith(specification, StandplaatsPeriodeProjectie.class, q -> q
 			.projections((cb, r) ->
 				List.of(
 					r.get(AbstractHibernateObject_.id),
@@ -101,31 +101,31 @@ public interface PlanningStandplaatsPeriodeRepository extends BaseJpaRepository<
 		);
 	}
 
-	private Join<?, MammaScreeningsEenheid> screeningsEenheidJoin(From<?, ? extends MammaStandplaatsPeriode> r)
+	private Join<?, MammaScreeningsEenheid> screeningsEenheidJoin(From<?, ? extends MammaStandplaatsPeriode> standplaatsPeriodeJoin)
 	{
-		return join(r, MammaStandplaatsPeriode_.screeningsEenheid);
+		return join(standplaatsPeriodeJoin, MammaStandplaatsPeriode_.screeningsEenheid);
 	}
 
-	private Join<?, MammaStandplaatsPeriode> allePeriodenBinnenRondeJoin(Root<MammaStandplaatsPeriode> r)
+	private Join<?, MammaStandplaatsPeriode> allePeriodenBinnenRondeJoin(Root<MammaStandplaatsPeriode> standplaatsPeriodeRoot)
 	{
-		var standplaatsRondeJoin = standplaatsRondeJoin(r);
+		var standplaatsRondeJoin = standplaatsRondeJoin(standplaatsPeriodeRoot);
 		return join(standplaatsRondeJoin, MammaStandplaatsRonde_.standplaatsPerioden);
 	}
 
-	private Join<?, MammaStandplaats> standplaatsJoin(Root<MammaStandplaatsPeriode> r)
+	private Join<?, MammaStandplaats> standplaatsJoin(Root<MammaStandplaatsPeriode> standplaatsPeriodeRoot)
 	{
-		var standplaatsRondeJoin = standplaatsRondeJoin(r);
+		var standplaatsRondeJoin = standplaatsRondeJoin(standplaatsPeriodeRoot);
 		return join(standplaatsRondeJoin, MammaStandplaatsRonde_.standplaats);
 	}
 
-	private Join<?, ScreeningOrganisatie> screeningOrganisatieJoin(Root<MammaStandplaatsPeriode> r)
+	private Join<?, ScreeningOrganisatie> screeningOrganisatieJoin(Root<MammaStandplaatsPeriode> standplaatsPeriodeRoot)
 	{
-		var standplaatsJoin = standplaatsJoin(r);
+		var standplaatsJoin = standplaatsJoin(standplaatsPeriodeRoot);
 		return join(standplaatsJoin, MammaStandplaats_.regio);
 	}
 
-	private Join<?, MammaStandplaatsRonde> standplaatsRondeJoin(Root<MammaStandplaatsPeriode> r)
+	private Join<?, MammaStandplaatsRonde> standplaatsRondeJoin(Root<MammaStandplaatsPeriode> standplaatsPeriodeRoot)
 	{
-		return join(r, MammaStandplaatsPeriode_.standplaatsRonde);
+		return join(standplaatsPeriodeRoot, MammaStandplaatsPeriode_.standplaatsRonde);
 	}
 }

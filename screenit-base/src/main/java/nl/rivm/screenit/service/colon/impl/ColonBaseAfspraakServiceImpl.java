@@ -58,8 +58,8 @@ import nl.rivm.screenit.model.colon.OpenUitnodiging;
 import nl.rivm.screenit.model.colon.WerklijstIntakeFilter;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
+import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
 import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 import nl.rivm.screenit.model.colon.planning.ColonTijdslot_;
@@ -87,9 +87,9 @@ import nl.rivm.screenit.specification.colon.ColonIntakeKamerSpecification;
 import nl.rivm.screenit.specification.colon.ColonScreeningRondeSpecification;
 import nl.rivm.screenit.specification.colon.ColonTijdslotSpecification;
 import nl.rivm.screenit.util.BriefUtil;
-import nl.rivm.screenit.util.ColonScreeningRondeUtil;
 import nl.rivm.screenit.util.DateUtil;
-import nl.rivm.screenit.util.FITTestUtil;
+import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
+import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
@@ -122,7 +122,6 @@ import static org.springframework.data.jpa.domain.Specification.where;
 @Service
 public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 {
-
 	@Autowired
 	private ColonIntakeAfspraakRepository afspraakRepository;
 
@@ -162,7 +161,7 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 		var afzegReden = "";
 		afspraakAfzeggen(intakeAfspraak, status, nu, communicatieTegenhouden);
 
-		var screeningRonde = intakeAfspraak.getColonScreeningRonde();
+		var screeningRonde = intakeAfspraak.getScreeningRonde();
 
 		if (screeningRonde.getOpenUitnodiging() == null)
 		{
@@ -196,7 +195,7 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 		afspraak.setAfgezegdOp(nu.plus(100, ChronoUnit.MILLIS));
 		hibernateService.saveOrUpdate(afspraak);
 
-		var screeningRonde = afspraak.getColonScreeningRonde();
+		var screeningRonde = afspraak.getScreeningRonde();
 		dossierBaseService.setDatumVolgendeUitnodiging(screeningRonde.getDossier(), ColonUitnodigingsintervalType.GEANNULEERDE_INTAKE_AFSPRAAK);
 
 		if (!ColonAfspraakStatus.GEANNULEERD_OPEN_UITNODIGING.equals(status))
@@ -389,7 +388,7 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 
 	private Function<From<?, ? extends ColonIntakeAfspraak>, From<?, ? extends ColonScreeningRonde>> screeningRondeJoin()
 	{
-		return r -> join(r, ColonIntakeAfspraak_.colonScreeningRonde);
+		return r -> join(r, ColonIntakeAfspraak_.screeningRonde);
 	}
 
 	private Sort getSorteringVoorAfspraken(Sort sort)
@@ -438,16 +437,16 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 	public void verplaatsAfspraak(ColonIntakeAfspraak nieuweAfspraak, Account account, BriefType briefType, boolean briefTegenhouden, boolean binnenRooster,
 		boolean verwezenMedischeRedenenDoorInfolijn)
 	{
-		var colonScreeningRonde = nieuweAfspraak.getColonScreeningRonde();
+		var screeningRonde = nieuweAfspraak.getScreeningRonde();
 
-		var laatsteAfspraak = colonScreeningRonde.getLaatsteAfspraak();
+		var laatsteAfspraak = screeningRonde.getLaatsteAfspraak();
 		if (nieuweAfspraak == null || nieuweAfspraak.getId() != null || nieuweAfspraak.equals(laatsteAfspraak) || laatsteAfspraak.getStatus()
 			.equals(ColonAfspraakStatus.VERPLAATST))
 		{
 
 			return;
 		}
-		colonScreeningRonde.getAfspraken().add(nieuweAfspraak);
+		screeningRonde.getAfspraken().add(nieuweAfspraak);
 
 		laatsteAfspraak.setNieuweAfspraak(nieuweAfspraak);
 		nieuweAfspraak.setOudeAfspraak(laatsteAfspraak);
@@ -456,7 +455,7 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 		var client = laatsteAfspraak.getClient();
 		client.getAfspraken().add(nieuweAfspraak);
 
-		colonScreeningRonde.setLaatsteAfspraak(nieuweAfspraak);
+		screeningRonde.setLaatsteAfspraak(nieuweAfspraak);
 		ColonAfspraakslot afspraakslot = null;
 		if (binnenRooster)
 		{
@@ -465,7 +464,7 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 		}
 		hibernateService.saveOrUpdate(nieuweAfspraak);
 		hibernateService.saveOrUpdate(laatsteAfspraak);
-		hibernateService.saveOrUpdate(colonScreeningRonde);
+		hibernateService.saveOrUpdate(screeningRonde);
 		hibernateService.saveOrUpdate(client);
 		if (afspraakslot != null)
 		{
@@ -477,7 +476,7 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 		{
 			briefType = BriefType.COLON_INTAKE_GEWIJZIGD;
 		}
-		var brief = briefService.maakBvoBrief(colonScreeningRonde, briefType);
+		var brief = briefService.maakBvoBrief(screeningRonde, briefType);
 		brief.setIntakeAfspraak(nieuweAfspraak);
 		if (briefTegenhouden)
 		{
@@ -527,20 +526,19 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 
 	protected void verstuurWijzigingsberichtNaarHA(ColonIntakeAfspraak nieuweAfspraak, ColonIntakeAfspraak laatsteAfspraak, Client client)
 	{
-
 		var context = new MailMergeContext();
 		context.setClient(client);
 		context.setIntakeAfspraak(nieuweAfspraak);
 		context.setVorigeIntakeAfspraak(laatsteAfspraak);
 
-		if (nieuweAfspraak != null && nieuweAfspraak.getColonScreeningRonde() != null && nieuweAfspraak.getColonScreeningRonde().getLaatsteUitnodiging() != null)
+		if (nieuweAfspraak != null && nieuweAfspraak.getScreeningRonde() != null && nieuweAfspraak.getScreeningRonde().getLaatsteUitnodiging() != null)
 		{
-			context.setColonUitnodiging(nieuweAfspraak.getColonScreeningRonde().getLaatsteUitnodiging());
+			context.setColonUitnodiging(nieuweAfspraak.getScreeningRonde().getLaatsteUitnodiging());
 		}
 		var berichtType = HuisartsBerichtType.WIJZIGING_INTAKEAFSPRAAK;
 		if (laatsteAfspraak == null)
 		{
-			if (nieuweAfspraak != null && nieuweAfspraak.getColonScreeningRonde() != null && nieuweAfspraak.getColonScreeningRonde().getOpenUitnodiging() != null)
+			if (nieuweAfspraak != null && nieuweAfspraak.getScreeningRonde() != null && nieuweAfspraak.getScreeningRonde().getOpenUitnodiging() != null)
 			{
 				berichtType = HuisartsBerichtType.INTAKE_NA_OPEN_UITNODIGING;
 			}
@@ -566,10 +564,10 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 		BriefType briefType, Account account)
 	{
 		OpenUitnodiging openUitnodiging;
-		var colonDossier = client.getColonDossier();
+		var dossier = client.getColonDossier();
 		var nu = currentDateSupplier.getLocalDateTime();
-		var laatsteScreeningRonde = colonDossier.getLaatsteScreeningRonde();
-		nieuweAfspraak.setColonScreeningRonde(laatsteScreeningRonde);
+		var laatsteScreeningRonde = dossier.getLaatsteScreeningRonde();
+		nieuweAfspraak.setScreeningRonde(laatsteScreeningRonde);
 		nieuweAfspraak.setClient(client);
 		nieuweAfspraak.setGewijzigdOp(nu.plus(100, ChronoUnit.MILLIS));
 		ColonAfspraakslot afspraakslot;
@@ -664,14 +662,14 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 	public void verzendHuisartsBerichtOpnieuw(Client client, Account account)
 	{
 		var laatsteScreeningRonde = client.getColonDossier().getLaatsteScreeningRonde();
-		var colonIntakeAfspraak = laatsteScreeningRonde.getLaatsteAfspraak();
+		var laatsteAfspraak = laatsteScreeningRonde.getLaatsteAfspraak();
 		var berichtType = HuisartsBerichtType.ONGUNSTIGE_UITSLAG;
 
-		switch (colonIntakeAfspraak.getStatus())
+		switch (laatsteAfspraak.getStatus())
 		{
 		case GEPLAND:
 		case UITGEVOERD:
-			if (colonIntakeAfspraak.getConclusie() != null && ColonConclusieType.NO_SHOW.equals(colonIntakeAfspraak.getConclusie().getType()))
+			if (laatsteAfspraak.getConclusie() != null && ColonConclusieType.NO_SHOW.equals(laatsteAfspraak.getConclusie().getType()))
 			{
 				berichtType = HuisartsBerichtType.NO_SHOW_INTAKE;
 			}
@@ -687,11 +685,11 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 
 		var context = new MailMergeContext();
 		context.setClient(client);
-		context.setIntakeAfspraak(colonIntakeAfspraak);
+		context.setIntakeAfspraak(laatsteAfspraak);
 
 		try
 		{
-			berichtenService.verstuurColonHuisartsBericht(client, laatsteScreeningRonde, laatsteScreeningRonde.getColonHuisarts(), berichtType, context, true);
+			berichtenService.verstuurColonHuisartsBericht(client, laatsteScreeningRonde, laatsteScreeningRonde.getHuisarts(), berichtType, context, true);
 		}
 		catch (Exception e)
 		{
@@ -702,12 +700,12 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 	@Override
 	public boolean magWijzigenAfzeggen(ColonIntakeAfspraak afspraak)
 	{
-		ColonConclusieType colonConclusieType = null;
+		ColonConclusieType conclusieType = null;
 		var isLaatsteRonde = false;
 		var heeftVerslagenInLaatsteRonde = false;
 		var rondeAfspraakIsLopend = true;
 		var conclusie = afspraak.getConclusie();
-		var ronde = afspraak.getColonScreeningRonde();
+		var ronde = afspraak.getScreeningRonde();
 		isLaatsteRonde = ronde.equals(ronde.getDossier().getLaatsteScreeningRonde());
 		if (isLaatsteRonde)
 		{
@@ -715,22 +713,22 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 		}
 		if (conclusie != null)
 		{
-			colonConclusieType = conclusie.getType();
+			conclusieType = conclusie.getType();
 		}
 		rondeAfspraakIsLopend = ScreeningRondeStatus.LOPEND.equals(ronde.getStatus());
 
 		var status = afspraak.getStatus();
 		return isLaatsteRonde && !heeftVerslagenInLaatsteRonde && rondeAfspraakIsLopend
-			&& (ColonAfspraakStatus.GEPLAND.equals(status) || ColonAfspraakStatus.UITGEVOERD.equals(status) && ColonConclusieType.NO_SHOW.equals(colonConclusieType));
+			&& (ColonAfspraakStatus.GEPLAND.equals(status) || ColonAfspraakStatus.UITGEVOERD.equals(status) && ColonConclusieType.NO_SHOW.equals(conclusieType));
 	}
 
 	@Override
 	public boolean magNieuweAfspraakMaken(Client client)
 	{
-		var colonDossier = client.getColonDossier();
-		boolean isDossierAangemeld = colonDossier.getAangemeld();
+		var dossier = client.getColonDossier();
+		boolean isDossierAangemeld = dossier.getAangemeld();
 
-		var laatsteScreeningRonde = colonDossier.getLaatsteScreeningRonde();
+		var laatsteScreeningRonde = dossier.getLaatsteScreeningRonde();
 		var isLaatsteRondeGeldigEnAangemeld = ColonScreeningRondeUtil.isLaatsteScreeningRondGeldigEnAangemeld(laatsteScreeningRonde);
 
 		if (isDossierAangemeld && isLaatsteRondeGeldigEnAangemeld && !ColonScreeningRondeUtil.heeftBuitenDoelgroepBrief(laatsteScreeningRonde)
@@ -762,47 +760,48 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 				{
 					return true;
 				}
-				var ifobtTest = laatsteScreeningRonde.getLaatsteIFOBTTest();
-				var isIfobtUitslagOngunstig = FITTestUtil.isOngunstig(ifobtTest);
+				var fitRegistratie = laatsteScreeningRonde.getLaatsteFitRegistratie();
+				var isFitAnalyseResultaatOngunstig = ColonFitRegistratieUtil.isOngunstig(fitRegistratie);
 
-				if (!isIfobtUitslagOngunstig && !FITTestUtil.isGunstig(ifobtTest))
+				if (!isFitAnalyseResultaatOngunstig && !ColonFitRegistratieUtil.isGunstig(fitRegistratie))
 				{
 
-					ifobtTest = null;
-					List<ColonScreeningRonde> rondes = new ArrayList<>(colonDossier.getScreeningRondes());
+					fitRegistratie = null;
+					List<ColonScreeningRonde> rondes = new ArrayList<>(dossier.getScreeningRondes());
 					Collections.sort(rondes, new PropertyComparator<>("id", false, true));
 					for (var ronde : rondes)
 					{
 						if (!ronde.equals(laatsteScreeningRonde))
 						{
 							Date vroegsteAnalyseDatum = null;
-							for (var test : ronde.getIfobtTesten())
+							for (var test : ronde.getFitRegistraties())
 							{
-								if (FITTestUtil.isOngunstig(test) && (vroegsteAnalyseDatum == null || vroegsteAnalyseDatum.after(test.getAnalyseDatum())))
+								if (ColonFitRegistratieUtil.isOngunstig(test) && (vroegsteAnalyseDatum == null || vroegsteAnalyseDatum.after(test.getAnalyseDatum())))
 								{
-									ifobtTest = test;
-									isIfobtUitslagOngunstig = true;
+									fitRegistratie = test;
+									isFitAnalyseResultaatOngunstig = true;
 									vroegsteAnalyseDatum = test.getAnalyseDatum();
 								}
 							}
 						}
 					}
 
-					if (isIfobtUitslagOngunstig)
+					if (isFitAnalyseResultaatOngunstig)
 					{
-						for (var afspraak : colonDossier.getClient().getAfspraken())
+						for (var afspraak : dossier.getClient().getAfspraken())
 						{
-							if (afspraak.getAangemaaktOp() != null && ifobtTest.getAnalyseDatum() != null && afspraak.getAangemaaktOp()
-								.isAfter(DateUtil.toLocalDateTime(ifobtTest.getAnalyseDatum())))
+							if (afspraak.getAangemaaktOp() != null && fitRegistratie.getAnalyseDatum() != null && afspraak.getAangemaaktOp()
+								.isAfter(DateUtil.toLocalDateTime(fitRegistratie.getAnalyseDatum())))
 							{
 
-								isIfobtUitslagOngunstig = false;
+								isFitAnalyseResultaatOngunstig = false;
 								break;
 							}
 						}
 					}
 				}
-				return isIfobtUitslagOngunstig && (IFOBTTestStatus.UITGEVOERD.equals(ifobtTest.getStatus()) || IFOBTTestStatus.DOETNIETMEE.equals(ifobtTest.getStatus()));
+				return isFitAnalyseResultaatOngunstig && (ColonFitRegistratieStatus.UITGEVOERD.equals(fitRegistratie.getStatus()) || ColonFitRegistratieStatus.DOETNIETMEE.equals(
+					fitRegistratie.getStatus()));
 			}
 		}
 		return false;

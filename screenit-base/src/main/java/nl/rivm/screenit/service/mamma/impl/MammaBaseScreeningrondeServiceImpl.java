@@ -54,7 +54,6 @@ import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -116,13 +115,7 @@ public class MammaBaseScreeningrondeServiceImpl implements MammaBaseScreeningron
 		dossier.setLaatsteScreeningRonde(null);
 		dossier.setScreeningRondes(new ArrayList<>());
 		hibernateService.saveOrUpdate(dossier);
-		if (CollectionUtils.isNotEmpty(rondes))
-		{
-			for (var ronde : rondes)
-			{
-				verwijderScreeningRonde(ronde, true);
-			}
-		}
+		rondes.forEach(ronde -> verwijderScreeningRonde(ronde, true));
 	}
 
 	@Override

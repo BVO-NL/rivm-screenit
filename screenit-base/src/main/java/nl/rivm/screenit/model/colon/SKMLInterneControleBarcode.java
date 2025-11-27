@@ -28,7 +28,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.colon.enums.IFOBTUitslagType;
+import nl.rivm.screenit.model.colon.enums.ColonFitAnalyseResultaatType;
 
 @Entity
 @Table(schema = "colon")
@@ -37,7 +37,7 @@ import nl.rivm.screenit.model.colon.enums.IFOBTUitslagType;
 public class SKMLInterneControleBarcode extends SKMLControleBarcode
 {
 	@ManyToOne(optional = false)
-	private IFobtLaboratorium laboratorium;
+	private ColonFitLaboratorium laboratorium;
 
 	private Integer volgorde;
 
@@ -48,6 +48,6 @@ public class SKMLInterneControleBarcode extends SKMLControleBarcode
 	public SKMLInterneControleBarcode()
 	{
 		super();
-		setType(IFOBTUitslagType.INTERN);
+		setType(ColonFitAnalyseResultaatType.INTERN);
 	}
 }

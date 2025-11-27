@@ -157,8 +157,8 @@ public class GebiedGegevens extends GebiedenBeheerPage
 		add(form);
 		form.add(new TextField<>("naam").setRequired(true).setEnabled(model.getObject().getPostcodeGebied() != null || StringUtils.isNotBlank(model.getObject().getWoonplaats())));
 		boolean magGebiedAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_GEBIEDEN, Actie.AANPASSEN);
-		boolean magRetourPercentageAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_GEBIEDEN_PERC_IFOBT_RETOUR, Actie.AANPASSEN);
-		boolean magOngunstigPercentageAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_GEBIEDEN_PERC_ONGUNSTIGE_IFOBT, Actie.AANPASSEN);
+		boolean magRetourPercentageAanpassen = ScreenitSession.get().checkPermission(Recht.COLON_BEHEER_GEBIEDEN_FIT_RETOUR_PERC, Actie.AANPASSEN);
+		boolean magOngunstigPercentageAanpassen = ScreenitSession.get().checkPermission(Recht.COLON_BEHEER_GEBIEDEN_FIT_ONGUNSTIG_PERC, Actie.AANPASSEN);
 
 		PercentageIntegerField percentageIFobtRetour = new PercentageIntegerField("percentageIFobtRetour", 1);
 		percentageIFobtRetour.setEnabled(magRetourPercentageAanpassen);

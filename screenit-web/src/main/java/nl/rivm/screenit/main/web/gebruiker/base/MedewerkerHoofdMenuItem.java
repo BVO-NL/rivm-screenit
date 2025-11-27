@@ -60,7 +60,7 @@ import nl.rivm.screenit.main.web.gebruiker.mamma.dense2.Dense2UitwisselingPage;
 import nl.rivm.screenit.main.web.gebruiker.rapportage.RapportagePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.facturatie.CervixBetalingPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.hl7v2berichten.CervixVerwerkHL7v2FoutBerichtenPage;
-import nl.rivm.screenit.main.web.gebruiker.screening.cervix.houdbaarheid.zasreeks.ZASReeksOverzichtPage;
+import nl.rivm.screenit.main.web.gebruiker.screening.cervix.houdbaarheid.zasreeks.CervixHoudbaarheidZasReeksOverzichtPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.huisarts.CervixKlaarzettenHuisartsPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.kwaliteitsborging.CervixBarcodesAfdrukkenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.aanvragen.CervixLabformulierAanvraagPage;
@@ -73,7 +73,7 @@ import nl.rivm.screenit.main.web.gebruiker.screening.cervix.monster.CervixOntvan
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.monster.CervixStatusMonsterPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.zoekenopbarcode.CervixZoekenOpBarcodePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.gebieden.GemeenteZoeken;
-import nl.rivm.screenit.main.web.gebruiker.screening.colon.houdbaarheid.ifobtbatch.IFOBTBatchOverzichtPage;
+import nl.rivm.screenit.main.web.gebruiker.screening.colon.houdbaarheid.ColonHoudbaarheidFitReeksOverzichtPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.huisartsimport.HuisartsImportBeheerPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.importcapverdeling.ImportCapVerdelingPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.intake.ColonGeplandeIntakesWerklijstPage;
@@ -84,7 +84,7 @@ import nl.rivm.screenit.main.web.gebruiker.screening.colon.overeenkomstenzoeken.
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.planning.rooster.RoosterAngularPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.proefbvo.ProefBVOAfmeldenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.verslagen.VerwerkteBerichtenOverzichtPage;
-import nl.rivm.screenit.main.web.gebruiker.screening.colon.zoekenopbarcode.ZoekenOpBarcodePage;
+import nl.rivm.screenit.main.web.gebruiker.screening.colon.zoekenopbarcode.ColonZoekenOpBarcodePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.gedeeld.verslagen.CervixVerwerkOngeldigeBerichtenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.gedeeld.verslagen.ColonVerwerkOngeldigeBerichtenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.gedeeld.verslagen.MammaVerwerkOngeldigeBerichtenPage;
@@ -147,7 +147,7 @@ public enum MedewerkerHoofdMenuItem
 				List<IMenuItem> contextMenuItems = new ArrayList<>();
 				contextMenuItems.add(new MedewerkerMenuItem("menu.cervixscreening.uitstrijkend.arts.klaarzetten", CervixKlaarzettenHuisartsPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.cervixscreening.labformulieren.aanvragen", CervixLabformulierAanvraagPage.class));
-				contextMenuItems.add(new MedewerkerMenuItem("menu.cervixscreening.zasbatch", ZASReeksOverzichtPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.cervixscreening.zasbatch", CervixHoudbaarheidZasReeksOverzichtPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.cervixscreening.barcodes-afdrukken", CervixBarcodesAfdrukkenPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.cervixscreening.ontvangstmonster", CervixOntvangstMonsterPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.cervixscreening.statusmonster", CervixStatusMonsterPage.class));
@@ -211,8 +211,8 @@ public enum MedewerkerHoofdMenuItem
 				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.huisartsimport", HuisartsImportBeheerPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.kwaliteitscontrole.reeks", SentinelControlesPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.kwaliteitscontrole", KwaliteitscontroleBatchOverzichtPage.class));
-				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.ifobtbatch", IFOBTBatchOverzichtPage.class));
-				contextMenuItems.add(new MedewerkerMenuItem("menu.screening.zoekenopbarcode", ZoekenOpBarcodePage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.fithoudbaarheid", ColonHoudbaarheidFitReeksOverzichtPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.screening.zoekenopbarcode", ColonZoekenOpBarcodePage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.niettebeoordelen", NietTeBeoordelenMonstersPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.verslagen", VerwerkteBerichtenOverzichtPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.screening.verwerkenongeldigeberichten", ColonVerwerkOngeldigeBerichtenPage.class));

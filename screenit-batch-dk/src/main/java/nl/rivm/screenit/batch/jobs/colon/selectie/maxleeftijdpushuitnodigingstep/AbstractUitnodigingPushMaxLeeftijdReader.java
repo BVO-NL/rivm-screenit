@@ -42,7 +42,7 @@ import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Gemeente_;
 import nl.rivm.screenit.model.Persoon_;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.specification.algemeen.PersoonSpecification;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
@@ -60,7 +60,7 @@ public abstract class AbstractUitnodigingPushMaxLeeftijdReader extends AbstractU
 	@Autowired
 	protected SimplePreferenceService preferenceService;
 
-	protected AbstractUitnodigingPushMaxLeeftijdReader(ColonUitnodigingCategorie categorie)
+	protected AbstractUitnodigingPushMaxLeeftijdReader(ColonUitnodigingscategorie categorie)
 	{
 		super(categorie);
 	}

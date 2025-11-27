@@ -25,7 +25,7 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.colon.ColonBrief;
-import nl.rivm.screenit.model.colon.IFOBTTest;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
 import nl.rivm.screenit.service.HeraanmeldenMergeVeldService;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
@@ -65,8 +65,8 @@ public class HeraanmeldenMergeVeldServiceImpl implements HeraanmeldenMergeVeldSe
 		ClientBrief brief = (ClientBrief) HibernateHelper.deproxy(clientBrief);
 		if (brief instanceof ColonBrief colonBrief)
 		{
-			IFOBTTest ifobtTest = colonBrief.getIfobtTest();
-			return ifobtTest != null ? ifobtTest.getHeraanmeldenTekstKey() : null;
+			ColonFitRegistratie fitRegistratie = colonBrief.getFitRegistratie();
+			return fitRegistratie != null ? fitRegistratie.getHeraanmeldenTekstKey() : null;
 		}
 		else if (brief instanceof CervixBrief cervixBrief)
 		{

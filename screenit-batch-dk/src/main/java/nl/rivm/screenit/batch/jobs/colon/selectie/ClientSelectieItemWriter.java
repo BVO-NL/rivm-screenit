@@ -39,13 +39,11 @@ import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.colon.ClientCategorieEntry;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonDossier;
-import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonOnderzoeksVariant;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.ColonVooraankondiging;
-import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -57,19 +55,19 @@ import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.rivm.screenit.model.project.ProjectInactiefReden;
 import nl.rivm.screenit.model.project.ProjectStatus;
-import nl.rivm.screenit.model.verwerkingverslag.SelectieRapportage;
-import nl.rivm.screenit.model.verwerkingverslag.SelectieRapportageEntry;
-import nl.rivm.screenit.model.verwerkingverslag.SelectieRapportageProjectGroepEntry;
+import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportage;
+import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageEntry;
+import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageProjectGroepEntry;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
-import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
+import nl.rivm.screenit.service.colon.ColonScreeningsrondeService;
 import nl.rivm.screenit.service.colon.ColonUitnodigingService;
-import nl.rivm.screenit.util.ColonScreeningRondeUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ProjectUtil;
+import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
@@ -106,7 +104,7 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 
 	private final ColonDossierBaseService dossierBaseService;
 
-	private final ColonBaseAfspraakService afspraakService;
+	private final ColonScreeningsrondeService screeningsrondeService;
 
 	private final ClientRepository clientRepository;
 
@@ -115,7 +113,7 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 	@Override
 	public void write(Chunk<? extends ClientCategorieEntry> chunk)
 	{
-		var selectieRapportage = hibernateService.load(SelectieRapportage.class,
+		var selectieRapportage = hibernateService.load(ColonSelectieRapportage.class,
 			stepExecution.getJobExecution().getExecutionContext().getLong(SelectieConstants.RAPPORTAGEKEYSELECTIE));
 		int aantalRondesUitnodigingsbriefZonderFit = simplePreferenceService.getInteger(PreferenceKey.COLON_AANTAL_RONDES_UITNODIGINGSBRIEF_ZONDER_FIT.name());
 
@@ -126,7 +124,7 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 			var categorie = categorieEntry.getCategorie();
 
 			boolean magUitnodigingMetFitMaken = ColonScreeningRondeUtil.magUitnodigingMetFitMaken(client.getColonDossier(), aantalRondesUitnodigingsbriefZonderFit)
-				|| categorie != ColonUitnodigingCategorie.U1 && categorie != ColonUitnodigingCategorie.U2;
+				|| categorie != ColonUitnodigingscategorie.U1 && categorie != ColonUitnodigingscategorie.U2;
 
 			var ronde = maakNieuweOrGeefLaatsteRonde(client, categorie, categorieEntry.getGepusht());
 
@@ -149,18 +147,18 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 		hibernateService.getHibernateSession().clear();
 	}
 
-	private void rapportageBijwerken(SelectieRapportage selectieRapportage, ClientCategorieEntry categorieEntry, Client client)
+	private void rapportageBijwerken(ColonSelectieRapportage selectieRapportage, ClientCategorieEntry categorieEntry, Client client)
 	{
 		var categorie = categorieEntry.getCategorie();
 
 		if (client.getColonDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging() == null)
 		{
-			categorie = ColonUitnodigingCategorie.U2_4;
+			categorie = ColonUitnodigingscategorie.U2_4;
 		}
-		SelectieRapportageEntry entry = null;
-		for (SelectieRapportageEntry entry2 : selectieRapportage.getEntries())
+		ColonSelectieRapportageEntry entry = null;
+		for (ColonSelectieRapportageEntry entry2 : selectieRapportage.getEntries())
 		{
-			if (entry2.getColonUitnodigingCategorie().equals(categorie) && entry2.getSelectieType() == SelectieType.UITNODIGING_GEMAAKT)
+			if (entry2.getUitnodigingscategorie().equals(categorie) && entry2.getSelectieType() == SelectieType.UITNODIGING_GEMAAKT)
 			{
 				entry = entry2;
 				break;
@@ -169,8 +167,8 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 
 		if (entry == null)
 		{
-			entry = new SelectieRapportageEntry();
-			entry.setColonUitnodigingCategorie(categorie);
+			entry = new ColonSelectieRapportageEntry();
+			entry.setUitnodigingscategorie(categorie);
 			entry.setAantal(0L);
 			entry.setWaarvanGepusht(0L);
 			entry.setRapportage(selectieRapportage);
@@ -191,16 +189,16 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 		}
 	}
 
-	private ColonScreeningRonde maakNieuweOrGeefLaatsteRonde(Client client, ColonUitnodigingCategorie categorie, Boolean gepushed)
+	private ColonScreeningRonde maakNieuweOrGeefLaatsteRonde(Client client, ColonUitnodigingscategorie categorie, Boolean gepushed)
 	{
 		ProjectClient pClient = ProjectUtil.getHuidigeProjectClient(client, currentDateSupplier.getDate());
 
 		ColonScreeningRonde laatsteScreeningRonde;
 		ColonDossier dossier = client.getColonDossier();
-		if (categorie == ColonUitnodigingCategorie.U1 || categorie == ColonUitnodigingCategorie.U2)
+		if (categorie == ColonUitnodigingscategorie.U1 || categorie == ColonUitnodigingscategorie.U2)
 		{
 
-			if (categorie == ColonUitnodigingCategorie.U2)
+			if (categorie == ColonUitnodigingscategorie.U2)
 			{
 				heractiveerDossier(dossier);
 				sluitVorigeRonde(dossier);
@@ -254,11 +252,11 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 		{
 
 			laatsteScreeningRonde = dossier.getLaatsteScreeningRonde();
-			laatsteScreeningRonde.setLaatsteIFOBTTest(null);
-			laatsteScreeningRonde.setLaatsteIFOBTTestExtra(null);
+			laatsteScreeningRonde.setLaatsteFitRegistratie(null);
+			laatsteScreeningRonde.setLaatsteExtraFitRegistratie(null);
 		}
 
-		if (categorie.equals(ColonUitnodigingCategorie.U1))
+		if (categorie.equals(ColonUitnodigingscategorie.U1))
 		{
 			ColonVooraankondiging vooraankondiging = new ColonVooraankondiging();
 			vooraankondiging.setClient(client);
@@ -267,14 +265,14 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 			ColonBrief brief = briefService.maakBvoBrief(laatsteScreeningRonde, BriefType.COLON_VOORAANKONDIGING);
 			vooraankondiging.setBrief(brief);
 
-			dossier.setColonVooraankondiging(vooraankondiging);
+			dossier.setVooraankondiging(vooraankondiging);
 			hibernateService.saveOrUpdate(vooraankondiging);
 			hibernateService.saveOrUpdate(dossier);
 
 		}
 		else
 		{
-			LOG.info(categorie.name() + " klaargezet voor client (id: '" + client.getId() + "')");
+			LOG.info("{} klaargezet voor client (id: '{}')", categorie.name(), client.getId());
 		}
 
 		hibernateService.saveOrUpdate(laatsteScreeningRonde);
@@ -300,31 +298,25 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 
 	private void sluitVorigeRonde(ColonDossier dossier)
 	{
-		ColonScreeningRonde eerdereScreeningRonde = dossier.getLaatsteScreeningRonde();
+		var eerdereScreeningRonde = dossier.getLaatsteScreeningRonde();
 		if (eerdereScreeningRonde != null && eerdereScreeningRonde.getStatus() == ScreeningRondeStatus.LOPEND)
 		{
-			ColonIntakeAfspraak laatsteAfspraak = eerdereScreeningRonde.getLaatsteAfspraak();
-			eerdereScreeningRonde.setStatus(ScreeningRondeStatus.AFGEROND);
-			eerdereScreeningRonde.setStatusDatum(currentDateSupplier.getDate());
-			if (laatsteAfspraak != null && laatsteAfspraak.getStatus() == ColonAfspraakStatus.GEPLAND)
-			{
-				afspraakService.annuleerAfspraak(laatsteAfspraak, null, ColonAfspraakStatus.GEANNULEERD_ONBEKEND, true);
-			}
+			screeningsrondeService.sluitRonde(eerdereScreeningRonde);
 			logService.logGebeurtenis(LogGebeurtenis.RONDE_VERLOPEN, dossier.getClient(), Bevolkingsonderzoek.COLON);
 			hibernateService.saveOrUpdate(eerdereScreeningRonde);
 		}
 	}
 
-	private void maakNieuweUitnodiging(ColonScreeningRonde laatsteScreeningRonde, ColonUitnodigingCategorie categorie)
+	private void maakNieuweUitnodiging(ColonScreeningRonde laatsteScreeningRonde, ColonUitnodigingscategorie categorie)
 	{
 		int vooraankondigingsPeriode = simplePreferenceService.getInteger(PreferenceKey.VOORAANKONDIGINSPERIODE.name());
 		ColonUitnodiging nieuweUitnodiging = new ColonUitnodiging();
 		nieuweUitnodiging.setUitnodigingsId(uitnodigingsDao.getNextUitnodigingsId());
-		nieuweUitnodiging.setColonUitnodigingCategorie(categorie);
+		nieuweUitnodiging.setUitnodigingscategorie(categorie);
 		nieuweUitnodiging.setCreatieDatum(currentDateSupplier.getDate());
 		nieuweUitnodiging.setOnderzoeksVariant(onderzoeksVariantVoorNieuweUitnodiging(laatsteScreeningRonde));
 
-		if (categorie == ColonUitnodigingCategorie.U1 || categorie == ColonUitnodigingCategorie.U2)
+		if (categorie == ColonUitnodigingscategorie.U1 || categorie == ColonUitnodigingscategorie.U2)
 		{
 			Date datumHuidigeUitnodiging = DateUtil.toUtilDate(currentDateSupplier.getLocalDate().plusDays(vooraankondigingsPeriode));
 			nieuweUitnodiging.setUitnodigingsDatum(datumHuidigeUitnodiging);
@@ -354,8 +346,8 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 
 	private void verwerkLimietWaarschuwingen(ColonScreeningRonde laatsteScreeningRonde)
 	{
-		int waarschuwingAantalIfobts = simplePreferenceService.getInteger(PreferenceKey.WAARSCHUWINGAANTALIFOBTS.name());
-		int maximaalAantalIfobts = simplePreferenceService.getInteger(PreferenceKey.MAXIMUMAANTALIFOBTS.name());
+		int waarschuwingAantalIfobts = simplePreferenceService.getInteger(PreferenceKey.COLON_AANTAL_FITS_WAARSCHUWING.name());
+		int maximaalAantalIfobts = simplePreferenceService.getInteger(PreferenceKey.COLON_MAX_AANTAL_FITS.name());
 
 		Client client = laatsteScreeningRonde.getDossier().getClient();
 		List<ColonUitnodiging> uitnodigingen = laatsteScreeningRonde.getUitnodigingen();
@@ -392,11 +384,11 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 		getExecutionContext().putInt(constant, aantalClienten);
 	}
 
-	private void updateCounterProject(SelectieRapportage selectieRapportage, long projectGroepId, Client client)
+	private void updateCounterProject(ColonSelectieRapportage selectieRapportage, long projectGroepId, Client client)
 	{
-		SelectieRapportageProjectGroepEntry projectGroepEntry = null;
+		ColonSelectieRapportageProjectGroepEntry projectGroepEntry = null;
 
-		for (SelectieRapportageProjectGroepEntry entry2 : selectieRapportage.getProjectGroepen())
+		for (ColonSelectieRapportageProjectGroepEntry entry2 : selectieRapportage.getProjectGroepen())
 		{
 			if (entry2.getProjectGroep().getId().equals(projectGroepId) && entry2.getSelectieType() == SelectieType.UITNODIGING_GEMAAKT)
 			{
@@ -451,7 +443,7 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 				aantalWerkDagen = DateUtil.getDaysBetweenIgnoreWeekends(currentDateSupplier.getDateMidnight(), uitnodigenVoorDKvoor, false) - 1;
 			}
 
-			SelectieRapportageProjectGroepEntry entry = new SelectieRapportageProjectGroepEntry();
+			ColonSelectieRapportageProjectGroepEntry entry = new ColonSelectieRapportageProjectGroepEntry();
 			entry.setRapportage(selectieRapportage);
 			entry.setClientenNogTeGaan(aantalNogTeGaan - 1); 
 			entry.setAantal(1L);

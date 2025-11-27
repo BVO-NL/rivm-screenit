@@ -41,8 +41,8 @@ import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.specification.algemeen.BeoordelingsEenheidSpecification;
 import nl.rivm.screenit.specification.mamma.MammaOnderzoekSpecification;
 import nl.rivm.screenit.specification.mamma.MammaScreeningsEenheidSpecification;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -63,14 +63,14 @@ public class MammaBeoordelingsEenheidServiceImpl implements MammaBeoordelingsEen
 
 	private final BeoordelingsEenheidRepository beoordelingsEenheidRepository;
 
-	private final ICurrentDateSupplier currentDateSuplier;
+	private final ICurrentDateSupplier currentDateSupplier;
 
 	private final MammaBaseOnderzoekRepository onderzoekRepository;
 
 	@Override
 	public long getAantalActieveGekoppeldeScreeningsEenheden(BeoordelingsEenheid beoordelingsEenheid)
 	{
-		var nu = currentDateSuplier.getLocalDate();
+		var nu = currentDateSupplier.getLocalDate();
 		return screeningsEenheidRepository.count(MammaScreeningsEenheidSpecification.isActief()
 			.and(heeftBeoordelingsEenheid(beoordelingsEenheid).or(heeftTijdelijkeBeoordelingsEenheidActiefOpMoment(beoordelingsEenheid, nu)))
 		);
@@ -125,7 +125,7 @@ public class MammaBeoordelingsEenheidServiceImpl implements MammaBeoordelingsEen
 		{
 			return Collections.emptyList();
 		}
-		organisatie = (Organisatie) HibernateHelper.deproxy(organisatie);
+		organisatie = (Organisatie) Hibernate.unproxy(organisatie);
 		OrganisatieType organisatieType = organisatie.getOrganisatieType();
 		return switch (organisatieType)
 		{
@@ -144,7 +144,7 @@ public class MammaBeoordelingsEenheidServiceImpl implements MammaBeoordelingsEen
 			return Collections.emptyList();
 		}
 		OrganisatieType organisatieType = organisatie.getOrganisatieType();
-		organisatie = (Organisatie) HibernateHelper.deproxy(organisatie);
+		organisatie = (Organisatie) Hibernate.unproxy(organisatie);
 		return switch (organisatieType)
 		{
 			case RIVM, KWALITEITSPLATFORM, SCREENINGSORGANISATIE ->

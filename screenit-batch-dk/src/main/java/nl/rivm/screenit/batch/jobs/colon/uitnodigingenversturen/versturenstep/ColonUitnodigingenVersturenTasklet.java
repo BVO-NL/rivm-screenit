@@ -41,7 +41,7 @@ import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.colon.ColonMergedBrieven;
 import nl.rivm.screenit.model.colon.ColonOnderzoeksVariant;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -130,7 +130,7 @@ public class ColonUitnodigingenVersturenTasklet extends AbstractUitnodigingenVer
 		if (logService.heeftGeenBestaandeLogregelBinnenPeriode(List.of(LogGebeurtenis.COLON_ADRES_ONVOLLEDIG_VOOR_INPAKCENTRUM), client.getPersoon().getBsn(),
 			melding, dagen))
 		{
-				List<Organisatie> dashboardOrganisaties = addLandelijkBeheerorganisatie(new ArrayList<>());
+			List<Organisatie> dashboardOrganisaties = addLandelijkBeheerorganisatie(new ArrayList<>());
 			dashboardOrganisaties.addAll(clientService.getScreeningOrganisatieVan(client));
 			logService.logGebeurtenis(LogGebeurtenis.COLON_ADRES_ONVOLLEDIG_VOOR_INPAKCENTRUM, dashboardOrganisaties, null, client, melding,
 				Bevolkingsonderzoek.COLON);
@@ -141,13 +141,13 @@ public class ColonUitnodigingenVersturenTasklet extends AbstractUitnodigingenVer
 	@Override
 	protected synchronized void updateCounts(ColonUitnodiging uitnodiging)
 	{
-		var aantalVerstuurd = getExecutionContext().getLong(uitnodiging.getColonUitnodigingCategorie().name());
-		getExecutionContext().put(uitnodiging.getColonUitnodigingCategorie().name(), aantalVerstuurd + 1);
+		var aantalVerstuurd = getExecutionContext().getLong(uitnodiging.getUitnodigingscategorie().name());
+		getExecutionContext().put(uitnodiging.getUitnodigingscategorie().name(), aantalVerstuurd + 1);
 
 		var client = getClientVanUitnodiging(uitnodiging);
-		var uitnodigingCategorie = uitnodiging.getColonUitnodigingCategorie();
+		var uitnodigingscategorie = uitnodiging.getUitnodigingscategorie();
 		var projectClienten = ProjectUtil.getHuidigeProjectClienten(client, currentDateSupplier.getDate(), true);
-		if ((uitnodigingCategorie.equals(ColonUitnodigingCategorie.U1) || uitnodigingCategorie.equals(ColonUitnodigingCategorie.U2)) && !projectClienten.isEmpty())
+		if ((uitnodigingscategorie.equals(ColonUitnodigingscategorie.U1) || uitnodigingscategorie.equals(ColonUitnodigingscategorie.U2)) && !projectClienten.isEmpty())
 		{
 			var projectGroepenCounters = (List<UitnodigingenVersturenProjectGroepCounterHolder>) getExecutionContext()
 				.get(UitnodigingenVersturenConstants.PROJECTENCOUNTERS);
@@ -229,7 +229,7 @@ public class ColonUitnodigingenVersturenTasklet extends AbstractUitnodigingenVer
 	@Override
 	protected void setUitnodigingVersturenTijd(List<Long> uitnodigingIds)
 	{
-		String uitnodigingUpdate = "UPDATE colon.colon_uitnodiging SET verstuurd_datum = :datum WHERE id in ( :uitnodigingIds )";
+		String uitnodigingUpdate = "UPDATE colon.uitnodiging SET verstuurd_datum = :datum WHERE id in ( :uitnodigingIds )";
 		hibernateService.getHibernateSession().createNativeQuery(uitnodigingUpdate)
 			.setParameter("datum", currentDateSupplier.getDate())
 			.setParameter("uitnodigingIds", uitnodigingIds)

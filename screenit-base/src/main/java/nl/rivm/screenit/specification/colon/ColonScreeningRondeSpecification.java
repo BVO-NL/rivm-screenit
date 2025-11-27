@@ -42,13 +42,13 @@ import nl.rivm.screenit.model.colon.ColonBrief_;
 import nl.rivm.screenit.model.colon.ColonConclusie;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonDossier_;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie_;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak_;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
 import nl.rivm.screenit.model.colon.ColonVerslag;
 import nl.rivm.screenit.model.colon.ColonVerslag_;
-import nl.rivm.screenit.model.colon.IFOBTTest_;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.OpenUitnodiging;
 import nl.rivm.screenit.model.colon.OpenUitnodiging_;
@@ -65,7 +65,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import static nl.rivm.screenit.specification.DateSpecification.truncate;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
-import static nl.rivm.screenit.specification.colon.ColonFITSpecification.heeftOngunstigeReguliereOfStudieUitslag;
+import static nl.rivm.screenit.specification.colon.ColonFitRegistratieSpecification.heeftOngunstigeReguliereOfStudieUitslag;
 import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftColonVerslagStatus;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -73,7 +73,7 @@ public class ColonScreeningRondeSpecification
 {
 	public static Specification<ColonScreeningRonde> heeftHuisarts()
 	{
-		return (r, q, cb) -> cb.isNotNull(r.get(ColonScreeningRonde_.colonHuisarts));
+		return (r, q, cb) -> cb.isNotNull(r.get(ColonScreeningRonde_.huisarts));
 	}
 
 	public static ExtendedSpecification<ColonScreeningRonde> heeftGeenAfsprakenZonderVervolg(LocalDate peilDatum)
@@ -82,14 +82,14 @@ public class ColonScreeningRondeSpecification
 		{
 			var subquery = q.subquery(Long.class);
 			var subRoot = subquery.from(ColonScreeningRonde.class);
-			var testenJoin = join(subRoot, ColonScreeningRonde_.ifobtTesten);
+			var testenJoin = join(subRoot, ColonScreeningRonde_.fitRegistraties);
 			var afspraakJoin = join(subRoot, ColonScreeningRonde_.laatsteAfspraak);
 			var conclusieJoin = join(afspraakJoin, ColonIntakeAfspraak_.conclusie, JoinType.LEFT);
 			var afmeldingJoin = join(subRoot, ColonScreeningRonde_.laatsteAfmelding, JoinType.LEFT);
 
 			subquery.select(subRoot.get(AbstractHibernateObject_.id))
 				.where(
-					isEersteOngunstigeUitslagUitLaatsteRonde(testenJoin.get(IFOBTTest_.statusDatum), subRoot.get(AbstractHibernateObject_.id), peilDatum)
+					isEersteOngunstigeUitslagUitLaatsteRonde(testenJoin.get(ColonFitRegistratie_.statusDatum), subRoot.get(AbstractHibernateObject_.id), peilDatum)
 						.and(heefGeenVervolg(afspraakJoin, conclusieJoin, afmeldingJoin)).toPredicate(r, q, cb)
 				);
 			return cb.not(r.get(AbstractHibernateObject_.id).in(subquery));
@@ -102,11 +102,13 @@ public class ColonScreeningRondeSpecification
 		{
 			var subquery = q.subquery(Long.class);
 			var subRoot = subquery.from(ColonScreeningRonde.class);
-			var testenJoin = join(subRoot, ColonScreeningRonde_.ifobtTesten);
+			var testenJoin = join(subRoot, ColonScreeningRonde_.fitRegistraties);
 
 			subquery.select(subRoot.get(AbstractHibernateObject_.id))
-				.where(isEersteOngunstigeUitslagUitLaatsteRonde(testenJoin.get(IFOBTTest_.statusDatum), subRoot.get(AbstractHibernateObject_.id), peilDatum).toPredicate(r, q,
-					cb));
+				.where(
+					isEersteOngunstigeUitslagUitLaatsteRonde(testenJoin.get(ColonFitRegistratie_.statusDatum), subRoot.get(AbstractHibernateObject_.id), peilDatum).toPredicate(r,
+						q,
+						cb));
 			return cb.not(r.get(AbstractHibernateObject_.id).in(subquery));
 		};
 	}
@@ -119,14 +121,14 @@ public class ColonScreeningRondeSpecification
 			var subquery = q.subquery(Integer.class);
 			var subRoot = subquery.from(ColonDossier.class);
 			var laatsteScreeningRondeJoin = join(subRoot, ColonDossier_.laatsteScreeningRonde);
-			var testenJoin = join(laatsteScreeningRondeJoin, ColonScreeningRonde_.ifobtTesten);
+			var testenJoin = join(laatsteScreeningRondeJoin, ColonScreeningRonde_.fitRegistraties);
 
 			subquery.select(cb.literal(1));
 			subquery.where(cb.and(
 				heeftOngunstigeReguliereOfStudieUitslag().with(root -> testenJoin).toPredicate(r, q, cb),
 				cb.equal(subRoot.get(ColonDossier_.laatsteScreeningRonde).get(AbstractHibernateObject_.id), screeningRondeId)));
 			subquery.groupBy(laatsteScreeningRondeJoin.get(AbstractHibernateObject_.id));
-			subquery.having(cb.equal(cb.least(testenJoin.get(IFOBTTest_.statusDatum)), fitStatusDatum));
+			subquery.having(cb.equal(cb.least(testenJoin.get(ColonFitRegistratie_.statusDatum)), fitStatusDatum));
 			return cb.and(cb.exists(subquery), cb.lessThanOrEqualTo(fitStatusDatum, DateUtil.toUtilDate(maxLengteRondeDatum)));
 		};
 	}
@@ -161,7 +163,7 @@ public class ColonScreeningRondeSpecification
 
 	public static ExtendedSpecification<ColonScreeningRonde> heeftGeenFit()
 	{
-		return (r, q, cb) -> cb.isEmpty(r.get(ColonScreeningRonde_.IFOBT_TESTEN));
+		return (r, q, cb) -> cb.isEmpty(r.get(ColonScreeningRonde_.FIT_REGISTRATIES));
 	}
 
 	public static ExtendedSpecification<ColonScreeningRonde> heeftBriefZonderFit()
@@ -210,7 +212,7 @@ public class ColonScreeningRondeSpecification
 			var oudeAfspraakJoin = join(subRoot, OpenUitnodiging_.oudeAfspraak);
 			var rondeJoin = join(subRoot, OpenUitnodiging_.ronde);
 			var oudeAfspraakConclusieJoin = join(oudeAfspraakJoin, ColonIntakeAfspraak_.conclusie, JoinType.LEFT);
-			var rondeVanOudeAfspraakJoin = join(oudeAfspraakJoin, ColonIntakeAfspraak_.colonScreeningRonde, JoinType.LEFT);
+			var rondeVanOudeAfspraakJoin = join(oudeAfspraakJoin, ColonIntakeAfspraak_.screeningRonde, JoinType.LEFT);
 			var laatsteAfmeldingVanRondeVanOudeAfspraakJoin = join(rondeVanOudeAfspraakJoin, ColonScreeningRonde_.laatsteAfmelding, JoinType.LEFT);
 			var laatsteAfspraakVanRondeJoin = join(rondeJoin, ColonScreeningRonde_.laatsteAfspraak, JoinType.LEFT);
 			var laatsteAfmeldingVanRondeJoin = join(rondeJoin, ColonScreeningRonde_.laatsteAfmelding, JoinType.LEFT);

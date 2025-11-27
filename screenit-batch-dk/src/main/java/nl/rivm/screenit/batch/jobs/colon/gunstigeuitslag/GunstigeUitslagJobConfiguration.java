@@ -1,4 +1,4 @@
-package nl.rivm.screenit.batch.jobs.colon.fitherinnering;
+package nl.rivm.screenit.batch.jobs.colon.gunstigeuitslag;
 
 /*-
  * ========================LICENSE_START=================================
@@ -22,7 +22,6 @@ package nl.rivm.screenit.batch.jobs.colon.fitherinnering;
  */
 
 import nl.rivm.screenit.batch.jobs.AbstractJobConfiguration;
-import nl.rivm.screenit.batch.jobs.colon.gunstigeuitslag.GunstigeUitslagJobListener;
 import nl.rivm.screenit.batch.jobs.colon.gunstigeuitslag.gunstigestep.GunstigeUitslagBriefReader;
 import nl.rivm.screenit.batch.jobs.colon.gunstigeuitslag.gunstigestep.GunstigeUitslagBriefWriter;
 import nl.rivm.screenit.model.enums.JobType;

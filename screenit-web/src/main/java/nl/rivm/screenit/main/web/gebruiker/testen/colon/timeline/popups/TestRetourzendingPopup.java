@@ -70,7 +70,7 @@ public class TestRetourzendingPopup extends AbstractTestBasePopupPanel
 		List<ColonUitnodiging> uitnodigingVoorRetourzending = new ArrayList<>();
 		for (ColonUitnodiging uitnodiging : ronde.getUitnodigingen())
 		{
-			if (uitnodiging.isVerstuurdDoorInpakcentrum() && uitnodiging.getGekoppeldeTest().getUitslag() == null && uitnodiging.getAntwoordFormulier() == null)
+			if (uitnodiging.isVerstuurdDoorInpakcentrum() && uitnodiging.getGekoppeldeFitRegistratie().getUitslag() == null && uitnodiging.getAntwoordFormulier() == null)
 			{
 				uitnodigingVoorRetourzending.add(uitnodiging);
 				List<ColonUitnodiging> uitnodigingen = new ArrayList<>();
@@ -93,7 +93,8 @@ public class TestRetourzendingPopup extends AbstractTestBasePopupPanel
 					for (int i = 0; i < ronde.getUitnodigingen().size(); i++)
 					{
 						ColonUitnodiging uitnodiging = ronde.getUitnodigingen().get(i);
-						if (uitnodiging.isVerstuurdDoorInpakcentrum() && uitnodiging.getGekoppeldeTest().getUitslag() == null && uitnodiging.getAntwoordFormulier() == null)
+						if (uitnodiging.isVerstuurdDoorInpakcentrum() && uitnodiging.getGekoppeldeFitRegistratie().getUitslag() == null
+							&& uitnodiging.getAntwoordFormulier() == null)
 						{
 							SimpleListHibernateModel<ColonUitnodiging> uitnodigingen = uitnodigingenMap.get(uitnodigingVoorRetourzending.get(i).getUitnodigingsId());
 							uitnodigingen.add(uitnodiging);

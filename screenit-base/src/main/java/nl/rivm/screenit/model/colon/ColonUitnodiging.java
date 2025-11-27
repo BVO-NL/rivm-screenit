@@ -36,8 +36,11 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.UniqueConstraint;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.InpakbareUitnodiging;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -45,23 +48,25 @@ import org.hibernate.envers.NotAudited;
 @Entity
 @Table(
 	schema = "colon",
+	name = "uitnodiging",
 	uniqueConstraints = { @UniqueConstraint(columnNames = "uitnodigingsId") },
 	indexes = {
 		@Index(name = "idx_colon_uitnodiging_verstuurd", columnList = "verstuurd"),
 		@Index(name = "idx_colon_uitnodiging_onderzoeks_variant", columnList = "onderzoeksVariant"),
 		@Index(name = "idx_colon_uitnodiging_trackid", columnList = "trackTraceId") })
 @Audited
+@Getter
+@Setter
 public class ColonUitnodiging extends InpakbareUitnodiging<ColonScreeningRonde>
 {
-
 	@Enumerated(EnumType.STRING)
-	private ColonUitnodigingCategorie colonUitnodigingCategorie;
+	private ColonUitnodigingscategorie uitnodigingscategorie;
 
 	@OneToOne
-	private IFOBTTest gekoppeldeTest;
+	private ColonFitRegistratie gekoppeldeFitRegistratie;
 
 	@OneToOne
-	private IFOBTTest gekoppeldeExtraTest;
+	private ColonFitRegistratie gekoppeldeExtraFitRegistratie;
 
 	@Deprecated
 	@OneToOne(cascade = CascadeType.ALL)
@@ -77,79 +82,4 @@ public class ColonUitnodiging extends InpakbareUitnodiging<ColonScreeningRonde>
 
 	@Temporal(TemporalType.DATE)
 	private Date uitgesteldeUitslagDatum;
-
-	public ColonUitnodigingCategorie getColonUitnodigingCategorie()
-	{
-		return colonUitnodigingCategorie;
-	}
-
-	public void setColonUitnodigingCategorie(ColonUitnodigingCategorie colonUitnodigingCategorie)
-	{
-		this.colonUitnodigingCategorie = colonUitnodigingCategorie;
-	}
-
-	public IFOBTTest getGekoppeldeTest()
-	{
-		return gekoppeldeTest;
-	}
-
-	public void setGekoppeldeTest(IFOBTTest gekoppeldeTest)
-	{
-		this.gekoppeldeTest = gekoppeldeTest;
-	}
-
-	public IFOBTTest getGekoppeldeExtraTest()
-	{
-		return gekoppeldeExtraTest;
-	}
-
-	public void setGekoppeldeExtraTest(IFOBTTest gekoppeldeExtraTest)
-	{
-		this.gekoppeldeExtraTest = gekoppeldeExtraTest;
-	}
-
-	@Deprecated
-	public void setAntwoordFormulier(ScannedAntwoordFormulier antwoordFormulier)
-	{
-		this.antwoordFormulier = antwoordFormulier;
-	}
-
-	@Deprecated
-	public ScannedAntwoordFormulier getAntwoordFormulier()
-	{
-		return antwoordFormulier;
-	}
-
-	@Override
-	public ColonScreeningRonde getScreeningRonde()
-	{
-		return screeningRonde;
-	}
-
-	@Override
-	public void setScreeningRonde(ColonScreeningRonde screeningRonde)
-	{
-		this.screeningRonde = screeningRonde;
-	}
-
-	public ColonOnderzoeksVariant getOnderzoeksVariant()
-	{
-		return onderzoeksVariant;
-	}
-
-	public void setOnderzoeksVariant(ColonOnderzoeksVariant onderzoeksVariant)
-	{
-		this.onderzoeksVariant = onderzoeksVariant;
-	}
-
-	public Date getUitgesteldeUitslagDatum()
-	{
-		return uitgesteldeUitslagDatum;
-	}
-
-	public void setUitgesteldeUitslagDatum(Date uitgesteldUitslagDatum)
-	{
-		this.uitgesteldeUitslagDatum = uitgesteldUitslagDatum;
-	}
-
 }

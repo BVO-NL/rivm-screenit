@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.List;
 
 import nl.rivm.screenit.batch.service.impl.ColonUitnodigingsgebiedSelectieContext;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 
 import org.springframework.batch.item.ExecutionContext;
 
@@ -35,6 +35,6 @@ public interface ColonUitnodigingsgebiedCapaciteitService
 
 	List<ColonUitnodigingsgebiedSelectieContext> leegloopHerverdelen(Collection<ColonUitnodigingsgebiedSelectieContext> uitnodigingsGebieden);
 
-	int bepaalProjectGroepPopulatie(long uitnodigingsGebiedId, ColonUitnodigingCategorie categorie, long projectGroupId, Integer minimaleLeeftijd, Integer maximaleLeeftijd);
+	int bepaalProjectGroepPopulatie(long uitnodigingsGebiedId, ColonUitnodigingscategorie categorie, long projectGroupId, Integer minimaleLeeftijd, Integer maximaleLeeftijd);
 
 }

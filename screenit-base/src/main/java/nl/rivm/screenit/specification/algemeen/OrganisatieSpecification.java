@@ -60,11 +60,11 @@ import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsAdres;
 import nl.rivm.screenit.model.cervix.CervixHuisartsAdres_;
 import nl.rivm.screenit.model.cervix.CervixHuisarts_;
+import nl.rivm.screenit.model.colon.ColonFitLaboratorium;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie_;
 import nl.rivm.screenit.model.colon.ColoscopieLocatie;
 import nl.rivm.screenit.model.colon.ColoscopieLocatie_;
-import nl.rivm.screenit.model.colon.IFobtLaboratorium;
 import nl.rivm.screenit.model.colon.PaLaboratorium;
 import nl.rivm.screenit.model.colon.PaLaboratorium_;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenOrganisatieOvereenkomst;
@@ -312,7 +312,7 @@ public class OrganisatieSpecification
 	{
 		var organisatiePredicates = new ArrayList<Predicate>();
 		var mogelijkeOrganisatieClasses = List.of(Organisatie.class, BMHKLaboratorium.class, BeoordelingsEenheid.class, CentraleEenheid.class, CervixHuisarts.class,
-			ColonIntakelocatie.class, ColoscopieLocatie.class, IFobtLaboratorium.class, Mammapoli.class, PaLaboratorium.class, RadiologieAfdeling.class, Rivm.class,
+			ColonIntakelocatie.class, ColoscopieLocatie.class, ColonFitLaboratorium.class, Mammapoli.class, PaLaboratorium.class, RadiologieAfdeling.class, Rivm.class,
 			ScreeningOrganisatie.class, ZorgInstelling.class);
 		mogelijkeOrganisatieClasses.forEach(c -> organisatiePredicates.add(cb.equal(treat(r, c, cb).type(), c)));
 		return composePredicatesOr(cb, organisatiePredicates);

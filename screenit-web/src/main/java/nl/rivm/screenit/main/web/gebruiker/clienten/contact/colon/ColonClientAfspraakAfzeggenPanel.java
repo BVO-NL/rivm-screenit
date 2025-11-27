@@ -75,7 +75,7 @@ public class ColonClientAfspraakAfzeggenPanel extends GenericPanel<ColonIntakeAf
 	public List<String> getOpslaanMeldingen()
 	{
 		ColonIntakeAfspraak afspraak = getModelObject();
-		ColonScreeningRonde ronde = afspraak.getColonScreeningRonde();
+		ColonScreeningRonde ronde = afspraak.getScreeningRonde();
 		String melding = String.format("coloscopie intake afspraak van %1$s in %2$s van %3$s afzeggen.", DateUtil.formatShortDateTime(afspraak.getVanaf()),
 			afspraak.getKamer().getNaam(),
 			afspraak.getKamer().getIntakelocatie().getNaam());

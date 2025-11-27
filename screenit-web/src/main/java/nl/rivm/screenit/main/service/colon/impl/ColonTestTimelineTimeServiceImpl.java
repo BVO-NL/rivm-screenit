@@ -31,9 +31,9 @@ import nl.rivm.screenit.main.model.testen.TestTimeLineDossierTijdstip;
 import nl.rivm.screenit.main.service.colon.ColonTestTimelineTimeService;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.colon.ColonDossier;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonVerslag;
-import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.service.BaseTestTimelineService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
@@ -71,7 +71,7 @@ public class ColonTestTimelineTimeServiceImpl implements ColonTestTimelineTimeSe
 	{
 		LOG.debug("Dossier aantal dagen terug gezet: " + dagen);
 		baseTestTimelineService.rekenObjectTerug(dossier, dagen);
-		baseTestTimelineService.rekenObjectTerug(dossier.getColonVooraankondiging(), dagen);
+		baseTestTimelineService.rekenObjectTerug(dossier.getVooraankondiging(), dagen);
 		baseTestTimelineService.rekenObjectTerug(dossier.getVolgendeUitnodiging(), dagen);
 		baseTestTimelineService.rekenObjectTerug(dossier.getAfmeldingen(), dagen);
 		rekenAlleScreeningRondesTerug(dossier, dagen);
@@ -93,25 +93,25 @@ public class ColonTestTimelineTimeServiceImpl implements ColonTestTimelineTimeSe
 		{
 		case DAG_UITNODIGING_VERSTUREN:
 			aantalDagen = preferenceService.getInteger(PreferenceKey.VOORAANKONDIGINSPERIODE.name());
-			var vooraankondiging = dossier.getColonVooraankondiging();
+			var vooraankondiging = dossier.getVooraankondiging();
 			return overgeblevenDagen(vooraankondiging.getCreatieDatum(), aantalDagen);
 		case DAG_NA_UITNODIGING_KOPPELEN:
 			aantalDagen = preferenceService.getInteger(PreferenceKey.VOORAANKONDIGINSPERIODE.name());
 			aantalDagen = aantalDagen + 3;
-			vooraankondiging = dossier.getColonVooraankondiging();
+			vooraankondiging = dossier.getVooraankondiging();
 			return overgeblevenDagen(vooraankondiging.getCreatieDatum(), aantalDagen);
 		case ANTWOORDFORMULIER_ONTVANGEN:
-		case IFOBT_TERUG_ONTVANGEN:
+		case COLON_FIT_ANALYSE_RESULTAAT_ONTVANGEN:
 			aantalDagen = 3;
 			return overgeblevenDagen(dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging().getVerstuurdDatum(), aantalDagen);
 		case EINDE_RONDE:
 			aantalDagen = preferenceService.getInteger(PreferenceKey.UITNODIGINGSINTERVAL.name());
 			return overgeblevenDagen(dossier.getLaatsteScreeningRonde().getCreatieDatum(), aantalDagen);
 		case DAG_HERINNERING_VERSTUREN:
-			aantalDagen = preferenceService.getInteger(PreferenceKey.IFOBTRAPELPERIODE.name());
+			aantalDagen = preferenceService.getInteger(PreferenceKey.COLON_HERINNERINGS_PERIODE.name());
 			return overgeblevenDagen(getTestMetEersteStatusDatum(dossier).getStatusDatum(), aantalDagen);
 		case DAG_NA_HERINNERING_VERSTUREN:
-			aantalDagen = preferenceService.getInteger(PreferenceKey.IFOBTRAPELPERIODE.name());
+			aantalDagen = preferenceService.getInteger(PreferenceKey.COLON_HERINNERINGS_PERIODE.name());
 			aantalDagen = aantalDagen + 1;
 			return overgeblevenDagen(getTestMetEersteStatusDatum(dossier).getStatusDatum(), aantalDagen);
 		case INTAKE_AFSPRAAK_CONCLUSIE:
@@ -125,11 +125,11 @@ public class ColonTestTimelineTimeServiceImpl implements ColonTestTimelineTimeSe
 		}
 	}
 
-	private IFOBTTest getTestMetEersteStatusDatum(ColonDossier dossier)
+	private ColonFitRegistratie getTestMetEersteStatusDatum(ColonDossier dossier)
 	{
-		IFOBTTest eersteTest = null;
+		ColonFitRegistratie eersteTest = null;
 		var ronde = dossier.getLaatsteScreeningRonde();
-		for (var test : ronde.getIfobtTesten())
+		for (var test : ronde.getFitRegistraties())
 		{
 			if (!test.isHerinnering() && (eersteTest == null || test.getStatusDatum().before(eersteTest.getStatusDatum())))
 			{
@@ -187,8 +187,8 @@ public class ColonTestTimelineTimeServiceImpl implements ColonTestTimelineTimeSe
 		for (var uitnodiging : ronde.getUitnodigingen())
 		{
 			baseTestTimelineService.rekenObjectTerug(uitnodiging, dagen);
-			baseTestTimelineService.rekenObjectTerug(uitnodiging.getGekoppeldeTest(), dagen);
-			baseTestTimelineService.rekenObjectTerug(uitnodiging.getGekoppeldeExtraTest(), dagen);
+			baseTestTimelineService.rekenObjectTerug(uitnodiging.getGekoppeldeFitRegistratie(), dagen);
+			baseTestTimelineService.rekenObjectTerug(uitnodiging.getGekoppeldeExtraFitRegistratie(), dagen);
 			baseTestTimelineService.rekenObjectTerug(uitnodiging.getAntwoordFormulier(), dagen);
 		}
 	}

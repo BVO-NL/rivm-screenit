@@ -577,6 +577,11 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 						melding += ". Gekoppelde afspraken (#" + persistentBlok.getAfspraken().size() + ") worden losgemaakt van dit capaciteitblok.";
 						niveau = MammaMeldingNiveau.WAARSCHUWING;
 					}
+					var minderValideReserveringen = persistentBlok.getMinderValideReserveringen();
+					if (!minderValideReserveringen.isEmpty())
+					{
+						melding += " Verwijderde mindervalide reserveringen (#" + minderValideReserveringen.size() + ").";
+					}
 					addMelding(meldingenDto, screeningsEenheid, melding, niveau, runDry);
 
 					if (!runDry)

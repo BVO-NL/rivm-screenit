@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.colon;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -47,15 +46,12 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import org.hibernate.envers.Audited;
 
 @Entity
-@Table(schema = "colon", indexes = { @Index(name = "idx_colon_conclusie_type", columnList = "type") })
+@Table(schema = "colon", name = "conclusie", indexes = { @Index(name = "idx_colon_conclusie_type", columnList = "type") })
 @Audited
 @Getter
 @Setter
 public class ColonConclusie extends AbstractHibernateObject
 {
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private ColonConclusieType type;
@@ -71,21 +67,21 @@ public class ColonConclusie extends AbstractHibernateObject
 	private Date datum;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable = true)
+	@Column
 	private Date datumColoscopie;
 
-	@Column(nullable = true)
+	@Column
 	private Boolean coloscopieDatumOpVerzoekClient;
 
-	@Column(nullable = true)
+	@Column
 	private Integer asaScore;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = true)
+	@Column
 	private ColonGeenOnderzoekReden geenOnderzoekReden;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable = true)
+	@Column
 	private Date noShowBericht;
 
 	private Boolean doorverwijzingBevestigd;

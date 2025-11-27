@@ -23,9 +23,12 @@ package nl.rivm.screenit.model.dashboard;
 
 import java.util.List;
 
+import lombok.Getter;
+
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 
+@Getter
 public enum DashboardType
 {
 	GBA_LANDELIJK("GBA & inactieve client", List.of(OrganisatieType.SCREENINGSORGANISATIE), Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA),
@@ -38,21 +41,21 @@ public enum DashboardType
 
 	UITNODIGING_VERSTUREN_NAAR_INPAKCENTRUM("Uitnodiging versturen naar inpakcentrum", Bevolkingsonderzoek.COLON),
 
-	CONTROLE_TERUGKOPPELING_CLIENT_SELECTIE("Controle terugkoppeling van Inpakcentrum", Bevolkingsonderzoek.COLON),
+	COLON_CONTROLE_FIT_KOPPELEN("Controle terugkoppeling van inpakcentrum", Bevolkingsonderzoek.COLON),
 
-	TERUGKOPPELING_CLIENT_SELECTIE("Terugkoppeling van Inpakcentrum", Bevolkingsonderzoek.COLON),
+	COLON_FIT_KOPPELEN("Terugkoppeling van inpakcentrum", Bevolkingsonderzoek.COLON),
 
-	RETOURZENDINGEN("Retourzendingen", Bevolkingsonderzoek.COLON),
+	COLON_RETOURZENDINGEN("Retourzendingen", Bevolkingsonderzoek.COLON),
 
-	COLON_IFOBT_KOPPELING("FIT-berichten koppeling", List.of(OrganisatieType.RIVM, OrganisatieType.LABORATORIUM), Bevolkingsonderzoek.COLON),
+	COLON_FIT_ANALYSE_RESULTATEN_AANNEMEN("FIT analyse resultaten aannemen", List.of(OrganisatieType.RIVM, OrganisatieType.LABORATORIUM), Bevolkingsonderzoek.COLON),
 
-	IFOBT_INLEZEN("FIT uitslagen ontvangen", Bevolkingsonderzoek.COLON),
+	COLON_FIT_ANALYSE_RESULTATEN_OPSLAAN("FIT analyse resultaten opslaan", Bevolkingsonderzoek.COLON),
 
-	IFOBT_VERWERKING("FIT verwerking", Bevolkingsonderzoek.COLON),
+	COLON_FIT_ANALYSE_RESULTATEN_VERWERKING("FIT analyse resultaten verwerking", Bevolkingsonderzoek.COLON),
 
-	IFOBT_HERINNERING("FIT herinnering", Bevolkingsonderzoek.COLON),
+	COLON_HERINNERING("FIT herinnering", Bevolkingsonderzoek.COLON),
 
-	GUNSTIGE_UITSLAG("Gunstige uitslag versturen", Bevolkingsonderzoek.COLON),
+	COLON_GUNSTIGE_UITSLAG("Gunstige uitslag maken", Bevolkingsonderzoek.COLON),
 
 	INTAKE_AFSPRAAK_MAKEN("Intake afspraken inplannen", List.of(OrganisatieType.SCREENINGSORGANISATIE), Bevolkingsonderzoek.COLON),
 
@@ -76,7 +79,7 @@ public enum DashboardType
 
 	CERVIX_ZAS_CONTROLE_TERUGKOPPELING("Controle zas terugkoppeling van inpakcentrum", Bevolkingsonderzoek.CERVIX),
 
-	CERVIX_ZAS_TERUGKOPPELING("Terugkoppeling zas van Inpakcentrum", Bevolkingsonderzoek.CERVIX),
+	CERVIX_ZAS_TERUGKOPPELING("Terugkoppeling zas van inpakcentrum", Bevolkingsonderzoek.CERVIX),
 
 	CERVIX_VERVOLGONDERZOEK("Controle-uitstrijkje", Bevolkingsonderzoek.CERVIX),
 
@@ -184,20 +187,5 @@ public enum DashboardType
 		this.naam = naam;
 		this.organisatieTypes = organisatieTypes;
 		this.bevolkingsOnderzoek = bevolkingsOnderzoek;
-	}
-
-	public String getNaam()
-	{
-		return naam;
-	}
-
-	public Bevolkingsonderzoek[] getBevolkingsOnderzoek()
-	{
-		return bevolkingsOnderzoek;
-	}
-
-	public List<OrganisatieType> getOrganisatieTypes()
-	{
-		return organisatieTypes;
 	}
 }

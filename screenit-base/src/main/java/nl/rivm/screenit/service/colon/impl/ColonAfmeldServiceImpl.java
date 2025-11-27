@@ -22,26 +22,18 @@ package nl.rivm.screenit.service.colon.impl;
  */
 
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 import nl.rivm.screenit.model.AanvraagBriefStatus;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.AfmeldingType;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.colon.ColonAfmelding;
-import nl.rivm.screenit.model.colon.ColonBrief;
-import nl.rivm.screenit.model.colon.ColonConclusie;
-import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
-import nl.rivm.screenit.model.colon.IFOBTTest;
-import nl.rivm.screenit.model.colon.OpenUitnodiging;
 import nl.rivm.screenit.model.colon.enums.ColonAfmeldingReden;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
 import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.OpenUitnodigingUitslag;
@@ -54,7 +46,7 @@ import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.service.colon.ColonScreeningsrondeService;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
-import nl.rivm.screenit.util.FITTestUtil;
+import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -62,11 +54,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@Transactional(propagation = Propagation.REQUIRED)
+@Transactional
 public class ColonAfmeldServiceImpl implements ColonAfmeldService
 {
 	private static final Logger LOG = LoggerFactory.getLogger(ColonAfmeldServiceImpl.class);
@@ -93,7 +84,6 @@ public class ColonAfmeldServiceImpl implements ColonAfmeldService
 	private ColonScreeningsrondeService screeningsrondeService;
 
 	@Override
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ColonAfmelding maakAfmelding()
 	{
 		return new ColonAfmelding();
@@ -102,7 +92,7 @@ public class ColonAfmeldServiceImpl implements ColonAfmeldService
 	@Override
 	public void definitieveAfmeldingAanvragen(ColonAfmelding afmelding, boolean rappelBrief)
 	{
-		BriefType briefType = BriefType.COLON_AFMELDING_AANVRAAG;
+		var briefType = BriefType.COLON_AFMELDING_AANVRAAG;
 		if (rappelBrief)
 		{
 			briefType = BriefType.COLON_AFMELDING_HANDTEKENING;
@@ -114,7 +104,7 @@ public class ColonAfmeldServiceImpl implements ColonAfmeldService
 	@Override
 	public void eenmaligAfmelden(ColonAfmelding afmelding, Account account)
 	{
-		ColonScreeningRonde ronde = afmelding.getScreeningRonde();
+		var ronde = afmelding.getScreeningRonde();
 
 		afspraakAfzeggen(ronde);
 		nietVerzondenUitnodigingenVerwijderen(ronde);
@@ -123,16 +113,16 @@ public class ColonAfmeldServiceImpl implements ColonAfmeldService
 
 	private void afspraakAfzeggen(ColonScreeningRonde ronde)
 	{
-		ColonIntakeAfspraak laatsteAfspraak = ronde.getLaatsteAfspraak();
+		var laatsteAfspraak = ronde.getLaatsteAfspraak();
 		if (laatsteAfspraak != null)
 		{
 			ColonConclusieType conclusieType = null;
-			ColonConclusie conclusie = laatsteAfspraak.getConclusie();
+			var conclusie = laatsteAfspraak.getConclusie();
 			if (conclusie != null)
 			{
 				conclusieType = conclusie.getType();
 			}
-			ColonAfspraakStatus status = laatsteAfspraak.getStatus();
+			var status = laatsteAfspraak.getStatus();
 			if (ColonAfspraakStatus.GEPLAND.equals(status)
 				|| ColonAfspraakStatus.UITGEVOERD.equals(status) && ColonConclusieType.NO_SHOW.equals(conclusieType))
 			{
@@ -145,14 +135,14 @@ public class ColonAfmeldServiceImpl implements ColonAfmeldService
 
 	private void nietVerzondenUitnodigingenVerwijderen(ColonScreeningRonde ronde)
 	{
-		ColonUitnodiging laatsteUitnodiging = ronde.getLaatsteUitnodiging();
+		var laatsteUitnodiging = ronde.getLaatsteUitnodiging();
 		if (laatsteUitnodiging != null && !laatsteUitnodiging.isVerstuurd())
 		{
-			List<ColonUitnodiging> uitnodigingen = ronde.getUitnodigingen();
+			var uitnodigingen = ronde.getUitnodigingen();
 			uitnodigingen.remove(laatsteUitnodiging);
 
 			ColonUitnodiging nieuweLaatsteUitnodiging = null;
-			for (ColonUitnodiging uitnodiging : uitnodigingen)
+			for (var uitnodiging : uitnodigingen)
 			{
 				if (nieuweLaatsteUitnodiging == null || nieuweLaatsteUitnodiging.getUitnodigingsId() < uitnodiging.getUitnodigingsId())
 				{
@@ -183,7 +173,7 @@ public class ColonAfmeldServiceImpl implements ColonAfmeldService
 			var ronde = dossier.getLaatsteScreeningRonde();
 			if (ronde != null && ronde.getOpenUitnodiging() != null && ronde.getOpenUitnodiging().getUitslag() == null)
 			{
-				OpenUitnodiging uitnodiging = ronde.getOpenUitnodiging();
+				var uitnodiging = ronde.getOpenUitnodiging();
 				uitnodiging.setUitslag(OpenUitnodigingUitslag.AFMELDING);
 				uitnodiging.setAfmelding(afmelding);
 				hibernateService.saveOrUpdate(uitnodiging);
@@ -207,17 +197,17 @@ public class ColonAfmeldServiceImpl implements ColonAfmeldService
 			hibernateService.saveOrUpdate(herAanTeMeldenAfmelding);
 		}
 
-		ColonIntakeAfspraak afspraak = herAanTeMeldenAfmelding.getHeraanmeldingAfspraak();
+		var afspraak = herAanTeMeldenAfmelding.getHeraanmeldingAfspraak();
 		if (Boolean.TRUE.equals(herAanTeMeldenAfmelding.getClientWilNieuweUitnodiging()) && afspraak == null)
 		{
-			screeningsrondeService.createNieuweUitnodiging(ronde, ColonUitnodigingCategorie.U4_2);
+			screeningsrondeService.createNieuweUitnodiging(ronde, ColonUitnodigingscategorie.U4_2);
 		}
 
 		if (afspraak != null)
 		{
-			Client client = ronde.getDossier().getClient();
+			var client = ronde.getDossier().getClient();
 			afspraak.setClient(client);
-			afspraak.setColonScreeningRonde(ronde);
+			afspraak.setScreeningRonde(ronde);
 			afspraak.setGewijzigdOp(nu.plus(100, ChronoUnit.MILLIS));
 
 			ColonAfspraakslot afspraakslot = null;
@@ -239,12 +229,12 @@ public class ColonAfmeldServiceImpl implements ColonAfmeldService
 			hibernateService.saveOrUpdate(client);
 			dossierBaseService.setDatumVolgendeUitnodiging(ronde.getDossier(), ColonUitnodigingsintervalType.GEPLANDE_INTAKE_AFSPRAAK);
 
-			BriefType afspraakBriefType = herAanTeMeldenAfmelding.getHeraanmeldingAfspraakBriefType();
+			var afspraakBriefType = herAanTeMeldenAfmelding.getHeraanmeldingAfspraakBriefType();
 			if (afspraakBriefType == null)
 			{
 				afspraakBriefType = BriefType.COLON_UITNODIGING_INTAKE;
 			}
-			ColonBrief brief = briefService.maakBvoBrief(ronde, afspraakBriefType, DateUtil.toUtilDate(nu.plus(150, ChronoUnit.MILLIS)));
+			var brief = briefService.maakBvoBrief(ronde, afspraakBriefType, DateUtil.toUtilDate(nu.plus(150, ChronoUnit.MILLIS)));
 
 			if (Boolean.TRUE.equals(herAanTeMeldenAfmelding.getHeraanmeldingAfspraakBriefTegenhouden()))
 			{
@@ -260,17 +250,17 @@ public class ColonAfmeldServiceImpl implements ColonAfmeldService
 			openUitnodigingService.afmeldingHeraanmeldingReactieOpOpenUitnodiging(herAanTeMeldenAfmelding, ronde, account);
 			if (Boolean.FALSE.equals(herAanTeMeldenAfmelding.getClientWilNieuweUitnodiging()))
 			{
-				ColonUitnodiging uitnodiging = ronde.getLaatsteUitnodiging();
+				var uitnodiging = ronde.getLaatsteUitnodiging();
 				if (uitnodiging != null)
 				{
-					IFOBTTest gekoppeldeTest = uitnodiging.getGekoppeldeTest();
-					IFOBTTestStatus ifobtTestStatus = FITTestUtil.getActieveFITTestStatusNaHeraanmelding(uitnodiging);
-					if (ifobtTestStatus != null && gekoppeldeTest != null
-						&& gekoppeldeTest.getStatus().magWijzigenNaarStatus(ifobtTestStatus, gekoppeldeTest))
+					var gekoppeldeFitRegistratie = uitnodiging.getGekoppeldeFitRegistratie();
+					var fitStatus = ColonFitRegistratieUtil.getActieveFitRegistratieStatusNaHeraanmelding(uitnodiging);
+					if (fitStatus != null && gekoppeldeFitRegistratie != null
+						&& gekoppeldeFitRegistratie.getStatus().magWijzigenNaarStatus(fitStatus, gekoppeldeFitRegistratie))
 					{
-						gekoppeldeTest.setStatus(ifobtTestStatus);
-						gekoppeldeTest.setStatusDatum(DateUtil.toUtilDate(nu.plus(100, ChronoUnit.MILLIS)));
-						hibernateService.saveOrUpdate(gekoppeldeTest);
+						gekoppeldeFitRegistratie.setStatus(fitStatus);
+						gekoppeldeFitRegistratie.setStatusDatum(DateUtil.toUtilDate(nu.plus(100, ChronoUnit.MILLIS)));
+						hibernateService.saveOrUpdate(gekoppeldeFitRegistratie);
 					}
 				}
 			}
@@ -278,7 +268,6 @@ public class ColonAfmeldServiceImpl implements ColonAfmeldService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ColonScreeningRonde getGeldigeRondeVoorHeraanmelding(ColonAfmelding herAanTeMeldenAfmelding)
 	{
 		ColonScreeningRonde ronde = null;

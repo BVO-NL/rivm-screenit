@@ -23,9 +23,9 @@ package nl.rivm.screenit.main.service.colon;
 
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
-import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
 import nl.rivm.screenit.model.dashboard.DashboardStatus;
 import nl.rivm.screenit.model.logging.LogRegel;
@@ -33,7 +33,7 @@ import nl.rivm.screenit.model.logging.LogRegel;
 public interface ColonDossierService
 {
 
-	void monsterNietBeoordeelbaar(IFOBTTest ifobtTest);
+	void monsterNietBeoordeelbaar(ColonFitRegistratie fitRegistratie);
 
 	void conclusieOpslaan(ColonIntakeAfspraak afspraak, ColonVervolgonderzoekKeuzesDto keuzes, OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
 		ColonConclusieType voorgaandeConclusie);
@@ -44,9 +44,9 @@ public interface ColonDossierService
 
 	void conclusieVerwijderen(ColonIntakeAfspraak afspraak, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, ColonConclusieType origConclusie);
 
-	void verwijderIfobtUitslag(IFOBTTest buis, UploadDocument uploadDocument, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+	void verwijderFitAnalyseResultaat(ColonFitRegistratie fitRegistratie, UploadDocument uploadDocument, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	void vervangUitslagVerwijderenDocument(IFOBTTest buis, UploadDocument uploadDocument);
+	void vervangUitslagVerwijderenDocument(ColonFitRegistratie fitRegistratie, UploadDocument uploadDocument);
 
 	boolean setUitslagenGecontroleerdEnUpdateDashboard(LogRegel logRegel, OrganisatieMedewerker medewerker, DashboardStatus dashboardStatus);
 }

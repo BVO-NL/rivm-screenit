@@ -34,7 +34,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.colon.verslagen.ColonPaVers
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup.followuppathologie.MammaFollowUpPathologieVerslagInzienPanel;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.berichten.Verslag;
-import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.cervix.CervixCytologieVerslag;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.PaVerslag;
@@ -88,7 +87,6 @@ public class ClientVerslagPage extends ClientPage
 		this.verslagModel = verslagModel;
 
 		var verslag = verslagModel.getObject();
-		var isOpenstaand = verslag.getStatus().equals(VerslagStatus.IN_BEWERKING);
 		var isNieuw = verslag.getId() == null;
 		var client = verslag.getScreeningRonde().getDossier().getClient();
 		var magVerslagDownloaden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VERSLAGEN, Actie.AANPASSEN, client);
@@ -118,7 +116,7 @@ public class ClientVerslagPage extends ClientPage
 		add(verwijderDialog);
 		addInzienPanel(verslag);
 		add(new ClientPaspoortPanel("passpoort", (IModel<Client>) getDefaultModel()));
-		addVerslagVerwijderenButton(isOpenstaand, isNieuw, magVerslagVerwijderen);
+		addVerslagVerwijderenButton(isNieuw, magVerslagVerwijderen);
 		addDownloadButton(verslag, magVerslagDownloaden);
 		addAnnulerenButton();
 		addTerugButton();
@@ -208,7 +206,7 @@ public class ClientVerslagPage extends ClientPage
 		});
 	}
 
-	private void addVerslagVerwijderenButton(boolean isOpenstaand, boolean isNieuw, boolean magVerslagVerwijderen)
+	private void addVerslagVerwijderenButton(boolean isNieuw, boolean magVerslagVerwijderen)
 	{
 		IndicatingAjaxLink<Void> verwijderen = new ConfirmingIndicatingAjaxLink<>("verwijderen", verwijderDialog, "verwijder.verslag")
 		{
@@ -232,7 +230,7 @@ public class ClientVerslagPage extends ClientPage
 
 		};
 		add(verwijderen);
-		verwijderen.setVisible((isOpenstaand || verslagModel.getObject().getOntvangenBericht() != null) && magVerslagVerwijderen && !isNieuw);
+		verwijderen.setVisible(magVerslagVerwijderen && !isNieuw);
 	}
 
 	private void addInzienPanel(Verslag<?, ?> verslag)

@@ -65,7 +65,7 @@ import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
+import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
@@ -89,14 +89,14 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.RondeNummerService;
 import nl.rivm.screenit.service.UploadDocumentService;
-import nl.rivm.screenit.service.colon.ColonBaseFITService;
+import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.rivm.screenit.service.mamma.MammaBaseLaesieService;
 import nl.rivm.screenit.util.AdresUtil;
-import nl.rivm.screenit.util.FITTestUtil;
 import nl.rivm.screenit.util.NaamUtil;
 import nl.rivm.screenit.util.StringUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
+import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
@@ -156,7 +156,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private final MammaBaseBeoordelingService baseBeoordelingService;
 
-	private final ColonBaseFITService colonBaseFITService;
+	private final ColonBaseFitService colonBaseFitService;
 
 	@Override
 	public boolean heeftVerzoekZonderGegenereerdeBrief(Client client)
@@ -400,7 +400,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 		{
 			addRow(sheet, "Ronde", rondeNummerService.geefRondeNummer(ronde), ronde.getCreatieDatum(), cellStyleDateTime);
 			addDkHuisarts(cellStyleDateTime, sheet, ronde);
-			addFITUitslagen(cellStyleDateTime, sheet, ronde);
+			addFitRegistraties(cellStyleDateTime, sheet, ronde);
 			addIntakeConclusies(cellStyleDate, cellStyleDateTime, sheet, ronde);
 			addDkVerslagen(cellStyleDateTime, sheet, ronde);
 			if (ronde.getDefinitiefVervolgbeleid() != null)
@@ -415,19 +415,19 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addDkHuisarts(CellStyle cellStyleDateTime, Sheet sheet, ColonScreeningRonde ronde)
 	{
-		EnovationHuisarts huisarts = ronde.getColonHuisarts();
+		EnovationHuisarts huisarts = ronde.getHuisarts();
 		if (huisarts != null)
 		{
 			addRow(sheet, "Huisarts", getVolledigeHuisArtsTekst(huisarts), ronde.getDatumVastleggenHuisarts(), cellStyleDateTime);
 		}
 	}
 
-	private void addFITUitslagen(CellStyle cellStyleDateTime, Sheet sheet, ColonScreeningRonde ronde)
+	private void addFitRegistraties(CellStyle cellStyleDateTime, Sheet sheet, ColonScreeningRonde ronde)
 	{
-		ronde.getIfobtTesten().stream().filter(test -> test.getStatus() == IFOBTTestStatus.UITGEVOERD && test.getUitslag() != null).forEach(test ->
+		ronde.getFitRegistraties().stream().filter(test -> test.getStatus() == ColonFitRegistratieStatus.UITGEVOERD && test.getUitslag() != null).forEach(test ->
 		{
-			var interpretatie = FITTestUtil.getInterpretatie(test, test.getStatus(), false).toLowerCase();
-			addRow(sheet, "Uitslag FIT (" + interpretatie + ")", colonBaseFITService.getToonbareWaarde(test),
+			var interpretatie = ColonFitRegistratieUtil.getInterpretatie(test, test.getStatus(), false).toLowerCase();
+			addRow(sheet, "Uitslag FIT (" + interpretatie + ")", colonBaseFitService.getToonbareWaarde(test),
 				test.getStatusDatum(),
 				cellStyleDateTime);
 		});

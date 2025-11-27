@@ -47,11 +47,11 @@ import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.enums.CervixMonsterType;
 import nl.rivm.screenit.model.cervix.enums.CervixUitstrijkjeStatus;
 import nl.rivm.screenit.model.colon.ColonDossier;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
+import nl.rivm.screenit.model.colon.ColonFitType;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
-import nl.rivm.screenit.model.colon.IFOBTTest;
-import nl.rivm.screenit.model.colon.IFOBTType;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
@@ -218,13 +218,13 @@ public class DocumentTemplateTestUtil
 		ronde.setDossier(dossier);
 		dossier.setLaatsteScreeningRonde(ronde);
 
-		var test = new IFOBTTest();
-		test.setType(IFOBTType.GOLD);
-		ronde.setLaatsteIFOBTTest(test);
+		var fitRegistratie = new ColonFitRegistratie();
+		fitRegistratie.setType(ColonFitType.GOLD);
+		ronde.setLaatsteFitRegistratie(fitRegistratie);
 
 		try
 		{
-			test.setAfnameDatum(DateUtils.parseDate("01-05-2017", "dd-MM-yyyy"));
+			fitRegistratie.setAfnameDatum(DateUtils.parseDate("01-05-2017", "dd-MM-yyyy"));
 		}
 		catch (ParseException e)
 		{

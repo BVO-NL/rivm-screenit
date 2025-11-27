@@ -115,7 +115,7 @@ public class InpakcentrumKoppelServiceImpl implements InpakcentrumKoppelService
 
 		if (Bevolkingsonderzoek.COLON.equals(bvo))
 		{
-			logService.logGebeurtenis(LogGebeurtenis.IFOBT_CONTROLE_KOPPELEN_GESTART, new LogEvent(), Bevolkingsonderzoek.COLON);
+			logService.logGebeurtenis(LogGebeurtenis.COLON_JOB_CONTROLE_FIT_KOPPELEN_GESTART, new LogEvent(), Bevolkingsonderzoek.COLON);
 		}
 		else if (Bevolkingsonderzoek.CERVIX.equals(bvo))
 		{

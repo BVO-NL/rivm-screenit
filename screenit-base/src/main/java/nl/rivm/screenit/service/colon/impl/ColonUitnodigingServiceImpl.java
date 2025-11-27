@@ -90,10 +90,10 @@ public class ColonUitnodigingServiceImpl implements ColonUitnodigingService
 	private ColonUitnodigingRepository uitnodigingRepository;
 
 	@Override
-	public BriefDefinitie getBriefType(ColonUitnodiging colonUitnodiging)
+	public BriefDefinitie getBriefType(ColonUitnodiging uitnodiging)
 	{
 		BriefType briefType = null;
-		switch (colonUitnodiging.getColonUitnodigingCategorie())
+		switch (uitnodiging.getUitnodigingscategorie())
 		{
 		case U1:
 		case U2:
@@ -106,7 +106,7 @@ public class ColonUitnodigingServiceImpl implements ColonUitnodigingService
 			briefType = BriefType.COLON_UITNODIGING_WANT_GEEN_MONSTER;
 			break;
 		default:
-			throw new IllegalStateException("Onbekende of lege uitnodigingscategorie: " + colonUitnodiging.getColonUitnodigingCategorie());
+			throw new IllegalStateException("Onbekende of lege uitnodigingscategorie: " + uitnodiging.getUitnodigingscategorie());
 		}
 
 		return briefService.getNieuwsteBriefDefinitie(briefType);
@@ -115,8 +115,8 @@ public class ColonUitnodigingServiceImpl implements ColonUitnodigingService
 	@Override
 	public LocalDate getGeprognotiseerdeIntakeDatum(boolean vooraankondigen)
 	{
-		var ifobtRetourPeriode = simplePreferenceService.getInteger(PreferenceKey.IFOBTRETOURPERIODE.name());
-		var ifobtAnalysePeriode = simplePreferenceService.getInteger(PreferenceKey.IFOBTANALYSEPERIODE.name());
+		var ifobtRetourPeriode = simplePreferenceService.getInteger(PreferenceKey.COLON_FIT_RETOUR_PERIODE.name());
+		var ifobtAnalysePeriode = simplePreferenceService.getInteger(PreferenceKey.COLON_FIT_ANALYSE_PERIODE.name());
 		var intakeAfspraakPeriode = simplePreferenceService.getInteger(PreferenceKey.INTAKEAFSPRAAKPERIODE.name());
 		var vooraankondigingsPeriode = simplePreferenceService.getInteger(PreferenceKey.VOORAANKONDIGINSPERIODE.name());
 
@@ -150,7 +150,7 @@ public class ColonUitnodigingServiceImpl implements ColonUitnodigingService
 		else
 		{
 			LOG.info("Maak een nieuwe uitnodiging nav uitnodiging met uitnodigingsId: " + uitnodiging.getUitnodigingsId());
-			nieuweUitnodiging = screeningsrondeService.createNieuweUitnodiging(screeningRonde, uitnodiging.getColonUitnodigingCategorie());
+			nieuweUitnodiging = screeningsrondeService.createNieuweUitnodiging(screeningRonde, uitnodiging.getUitnodigingscategorie());
 		}
 		return nieuweUitnodiging;
 	}
@@ -178,9 +178,9 @@ public class ColonUitnodigingServiceImpl implements ColonUitnodigingService
 
 		if (ProjectUtil.hasParameterSet(projectClient, ProjectParameterKey.COLON_WACHTTIJD_UITSLAG_STUDIETEST))
 		{
-			var gekoppeldeTest = uitnodiging.getGekoppeldeTest();
+			var gekoppeldeFitRegistratie = uitnodiging.getGekoppeldeFitRegistratie();
 			var wachttijd = Integer.parseInt(ProjectUtil.getParameter(projectClient.getProject(), ProjectParameterKey.COLON_WACHTTIJD_UITSLAG_STUDIETEST));
-			var analysedatum = DateUtil.toLocalDate(gekoppeldeTest.getAnalyseDatum());
+			var analysedatum = DateUtil.toLocalDate(gekoppeldeFitRegistratie.getAnalyseDatum());
 			uitnodiging.setUitgesteldeUitslagDatum(DateUtil.toUtilDate(DateUtil.plusWerkdagen(analysedatum, wachttijd)));
 		}
 	}

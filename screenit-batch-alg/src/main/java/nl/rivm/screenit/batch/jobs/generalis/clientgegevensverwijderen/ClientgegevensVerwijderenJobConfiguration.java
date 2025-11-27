@@ -22,8 +22,8 @@ package nl.rivm.screenit.batch.jobs.generalis.clientgegevensverwijderen;
  */
 
 import nl.rivm.screenit.batch.jobs.AbstractJobConfiguration;
-import nl.rivm.screenit.batch.jobs.generalis.clientgegevensverwijderen.clientgegevensverwijderen.ClientgegevensVerwijderenReader;
-import nl.rivm.screenit.batch.jobs.generalis.clientgegevensverwijderen.clientgegevensverwijderen.ClientgegevensVerwijderenWriter;
+import nl.rivm.screenit.batch.jobs.generalis.clientgegevensverwijderen.clientverwijderen.ClientVerwijderenReader;
+import nl.rivm.screenit.batch.jobs.generalis.clientgegevensverwijderen.clientverwijderen.ClientVerwijderenWriter;
 import nl.rivm.screenit.batch.jobs.generalis.clientgegevensverwijderen.oudedossierslegen.OudeDossiersLegenReader;
 import nl.rivm.screenit.batch.jobs.generalis.clientgegevensverwijderen.oudedossierslegen.OudeDossiersLegenWriter;
 import nl.rivm.screenit.batch.jobs.generalis.clientgegevensverwijderen.persoonsgegevensverwijderen.PersoonsgegevensVerwijderenReader;
@@ -73,7 +73,7 @@ public class ClientgegevensVerwijderenJobConfiguration extends AbstractJobConfig
 	}
 
 	@Bean
-	public Step clientgegevensVerwijderenStep(ClientgegevensVerwijderenReader reader, ClientgegevensVerwijderenWriter writer)
+	public Step clientgegevensVerwijderenStep(ClientVerwijderenReader reader, ClientVerwijderenWriter writer)
 	{
 		return new StepBuilder("clientgegevensVerwijderenStep", repository)
 			.<Long, Long> chunk(1, transactionManager)

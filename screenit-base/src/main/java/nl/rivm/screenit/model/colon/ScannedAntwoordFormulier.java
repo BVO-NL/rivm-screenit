@@ -98,7 +98,7 @@ public class ScannedAntwoordFormulier extends ScannedFormulier
 	private boolean verwerkt;
 
 	@ManyToOne
-	private IFobtLaboratorium labId;
+	private ColonFitLaboratorium labId;
 
 	private String status;
 
@@ -229,12 +229,12 @@ public class ScannedAntwoordFormulier extends ScannedFormulier
 		this.verwerkt = verwerkt;
 	}
 
-	public IFobtLaboratorium getLabId()
+	public ColonFitLaboratorium getLabId()
 	{
 		return labId;
 	}
 
-	public void setLabId(IFobtLaboratorium labId)
+	public void setLabId(ColonFitLaboratorium labId)
 	{
 		this.labId = labId;
 	}

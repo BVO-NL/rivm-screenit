@@ -27,7 +27,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseLogListener;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -35,9 +35,9 @@ import nl.rivm.screenit.model.enums.SelectieType;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.logging.UitnodigingVersturenLogEvent;
 import nl.rivm.screenit.model.project.ProjectGroep;
-import nl.rivm.screenit.model.verwerkingverslag.SelectieRapportage;
-import nl.rivm.screenit.model.verwerkingverslag.SelectieRapportageEntry;
-import nl.rivm.screenit.model.verwerkingverslag.SelectieRapportageProjectGroepEntry;
+import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportage;
+import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageEntry;
+import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageProjectGroepEntry;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
@@ -57,7 +57,7 @@ public class UitnodigingenVersturenListener extends BaseLogListener
 	protected void beforeStarting(JobExecution jobExecution)
 	{
 		var context = jobExecution.getExecutionContext();
-		for (var categorie : ColonUitnodigingCategorie.getCategorieen())
+		for (var categorie : ColonUitnodigingscategorie.getCategorieen())
 		{
 			context.putLong(categorie.name(), 0);
 		}
@@ -102,27 +102,27 @@ public class UitnodigingenVersturenListener extends BaseLogListener
 
 		long totaalVerstuurd = 0;
 
-		var rapportage = new SelectieRapportage();
-		for (var categorie : ColonUitnodigingCategorie.getCategorieen())
+		var rapportage = new ColonSelectieRapportage();
+		for (var categorie : ColonUitnodigingscategorie.getCategorieen())
 		{
 			Long aantal = context.getLong(categorie.name());
 
-			SelectieRapportageEntry entry = new SelectieRapportageEntry();
+			ColonSelectieRapportageEntry entry = new ColonSelectieRapportageEntry();
 			entry.setSelectieType(SelectieType.UITNODIGING_VERSTUURD);
 			entry.setAantal(aantal);
 			entry.setRapportage(rapportage);
-			entry.setColonUitnodigingCategorie(categorie);
+			entry.setUitnodigingscategorie(categorie);
 			hibernateService.saveOrUpdate(entry);
 			totaalVerstuurd += aantal;
 		}
 		rapportage.setDatumVerwerking(currentDateSupplier.getDate());
 
 		var projectCounterHolders = (List<UitnodigingenVersturenProjectGroepCounterHolder>) context.get(UitnodigingenVersturenConstants.PROJECTENCOUNTERS);
-		var rapportageProjectGroepen = new ArrayList<SelectieRapportageProjectGroepEntry>();
+		var rapportageProjectGroepen = new ArrayList<ColonSelectieRapportageProjectGroepEntry>();
 		for (var projectCounterHolder : projectCounterHolders)
 		{
 			var projectGroep = hibernateService.get(ProjectGroep.class, projectCounterHolder.getProjectGroepId());
-			var projectGroepEntry = new SelectieRapportageProjectGroepEntry();
+			var projectGroepEntry = new ColonSelectieRapportageProjectGroepEntry();
 			projectGroepEntry.setProjectGroep(projectGroep);
 			projectGroepEntry.setAantal(projectCounterHolder.getAantalVerstuurd());
 			projectGroepEntry.setRapportage(rapportage);

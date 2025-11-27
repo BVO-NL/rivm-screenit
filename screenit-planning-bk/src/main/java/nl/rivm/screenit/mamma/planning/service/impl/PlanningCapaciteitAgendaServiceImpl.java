@@ -43,7 +43,6 @@ import nl.rivm.screenit.mamma.planning.model.PlanningConstanten;
 import nl.rivm.screenit.mamma.planning.model.PlanningDag;
 import nl.rivm.screenit.mamma.planning.model.PlanningMinderValideReservering;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsPeriode;
 import nl.rivm.screenit.mamma.planning.model.PlanningWeek;
 import nl.rivm.screenit.mamma.planning.service.PlanningCapaciteitAgendaService;
 import nl.rivm.screenit.mamma.planning.service.PlanningCapaciteitBlokService;
@@ -238,10 +237,10 @@ public class PlanningCapaciteitAgendaServiceImpl implements PlanningCapaciteitAg
 			PlanningBlokIndex.deleted(naarScreeningsEenheid, deletedBlokList);
 			PlanningBlokIndex.changed(naarScreeningsEenheid, changedBlokList);
 
-			PlanningStandplaatsPeriode standplaatsPeriode = naarScreeningsEenheid.getDagNavigableMap().get(herhalenVanaf).getStandplaatsPeriode();
-			if (standplaatsPeriode != null)
+			var herhalenVanafDag = naarScreeningsEenheid.getDagNavigableMap().get(herhalenVanaf);
+			if (herhalenVanafDag != null && herhalenVanafDag.getStandplaatsPeriode() != null)
 			{
-				wijzigingenRoute.setVanafStandplaatsPeriode(standplaatsPeriode);
+				wijzigingenRoute.setVanafStandplaatsPeriode(herhalenVanafDag.getStandplaatsPeriode());
 			}
 		}
 	}

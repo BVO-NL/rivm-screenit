@@ -33,7 +33,7 @@ import nl.rivm.screenit.util.TimeRange;
 
 @Getter
 @Setter
-public class MammaScreeningsEenheidDto
+public class MammaScreeningsEenheidDto 
 {
 	private TimeRange minderValidePeriode1;
 

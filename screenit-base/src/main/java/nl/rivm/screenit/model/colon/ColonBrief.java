@@ -38,32 +38,32 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Entity
-@Table(schema = "colon", indexes = { @Index(name = "idx_colon_brief_gegenereerd", columnList = "gegenereerd"),
+@Table(schema = "colon", name = "brief", indexes = { @Index(name = "idx_colon_brief_gegenereerd", columnList = "gegenereerd"),
 	@Index(name = "idx_colon_brief_vervangendeprojectbrief", columnList = "vervangendeprojectbrief") })
 @Audited
 @Getter
 @Setter
 public class ColonBrief extends ClientBrief<ColonScreeningRonde, ColonAfmelding, ColonBrief>
 {
-	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	private ColonIntakeAfspraak intakeAfspraak;
 
-	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	private ColonIntakeAfspraak vorigeIntakeAfspraak;
 
-	@ManyToOne(optional = true, fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
+	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.SAVE_UPDATE })
-	private IFOBTTest ifobtTest;
+	private ColonFitRegistratie fitRegistratie;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.SAVE_UPDATE })
 	private ColonMergedBrieven mergedBrieven;
 
-	@ManyToOne(optional = true, fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
+	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.SAVE_UPDATE })
 	private ColonScreeningRonde screeningRonde;
 
-	@ManyToOne(optional = true, fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
+	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.SAVE_UPDATE })
 	private ColonAfmelding afmelding;
 

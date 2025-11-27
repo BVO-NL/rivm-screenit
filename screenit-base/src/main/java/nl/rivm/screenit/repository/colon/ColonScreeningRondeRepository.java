@@ -32,6 +32,6 @@ public interface ColonScreeningRondeRepository extends BaseJpaRepository<ColonSc
 	ColonScreeningRonde findFirstByOrderByCreatieDatumDesc();
 
 	@Modifying
-	@Query("update ColonScreeningRonde set colonHuisarts = null where colonHuisarts in (select h from EnovationHuisarts h where h.verwijderd = true)")
+	@Query("update ColonScreeningRonde set huisarts = null where huisarts in (select h from EnovationHuisarts h where h.verwijderd = true)")
 	void maakVerwijderdeHuisartsenLosVanScreeningRondes();
 }

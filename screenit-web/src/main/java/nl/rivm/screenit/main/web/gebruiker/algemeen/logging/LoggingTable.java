@@ -33,8 +33,8 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen
 import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen.cervix.herinneren.HerinnerenVerwerkenVerslagPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen.cervix.huisartsberichten.HuisartsberichtenVerslagPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen.cervix.zas.ZasVersturenVerslagPage;
+import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen.colon.fitanalyseresultaatverwerking.ColonFitAnalyseResultaatSetVerwerkingVerslagPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen.gba.GbaVerslagPage;
-import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen.ifobtverwerking.IfobtVerwerkingVerslagPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen.intake.IntakeVerslagPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen.mamma.ilm.MammaIlmBeeldenStatusRapportagePage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslagen.mamma.uitnodigingen.MammaUitnodigenRapportagePage;
@@ -58,7 +58,6 @@ import nl.rivm.screenit.model.logging.CervixHerinnerenBeeindigdLogEvent;
 import nl.rivm.screenit.model.logging.CervixHuisartsberichtenBeeindigdLogEvent;
 import nl.rivm.screenit.model.logging.CervixUitnodigingVersturenLogEvent;
 import nl.rivm.screenit.model.logging.GbaVerwerkingBeeindigdLogEvent;
-import nl.rivm.screenit.model.logging.IfobtVerwerkingBeeindigdLogEvent;
 import nl.rivm.screenit.model.logging.IntakeMakenLogEvent;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.logging.LogRegel;
@@ -66,8 +65,9 @@ import nl.rivm.screenit.model.logging.MammaHl7v24BerichtLogEvent;
 import nl.rivm.screenit.model.logging.MammaIlmLogEvent;
 import nl.rivm.screenit.model.logging.MammaUitnodigenLogEvent;
 import nl.rivm.screenit.model.logging.RetourzendingLogEvent;
-import nl.rivm.screenit.model.logging.SelectieRondeBeeindigdLogEvent;
 import nl.rivm.screenit.model.logging.UitnodigingVersturenLogEvent;
+import nl.rivm.screenit.model.logging.colon.ColonFitAnalyseResultaatSetVerwerkingBeeindigdLogEvent;
+import nl.rivm.screenit.model.logging.colon.ColonSelectieRondeBeeindigdLogEvent;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.LogService;
 import nl.topicuszorg.wicket.hibernate.SimpleHibernateModel;
@@ -116,7 +116,7 @@ public class LoggingTable extends ScreenitDataTable<LogRegel, String>
 			setResponsePage(new IntakeVerslagPage(ModelUtil.sModel((IntakeMakenLogEvent) logEvent), logRegel.getGebeurtenisDatum()));
 			break;
 		case SELECTIERONDE_BEEINDIGD:
-			setResponsePage(new SelectieVerslagPage(ModelUtil.sModel(((SelectieRondeBeeindigdLogEvent) logEvent).getRapportage())));
+			setResponsePage(new SelectieVerslagPage(ModelUtil.sModel(((ColonSelectieRondeBeeindigdLogEvent) logEvent).getRapportage())));
 			break;
 		case UITNODIGING_VERSTUREN_JOB_AFGEROND:
 			setResponsePage(new UitnodigingVersturenVerslagPage(ModelUtil.sModel(((UitnodigingVersturenLogEvent) logEvent).getRapportage())));
@@ -124,9 +124,10 @@ public class LoggingTable extends ScreenitDataTable<LogRegel, String>
 		case RETOURZENDINGEN_VERWERKT:
 			setResponsePage(new RetourzendingenVerwerkingsVerslagPage(ModelUtil.csModel((RetourzendingLogEvent) logEvent)));
 			break;
-		case IFOBT_VERWERKING_AFGEROND:
-		case IFOBT_INLEZEN_AFGEROND:
-			setResponsePage(new IfobtVerwerkingVerslagPage(ModelUtil.sModel((IfobtVerwerkingBeeindigdLogEvent) logEvent), logRegel.getLogGebeurtenis()));
+		case COLON_JOB_FIT_ANALYSE_RESULTATEN_VERWERKING_AFGEROND:
+		case COLON_JOB_FIT_ANALYSE_RESULTATEN_OPSLAAN_AFGEROND:
+			setResponsePage(new ColonFitAnalyseResultaatSetVerwerkingVerslagPage(ModelUtil.sModel((ColonFitAnalyseResultaatSetVerwerkingBeeindigdLogEvent) logEvent),
+				logRegel.getLogGebeurtenis()));
 			break;
 		case BRIEVEN_GENERENEN_AFGEROND:
 		case CERVIX_BRIEVEN_GENERENEN_AFGEROND:
@@ -184,7 +185,8 @@ public class LoggingTable extends ScreenitDataTable<LogRegel, String>
 			}
 			else
 			{
-				((MedewerkerBasePage) getPage()).getDialog().openWith(target, new ShowVolledigeLoggingMeldingPopupPanel(BootstrapDialog.CONTENT_ID, logEvent.getVolledigeMelding()));
+				((MedewerkerBasePage) getPage()).getDialog()
+					.openWith(target, new ShowVolledigeLoggingMeldingPopupPanel(BootstrapDialog.CONTENT_ID, logEvent.getVolledigeMelding()));
 			}
 			break;
 		}
@@ -212,9 +214,9 @@ public class LoggingTable extends ScreenitDataTable<LogRegel, String>
 				return ScreenitSession.get().getAuthorizationStrategy().isInstantiationAuthorized(CervixVerwerkHL7v2FoutBerichtenPage.class);
 			case RETOURZENDINGEN_VERWERKT:
 				return ScreenitSession.get().getAuthorizationStrategy().isInstantiationAuthorized(RetourzendingenVerwerkingsVerslagPage.class);
-			case IFOBT_VERWERKING_AFGEROND:
-			case IFOBT_INLEZEN_AFGEROND:
-				return ScreenitSession.get().getAuthorizationStrategy().isInstantiationAuthorized(IfobtVerwerkingVerslagPage.class);
+			case COLON_JOB_FIT_ANALYSE_RESULTATEN_VERWERKING_AFGEROND:
+			case COLON_JOB_FIT_ANALYSE_RESULTATEN_OPSLAAN_AFGEROND:
+				return ScreenitSession.get().getAuthorizationStrategy().isInstantiationAuthorized(ColonFitAnalyseResultaatSetVerwerkingVerslagPage.class);
 			case BRIEVEN_GENERENEN_AFGEROND:
 			case CERVIX_BRIEVEN_GENERENEN_AFGEROND:
 			case MAMMA_BRIEVEN_GENEREREN_AFGEROND:

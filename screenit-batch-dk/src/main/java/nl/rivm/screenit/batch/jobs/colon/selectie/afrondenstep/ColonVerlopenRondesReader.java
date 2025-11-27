@@ -29,9 +29,9 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.colon.ColonDossier_;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie_;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
-import nl.rivm.screenit.model.colon.IFOBTTest_;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.algemeen.PersoonSpecification;
 import nl.rivm.screenit.specification.algemeen.ScreeningRondeSpecification;
@@ -73,7 +73,7 @@ public class ColonVerlopenRondesReader extends BaseSpecificationScrollableResult
 			var persoonJoin = join(clientJoin, Client_.persoon);
 			var uitnodigingJoin = join(r, ColonScreeningRonde_.laatsteUitnodiging, JoinType.LEFT);
 			var afspraakJoin = join(r, ColonScreeningRonde_.laatsteAfspraak, JoinType.LEFT);
-			var testenJoin = join(r, ColonScreeningRonde_.ifobtTesten, JoinType.LEFT);
+			var testenJoin = join(r, ColonScreeningRonde_.fitRegistraties, JoinType.LEFT);
 
 			return ScreeningRondeSpecification.<ColonScreeningRonde> isLopend()
 				.and(PersoonSpecification.isGeborenVoor(maxLeeftijdDatum).with(root -> persoonJoin))
@@ -83,7 +83,8 @@ public class ColonVerlopenRondesReader extends BaseSpecificationScrollableResult
 					.or(ColonUitnodigingSpecification.heeftVerlopenFit(maxLengteRondeDatum).with(root -> uitnodigingJoin))
 					.or(ColonScreeningRondeSpecification.heeftGeenLaatsteAfspraak())
 					.or(ColonIntakeAfspraakSpecification.conclusieNietBinnenWachtperiodeVerwerkt(wachttijdNaAfspraakDatum).with(root -> afspraakJoin))
-					.or(ColonScreeningRondeSpecification.isEersteOngunstigeUitslagUitLaatsteRonde(testenJoin.get(IFOBTTest_.statusDatum), r.get(AbstractHibernateObject_.id),
+					.or(ColonScreeningRondeSpecification.isEersteOngunstigeUitslagUitLaatsteRonde(testenJoin.get(ColonFitRegistratie_.statusDatum),
+						r.get(AbstractHibernateObject_.id),
 						maxLengteRondeDatum))
 				)
 				.toPredicate(r, q, cb);

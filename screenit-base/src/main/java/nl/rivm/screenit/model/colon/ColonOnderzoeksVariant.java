@@ -25,21 +25,21 @@ import java.util.Arrays;
 
 public enum ColonOnderzoeksVariant
 {
-	STANDAARD(IFOBTType.GOLD),
+	STANDAARD(ColonFitType.GOLD),
 
 	@Deprecated
-	TB_PAIRED(IFOBTType.GOLD, IFOBTType.EIKEN),
+	TB_PAIRED(ColonFitType.GOLD, ColonFitType.EIKEN),
 
-	VERGELIJKEND(IFOBTType.GOLD, IFOBTType.STUDIE);
+	VERGELIJKEND(ColonFitType.GOLD, ColonFitType.STUDIE);
 
-	final private IFOBTType[] typen;
+	final private ColonFitType[] typen;
 
-	ColonOnderzoeksVariant(IFOBTType... typen)
+	ColonOnderzoeksVariant(ColonFitType... typen)
 	{
 		this.typen = typen;
 	}
 
-	public static boolean isOfType(ColonOnderzoeksVariant variant, IFOBTType type)
+	public static boolean isOfType(ColonOnderzoeksVariant variant, ColonFitType type)
 	{
 		return variant != null && Arrays.asList(variant.typen).contains(type);
 	}

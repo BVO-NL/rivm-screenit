@@ -65,4 +65,42 @@ public class PlanningCapaciteitBlokDto extends PlanningConceptEntiteitDto
 	{
 		return Range.closedOpen(toLocalTime(vanaf), toLocalTime(tot));
 	}
+
+	public PlanningCapaciteitBlokDto maakKopie()
+	{
+		var kopie = new PlanningCapaciteitBlokDto();
+		kopie.id = this.id;
+		kopie.vanaf = this.vanaf != null ? new Date(this.vanaf.getTime()) : null;
+		kopie.tot = this.tot != null ? new Date(this.tot.getTime()) : null;
+		kopie.aantalOnderzoeken = this.aantalOnderzoeken;
+		kopie.opmerkingen = this.opmerkingen;
+		kopie.blokType = this.blokType;
+		kopie.screeningsEenheidId = this.screeningsEenheidId;
+		kopie.minderValideAfspraakMogelijk = this.minderValideAfspraakMogelijk;
+		kopie.getMinderValideReserveringen().addAll(
+			this.getMinderValideReserveringen().stream()
+				.map(reservering -> new PlanningMindervalideReserveringDto(reservering.getId(), reservering.conceptId,
+					reservering.getVanaf()))
+				.toList());
+		kopie.conceptId = this.conceptId;
+		return kopie;
+	}
+
+	public PlanningCapaciteitBlokDto verwerkWijzigingenUit(PlanningCapaciteitBlokDto gewijzigdBlok)
+	{
+		vanaf = gewijzigdBlok.vanaf;
+		tot = gewijzigdBlok.tot;
+		aantalOnderzoeken = gewijzigdBlok.aantalOnderzoeken;
+		opmerkingen = gewijzigdBlok.opmerkingen;
+		blokType = gewijzigdBlok.blokType;
+		screeningsEenheidId = gewijzigdBlok.screeningsEenheidId;
+		minderValideAfspraakMogelijk = gewijzigdBlok.minderValideAfspraakMogelijk;
+		getMinderValideReserveringen().clear();
+		getMinderValideReserveringen().addAll(
+			gewijzigdBlok.getMinderValideReserveringen().stream()
+				.map(reservering -> new PlanningMindervalideReserveringDto(reservering.getId(), reservering.conceptId,
+					reservering.getVanaf()))
+				.toList());
+		return this;
+	}
 }

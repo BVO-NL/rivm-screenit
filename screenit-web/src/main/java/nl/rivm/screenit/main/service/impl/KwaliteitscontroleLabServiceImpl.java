@@ -28,7 +28,7 @@ import nl.rivm.screenit.model.colon.SKMLInterneControleBarcode;
 import nl.rivm.screenit.model.colon.SKMLInterneControleSet;
 import nl.rivm.screenit.model.colon.SKMLInterneControleSet_;
 import nl.rivm.screenit.model.colon.SKMLSentineelControleBarcode;
-import nl.rivm.screenit.repository.colon.ColonFITRepository;
+import nl.rivm.screenit.repository.colon.ColonFitRegistratieRepository;
 import nl.rivm.screenit.repository.colon.ColonSKMLControleBarcodeRepository;
 import nl.rivm.screenit.repository.colon.ColonSKMLExterneControleBarcodeRepository;
 import nl.rivm.screenit.repository.colon.ColonSKMLInterneControleBarcodeRepository;
@@ -59,7 +59,7 @@ public class KwaliteitscontroleLabServiceImpl implements KwaliteitscontroleLabSe
 	private ColonSKMLInterneControleSetRepository skmlInterneControleSetRepository;
 
 	@Autowired
-	private ColonFITRepository fitRepository;
+	private ColonFitRegistratieRepository fitRegistratieRepository;
 
 	@Override
 	public SKMLInterneControleSet laagOfHoogSample(Organisatie organisatie)
@@ -130,6 +130,6 @@ public class KwaliteitscontroleLabServiceImpl implements KwaliteitscontroleLabSe
 	@Override
 	public boolean checkOfBarcodeAlBestaat(String barcode)
 	{
-		return skmlControleBarcodeRepository.existsByBarcode(barcode) || fitRepository.existsByBarcode(barcode);
+		return skmlControleBarcodeRepository.existsByBarcode(barcode) || fitRegistratieRepository.existsByBarcode(barcode);
 	}
 }

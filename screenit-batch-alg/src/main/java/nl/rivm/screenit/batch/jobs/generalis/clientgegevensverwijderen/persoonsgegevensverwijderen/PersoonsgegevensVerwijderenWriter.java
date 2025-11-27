@@ -58,7 +58,7 @@ public class PersoonsgegevensVerwijderenWriter extends BaseWriter<Client>
 		}
 		else
 		{
-			LOG.info("Client '{}' heeft nog gevulde dossiers, persoonsgegevens niet verwijderd", client.getId());
+			LOG.info("Client '{}' heeft nog gevulde dossiers, persoonsgegevens zijn niet verwijderd", client.getId());
 			aantalContextOphogen(TOTAAL_AANTAL_PERSOONSGEGEVENS_CLIENTEN_NIET_VERWIJDERD_KEY);
 		}
 	}
@@ -73,7 +73,8 @@ public class PersoonsgegevensVerwijderenWriter extends BaseWriter<Client>
 		{
 			return false;
 		}
-		if (client.getMammaDossier() != null && (client.getMammaDossier().getLaatsteScreeningRonde() != null || client.getMammaDossier().getLaatsteAfmelding() != null))
+		if (client.getMammaDossier() != null && (client.getMammaDossier().getLaatsteScreeningRonde() != null || client.getMammaDossier().getLaatsteAfmelding() != null
+			|| !client.getMammaDossier().getIlmBezwaarPogingen().isEmpty()))
 		{
 			return false;
 		}

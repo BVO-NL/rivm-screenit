@@ -80,7 +80,7 @@ public class ColonClientContactNieuweAfspraakAanmakenPanel extends AbstractClien
 			{
 				ColonIntakeAfspraak afspraak = new ColonIntakeAfspraak();
 				afspraak.setClient(client.getObject());
-				afspraak.setColonScreeningRonde(laatsteScreeningRonde);
+				afspraak.setScreeningRonde(laatsteScreeningRonde);
 				afspraak.setAangemaaktOp(currentDateSupplier.getLocalDateTime());
 				ColoscopieCentrumWrapper intakeLocatieWrapper = organisatieZoekService.getNearestIntakeLocatie(client.getObject());
 				ColonIntakelocatie intakeLocatie = hibernateService.load(ColonIntakelocatie.class, intakeLocatieWrapper.getId());

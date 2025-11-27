@@ -42,7 +42,7 @@ public interface BaseVerslagService
 
 	String createLogMelding(Verslag<?, ?> verslag);
 
-	boolean isElektronischPalgaVerslag(MammaFollowUpVerslag followUpVerslag);
+	boolean isDigitaalPalgaVerslag(MammaFollowUpVerslag followUpVerslag);
 
 	MdlVerslag getMdlVerslagMetTNummer(PaVerslagContent verslagContent);
 

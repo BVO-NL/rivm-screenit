@@ -95,9 +95,9 @@ public class HuisartsPanel extends GenericPanel<ColonScreeningRonde>
 			{
 				ColonScreeningRonde huidigeRonde = getModelObject();
 				ColonScreeningRonde vorigeRonde = rondeNummerService.getVorigeRonde(huidigeRonde);
-				if (vorigeRonde != null && vorigeRonde.getColonHuisarts() != null && huidigeRonde.getColonHuisarts() == null)
+				if (vorigeRonde != null && vorigeRonde.getHuisarts() != null && huidigeRonde.getHuisarts() == null)
 				{
-					getDialog().openWith(target, new HuisartsVorigeRondeDialogPanel(IDialog.CONTENT_ID, getModel(), ModelUtil.sModel(vorigeRonde.getColonHuisarts()),
+					getDialog().openWith(target, new HuisartsVorigeRondeDialogPanel(IDialog.CONTENT_ID, getModel(), ModelUtil.sModel(vorigeRonde.getHuisarts()),
 						getZoekModel(), getDialog(), getHuisartsWijzigenPanel())
 					{
 						@Override
@@ -121,7 +121,7 @@ public class HuisartsPanel extends GenericPanel<ColonScreeningRonde>
 							@Override
 							protected void onHuisartsGekozen(AjaxRequestTarget target, EnovationHuisarts huisarts)
 							{
-								HuisartsPanel.this.getModelObject().setColonHuisarts(huisarts);
+								HuisartsPanel.this.getModelObject().setHuisarts(huisarts);
 								getHuisartsWijzigenPanel().verversHuisarts(target);
 								getDialog().close(target);
 							}
@@ -135,7 +135,7 @@ public class HuisartsPanel extends GenericPanel<ColonScreeningRonde>
 
 		ColonScreeningRonde laatsteScreeningronde = getModelObject();
 		boolean vorigeBerichtenBeschikbaar = laatsteScreeningronde.getLaatsteAfspraak() != null;
-		EnovationHuisarts enovationHuisarts = laatsteScreeningronde.getColonHuisarts();
+		EnovationHuisarts enovationHuisarts = laatsteScreeningronde.getHuisarts();
 
 		boolean verzendHaBerichtenVisible = magVerzenden && vorigeBerichtenBeschikbaar && enovationHuisarts != null;
 		final WebMarkupContainer verzendHaBerichtenOpnieuwContainer = new WebMarkupContainer("verzendHaBerichtenOpnieuwContainer");
@@ -152,7 +152,7 @@ public class HuisartsPanel extends GenericPanel<ColonScreeningRonde>
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				HuisartsPanel.this.getModelObject().setColonHuisarts(null);
+				HuisartsPanel.this.getModelObject().setHuisarts(null);
 				HuisartsPanel.this.get("huisartsNaam").setDefaultModelObject("");
 				HuisartsPanel.this.get("praktijkAdres").setDefaultModelObject("");
 				HuisartsPanel.this.get("praktijkNaam").setDefaultModelObject("");

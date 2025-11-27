@@ -37,11 +37,11 @@ import nl.rivm.screenit.model.Uitnodiging_;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonBrief_;
 import nl.rivm.screenit.model.colon.ColonDossier_;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie_;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.ColonUitnodiging_;
-import nl.rivm.screenit.model.colon.IFOBTTest_;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
+import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.algemeen.ClientSpecification;
@@ -133,9 +133,9 @@ public class ColonUitnodigingSpecification
 	{
 		return (r, q, cb) ->
 		{
-			var fitJoin = join(r, ColonUitnodiging_.gekoppeldeTest, JoinType.LEFT);
+			var fitJoin = join(r, ColonUitnodiging_.gekoppeldeFitRegistratie, JoinType.LEFT);
 			return cb.and(
-				cb.equal(fitJoin.get(IFOBTTest_.status), IFOBTTestStatus.ACTIEF),
+				cb.equal(fitJoin.get(ColonFitRegistratie_.status), ColonFitRegistratieStatus.ACTIEF),
 				cb.lessThan(r.get(Uitnodiging_.creatieDatum), DateUtil.toUtilDate(peilDatum))
 			);
 		};
@@ -145,7 +145,7 @@ public class ColonUitnodigingSpecification
 	{
 		return (r, q, cb) ->
 		{
-			var fitJoin = join(r, ColonUitnodiging_.gekoppeldeTest, JoinType.LEFT);
+			var fitJoin = join(r, ColonUitnodiging_.gekoppeldeFitRegistratie, JoinType.LEFT);
 			return cb.isNull(fitJoin.get(AbstractHibernateObject_.id));
 		};
 	}

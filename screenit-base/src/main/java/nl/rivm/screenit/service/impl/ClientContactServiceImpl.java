@@ -73,19 +73,19 @@ import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.enums.ColonAfmeldingReden;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
+import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.model.enums.BevestigingsType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.model.enums.ColonNieuwFitResultaat;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.IntervalEenheidAanduiding;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
-import nl.rivm.screenit.model.enums.NieuweIfobtResultaat;
 import nl.rivm.screenit.model.enums.SmsStatus;
-import nl.rivm.screenit.model.logging.NieuweIFobtAanvraagLogEvent;
+import nl.rivm.screenit.model.logging.colon.ColonNieuwFitAanvraagLogEvent;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaAfspraakReservering;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
@@ -117,7 +117,7 @@ import nl.rivm.screenit.service.cervix.CervixBaseScreeningrondeService;
 import nl.rivm.screenit.service.cervix.CervixBaseUitnodigingService;
 import nl.rivm.screenit.service.cervix.CervixFactory;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
-import nl.rivm.screenit.service.colon.ColonBaseFITService;
+import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.rivm.screenit.service.colon.ColonHuisartsService;
 import nl.rivm.screenit.service.colon.ColonScreeningsrondeService;
 import nl.rivm.screenit.service.colon.ColonTijdelijkAfmeldenJaartallenService;
@@ -135,9 +135,9 @@ import nl.rivm.screenit.service.mamma.MammaDigitaalContactService;
 import nl.rivm.screenit.service.mamma.MammaHuisartsService;
 import nl.rivm.screenit.util.AfmeldingUtil;
 import nl.rivm.screenit.util.BriefUtil;
-import nl.rivm.screenit.util.ColonScreeningRondeUtil;
 import nl.rivm.screenit.util.DateUtil;
-import nl.rivm.screenit.util.FITTestUtil;
+import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
+import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
@@ -197,7 +197,7 @@ public class ClientContactServiceImpl implements ClientContactService
 	private ColonUitnodigingService colonUitnodigingsService;
 
 	@Autowired
-	private ColonBaseFITService fitService;
+	private ColonBaseFitService fitService;
 
 	@Autowired
 	private CervixFactory factory;
@@ -293,8 +293,8 @@ public class ClientContactServiceImpl implements ClientContactService
 			var extraOpslaanParams = extraOpslaanObjecten.get(actie.getType());
 			switch (actie.getType())
 			{
-			case COLON_AANVRAGEN_NIEUWE_IFOBT:
-				vraagNieuweIfobtAan(client, account);
+			case COLON_AANVRAGEN_NIEUWE_FIT:
+				vraagNieuweFitAan(client, account);
 				break;
 			case OPNIEUW_AANVRAGEN_CLIENTGEGEVENS:
 				baseGbaVraagService.vraagGbaGegevensOpnieuwAan(client, account, actie.getOpnieuwAanvragenClientgegevensReden());
@@ -572,18 +572,25 @@ public class ClientContactServiceImpl implements ClientContactService
 		}
 		else if (BevestigingsType.MAIL == bevestigingsType)
 		{
-			var clientUitAfspraak = afspraak.getUitnodiging().getScreeningRonde().getDossier().getClient();
 			var bevestigingsMailAdres = (String) extraOpslaanParams.get(ExtraOpslaanKey.AFSPRAAK_BEVESTIGING_MAIL_ADRES);
-			clientUitAfspraak.getPersoon().setEmailadres(bevestigingsMailAdres);
-
-			clientService.saveContactGegevens(clientUitAfspraak, account);
-			mammaDigitaalContactService.sendBevestigAfspraakMail(afspraak);
+			verstuurBevestigingsmail(afspraak, account, bevestigingsMailAdres);
 		}
 		else
 		{
 			baseBriefService.setNietGegenereerdeBrievenOpTegenhouden(afspraak.getUitnodiging().getScreeningRonde(),
 				Collections.singletonList(BriefType.MAMMA_AFSPRAAK_VERZET));
 		}
+	}
+
+	@Override
+	@Transactional
+	public void verstuurBevestigingsmail(MammaAfspraak afspraak, Account account, String emailAdres)
+	{
+		var clientUitAfspraak = afspraak.getUitnodiging().getScreeningRonde().getDossier().getClient();
+		clientUitAfspraak.getPersoon().setEmailadres(emailAdres);
+
+		clientService.saveContactGegevens(clientUitAfspraak, account);
+		mammaDigitaalContactService.sendBevestigAfspraakMail(afspraak);
 	}
 
 	private void heropenRonde(ScreeningRonde screeningRonde)
@@ -792,9 +799,9 @@ public class ClientContactServiceImpl implements ClientContactService
 		var ronde = (ColonScreeningRonde) extraOpslaanParams.get(ExtraOpslaanKey.COLON_HUISARTS);
 		var huisartsBerichtenVerzenden = (Boolean) extraOpslaanParams.get(ExtraOpslaanKey.COLON_HUISARTSBERICHTEN_VERZENDEN);
 
-		var isGewijzigd = colonHuisartsService.koppelHuisarts(ronde.getColonHuisarts(), ronde, account);
+		var isGewijzigd = colonHuisartsService.koppelHuisarts(ronde.getHuisarts(), ronde, account);
 
-		if (!isAfspraakActieAanwezig && Boolean.TRUE.equals(huisartsBerichtenVerzenden) && ronde.getColonHuisarts() != null)
+		if (!isAfspraakActieAanwezig && Boolean.TRUE.equals(huisartsBerichtenVerzenden) && ronde.getHuisarts() != null)
 		{
 			afspraakService.verzendHuisartsBerichtOpnieuw(client, account);
 		}
@@ -1186,8 +1193,8 @@ public class ClientContactServiceImpl implements ClientContactService
 		{
 		case COLON_HUISARTS_WIJZIGEN:
 			return heeftNietVerlopenLaatsteScreeningRonde;
-		case COLON_AANVRAGEN_NIEUWE_IFOBT:
-			return magNieuweIfobtAanvragen(client);
+		case COLON_AANVRAGEN_NIEUWE_FIT:
+			return magNieuweFitAanvragen(client);
 		case COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN:
 			return magAfspaakWijzigenAfzeggen;
 		case COLON_NIEUWE_AFSPRAAK_AANMAKEN:
@@ -1214,8 +1221,8 @@ public class ClientContactServiceImpl implements ClientContactService
 		case COLON_VERWIJDEREN_UITSLAG_BRIEF_AANVRAGEN:
 			if (heeftNietVerlopenLaatsteScreeningRonde)
 			{
-				return laatsteScreeningRonde.getIfobtTesten().stream()
-					.anyMatch(test -> !IFOBTTestStatus.VERWIJDERD.equals(test.getStatus()) && test.getUitslag() != null);
+				return laatsteScreeningRonde.getFitRegistraties().stream()
+					.anyMatch(test -> !ColonFitRegistratieStatus.VERWIJDERD.equals(test.getStatus()) && test.getUitslag() != null);
 			}
 			return false;
 		default:
@@ -1402,35 +1409,36 @@ public class ClientContactServiceImpl implements ClientContactService
 
 	@Override
 	@Transactional
-	public NieuweIfobtResultaat vraagNieuweIfobtAan(Client client, Account account)
+	public ColonNieuwFitResultaat vraagNieuweFitAan(Client client, Account account)
 	{
 		var laatsteScreeningRonde = client.getColonDossier().getLaatsteScreeningRonde();
 
 		var laatsteUitnodiging = laatsteScreeningRonde.getLaatsteUitnodiging();
 		if (laatsteUitnodiging != null)
 		{
-			var test = laatsteUitnodiging.getGekoppeldeTest();
-			if (test != null && !IFOBTTestStatus.VERWIJDERD.equals(test.getStatus()) && !IFOBTTestStatus.VERLOREN.equals(test.getStatus()))
+			var gekoppeldeFitRegistratie = laatsteUitnodiging.getGekoppeldeFitRegistratie();
+			if (gekoppeldeFitRegistratie != null && !ColonFitRegistratieStatus.VERWIJDERD.equals(gekoppeldeFitRegistratie.getStatus())
+				&& !ColonFitRegistratieStatus.VERLOREN.equals(gekoppeldeFitRegistratie.getStatus()))
 			{
-				fitService.markeerBuisAlsVerloren(laatsteUitnodiging);
+				fitService.markeerRegistratieAlsVerloren(laatsteUitnodiging);
 			}
 			var nieuweUitnodiging = colonUitnodigingsService.cloneUitnodiging(laatsteUitnodiging, true);
 			if (nieuweUitnodiging != null)
 			{
-				nieuweUitnodiging.setColonUitnodigingCategorie(ColonUitnodigingCategorie.U4);
+				nieuweUitnodiging.setUitnodigingscategorie(ColonUitnodigingscategorie.U4);
 				hibernateService.saveOrUpdate(nieuweUitnodiging);
 			}
 		}
 		else
 		{
-			colonScreeningsrondeService.createNieuweUitnodiging(laatsteScreeningRonde, ColonUitnodigingCategorie.U4);
+			colonScreeningsrondeService.createNieuweUitnodiging(laatsteScreeningRonde, ColonUitnodigingscategorie.U4);
 		}
-		var resultaat = NieuweIfobtResultaat.AANGEVRAAGD;
+		var resultaat = ColonNieuwFitResultaat.AANGEVRAAGD;
 
-		var logEvent = new NieuweIFobtAanvraagLogEvent();
+		var logEvent = new ColonNieuwFitAanvraagLogEvent();
 		logEvent.setClient(client);
 		logEvent.setResultaat(resultaat);
-		logService.logGebeurtenis(LogGebeurtenis.NIEUWE_IFOBT_AANGEVRAAGD, logEvent, account, client, Bevolkingsonderzoek.COLON);
+		logService.logGebeurtenis(LogGebeurtenis.COLON_NIEUWE_FIT_AANGEVRAAGD, logEvent, account, client, Bevolkingsonderzoek.COLON);
 
 		return resultaat;
 	}
@@ -1457,7 +1465,7 @@ public class ClientContactServiceImpl implements ClientContactService
 		{
 			resultaat = false;
 		}
-		else if (FITTestUtil.heeftSuccesvolleAnalyse(laatsteScreeningRonde))
+		else if (ColonFitRegistratieUtil.heeftSuccesvolleAnalyse(laatsteScreeningRonde))
 		{
 			resultaat = false;
 		}
@@ -1481,7 +1489,7 @@ public class ClientContactServiceImpl implements ClientContactService
 	}
 
 	@Override
-	public boolean magNieuweIfobtAanvragen(Client client)
+	public boolean magNieuweFitAanvragen(Client client)
 	{
 		return magNieuweFitAanvragen(client, false);
 	}
@@ -1507,8 +1515,8 @@ public class ClientContactServiceImpl implements ClientContactService
 		{
 			if (laatsteScreeningRonde.getStatus() == ScreeningRondeStatus.AFGEROND)
 			{
-				var ifobtTest = laatsteScreeningRonde.getLaatsteIFOBTTest();
-				if (FITTestUtil.isGunstig(ifobtTest))
+				var fitRegistratie = laatsteScreeningRonde.getLaatsteFitRegistratie();
+				if (ColonFitRegistratieUtil.isGunstig(fitRegistratie))
 				{
 					afmeldTypes.add(AfmeldingType.EENMALIG);
 				}
@@ -1549,7 +1557,7 @@ public class ClientContactServiceImpl implements ClientContactService
 			var wordtUitgenodigdVolgendeRonde =
 				colonDossier.getVolgendeUitnodiging() == null || colonDossier.getVolgendeUitnodiging().getInterval().getEenheid() != IntervalEenheidAanduiding.GEEN;
 			var heeftBeschikbareTijdelijkAfmeldOpties = !colonTijdelijkAfmeldenJaartallenService.bepaalMogelijkeAfmeldJaren(client).isEmpty();
-			if (colonDossier.getColonVooraankondiging() != null
+			if (colonDossier.getVooraankondiging() != null
 				&& wordtUitgenodigdVolgendeRonde
 				&& heeftBeschikbareTijdelijkAfmeldOpties
 				&& heeftNietVerlopenLaatsteScreeningRonde)
@@ -1746,7 +1754,7 @@ public class ClientContactServiceImpl implements ClientContactService
 			return false;
 		}
 
-		var eersteOngunstigUitslag = ColonScreeningRondeUtil.getEersteOngunstigeTest(laatsteScreeningRonde);
+		var eersteOngunstigUitslag = ColonScreeningRondeUtil.getEersteOngunstigeFitRegistratie(laatsteScreeningRonde);
 		var uitnodigingsinterval = preferenceService.getInteger(PreferenceKey.UITNODIGINGSINTERVAL.name());
 		var vandaag = currentDateSupplier.getLocalDate();
 		var laatsteAfspraak = laatsteScreeningRonde.getLaatsteAfspraak();

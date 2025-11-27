@@ -34,7 +34,7 @@ public class ColonHuisartsOntkoppelenWriter extends BaseWriter<ColonScreeningRon
 	@Override
 	protected void write(ColonScreeningRonde ronde) throws Exception
 	{
-		ronde.setColonHuisarts(null);
+		ronde.setHuisarts(null);
 		getHibernateService().saveOrUpdate(ronde);
 		aantalContextOphogen(ColonHuisartsOntkoppelenListener.AANTAL_RONDES_ONTKOPPELD);
 	}

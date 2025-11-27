@@ -94,6 +94,8 @@ import nl.rivm.screenit.model.colon.ColonAfmelding;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonConclusie;
 import nl.rivm.screenit.model.colon.ColonDossier;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
+import nl.rivm.screenit.model.colon.ColonFitType;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.ColonOnderzoeksVariant;
@@ -101,14 +103,12 @@ import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.ColonVerslag;
 import nl.rivm.screenit.model.colon.ColonVooraankondiging;
-import nl.rivm.screenit.model.colon.IFOBTTest;
-import nl.rivm.screenit.model.colon.IFOBTType;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.OpenUitnodiging;
 import nl.rivm.screenit.model.colon.ScannedAntwoordFormulier;
 import nl.rivm.screenit.model.colon.enums.ColonAfmeldingReden;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
-import nl.rivm.screenit.model.colon.enums.IFOBTTestStatus;
+import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.colon.enums.RetourzendingWijze;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -150,9 +150,9 @@ import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EntityAuditUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
-import nl.rivm.screenit.util.FITTestUtil;
 import nl.rivm.screenit.util.NaamUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
+import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
@@ -233,9 +233,9 @@ public class DossierServiceImpl implements DossierService
 
 			if (i == 0)
 			{
-				if (client.getColonDossier().getColonVooraankondiging() != null)
+				if (client.getColonDossier().getVooraankondiging() != null)
 				{
-					ColonVooraankondiging vooraankondiging = client.getColonDossier().getColonVooraankondiging();
+					ColonVooraankondiging vooraankondiging = client.getColonDossier().getVooraankondiging();
 					ScreeningRondeGebeurtenis screeningRondeGebeurtenis = new ScreeningRondeGebeurtenis();
 					screeningRondeGebeurtenis.setDatum(vooraankondiging.getCreatieDatum());
 					screeningRondeGebeurtenis.setGebeurtenis(TypeGebeurtenis.VOORAANKONDIGING);
@@ -284,11 +284,11 @@ public class DossierServiceImpl implements DossierService
 				}
 
 				retouren(rondeDossier, colonUitnodiging);
-				IFOBTTest buis = FITTestUtil.getFITTest(colonUitnodiging);
+				var fitRegistratie = ColonFitRegistratieUtil.getFitRegistratie(colonUitnodiging);
 
-				if (buis != null && buis.getBarcode() != null)
+				if (fitRegistratie != null && fitRegistratie.getBarcode() != null)
 				{
-					maakDKUitnodigingsPakketSamenstellenGebeurtenis(rondeDossier, colonUitnodiging, buis);
+					maakDKUitnodigingsPakketSamenstellenGebeurtenis(rondeDossier, colonUitnodiging, fitRegistratie);
 				}
 			}
 
@@ -297,15 +297,15 @@ public class DossierServiceImpl implements DossierService
 				maakDKVerslagGebeurtenis(rondeDossier, verslag);
 			}
 
-			if (colonScreeningRonde.getColonHuisarts() != null && colonScreeningRonde.getDatumVastleggenHuisarts() != null)
+			if (colonScreeningRonde.getHuisarts() != null && colonScreeningRonde.getDatumVastleggenHuisarts() != null)
 			{
 				rondeDossier.addGebeurtenis(maakHuisartsToegevoegd(colonScreeningRonde, TypeGebeurtenis.COLON_HUISARTS_TOEGEVOEGD,
 					colonScreeningRonde.getDatumVastleggenHuisarts()));
 			}
 
-			for (IFOBTTest buis : colonScreeningRonde.getIfobtTesten())
+			for (var fitRegistratie : colonScreeningRonde.getFitRegistraties())
 			{
-				maakDKIFOBTTestGebeurtenis(rondeDossier, buis);
+				maakDKIFOBTTestGebeurtenis(rondeDossier, fitRegistratie);
 			}
 
 			voegBrievenGebeurtenissenToe(colonScreeningRonde, rondeDossier);
@@ -384,15 +384,15 @@ public class DossierServiceImpl implements DossierService
 			screeningRondeGebeurtenis.setDatum(lastActionOfClient);
 			screeningRondeGebeurtenis.setGebeurtenis(TypeGebeurtenis.AFNAMEDATUM_INGEVULD_OP_PORTAAL);
 			screeningRondeGebeurtenis.setBron(GebeurtenisBron.CLIENT);
-			screeningRondeGebeurtenis.setExtraOmschrijving(Constants.getDateFormat().format(getClientAfnameDatum(colonUitnodiging.getGekoppeldeTest())));
+			screeningRondeGebeurtenis.setExtraOmschrijving(Constants.getDateFormat().format(getClientAfnameDatum(colonUitnodiging.getGekoppeldeFitRegistratie())));
 			rondeDossier.addGebeurtenis(screeningRondeGebeurtenis);
 		}
 	}
 
-	private void maakDKUitnodigingsPakketSamenstellenGebeurtenis(ScreeningRondeGebeurtenissen rondeDossier, ColonUitnodiging colonUitnodiging, IFOBTTest buis)
+	private void maakDKUitnodigingsPakketSamenstellenGebeurtenis(ScreeningRondeGebeurtenissen rondeDossier, ColonUitnodiging colonUitnodiging, ColonFitRegistratie fitRegistratie)
 	{
 		var screeningRondeGebeurtenis = new ScreeningRondeGebeurtenis();
-		screeningRondeGebeurtenis.setDatum(buis.getDatumVerstuurd());
+		screeningRondeGebeurtenis.setDatum(fitRegistratie.getDatumVerstuurd());
 		screeningRondeGebeurtenis.setGebeurtenis(TypeGebeurtenis.UITNODIGINGSPAKKET_SAMENGESTELD);
 		var extraOmschrijving = contructBarcodeInfo(colonUitnodiging);
 		screeningRondeGebeurtenis.setExtraOmschrijving("UitnodigingsID: " + colonUitnodiging.getUitnodigingsId(), extraOmschrijving);
@@ -435,76 +435,76 @@ public class DossierServiceImpl implements DossierService
 		}
 	}
 
-	private void maakDKIFOBTTestGebeurtenis(ScreeningRondeGebeurtenissen rondeDossier, IFOBTTest buis)
+	private void maakDKIFOBTTestGebeurtenis(ScreeningRondeGebeurtenissen rondeDossier, ColonFitRegistratie fitRegistratie)
 	{
 		TypeGebeurtenis typeGebeurtenis = null;
-		switch (buis.getStatus())
+		switch (fitRegistratie.getStatus())
 		{
 		case VERLOREN:
-			typeGebeurtenis = TypeGebeurtenis.IFOBTVERLOREN;
+			typeGebeurtenis = TypeGebeurtenis.COLON_NIEUWE_FIT_AANGEVRAAGD;
 			break;
 		case NIETONTVANGEN:
-			typeGebeurtenis = TypeGebeurtenis.RETOURPERIODEIFOBTVERSTREKEN;
+			typeGebeurtenis = TypeGebeurtenis.COLON_FIT_RETOUR_PERIODE_VERSTREKEN;
 			break;
 		case NIETTEBEOORDELEN:
-			typeGebeurtenis = TypeGebeurtenis.IFOBTNIETTEBEOORDELEN;
+			typeGebeurtenis = TypeGebeurtenis.COLON_FIT_ONBEOORDEELBAAR;
 			break;
 		case VERVALDATUMVERLOPEN:
-			typeGebeurtenis = TypeGebeurtenis.VERVALDATUMIFOBTVERLOPEN;
+			typeGebeurtenis = TypeGebeurtenis.COLON_FIT_VERVALDATUM_VERLOPEN;
 			break;
 		case UITGEVOERD:
 		case WACHTOPBRIEF:
 		case VERWIJDERD:
-			typeGebeurtenis = TypeGebeurtenis.UITSLAGIFOBTONTVANGEN;
+			typeGebeurtenis = TypeGebeurtenis.COLON_FIT_UITSLAG_ONTVANGEN;
 			break;
 		case ONBETROUWBAAR:
-			typeGebeurtenis = TypeGebeurtenis.UITSLAGIFOBTONBETROUWBAAR;
+			typeGebeurtenis = TypeGebeurtenis.COLON_FIT_UITSLAG_ONBETROUWBAAR;
 			break;
 		default:
-			if (buis.getUitslag() != null)
+			if (fitRegistratie.getUitslag() != null)
 			{
-				typeGebeurtenis = TypeGebeurtenis.UITSLAGIFOBTONTVANGEN;
+				typeGebeurtenis = TypeGebeurtenis.COLON_FIT_UITSLAG_ONTVANGEN;
 			}
 			break;
 		}
 
 		if (typeGebeurtenis != null)
 		{
-			var barcodeInfo = "Barcode: " + buis.getBarcode();
+			var barcodeInfo = "Barcode: " + fitRegistratie.getBarcode();
 			var screeningRondeGebeurtenis = new ScreeningRondeGebeurtenis();
-			screeningRondeGebeurtenis.setDatum(buis.getStatusDatum());
+			screeningRondeGebeurtenis.setDatum(fitRegistratie.getStatusDatum());
 			screeningRondeGebeurtenis.setGebeurtenis(typeGebeurtenis);
-			screeningRondeGebeurtenis.setUitnodiging(FITTestUtil.getUitnodiging(buis));
-			screeningRondeGebeurtenis.setBuis(buis);
-			screeningRondeGebeurtenis.setBron(bepaalGebeurtenisBron(buis, false));
+			screeningRondeGebeurtenis.setUitnodiging(ColonFitRegistratieUtil.getUitnodiging(fitRegistratie));
+			screeningRondeGebeurtenis.setRegistratie(fitRegistratie);
+			screeningRondeGebeurtenis.setBron(bepaalGebeurtenisBron(fitRegistratie, false));
 			screeningRondeGebeurtenis.setExtraOmschrijving(barcodeInfo);
-			if (typeGebeurtenis == TypeGebeurtenis.IFOBTVERLOREN && buis.getBarcode() != null)
+			if (typeGebeurtenis == TypeGebeurtenis.COLON_NIEUWE_FIT_AANGEVRAAGD && fitRegistratie.getBarcode() != null)
 			{
-				screeningRondeGebeurtenis.setBron(bepaalGebeurtenisBron(buis, true));
+				screeningRondeGebeurtenis.setBron(bepaalGebeurtenisBron(fitRegistratie, true));
 			}
-			else if (typeGebeurtenis == TypeGebeurtenis.UITSLAGIFOBTONTVANGEN && buis.getBarcode() != null)
+			else if (typeGebeurtenis == TypeGebeurtenis.COLON_FIT_UITSLAG_ONTVANGEN && fitRegistratie.getBarcode() != null)
 			{
-				if (buis.getVerwerkingsDatum() != null)
+				if (fitRegistratie.getVerwerkingsDatum() != null)
 				{
-					screeningRondeGebeurtenis.setDatum(buis.getVerwerkingsDatum());
+					screeningRondeGebeurtenis.setDatum(fitRegistratie.getVerwerkingsDatum());
 				}
-				if (FITTestUtil.isOngunstig(buis))
+				if (ColonFitRegistratieUtil.isOngunstig(fitRegistratie))
 				{
 					screeningRondeGebeurtenis.setExtraOmschrijving("Ongunstig", barcodeInfo);
 				}
-				else if (FITTestUtil.isGunstig(buis))
+				else if (ColonFitRegistratieUtil.isGunstig(fitRegistratie))
 				{
 					screeningRondeGebeurtenis.setExtraOmschrijving("Gunstig", barcodeInfo);
 				}
-				else if (buis.getStatus() == IFOBTTestStatus.VERWIJDERD)
+				else if (fitRegistratie.getStatus() == ColonFitRegistratieStatus.VERWIJDERD)
 				{
 					screeningRondeGebeurtenis.setExtraOmschrijving("Verwijderd", barcodeInfo);
 				}
 			}
-			else if (typeGebeurtenis == TypeGebeurtenis.IFOBTNIETTEBEOORDELEN)
+			else if (typeGebeurtenis == TypeGebeurtenis.COLON_FIT_ONBEOORDEELBAAR)
 			{
-				screeningRondeGebeurtenis.setExtraOmschrijving(EnumStringUtil.getPropertyString(buis.getRedenNietTeBeoordelen()), barcodeInfo);
-				screeningRondeGebeurtenis.setBron(bepaalGebeurtenisBron(buis, true));
+				screeningRondeGebeurtenis.setExtraOmschrijving(EnumStringUtil.getPropertyString(fitRegistratie.getRedenNietTeBeoordelen()), barcodeInfo);
+				screeningRondeGebeurtenis.setBron(bepaalGebeurtenisBron(fitRegistratie, true));
 			}
 
 			rondeDossier.addGebeurtenis(screeningRondeGebeurtenis);
@@ -702,18 +702,18 @@ public class DossierServiceImpl implements DossierService
 	{
 		ColonOnderzoeksVariant onderzoeksVariant = colonUitnodiging.getOnderzoeksVariant();
 		String alleBarcodes = "Barcode: ";
-		if (ColonOnderzoeksVariant.isOfType(onderzoeksVariant, IFOBTType.GOLD))
+		if (ColonOnderzoeksVariant.isOfType(onderzoeksVariant, ColonFitType.GOLD))
 		{
-			alleBarcodes += colonUitnodiging.getGekoppeldeTest().getBarcode();
+			alleBarcodes += colonUitnodiging.getGekoppeldeFitRegistratie().getBarcode();
 			if (onderzoeksVariant.equals(ColonOnderzoeksVariant.VERGELIJKEND) || onderzoeksVariant.equals(ColonOnderzoeksVariant.TB_PAIRED))
 			{
 				alleBarcodes += "(G)";
 			}
 		}
-		if (ColonOnderzoeksVariant.isOfType(onderzoeksVariant, IFOBTType.STUDIE) || ColonOnderzoeksVariant.isOfType(onderzoeksVariant, IFOBTType.EIKEN))
+		if (ColonOnderzoeksVariant.isOfType(onderzoeksVariant, ColonFitType.STUDIE) || ColonOnderzoeksVariant.isOfType(onderzoeksVariant, ColonFitType.EIKEN))
 		{
-			alleBarcodes += "/" + colonUitnodiging.getGekoppeldeExtraTest().getBarcode();
-			alleBarcodes += ColonOnderzoeksVariant.isOfType(onderzoeksVariant, IFOBTType.STUDIE) ? "(S)" : "(E)";
+			alleBarcodes += "/" + colonUitnodiging.getGekoppeldeExtraFitRegistratie().getBarcode();
+			alleBarcodes += ColonOnderzoeksVariant.isOfType(onderzoeksVariant, ColonFitType.STUDIE) ? "(S)" : "(E)";
 		}
 
 		return alleBarcodes;
@@ -1907,17 +1907,17 @@ public class DossierServiceImpl implements DossierService
 		else if (brief.getBevolkingsonderzoek() == Bevolkingsonderzoek.COLON)
 		{
 			ColonBrief colonBrief = (ColonBrief) HibernateHelper.deproxy(brief);
-			IFOBTTest ifobtTest = colonBrief.getIfobtTest();
-			if (ifobtTest != null)
+			ColonFitRegistratie fitRegistratie = colonBrief.getFitRegistratie();
+			if (fitRegistratie != null)
 			{
-				ColonUitnodiging uitnodiging = FITTestUtil.getUitnodiging(ifobtTest);
+				ColonUitnodiging uitnodiging = ColonFitRegistratieUtil.getUitnodiging(fitRegistratie);
 				if (uitnodiging != null)
 				{
 					extraOmschrijvingen.add("UitnodigingsID: ");
 					extraOmschrijvingen.add(String.valueOf(uitnodiging.getUitnodigingsId()));
 				}
 				extraOmschrijvingen.add("Barcode: ");
-				extraOmschrijvingen.add(ifobtTest.getBarcode());
+				extraOmschrijvingen.add(fitRegistratie.getBarcode());
 			}
 		}
 		else if (brief.getBevolkingsonderzoek() == Bevolkingsonderzoek.MAMMA)
@@ -2218,7 +2218,7 @@ public class DossierServiceImpl implements DossierService
 		return bron;
 	}
 
-	private Date getClientAfnameDatum(IFOBTTest entity)
+	private Date getClientAfnameDatum(ColonFitRegistratie entity)
 	{
 		AuditQuery query = EntityAuditUtil.createQuery(entity, hibernateService.getHibernateSession());
 		query.add(AuditEntity.revisionProperty("client").isNotNull());
@@ -2227,7 +2227,7 @@ public class DossierServiceImpl implements DossierService
 		Date afnamedatum = null;
 		if (!objecten.isEmpty())
 		{
-			IFOBTTest result = EntityAuditUtil.getRevisionEntity(objecten.get(0));
+			ColonFitRegistratie result = EntityAuditUtil.getRevisionEntity(objecten.get(0));
 			afnamedatum = result.getAfnameDatum();
 		}
 		return afnamedatum;

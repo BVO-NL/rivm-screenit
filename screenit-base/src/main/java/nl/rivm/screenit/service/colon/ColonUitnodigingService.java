@@ -32,7 +32,7 @@ import nl.rivm.screenit.model.colon.UitnodigingCohort;
 public interface ColonUitnodigingService
 {
 
-	BriefDefinitie getBriefType(ColonUitnodiging colonUitnodiging);
+	BriefDefinitie getBriefType(ColonUitnodiging uitnodiging);
 
 	LocalDate getGeprognotiseerdeIntakeDatum(boolean vooraankondigen);
 

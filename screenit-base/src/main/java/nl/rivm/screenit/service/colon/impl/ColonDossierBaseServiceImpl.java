@@ -33,13 +33,13 @@ import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonConclusie;
 import nl.rivm.screenit.model.colon.ColonDossier;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.ColonUitnodigingsinterval;
 import nl.rivm.screenit.model.colon.ColonVolgendeUitnodiging;
 import nl.rivm.screenit.model.colon.ColonVooraankondiging;
-import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
@@ -57,9 +57,9 @@ import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
-import nl.rivm.screenit.util.ColonScreeningRondeUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ProjectUtil;
+import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.jetbrains.annotations.NotNull;
@@ -171,7 +171,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 		case EERSTE_ONGUNSTIGE_UITSLAG_VORIGE_RONDE:
 			if (laatsteScreeningRonde.getOpenUitnodiging() == null)
 			{
-				peildatum = ColonScreeningRondeUtil.getEersteOngunstigeTest(laatsteScreeningRonde).getVerwerkingsDatum();
+				peildatum = ColonScreeningRondeUtil.getEersteOngunstigeFitRegistratie(laatsteScreeningRonde).getVerwerkingsDatum();
 			}
 			else
 			{
@@ -231,7 +231,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 
 	@Override
 	@Transactional
-	public void setVolgendeUitnodingVoorConclusie(ColonIntakeAfspraak afspraak)
+	public void setVolgendeUitnodigingVoorConclusie(ColonIntakeAfspraak afspraak)
 	{
 		ColonConclusie conclusie = afspraak.getConclusie();
 		ColonUitnodigingsintervalType interval = null;
@@ -253,7 +253,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 		}
 		if (interval != null)
 		{
-			setDatumVolgendeUitnodiging(afspraak.getColonScreeningRonde().getDossier(), interval);
+			setDatumVolgendeUitnodiging(afspraak.getScreeningRonde().getDossier(), interval);
 		}
 	}
 
@@ -405,7 +405,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 		{
 			maakRondeLeeg(ronde);
 		}
-		verwijderVoorAankondiging(dossier);
+		verwijderVooraankondiging(dossier);
 		hibernateService.deleteAll(rondes);
 	}
 
@@ -413,20 +413,20 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 	{
 		for (ColonBrief brief : ronde.getBrieven())
 		{
-			brief.setIfobtTest(null);
+			brief.setFitRegistratie(null);
 
 			hibernateService.saveOrUpdate(brief);
 		}
 		baseDossierService.verwijderAlleAfmeldingenUitRonde(ronde);
-		verwijderFITVoorUitnodigingen(ronde.getUitnodigingen());
+		verwijderFitRegistratiesVoorUitnodigingen(ronde.getUitnodigingen());
 	}
 
-	private void verwijderVoorAankondiging(ColonDossier dossier)
+	private void verwijderVooraankondiging(ColonDossier dossier)
 	{
-		if (dossier.getColonVooraankondiging() != null)
+		if (dossier.getVooraankondiging() != null)
 		{
-			ColonVooraankondiging vooraankondigiging = dossier.getColonVooraankondiging();
-			dossier.setColonVooraankondiging(null);
+			ColonVooraankondiging vooraankondigiging = dossier.getVooraankondiging();
+			dossier.setVooraankondiging(null);
 			ColonBrief vooraankondigigingBrief = vooraankondigiging.getBrief();
 			if (vooraankondigigingBrief != null && vooraankondigigingBrief.getScreeningRonde() != null)
 			{
@@ -437,40 +437,40 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 		}
 	}
 
-	private void verwijderFITVoorUitnodigingen(List<ColonUitnodiging> uitnodigingen)
+	private void verwijderFitRegistratiesVoorUitnodigingen(List<ColonUitnodiging> uitnodigingen)
 	{
-		for (ColonUitnodiging uitnodiging : uitnodigingen)
+		for (var uitnodiging : uitnodigingen)
 		{
-			IFOBTTest test = uitnodiging.getGekoppeldeTest();
-			IFOBTTest extraTest = uitnodiging.getGekoppeldeExtraTest();
-			uitnodiging.setGekoppeldeTest(null);
-			uitnodiging.setGekoppeldeExtraTest(null);
+			var fitRegistratie = uitnodiging.getGekoppeldeFitRegistratie();
+			var extraFitRegistratie = uitnodiging.getGekoppeldeExtraFitRegistratie();
+			uitnodiging.setGekoppeldeFitRegistratie(null);
+			uitnodiging.setGekoppeldeExtraFitRegistratie(null);
 			hibernateService.saveOrUpdate(uitnodiging);
 
-			if (test != null)
+			if (fitRegistratie != null)
 			{
-				verwijderTestenVanScreeningRonde(test);
+				verwijderFitRegistratiesVanScreeningRonde(fitRegistratie);
 			}
-			if (extraTest != null)
+			if (extraFitRegistratie != null)
 			{
-				verwijderTestenVanScreeningRonde(extraTest);
+				verwijderFitRegistratiesVanScreeningRonde(extraFitRegistratie);
 			}
 		}
 	}
 
-	private void verwijderTestenVanScreeningRonde(IFOBTTest test)
+	private void verwijderFitRegistratiesVanScreeningRonde(ColonFitRegistratie fitRegistratie)
 	{
-		var verwijderBrief = test.getVerwijderbrief();
+		var verwijderBrief = fitRegistratie.getVerwijderbrief();
 		if (verwijderBrief != null)
 		{
 			uploadDocumentService.delete(verwijderBrief);
 		}
-		ColonScreeningRonde andereScreeningRonde = test.getColonScreeningRonde();
-		andereScreeningRonde.setLaatsteIFOBTTest(null);
-		andereScreeningRonde.setLaatsteIFOBTTestExtra(null);
-		andereScreeningRonde.getIfobtTesten().remove(test);
+		ColonScreeningRonde andereScreeningRonde = fitRegistratie.getScreeningRonde();
+		andereScreeningRonde.setLaatsteFitRegistratie(null);
+		andereScreeningRonde.setLaatsteExtraFitRegistratie(null);
+		andereScreeningRonde.getFitRegistraties().remove(fitRegistratie);
 		hibernateService.saveOrUpdate(andereScreeningRonde);
-		hibernateService.delete(test);
+		hibernateService.delete(fitRegistratie);
 	}
 
 	@Override

@@ -137,8 +137,8 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 			}
 
 			MammaScreeningRonde mammaScreeningRonde = maakRondeEnUitnodiging(dossier, briefType, mammaStandplaatsRonde, false);
-			MammaCapaciteitBlok capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, afspraakOptie.getCapaciteitBlokDto().id);
-			MammaStandplaatsPeriode standplaatsPeriode = afspraakOptie.getCapaciteitBlokDto().standplaatsPeriode;
+			MammaCapaciteitBlok capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, afspraakOptie.getCapaciteitBlokDto().getId());
+			MammaStandplaatsPeriode standplaatsPeriode = afspraakOptie.getCapaciteitBlokDto().getStandplaatsPeriode();
 			baseAfspraakService.maakAfspraak(mammaScreeningRonde, capaciteitBlok, DateUtil.toUtilDate(afspraakOptie.getVanaf().atDate(afspraakOptie.getDatum())),
 				standplaatsPeriode, null, false, true, false, true, false, null, false);
 

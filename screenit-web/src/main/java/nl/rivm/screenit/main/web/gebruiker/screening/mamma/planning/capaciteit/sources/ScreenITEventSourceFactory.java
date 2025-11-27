@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
+import lombok.Getter;
+
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningWeekDto;
@@ -56,7 +58,6 @@ import com.google.common.collect.Range;
 
 public class ScreenITEventSourceFactory implements Serializable
 {
-
 	@SpringBean
 	private ICurrentDateSupplier dateSupplier;
 
@@ -68,6 +69,7 @@ public class ScreenITEventSourceFactory implements Serializable
 
 	private final IModel<MammaScreeningsEenheid> screeningsEenheidModel;
 
+	@Getter
 	private PlanningWeekDto weekDto;
 
 	public ScreenITEventSourceFactory(IModel<MammaScreeningsEenheid> screeningsEenheid)
@@ -154,23 +156,8 @@ public class ScreenITEventSourceFactory implements Serializable
 		}
 	}
 
-	public PlanningWeekDto getWeekDto()
-	{
-		return weekDto;
-	}
-
 	public PlanningCapaciteitBlokDto getBlok(UUID conceptId)
 	{
-		PlanningCapaciteitBlokDto blok = weekDto.blokken.stream().filter(b -> b.conceptId.equals(conceptId)).findFirst().orElse(null);
-		if (blok != null)
-		{
-			return blok;
-		}
-		return null;
-	}
-
-	public IModel<MammaScreeningsEenheid> getScreeningsEenheidModel()
-	{
-		return screeningsEenheidModel;
+		return weekDto.blokken.stream().filter(b -> b.conceptId.equals(conceptId)).findFirst().orElse(null);
 	}
 }

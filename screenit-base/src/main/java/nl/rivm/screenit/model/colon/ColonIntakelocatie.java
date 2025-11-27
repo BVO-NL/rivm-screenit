@@ -47,7 +47,6 @@ import org.hibernate.envers.NotAudited;
 @Setter
 public class ColonIntakelocatie extends Organisatie
 {
-
 	@OneToMany(mappedBy = "intakelocatie")
 	@NotAudited
 	private List<ColoscopieCentrumColonCapaciteitVerdeling> capaciteitVerdeling = new ArrayList<>();
@@ -65,5 +64,4 @@ public class ColonIntakelocatie extends Organisatie
 	private Integer aantalGeprognostiseerdeRoosterblokken;
 
 	private Integer aantalGeprognostiseerdeRoosterblokkenVolgendJaar;
-
 }

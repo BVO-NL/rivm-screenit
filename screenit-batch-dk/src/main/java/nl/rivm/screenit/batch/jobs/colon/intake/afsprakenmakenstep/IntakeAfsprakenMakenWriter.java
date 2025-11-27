@@ -50,8 +50,8 @@ import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.service.colon.ColonHuisartsBerichtService;
 import nl.rivm.screenit.util.BigDecimalUtil;
-import nl.rivm.screenit.util.ColonScreeningRondeUtil;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
@@ -147,7 +147,7 @@ public class IntakeAfsprakenMakenWriter implements ItemWriter<ClientAfspraak>
 						var newAfspraak = new ColonIntakeAfspraak();
 						var startDatumTijd = DateUtil.toLocalDateTime(vrijSlot.getStartTijd());
 						LOG.trace("Voor client wordt een intake afspraak gemaakt (id " + clientId + ")");
-						newAfspraak.setColonScreeningRonde(screeningRonde);
+						newAfspraak.setScreeningRonde(screeningRonde);
 						newAfspraak.setClient(client);
 						newAfspraak.setBezwaar(false);
 						newAfspraak.setGewijzigdOp(currentDateSupplier.getLocalDateTime());
@@ -206,7 +206,7 @@ public class IntakeAfsprakenMakenWriter implements ItemWriter<ClientAfspraak>
 							var brief = briefService.maakBvoBrief(screeningRonde, type);
 							if (BriefType.COLON_UITNODIGING_INTAKE.equals(type))
 							{
-								brief.setIfobtTest(ColonScreeningRondeUtil.getEersteOngunstigeTest(screeningRonde));
+								brief.setFitRegistratie(ColonScreeningRondeUtil.getEersteOngunstigeFitRegistratie(screeningRonde));
 							}
 							brief.setIntakeAfspraak(newAfspraak);
 							hibernateService.saveOrUpdate(brief);

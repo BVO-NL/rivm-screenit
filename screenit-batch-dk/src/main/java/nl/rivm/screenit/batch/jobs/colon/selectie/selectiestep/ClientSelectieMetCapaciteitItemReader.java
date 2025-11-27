@@ -31,8 +31,8 @@ import nl.rivm.screenit.batch.service.impl.ColonUitnodigingsgebiedSelectieContex
 import nl.rivm.screenit.model.colon.ClientCategorieEntry;
 import nl.rivm.screenit.model.colon.UitnodigingsGebied;
 import nl.rivm.screenit.model.enums.JobStartParameter;
-import nl.rivm.screenit.model.verwerkingverslag.SelectieRapportage;
-import nl.rivm.screenit.model.verwerkingverslag.SelectieRapportageGewijzigdGebiedEntry;
+import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportage;
+import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageGewijzigdGebiedEntry;
 import nl.rivm.screenit.service.BaseProjectService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonUitnodigingService;
@@ -149,7 +149,7 @@ public class ClientSelectieMetCapaciteitItemReader extends AbstractClientSelecti
 	private void rapporteerLeegLopendeGebieden()
 	{
 		Long selectieRapportageId = stepExecution.getJobExecution().getExecutionContext().getLong(SelectieConstants.RAPPORTAGEKEYSELECTIE);
-		var selectieRapportage = hibernateService.get(SelectieRapportage.class, selectieRapportageId);
+		var selectieRapportage = hibernateService.get(ColonSelectieRapportage.class, selectieRapportageId);
 		if (selectieRapportage != null)
 		{
 			for (var uitnodigingsgebied : uitnodigingsgebieden)
@@ -157,7 +157,7 @@ public class ClientSelectieMetCapaciteitItemReader extends AbstractClientSelecti
 				int capaciteitToevoegingOfOver = uitnodigingsgebied.getUitnodigingscapaciteitToevoegingOfOver();
 				if (capaciteitToevoegingOfOver > 0 || uitnodigingsgebied.isLeeglopendGebied())
 				{
-					var gewijzigdGebiedEntry = new SelectieRapportageGewijzigdGebiedEntry();
+					var gewijzigdGebiedEntry = new ColonSelectieRapportageGewijzigdGebiedEntry();
 					gewijzigdGebiedEntry.setPercentage(capaciteitToevoegingOfOver);
 					gewijzigdGebiedEntry.setUitnodigingsGebied(hibernateService.load(UitnodigingsGebied.class, uitnodigingsgebied.getUitnodigingsgebiedId()));
 					gewijzigdGebiedEntry.setRapportage(selectieRapportage);

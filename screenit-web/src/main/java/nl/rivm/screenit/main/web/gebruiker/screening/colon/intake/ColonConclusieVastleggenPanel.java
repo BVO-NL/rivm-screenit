@@ -41,9 +41,9 @@ import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonConclusie;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
-import nl.rivm.screenit.model.colon.IFOBTTest;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieOnHoldReden;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
@@ -55,10 +55,10 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
-import nl.rivm.screenit.util.ColonScreeningRondeUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.util.NaamUtil;
+import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -145,7 +145,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 
 		ColonIntakeAfspraak afspraak = ModelUtil.nullSafeGet(model);
 		ColonConclusie conclusie = afspraak.getConclusie();
-		mdlVerslagVerwerkt = ColonScreeningRondeUtil.heeftAfgerondeVerslag(afspraak.getColonScreeningRonde(), VerslagType.MDL);
+		mdlVerslagVerwerkt = ColonScreeningRondeUtil.heeftAfgerondeVerslag(afspraak.getScreeningRonde(), VerslagType.MDL);
 		vervolgonderzoekDto = new ColonVervolgonderzoekKeuzesDto();
 
 		if (conclusie == null)
@@ -180,7 +180,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 		}
 		Form<ColonIntakeAfspraak> form = new ConclusieForm("form", model);
 		add(form);
-		Client client = model.getObject().getColonScreeningRonde().getDossier().getClient();
+		Client client = model.getObject().getScreeningRonde().getDossier().getClient();
 		add(new Label("client.persoon.bsn"));
 		add(new Label("client.persoon.geboortedatum", DateUtil.getGeboortedatum(client)));
 	}
@@ -221,7 +221,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 			add(DateLabel.forDatePattern("conclusie.datum", "dd-MM-yyyy HH:mm"));
 			add(DateLabel.forDatePattern("datumEerstOngunstigeUitslag", Model.of(getDatumEersteOngunstigeUitslagInRonde(intakeAfspraak)), "dd-MM-yyyy"));
 
-			Client client = intakeAfspraak.getColonScreeningRonde().getDossier().getClient();
+			Client client = intakeAfspraak.getScreeningRonde().getDossier().getClient();
 			add(new Label("client.persoon.achternaam", NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client)));
 			add(new Label("conclusie.organisatieMedewerker.medewerker.naamVolledig"));
 			addOudeAfspraak();
@@ -301,7 +301,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 						resourceKey = "ColonGeenOnderzoekReden.TERUG_NAAR_SCREENING_x_JAAR.gevolg";
 					}
 					StringResourceModel resourceModel = new StringResourceModel(resourceKey, ColonConclusieVastleggenPanel.this);
-					LocalDate theoretischeDatumVolgendeUitnodiging = dossierBaseService.getTheoretischeDatumVolgendeUitnodiging(afspraak.getColonScreeningRonde().getDossier(),
+					LocalDate theoretischeDatumVolgendeUitnodiging = dossierBaseService.getTheoretischeDatumVolgendeUitnodiging(afspraak.getScreeningRonde().getDossier(),
 						interval);
 					if (theoretischeDatumVolgendeUitnodiging != null)
 					{
@@ -363,7 +363,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 
 			add(new WebMarkupContainer("tekstOntvangenMDLverslag").setVisible(mdlVerslagVerwerkt));
 			add(new WebMarkupContainer("tekstGeenLaatsteAfspraak")
-				.setVisible(!mdlVerslagVerwerkt && !intakeAfspraak.getColonScreeningRonde().getLaatsteAfspraak().equals(intakeAfspraak) && !(getModelObject().getConclusie() != null
+				.setVisible(!mdlVerslagVerwerkt && !intakeAfspraak.getScreeningRonde().getLaatsteAfspraak().equals(intakeAfspraak) && !(getModelObject().getConclusie() != null
 					&& ColonConclusieType.DOORVERWIJZEN_NAAR_ANDER_CENTRUM.equals(getModelObject().getConclusie().getType()))));
 		}
 
@@ -377,7 +377,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 
 		private Date getDatumEersteOngunstigeUitslagInRonde(ColonIntakeAfspraak intakeAfspraak)
 		{
-			IFOBTTest eersteGunstigeTest = ColonScreeningRondeUtil.getEersteOngunstigeTest(intakeAfspraak.getColonScreeningRonde());
+			ColonFitRegistratie eersteGunstigeTest = ColonScreeningRondeUtil.getEersteOngunstigeFitRegistratie(intakeAfspraak.getScreeningRonde());
 			return eersteGunstigeTest != null ? eersteGunstigeTest.getVerwerkingsDatum() : null;
 		}
 
@@ -428,7 +428,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 		private Date getOngunstigeUitslagBriefDatum(ColonIntakeAfspraak afspraak)
 		{
 			Date briefAfgedrukt = null;
-			ColonScreeningRonde ronde = afspraak.getColonScreeningRonde();
+			ColonScreeningRonde ronde = afspraak.getScreeningRonde();
 			if (ronde != null)
 			{
 				for (ColonBrief brief : ronde.getBrieven())

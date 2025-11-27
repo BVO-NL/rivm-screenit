@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.service.impl;
 
 /*-
@@ -34,10 +33,12 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Slf4j
-@Service(value = "currentDateSuplier")
+@Service
+@Profile("!test & !cucumber")
 public class DefaultCurrentDateSupplier implements ICurrentDateSupplier
 {
 

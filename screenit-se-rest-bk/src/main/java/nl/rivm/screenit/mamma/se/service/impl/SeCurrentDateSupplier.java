@@ -27,9 +27,13 @@ import nl.rivm.screenit.mamma.se.websocket.socket.SeProxyWebsocket;
 import nl.rivm.screenit.service.impl.DefaultCurrentDateSupplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-@Service(value = "currentDateSuplier")
+@Service
+@Primary
+@Profile("!test & !cucumber")
 public class SeCurrentDateSupplier extends DefaultCurrentDateSupplier
 {
 

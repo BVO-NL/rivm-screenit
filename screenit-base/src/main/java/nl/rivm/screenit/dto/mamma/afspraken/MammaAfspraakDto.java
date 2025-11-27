@@ -41,7 +41,7 @@ public class MammaAfspraakDto implements Serializable
 
 	private BigDecimal benodigdeCapaciteit;
 
-	private boolean minderValide;
+	private boolean mindervalide;
 
 	private boolean dubbeleTijd;
 

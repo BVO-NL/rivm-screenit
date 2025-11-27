@@ -31,9 +31,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.service.ColonUitnodigingSelectieService;
 import nl.rivm.screenit.batch.service.ColonUitnodigingsgebiedCapaciteitService;
-import nl.rivm.screenit.model.colon.enums.ColonUitnodigingCategorie;
+import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.model.project.ProjectGroep;
-import nl.rivm.screenit.service.colon.ColonBaseFITService;
+import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.rivm.screenit.service.colon.ColonUitnodigingService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
@@ -51,7 +51,7 @@ public class ColonClientSelectieContext
 		{
 		}
 
-		abstract ColonUitnodigingCategorie getCategorie();
+		abstract ColonUitnodigingscategorie getCategorie();
 
 		boolean isMaxAantalClientenBereikt()
 		{
@@ -87,9 +87,9 @@ public class ColonClientSelectieContext
 	{
 
 		@Override
-		public ColonUitnodigingCategorie getCategorie()
+		public ColonUitnodigingscategorie getCategorie()
 		{
-			return ColonUitnodigingCategorie.U2;
+			return ColonUitnodigingscategorie.U2;
 		}
 
 		@Override
@@ -111,9 +111,9 @@ public class ColonClientSelectieContext
 		}
 
 		@Override
-		public ColonUitnodigingCategorie getCategorie()
+		public ColonUitnodigingscategorie getCategorie()
 		{
-			return ColonUitnodigingCategorie.U1;
+			return ColonUitnodigingscategorie.U1;
 		}
 
 		@Override
@@ -129,11 +129,11 @@ public class ColonClientSelectieContext
 
 		final long projectGroupId;
 
-		private final ColonUitnodigingCategorie categorie;
+		private final ColonUitnodigingscategorie categorie;
 
 		private int maxAantalClientenPerDag = 0;
 
-		ProjectGroupUitnodiging(long projectGroupId, ColonUitnodigingCategorie categorie)
+		ProjectGroupUitnodiging(long projectGroupId, ColonUitnodigingscategorie categorie)
 		{
 			this.projectGroupId = projectGroupId;
 			this.categorie = categorie;
@@ -147,7 +147,7 @@ public class ColonClientSelectieContext
 		}
 
 		@Override
-		public ColonUitnodigingCategorie getCategorie()
+		public ColonUitnodigingscategorie getCategorie()
 		{
 			return categorie;
 		}
@@ -188,7 +188,7 @@ public class ColonClientSelectieContext
 
 	public ColonUitnodigingService uitnodigingService;
 
-	public ColonBaseFITService fitService;
+	public ColonBaseFitService fitService;
 
 	public void init(List<Integer> uitnodigingsJaren, List<ProjectGroep> projectGroepen)
 	{
@@ -205,9 +205,9 @@ public class ColonClientSelectieContext
 	{
 		for (var groep : projectGroepen)
 		{
-			taken.add(new ProjectGroupUitnodiging(groep.getId(), ColonUitnodigingCategorie.U1));
+			taken.add(new ProjectGroupUitnodiging(groep.getId(), ColonUitnodigingscategorie.U1));
 			LOG.info("Categorie: U1, Project {}/{} (groepId: '{}')", groep.getProject().getNaam(), groep.getNaam(), groep.getId());
-			taken.add(new ProjectGroupUitnodiging(groep.getId(), ColonUitnodigingCategorie.U2));
+			taken.add(new ProjectGroupUitnodiging(groep.getId(), ColonUitnodigingscategorie.U2));
 			LOG.info("Categorie: U2, Project {}/{} (groepId: '{}')", groep.getProject().getNaam(), groep.getNaam(), groep.getId());
 			exclusieGroepIds.add(groep.getId());
 		}
