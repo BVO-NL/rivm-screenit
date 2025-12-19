@@ -22,6 +22,7 @@ package nl.rivm.screenit.service.mamma.impl;
  */
 
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.UploadDocument;
@@ -171,6 +172,7 @@ public class MammaBaseTestTimelineServiceImpl implements MammaBaseTestTimelineSe
 		if (standplaatsRonde == null)
 		{
 			var lijstMetStandplaatsronden = hibernateService.loadAll(MammaStandplaatsRonde.class);
+			lijstMetStandplaatsronden.sort(Comparator.comparing(MammaStandplaatsRonde::getId));
 			var eersteStandplaatsRondeMetAchtervang = lijstMetStandplaatsronden
 				.stream()
 				.filter(standplaatsRondeToDetermine -> standplaatsRondeToDetermine.getAchtervangToegepast().equals(Boolean.TRUE))

@@ -40,5 +40,6 @@ public interface ColonIntakelocatieService
 
 	void saveIntakelocatieBeschrijving(ColonIntakelocatie intakelocatie, String locatieBeschrijving, OrganisatieMedewerker inOrganisatieMedewerker);
 
-	void saveIntakelocatieDigitaleIntake(ColonIntakelocatie intakelocatie, String digitaleIntakeTekst, OrganisatieMedewerker inOrganisatieMedewerker);
+	void saveIntakelocatieDigitaleIntake(ColonIntakelocatie intakelocatie, String digitaleIntakeTekst, Boolean digitaleIntakeEnabled, OrganisatieMedewerker inOrganisatieMedewerker);
+
 }

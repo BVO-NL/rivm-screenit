@@ -63,7 +63,7 @@ const afstandOpties = () => {
 	const afstanden = ["5", "10", "15", "20", "25", "30", "35", "40", "45"]
 	const afstandOpties: Array<DropdownOption> = []
 	for (const afstand of afstanden) {
-		afstandOpties.push({value: afstand, label: `${afstand  } km`})
+		afstandOpties.push({value: afstand, label: `${afstand} km`})
 	}
 	return afstandOpties
 }
@@ -99,7 +99,7 @@ const MammaAfspraakMakenForm = (props: MammaAfspraakMakenFormProps) => {
 	useEffect(() => {
 		if (dossierVerverst) {
 			setBeschikbaarheidOpgehaald(false)
-			const url = `mamma/afspraak/beschikbaarheid${  gekozenPlaats ? "/plaats" : `/afstand/${gekozenAfstand}`}`
+			const url = `mamma/afspraak/beschikbaarheid${gekozenPlaats ? "/plaats" : `/afstand/${gekozenAfstand}`}`
 
 			ScreenitBackend<Date[]>(url, {
 				method: gekozenPlaats ? "POST" : "GET",
@@ -207,7 +207,11 @@ const MammaAfspraakMakenForm = (props: MammaAfspraakMakenFormProps) => {
 						label={getString(properties.form.button)}
 						displayArrow={ArrowType.ARROW_RIGHT}
 						onClick={() => {
-							datadogService.stuurEvent("zoekAfspraken", AnalyticsCategorie.MAMMA_AFSPRAAK, {datum: values.vanaf, plaats: values.plaats, reisafstand: values.afstand})
+							datadogService.stuurEvent("zoekAfspraken", AnalyticsCategorie.MAMMA_AFSPRAAK, {
+								datum: values.vanaf,
+								plaats: values.plaats,
+								reisafstand: values.afstand,
+							})
 							if (beschikbaarheidOpgehaald) {
 								handleSubmit()
 								props.onZoekenClick && props.onZoekenClick()

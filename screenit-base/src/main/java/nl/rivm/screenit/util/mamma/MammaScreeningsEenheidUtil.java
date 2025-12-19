@@ -25,7 +25,8 @@ import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
+
+import org.hibernate.Hibernate;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class MammaScreeningsEenheidUtil
@@ -33,6 +34,6 @@ public class MammaScreeningsEenheidUtil
 	public static ScreeningOrganisatie getScreeningsOrganisatie(MammaScreeningsEenheid screeningsEenheid)
 	{
 		var regio = screeningsEenheid.getBeoordelingsEenheid().getParent().getRegio();
-		return (ScreeningOrganisatie) HibernateHelper.deproxy(regio);
+		return (ScreeningOrganisatie) Hibernate.unproxy(regio);
 	}
 }

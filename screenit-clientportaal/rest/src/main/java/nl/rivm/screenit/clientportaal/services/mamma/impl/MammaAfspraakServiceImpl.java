@@ -32,7 +32,7 @@ import nl.rivm.screenit.clientportaal.model.mamma.MammaAfspraakOptieDto;
 import nl.rivm.screenit.clientportaal.model.mamma.MammaAfspraakWijzigenFilterDto;
 import nl.rivm.screenit.clientportaal.model.mamma.MammaAfspraakZoekFilterDto;
 import nl.rivm.screenit.clientportaal.services.mamma.MammaAfspraakService;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakOptieMetAfstandDto;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaHuidigeAfspraakDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
@@ -81,7 +81,7 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 			maximaalAfspraakDagVoorPlaats(client, plaats, afstand));
 		var afspraakOpties = baseAfspraakService.getAfspraakOpties(client, filterVoorOphalenAfspraakOpties);
 
-		return afspraakOpties.stream().map(MammaBaseAfspraakOptieDto::getDatum).sorted().distinct().collect(Collectors.toList());
+		return afspraakOpties.stream().map(MammaAfspraakOptieMetAfstandDto::getDatum).sorted().distinct().collect(Collectors.toList());
 	}
 
 	private LocalDate maximaalAfspraakDagVoorPlaats(Client client, String plaats, String afstand)
@@ -129,28 +129,28 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 	}
 
 	@Override
-	public MammaAfspraakOptieDto toAfspraakOptieDto(MammaBaseAfspraakOptieDto baseAfspraakOptieDto, Client client)
+	public MammaAfspraakOptieDto toAfspraakOptieDto(MammaAfspraakOptieMetAfstandDto afspraakOptieMetAfstandDto, Client client)
 	{
-		var mammaAfspraakOptieDto = new MammaAfspraakOptieDto(baseAfspraakOptieDto);
+		var afspraakOptieDto = new MammaAfspraakOptieDto(afspraakOptieMetAfstandDto);
 		var standplaatsPeriode = hibernateService.get(MammaStandplaatsPeriode.class,
-			baseAfspraakOptieDto.getStandplaatsPeriodeId());
+			afspraakOptieMetAfstandDto.getStandplaatsPeriodeId());
 		var locatie = standplaatsService.getStandplaatsLocatie(standplaatsPeriode.getStandplaatsRonde().getStandplaats(),
-			DateUtil.toUtilDate(baseAfspraakOptieDto.getDatum()));
+			DateUtil.toUtilDate(afspraakOptieMetAfstandDto.getDatum()));
 
-		mammaAfspraakOptieDto.setAdres(AdresUtil.getStraatMetHuisnummerVoorStandplaatsLocatie(locatie, false));
-		mammaAfspraakOptieDto.setPostcode(locatie.getPostcode());
-		mammaAfspraakOptieDto.setPlaats(locatie.getPlaats());
+		afspraakOptieDto.setAdres(AdresUtil.getStraatMetHuisnummerVoorStandplaatsLocatie(locatie, false));
+		afspraakOptieDto.setPostcode(locatie.getPostcode());
+		afspraakOptieDto.setPlaats(locatie.getPlaats());
 
-		var briefKanVerzondenWorden = baseAfspraakService.briefKanNogVerzondenWorden(DateUtil.toUtilDate(baseAfspraakOptieDto.getDatum()));
-		mammaAfspraakOptieDto.setToonBevestigingsBriefOptie(briefKanVerzondenWorden);
+		var briefKanVerzondenWorden = baseAfspraakService.briefKanNogVerzondenWorden(DateUtil.toUtilDate(afspraakOptieMetAfstandDto.getDatum()));
+		afspraakOptieDto.setToonBevestigingsBriefOptie(briefKanVerzondenWorden);
 
-		var smsKanVerzondenWorden = baseAfspraakService.smsKanNogVerzondenWorden(baseAfspraakOptieDto.getDatumTijd());
-		mammaAfspraakOptieDto.setToonSmsHerinneringOptie(smsKanVerzondenWorden);
+		var smsKanVerzondenWorden = baseAfspraakService.smsKanNogVerzondenWorden(afspraakOptieMetAfstandDto.getDatumTijd());
+		afspraakOptieDto.setToonSmsHerinneringOptie(smsKanVerzondenWorden);
 
-		mammaAfspraakOptieDto.setClientEmailAdres(client.getPersoon().getEmailadres());
-		mammaAfspraakOptieDto.setClientMobielNummer(client.getPersoon().getTelefoonnummer1());
+		afspraakOptieDto.setClientEmailAdres(client.getPersoon().getEmailadres());
+		afspraakOptieDto.setClientMobielNummer(client.getPersoon().getTelefoonnummer1());
 
-		return mammaAfspraakOptieDto;
+		return afspraakOptieDto;
 	}
 
 	@Override

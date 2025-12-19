@@ -637,13 +637,13 @@ public abstract class AbstractUitnodigingenVersturenTasklet<U extends InpakbareU
 		UploadDocument uploadDocument)
 	{
 		var mergeFields = inpakcentrumUitnodigingDto.getMergeFields();
-		Stream.of(MergeField.CLIENT_ADRES, MergeField.CLIENT_POSTCODE,
-			MergeField.CLIENT_WOONPLAATS, MergeField.UITNODIGINGSID).filter(MergeField::naarInpakcentrum).forEach(mergeField ->
+		Stream.of(MergeField.CLIENT_ADRES, MergeField.CLIENT_POSTCODE, MergeField.CLIENT_WOONPLAATS).filter(MergeField::naarInpakcentrum).forEach(mergeField ->
 		{
 			Object value = mergeField.getValue(mailMergeContext);
 			addMergeField(mergeFields, mergeField.getFieldName(), value != null ? value.toString() : "");
 		});
 
+		addMergeField(mergeFields, "_UITNODIGINGSID", Long.toString(inpakcentrumUitnodigingDto.getId()));
 		addMergeField(mergeFields, "_VOLGNUMMER", Integer.toString(uitnodigingVolgnummer));
 		addMergeField(mergeFields, "_BVO", bvoAfkorting);
 		addMergeField(mergeFields, "_PROJECT", briefActie != null ? "P" + briefActie.getProject().getId() + ":" + briefActie.getProject().getNaam() : "");

@@ -1,8 +1,8 @@
-package nl.rivm.screenit.mamma.planning.repository.projectie;
+package nl.rivm.screenit.dvabron.models;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-planning-bk
+ * screenit-webservice-broker
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,18 +21,16 @@ package nl.rivm.screenit.mamma.planning.repository.projectie;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDateTime;
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
+
+import nl.rivm.screenit.dvabron.enums.DvaToetsResult;
 
 @Getter
-@AllArgsConstructor
-public class PlanningMinderValideReserveringProjectie
+@Setter
+public class DvaToetsResultaat
 {
-	private Long id;
+	private String medmijcode;
 
-	private Long capaciteitBlokId;
-
-	private LocalDateTime vanaf;
+	private DvaToetsResult toetsresultaat;
 }

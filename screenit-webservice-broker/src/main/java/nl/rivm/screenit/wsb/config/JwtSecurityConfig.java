@@ -70,17 +70,19 @@ public class JwtSecurityConfig
 	public static final String ROLE_PREFIX = "ROLE_";
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http, String inpakcentrumIdpIssuer)
+	public SecurityFilterChain securityFilterChain(HttpSecurity http, String idpIssuer)
 		throws Exception
 	{
-		var heeftInpakcentrumIdpIssuer = StringUtils.isNotBlank(inpakcentrumIdpIssuer);
+		var heeftIdpIssuer = StringUtils.isNotBlank(idpIssuer);
 		var httpSecurity = http.csrf(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests(authz ->
 			{
-				if (heeftInpakcentrumIdpIssuer)
+				if (heeftIdpIssuer)
 				{
 					authz.requestMatchers("/services/**").permitAll()
-						.requestMatchers("/api/inpakcentrum/v2/**").hasRole("screenit_app").anyRequest().authenticated();
+						.requestMatchers("/api/rest/dvabron/v1/**").hasRole("databroker-dva")
+						.requestMatchers("/api/inpakcentrum/v2/**").hasRole("screenit_app")
+						.anyRequest().authenticated();
 				}
 				else
 				{
@@ -89,7 +91,7 @@ public class JwtSecurityConfig
 			})
 			.addFilterBefore(new SecurityLogFilter(), BearerTokenAuthenticationFilter.class);
 
-		if (heeftInpakcentrumIdpIssuer)
+		if (heeftIdpIssuer)
 		{
 			httpSecurity.oauth2ResourceServer(oauth2ResourceServer ->
 				oauth2ResourceServer.jwt(jwt ->
@@ -110,14 +112,14 @@ public class JwtSecurityConfig
 	}
 
 	@Bean
-	JwtDecoder jwtDecoder(String inpakcentrumIdpIssuer)
+	JwtDecoder jwtDecoder(String idpIssuer)
 	{
-		if (StringUtils.isBlank(inpakcentrumIdpIssuer))
+		if (StringUtils.isBlank(idpIssuer))
 		{
 			return null;
 		}
-		NimbusJwtDecoder jwtDecoder = JwtDecoders.fromIssuerLocation(inpakcentrumIdpIssuer);
-		jwtDecoder.setJwtValidator(jwtValidator(inpakcentrumIdpIssuer, SERVER_VALIDATOR_AUDIENCE));
+		NimbusJwtDecoder jwtDecoder = JwtDecoders.fromIssuerLocation(idpIssuer);
+		jwtDecoder.setJwtValidator(jwtValidator(idpIssuer, SERVER_VALIDATOR_AUDIENCE));
 		return jwtDecoder;
 	}
 

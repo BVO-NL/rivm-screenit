@@ -23,7 +23,7 @@ import {AfspraakOptie} from "../../../../../../datatypes/mamma/AfspraakOptie"
 import BasePopup from "../../../../../../components/popup/BasePopup"
 import {Col, NavLink, Row} from "react-bootstrap"
 import classNames from "classnames"
-import {formatDateText, formatDateTime, formatTime} from "../../../../../../utils/DateUtil"
+import {formatDateText, formatTime} from "../../../../../../utils/DateUtil"
 import bvoStyles from "../../../../../../components/BvoStyle.module.scss"
 import styles from "./MammaAfspraakMakenWizardModuleStyles.module.scss"
 import {useSelectedBvo} from "../../../../../../utils/Hooks"
@@ -65,7 +65,7 @@ const MammaAfspraakMakenPopup = (props: MammaAfspraakMakenPopupProps) => {
 			AnalyticsCategorie.MAMMA_AFSPRAAK,
 			{
 				client: client.persoon.id,
-				datum: formatDateTime(afspraakOptie.datumTijd),
+				datum: afspraakOptie.datumTijd,
 				standplaatsPeriode: afspraakOptie.standplaatsPeriodeId,
 			},
 		)
@@ -90,7 +90,7 @@ const MammaAfspraakMakenPopup = (props: MammaAfspraakMakenPopupProps) => {
 			AnalyticsCategorie.MAMMA_AFSPRAAK,
 			{
 				client: client.persoon.id,
-				datum: formatDateTime(afspraakOptie.datumTijd),
+				datum: afspraakOptie.datumTijd,
 				standplaatsPeriode: afspraakOptie.standplaatsPeriodeId,
 				redenTijdNietMeerBeschikbaar: !props.isBevestigingsPopup,
 			},

@@ -80,6 +80,8 @@ import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v251.message.OUL_R22;
 import ca.uhn.hl7v2.parser.Parser;
 
+import static nl.rivm.screenit.util.colon.ColonFitRegistratieUtil.ANALYSE_RESULTAAT_FLAG_PRO;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -169,7 +171,7 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 		{
 			try
 			{
-				var barcode = result.getSid();
+				var barcode = result.getBarcode();
 				LOG.info("Uitslag voor barcode verwerken: {}", barcode);
 				var resultaatType = bepaalResultaatType(barcode);
 				resultaatSet = createOrGetResultaatSet(result);
@@ -207,7 +209,7 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 			}
 			catch (Exception e)
 			{
-				var melding = "Onbekende fout in regel met barcode " + result.getSid() + "\n";
+				var melding = "Onbekende fout in regel met barcode " + result.getBarcode() + "\n";
 				melding += e.getMessage();
 
 				LOG.warn("Fout bij verwerking van uitslag regel ", e);
@@ -255,7 +257,7 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 	{
 		uitslag.setFlag(result.getFlag());
 
-		if (Objects.equals(result.getFlag(), ColonFitRegistratieUtil.UITSLAG_FLAG_PRO))
+		if (Objects.equals(result.getFlag(), ANALYSE_RESULTAAT_FLAG_PRO))
 		{
 
 			uitslag.setUitslag(null);

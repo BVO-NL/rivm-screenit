@@ -101,13 +101,19 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.COLON_VERWIJDEREN_FIT_ANALYSE_RESULTATEN_AANLEVERING,
+	recht = { Recht.COLON_KWALITEITSCONTROLE_FIT_ANALYSE_RESULTATEN_AANLEVERING,
 		Recht.COLON_AUTORISATIE_FIT_ANALYSE_RESULTATEN_AANLEVERING, Recht.COLON_VERWIJDEREN_FIT_ANALYSE_RESULTATEN_AANLEVERING },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON },
 	organisatieTypeScopes = { OrganisatieType.LABORATORIUM, OrganisatieType.KWALITEITSPLATFORM, OrganisatieType.RIVM })
 public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabBasePage
 {
 	private final ScreenitDataTable<ColonFitAnalyseResultaatSet, String> table;
+
+	private final IModel<HibernateCheckBoxListContainer<ColonFitAnalyseResultaatSet>> checkBoxListContainer = Model.of(new HibernateCheckBoxListContainer<>());
+
+	private final TransparentWebMarkupContainer statusIconFragmentContainer;
+
+	private final ColonFitAnalyseResultaatSetDataProvider fitAnalyseResultaatSetDataProvider;
 
 	@SpringBean
 	private OrganisatieService organisatieService;
@@ -120,12 +126,6 @@ public class KwaliteitscontroleBatchOverzichtPage extends KwaliteitscontroleLabB
 
 	@SpringBean
 	private ICurrentDateSupplier currentDateSupplier;
-
-	private final IModel<HibernateCheckBoxListContainer<ColonFitAnalyseResultaatSet>> checkBoxListContainer = Model.of(new HibernateCheckBoxListContainer<>());
-
-	private final TransparentWebMarkupContainer statusIconFragmentContainer;
-
-	private final ColonFitAnalyseResultaatSetDataProvider fitAnalyseResultaatSetDataProvider;
 
 	public KwaliteitscontroleBatchOverzichtPage()
 	{

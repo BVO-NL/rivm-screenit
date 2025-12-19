@@ -25,13 +25,13 @@ import type {Transaction} from "../datatypes/Transaction"
 import {dispatchActions} from "./DispatchUtil"
 import {createActionOffline, createActionOnline} from "../actions/ConnectionActions"
 import {persistentErrorToast} from "./ToastUtil"
-import {nuISO, setOffset} from "./DateUtil"
-import moment, {Duration} from "moment"
+import {javaDurationToJavascript, nuISO, setOffset} from "./DateUtil"
 import {fetchApiPromise} from "./ApiUtil"
 import {EnvironmentInfo} from "../datatypes/EnvironmentInfo"
 import {Client, Message, Stomp} from "@stomp/stompjs"
 import {createUpdateWebsocketStatusAction} from "../actions/WebsocketStatusActions"
 import {WEBSOCKET_STATUS_OFFLINE, WEBSOCKET_STATUS_ONLINE} from "../datatypes/WebsocketStatus"
+import {Duration} from "date-fns"
 
 export const initWebSocket = (): void => {
 	let websockerUrl = `${(window.location.protocol === "https:" ? "wss:
@@ -119,9 +119,9 @@ const verwerkSocketBericht = (message: Message): void => {
 			updateDaglijst()
 			break
 		case TIJD_UPDATE:
-			const duration: string = body.split("###")[1]
-			const momentDuration: Duration = moment.duration(duration)
-			setOffset(momentDuration)
+			const isoString: string = body.split("###")[1]
+			const duration: Duration = javaDurationToJavascript(isoString)
+			setOffset(duration)
 			console.log(`De tijd is verzet naar: ${nuISO()}`)
 			break
 		case SERVER_ERROR:

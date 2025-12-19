@@ -26,7 +26,6 @@ import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.AbstractGebeurtenisDetailPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.controleren.CervixLabformulierPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.controleren.S3LabformulierResourceLink;
-import nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.controleren.SpherionResourceLink;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
@@ -83,7 +82,14 @@ public class CervixLabformulierInzienPanel extends AbstractGebeurtenisDetailPane
 			if (Boolean.FALSE.equals(isFormulierDigitaal))
 			{
 				var betreftEenS3Labformulier = labformulierService.betreftEenS3Labformulier(objid);
-				add(betreftEenS3Labformulier ? new S3LabformulierResourceLink("download", objid) : new SpherionResourceLink("download", objid));
+				if (betreftEenS3Labformulier)
+				{
+					add(new S3LabformulierResourceLink("download", objid));
+				}
+				else
+				{
+					add(new EmptyPanel("download"));
+				}
 				add(new CervixLabformulierPanel("labformulier", objid));
 			}
 			else

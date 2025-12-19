@@ -28,7 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.dto.mamma.afspraken.IMammaAfspraakWijzigenFilter;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakOptieMetAfstandDto;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.Client;
@@ -58,7 +58,7 @@ public interface MammaBaseAfspraakService
 {
 	LocalDate getHuidigeDagVoorPlannenAfspraken();
 
-	List<MammaBaseAfspraakOptieDto> getAfspraakOpties(Client client, IMammaAfspraakWijzigenFilter filter);
+	List<MammaAfspraakOptieMetAfstandDto> getAfspraakOpties(Client client, IMammaAfspraakWijzigenFilter filter);
 
 	MammaAfspraakOptie getAfspraakOptieBulkVerzetten(MammaDossier dossier, MammaStandplaatsPeriode standplaatsPeriode, LocalDate vanaf, LocalDate totEnMet,
 		BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen);
@@ -67,7 +67,7 @@ public interface MammaBaseAfspraakService
 		BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen, Integer afspraakBijUitnodigenVanafAantalWerkdagen)
 		throws MammaOnvoldoendeVrijeCapaciteitException;
 
-	List<MammaBaseAfspraakOptieDto> filterAfspraakOptiesOpDagEnDagdeel(List<MammaBaseAfspraakOptieDto> afspraken, MammaDagEnDagdeelFilter filter);
+	List<MammaAfspraakOptieMetAfstandDto> filterAfspraakOptiesOpDagEnDagdeel(List<MammaAfspraakOptieMetAfstandDto> afspraken, MammaDagEnDagdeelFilter filter);
 
 	boolean heeftAfspraken(long standplaatsPeriodeId, MammaAfspraakStatus... afspraakStatussen);
 

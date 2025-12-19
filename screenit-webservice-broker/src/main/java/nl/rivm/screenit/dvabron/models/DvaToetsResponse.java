@@ -1,8 +1,8 @@
-package nl.rivm.screenit.model.mamma;
+package nl.rivm.screenit.dvabron.models;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-base
+ * screenit-webservice-broker
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,35 +21,12 @@ package nl.rivm.screenit.model.mamma;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDateTime;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-
-import org.hibernate.envers.Audited;
-
-@Entity
-@Table(
-	schema = "mamma",
-	name = "minder_valide_reservering")
-@Audited
 @Getter
 @Setter
-@NoArgsConstructor
-public class MammaMinderValideReservering extends AbstractHibernateObject
+public class DvaToetsResponse
 {
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	private MammaCapaciteitBlok capaciteitBlok;
-
-	@Column(nullable = false)
-	private LocalDateTime vanaf;
+	private DvaToetsResultaat[] resultaten;
 }

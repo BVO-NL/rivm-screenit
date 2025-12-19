@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
@@ -61,10 +62,8 @@ public class MammaDeterminatieKandidaatAfspraakImpl extends MammaRationaal imple
 
 	private final boolean dubbeleTijd;
 
-	@Getter
 	private final LocalDate datum;
 
-	@Getter
 	private final LocalTime vanaf;
 
 	private LocalTime tot;
@@ -82,7 +81,7 @@ public class MammaDeterminatieKandidaatAfspraakImpl extends MammaRationaal imple
 		capaciteitBlokDto = capaciteitBlok;
 		minimaleAfspraakVanaf = mogelijkeAfspraakPeriode.getVanaf();
 		maximaleAfspraakTot = mogelijkeAfspraakPeriode.getTot();
-		datum = capaciteitBlok.getVanaf().toLocalDate();
+		datum = capaciteitBlok.getDatum();
 		vanaf = afspraakPeriode.getVanaf();
 		tot = afspraakPeriode.getTot().isAfter(mogelijkeAfspraakPeriode.getTot()) ? mogelijkeAfspraakPeriode.getTot() : afspraakPeriode.getTot();
 		this.minderValide = minderValide;
@@ -277,5 +276,23 @@ public class MammaDeterminatieKandidaatAfspraakImpl extends MammaRationaal imple
 	public BigDecimal getNoemer()
 	{
 		return getDuurInSeconden();
+	}
+
+	@Override
+	public Long getCapaciteitBlokId()
+	{
+		return capaciteitBlokDto.getId();
+	}
+
+	@Override
+	public Long getStandplaatsPeriodeId()
+	{
+		return capaciteitBlokDto.getStandplaatsPeriodeId();
+	}
+
+	@Override
+	public LocalDateTime getDatumTijd()
+	{
+		return datum.atTime(vanaf);
 	}
 }

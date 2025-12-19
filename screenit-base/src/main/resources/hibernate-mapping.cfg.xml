@@ -282,7 +282,7 @@
         <mapping class="nl.rivm.screenit.model.mamma.MammaScreeningsEenheid"/>
         <mapping class="nl.rivm.screenit.model.mamma.MammaScreeningsEenheidStatus"/>
         <mapping class="nl.rivm.screenit.model.mamma.MammaCapaciteitBlok"/>
-        <mapping class="nl.rivm.screenit.model.mamma.MammaMinderValideReservering"/>
+        <mapping class="nl.rivm.screenit.model.mamma.MammaMindervalideReservering"/>
         <mapping class="nl.rivm.screenit.model.mamma.MammaStandplaatsOpmerking"/>
         <mapping class="nl.rivm.screenit.model.mamma.MammaPostcodeReeks"/>
         <mapping class="nl.rivm.screenit.model.mamma.MammaStandplaatsLocatie"/>

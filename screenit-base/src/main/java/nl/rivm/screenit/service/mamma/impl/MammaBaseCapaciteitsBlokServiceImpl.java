@@ -24,7 +24,6 @@ package nl.rivm.screenit.service.mamma.impl;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +35,7 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakDto;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakReserveringView;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaCapaciteitBlokDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaMindervalideReserveringProjectie;
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
@@ -47,15 +47,17 @@ import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.model.mamma.enums.MammaFactorType;
 import nl.rivm.screenit.repository.mamma.MammaAfspraakReserveringRepository;
+import nl.rivm.screenit.repository.mamma.MammaCapaciteitBlokProjectie;
 import nl.rivm.screenit.repository.mamma.MammaCapaciteitBlokRepository;
+import nl.rivm.screenit.repository.mamma.MammaMindervalideReserveringRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.mamma.MammaPlanningUtil;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -71,6 +73,7 @@ import static nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType.GEEN_SC
 import static nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType.SCREENING;
 import static nl.rivm.screenit.specification.mamma.MammaCapaciteitBlokSpecification.heeftBlokType;
 import static nl.rivm.screenit.specification.mamma.MammaCapaciteitBlokSpecification.voorScreeningsEenheidInPeriode;
+import static nl.rivm.screenit.util.mamma.MammaScreeningsEenheidUtil.getScreeningsOrganisatie;
 
 @Service
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -90,6 +93,9 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 	private MammaAfspraakReserveringRepository afspraakReserveringRepository;
 
 	@Autowired
+	private MammaMindervalideReserveringRepository mindervalideReserveringRepository;
+
+	@Autowired
 	private SimplePreferenceService preferenceService;
 
 	@Autowired
@@ -105,7 +111,7 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 			blok.getMinderValideReserveringen().clear();
 		}
 
-		boolean isNieuw = blok.conceptId == null;
+		var isNieuw = blok.conceptId == null;
 		try
 		{
 			conceptPlanningsApplicatie.sendCapaciteitBlok(blok, isNieuw, ingelogdeOrganisatieMedewerker);
@@ -166,14 +172,14 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 
 	private void bepaalCapaciteit(List<MammaCapaciteitBlok> capaciteitsBlokken, MammaScreeningsEenheid screeningsEenheid)
 	{
-		ScreeningOrganisatie screeningOrganisatie = (ScreeningOrganisatie) Hibernate.unproxy(screeningsEenheid.getBeoordelingsEenheid().getParent().getRegio());
-		for (MammaCapaciteitBlok capaciteitBlok : capaciteitsBlokken)
+		var screeningOrganisatie = getScreeningsOrganisatie(screeningsEenheid);
+		for (var capaciteitBlok : capaciteitsBlokken)
 		{
-			BigDecimal aantalOnderzoeken = new BigDecimal(capaciteitBlok.getAantalOnderzoeken());
+			var aantalOnderzoeken = new BigDecimal(capaciteitBlok.getAantalOnderzoeken());
 			capaciteitBlok.setBeschikbareCapaciteit(aantalOnderzoeken.multiply(MammaFactorType.GEEN.getFactor(screeningOrganisatie)));
 
 			afspraakService.bepaalBenodigdeCapaciteit(capaciteitBlok.getAfspraken(), screeningsEenheid);
-			BigDecimal benodigdeCapaciteit = afspraakService.getBenodigdeCapaciteit(capaciteitBlok.getAfspraken());
+			var benodigdeCapaciteit = afspraakService.getBenodigdeCapaciteit(capaciteitBlok.getAfspraken());
 			capaciteitBlok.setVrijeCapaciteit(capaciteitBlok.getBeschikbareCapaciteit().subtract(benodigdeCapaciteit));
 		}
 	}
@@ -186,54 +192,83 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 
 			return Collections.emptyList();
 		}
+
+		var screeningOrganisatie = getScreeningsOrganisatie(standplaatsPeriode.getScreeningsEenheid());
+		var capaciteitBlokProjecties = getCapaciteitBlokProjecties(standplaatsPeriode, vanaf, totEnMet, screeningOrganisatie);
+
+		var capaciteitBlokDtoPerId = maakCapaciteitBlokDtoMap(capaciteitBlokProjecties, standplaatsPeriode, screeningOrganisatie);
+		haalAfspraakReserveringenOpEnVoegToeAanCapaciteitBlokken(capaciteitBlokDtoPerId, screeningOrganisatie, client);
+		haalMindervalideReserveringenOpEnVoegToeAanCapaciteitBlokken(capaciteitBlokDtoPerId);
+		capaciteitBlokDtoPerId.values().forEach(MammaPlanningUtil::sorteerCapaciteitBlokOpAfspraakTijdEnZetAfspraakTot);
+		return capaciteitBlokDtoPerId.values();
+	}
+
+	private List<MammaCapaciteitBlokProjectie> getCapaciteitBlokProjecties(MammaStandplaatsPeriode standplaatsPeriode, Date vanaf, Date totEnMet,
+		ScreeningOrganisatie screeningOrganisatie)
+	{
 		var zoekBereik = Range.closed(vanaf, totEnMet);
 		var screeningsEenheid = standplaatsPeriode.getScreeningsEenheid();
-		var screeningOrganisatie = (ScreeningOrganisatie) Hibernate.unproxy(screeningsEenheid.getBeoordelingsEenheid().getParent().getRegio());
 		var standplaats = standplaatsPeriodeOverlaptMetZoekBereik(standplaatsPeriode, vanaf, totEnMet) ? standplaatsPeriode.getStandplaatsRonde().getStandplaats() : null;
 
-		var capaciteitBlokProjecties = capaciteitBlokRepository.findNietGeblokkeerdeScreeningCapaciteitBlokken(zoekBereik, screeningsEenheid, screeningOrganisatie, standplaats);
+		return capaciteitBlokRepository.findNietGeblokkeerdeScreeningCapaciteitBlokken(zoekBereik, screeningsEenheid, screeningOrganisatie, standplaats);
+	}
 
+	private Map<Long, MammaCapaciteitBlokDto> maakCapaciteitBlokDtoMap(List<MammaCapaciteitBlokProjectie> capaciteitBlokProjecties,
+		MammaStandplaatsPeriode standplaatsPeriode, ScreeningOrganisatie screeningOrganisatie)
+	{
 		Map<Long, MammaCapaciteitBlokDto> capaciteitBlokDtoMap = new HashMap<>();
-		for (var projectie : capaciteitBlokProjecties)
+
+		for (var blokProjectie : capaciteitBlokProjecties)
 		{
-			var capaciteitBlokId = projectie.getBlokId();
-			var afspraakVanaf = DateUtil.toLocalDateTime(projectie.getAfspraakVanaf());
-			var capaciteitBlokDto = capaciteitBlokDtoMap.get(capaciteitBlokId);
-			if (capaciteitBlokDto == null)
-			{
-				capaciteitBlokDto = new MammaCapaciteitBlokDto();
-				capaciteitBlokDto.setId(capaciteitBlokId);
-				capaciteitBlokDto.setVanaf(DateUtil.toLocalDateTime(projectie.getBlokVanaf()));
-				capaciteitBlokDto.setTot(DateUtil.toLocalTime((projectie.getBlokTot())));
-				capaciteitBlokDto.setAantalOnderzoeken(projectie.getAantalOnderzoeken());
-				capaciteitBlokDto.setMinderValideAfspraakMogelijk(projectie.isMinderValideAfspraakMogelijk());
-				var aantalOnderzoeken = new BigDecimal(capaciteitBlokDto.getAantalOnderzoeken());
-				capaciteitBlokDto.setBeschikbareCapaciteit(aantalOnderzoeken.multiply(MammaFactorType.GEEN.getFactor(screeningOrganisatie)));
-				capaciteitBlokDto.setStandplaatsPeriode(standplaatsPeriode);
-				capaciteitBlokDtoMap.put(capaciteitBlokId, capaciteitBlokDto);
-			}
-			if (afspraakVanaf != null)
-			{
-				var doelgroep = projectie.getDoelgroep();
-				var isTehuisClient = projectie.getTehuisId() != null;
-				var eersteOnderzoek = projectie.getEersteOnderzoek();
-				var opkomstkans = projectie.getOpkomstkans();
-				var factor = MammaFactorType.getFactorType(isTehuisClient, doelgroep, eersteOnderzoek).getFactor(screeningOrganisatie);
-				var afspraakDto = new MammaAfspraakDto();
-				afspraakDto.setCapaciteitBlokDto(capaciteitBlokDto);
-				afspraakDto.setVanaf(afspraakVanaf);
-				afspraakDto.setBenodigdeCapaciteit(factor.multiply(opkomstkans));
-				afspraakDto.setMindervalide(doelgroep == MammaDoelgroep.MINDER_VALIDE);
-				afspraakDto.setDubbeleTijd(doelgroep == MammaDoelgroep.DUBBELE_TIJD || isTehuisClient);
-				capaciteitBlokDto.getAfspraakDtos().add(afspraakDto);
-			}
-			var benodigdeCapaciteit = capaciteitBlokDto.getAfspraakDtos().stream().map(MammaAfspraakDto::getBenodigdeCapaciteit).reduce(BigDecimal.ZERO,
-				BigDecimal::add);
-			capaciteitBlokDto.setVrijeCapaciteit(capaciteitBlokDto.getBeschikbareCapaciteit().subtract(benodigdeCapaciteit));
+			var capaciteitBlokDto = capaciteitBlokDtoMap.computeIfAbsent(
+				blokProjectie.getBlokId(),
+				id -> createCapaciteitBlokDto(standplaatsPeriode, blokProjectie, screeningOrganisatie)
+			);
+
+			voegAfspraakToeAanBlok(blokProjectie, capaciteitBlokDto, screeningOrganisatie);
 		}
-		haalAfspraakReserveringenOpEnVoegToeAanCapaciteitBlokken(capaciteitBlokDtoMap, screeningOrganisatie, client);
-		sorteerCapaciteitBlokkenOpAfspraakTijdEnZetAfspraakTot(capaciteitBlokDtoMap);
-		return capaciteitBlokDtoMap.values();
+
+		return capaciteitBlokDtoMap;
+	}
+
+	private static MammaCapaciteitBlokDto createCapaciteitBlokDto(MammaStandplaatsPeriode standplaatsPeriode, MammaCapaciteitBlokProjectie projectie,
+		ScreeningOrganisatie screeningOrganisatie)
+	{
+		var capaciteitBlokDto = new MammaCapaciteitBlokDto();
+		capaciteitBlokDto.setId(projectie.getBlokId());
+		capaciteitBlokDto.setVanaf(DateUtil.toLocalDateTime(projectie.getBlokVanaf()));
+		capaciteitBlokDto.setTot(DateUtil.toLocalTime((projectie.getBlokTot())));
+		capaciteitBlokDto.setAantalOnderzoeken(projectie.getAantalOnderzoeken());
+		capaciteitBlokDto.setMinderValideAfspraakMogelijk(projectie.isMinderValideAfspraakMogelijk());
+		var aantalOnderzoeken = new BigDecimal(capaciteitBlokDto.getAantalOnderzoeken());
+		capaciteitBlokDto.setBeschikbareCapaciteit(aantalOnderzoeken.multiply(MammaFactorType.GEEN.getFactor(screeningOrganisatie)));
+		capaciteitBlokDto.setStandplaatsPeriodeId(standplaatsPeriode.getId());
+		return capaciteitBlokDto;
+	}
+
+	private void voegAfspraakToeAanBlok(MammaCapaciteitBlokProjectie projectie, MammaCapaciteitBlokDto capaciteitBlokDto, ScreeningOrganisatie screeningOrganisatie)
+	{
+		if (projectie.getAfspraakVanaf() != null)
+		{
+			var afspraakDto = createAfspraakDto(projectie, screeningOrganisatie);
+			afspraakDto.setCapaciteitBlokDto(capaciteitBlokDto);
+			capaciteitBlokDto.getAfspraakDtos().add(afspraakDto);
+		}
+	}
+
+	private static MammaAfspraakDto createAfspraakDto(MammaCapaciteitBlokProjectie projectie, ScreeningOrganisatie screeningOrganisatie)
+	{
+		var doelgroep = projectie.getDoelgroep();
+		var isTehuisClient = projectie.getTehuisId() != null;
+		var eersteOnderzoek = projectie.getEersteOnderzoek();
+		var opkomstkans = projectie.getOpkomstkans();
+		var factor = MammaFactorType.getFactorType(isTehuisClient, doelgroep, eersteOnderzoek).getFactor(screeningOrganisatie);
+		var afspraakDto = new MammaAfspraakDto();
+		afspraakDto.setVanaf(DateUtil.toLocalDateTime(projectie.getAfspraakVanaf()));
+		afspraakDto.setBenodigdeCapaciteit(factor.multiply(opkomstkans));
+		afspraakDto.setMindervalide(doelgroep == MammaDoelgroep.MINDER_VALIDE);
+		afspraakDto.setDubbeleTijd(doelgroep == MammaDoelgroep.DUBBELE_TIJD || isTehuisClient);
+		return afspraakDto;
 	}
 
 	private boolean standplaatsPeriodeOverlaptMetZoekBereik(MammaStandplaatsPeriode standplaatsPeriode, Date zoekVanaf, Date zoekTotEnMet)
@@ -257,6 +292,22 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 		}
 	}
 
+	private void haalMindervalideReserveringenOpEnVoegToeAanCapaciteitBlokken(Map<Long, MammaCapaciteitBlokDto> capaciteitBlokDtoMap)
+	{
+		var capaciteitblokIds = capaciteitBlokDtoMap.keySet();
+		if (!capaciteitblokIds.isEmpty())
+		{
+			var mindervalideReserveringen = mindervalideReserveringRepository.leesMindervalideReserveringen(capaciteitblokIds);
+			mindervalideReserveringen.forEach(reservering -> voegReserveringToeAanCapaciteitBlok(reservering, capaciteitBlokDtoMap));
+		}
+	}
+
+	private static void voegReserveringToeAanCapaciteitBlok(MammaMindervalideReserveringProjectie reservering, Map<Long, MammaCapaciteitBlokDto> capaciteitBlokDtoMap)
+	{
+		var capaciteitBlokDto = capaciteitBlokDtoMap.get(reservering.capaciteitBlokId());
+		capaciteitBlokDto.getMindervalideReserveringen().add(reservering.vanaf().toLocalTime());
+	}
+
 	private void converteerReserveringNaarAfspraakInCapaciteitBlok(MammaAfspraakReserveringView reservering, Map<Long, MammaCapaciteitBlokDto> capaciteitBlokDtoMap,
 		ScreeningOrganisatie screeningOrganisatie)
 	{
@@ -274,28 +325,6 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 		capaciteitBlokDto.getAfspraakDtos().add(afspraakDto);
 	}
 
-	private void sorteerCapaciteitBlokkenOpAfspraakTijdEnZetAfspraakTot(Map<Long, MammaCapaciteitBlokDto> capaciteitBlokDtoMap)
-	{
-
-		capaciteitBlokDtoMap.values().forEach(capaciteitBlokDto ->
-		{
-			capaciteitBlokDto.getAfspraakDtos().sort(Comparator.comparing(MammaAfspraakDto::getVanaf));
-			MammaAfspraakDto vorigeAfspraakDto = null;
-			for (var afspraakDto : capaciteitBlokDto.getAfspraakDtos())
-			{
-				if (vorigeAfspraakDto != null)
-				{
-					vorigeAfspraakDto.setTot(afspraakDto.getVanaf().toLocalTime());
-				}
-				vorigeAfspraakDto = afspraakDto;
-			}
-			if (vorigeAfspraakDto != null)
-			{
-				vorigeAfspraakDto.setTot(capaciteitBlokDto.getTot());
-			}
-		});
-	}
-
 	@Override
 	public MammaCapaciteit getCapaciteit(Collection<MammaCapaciteitBlokDto> screeningCapaciteitBlokDtos)
 	{
@@ -304,12 +333,15 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 		for (var capaciteitBlokDto : screeningCapaciteitBlokDtos)
 		{
 			capaciteit.setBeschikbareCapaciteit(capaciteit.getBeschikbareCapaciteit().add(capaciteitBlokDto.getBeschikbareCapaciteit()));
-			capaciteit.setVrijeCapaciteit(capaciteit.getVrijeCapaciteit().add(capaciteitBlokDto.getVrijeCapaciteit()));
 
-			var standplaatsPeriodeDag = capaciteitBlokDto.getVanaf().toLocalDate().format(DateUtil.LOCAL_DATE_FORMAT) + "-" + capaciteitBlokDto.getStandplaatsPeriode();
+			var vrijeCapaciteitVanBlok = MammaPlanningUtil.getVrijeCapaciteitVanBlok(capaciteitBlokDto);
+			capaciteit.setVrijeCapaciteit(capaciteit.getVrijeCapaciteit().add(vrijeCapaciteitVanBlok));
+
+			var standplaatsPeriodeDag = capaciteitBlokDto.getDatum().format(DateUtil.LOCAL_DATE_FORMAT) + "-" + capaciteitBlokDto.getStandplaatsPeriodeId();
 
 			var vrijeCapaciteitVoorStandplaatsPeriodeDag = vrijeCapaciteitPerStandplaatsPeriodeDag.getOrDefault(standplaatsPeriodeDag, BigDecimal.ZERO)
-				.add(capaciteitBlokDto.getVrijeCapaciteit());
+				.add(vrijeCapaciteitVanBlok);
+
 			vrijeCapaciteitPerStandplaatsPeriodeDag.put(standplaatsPeriodeDag, vrijeCapaciteitVoorStandplaatsPeriodeDag);
 		}
 
@@ -330,5 +362,4 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 		var capaciteitBlokkenNu = getScreeningCapaciteitBlokken(screeningsEenheid, Range.closed(nu, nu), false);
 		return capaciteitBlokkenNu.stream().findAny().orElse(null);
 	}
-
 }

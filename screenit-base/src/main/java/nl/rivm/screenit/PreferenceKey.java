@@ -303,6 +303,8 @@ public enum PreferenceKey
 
 	MAMMA_AFSPRAAK_VERZETTEN_ZONDER_CLIENT_CONTACT_VANAF_AANTAL_WERKDAGEN("Afspraak verzetten zonder client contact vanaf", Integer.class),
 
+	MAMMA_VRIJGEVEN_MINDERVALIDE_RESERVERINGEN_BINNEN_AANTAL_DAGEN("Vrijgeven mindervalidereserveringen", Integer.class),
+
 	MAMMA_CAPACITEIT_VOLLEDIG_BENUT_TOT_EN_MET_AANTAL_WERKDAGEN("Capaciteit volledig benut tot en met", Integer.class),
 
 	MAMMA_BEVESTIGINGSBRIEF_NIET_VERZENDEN_BINNEN_AANTAL_WERKDAGEN("Bevestigingsbrief niet versturen als de afspraak valt binnen aantal dagen", Integer.class),

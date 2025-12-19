@@ -31,9 +31,6 @@ import org.apache.wicket.validation.validator.RangeValidator;
 
 public class BigDecimalField extends TextField<BigDecimal>
 {
-
-	private static final long serialVersionUID = 1L;
-
 	public BigDecimalField(String id)
 	{
 		super(id);
@@ -58,5 +55,4 @@ public class BigDecimalField extends TextField<BigDecimal>
 	{
 		return (IConverter<C>) new ScreenITScaledBigDecimalConverter();
 	}
-
 }

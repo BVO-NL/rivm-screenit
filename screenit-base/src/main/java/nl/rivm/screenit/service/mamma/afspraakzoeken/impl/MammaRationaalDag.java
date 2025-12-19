@@ -36,8 +36,6 @@ class MammaRationaalDag extends MammaRationaal
 {
 	private final List<MammaRationaalBlok> rationaalBlokken = new ArrayList<>();
 
-	private final boolean genoegDagcapaciteitVoorMindervalide;
-
 	@Getter
 	private final BigDecimal aflopendDagNummer;
 
@@ -62,21 +60,13 @@ class MammaRationaalDag extends MammaRationaal
 		});
 
 		streefcapaciteit = beschikbareCapaciteit;
-		genoegDagcapaciteitVoorMindervalide = beschikbareCapaciteit.compareTo(zoekContext.getMinimaleDagCapaciteitMindervalideAfspraken()) >= 0;
 	}
 
 	MammaRationaalAfspraakOptie getAfspraakOptie()
 	{
 		var rationaalBlok = MammaCapaciteitZoeken.elementMetRelatiefMeesteVrijeCapaciteit(rationaalBlokken);
-
 		var afspraakOptie = rationaalBlok.getAfspraakOptie();
-		if (afspraakOptie.isMindervalide() && !genoegDagcapaciteitVoorMindervalide)
-		{
-			afspraakOptie.setGeldigeAfspraak(false);
-		}
-
 		gebruikteCapaciteit = gebruikteCapaciteit.add(afspraakOptie.getBenodigdeCapaciteit());
-
 		return afspraakOptie;
 	}
 

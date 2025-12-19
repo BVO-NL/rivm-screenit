@@ -34,6 +34,7 @@ import nl.rivm.screenit.huisartsenportaal.model.enums.AanmeldStatus;
 import nl.rivm.screenit.huisartsenportaal.repository.HuisartsRepository;
 import nl.rivm.screenit.huisartsenportaal.util.DateUtil;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -69,15 +70,11 @@ public class ApplicationConfiguration
 	{
 		return (String username) ->
 		{
-			Huisarts huisarts;
-			try
+			Huisarts huisarts = huisartsRepository.findByGebruikersnaam(username);
+			if (huisarts == null && NumberUtils.isDigits(username) && username.indexOf("0") != 0)
 			{
-				var gebruikersnaam = Long.parseLong(username);
-				huisarts = huisartsRepository.findByHuisartsportaalId(gebruikersnaam);
-			}
-			catch (NumberFormatException e)
-			{
-				huisarts = huisartsRepository.findByGebruikersnaam(username);
+				var huisartsportaalId = Long.parseLong(username);
+				huisarts = huisartsRepository.findByHuisartsportaalId(huisartsportaalId);
 			}
 
 			if (huisarts == null || !huisarts.isAccountNonExpired())
@@ -110,7 +107,7 @@ public class ApplicationConfiguration
 	{
 		var lastAttempt = DateUtil.toLocalDateTime(huisarts.getLastAttemptDate());
 		var lockdownTime = LocalDateTime.now().minusMinutes(Medewerker.MAX_LOCKED);
-		return ChronoUnit.MINUTES.between(lastAttempt, lockdownTime);
+		return ChronoUnit.MINUTES.between(lockdownTime, lastAttempt);
 	}
 
 	@Bean

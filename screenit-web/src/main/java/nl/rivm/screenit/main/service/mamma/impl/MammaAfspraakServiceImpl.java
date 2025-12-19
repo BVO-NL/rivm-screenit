@@ -38,7 +38,7 @@ import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dto.mamma.afspraken.IMammaBulkVerzettenFilter;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakOptieMetAfstandDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningVerzetClientenDto;
 import nl.rivm.screenit.main.service.mamma.MammaAfspraakService;
 import nl.rivm.screenit.main.transformer.MammaScreeningsEenheidMetDatumDto;
@@ -227,7 +227,7 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 
 			boolean annuleerVorigeAfspraak = bestaandeAfspraak.getVanaf().compareTo(dateSupplier.getDate()) > 0;
 
-			var capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, afspraakOptie.getCapaciteitBlokDto().getId());
+			var capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, afspraakOptie.getCapaciteitBlokId());
 
 			var digitaleBerichten = dossier.getLaatsteScreeningRonde().getBerichten();
 			var emailAdres = dossier.getClient().getPersoon().getEmailadres();
@@ -241,7 +241,7 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 			}
 
 			var nieuweAfspraak = baseAfspraakService.maakAfspraak(uitnodiging.getScreeningRonde(), capaciteitBlok,
-				DateUtil.toUtilDate(afspraakOptie.getVanaf().atDate(afspraakOptie.getDatum())), filter.getStandplaatsPeriode(), filter.getVerzettenReden(),
+				DateUtil.toUtilDate(afspraakOptie.getDatumTijd()), filter.getStandplaatsPeriode(), filter.getVerzettenReden(),
 				annuleerVorigeAfspraak, false, true, true, true, account, false);
 
 			var nieuweAfspraakDate = DateUtil.toLocalDate(nieuweAfspraak.getVanaf());
@@ -358,7 +358,7 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public String controleerAfspraakInAndereLocatie(MammaBaseAfspraakOptieDto afspraakOptieDto, MammaDossier dossier)
+	public String controleerAfspraakInAndereLocatie(MammaAfspraakOptieMetAfstandDto afspraakOptieDto, MammaDossier dossier)
 	{
 		MammaStandplaatsPeriode standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class, afspraakOptieDto.getStandplaatsPeriodeId());
 		MammaAfspraak laatsteAfspraak = MammaScreeningRondeUtil.getLaatsteAfspraak(dossier.getLaatsteScreeningRonde());
@@ -429,7 +429,7 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public void verzetAfsprakenNaarStandplaatsPlusBrievenKlaarzettenVoorAfdrukken(Map<Long, List<Long>> afsprakenTeVerplatsen, Account account)
 	{
-		afsprakenTeVerplatsen.entrySet().forEach(e -> EXECUTOR_SERVICE.submit(new AfsprakenVerplaatsenThread(e.getKey(), e.getValue(), account.getId())));
+		afsprakenTeVerplatsen.forEach((key, value) -> EXECUTOR_SERVICE.submit(new AfsprakenVerplaatsenThread(key, value, account.getId())));
 	}
 
 	private boolean bulkVerzettenAlleenViaBrief()

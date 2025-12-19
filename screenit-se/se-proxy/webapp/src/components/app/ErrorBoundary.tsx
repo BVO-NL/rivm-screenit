@@ -38,11 +38,15 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
 	}
 
 	componentDidCatch(error: Error, info: ErrorInfo): void {
-		verstuurConsoleMeldingNaarCentraal({
-			level: "ERROR",
-			melding: `Fout uit component: ${error.message}`,
-			stack: info.componentStack ?? undefined,
-		})
+		if (isDevelopment()) {
+			console.error("ErrorBoundary error:", error, info)
+		} else {
+			verstuurConsoleMeldingNaarCentraal({
+				level: "ERROR",
+				melding: `Fout uit component: ${error.message}`,
+				stack: info.componentStack ?? undefined,
+			})
+		}
 		this.setState({hasError: true})
 	}
 
@@ -54,7 +58,14 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
 	}
 }
 
+function isDevelopment(): boolean {
+	return process.env.NODE_ENV !== "production"
+}
+
 (function (): void {
+	if (isDevelopment()) {
+		return
+	}
 
 	const oldConsole: any = console
 

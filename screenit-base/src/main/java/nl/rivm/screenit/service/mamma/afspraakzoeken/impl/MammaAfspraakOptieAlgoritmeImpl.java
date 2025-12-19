@@ -34,11 +34,13 @@ import java.util.TreeMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaCapaciteitBlokDto;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
+import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
 import nl.rivm.screenit.service.mamma.MammaBaseDossierService;
@@ -48,6 +50,7 @@ import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaOnvoldoendeVrijeCapaci
 import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaStandplaatsPeriodeMetZoekbereik;
 import nl.rivm.screenit.service.mamma.impl.MammaCapaciteit;
 import nl.rivm.screenit.util.DateUtil;
+import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -59,7 +62,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static nl.rivm.screenit.util.DateUtil.toLocalDate;
 
-@Component("mammaAfspraakOptieAlgoritme") 
+@Component("mammaAfspraakOptieAlgoritme")
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Slf4j
 @RequiredArgsConstructor
@@ -72,6 +75,10 @@ public class MammaAfspraakOptieAlgoritmeImpl implements MammaAfspraakOptieAlgori
 	private final MammaBaseDossierService dossierService;
 
 	private final MammaBaseAfspraakService afspraakService;
+
+	private final SimplePreferenceService simplePreferenceService;
+
+	private final ICurrentDateSupplier currentDateSupplier;
 
 	private List<MammaStandplaatsPeriodeMetZoekbereik> standplaatsPeriodesMetZoekBereik;
 
@@ -89,9 +96,9 @@ public class MammaAfspraakOptieAlgoritmeImpl implements MammaAfspraakOptieAlgori
 	public List<MammaAfspraakOptie> getAfspraakOpties(MammaDossier dossier, MammaStandplaatsPeriode standplaatsPeriode, LocalDate vanaf, LocalDate totEnMet,
 		boolean extraOpties, BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen, boolean corrigeerNegatieveVrijeCapaciteit)
 	{
+		this.extraOpties = extraOpties;
 		standplaatsPeriodesMetZoekBereik = List.of(new MammaStandplaatsPeriodeMetZoekbereik(standplaatsPeriode, vanaf, totEnMet));
 		initialiseerZoekContext(dossier, voorlopigeOpkomstkans, capaciteitVolledigBenutTotEnMetAantalWerkdagen);
-		this.extraOpties = extraOpties || zoekContext.isMindervalide();
 
 		return zoekAfspraakOpties();
 	}
@@ -132,18 +139,16 @@ public class MammaAfspraakOptieAlgoritmeImpl implements MammaAfspraakOptieAlgori
 		var screeningsEenheid = standplaatsPeriodesMetZoekBereik.get(0).standplaatsPeriode().getScreeningsEenheid();
 		var screeningOrganisatie = (ScreeningOrganisatie) Hibernate.unproxy(screeningsEenheid.getBeoordelingsEenheid().getParent().getRegio());
 		var factor = dossierService.getFactorType(dossier).getFactor(screeningOrganisatie);
+		var vrijgevenMindervalideReserveringenBinnenAantalDagen = simplePreferenceService.getInteger(
+			PreferenceKey.MAMMA_VRIJGEVEN_MINDERVALIDE_RESERVERINGEN_BINNEN_AANTAL_DAGEN.name());
+		var vrijgevenMindervalideReserveringenTotEnMetDatum = currentDateSupplier.getLocalDate().plusDays(vrijgevenMindervalideReserveringenBinnenAantalDagen);
 		zoekContext = new MammaAfspraakOptieZoekContext(dossier, factor, voorlopigeOpkomstkans, screeningsEenheid, screeningOrganisatie,
-			capaciteitVolledigBenutTotEnMetAantalWerkdagen);
+			capaciteitVolledigBenutTotEnMetAantalWerkdagen, vrijgevenMindervalideReserveringenTotEnMetDatum);
 	}
 
 	private List<MammaAfspraakOptie> zoekAfspraakOpties()
 	{
 		initialiseerRationaalDagen();
-
-		if (zoekContext.isMindervalide() && standplaatsPeriodesMetZoekBereik.get(0).standplaatsPeriode().getStandplaatsRonde().getMinderValideUitwijkStandplaats() != null)
-		{
-			return Collections.emptyList();
-		}
 
 		var totaleVrijeCapaciteit = rationaalDagen.stream().map(MammaRationaalDag::getVrijeCapaciteit).reduce(BigDecimal.ZERO, BigDecimal::add);
 		var aantalOptiesVrijeCapaciteit = deelEnRondAfNaarBoven(totaleVrijeCapaciteit, zoekContext.getBenodigdeCapaciteit());
@@ -217,7 +222,7 @@ public class MammaAfspraakOptieAlgoritmeImpl implements MammaAfspraakOptieAlgori
 		return capaciteitBlokken.stream()
 			.sorted(comparing(MammaCapaciteitBlokDto::getVanaf))
 			.collect(groupingBy(
-				blok -> blok.getVanaf().toLocalDate(),
+				MammaCapaciteitBlokDto::getDatum,
 				TreeMap::new,
 				toList()));
 	}

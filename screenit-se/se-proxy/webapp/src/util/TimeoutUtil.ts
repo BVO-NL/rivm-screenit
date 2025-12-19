@@ -22,9 +22,9 @@ import {store} from "../Store"
 import {logoutClient} from "../restclient/AuthenticatieRestclient"
 import {showErrorToast} from "./ToastUtil"
 import {nu} from "./DateUtil"
-import {Moment} from "moment"
+import {addMinutes} from "date-fns"
 
-let logoutMoment: Moment
+let logoutMoment: Date
 let idleCheck: NodeJS.Timeout
 export const ensureIdleCheck = (): void => {
 	if (idleCheck) {
@@ -35,7 +35,7 @@ export const ensureIdleCheck = (): void => {
 	idleCheck = setInterval(timerIncrement, 1000)
 }
 export const resetTimeout = (): void => {
-	logoutMoment = nu().add(30, "minutes")
+	logoutMoment = addMinutes(nu(), 30)
 }
 
 const timerIncrement = (): void => {

@@ -25,18 +25,21 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import nl.rivm.screenit.dto.mamma.afspraken.MammaCapaciteitBlokDto;
-
 public interface MammaAfspraakOptie
 {
-	MammaCapaciteitBlokDto getCapaciteitBlokDto();
+	Long getCapaciteitBlokId();
 
-	LocalDate getDatum();
+	Long getStandplaatsPeriodeId();
 
-	LocalTime getVanaf();
+	LocalDateTime getDatumTijd();
 
-	default LocalDateTime getDatumTijd()
+	default LocalDate getDatum()
 	{
-		return getDatum().atTime(getVanaf());
+		return getDatumTijd().toLocalDate();
+	}
+
+	default LocalTime getTijd()
+	{
+		return getDatumTijd().toLocalTime();
 	}
 }

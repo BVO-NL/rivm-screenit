@@ -68,7 +68,7 @@ public class MammaPlanningBeheerGegevensPanel extends GenericPanel<ScreeningOrga
 		afspraakDrempelBk.setEnabled(magAanpassen);
 		form.add(afspraakDrempelBk);
 		form.add(new BigDecimalField("factorDubbeleTijdBk", 2, BigDecimal.ZERO, new BigDecimal("4.0")).setRequired(true).setEnabled(magAanpassen));
-		form.add(new BigDecimalField("factorMinderValideBk", 2, BigDecimal.ZERO, new BigDecimal("4.0")).setRequired(true).setEnabled(magAanpassen));
+		form.add(new BigDecimalField("factorMinderValideBk", 0, BigDecimal.ONE, new BigDecimal("5")).setRequired(true).setEnabled(magAanpassen));
 		form.add(new BigDecimalField("factorEersteOnderzoekBk", 2, BigDecimal.ZERO, new BigDecimal("4.0")).setRequired(true).setEnabled(magAanpassen));
 		form.add(new NumberTextField<Integer>("wekenVanTevorenUitnodigen").setRequired(true).setEnabled(magAanpassen));
 		form.add(new NumberTextField<Integer>("vervallenCapaciteitsreserveringDagenBk").setMinimum(0).setRequired(true).setEnabled(magAanpassen));

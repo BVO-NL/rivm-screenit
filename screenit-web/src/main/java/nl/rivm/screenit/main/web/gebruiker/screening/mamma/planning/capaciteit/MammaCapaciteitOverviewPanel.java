@@ -277,14 +277,14 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 			@Override
 			protected void onOpslaan(AjaxRequestTarget target, IModel<PlanningCapaciteitBlokDto> editBlokModel)
 			{
-				origineelBlok.verwerkWijzigingenUit(editBlokModel.getObject());
-
-				onBeforeOpslaan(origineelBlok);
+				PlanningCapaciteitBlokDto editBlok = editBlokModel.getObject();
+				onBeforeOpslaan(editBlok);
 				if (!getThisPage().hasMeldingen())
 				{
-					var melding = baseCapaciteitsBlokService.saveOrUpdate(origineelBlok, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+					var melding = baseCapaciteitsBlokService.saveOrUpdate(editBlok, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 					if (StringUtils.isBlank(melding))
 					{
+						origineelBlok.verwerkWijzigingenUit(editBlok);
 						blokSuccesvolChanged(response, target);
 					}
 					else

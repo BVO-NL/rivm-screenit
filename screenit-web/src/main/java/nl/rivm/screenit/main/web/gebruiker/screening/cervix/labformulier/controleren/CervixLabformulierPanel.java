@@ -23,6 +23,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.contro
 
 import nl.rivm.screenit.service.cervix.CervixLabformulierService;
 
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
@@ -40,7 +41,7 @@ public class CervixLabformulierPanel extends Panel
 		}
 		else
 		{
-			add(new SpherionViewerContainer("labformulier", objid));
+			add(new EmptyPanel("labformulier"));
 		}
 	}
 

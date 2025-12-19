@@ -59,7 +59,7 @@ import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningDoorrekenenManager;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
-import nl.rivm.screenit.model.mamma.MammaMinderValideReservering;
+import nl.rivm.screenit.model.mamma.MammaMindervalideReservering;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
@@ -400,7 +400,7 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 				persistentBlok.setTot(blok.getDateTot());
 				persistentBlok.setVanaf(blok.getDateVanaf());
 				persistentBlok.setMinderValideAfspraakMogelijk(blok.isMinderValideAfspraakMogelijk());
-				var persistentMvReserveringen = persistentBlok.getMinderValideReserveringen();
+				var persistentMvReserveringen = persistentBlok.getMindervalideReserveringen();
 				var persistentMvReserveringenMap = maakPersistentMvReserveringMap(persistentMvReserveringen);
 				var conceptMvReserveringen = blok.getMindervalideReserveringen();
 
@@ -478,12 +478,12 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 
 	}
 
-	private void verwerkWijzigingenMvReserveringen(List<MammaMinderValideReservering> teVerwijderenMvReserveringen,
+	private void verwerkWijzigingenMvReserveringen(List<MammaMindervalideReservering> teVerwijderenMvReserveringen,
 		List<PlanningMinderValideReservering> conceptNieuweMvReserveringen,
 		List<PlanningMinderValideReservering> conceptMvReserveringenMetWijzigingen, MammaCapaciteitBlok persistentBlok)
 	{
 		teVerwijderenMvReserveringen.forEach(hibernateService::delete);
-		persistentBlok.getMinderValideReserveringen().removeAll(teVerwijderenMvReserveringen);
+		persistentBlok.getMindervalideReserveringen().removeAll(teVerwijderenMvReserveringen);
 		slaNieuweConceptMvReserveringenOp(conceptNieuweMvReserveringen, persistentBlok);
 		slaConceptMvReserveringWijzigingenOp(conceptMvReserveringenMetWijzigingen);
 	}
@@ -493,13 +493,13 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 		return conceptMindervalideReserveringen.stream().filter(reservering -> reservering.getId() == null).toList();
 	}
 
-	private Map<Long, MammaMinderValideReservering> maakPersistentMvReserveringMap(List<MammaMinderValideReservering> persistentReserveringen)
+	private Map<Long, MammaMindervalideReservering> maakPersistentMvReserveringMap(List<MammaMindervalideReservering> persistentReserveringen)
 	{
-		return persistentReserveringen.stream().collect(Collectors.toMap(MammaMinderValideReservering::getId, r -> r));
+		return persistentReserveringen.stream().collect(Collectors.toMap(MammaMindervalideReservering::getId, r -> r));
 	}
 
 	private List<PlanningMinderValideReservering> bepaalConceptMvReserveringenMetWijzigingen(List<PlanningMinderValideReservering> bestaandeReserveringen,
-		Map<Long, MammaMinderValideReservering> persistentReserveringenMap)
+		Map<Long, MammaMindervalideReservering> persistentReserveringenMap)
 	{
 		return bestaandeReserveringen.stream()
 			.filter(bestaandeReservering ->
@@ -510,7 +510,7 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 			.toList();
 	}
 
-	private List<MammaMinderValideReservering> bepaalTeVerwijderenMvReserveringen(List<MammaMinderValideReservering> persistentMvReserveringen,
+	private List<MammaMindervalideReservering> bepaalTeVerwijderenMvReserveringen(List<MammaMindervalideReservering> persistentMvReserveringen,
 		List<PlanningMinderValideReservering> conceptMindervalideReserveringen)
 	{
 		var bestaandeConceptMvReserveringIds = conceptMindervalideReserveringen.stream().map(PlanningMinderValideReservering::getId).filter(Objects::nonNull).toList();
@@ -520,7 +520,7 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 	}
 
 	private String voegMeldingenToeVoorMvReserveringen(List<PlanningMinderValideReservering> conceptNieuweReserveringen,
-		List<PlanningMinderValideReservering> conceptReserveringenVoorWijzigen, List<MammaMinderValideReservering> teVerwijderenReserveringen)
+		List<PlanningMinderValideReservering> conceptReserveringenVoorWijzigen, List<MammaMindervalideReservering> teVerwijderenReserveringen)
 	{
 		var melding = "";
 		if (!conceptNieuweReserveringen.isEmpty())
@@ -542,7 +542,7 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 	{
 		teWijzigenReserveringen.forEach(teWijzigenReserveringing ->
 		{
-			var reservering = hibernateService.get(MammaMinderValideReservering.class, teWijzigenReserveringing.getId());
+			var reservering = hibernateService.get(MammaMindervalideReservering.class, teWijzigenReserveringing.getId());
 			reservering.setVanaf(teWijzigenReserveringing.getVanaf());
 		});
 	}
@@ -551,11 +551,11 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 	{
 		conceptReserveringen.forEach(reservering ->
 		{
-			var nieuweReservering = new MammaMinderValideReservering();
+			var nieuweReservering = new MammaMindervalideReservering();
 			nieuweReservering.setCapaciteitBlok(persistentBlok);
 			nieuweReservering.setVanaf(reservering.getVanaf());
 			hibernateService.save(nieuweReservering);
-			persistentBlok.getMinderValideReserveringen().add(nieuweReservering);
+			persistentBlok.getMindervalideReserveringen().add(nieuweReservering);
 			reservering.setId(nieuweReservering.getId());
 		});
 	}
@@ -577,7 +577,7 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 						melding += ". Gekoppelde afspraken (#" + persistentBlok.getAfspraken().size() + ") worden losgemaakt van dit capaciteitblok.";
 						niveau = MammaMeldingNiveau.WAARSCHUWING;
 					}
-					var minderValideReserveringen = persistentBlok.getMinderValideReserveringen();
+					var minderValideReserveringen = persistentBlok.getMindervalideReserveringen();
 					if (!minderValideReserveringen.isEmpty())
 					{
 						melding += " Verwijderde mindervalide reserveringen (#" + minderValideReserveringen.size() + ").";

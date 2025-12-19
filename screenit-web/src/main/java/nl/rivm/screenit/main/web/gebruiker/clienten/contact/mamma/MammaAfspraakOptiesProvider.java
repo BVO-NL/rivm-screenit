@@ -26,7 +26,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
+import lombok.Setter;
+
+import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakOptieMetAfstandDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.MammaDagEnDagdeelFilter;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
@@ -38,11 +40,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-public class MammaAfspraakOptiesProvider extends SortableDataProvider<MammaBaseAfspraakOptieDto, String>
+public class MammaAfspraakOptiesProvider extends SortableDataProvider<MammaAfspraakOptieMetAfstandDto, String>
 {
-
-	private static final long serialVersionUID = 1L;
-
 	@SpringBean
 	private MammaBaseAfspraakService baseAfspraakService;
 
@@ -52,10 +51,11 @@ public class MammaAfspraakOptiesProvider extends SortableDataProvider<MammaBaseA
 
 	private final MammaDagEnDagdeelFilter dagEnDagdeelFilter;
 
-	private List<MammaBaseAfspraakOptieDto> afspraakOpties;
+	private List<MammaAfspraakOptieMetAfstandDto> afspraakOpties;
 
-	private List<MammaBaseAfspraakOptieDto> afspraakOptiesCache = new ArrayList<>();
+	private List<MammaAfspraakOptieMetAfstandDto> afspraakOptiesCache = new ArrayList<>();
 
+	@Setter
 	private boolean lijstBehouden = false;
 
 	public MammaAfspraakOptiesProvider(IModel<Client> clientModel, IModel<MammaAfspraakWijzigenFilter> filterModel, MammaDagEnDagdeelFilter dagEnDagdeelFilter)
@@ -67,7 +67,7 @@ public class MammaAfspraakOptiesProvider extends SortableDataProvider<MammaBaseA
 	}
 
 	@Override
-	public Iterator<? extends MammaBaseAfspraakOptieDto> iterator(long first, long count)
+	public Iterator<? extends MammaAfspraakOptieMetAfstandDto> iterator(long first, long count)
 	{
 		return afspraakOpties.subList((int) first, (int) (first + count)).iterator();
 	}
@@ -86,7 +86,7 @@ public class MammaAfspraakOptiesProvider extends SortableDataProvider<MammaBaseA
 	}
 
 	@Override
-	public IModel<MammaBaseAfspraakOptieDto> model(MammaBaseAfspraakOptieDto afspraakOptieDto)
+	public IModel<MammaAfspraakOptieMetAfstandDto> model(MammaAfspraakOptieMetAfstandDto afspraakOptieDto)
 	{
 		return Model.of(afspraakOptieDto);
 	}
@@ -96,10 +96,5 @@ public class MammaAfspraakOptiesProvider extends SortableDataProvider<MammaBaseA
 	{
 		ModelUtil.nullSafeDetach(filterModel);
 		ModelUtil.nullSafeDetach(clientModel);
-	}
-
-	public void setLijstBehouden(boolean lijstBehouden)
-	{
-		this.lijstBehouden = lijstBehouden;
 	}
 }

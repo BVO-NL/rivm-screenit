@@ -67,6 +67,7 @@ public class FilterConfig
 		filter.setFilter(restControllerLoggingFilter);
 		filter.addUrlPatterns("/services/rest/*");
 		filter.addUrlPatterns("/api/inpakcentrum/v2/*");
+		filter.addUrlPatterns("/api/rest/dvabron/v1/*");
 		filter.setOrder(FilterOrder.LOG.ordinal());
 		return filter;
 	}

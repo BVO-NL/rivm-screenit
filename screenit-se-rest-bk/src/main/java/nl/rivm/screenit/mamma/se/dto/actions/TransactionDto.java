@@ -47,23 +47,7 @@ public class TransactionDto
 	@JsonDeserialize(using = LocalDateDeserializer.class)
 	private LocalDate afspraakVanafDatum;
 
-	@Deprecated(forRemoval = true, since = "25.6.0")
-	private Long instellingGebruikerId;
-
 	private Long organisatieMedewerkerId;
 
 	private List<ActionDto> actions;
-
-	@Deprecated(forRemoval = true, since = "25.6.0")
-	public Long getOrganisatieMedewerkerId()
-	{
-		return organisatieMedewerkerId != null ? organisatieMedewerkerId : instellingGebruikerId;
-	}
-
-	@Deprecated(forRemoval = true, since = "25.6.0")
-	public void setOrganisatieMedewerkerId(Long organisatieMedewerkerId)
-	{
-		this.organisatieMedewerkerId = organisatieMedewerkerId;
-		this.instellingGebruikerId = organisatieMedewerkerId;
-	}
 }

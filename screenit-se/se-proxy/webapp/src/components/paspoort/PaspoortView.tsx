@@ -28,7 +28,7 @@ import Paneel from "../generic/Paneel"
 import PaneelNaam from "../generic/PaneelNaam"
 import type {Afspraak} from "../../datatypes/Afspraak"
 import {AANVULLENDE_BEELDEN_NODIG_SE} from "../../datatypes/OpschortenReden"
-import moment from "moment"
+import {differenceInYears} from "date-fns"
 
 export type PaspoortProps = {
 	client: Client;
@@ -39,7 +39,7 @@ export type PaspoortProps = {
 export default class PaspoortView extends Component<PaspoortProps> {
 
 	getLeeftijd = (geboortedatum: string): number => {
-		return nu().diff(moment(String(geboortedatum)), "years")
+		return differenceInYears(nu(), geboortedatum)
 	}
 
 	render(): JSX.Element {

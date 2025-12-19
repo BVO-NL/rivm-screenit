@@ -22,6 +22,7 @@ package nl.rivm.screenit.service.mamma.afspraakzoeken.impl;
  */
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import lombok.Getter;
 
@@ -34,13 +35,9 @@ import nl.rivm.screenit.util.mamma.MammaPlanningUtil;
 @Getter
 class MammaAfspraakOptieZoekContext
 {
-	private static final BigDecimal MINIMUM_OPKOMSTKANS = new BigDecimal("0.1");
-
 	private final MammaDossier dossier;
 
 	private final BigDecimal factor;
-
-	private final boolean mindervalide; 
 
 	private final boolean dubbeleTijd;
 
@@ -48,23 +45,25 @@ class MammaAfspraakOptieZoekContext
 
 	private final BigDecimal benodigdeCapaciteit;
 
-	private final BigDecimal minimaleDagCapaciteitMindervalideAfspraken;
+	private final BigDecimal benodigdeCapaciteitPerMindervalideAfspraak;
 
 	private final int benodigdeMinutenVoorMindervalideAfspraak;
 
 	private final Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen;
 
+	private final LocalDate vrijgevenMindervalideReserveringenTotEnMetDatum;
+
 	MammaAfspraakOptieZoekContext(MammaDossier dossier, BigDecimal factor, BigDecimal voorlopigeOpkomstkans, MammaScreeningsEenheid screeningsEenheid,
-		ScreeningOrganisatie screeningOrganisatie, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen)
+		ScreeningOrganisatie screeningOrganisatie, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen, LocalDate vrijgevenMindervalideReserveringenTotEnMetDatum)
 	{
 		this.dossier = dossier;
 		this.factor = factor;
 		this.capaciteitVolledigBenutTotEnMetAantalWerkdagen = capaciteitVolledigBenutTotEnMetAantalWerkdagen;
-		mindervalide = dossier.getDoelgroep().equals(MammaDoelgroep.MINDER_VALIDE);
 		dubbeleTijd = dossier.getDoelgroep().equals(MammaDoelgroep.DUBBELE_TIJD) || dossier.getTehuis() != null;
-		enkeleMammograaf = screeningsEenheid.getMammografen().size() <= 1;
-		minimaleDagCapaciteitMindervalideAfspraken = BigDecimal.valueOf(screeningOrganisatie.getMinimaleDagCapaciteitMinderValideAfspraken());
-		benodigdeCapaciteit = factor.multiply(voorlopigeOpkomstkans.compareTo(MINIMUM_OPKOMSTKANS) >= 0 ? voorlopigeOpkomstkans : MINIMUM_OPKOMSTKANS);
-		benodigdeMinutenVoorMindervalideAfspraak = MammaPlanningUtil.benodigdeMinutenVoorMindervalideAfspraak(screeningOrganisatie.getFactorMinderValideBk());
+		enkeleMammograaf = MammaPlanningUtil.isEnkeleMammograaf(screeningsEenheid);
+		benodigdeCapaciteit = MammaPlanningUtil.bepaalBenodigdeCapaciteitVoorNieuweAfspraakOptie(factor, voorlopigeOpkomstkans);
+		benodigdeCapaciteitPerMindervalideAfspraak = screeningOrganisatie.getFactorMinderValideBk();
+		benodigdeMinutenVoorMindervalideAfspraak = MammaPlanningUtil.benodigdeMinutenVoorMindervalideAfspraak(benodigdeCapaciteitPerMindervalideAfspraak);
+		this.vrijgevenMindervalideReserveringenTotEnMetDatum = vrijgevenMindervalideReserveringenTotEnMetDatum;
 	}
 }

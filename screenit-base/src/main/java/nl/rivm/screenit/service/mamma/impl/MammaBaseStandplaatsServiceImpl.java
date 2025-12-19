@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import nl.rivm.screenit.dto.mamma.afspraken.IMammaAfspraakWijzigenFilter;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakOptieMetAfstandDto;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaStandplaatsPeriodeMetAfstandDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.IDocument;
@@ -126,7 +126,7 @@ public class MammaBaseStandplaatsServiceImpl implements MammaBaseStandplaatsServ
 			var standplaatsPerioden = sandplaatsPeriodeService.getStandplaatsPerioden(filter);
 			var gefilterdeStandplaatsPerioden = standplaatsPerioden.stream()
 				.filter(standplaats -> !validatieUitvoeren || uitstelService.valideerStandplaatsPeriode(standplaats, filter.getVanaf()) == null)
-				.collect(Collectors.toList());
+				.toList();
 			for (var standplaatsPeriode : gefilterdeStandplaatsPerioden)
 			{
 				var standplaatsId = standplaatsPeriode.getStandplaatsRonde().getStandplaats().getId();
@@ -143,7 +143,7 @@ public class MammaBaseStandplaatsServiceImpl implements MammaBaseStandplaatsServ
 					}
 					else
 					{
-						afstand = MammaBaseAfspraakOptieDto.ONBEKENDE_AFSTAND;
+						afstand = MammaAfspraakOptieMetAfstandDto.ONBEKENDE_AFSTAND;
 					}
 					afstandenPerStandplaats.put(standplaatsId, afstand);
 				}
@@ -421,7 +421,7 @@ public class MammaBaseStandplaatsServiceImpl implements MammaBaseStandplaatsServ
 		var screeningsEenheid = eerstvolgendePeriodeStandplaats.getScreeningsEenheid();
 		var gefilterdeStandplaatsPeriodes = screeningsEenheid.getStandplaatsPerioden().stream()
 			.filter(p -> p.getTotEnMet().after(DateUtil.toUtilDate(vandaag)) || DateUtil.compareEquals(p.getTotEnMet(), DateUtil.toUtilDate(vandaag)))
-			.collect(Collectors.toList());
+			.toList();
 
 		for (var periode : gefilterdeStandplaatsPeriodes)
 		{

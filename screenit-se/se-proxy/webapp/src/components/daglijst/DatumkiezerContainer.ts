@@ -25,10 +25,11 @@ import {leesAfspraken} from "../../restclient/DaglijstRestclient"
 import {leesPlanning} from "../../restclient/PlanningRestClient"
 import {getDagverslag} from "../../restclient/DagverslagRestClient"
 import {createActionNavigateToDaglijst, createActionNavigateToDagverslag} from "../../actions/NavigationActions"
-import {datumInVerleden, isAfter, vandaagPlusDagen} from "../../util/DateUtil"
+import {datumInVerleden, vandaagPlusDagen} from "../../util/DateUtil"
 import {showErrorToast} from "../../util/ToastUtil"
 import {RootState} from "../../Store"
 import {Dispatch} from "redux"
+import {isAfter} from "date-fns"
 
 const mapStateToProps = (state: RootState): DatumkiezerViewStateProps => {
 	return {

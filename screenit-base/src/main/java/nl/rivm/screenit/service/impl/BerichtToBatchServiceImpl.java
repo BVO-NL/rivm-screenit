@@ -142,7 +142,7 @@ public class BerichtToBatchServiceImpl implements BerichtToBatchService
 	}
 
 	@Override
-	public void queueIFobtBericht(String berichtId)
+	public void queueFitAnalyseResultatenBericht(String berichtId)
 	{
 		LOG.debug("Sending ActiveMq message to batch DK");
 		queueBericht(ifobtDestination, berichtId);

@@ -32,10 +32,15 @@ import nl.rivm.screenit.model.colon.ColonFitAnalyseResultaatDto;
 import org.apache.commons.lang.StringUtils;
 
 import ca.uhn.hl7v2.model.DataTypeException;
+import ca.uhn.hl7v2.model.v251.datatype.IS;
 import ca.uhn.hl7v2.model.v251.datatype.NM;
 import ca.uhn.hl7v2.model.v251.datatype.ST;
+import ca.uhn.hl7v2.model.v251.group.OUL_R22_SPECIMEN;
 import ca.uhn.hl7v2.model.v251.message.OUL_R22;
-import ca.uhn.hl7v2.model.v251.segment.MSH;
+import ca.uhn.hl7v2.model.v251.segment.OBX;
+
+import static nl.rivm.screenit.util.colon.ColonFitRegistratieUtil.ANALYSE_RESULTAAT_FLAG_PRO;
+import static nl.rivm.screenit.util.colon.ColonFitRegistratieUtil.ANALYSE_RESULTAAT_FLAG_SS;
 
 @Slf4j
 @Getter
@@ -52,102 +57,153 @@ public class ColonHl7BerichtToFitAnalyseResultaatSetWrapper
 	public ColonHl7BerichtToFitAnalyseResultaatSetWrapper(OUL_R22 message) throws DataTypeException
 	{
 		this.message = message;
-		MSH header = message.getMSH();
+		var header = message.getMSH();
 		messageId = header.getMsh10_MessageControlID().getValue();
+		if (StringUtils.isBlank(messageId))
+		{
+			throw new DataTypeException("MSH.10: Geen messageId ingevuld.");
+		}
 		labId = header.getMsh4_SendingFacility().getHd1_NamespaceID().getValue();
 
 		for (int i = 0; i < message.getSPECIMENReps(); i++)
 		{
 			var specimen = message.getSPECIMEN(i);
 			var resultOBX = specimen.getORDER().getRESULT().getOBX();
-			var resultSPM = specimen.getSPM();
 
 			var analyseResultaatDto = new ColonFitAnalyseResultaatDto();
 
-			var entityIdentifier = specimen.getCONTAINER().getSAC().getContainerIdentifier().getEntityIdentifier();
-
-			if (entityIdentifier != null)
+			var barcode = specimen.getCONTAINER().getSAC().getContainerIdentifier().getEntityIdentifier().getValue();
+			if (StringUtils.isBlank(barcode))
 			{
-				analyseResultaatDto.setSid(entityIdentifier.getValue());
+				throw new DataTypeException("SAC.3: Geen barcode in specimen: " + (i + 1));
 			}
+			analyseResultaatDto.setBarcode(barcode);
 			analyseResultaatDto.setLabID(labId);
 
-			var specimenRejectReason = resultSPM.getSpecimenRejectReason(0);
-
-			var observationValue = resultOBX.getObx5_ObservationValue(0);
-			var flag = resultOBX.getObx8_AbnormalFlags(0);
-
-			var sid = analyseResultaatDto.getSid();
-			boolean isQC = sid != null && sid.startsWith("QC");
+			boolean isQC = barcode.startsWith("QC");
 
 			if (isQC)
 			{
-				if (observationValue.getData() instanceof NM nm)
-				{
-					analyseResultaatDto.setResultValue(nm.getValue());
-				}
-				else
-				{
-
-					throw new DataTypeException("Combinatie van SPM en OBX waardes klopt niet samen. Barcode: " + sid);
-				}
+				kopieerQcAnalyseResultaat(resultOBX, analyseResultaatDto, barcode);
 			}
 			else
 			{
-
-				if (specimenRejectReason.getCwe1_Identifier().getValue() != null)
-				{
-					analyseResultaatDto.setOnbeoordeelbaarReden(specimenRejectReason.getCwe1_Identifier().getValue());
-				}
-				else if (observationValue.getData() instanceof ST st && flag.getValue() != null)
-				{
-					var flagValue = flag.getValue();
-
-					if (!"PRO".equals(flagValue) && !"SS".equals(flagValue))
-					{
-						throw new DataTypeException("Combinatie van SPM en OBX waardes klopt niet samen. Barcode: " + sid);
-					}
-					var observationValueString = st.getValue();
-
-					if (observationValueString == null || StringUtils.countMatches(observationValueString, "*") != observationValueString.length())
-					{
-						throw new DataTypeException("Combinatie van SPM en OBX waardes klopt niet samen. Barcode: " + sid);
-					}
-					analyseResultaatDto.setFlag(flagValue);
-				}
-
-				else if (observationValue.getData() instanceof NM nm)
-				{
-					analyseResultaatDto.setResultValue(nm.getValue());
-				}
-				else
-				{
-					throw new DataTypeException("Combinatie van SPM en OBX waardes klopt niet samen. Barcode: " + sid);
-				}
+				kopieerNormaleAnalyseResultaat(specimen, analyseResultaatDto, barcode);
 			}
+			kopieerInstrumentId(resultOBX, analyseResultaatDto, barcode);
+			kopieerAnalyseDatum(resultOBX, analyseResultaatDto, barcode);
 
-			var equipmentInstanceIdentifier = resultOBX.getObx18_EquipmentInstanceIdentifier(0).getEi1_EntityIdentifier();
-			if (equipmentInstanceIdentifier != null)
-			{
-				analyseResultaatDto.setInstrumentID(equipmentInstanceIdentifier.getValue());
-			}
-
-			try
-			{
-				var resultDate = resultOBX.getObx19_DateTimeOfTheAnalysis().getTime();
-				if (resultDate != null)
-				{
-					analyseResultaatDto.setDateTimeResult(resultDate.getValueAsDate());
-				}
-			}
-			catch (DataTypeException ex)
-			{
-				LOG.warn("Fout bij parsen analysedatum FIT. MessageID: {}", messageId);
-				throw ex;
-			}
 			analyseResultaatDto.setBestandsNaam(messageId);
 			results.add(analyseResultaatDto);
 		}
 
 	}
+
+	private static void kopieerQcAnalyseResultaat(OBX obx, ColonFitAnalyseResultaatDto analyseResultaatDto, String barcode) throws DataTypeException
+	{
+		var observationValue = obx.getObx5_ObservationValue(0);
+		if (observationValue.getData() instanceof NM nm && StringUtils.isNotBlank(nm.getValue()))
+		{
+			analyseResultaatDto.setResultValue(nm.getValue());
+		}
+		else
+		{
+
+			throw new DataTypeException("OBX.2: Geen analyse resultaat. Barcode: " + barcode);
+		}
+	}
+
+	private static void kopieerNormaleAnalyseResultaat(OUL_R22_SPECIMEN specimen, ColonFitAnalyseResultaatDto analyseResultaatDto, String barcode)
+		throws DataTypeException
+	{
+		var resultOBX = specimen.getORDER().getRESULT().getOBX();
+		var resultSPM = specimen.getSPM();
+		var specimenRejectReason = resultSPM.getSpecimenRejectReason(0);
+
+		var observationValue = resultOBX.getObx5_ObservationValue(0);
+		var flag = resultOBX.getObx8_AbnormalFlags(0);
+
+		var onbeoordeelbaarReden = specimenRejectReason.getCwe1_Identifier().getValue();
+		if (StringUtils.isNotBlank(onbeoordeelbaarReden))
+		{
+			if (StringUtils.isNumeric(onbeoordeelbaarReden))
+			{
+				analyseResultaatDto.setOnbeoordeelbaarReden(onbeoordeelbaarReden);
+			}
+			else
+			{
+				throw new DataTypeException("SPM.21: Waarde (" + onbeoordeelbaarReden + ") is niet numeriek. Barcode: " + barcode);
+			}
+		}
+		else if (observationValue.getData() instanceof ST st && StringUtils.isNotBlank(flag.getValue()))
+		{
+			kopieerFlag(analyseResultaatDto, barcode, st, flag);
+		}
+
+		else if (observationValue.getData() instanceof NM nm && StringUtils.isNotBlank(nm.getValue()))
+		{
+			analyseResultaatDto.setResultValue(nm.getValue());
+		}
+		else
+		{
+			throw new DataTypeException("Combinatie van SPM en OBX waardes klopt niet samen. Barcode: " + barcode);
+		}
+	}
+
+	private static void kopieerFlag(ColonFitAnalyseResultaatDto analyseResultaatDto, String barcode, ST st, IS flag) throws DataTypeException
+	{
+		var flagValue = flag.getValue();
+
+		if (!ANALYSE_RESULTAAT_FLAG_PRO.equals(flagValue) && !ANALYSE_RESULTAAT_FLAG_SS.equals(flagValue))
+		{
+			throw new DataTypeException("OBX.5: Onbekende flag: " + flagValue + ". Barcode: " + barcode);
+		}
+		var observationValueString = st.getValue();
+
+		if (observationValueString == null || StringUtils.countMatches(observationValueString, "*") != observationValueString.length())
+		{
+			throw new DataTypeException("Combinatie van SPM en OBX waardes klopt niet samen. Barcode: " + barcode);
+		}
+		analyseResultaatDto.setFlag(flagValue);
+	}
+
+	private static void kopieerInstrumentId(OBX obx, ColonFitAnalyseResultaatDto analyseResultaatDto, String barcode) throws DataTypeException
+	{
+		var equipmentInstanceIdentifier = obx.getObx18_EquipmentInstanceIdentifier(0).getEi1_EntityIdentifier().getValue();
+		if (StringUtils.isNotBlank(equipmentInstanceIdentifier))
+		{
+			analyseResultaatDto.setInstrumentID(equipmentInstanceIdentifier);
+		}
+		else if (heeftAnalyseResultaat(analyseResultaatDto))
+		{
+			throw new DataTypeException("OBX.18: Geen instrument identifier bij analyse resultaat. Barcode: " + barcode);
+		}
+	}
+
+	private void kopieerAnalyseDatum(OBX resultOBX, ColonFitAnalyseResultaatDto analyseResultaatDto, String barcode) throws DataTypeException
+	{
+		try
+		{
+			var resultDate = resultOBX.getObx19_DateTimeOfTheAnalysis().getTime().getValueAsDate();
+			if (resultDate != null)
+			{
+				analyseResultaatDto.setDateTimeResult(resultDate);
+			}
+			else if (heeftAnalyseResultaat(analyseResultaatDto))
+			{
+				throw new DataTypeException("OBX.19: Geen analysedatum. Barcode: " + barcode);
+			}
+		}
+		catch (DataTypeException ex)
+		{
+			LOG.warn("Fout bij parsen analysedatum FIT. MessageID: {}", messageId);
+			throw ex;
+		}
+	}
+
+	private static boolean heeftAnalyseResultaat(ColonFitAnalyseResultaatDto analyseResultaatDto)
+	{
+		return analyseResultaatDto.getResultValue() != null || ANALYSE_RESULTAAT_FLAG_PRO.equals(analyseResultaatDto.getFlag());
+	}
+
 }

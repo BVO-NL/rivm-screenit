@@ -50,14 +50,12 @@ import nl.rivm.screenit.util.DateUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@ConditionalOnProperty(value = "textract.enabled", havingValue = "true")
 public class CervixAnalogeLabformulierS3VerwerkenServiceImpl implements CervixAnalogeLabformulierS3VerwerkenService
 {
 	private final TextractService textractService;

@@ -78,7 +78,7 @@ public class OrganisatieUtil
 		case SCREENINGSORGANISATIE:
 			nieuweOrganisatie = new ScreeningOrganisatie();
 			((ScreeningOrganisatie) nieuweOrganisatie).setAfspraakDrempelBk(10);
-			((ScreeningOrganisatie) nieuweOrganisatie).setFactorMinderValideBk(new BigDecimal("3.0"));
+			((ScreeningOrganisatie) nieuweOrganisatie).setFactorMinderValideBk(new BigDecimal("3"));
 			((ScreeningOrganisatie) nieuweOrganisatie).setFactorDubbeleTijdBk(new BigDecimal("2.0"));
 			((ScreeningOrganisatie) nieuweOrganisatie).setFactorEersteOnderzoekBk(new BigDecimal("1.1"));
 			break;

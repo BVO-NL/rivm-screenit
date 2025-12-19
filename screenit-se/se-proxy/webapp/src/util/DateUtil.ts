@@ -18,20 +18,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import moment, {Duration} from "moment"
-import localization from "moment/locale/nl"
 import {createActionKiesDaglijstDatum} from "../actions/DaglijstDatumActions"
 import {store} from "../Store"
 import {leesAfspraken} from "../restclient/DaglijstRestclient"
 import {leesPlanning} from "../restclient/PlanningRestClient"
 import {createActionNavigateToDaglijst} from "../actions/NavigationActions"
+import {add, differenceInMinutes, Duration, format, formatDistanceToNow, formatDuration, isAfter, isBefore, isEqual, sub} from "date-fns"
 
-moment.updateLocale("nl", localization)
-export const vandaagISO = (): string => nu().format("YYYY-MM-DD")
-let offset = 0
+export const DATUM_FORMAT = "yyyy-MM-dd"
+export const NL_DATUM_FORMAT = "dd-MM-yyyy"
+export const TIJD_FORMAT = "HH:mm"
+export const TIMESTAMP_FORMAT = "HH:mm:ss.SSS"
+export const ISO_TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
+export const NL_DATUM_TIJD_FORMAT = "dd-MM-yyyy HH:mm"
+
+export const vandaagISO = (): string => format(nu(), DATUM_FORMAT)
+let offset: Duration | null = null
 
 export const setOffset = (val: Duration): void => {
-	offset = Number(val)
+	offset = val
 
 	if (store.getState().session) {
 		store.dispatch(createActionKiesDaglijstDatum(vandaagISO()))
@@ -40,47 +45,45 @@ export const setOffset = (val: Duration): void => {
 	}
 }
 
-export const nu = (): moment.Moment => {
-	if (offset !== 0) {
-		const nuDST = moment().isDST()
-		const goal = moment().add(offset)
-		const goalDST = goal.isDST()
-
-		if (nuDST && !goalDST) {
-			goal.add(moment.duration({
-				"s": 3600,
-			}))
-		} else if (!nuDST && goalDST) {
-			goal.subtract(moment.duration({
-				"s": 3600,
-			}))
-		}
-
-		return goal
+export const nu = (): Date => {
+	if (offset !== null) {
+		return add(new Date(), offset)
 	}
 
-	return moment()
+	return new Date()
 }
 
-export const nuISO = (): string => nu().format("YYYY-MM-DDTHH:mm:ss")
+export const nuISO = (): string => format(nu(), ISO_TIMESTAMP_FORMAT)
 
-export const nuTimestamp = (): string => nu().format("HH:mm:ss.SSS")
+export const nuTimestamp = (): string => format(nu(), TIMESTAMP_FORMAT)
 
-export const nuTijdUrenMinuten = (): string => nu().format("HH:mm")
+export const nuTijdUrenMinuten = (): string => format(nu(), TIJD_FORMAT)
 
-export const ligtTussenData = (datum: Date, startDatum: Date | null, eindDatum: Date | null): boolean => {
-	if (startDatum || eindDatum) {
-		return (startDatum ? getDate(String(startDatum)) <= String(datum) : true) && (eindDatum ? String(datum) <= getDate(String(eindDatum)) : true)
-	} else {
-		return false
+export const ligtTussenData = (
+	datum: Date,
+	startDatum: Date | null,
+	eindDatum: Date | null,
+): boolean => {
+	if (startDatum && eindDatum) {
+		return (
+			(isAfter(datum, startDatum) || isEqual(datum, startDatum)) &&
+			(isBefore(datum, eindDatum) || isEqual(datum, eindDatum))
+		)
 	}
+	if (startDatum) {
+		return isAfter(datum, startDatum) || isEqual(datum, startDatum)
+	}
+	if (eindDatum) {
+		return isBefore(datum, eindDatum) || isEqual(datum, eindDatum)
+	}
+	return false
 }
 
-export const datumFormaat = (isoDatum: string | Date | null | undefined): string => isoDatum ? moment(String(isoDatum)).format("DD-MM-YYYY") : ""
+export const datumFormaat = (isoDatum: string | Date | null | undefined): string => isoDatum ? format(new Date(String(isoDatum)), NL_DATUM_FORMAT) : ""
 
-export const tijdFormaat = (isoTijd: string | undefined): string => isoTijd ? moment(isoTijd).format("HH:mm") : ""
+export const tijdFormaat = (isoTijd: string | undefined): string => isoTijd ? format(new Date(isoTijd), TIJD_FORMAT) : ""
 
-export const datumTijdFormaat = (isoTijd: string | undefined): string => isoTijd ? moment(isoTijd).format("DD-MM-YYYY HH:mm") : ""
+export const datumTijdFormaat = (isoTijd: string | undefined): string => isoTijd ? format(new Date(isoTijd), NL_DATUM_TIJD_FORMAT) : ""
 
 export const getDate = (isoDatetime: string): string => {
 	return isoDatetime.split("T")[0]
@@ -92,28 +95,22 @@ export const getTime = (isoDatetime: string): string => {
 
 export const datumInVerleden = (isoDateTime: string): boolean => {
 	const datum = new Date(isoDateTime)
-	const gisteren = nu().subtract(1, "days").toDate()
+	const gisteren = sub(nu(), {days: 1})
 	return datum <= gisteren
 }
 
 export const datumInToekomst = (isoDateTime: string): boolean => {
 	const datum = new Date(isoDateTime)
-	const vandaagIso = nu().toDate()
+	const vandaagIso = nu()
 	return datum > vandaagIso
 }
 
-export const isAfter = (vergelijkingsIsoDatum: string, referentieIsoDatum: string): boolean => {
-	const vergelijkingsDatum = new Date(vergelijkingsIsoDatum)
-	const referentieDatum = new Date(referentieIsoDatum)
-	return vergelijkingsDatum > referentieDatum
-}
-
 export const getTijdGeledenTekst = (timestamp: string): string => {
-	return moment(timestamp).fromNow()
+	return formatDistanceToNow(new Date(timestamp), {addSuffix: true})
 }
 
-export const vandaagPlusDagen = (aantal: number): string => {
-	return nu().add(aantal, "d").format("YYYY-MM-DDTHH:mm:ss")
+export const vandaagPlusDagen = (aantal: number): Date => {
+	return add(nu(), {days: aantal})
 }
 
 export const vandaagDate = (): Date => {
@@ -129,9 +126,26 @@ export const stringDatumEnStringTijdNaarDatumTijd = (datum: string, tijd: string
 }
 
 export const verschilDatumTijdEnNuInMinuten = (datumTijd: string | Date): number => {
-	return moment.duration(moment(nuISO()).diff(new Date(datumTijd))).as("minutes")
+	return differenceInMinutes(new Date(nuISO()), new Date(datumTijd))
 }
 
 export const numberMinutenNaarStringUrenEnMinuten = (minuten: number): string => {
-	return moment.duration(minuten, "minutes").humanize()
+	return formatDuration({minutes: minuten})
+}
+
+export const javaDurationToJavascript = (durationStr: string): Duration => {
+	const match = durationStr.match(
+		/^P(?:(-?\d+)W)?(?:(-?\d+)D)?(?:T(?:(-?\d+)H)?(?:(-?\d+)M)?(?:(-?\d+(?:\.\d+)?)S)?)?$/,
+	)
+	if (!match) {
+		throw new Error(`Invalid Java Duration format: ${durationStr}`)
+	}
+	const [, w, d, h, m, s] = match
+	const days = (w ? parseInt(w, 10) * 7 : 0) + (d ? parseInt(d, 10) : 0)
+	return {
+		days,
+		hours: h ? parseInt(h, 10) : 0,
+		minutes: m ? parseInt(m, 10) : 0,
+		seconds: s ? parseFloat(s) : 0,
+	}
 }

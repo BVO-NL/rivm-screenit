@@ -23,11 +23,11 @@ import type {MammograafStatus} from "../../datatypes/connectiestatus/MammograafS
 import type {ConnectieStatusLevel} from "../../datatypes/connectiestatus/ConnectieStatus"
 import {connectieStatusLevels, getMostCriticalStatusLevel} from "../../datatypes/connectiestatus/ConnectieStatus"
 import type {ConnectieStatusItem} from "./ConnectieStatusItem"
-import moment from "moment"
 import {Col, Row} from "reactstrap"
 import MammograafDicomBerichtStatusView from "./MammograafDicomBerichtStatusView"
 import type {MammograafDicomMessageType} from "../../datatypes/connectiestatus/MammograafDicomMessageError"
 import {nu} from "../../util/DateUtil"
+import {isSameDay} from "date-fns"
 
 export type MammograafStatusViewStateProps = {
 	mammograafStatus: MammograafStatus;
@@ -90,7 +90,7 @@ export default class MammograafStatusView extends Component<MammograafStatusView
 		return this.props.mammograafStatus.foutenSindsLaatsteSuccesDmwlBericht.length > 0 ? "FAULT" : this.props.mammograafStatus.laatsteSuccesDmwlBerichtTimestamp ? "OK" : "WARN"
 	}
 	getDatumStatusLevel = (): ConnectieStatusLevel => {
-		return this.props.mammograafStatus.mammograafDatum ? moment(this.props.mammograafStatus.mammograafDatum).isSame(nu(), "day") ? "OK" : "FAULT" : "WARN"
+		return this.props.mammograafStatus.mammograafDatum ? isSameDay(nu(), this.props.mammograafStatus.mammograafDatum) ? "OK" : "FAULT" : "WARN"
 	}
 	getStatusLevel = (): ConnectieStatusLevel => {
 		const statusLevel = getMostCriticalStatusLevel([this.getDmwlStatusLevel(), this.getMppsStatusLevel(), this.getDatumStatusLevel()])

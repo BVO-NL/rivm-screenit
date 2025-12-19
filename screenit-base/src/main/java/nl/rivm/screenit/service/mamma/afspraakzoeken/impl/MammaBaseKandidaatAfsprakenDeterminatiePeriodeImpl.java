@@ -211,8 +211,7 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 		var capaciteitsBlokMap = new TreeMap<LocalDate, List<MammaCapaciteitBlokDto>>();
 		nietGeblokkeerdeCapaciteitsBlokken.forEach(blok ->
 		{
-			var vanafDatum = blok.getVanaf().toLocalDate();
-			capaciteitsBlokMap.computeIfAbsent(vanafDatum, v -> new ArrayList<>()).add(blok);
+			capaciteitsBlokMap.computeIfAbsent(blok.getDatum(), v -> new ArrayList<>()).add(blok);
 		});
 
 		capaciteitsBlokMap.forEach((key, value) -> value.sort(Comparator.comparing(MammaCapaciteitBlokDto::getVanaf)));
@@ -433,8 +432,8 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 			this.datum = datum;
 			minderValideAfspraakMogelijk = capaciteitBlokDto.isMinderValideAfspraakMogelijk();
 
-			LOG.debug("{} afspraken in capaciteitBlok {} vanaf {}, beschikbaar: {}, vrij: {}, MV: {}", capaciteitBlokDto.getAfspraakDtos().size(), capaciteitBlokDto.getId(),
-				capaciteitBlokDto.getVanaf(), capaciteitBlokDto.getBeschikbareCapaciteit(), capaciteitBlokDto.getVrijeCapaciteit(),
+			LOG.debug("{} afspraken in capaciteitBlok {} vanaf {}, beschikbaar: {}, MV: {}", capaciteitBlokDto.getAfspraakDtos().size(), capaciteitBlokDto.getId(),
+				capaciteitBlokDto.getVanaf(), capaciteitBlokDto.getBeschikbareCapaciteit(),
 				capaciteitBlokDto.isMinderValideAfspraakMogelijk());
 
 			if (isMindervalide)
@@ -543,7 +542,7 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 				}
 				else
 				{
-					var eersteKandidaatAfspraakVanaf = kandidaatAfspraakList.get(0).getVanaf();
+					var eersteKandidaatAfspraakVanaf = kandidaatAfspraakList.get(0).getTijd();
 					if (!eersteKandidaatAfspraakVanaf.equals(capaciteitBlokVanaf.toLocalTime()))
 					{
 
@@ -571,7 +570,7 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 		private MammaDeterminatieKandidaatAfspraakImpl addKandidaatAfspraak(MammaDeterminatieKandidaatAfspraakImpl kandidaatAfspraak)
 		{
 			kandidaatAfspraakList.add(kandidaatAfspraak);
-			kandidaatAfspraakList.sort(Comparator.comparing(MammaAfspraakOptie::getVanaf));
+			kandidaatAfspraakList.sort(Comparator.comparing(MammaAfspraakOptie::getTijd));
 			return kandidaatAfspraak;
 		}
 
@@ -640,7 +639,7 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 			}
 			else
 			{
-				var eersteKandidaatAfspraakVanaf = kandidaatAfspraakList.get(0).getVanaf();
+				var eersteKandidaatAfspraakVanaf = kandidaatAfspraakList.get(0).getTijd();
 				if (!eersteKandidaatAfspraakVanaf.equals(periodeVanaf))
 				{
 
@@ -660,7 +659,7 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 		private MammaDeterminatieKandidaatAfspraakImpl addKandidaatAfspraak(MammaDeterminatieKandidaatAfspraakImpl kandidaatAfspraak)
 		{
 			kandidaatAfspraakList.add(kandidaatAfspraak);
-			kandidaatAfspraakList.sort(Comparator.comparing(MammaAfspraakOptie::getVanaf));
+			kandidaatAfspraakList.sort(Comparator.comparing(MammaAfspraakOptie::getTijd));
 			return kandidaatAfspraak;
 		}
 

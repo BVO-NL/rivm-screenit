@@ -23,17 +23,14 @@ package nl.rivm.screenit.dto.mamma.afspraken;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Transient;
-
 import lombok.Getter;
 import lombok.Setter;
-
-import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 
 @Setter
 @Getter
@@ -45,8 +42,6 @@ public class MammaCapaciteitBlokDto implements Serializable
 
 	private LocalTime tot;
 
-	private BigDecimal vrijeCapaciteit;
-
 	private BigDecimal beschikbareCapaciteit;
 
 	private List<MammaAfspraakDto> afspraakDtos = new ArrayList<>();
@@ -55,9 +50,12 @@ public class MammaCapaciteitBlokDto implements Serializable
 
 	private Integer aantalOnderzoeken;
 
-	@Transient
-	private MammaStandplaatsPeriode standplaatsPeriode;
+	private Long standplaatsPeriodeId;
 
 	private boolean minderValideAfspraakMogelijk;
 
+	public LocalDate getDatum()
+	{
+		return vanaf.toLocalDate();
+	}
 }

@@ -42,13 +42,9 @@ public class WsbApplicationConfig
 
 	private Boolean fqdncontrole;
 
-	private WsbEndpointConfig labformulier;
-
-	private WsbEndpointConfig scan;
-
 	private WsbEndpointConfig inpakcentrum;
 
-	private IdpValidatieConfig idpInpakcentrum;
+	private IdpValidatieConfig idpValidatieConfig;
 
 	@Bean
 	public String schematronLocation()
@@ -60,30 +56,6 @@ public class WsbApplicationConfig
 	public Boolean fqdncontrole()
 	{
 		return fqdncontrole != null ? fqdncontrole : false;
-	}
-
-	@Bean
-	public String labformulierInlognaam()
-	{
-		return StringUtils.defaultIfBlank(labformulier.inlognaam, "");
-	}
-
-	@Bean
-	public String labformulierWachtwoord()
-	{
-		return StringUtils.defaultIfBlank(labformulier.wachtwoord, "");
-	}
-
-	@Bean
-	public String scanInlognaam()
-	{
-		return StringUtils.defaultIfBlank(scan.inlognaam, "");
-	}
-
-	@Bean
-	public String scanWachtwoord()
-	{
-		return StringUtils.defaultIfBlank(scan.wachtwoord, "");
 	}
 
 	@Deprecated(forRemoval = true, since = "nieuwe endpoint wordt gebruikt in PROD")
@@ -101,9 +73,9 @@ public class WsbApplicationConfig
 	}
 
 	@Bean
-	public String inpakcentrumIdpIssuer()
+	public String idpIssuer()
 	{
-		return StringUtils.defaultIfBlank(idpInpakcentrum.issuer, "");
+		return StringUtils.defaultIfBlank(idpValidatieConfig.issuer, "");
 	}
 
 	@Bean

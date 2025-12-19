@@ -35,7 +35,7 @@ public class ColonFitAnalyseResultaatDto implements Serializable
 
 	private String instrumentID;
 
-	private String sid;
+	private String barcode;
 
 	private String resultValue;
 

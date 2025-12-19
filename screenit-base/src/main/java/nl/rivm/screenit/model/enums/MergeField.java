@@ -1592,10 +1592,16 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
+				var organisatieParameterService = getOrganisatieParameterService();
+
 				if (context.getIntakeAfspraak() != null)
 				{
-					return getOrganisatieParameterService().getOrganisatieParameter(context.getIntakeAfspraak().getKamer().getIntakelocatie(),
-						OrganisatieParameterKey.COLON_DIGITALE_INTAKE);
+					var intakelocatie = context.getIntakeAfspraak().getKamer().getIntakelocatie();
+					if (organisatieParameterService.getOrganisatieParameter(intakelocatie, OrganisatieParameterKey.COLON_DIGITALE_INTAKE_ENABLED))
+					{
+						return organisatieParameterService.getOrganisatieParameter(context.getIntakeAfspraak().getKamer().getIntakelocatie(),
+							OrganisatieParameterKey.COLON_DIGITALE_INTAKE);
+					}
 				}
 				return null;
 			}

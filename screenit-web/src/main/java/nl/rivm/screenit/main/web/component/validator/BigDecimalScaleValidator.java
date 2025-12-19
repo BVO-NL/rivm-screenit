@@ -31,9 +31,6 @@ import org.slf4j.LoggerFactory;
 
 public class BigDecimalScaleValidator implements IValidator<BigDecimal>
 {
-
-	private static final long serialVersionUID = 1L;
-
 	private static final Logger LOG = LoggerFactory.getLogger(BigDecimalScaleValidator.class);
 
 	private int scaleMax;
@@ -65,6 +62,7 @@ public class BigDecimalScaleValidator implements IValidator<BigDecimal>
 		String errorCode = getClass().getSimpleName() + "." + errorKey;
 		LOG.info(errorCode);
 		error.addKey(errorCode);
+		error.setVariable("scale", Integer.toString(scaleMax));
 		validatable.error(error);
 	}
 }

@@ -29,7 +29,7 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.service.LogService;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +39,7 @@ import io.awspring.cloud.sqs.annotation.SqsListener;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty(value = "textract.enabled", havingValue = "true")
+@Profile("!test")
 public class CervixLabformulierS3Listener
 {
 	private static final ObjectMapper objectMapper = new ObjectMapper();

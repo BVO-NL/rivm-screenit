@@ -1,8 +1,8 @@
-package nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.controleren;
+package nl.rivm.screenit.dvabron.models;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-web
+ * screenit-webservice-broker
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,19 +21,22 @@ package nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.contro
  * =========================LICENSE_END==================================
  */
 
-import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 
-import org.apache.wicket.markup.html.link.ResourceLink;
+import lombok.Getter;
+import lombok.Setter;
 
-public class SpherionResourceLink extends ResourceLink<Void>
+@Getter
+@Setter
+public class DvaToetsRequest
 {
+	@NotBlank
+	private String bsn;
 
-	private static final long serialVersionUID = 1L;
+	@NotBlank
+	private String zorgaanbieder;
 
-	public SpherionResourceLink(String id, String objid)
-	{
-		super(id, new SpherionFormulierViewerResource(String.format(ApplicationContextProvider.getApplicationContext().getBean("spherionUrl", String.class), objid), false,
-			ApplicationContextProvider.getApplicationContext().getBean("spherionUsername", String.class),
-			ApplicationContextProvider.getApplicationContext().getBean("spherionPassword", String.class)));
-	}
+	@NotEmpty
+	private String[] gegevens;
 }

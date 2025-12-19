@@ -1,8 +1,8 @@
-package nl.rivm.screenit.main.config;
+package nl.rivm.screenit.repository.mamma;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-web
+ * screenit-base
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,44 +21,21 @@ package nl.rivm.screenit.main.config;
  * =========================LICENSE_END==================================
  */
 
-import lombok.Setter;
+import java.util.Collection;
+import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaMindervalideReserveringProjectie;
+import nl.rivm.screenit.model.mamma.MammaMindervalideReservering;
+import nl.rivm.screenit.repository.BaseJpaRepository;
 
-@Configuration
-@Order(Ordered.HIGHEST_PRECEDENCE)
-@ConfigurationProperties(prefix = "spherion")
-@Setter
-public class SpherionConfig
+import org.springframework.data.jpa.repository.Query;
+
+public interface MammaMindervalideReserveringRepository extends BaseJpaRepository<MammaMindervalideReservering>
 {
-
-	private String url;
-
-	private String username;
-
-	private String password;
-
-	@Bean
-	public String spherionUrl()
-	{
-		return StringUtils.defaultIfBlank(url, "");
-	}
-
-	@Bean
-	public String spherionUsername()
-	{
-		return StringUtils.defaultIfBlank(username, "");
-	}
-
-	@Bean
-	public String spherionPassword()
-	{
-		return StringUtils.defaultIfBlank(password, "");
-	}
-
+	@Query("""
+		select mvr.id, mvr.capaciteitBlok.id, mvr.vanaf
+		from MammaMindervalideReservering mvr
+		where
+		   mvr.capaciteitBlok.id in :capaciteitBlokIds""")
+	List<MammaMindervalideReserveringProjectie> leesMindervalideReserveringen(Collection<Long> capaciteitBlokIds);
 }

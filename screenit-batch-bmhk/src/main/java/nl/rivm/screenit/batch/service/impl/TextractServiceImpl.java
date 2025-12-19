@@ -32,7 +32,6 @@ import nl.rivm.screenit.batch.service.TextractService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -47,7 +46,6 @@ import software.amazon.awssdk.services.textract.model.FeatureType;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@ConditionalOnProperty(value = "textract.enabled", havingValue = "true")
 public class TextractServiceImpl implements TextractService
 {
 	private final String textractAccessId;

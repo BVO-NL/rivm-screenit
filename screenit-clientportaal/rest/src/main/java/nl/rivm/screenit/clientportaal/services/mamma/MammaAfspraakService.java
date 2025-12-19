@@ -27,7 +27,7 @@ import java.util.List;
 import nl.rivm.screenit.clientportaal.model.mamma.MammaAfspraakOptieDto;
 import nl.rivm.screenit.clientportaal.model.mamma.MammaAfspraakWijzigenFilterDto;
 import nl.rivm.screenit.clientportaal.model.mamma.MammaAfspraakZoekFilterDto;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakOptieMetAfstandDto;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaHuidigeAfspraakDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
@@ -40,7 +40,7 @@ public interface MammaAfspraakService
 
 	MammaAfspraak toAfspraak(MammaAfspraakOptieDto afspraakOptieDto, Client client);
 
-	MammaAfspraakOptieDto toAfspraakOptieDto(MammaBaseAfspraakOptieDto baseAfspraakOptieDto, Client client);
+	MammaAfspraakOptieDto toAfspraakOptieDto(MammaAfspraakOptieMetAfstandDto afspraakOptieMetAfstandDto, Client client);
 
 	MammaHuidigeAfspraakDto toHuidigeAfspraakDto(MammaAfspraak huidigeAfspraak);
 }

@@ -31,6 +31,8 @@ public enum OrganisatieParameterKey
 
 	COLON_DIGITALE_INTAKE(OrganisatieType.INTAKELOCATIE, String.class, null, Bevolkingsonderzoek.COLON),
 
+	COLON_DIGITALE_INTAKE_ENABLED(OrganisatieType.INTAKELOCATIE, Boolean.class, null, Bevolkingsonderzoek.COLON),
+
 	COLON_INTAKELOCATIE_BESCHRIJVING(OrganisatieType.INTAKELOCATIE, String.class, null, Bevolkingsonderzoek.COLON),
 
 	CERVIX_SIGNALERINGSTERMIJN_MISSENDE_UITSLAGEN(OrganisatieType.RIVM, Integer.class, 366, Bevolkingsonderzoek.CERVIX),

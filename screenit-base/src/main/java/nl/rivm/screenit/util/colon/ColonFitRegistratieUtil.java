@@ -46,7 +46,9 @@ import org.slf4j.LoggerFactory;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ColonFitRegistratieUtil
 {
-	public static final String UITSLAG_FLAG_PRO = "PRO";
+	public static final String ANALYSE_RESULTAAT_FLAG_PRO = "PRO";
+
+	public static final String ANALYSE_RESULTAAT_FLAG_SS = "SS";
 
 	private static final Logger LOG = LoggerFactory.getLogger(ColonFitRegistratieUtil.class);
 
@@ -56,13 +58,14 @@ public final class ColonFitRegistratieUtil
 		{
 			return fitRegistratie.getGeinterpreteerdeUitslag().equals(ColonGeinterpreteerdeUitslag.ONGUNSTIG);
 		}
-		if (fitRegistratie == null || (fitRegistratie.getUitslag() == null && !UITSLAG_FLAG_PRO.equals(fitRegistratie.getFlag())) || fitRegistratie.getNormWaarde() == null)
+		if (fitRegistratie == null || (fitRegistratie.getUitslag() == null && !ANALYSE_RESULTAAT_FLAG_PRO.equals(fitRegistratie.getFlag()))
+			|| fitRegistratie.getNormWaarde() == null)
 		{
 			LOG.trace("test, uitslag, normwaarde of geinterpreteerde uitslag (studietest) is null");
 			return false;
 		}
 
-		return UITSLAG_FLAG_PRO.equals(fitRegistratie.getFlag()) || fitRegistratie.getUitslag().compareTo(fitRegistratie.getNormWaarde()) >= 0;
+		return ANALYSE_RESULTAAT_FLAG_PRO.equals(fitRegistratie.getFlag()) || fitRegistratie.getUitslag().compareTo(fitRegistratie.getNormWaarde()) >= 0;
 	}
 
 	public static boolean isGunstig(ColonFitRegistratie fitRegistratie)

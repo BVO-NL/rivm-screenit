@@ -1,8 +1,8 @@
-package nl.rivm.screenit.repository.mamma;
+package nl.rivm.screenit.dvabron.models;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-base
+ * screenit-webservice-broker
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,9 +21,26 @@ package nl.rivm.screenit.repository.mamma;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.mamma.MammaMinderValideReservering;
-import nl.rivm.screenit.repository.BaseJpaRepository;
+import lombok.Setter;
 
-public interface MammaMinderValideReserveringRepository extends BaseJpaRepository<MammaMinderValideReservering>
+@Setter
+public class DvaToetsErrorResponse
 {
+	private String description;
+
+	private ErrorContent error;
+
+	@Setter
+	public static class ErrorContent
+	{
+		private String timestamp;
+
+		private int status;
+
+		private String error;
+
+		private String message;
+
+		private String path;
+	}
 }

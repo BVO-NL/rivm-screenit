@@ -31,6 +31,7 @@ import {createBeeindigBezigMetKwaliteitsopnameAction, createStartBezigMetKwalite
 import {nu, nuISO} from "../../util/DateUtil"
 import {Dispatch} from "redux"
 import {navigateToDaglijst} from "../../util/NavigationUtil"
+import {format} from "date-fns"
 
 const mapDispatchToProps = (dispatch: Dispatch): KwaliteitsopnameViewProps => ({
 	onKwaliteitsopnameAction(actionType: string, reden: KwaliteitsopnameReden, voorOfNaKalibratie: VoorOfNaKalibratie): void {
@@ -64,9 +65,9 @@ const startOfBeeindigKwaliteitsopname = (mammograafnr: string, volgnr: number | 
 		return
 	}
 	const medewerkercode = session.medewerkercode
-	const datumAcccesionNumber = nu().format("DDMMYY")
+	const datumAcccesionNumber = format(nu(), "ddMMyy")
 
-	const datumPatientId = nu().format("YYYYMMDD")
+	const datumPatientId = format(nu(), "yyyyMMdd")
 	const startMoment = nuISO()
 	const kalibratieLetter = voorOfNaKalibratie === "Na kalibratie" ? "N" : voorOfNaKalibratie === "Voor kalibratie" ? "V" : "G"
 	const seNr = seCode().split("-")[1]

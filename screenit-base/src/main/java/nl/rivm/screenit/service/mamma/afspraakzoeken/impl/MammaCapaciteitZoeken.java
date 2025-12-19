@@ -75,12 +75,12 @@ class MammaCapaciteitZoeken
 
 	private static Integer gecorrigeerdMidden(List<MammaAfspraakOptie> afspraken, int middle)
 	{
-		var vanafMiddle = afspraken.get(middle).getVanaf();
+		var vanafMiddle = afspraken.get(middle).getTijd();
 		var index = middle - 1;
 		var forward = true;
 		for (var i = 2; 0 <= index && index < afspraken.size(); i++)
 		{
-			var vanafIndex = afspraken.get(index).getVanaf();
+			var vanafIndex = afspraken.get(index).getTijd();
 			if (!vanafMiddle.equals(vanafIndex))
 			{
 				return forward ? index + 1 : index;

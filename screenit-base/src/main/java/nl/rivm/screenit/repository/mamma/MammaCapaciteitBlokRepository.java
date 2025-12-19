@@ -57,7 +57,6 @@ import static nl.rivm.screenit.specification.mamma.MammaCapaciteitBlokSpecificat
 
 public interface MammaCapaciteitBlokRepository extends BaseJpaRepository<MammaCapaciteitBlok>
 {
-
 	default List<MammaCapaciteitBlokProjectie> findNietGeblokkeerdeScreeningCapaciteitBlokken(Range<Date> zoekPeriode, MammaScreeningsEenheid screeningsEenheid,
 		ScreeningOrganisatie screeningOrganisatie, MammaStandplaats standplaats)
 	{

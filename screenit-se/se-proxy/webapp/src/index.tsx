@@ -28,6 +28,8 @@ import {store} from "./Store"
 import {readEnvironmentInfo} from "./restclient/EnvironmentInfoRestclient"
 import {initWebSocket} from "./util/WebSocketUtil"
 import {createRoot} from "react-dom/client"
+import {nl} from "date-fns/locale"
+import {setDefaultOptions} from "date-fns"
 
 const container = document.getElementById("root")
 
@@ -40,4 +42,5 @@ if (container) {
 	initWebSocket()
 	readEnvironmentInfo()
 	unregister()
+	setDefaultOptions({locale: nl})
 }

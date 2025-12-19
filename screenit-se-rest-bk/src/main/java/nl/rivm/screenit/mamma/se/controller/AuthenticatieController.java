@@ -67,12 +67,6 @@ public class AuthenticatieController extends AuthorizedController
 {
 	private static final String LOGGING = "logging";
 
-	private static final SimpleBeanPropertyFilter FILTER_JSON_VELDEN_OUDE_VERSIE = SimpleBeanPropertyFilter.serializeAllExcept("organisatieMedewerkerId");
-
-	private static final SimpleBeanPropertyFilter FILTER_JSON_VELDEN_NIEUWE_VERSIE = SimpleBeanPropertyFilter.serializeAllExcept("instellingGebruikerId");
-
-	private static final String NIEUWE_VERSIE = "25.5.26";
-
 	private final MammaScreeningsEenheidService screeningsEenheidService;
 
 	private final LogService logService;
@@ -133,23 +127,10 @@ public class AuthenticatieController extends AuthorizedController
 
 			configuratieService.voegParametersToe(result, seVersie, ingelogdeScreeningsEenheid);
 
-			var filterProvider = new SimpleFilterProvider();
-			filterProvider.addFilter("autorisatieFilter", isNieuweSEVersie(seVersie) ? FILTER_JSON_VELDEN_NIEUWE_VERSIE : FILTER_JSON_VELDEN_OUDE_VERSIE);
-
-			return ResponseEntity.ok(objectMapper.readTree(objectMapper.writer(filterProvider).writeValueAsString(result)));
+			return ResponseEntity.ok(objectMapper.readTree(objectMapper.writeValueAsString(result)));
 		}
 
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(loginDto);
-	}
-
-	private static boolean isNieuweSEVersie(String seVersie)
-	{
-		var startDash = seVersie.indexOf('-');
-		if (startDash > 0)
-		{
-			seVersie = seVersie.substring(0, startDash);
-		}
-		return seVersie.startsWith("0") || Version.parse(seVersie).isGreaterThanOrEqualTo(Version.parse(NIEUWE_VERSIE));
 	}
 
 	@RequestMapping(value = "/uitloggen", method = RequestMethod.POST)

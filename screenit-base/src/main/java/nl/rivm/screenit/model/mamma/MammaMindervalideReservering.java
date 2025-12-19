@@ -1,6 +1,8 @@
+package nl.rivm.screenit.model.mamma;
+
 /*-
  * ========================LICENSE_START=================================
- * screenit-se-proxy
+ * screenit-base
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -18,8 +20,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import moment from "moment"
 
-export const vandaagPlusDagen = (aantal: number): string => {
-	return moment().add(aantal, "d").format("YYYY-MM-DDTHH:mm:ss")
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
+
+import org.hibernate.envers.Audited;
+
+@Entity
+@Table(
+	schema = "mamma",
+	name = "mindervalide_reservering")
+@Audited
+@Getter
+@Setter
+@NoArgsConstructor
+public class MammaMindervalideReservering extends AbstractHibernateObject
+{
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	private MammaCapaciteitBlok capaciteitBlok;
+
+	@Column(nullable = false)
+	private LocalDateTime vanaf;
 }

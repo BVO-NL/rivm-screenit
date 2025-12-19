@@ -27,8 +27,6 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
@@ -43,7 +41,6 @@ import lombok.Setter;
 
 import nl.rivm.screenit.model.EnovationHuisarts;
 import nl.rivm.screenit.model.ScreeningRonde;
-import nl.rivm.screenit.model.colon.enums.ColonDefinitiefVervolgbeleid;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.envers.Audited;
@@ -52,8 +49,7 @@ import org.hibernate.envers.NotAudited;
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 @Entity
-@Table(schema = "colon", name = "screening_ronde", indexes = { @Index(name = "idx_colon_screening_ronde_status", columnList = "status"),
-	@Index(name = "idx_colon_screening_ronde_definitiefvervolgbeleid", columnList = "definitiefvervolgbeleid") })
+@Table(schema = "colon", name = "screening_ronde", indexes = { @Index(name = "idx_colon_screening_ronde_status", columnList = "status") })
 @Audited
 @Getter
 @Setter
@@ -113,10 +109,6 @@ public class ColonScreeningRonde extends ScreeningRonde<ColonDossier, ColonBrief
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "screeningsRonde")
 	@NotAudited
 	private List<ColonHuisartsBericht> huisartsBerichten = new ArrayList<>();
-
-	@Deprecated
-	@Enumerated(EnumType.STRING)
-	private ColonDefinitiefVervolgbeleid definitiefVervolgbeleid;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "screeningsRonde")
 	@NotAudited

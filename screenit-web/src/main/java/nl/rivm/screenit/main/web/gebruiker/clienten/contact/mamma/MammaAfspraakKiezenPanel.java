@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
-import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakOptieMetAfstandDto;
 import nl.rivm.screenit.exceptions.MammaTijdNietBeschikbaarException;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContactActiePanel;
@@ -50,11 +50,9 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class MammaAfspraakKiezenPanel extends AbstractClientContactActiePanel<Client>
 {
-	private static final long serialVersionUID = 1L;
-
 	private Panel nieuweAfspraakPanel;
 
-	private Panel afspraakZoekenPanel;
+	private final Panel afspraakZoekenPanel;
 
 	@SpringBean
 	private HibernateService hibernateService;
@@ -78,10 +76,8 @@ public class MammaAfspraakKiezenPanel extends AbstractClientContactActiePanel<Cl
 
 		afspraakZoekenPanel = new MammaAfspraakZoekenPanel("afspraakZoekenPanel", clientModel)
 		{
-			private static final long serialVersionUID = 1L;
-
 			@Override
-			protected void nieuweAfspraak(AjaxRequestTarget target, MammaBaseAfspraakOptieDto afspraakOptieDto, MammaVerzettenReden verzettenReden)
+			protected void nieuweAfspraak(AjaxRequestTarget target, MammaAfspraakOptieMetAfstandDto afspraakOptieDto, MammaVerzettenReden verzettenReden)
 			{
 				if (!checkBestaatCapaciteitBlokNog(target, afspraakOptieDto.getCapaciteitBlokId()))
 				{
@@ -91,7 +87,7 @@ public class MammaAfspraakKiezenPanel extends AbstractClientContactActiePanel<Cl
 				var standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class, afspraakOptieDto.getStandplaatsPeriodeId());
 				var uitnodiging = getModelObject().getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging();
 
-				var vanaf = DateUtil.toUtilDate(afspraakOptieDto.getTijd(), afspraakOptieDto.getDatum());
+				var vanaf = DateUtil.toUtilDate(afspraakOptieDto.getDatumTijd());
 				var dummyAfspraak = baseFactory.maakDummyAfspraak(uitnodiging, vanaf, capaciteitBlok, standplaatsPeriode, verzettenReden);
 
 				if (clientContactService.isAfspraakTijdBezet(dummyAfspraak, ((MammaAfspraakZoekenPanel) afspraakZoekenPanel).getFilterModel().getObject()))

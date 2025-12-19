@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.batch.model.MammaAfspraakWijzigenFilter;
 import nl.rivm.screenit.batch.model.UitstelUitnodigingRaportageEntry;
 import nl.rivm.screenit.batch.service.MammaBatchUitnodigenService;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakOptieMetAfstandDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -186,7 +186,7 @@ public class MammaBatchUitnodigenServiceImpl implements MammaBatchUitnodigenServ
 		return UitstelUitnodigingRaportageEntry.maak(standplaatsPeriode, uitnodiging);
 	}
 
-	private UitstelUitnodigingRaportageEntry maakUitnodigingMetAfspraak(MammaUitstel uitstel, MammaBaseAfspraakOptieDto afspraakOptie)
+	private UitstelUitnodigingRaportageEntry maakUitnodigingMetAfspraak(MammaUitstel uitstel, MammaAfspraakOptieMetAfstandDto afspraakOptie)
 	{
 		var standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class, afspraakOptie.getStandplaatsPeriodeId());
 		maakAfspraakUitnodiging(uitstel, standplaatsPeriode.getStandplaatsRonde());

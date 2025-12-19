@@ -86,7 +86,7 @@ public class PlanningCapaciteitBlokDto extends PlanningConceptEntiteitDto
 		return kopie;
 	}
 
-	public PlanningCapaciteitBlokDto verwerkWijzigingenUit(PlanningCapaciteitBlokDto gewijzigdBlok)
+	public void verwerkWijzigingenUit(PlanningCapaciteitBlokDto gewijzigdBlok)
 	{
 		vanaf = gewijzigdBlok.vanaf;
 		tot = gewijzigdBlok.tot;
@@ -101,6 +101,5 @@ public class PlanningCapaciteitBlokDto extends PlanningConceptEntiteitDto
 				.map(reservering -> new PlanningMindervalideReserveringDto(reservering.getId(), reservering.conceptId,
 					reservering.getVanaf()))
 				.toList());
-		return this;
 	}
 }

@@ -1,8 +1,8 @@
-package nl.rivm.screenit.model.colon.enums;
+package nl.rivm.screenit.dvabron.services;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-base
+ * screenit-webservice-broker
  * %%
  * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,26 +21,10 @@ package nl.rivm.screenit.model.colon.enums;
  * =========================LICENSE_END==================================
  */
 
-@Deprecated
-public enum ColonDefinitiefVervolgbeleid
+import nl.rivm.screenit.dvabron.models.DvaToetsRequest;
+import nl.rivm.screenit.dvabron.models.DvaToetsResponse;
+
+public interface DvaBronService
 {
-
-	TERUG_NAAR_SCREENING(InactiveerReden.DEF_VERVOLGBELEID_TERUG_NAAR_SCREENING),
-
-	DEFINITIEVE_EXCLUSIE(InactiveerReden.DEF_VERVOLGBELEID_DEFINITIEVE_EXCLUSIE),
-
-	ONBEKEND(InactiveerReden.DEF_VERVOLGBELEID_ONBEKEND);
-
-	private final InactiveerReden inactiveerReden;
-
-	ColonDefinitiefVervolgbeleid(InactiveerReden inactiveerReden)
-	{
-		this.inactiveerReden = inactiveerReden;
-	}
-
-	public InactiveerReden getInactiveerReden()
-	{
-		return inactiveerReden;
-	}
-
+	DvaToetsResponse checkBeschikbaarheidToets(DvaToetsRequest dvaToetsRequest);
 }

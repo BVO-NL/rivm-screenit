@@ -92,7 +92,7 @@ import static nl.rivm.screenit.specification.colon.ColonFitRegistratieSpecificat
 import static nl.rivm.screenit.specification.colon.ColonFitRegistratieSpecification.heeftFitType;
 import static nl.rivm.screenit.specification.colon.ColonFitRegistratieSpecification.heeftStatusDatumVoorOfOp;
 import static nl.rivm.screenit.specification.colon.ColonFitRegistratieSpecification.valideerFitUitslagStatus;
-import static nl.rivm.screenit.util.colon.ColonFitRegistratieUtil.UITSLAG_FLAG_PRO;
+import static nl.rivm.screenit.util.colon.ColonFitRegistratieUtil.ANALYSE_RESULTAAT_FLAG_PRO;
 
 @Slf4j
 @Service
@@ -781,7 +781,7 @@ public class ColonBaseFitServiceImpl implements ColonBaseFitService
 
 		var betrouwbareLimiet = simplePreferenceService.getLong(PreferenceKey.COLON_BETROUWBARE_LIMIET_FIT.name(), 80L);
 		var waardeHogerDanLimiet = fitRegistratie.getUitslag() != null && fitRegistratie.getUitslag().compareTo(BigDecimal.valueOf(betrouwbareLimiet)) >= 0;
-		var heeftProFlag = UITSLAG_FLAG_PRO.equals(fitRegistratie.getFlag());
+		var heeftProFlag = ANALYSE_RESULTAAT_FLAG_PRO.equals(fitRegistratie.getFlag());
 		if (isDk2026Actief() && (waardeHogerDanLimiet || heeftProFlag))
 		{
 			return "> " + betrouwbareLimiet;

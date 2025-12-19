@@ -21,7 +21,8 @@
 import type {ValidationError} from "../datatypes/Error"
 import {getErrorMessage} from "../datatypes/Error"
 import type {Validation} from "./Validation"
-import moment from "moment"
+import {isAfter, isBefore, isValid, sub} from "date-fns"
+import {nu} from "../util/DateUtil"
 
 export class GeboortedatumValidator<T extends string | undefined> implements Validation<T> {
 	isValid(value: string | undefined): boolean {
@@ -42,10 +43,8 @@ export class GeboortedatumValidator<T extends string | undefined> implements Val
 
 function isGeboortedatumValid(geboortedatum: string | undefined): boolean {
 	if (geboortedatum) {
-		if (geboortedatum.length === 10 && /[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}/.test(geboortedatum)) {
-			const momentDate: moment.Moment = moment(geboortedatum, "YYYY-MM-DD")
-			return momentDate.isAfter(moment().subtract(100, "years")) && momentDate.isBefore(moment())
-		}
+		const date = new Date(geboortedatum)
+		return isValid(date) && isAfter(date, sub(nu(), {years: 100})) && isBefore(date, nu())
 	}
 
 	return false

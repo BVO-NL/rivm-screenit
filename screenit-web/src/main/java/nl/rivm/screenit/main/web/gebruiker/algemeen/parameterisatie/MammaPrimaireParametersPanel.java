@@ -25,6 +25,7 @@ import java.util.Map;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.model.Parameterisatie;
+import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 
@@ -34,7 +35,6 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
-import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
 import org.apache.wicket.validation.validator.RangeValidator;
 
 public class MammaPrimaireParametersPanel extends BasePrimaireParametersPanel
@@ -58,6 +58,8 @@ public class MammaPrimaireParametersPanel extends BasePrimaireParametersPanel
 		form.add(new TextField<>("mammaAfspraakZoekenStandaardFilterEinddatumDagenInToekomst", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
 		form.add(new TextField<>("mammaAfspraakZoekenAantalMinutenInToekomst", Integer.class).add(RangeValidator.minimum(0)).add(RangeValidator.maximum(1440)).setRequired(true));
 		form.add(new TextField<>("mammaAfspraakReserveringGeldigVoor", Integer.class).add(RangeValidator.minimum(0)).add(RangeValidator.maximum(10)).setRequired(true));
+		form.add(new TextField<>("mammaVrijgevenMindervalideReserveringenBinnenAantalDagen", Integer.class).add(RangeValidator.minimum(1)).add(RangeValidator.maximum(180))
+			.setRequired(true));
 		form.add(new TextField<>("mammaCapaciteitVolledigBenutTotEnMetAantalWerkdagen", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
 		form.add(new TextField<>("mammaBevestigingsbriefNietVerzendenBinnenAantalWerkdagen", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
 		form.add(new TextField<>("mammaBulkVerzettenInVerledenAantalWeken", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));

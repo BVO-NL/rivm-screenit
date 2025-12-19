@@ -39,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dto.mamma.afspraken.IMammaAfspraakWijzigenFilter;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakOptieMetAfstandDto;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.Client;
@@ -71,6 +71,7 @@ import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
+import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekStatus;
@@ -175,9 +176,9 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 	}
 
 	@Override
-	public List<MammaBaseAfspraakOptieDto> getAfspraakOpties(Client client, IMammaAfspraakWijzigenFilter filter)
+	public List<MammaAfspraakOptieMetAfstandDto> getAfspraakOpties(Client client, IMammaAfspraakWijzigenFilter filter)
 	{
-		var afspraakOptieDtos = new ArrayList<MammaBaseAfspraakOptieDto>();
+		var afspraakOptieDtos = new ArrayList<MammaAfspraakOptieMetAfstandDto>();
 		var dossier = client.getMammaDossier();
 		var minimaleTijdstip = currentDateSupplier.getLocalDateTime()
 			.plusMinutes(preferenceService.getInteger(PreferenceKey.MAMMA_AFSPRAAK_ZOEKEN_AANTAL_MINUTEN_IN_TOEKOMST.name(), 0));
@@ -201,7 +202,7 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 
 				var vanafDatum = Collections.max(Arrays.asList(filter.getVanaf(), standplaatsPeriodeVanaf));
 				var totEnMetDatum = Collections.min(Arrays.asList(filter.getTotEnMet(), vrijgegevenTotEnMetDatum, standplaatsPeriodeTotEnMet));
-				var afspraakOptiesStandplaatsPeriode = maakAfspraakOptieZoekAlgoritme().getAfspraakOpties(dossier, standplaatsPeriode,
+				var afspraakOptiesStandplaatsPeriode = maakAfspraakOptieZoekAlgoritme(dossier).getAfspraakOpties(dossier, standplaatsPeriode,
 					vroegstMogelijkeUitnodigingsDatum(dossier, vanafDatum, minimaleIntervalMammografieOnderzoeken), totEnMetDatum, filter.getExtraOpties(), voorlopigeOpkomstkans,
 					capaciteitVolledigBenutTotEnMetAantalWerkdagen, true);
 
@@ -210,8 +211,8 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 					if (minimaleTijdstip.isBefore(afspraakOptie.getDatumTijd()))
 					{
 						afspraakOptieDtos
-							.add(new MammaBaseAfspraakOptieDto(afspraakOptie.getCapaciteitBlokDto().getId(), afspraakOptie.getDatum(), afspraakOptie.getVanaf(),
-								standplaatsPeriode.getId(), standplaatsPeriodeMetAfstandDto.getAfstand()));
+							.add(new MammaAfspraakOptieMetAfstandDto(afspraakOptie.getCapaciteitBlokId(), afspraakOptie.getDatumTijd(), standplaatsPeriode.getId(),
+								standplaatsPeriodeMetAfstandDto.getAfstand()));
 					}
 				});
 			}
@@ -223,7 +224,7 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 	public MammaAfspraakOptie getAfspraakOptieBulkVerzetten(MammaDossier dossier, MammaStandplaatsPeriode standplaatsPeriode, LocalDate vanaf, LocalDate totEnMet,
 		BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen)
 	{
-		return maakAfspraakOptieZoekAlgoritme()
+		return maakAfspraakOptieZoekAlgoritme(dossier)
 			.getAfspraakOpties(dossier, standplaatsPeriode, vanaf, totEnMet, false, voorlopigeOpkomstkans, capaciteitVolledigBenutTotEnMetAantalWerkdagen, false)
 			.get(0); 
 	}
@@ -233,20 +234,32 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 		BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen, Integer afspraakBijUitnodigenVanafAantalWerkdagen)
 		throws MammaOnvoldoendeVrijeCapaciteitException
 	{
-		return maakAfspraakOptieZoekAlgoritme()
+		return maakAfspraakOptieZoekAlgoritme(dossier)
 			.getAfspraakOptieUitnodiging(dossier, standplaatsRonde, voorlopigeOpkomstkans, capaciteitVolledigBenutTotEnMetAantalWerkdagen,
 				afspraakBijUitnodigenVanafAantalWerkdagen);
 	}
 
-	private MammaAfspraakOptieAlgoritme maakAfspraakOptieZoekAlgoritme()
+	private MammaAfspraakOptieAlgoritme maakAfspraakOptieZoekAlgoritme(MammaDossier dossier)
 	{
 		var minderValideReserveringIngeschakeld = preferenceService.getBoolean(PreferenceKey.MAMMA_MINDERVALIDE_RESERVERING_ACTIEF.name(), false);
-		var beanNaam = minderValideReserveringIngeschakeld ? "mammaAfspraakOptieAlgoritme" : "mammaBaseKandidaatAfsprakenDeterminatiePeriode";
+		String beanNaam;
+		if (!minderValideReserveringIngeschakeld)
+		{
+			beanNaam = "mammaBaseKandidaatAfsprakenDeterminatiePeriode";
+		}
+		else if (dossier.getDoelgroep() == MammaDoelgroep.MINDER_VALIDE)
+		{
+			beanNaam = "mammaMindervalideAfspraakOptieAlgoritme";
+		}
+		else
+		{
+			beanNaam = "mammaAfspraakOptieAlgoritme";
+		}
 		return applicationContext.getBean(beanNaam, MammaAfspraakOptieAlgoritme.class);
 	}
 
 	@Override
-	public List<MammaBaseAfspraakOptieDto> filterAfspraakOptiesOpDagEnDagdeel(List<MammaBaseAfspraakOptieDto> afspraken, MammaDagEnDagdeelFilter filter)
+	public List<MammaAfspraakOptieMetAfstandDto> filterAfspraakOptiesOpDagEnDagdeel(List<MammaAfspraakOptieMetAfstandDto> afspraken, MammaDagEnDagdeelFilter filter)
 	{
 		if (filter != null)
 		{
@@ -262,12 +275,12 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 		}
 	}
 
-	private boolean voldoetAfspraakAanFilter(MammaBaseAfspraakOptieDto afspraak, MammaDagEnDagdeelFilter filter, LocalTime startMiddag, LocalTime startAvond)
+	private boolean voldoetAfspraakAanFilter(MammaAfspraakOptieMetAfstandDto afspraak, MammaDagEnDagdeelFilter filter, LocalTime startMiddag, LocalTime startAvond)
 	{
 		return voldoetAfspraakAanDagFilter(afspraak, filter.getDagen()) && voldoetAfspraakAanDagDeelFilter(afspraak, filter.getDagdelen(), startMiddag, startAvond);
 	}
 
-	private boolean voldoetAfspraakAanDagFilter(MammaBaseAfspraakOptieDto afspraak, List<BeschikbareAfspraakDagen> keuzeDagen)
+	private boolean voldoetAfspraakAanDagFilter(MammaAfspraakOptieMetAfstandDto afspraak, List<BeschikbareAfspraakDagen> keuzeDagen)
 	{
 		if (keuzeDagen.isEmpty())
 		{
@@ -277,7 +290,7 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 		return keuzeDagen.stream().anyMatch(dag -> dag.getDagVanDeWeek().equals(afspraakDag));
 	}
 
-	private boolean voldoetAfspraakAanDagDeelFilter(MammaBaseAfspraakOptieDto afspraak, List<Dagdeel> keuzeDagdelen, LocalTime startMiddag, LocalTime startAvond)
+	private boolean voldoetAfspraakAanDagDeelFilter(MammaAfspraakOptieMetAfstandDto afspraak, List<Dagdeel> keuzeDagdelen, LocalTime startMiddag, LocalTime startAvond)
 	{
 		if (keuzeDagdelen.isEmpty())
 		{
@@ -286,7 +299,7 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 		return keuzeDagdelen.stream().anyMatch(dagdeel -> dagdeel.equals(getAfspraakDagdeel(afspraak, startMiddag, startAvond)));
 	}
 
-	private Dagdeel getAfspraakDagdeel(MammaBaseAfspraakOptieDto afspraak, LocalTime startMiddag, LocalTime startAvond)
+	private Dagdeel getAfspraakDagdeel(MammaAfspraakOptieMetAfstandDto afspraak, LocalTime startMiddag, LocalTime startAvond)
 	{
 
 		var afspraakTijd = afspraak.getTijd();

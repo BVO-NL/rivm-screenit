@@ -20,7 +20,7 @@
  */
 import {Component, JSX} from "react"
 import type {MammograafDicomMessageError, MammograafDicomMessageType} from "../../datatypes/connectiestatus/MammograafDicomMessageError"
-import moment from "moment"
+import {getTijdGeledenTekst} from "../../util/DateUtil"
 
 export type MammograafDicomFoutmeldingenPopupViewProps = {
 	messageType: MammograafDicomMessageType;
@@ -31,14 +31,14 @@ export default class MammograafDicomFoutmeldingenPopupView extends Component<Mam
 	render(): JSX.Element {
 		return <div>
 			{this.props.messageType === "MPPS" ? <div>
-				{this.props.errors.reverse().map((e: MammograafDicomMessageError) => {
+				{[...this.props.errors].reverse().map((e: MammograafDicomMessageError) => {
 					return <p key={e.timestamp} className={"mammograafDicomMessageErrorText"}>
-						<b>{moment(e.timestamp).fromNow()}</b>: {e.message}</p>
+						<b>{getTijdGeledenTekst(e.timestamp)}</b>: {e.message}</p>
 				})}
 			</div> : <div>
-				{this.props.errors.reverse().map((e: MammograafDicomMessageError) => {
+				{[...this.props.errors].reverse().map((e: MammograafDicomMessageError) => {
 					return <p key={e.timestamp} className={"mammograafDicomMessageErrorText"}>
-						<b>{moment(e.timestamp).fromNow()}</b>: DMWL mislukt door mismatch in keys. {e.message}</p>
+						<b>{getTijdGeledenTekst(e.timestamp)}</b>: DMWL mislukt door mismatch in keys. {e.message}</p>
 				})}
 			</div>}
 		</div>

@@ -30,7 +30,7 @@ import {useSelector} from "react-redux"
 import {State} from "../../../../datatypes/State"
 import BasePage from "../../../BasePage"
 import SearchResultAfspraken from "../../../../components/search_results/SearchResultAfspraken"
-import {formatDateTime, formatDateWithDayName, formatTime, zoekIndex} from "../../../../utils/DateUtil"
+import {formatDateWithDayName, formatTime, zoekIndex} from "../../../../utils/DateUtil"
 import {FormErrorComponent} from "../../../../components/form_error/FormErrorComponent"
 import Button from "../../../../components/input/Button"
 import {ArrowType} from "../../../../components/vectors/ArrowIconComponent"
@@ -112,7 +112,7 @@ const MammaAfspraakMakenPage = () => {
 			AnalyticsCategorie.MAMMA_AFSPRAAK,
 			{
 				client: client.persoon.id,
-				datum: formatDateTime(afspraakOptie.datumTijd),
+				datum: afspraakOptie.datumTijd,
 				standplaatsPeriode: afspraakOptie.standplaatsPeriodeId,
 			},
 		)

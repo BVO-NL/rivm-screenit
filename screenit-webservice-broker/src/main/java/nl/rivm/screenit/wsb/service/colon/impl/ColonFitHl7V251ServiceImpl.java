@@ -85,7 +85,7 @@ public class ColonFitHl7V251ServiceImpl extends BaseHL7v2Service<OUL_R22> implem
 			{
 				try
 				{
-					verwerkBerichtService.queueIFobtBericht(wrapper.getMessageId());
+					verwerkBerichtService.queueFitAnalyseResultatenBericht(wrapper.getMessageId());
 				}
 				catch (UncategorizedJmsException e)
 				{

@@ -37,7 +37,7 @@ public interface BerichtToBatchService
 
 	void queueHPVBericht(Long labId);
 
-	void queueIFobtBericht(String messageId);
+	void queueFitAnalyseResultatenBericht(String messageId);
 
 	void queueMammaUploadBeeldenVerzoekBericht();
 

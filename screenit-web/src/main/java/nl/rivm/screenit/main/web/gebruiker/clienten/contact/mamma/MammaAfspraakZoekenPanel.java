@@ -26,7 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakOptieMetAfstandDto;
 import nl.rivm.screenit.main.service.mamma.MammaAfspraakService;
 import nl.rivm.screenit.main.web.component.SimpleStringResourceModel;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
@@ -120,13 +120,11 @@ public abstract class MammaAfspraakZoekenPanel extends GenericPanel<Client>
 		filterModel = new CompoundPropertyModel<>(new MammaAfspraakWijzigenFilter(vanaf, totEnmet, standplaats, screeningsEenheid));
 		filterModel.getObject().setClient(client);
 
-		List<IColumn<MammaBaseAfspraakOptieDto, String>> columns = new ArrayList<>();
+		List<IColumn<MammaAfspraakOptieMetAfstandDto, String>> columns = new ArrayList<>();
 		columns.add(new AbstractColumn<>(Model.of("SE"))
 		{
-			private static final long serialVersionUID = 1L;
-
 			@Override
-			public void populateItem(Item<ICellPopulator<MammaBaseAfspraakOptieDto>> cell, String id, IModel<MammaBaseAfspraakOptieDto> afspraakOptieDtoModel)
+			public void populateItem(Item<ICellPopulator<MammaAfspraakOptieMetAfstandDto>> cell, String id, IModel<MammaAfspraakOptieMetAfstandDto> afspraakOptieDtoModel)
 			{
 				cell.add(
 					new Label(id,
@@ -136,10 +134,8 @@ public abstract class MammaAfspraakZoekenPanel extends GenericPanel<Client>
 
 		columns.add(new AbstractColumn<>(Model.of("Standplaats"))
 		{
-			private static final long serialVersionUID = 1L;
-
 			@Override
-			public void populateItem(Item<ICellPopulator<MammaBaseAfspraakOptieDto>> cell, String id, IModel<MammaBaseAfspraakOptieDto> afspraakOptieDtoModel)
+			public void populateItem(Item<ICellPopulator<MammaAfspraakOptieMetAfstandDto>> cell, String id, IModel<MammaAfspraakOptieMetAfstandDto> afspraakOptieDtoModel)
 			{
 				cell.add(
 					new Label(id, hibernateService.load(MammaStandplaatsPeriode.class, afspraakOptieDtoModel.getObject().getStandplaatsPeriodeId()).getStandplaatsRonde()
@@ -148,10 +144,8 @@ public abstract class MammaAfspraakZoekenPanel extends GenericPanel<Client>
 		});
 		columns.add(new AbstractColumn<>(new SimpleStringResourceModel("label.afstand"))
 		{
-			private static final long serialVersionUID = 1L;
-
 			@Override
-			public void populateItem(Item<ICellPopulator<MammaBaseAfspraakOptieDto>> cell, String id, IModel<MammaBaseAfspraakOptieDto> afspraakOptieDtoModel)
+			public void populateItem(Item<ICellPopulator<MammaAfspraakOptieMetAfstandDto>> cell, String id, IModel<MammaAfspraakOptieMetAfstandDto> afspraakOptieDtoModel)
 			{
 				var afspraakDto = afspraakOptieDtoModel.getObject();
 				var afstand = afspraakDto.getAfstand();
@@ -167,23 +161,19 @@ public abstract class MammaAfspraakZoekenPanel extends GenericPanel<Client>
 		});
 		columns.add(new AbstractColumn<>(new SimpleStringResourceModel("label.datum"))
 		{
-			private static final long serialVersionUID = 1L;
-
 			@Override
-			public void populateItem(Item<ICellPopulator<MammaBaseAfspraakOptieDto>> cell, String id, IModel<MammaBaseAfspraakOptieDto> afspraakOptieDtoModel)
+			public void populateItem(Item<ICellPopulator<MammaAfspraakOptieMetAfstandDto>> cell, String id, IModel<MammaAfspraakOptieMetAfstandDto> afspraakOptieDtoModel)
 			{
 				cell.add(DateLabel.forDatePattern(id, Model.of(DateUtil.toUtilDate(afspraakOptieDtoModel.getObject().getDatum())), "EEEE dd-MM-yyyy"));
 			}
 		});
 		columns.add(new AbstractColumn<>(new SimpleStringResourceModel("label.tijd"))
 		{
-			private static final long serialVersionUID = 1L;
-
 			@Override
-			public void populateItem(Item<ICellPopulator<MammaBaseAfspraakOptieDto>> cell, String id, IModel<MammaBaseAfspraakOptieDto> afspraakOptieDtoModel)
+			public void populateItem(Item<ICellPopulator<MammaAfspraakOptieMetAfstandDto>> cell, String id, IModel<MammaAfspraakOptieMetAfstandDto> afspraakOptieDtoModel)
 			{
 				var afspraakOptieDto = afspraakOptieDtoModel.getObject();
-				cell.add(DateLabel.forDatePattern(id, Model.of(DateUtil.toUtilDate(afspraakOptieDto.getTijd(), afspraakOptieDto.getDatum())), "HH:mm"));
+				cell.add(DateLabel.forDatePattern(id, Model.of(DateUtil.toUtilDate(afspraakOptieDto.getDatumTijd())), "HH:mm"));
 			}
 		});
 
@@ -192,10 +182,8 @@ public abstract class MammaAfspraakZoekenPanel extends GenericPanel<Client>
 
 		var afspraakOpties = new ScreenitDataTable<>("afspraakOpties", columns, afspraakOptiesProvider, 10, Model.of("opties"))
 		{
-			private static final long serialVersionUID = 1L;
-
 			@Override
-			public void onClick(AjaxRequestTarget target, IModel<MammaBaseAfspraakOptieDto> afspraakOptieDtoModel)
+			public void onClick(AjaxRequestTarget target, IModel<MammaAfspraakOptieMetAfstandDto> afspraakOptieDtoModel)
 			{
 				nieuweAfspraak(target, afspraakOptieDtoModel.getObject(), filterModel.getObject().getVerzettenReden());
 
@@ -218,8 +206,6 @@ public abstract class MammaAfspraakZoekenPanel extends GenericPanel<Client>
 
 		add(new MammaAfspraakWijzigenFilterPanel("filter", filterModel, false, ModelUtil.sModel(standplaats))
 		{
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void zoeken(AjaxRequestTarget target)
 			{
@@ -239,7 +225,7 @@ public abstract class MammaAfspraakZoekenPanel extends GenericPanel<Client>
 		});
 	}
 
-	protected abstract void nieuweAfspraak(AjaxRequestTarget target, MammaBaseAfspraakOptieDto afspraakOptieDto, MammaVerzettenReden mammaVerzettenReden);
+	protected abstract void nieuweAfspraak(AjaxRequestTarget target, MammaAfspraakOptieMetAfstandDto afspraakOptieDto, MammaVerzettenReden mammaVerzettenReden);
 
 	protected IModel<MammaAfspraakWijzigenFilter> getFilterModel()
 	{

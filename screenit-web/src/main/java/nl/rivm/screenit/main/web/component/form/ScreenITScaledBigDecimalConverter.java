@@ -30,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 
 public class ScreenITScaledBigDecimalConverter extends ScaledBigDecimalConverter
 {
-
 	@Override
 	public BigDecimal convertToObject(String value, Locale locale)
 	{

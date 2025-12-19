@@ -403,10 +403,6 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 			addFitRegistraties(cellStyleDateTime, sheet, ronde);
 			addIntakeConclusies(cellStyleDate, cellStyleDateTime, sheet, ronde);
 			addDkVerslagen(cellStyleDateTime, sheet, ronde);
-			if (ronde.getDefinitiefVervolgbeleid() != null)
-			{
-				addRow(sheet, "Definitief vervolgbeleid", ronde.getDefinitiefVervolgbeleid(), ronde.getStatusDatum(), cellStyleDateTime);
-			}
 			addEmptyRow(sheet);
 		}
 		sheet.autoSizeColumn(0);

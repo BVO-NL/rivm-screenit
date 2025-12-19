@@ -49,7 +49,9 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
@@ -135,21 +137,50 @@ public class ColonIntakekamerBeheer extends OrganisatieBeheer
 		var digitaleIntakeForm = new Form<>("digitaleIntakeForm", ModelUtil.sModel(intakelocatie));
 		add(digitaleIntakeForm);
 
+		Boolean digitaleIntakeEnabled = organisatieParameterService.getOrganisatieParameter(intakelocatie, OrganisatieParameterKey.COLON_DIGITALE_INTAKE_ENABLED);
+		var digitaleIntakeEnabledModel = Model.of(digitaleIntakeEnabled);
+		var digitaleIntakeEnabledCheckBox = new CheckBox("digitaleIntakeEnabled", digitaleIntakeEnabledModel);
+		digitaleIntakeEnabledCheckBox.setOutputMarkupId(true);
+		digitaleIntakeForm.add(digitaleIntakeEnabledCheckBox);
+
 		String digitaleIntakeTekst = organisatieParameterService.getOrganisatieParameter(intakelocatie, OrganisatieParameterKey.COLON_DIGITALE_INTAKE);
 		var digitaleIntakeTekstModel = Model.of(digitaleIntakeTekst);
-		digitaleIntakeForm.add(new TextArea<>("digitaleIntake", digitaleIntakeTekstModel).add(StringValidator.maximumLength(2048)));
+		var digitaleIntakeTextArea = new TextArea<>("digitaleIntakeTekst", digitaleIntakeTekstModel)
+			.add(StringValidator.maximumLength(8192))
+			.setOutputMarkupId(true)
+			.setOutputMarkupPlaceholderTag(true)
+			.setVisible(Boolean.TRUE.equals(digitaleIntakeEnabledModel.getObject()));
+		digitaleIntakeForm.add(digitaleIntakeTextArea);
 
-		digitaleIntakeForm.add(new AjaxSubmitLink("opslaan")
+		digitaleIntakeEnabledCheckBox.add(new AjaxFormComponentUpdatingBehavior("change")
+		{
+			@Override
+			protected void onUpdate(AjaxRequestTarget target)
+			{
+				digitaleIntakeTextArea.setVisible(Boolean.TRUE.equals(digitaleIntakeEnabledModel.getObject()));
+				target.add(digitaleIntakeForm);
+			}
+		});
+
+		var opslaan = new AjaxSubmitLink("opslaan")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				intakelocatieService.saveIntakelocatieDigitaleIntake((ColonIntakelocatie) getForm().getDefaultModelObject(), digitaleIntakeTekstModel.getObject(),
+				intakelocatieService.saveIntakelocatieDigitaleIntake((ColonIntakelocatie) getForm().getDefaultModelObject(), digitaleIntakeTekstModel.getObject(), digitaleIntakeEnabledModel.getObject(),
 					ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				info("Digitale intake informatie is opgeslagen");
 				BasePage.markeerFormulierenOpgeslagen(target);
 			}
-		});
+		};
+
+		if (inzien)
+		{
+			digitaleIntakeTextArea.setEnabled(false);
+			digitaleIntakeEnabledCheckBox.setEnabled(false);
+			opslaan.setVisible(false);
+		}
+		digitaleIntakeForm.add(opslaan);
 	}
 
 	private void addRoosterblokGrootteWijzigen()

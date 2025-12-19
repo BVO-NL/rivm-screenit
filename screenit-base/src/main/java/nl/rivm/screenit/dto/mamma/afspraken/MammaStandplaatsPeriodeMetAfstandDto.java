@@ -40,6 +40,6 @@ public class MammaStandplaatsPeriodeMetAfstandDto implements Serializable
 
 	public boolean isOnbekendeAfstand()
 	{
-		return afstand.equals(MammaBaseAfspraakOptieDto.ONBEKENDE_AFSTAND);
+		return afstand.equals(MammaAfspraakOptieMetAfstandDto.ONBEKENDE_AFSTAND);
 	}
 }

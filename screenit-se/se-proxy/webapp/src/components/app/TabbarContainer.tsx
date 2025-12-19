@@ -26,7 +26,7 @@ import {getIfExists} from "../../util/MapUtil"
 import {showErrorToast} from "../../util/ToastUtil"
 import {RootState, store} from "../../Store"
 import {getDagverslag} from "../../restclient/DagverslagRestClient"
-import {datumInVerleden, isAfter, vandaagISO, vandaagPlusDagen} from "../../util/DateUtil"
+import {datumInVerleden, vandaagISO, vandaagPlusDagen} from "../../util/DateUtil"
 import {hasNietDoorgevoerdeOnderzoeken, hasOpenstaandeOnderzoeken} from "../../util/AfsprakenUtil"
 import {createActionWijzigingenVerwerkt} from "../../actions/WijzigingenActions"
 import {showWijzigingenPopup} from "../../util/PopupUtil"
@@ -41,6 +41,7 @@ import {
 	navigateToKwaliteitsopname,
 	navigateToOnderzoek,
 } from "../../util/NavigationUtil"
+import {isAfter} from "date-fns"
 
 const mapStateToProps = (state: RootState): TabbarViewStateProps => {
 	const afspraak = getIfExists(state.afsprakenById, state.navigation.afspraakId)

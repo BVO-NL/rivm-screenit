@@ -24,17 +24,24 @@ package nl.rivm.screenit.util.mamma;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Comparator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.Constants;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaCapaciteitBlokDto;
+import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.util.DateUtil;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MammaPlanningUtil
 {
 	private static final int AANTAL_WERKDAGEN_TUSSEN_DATA_GRENS = 5;
+
+	private static final BigDecimal MINIMUM_OPKOMSTKANS = new BigDecimal("0.1");
 
 	public static boolean datumIsMeerDanVijfWerkdagenVoorDatum(LocalDate teCheckenDatum, LocalDate grensDatum)
 	{
@@ -51,5 +58,46 @@ public class MammaPlanningUtil
 	{
 
 		return minimumTijdvak(factorMinderValide);
+	}
+
+	public static void sorteerCapaciteitBlokOpAfspraakTijdEnZetAfspraakTot(MammaCapaciteitBlokDto capaciteitBlokDto) 
+	{
+		capaciteitBlokDto.getAfspraakDtos().sort(Comparator.comparing(MammaAfspraakDto::getVanaf));
+		MammaAfspraakDto vorigeAfspraakDto = null;
+		for (var afspraakDto : capaciteitBlokDto.getAfspraakDtos())
+		{
+			if (vorigeAfspraakDto != null)
+			{
+				vorigeAfspraakDto.setTot(afspraakDto.getVanaf().toLocalTime());
+			}
+			vorigeAfspraakDto = afspraakDto;
+		}
+		if (vorigeAfspraakDto != null)
+		{
+			vorigeAfspraakDto.setTot(capaciteitBlokDto.getTot());
+		}
+	}
+
+	public static BigDecimal bepaalBenodigdeCapaciteitVoorNieuweAfspraakOptie(BigDecimal factor, BigDecimal voorlopigeOpkomstkans)
+	{
+		return factor.multiply(voorlopigeOpkomstkans.compareTo(MINIMUM_OPKOMSTKANS) >= 0 ? voorlopigeOpkomstkans : MINIMUM_OPKOMSTKANS);
+	}
+
+	public static BigDecimal getVrijeCapaciteitVanBlok(MammaCapaciteitBlokDto capaciteitBlokDto)
+	{
+		var totaalBenodigdeCapaciteitVoorAlleAfspraken = capaciteitBlokDto.getAfspraakDtos().stream().map(MammaAfspraakDto::getBenodigdeCapaciteit).reduce(BigDecimal.ZERO,
+			BigDecimal::add);
+		return capaciteitBlokDto.getBeschikbareCapaciteit().subtract(totaalBenodigdeCapaciteitVoorAlleAfspraken);
+	}
+
+	public static boolean mindervalideReserveringIsOnbezet(MammaCapaciteitBlokDto capaciteitBlokDto, LocalTime mvReserveringVanaf)
+	{
+		return capaciteitBlokDto.getAfspraakDtos().stream()
+			.noneMatch(afspraakDto -> afspraakDto.isMindervalide() && afspraakDto.getVanaf().toLocalTime().equals(mvReserveringVanaf));
+	}
+
+	public static boolean isEnkeleMammograaf(MammaScreeningsEenheid screeningsEenheid)
+	{
+		return screeningsEenheid.getMammografen().size() <= 1;
 	}
 }

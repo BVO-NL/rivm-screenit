@@ -38,7 +38,6 @@ import nl.rivm.screenit.model.berichten.enums.VerslagGeneratie;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.colon.ColonDossier;
-import nl.rivm.screenit.model.colon.ColonFitRegistratie;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonVerslag;
@@ -110,7 +109,6 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 		var screeningRonde = verslag.getScreeningRonde();
 		var nu = currentDateSupplier.getDate();
 		screeningRonde.setStatusDatum(nu);
-		screeningRonde.setDefinitiefVervolgbeleid(null);
 		var dossier = screeningRonde.getDossier();
 
 		var laatsteAfspraak = screeningRonde.getLaatsteAfspraak();

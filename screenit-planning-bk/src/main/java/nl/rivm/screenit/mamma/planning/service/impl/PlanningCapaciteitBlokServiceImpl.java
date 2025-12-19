@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 
+import nl.rivm.screenit.dto.mamma.afspraken.MammaMindervalideReserveringProjectie;
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningMindervalideReserveringDto;
 import nl.rivm.screenit.exceptions.OpslaanVerwijderenTijdBlokException;
@@ -44,7 +45,6 @@ import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
 import nl.rivm.screenit.mamma.planning.repository.PlanningCapaciteitBlokRepository;
 import nl.rivm.screenit.mamma.planning.repository.PlanningMindervalideReserveringRepository;
 import nl.rivm.screenit.mamma.planning.repository.projectie.PlanningCapaciteitBlokProjectie;
-import nl.rivm.screenit.mamma.planning.repository.projectie.PlanningMinderValideReserveringProjectie;
 import nl.rivm.screenit.mamma.planning.service.PlanningCapaciteitBlokService;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningWijzigingen;
 import nl.rivm.screenit.util.DateUtil;
@@ -85,8 +85,8 @@ public class PlanningCapaciteitBlokServiceImpl implements PlanningCapaciteitBlok
 		var zoekPeriode = RangeUtil.range(vanafDatum, BoundType.CLOSED, totEnMetDatum, BoundType.CLOSED);
 
 		var reserveringPerCapaciteitBlokId = minderValideReserveringRepository.leesMindervalideReserveringen(screeningsEenheid, zoekPeriode).stream().collect(
-			Collectors.groupingBy(PlanningMinderValideReserveringProjectie::getCapaciteitBlokId,
-				Collectors.mapping(projectie -> new PlanningMinderValideReservering(projectie.getId(), projectie.getVanaf()), Collectors.toList())));
+			Collectors.groupingBy(MammaMindervalideReserveringProjectie::capaciteitBlokId,
+				Collectors.mapping(projectie -> new PlanningMinderValideReservering(projectie.id(), projectie.vanaf()), Collectors.toList())));
 
 		var planningBlokken = capaciteitBlokRepository.leesCapaciteitBlokken(screeningsEenheid, zoekPeriode);
 
@@ -98,7 +98,6 @@ public class PlanningCapaciteitBlokServiceImpl implements PlanningCapaciteitBlok
 	private PlanningBlok mapNaarPlanningBlok(PlanningScreeningsEenheid screeningsEenheid, PlanningCapaciteitBlokProjectie blokProjectie,
 		List<PlanningMinderValideReservering> mindervalideReserveringen)
 	{
-
 		var vanaf = blokProjectie.getVanaf();
 		var blok = new PlanningBlok(blokProjectie.getId(), vanaf.toLocalTime(), blokProjectie.getTot().toLocalTime(), blokProjectie.getAantalOnderzoeken(),
 			blokProjectie.getBlokType(), blokProjectie.getOpmerkingen(), blokProjectie.isMinderValideAfspraakMogelijk(), mindervalideReserveringen);

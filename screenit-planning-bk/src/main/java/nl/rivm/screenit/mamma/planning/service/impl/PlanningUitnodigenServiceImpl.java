@@ -21,8 +21,6 @@ package nl.rivm.screenit.mamma.planning.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.mamma.planning.index.PlanningClientIndex;
 import nl.rivm.screenit.mamma.planning.model.PlanningClient;
-import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaats;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsRonde;
 import nl.rivm.screenit.mamma.planning.model.rapportage.PlanningStandplaatsPeriodeUitnodigenRapportageDto;
 import nl.rivm.screenit.mamma.planning.model.rapportage.PlanningStandplaatsRondeUitnodigenRapportageDto;
@@ -43,7 +39,6 @@ import nl.rivm.screenit.mamma.planning.model.rapportage.PlanningUitnodigenRappor
 import nl.rivm.screenit.mamma.planning.service.PlanningUitnodigenService;
 import nl.rivm.screenit.mamma.planning.service.PlanningUitnodigingContext;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -55,8 +50,6 @@ import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
-import nl.rivm.screenit.model.mamma.MammaUitnodiging;
-import nl.rivm.screenit.model.mamma.MammaUitstel;
 import nl.rivm.screenit.model.mamma.enums.MammaUitstelReden;
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsRondeRapportageStatus;
 import nl.rivm.screenit.service.LogService;
@@ -100,25 +93,25 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 	public void uitnodigen(PlanningStandplaatsRonde standplaatsRonde, Set<PlanningClient> openUitnodigingClientSet, NavigableSet<PlanningClient> afspraakUitnodigingClientSet,
 		PlanningUitnodigenRapportageDto rapportageDto, PlanningUitnodigingContext context)
 	{
-		MammaStandplaatsRonde mammaStandplaatsRonde = hibernateService.get(MammaStandplaatsRonde.class, standplaatsRonde.getId());
+		var mammaStandplaatsRonde = hibernateService.get(MammaStandplaatsRonde.class, standplaatsRonde.getId());
 
-		MammaStandplaatsPeriode eersteMammaStandplaatsPeriode = hibernateService.get(MammaStandplaatsPeriode.class,
+		var eersteMammaStandplaatsPeriode = hibernateService.get(MammaStandplaatsPeriode.class,
 			standplaatsRonde.getStandplaatsPeriodeNavigableSet().first().getId());
 
 		baseKansberekeningService.resetPreferences();
 
-		for (PlanningClient client : openUitnodigingClientSet)
+		for (var client : openUitnodigingClientSet)
 		{
-			BriefType briefType = screeningrondeService.bepaalBriefTypeVoorOpenUitnodiging(client.isSuspect(), client.getDoelgroep());
+			var briefType = screeningrondeService.bepaalBriefTypeVoorOpenUitnodiging(client.isSuspect(), client.getDoelgroep());
 			maakRondeEnUitnodiging(getDossier(client), briefType, mammaStandplaatsRonde, false);
 			voegToe(getStandplaatsPeriodeUitnodigenRapportage(rapportageDto, eersteMammaStandplaatsPeriode), briefType, client);
 		}
 
-		for (PlanningClient client : afspraakUitnodigingClientSet)
+		for (var client : afspraakUitnodigingClientSet)
 		{
-			MammaDossier dossier = getDossier(client);
-			BriefType briefType = BriefType.MAMMA_AFSPRAAK_UITNODIGING;
-			BigDecimal voorlopigeOpkomstkans = baseKansberekeningService
+			var dossier = getDossier(client);
+			var briefType = BriefType.MAMMA_AFSPRAAK_UITNODIGING;
+			var voorlopigeOpkomstkans = baseKansberekeningService
 				.getVoorlopigeOpkomstkans(dossier, eersteMammaStandplaatsPeriode, null, briefType);
 
 			MammaAfspraakOptie afspraakOptie;
@@ -129,17 +122,17 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 			}
 			catch (MammaOnvoldoendeVrijeCapaciteitException e)
 			{
-				ScreeningOrganisatie regio = mammaStandplaatsRonde.getStandplaats().getRegio();
+				var regio = mammaStandplaatsRonde.getStandplaats().getRegio();
 				logService.logGebeurtenis(LogGebeurtenis.MAMMA_ONVOLDOENDE_VRIJE_CAPACITEIT, List.of(regio),
 					new LogEvent(mammaStandplaatsRonde.getStandplaats().getNaam()),
 					Bevolkingsonderzoek.MAMMA);
 				break;
 			}
 
-			MammaScreeningRonde mammaScreeningRonde = maakRondeEnUitnodiging(dossier, briefType, mammaStandplaatsRonde, false);
-			MammaCapaciteitBlok capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, afspraakOptie.getCapaciteitBlokDto().getId());
-			MammaStandplaatsPeriode standplaatsPeriode = afspraakOptie.getCapaciteitBlokDto().getStandplaatsPeriode();
-			baseAfspraakService.maakAfspraak(mammaScreeningRonde, capaciteitBlok, DateUtil.toUtilDate(afspraakOptie.getVanaf().atDate(afspraakOptie.getDatum())),
+			var mammaScreeningRonde = maakRondeEnUitnodiging(dossier, briefType, mammaStandplaatsRonde, false);
+			var capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, afspraakOptie.getCapaciteitBlokId());
+			var standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class, afspraakOptie.getStandplaatsPeriodeId());
+			baseAfspraakService.maakAfspraak(mammaScreeningRonde, capaciteitBlok, DateUtil.toUtilDate(afspraakOptie.getDatumTijd()),
 				standplaatsPeriode, null, false, true, false, true, false, null, false);
 
 			voegToe(getStandplaatsPeriodeUitnodigenRapportage(rapportageDto, standplaatsPeriode), briefType, client);
@@ -156,12 +149,12 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 	@Override
 	public void achtervangUitstel(PlanningStandplaatsRonde standplaatsRonde, Set<PlanningClient> uitTeStellenClientSet, PlanningUitnodigenRapportageDto rapportage)
 	{
-		MammaStandplaatsRonde mammaStandplaatsRonde = hibernateService.get(MammaStandplaatsRonde.class, standplaatsRonde.getId());
+		var mammaStandplaatsRonde = hibernateService.get(MammaStandplaatsRonde.class, standplaatsRonde.getId());
 
 		uitstellen(mammaStandplaatsRonde, uitTeStellenClientSet, mammaStandplaatsRonde.getAchtervangStandplaats(), MammaUitstelReden.ACHTERVANG_UITSTEL);
 		mammaStandplaatsRonde.setAchtervangToegepast(true);
 
-		MammaStandplaatsPeriode laatsteMammaStandplaatsPeriode = hibernateService.get(MammaStandplaatsPeriode.class,
+		var laatsteMammaStandplaatsPeriode = hibernateService.get(MammaStandplaatsPeriode.class,
 			standplaatsRonde.getStandplaatsPeriodeNavigableSet().last().getId());
 		getStandplaatsPeriodeUitnodigenRapportage(rapportage, laatsteMammaStandplaatsPeriode).setUitgesteldAchtervangUitstel((long) uitTeStellenClientSet.size());
 	}
@@ -169,12 +162,12 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 	@Override
 	public void minderValideUitwijkUitstel(PlanningStandplaatsRonde standplaatsRonde, Set<PlanningClient> uitTeStellenClientSet, PlanningUitnodigenRapportageDto rapportage)
 	{
-		MammaStandplaatsRonde mammaStandplaatsRonde = hibernateService.get(MammaStandplaatsRonde.class, standplaatsRonde.getId());
+		var mammaStandplaatsRonde = hibernateService.get(MammaStandplaatsRonde.class, standplaatsRonde.getId());
 
 		uitstellen(mammaStandplaatsRonde, uitTeStellenClientSet, mammaStandplaatsRonde.getMinderValideUitwijkStandplaats(),
 			MammaUitstelReden.MINDER_VALIDE_UITWIJK_UITSTEL);
 
-		MammaStandplaatsPeriode eersteMammaStandplaatsPeriode = hibernateService.get(MammaStandplaatsPeriode.class,
+		var eersteMammaStandplaatsPeriode = hibernateService.get(MammaStandplaatsPeriode.class,
 			standplaatsRonde.getStandplaatsPeriodeNavigableSet().first().getId());
 		getStandplaatsPeriodeUitnodigenRapportage(rapportage, eersteMammaStandplaatsPeriode).setUitgesteldMinderValideUitgewijktUitstel((long) uitTeStellenClientSet.size());
 	}
@@ -192,8 +185,8 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 	{
 		synchronized (rapportageDto)
 		{
-			MammaStandplaatsRonde standplaatsRonde = standplaatsPeriode.getStandplaatsRonde();
-			PlanningStandplaatsRondeUitnodigenRapportageDto standplaatsRondeUitnodigenRapportage = rapportageDto.getStandplaatsRondeUitnodigenRapportages().stream()
+			var standplaatsRonde = standplaatsPeriode.getStandplaatsRonde();
+			var standplaatsRondeUitnodigenRapportage = rapportageDto.getStandplaatsRondeUitnodigenRapportages().stream()
 				.filter(element -> element.getStandplaatsRondeId().equals(standplaatsRonde.getId())).findAny().orElse(null);
 			if (standplaatsRondeUitnodigenRapportage == null)
 			{
@@ -204,7 +197,7 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 				rapportageDto.getStandplaatsRondeUitnodigenRapportages().add(standplaatsRondeUitnodigenRapportage);
 			}
 
-			PlanningStandplaatsPeriodeUitnodigenRapportageDto standplaatsPeriodeUitnodigenRapportage = standplaatsRondeUitnodigenRapportage
+			var standplaatsPeriodeUitnodigenRapportage = standplaatsRondeUitnodigenRapportage
 				.getStandplaatsPeriodeUitnodigenRapportages()
 				.stream()
 				.filter(element -> element.getStandplaatsPeriodeId().equals(standplaatsPeriode.getId())).findAny().orElse(null);
@@ -222,7 +215,7 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 
 	private void uitstellen(MammaStandplaatsRonde standplaatsRonde, Set<PlanningClient> uitTeStellenClientSet, MammaStandplaats uitstellenNaar, MammaUitstelReden uitstelReden)
 	{
-		for (PlanningClient client : uitTeStellenClientSet)
+		for (var client : uitTeStellenClientSet)
 		{
 			MammaScreeningRonde screeningRonde;
 			if (client.getUitstelStandplaats() != null)
@@ -234,7 +227,7 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 				screeningRonde = maakRondeEnUitnodiging(getDossier(client), null, standplaatsRonde, true);
 			}
 
-			MammaUitstel uitstel = baseFactory.maakUitstel(screeningRonde, uitstellenNaar, DateUtil.toUtilDate(client.getHuidigeStreefDatum()), uitstelReden);
+			var uitstel = baseFactory.maakUitstel(screeningRonde, uitstellenNaar, DateUtil.toUtilDate(client.getHuidigeStreefDatum()), uitstelReden);
 			screeningRonde.setLaatsteUitstel(uitstel);
 			screeningRonde.getUitstellen().add(uitstel);
 
@@ -251,13 +244,13 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 
 	private MammaScreeningRonde maakRondeEnUitnodiging(MammaDossier mammaDossier, BriefType uitnodigingsBriefType, MammaStandplaatsRonde mammaStandplaatsRonde, boolean uitstellen)
 	{
-		PlanningClient client = PlanningClientIndex.get(mammaDossier.getClient().getId());
+		var client = PlanningClientIndex.get(mammaDossier.getClient().getId());
 		MammaScreeningRonde screeningRonde;
 		if (client.getUitstelStandplaats() != null)
 		{
 			screeningRonde = mammaDossier.getLaatsteScreeningRonde();
-			MammaUitstel uitstel = screeningRonde.getLaatsteUitstel();
-			MammaUitnodiging uitnodiging = baseFactory.maakUitnodiging(screeningRonde, mammaStandplaatsRonde, uitnodigingsBriefType);
+			var uitstel = screeningRonde.getLaatsteUitstel();
+			var uitnodiging = baseFactory.maakUitnodiging(screeningRonde, mammaStandplaatsRonde, uitnodigingsBriefType);
 			uitstel.setUitnodiging(uitnodiging);
 			hibernateService.saveOrUpdate(uitnodiging);
 		}
@@ -277,18 +270,18 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 
 	private void standplaatsRondeToevoegen(PlanningStandplaatsRonde voorgaandeStandplaatsRonde)
 	{
-		LOG.info("standplaatsRondeToevoegen voorgaandeStandplaatsRonde: " + voorgaandeStandplaatsRonde.getId());
+		LOG.info("standplaatsRondeToevoegen voorgaandeStandplaatsRonde: {}", voorgaandeStandplaatsRonde.getId());
 
-		PlanningStandplaats standplaats = voorgaandeStandplaatsRonde.getStandplaats();
-		PlanningScreeningsEenheid screeningsEenheid = voorgaandeStandplaatsRonde.getStandplaatsPeriodeNavigableSet().first().getScreeningsEenheid();
+		var standplaats = voorgaandeStandplaatsRonde.getStandplaats();
+		var screeningsEenheid = voorgaandeStandplaatsRonde.getStandplaatsPeriodeNavigableSet().first().getScreeningsEenheid();
 
 		if (standplaats.getStandplaatsRondeNavigableSet().last().equals(voorgaandeStandplaatsRonde))
 		{
 
-			MammaScreeningsEenheid mammaScreeningsEenheid = hibernateService.get(MammaScreeningsEenheid.class, screeningsEenheid.getId());
-			MammaStandplaats mammaStandplaats = hibernateService.get(MammaStandplaats.class, standplaats.getId());
-			MammaStandplaatsPeriode mammaStandplaatsPeriode = new MammaStandplaatsPeriode();
-			MammaStandplaatsRonde mammaStandplaatsRonde = new MammaStandplaatsRonde();
+			var mammaScreeningsEenheid = hibernateService.get(MammaScreeningsEenheid.class, screeningsEenheid.getId());
+			var mammaStandplaats = hibernateService.get(MammaStandplaats.class, standplaats.getId());
+			var mammaStandplaatsPeriode = new MammaStandplaatsPeriode();
+			var mammaStandplaatsRonde = new MammaStandplaatsRonde();
 
 			mammaScreeningsEenheid.getStandplaatsPerioden().add(mammaStandplaatsPeriode);
 			mammaStandplaatsPeriode.setScreeningsEenheid(mammaScreeningsEenheid);
@@ -298,7 +291,7 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 			mammaStandplaatsRonde.setAchtervangToegepast(false);
 			mammaStandplaats.getStandplaatsRonden().add(mammaStandplaatsRonde);
 
-			Date datum = DateUtil.toUtilDate(screeningsEenheid.getStandplaatsPeriodeNavigableSet().last().getTotEnMet().plusDays(1));
+			var datum = DateUtil.toUtilDate(screeningsEenheid.getStandplaatsPeriodeNavigableSet().last().getTotEnMet().plusDays(1));
 			mammaStandplaatsPeriode.setVanaf(datum);
 			mammaStandplaatsPeriode.setTotEnMet(datum);
 			mammaStandplaatsPeriode.setStandplaatsRondeVolgNr(1);

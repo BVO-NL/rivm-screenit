@@ -26,6 +26,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.colon.UitnodigingCohort;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
@@ -35,11 +38,10 @@ import org.apache.wicket.model.IDetachable;
 
 public class Parameterisatie implements IDetachable, Cloneable
 {
-
-	private static final long serialVersionUID = 1L;
-
 	private SimpleListHibernateModel<UitnodigingCohort> cohorten;
 
+	@Setter
+	@Getter
 	private Map<PreferenceKey, Object> parameters;
 
 	public List<UitnodigingCohort> getCohorten()
@@ -73,16 +75,6 @@ public class Parameterisatie implements IDetachable, Cloneable
 	public void detach()
 	{
 		ModelUtil.nullSafeDetach(cohorten);
-	}
-
-	public Map<PreferenceKey, Object> getParameters()
-	{
-		return parameters;
-	}
-
-	public void setParameters(Map<PreferenceKey, Object> parameters)
-	{
-		this.parameters = parameters;
 	}
 
 	@Override

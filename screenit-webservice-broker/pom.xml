@@ -37,13 +37,6 @@
                                         <bindingFile>${basedir}/src/main/resources/bindings/jaxws-bindings-pd.xml</bindingFile>
                                     </bindingFiles>
                                 </wsdlOption>
-                                <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/wsdl/LabformulierService.wsdl</wsdl>
-                                    <bindingFiles>
-                                        <bindingFile>${basedir}/src/main/resources/bindings/jaxb-bindings-labformulier.xml</bindingFile>
-                                        <bindingFile>${basedir}/src/main/resources/bindings/jaxws-bindings-labformulier.xml</bindingFile>
-                                    </bindingFiles>
-                                </wsdlOption>
                             </wsdlOptions>
                             <encoding>UTF-8</encoding>
                         </configuration>
@@ -185,6 +178,12 @@
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-server</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.ibm.icu</groupId>
+                    <artifactId>icu4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

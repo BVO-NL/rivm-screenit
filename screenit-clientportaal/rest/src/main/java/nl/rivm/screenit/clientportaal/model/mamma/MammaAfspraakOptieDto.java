@@ -21,7 +21,9 @@ package nl.rivm.screenit.clientportaal.model.mamma;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -29,12 +31,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import nl.rivm.screenit.clientportaal.model.ClientportaalBaseDto;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakOptieMetAfstandDto;
+import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaAfspraakOptie;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MammaAfspraakOptieDto extends ClientportaalBaseDto
+public class MammaAfspraakOptieDto extends ClientportaalBaseDto implements MammaAfspraakOptie
 {
 	private Long capaciteitBlokId;
 
@@ -60,11 +65,25 @@ public class MammaAfspraakOptieDto extends ClientportaalBaseDto
 
 	private MammaAfspraakZoekFilterDto filter;
 
-	public MammaAfspraakOptieDto(MammaBaseAfspraakOptieDto baseAfspraakOptieDto)
+	public MammaAfspraakOptieDto(MammaAfspraakOptieMetAfstandDto afspraakOptieMetAfstandDto)
 	{
-		this.capaciteitBlokId = baseAfspraakOptieDto.getCapaciteitBlokId();
-		this.datumTijd = baseAfspraakOptieDto.getTijd().atDate(baseAfspraakOptieDto.getDatum());
-		this.standplaatsPeriodeId = baseAfspraakOptieDto.getStandplaatsPeriodeId();
-		this.afstand = baseAfspraakOptieDto.getAfstand();
+		this.capaciteitBlokId = afspraakOptieMetAfstandDto.getCapaciteitBlokId();
+		this.datumTijd = afspraakOptieMetAfstandDto.getDatumTijd();
+		this.standplaatsPeriodeId = afspraakOptieMetAfstandDto.getStandplaatsPeriodeId();
+		this.afstand = afspraakOptieMetAfstandDto.getAfstand();
+	}
+
+	@Override
+	@JsonIgnore
+	public LocalTime getTijd()
+	{
+		return MammaAfspraakOptie.super.getTijd();
+	}
+
+	@Override
+	@JsonIgnore
+	public LocalDate getDatum()
+	{
+		return MammaAfspraakOptie.super.getDatum();
 	}
 }

@@ -22,83 +22,20 @@ package nl.rivm.screenit.dto.mamma.afspraken;
  */
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Objects;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaAfspraakOptie;
 
 @Getter
-public class MammaBaseAfspraakOptieDto implements Serializable, Comparable<MammaBaseAfspraakOptieDto>
+@RequiredArgsConstructor
+public class MammaBaseAfspraakOptieDto implements MammaAfspraakOptie, Serializable
 {
-	public static final Double ONBEKENDE_AFSTAND = -1.0;
-
 	private final Long capaciteitBlokId;
 
-	private final LocalDate datum;
-
-	private final LocalTime tijd;
+	private final LocalDateTime datumTijd;
 
 	private final Long standplaatsPeriodeId;
-
-	private final Double afstand;
-
-	public MammaBaseAfspraakOptieDto(Long capaciteitBlokId, LocalDate datum, LocalTime tijd, Long standplaatsPeriodeId, Double afstand)
-	{
-		this.capaciteitBlokId = capaciteitBlokId;
-		this.datum = datum;
-		this.tijd = tijd;
-		this.standplaatsPeriodeId = standplaatsPeriodeId;
-		this.afstand = afstand;
-	}
-
-	@Override
-	public int compareTo(MammaBaseAfspraakOptieDto afspraakOptieDto)
-	{
-		int compareTo = this.afstand.compareTo(afspraakOptieDto.afstand);
-		if (compareTo == 0)
-		{
-			compareTo = this.datum.compareTo(afspraakOptieDto.datum);
-			if (compareTo == 0)
-			{
-				compareTo = this.tijd.compareTo(afspraakOptieDto.tijd);
-			}
-		}
-		return compareTo;
-	}
-
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		MammaBaseAfspraakOptieDto that = (MammaBaseAfspraakOptieDto) o;
-		return Objects.equals(capaciteitBlokId, that.capaciteitBlokId) &&
-			Objects.equals(datum, that.datum) &&
-			Objects.equals(tijd, that.tijd) &&
-			Objects.equals(standplaatsPeriodeId, that.standplaatsPeriodeId);
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(capaciteitBlokId, datum, tijd, standplaatsPeriodeId);
-	}
-
-	public boolean isAfstandOnbekend()
-	{
-		return afstand.equals(ONBEKENDE_AFSTAND);
-	}
-
-	public LocalDateTime getDatumTijd()
-	{
-		return getDatum().atTime(getTijd());
-	}
 }

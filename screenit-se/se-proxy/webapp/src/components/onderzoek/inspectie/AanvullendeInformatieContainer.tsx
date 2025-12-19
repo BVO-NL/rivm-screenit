@@ -40,7 +40,6 @@ import {validateField} from "../../../util/ValidationUtil"
 import {createActionUpdateFormField} from "../../../actions/FormActions"
 import {dispatchActions} from "../../../util/DispatchUtil"
 import {RootState, store} from "../../../Store"
-import moment from "moment"
 import type {Zorginstelling} from "../../../datatypes/Zorginstelling"
 import {createActionShowPopup} from "../../../actions/PopupActions"
 import AdhocKwaliteitscontrolePopupView from "../../melding/AdhocKwaliteitscontrolePopupView"
@@ -83,7 +82,7 @@ const mapStateToProps = (state: RootState, ownProps: AanvullendeInformatieContai
 }
 
 const getJarenLijst = (daglijstDatum: string): number[] => {
-	const ditJaar: number = moment(daglijstDatum).year()
+	const ditJaar: number = new Date(daglijstDatum).getFullYear()
 	const jarenList: number[] = []
 	for (let i = 0; i < aantalJarenTerug; i++) {
 		jarenList.push(ditJaar - i)

@@ -687,14 +687,11 @@ public class ClientContactServiceImpl implements ClientContactService
 
 		if (LOG.isTraceEnabled())
 		{
-			var afspraken = new StringBuilder();
-			afspraakOpties.forEach(a -> afspraken.append(a.getDatum() + " " + a.getTijd() + " " + a.getCapaciteitBlokId() + ", "));
-			LOG.trace("isAfspraakTijdBezet: Kandaten {}", afspraken);
+			var optiesTekst = afspraakOpties.stream().map(a -> a.getDatumTijd() + " " + a.getCapaciteitBlokId()).collect(Collectors.joining(", "));
+			LOG.trace("isAfspraakTijdBezet: afspraakopties: {}", optiesTekst);
 		}
-		var tijd = DateUtil.toLocalTime(nieuweVanaf);
-		var datum = DateUtil.toLocalDate(nieuweVanaf);
 
-		return afspraakOpties.stream().noneMatch(afspraakOptie -> tijd.equals(afspraakOptie.getTijd()) && datum.equals(afspraakOptie.getDatum())
+		return afspraakOpties.stream().noneMatch(afspraakOptie -> DateUtil.toLocalDateTime(nieuweVanaf).equals(afspraakOptie.getDatumTijd())
 			&& capaciteitBlok.getId().equals(afspraakOptie.getCapaciteitBlokId()));
 	}
 

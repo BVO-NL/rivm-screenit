@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
@@ -43,11 +44,11 @@ import static nl.rivm.screenit.Constants.BK_TIJDVAK_MIN;
 import static nl.rivm.screenit.Constants.BK_TIJDVAK_SEC;
 
 @Slf4j
+
 class MammaRationaalAfspraakOptie extends MammaRationaal implements MammaAfspraakOptie
 {
-	private static final int BENODIGDE_MINUTEN_VOOR_DUBBELE_TIJD_AFSPRAAK = 10;
+	static final int BENODIGDE_MINUTEN_VOOR_DUBBELE_TIJD_AFSPRAAK = 10;
 
-	@Getter
 	private final MammaCapaciteitBlokDto capaciteitBlokDto;
 
 	private final boolean enkeleMammograaf;
@@ -66,10 +67,8 @@ class MammaRationaalAfspraakOptie extends MammaRationaal implements MammaAfspraa
 
 	private final boolean dubbeleTijd;
 
-	@Getter
 	private final LocalDate datum;
 
-	@Getter
 	private final LocalTime vanaf;
 
 	private LocalTime tot;
@@ -86,7 +85,7 @@ class MammaRationaalAfspraakOptie extends MammaRationaal implements MammaAfspraa
 		capaciteitBlokDto = capaciteitBlok;
 		begintijdBlok = capaciteitBlok.getVanaf().toLocalTime();
 		eindtijdBlok = capaciteitBlok.getTot();
-		datum = capaciteitBlok.getVanaf().toLocalDate();
+		datum = capaciteitBlok.getDatum();
 		vanaf = afspraakPeriode.lowerEndpoint();
 		tot = afspraakPeriode.upperEndpoint();
 		this.mindervalide = mindervalide;
@@ -109,7 +108,7 @@ class MammaRationaalAfspraakOptie extends MammaRationaal implements MammaAfspraa
 	static MammaRationaalAfspraakOptie voorNieuweOptie(LocalTime vanaf, LocalTime tot, MammaCapaciteitBlokDto capaciteitBlok, MammaAfspraakOptieZoekContext zoekContext)
 	{
 		return new MammaRationaalAfspraakOptie(capaciteitBlok, Range.closedOpen(vanaf, tot),
-			zoekContext.getBenodigdeCapaciteit(), zoekContext.isMindervalide(), zoekContext.isDubbeleTijd(), zoekContext);
+			zoekContext.getBenodigdeCapaciteit(), false, zoekContext.isDubbeleTijd(), zoekContext);
 	}
 
 	private boolean geldigeDuurEnPeriode(LocalTime vanaf, LocalTime tot)
@@ -147,9 +146,9 @@ class MammaRationaalAfspraakOptie extends MammaRationaal implements MammaAfspraa
 		}
 
 		LOG.debug(
-			"AfspraakOptie {}-{} MV={}, DT={}, geldig={}, afgesplitsteOngeldig={} gesplitst naar {}-{}, MV={}, DT={}, geldig={}, afgesplitsteOngeldig={}, capaciteitBlokId={}",
-			vanaf, tot, mindervalide, dubbeleTijd, geldigeAfspraak, afgesplitsteOptiesZijnOngeldig, nieuweOptie.vanaf, nieuweOptie.tot, nieuweOptie.mindervalide,
-			nieuweOptie.dubbeleTijd, nieuweOptie.geldigeAfspraak, nieuweOptie.afgesplitsteOptiesZijnOngeldig, capaciteitBlokDto.getId());
+			"AfspraakOptie {}-{} MV={}, DT={}, geldig={}, afgesplitsteOngeldig={} gesplitst naar {}-{}, DT={}, geldig={}, afgesplitsteOngeldig={}, capaciteitBlokId={}",
+			vanaf, tot, mindervalide, dubbeleTijd, geldigeAfspraak, afgesplitsteOptiesZijnOngeldig, nieuweOptie.vanaf, nieuweOptie.tot, nieuweOptie.dubbeleTijd,
+			nieuweOptie.geldigeAfspraak, nieuweOptie.afgesplitsteOptiesZijnOngeldig, getCapaciteitBlokId());
 
 		tot = nieuweOptie.vanaf;
 		return nieuweOptie;
@@ -177,7 +176,7 @@ class MammaRationaalAfspraakOptie extends MammaRationaal implements MammaAfspraa
 	{
 		var nieuweOptie = voorNieuweOptie(nieuweVanaf, tot, capaciteitBlokDto, zoekContext);
 		controleerDatNieuweOptieVoorEindtijdBlokBegint(nieuweOptie);
-		controleerDatNieuweMindervalideOfDubbeleTijdOptieNietGelijkValtMetBestaandeAfspraak(nieuweOptie);
+		controleerDatNieuweDubbeleTijdOptieNietGelijkValtMetBestaandeAfspraak(nieuweOptie);
 		controleerDatBestaandeAfspraakGeldigBlijft(nieuweOptie);
 		return nieuweOptie;
 	}
@@ -187,9 +186,9 @@ class MammaRationaalAfspraakOptie extends MammaRationaal implements MammaAfspraa
 		nieuweOptie.geldigeAfspraak &= eindtijdBlok.isAfter(nieuweOptie.vanaf); 
 	}
 
-	private void controleerDatNieuweMindervalideOfDubbeleTijdOptieNietGelijkValtMetBestaandeAfspraak(MammaRationaalAfspraakOptie nieuweOptie)
+	private void controleerDatNieuweDubbeleTijdOptieNietGelijkValtMetBestaandeAfspraak(MammaRationaalAfspraakOptie nieuweOptie)
 	{
-		if (enkeleMammograaf && (nieuweOptie.mindervalide || nieuweOptie.dubbeleTijd))
+		if (enkeleMammograaf && nieuweOptie.dubbeleTijd)
 		{
 			nieuweOptie.geldigeAfspraak &= nieuweOptie.vanaf.isAfter(vanaf);
 		}
@@ -260,7 +259,7 @@ class MammaRationaalAfspraakOptie extends MammaRationaal implements MammaAfspraa
 	{
 		var nieuweOptie = maakNieuweOptie(vanaf, zoekContext);
 
-		nieuweOptie.geldigeAfspraak &= !zoekContext.isMindervalide() && !zoekContext.isDubbeleTijd();
+		nieuweOptie.geldigeAfspraak &= !zoekContext.isDubbeleTijd(); 
 		return nieuweOptie;
 	}
 
@@ -274,5 +273,23 @@ class MammaRationaalAfspraakOptie extends MammaRationaal implements MammaAfspraa
 	BigDecimal getNoemer()
 	{
 		return getDuurInSeconden();
+	}
+
+	@Override
+	public Long getCapaciteitBlokId()
+	{
+		return capaciteitBlokDto.getId();
+	}
+
+	@Override
+	public Long getStandplaatsPeriodeId()
+	{
+		return capaciteitBlokDto.getStandplaatsPeriodeId();
+	}
+
+	@Override
+	public LocalDateTime getDatumTijd()
+	{
+		return datum.atTime(vanaf);
 	}
 }

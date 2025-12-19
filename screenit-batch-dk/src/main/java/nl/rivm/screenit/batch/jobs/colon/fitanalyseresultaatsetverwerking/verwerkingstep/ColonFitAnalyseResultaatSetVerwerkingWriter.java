@@ -78,13 +78,13 @@ public class ColonFitAnalyseResultaatSetVerwerkingWriter implements ItemWriter<C
 		ColonFitAnalyseResultaatSet resultaatSet = null;
 		ColonFitAnalyseResultaatSetVerwerkingRapportageEntry verslagEntry = null;
 
-		for (var ifobtResult : chunk.getItems())
+		for (var fitAnalyseResultaat : chunk.getItems())
 		{
-			var fitRegistratie = fitService.getFit(ifobtResult.getBarcode()).orElse(null);
+			var fitRegistratie = fitService.getFit(fitAnalyseResultaat.getBarcode()).orElse(null);
 
-			if (resultaatSet == null || !resultaatSet.equals(ifobtResult.getAnalyseResultaatSet()))
+			if (resultaatSet == null || !resultaatSet.equals(fitAnalyseResultaat.getAnalyseResultaatSet()))
 			{
-				resultaatSet = ifobtResult.getAnalyseResultaatSet();
+				resultaatSet = fitAnalyseResultaat.getAnalyseResultaatSet();
 				verslagEntry = null;
 			}
 			if (verslagEntry == null)
@@ -114,12 +114,12 @@ public class ColonFitAnalyseResultaatSetVerwerkingWriter implements ItemWriter<C
 				if (fitRegistratie.getUitslag() == null)
 				{
 					logService.logGebeurtenis(LogGebeurtenis.COLON_FIT_ANALYSE_RESULTAAT_VERWERKT, client, "barcode: " + fitRegistratie.getBarcode(), Bevolkingsonderzoek.COLON);
-					zetAnalysegegevensOverNaarFit(resultaatSet, ifobtResult, fitRegistratie);
+					zetAnalysegegevensOverNaarFit(resultaatSet, fitAnalyseResultaat, fitRegistratie);
 
-					if (ifobtResult.getOnbeoordeelbaarReden() != null || (!ColonFitRegistratieUtil.UITSLAG_FLAG_PRO.equals(fitRegistratie.getFlag())
+					if (fitAnalyseResultaat.getOnbeoordeelbaarReden() != null || (!ColonFitRegistratieUtil.ANALYSE_RESULTAAT_FLAG_PRO.equals(fitRegistratie.getFlag())
 						&& fitRegistratie.getFlag() != null))
 					{
-						fitRegistratie.setRedenNietTeBeoordelen(ifobtResult.getOnbeoordeelbaarReden());
+						fitRegistratie.setRedenNietTeBeoordelen(fitAnalyseResultaat.getOnbeoordeelbaarReden());
 						fitService.monsterNietBeoordeelbaar(fitRegistratie);
 					}
 					else
@@ -141,7 +141,7 @@ public class ColonFitAnalyseResultaatSetVerwerkingWriter implements ItemWriter<C
 			}
 			else
 			{
-				LOG.warn("Barcode van iFobtResult (id: '{}') is onbekend of hoort niet bij een FIT.", ifobtResult.getId());
+				LOG.warn("Barcode van analyseResult (id: '{}') is onbekend of hoort niet bij een FIT.", fitAnalyseResultaat.getId());
 			}
 			resultaatSet.setAantalVerwerkt(resultaatSet.getAantalVerwerkt() + 1);
 			if (resultaatSet.getAantalVerwerkt() >= resultaatSet.getUitslagen().size())
@@ -163,7 +163,7 @@ public class ColonFitAnalyseResultaatSetVerwerkingWriter implements ItemWriter<C
 		fitRegistratie.setVerwerkingsDatum(currentDateSupplier.getDate());
 		fitRegistratie.setFlag(ifobtResult.getFlag());
 
-		if (ColonFitRegistratieUtil.UITSLAG_FLAG_PRO.equals(fitRegistratie.getFlag()))
+		if (ColonFitRegistratieUtil.ANALYSE_RESULTAAT_FLAG_PRO.equals(fitRegistratie.getFlag()))
 		{
 			fitRegistratie.setGeinterpreteerdeUitslag(ColonGeinterpreteerdeUitslag.ONGUNSTIG);
 		}
