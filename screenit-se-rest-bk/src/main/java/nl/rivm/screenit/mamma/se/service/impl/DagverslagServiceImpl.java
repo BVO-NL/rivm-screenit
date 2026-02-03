@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.se.service.impl;
  * ========================LICENSE_START=================================
  * screenit-se-rest-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -116,13 +116,7 @@ public class DagverslagServiceImpl implements DagverslagService
 
 	private DagProductieDto getOrCreateDagproductieDto(Long organisatieMedewerkerId, Map<String, DagProductieDto> result)
 	{
-		var dagproductieDto = result.get(getDisplayName(organisatieMedewerkerId));
-		if (dagproductieDto == null)
-		{
-			dagproductieDto = new DagProductieDto();
-			result.put(getDisplayName(organisatieMedewerkerId), dagproductieDto);
-		}
-		return dagproductieDto;
+		return result.computeIfAbsent(getDisplayName(organisatieMedewerkerId), k -> new DagProductieDto());
 	}
 
 	private String getDisplayName(long organisatieMedewerkerId)
@@ -195,7 +189,8 @@ public class DagverslagServiceImpl implements DagverslagService
 
 		var statistiekenDto = new DagPlanningSamenvattingDto();
 		statistiekenDto.setDagCapaciteit(beschikbareCapaciteit);
-		statistiekenDto.setBeschikbaarheid(vrijeCapaciteit.setScale(1, RoundingMode.HALF_UP));
+		statistiekenDto.setVrijeCapaciteit(vrijeCapaciteit.setScale(1, RoundingMode.HALF_UP));
+		statistiekenDto.setBeschikbaarheid(statistiekenDto.getVrijeCapaciteit());
 		statistiekenDto.setStarttijd(starttijd);
 		statistiekenDto.setEindtijd(eindtijd);
 

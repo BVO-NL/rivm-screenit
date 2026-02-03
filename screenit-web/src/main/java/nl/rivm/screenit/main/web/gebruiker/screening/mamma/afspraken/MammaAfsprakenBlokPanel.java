@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.afspraken;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -34,19 +34,17 @@ import nl.rivm.screenit.main.web.gebruiker.gedeeld.MammaDoelgroepIndicatorPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.formatter.TelefoonnummersFormatter;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Gemeente;
-import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaDossier;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.AfmeldingUtil;
 import nl.rivm.screenit.util.BigDecimalUtil;
+import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.util.NaamUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.search.column.HibernateCheckBoxListContainer;
@@ -63,11 +61,11 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
-public class MammaAfsprakenBlokPanel extends GenericPanel<List<MammaAfspraak>>
+public class MammaAfsprakenBlokPanel extends GenericPanel<List<MammaAfspraakOfMindervalideReserveringWrapper>>
 {
-
 	private final HibernateCheckBoxListContainer<MammaAfspraak> selectedAfspraken;
 
 	public static final String AFSPRAAK_VERZETTEN_DATUM = "AfspraakVerzetten.datum";
@@ -81,99 +79,134 @@ public class MammaAfsprakenBlokPanel extends GenericPanel<List<MammaAfspraak>>
 
 	private boolean magBulkVerzetten;
 
-	public MammaAfsprakenBlokPanel(String id, IModel<List<MammaAfspraak>> afsprakenModel, HibernateCheckBoxListContainer<MammaAfspraak> selectedAfspraken, LocalDate currentDay,
+	public MammaAfsprakenBlokPanel(String id, IModel<List<MammaAfspraakOfMindervalideReserveringWrapper>> afsprakenEnReserveringenModel,
+		HibernateCheckBoxListContainer<MammaAfspraak> selectedAfspraken,
+		LocalDate currentDay,
 		boolean magVerzetten, boolean magBulkVerzetten)
 	{
-		super(id, afsprakenModel);
+		super(id, afsprakenEnReserveringenModel);
 		this.selectedAfspraken = selectedAfspraken;
 		this.magBulkVerzetten = magBulkVerzetten;
 
 		setOutputMarkupId(true);
 
-		WebMarkupContainer selectColumn = new WebMarkupContainer("selectColumn");
+		var selectColumn = new WebMarkupContainer("selectColumn");
 		selectColumn.setVisible(magBulkVerzetten);
 		add(selectColumn);
 
-		add(new ListView<MammaAfspraak>("items", afsprakenModel)
+		add(new ListView<>("items", afsprakenEnReserveringenModel)
 		{
 			@Override
-			protected void populateItem(ListItem<MammaAfspraak> item)
+			protected void populateItem(ListItem<MammaAfspraakOfMindervalideReserveringWrapper> item)
 			{
-				MammaAfspraak afspraak = item.getModelObject();
-				MammaScreeningRonde laatsteScreeningRonde = afspraak.getUitnodiging().getScreeningRonde().getDossier().getLaatsteScreeningRonde();
+				var wrapper = item.getModelObject();
+				if (wrapper.isLegeMindervalideReservering())
+				{
+					addLabelsVoorMindervalideReservering(item);
+					return;
+				}
+
+				addLabelsVoorAfspraak(item);
+			}
+
+			private void addLabelsVoorAfspraak(ListItem<MammaAfspraakOfMindervalideReserveringWrapper> item)
+			{
+				var afspraak = item.getModelObject().getAfspraak();
+				var dossier = getDossier(afspraak);
+				var laatsteScreeningRonde = dossier.getLaatsteScreeningRonde();
+				var client = dossier.getClient();
+				var persoon = client.getPersoon();
 
 				addCheckbox(item);
 				item.add(DateLabel.forDatePattern("tijd", Model.of(afspraak.getVanaf()), "HH:mm"));
-				Client client = afspraak.getUitnodiging().getScreeningRonde().getDossier().getClient();
+
 				item.add(new Label("client", NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client)));
-				String datePattern = Constants.DEFAULT_DATE_FORMAT;
-				if (client.getPersoon().getGeboortedatumPrecisie() != null)
-				{
-					datePattern = client.getPersoon().getGeboortedatumPrecisie().getDatePattern();
-				}
-				item.add(DateLabel.forDatePattern("geboortedatum", Model.of(client.getPersoon().getGeboortedatum()), datePattern));
-				item.add(new Label("bsn", client.getPersoon().getBsn()));
-				item.add(new Label("telefoonnr", TelefoonnummersFormatter.getTelefoonnummersVoorPersoon(client.getPersoon())));
+				item.add(new Label("geboortedatum", DateUtil.getGeboortedatum(persoon)));
+				item.add(new Label("bsn", persoon.getBsn()));
+				item.add(new Label("telefoonnr", TelefoonnummersFormatter.getTelefoonnummersVoorPersoon(persoon)));
 				item.add(new Label("opkomstkans", BigDecimalUtil.decimalToString(afspraak.getOpkomstkans().getOpkomstkans().multiply(BigDecimal.valueOf(100)), 0) + "%"));
-				item.add(new MammaDoelgroepIndicatorPanel("doelgroep", client.getMammaDossier(), true));
+				item.add(new MammaDoelgroepIndicatorPanel("doelgroep", dossier, true));
+				item.add(new Label("verzet", getVerzetTekst(afspraak)));
 
-				String verzet = "Nee";
-				if (afspraak.getVerzettenReden() != null)
-				{
-					verzet = "Ja (" + getString(EnumStringUtil.getPropertyString(afspraak.getVerzettenReden())) + ")";
-				}
-				item.add(new Label("verzet", verzet));
+				item.add(new WebMarkupContainer("mindervalideReservering").setVisible(item.getModelObject().isMindervalideReserveringOpVanafTijd()));
+				var verzetten = createVerzettenLink(item);
+				var laatsteAfspraak = laatsteScreeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak();
+				verzetten.setVisible(magVerzetten && laatsteAfspraak != null && laatsteAfspraak.equals(afspraak)
+					&& !AfmeldingUtil.isEenmaligOfDefinitiefAfgemeld(getDossier(laatsteAfspraak)));
+				item.add(verzetten);
+			}
 
-				AjaxLink<Void> verzetten = new AjaxLink<Void>("verzetten")
+			private AjaxLink<Void> createVerzettenLink(ListItem<MammaAfspraakOfMindervalideReserveringWrapper> item)
+			{
+				return new AjaxLink<>("verzetten")
 				{
 					@Override
 					public void onClick(AjaxRequestTarget target)
 					{
-						MammaAfspraak afspraak = (MammaAfspraak) HibernateHelper.deproxy(ModelProxyHelper.deproxy(item.getModelObject()));
+						var afspraak = (MammaAfspraak) Hibernate.unproxy(ModelProxyHelper.deproxy(item.getModelObject().getAfspraak()));
+						List<Object> extraParameters = getExtraParameters(afspraak);
+
+						ScreenitSession.get().setZoekObject(AFSPRAAK_VERZETTEN_DATUM, Model.of(currentDay));
+						ScreenitSession.get().setZoekObject(AFSPRAAK_VERZETTEN_SCREENINGSEENHEID, ModelUtil.sModel(afspraak.getStandplaatsPeriode().getScreeningsEenheid()));
+						ScreenitSession.get().setZoekObject(AFSPRAAK_VERZETTEN_KOMT_VANUIT_AFSPRAKENKALENDER, Model.of(true));
+
+						var clientContactActieTypeWrapper = afspraak.getVanaf().compareTo(dateSupplier.getDate()) < 0
+							? ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN
+							: ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_WIJZIGEN;
+
+						var client = getDossier(afspraak).getClient();
+						setResponsePage(new ClientContactPage(ModelUtil.sModel((Client) Hibernate.unproxy(client)),
+							extraParameters, clientContactActieTypeWrapper));
+					}
+
+					private List<Object> getExtraParameters(MammaAfspraak afspraak)
+					{
 						List<Object> extraParameters = new ArrayList<>();
 						extraParameters.add(afspraak);
 						extraParameters.add(MammaAfspraakStatus.GEPLAND);
 						extraParameters.add(getPage().getDefaultModelObject());
 						extraParameters.add(Constants.CONTACT_EXTRA_PARAMETER_VANUIT_BK_PLANNING);
 						extraParameters.add(currentDay);
-
-						ScreenitSession.get().setZoekObject(AFSPRAAK_VERZETTEN_DATUM, Model.of(currentDay));
-						ScreenitSession.get().setZoekObject(AFSPRAAK_VERZETTEN_SCREENINGSEENHEID, ModelUtil.sModel(afspraak.getStandplaatsPeriode().getScreeningsEenheid()));
-						ScreenitSession.get().setZoekObject(AFSPRAAK_VERZETTEN_KOMT_VANUIT_AFSPRAKENKALENDER, Model.of(true));
-
-						ClientContactActieTypeWrapper clientContactActieTypeWrapper = afspraak.getVanaf().compareTo(dateSupplier.getDate()) < 0
-							? ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN
-							: ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_WIJZIGEN;
-
-						setResponsePage(new ClientContactPage(ModelUtil.sModel(afspraak.getUitnodiging().getScreeningRonde().getDossier().getClient()),
-							extraParameters, clientContactActieTypeWrapper));
+						return extraParameters;
 					}
 				};
-				MammaAfspraak laatsteAfspraak = laatsteScreeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak();
-				verzetten.setVisible(magVerzetten && laatsteAfspraak != null && laatsteAfspraak.equals(afspraak)
-					&& !AfmeldingUtil.isEenmaligOfDefinitefAfgemeld(laatsteAfspraak.getUitnodiging().getScreeningRonde().getDossier()));
-				item.add(verzetten);
 			}
 		});
 	}
 
-	private void addCheckbox(ListItem<MammaAfspraak> item)
+	private static void addLabelsVoorMindervalideReservering(ListItem<MammaAfspraakOfMindervalideReserveringWrapper> item)
 	{
-		MammaAfspraak afspraak = item.getModelObject();
-		MammaDossier dossier = afspraak.getUitnodiging().getScreeningRonde().getDossier();
-		Persoon persoon = dossier.getClient().getPersoon();
+		var vanaf = item.getModelObject().getVanafTijd();
+		item.add(new Label("tijd", DateUtil.formatLocalTime(vanaf)));
+		item.add(new WebMarkupContainer("select").setVisible(false));
+		item.add(new WebMarkupContainer("client"));
+		item.add(new WebMarkupContainer("geboortedatum"));
+		item.add(new WebMarkupContainer("bsn"));
+		item.add(new WebMarkupContainer("telefoonnr"));
+		item.add(new WebMarkupContainer("opkomstkans"));
+		item.add(new WebMarkupContainer("doelgroep"));
+		item.add(new WebMarkupContainer("verzet"));
+		item.add(new WebMarkupContainer("mindervalideReservering"));
+		item.add(new WebMarkupContainer("verzetten").setVisible(false));
+	}
 
-		MammaScreeningRonde laatsteScreeningRonde = dossier.getLaatsteScreeningRonde();
-		MammaAfspraak laatsteAfspraak = laatsteScreeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak();
+	private void addCheckbox(ListItem<MammaAfspraakOfMindervalideReserveringWrapper> item)
+	{
+		var afspraak = item.getModelObject().getAfspraak();
+		var dossier = getDossier(afspraak);
+		var persoon = dossier.getClient().getPersoon();
 
-		CheckBox select = new CheckBox("select", new PropertyModel<>(selectedAfspraken.getValueMap(), item.getModelObject().getId().toString()));
+		var laatsteScreeningRonde = dossier.getLaatsteScreeningRonde();
+		var laatsteAfspraak = laatsteScreeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak();
+
+		var select = new CheckBox("select", new PropertyModel<>(selectedAfspraken.getValueMap(), afspraak.getId().toString()));
 		select.setVisible(
 			magBulkVerzetten
 				&& afspraak.getStatus().equals(MammaAfspraakStatus.GEPLAND)
 				&& laatsteAfspraak.equals(afspraak)
 				&& dossier.getTehuis() == null
-				&& !dossier.getDoelgroep().equals(MammaDoelgroep.MINDER_VALIDE)
-				&& !AfmeldingUtil.isEenmaligOfDefinitefAfgemeld(dossier)
+				&& !dossier.getDoelgroep().equals(MammaDoelgroep.MINDERVALIDE)
+				&& !AfmeldingUtil.isEenmaligOfDefinitiefAfgemeld(dossier)
 				&& !MammaScreeningRondeUtil.heeftActiefUitstel(laatsteScreeningRonde)
 				&& persoon.getOverlijdensdatum() == null
 				&& persoon.getDatumVertrokkenUitNederland() == null
@@ -181,5 +214,19 @@ public class MammaAfsprakenBlokPanel extends GenericPanel<List<MammaAfspraak>>
 		);
 		item.add(select);
 		selectedAfspraken.addObject(afspraak);
+	}
+
+	private String getVerzetTekst(MammaAfspraak afspraak)
+	{
+		if (afspraak.getVerzettenReden() != null)
+		{
+			return "Ja (" + getString(EnumStringUtil.getPropertyString(afspraak.getVerzettenReden())) + ")";
+		}
+		return "Nee";
+	}
+
+	private MammaDossier getDossier(MammaAfspraak afspraak)
+	{
+		return afspraak.getUitnodiging().getScreeningRonde().getDossier();
 	}
 }

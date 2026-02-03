@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
  * ========================LICENSE_START=================================
  * screenit-se-proxy
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -35,6 +35,7 @@ import nl.rivm.screenit.mamma.se.proxy.services.PersistableTransactionService;
 import nl.rivm.screenit.mamma.se.proxy.services.ProxyService;
 import nl.rivm.screenit.mamma.se.proxy.services.SeDaglijstService;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -57,6 +58,9 @@ public class EnvironmentInfoProxyController
 
 	private final ConfiguratieService configuratieService;
 
+	@Value("${IMS_CONTEXT_BRIDGE_URL}")
+	private String imsContextBridgeUrl;
+
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<EnvironmentInfoDto> readBuildInfo(HttpSession httpSession, HttpServletRequest request)
 	{
@@ -71,6 +75,7 @@ public class EnvironmentInfoProxyController
 		environmentInfo.setCacheVulling(proxyService.cacheVullingInfo());
 		environmentInfo.setDagenDaglijstOphalenLimiet(configuratieService.getConfiguratieIntegerValue(SeConfiguratieKey.SE_DAGLIJST_OPHALEN_VOOR_DAGEN));
 		environmentInfo.setTomosyntheseMogelijk(configuratieService.getConfiguratieBooleanValue(SeConfiguratieKey.TOMOSYNTHESE_MOGELIJK, false));
+		environmentInfo.setImsContextBridgeUrl(imsContextBridgeUrl);
 		return ResponseEntity.ok(environmentInfo);
 	}
 }

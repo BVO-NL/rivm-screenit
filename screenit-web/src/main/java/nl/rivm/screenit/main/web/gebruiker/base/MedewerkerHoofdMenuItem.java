@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.base;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -79,7 +79,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.colon.importcapverdeling.Im
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.intake.ColonGeplandeIntakesWerklijstPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.kwaliteitscontrole.KwaliteitscontroleBatchOverzichtPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.kwaliteitscontrole.reeks.SentinelControlesPage;
-import nl.rivm.screenit.main.web.gebruiker.screening.colon.niettebeoordelen.NietTeBeoordelenMonstersPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.overeenkomstenzoeken.OvereenkomstZoekenBeheerPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.planning.rooster.RoosterAngularPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.proefbvo.ProefBVOAfmeldenPage;
@@ -107,7 +106,7 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.ad
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.beelden.MammaBeeldenZoekenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.beelden.MammaPortfolioZoekenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.fotobespreking.MammaFotobesprekingOverzichtPage;
-import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.visitatie.MammaVisitatieOverzichtPage;
+import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.visitatie.MammaVisitatieOverzichtAngularPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.palga.MammaPalgaUitwisselingPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.dashboard.MammaPlanningDashboardPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.sestatus.MammaSEStatusPage;
@@ -188,7 +187,7 @@ public enum MedewerkerHoofdMenuItem
 						MammaFollowUpPathologieRegioWerklijstPage.class, MammaFollowUpConclusieWerklijst.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.mammascreening.beelden", MammaBeeldenZoekenPage.class, MammaPortfolioZoekenPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.screening.verwerkenongeldigeberichten", MammaVerwerkOngeldigeBerichtenPage.class));
-				contextMenuItems.add(new MedewerkerMenuItem("menu.mammascreening.visitatie", MammaVisitatieOverzichtPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.mammascreening.visitatie", MammaVisitatieOverzichtAngularPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.mammascreening.adhockwaliteitscontrole", MammaAdhocMeekijkverzoekOnderzoekenWerklijstPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.all.afdrukkendocumenten", MammaAfdrukkenDocumentenPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.mammascreening.palga", MammaPalgaUitwisselingPage.class));
@@ -213,7 +212,6 @@ public enum MedewerkerHoofdMenuItem
 				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.kwaliteitscontrole", KwaliteitscontroleBatchOverzichtPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.fithoudbaarheid", ColonHoudbaarheidFitReeksOverzichtPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.screening.zoekenopbarcode", ColonZoekenOpBarcodePage.class));
-				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.niettebeoordelen", NietTeBeoordelenMonstersPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.verslagen", VerwerkteBerichtenOverzichtPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.screening.verwerkenongeldigeberichten", ColonVerwerkOngeldigeBerichtenPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.proefbvo", ProefBVOAfmeldenPage.class));

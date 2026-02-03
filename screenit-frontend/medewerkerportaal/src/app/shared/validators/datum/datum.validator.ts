@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@
  */
 import { AbstractControl, FormControl, ValidationErrors, ValidatorFn } from '@angular/forms'
 import { addDays, addMonths, isAfter, isBefore, isValid, parse, startOfDay } from 'date-fns'
-import { formatNLDate, parseDate } from '@shared/date-utils'
+import { formatNLDate, parseDate } from '@shared/utils/date-utils'
 import { TIME_FORMAT } from '@shared/constants'
 import { ToastService } from '@shared/toast/service/toast.service'
 
@@ -78,7 +78,7 @@ export const createDatumTijdInVerledenValidator =
   }
 
 export const createMinimumDatumValidator =
-  (datumCtrl: FormControl, plusDagen: number = 0): ValidatorFn =>
+  (datumCtrl: FormControl, plusDagen = 0): ValidatorFn =>
   (control: AbstractControl): ValidationErrors | null => {
     if (!control.dirty) {
       return null
@@ -131,7 +131,7 @@ export const createStartEindTijdValidator = (startVeld: string, eindVeld: string
 export const createStartEindDatumValidator = (
   startVeld: string,
   eindVeld: string,
-  validatieBericht: string = 'De startdatum moet voor de einddatum liggen',
+  validatieBericht = 'De startdatum moet voor de einddatum liggen',
   toastService?: ToastService,
 ): ValidatorFn => {
   return (control: AbstractControl): ValidationErrors | null => {

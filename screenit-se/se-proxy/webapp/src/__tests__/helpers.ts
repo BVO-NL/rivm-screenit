@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * screenit-se-proxy
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -43,6 +43,7 @@ export const createStateHelper = (stateSlice: Partial<RootState> = {}): RootStat
 			nfcEnabled: true, timestamp: "",
 			tomosyntheseMogelijk: true,
 			version: "23.4",
+			imsContextBridgeUrl: "",
 		},
 		error: {errorReferentie: ""},
 		formsByFormId: new Map(),

@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.planning.repository;
  * ========================LICENSE_START=================================
  * screenit-planning-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -46,10 +46,9 @@ public interface PlanningStandplaatsRondeRepository extends BaseJpaRepository<Ma
 				r.get(MammaStandplaatsRonde_.standplaats).get(AbstractHibernateObject_.id),
 				r.get(MammaStandplaatsRonde_.afspraakDrempel),
 				r.get(MammaStandplaatsRonde_.achtervangStandplaats).get(AbstractHibernateObject_.id),
-				r.get(MammaStandplaatsRonde_.minderValideUitwijkStandplaats).get(AbstractHibernateObject_.id),
 				r.get(MammaStandplaatsRonde_.achtervangToegepast),
-				r.get(MammaStandplaatsRonde_.minderValideUitnodigenVanaf),
-				r.get(MammaStandplaatsRonde_.extraMinderValideCapaciteitUitgenodigd)
+				r.get(MammaStandplaatsRonde_.mindervalideUitnodigenVanaf),
+				r.get(MammaStandplaatsRonde_.extraMindervalideCapaciteitUitgenodigd)
 			)
 		).all());
 	}

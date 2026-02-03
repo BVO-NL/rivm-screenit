@@ -4,7 +4,7 @@ package nl.rivm.screenit.batch.jobs.mamma.uitnodigen.uitstel;
  * ========================LICENSE_START=================================
  * screenit-batch-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -67,8 +67,8 @@ public class MammaUitstelUitnodigenWriter extends BaseWriter<Client>
 		case MAMMA_OPEN_UITNODIGING:
 			rapportage.setUitgenodigdOpen(rapportage.getUitgenodigdOpen() + 1);
 			break;
-		case MAMMA_UITNODIGING_MINDER_VALIDE:
-			rapportage.setUitgenodigdMinderValide(rapportage.getUitgenodigdMinderValide() + 1);
+		case MAMMA_UITNODIGING_MINDERVALIDE:
+			rapportage.setUitgenodigdMindervalide(rapportage.getUitgenodigdMindervalide() + 1);
 			break;
 		case MAMMA_UITNODIGING_SUSPECT:
 			rapportage.setUitgenodigdSuspect(rapportage.getUitgenodigdSuspect() + 1);

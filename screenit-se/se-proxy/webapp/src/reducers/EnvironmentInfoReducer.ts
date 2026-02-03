@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * screenit-se-proxy
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,13 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {EnvironmentInfoActions, SET_ENVIRONMENTINFO} from "../actions/EnvironmentInfoActions"
+import {EnvironmentInfoActions, SET_ENVIRONMENT_INFO} from "../actions/EnvironmentInfoActions"
 import {EnvironmentInfo} from "../datatypes/EnvironmentInfo"
 import {Reducer} from "redux"
 
 const EnvironmentInfoReducer: Reducer<EnvironmentInfo | null, EnvironmentInfoActions> = (stateSlice = null, action) => {
 	switch (action.type) {
-		case SET_ENVIRONMENTINFO:
+		case SET_ENVIRONMENT_INFO:
 			return action.environment
 		default:
 			return stateSlice

@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.service.mamma;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -43,4 +43,8 @@ public interface MammaBeoordelingsEenheidService
 	List<BeoordelingsEenheid> getBeoordelingsEenheden(Organisatie organisatie);
 
 	List<BeoordelingsEenheid> getBeoordelingsEenheden(Organisatie organisatie, List<CentraleEenheid> centraleEenheden);
+
+	List<BeoordelingsEenheid> getBeoordelingseenhedenById(Organisatie organisatie, List<Long> centraleEenheidIds);
+
+	BeoordelingsEenheid getBeoordelingseenheidById(Long centraleEenheidId);
 }

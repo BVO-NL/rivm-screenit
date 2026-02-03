@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.route;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.route;
  * =========================LICENSE_END==================================
  */
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -37,7 +36,6 @@ import nl.rivm.screenit.dto.mamma.planning.PlanningStandplaatsPeriodeDto;
 import nl.rivm.screenit.main.exception.MagOpslaanException;
 import nl.rivm.screenit.main.service.mamma.MammaRouteService;
 import nl.rivm.screenit.main.service.mamma.MammaStandplaatsPeriodeService;
-import nl.rivm.screenit.main.service.mamma.MammaStandplaatsService;
 import nl.rivm.screenit.main.util.StandplaatsPeriodeUtil;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
@@ -57,7 +55,6 @@ import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsRondeUitno
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
-import nl.rivm.screenit.service.mamma.impl.MammaCapaciteit;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -97,9 +94,6 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 	@SpringBean
 	private HibernateService hibernateService;
 
-	@SpringBean
-	private MammaStandplaatsService standplaatsService;
-
 	@SpringBean(name = "applicationUrl")
 	private String applicationUrl;
 
@@ -112,25 +106,21 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 	@SpringBean
 	private ICurrentDateSupplier dateSupplier;
 
-	private LocalDate initieleVanaf;
+	private final LocalDate initieleVanaf;
 
-	private LocalDate initieleTotEnMet;
+	private final LocalDate initieleTotEnMet;
 
-	private LocalDate vrijgegevenTotEnMet;
+	private final LocalDate vrijgegevenTotEnMet;
 
-	private LocalDate uitnodigenTotEnMet;
+	private final LocalDate uitnodigenTotEnMet;
 
-	private IModel<Date> nieuweTotEnMetDatumModel = new Model<>();
+	private final IModel<Date> nieuweTotEnMetDatumModel = new Model<>();
 
-	private IModel<Boolean> isPrognoseModel;
+	private final IModel<Boolean> isPrognoseModel;
 
-	private ScreenitDropdown<Long> achtervangStandplaatsPeriodeDropdown;
+	private final ScreenitDropdown<Long> achtervangStandplaatsPeriodeDropdown;
 
-	private ScreenitDropdown<Long> minderValideUitwijkStandplaatsDropdown;
-
-	private WebMarkupContainer achtervangStandplaatsContainer;
-
-	private WebMarkupContainer minderValideUitwijkStandplaatsContainer;
+	private final WebMarkupContainer achtervangStandplaatsContainer;
 
 	@Override
 	public void renderHead(IHeaderResponse response)
@@ -142,7 +132,7 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 		response.render(JavaScriptHeaderItem.forUrl("assets/js/voorspellingsgrafiek/matrix.js"));
 		response.render(JavaScriptHeaderItem.forUrl("assets/js/voorspellingsgrafiek/voorspellingsgrafiek.js"));
 
-		JsStatement jsStatement = new JsStatement();
+		var jsStatement = new JsStatement();
 		jsStatement.append("deVoorspellingsgrafiekenDeelnamekans = new VoorspellingsgrafiekenDeelnamekans();");
 		response.render(OnDomReadyHeaderItem.forScript(jsStatement.render()));
 	}
@@ -152,41 +142,39 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 	{
 		super(id, model);
 
-		final PlanningStandplaatsPeriodeDto standplaatsPeriodeDto = model.getObject();
+		final var standplaatsPeriodeDto = model.getObject();
 
-		ScreeningOrganisatie ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
-		boolean magAanpassen = ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
+		var ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
+		var magAanpassen = ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
 
-		List<Long> actieveStandplaatsen = getStandplaatsen(ingelogdNamensRegio);
+		var actieveStandplaatsen = getStandplaatsen(ingelogdNamensRegio);
 
-		Long initieleMinderValideUitwijkStandplaatsId = getModelObject().minderValideUitwijkStandplaatsId;
-
-		ScreenitForm<MammaStandplaatsPeriode> form = new ScreenitForm<>("form");
+		var form = new ScreenitForm<MammaStandplaatsPeriode>("form");
 		add(form);
 
-		final WebMarkupContainer accordionContainer = new WebMarkupContainer("accordionContainer");
+		final var accordionContainer = new WebMarkupContainer("accordionContainer");
 
-		WebMarkupContainer standVanZakenContainer = new WebMarkupContainer("standVanZakenContainer");
-		WebMarkupContainer standVanZakenLink = new WebMarkupContainer("standVanZakenLink");
+		var standVanZakenContainer = new WebMarkupContainer("standVanZakenContainer");
+		var standVanZakenLink = new WebMarkupContainer("standVanZakenLink");
 		addLinkBehaviorAccordion(accordionContainer, standVanZakenContainer, standVanZakenLink);
 
-		WebMarkupContainer configurationContainer = new WebMarkupContainer("configurationContainer");
-		WebMarkupContainer configurationLink = new WebMarkupContainer("configurationLink");
+		var configurationContainer = new WebMarkupContainer("configurationContainer");
+		var configurationLink = new WebMarkupContainer("configurationLink");
 		addLinkBehaviorAccordion(accordionContainer, configurationContainer, configurationLink);
 
-		WebMarkupContainer afspraakDrempelContainer = new WebMarkupContainer("afspraakDrempelContainer");
-		WebMarkupContainer afspraakDrempelLink = new WebMarkupContainer("afspraakDrempelLink");
+		var afspraakDrempelContainer = new WebMarkupContainer("afspraakDrempelContainer");
+		var afspraakDrempelLink = new WebMarkupContainer("afspraakDrempelLink");
 		addLinkBehaviorAccordion(accordionContainer, afspraakDrempelContainer, afspraakDrempelLink);
 
-		MammaStandplaats standplaats = hibernateService.get(MammaStandplaats.class, standplaatsPeriodeDto.standplaatsId);
+		var standplaats = hibernateService.get(MammaStandplaats.class, standplaatsPeriodeDto.standplaatsId);
 
-		String naam = StandplaatsPeriodeUtil.getStandplaatsPeriodeNaam(getModelObject(), standplaats);
+		var naam = StandplaatsPeriodeUtil.getStandplaatsPeriodeNaam(getModelObject(), standplaats);
 
 		form.add(new Label("standplaatsRonde.standplaats.naam", naam));
 
 		afspraakDrempelContainer.add(new Label("standplaatsRonde.standplaats.regio.afspraakDrempelBk", standplaats.getRegio().getAfspraakDrempelBk()));
 
-		TextField<Integer> afspraakDrempel = new TextField<>("afspraakDrempel");
+		var afspraakDrempel = new TextField<Integer>("afspraakDrempel");
 		afspraakDrempelContainer.add(afspraakDrempel);
 		afspraakDrempel.setEnabled(magAanpassen);
 		afspraakDrempel.setRequired(false);
@@ -202,7 +190,7 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 		configurationContainer.add(einddatumPicker);
 
 		isPrognoseModel = Model.of(prognose);
-		AjaxCheckBox totEnMetPrognoseCheckbox = new AjaxCheckBox("totEnMetPrognoseCheckbox", isPrognoseModel)
+		var totEnMetPrognoseCheckbox = new AjaxCheckBox("totEnMetPrognoseCheckbox", isPrognoseModel)
 		{
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
@@ -217,7 +205,7 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 
 		form.setEnabled(true);
 
-		DatePicker<Date> vanafDatum = ComponentHelper.newYearDatePicker("vanaf");
+		var vanafDatum = ComponentHelper.newYearDatePicker("vanaf");
 		if (magBeginDatumWijzigen)
 		{
 			configurationContainer.add(new EmptyPanel("vanafLabel"));
@@ -268,52 +256,25 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 		}
 		updateEindDatumOnPrognose(prognose, einddatumPicker, magEindDatumWijzigen, magAanpassen);
 
-		minderValideUitwijkStandplaatsDropdown = new ScreenitDropdown<>("minderValideUitwijkStandplaatsId",
-			actieveStandplaatsen, new ChoiceRenderer<>()
-		{
-			@Override
-			public Object getDisplayValue(Long object)
-			{
-				return hibernateService.load(MammaStandplaats.class, object).getNaam();
-			}
-		});
-
-		minderValideUitwijkStandplaatsDropdown.add(new OnChangeAjaxBehavior()
-		{
-			@Override
-			protected void onUpdate(AjaxRequestTarget ajaxRequestTarget)
-			{
-
-			}
-		});
-		minderValideUitwijkStandplaatsDropdown.setNullValid(true);
-		minderValideUitwijkStandplaatsDropdown.setOutputMarkupId(true);
-		minderValideUitwijkStandplaatsDropdown.setEnabled(magAanpassen);
-
-		minderValideUitwijkStandplaatsContainer = new WebMarkupContainer("minderValideUitwijkStandplaatsContainer");
-		minderValideUitwijkStandplaatsContainer.setOutputMarkupId(true);
-		minderValideUitwijkStandplaatsContainer.add(minderValideUitwijkStandplaatsDropdown);
-		configurationContainer.add(minderValideUitwijkStandplaatsContainer);
-
-		DatePicker<Date> minderValideUitnodigenVanaf = ComponentHelper.newYearDatePicker("minderValideUitnodigenVanaf");
-		minderValideUitnodigenVanaf.setDisabled(!magAanpassen);
-		configurationContainer.add(minderValideUitnodigenVanaf);
+		var mindervalideUitnodigenVanaf = ComponentHelper.newYearDatePicker("mindervalideUitnodigenVanaf");
+		mindervalideUitnodigenVanaf.setDisabled(!magAanpassen);
+		configurationContainer.add(mindervalideUitnodigenVanaf);
 
 		addAfspraakcapaciteitBeschikbaarVoor(configurationContainer, standplaats);
 
 		initieleVanaf = getModelObject().vanaf;
 		initieleTotEnMet = getModelObject().totEnMet;
 
-		MammaScreeningsEenheid screeningsEenheid = screeningsEenheidModel.getObject();
+		var screeningsEenheid = screeningsEenheidModel.getObject();
 		vrijgegevenTotEnMet = DateUtil.toLocalDate(screeningsEenheid.getVrijgegevenTotEnMet());
 		uitnodigenTotEnMet = DateUtil.toLocalDate(screeningsEenheid.getUitnodigenTotEnMet());
 
-		WebMarkupContainer geenCapaciteitOverzicht = new WebMarkupContainer("geenCapaciteitOverzicht");
+		var geenCapaciteitOverzicht = new WebMarkupContainer("geenCapaciteitOverzicht");
 		standVanZakenContainer.add(geenCapaciteitOverzicht);
-		WebMarkupContainer capaciteitOverzichtContainer = new WebMarkupContainer("capaciteitOverzichtContainer");
+		var capaciteitOverzichtContainer = new WebMarkupContainer("capaciteitOverzichtContainer");
 		standVanZakenContainer.add(capaciteitOverzichtContainer);
 
-		Long standplaatsPeriodeId = standplaatsPeriodeDto.id;
+		var standplaatsPeriodeId = standplaatsPeriodeDto.id;
 		MammaStandplaatsPeriode standplaatsPeriode = null;
 		if (standplaatsPeriodeId != null)
 		{
@@ -323,17 +284,17 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 		{
 			geenCapaciteitOverzicht.setVisible(false);
 
-			LocalDate vandaag = dateSupplier.getLocalDate();
+			var vandaag = dateSupplier.getLocalDate();
 
-			LocalDate vanaf = Collections.max(Arrays.asList(vandaag, standplaatsPeriodeDto.vanaf));
-			LocalDate totEnMet = Collections.min(Arrays.asList(vrijgegevenTotEnMet, standplaatsPeriodeDto.totEnMet));
+			var vanaf = Collections.max(Arrays.asList(vandaag, standplaatsPeriodeDto.vanaf));
+			var totEnMet = Collections.min(Arrays.asList(vrijgegevenTotEnMet, standplaatsPeriodeDto.totEnMet));
 
-			MammaCapaciteit capaciteit = baseCapaciteitsBlokService.getCapaciteit(baseCapaciteitsBlokService
+			var capaciteit = baseCapaciteitsBlokService.getCapaciteit(baseCapaciteitsBlokService
 				.getNietGeblokkeerdeScreeningCapaciteitBlokDtos(standplaatsPeriode, DateUtil.toUtilDate(vanaf.atStartOfDay()),
 					DateUtil.toUtilDate(totEnMet.atTime(Constants.BK_EINDTIJD_DAG)), null));
 
-			BigDecimal beschikbareCapaciteitRegulier = capaciteit.getBeschikbareCapaciteit();
-			BigDecimal vrijeCapaciteitRegulier = capaciteit.getVrijeCapaciteit();
+			var beschikbareCapaciteitRegulier = capaciteit.getBeschikbareCapaciteit();
+			var vrijeCapaciteitRegulier = capaciteit.getVrijeCapaciteit();
 
 			capaciteitOverzichtContainer.add(new Label("beschikbaarRegulier",
 				beschikbareCapaciteitRegulier.setScale(0, RoundingMode.HALF_UP).toString()));
@@ -345,9 +306,9 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 			capaciteitOverzichtContainer.setVisible(false);
 		}
 
-		WebMarkupContainer nietUitgenodigd = new WebMarkupContainer("nietUitgenodigd");
+		var nietUitgenodigd = new WebMarkupContainer("nietUitgenodigd");
 		standVanZakenContainer.add(nietUitgenodigd);
-		WebMarkupContainer uitnodigenOverzichtContainer = new WebMarkupContainer("uitnodigenOverzichtContainer");
+		var uitnodigenOverzichtContainer = new WebMarkupContainer("uitnodigenOverzichtContainer");
 		standVanZakenContainer.add(uitnodigenOverzichtContainer);
 
 		MammaStandplaatsRondeUitnodigenRapportage standplaatsRondeUitnodigenRapportage = null;
@@ -365,14 +326,14 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 			uitnodigenOverzichtContainer.add(new Label("totaalVervolgRonde"));
 			uitnodigenOverzichtContainer.add(new Label("totaalEersteRonde"));
 			uitnodigenOverzichtContainer.add(new Label("totaalDubbeleTijd"));
-			uitnodigenOverzichtContainer.add(new Label("totaalMinderValide"));
+			uitnodigenOverzichtContainer.add(new Label("totaalMindervalide"));
 			uitnodigenOverzichtContainer.add(new Label("totaalTehuis"));
 			uitnodigenOverzichtContainer.add(new Label("totaalSuspect"));
 			uitnodigenOverzichtContainer.add(new Label("uitTeNodigenTotaal"));
 			uitnodigenOverzichtContainer.add(new Label("uitTeNodigenVervolgRonde"));
 			uitnodigenOverzichtContainer.add(new Label("uitTeNodigenEersteRonde"));
 			uitnodigenOverzichtContainer.add(new Label("uitTeNodigenDubbeleTijd"));
-			uitnodigenOverzichtContainer.add(new Label("uitTeNodigenMinderValide"));
+			uitnodigenOverzichtContainer.add(new Label("uitTeNodigenMindervalide"));
 			uitnodigenOverzichtContainer.add(new Label("uitTeNodigenTehuis"));
 			uitnodigenOverzichtContainer.add(new Label("uitTeNodigenSuspect"));
 		}
@@ -381,7 +342,7 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 			uitnodigenOverzichtContainer.setVisible(false);
 		}
 
-		IndicatingAjaxButton splitsenKnop = new IndicatingAjaxButton("splitsen")
+		var splitsenKnop = new IndicatingAjaxButton("splitsen")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
@@ -407,11 +368,10 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 		splitsenKnop.setEnabled(magAanpassen);
 		form.add(splitsenKnop);
 
-		BootstrapDialog dialog = new BootstrapDialog("dialog");
+		var dialog = new BootstrapDialog("dialog");
 		add(dialog);
 
-		ConfirmingIndicatingAjaxSubmitLink<Void> opslaanKnop = new ConfirmingIndicatingAjaxSubmitLink<>("opslaan", dialog,
-			"Standplaatsperiode.opslaan.minder.valide.uitwijk.waarschuwing")
+		ConfirmingIndicatingAjaxSubmitLink<Void> opslaanKnop = new ConfirmingIndicatingAjaxSubmitLink<>("opslaan", dialog, null)
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
@@ -426,7 +386,7 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 					standplaatsPeriodeDto.prognose = isPrognoseModel.getObject();
 					standplaatsPeriodeDto.totEnMet = nieuweEindDatum;
 
-					boolean isStandplaatsGewijzigd = opslaan();
+					var isStandplaatsGewijzigd = opslaan();
 					if (isStandplaatsGewijzigd)
 					{
 						info(getString("message.gegevens.onthouden"));
@@ -447,7 +407,7 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 			@Override
 			protected boolean skipConfirmation()
 			{
-				return !nieuweMindervalideUitwijkStandplaatsGekozen() && !afsprakenWordenVerzet();
+				return !afsprakenWordenVerzet();
 			}
 
 			private boolean afsprakenWordenVerzet()
@@ -459,30 +419,12 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 				return aantalAfspraken > 0;
 			}
 
-			private boolean nieuweMindervalideUitwijkStandplaatsGekozen()
-			{
-				return standplaatsPeriodeDto.minderValideUitwijkStandplaatsId != null
-					&& !standplaatsPeriodeDto.minderValideUitwijkStandplaatsId.equals(initieleMinderValideUitwijkStandplaatsId);
-			}
-
 			@Override
 			protected IModel<String> getContentStringModel()
 			{
-				var afsprakenWordenVerzet = afsprakenWordenVerzet();
-				var nieuweMindervalideUitwijkStandplaatsGekozen = nieuweMindervalideUitwijkStandplaatsGekozen();
-
-				if (afsprakenWordenVerzet && nieuweMindervalideUitwijkStandplaatsGekozen)
-				{
-					return Model.of("<ul><li>" + getAfsprakenVerzetMelding() + "</li><li>" + getString(
-						"Standplaatsperiode.opslaan.minder.valide.uitwijk.waarschuwing") + "</li></ul>");
-				}
-				if (afsprakenWordenVerzet)
+				if (afsprakenWordenVerzet())
 				{
 					return Model.of(getAfsprakenVerzetMelding());
-				}
-				if (nieuweMindervalideUitwijkStandplaatsGekozen)
-				{
-					return Model.of(getString("Standplaatsperiode.opslaan.minder.valide.uitwijk.waarschuwing"));
 				}
 				return Model.of("");
 			}
@@ -558,8 +500,8 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 		List<Long> standplaatsenIds = new ArrayList<>();
 		if (ingelogdNamensRegio != null)
 		{
-			List<MammaStandplaats> standplaatsen = routeService.getStandplaatsenMetRoute(ingelogdNamensRegio);
-			for (Long id : getModelObject().afspraakcapaciteitBeschikbaarVoorIds)
+			var standplaatsen = routeService.getStandplaatsenMetRoute(ingelogdNamensRegio);
+			for (var id : getModelObject().afspraakcapaciteitBeschikbaarVoorIds)
 			{
 				standplaatsen.addAll(routeService.getStandplaatsenMetRoute(hibernateService.load(ScreeningOrganisatie.class, id)));
 			}
@@ -573,7 +515,7 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 
 	private void addAfspraakcapaciteitBeschikbaarVoor(WebMarkupContainer configurationContainer, MammaStandplaats standplaats)
 	{
-		List<Long> alleScreeningorganisatieIds = organisatieService.getAllActiefScreeningOrganisaties().stream().map(ScreeningOrganisatie::getId).collect(Collectors.toList());
+		var alleScreeningorganisatieIds = organisatieService.getAllActiefScreeningOrganisaties().stream().map(ScreeningOrganisatie::getId).collect(Collectors.toList());
 		alleScreeningorganisatieIds.remove(standplaats.getRegio().getId());
 		configurationContainer.add(new ScreenitListMultipleChoice<>("afspraakcapaciteitBeschikbaarVoorIds", alleScreeningorganisatieIds, new ChoiceRenderer<>()
 		{
@@ -587,31 +529,24 @@ public abstract class MammaStandplaatsPeriodeEditPanel extends GenericPanel<Plan
 			@Override
 			protected void onUpdate(AjaxRequestTarget ajaxRequestTarget)
 			{
-				List<Long> standplaatsenIds = getStandplaatsen(ScreenitSession.get().getScreeningOrganisatie());
+				var standplaatsenIds = getStandplaatsen(ScreenitSession.get().getScreeningOrganisatie());
 				if (!standplaatsenIds.contains(getModelObject().achtervangStandplaatsId))
 				{
 					getModelObject().achtervangStandplaatsId = null;
 				}
-				if (!standplaatsenIds.contains(getModelObject().minderValideUitwijkStandplaatsId))
-				{
-					getModelObject().minderValideUitwijkStandplaatsId = null;
-				}
 				achtervangStandplaatsPeriodeDropdown.setChoices(standplaatsenIds);
-				minderValideUitwijkStandplaatsDropdown.setChoices(standplaatsenIds);
-
 				ajaxRequestTarget.add(achtervangStandplaatsContainer);
-				ajaxRequestTarget.add(minderValideUitwijkStandplaatsContainer);
 			}
 		}));
 	}
 
 	private boolean magSplitsen()
 	{
-		PlanningStandplaatsPeriodeDto standplaatsPeriodeDto = getModelObject();
+		var standplaatsPeriodeDto = getModelObject();
 
-		LocalDate nieuweTotEnMet = DateUtil.toLocalDate(nieuweTotEnMetDatumModel.getObject());
+		var nieuweTotEnMet = DateUtil.toLocalDate(nieuweTotEnMetDatumModel.getObject());
 		boolean oudePrognose = standplaatsPeriodeDto.prognose;
-		boolean nieuwePrognose = Boolean.TRUE.equals(isPrognoseModel.getObject());
+		var nieuwePrognose = Boolean.TRUE.equals(isPrognoseModel.getObject());
 
 		if (nieuwePrognose)
 		{

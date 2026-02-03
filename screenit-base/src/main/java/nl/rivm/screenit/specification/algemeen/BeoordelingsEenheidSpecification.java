@@ -4,7 +4,7 @@ package nl.rivm.screenit.specification.algemeen;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -70,6 +70,11 @@ public class BeoordelingsEenheidSpecification
 	public static ExtendedSpecification<BeoordelingsEenheid> heeftCentraleEenheidIn(Collection<CentraleEenheid> centraleEenheden)
 	{
 		return (r, q, cb) -> r.get(Organisatie_.parent).in(centraleEenheden);
+	}
+
+	public static ExtendedSpecification<BeoordelingsEenheid> heeftCentraleEenheidIdIn(Collection<Long> centraleEenheidIds)
+	{
+		return (r, q, cb) -> r.get(Organisatie_.parent).get(AbstractHibernateObject_.id).in(centraleEenheidIds);
 	}
 
 	public static ExtendedSpecification<BeoordelingsEenheid> filterCentraleEenheid(Collection<CentraleEenheid> centraleEenheden)

@@ -1,0 +1,135 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog titel="Visitatie">
+  <form [formGroup]="editForm" body>
+    <div class="clr-row">
+      <div class="clr-col-6">
+        <clr-input-container>
+          <label class="clr-required-mark" for="omschrijving">Omschrijving</label>
+          <input clrInput id="omschrijving" type="text" formControlName="omschrijving" data-testid="input_omschrijving"/>
+          <clr-control-error *clrIfError="'required'">De omschrijving is verplicht</clr-control-error>
+          <clr-control-error *clrIfError="'uniek'">De omschrijving is niet uniek</clr-control-error>
+        </clr-input-container>
+
+        <clr-combobox-container>
+          <label for="status" [appRequiredMark]="true">Status</label>
+          <clr-combobox formControlName="status" id="status" required data-testid="status_combobox">
+            <ng-container *clrOptionSelected="let selected">
+              {{ selected?.weergave }}
+            </ng-container>
+            <clr-options>
+              <clr-option *clrOptionItems="let status of mammaVisitatieStatusLijst; field: 'weergave'" [clrValue]="status">{{ status.weergave }}</clr-option>
+            </clr-options>
+          </clr-combobox>
+          <clr-control-error *clrIfError="'required'">De status is verplicht</clr-control-error>
+        </clr-combobox-container>
+
+        @if (visitatieTypeBe) {
+          <clr-combobox-container>
+            <label for="beoordelingseenheid" [appRequiredMark]="true">Beoordelingseenheid</label>
+            <clr-combobox id="beoordelingseenheden" formControlName="beoordelingseenheid" [required]="visitatieTypeBe" data-testid="beoordelingseenheid_combobox">
+              <ng-container *clrOptionSelected="let selected">
+                {{ selected?.naam }}
+              </ng-container>
+              <clr-options>
+                <clr-option *clrOptionItems="let beoordelingseenheid of beoordelingseenheden(); field: 'naam'" [clrValue]="beoordelingseenheid"
+                >{{ beoordelingseenheid.naam }}
+                </clr-option>
+              </clr-options>
+            </clr-combobox>
+            <clr-control-error *clrIfError="'required'">De beoordelingseenheid is verplicht</clr-control-error>
+          </clr-combobox-container>
+        }
+
+        <clr-file-input-container>
+          <label for="rapportage">Rapportage</label>
+          <input clrFileInput type="file" [accept]="contentType.XLSX" formControlName="rapportage" id="rapportage" data-testid="rapportage_input"/>
+        </clr-file-input-container>
+
+        <clr-file-input-container>
+          <label for="vragenlijst">Vragenlijst</label>
+          <input clrFileInput type="file" [accept]="contentType.XLSX" formControlName="vragenlijst" id="vragenlijst" data-testid="vragenlijst_input"/>
+        </clr-file-input-container>
+      </div>
+
+      <div class="clr-col-6">
+        @if (isNieuw) {
+          @if (!visitatieTypeBe) {
+            <clr-file-input-container>
+              <label for="insteltechniek">Insteltechniek</label>
+              <input clrFileInput type="file" [accept]="contentType.CSV" formControlName="insteltechniek" id="insteltechniek" data-testid="insteltechniek_input"/>
+              <clr-control-error *clrIfError="'extensie'">{{ editForm.get('insteltechniek')!.getError('extensie') }}</clr-control-error>
+              <clr-control-error *clrIfError="'aantalBestanden'">{{ editForm.get('insteltechniek')!.getError('aantalBestanden') }}</clr-control-error>
+            </clr-file-input-container>
+
+            @for (richting of fotorichtingen; track richting) {
+              <clr-radio-wrapper>
+                <input
+                  type="radio"
+                  clrRadio
+                  [value]="richting"
+                  name="fotorichting"
+                  formControlName="fotorichting"
+                  [id]="richting"
+                  [attr.data-testid]="'fotorichting_' + richting + '_radio'"
+                />
+                <label [for]="richting">{{ richting }}</label>
+              </clr-radio-wrapper>
+            }
+          } @else {
+            <clr-file-input-container>
+              <label for="intervalcarcinomen">Intervalcarcinomen</label>
+              <input clrFileInput type="file" [accept]="contentType.CSV" formControlName="intervalcarcinomen" id="intervalcarcinomen" data-testid="intervalcarcinomen_input"/>
+              <clr-control-error *clrIfError="'extensie'">{{ editForm.get('intervalcarcinomen')!.getError('extensie') }}</clr-control-error>
+              <clr-control-error *clrIfError="'aantalBestanden'">{{ editForm.get('intervalcarcinomen')!.getError('aantalBestanden') }}</clr-control-error>
+            </clr-file-input-container>
+
+            <clr-file-input-container>
+              <label for="screen_detected">T2+ screen detected</label>
+              <input clrFileInput type="file" [accept]="contentType.CSV" formControlName="screenDetected" id="screen_detected" data-testid="screen_detected_input"/>
+              <clr-control-error *clrIfError="'extensie'">{{ editForm.get('screenDetected')!.getError('extensie') }}</clr-control-error>
+              <clr-control-error *clrIfError="'aantalBestanden'">{{ editForm.get('screenDetected')!.getError('aantalBestanden') }}</clr-control-error>
+            </clr-file-input-container>
+
+            <clr-file-input-container>
+              <label for="verwijzingen">Verwijzingen</label>
+              <input clrFileInput type="file" [accept]="contentType.CSV" formControlName="verwijzingen" id="verwijzingen" data-testid="verwijzingen_input"/>
+              <clr-control-error *clrIfError="'extensie'">{{ editForm.get('verwijzingen')!.getError('extensie') }}</clr-control-error>
+              <clr-control-error *clrIfError="'aantalBestanden'">{{ editForm.get('verwijzingen')!.getError('aantalBestanden') }}</clr-control-error>
+            </clr-file-input-container>
+
+            <clr-file-input-container>
+              <label for="protheses">Protheses</label>
+              <input clrFileInput type="file" [accept]="contentType.CSV" formControlName="protheses" id="protheses" data-testid="protheses_input"/>
+              <clr-control-error *clrIfError="'extensie'">{{ editForm.get('protheses')!.getError('extensie') }}</clr-control-error>
+              <clr-control-error *clrIfError="'aantalBestanden'">{{ editForm.get('protheses')!.getError('aantalBestanden') }}</clr-control-error>
+            </clr-file-input-container>
+          }
+        }
+      </div>
+    </div>
+  </form>
+
+  <div class="btn-group" buttons>
+    <button class="btn btn-secondary" (click)="sluitDialog()" data-testid="annuleren_btn">Annuleren</button>
+    <button class="btn btn-primary" (click)="opslaan()" data-testid="opslaan_btn">Opslaan</button>
+  </div>
+</app-base-dialog>

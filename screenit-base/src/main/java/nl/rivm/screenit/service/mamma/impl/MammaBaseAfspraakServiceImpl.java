@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.mamma.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -45,7 +45,6 @@ import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.MammaDagEnDagdeelFilter;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.BeschikbareAfspraakDagen;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -95,6 +94,7 @@ import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaAfspraakOptieAlgoritme
 import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaOnvoldoendeVrijeCapaciteitException;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
+import nl.rivm.screenit.util.mamma.MammaScreeningsEenheidUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
@@ -247,7 +247,7 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 		{
 			beanNaam = "mammaBaseKandidaatAfsprakenDeterminatiePeriode";
 		}
-		else if (dossier.getDoelgroep() == MammaDoelgroep.MINDER_VALIDE)
+		else if (dossier.getDoelgroep() == MammaDoelgroep.MINDERVALIDE)
 		{
 			beanNaam = "mammaMindervalideAfspraakOptieAlgoritme";
 		}
@@ -401,7 +401,7 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 	@Override
 	public void bepaalBenodigdeCapaciteit(List<MammaAfspraak> afspraken, MammaScreeningsEenheid screeningsEenheid)
 	{
-		var screeningOrganisatie = (ScreeningOrganisatie) Hibernate.unproxy(screeningsEenheid.getBeoordelingsEenheid().getParent().getRegio());
+		var screeningOrganisatie = MammaScreeningsEenheidUtil.getScreeningsOrganisatie(screeningsEenheid);
 
 		for (MammaAfspraak afspraak : afspraken)
 		{

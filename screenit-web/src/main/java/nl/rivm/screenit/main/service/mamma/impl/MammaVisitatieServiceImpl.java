@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.service.mamma.impl;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,9 +24,10 @@ package nl.rivm.screenit.main.service.mamma.impl;
 import java.time.LocalDate;
 import java.util.List;
 
+import nl.rivm.screenit.main.model.mamma.beoordeling.MammaVisitatieOnderzoekenWerklijstZoekObject;
+import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieWerklijstFilterDto;
 import nl.rivm.screenit.main.service.mamma.MammaVisitatieService;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
-import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaVisitatie;
 import nl.rivm.screenit.model.mamma.MammaVisitatieOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderdeel;
@@ -35,19 +36,25 @@ import nl.rivm.screenit.repository.mamma.MammaVisitatieOnderzoekRepository;
 import nl.rivm.screenit.repository.mamma.MammaVisitatieRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import static nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderzoekStatus.GEZIEN;
 import static nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderzoekStatus.NIET_GEZIEN;
+import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenEmpty;
+import static nl.rivm.screenit.specification.mamma.MammaVisitatieOnderzoekSpecification.filterVolgnummerVanaf;
 import static nl.rivm.screenit.specification.mamma.MammaVisitatieOnderzoekSpecification.heeftBeoordeling;
 import static nl.rivm.screenit.specification.mamma.MammaVisitatieOnderzoekSpecification.heeftOnderdeel;
 import static nl.rivm.screenit.specification.mamma.MammaVisitatieOnderzoekSpecification.heeftStatus;
 import static nl.rivm.screenit.specification.mamma.MammaVisitatieOnderzoekSpecification.heeftVisitatie;
 import static nl.rivm.screenit.specification.mamma.MammaVisitatieSpecification.filterOpAfgerondOpVanaf;
-import static nl.rivm.screenit.specification.mamma.MammaVisitatieSpecification.filterOpScreeningsEenheid;
+import static nl.rivm.screenit.specification.mamma.MammaVisitatieSpecification.filterOpOmschrijving;
+import static nl.rivm.screenit.specification.mamma.MammaVisitatieSpecification.filterOpScreeningsEenheidId;
 import static nl.rivm.screenit.specification.mamma.MammaVisitatieSpecification.filterOpStatus;
+import static nl.rivm.screenit.specification.mamma.MammaVisitatieSpecification.heeftGeenBeoordelingseenheid;
 
 @Service
 public class MammaVisitatieServiceImpl implements MammaVisitatieService
@@ -59,28 +66,28 @@ public class MammaVisitatieServiceImpl implements MammaVisitatieService
 	private MammaVisitatieRepository visitatieRepository;
 
 	@Override
-	public List<MammaVisitatieOnderzoek> zoekVisitatieOnderzoeken(MammaVisitatieOnderdeel onderdeel, MammaVisitatie visitatie, long first, long count, Sort sort)
+	public List<MammaVisitatieOnderzoek> zoekVisitatieOnderzoeken(MammaVisitatieOnderzoekenWerklijstZoekObject filter, long first, long count, Sort sort)
 	{
-		return visitatieOnderzoekRepository.findWith(visitatieOnderzoekSpecification(onderdeel, visitatie), q -> q.sortBy(sort)).all(first, count);
+		return visitatieOnderzoekRepository.findWith(visitatieOnderzoekSpecification(filter.getOnderdeel(), filter.getVisitatie(), filter.getVolgnummerVanaf()),
+			q -> q.sortBy(sort)).all(first, count);
 	}
 
 	@Override
-	public long countVisitatieOnderzoeken(MammaVisitatieOnderdeel onderdeel, MammaVisitatie visitatie)
+	public long countVisitatieOnderzoeken(MammaVisitatieOnderzoekenWerklijstZoekObject filter)
 	{
-		return visitatieOnderzoekRepository.count(visitatieOnderzoekSpecification(onderdeel, visitatie));
+		return visitatieOnderzoekRepository.count(visitatieOnderzoekSpecification(filter.getOnderdeel(), filter.getVisitatie(), filter.getVolgnummerVanaf()));
 	}
 
 	@Override
-	public List<MammaVisitatie> zoekVisitaties(LocalDate vanaf, List<MammaScreeningsEenheid> screeningsEenheden, List<MammaVisitatieStatus> statussen, long first, long count,
-		Sort sort)
+	public Page<MammaVisitatie> zoekVisitaties(MammaVisitatieWerklijstFilterDto filter, PageRequest pageRequest)
 	{
-		return visitatieRepository.findWith(visitatieSpecification(vanaf, screeningsEenheden, statussen), q -> q.sortBy(sort)).all(first, count);
+		return visitatieRepository.findAll(visitatieSpecification(filter.getVanaf(), filter.getScreeningseenheidIds(), filter.getStatussen()), pageRequest);
 	}
 
 	@Override
-	public long countVisitaties(LocalDate vanaf, List<MammaScreeningsEenheid> screeningsEenheden, List<MammaVisitatieStatus> statussen)
+	public long countVisitaties(MammaVisitatieWerklijstFilterDto filter)
 	{
-		return visitatieRepository.count(visitatieSpecification(vanaf, screeningsEenheden, statussen));
+		return visitatieRepository.count(visitatieSpecification(filter.getVanaf(), filter.getScreeningseenheidIds(), filter.getStatussen()));
 	}
 
 	@Override
@@ -107,15 +114,27 @@ public class MammaVisitatieServiceImpl implements MammaVisitatieService
 		return isAllesGezien(visitatie) && visitatie.getAfgerondOp() == null;
 	}
 
-	private Specification<MammaVisitatieOnderzoek> visitatieOnderzoekSpecification(MammaVisitatieOnderdeel onderdeel, MammaVisitatie visitatie)
+	@Override
+	public MammaVisitatie getById(Long id)
 	{
-		return heeftOnderdeel(onderdeel).and(heeftVisitatie(visitatie));
+		return visitatieRepository.findById(id).orElse(null);
 	}
 
-	private Specification<MammaVisitatie> visitatieSpecification(LocalDate afgerondOpVanaf, List<MammaScreeningsEenheid> screeningsEenheden, List<MammaVisitatieStatus> statussen)
+	@Override
+	public List<MammaVisitatie> getByOmschrijving(String omschrijving)
+	{
+		return visitatieRepository.findAll(filterOpOmschrijving(omschrijving));
+	}
+
+	private Specification<MammaVisitatieOnderzoek> visitatieOnderzoekSpecification(MammaVisitatieOnderdeel onderdeel, MammaVisitatie visitatie, Integer volgnummer)
+	{
+		return heeftOnderdeel(onderdeel).and(heeftVisitatie(visitatie)).and(filterVolgnummerVanaf(volgnummer));
+	}
+
+	private Specification<MammaVisitatie> visitatieSpecification(LocalDate afgerondOpVanaf, List<Long> screeningsEenheidIds, List<MammaVisitatieStatus> statussen)
 	{
 		return filterOpAfgerondOpVanaf(afgerondOpVanaf)
-			.and(filterOpScreeningsEenheid(screeningsEenheden))
+			.and(skipWhenEmpty(screeningsEenheidIds, filterOpScreeningsEenheidId(screeningsEenheidIds).or(heeftGeenBeoordelingseenheid())))
 			.and(filterOpStatus(statussen));
 	}
 }

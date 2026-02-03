@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.contact;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -442,7 +442,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 							}
 						}
 						Client client = ClientContactPanel.this.getModelObject();
-						if (selectedActies.contains(ClientContactActieTypeWrapper.MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS))
+						if (selectedActies.contains(ClientContactActieTypeWrapper.MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS))
 						{
 							if (clientContactService.heeftOpenMammaAfspraak(client))
 							{

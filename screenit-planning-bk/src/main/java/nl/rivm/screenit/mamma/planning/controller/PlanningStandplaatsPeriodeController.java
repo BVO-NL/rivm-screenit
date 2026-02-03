@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.planning.controller;
  * ========================LICENSE_START=================================
  * screenit-planning-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -60,8 +60,7 @@ public class PlanningStandplaatsPeriodeController
 		}
 
 		standplaatsPeriode.getStandplaatsRonde().setAchtervangStandplaats(PlanningStandplaatsIndex.get(standplaatsPeriodeDto.achtervangStandplaatsId));
-		standplaatsPeriode.getStandplaatsRonde().setMinderValideUitwijkStandplaats(PlanningStandplaatsIndex.get(standplaatsPeriodeDto.minderValideUitwijkStandplaatsId));
-		standplaatsPeriode.getStandplaatsRonde().setMinderValideUitnodigenVanaf(standplaatsPeriodeDto.minderValideUitnodigenVanaf);
+		standplaatsPeriode.getStandplaatsRonde().setMindervalideUitnodigenVanaf(standplaatsPeriodeDto.mindervalideUitnodigenVanaf);
 		standplaatsPeriode.getStandplaatsRonde().setAfspraakcapaciteitBeschikbaarVoor(
 			standplaatsPeriodeDto.afspraakcapaciteitBeschikbaarVoorIds.stream().map(PlanningScreeningsOrganisatieIndex::get).toList());
 	}

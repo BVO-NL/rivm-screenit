@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,7 +22,7 @@ import { Component, inject, Signal, signal } from '@angular/core'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
 import { PdfViewerComponent } from '@shared/components/pdf-viewer/pdf-viewer.component'
-import { DocumentenService } from '@shared/services/documenten/documenten.service'
+import { DocumentService } from '@/shared/services/document/document.service'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { saveAs } from 'file-saver'
 
@@ -33,12 +33,12 @@ import { saveAs } from 'file-saver'
 })
 export class BriefInzienDialogComponent {
   private readonly dialogRef = inject(DialogRef)
-  private readonly documentenService = inject(DocumentenService)
+  private readonly documentenService = inject(DocumentService)
   private readonly documentId: number = inject(DIALOG_DATA)
   brief: Signal<string | undefined> = signal(undefined)
 
   constructor() {
-    this.brief = toSignal(this.documentenService.getById(this.documentId).pipe(takeUntilDestroyed()))
+    this.brief = toSignal(this.documentenService.getDocumentUrlById(this.documentId).pipe(takeUntilDestroyed()))
   }
 
   sluiten() {

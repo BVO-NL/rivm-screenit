@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.colon;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -56,6 +56,7 @@ import org.hibernate.envers.Audited;
 public class ColonFitRegistratie extends AbstractHibernateObject
 {
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private ColonFitRegistratieStatus status;
 
 	@Enumerated(EnumType.STRING)
@@ -64,6 +65,7 @@ public class ColonFitRegistratie extends AbstractHibernateObject
 	private boolean herinnering;
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	private Date statusDatum;
 
 	@Temporal(TemporalType.TIMESTAMP)

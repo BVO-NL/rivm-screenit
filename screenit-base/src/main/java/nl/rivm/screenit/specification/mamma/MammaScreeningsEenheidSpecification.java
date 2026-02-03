@@ -4,7 +4,7 @@ package nl.rivm.screenit.specification.mamma;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -33,6 +33,7 @@ import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.algemeen.BeoordelingsEenheidSpecification;
 import nl.rivm.screenit.util.DateUtil;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -86,6 +87,11 @@ public class MammaScreeningsEenheidSpecification
 	public static Specification<MammaScreeningsEenheid> heeftBeoordelingsEenheidIn(List<BeoordelingsEenheid> beoordelingsEenheden)
 	{
 		return (r, q, cb) -> r.get(MammaScreeningsEenheid_.beoordelingsEenheid).in(beoordelingsEenheden);
+	}
+
+	public static Specification<MammaScreeningsEenheid> heeftBeoordelingseenheidIdIn(List<Long> beoordelingseenheidIds)
+	{
+		return (r, q, cb) -> r.get(MammaScreeningsEenheid_.beoordelingsEenheid).get(AbstractHibernateObject_.id).in(beoordelingseenheidIds);
 	}
 
 	public static Specification<MammaScreeningsEenheid> heeftTijdelijkeBeoordelingsEenheidActiefOpMoment(BeoordelingsEenheid beoordelingsEenheid, LocalDate moment)

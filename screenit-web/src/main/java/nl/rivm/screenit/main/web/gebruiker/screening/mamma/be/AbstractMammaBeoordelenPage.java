@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.be;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -64,7 +64,7 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	actie = Actie.INZIEN,
 	checkScope = true,
 	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_BEOORDELING_WERKLIJST, Recht.MEDEWERKER_FOTOBESPREKING, Recht.MEDEWERKER_VISITATIE,
+	recht = { Recht.MEDEWERKER_SCREENING_MAMMA_BEOORDELING_WERKLIJST, Recht.MEDEWERKER_FOTOBESPREKING, Recht.MEDEWERKER_VISITATIE, Recht.MEDEWERKER_VISITATIE_INSTELTECHNIEK,
 		Recht.MEDEWERKER_AD_HOC_MEEMKIJKVERZOEK_WERKLIJST },
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 @Slf4j

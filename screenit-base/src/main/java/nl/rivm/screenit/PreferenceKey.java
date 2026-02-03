@@ -4,7 +4,7 @@ package nl.rivm.screenit;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -303,7 +303,7 @@ public enum PreferenceKey
 
 	MAMMA_AFSPRAAK_VERZETTEN_ZONDER_CLIENT_CONTACT_VANAF_AANTAL_WERKDAGEN("Afspraak verzetten zonder client contact vanaf", Integer.class),
 
-	MAMMA_VRIJGEVEN_MINDERVALIDE_RESERVERINGEN_BINNEN_AANTAL_DAGEN("Vrijgeven mindervalidereserveringen", Integer.class),
+	MAMMA_VRIJGEVEN_MINDERVALIDE_RESERVERINGEN_BINNEN_AANTAL_DAGEN("Vrijgeven mindervalidenreserveringen", Integer.class),
 
 	MAMMA_CAPACITEIT_VOLLEDIG_BENUT_TOT_EN_MET_AANTAL_WERKDAGEN("Capaciteit volledig benut tot en met", Integer.class),
 
@@ -363,7 +363,7 @@ public enum PreferenceKey
 
 	MAMMA_CLIENTPORTAAL_TIJDELIJKE_MELDING("BK clientportaal: Tijdelijke melding", String.class),
 
-	MAMMA_MINDERVALIDE_RESERVERING_ACTIEF("BK mindervalide reservering actief", Boolean.class),
+	MAMMA_MINDERVALIDE_RESERVERING_ACTIEF("BK mindervalidenreservering actief", Boolean.class),
 
 	CERVIX_UITSTEL_UITSLAGBRIEF_PAP3A2_OF_HOGER("Uitstel uitslagbrief na PAP3a2 of hoger", Integer.class),
 

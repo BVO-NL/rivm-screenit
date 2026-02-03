@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@
  */
 import { datadogRum } from '@datadog/browser-rum'
 import { environment } from '../../environments/environment'
-import { isAcceptatie, isProductie } from '@shared/utils'
+import { isAcceptatie, isProductie } from '@shared/utils/environment-utils'
 
 export default function setupDatadog() {
   if (!isAcceptatie() || !isProductie()) {

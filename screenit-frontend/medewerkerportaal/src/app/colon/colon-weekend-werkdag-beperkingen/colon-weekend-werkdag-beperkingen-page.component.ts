@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -33,7 +33,7 @@ import { SecurityConstraint } from '@shared/types/autorisatie/security-constrain
 import { Actie } from '@shared/types/autorisatie/actie'
 import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
-import { OrganisatieType } from '@shared/types/autorisatie/organisatie-type'
+import { OrganisatieType } from '@/shared/types/algemeen/organisatie-type'
 import { Required } from '@shared/types/autorisatie/required'
 import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { ToastService } from '@shared/toast/service/toast.service'
@@ -131,5 +131,5 @@ export class ColonWeekendWerkdagBeperkingenPageComponent {
       })
   }
 
-  isVeldDisabled: boolean = true
+  isVeldDisabled = true
 }

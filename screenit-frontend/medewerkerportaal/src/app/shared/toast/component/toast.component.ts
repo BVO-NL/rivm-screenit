@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -67,7 +67,7 @@ export class ToastComponent {
         takeUntilDestroyed(),
         debounce(() => timer(this.updateDelay)),
       )
-      .subscribe((message: string) => {
+      .subscribe((message: string | string[]) => {
         const index = this.toasts.findIndex((toast) => toast.message === message)
         if (index !== -1) {
           this.toasts.splice(index, 1)
@@ -89,4 +89,6 @@ export class ToastComponent {
   private hasToast(toast: Toast): boolean {
     return this.toasts.find((_toast) => _toast.message === toast.message) != undefined
   }
+
+  protected readonly Array = Array
 }

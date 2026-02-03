@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.mamma.dense2;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -41,6 +41,13 @@ public class Dense2UitwisselingPage extends AngularBasePage
 	protected String getComponent()
 	{
 		return "dense2-uitwisseling";
+	}
+
+	@Override
+	public void onInitialize()
+	{
+		super.onInitialize();
+		initAngularComponent("mammaDense2Uitwisseling");
 	}
 
 	@Override

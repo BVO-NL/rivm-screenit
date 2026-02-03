@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.enums;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -191,6 +191,7 @@ public enum LogGebeurtenis
 
 	COLON_FIT_ANALYSE_RESULTAAT_VERWERKT(Level.INFO),
 
+	@Deprecated
 	COLON_FIT_ONBEOORDEELBAAR(Level.INFO),
 
 	COLON_HERINNERING_VERZONDEN(Level.INFO, DashboardType.COLON_HERINNERING, DashboardActieType.OVERIG),
@@ -921,6 +922,12 @@ public enum LogGebeurtenis
 
 	MAMMA_UITNODIGEN_AFGEROND(Level.INFO, DashboardType.MAMMA_UITNODIGINGEN, DashboardActieType.OVERIG),
 
+	MAMMA_SIGNALEREN_MINDERVALIDE_RESERVERINGEN_GESTART(Level.INFO, DashboardType.MAMMA_MINDERVALIDE_RESERVERINGEN, DashboardActieType.START),
+
+	MAMMA_SIGNALEREN_MINDERVALIDE_RESERVERINGEN_AFGEROND(Level.INFO, DashboardType.MAMMA_MINDERVALIDE_RESERVERINGEN, DashboardActieType.OVERIG),
+
+	MAMMA_WEINIG_MINDERVALIDE_RESERVERINGEN(Level.WARNING, DashboardType.MAMMA_MINDERVALIDE_RESERVERINGEN, DashboardActieType.OVERIG),
+
 	MAMMA_UITNODIGEN_FOUT(Level.ERROR, DashboardType.MAMMA_UITNODIGINGEN, DashboardActieType.OVERIG),
 
 	MAMMA_UITNODIGEN_ONDERBROKEN(Level.WARNING, DashboardType.MAMMA_UITNODIGINGEN, DashboardActieType.OVERIG),
@@ -940,8 +947,6 @@ public enum LogGebeurtenis
 	MAMMA_BEOORDELING_OPGESCHORT(Level.INFO),
 
 	MAMMA_ACHTERVANG_UITSTEL(Level.INFO),
-
-	MAMMA_MINDER_VALIDE_UITWIJK(Level.INFO),
 
 	MAMMA_UITSTEL_GEANNULEERD_TEHUIS(Level.INFO),
 

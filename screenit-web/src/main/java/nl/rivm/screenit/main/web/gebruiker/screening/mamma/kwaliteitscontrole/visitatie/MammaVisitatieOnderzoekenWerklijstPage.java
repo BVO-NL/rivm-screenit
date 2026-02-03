@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.v
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,6 +21,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.v
  * =========================LICENSE_END==================================
  */
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,7 +42,6 @@ import nl.rivm.screenit.main.web.component.table.NotClickableAbstractColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaBeTabelCounterPanel;
-import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Medewerker_;
 import nl.rivm.screenit.model.OrganisatieMedewerker_;
@@ -49,7 +49,6 @@ import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.enums.Actie;
-import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling_;
@@ -66,6 +65,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderdeel;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderzoekStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieStatus;
 import nl.rivm.screenit.util.DateUtil;
+import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
 
@@ -78,6 +78,8 @@ import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -85,21 +87,13 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.data.domain.Sort;
-import org.wicketstuff.shiro.ShiroConstraint;
 
 import static nl.rivm.screenit.util.StringUtil.propertyChain;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 
-@SecurityConstraint(
-	actie = Actie.INZIEN,
-	checkScope = true,
-	constraint = ShiroConstraint.HasPermission,
-	recht = { Recht.MEDEWERKER_VISITATIE },
-	organisatieTypeScopes = { OrganisatieType.KWALITEITSPLATFORM, OrganisatieType.SCREENINGSORGANISATIE },
-	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisitatieBasePage
 {
-	static final String SESSION_KEY = "visitatie";
+	public static final String SESSION_KEY = "visitatie";
 
 	@SpringBean
 	private MammaKwaliteitscontroleService kwaliteitscontroleService;
@@ -110,6 +104,8 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 	private final IModel<MammaVisitatieOnderzoekenWerklijstZoekObject> zoekObjectModel;
 
 	private WebMarkupContainer refreshContainer;
+
+	private ScreenitDataTable<MammaVisitatieOnderzoek, String> table;
 
 	public MammaVisitatieOnderzoekenWerklijstPage(MammaVisitatieOnderdeel onderdeel)
 	{
@@ -157,7 +153,7 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 			Constants.getDateTimeSecondsFormat()));
 		if (zoekObjectModel.getObject().getOnderdeel() == MammaVisitatieOnderdeel.INSTELTECHNIEK)
 		{
-			columns.add(new PropertyColumn<>(Model.of("MBBer code"), propertyChain(medewerkerProperty, Medewerker_.MEDEWERKERCODE),
+			columns.add(new PropertyColumn<>(Model.of("Medewerkercode"), propertyChain(medewerkerProperty, Medewerker_.MEDEWERKERCODE),
 				"beoordeling.onderzoek.mammografie.afgerondDoor.medewerker.medewerkercode"));
 		}
 		columns.add(new PropertyColumn<>(Model.of("Volgnummer"), MammaVisitatieOnderzoek_.VOLGNUMMER, "volgnummer"));
@@ -179,7 +175,7 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 			columns.add(getOnderzoekVerwijderenColumn());
 		}
 
-		ScreenitDataTable<MammaVisitatieOnderzoek, String> table = new ScreenitDataTable<>("resultaten", columns, onderzoekDataProvider, 10, Model.of("onderzoek(en)"))
+		table = new ScreenitDataTable<>("resultaten", columns, onderzoekDataProvider, 10, Model.of("onderzoek(en)"))
 		{
 
 			@Override
@@ -194,32 +190,66 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 			@Override
 			public Panel getCustomPanel(String id)
 			{
-				IModel<Integer> gezienModel = new IModel<Integer>()
-				{
-					@Override
-					public Integer getObject()
-					{
-						return (int) visitatieService.countAantalGezien(getVisitatie(), zoekObjectModel.getObject().getOnderdeel());
-					}
-
-				};
-
-				IModel<Integer> nietGezienModel = new IModel<Integer>()
-				{
-					@Override
-					public Integer getObject()
-					{
-						return (int) getItemCount() - gezienModel.getObject();
-					}
-				};
+				IModel<Integer> gezienModel = () -> (int) visitatieService.countAantalGezien(getVisitatie(), zoekObjectModel.getObject().getOnderdeel());
+				IModel<Integer> nietGezienModel = () -> (int) getItemCount() - gezienModel.getObject();
 
 				return new MammaBeTabelCounterPanel(id, nietGezienModel, gezienModel);
 			}
 		};
 		refreshContainer.add(table);
-		refreshContainer.add(new ExportToXslLink<>("csv", "Onderzoek(en)", table));
+		refreshContainer.add(new ExportToXslLink<>("csv", zoekObjectModel.getObject().getVisitatie().getOmschrijving() + " onderzoek(en)")
+		{
+			@Override
+			protected String getDatumTijdFormat()
+			{
+				return Constants.DATE_FORMAT_ISO8601;
+			}
+
+			@Override
+			protected String getCsv()
+			{
+				var csv = new StringBuilder();
+				csv.append("Datum,Medewerkercode,Volgnummer,Fotorichting\n");
+				var iterator = onderzoekDataProvider.iterator(-1, -1);
+				while (iterator.hasNext())
+				{
+					var visitatieOnderzoek = iterator.next();
+					csv.append(new SimpleDateFormat(Constants.DEFAULT_DATE_TIME_SECONDS_FORMAT).format(visitatieOnderzoek.getBeoordeling().getOnderzoek().getCreatieDatum()))
+						.append(",");
+					csv.append(visitatieOnderzoek.getBeoordeling().getOnderzoek().getMammografie().getAfgerondDoor() != null
+						? visitatieOnderzoek.getBeoordeling().getOnderzoek().getMammografie().getAfgerondDoor().getMedewerker().getMedewerkercode()
+						: "").append(",");
+					csv.append(visitatieOnderzoek.getVolgnummer() != null ? visitatieOnderzoek.getVolgnummer() : "").append(",");
+					csv.append(visitatieOnderzoek.getVisitatie().getFotorichting() != null ? visitatieOnderzoek.getVisitatie().getFotorichting() : "").append("\n");
+				}
+				return csv.toString();
+			}
+		});
 
 		addVisitatieAfrondenButton();
+		addNavigeerForm();
+	}
+
+	private void addNavigeerForm()
+	{
+		var form = new Form<>("navigeerForm", new CompoundPropertyModel<>(zoekObjectModel.getObject()));
+		var volgnummerField = new NumberTextField<>("volgnummerVanaf")
+			.setOutputMarkupPlaceholderTag(true)
+			.setOutputMarkupId(true);
+		form.add(volgnummerField);
+
+		var navigeerButton = new IndicatingAjaxSubmitLink("navigeerButton")
+		{
+			@Override
+			public void onSubmit(AjaxRequestTarget target)
+			{
+
+				table.setCurrentPage(0);
+				target.add(refreshContainer);
+			}
+		};
+		form.add(navigeerButton);
+		add(form);
 	}
 
 	private IColumn<MammaVisitatieOnderzoek, String> getOnderzoekVerwijderenColumn()
@@ -333,7 +363,7 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 	{
 		Map<Long, Long> onderzoekenIdMapping = new LinkedHashMap<>();
 		var zoekObject = zoekObjectModel.getObject();
-		for (var onderzoek : visitatieService.zoekVisitatieOnderzoeken(zoekObject.getOnderdeel(), zoekObject.getVisitatie(), -1, -1, Sort.by(ASC, sortProperty)))
+		for (var onderzoek : visitatieService.zoekVisitatieOnderzoeken(zoekObject, -1, -1, Sort.by(ASC, sortProperty)))
 		{
 			onderzoekenIdMapping.put(onderzoek.getBeoordeling().getId(), onderzoek.getId());
 		}
@@ -351,8 +381,9 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 		List<MedewerkerMenuItem> contextMenuItems = super.getContextMenuItems();
-		contextMenuItems.addAll(MammaVisitatieOnderdeelWrapper.getContextMenuItems());
-
+		contextMenuItems.addAll(MammaVisitatieOnderdeelWrapper.getContextMenuItems(
+			ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VISITATIE_INSTELTECHNIEK, Actie.INZIEN),
+			ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VISITATIE, Actie.INZIEN)));
 		return contextMenuItems;
 	}
 

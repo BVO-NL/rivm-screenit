@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,11 +18,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import { WicketNamespace } from '@shared/types/wicket-namespace'
+
 export {}
 
 declare global {
   interface Window {
     mozNotification: Notification
     webkitNotification: Notification
+    [key: string]: never
+    Wicket: never
+    [WicketNamespace.MAMMA_VISITATIE_OVERZICHT]: () => string
   }
 }
+
+declare namespace Wicket {}

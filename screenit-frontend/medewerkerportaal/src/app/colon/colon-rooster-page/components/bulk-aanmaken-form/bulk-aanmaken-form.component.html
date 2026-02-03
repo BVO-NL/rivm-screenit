@@ -2,7 +2,7 @@
   ========================LICENSE_START=================================
   medewerkerportaal
   %%
-  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
   %%
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -32,15 +32,14 @@
   @if (geselecteerdeFrequentie === herhalingsfrequentie.DAGELIJKS) {
     <clr-checkbox-container>
       <clr-checkbox-wrapper>
-        <input type="checkbox" clrCheckbox id="alleenWerkdagen" formControlName="alleenWerkdagen" data-testid="checkbox_alleen_werkdagen">
+        <input type="checkbox" clrCheckbox id="alleenWerkdagen" formControlName="alleenWerkdagen" data-testid="checkbox_alleen_werkdagen"/>
         <label for="alleenWerkdagen">Alleen op werkdagen</label>
       </clr-checkbox-wrapper>
     </clr-checkbox-container>
   }
 
   @if (geselecteerdeFrequentie === herhalingsfrequentie.WEKELIJKS || geselecteerdeFrequentie === herhalingsfrequentie.TWEE_WEKELIJKS) {
-    <app-weekdagen-selector formControlName="dagen"
-      />
+    <app-weekdagen-selector formControlName="dagen"/>
   }
 
   @if (geselecteerdeFrequentie !== undefined && geselecteerdeFrequentie !== herhalingsfrequentie.GEEN_HERHALING) {

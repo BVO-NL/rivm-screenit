@@ -4,7 +4,7 @@ package nl.rivm.screenit.dto.mamma.planning;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -59,7 +59,7 @@ public class PlanningCapaciteitBlokDto extends PlanningConceptEntiteitDto
 
 	@Getter
 	@Setter
-	private List<PlanningMindervalideReserveringDto> minderValideReserveringen = new ArrayList<>();
+	private List<PlanningMindervalideReserveringDto> mindervalideReserveringen = new ArrayList<>();
 
 	public Range<LocalTime> getCapaciteitBlokRange()
 	{
@@ -77,8 +77,8 @@ public class PlanningCapaciteitBlokDto extends PlanningConceptEntiteitDto
 		kopie.blokType = this.blokType;
 		kopie.screeningsEenheidId = this.screeningsEenheidId;
 		kopie.minderValideAfspraakMogelijk = this.minderValideAfspraakMogelijk;
-		kopie.getMinderValideReserveringen().addAll(
-			this.getMinderValideReserveringen().stream()
+		kopie.getMindervalideReserveringen().addAll(
+			this.getMindervalideReserveringen().stream()
 				.map(reservering -> new PlanningMindervalideReserveringDto(reservering.getId(), reservering.conceptId,
 					reservering.getVanaf()))
 				.toList());
@@ -95,9 +95,9 @@ public class PlanningCapaciteitBlokDto extends PlanningConceptEntiteitDto
 		blokType = gewijzigdBlok.blokType;
 		screeningsEenheidId = gewijzigdBlok.screeningsEenheidId;
 		minderValideAfspraakMogelijk = gewijzigdBlok.minderValideAfspraakMogelijk;
-		getMinderValideReserveringen().clear();
-		getMinderValideReserveringen().addAll(
-			gewijzigdBlok.getMinderValideReserveringen().stream()
+		getMindervalideReserveringen().clear();
+		getMindervalideReserveringen().addAll(
+			gewijzigdBlok.getMindervalideReserveringen().stream()
 				.map(reservering -> new PlanningMindervalideReserveringDto(reservering.getId(), reservering.conceptId,
 					reservering.getVanaf()))
 				.toList());

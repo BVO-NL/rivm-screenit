@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,8 +19,8 @@
  * =========================LICENSE_END==================================
  */
 import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
-import { Organisatie } from '@shared/types/autorisatie/organisatie'
 import { MedewerkerRol } from '@shared/types/autorisatie/medewerker-rol'
+import { OrganisatieDto } from '../algemeen/dto/organisatie.dto'
 
 export interface Medewerker {
   rollen: MedewerkerRol[]
@@ -28,5 +28,5 @@ export interface Medewerker {
   bevolkingsonderzoeken: Bevolkingsonderzoek[]
   voornaam: string
   achternaam: string
-  organisatie: Organisatie
+  organisatie: OrganisatieDto
 }

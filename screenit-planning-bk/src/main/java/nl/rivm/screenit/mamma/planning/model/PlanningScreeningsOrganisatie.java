@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.planning.model;
  * ========================LICENSE_START=================================
  * screenit-planning-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -53,7 +53,7 @@ public class PlanningScreeningsOrganisatie extends PlanningEntiteit
 
 	private BigDecimal factorDubbeleTijd;
 
-	private BigDecimal factorMinderValide;
+	private BigDecimal factorMindervalide;
 
 	private int wekenVanTevorenUitnodigen;
 
@@ -65,7 +65,7 @@ public class PlanningScreeningsOrganisatie extends PlanningEntiteit
 		afspraakDrempel = screeningOrganisatie.getAfspraakDrempelBk();
 		factorEersteOnderzoek = screeningOrganisatie.getFactorEersteOnderzoekBk();
 		factorDubbeleTijd = screeningOrganisatie.getFactorDubbeleTijdBk();
-		factorMinderValide = screeningOrganisatie.getFactorMinderValideBk();
+		factorMindervalide = screeningOrganisatie.getFactorMindervalideBk();
 		wekenVanTevorenUitnodigen = screeningOrganisatie.getWekenVanTevorenUitnodigen();
 		vervallenCapaciteitsreserveringDagen = screeningOrganisatie.getVervallenCapaciteitsreserveringDagenBk();
 	}
@@ -80,8 +80,8 @@ public class PlanningScreeningsOrganisatie extends PlanningEntiteit
 			return getFactorEersteOnderzoek();
 		case DUBBELE_TIJD:
 			return getFactorDubbeleTijd();
-		case MINDER_VALIDE:
-			return getFactorMinderValide();
+		case MINDERVALIDE:
+			return getFactorMindervalide();
 		default:
 			throw new IllegalArgumentException();
 		}

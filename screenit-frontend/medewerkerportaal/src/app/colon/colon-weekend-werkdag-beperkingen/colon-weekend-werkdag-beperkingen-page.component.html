@@ -2,7 +2,7 @@
   ========================LICENSE_START=================================
   medewerkerportaal
   %%
-  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
   %%
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -32,19 +32,16 @@
             <clr-input-container class="nacht-beperking">
               <label class="clr-required-mark" for="ochtend">Ochtend</label>
               <input clrInput formControlName="nachtBeperkingEindDisabled" autocomplete="off" type="time" value="00:00"/>
-              <input clrInput autocomplete="off" formControlName="nachtBeperkingEind" id="ochtend" type="time"
-                     data-testid="input_nacht_beperking_eind"/>
+              <input clrInput autocomplete="off" formControlName="nachtBeperkingEind" id="ochtend" type="time" data-testid="input_nacht_beperking_eind"/>
               <clr-control-error *clrIfError="'required'">De eindtijd is verplicht</clr-control-error>
             </clr-input-container>
 
             <clr-input-container class="nacht-beperking">
               <label class="clr-required-mark not-greyed-out" for="avond">Avond</label>
-              <input clrInput autocomplete="off" class="not-greyed-out" formControlName="nachtBeperkingBegin" id="avond" type="time"
-                     data-testid="input_nacht_beperking_start"/>
+              <input clrInput autocomplete="off" class="not-greyed-out" formControlName="nachtBeperkingBegin" id="avond" type="time" data-testid="input_nacht_beperking_start"/>
               <input clrInput formControlName="nachtBeperkingBeginDisabled" autocomplete="off" type="time" value="23:59"/>
               <clr-control-error *clrIfError="'required'">De eindtijd is verplicht</clr-control-error>
             </clr-input-container>
-
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -40,7 +40,7 @@ import { ColonHerhaling } from '@shared/types/colon/colon-herhaling'
 import { COLON_ROOSTER_MAX_HERHALING_IN_MAANDEN, WEEK_DAGEN } from '@shared/constants'
 import { SelectOption } from '@shared/types/select-option'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { formatDate, formatNLDate, parseDate } from '@shared/date-utils'
+import { formatDate, formatNLDate, parseDate } from '@shared/utils/date-utils'
 import { add, addWeeks, isValid } from 'date-fns'
 import { distinctUntilChanged, filter, startWith } from 'rxjs'
 import { ColonHerhalingsfrequentie } from '@shared/types/colon/colon-herhaling-frequentie'

@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.extrabeveiligdeomgeving;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -40,5 +40,12 @@ public class ExtraBeveiligdeOmgevingKeuzeHerstellenPage extends ExtraBeveiligdeO
 	protected String getComponent()
 	{
 		return "extra-beveiligde-omgeving-keuze-herstellen";
+	}
+
+	@Override
+	public void onInitialize()
+	{
+		super.onInitialize();
+		initAngularComponent("extraBeveiligdeOmgevingKeuzeHerstellen");
 	}
 }

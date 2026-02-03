@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.planning.controller;
  * ========================LICENSE_START=================================
  * screenit-planning-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -134,12 +134,12 @@ public class PlanningRouteController
 		PlanningStandplaatsPeriode gewijzigdVanafPeriode = null;
 		if (gewijzigdeStandplaatsPeriodeDto.standplaatsPeriodeConceptId == null)
 		{
-			gewijzigdeStandplaatsPeriodeDto.volgNr = getNieuwIniVolgNr(screeningsEenheidNaar);
+			gewijzigdeStandplaatsPeriodeDto.volgNr = getNieuwInitieelVolgNr(screeningsEenheidNaar);
 			standplaatsPeriode = new PlanningStandplaatsPeriode(null, gewijzigdeStandplaatsPeriodeDto.volgNr, 1, dateSupplier.getLocalDate(), true,
 				PlanningConstanten.plannenTotEnMetDatum); 
 			screeningsEenheidNaar.getStandplaatsPeriodeNavigableSet().add(standplaatsPeriode);
 
-			PlanningStandplaatsRonde standplaatsRonde = new PlanningStandplaatsRonde(null, null, null, null, null, false, null, BigDecimal.ZERO);
+			PlanningStandplaatsRonde standplaatsRonde = new PlanningStandplaatsRonde(null, null, null, null, false, null, BigDecimal.ZERO);
 			PlanningStandplaats standplaats = PlanningStandplaatsIndex.get(gewijzigdeStandplaatsPeriodeDto.standplaatsId);
 			standplaatsRonde.setStandplaats(standplaats);
 			standplaatsRonde.getStandplaatsPeriodeNavigableSet().add(standplaatsPeriode);
@@ -188,7 +188,7 @@ public class PlanningRouteController
 			}
 			else
 			{
-				int index = getNieuwIniVolgNr(screeningsEenheidVan);
+				int index = getNieuwInitieelVolgNr(screeningsEenheidVan);
 				decrementIndex(index, oudeVolgNr, screeningsEenheidVan);
 				int totEnMetVolgnummer = screeningsEenheidNaar.getStandplaatsPeriodeNavigableSet().isEmpty() ? 0
 					: screeningsEenheidNaar.getStandplaatsPeriodeNavigableSet().last().getScreeningsEenheidVolgNr() + 1;
@@ -249,19 +249,10 @@ public class PlanningRouteController
 		PlanningDoorrekenenManager.run();
 	}
 
-	private int getNieuwIniVolgNr(PlanningScreeningsEenheid screeningsEenheid)
+	private int getNieuwInitieelVolgNr(PlanningScreeningsEenheid screeningsEenheid)
 	{
-		int nieuwVolgNr = 0;
 		NavigableSet<PlanningStandplaatsPeriode> perioden = screeningsEenheid.getStandplaatsPeriodeNavigableSet();
-		if (!perioden.isEmpty())
-		{
-			nieuwVolgNr = perioden.last().getScreeningsEenheidVolgNr() + 1;
-		}
-		else
-		{
-			nieuwVolgNr = screeningsEenheid.getVolgNrOffset();
-		}
-		return nieuwVolgNr;
+		return perioden.isEmpty() ? screeningsEenheid.getVolgNrOffset() : perioden.last().getScreeningsEenheidVolgNr() + 1;
 	}
 
 	private Optional<PlanningStandplaatsPeriode> getEersteStandplaatsPeriodeMetPrognoseGeenAfspraken(PlanningScreeningsEenheid screeningsEenheid)

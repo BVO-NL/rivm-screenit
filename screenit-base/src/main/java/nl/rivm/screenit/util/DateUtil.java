@@ -4,7 +4,7 @@ package nl.rivm.screenit.util;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -132,26 +132,18 @@ public final class DateUtil
 		return datum;
 	}
 
-	public static LocalDateTime roundMinutes(LocalDateTime startTime)
+	public static LocalDateTime rondAfNaarBovenOp5Minuten(LocalDateTime moment)
 	{
-		int minutes = startTime.getMinute();
-		int modulo = minutes % 5;
+		Preconditions.checkNotNull(moment, "Input-moment mag niet null zijn");
 
-		if (modulo <= 2)
+		var result = moment.truncatedTo(ChronoUnit.MINUTES);
+		var modulo = result.getMinute() % 5;
+		if (modulo != 0)
 		{
-			minutes -= modulo;
+			result = result.plusMinutes(5 - modulo);
 		}
-		else
-		{
-			minutes += 5 - modulo;
-		}
+		return result;
 
-		if (minutes != 60)
-		{
-			return startTime.withMinute(minutes);
-		}
-
-		return startTime.plusHours(1).withMinute(0);
 	}
 
 	public static List<Range<LocalDateTime>> disjunct(Range<LocalDateTime> target, Range<LocalDateTime> disjunct)
@@ -477,11 +469,6 @@ public final class DateUtil
 		return "";
 	}
 
-	public static boolean isZelfdeDag(Date date1, Date date2)
-	{
-		return DateUtil.toUtilDateMidnight(date1).compareTo(DateUtil.toUtilDateMidnight(date2)) == 0;
-	}
-
 	public static boolean isZelfdeDag(LocalDate date1, Date date2)
 	{
 		return DateUtil.toUtilDateMidnight(date1).compareTo(DateUtil.toUtilDateMidnight(date2)) == 0;
@@ -652,14 +639,14 @@ public final class DateUtil
 		return getPeriodeTussenTweeDatums(startdatum.toLocalDate(), einddatum.toLocalDate(), ChronoUnit.DAYS);
 	}
 
-	public static boolean overlaps(Range<Date> a, Range<Date> b)
+	public static boolean overlaps(Range<Date> rangeA, Range<Date> rangeB)
 	{
-		if (!a.isConnected(b))
+		if (!rangeA.isConnected(rangeB))
 		{
 			return false;
 		}
 
-		var intersection = a.intersection(b);
+		var intersection = rangeA.intersection(rangeB);
 
 		var intersects = !intersection.isEmpty();
 		if (intersection.hasLowerBound() && intersection.hasUpperBound())

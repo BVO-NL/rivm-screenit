@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.colon.dto;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,12 +24,12 @@ package nl.rivm.screenit.model.colon.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import nl.rivm.screenit.dto.EntityDto;
+
 @Getter
 @Setter
-public class ColonIntakelocatieDto
+public class ColonIntakelocatieDto extends EntityDto
 {
-	private Long id;
-
 	private String naam;
 
 	private Integer aantalGeprognosticeerdeAfspraakslots;

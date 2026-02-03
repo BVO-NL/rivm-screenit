@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -166,7 +166,7 @@ public class BaseProjectServiceImpl implements BaseProjectService
 			for (var excludeerOnderzoek : excludeerAfmeldingOnderzoeken)
 			{
 				if (doelgroepService.behoortTotDoelgroep(client, excludeerOnderzoek)
-					&& AfmeldingUtil.isEenmaligOfDefinitefAfgemeld(clientService.getDossier(client, excludeerOnderzoek)))
+					&& AfmeldingUtil.isEenmaligOfDefinitiefAfgemeld(clientService.getDossier(client, excludeerOnderzoek)))
 				{
 					throw new IllegalStateException(
 						"Deze cliënt heeft zich afgemeld bij het onderzoek: " + excludeerOnderzoek.getAfkorting() + ", en deze is geëxcludeerd.");

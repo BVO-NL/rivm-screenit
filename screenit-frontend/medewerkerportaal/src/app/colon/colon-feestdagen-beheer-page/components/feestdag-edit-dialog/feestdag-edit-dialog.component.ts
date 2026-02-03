@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,7 +31,7 @@ import { ColonRoosterBeperkingComponent } from '@/colon/components/colon-rooster
 import { datumInVerledenValidator, valideDatumValidator } from '@shared/validators/datum/datum.validator'
 import { format } from 'date-fns'
 import { NL_DATE_FORMAT } from '@shared/constants'
-import { formatDate, formatNLDate, parseDate } from '@shared/date-utils'
+import { formatDate, formatNLDate, parseDate } from '@shared/utils/date-utils'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
 
 @Component({

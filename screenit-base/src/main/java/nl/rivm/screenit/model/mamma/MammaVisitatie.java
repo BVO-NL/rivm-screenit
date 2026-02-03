@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.mamma;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -37,10 +37,14 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
+import nl.rivm.screenit.model.mamma.enums.MammaFotorichting;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieStatus;
 import nl.rivm.screenit.util.DiffSpecs;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
@@ -53,6 +57,8 @@ import org.hibernate.envers.NotAudited;
 @Entity
 @Table(schema = "mamma", name = "visitatie")
 @Audited
+@Getter
+@Setter
 public class MammaVisitatie extends AbstractHibernateObject implements MammaIKwaliteitscontrole
 {
 	@Column(nullable = false, length = HibernateMagicNumber.L256, unique = true)
@@ -66,10 +72,10 @@ public class MammaVisitatie extends AbstractHibernateObject implements MammaIKwa
 	@NotAudited
 	private OrganisatieMedewerker aangemaaktDoor;
 
-	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	private BeoordelingsEenheid beoordelingsEenheid;
 
-	@Column(nullable = true)
+	@Column
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date gestartOp;
 
@@ -77,7 +83,7 @@ public class MammaVisitatie extends AbstractHibernateObject implements MammaIKwa
 	@Cascade(CascadeType.DELETE)
 	private List<MammaVisitatieOnderzoek> onderzoeken = new ArrayList<>();
 
-	@Column(nullable = true)
+	@Column
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date afgerondOp;
 
@@ -85,113 +91,15 @@ public class MammaVisitatie extends AbstractHibernateObject implements MammaIKwa
 	@Enumerated(EnumType.STRING)
 	private MammaVisitatieStatus status;
 
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	@DiffSpecs(displayProperty = "naam")
 	private UploadDocument rapportageBijlage;
 
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	@DiffSpecs(displayProperty = "naam")
 	private UploadDocument vragenlijstBijlage;
 
-	public BeoordelingsEenheid getBeoordelingsEenheid()
-	{
-		return beoordelingsEenheid;
-	}
-
-	public void setBeoordelingsEenheid(BeoordelingsEenheid beoordelingsEenheid)
-	{
-		this.beoordelingsEenheid = beoordelingsEenheid;
-	}
-
-	public String getOmschrijving()
-	{
-		return omschrijving;
-	}
-
-	public void setOmschrijving(String omschrijving)
-	{
-		this.omschrijving = omschrijving;
-	}
-
-	public Date getAfgerondOp()
-	{
-		return afgerondOp;
-	}
-
-	@Override
-	public void setAfgerondOp(Date afgerondOp)
-	{
-		this.afgerondOp = afgerondOp;
-	}
-
-	public Date getAangemaaktOp()
-	{
-		return aangemaaktOp;
-	}
-
-	public void setAangemaaktOp(Date aangemaaktOp)
-	{
-		this.aangemaaktOp = aangemaaktOp;
-	}
-
-	public OrganisatieMedewerker getAangemaaktDoor()
-	{
-		return aangemaaktDoor;
-	}
-
-	public void setAangemaaktDoor(OrganisatieMedewerker aangemaaktDoor)
-	{
-		this.aangemaaktDoor = aangemaaktDoor;
-	}
-
-	public Date getGestartOp()
-	{
-		return gestartOp;
-	}
-
-	@Override
-	public void setGestartOp(Date gestartOp)
-	{
-		this.gestartOp = gestartOp;
-	}
-
-	public List<MammaVisitatieOnderzoek> getOnderzoeken()
-	{
-		return onderzoeken;
-	}
-
-	public void setOnderzoeken(List<MammaVisitatieOnderzoek> onderzoeken)
-	{
-		this.onderzoeken = onderzoeken;
-	}
-
-	public MammaVisitatieStatus getStatus()
-	{
-		return status;
-	}
-
-	public void setStatus(MammaVisitatieStatus status)
-	{
-		this.status = status;
-	}
-
-	public UploadDocument getRapportageBijlage()
-	{
-		return rapportageBijlage;
-	}
-
-	public void setRapportageBijlage(UploadDocument rapportageBijlage)
-	{
-		this.rapportageBijlage = rapportageBijlage;
-	}
-
-	public UploadDocument getVragenlijstBijlage()
-	{
-		return vragenlijstBijlage;
-	}
-
-	public void setVragenlijstBijlage(UploadDocument vragenlijstBijlage)
-	{
-		this.vragenlijstBijlage = vragenlijstBijlage;
-	}
+	@Column
+	@Enumerated(EnumType.STRING)
+	private MammaFotorichting fotorichting;
 }

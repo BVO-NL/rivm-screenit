@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.planning.service.impl;
  * ========================LICENSE_START=================================
  * screenit-planning-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -446,13 +446,10 @@ public class PlanningConceptmodelServiceImpl implements PlanningConceptmodelServ
 			{
 				var planningAchtervangStandplaats = Optional.ofNullable(standplaatsRondeDto.getAchtervangStandplaatsId()).map(PlanningStandplaatsIndex::get).orElse(null);
 
-				var planningMinderValideUitwijkStandplaats = Optional.ofNullable(standplaatsRondeDto.getMinderValideUitwijkStandplaatsId()).map(PlanningStandplaatsIndex::get)
-					.orElse(null);
-
 				var planningStandplaatsRonde = new PlanningStandplaatsRonde(standplaatsRondeDto.getId(), standplaatsRondeDto.getAfspraakDrempel(),
 					standplaatsRondeDto.getInterval(),
-					planningAchtervangStandplaats, planningMinderValideUitwijkStandplaats, standplaatsRondeDto.getAchtervangToegepast(),
-					toLocalDate(standplaatsRondeDto.getMinderValideUitnodigenVanaf()), standplaatsRondeDto.getExtraMinderValideCapaciteitUitgenodigd());
+					planningAchtervangStandplaats, standplaatsRondeDto.getAchtervangToegepast(),
+					toLocalDate(standplaatsRondeDto.getMindervalideUitnodigenVanaf()), standplaatsRondeDto.getExtraMindervalideCapaciteitUitgenodigd());
 
 				planningStandplaatsRonde.setStandplaats(PlanningStandplaatsIndex.get(standplaatsRondeDto.getStandplaatsId()));
 

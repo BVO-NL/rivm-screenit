@@ -4,7 +4,7 @@ package nl.rivm.screenit.batch.service.impl;
  * ========================LICENSE_START=================================
  * screenit-batch-alg
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -938,14 +938,6 @@ public class GbaServiceImpl implements GbaService
 		persoonsGegevensGewijzigd |= isAchternaamGewijzigd;
 		boolean imsGegevensGewijzigd = isAchternaamGewijzigd;
 
-		if (Strings.isNullOrEmpty(geslachtsnaam) && isNieuw)
-		{
-			persoon.setAchternaam("");
-
-			hibernateService.saveOrUpdate(client);
-			createFout(client, verwerkingsLog, "Verstrekking bevat geen geslachtsnaam, bsn: " + bsn, GbaFoutCategorie.INHOUDELIJK_ERNGSTIG);
-		}
-
 		boolean isTussenvoegselGewijzigd = changeProperty(persoon, "tussenvoegsel", tussenvoegselGeslachtsnaam, verstrekking);
 		persoonsGegevensGewijzigd |= isTussenvoegselGewijzigd;
 		imsGegevensGewijzigd |= isTussenvoegselGewijzigd;
@@ -965,26 +957,6 @@ public class GbaServiceImpl implements GbaService
 		{
 			persoonsGegevensGewijzigd |= changeProperty(persoon, "titel", null, true);
 			persoonsGegevensGewijzigd |= changeProperty(persoon, "titelCode", null, true);
-		}
-
-		if (geboorteDatum != null)
-		{
-			boolean isGeboortedatumGewijzigd = changeProperty(persoon, "geboortedatum", geboorteDatum, verstrekking);
-			persoonsGegevensGewijzigd |= isGeboortedatumGewijzigd;
-			imsGegevensGewijzigd |= isGeboortedatumGewijzigd;
-
-			persoonsGegevensGewijzigd |= changeProperty(persoon, "geboortedatumPrecisie", geboorteDatumPrecisie, verstrekking);
-		}
-		else if (isNieuw)
-		{
-
-			hibernateService.saveOrUpdate(client);
-			createFout(client, verwerkingsLog, "Verstrekking bevat geen geboortedatum, bsn: " + bsn, GbaFoutCategorie.INHOUDELIJK_ERNGSTIG);
-		}
-		else if (verstrekking)
-		{
-			persoonsGegevensGewijzigd |= changeProperty(persoon, "geboortedatum", null, true);
-			persoonsGegevensGewijzigd |= changeProperty(persoon, "geboortedatumPrecisie", null, true);
 		}
 
 		if (overlijdensDatum != null)
@@ -1091,11 +1063,38 @@ public class GbaServiceImpl implements GbaService
 			persoonsGegevensGewijzigd |= changeProperty(persoon, "datumOntbindingPartnerschap", null, true);
 		}
 
+		if (Strings.isNullOrEmpty(geslachtsnaam) && isNieuw)
+		{
+			persoon.setAchternaam("");
+
+			hibernateService.saveOrUpdate(client);
+			createFout(client, verwerkingsLog, "Verstrekking bevat geen geslachtsnaam, bsn: " + bsn, GbaFoutCategorie.INHOUDELIJK_ERNGSTIG);
+		}
+
+		if (geboorteDatum != null)
+		{
+			boolean isGeboortedatumGewijzigd = changeProperty(persoon, "geboortedatum", geboorteDatum, verstrekking);
+			persoonsGegevensGewijzigd |= isGeboortedatumGewijzigd;
+			imsGegevensGewijzigd |= isGeboortedatumGewijzigd;
+
+			persoonsGegevensGewijzigd |= changeProperty(persoon, "geboortedatumPrecisie", geboorteDatumPrecisie, verstrekking);
+		}
+		else if (isNieuw)
+		{
+
+			hibernateService.saveOrUpdate(client);
+			createFout(client, verwerkingsLog, "Verstrekking bevat geen geboortedatum, bsn: " + bsn, GbaFoutCategorie.INHOUDELIJK_ERNGSTIG);
+		}
+		else if (verstrekking)
+		{
+			persoonsGegevensGewijzigd |= changeProperty(persoon, "geboortedatum", null, true);
+			persoonsGegevensGewijzigd |= changeProperty(persoon, "geboortedatumPrecisie", null, true);
+		}
+
 		if (imsGegevensGewijzigd)
 		{
 			plaatsIMSGegevensGewijzigdMarker(client);
 		}
-
 		return persoonsGegevensGewijzigd;
 	}
 

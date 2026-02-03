@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,4 +20,6 @@
  */
 export enum Recht {
   MEDEWERKER_LOCATIE_ROOSTER = 'MEDEWERKER_LOCATIE_ROOSTER',
+  MEDEWERKER_VISITATIE = 'MEDEWERKER_VISITATIE',
+  MEDEWERKER_VISITATIE_INSTELTECHNIEK = 'MEDEWERKER_VISITATIE_INSTELTECHNIEK',
 }

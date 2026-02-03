@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.inpakcentrum.naarinpakcentrum;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -27,12 +27,12 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
+import nl.rivm.screenit.dto.EntityDto;
+
 @Setter
 @Getter
-public class InpakcentrumUitnodigingDto
+public class InpakcentrumUitnodigingDto extends EntityDto
 {
-	private long id;
-
 	private String template;
 
 	private List<InpakcentrumMergeFieldDto> mergeFields = new ArrayList<>();

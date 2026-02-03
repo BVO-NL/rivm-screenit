@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.mamma;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -127,7 +127,7 @@ public class MammaScreeningRonde extends ScreeningRonde<MammaDossier, MammaBrief
 	private String postcode;
 
 	@Column(nullable = false)
-	private Boolean minderValideOnderzoekZiekenhuis;
+	private Boolean mindervalideOnderzoekZiekenhuis;
 
 	@Column(nullable = true)
 	@Enumerated(EnumType.STRING)
@@ -156,5 +156,4 @@ public class MammaScreeningRonde extends ScreeningRonde<MammaDossier, MammaBrief
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "screeningRonde", cascade = { jakarta.persistence.CascadeType.REMOVE })
 	@Cascade(CascadeType.DELETE)
 	private List<MammaConclusieReview> conclusieReviews = new ArrayList<>();
-
 }

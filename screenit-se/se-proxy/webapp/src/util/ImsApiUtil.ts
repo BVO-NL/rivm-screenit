@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * screenit-se-proxy
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,8 +23,6 @@ import {store} from "../Store"
 import {createActionClearStudyForIms, createActionSetStudyForIms} from "../actions/ImsActions"
 import {createActionPutIMSConnectieStatus} from "../actions/ConnectieStatusActions"
 import {fetchApiPromise} from "./ApiUtil"
-
-const url = "https:
 
 const getStandardHeaders = (): Headers => {
 	const headers = new Headers()
@@ -87,6 +85,8 @@ export const logoffToIMS = async (username: string): Promise<void> => {
 }
 
 const fetchIMS = async (imsAction: any): Promise<void> => {
+	const url = store.getState().environmentInfo?.imsContextBridgeUrl ?? "https:
+
 	try {
 		await fetch(url, {
 			method: "PUT",

@@ -1,12 +1,12 @@
 
 const eslint = require('@eslint/js')
-const tseslint = require('typescript-eslint')
+const { defineConfig, configs } = require('typescript-eslint')
 const angular = require('angular-eslint')
 
-module.exports = tseslint.config(
+module.exports = defineConfig(
   {
     files: ['**/*.ts'],
-    extends: [eslint.configs.recommended, ...tseslint.configs.recommended, ...tseslint.configs.stylistic, ...angular.configs.tsRecommended],
+    extends: [eslint.configs.recommended, ...configs.recommended, ...configs.stylistic, ...angular.configs.tsRecommended],
     processor: angular.processInlineTemplates,
     rules: {
       '@angular-eslint/directive-selector': [

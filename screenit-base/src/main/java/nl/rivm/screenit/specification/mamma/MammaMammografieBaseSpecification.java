@@ -4,7 +4,7 @@ package nl.rivm.screenit.specification.mamma;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,6 +24,9 @@ package nl.rivm.screenit.specification.mamma;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -41,9 +44,6 @@ import nl.rivm.screenit.util.DateUtil;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MammaMammografieBaseSpecification
 {
@@ -59,7 +59,7 @@ public class MammaMammografieBaseSpecification
 
 	public static Specification<MammaMammografie> heeftUitnodigingsNummer(long uitnodigingsNummer)
 	{
-		return MammaScreeningRondeSpecification.heeftUitnogigingsNummer(uitnodigingsNummer).with(r -> screeningRondeJoin(r));
+		return MammaScreeningRondeSpecification.heeftUitnodigingsNummer(uitnodigingsNummer).with(r -> screeningRondeJoin(r));
 	}
 
 	public static ExtendedSpecification<MammaMammografie> heeftIlmStatusDatumVoor(LocalDateTime peilMoment)

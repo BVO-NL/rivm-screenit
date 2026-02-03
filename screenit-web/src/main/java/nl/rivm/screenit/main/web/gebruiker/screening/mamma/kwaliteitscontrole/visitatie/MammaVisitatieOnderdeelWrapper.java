@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.v
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,13 +21,14 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.v
  * =========================LICENSE_END==================================
  */
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderdeel;
+import nl.rivm.screenit.util.EnumStringUtil;
 
 public enum MammaVisitatieOnderdeelWrapper
 {
@@ -48,9 +49,18 @@ public enum MammaVisitatieOnderdeelWrapper
 		this.pageClass = pageClass;
 	}
 
-	public static List<MedewerkerMenuItem> getContextMenuItems()
+	public static List<MedewerkerMenuItem> getContextMenuItems(boolean insteltechniekRecht, boolean visitatieRecht)
 	{
-		return Arrays.asList(values()).stream().map(ow -> new MedewerkerMenuItem(EnumStringUtil.getPropertyString(MammaVisitatieOnderdeel.valueOf(ow.name())), true,
+		var onderdelen = new ArrayList<MammaVisitatieOnderdeelWrapper>();
+		if (insteltechniekRecht)
+		{
+			onderdelen.add(INSTELTECHNIEK);
+		}
+		if (visitatieRecht)
+		{
+			onderdelen.addAll(Arrays.stream(values()).filter(ow -> ow != INSTELTECHNIEK).toList());
+		}
+		return onderdelen.stream().map(ow -> new MedewerkerMenuItem(EnumStringUtil.getPropertyString(MammaVisitatieOnderdeel.valueOf(ow.name())), true,
 			ow.pageClass)).collect(Collectors.toList());
 	}
 }

@@ -4,7 +4,7 @@ package nl.rivm.screenit.batch.jobs.mamma.uitnodigen;
  * ========================LICENSE_START=================================
  * screenit-batch-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -150,8 +150,8 @@ public class MammaUitnodigenListener extends BaseLogListener
 				sommeerAantalUitnodigingen(standplaatsPeriodeRapportage.getUitgenodigdAfspraak(), uitstelRapportage.getUitgenodigdAfspraak()));
 			standplaatsPeriodeRapportage.setUitgenodigdOpen(
 				sommeerAantalUitnodigingen(standplaatsPeriodeRapportage.getUitgenodigdOpen(), uitstelRapportage.getUitgenodigdOpen()));
-			standplaatsPeriodeRapportage.setUitgenodigdMinderValide(
-				sommeerAantalUitnodigingen(standplaatsPeriodeRapportage.getUitgenodigdMinderValide(), uitstelRapportage.getUitgenodigdMinderValide()));
+			standplaatsPeriodeRapportage.setUitgenodigdMindervalide(
+				sommeerAantalUitnodigingen(standplaatsPeriodeRapportage.getUitgenodigdMindervalide(), uitstelRapportage.getUitgenodigdMindervalide()));
 			standplaatsPeriodeRapportage.setUitgenodigdSuspect(
 				sommeerAantalUitnodigingen(standplaatsPeriodeRapportage.getUitgenodigdSuspect(), uitstelRapportage.getUitgenodigdSuspect()));
 			standplaatsPeriodeRapportage.setUitgenodigdNaUitstel(

@@ -2,7 +2,7 @@
   ========================LICENSE_START=================================
   medewerkerportaal
   %%
-  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
   %%
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -23,15 +23,12 @@
     <div class="clr-col">
       <clr-input-container>
         <label class="clr-required-mark" for="naam">Naam</label>
-        <input clrInput id="naam" type="text" formControlName="feestdagNaam" maxlength="255"
-          class="clr-col-12 clr-col-md-8"
-          data-testid="input_feestdag_naam"/>
+        <input clrInput id="naam" type="text" formControlName="feestdagNaam" maxlength="255" class="clr-col-12 clr-col-md-8" data-testid="input_feestdag_naam"/>
         <clr-control-error *clrIfError="'required'">De naam is verplicht</clr-control-error>
       </clr-input-container>
       <clr-date-container>
         <label class="clr-required-mark" for="datum">Datum</label>
-        <input clrDate autocomplete="off" formControlName="feestdagDatum" id="datum" type="date" [min]="now"
-          class="clr-col-12 clr-col-md-8"/>
+        <input clrDate autocomplete="off" formControlName="feestdagDatum" id="datum" type="date" [min]="now" class="clr-col-12 clr-col-md-8"/>
         <clr-control-error *clrIfError="'required'">De datum is verplicht</clr-control-error>
         <clr-control-error *clrIfError="'datumInVerleden'">{{ datumCtrl.getError('datumInVerleden') }}</clr-control-error>
         <clr-control-error *clrIfError="'valideDatum'">{{ datumCtrl.getError('valideDatum') }}</clr-control-error>

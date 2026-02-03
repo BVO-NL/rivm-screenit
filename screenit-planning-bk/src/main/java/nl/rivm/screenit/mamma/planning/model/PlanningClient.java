@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.planning.model;
  * ========================LICENSE_START=================================
  * screenit-planning-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -121,7 +121,7 @@ public final class PlanningClient extends PlanningEntiteit
 
 		if (tehuis != null)
 		{
-			this.factorType = this.doelgroep == MammaDoelgroep.MINDER_VALIDE ? MammaFactorType.MINDER_VALIDE : MammaFactorType.DUBBELE_TIJD;
+			this.factorType = this.doelgroep == MammaDoelgroep.MINDERVALIDE ? MammaFactorType.MINDERVALIDE : MammaFactorType.DUBBELE_TIJD;
 		}
 		else
 		{
@@ -140,8 +140,8 @@ public final class PlanningClient extends PlanningEntiteit
 			case DUBBELE_TIJD:
 				this.factorType = MammaFactorType.DUBBELE_TIJD;
 				break;
-			case MINDER_VALIDE:
-				this.factorType = MammaFactorType.MINDER_VALIDE;
+			case MINDERVALIDE:
+				this.factorType = MammaFactorType.MINDERVALIDE;
 				break;
 			default:
 				throw new IllegalArgumentException();

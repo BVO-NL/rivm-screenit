@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.planning.controller;
  * ========================LICENSE_START=================================
  * screenit-planning-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -72,10 +72,10 @@ public class PlanningScreeningsOrganisatieController
 			screeningsOrganisatie.setFactorDubbeleTijd(screeningsOrganisatieDto.factorDubbeleTijdBk);
 			bepaalWijzigingen(MammaFactorType.DUBBELE_TIJD, screeningsOrganisatie);
 		}
-		if (!screeningsOrganisatie.getFactorMinderValide().equals(screeningsOrganisatieDto.factorMinderValideBk))
+		if (!screeningsOrganisatie.getFactorMindervalide().equals(screeningsOrganisatieDto.factorMindervalideBk))
 		{
-			screeningsOrganisatie.setFactorMinderValide(screeningsOrganisatieDto.factorMinderValideBk);
-			bepaalWijzigingen(MammaFactorType.MINDER_VALIDE, screeningsOrganisatie);
+			screeningsOrganisatie.setFactorMindervalide(screeningsOrganisatieDto.factorMindervalideBk);
+			bepaalWijzigingen(MammaFactorType.MINDERVALIDE, screeningsOrganisatie);
 		}
 
 		if (screeningsOrganisatie.getVervallenCapaciteitsreserveringDagen() != screeningsOrganisatieDto.vervallenCapaciteitsreserveringDagenBk)
@@ -109,7 +109,7 @@ public class PlanningScreeningsOrganisatieController
 			}
 		}
 
-		if (factorType == MammaFactorType.DUBBELE_TIJD || factorType == MammaFactorType.MINDER_VALIDE)
+		if (factorType == MammaFactorType.DUBBELE_TIJD || factorType == MammaFactorType.MINDERVALIDE)
 		{
 			PlanningWijzigingen.getTehuisSet().addAll(screeningsOrganisatie.getTehuisSet());
 		}

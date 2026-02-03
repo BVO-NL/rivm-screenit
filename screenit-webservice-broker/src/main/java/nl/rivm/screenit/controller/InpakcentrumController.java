@@ -4,7 +4,7 @@ package nl.rivm.screenit.controller;
  * ========================LICENSE_START=================================
  * screenit-webservice-broker
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -106,6 +106,11 @@ public class InpakcentrumController
 			|| bevolkingsonderzoek.equals(Bevolkingsonderzoek.COLON) && !bestandsnaam.startsWith("DK") || !bestandsnaam.contains("_mergedata"))
 		{
 			return "Bestandsnaam is niet correct. Bestandsnaam moet beginnen met 'DK' of 'BMHK' gevolgd door '_mergedata' + uniek nummer per bestand.";
+		}
+
+		if (bestandsnaam.length() > 100)
+		{
+			return "Bestandsnaam mag maximaal 100 tekens bevatten.";
 		}
 
 		if (!isValidBase64Json(inpakcentrumKoppelDataRequestDto.getMappingData()))

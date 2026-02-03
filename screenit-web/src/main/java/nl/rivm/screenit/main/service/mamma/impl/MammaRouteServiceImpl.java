@@ -5,7 +5,7 @@ package nl.rivm.screenit.main.service.mamma.impl;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -97,7 +97,7 @@ public class MammaRouteServiceImpl implements MammaRouteService
 			csvBuilder.append(ExportToXslUtil.getCsvValue(standplaatsPeriode.totEnMet != null ? standplaatsPeriode.totEnMet.format(DateUtil.LOCAL_DATE_FORMAT) : ""));
 			csvBuilder.append(",");
 			csvBuilder.append(ExportToXslUtil
-				.getCsvValue(standplaatsPeriode.minderValideUitnodigenVanaf != null ? standplaatsPeriode.minderValideUitnodigenVanaf.format(DateUtil.LOCAL_DATE_FORMAT) : ""));
+				.getCsvValue(standplaatsPeriode.mindervalideUitnodigenVanaf != null ? standplaatsPeriode.mindervalideUitnodigenVanaf.format(DateUtil.LOCAL_DATE_FORMAT) : ""));
 			csvBuilder.append(",");
 			csvBuilder.append(ExportToXslUtil.getCsvValue(ExportToXslUtil.getIntervalString(standplaatsPeriode.initieelIntervalMaanden)));
 			csvBuilder.append(",");

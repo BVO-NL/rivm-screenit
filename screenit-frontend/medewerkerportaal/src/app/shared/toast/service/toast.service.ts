@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,11 +26,11 @@ import { Toast } from '@shared/types/toast'
   providedIn: 'root',
 })
 export class ToastService {
-  showToast$: Subject<Toast> = new Subject<Toast>()
-  hideToast$: Subject<string> = new Subject<string>()
-  clearToasts$: Subject<void> = new Subject<void>()
+  showToast$ = new Subject<Toast>()
+  hideToast$ = new Subject<string | string[]>()
+  clearToasts$ = new Subject<void>()
 
-  error(message: string) {
+  error(message: string | string[]) {
     this.showToast({
       id: Math.random(),
       message,
@@ -39,7 +39,7 @@ export class ToastService {
     })
   }
 
-  success(message: string) {
+  success(message: string | string[]) {
     this.showToast({
       id: Math.random(),
       message,
@@ -49,7 +49,17 @@ export class ToastService {
     })
   }
 
-  hide(message: string) {
+  warning(message: string | string[]) {
+    this.showToast({
+      id: Math.random(),
+      message,
+      type: 'warning',
+      disableClose: false,
+      autoClose: 5000,
+    })
+  }
+
+  hide(message: string | string[]) {
     this.hideToast$.next(message)
   }
 

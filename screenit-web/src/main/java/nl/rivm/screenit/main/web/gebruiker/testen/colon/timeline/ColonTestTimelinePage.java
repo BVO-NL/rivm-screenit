@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.testen.colon.timeline;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,6 +21,7 @@ package nl.rivm.screenit.main.web.gebruiker.testen.colon.timeline;
  * =========================LICENSE_END==================================
  */
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,8 +55,10 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.GebeurtenisBron;
 import nl.rivm.screenit.model.enums.Recht;
+import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.TestService;
 import nl.rivm.screenit.service.colon.ColonTestService;
+import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.TestBsnGenerator;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
@@ -106,6 +109,9 @@ public class ColonTestTimelinePage extends TestenBasePage
 	@SpringBean
 	private TestService testService;
 
+	@SpringBean
+	private ICurrentDateSupplier currentDateSupplier;
+
 	private final IModel<TestTimelineModel> model;
 
 	private IModel<List<TestTimelineRonde>> rondesModel;
@@ -120,8 +126,9 @@ public class ColonTestTimelinePage extends TestenBasePage
 		add(dialog);
 
 		model = new CompoundPropertyModel<>(new TestTimelineModel());
-		TestTimelineModel object = model.getObject();
-		object.setBsn(TestBsnGenerator.getValideBsn());
+		var testTimelineModel = model.getObject();
+		testTimelineModel.setBsn(TestBsnGenerator.getValideBsn());
+		testTimelineModel.setGeboortedatum(DateUtil.minusTijdseenheid(currentDateSupplier.getDate(), 56, ChronoUnit.YEARS));
 
 		form = new Form<>("form", model);
 		form.setOutputMarkupId(true);

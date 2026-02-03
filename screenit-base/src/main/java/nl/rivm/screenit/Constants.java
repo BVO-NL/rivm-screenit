@@ -4,7 +4,7 @@ package nl.rivm.screenit;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -54,6 +54,8 @@ public class Constants
 	public static final String DEFAULT_DATE_TIME_SECONDS_FORMAT = "dd-MM-yyyy HH:mm:ss";
 
 	public static final String DEFAULT_TIME_FORMAT = "HH:mm";
+
+	public static final String DATE_FORMAT_ISO8601 = "yyyy-MM-dd HH:mm:ss";
 
 	public static final String DATE_FORMAT_YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
 

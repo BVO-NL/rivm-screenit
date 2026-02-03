@@ -4,7 +4,7 @@ package nl.rivm.screenit.model;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,6 +30,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -121,7 +122,7 @@ public class Persoon extends AbstractHibernateObject
 	@Column(length = 200)
 	private String achternaam;
 
-	@Column(length = 12)
+	@Column(length = 12, nullable = false)
 	private String bsn;
 
 	@Column(length = MAX_EMAIL_LENGTH)
@@ -132,6 +133,7 @@ public class Persoon extends AbstractHibernateObject
 	private Date geboortedatum;
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private Geslacht geslacht;
 
 	@Column(length = 20)
@@ -150,7 +152,8 @@ public class Persoon extends AbstractHibernateObject
 	@Column(length = 10)
 	private String partnerTussenvoegsel;
 
-	@OneToOne(cascade = CascadeType.ALL, optional = false)
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(nullable = false)
 	private Client client;
 
 	@Column(length = 20)

@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.planning.service.impl;
  * ========================LICENSE_START=================================
  * screenit-planning-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,7 +22,6 @@ package nl.rivm.screenit.mamma.planning.service.impl;
  */
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -40,7 +39,7 @@ import nl.rivm.screenit.mamma.planning.index.PlanningBlokIndex;
 import nl.rivm.screenit.mamma.planning.index.PlanningScreeningsEenheidIndex;
 import nl.rivm.screenit.mamma.planning.model.PlanningBlok;
 import nl.rivm.screenit.mamma.planning.model.PlanningConstanten;
-import nl.rivm.screenit.mamma.planning.model.PlanningMinderValideReservering;
+import nl.rivm.screenit.mamma.planning.model.PlanningMindervalideReservering;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
 import nl.rivm.screenit.mamma.planning.repository.PlanningCapaciteitBlokRepository;
 import nl.rivm.screenit.mamma.planning.repository.PlanningMindervalideReserveringRepository;
@@ -63,7 +62,7 @@ public class PlanningCapaciteitBlokServiceImpl implements PlanningCapaciteitBlok
 {
 	private final PlanningCapaciteitBlokRepository capaciteitBlokRepository;
 
-	private final PlanningMindervalideReserveringRepository minderValideReserveringRepository;
+	private final PlanningMindervalideReserveringRepository mindervalideReserveringRepository;
 
 	@Override
 	public Set<PlanningBlok> getCapaciteitsBlokkenVanDag(PlanningScreeningsEenheid screeningsEenheid, LocalDate bronDate)
@@ -84,9 +83,9 @@ public class PlanningCapaciteitBlokServiceImpl implements PlanningCapaciteitBlok
 	{
 		var zoekPeriode = RangeUtil.range(vanafDatum, BoundType.CLOSED, totEnMetDatum, BoundType.CLOSED);
 
-		var reserveringPerCapaciteitBlokId = minderValideReserveringRepository.leesMindervalideReserveringen(screeningsEenheid, zoekPeriode).stream().collect(
+		var reserveringPerCapaciteitBlokId = mindervalideReserveringRepository.leesMindervalideReserveringen(screeningsEenheid, zoekPeriode).stream().collect(
 			Collectors.groupingBy(MammaMindervalideReserveringProjectie::capaciteitBlokId,
-				Collectors.mapping(projectie -> new PlanningMinderValideReservering(projectie.id(), projectie.vanaf()), Collectors.toList())));
+				Collectors.mapping(projectie -> new PlanningMindervalideReservering(projectie.id(), projectie.vanaf()), Collectors.toList())));
 
 		var planningBlokken = capaciteitBlokRepository.leesCapaciteitBlokken(screeningsEenheid, zoekPeriode);
 
@@ -96,7 +95,7 @@ public class PlanningCapaciteitBlokServiceImpl implements PlanningCapaciteitBlok
 	}
 
 	private PlanningBlok mapNaarPlanningBlok(PlanningScreeningsEenheid screeningsEenheid, PlanningCapaciteitBlokProjectie blokProjectie,
-		List<PlanningMinderValideReservering> mindervalideReserveringen)
+		List<PlanningMindervalideReservering> mindervalideReserveringen)
 	{
 		var vanaf = blokProjectie.getVanaf();
 		var blok = new PlanningBlok(blokProjectie.getId(), vanaf.toLocalTime(), blokProjectie.getTot().toLocalTime(), blokProjectie.getAantalOnderzoeken(),
@@ -115,9 +114,9 @@ public class PlanningCapaciteitBlokServiceImpl implements PlanningCapaciteitBlok
 		PlanningCapaciteitChangeChecker.magCapaciteitOpslaanVerwijderen(blokDto, true);
 
 		var vanaf = DateUtil.toLocalDateTime(blokDto.vanaf);
-		var minderValideReserveringen = maakMinderValideReserveringen(blokDto, vanaf);
+		var mindervalideReserveringen = maakMindervalideReserveringen(blokDto);
 		var blok = new PlanningBlok(null, vanaf.toLocalTime(), DateUtil.toLocalTime(blokDto.tot), blokDto.aantalOnderzoeken, blokDto.blokType, blokDto.opmerkingen,
-			blokDto.minderValideAfspraakMogelijk, minderValideReserveringen);
+			blokDto.minderValideAfspraakMogelijk, mindervalideReserveringen);
 		blok.setScreeningsEenheid(screeningsEenheid);
 		screeningsEenheid.getBlokSet().add(blok);
 
@@ -131,10 +130,9 @@ public class PlanningCapaciteitBlokServiceImpl implements PlanningCapaciteitBlok
 		return blok;
 	}
 
-	private List<PlanningMinderValideReservering> maakMinderValideReserveringen(PlanningCapaciteitBlokDto blokDto, LocalDateTime blokVanaf)
+	private List<PlanningMindervalideReservering> maakMindervalideReserveringen(PlanningCapaciteitBlokDto blokDto)
 	{
-		return blokDto.getMinderValideReserveringen().stream().map(dto -> new PlanningMinderValideReservering(null, LocalDateTime.of(blokVanaf.toLocalDate(), dto.getVanaf())))
-			.toList();
+		return blokDto.getMindervalideReserveringen().stream().map(dto -> new PlanningMindervalideReservering(null, dto.getVanaf())).toList();
 	}
 
 	@Override
@@ -148,18 +146,17 @@ public class PlanningCapaciteitBlokServiceImpl implements PlanningCapaciteitBlok
 	}
 
 	@Override
-	public void updateMinderValideReserveringenVoorCapaciteitBlok(List<PlanningMindervalideReserveringDto> mindervalideReserveringDtos, PlanningBlok capaciteitBlok,
-		LocalDate datumVanReserveringen)
+	public void updateMindervalideReserveringenVoorCapaciteitBlok(List<PlanningMindervalideReserveringDto> mindervalideReserveringDtos, PlanningBlok capaciteitBlok)
 	{
 		var nieuweReserveringen = mindervalideReserveringDtos.stream().map(dto ->
 		{
-			var reserveringVanaf = LocalDateTime.of(datumVanReserveringen, dto.getVanaf());
+			var reserveringVanaf = dto.getVanaf();
 			return dto.conceptId == null ?
-				new PlanningMinderValideReservering(dto.getId(), reserveringVanaf) :
-				new PlanningMinderValideReservering(dto.getId(), reserveringVanaf, dto.conceptId);
+				new PlanningMindervalideReservering(dto.getId(), reserveringVanaf) :
+				new PlanningMindervalideReservering(dto.getId(), reserveringVanaf, dto.conceptId);
 		}).toList();
-		var planningMinderValideReserveringen = capaciteitBlok.getMindervalideReserveringen();
-		planningMinderValideReserveringen.clear();
-		planningMinderValideReserveringen.addAll(nieuweReserveringen);
+		var planningMindervalideReserveringen = capaciteitBlok.getMindervalideReserveringen();
+		planningMindervalideReserveringen.clear();
+		planningMindervalideReserveringen.addAll(nieuweReserveringen);
 	}
 }

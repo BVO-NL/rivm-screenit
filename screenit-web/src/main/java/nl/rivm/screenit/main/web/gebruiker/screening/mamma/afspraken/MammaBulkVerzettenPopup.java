@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.afspraken;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,33 +25,27 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaCapaciteitBlokDto;
-import nl.rivm.screenit.main.service.mamma.MammaAfspraakService;
+import nl.rivm.screenit.main.service.mamma.MammaBulkverzettenService;
 import nl.rivm.screenit.main.util.StandplaatsPeriodeUtil;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxSubmitLink;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
-import nl.rivm.screenit.model.mamma.enums.MammaFactorType;
 import nl.rivm.screenit.model.mamma.enums.MammaVerzettenReden;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
-import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
 import nl.rivm.screenit.service.mamma.MammaBaseDossierService;
 import nl.rivm.screenit.service.mamma.MammaBaseKansberekeningService;
-import nl.rivm.screenit.service.mamma.impl.MammaCapaciteit;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.mamma.MammaScreeningsEenheidUtil;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.input.validator.DependantDateValidator;
@@ -75,18 +69,8 @@ import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 public abstract class MammaBulkVerzettenPopup extends GenericPanel<MammaBulkVerzettenFilter>
 {
-	private static final long serialVersionUID = 1L;
-
-	private BootstrapDialog confirmPopup;
-
 	@SpringBean
-	private MammaBaseAfspraakService baseAfspraakService;
-
-	@SpringBean
-	private MammaBaseCapaciteitsBlokService baseCapaciteitsBlokService;
-
-	@SpringBean
-	private MammaAfspraakService afspraakService;
+	private MammaBulkverzettenService bulkverzettenService;
 
 	@SpringBean
 	private ICurrentDateSupplier dateSupplier;
@@ -100,69 +84,64 @@ public abstract class MammaBulkVerzettenPopup extends GenericPanel<MammaBulkVerz
 	@SpringBean
 	private MammaBaseDossierService baseDossierService;
 
-	private ScreenitDropdown<MammaStandplaatsPeriode> standplaatsPeriodeDropdown;
+	private final IModel<List<MammaAfspraak>> afsprakenModel;
 
-	private IModel<List<MammaAfspraak>> afsprakenModel;
+	private BigDecimal vrijeCapaciteitInDoelperiode;
 
-	private IModel<MammaStandplaatsPeriode> standplaatsPeriodeModel;
+	private final BigDecimal benodigdeCapaciteitVoorAfspraken;
 
-	private MammaCapaciteit capaciteit;
+	private final IModel<MammaStandplaatsPeriode> gekozenStandplaatsPeriodeModel;
 
-	private BigDecimal benodigdeCapaciteitVoorAfspraken;
+	private final FormComponent<Date> vanaf;
 
-	private IModel<MammaStandplaatsPeriode> gekozenStandplaatsPeriodeModel;
+	private final FormComponent<Date> tot;
 
-	private FormComponent<Date> vanaf;
-
-	private FormComponent<Date> tot;
-
-	private WebMarkupContainer vrijeCapaciteitContainer;
+	private final WebMarkupContainer vrijeCapaciteitContainer;
 
 	private DateValidator dateValidatorMinimum;
 
 	private DateValidator dateValidatorMaximum;
 
-	private Form<MammaBulkVerzettenFilter> form;
+	private final Form<MammaBulkVerzettenFilter> form;
 
-	private Date afspraakVerzettenZonderClientContactVanaf;
+	private final Date afspraakVerzettenZonderClientContactVanaf;
 
 	public MammaBulkVerzettenPopup(String id, List<MammaAfspraak> afspraken, IModel<MammaScreeningsEenheid> screeningsEenheidModel, IModel<Date> datum,
-		IModel<MammaStandplaatsPeriode> standplaatsPeriodeModel, List<MammaStandplaatsPeriode> standplaatsPeriodesVoorBulkVerzetten)
+		IModel<MammaStandplaatsPeriode> huidigeStandplaatsPeriodeModel, List<MammaStandplaatsPeriode> standplaatsPeriodesVoorBulkVerzetten)
 	{
 		super(id);
 		this.afsprakenModel = ModelUtil.listRModel(afspraken);
-		this.standplaatsPeriodeModel = standplaatsPeriodeModel;
 
-		MammaScreeningsEenheid screeningsEenheid = screeningsEenheidModel.getObject();
-		MammaStandplaatsPeriode standplaatsPeriode = standplaatsPeriodeModel.getObject();
+		var screeningsEenheid = screeningsEenheidModel.getObject();
+		var huidigeStandplaatsPeriode = huidigeStandplaatsPeriodeModel.getObject();
 
-		gekozenStandplaatsPeriodeModel = standplaatsPeriodesVoorBulkVerzetten.contains(standplaatsPeriode) ? ModelUtil.cModel(standplaatsPeriode)
-			: ModelUtil.cModel(standplaatsPeriodesVoorBulkVerzetten.get(0));
+		gekozenStandplaatsPeriodeModel = standplaatsPeriodesVoorBulkVerzetten.contains(huidigeStandplaatsPeriode) ? ModelUtil.ccModel(huidigeStandplaatsPeriode)
+			: ModelUtil.ccModel(standplaatsPeriodesVoorBulkVerzetten.get(0));
 
 		afspraakVerzettenZonderClientContactVanaf = DateUtil.plusWerkdagen(dateSupplier.getDateMidnight(),
 			preferenceService.getInteger(PreferenceKey.MAMMA_AFSPRAAK_VERZETTEN_ZONDER_CLIENT_CONTACT_VANAF_AANTAL_WERKDAGEN.name()));
 
-		Date minDag = Collections.max(Arrays.asList(gekozenStandplaatsPeriodeModel.getObject().getVanaf(), afspraakVerzettenZonderClientContactVanaf));
-		Date maxDag = Collections.min(
+		var minDag = Collections.max(Arrays.asList(gekozenStandplaatsPeriodeModel.getObject().getVanaf(), afspraakVerzettenZonderClientContactVanaf));
+		var maxDag = Collections.min(
 			Arrays.asList(gekozenStandplaatsPeriodeModel.getObject().getTotEnMet(), gekozenStandplaatsPeriodeModel.getObject().getScreeningsEenheid().getVrijgegevenTotEnMet()));
 
 		benodigdeCapaciteitVoorAfspraken = afspraken.stream().map(afspraak ->
 		{
-			BigDecimal voorlopigeOpkomstkans = baseKansberekeningService
+			var voorlopigeOpkomstkans = baseKansberekeningService
 				.getVoorlopigeOpkomstkans(afspraak.getUitnodiging(), gekozenStandplaatsPeriodeModel.getObject(), MammaVerzettenReden.ONVOORZIENE_OMSTANDIGHEDEN);
-			MammaFactorType factorType = baseDossierService.getFactorType(afspraak.getUitnodiging().getScreeningRonde().getDossier());
-			BigDecimal factor = factorType.getFactor((ScreeningOrganisatie) screeningsEenheid.getBeoordelingsEenheid().getParent().getRegio());
+			var factorType = baseDossierService.getFactorType(afspraak.getUitnodiging().getScreeningRonde().getDossier());
+			var factor = factorType.getFactor(MammaScreeningsEenheidUtil.getScreeningsOrganisatie(screeningsEenheid));
 			return voorlopigeOpkomstkans.multiply(factor);
 		}).reduce(BigDecimal.ZERO, BigDecimal::add);
 
-		MammaBulkVerzettenFilter filter = new MammaBulkVerzettenFilter(minDag, maxDag, gekozenStandplaatsPeriodeModel);
+		var filter = new MammaBulkVerzettenFilter(minDag, maxDag, gekozenStandplaatsPeriodeModel);
 
 		setModel(new CompoundPropertyModel<>(filter));
-		confirmPopup = new BootstrapDialog("confirmPopup");
+		var confirmPopup = new BootstrapDialog("confirmPopup");
 		confirmPopup.setOutputMarkupPlaceholderTag(true);
 		add(confirmPopup);
 
-		String huidigeStandplaatsPeriodeNaam = StandplaatsPeriodeUtil.getStandplaatsPeriodeNaam(standplaatsPeriode);
+		var huidigeStandplaatsPeriodeNaam = StandplaatsPeriodeUtil.getStandplaatsPeriodeNaam(huidigeStandplaatsPeriode);
 
 		add(new Label("standplaatsPeriode.screeningsEenheid.naam"));
 		add(new Label("standplaatsPeriode.standplaatsRonde.standplaats.naam", huidigeStandplaatsPeriodeNaam));
@@ -176,7 +155,8 @@ public abstract class MammaBulkVerzettenPopup extends GenericPanel<MammaBulkVerz
 		form = new Form<>("form", getModel());
 		form.add(vrijeCapaciteitContainer);
 
-		standplaatsPeriodeDropdown = new ScreenitDropdown<>("standplaatsPeriodeNaar", gekozenStandplaatsPeriodeModel, ModelUtil.listRModel(standplaatsPeriodesVoorBulkVerzetten),
+		var standplaatsPeriodeDropdown = new ScreenitDropdown<>("standplaatsPeriodeNaar", gekozenStandplaatsPeriodeModel,
+			ModelUtil.listRModel(standplaatsPeriodesVoorBulkVerzetten),
 			new ChoiceRenderer<>()
 			{
 				@Override
@@ -206,7 +186,7 @@ public abstract class MammaBulkVerzettenPopup extends GenericPanel<MammaBulkVerz
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				MammaBulkVerzettenFilter verzettenFilter = MammaBulkVerzettenPopup.this.getModelObject();
+				var verzettenFilter = MammaBulkVerzettenPopup.this.getModelObject();
 				addOrReplaceVrijeCapaciteit(verzettenFilter, vrijeCapaciteitContainer);
 				target.add(vrijeCapaciteitContainer);
 
@@ -222,7 +202,7 @@ public abstract class MammaBulkVerzettenPopup extends GenericPanel<MammaBulkVerz
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				MammaBulkVerzettenFilter verzettenFilter = MammaBulkVerzettenPopup.this.getModelObject();
+				var verzettenFilter = MammaBulkVerzettenPopup.this.getModelObject();
 				addOrReplaceVrijeCapaciteit(verzettenFilter, vrijeCapaciteitContainer);
 				target.add(vrijeCapaciteitContainer);
 
@@ -232,7 +212,7 @@ public abstract class MammaBulkVerzettenPopup extends GenericPanel<MammaBulkVerz
 
 		form.add(new DependantDateValidator(vanaf, tot, Operator.AFTER));
 
-		RadioChoice<MammaVerzettenReden> reden = new RadioChoice<MammaVerzettenReden>("reden", new ArrayList<>(MammaVerzettenReden.BRIEF_VERPLICHT),
+		var reden = new RadioChoice<>("reden", new ArrayList<>(MammaVerzettenReden.BRIEF_VERPLICHT),
 			new EnumChoiceRenderer<>(this));
 		reden.setPrefix("<label class=\"radio\">");
 		reden.setSuffix("</label>");
@@ -241,7 +221,7 @@ public abstract class MammaBulkVerzettenPopup extends GenericPanel<MammaBulkVerz
 
 		add(form);
 
-		ConfirmingIndicatingAjaxSubmitLink<Void> verzetten = new ConfirmingIndicatingAjaxSubmitLink<Void>("verzetten", form, confirmPopup, "bulk.verzetten")
+		var verzetten = new ConfirmingIndicatingAjaxSubmitLink<Void>("verzetten", form, confirmPopup, "bulk.verzetten")
 		{
 			private boolean bulkVerzettenMogelijk;
 
@@ -249,7 +229,7 @@ public abstract class MammaBulkVerzettenPopup extends GenericPanel<MammaBulkVerz
 			protected boolean skipConfirmation()
 			{
 				bulkVerzettenMogelijk = true;
-				if (benodigdeCapaciteitVoorAfspraken.compareTo(capaciteit.getVrijeCapaciteit()) > 0)
+				if (benodigdeCapaciteitVoorAfspraken.compareTo(vrijeCapaciteitInDoelperiode) > 0)
 				{
 					error(getString("bulk.verzetten.te.weinig.cap"));
 					bulkVerzettenMogelijk = false;
@@ -260,10 +240,10 @@ public abstract class MammaBulkVerzettenPopup extends GenericPanel<MammaBulkVerz
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				MammaBulkVerzettenFilter verzettenFilter = MammaBulkVerzettenPopup.this.getModelObject();
+				var verzettenFilter = MammaBulkVerzettenPopup.this.getModelObject();
 				if (bulkVerzettenMogelijk)
 				{
-					afspraakService.bulkVerzetten(verzettenFilter, afsprakenModel.getObject(), ScreenitSession.get().getIngelogdAccount(),
+					bulkverzettenService.bulkVerzetten(verzettenFilter, afsprakenModel.getObject(), ScreenitSession.get().getIngelogdAccount(),
 						DateUtil.toLocalDate(datum.getObject()));
 					verzettenAfgerond(target);
 				}
@@ -275,23 +255,14 @@ public abstract class MammaBulkVerzettenPopup extends GenericPanel<MammaBulkVerz
 
 	private void addOrReplaceVrijeCapaciteit(MammaBulkVerzettenFilter filter, WebMarkupContainer benodigdeCapaciteitContainer)
 	{
-		MammaStandplaatsPeriode standplaatsPeriode = gekozenStandplaatsPeriodeModel.getObject();
-
-		Date vanaf = DateUtil.toUtilDate(filter.getVanafLocalDate());
-		Date totEnMet = DateUtil.toUtilDate(filter.getTotEnMetLocalDate().plusDays(1));
-
-		Collection<MammaCapaciteitBlokDto> capaciteitsBlokken = baseCapaciteitsBlokService.getNietGeblokkeerdeScreeningCapaciteitBlokDtos(standplaatsPeriode, vanaf, totEnMet,
-			null);
-		capaciteit = baseCapaciteitsBlokService.getCapaciteit(capaciteitsBlokken);
-
-		benodigdeCapaciteitContainer.addOrReplace(
-			new Label("vrijeCapaciteitTotaal", capaciteit.getVrijeCapaciteit().setScale(1, RoundingMode.HALF_UP).toString()));
+		vrijeCapaciteitInDoelperiode = bulkverzettenService.getVrijeCapaciteitBulkverzetten(filter);
+		benodigdeCapaciteitContainer.addOrReplace(new Label("vrijeCapaciteitTotaal", vrijeCapaciteitInDoelperiode.setScale(1, RoundingMode.HALF_UP).toString()));
 	}
 
 	private void standplaatsPeriodeSelected(AjaxRequestTarget target)
 	{
-		Date minDag = Collections.max(Arrays.asList(gekozenStandplaatsPeriodeModel.getObject().getVanaf(), afspraakVerzettenZonderClientContactVanaf));
-		Date maxDag = gekozenStandplaatsPeriodeModel.getObject().getScreeningsEenheid().getVrijgegevenTotEnMet() != null
+		var minDag = Collections.max(Arrays.asList(gekozenStandplaatsPeriodeModel.getObject().getVanaf(), afspraakVerzettenZonderClientContactVanaf));
+		var maxDag = gekozenStandplaatsPeriodeModel.getObject().getScreeningsEenheid().getVrijgegevenTotEnMet() != null
 			? Collections
 			.min(Arrays.asList(gekozenStandplaatsPeriodeModel.getObject().getTotEnMet(),
 				gekozenStandplaatsPeriodeModel.getObject().getScreeningsEenheid().getVrijgegevenTotEnMet()))
@@ -306,7 +277,7 @@ public abstract class MammaBulkVerzettenPopup extends GenericPanel<MammaBulkVerz
 		vanaf.add(dateValidatorMinimum);
 		tot.add(dateValidatorMaximum);
 
-		MammaBulkVerzettenFilter filter = getModelObject();
+		var filter = getModelObject();
 		filter.setVanaf(minDag);
 		filter.setTotEnMet(maxDag);
 		filter.setStandplaatsPeriode(gekozenStandplaatsPeriodeModel.getObject());
@@ -324,7 +295,6 @@ public abstract class MammaBulkVerzettenPopup extends GenericPanel<MammaBulkVerz
 	{
 		super.detachModel();
 		ModelUtil.nullSafeDetach(afsprakenModel);
-		ModelUtil.nullSafeDetach(standplaatsPeriodeModel);
 		ModelUtil.nullSafeDetach(gekozenStandplaatsPeriodeModel);
 	}
 }

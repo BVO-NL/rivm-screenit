@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.mamma;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -40,6 +40,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.util.DiffSpecs;
@@ -51,6 +54,8 @@ import org.hibernate.envers.Audited;
 @Entity
 @Table(schema = "mamma", name = "standplaats_ronde")
 @Audited
+@Getter
+@Setter
 public class MammaStandplaatsRonde extends AbstractHibernateObject
 {
 	@Serial
@@ -60,7 +65,7 @@ public class MammaStandplaatsRonde extends AbstractHibernateObject
 	@SkipFieldForDiff
 	private MammaStandplaats standplaats;
 
-	@Column(nullable = true)
+	@Column()
 	private Integer afspraakDrempel;
 
 	@OneToMany(mappedBy = "standplaatsRonde", fetch = FetchType.LAZY)
@@ -70,13 +75,9 @@ public class MammaStandplaatsRonde extends AbstractHibernateObject
 	@Column(precision = HibernateMagicNumber.P9, scale = HibernateMagicNumber.S5)
 	private BigDecimal interval;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@DiffSpecs(displayProperty = "naam")
 	private MammaStandplaats achtervangStandplaats;
-
-	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@DiffSpecs(displayProperty = "naam")
-	private MammaStandplaats minderValideUitwijkStandplaats;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
@@ -87,7 +88,7 @@ public class MammaStandplaatsRonde extends AbstractHibernateObject
 	@DiffSpecs(displayProperty = "naam", listSupported = true)
 	private List<ScreeningOrganisatie> afspraakcapaciteitBeschikbaarVoor = new ArrayList<>();
 
-	@OneToOne(mappedBy = "standplaatsRonde", optional = true, fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "standplaatsRonde")
 	@SkipFieldForDiff
 	private MammaKansberekeningStandplaatsRondeGemiddelden standplaatsRondeGemiddelden;
 
@@ -95,118 +96,8 @@ public class MammaStandplaatsRonde extends AbstractHibernateObject
 	private Boolean achtervangToegepast;
 
 	@Temporal(TemporalType.DATE)
-	private Date minderValideUitnodigenVanaf;
+	private Date mindervalideUitnodigenVanaf;
 
 	@Column(nullable = false, precision = HibernateMagicNumber.P9, scale = HibernateMagicNumber.S2)
-	private BigDecimal extraMinderValideCapaciteitUitgenodigd = BigDecimal.ZERO;
-
-	public MammaStandplaats getStandplaats()
-	{
-		return standplaats;
-	}
-
-	public void setStandplaats(MammaStandplaats standplaats)
-	{
-		this.standplaats = standplaats;
-	}
-
-	public List<MammaStandplaatsPeriode> getStandplaatsPerioden()
-	{
-		return standplaatsPerioden;
-	}
-
-	public void setStandplaatsPerioden(List<MammaStandplaatsPeriode> standplaatsPerioden)
-	{
-		this.standplaatsPerioden = standplaatsPerioden;
-	}
-
-	public BigDecimal getInterval()
-	{
-		return interval;
-	}
-
-	public void setInterval(BigDecimal interval)
-	{
-		this.interval = interval;
-	}
-
-	public Integer getAfspraakDrempel()
-	{
-		return afspraakDrempel;
-	}
-
-	public void setAfspraakDrempel(Integer afspraakDrempel)
-	{
-		this.afspraakDrempel = afspraakDrempel;
-	}
-
-	public MammaStandplaats getAchtervangStandplaats()
-	{
-		return achtervangStandplaats;
-	}
-
-	public void setAchtervangStandplaats(MammaStandplaats achtervangStandplaats)
-	{
-		this.achtervangStandplaats = achtervangStandplaats;
-	}
-
-	public MammaStandplaats getMinderValideUitwijkStandplaats()
-	{
-		return minderValideUitwijkStandplaats;
-	}
-
-	public void setMinderValideUitwijkStandplaats(MammaStandplaats minderValideUitwijkStandplaats)
-	{
-		this.minderValideUitwijkStandplaats = minderValideUitwijkStandplaats;
-	}
-
-	public MammaKansberekeningStandplaatsRondeGemiddelden getStandplaatsRondeGemiddelden()
-	{
-		return standplaatsRondeGemiddelden;
-	}
-
-	public void setStandplaatsRondeGemiddelden(MammaKansberekeningStandplaatsRondeGemiddelden standplaatsRondeGemiddelden)
-	{
-		this.standplaatsRondeGemiddelden = standplaatsRondeGemiddelden;
-	}
-
-	public Boolean getAchtervangToegepast()
-	{
-		return achtervangToegepast;
-	}
-
-	public void setAchtervangToegepast(Boolean achtervangToegepast)
-	{
-		this.achtervangToegepast = achtervangToegepast;
-	}
-
-	public Date getMinderValideUitnodigenVanaf()
-	{
-		return minderValideUitnodigenVanaf;
-	}
-
-	public void setMinderValideUitnodigenVanaf(Date minderValideUitnodigenVanaf)
-	{
-		this.minderValideUitnodigenVanaf = minderValideUitnodigenVanaf;
-	}
-
-	public BigDecimal getExtraMinderValideCapaciteitUitgenodigd()
-	{
-		return extraMinderValideCapaciteitUitgenodigd;
-	}
-
-	public void setExtraMinderValideCapaciteitUitgenodigd(BigDecimal extraMinderValideCapaciteitUitgenodigd)
-	{
-		this.extraMinderValideCapaciteitUitgenodigd = extraMinderValideCapaciteitUitgenodigd;
-	}
-
-	public List<ScreeningOrganisatie> getAfspraakcapaciteitBeschikbaarVoor()
-	{
-		return afspraakcapaciteitBeschikbaarVoor;
-	}
-
-	public void setAfspraakcapaciteitBeschikbaarVoor(List<ScreeningOrganisatie> afspraakcapaciteitBeschikbaarVoor)
-	{
-		this.afspraakcapaciteitBeschikbaarVoor = afspraakcapaciteitBeschikbaarVoor;
-	}
+	private BigDecimal extraMindervalideCapaciteitUitgenodigd = BigDecimal.ZERO;
 }

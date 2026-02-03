@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.dto.algemeen;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,17 +21,17 @@ package nl.rivm.screenit.main.dto.algemeen;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDate;
+
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import nl.rivm.screenit.dto.EntityDto;
 
 @Getter
 @Setter
-public class BezwaarClientDto
+public class BezwaarClientDto extends EntityDto
 {
-	private Long id;
-
 	private String bsn;
 
 	private LocalDate geboortedatum;

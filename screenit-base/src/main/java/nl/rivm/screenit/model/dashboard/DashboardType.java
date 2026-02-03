@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.dashboard;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -129,6 +129,8 @@ public enum DashboardType
 	MAMMA_IMS_INKOMEND("Inkomende HL7-berichten IMS", Bevolkingsonderzoek.MAMMA),
 
 	MAMMA_UITNODIGINGEN("Uitnodigingen", List.of(OrganisatieType.RIVM, OrganisatieType.SCREENINGSORGANISATIE), Bevolkingsonderzoek.MAMMA),
+
+	MAMMA_MINDERVALIDE_RESERVERINGEN("Mindervalidenreserveringen", List.of(OrganisatieType.RIVM, OrganisatieType.SCREENINGSORGANISATIE), Bevolkingsonderzoek.MAMMA),
 
 	MAMMA_HUISARTS_BERICHTEN("Huisartsberichten", List.of(OrganisatieType.RIVM, OrganisatieType.SCREENINGSORGANISATIE), Bevolkingsonderzoek.MAMMA),
 

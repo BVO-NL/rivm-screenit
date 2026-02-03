@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,7 @@ import { ClrCheckboxModule, ClrCommonFormsModule, ClrDatepickerModule, ClrInputM
 import { KamerSelectorComponent } from '@/colon/colon-rooster-page/components/kamer-selector/kamer-selector.component'
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { WeekdagenSelectorComponent } from '@/colon/colon-rooster-page/components/weekdagen-selector/weekdagen-selector.component'
-import { formatDate } from '@shared/date-utils'
+import { formatDate } from '@shared/utils/date-utils'
 import { createStartEindDatumValidator, createStartEindTijdValidator, datumInVerledenValidator, valideDatumValidator } from '@shared/validators/datum/datum.validator'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ColonTijdslotFilter } from '@shared/types/colon/colon-tijdslot-filter'

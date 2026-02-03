@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -59,7 +60,6 @@ import nl.rivm.screenit.service.CoordinatenService;
 import nl.rivm.screenit.service.DossierFactory;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.TestService;
-import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.service.mamma.MammaBaseKansberekeningService;
 import nl.rivm.screenit.specification.algemeen.GemeenteSpecification;
 import nl.rivm.screenit.specification.algemeen.OrganisatieSpecification;
@@ -101,9 +101,6 @@ public class TestServiceImpl implements TestService
 
 	@Autowired
 	private DossierFactory dossierFactory;
-
-	@Autowired
-	private UploadDocumentService uploadDocumentService;
 
 	@Autowired
 	private ICurrentDateSupplier currentDateSupplier;
@@ -346,18 +343,11 @@ public class TestServiceImpl implements TestService
 		return client;
 	}
 
-	private static void zetGeboortedatum(Date geboortedatum, Persoon persoon)
+	private void zetGeboortedatum(Date geboortedatum, Persoon persoon)
 	{
 		if (geboortedatum == null)
 		{
-			try
-			{
-				persoon.setGeboortedatum(new SimpleDateFormat("dd-MM-yyyy").parse("01-01-1950"));
-			}
-			catch (ParseException e)
-			{
-				LOG.error(e.getMessage(), e);
-			}
+			persoon.setGeboortedatum(DateUtil.minusTijdseenheid(currentDateSupplier.getDate(), 56, ChronoUnit.YEARS));
 		}
 		else
 		{

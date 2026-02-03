@@ -2,7 +2,7 @@
   ========================LICENSE_START=================================
   medewerkerportaal
   %%
-  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
   %%
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -30,21 +30,32 @@
     </div>
     <app-select-button [options]="viewRanges" [(ngModel)]="viewRange" (ngModelChange)="setViewRange($event)" [closeOnItemClick]="true" data-testid="select_btn_view_range"/>
     <clr-date-container>
-      <input type="date" autocomplete="off" clrDate id="selectedDate" placeholder="dd-mm-jjjj" name="selectedDate" [(clrDate)]="selectedDate!"
-             (clrDateChange)="selectedDateChange.emit($event)" (keydown.enter)="checkInput($event)" (blur)="checkInput($event)" data-testid="input_selected_date"/>
+      <input
+        type="date"
+        autocomplete="off"
+        clrDate
+        id="selectedDate"
+        placeholder="dd-mm-jjjj"
+        name="selectedDate"
+        [(clrDate)]="selectedDate!"
+        (clrDateChange)="selectedDateChange.emit($event)"
+        (keydown.enter)="checkInput($event)"
+        (blur)="checkInput($event)"
+        data-testid="input_selected_date"
+      />
     </clr-date-container>
     <div class="btn-group">
       <button (click)="gotoPrevious.emit()" class="btn btn-outline" data-testid="btn_goto_previous">
-          <span class="clr-display-flex clr-align-items-center">
-            <cds-icon shape="angle" direction="left"></cds-icon>
-            Vorige
-          </span>
+        <span class="clr-display-flex clr-align-items-center">
+          <cds-icon shape="angle" direction="left"></cds-icon>
+          Vorige
+        </span>
       </button>
       <button (click)="gotoNext.emit()" class="btn btn-outline" data-testid="btn_goto_next">
-          <span class="clr-display-flex clr-align-items-center">
-            Volgende
-            <cds-icon shape="angle" direction="right"></cds-icon>
-          </span>
+        <span class="clr-display-flex clr-align-items-center">
+          Volgende
+          <cds-icon shape="angle" direction="right"></cds-icon>
+        </span>
       </button>
     </div>
     <app-rooster-legenda/>
@@ -57,12 +68,7 @@
         <cds-icon direction="down" shape="angle"></cds-icon>
       </button>
       <clr-dropdown-menu>
-        <button
-          (click)="openBulkTijdslotVerwijderenDialog(option)"
-          *ngFor="let option of verwijderOpties; let i = index"
-          [attr.aria-label]="option.label"
-          clrDropdownItem
-        >
+        <button (click)="openBulkTijdslotVerwijderenDialog(option)" *ngFor="let option of verwijderOpties; let i = index" [attr.aria-label]="option.label" clrDropdownItem>
           {{ option.label }}
         </button>
       </clr-dropdown-menu>
@@ -75,7 +81,5 @@
       <cds-icon shape="plus"></cds-icon>
       Afspraakslot
     </button>
-
   </div>
-
 </div>

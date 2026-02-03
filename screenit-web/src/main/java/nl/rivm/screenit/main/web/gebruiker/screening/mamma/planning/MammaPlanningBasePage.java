@@ -5,7 +5,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -51,9 +51,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public abstract class MammaPlanningBasePage extends MammaScreeningBasePage
 {
-
-	private static final long serialVersionUID = 1L;
-
 	protected boolean magAanpassen;
 
 	protected boolean ingelogdNamensRegio;

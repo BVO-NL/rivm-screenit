@@ -4,7 +4,7 @@ package nl.rivm.screenit.batch.jobs.mamma.uitnodigen.interval;
  * ========================LICENSE_START=================================
  * screenit-batch-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -65,8 +65,8 @@ public class MammaIntervalUitnodigenWriter extends BaseWriter<Client>
 		case MAMMA_OPEN_UITNODIGING:
 			intervalUitnodigenRapportage.setUitgenodigdOpen(intervalUitnodigenRapportage.getUitgenodigdOpen() + 1);
 			break;
-		case MAMMA_UITNODIGING_MINDER_VALIDE:
-			intervalUitnodigenRapportage.setUitgenodigdMinderValide(intervalUitnodigenRapportage.getUitgenodigdMinderValide() + 1);
+		case MAMMA_UITNODIGING_MINDERVALIDE:
+			intervalUitnodigenRapportage.setUitgenodigdMindervalide(intervalUitnodigenRapportage.getUitgenodigdMindervalide() + 1);
 			break;
 		case MAMMA_UITNODIGING_SUSPECT:
 			intervalUitnodigenRapportage.setUitgenodigdSuspect(intervalUitnodigenRapportage.getUitgenodigdSuspect() + 1);

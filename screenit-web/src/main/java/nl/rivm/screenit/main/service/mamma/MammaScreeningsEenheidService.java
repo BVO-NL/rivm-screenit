@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.service.mamma;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -37,6 +37,8 @@ public interface MammaScreeningsEenheidService
 {
 	List<MammaScreeningsEenheid> getActieveScreeningsEenhedenVoorBeoordelingsEenheden(List<BeoordelingsEenheid> beoordelingsEenheden);
 
+	List<MammaScreeningsEenheid> getActieveScreeningsEenhedenVoorBeoordelingseenheidIds(List<Long> beoordelingseenheidIds);
+
 	List<MammaScreeningsEenheid> getActieveScreeningsEenheden();
 
 	List<MammaScreeningsEenheid> zoekScreeningsEenheden(MammaScreeningsEenheid zoekObject, ScreeningOrganisatie regio, long first, long count, Sort sort);
@@ -68,5 +70,4 @@ public interface MammaScreeningsEenheidService
 	boolean ipAdressenHebbenZelfdeGemeenschappelijkeBlokken(MammaScreeningsEenheid screeningsEenheid);
 
 	String valideerMinderValideAfspraakPeriodes(MammaScreeningsEenheid screeningsEenheid);
-
 }

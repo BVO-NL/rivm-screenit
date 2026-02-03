@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.beheer;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -51,12 +51,13 @@ public class MammaPlanningBeheerGegevensPanel extends GenericPanel<ScreeningOrga
 	@SpringBean
 	private OrganisatieService organisatieService;
 
-	private boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING_BEHEER, Actie.AANPASSEN)
-		&& ScreenitSession.get().getScreeningOrganisatie() != null;
-
 	public MammaPlanningBeheerGegevensPanel(String id, IModel<ScreeningOrganisatie> model)
 	{
 		super(id, model);
+
+		boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING_BEHEER, Actie.AANPASSEN)
+			&& ScreenitSession.get().getScreeningOrganisatie() != null;
+
 		setOutputMarkupId(true);
 
 		ScreenitForm<ScreeningOrganisatie> form = new ScreenitForm<>("form", model);
@@ -68,13 +69,12 @@ public class MammaPlanningBeheerGegevensPanel extends GenericPanel<ScreeningOrga
 		afspraakDrempelBk.setEnabled(magAanpassen);
 		form.add(afspraakDrempelBk);
 		form.add(new BigDecimalField("factorDubbeleTijdBk", 2, BigDecimal.ZERO, new BigDecimal("4.0")).setRequired(true).setEnabled(magAanpassen));
-		form.add(new BigDecimalField("factorMinderValideBk", 0, BigDecimal.ONE, new BigDecimal("5")).setRequired(true).setEnabled(magAanpassen));
+		form.add(new BigDecimalField("factorMindervalideBk", 0, BigDecimal.ONE, new BigDecimal("5")).setRequired(true).setEnabled(magAanpassen));
 		form.add(new BigDecimalField("factorEersteOnderzoekBk", 2, BigDecimal.ZERO, new BigDecimal("4.0")).setRequired(true).setEnabled(magAanpassen));
 		form.add(new NumberTextField<Integer>("wekenVanTevorenUitnodigen").setRequired(true).setEnabled(magAanpassen));
 		form.add(new NumberTextField<Integer>("vervallenCapaciteitsreserveringDagenBk").setMinimum(0).setRequired(true).setEnabled(magAanpassen));
-		form.add(new NumberTextField<Integer>("minimaleDagCapaciteitMinderValideAfspraken").setRequired(true).setEnabled(magAanpassen));
-		form.add(new HiddenField("applicationUrl", Model.of(applicationUrl)));
-		form.add(new HiddenField("subUrl", Model.of("/api/getAfspraakDrempelOverzichtScreeningsOrganisatie?screeningsOrganisatieId=" + model.getObject().getId() + "&")));
+		form.add(new HiddenField<>("applicationUrl", Model.of(applicationUrl)));
+		form.add(new HiddenField<>("subUrl", Model.of("/api/getAfspraakDrempelOverzichtScreeningsOrganisatie?screeningsOrganisatieId=" + model.getObject().getId() + "&")));
 
 		AjaxSubmitLink submitButton = new AjaxSubmitLink("submit")
 		{

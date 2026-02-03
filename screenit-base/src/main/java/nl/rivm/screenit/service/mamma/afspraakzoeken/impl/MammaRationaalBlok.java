@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.mamma.afspraakzoeken.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakDto;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaCapaciteitBlokDto;
 import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaAfspraakOptie;
+import nl.rivm.screenit.util.mamma.MammaMindervalideUtil;
 import nl.rivm.screenit.util.mamma.MammaPlanningUtil;
 
 import static nl.rivm.screenit.util.BigDecimalUtil.isPositive;
@@ -72,12 +73,12 @@ class MammaRationaalBlok extends MammaRationaal
 
 	private void voegMindervalideReserveringenToeAlsAfsprakenAanCapaciteitBlok(MammaCapaciteitBlokDto capaciteitBlokDto)
 	{
-		if (!capaciteitBlokDto.getVanaf().toLocalDate().isAfter(zoekContext.getVrijgevenMindervalideReserveringenTotEnMetDatum()))
+		if (MammaMindervalideUtil.zijnMindervalideReserveringenVrijgegeven(capaciteitBlokDto, zoekContext.getVrijgevenMindervalideReserveringenTotEnMetDatum()))
 		{
-			return; 
+			return;
 		}
 		var onbezetteMindervalideReserveringAfspraken = capaciteitBlokDto.getMindervalideReserveringen().stream()
-			.filter(mvReserveringVanaf -> MammaPlanningUtil.mindervalideReserveringIsOnbezet(capaciteitBlokDto, mvReserveringVanaf))
+			.filter(mvReserveringVanaf -> MammaMindervalideUtil.isMindervalideReserveringOnbezet(capaciteitBlokDto, mvReserveringVanaf))
 			.map(mvReserveringVanaf ->
 				maakMindervalideAfspraakVoorMindervalideReservering(capaciteitBlokDto, mvReserveringVanaf)
 			).toList();

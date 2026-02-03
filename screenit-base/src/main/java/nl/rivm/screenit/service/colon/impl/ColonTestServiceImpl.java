@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.colon.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.Date;
@@ -633,14 +632,7 @@ public class ColonTestServiceImpl implements ColonTestService
 			persoon.setBsn(bsn);
 			if (geboortedatum == null)
 			{
-				try
-				{
-					persoon.setGeboortedatum(new SimpleDateFormat("dd-MM-yyyy").parse("01-01-1950"));
-				}
-				catch (ParseException e)
-				{
-					LOG.error("Er is een fout opgetreden! " + e.getMessage(), e);
-				}
+				persoon.setGeboortedatum(DateUtil.minusTijdseenheid(currentDateSupplier.getDate(), 56, ChronoUnit.YEARS));
 			}
 			else
 			{

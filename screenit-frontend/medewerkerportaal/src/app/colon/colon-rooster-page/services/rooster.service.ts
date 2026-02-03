@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,14 +24,14 @@ import { forkJoin, map, Observable, of, Subject, switchMap, take, tap } from 'rx
 import { ApiService } from '@shared/services/api/api.service'
 import { ColonAfspraakslot } from '@shared/types/colon/colon-afspraakslot'
 import { ColonKamer } from '@shared/types/colon/colon-kamer'
-import { convertNLDateStringToDateString, formatDate, formatDateAsISO, formatNLDate, formatTimeAsISO, parseDate } from '@shared/date-utils'
+import { convertNLDateStringToDateString, formatDate, formatDateAsISO, formatNLDate, formatTimeAsISO, parseDate } from '@shared/utils/date-utils'
 import { ColonBlokkade } from '@shared/types/colon/colon-blokkade'
 import { ColonRoosterBeperkingenDto } from '@shared/types/colon/colon-rooster-beperkingen-dto'
 import { ColonRoosterInstellingen, ColonRoosterInstellingenDto } from '@shared/types/colon/colon-rooster-instellingen'
 import { BaseService } from '@shared/services/base/base.service'
 import { EventInput, EventSourceInput } from '@fullcalendar/core'
 import { NotPersisted } from '@shared/types/not-presisted'
-import { Signaleringstermijn } from '@shared/types/signaleringstermijn'
+import { Signaleringstermijn } from '@shared/types/colon/signaleringstermijn'
 import { addDays, differenceInDays, endOfDay, startOfDay } from 'date-fns'
 import { ColonFeestdagDto } from '@shared/types/colon/colon-feestdag'
 import { ColonTijdslotStatus } from '@shared/types/colon/colon-tijdslot-status'
@@ -49,12 +49,12 @@ interface RoosterState {
   providedIn: 'root',
 })
 export class RoosterService extends BaseService<RoosterState> {
+  onRefresh: Subject<boolean> = new Subject<boolean>()
   private api: ApiService = inject(ApiService)
   private colonService: ColonService = inject(ColonService)
   private roosterBaseUrl = '/api/colon/rooster'
   private roosterAfspraakslotBaseUrl = '/api/colon/rooster/afspraakslot'
   private roosterBlokkadeBaseUrl = '/api/colon/rooster/blokkade'
-  onRefresh: Subject<boolean> = new Subject<boolean>()
 
   get instellingen(): Signal<ColonRoosterInstellingen> {
     return this.select('instellingen')
@@ -64,6 +64,14 @@ export class RoosterService extends BaseService<RoosterState> {
     return this.select('kamers')
   }
 
+  get signaleringstermijn(): Signal<Signaleringstermijn | null> {
+    return this.select('signaleringstermijn')
+  }
+
+  get heeftGeenCapaciteitBinnenSignaleringstermijn(): boolean {
+    return this.signaleringstermijn()?.heeftGeenCapaciteitBinnenSignaleringsTermijn ?? false
+  }
+
   getAfspraakslots(startDate: Date, endDate: Date): Observable<ColonAfspraakslot[]> {
     const url = this.roosterAfspraakslotBaseUrl
     const params: { startDate?: string; endDate?: string } = {
@@ -71,14 +79,6 @@ export class RoosterService extends BaseService<RoosterState> {
       endDate: formatDate(endDate),
     }
     return this.api.get<ColonAfspraakslot[]>(url, params)
-  }
-
-  get signaleringstermijn(): Signal<Signaleringstermijn | null> {
-    return this.select('signaleringstermijn')
-  }
-
-  get heeftGeenCapaciteitBinnenSignaleringstermijn(): boolean {
-    return this.signaleringstermijn()?.heeftGeenCapaciteitBinnenSignaleringsTermijn ?? false
   }
 
   fetchSignaleringstermijn(): Observable<Signaleringstermijn> {
@@ -162,33 +162,12 @@ export class RoosterService extends BaseService<RoosterState> {
     }
   }
 
-  private searchBlokkades(params: Record<string, string>): Observable<ColonTijdslot[]> {
-    const url = `${this.roosterBlokkadeBaseUrl}/search`
-    return this.api.get<ColonTijdslot[]>(url, params)
-  }
-
-  private searchAfspraakslots(params: Record<string, string>): Observable<ColonTijdslot[]> {
-    const url = `${this.roosterAfspraakslotBaseUrl}/search`
-    return this.api.get<ColonTijdslot[]>(url, params)
-  }
-
   bulkDeleteTijdslots(tijdslotIds: number[], alleenValidatie: boolean, type: string): Observable<unknown> {
     if (type === 'afspraakslots') {
       return this.bulkDeleteAfspraakslots(tijdslotIds, alleenValidatie)
     } else {
       return this.bulkDeleteBlokkades(tijdslotIds, alleenValidatie)
     }
-  }
-
-  private bulkDeleteAfspraakslots(afspraakslotIds: number[], alleenValidatie: boolean): Observable<unknown> {
-    return this.handleTijdslotChangeResponse(
-      this.api.del(`${this.roosterAfspraakslotBaseUrl}/${afspraakslotIds.join(',')}?alleenValidatie=${alleenValidatie}&bulk=true`),
-      'verwijderen',
-    )
-  }
-
-  private bulkDeleteBlokkades(blokkadeIds: number[], alleenValidatie: boolean): Observable<unknown> {
-    return this.handleTijdslotChangeResponse(this.api.del(`${this.roosterBlokkadeBaseUrl}/${blokkadeIds.join(',')}?alleenValidatie=${alleenValidatie}&bulk=true`))
   }
 
   getKamers(): Observable<ColonKamer[]> {
@@ -265,6 +244,27 @@ export class RoosterService extends BaseService<RoosterState> {
       })),
       tap((instellingen) => this.set('instellingen', instellingen)),
     )
+  }
+
+  private searchBlokkades(params: Record<string, string>): Observable<ColonTijdslot[]> {
+    const url = `${this.roosterBlokkadeBaseUrl}/search`
+    return this.api.get<ColonTijdslot[]>(url, params)
+  }
+
+  private searchAfspraakslots(params: Record<string, string>): Observable<ColonTijdslot[]> {
+    const url = `${this.roosterAfspraakslotBaseUrl}/search`
+    return this.api.get<ColonTijdslot[]>(url, params)
+  }
+
+  private bulkDeleteAfspraakslots(afspraakslotIds: number[], alleenValidatie: boolean): Observable<unknown> {
+    return this.handleTijdslotChangeResponse(
+      this.api.del(`${this.roosterAfspraakslotBaseUrl}/${afspraakslotIds.join(',')}?alleenValidatie=${alleenValidatie}&bulk=true`),
+      'verwijderen',
+    )
+  }
+
+  private bulkDeleteBlokkades(blokkadeIds: number[], alleenValidatie: boolean): Observable<unknown> {
+    return this.handleTijdslotChangeResponse(this.api.del(`${this.roosterBlokkadeBaseUrl}/${blokkadeIds.join(',')}?alleenValidatie=${alleenValidatie}&bulk=true`))
   }
 
   private handleTijdslotChangeResponse(response: Observable<unknown>, actie: 'toevoegen' | 'aanpassen' | 'verwijderen' | null = null): Observable<unknown> {

@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.mamma.afspraakzoeken.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,9 +25,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
@@ -45,6 +45,7 @@ import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
 import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaAfspraakOptie;
 import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaAfspraakOptieAlgoritme;
 import nl.rivm.screenit.util.RangeUtil;
+import nl.rivm.screenit.util.mamma.MammaMindervalideUtil;
 import nl.rivm.screenit.util.mamma.MammaPlanningUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningsEenheidUtil;
 
@@ -53,7 +54,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.Range;
 
 import static nl.rivm.screenit.util.DateUtil.toUtilDate;
-import static nl.rivm.screenit.util.mamma.MammaPlanningUtil.benodigdeMinutenVoorMindervalideAfspraak;
+import static nl.rivm.screenit.util.mamma.MammaMindervalideUtil.benodigdeMinutenVoorMindervalideAfspraak;
 import static nl.rivm.screenit.util.mamma.MammaPlanningUtil.isEnkeleMammograaf;
 
 @Component("mammaMindervalideAfspraakOptieAlgoritme")
@@ -76,11 +77,6 @@ public class MammaMindervalideAfspraakOptieAlgoritmeImpl implements MammaAfspraa
 	public List<MammaAfspraakOptie> getAfspraakOpties(MammaDossier dossier, MammaStandplaatsPeriode standplaatsPeriode, LocalDate vanaf, LocalDate totEnMet, boolean extraOpties,
 		BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen, boolean corrigeerNegatieveVrijeCapaciteit)
 	{
-		if (standplaatsPeriode.getStandplaatsRonde().getMinderValideUitwijkStandplaats() != null)
-		{
-			return Collections.emptyList();
-		}
-
 		var nietGeblokkeerdeScreeningCapaciteitBlokDtos = capaciteitsBlokService.getNietGeblokkeerdeScreeningCapaciteitBlokDtos(standplaatsPeriode, toUtilDate(vanaf),
 			toUtilDate(totEnMet.atTime(Constants.BK_EINDTIJD_DAG)), dossier.getClient());
 		var screeningsEenheid = standplaatsPeriode.getScreeningsEenheid();
@@ -92,7 +88,7 @@ public class MammaMindervalideAfspraakOptieAlgoritmeImpl implements MammaAfspraa
 			.filter(blok -> !blok.getMindervalideReserveringen().isEmpty())
 			.filter(blok ->
 				isGenoegCapaciteitVoorAfspraak(blok, vrijeCapaciteitPerDag, benodigdeCapaciteitVoorNieuweAfspraakOptie))
-			.flatMap(blok -> getMindervalideReserveringenBinnenBlok(blok, screeningsEenheid, factorMindervalideBk).stream()
+			.flatMap(blok -> getBruikbareMindervalideReserveringenBinnenBlok(blok, screeningsEenheid, factorMindervalideBk).stream()
 				.map(mvReservering -> maakAfspraakOptie(blok, mvReservering)))
 			.toList();
 	}
@@ -127,10 +123,11 @@ public class MammaMindervalideAfspraakOptieAlgoritmeImpl implements MammaAfspraa
 	private BigDecimal getFactorMindervalideBk(MammaScreeningsEenheid screeningsEenheid)
 	{
 		var screeningOrganisatie = MammaScreeningsEenheidUtil.getScreeningsOrganisatie(screeningsEenheid);
-		return screeningOrganisatie.getFactorMinderValideBk();
+		return screeningOrganisatie.getFactorMindervalideBk();
 	}
 
-	private static List<LocalTime> getMindervalideReserveringenBinnenBlok(MammaCapaciteitBlokDto blok, MammaScreeningsEenheid screeningsEenheid, BigDecimal factorMindervalideBk)
+	private static List<LocalTime> getBruikbareMindervalideReserveringenBinnenBlok(MammaCapaciteitBlokDto blok, MammaScreeningsEenheid screeningsEenheid,
+		BigDecimal factorMindervalideBk)
 	{
 		var benodigdeMinutenVoorMindervalideAfspraak = benodigdeMinutenVoorMindervalideAfspraak(factorMindervalideBk);
 		var blokRange = Range.closedOpen(blok.getVanaf().toLocalTime(), blok.getTot());
@@ -140,18 +137,31 @@ public class MammaMindervalideAfspraakOptieAlgoritmeImpl implements MammaAfspraa
 			{
 				var reserveringRange = Range.closedOpen(reservering, reservering.plusMinutes(benodigdeMinutenVoorMindervalideAfspraak));
 				return blokRange.encloses(reserveringRange)
-					&& (!isEnkeleMammograaf(screeningsEenheid)
-					|| geenOverlapTussenMindervalidereserveringEnBestaandeAfspraak(blok, reserveringRange, factorMindervalideBk));
+					&& (isEnkeleMammograaf(screeningsEenheid) ?
+					geenOverlapTussenMindervalideReserveringEnAfspraken(blok, reserveringRange, factorMindervalideBk) :
+					geenOverlapTussenMindervalideReserveringEnMindervalideAfspraken(blok, reserveringRange, factorMindervalideBk));
 			})
 			.toList();
 	}
 
-	private static boolean geenOverlapTussenMindervalidereserveringEnBestaandeAfspraak(MammaCapaciteitBlokDto capaciteitBlokDto,
+	private static boolean geenOverlapTussenMindervalideReserveringEnAfspraken(MammaCapaciteitBlokDto blok,
 		Range<LocalTime> reserveringRange, BigDecimal factorMindervalide)
 	{
-		return capaciteitBlokDto.getAfspraakDtos().stream()
-			.noneMatch(afspraakDto -> RangeUtil.isOverlap(reserveringRange,
-				Range.closedOpen(afspraakDto.getVanaf().toLocalTime(), getTotTijdAfspraak(afspraakDto, factorMindervalide))));
+		return blok.getAfspraakDtos().stream()
+			.noneMatch(heeftOverlapMetMindervalideReservering(reserveringRange, factorMindervalide));
+	}
+
+	private static boolean geenOverlapTussenMindervalideReserveringEnMindervalideAfspraken(MammaCapaciteitBlokDto blok,
+		Range<LocalTime> reserveringRange, BigDecimal factorMindervalide)
+	{
+		return blok.getAfspraakDtos().stream().filter(MammaAfspraakDto::isMindervalide)
+			.noneMatch(heeftOverlapMetMindervalideReservering(reserveringRange, factorMindervalide));
+	}
+
+	private static Predicate<MammaAfspraakDto> heeftOverlapMetMindervalideReservering(Range<LocalTime> reserveringRange, BigDecimal factorMindervalide)
+	{
+		return afspraakDto -> RangeUtil.isOverlap(reserveringRange,
+			Range.closedOpen(afspraakDto.getVanaf().toLocalTime(), getTotTijdAfspraak(afspraakDto, factorMindervalide)));
 	}
 
 	private static LocalTime getTotTijdAfspraak(MammaAfspraakDto afspraakDto, BigDecimal factorMindervalide)
@@ -164,7 +174,7 @@ public class MammaMindervalideAfspraakOptieAlgoritmeImpl implements MammaAfspraa
 	{
 		if (afspraakDto.isMindervalide())
 		{
-			return MammaPlanningUtil.benodigdeMinutenVoorMindervalideAfspraak(factorMindervalide);
+			return MammaMindervalideUtil.benodigdeMinutenVoorMindervalideAfspraak(factorMindervalide);
 		}
 		if (afspraakDto.isDubbeleTijd())
 		{

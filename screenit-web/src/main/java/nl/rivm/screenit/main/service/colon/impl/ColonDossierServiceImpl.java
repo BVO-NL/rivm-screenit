@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.service.colon.impl;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -122,13 +122,6 @@ public class ColonDossierServiceImpl implements ColonDossierService
 	private final OrganisatieParameterService organisatieParameterService;
 
 	private final DashboardService dashboardService;
-
-	@Override
-	@Transactional
-	public void monsterNietBeoordeelbaar(ColonFitRegistratie fitRegistratie)
-	{
-		fitService.monsterNietBeoordeelbaar(fitRegistratie);
-	}
 
 	@Override
 	@Transactional
@@ -390,12 +383,8 @@ public class ColonDossierServiceImpl implements ColonDossierService
 		if (Boolean.FALSE.equals(colonDossier.getAangemeld())
 			&& (colonDossier.getLaatsteAfmelding() == null || colonDossier.getLaatsteAfmelding().getHeraanmeldStatus() == AanvraagBriefStatus.VERWERKT))
 		{
-			if (colonDossier.getInactiveerReden() == null)
-			{
-
-				colonDossier.setStatus(DossierStatus.ACTIEF);
-				colonDossier.setInactiefVanaf(null);
-			}
+			colonDossier.setStatus(DossierStatus.ACTIEF);
+			colonDossier.setInactiefVanaf(null);
 			colonDossier.setAangemeld(true);
 		}
 

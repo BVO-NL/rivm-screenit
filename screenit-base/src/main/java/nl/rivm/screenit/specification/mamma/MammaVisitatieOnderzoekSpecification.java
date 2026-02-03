@@ -4,7 +4,7 @@ package nl.rivm.screenit.specification.mamma;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -34,6 +34,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderzoekStatus;
 import org.springframework.data.jpa.domain.Specification;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.equalsOrFalseIfParamNull;
+import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNull;
 import static org.springframework.data.jpa.domain.Specification.not;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -62,5 +63,10 @@ public class MammaVisitatieOnderzoekSpecification
 	public static Specification<MammaVisitatieOnderzoek> heeftOnderdeel(MammaVisitatieOnderdeel onderdeel)
 	{
 		return (r, q, cb) -> cb.equal(r.get(MammaVisitatieOnderzoek_.onderdeel), onderdeel);
+	}
+
+	public static Specification<MammaVisitatieOnderzoek> filterVolgnummerVanaf(Integer volgnummer)
+	{
+		return skipWhenNull(volgnummer, (r, q, cb) -> cb.greaterThanOrEqualTo(r.get(MammaVisitatieOnderzoek_.VOLGNUMMER), volgnummer));
 	}
 }

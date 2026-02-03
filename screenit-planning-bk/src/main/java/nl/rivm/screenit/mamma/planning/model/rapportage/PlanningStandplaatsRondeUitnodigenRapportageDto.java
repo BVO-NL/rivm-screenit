@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.planning.model.rapportage;
  * ========================LICENSE_START=================================
  * screenit-planning-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -45,7 +45,7 @@ public class PlanningStandplaatsRondeUitnodigenRapportageDto
 
 	private Long totaalDubbeleTijd;
 
-	private Long totaalMinderValide;
+	private Long totaalMindervalide;
 
 	private Long totaalTehuis;
 
@@ -59,12 +59,11 @@ public class PlanningStandplaatsRondeUitnodigenRapportageDto
 
 	private Long uitTeNodigenDubbeleTijd;
 
-	private Long uitTeNodigenMinderValide;
+	private Long uitTeNodigenMindervalide;
 
 	private Long uitTeNodigenTehuis;
 
 	private Long uitTeNodigenSuspect;
 
 	private MammaStandplaatsRondeRapportageStatus status;
-
 }

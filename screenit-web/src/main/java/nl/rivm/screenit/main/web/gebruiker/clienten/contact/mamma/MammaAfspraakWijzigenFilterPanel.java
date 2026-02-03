@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.contact.mamma;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -143,7 +143,7 @@ public abstract class MammaAfspraakWijzigenFilterPanel extends GenericPanel<Mamm
 		values.remove(MammaVerzettenReden.PASSANT);
 
 		ClientContactPanelCreateContext panelCreateContext = getPage().getMetaData(ClientContactPanel.CREATE_CONTEXT_KEY);
-		if (dossier.getDoelgroep().equals(MammaDoelgroep.MINDER_VALIDE) || dossier.getTehuis() != null || panelCreateContext.bkAlleenClientContact)
+		if (dossier.getDoelgroep().equals(MammaDoelgroep.MINDERVALIDE) || dossier.getTehuis() != null || panelCreateContext.bkAlleenClientContact)
 		{
 			values.removeAll(MammaVerzettenReden.BRIEF_VERPLICHT);
 			filter.setVerzettenReden(MammaVerzettenReden.CLIENT_CONTACT);

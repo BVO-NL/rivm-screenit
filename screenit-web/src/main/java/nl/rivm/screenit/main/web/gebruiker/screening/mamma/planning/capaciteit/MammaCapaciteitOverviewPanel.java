@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,15 +34,14 @@ import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningMeldingenDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningStandplaatsPeriodeDto;
-import nl.rivm.screenit.main.exception.MammaMinderValideReserveringException;
-import nl.rivm.screenit.main.service.mamma.MammaMinderValideReserveringService;
+import nl.rivm.screenit.main.exception.MammaMindervalideReserveringException;
+import nl.rivm.screenit.main.service.mamma.MammaMindervalideReserveringService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.fullcalendar.CalendarResponse;
 import nl.rivm.screenit.main.web.component.fullcalendar.FullCalendar;
 import nl.rivm.screenit.main.web.component.fullcalendar.callback.AbstractShiftedEventParam;
 import nl.rivm.screenit.main.web.component.fullcalendar.callback.ClickedEvent;
 import nl.rivm.screenit.main.web.component.fullcalendar.callback.DroppedEvent;
-import nl.rivm.screenit.main.web.component.fullcalendar.callback.ResizedEvent;
 import nl.rivm.screenit.main.web.component.fullcalendar.callback.SelectedRange;
 import nl.rivm.screenit.main.web.component.fullcalendar.callback.View;
 import nl.rivm.screenit.main.web.component.fullcalendar.config.Config;
@@ -94,7 +92,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 	private MammaBaseConceptPlanningsApplicatie baseConceptPlanningsApplicatie;
 
 	@SpringBean
-	private MammaMinderValideReserveringService minderValideReserveringService;
+	private MammaMindervalideReserveringService mindervalideReserveringService;
 
 	private Date origStartTijd;
 
@@ -201,12 +199,6 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 			protected boolean onEventDropped(DroppedEvent event, CalendarResponse response)
 			{
 				response.refetchEvents();
-				return wijzigCapaciteitsBlok(event);
-			}
-
-			@Override
-			protected boolean onEventResized(ResizedEvent event, CalendarResponse response)
-			{
 				return wijzigCapaciteitsBlok(event);
 			}
 
@@ -354,19 +346,19 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 		}
 		if (!getThisPage().hasMeldingen())
 		{
-			valideerMinderValideReserveringen(blok);
+			valideerMindervalideReserveringen(blok);
 		}
 	}
 
-	private void valideerMinderValideReserveringen(PlanningCapaciteitBlokDto blok)
+	private void valideerMindervalideReserveringen(PlanningCapaciteitBlokDto blok)
 	{
-		if (!blok.getMinderValideReserveringen().isEmpty())
+		if (!blok.getMindervalideReserveringen().isEmpty())
 		{
 			try
 			{
-				minderValideReserveringService.valideerMinderValideReserveringen(blok);
+				mindervalideReserveringService.valideerMindervalideReserveringen(blok);
 			}
-			catch (MammaMinderValideReserveringException e)
+			catch (MammaMindervalideReserveringException e)
 			{
 				getThisPage().errorMelding(getString(e.getMessage()));
 			}
@@ -381,18 +373,13 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 			var blok = sourceFactory.getBlok(event.getEvent().getConceptId());
 			origStartTijd = blok.vanaf;
 
-			if (event.getNewEndTime().getDayOfYear() > event.getNewStartTime().getDayOfYear())
-			{
-				var millisDifference = Duration.between(event.getNewStartTime(), event.getNewEndTime()).toMillis();
-				var newEndDate = DateUtil.startDag(DateUtil.toUtilDate(event.getNewEndTime()));
-				blok.tot = newEndDate;
-				blok.vanaf = DateUtil.minusTijdseenheid(newEndDate, millisDifference, ChronoUnit.MILLIS);
-			}
-			else
-			{
-				blok.vanaf = DateUtil.toUtilDate(event.getNewStartTime());
-				blok.tot = DateUtil.toUtilDate(event.getNewEndTime());
-			}
+			var nieuweStartTijd = event.getNewStartTime();
+			var veranderingVanTijdInMinuten = Duration.between(DateUtil.toLocalTime(blok.vanaf), nieuweStartTijd.toLocalTime()).toMinutes();
+
+			blok.getMindervalideReserveringen().forEach(mvr -> mvr.setVanaf(mvr.getVanaf().plusMinutes(veranderingVanTijdInMinuten)));
+
+			blok.vanaf = DateUtil.toUtilDate(nieuweStartTijd);
+			blok.tot = DateUtil.toUtilDate(event.getNewEndTime());
 			onBeforeOpslaan(blok);
 
 			if (!getThisPage().hasMeldingen())

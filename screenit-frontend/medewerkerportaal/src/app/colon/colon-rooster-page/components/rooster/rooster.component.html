@@ -2,7 +2,7 @@
   ========================LICENSE_START=================================
   medewerkerportaal
   %%
-  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
   %%
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -31,17 +31,13 @@
   [viewRange]="viewRange"
 />
 
-<full-calendar
-  class="aantal-kamers-{{kamers.length}}"
-  #calendar
-  id="roosterCalendar"
-  [options]="calendarOptions"
-  [resources]="kamers"
-  [events]="tijdsloten$ | async"
->
+<full-calendar class="aantal-kamers-{{ kamers.length }}" #calendar id="roosterCalendar" [options]="calendarOptions" [resources]="kamers" [events]="tijdsloten$ | async">
   <ng-template #eventContent let-arg>
-    <div class="fc-event-main-frames" [attr.data-test-starttijd]="arg.event.extendedProps.vanaf | date: TIME_FORMAT"
-         [attr.data-test-eindtijd]="arg.event.extendedProps.tot | date: TIME_FORMAT">
+    <div
+      class="fc-event-main-frames"
+      [attr.data-test-starttijd]="arg.event.extendedProps.vanaf | date: TIME_FORMAT"
+      [attr.data-test-eindtijd]="arg.event.extendedProps.tot | date: TIME_FORMAT"
+    >
       @if (toonIconen) {
         @switch (arg.event.extendedProps.status) {
           @case (ColonTijdslotStatus.VRIJ_TE_VERPLAATSEN) {
@@ -51,15 +47,15 @@
             </svg>
           }
           @case (ColonTijdslotStatus.GEBRUIKT_VOOR_CAPACITEIT) {
-            <svg class="event-icon rotate-45" stroke="#fff" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" width="14"
-                 height="14">
+            <svg class="event-icon rotate-45" stroke="#fff" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
               <path d="M27.66,15.61,18,6,8.34,15.61A1,1,0,1,0,9.75,17L17,9.81V28.94a1,1,0,1,0,2,0V9.81L26.25,17a1,1,0,0,0,1.41-1.42Z"></path>
             </svg>
           }
           @case (ColonTijdslotStatus.INTAKE_GEPLAND) {
             <svg class="event-icon" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
               <path
-                d="M19.41,18l8.29-8.29a1,1,0,0,0-1.41-1.41L18,16.59,9.71,8.29A1,1,0,0,0,8.29,9.71L16.59,18,8.29,26.29a1,1,0,1,0,1.41,1.41L18,19.41l8.29,8.29a1,1,0,0,0,1.41-1.41Z"></path>
+                d="M19.41,18l8.29-8.29a1,1,0,0,0-1.41-1.41L18,16.59,9.71,8.29A1,1,0,0,0,8.29,9.71L16.59,18,8.29,26.29a1,1,0,1,0,1.41,1.41L18,19.41l8.29,8.29a1,1,0,0,0,1.41-1.41Z"
+              ></path>
             </svg>
           }
         }

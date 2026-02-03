@@ -1,0 +1,75 @@
+package nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.visitatie;
+
+/*-
+ * ========================LICENSE_START=================================
+ * screenit-web
+ * %%
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+
+import java.util.ArrayList;
+import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
+
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
+import nl.rivm.screenit.main.web.gebruiker.base.angular.AngularBasePage;
+import nl.rivm.screenit.main.web.security.SecurityConstraint;
+import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
+import nl.rivm.screenit.model.enums.Recht;
+
+import org.wicketstuff.shiro.ShiroConstraint;
+
+@Slf4j
+@SecurityConstraint(
+	constraint = ShiroConstraint.HasPermission,
+	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA },
+	recht = { Recht.MEDEWERKER_VISITATIE, Recht.MEDEWERKER_VISITATIE_INSTELTECHNIEK },
+	organisatieTypeScopes = { OrganisatieType.KWALITEITSPLATFORM, OrganisatieType.SCREENINGSORGANISATIE, OrganisatieType.RIVM })
+public class MammaVisitatieOverzichtAngularPage extends AngularBasePage
+{
+	@Override
+	protected String getComponent()
+	{
+		return "mamma-visitatie-overzicht";
+	}
+
+	@Override
+	public void onInitialize()
+	{
+		super.onInitialize();
+		initAngularComponent("mammaVisitatieOverzicht");
+	}
+
+	@Override
+	protected MedewerkerHoofdMenuItem getActieveMenuItem()
+	{
+		return MedewerkerHoofdMenuItem.MAMMA;
+	}
+
+	@Override
+	protected List<MedewerkerMenuItem> getContextMenuItems()
+	{
+		var contextMenuItems = new ArrayList<MedewerkerMenuItem>();
+		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.visitatie.overzicht",
+			MammaVisitatieOverzichtAngularPage.class));
+
+		return contextMenuItems;
+	}
+}

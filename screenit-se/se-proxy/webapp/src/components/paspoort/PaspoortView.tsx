@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * screenit-se-proxy
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -51,7 +51,7 @@ export default class PaspoortView extends Component<PaspoortProps> {
 					{this.props.client.inTehuis && <i className="fa fa-home px-1 py-1 float-right"/>}
 					{!this.props.client.inTehuis && this.props.client.doelgroep === "DUBBELE_TIJD" &&
 						<i className="fa fa-clock-o px-1 py-1 float-right"/>}
-					{this.props.client.doelgroep === "MINDER_VALIDE" &&
+					{this.props.client.doelgroep === "MINDERVALIDE" &&
 						<i className="fa fa-wheelchair px-1 py-1 float-right"/>}
 					{this.props.afspraak.eerderOnderbrokenInZelfdeRonde ?
 						<i className="fa fa-step-forward px-1 py-1 float-right"/> : null}

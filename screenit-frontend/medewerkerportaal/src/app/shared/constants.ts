@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,6 +19,7 @@
  * =========================LICENSE_END==================================
  */
 export const NL_DATE_FORMAT = 'dd-MM-yyyy'
+export const NL_DATE_TIME_FORMAT = 'dd-MM-yyyy HH:mm'
 export const DATE_FORMAT = 'yyyy-MM-dd'
 export const LOCAL_TIME_FORMAT = 'HH:mm:ss'
 export const TIME_FORMAT = 'HH:mm'
@@ -60,3 +61,4 @@ export const WEEK_DAGEN = [
   },
 ]
 export const COLON_ROOSTER_MAX_HERHALING_IN_MAANDEN = 18
+export const AANTAL_RIJEN_PER_PAGINA = 20

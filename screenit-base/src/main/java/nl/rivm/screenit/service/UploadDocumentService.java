@@ -4,7 +4,7 @@ package nl.rivm.screenit.service;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,15 +21,15 @@ package nl.rivm.screenit.service;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.UploadDocument;
-import nl.rivm.screenit.model.enums.FileStoreLocation;
-
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+
+import nl.rivm.screenit.model.UploadDocument;
+import nl.rivm.screenit.model.enums.FileStoreLocation;
+
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UploadDocumentService
 {

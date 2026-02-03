@@ -4,7 +4,7 @@ package nl.rivm.screenit.batch.jobs.cervix.gevolgenlabprocesverwerken.step;
  * ========================LICENSE_START=================================
  * screenit-batch-bmhk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,6 +20,8 @@ package nl.rivm.screenit.batch.jobs.cervix.gevolgenlabprocesverwerken.step;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+
+import jakarta.annotation.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,8 +66,6 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.Nullable;
 
 @Component
 @Slf4j
@@ -287,7 +287,7 @@ public class CervixGevolgenLabprocesVerwerkenWriter extends BaseWriter<CervixMon
 		var ontvangstRonde = monster.getOntvangstScreeningRonde();
 		var dossier = ontvangstRonde.getDossier();
 
-		if (ontvangstRonde.equals(dossier.getLaatsteScreeningRonde()) && AfmeldingUtil.isEenmaligOfDefinitefAfgemeld(dossier))
+		if (ontvangstRonde.equals(dossier.getLaatsteScreeningRonde()) && AfmeldingUtil.isEenmaligOfDefinitiefAfgemeld(dossier))
 		{
 			heraanmeldenTekstKey = bepaalTekstKeyActieveAfmelding(ontvangstRonde, dossier);
 			heraanmeldenVoordatUitslagGemaaktWordt(monster);

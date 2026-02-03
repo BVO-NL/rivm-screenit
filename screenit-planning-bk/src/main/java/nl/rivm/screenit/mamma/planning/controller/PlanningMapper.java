@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.planning.controller;
  * ========================LICENSE_START=================================
  * screenit-planning-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,6 +22,7 @@ package nl.rivm.screenit.mamma.planning.controller;
  */
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import nl.rivm.screenit.dto.mamma.planning.PlanningBlokkadeDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
@@ -44,7 +45,7 @@ import nl.rivm.screenit.util.DateUtil;
 
 public class PlanningMapper
 {
-	private static final BigDecimal DAGEN_PER_MAAND = new BigDecimal(365 * 3 + 366).divide(new BigDecimal(12 * 4));
+	private static final BigDecimal DAGEN_PER_MAAND = new BigDecimal(365 * 3 + 366).divide(new BigDecimal(12 * 4), 4, RoundingMode.HALF_UP);
 
 	public static PlanningBlokkade from(PlanningBlokkadeDto blokkadeDto)
 	{
@@ -84,10 +85,10 @@ public class PlanningMapper
 		dto.opmerkingen = blok.getOpmerkingen();
 		dto.conceptId = blok.getConceptId();
 		dto.minderValideAfspraakMogelijk = blok.isMinderValideAfspraakMogelijk();
-		dto.getMinderValideReserveringen().addAll(
+		dto.getMindervalideReserveringen().addAll(
 			blok.getMindervalideReserveringen().stream()
 				.map(teMappenReservering -> new PlanningMindervalideReserveringDto(teMappenReservering.getId(), teMappenReservering.getConceptId(),
-					teMappenReservering.getVanaf().toLocalTime()))
+					teMappenReservering.getVanaf()))
 				.toList());
 		return dto;
 	}
@@ -104,7 +105,7 @@ public class PlanningMapper
 		standplaatsPeriodeDto.totEnMet = standplaatsPeriode.getTotEnMet();
 		standplaatsPeriodeDto.blokkadeIds = standplaatsPeriode.getBlokkadeNavigableSet().stream().map(PlanningEntiteit::getId).toList();
 		standplaatsPeriodeDto.conceptId = standplaatsPeriode.getConceptId();
-		standplaatsPeriodeDto.initieelIntervalMaanden = intervalToMonth(standplaatsRonde.getIntieelInterval());
+		standplaatsPeriodeDto.initieelIntervalMaanden = intervalToMonth(standplaatsRonde.getInitieelInterval());
 		standplaatsPeriodeDto.intervalMaanden = intervalToMonth(standplaatsRonde.getInterval());
 		standplaatsPeriodeDto.prognose = standplaatsPeriode.getPrognose();
 		standplaatsPeriodeDto.id = standplaatsPeriode.getId();
@@ -113,10 +114,7 @@ public class PlanningMapper
 		standplaatsPeriodeDto.achtervangStandplaatsId = standplaatsRonde.getAchtervangStandplaats() != null
 			? standplaatsRonde.getAchtervangStandplaats().getId()
 			: null;
-		standplaatsPeriodeDto.minderValideUitwijkStandplaatsId = standplaatsRonde.getMinderValideUitwijkStandplaats() != null
-			? standplaatsRonde.getMinderValideUitwijkStandplaats().getId()
-			: null;
-		standplaatsPeriodeDto.minderValideUitnodigenVanaf = standplaatsRonde.getMinderValideUitnodigenVanaf();
+		standplaatsPeriodeDto.mindervalideUitnodigenVanaf = standplaatsRonde.getMindervalideUitnodigenVanaf();
 
 		standplaatsPeriodeDto.afspraakcapaciteitBeschikbaarVoorIds = standplaatsRonde.getAfspraakcapaciteitBeschikbaarVoor().stream()
 			.map(PlanningScreeningsOrganisatie::getId)
@@ -148,7 +146,7 @@ public class PlanningMapper
 
 	private static BigDecimal intervalToMonth(BigDecimal intervalInDays)
 	{
-		return intervalInDays != null ? intervalInDays.divide(DAGEN_PER_MAAND, 5, BigDecimal.ROUND_HALF_UP) : null;
+		return intervalInDays != null ? intervalInDays.divide(DAGEN_PER_MAAND, 5, RoundingMode.HALF_UP) : null;
 	}
 
 }

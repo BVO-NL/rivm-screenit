@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.mamma;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -65,7 +65,7 @@ public class MammaScreeningsEenheid extends AbstractHibernateObject implements I
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	@Column(length = HibernateMagicNumber.L255)
+	@Column(nullable = false)
 	private String naam;
 
 	@Column(nullable = false, unique = true, length = HibernateMagicNumber.L255)
@@ -129,6 +129,7 @@ public class MammaScreeningsEenheid extends AbstractHibernateObject implements I
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
+
 	private MammaDuurMinderValideAfspraak duurMinderValideAfspraak;
 
 	@Transient
@@ -136,18 +137,22 @@ public class MammaScreeningsEenheid extends AbstractHibernateObject implements I
 
 	@Column
 	@Temporal(TemporalType.TIME)
+
 	private Date minderValidePeriode1Vanaf;
 
 	@Column
 	@Temporal(TemporalType.TIME)
+
 	private Date minderValidePeriode1TotEnMet;
 
 	@Column
 	@Temporal(TemporalType.TIME)
+
 	private Date minderValidePeriode2Vanaf;
 
 	@Column
 	@Temporal(TemporalType.TIME)
+
 	private Date minderValidePeriode2TotEnMet;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "screeningsEenheid")

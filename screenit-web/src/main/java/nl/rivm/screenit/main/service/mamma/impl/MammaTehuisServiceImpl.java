@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.service.mamma.impl;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -148,7 +148,7 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 		{
 			melding += "Opmerking voor tehuis '" + tehuis.getNaam() + "' aangemaakt.";
 		}
-		else if (diffToLatestVersion.length() > 0)
+		else if (!diffToLatestVersion.isEmpty())
 		{
 			melding += "Opmerking voor tehuis '" + tehuis.getNaam() + "' gewijzigd.";
 		}
@@ -249,7 +249,7 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 
 		if (uitstel != null && uitstel.getGeannuleerdOp() == null && uitstel.getUitnodiging() == null)
 		{
-			if (uitstel.getUitstelReden() == MammaUitstelReden.ACHTERVANG_UITSTEL || uitstel.getUitstelReden() == MammaUitstelReden.MINDER_VALIDE_UITWIJK_UITSTEL)
+			if (uitstel.getUitstelReden() == MammaUitstelReden.ACHTERVANG_UITSTEL)
 			{
 				baseScreeningrondeService.verwijderScreeningRonde(screeningRonde, false);
 			}

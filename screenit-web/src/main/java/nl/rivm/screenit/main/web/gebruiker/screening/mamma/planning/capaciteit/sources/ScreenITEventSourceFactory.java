@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit.
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,12 +22,9 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit.
  */
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -35,6 +32,7 @@ import lombok.Getter;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
+import nl.rivm.screenit.dto.mamma.planning.PlanningDagDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningWeekDto;
 import nl.rivm.screenit.main.web.component.fullcalendar.event.EventSource;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit.MammaCapaciteitOverviewPanel;
@@ -48,13 +46,17 @@ import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
-import nl.rivm.screenit.util.DateUtil;
 
 import org.apache.wicket.injection.Injector;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import com.google.common.collect.Range;
+
+import static nl.rivm.screenit.util.DateUtil.plusDagen;
+import static nl.rivm.screenit.util.DateUtil.toLocalDate;
+import static nl.rivm.screenit.util.DateUtil.toLocalDateTime;
+import static nl.rivm.screenit.util.DateUtil.toUtilDate;
 
 public class ScreenITEventSourceFactory implements Serializable
 {
@@ -80,7 +82,7 @@ public class ScreenITEventSourceFactory implements Serializable
 
 	public EventSource getAantalOnderzoekenPerDagSource()
 	{
-		EventSource aantalOnderzoekenPerDag = new EventSource();
+		var aantalOnderzoekenPerDag = new EventSource();
 		aantalOnderzoekenPerDag.setBackgroundColor("#FFFFFF");
 		aantalOnderzoekenPerDag.setBorderColor("#FFFFFF");
 		aantalOnderzoekenPerDag.setEventsProvider(new AantalRegulierOnderzoekenPerDagProvider(this));
@@ -89,21 +91,21 @@ public class ScreenITEventSourceFactory implements Serializable
 
 	public EventSource getAantalOnderzoekenPerWeekSource()
 	{
-		EventSource aantalOnderzoekenPerWeek = new EventSource();
+		var aantalOnderzoekenPerWeek = new EventSource();
 		aantalOnderzoekenPerWeek.setEventsProvider(new AantalRegulierOnderzoekenPerWeekProvider(this));
 		return aantalOnderzoekenPerWeek;
 	}
 
 	public EventSource getWeekCapaciteitSource()
 	{
-		EventSource capaciteit = new EventSource();
+		var capaciteit = new EventSource();
 		capaciteit.setEventsProvider(new WeekCapaciteitEventsProvider(this));
 		return capaciteit;
 	}
 
 	public EventSource getBlokkadesSource()
 	{
-		EventSource blokkades = new EventSource();
+		var blokkades = new EventSource();
 		blokkades.setBackgroundColor("#f7e7e7");
 		blokkades.setBorderColor("#df9f9f");
 		blokkades.setEventsProvider(new BlokkadeEventsProvider(this));
@@ -112,7 +114,7 @@ public class ScreenITEventSourceFactory implements Serializable
 
 	public EventSource getStandplaatsSource(MammaCapaciteitOverviewPanel capaciteitOverviewPanel)
 	{
-		EventSource blokkades = new EventSource();
+		var blokkades = new EventSource();
 		blokkades.setBackgroundColor("#f7f2ff");
 		blokkades.setBorderColor("#d8beff");
 		blokkades.setEventsProvider(new StandplaatsEventsProvider(this, capaciteitOverviewPanel));
@@ -121,39 +123,51 @@ public class ScreenITEventSourceFactory implements Serializable
 
 	public void resetCapaciteit(Date weekStart)
 	{
-		MammaScreeningsEenheid screeningsEenheid = screeningsEenheidModel.getObject();
+		var screeningsEenheid = screeningsEenheidModel.getObject();
 		weekDto = baseConceptPlanningsApplicatie.getWeek(screeningsEenheid, weekStart);
 
-		LocalDateTime nu = dateSupplier.getLocalDateTime();
-		if (nu.isAfter(DateUtil.toLocalDateTime(weekStart)))
+		var nu = dateSupplier.getLocalDateTime();
+		var vandaag = nu.toLocalDate();
+		if (nu.isAfter(toLocalDateTime(weekStart)))
 		{
-			Date to = Collections.min(Arrays.asList(DateUtil.toUtilDate(nu), DateUtil.plusDagen(weekStart, 7)));
+			var to = Collections.min(Arrays.asList(toUtilDate(nu), plusDagen(weekStart, 7)));
+			var blokkenUitDatbase = baseCapaciteitsBlokService.getAlleCapaciteitBlokken(screeningsEenheid, Range.closed(weekStart, to));
 
-			List<MammaCapaciteitBlok> blokken = baseCapaciteitsBlokService.getAlleCapaciteitBlokken(screeningsEenheid, Range.closed(weekStart, to));
+			final var prognoseVanafDatum = nu.toLocalTime().isBefore(Constants.BK_EINDTIJD_DAG) ? vandaag : vandaag.plusDays(1);
 
-			final LocalDate prognoseVanafDatum = nu.toLocalTime().isBefore(Constants.BK_EINDTIJD_DAG) ? nu.toLocalDate() : nu.toLocalDate().plusDays(1);
-
-			weekDto.dagen.stream().filter(dagDto -> dagDto.datum.isBefore(prognoseVanafDatum)).forEach(dagDto ->
-			{
-				final AtomicLong totaalAantalOnderzoeken = new AtomicLong();
-				blokken.stream().filter(blok -> DateUtil.toLocalDate(blok.getVanaf()).equals(dagDto.datum)).forEach(blok ->
+			weekDto.dagen.stream()
+				.filter(dagDto -> dagDto.datum.isBefore(prognoseVanafDatum) && planningModelHeeftGeenCapaciteitBlokOpDag(dagDto))
+				.forEach(dagDto ->
 				{
-					PlanningCapaciteitBlokDto blokDto = new PlanningCapaciteitBlokDto();
-					blokDto.id = blok.getId();
-					blokDto.blokType = blok.getBlokType();
-					blokDto.vanaf = blok.getVanaf();
-					blokDto.tot = blok.getTot();
-					blokDto.screeningsEenheidId = screeningsEenheid.getId();
-					blokDto.opmerkingen = blok.getOpmerkingen();
-					blokDto.aantalOnderzoeken = blok.getAantalOnderzoeken();
-					blokDto.minderValideAfspraakMogelijk = blok.getMinderValideAfspraakMogelijk();
-					weekDto.blokken.add(blokDto);
-
-					totaalAantalOnderzoeken.set(totaalAantalOnderzoeken.get() + blok.getBeschikbareCapaciteit().intValue());
+					final var totaalAantalOnderzoeken = new AtomicLong();
+					blokkenUitDatbase.stream().filter(blok -> toLocalDate(blok.getVanaf()).equals(dagDto.datum)).forEach(blok ->
+					{
+						maakPlanningBlokEnVoegToeAanWeekDto(blok, screeningsEenheid, totaalAantalOnderzoeken);
+					});
+					dagDto.totaalAantalOnderzoeken = totaalAantalOnderzoeken.get();
 				});
-				dagDto.totaalAantalOnderzoeken = totaalAantalOnderzoeken.get();
-			});
 		}
+	}
+
+	private boolean planningModelHeeftGeenCapaciteitBlokOpDag(PlanningDagDto dagDto)
+	{
+		return weekDto.blokken.stream().noneMatch(blokDto -> dagDto.datum.equals(toLocalDate(blokDto.vanaf)));
+	}
+
+	private void maakPlanningBlokEnVoegToeAanWeekDto(MammaCapaciteitBlok blok, MammaScreeningsEenheid screeningsEenheid, AtomicLong totaalAantalOnderzoeken)
+	{
+		var blokDto = new PlanningCapaciteitBlokDto();
+		blokDto.id = blok.getId();
+		blokDto.blokType = blok.getBlokType();
+		blokDto.vanaf = blok.getVanaf();
+		blokDto.tot = blok.getTot();
+		blokDto.screeningsEenheidId = screeningsEenheid.getId();
+		blokDto.opmerkingen = blok.getOpmerkingen();
+		blokDto.aantalOnderzoeken = blok.getAantalOnderzoeken();
+		blokDto.minderValideAfspraakMogelijk = blok.getMinderValideAfspraakMogelijk();
+		weekDto.blokken.add(blokDto);
+
+		totaalAantalOnderzoeken.set(totaalAantalOnderzoeken.get() + blok.getBeschikbareCapaciteit().intValue());
 	}
 
 	public PlanningCapaciteitBlokDto getBlok(UUID conceptId)

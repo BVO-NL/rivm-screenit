@@ -2,7 +2,7 @@
   ========================LICENSE_START=================================
   medewerkerportaal
   %%
-  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
   %%
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -29,7 +29,7 @@
   <clr-dg-column clrDgField="naam">Naam</clr-dg-column>
   <clr-dg-column clrDgField="datum">Datum</clr-dg-column>
   <clr-dg-column clrDgField="beperking">Beperking</clr-dg-column>
-  <clr-dg-column [style.width.px]="105"></clr-dg-column>
+  <clr-dg-column class="btn-column"></clr-dg-column>
 
   @if (feestdagen$ | async; as feestdagen) {
     <clr-dg-row *clrDgItems="let feestdag of feestdagen">

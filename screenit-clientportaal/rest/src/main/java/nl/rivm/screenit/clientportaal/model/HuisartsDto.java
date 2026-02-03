@@ -4,7 +4,7 @@ package nl.rivm.screenit.clientportaal.model;
  * ========================LICENSE_START=================================
  * screenit-clientportaal-rest
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,13 +25,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import nl.rivm.screenit.dto.EntityDto;
+
 @Getter
 @Setter
 @NoArgsConstructor
-public class HuisartsDto
+public class HuisartsDto extends EntityDto
 {
-	private Long id;
-
 	private String achternaam;
 
 	private String voorletters;

@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.model.testen;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,8 +23,6 @@ package nl.rivm.screenit.main.model.testen;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -68,15 +66,6 @@ public class TestTimelineModel implements Serializable, IDetachable
 
 	public TestTimelineModel()
 	{
-		try
-		{
-			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-			geboortedatum = format.parse("01-01-1950");
-		}
-		catch (ParseException e)
-		{
-
-		}
 
 	}
 

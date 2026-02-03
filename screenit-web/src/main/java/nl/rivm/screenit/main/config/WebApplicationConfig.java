@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.config;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -47,6 +47,10 @@ public class WebApplicationConfig
 
 	private String huisartsPortaalUrl;
 
+	private String imsContextBridgeUrl;
+
+	private String imsContextBridgeWebsocketUrl;
+
 	@Bean
 	public String configDir()
 	{
@@ -75,5 +79,17 @@ public class WebApplicationConfig
 	public String huisartsPortaalUrl()
 	{
 		return StringUtils.defaultIfBlank(huisartsPortaalUrl, "");
+	}
+
+	@Bean
+	public String imsContextBridgeUrl()
+	{
+		return StringUtils.defaultIfBlank(imsContextBridgeUrl, "");
+	}
+
+	@Bean
+	public String imsContextBridgeWebsocketUrl()
+	{
+		return StringUtils.defaultIfBlank(imsContextBridgeWebsocketUrl, "");
 	}
 }

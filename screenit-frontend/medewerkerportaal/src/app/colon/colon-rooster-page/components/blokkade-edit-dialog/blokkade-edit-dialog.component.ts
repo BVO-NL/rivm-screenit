@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -33,7 +33,7 @@ import { DATE_FORMAT, NL_DATE_FORMAT, TIME_FORMAT } from '@shared/constants'
 import { ColonBlokkade } from '@shared/types/colon/colon-blokkade'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { createDatumTijdInVerledenValidator, createStartEindTijdValidator, valideDatumValidator } from '@shared/validators/datum/datum.validator'
-import { formatDateAsISO, formatDateStringAsTime, formatNLDate, formatTimeAsISO, parseDate } from '@shared/date-utils'
+import { formatDateAsISO, formatDateStringAsTime, formatNLDate, formatTimeAsISO, parseDate } from '@shared/utils/date-utils'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component'
 import { ColonService } from '@/colon/services/colon.service'
@@ -41,7 +41,7 @@ import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
 import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
-import { OrganisatieType } from '@shared/types/autorisatie/organisatie-type'
+import { OrganisatieType } from '@/shared/types/algemeen/organisatie-type'
 import { Required } from '@shared/types/autorisatie/required'
 import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { ToastService } from '@shared/toast/service/toast.service'

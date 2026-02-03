@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, signal } from '@angular/core'
 import { ClrCommonFormsModule, ClrDatagridModule, ClrDatepickerModule, ClrFileInputModule, ClrInputModule } from '@clr/angular'
 import { FormControl, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
-import { formatDate } from '@shared/date-utils'
+import { formatDate } from '@shared/utils/date-utils'
 import { valideDatumValidator } from '@shared/validators/datum/datum.validator'
 import { bsnValidator } from '@shared/validators/bsn/bsn.validator'
 import { Dialog } from '@angular/cdk/dialog'

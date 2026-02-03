@@ -4,7 +4,7 @@ package nl.rivm.screenit.util.mamma;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,6 @@ package nl.rivm.screenit.util.mamma;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Comparator;
 
 import lombok.AccessLevel;
@@ -52,12 +51,6 @@ public class MammaPlanningUtil
 	public static int minimumTijdvak(BigDecimal factor)
 	{
 		return factor.setScale(0, RoundingMode.HALF_DOWN).multiply(new BigDecimal(Constants.BK_TIJDVAK_MIN)).intValue();
-	}
-
-	public static int benodigdeMinutenVoorMindervalideAfspraak(BigDecimal factorMinderValide)
-	{
-
-		return minimumTijdvak(factorMinderValide);
 	}
 
 	public static void sorteerCapaciteitBlokOpAfspraakTijdEnZetAfspraakTot(MammaCapaciteitBlokDto capaciteitBlokDto) 
@@ -88,12 +81,6 @@ public class MammaPlanningUtil
 		var totaalBenodigdeCapaciteitVoorAlleAfspraken = capaciteitBlokDto.getAfspraakDtos().stream().map(MammaAfspraakDto::getBenodigdeCapaciteit).reduce(BigDecimal.ZERO,
 			BigDecimal::add);
 		return capaciteitBlokDto.getBeschikbareCapaciteit().subtract(totaalBenodigdeCapaciteitVoorAlleAfspraken);
-	}
-
-	public static boolean mindervalideReserveringIsOnbezet(MammaCapaciteitBlokDto capaciteitBlokDto, LocalTime mvReserveringVanaf)
-	{
-		return capaciteitBlokDto.getAfspraakDtos().stream()
-			.noneMatch(afspraakDto -> afspraakDto.isMindervalide() && afspraakDto.getVanaf().toLocalTime().equals(mvReserveringVanaf));
 	}
 
 	public static boolean isEnkeleMammograaf(MammaScreeningsEenheid screeningsEenheid)

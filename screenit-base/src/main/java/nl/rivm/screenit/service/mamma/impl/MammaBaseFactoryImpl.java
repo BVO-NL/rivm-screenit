@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.mamma.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -156,7 +156,7 @@ public class MammaBaseFactoryImpl implements MammaBaseFactory
 		ronde.setUitnodigingsNr(getNextUniqueMammaUitnodigingsNr());
 		ronde.setGeforceerd(isGeforceerd);
 		ronde.setPostcode(postcode);
-		ronde.setMinderValideOnderzoekZiekenhuis(false);
+		ronde.setMindervalideOnderzoekZiekenhuis(false);
 
 		dossier.getScreeningRondes().add(ronde);
 		dossier.setLaatsteScreeningRonde(ronde);

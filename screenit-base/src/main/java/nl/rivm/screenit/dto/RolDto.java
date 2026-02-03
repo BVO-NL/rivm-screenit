@@ -4,7 +4,7 @@ package nl.rivm.screenit.dto;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,6 @@ package nl.rivm.screenit.dto;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serializable;
 import java.util.List;
 
 import lombok.Getter;
@@ -31,9 +30,8 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 
 @Getter
 @Setter
-public class RolDto implements Serializable
+public class RolDto extends EntityDto
 {
-	private Long id;
 
 	private RolDto parentRol;
 

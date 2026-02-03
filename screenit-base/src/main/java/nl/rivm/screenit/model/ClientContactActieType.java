@@ -4,7 +4,7 @@ package nl.rivm.screenit.model;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -95,9 +95,9 @@ public enum ClientContactActieType
 
 	MAMMA_HUISARTS_WIJZIGEN(new Bevolkingsonderzoek[] { Bevolkingsonderzoek.MAMMA }),
 
-	MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS(new Bevolkingsonderzoek[] { Bevolkingsonderzoek.MAMMA }),
+	MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS(new Bevolkingsonderzoek[] { Bevolkingsonderzoek.MAMMA }),
 
-	MAMMA_MINDER_VALIDE_NIET_MEER_ZIEKENHUIS(new Bevolkingsonderzoek[] { Bevolkingsonderzoek.MAMMA }),
+	MAMMA_MINDERVALIDE_NIET_MEER_ZIEKENHUIS(new Bevolkingsonderzoek[] { Bevolkingsonderzoek.MAMMA }),
 
 	MAMMA_CLIENT_WIL_GEEN_VERVOLG_ONDERZOEK(new Bevolkingsonderzoek[] { Bevolkingsonderzoek.MAMMA }),
 

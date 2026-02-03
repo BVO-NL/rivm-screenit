@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.planning.service;
  * ========================LICENSE_START=================================
  * screenit-planning-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -33,14 +33,12 @@ import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 public interface PlanningUitnodigenService
 {
 	void uitnodigen(PlanningStandplaatsRonde standplaatsRonde, Set<PlanningClient> openUitnodigingClientSet, NavigableSet<PlanningClient> afspraakUitnodigingClientSet,
-					PlanningUitnodigenRapportageDto rapportageDto, PlanningUitnodigingContext context);
+		PlanningUitnodigenRapportageDto rapportageDto, PlanningUitnodigingContext context);
 
 	void achtervangUitstel(PlanningStandplaatsRonde standplaatsRonde, Set<PlanningClient> uitTeStellenClientSet, PlanningUitnodigenRapportageDto rapportageDto);
-
-	void minderValideUitwijkUitstel(PlanningStandplaatsRonde planningStandplaatsRonde, Set<PlanningClient> uitTeStellenClientSet, PlanningUitnodigenRapportageDto rapportageDto);
 
 	void clear();
 
 	PlanningStandplaatsPeriodeUitnodigenRapportageDto getStandplaatsPeriodeUitnodigenRapportage(PlanningUitnodigenRapportageDto rapportageDto,
-																								MammaStandplaatsPeriode standplaatsPeriode);
+		MammaStandplaatsPeriode standplaatsPeriode);
 }

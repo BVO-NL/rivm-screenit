@@ -1,11 +1,10 @@
-
 package nl.rivm.screenit.main.web.gebruiker.base;
 
 /*-
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -128,6 +127,12 @@ public abstract class MedewerkerBasePage extends BasePage
 
 	@SpringBean
 	private IScreenitRealm realm;
+
+	@SpringBean(name = "imsContextBridgeWebsocketUrl")
+	private String imsContextBridgeWebsocketUrl;
+
+	@SpringBean(name = "imsContextBridgeUrl")
+	private String imsContextBridgeUrl;
 
 	protected AbstractDefaultAjaxBehavior keepAliveBehavior;
 
@@ -329,6 +334,7 @@ public abstract class MedewerkerBasePage extends BasePage
 			response.render(JavaScriptHeaderItem.forScript(createImsErrorAfhandeling(), null));
 			response.render(JavaScriptHeaderItem.forUrl(IMS_DESKTOPSYNC_JS_SOURCE));
 			response.render(JavaScriptHeaderItem.forUrl(IMS_KEYPAD_JS_SOURCE));
+			response.render(JavaScriptHeaderItem.forScript(setImsUrls(), null));
 			if (loginIms)
 			{
 				response.render(JavaScriptHeaderItem.forScript(createImsLogonCommand(), null));
@@ -592,7 +598,7 @@ public abstract class MedewerkerBasePage extends BasePage
 	{
 		if (heeftImsKoppelingRecht)
 		{
-			SecurityHeadersFilter.allowExtraConnectSrcInContentSecurityPolicy(response, "https://localhost:7001 wss://localhost:7002");
+			SecurityHeadersFilter.allowExtraConnectSrcInContentSecurityPolicy(response, imsContextBridgeUrl + " " + imsContextBridgeWebsocketUrl);
 		}
 		super.setHeaders(response);
 	}
@@ -650,6 +656,11 @@ public abstract class MedewerkerBasePage extends BasePage
 	{
 		return "imsErrorCallback = " + imsErrorCallbackBehavior.getCallbackFunction(CallbackParameter.explicit(MAMMA_IMS_ERROR_CALLBACK_PARAM_MESSAGE),
 			CallbackParameter.explicit(MAMMA_IMS_ERROR_CALLBACK_PARAM_ONDERZOEK)) + ";";
+	}
+
+	private String setImsUrls()
+	{
+		return "imsContextBridgeUrl = '" + imsContextBridgeUrl + "'; imsContextBridgeWebsocketUrl = '" + imsContextBridgeWebsocketUrl + "';";
 	}
 
 	private void createImsErrorCallback()

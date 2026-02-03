@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * screenit-se-proxy
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,16 +22,14 @@ import type {EnvironmentInfo} from "../datatypes/EnvironmentInfo"
 
 export type EnvironmentInfoActions = SetEnvironmentInfoAction;
 
-export const SET_ENVIRONMENTINFO = "SET_ENVIRONMENTINFO"
+export const SET_ENVIRONMENT_INFO = "SET_ENVIRONMENT_INFO"
 export type SetEnvironmentInfoAction = {
-	type: "SET_ENVIRONMENTINFO";
+	type: "SET_ENVIRONMENT_INFO";
 	environment: EnvironmentInfo;
 };
 export const createActionSetEnvironmentInfo = (environmentInfo: EnvironmentInfo): SetEnvironmentInfoAction => {
-	const action: SetEnvironmentInfoAction = {
-		type: SET_ENVIRONMENTINFO,
+	return {
+		type: SET_ENVIRONMENT_INFO,
 		environment: environmentInfo,
 	}
-
-	return action
 }

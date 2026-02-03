@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.mamma.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -32,6 +32,8 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import jakarta.annotation.PostConstruct;
 
 import nl.rivm.screenit.dto.mamma.planning.PlanningBlokkadeDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
@@ -61,6 +63,7 @@ import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.enums.MammaPlanningStatus;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
+import nl.rivm.screenit.util.mamma.MammaScreeningsEenheidUtil;
 import nl.rivm.screenit.util.rest.RestApiFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -77,8 +80,6 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
-import jakarta.annotation.PostConstruct;
 
 @Service
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -294,7 +295,7 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 			PlanningScreeningsEenheidDto dto = new PlanningScreeningsEenheidDto();
 			dto.id = screeningsEenheid.getId();
 			dto.aantalMammografen = Math.max(screeningsEenheid.getMammografen().size(), 1); 
-			dto.screeningsOrganisatieId = screeningsEenheid.getBeoordelingsEenheid().getParent().getRegio().getId();
+			dto.screeningsOrganisatieId = MammaScreeningsEenheidUtil.getScreeningsOrganisatie(screeningsEenheid).getId();
 
 			sendToPlanningApplicatie(PlanningRestConstants.C_SCREENINGSEENHEID, dto, isNieuw, null);
 		}

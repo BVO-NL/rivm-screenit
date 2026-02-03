@@ -2,7 +2,7 @@
 # ========================LICENSE_START=================================
 # screenit-kansberekening
 # %%
-# Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+# Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
 # %%
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -43,12 +43,12 @@ _uitkomst_beoordeling_statussen_mapping = [
 ]
 
 _doelgroepen_mapping = [
-    ['REGULIER', 'DUBBELE_TIJD', 'MINDER_VALIDE'],
+    ['REGULIER', 'DUBBELE_TIJD', 'MINDERVALIDE'],
     [0, 0.5, 1]
 ]
 
 _uitnodiging_brief_typen_mapping = [
-    ['MAMMA_AFSPRAAK_UITNODIGING', 'MAMMA_OPEN_UITNODIGING', 'MAMMA_UITNODIGING_MINDER_VALIDE', 'MAMMA_UITNODIGING_TEHUIS_ZONDER_DATUM', 'MAMMA_UITNODIGING_SUSPECT'],
+    ['MAMMA_AFSPRAAK_UITNODIGING', 'MAMMA_OPEN_UITNODIGING', 'MAMMA_UITNODIGING_MINDERVALIDE', 'MAMMA_UITNODIGING_TEHUIS_ZONDER_DATUM', 'MAMMA_UITNODIGING_SUSPECT'],
     [0, 0.5, 0.5, 0.5, 1]
 ]
 

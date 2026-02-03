@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.service.mamma.impl;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,9 +22,7 @@ package nl.rivm.screenit.main.service.mamma.impl;
  */
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,7 +35,6 @@ import java.util.concurrent.Executors;
 import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.dto.mamma.afspraken.IMammaBulkVerzettenFilter;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakOptieMetAfstandDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningVerzetClientenDto;
 import nl.rivm.screenit.main.service.mamma.MammaAfspraakService;
@@ -45,16 +42,11 @@ import nl.rivm.screenit.main.transformer.MammaScreeningsEenheidMetDatumDto;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.TijdelijkAdres;
-import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
-import nl.rivm.screenit.model.enums.DigitaalBerichtTemplateType;
-import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaBlokkade;
 import nl.rivm.screenit.model.mamma.MammaBrief;
-import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
-import nl.rivm.screenit.model.mamma.MammaDigitaalClientBericht;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
@@ -71,19 +63,15 @@ import nl.rivm.screenit.repository.mamma.MammaUitnodigingRepository;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BerichtToSeRestBkService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
-import nl.rivm.screenit.service.mamma.MammaBaseKansberekeningService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
-import nl.rivm.screenit.service.mamma.MammaDigitaalContactService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -106,7 +94,6 @@ import static nl.rivm.screenit.specification.mamma.MammaUitnodigingSpecification
 @RequiredArgsConstructor
 public class MammaAfspraakServiceImpl implements MammaAfspraakService
 {
-
 	private final HibernateService hibernateService;
 
 	private final MammaBaseConceptPlanningsApplicatie baseConceptPlanningsApplicatie;
@@ -115,19 +102,13 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 
 	private final MammaBaseAfspraakService baseAfspraakService;
 
-	private final LogService logService;
-
 	private final SimplePreferenceService preferenceService;
 
 	private final MammaBaseStandplaatsService baseStandplaatsService;
 
 	private final BerichtToSeRestBkService berichtToSeRestBkService;
 
-	private final MammaBaseKansberekeningService kansberekeningService;
-
 	private final BaseBriefService baseBriefService;
-
-	private final MammaDigitaalContactService digitaalContactService;
 
 	private final MammaUitnodigingRepository uitnodigingRepository;
 
@@ -196,112 +177,6 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 				.sortBy(Sort.by(sortDirection, MammaUitnodiging_.LAATSTE_AFSPRAAK + "." + MammaAfspraak_.VANAF))
 				.first()
 		).orElse(null);
-	}
-
-	@Override
-	public void bulkVerzetten(IMammaBulkVerzettenFilter filter, List<MammaAfspraak> afspraken, Account account, LocalDate verzettenVanDatum)
-	{
-		MammaStandplaatsPeriode standplaatsPeriode = filter.getStandplaatsPeriode();
-		LocalDate vanaf = filter.getVanafLocalDate();
-		LocalDate totEnMet = filter.getTotEnMetLocalDate();
-
-		PlanningVerzetClientenDto verzetClientenDto = new PlanningVerzetClientenDto();
-		verzetClientenDto.verzetStandplaatsPeriodeId = standplaatsPeriode.getId();
-		Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen = preferenceService.getInteger(PreferenceKey.MAMMA_CAPACITEIT_VOLLEDIG_BENUT_TOT_EN_MET_AANTAL_WERKDAGEN.toString());
-		kansberekeningService.resetPreferences();
-
-		Set<LocalDate> afspraakDatums = new HashSet<>();
-		afspraakDatums.add(verzettenVanDatum);
-
-		for (MammaAfspraak bestaandeAfspraak : afspraken)
-		{
-			hibernateService.getHibernateSession().flush();
-
-			var uitnodiging = bestaandeAfspraak.getUitnodiging();
-			var dossier = uitnodiging.getScreeningRonde().getDossier();
-
-			var voorlopigeOpkomstkans = kansberekeningService.getVoorlopigeOpkomstkans(uitnodiging, standplaatsPeriode, filter.getVerzettenReden());
-
-			var afspraakOptie = baseAfspraakService.getAfspraakOptieBulkVerzetten(dossier, standplaatsPeriode, vanaf, totEnMet, voorlopigeOpkomstkans,
-				capaciteitVolledigBenutTotEnMetAantalWerkdagen);
-
-			boolean annuleerVorigeAfspraak = bestaandeAfspraak.getVanaf().compareTo(dateSupplier.getDate()) > 0;
-
-			var capaciteitBlok = hibernateService.load(MammaCapaciteitBlok.class, afspraakOptie.getCapaciteitBlokId());
-
-			var digitaleBerichten = dossier.getLaatsteScreeningRonde().getBerichten();
-			var emailAdres = dossier.getClient().getPersoon().getEmailadres();
-			var kanEmailVersturen = !digitaleBerichten.isEmpty() && !bulkVerzettenAlleenViaBrief() && StringUtils.isNotBlank(emailAdres);
-
-			var magMailVerzenden = false;
-
-			if (kanEmailVersturen)
-			{
-				magMailVerzenden = bepaalOfErMailVerzondenMoetWorden(bestaandeAfspraak);
-			}
-
-			var nieuweAfspraak = baseAfspraakService.maakAfspraak(uitnodiging.getScreeningRonde(), capaciteitBlok,
-				DateUtil.toUtilDate(afspraakOptie.getDatumTijd()), filter.getStandplaatsPeriode(), filter.getVerzettenReden(),
-				annuleerVorigeAfspraak, false, true, true, true, account, false);
-
-			var nieuweAfspraakDate = DateUtil.toLocalDate(nieuweAfspraak.getVanaf());
-			afspraakDatums.add(nieuweAfspraakDate);
-
-			verzetClientenDto.clientIdSet.add(dossier.getClient().getId());
-
-			verstuurBriefOfMail(nieuweAfspraak, magMailVerzenden);
-		}
-
-		baseConceptPlanningsApplicatie.verzetClienten(verzetClientenDto);
-
-		berichtToSeRestBkService.notificeerScreeningsEenheidVerversenDaglijst(standplaatsPeriode.getScreeningsEenheid(), afspraakDatums);
-
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-		String melding = "Bulk verzetting: #" + afspraken.size() + " afspraken, reden: " + filter.getVerzettenReden() + ", vanaf: "
-			+ vanaf.format(formatter) + ", tot/met: " + totEnMet.format(formatter);
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_AFSPRAAK_VERZET, account, melding, Bevolkingsonderzoek.MAMMA);
-	}
-
-	private boolean bepaalOfErMailVerzondenMoetWorden(MammaAfspraak bestaandeAfspraak)
-	{
-		var digitaleContacten = bestaandeAfspraak.getUitnodiging().getScreeningRonde().getBerichten();
-
-		var laatsteDigitaleMailContact = digitaleContacten.stream().filter(d -> d.getDigitaalBerichtTemplateType() == DigitaalBerichtTemplateType.MAMMA_AFSPRAAK_BEVESTIGING)
-			.max(Comparator.comparing(MammaDigitaalClientBericht::getCreatieMoment));
-
-		var brieven = bestaandeAfspraak.getUitnodiging().getScreeningRonde().getBrieven();
-		var laatsteAfspraakVerzetBrief = brieven.stream().filter(b -> b.getBriefType() == BriefType.MAMMA_AFSPRAAK_VERZET).max(Comparator.comparing(MammaBrief::getCreatieDatum));
-
-		var creatieMomentDigitaalBericht = laatsteDigitaleMailContact.orElseGet(MammaDigitaalClientBericht::new).getCreatieMoment();
-
-		if (creatieMomentDigitaalBericht == null)
-		{
-			return false;
-		}
-
-		if (laatsteAfspraakVerzetBrief.isPresent())
-		{
-			var briefCreatieMoment = laatsteAfspraakVerzetBrief.get().getCreatieDatum();
-
-			if (creatieMomentDigitaalBericht.isBefore(DateUtil.toLocalDateTime(briefCreatieMoment)))
-			{
-				return false;
-			}
-		}
-		var bestaandeAfspraakCreatieMoment = DateUtil.toLocalDateTime(bestaandeAfspraak.getCreatiedatum());
-		return !creatieMomentDigitaalBericht.isBefore(bestaandeAfspraakCreatieMoment);
-	}
-
-	private void verstuurBriefOfMail(MammaAfspraak nieuweAfspraak, boolean mailVerzenden)
-	{
-		if (!mailVerzenden)
-		{
-			baseBriefService.maakBvoBrief(nieuweAfspraak.getUitnodiging().getScreeningRonde(), BriefType.MAMMA_AFSPRAAK_VERZET);
-		}
-		else
-		{
-			digitaalContactService.sendBevestigAfspraakMail(nieuweAfspraak);
-		}
 	}
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -427,14 +302,9 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public void verzetAfsprakenNaarStandplaatsPlusBrievenKlaarzettenVoorAfdrukken(Map<Long, List<Long>> afsprakenTeVerplatsen, Account account)
+	public void verzetAfsprakenNaarStandplaatsPlusBrievenKlaarzettenVoorAfdrukken(Map<Long, List<Long>> afsprakenTeVerplaatsen, Account account)
 	{
-		afsprakenTeVerplatsen.forEach((key, value) -> EXECUTOR_SERVICE.submit(new AfsprakenVerplaatsenThread(key, value, account.getId())));
-	}
-
-	private boolean bulkVerzettenAlleenViaBrief()
-	{
-		return preferenceService.getBoolean(PreferenceKey.MAMMA_BULK_VERZETTEN_ALLEEN_BRIEF.name(), false);
+		afsprakenTeVerplaatsen.forEach((key, value) -> EXECUTOR_SERVICE.submit(new AfsprakenVerplaatsenThread(key, value, account.getId())));
 	}
 
 	private class AfsprakenVerplaatsenThread extends OpenHibernateSessionInThread

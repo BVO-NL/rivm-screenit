@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -238,7 +238,6 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 				if (DossierStatus.INACTIEF == dossier.getStatus())
 				{
 					dossier.setStatus(DossierStatus.ACTIEF);
-					dossier.setInactiveerReden(null);
 					dossier.setInactiefVanaf(null);
 					dossier.setInactiefTotMet(null);
 					hibernateService.saveOrUpdate(dossier);

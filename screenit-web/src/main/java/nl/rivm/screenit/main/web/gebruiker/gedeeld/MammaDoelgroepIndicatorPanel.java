@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.gedeeld;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -36,7 +36,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class MammaDoelgroepIndicatorPanel extends Panel
 {
-
 	@SpringBean
 	private MammaVolgendeUitnodigingService volgendeUitnodigingService;
 
@@ -50,20 +49,20 @@ public class MammaDoelgroepIndicatorPanel extends Panel
 	public MammaDoelgroepIndicatorPanel(String id, MammaDossier dossier, boolean toonTehuis)
 	{
 		super(id);
-		boolean isMinderValideClient = false;
+		boolean isMindervalideClient = false;
 		boolean isDubbeleTijdClient = false;
 		boolean isTehuisClient = false;
 		boolean isSuspectOfHoogRisico = false;
 		if (dossier != null)
 		{
 			MammaDoelgroep doelgroep = dossier.getDoelgroep();
-			isMinderValideClient = MammaDoelgroep.MINDER_VALIDE.equals(doelgroep);
+			isMindervalideClient = MammaDoelgroep.MINDERVALIDE.equals(doelgroep);
 			isDubbeleTijdClient = MammaDoelgroep.DUBBELE_TIJD.equals(doelgroep);
 			isTehuisClient = dossier.getTehuis() != null;
 			isSuspectOfHoogRisico = volgendeUitnodigingService.isSuspectOfHoogRisico(dossier);
 		}
 		add(new WebMarkupContainer("dubbleTijd").setVisible(isDubbeleTijdClient));
-		add(new WebMarkupContainer("minderValide").setVisible(isMinderValideClient));
+		add(new WebMarkupContainer("mindervalide").setVisible(isMindervalideClient));
 		add(new WebMarkupContainer("tehuis").setVisible(isTehuisClient && toonTehuis));
 		add(new WebMarkupContainer("suspectOfHoogRisico").setVisible(isSuspectOfHoogRisico));
 
@@ -71,5 +70,4 @@ public class MammaDoelgroepIndicatorPanel extends Panel
 			|| ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_AFSPRAKEN_BEHEER, Actie.INZIEN)
 			|| ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_TEHUIS, Actie.INZIEN));
 	}
-
 }

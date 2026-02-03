@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@
 import { inject, Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
 import { BezwaarClient } from '@shared/types/algemeen/bezwaar-client'
-import { formatDate } from '@shared/date-utils'
+import { formatDate } from '@shared/utils/date-utils'
 import { ApiService } from '@shared/services/api/api.service'
 
 @Injectable({

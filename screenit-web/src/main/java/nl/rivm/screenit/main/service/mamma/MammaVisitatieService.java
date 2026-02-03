@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.service.mamma;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,27 +21,28 @@ package nl.rivm.screenit.main.service.mamma;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDate;
 import java.util.List;
 
+import nl.rivm.screenit.main.model.mamma.beoordeling.MammaVisitatieOnderzoekenWerklijstZoekObject;
+import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieWerklijstFilterDto;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
-import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaVisitatie;
 import nl.rivm.screenit.model.mamma.MammaVisitatieOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderdeel;
-import nl.rivm.screenit.model.mamma.enums.MammaVisitatieStatus;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 public interface MammaVisitatieService
 {
-	List<MammaVisitatieOnderzoek> zoekVisitatieOnderzoeken(MammaVisitatieOnderdeel onderdeel, MammaVisitatie visitatie, long first, long count, Sort sort);
+	List<MammaVisitatieOnderzoek> zoekVisitatieOnderzoeken(MammaVisitatieOnderzoekenWerklijstZoekObject filter, long first, long count, Sort sort);
 
-	long countVisitatieOnderzoeken(MammaVisitatieOnderdeel onderdeel, MammaVisitatie visitatie);
+	long countVisitatieOnderzoeken(MammaVisitatieOnderzoekenWerklijstZoekObject filter);
 
-	List<MammaVisitatie> zoekVisitaties(LocalDate vanaf, List<MammaScreeningsEenheid> screeningsEenheden, List<MammaVisitatieStatus> statussen, long first, long count, Sort sort);
+	Page<MammaVisitatie> zoekVisitaties(MammaVisitatieWerklijstFilterDto filter, PageRequest pageRequest);
 
-	long countVisitaties(LocalDate vanaf, List<MammaScreeningsEenheid> screeningsEenheden, List<MammaVisitatieStatus> statussen);
+	long countVisitaties(MammaVisitatieWerklijstFilterDto filter);
 
 	boolean isBeoordelingInVisitatieOnderdeel(MammaBeoordeling beoordeling, MammaVisitatie visitatie, MammaVisitatieOnderdeel visitatieOnderdeel);
 
@@ -50,4 +51,8 @@ public interface MammaVisitatieService
 	boolean isAllesGezien(MammaVisitatie visitatie);
 
 	boolean kanVisitatieAfronden(MammaVisitatie visitatie);
+
+	MammaVisitatie getById(Long id);
+
+	List<MammaVisitatie> getByOmschrijving(String omschrijving);
 }

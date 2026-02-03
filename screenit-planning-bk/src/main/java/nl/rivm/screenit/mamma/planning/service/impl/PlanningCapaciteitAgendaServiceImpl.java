@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.planning.service.impl;
  * ========================LICENSE_START=================================
  * screenit-planning-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -41,7 +41,7 @@ import nl.rivm.screenit.mamma.planning.index.PlanningScreeningsEenheidIndex;
 import nl.rivm.screenit.mamma.planning.model.PlanningBlok;
 import nl.rivm.screenit.mamma.planning.model.PlanningConstanten;
 import nl.rivm.screenit.mamma.planning.model.PlanningDag;
-import nl.rivm.screenit.mamma.planning.model.PlanningMinderValideReservering;
+import nl.rivm.screenit.mamma.planning.model.PlanningMindervalideReservering;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
 import nl.rivm.screenit.mamma.planning.model.PlanningWeek;
 import nl.rivm.screenit.mamma.planning.service.PlanningCapaciteitAgendaService;
@@ -204,7 +204,7 @@ public class PlanningCapaciteitAgendaServiceImpl implements PlanningCapaciteitAg
 					for (PlanningBlok teHerhalenBlok : teHerhalenDag.getBlokSet())
 					{
 						var teHerhalenReserveringen = teHerhalenBlok.getMindervalideReserveringen().stream()
-							.map(r -> new PlanningMinderValideReservering(null, naarDag.getDatum().atTime(r.getVanaf().toLocalTime())))
+							.map(r -> new PlanningMindervalideReservering(null, r.getVanaf()))
 							.toList();
 						PlanningBlok naarBlok = new PlanningBlok(null,
 							teHerhalenBlok.getVanaf(),

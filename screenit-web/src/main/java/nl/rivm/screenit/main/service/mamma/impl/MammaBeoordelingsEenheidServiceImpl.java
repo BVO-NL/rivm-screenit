@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.service.mamma.impl;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -46,8 +46,10 @@ import org.hibernate.Hibernate;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import static nl.rivm.screenit.specification.algemeen.BeoordelingsEenheidSpecification.heeftCentraleEenheidIdIn;
 import static nl.rivm.screenit.specification.algemeen.BeoordelingsEenheidSpecification.heeftCentraleEenheidIn;
 import static nl.rivm.screenit.specification.algemeen.BeoordelingsEenheidSpecification.heeftScreeningOrganisatie;
+import static nl.rivm.screenit.specification.algemeen.BeoordelingsEenheidSpecification.isActief;
 import static nl.rivm.screenit.specification.mamma.MammaOnderzoekSpecification.heeftGeenBeoordelingStatusIn;
 import static nl.rivm.screenit.specification.mamma.MammaOnderzoekSpecification.isDoorgevoerd;
 import static nl.rivm.screenit.specification.mamma.MammaScreeningsEenheidSpecification.heeftBeoordelingsEenheid;
@@ -158,6 +160,37 @@ public class MammaBeoordelingsEenheidServiceImpl implements MammaBeoordelingsEen
 			case BEOORDELINGSEENHEID -> Collections.singletonList((BeoordelingsEenheid) organisatie);
 			default -> Collections.emptyList();
 		};
+	}
+
+	@Override
+	public List<BeoordelingsEenheid> getBeoordelingseenhedenById(Organisatie organisatie, List<Long> centraleEenheidIds)
+	{
+		if (organisatie == null)
+		{
+			return Collections.emptyList();
+		}
+		var organisatieType = organisatie.getOrganisatieType();
+		organisatie = (Organisatie) Hibernate.unproxy(organisatie);
+		return switch (organisatieType)
+		{
+			case RIVM, KWALITEITSPLATFORM, SCREENINGSORGANISATIE ->
+			{
+				if (centraleEenheidIds.isEmpty())
+				{
+					yield Collections.emptyList();
+				}
+				yield beoordelingsEenheidRepository.findAll(isActief(true).and(heeftCentraleEenheidIdIn(centraleEenheidIds)),
+					Sort.by(Organisatie_.NAAM));
+			}
+			case BEOORDELINGSEENHEID -> Collections.singletonList((BeoordelingsEenheid) organisatie);
+			default -> Collections.emptyList();
+		};
+	}
+
+	@Override
+	public BeoordelingsEenheid getBeoordelingseenheidById(Long centraleEenheidId)
+	{
+		return beoordelingsEenheidRepository.findById(centraleEenheidId).orElse(null);
 	}
 
 	private List<BeoordelingsEenheid> getActieveBeoordelingsEenhedenVoorScreeningsOrganisatie(Organisatie organisatie)

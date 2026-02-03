@@ -4,7 +4,7 @@ package nl.rivm.screenit.dto.mamma.planning;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -37,8 +37,6 @@ public class PlanningStandplaatsPeriodeDto extends PlanningConceptEntiteitDto
 
 	public Long achtervangStandplaatsId;
 
-	public Long minderValideUitwijkStandplaatsId;
-
 	public List<Long> afspraakcapaciteitBeschikbaarVoorIds = new ArrayList<>();
 
 	public Integer screeningsEenheidVolgNr;
@@ -69,5 +67,5 @@ public class PlanningStandplaatsPeriodeDto extends PlanningConceptEntiteitDto
 
 	@JsonDeserialize(using = LocalDateDeserializer.class)
 	@JsonSerialize(using = LocalDateSerializer.class)
-	public LocalDate minderValideUitnodigenVanaf;
+	public LocalDate mindervalideUitnodigenVanaf;
 }

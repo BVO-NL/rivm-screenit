@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.se.proxy.configuration;
  * ========================LICENSE_START=================================
  * screenit-se-proxy
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,6 +25,7 @@ import nl.rivm.screenit.webcommons.config.CsrfCustomAccessDeniedHandler;
 import nl.rivm.screenit.webcommons.config.SpaCsrfTokenRequestHandler;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -42,9 +43,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class SecurityConfig
 {
-	private static final String NFC_ENDPOINT = "http://localhost:5001";
-
-	private static final String IMS_ENDPOINT = "https://localhost:7001";
+	@Value("${IMS_CONTEXT_BRIDGE_URL}")
+	private String IMS_CONTEXT_BRIDGE_URL;
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception
@@ -72,14 +72,16 @@ public class SecurityConfig
 		auth.inMemoryAuthentication();
 	}
 
-	private static String getContentSecurityPolicy()
+	private String getContentSecurityPolicy()
 	{
+		var nfcEndpoint = "http://localhost:5001";
+
 		return String.join(" ; ",
 			createCspRule("default-src", "'self'"),
 			createCspRule("style-src", "'self'", "'unsafe-inline'"),
 			createCspRule("script-src", "'self'", "'unsafe-inline'"),
 			createCspRule("img-src", "'self'", "data:"),
-			createCspRule("connect-src", "'self'", NFC_ENDPOINT, IMS_ENDPOINT, "ws:", "wss:")
+			createCspRule("connect-src", "'self'", nfcEndpoint, IMS_CONTEXT_BRIDGE_URL, "ws:", "wss:")
 		);
 	}
 

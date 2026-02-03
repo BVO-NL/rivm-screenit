@@ -4,7 +4,7 @@ package nl.rivm.screenit.specification.mamma;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -32,6 +32,7 @@ import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid_;
 import nl.rivm.screenit.model.mamma.MammaVisitatie;
 import nl.rivm.screenit.model.mamma.MammaVisitatie_;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieStatus;
+import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
@@ -66,8 +67,32 @@ public class MammaVisitatieSpecification
 		});
 	}
 
+	public static ExtendedSpecification<MammaVisitatie> filterOpScreeningsEenheidId(Collection<Long> screeningsEenheidIds)
+	{
+		return skipWhenEmpty(screeningsEenheidIds, (r, q, cb) ->
+		{
+			var subquery = q.subquery(Long.class);
+			var subqueryRoot = subquery.from(MammaScreeningsEenheid.class);
+
+			subquery.select(subqueryRoot.get(MammaScreeningsEenheid_.beoordelingsEenheid).get(AbstractHibernateObject_.id)).distinct(true)
+				.where(heeftIdIn(screeningsEenheidIds).toPredicate(subqueryRoot, q, cb));
+
+			return r.get(MammaVisitatie_.beoordelingsEenheid).get(AbstractHibernateObject_.id).in(subquery);
+		});
+	}
+
 	public static Specification<MammaVisitatie> filterOpStatus(Collection<MammaVisitatieStatus> statussen)
 	{
 		return skipWhenEmpty(statussen, (r, q, cb) -> r.get(MammaVisitatie_.status).in(statussen));
+	}
+
+	public static Specification<MammaVisitatie> filterOpOmschrijving(String omschrijving)
+	{
+		return skipWhenEmpty(omschrijving, (r, q, cb) -> cb.equal(r.get(MammaVisitatie_.omschrijving), omschrijving));
+	}
+
+	public static ExtendedSpecification<MammaVisitatie> heeftGeenBeoordelingseenheid()
+	{
+		return (r, q, cb) -> cb.isNull(r.get(MammaVisitatie_.beoordelingsEenheid));
 	}
 }

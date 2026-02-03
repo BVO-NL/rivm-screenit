@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -52,7 +52,7 @@ export class WeekdagenSelectorComponent implements ControlValueAccessor {
   private onTouched: (() => void) | undefined
   private formBuilder: FormBuilder = inject(FormBuilder)
 
-  @Input() metLabel: boolean = false
+  @Input() metLabel = false
   @Input() type: 'select' | 'checkbox' = 'checkbox'
 
   protected readonly dagen = WEEK_DAGEN

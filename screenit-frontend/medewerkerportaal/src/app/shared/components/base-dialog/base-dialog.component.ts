@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -48,7 +48,7 @@ import { ClrModalModule } from '@clr/angular'
   ],
 })
 export class BaseDialogComponent {
-  @Output() sluiten: EventEmitter<void> = new EventEmitter()
+  @Output() sluiten = new EventEmitter<void>()
   @Input({ required: true }) titel = 'Titel'
   @Input() justifyButtons = false
   @Input() size = 'md'

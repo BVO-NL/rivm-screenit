@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslage
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -39,9 +39,6 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaUitnodigenRapportagePage extends AlgemeenPage
 {
-
-	private static final long serialVersionUID = 1L;
-
 	public MammaUitnodigenRapportagePage(IModel<MammaUitnodigenRapportage> model)
 	{
 		add(new MammaUitnodigenRapportagePanel("panel", model));

@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.enums;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -718,7 +718,7 @@ public enum BriefType
 		true, "3_20_102 - Uitnodiging zonder datum",
 		Bevolkingsonderzoek.MAMMA),
 
-	MAMMA_UITNODIGING_MINDER_VALIDE(
+	MAMMA_UITNODIGING_MINDERVALIDE(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY, ProjectBriefActieType.XMETY },
 		true, "3_20_105 - Uitnodiging mindervaliden zonder datum",
@@ -844,10 +844,10 @@ public enum BriefType
 		false, "3_40_104 - Geen uitslag cliënt niet beoordeeld",
 		Bevolkingsonderzoek.MAMMA),
 
-	MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS(
+	MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY, ProjectBriefActieType.XMETY },
-		true, "3_20_109 - Mindervalide onderzoek in ziekenhuis",
+		true, "3_20_109 - Mindervalidenonderzoek in ziekenhuis",
 		Bevolkingsonderzoek.MAMMA),
 
 	MAMMA_BEPERKT_BEOORDEELBAAR(
@@ -891,14 +891,14 @@ public enum BriefType
 	private static final List<BriefType> MAMMA_UITNODIGINGEN = Arrays.asList(
 		BriefType.MAMMA_AFSPRAAK_UITNODIGING, BriefType.MAMMA_AFSPRAAK_VERZET,
 		BriefType.MAMMA_OPEN_UITNODIGING,
-		BriefType.MAMMA_UITNODIGING_MINDER_VALIDE,
+		BriefType.MAMMA_UITNODIGING_MINDERVALIDE,
 		BriefType.MAMMA_UITNODIGING_SUSPECT,
 		BriefType.MAMMA_UITNODIGING_TEHUIS_ZONDER_DATUM,
 		BriefType.MAMMA_UITSTEL);
 
 	public static final List<BriefType> MAMMA_OPEN_UITNODIGINGEN = Arrays.asList(
 		BriefType.MAMMA_OPEN_UITNODIGING,
-		BriefType.MAMMA_UITNODIGING_MINDER_VALIDE,
+		BriefType.MAMMA_UITNODIGING_MINDERVALIDE,
 		BriefType.MAMMA_UITNODIGING_SUSPECT,
 		BriefType.MAMMA_UITNODIGING_TEHUIS_ZONDER_DATUM);
 
@@ -1127,12 +1127,12 @@ public enum BriefType
 
 	public static List<BriefType> getMammaEersteRondeBrieftype()
 	{
-		return Arrays.asList(MAMMA_AFSPRAAK_UITNODIGING, MAMMA_OPEN_UITNODIGING, MAMMA_UITNODIGING_MINDER_VALIDE, MAMMA_UITNODIGING_TEHUIS_ZONDER_DATUM);
+		return Arrays.asList(MAMMA_AFSPRAAK_UITNODIGING, MAMMA_OPEN_UITNODIGING, MAMMA_UITNODIGING_MINDERVALIDE, MAMMA_UITNODIGING_TEHUIS_ZONDER_DATUM);
 	}
 
 	public static List<BriefType> getMammaBriefApart()
 	{
-		return Arrays.asList(MAMMA_OPEN_UITNODIGING, MAMMA_UITNODIGING_MINDER_VALIDE, MAMMA_UITNODIGING_TEHUIS_ZONDER_DATUM, MAMMA_AFSPRAAK_UITNODIGING, MAMMA_UITNODIGING_SUSPECT,
+		return Arrays.asList(MAMMA_OPEN_UITNODIGING, MAMMA_UITNODIGING_MINDERVALIDE, MAMMA_UITNODIGING_TEHUIS_ZONDER_DATUM, MAMMA_AFSPRAAK_UITNODIGING, MAMMA_UITNODIGING_SUSPECT,
 			MAMMA_AFSPRAAK_VERZET);
 	}
 

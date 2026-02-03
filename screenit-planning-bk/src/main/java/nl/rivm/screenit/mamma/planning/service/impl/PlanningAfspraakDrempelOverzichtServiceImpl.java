@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.planning.service.impl;
  * ========================LICENSE_START=================================
  * screenit-planning-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -92,7 +92,7 @@ public class PlanningAfspraakDrempelOverzichtServiceImpl implements PlanningAfsp
 		Long[] cdvVervolgRonde = nieuweCumulatieveDeelnamekansVerdeling();
 		Long[] cdvEersteRonde = nieuweCumulatieveDeelnamekansVerdeling();
 		Long[] cdvDubbeleTijd = nieuweCumulatieveDeelnamekansVerdeling();
-		Long[] cdvMinderValide = nieuweCumulatieveDeelnamekansVerdeling();
+		Long[] cdvMindervalide = nieuweCumulatieveDeelnamekansVerdeling();
 		Long[] cdvTehuis = nieuweCumulatieveDeelnamekansVerdeling();
 		Long[] cdvSuspect = nieuweCumulatieveDeelnamekansVerdeling();
 
@@ -123,8 +123,8 @@ public class PlanningAfspraakDrempelOverzichtServiceImpl implements PlanningAfsp
 
 			switch (client.getDoelgroep())
 			{
-			case MINDER_VALIDE:
-				voegToeCumulatieveVerdeling(cdvMinderValide, cdvIndex);
+			case MINDERVALIDE:
+				voegToeCumulatieveVerdeling(cdvMindervalide, cdvIndex);
 				drempelToepassen = false;
 				break;
 			case DUBBELE_TIJD:
@@ -174,7 +174,7 @@ public class PlanningAfspraakDrempelOverzichtServiceImpl implements PlanningAfsp
 			new PlanningAfspraakDrempelOverzichtDto.Kolom("Vervolgronde", cdvVervolgRonde, cdvDrempelToepassenVervolgRonde),
 			new PlanningAfspraakDrempelOverzichtDto.Kolom("Eerste ronde", cdvEersteRonde, cdvDrempelToepassenEersteRonde),
 			new PlanningAfspraakDrempelOverzichtDto.Kolom("Dubbele tijd", cdvDubbeleTijd, cdvDrempelToepassenDubbeleTijd),
-			new PlanningAfspraakDrempelOverzichtDto.Kolom("Minder valide", cdvMinderValide, null),
+			new PlanningAfspraakDrempelOverzichtDto.Kolom("Mindervalide", cdvMindervalide, null),
 			new PlanningAfspraakDrempelOverzichtDto.Kolom("Tehuis", cdvTehuis, null),
 			new PlanningAfspraakDrempelOverzichtDto.Kolom("Suspect", cdvSuspect, null),
 		};

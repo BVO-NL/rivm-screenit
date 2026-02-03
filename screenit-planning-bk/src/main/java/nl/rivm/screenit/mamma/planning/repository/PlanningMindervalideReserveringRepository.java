@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.planning.repository;
  * ========================LICENSE_START=================================
  * screenit-planning-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -41,8 +41,9 @@ public interface PlanningMindervalideReserveringRepository extends BaseJpaReposi
 {
 	default List<MammaMindervalideReserveringProjectie> leesMindervalideReserveringen(PlanningScreeningsEenheid screeningsEenheid, Range<LocalDate> zoekPeriode)
 	{
-		return findWith(heeftScreeningsEenheidId(screeningsEenheid.getId()).with(MammaMindervalideReservering_.capaciteitBlok)
-				.and(DateSpecification.bevatLocalDate(zoekPeriode, r -> r.get(MammaMindervalideReservering_.vanaf))),
+		return findWith(heeftScreeningsEenheidId(screeningsEenheid.getId())
+				.and(DateSpecification.bevatLocalDateToDate(zoekPeriode, r -> r.get(MammaCapaciteitBlok_.vanaf)))
+				.with(MammaMindervalideReservering_.capaciteitBlok),
 			MammaMindervalideReserveringProjectie.class,
 			q -> q.projections(
 					(cb, r) -> List.of(

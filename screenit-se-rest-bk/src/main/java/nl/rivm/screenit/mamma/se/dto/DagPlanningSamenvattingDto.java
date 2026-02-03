@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.se.dto;
  * ========================LICENSE_START=================================
  * screenit-se-rest-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,9 +31,11 @@ import lombok.Setter;
 @Setter
 public class DagPlanningSamenvattingDto
 {
-	private BigDecimal dagCapaciteit;
+	private BigDecimal dagCapaciteit = BigDecimal.ZERO;
 
-	private BigDecimal beschikbaarheid;
+	private BigDecimal vrijeCapaciteit = BigDecimal.ZERO;
+
+	private BigDecimal beschikbaarheid = BigDecimal.ZERO; 
 
 	private LocalDateTime starttijd;
 
@@ -46,12 +48,4 @@ public class DagPlanningSamenvattingDto
 	private long aantalOnderbroken;
 
 	private long aantalOnvolledig;
-
-	public DagPlanningSamenvattingDto()
-	{
-		dagCapaciteit = BigDecimal.ZERO;
-		beschikbaarheid = BigDecimal.ZERO;
-		starttijd = null;
-		eindtijd = null;
-	}
 }

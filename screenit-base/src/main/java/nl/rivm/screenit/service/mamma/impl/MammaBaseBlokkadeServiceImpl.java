@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.mamma.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,7 +25,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import nl.rivm.screenit.model.OrganisatieMedewerker;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaBlokkade;
@@ -36,10 +35,10 @@ import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.mamma.MammaBaseBlokkadeService;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
 import nl.rivm.screenit.util.EntityAuditUtil;
+import nl.rivm.screenit.util.mamma.MammaScreeningsEenheidUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,7 +82,7 @@ public class MammaBaseBlokkadeServiceImpl implements MammaBaseBlokkadeService
 		return blokkadeRepository.findAll(isActief(true)
 			.and(isGeldigOp(dag))
 			.and(heeftScreeningsEenheid(screeningsEenheid)
-				.or(heeftScreeningsOrganisatie((ScreeningOrganisatie) Hibernate.unproxy(screeningsEenheid.getBeoordelingsEenheid().getParent().getRegio())))
+				.or(heeftScreeningsOrganisatie(MammaScreeningsEenheidUtil.getScreeningsOrganisatie(screeningsEenheid)))
 				.or(filterOpStandplaats(standplaats))));
 	}
 

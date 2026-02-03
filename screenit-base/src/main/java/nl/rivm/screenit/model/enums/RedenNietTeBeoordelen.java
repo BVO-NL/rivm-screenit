@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.enums;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -28,20 +28,25 @@ import lombok.Getter;
 @Getter
 public enum RedenNietTeBeoordelen
 {
+	@Deprecated
 	GEEN_MONSTER(Optional.empty()),
 
+	@Deprecated
 	BARCODE_ONLEESBAAR(Optional.empty()),
 
 	BUIS_KAPOT(Optional.of("2")),
 
 	GEEN_VLOEISTOF(Optional.of("3")),
 
+	@Deprecated
 	TE_WEINIG_ONTLASTING(Optional.empty()),
 
+	@Deprecated
 	TE_VEEL_ONTLASTING(Optional.empty()),
 
 	TECHNISCH_ONMOGELIJK(Optional.of("1")),
 
+	@Deprecated
 	MANUELE_FOUT(Optional.empty()),
 
 	AFWIJKENDE_MONSTERHOEVEELHEID(Optional.of("4"));

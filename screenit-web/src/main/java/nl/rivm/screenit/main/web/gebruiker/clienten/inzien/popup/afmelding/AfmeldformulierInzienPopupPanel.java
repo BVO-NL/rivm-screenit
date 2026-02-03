@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.inzien.popup.afmelding;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.inzien.popup.afmelding;
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -53,6 +52,7 @@ import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BriefHerdrukkenService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.BriefUtil;
+import nl.topicuszorg.documentupload.wicket.UploadDocumentLink;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -64,13 +64,11 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.EnumLabel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
-import org.apache.wicket.markup.html.link.DownloadLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.ListModel;
@@ -157,17 +155,8 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 		document = ModelUtil.sModel(getModelObject().getHandtekeningDocumentAfmelding());
 		if (isDocumentBeschikbaar(document))
 		{
-			DownloadLink downloadLink = new DownloadLink("afmeldformulierHandImg", new LoadableDetachableModel<>()
-			{
-
-				@Override
-				protected File load()
-				{
-					return uploadDocumentService.load(document.getObject());
-				}
-
-			}, "Afmeldingsformulier met handtekening." + FilenameUtils.getExtension(document.getObject().getNaam()));
-			add(downloadLink);
+			add(new UploadDocumentLink("afmeldformulierHandImg", document, true,
+				"Afmeldingsformulier met handtekening." + FilenameUtils.getExtension(document.getObject().getNaam())));
 		}
 		else
 		{

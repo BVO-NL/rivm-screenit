@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.mamma.afspraakzoeken.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -36,7 +36,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaCapaciteitBlokDto;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
@@ -50,9 +49,9 @@ import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaOnvoldoendeVrijeCapaci
 import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaStandplaatsPeriodeMetZoekbereik;
 import nl.rivm.screenit.service.mamma.impl.MammaCapaciteit;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.mamma.MammaScreeningsEenheidUtil;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -137,7 +136,7 @@ public class MammaAfspraakOptieAlgoritmeImpl implements MammaAfspraakOptieAlgori
 	private void initialiseerZoekContext(MammaDossier dossier, BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen)
 	{
 		var screeningsEenheid = standplaatsPeriodesMetZoekBereik.get(0).standplaatsPeriode().getScreeningsEenheid();
-		var screeningOrganisatie = (ScreeningOrganisatie) Hibernate.unproxy(screeningsEenheid.getBeoordelingsEenheid().getParent().getRegio());
+		var screeningOrganisatie = MammaScreeningsEenheidUtil.getScreeningsOrganisatie(screeningsEenheid);
 		var factor = dossierService.getFactorType(dossier).getFactor(screeningOrganisatie);
 		var vrijgevenMindervalideReserveringenBinnenAantalDagen = simplePreferenceService.getInteger(
 			PreferenceKey.MAMMA_VRIJGEVEN_MINDERVALIDE_RESERVERINGEN_BINNEN_AANTAL_DAGEN.name());

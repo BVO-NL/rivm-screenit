@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.mamma.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,8 +21,11 @@ package nl.rivm.screenit.service.mamma.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.dto.mamma.afspraken.IMammaAfspraakWijzigenFilter;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
@@ -35,7 +38,6 @@ import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsPeriodeService;
 import nl.topicuszorg.organisatie.model.Adres_;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -53,22 +55,35 @@ import static nl.rivm.screenit.specification.mamma.MammaStandplaatsPeriodeSpecif
 import static nl.rivm.screenit.specification.mamma.MammaStandplaatsPeriodeSpecification.overlaptMetPeriode;
 
 @Service
+@RequiredArgsConstructor
 public class MammaBaseStandplaatsPeriodeServiceImpl implements MammaBaseStandplaatsPeriodeService
 {
-	@Autowired
-	private MammaStandplaatsPeriodeRepository standplaatsPeriodeRepository;
+	private final MammaStandplaatsPeriodeRepository standplaatsPeriodeRepository;
 
 	@Override
 	public List<MammaStandplaatsPeriode> getStandplaatsPerioden(IMammaAfspraakWijzigenFilter filter)
 	{
 		return standplaatsPeriodeRepository.findAll(
-			overlaptMetPeriode(Range.closed(filter.getVanaf(), filter.getTotEnMet()))
-				.and(heeftActieveStandplaats())
-				.and(heeftActieveScreeningsEenheid())
+			heeftActieveStandplaatsEnEenheidEnValtBinnenRange(Range.closed(filter.getVanaf(), filter.getTotEnMet()))
 				.and(filterScreeningsEenheden(filter.getScreeningsEenheden()))
 				.and(locatieSpecificatie(filter)),
 			Sort.by(String.join(".", MammaStandplaatsPeriode_.STANDPLAATS_RONDE, MammaStandplaatsRonde_.STANDPLAATS, MammaStandplaats_.LOCATIE, Adres_.PLAATS))
 		);
+	}
+
+	@Override
+	public List<MammaStandplaatsPeriode> getStandplaatsPeriodenVanScreeningsEenheid(MammaScreeningsEenheid screeningsEenheid, Range<LocalDate> periode)
+	{
+		return standplaatsPeriodeRepository.findAll(
+			heeftActieveStandplaatsEnEenheidEnValtBinnenRange(periode)
+				.and(heeftScreeningsEenheid(screeningsEenheid)));
+	}
+
+	private static Specification<MammaStandplaatsPeriode> heeftActieveStandplaatsEnEenheidEnValtBinnenRange(Range<LocalDate> periode)
+	{
+		return overlaptMetPeriode(periode)
+			.and(heeftActieveStandplaats())
+			.and(heeftActieveScreeningsEenheid());
 	}
 
 	@Override

@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.clienten;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -78,7 +78,6 @@ public enum ClientContactActieTypeWrapper
 				return new ClientContactActieTypeWrapper[] { ClientContactActieTypeWrapper.GEEN, ClientContactActieTypeWrapper.CERVIX_DEELNAME_BUITEN_BVO_BMHK,
 					ClientContactActieTypeWrapper.COLON_AFMELDEN,
 					ClientContactActieTypeWrapper.COLON_HERAANMELDEN };
-
 			}
 		},
 
@@ -92,7 +91,6 @@ public enum ClientContactActieTypeWrapper
 			public ClientContactActieTypeWrapper[] getExclusie()
 			{
 				return new ClientContactActieTypeWrapper[] { ClientContactActieTypeWrapper.GEEN };
-
 			}
 		},
 
@@ -312,7 +310,7 @@ public enum ClientContactActieTypeWrapper
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN,
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN_FORCEREN,
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_WIJZIGEN, ClientContactActieTypeWrapper.MAMMA_HERAANMELDEN, ClientContactActieTypeWrapper.MAMMA_RONDE_FORCEREN,
-					ClientContactActieTypeWrapper.MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS, ClientContactActieTypeWrapper.MAMMA_HERBEOORDELEN };
+					ClientContactActieTypeWrapper.MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS, ClientContactActieTypeWrapper.MAMMA_HERBEOORDELEN };
 			}
 		},
 
@@ -325,7 +323,7 @@ public enum ClientContactActieTypeWrapper
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN,
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN_FORCEREN,
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_WIJZIGEN, ClientContactActieTypeWrapper.MAMMA_AFMELDEN, ClientContactActieTypeWrapper.MAMMA_RONDE_FORCEREN,
-					ClientContactActieTypeWrapper.MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS, ClientContactActieTypeWrapper.MAMMA_HERBEOORDELEN };
+					ClientContactActieTypeWrapper.MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS, ClientContactActieTypeWrapper.MAMMA_HERBEOORDELEN };
 			}
 		},
 
@@ -338,15 +336,15 @@ public enum ClientContactActieTypeWrapper
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_WIJZIGEN,
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN_FORCEREN,
 					ClientContactActieTypeWrapper.MAMMA_AFMELDEN, ClientContactActieTypeWrapper.MAMMA_HERAANMELDEN,
-					ClientContactActieTypeWrapper.MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS, ClientContactActieTypeWrapper.MAMMA_DOELGROEP_WIJZIGEN,
+					ClientContactActieTypeWrapper.MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS, ClientContactActieTypeWrapper.MAMMA_DOELGROEP_WIJZIGEN,
 					ClientContactActieTypeWrapper.MAMMA_HERBEOORDELEN };
 			}
 		},
 
-	MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS(
-		ClientContactActieType.MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS,
+	MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS(
+		ClientContactActieType.MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS,
 		null,
-		Recht.MEDEWERKER_CLIENT_MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS,
+		Recht.MEDEWERKER_CLIENT_MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS,
 		"icon-calendar")
 		{
 			@Override
@@ -382,7 +380,7 @@ public enum ClientContactActieTypeWrapper
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_WIJZIGEN, ClientContactActieTypeWrapper.MAMMA_HERBEOORDELEN,
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN_FORCEREN,
 					ClientContactActieTypeWrapper.MAMMA_AFMELDEN, ClientContactActieTypeWrapper.MAMMA_HERAANMELDEN, ClientContactActieTypeWrapper.MAMMA_RONDE_FORCEREN,
-					ClientContactActieTypeWrapper.MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS, ClientContactActieTypeWrapper.MAMMA_DOELGROEP_WIJZIGEN,
+					ClientContactActieTypeWrapper.MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS, ClientContactActieTypeWrapper.MAMMA_DOELGROEP_WIJZIGEN,
 					MAMMA_CLIENT_WIL_GEEN_ONDERZOEK_VERVOLG, MAMMA_VERZOEK_CLIENT_CONTACT };
 			}
 		},
@@ -400,7 +398,7 @@ public enum ClientContactActieTypeWrapper
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN,
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN_FORCEREN, ClientContactActieTypeWrapper.MAMMA_AFMELDEN, ClientContactActieTypeWrapper.MAMMA_HERAANMELDEN,
 					ClientContactActieTypeWrapper.MAMMA_RONDE_FORCEREN, ClientContactActieTypeWrapper.MAMMA_CLIENT_WIL_GEEN_ONDERZOEK_VERVOLG,
-					ClientContactActieTypeWrapper.MAMMA_VERZOEK_CLIENT_CONTACT, ClientContactActieTypeWrapper.MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS,
+					ClientContactActieTypeWrapper.MAMMA_VERZOEK_CLIENT_CONTACT, ClientContactActieTypeWrapper.MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS,
 					ClientContactActieTypeWrapper.MAMMA_DOELGROEP_WIJZIGEN, ClientContactActieTypeWrapper.MAMMA_HERBEOORDELEN };
 			}
 		},
@@ -415,8 +413,8 @@ public enum ClientContactActieTypeWrapper
 			public ClientContactActieTypeWrapper[] getExclusie()
 			{
 				return new ClientContactActieTypeWrapper[] { ClientContactActieTypeWrapper.GEEN, ClientContactActieTypeWrapper.CERVIX_DEELNAME_BUITEN_BVO_BMHK,
-					ClientContactActieTypeWrapper.MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS,
-					ClientContactActieTypeWrapper.MAMMA_MINDER_VALIDE_NIET_MEER_ZIEKENHUIS,
+					ClientContactActieTypeWrapper.MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS,
+					ClientContactActieTypeWrapper.MAMMA_MINDERVALIDE_NIET_MEER_ZIEKENHUIS,
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN, ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_WIJZIGEN, ClientContactActieTypeWrapper.MAMMA_RONDE_FORCEREN,
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN_FORCEREN, ClientContactActieTypeWrapper.MAMMA_HERBEOORDELEN };
 			}
@@ -479,7 +477,7 @@ public enum ClientContactActieTypeWrapper
 				return new ClientContactActieTypeWrapper[] { ClientContactActieTypeWrapper.GEEN, ClientContactActieTypeWrapper.CERVIX_DEELNAME_BUITEN_BVO_BMHK,
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN, ClientContactActieTypeWrapper.MAMMA_HERBEOORDELEN,
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_WIJZIGEN, ClientContactActieTypeWrapper.MAMMA_AFMELDEN, ClientContactActieTypeWrapper.MAMMA_HERAANMELDEN,
-					ClientContactActieTypeWrapper.MAMMA_RONDE_FORCEREN, ClientContactActieTypeWrapper.MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS,
+					ClientContactActieTypeWrapper.MAMMA_RONDE_FORCEREN, ClientContactActieTypeWrapper.MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS,
 					ClientContactActieTypeWrapper.MAMMA_DOELGROEP_WIJZIGEN, MAMMA_CLIENT_WIL_GEEN_ONDERZOEK_VERVOLG, MAMMA_VERZOEK_CLIENT_CONTACT };
 			}
 		},
@@ -497,15 +495,15 @@ public enum ClientContactActieTypeWrapper
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN,
 					ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_WIJZIGEN, ClientContactActieTypeWrapper.MAMMA_AFMELDEN, ClientContactActieTypeWrapper.MAMMA_HERAANMELDEN,
 					ClientContactActieTypeWrapper.MAMMA_RONDE_FORCEREN, ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN_FORCEREN,
-					ClientContactActieTypeWrapper.MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS,
+					ClientContactActieTypeWrapper.MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS,
 					ClientContactActieTypeWrapper.MAMMA_DOELGROEP_WIJZIGEN, MAMMA_CLIENT_WIL_GEEN_ONDERZOEK_VERVOLG, MAMMA_VERZOEK_CLIENT_CONTACT };
 			}
 		},
 
-	MAMMA_MINDER_VALIDE_NIET_MEER_ZIEKENHUIS(
-		ClientContactActieType.MAMMA_MINDER_VALIDE_NIET_MEER_ZIEKENHUIS,
+	MAMMA_MINDERVALIDE_NIET_MEER_ZIEKENHUIS(
+		ClientContactActieType.MAMMA_MINDERVALIDE_NIET_MEER_ZIEKENHUIS,
 		null,
-		Recht.MEDEWERKER_CLIENT_MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS_TERUGDRAAIEN,
+		Recht.MEDEWERKER_CLIENT_MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS_TERUGDRAAIEN,
 		"icon-calendar")
 		{
 			@Override

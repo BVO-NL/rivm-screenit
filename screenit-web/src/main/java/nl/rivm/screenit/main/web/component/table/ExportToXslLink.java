@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.component.table;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -32,6 +32,7 @@ import java.time.Duration;
 import java.util.Iterator;
 import java.util.List;
 
+import nl.rivm.screenit.Constants;
 import nl.topicuszorg.csv2xls.services.Csv2xlsService;
 
 import org.apache.commons.io.IOUtils;
@@ -111,7 +112,8 @@ public class ExportToXslLink<T extends Serializable, S> extends GenericPanel<T>
 							String csv = getCsv();
 
 							outputStream = new ByteArrayOutputStream();
-							csv2xlsService.createXls(csv.toString(), outputStream, false, "HeaderValueYjKFLs23", "CelValueFKWsx3D", bestandsnaam, "dd-MM-yyyy", "dd-MM-yyyy HH:mm",
+							csv2xlsService.createXls(csv, outputStream, false, "HeaderValueYjKFLs23", "CelValueFKWsx3D", bestandsnaam, getDatumFormat(),
+								getDatumTijdFormat(),
 								false);
 
 							inputStream = new ByteArrayInputStream(outputStream.toByteArray());
@@ -151,6 +153,16 @@ public class ExportToXslLink<T extends Serializable, S> extends GenericPanel<T>
 				LOG.error("Fout bij het sluiten van stream: " + e.getMessage(), e);
 			}
 		}
+	}
+
+	protected String getDatumFormat()
+	{
+		return Constants.DEFAULT_DATE_FORMAT;
+	}
+
+	protected String getDatumTijdFormat()
+	{
+		return Constants.DEFAULT_DATE_TIME_SECONDS_FORMAT;
 	}
 
 	protected String getCsv() throws NullPointerException
@@ -276,6 +288,7 @@ public class ExportToXslLink<T extends Serializable, S> extends GenericPanel<T>
 			this.dataTable.getDataProvider().detach();
 		}
 	}
+
 	public void setDataTable(ScreenitDataTable<T, S> dataTable)
 	{
 		this.dataTable = dataTable;

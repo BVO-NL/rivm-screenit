@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.verwerkingverslag.mamma;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -71,7 +71,7 @@ public class MammaStandplaatsRondeUitnodigenRapportage extends AbstractHibernate
 	private Long totaalDubbeleTijd;
 
 	@Column
-	private Long totaalMinderValide;
+	private Long totaalMindervalide;
 
 	@Column
 	private Long totaalTehuis;
@@ -92,7 +92,7 @@ public class MammaStandplaatsRondeUitnodigenRapportage extends AbstractHibernate
 	private Long uitTeNodigenDubbeleTijd;
 
 	@Column
-	private Long uitTeNodigenMinderValide;
+	private Long uitTeNodigenMindervalide;
 
 	@Column
 	private Long uitTeNodigenTehuis;

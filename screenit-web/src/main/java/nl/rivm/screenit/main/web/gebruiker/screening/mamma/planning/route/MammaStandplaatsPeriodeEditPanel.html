@@ -2,7 +2,7 @@
   ========================LICENSE_START=================================
   screenit-web
   %%
-  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
   %%
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -101,14 +101,14 @@
 									<tr>
 										<td>Totaal</td>
 										<td wicket:id="totaalDubbeleTijd">12</td>
-										<td wicket:id="totaalMinderValide">12</td>
+										<td wicket:id="totaalMindervalide">12</td>
 										<td wicket:id="totaalTehuis">12</td>
 										<td wicket:id="totaalSuspect">12</td>
 									</tr>
 									<tr>
 										<td>Uit te nodigen</td>
 										<td wicket:id="uitTeNodigenDubbeleTijd">12</td>
-										<td wicket:id="uitTeNodigenMinderValide">12</td>
+										<td wicket:id="uitTeNodigenMindervalide">12</td>
 										<td wicket:id="uitTeNodigenTehuis">12</td>
 										<td wicket:id="uitTeNodigenSuspect">12</td>
 									</tr>
@@ -187,27 +187,17 @@
 											</div>
 										</div>
 									</div>
-									<div wicket:id="minderValideUitwijkStandplaatsContainer">
-										<div class="control-group">
-											<label class="control-label">Mindervalide uitwijk standplaats</label>
-											<div class="controls">
-												<div>
-													<select wicket:id="minderValideUitwijkStandplaatsId"></select>
-												</div>
-											</div>
-										</div>
-									</div>
 									<div class="control-group">
-										<label class="control-label">Alle mindervalide uitnodigen vanaf</label>
+										<label class="control-label">Alle mindervaliden uitnodigen vanaf</label>
 										<div class="controls">
 											<div>
 												<div class="btn-group periode-filter">
 													<div class="input-append">
-														<input name="minderValideUitnodigenVanaf" wicket:id="minderValideUitnodigenVanaf" type="text"
+														<input name="mindervalideUitnodigenVanaf" wicket:id="mindervalideUitnodigenVanaf" type="text"
 															   placeholder="dd-mm-jaar" size="16"
 															   class="input-small datum three-months"/>
 														<a class="add-on js-datepicker-show"
-														   title="minderValideUitnodigenVanaf"
+														   title="mindervalideUitnodigenVanaf"
 														   tabindex="-1">
 															<i class="icon-calendar"></i>
 														</a>

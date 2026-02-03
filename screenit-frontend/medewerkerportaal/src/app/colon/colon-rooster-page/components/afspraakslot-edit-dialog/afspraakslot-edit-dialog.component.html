@@ -2,7 +2,7 @@
   ========================LICENSE_START=================================
   medewerkerportaal
   %%
-  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
   %%
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -23,7 +23,7 @@
     <div class="clr-col">
       <clr-combobox-container>
         <label [class.clr-required-mark]="!afspraakslotForm.get('kamer')?.disabled" for="kamer">Kamer</label>
-        <clr-combobox formControlName="kamer" required id="kamer" class=" kamer-selector" data-testid="cb_kamer_selector">
+        <clr-combobox formControlName="kamer" required id="kamer" class="kamer-selector" data-testid="cb_kamer_selector">
           <clr-options>
             <clr-option [clrValue]="kamer" *clrOptionItems="let kamer of kamers$(); field: 'naam'">{{ kamer.naam }}</clr-option>
           </clr-options>
@@ -32,8 +32,7 @@
       </clr-combobox-container>
       <clr-date-container>
         <label [class.clr-required-mark]="!datumCtrl.disabled" for="datum">Datum</label>
-        <input autocomplete="off" clrDate formControlName="datum" [disabled]="!bewerkenToegestaan" name="datum" id="datum" type="date" [min]="now"
-               data-testid="input_datum"/>
+        <input autocomplete="off" clrDate formControlName="datum" [disabled]="!bewerkenToegestaan" name="datum" id="datum" type="date" [min]="now" data-testid="input_datum"/>
         <clr-control-error *clrIfError="'required'">De datum is verplicht</clr-control-error>
         <clr-control-error *clrIfError="'datumInVerleden'">{{ datumCtrl.getError('datumInVerleden') }}</clr-control-error>
         <clr-control-error *clrIfError="'valideDatum'">{{ datumCtrl.getError('valideDatum') }}</clr-control-error>
@@ -67,24 +66,12 @@
   </form>
   <ng-container buttons>
     @if (verwijderenToegestaan) {
-      <button type="button"
-              class="btn btn-danger"
-              (click)="confirmDeleteSlot()"
-              data-testid="btn-verwijderen">
-        Verwijderen
-      </button>
+      <button type="button" class="btn btn-danger" (click)="confirmDeleteSlot()" data-testid="btn-verwijderen">Verwijderen</button>
     }
     <div class="btn-group">
       <button type="button" class="btn" (click)="cancel()" data-testid="btn_annuleren">{{ bewerkenToegestaan ? 'Annuleren' : 'Sluiten' }}</button>
       @if (bewerkenToegestaan) {
-        <button type="button"
-                class="btn btn-primary"
-                [disabled]="afspraakslotForm.invalid"
-                (click)="save()"
-                data-testid="btn_opslaan"
-        >
-          Opslaan
-        </button>
+        <button type="button" class="btn btn-primary" [disabled]="afspraakslotForm.invalid" (click)="save()" data-testid="btn_opslaan">Opslaan</button>
       }
     </div>
   </ng-container>

@@ -1,0 +1,102 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<div class="visitatie-header">
+  <h2>Visitatie overzicht</h2>
+  @if (magToevoegen) {
+    <clr-dropdown [clrCloseMenuOnItemClick]="true">
+      <button class="btn btn-primary header-btn" data-testid="visitatie_toevoegen_btn" clrDropdownTrigger>
+        <cds-icon shape="plus"></cds-icon>
+        Visitatie
+      </button>
+      <clr-dropdown-menu clrPosition="bottom-right">
+        <button clrDropdownItem (click)="openVisitatieToevoegenDialog('be')" data-testid="visitatie_toevoegen_be_btn">Visitatie voor BE</button>
+        <button clrDropdownItem (click)="openVisitatieToevoegenDialog('insteltechniek')" data-testid="visitatie_toevoegen_insteltechniek_btn">Visitatie voor insteltechniek</button>
+      </clr-dropdown-menu>
+    </clr-dropdown>
+  }
+</div>
+
+<app-mamma-visitatie-filter (filter)="filterValidaties($event)" class="visitatie-filter"/>
+
+<clr-datagrid class="visitatie-grid" data-testid="visitatie_grid" (clrDgRefresh)="refreshData($event)">
+  <clr-dg-column clrDgSortBy="omschrijving" data-testid="omschrijving_column-header">Omschrijving</clr-dg-column>
+  <clr-dg-column clrDgSortBy="gestartOp" data-testid="gestart_column-header">Gestart</clr-dg-column>
+  <clr-dg-column clrDgSortBy="afgerondOp" data-testid="afgerondOp_column-header">Afgerond</clr-dg-column>
+  <clr-dg-column clrDgSortBy="aangemaaktOp" data-testid="aangemaaktOp_column-header">Aangemaakt</clr-dg-column>
+  <clr-dg-column clrDgSortBy="aangemaaktDoor" data-testid="aangemaaktDoor_column-header">Door</clr-dg-column>
+  <clr-dg-column clrDgSortBy="status" data-testid="status_column-header">Status</clr-dg-column>
+  <clr-dg-column clrDgSortBy="beoordelingsEenheid.naam" data-testid="beoordelingseenheid_column-header">BE</clr-dg-column>
+  <clr-dg-column class="btn-column">Rapportage</clr-dg-column>
+  <clr-dg-column class="btn-column">Vragenlijst</clr-dg-column>
+  <clr-dg-column class="btn-column"></clr-dg-column>
+  <clr-dg-column class="btn-column"></clr-dg-column>
+
+  @if (visitaties().length) {
+    @for (visitatie of visitaties(); track visitatie) {
+      <clr-dg-row data-testid="visitatie_rij" [clrDgItem]="visitatie">
+        <clr-dg-cell (click)="openVisitatieEditDialog(visitatie)">{{ visitatie.omschrijving }}</clr-dg-cell>
+        <clr-dg-cell (click)="openVisitatieEditDialog(visitatie)">{{ visitatie.gestartOp | date: NL_DATE_TIME_FORMAT }}</clr-dg-cell>
+        <clr-dg-cell (click)="openVisitatieEditDialog(visitatie)">{{ visitatie.afgerondOp | date: NL_DATE_TIME_FORMAT }}</clr-dg-cell>
+        <clr-dg-cell (click)="openVisitatieEditDialog(visitatie)">{{ visitatie.aangemaaktOp | date: NL_DATE_TIME_FORMAT }}</clr-dg-cell>
+        <clr-dg-cell (click)="openVisitatieEditDialog(visitatie)">{{ visitatie.aangemaaktDoor }}</clr-dg-cell>
+        <clr-dg-cell (click)="openVisitatieEditDialog(visitatie)">{{ visitatie.status | titlecase }}</clr-dg-cell>
+        <clr-dg-cell (click)="openVisitatieEditDialog(visitatie)">{{ visitatie.beoordelingseenheid?.naam }}</clr-dg-cell>
+        <clr-dg-cell class="clr-justify-content-center">
+          @if (visitatie.rapportageDocumentId) {
+            <button class="btn btn-icon" (click)="downloadDocument(visitatie.rapportageDocumentId!, 'rapportage.xlsx')" data-testid="download_rapportage_btn">
+              <cds-icon shape="download" title="Rapportage downloaden"></cds-icon>
+            </button>
+          }
+        </clr-dg-cell>
+        <clr-dg-cell class="clr-justify-content-center">
+          @if (visitatie.vragenlijstDocumentId) {
+            <button class="btn btn-icon" (click)="downloadDocument(visitatie.vragenlijstDocumentId!, 'vragenlijst.xlsx')" data-testid="download_vragenlijst_btn">
+              <cds-icon shape="download" title="Vragenlijst downloaden"></cds-icon>
+            </button>
+          }
+        </clr-dg-cell>
+        <clr-dg-cell class="clr-justify-content-center">
+          @if (magInzien) {
+            <button class="btn btn-icon" (click)="navigeerNaarVisitatie(visitatie.id)" data-testid="inzien_visitatie_btn">
+              <cds-icon shape="pop-out" title="Naar visitatie gaan"></cds-icon>
+            </button>
+          }
+        </clr-dg-cell>
+        <clr-dg-cell class="clr-justify-content-center">
+          @if (magVerwijderen) {
+            <button class="btn btn-icon btn-danger" (click)="openVerwijderenDialog(visitatie)" data-testid="verwijderen_visitatie_btn">
+              <cds-icon shape="trash" title="Visitatie verwijderen"></cds-icon>
+            </button>
+          }
+        </clr-dg-cell>
+      </clr-dg-row>
+    }
+  }
+  <clr-dg-footer>
+    <clr-dg-pagination
+      #pagination
+      [clrDgPageSize]="paginering().paginaGrootte"
+      [clrDgTotalItems]="paginering().totaal"
+      [clrDgPage]="paginering().paginaNummer"
+      [clrDgLastPage]="laatstePagina()"
+    />
+  </clr-dg-footer>
+</clr-datagrid>

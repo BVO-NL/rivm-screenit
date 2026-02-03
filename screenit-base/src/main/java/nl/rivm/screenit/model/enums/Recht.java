@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.enums;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -438,8 +438,6 @@ public enum Recht implements INaam
 		"Screening projectbrieven printen",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA }),
 
-	MEDEWERKER_SCREENING_NIETTEBEOORDELEN("Niet te beoordelen monsters scannen", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }),
-
 	MEDEWERKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN(
 		"Verwerken ongeldige berichten",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA }),
@@ -786,14 +784,14 @@ public enum Recht implements INaam
 		new ToegangLevel[] { ToegangLevel.LANDELIJK },
 		Actie.TOEVOEGEN),
 
-	MEDEWERKER_CLIENT_MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS(
-		"Mindervalide onderzoek ziekenhuis",
+	MEDEWERKER_CLIENT_MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS(
+		"Mindervalidenonderzoek ziekenhuis",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.MAMMA },
 		new ToegangLevel[] { ToegangLevel.LANDELIJK },
 		Actie.AANPASSEN),
 
-	MEDEWERKER_CLIENT_MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS_TERUGDRAAIEN(
-		"Mindervalide onderzoek ziekenhuis terugdraaien",
+	MEDEWERKER_CLIENT_MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS_TERUGDRAAIEN(
+		"Mindervalidenonderzoek ziekenhuis terugdraaien",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.MAMMA },
 		new ToegangLevel[] { ToegangLevel.LANDELIJK },
 		Actie.AANPASSEN),
@@ -1058,6 +1056,11 @@ public enum Recht implements INaam
 		"Visitatie",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.MAMMA },
 		new ToegangLevel[] { ToegangLevel.LANDELIJK }),
+
+	MEDEWERKER_VISITATIE_INSTELTECHNIEK(
+		"Visitatie Insteltechniek",
+		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.MAMMA },
+		new ToegangLevel[] { ToegangLevel.LANDELIJK }, Actie.INZIEN),
 
 	MEDEWERKER_AD_HOC_MEEMKIJKVERZOEK_WERKLIJST(
 		"Ad hoc meekijkverzoek werklijst",

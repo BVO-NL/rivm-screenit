@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.mamma;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,6 +21,7 @@ package nl.rivm.screenit.service.mamma;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -28,9 +29,13 @@ import nl.rivm.screenit.dto.mamma.afspraken.IMammaAfspraakWijzigenFilter;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 
+import com.google.common.collect.Range;
+
 public interface MammaBaseStandplaatsPeriodeService
 {
 	List<MammaStandplaatsPeriode> getStandplaatsPerioden(IMammaAfspraakWijzigenFilter filter);
+
+	List<MammaStandplaatsPeriode> getStandplaatsPeriodenVanScreeningsEenheid(MammaScreeningsEenheid screeningsEenheid, Range<LocalDate> periode);
 
 	MammaStandplaatsPeriode getStandplaatsPeriodeOpDatum(MammaScreeningsEenheid screeningsEenheid, Date datum);
 }

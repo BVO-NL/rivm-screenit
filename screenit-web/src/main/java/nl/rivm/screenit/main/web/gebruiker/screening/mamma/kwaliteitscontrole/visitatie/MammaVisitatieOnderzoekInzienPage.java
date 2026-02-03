@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.v
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,11 +26,14 @@ import java.util.List;
 import java.util.Map;
 
 import nl.rivm.screenit.main.service.mamma.MammaImsService;
+import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaClientPaspoortPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaScreeningBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaBeoordelenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaRondePanel;
+import nl.rivm.screenit.model.enums.Actie;
+import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaVisitatieOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammaBeLezerSoort;
@@ -113,8 +116,10 @@ public class MammaVisitatieOnderzoekInzienPage extends AbstractMammaBeoordelenPa
 	{
 		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
 		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.visitatie.overzicht",
-			MammaVisitatieOverzichtPage.class));
-		contextMenuItems.addAll(MammaVisitatieOnderdeelWrapper.getContextMenuItems());
+			MammaVisitatieOverzichtAngularPage.class));
+		contextMenuItems.addAll(MammaVisitatieOnderdeelWrapper.getContextMenuItems(
+		    ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VISITATIE_INSTELTECHNIEK, Actie.INZIEN),
+			ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VISITATIE, Actie.INZIEN)));
 
 		return contextMenuItems;
 	}

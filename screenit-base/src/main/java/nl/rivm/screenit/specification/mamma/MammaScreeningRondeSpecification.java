@@ -4,7 +4,7 @@ package nl.rivm.screenit.specification.mamma;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -162,9 +162,9 @@ public class MammaScreeningRondeSpecification
 		});
 	}
 
-	public static ExtendedSpecification<MammaScreeningRonde> isMinderValideOnderzoekZiekenhuis(boolean minderValideOnderzoekZiekenhuis)
+	public static ExtendedSpecification<MammaScreeningRonde> isMindervalideOnderzoekZiekenhuis(boolean mindervalideOnderzoekZiekenhuis)
 	{
-		return (r, q, cb) -> cb.equal(r.get(MammaScreeningRonde_.minderValideOnderzoekZiekenhuis), minderValideOnderzoekZiekenhuis);
+		return (r, q, cb) -> cb.equal(r.get(MammaScreeningRonde_.mindervalideOnderzoekZiekenhuis), mindervalideOnderzoekZiekenhuis);
 	}
 
 	public static ExtendedSpecification<MammaScreeningRonde> heeftGeenScreeningRondeEvent()
@@ -177,7 +177,7 @@ public class MammaScreeningRondeSpecification
 		return (r, q, cb) -> cb.isNull(r.get(MammaScreeningRonde_.laatsteOnderzoek));
 	}
 
-	public static ExtendedSpecification<MammaScreeningRonde> heeftUitnogigingsNummer(long uitnodigingsNummer)
+	public static ExtendedSpecification<MammaScreeningRonde> heeftUitnodigingsNummer(long uitnodigingsNummer)
 	{
 		return (r, q, cb) -> cb.equal(r.get(MammaScreeningRonde_.uitnodigingsNr), uitnodigingsNummer);
 	}

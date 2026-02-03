@@ -2,7 +2,7 @@
   ========================LICENSE_START=================================
   medewerkerportaal
   %%
-  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
   %%
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -33,7 +33,7 @@
         </clr-combobox-container>
         @if (isNieuw) {
           <div class="clr-checkbox-wrapper">
-            <input type="checkbox" id="alleKamers" formControlName="alleKamers">
+            <input type="checkbox" id="alleKamers" formControlName="alleKamers"/>
             <label for="alleKamers" class="clr-control-label">Alle kamers</label>
           </div>
         }
@@ -42,36 +42,44 @@
       <div class="control-checkbox-grid">
         <clr-date-container class="no-error-icon">
           <label [class.clr-required-mark]="!datumCtrl.disabled" for="datum">Datum</label>
-          <input [disabled]=!this.bewerkenToegestaan autocomplete="off" clrDate formControlName="datum" name="datum" id="datum" type="date"
+          <input
+            [disabled]="!this.bewerkenToegestaan"
+            autocomplete="off"
+            clrDate
+            formControlName="datum"
+            name="datum"
+            id="datum"
+            type="date"
             [min]="now"
             class="clr-col-md-8"
-            data-testid="input_datum"/>
+            data-testid="input_datum"
+          />
           <clr-control-error *clrIfError="'required'">De datum is verplicht</clr-control-error>
           <clr-control-error *clrIfError="'datumInVerleden'">{{ datumCtrl.getError('datumInVerleden') }}</clr-control-error>
           <clr-control-error *clrIfError="'valideDatum'">{{ datumCtrl.getError('valideDatum') }}</clr-control-error>
         </clr-date-container>
         <div class="clr-checkbox-wrapper">
-          <input type="checkbox" id="heleDag" formControlName="heleDag">
+          <input type="checkbox" id="heleDag" formControlName="heleDag"/>
           <label for="heleDag" class="clr-control-label">Hele dag</label>
         </div>
       </div>
 
       <clr-input-container>
         <label [class.clr-required-mark]="!startTijdCtrl.disabled" for="startTijd">Starttijd</label>
-		  <input clrInput autocomplete="off" formControlName="vanaf" id="startTijd" type="time" data-testid="input_start_tijd"/>
+        <input clrInput autocomplete="off" formControlName="vanaf" id="startTijd" type="time" data-testid="input_start_tijd"/>
         <clr-control-error *clrIfError="'required'">De starttijd is verplicht</clr-control-error>
         <clr-control-error *clrIfError="'tijdStappen'">{{ startTijdCtrl.getError('tijdStappen') }}</clr-control-error>
       </clr-input-container>
 
       <clr-input-container>
         <label [class.clr-required-mark]="!eindTijdCtrl.disabled" for="startTijd">Eindtijd</label>
-		  <input clrInput autocomplete="off" formControlName="tot" id="eindTijd" type="time" data-testid="input_eind_tijd"/>
+        <input clrInput autocomplete="off" formControlName="tot" id="eindTijd" type="time" data-testid="input_eind_tijd"/>
         <clr-control-error *clrIfError="'required'">De eindtijd is verplicht</clr-control-error>
       </clr-input-container>
 
       <clr-input-container>
-		  <label for="omschrijving" [class.clr-required-mark]="!blokkadeForm.get('omschrijving')?.disabled">Omschrijving</label>
-		  <input clrInput id="omschrijving" formControlName="omschrijving" type="text" data-testid="input_omschrijving">
+        <label for="omschrijving" [class.clr-required-mark]="!blokkadeForm.get('omschrijving')?.disabled">Omschrijving</label>
+        <input clrInput id="omschrijving" formControlName="omschrijving" type="text" data-testid="input_omschrijving"/>
         <clr-control-error *clrIfError="'required'">Omschrijving is verplicht</clr-control-error>
       </clr-input-container>
     </div>
@@ -82,24 +90,12 @@
 
   <ng-container buttons>
     @if (verwijderenToegestaan) {
-      <button type="button"
-        class="btn btn-danger"
-        (click)="confirmDelete()"
-        data-testid="btn-verwijderen">
-        Verwijderen
-      </button>
+      <button type="button" class="btn btn-danger" (click)="confirmDelete()" data-testid="btn-verwijderen">Verwijderen</button>
     }
     <div class="btn-group">
       <button type="button" class="btn" (click)="cancel()" data-testid="btn_annuleren">{{ bewerkenToegestaan ? 'Annuleren' : 'Sluiten' }}</button>
       @if (bewerkenToegestaan) {
-        <button type="button"
-                class="btn btn-primary"
-                [disabled]="blokkadeForm.invalid"
-                (click)="save()"
-                data-testid="btn_opslaan"
-        >
-          Opslaan
-        </button>
+        <button type="button" class="btn btn-primary" [disabled]="blokkadeForm.invalid" (click)="save()" data-testid="btn_opslaan">Opslaan</button>
       }
     </div>
   </ng-container>

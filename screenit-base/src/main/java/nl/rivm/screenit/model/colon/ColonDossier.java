@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.colon;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,8 +26,6 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -38,7 +36,6 @@ import lombok.Setter;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Dossier;
-import nl.rivm.screenit.model.colon.enums.InactiveerReden;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.envers.Audited;
@@ -56,9 +53,6 @@ public class ColonDossier extends Dossier<ColonScreeningRonde, ColonAfmelding>
 	@OneToOne(mappedBy = "colonDossier", optional = false)
 	@JsonBackReference
 	private Client client;
-
-	@Enumerated(EnumType.STRING)
-	private InactiveerReden inactiveerReden;
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@NotAudited

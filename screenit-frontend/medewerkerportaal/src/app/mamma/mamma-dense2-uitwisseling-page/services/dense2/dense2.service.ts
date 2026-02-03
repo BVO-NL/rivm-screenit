@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -36,7 +36,7 @@ export class Dense2Service {
   }
 
   export(bestandsnaam: string): Observable<Blob> {
-    return this.fileService.download(`${this.baseUrl}/export`, bestandsnaam)
+    return this.fileService.download(`${this.baseUrl}/export`, bestandsnaam, 'text/csv')
   }
 
   updateConfiguratie(configuratie: MammaDense2Configuratie): Observable<void> {

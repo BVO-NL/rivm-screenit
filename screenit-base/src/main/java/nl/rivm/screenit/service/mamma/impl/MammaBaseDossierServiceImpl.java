@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.mamma.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -182,7 +182,7 @@ public class MammaBaseDossierServiceImpl implements MammaBaseDossierService
 		if (heeftGbaPostcode(dossier) && clientService.isLevendeInwonerNederlandMetGbaIndicatie(dossier.getClient()))
 		{
 			var ronde = dossier.getLaatsteScreeningRonde();
-			if (ronde != null && !ronde.getMinderValideOnderzoekZiekenhuis()
+			if (ronde != null && !ronde.getMindervalideOnderzoekZiekenhuis()
 				&& (ronde.getStatus() == ScreeningRondeStatus.LOPEND || viaSePassant && afmeldService.magEenmaligHeraanmelden(dossier.getClient())))
 			{
 				var laatsteUitnodiging = ronde.getLaatsteUitnodiging();

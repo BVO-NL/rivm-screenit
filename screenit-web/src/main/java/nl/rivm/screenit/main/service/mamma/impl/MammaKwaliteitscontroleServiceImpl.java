@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.service.mamma.impl;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,20 +24,26 @@ package nl.rivm.screenit.main.service.mamma.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.Constants;
+import nl.rivm.screenit.main.mappers.mamma.MammaVisitatieMapper;
+import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieRequestDto;
+import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieResponseDto;
+import nl.rivm.screenit.main.service.mamma.MammaBeoordelingsEenheidService;
 import nl.rivm.screenit.main.service.mamma.MammaFotobesprekingService;
 import nl.rivm.screenit.main.service.mamma.MammaKwaliteitscontroleService;
 import nl.rivm.screenit.main.service.mamma.MammaVisitatieService;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BezwaarType;
@@ -71,16 +77,16 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 @Service
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontroleService
 {
 	@Autowired
@@ -110,8 +116,14 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 	@Autowired
 	private UploadDocumentService uploadDocumentService;
 
+	@Autowired
+	private MammaVisitatieMapper mammaVisitatieMapper;
+
+	@Autowired
+	private MammaBeoordelingsEenheidService beoordelingsEenheidService;
+
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public List<String> saveOrUpdateFotobespreking(MammaFotobespreking fotobespreking, File file)
 	{
 		hibernateService.saveOrUpdate(fotobespreking);
@@ -168,7 +180,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public String addFotobesprekingOnderzoek(MammaFotobespreking fotobespreking, Client client)
 	{
 		String melding = null;
@@ -205,7 +217,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void deleteBesprokenFotobesprekingOnderzoek(MammaFotobesprekingOnderzoek fotobesprekingOnderzoek)
 	{
 		if (fotobesprekingOnderzoek.getStatus() == MammaFotobesprekingOnderzoekStatus.NIET_BESPROKEN)
@@ -222,14 +234,14 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void deleteFotobespreking(MammaFotobespreking fotobespreking)
 	{
 		hibernateService.delete(fotobespreking);
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void deleteVisitatieOnderzoek(MammaVisitatieOnderzoek visitatieOnderzoek)
 	{
 		if (visitatieOnderzoek.getStatus() == MammaVisitatieOnderzoekStatus.NIET_GEZIEN)
@@ -246,7 +258,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void deleteVisitatie(MammaVisitatie visitatie)
 	{
 		if (visitatie.getRapportageBijlage() != null)
@@ -263,7 +275,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public String addVisitatieOnderzoek(MammaVisitatie visitatie, MammaVisitatieOnderdeel visitatieOnderdeel, Client client)
 	{
 		String melding = null;
@@ -366,7 +378,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void wijzigOnderzoekStatus(MammaFotobesprekingOnderzoek fotobesprekingOnderzoek, MammaFotobesprekingOnderzoekStatus nieuweStatus)
 	{
 		fotobesprekingOnderzoek.setStatus(nieuweStatus);
@@ -374,7 +386,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void startKwaliteitscontrole(MammaIKwaliteitscontrole kwaliteitscontrole)
 	{
 		kwaliteitscontrole.setGestartOp(dateSuppier.getDate());
@@ -382,14 +394,14 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void fotobesprekingAfronden(MammaFotobespreking fotobespreking)
 	{
 		kwaliteitscontroleAfronden(fotobespreking);
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void herbeoordeelFotobesprekingOnderzoek(MammaFotobesprekingOnderzoek fotobesprekingOnderzoek)
 	{
 		MammaBeoordeling beoordeling = fotobesprekingOnderzoek.getBeoordeling();
@@ -421,7 +433,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void wijzigOnderzoekStatus(MammaVisitatieOnderzoek visitatieOnderzoek, MammaVisitatieOnderzoekStatus nieuweOnderzoekStatus)
 	{
 		visitatieOnderzoek.setStatus(nieuweOnderzoekStatus);
@@ -429,14 +441,92 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
-	public List<String> saveOrUpdateVisitatie(MammaVisitatie visitatie, Map<MammaVisitatieOnderdeel, File> fileMap, Map<File, String> fileNameMap,
-		UploadDocument rapportageBijlage, UploadDocument vragenlijstBijlage)
+	@Transactional
+	public MammaVisitatieResponseDto maakOfBewerkVisitatie(MammaVisitatieRequestDto request, Map<String, MultipartFile> bestanden, MultipartFile rapportage,
+		MultipartFile vragenlijst, OrganisatieMedewerker ingelogdeGebruiker)
 	{
-		List<String> messages = new ArrayList<>();
+		MammaVisitatie visitatie = null;
+		if (request.getId() != null)
+		{
+			visitatie = visitatieService.getById(request.getId());
+			if (visitatie == null)
+			{
+				throw new IllegalArgumentException("Visitatie met id " + request.getId() + " niet gevonden.");
+			}
+		}
+		else
+		{
+			visitatie = new MammaVisitatie();
+			visitatie.setAangemaaktOp(dateSuppier.getDate());
+			visitatie.setAangemaaktDoor(ingelogdeGebruiker);
+		}
+		visitatie.setFotorichting(request.getFotorichting());
+		visitatie.setStatus(request.getStatus());
+		visitatie.setOmschrijving(request.getOmschrijving());
+		if (request.getBeoordelingseenheidId() != null)
+		{
+			visitatie.setBeoordelingsEenheid(beoordelingsEenheidService.getBeoordelingseenheidById(request.getBeoordelingseenheidId()));
+		}
+		return verwerkVisitatieBestanden(visitatie, bestanden, rapportage, vragenlijst);
+	}
+
+	private MammaVisitatieResponseDto verwerkVisitatieBestanden(MammaVisitatie visitatie,
+		Map<String, MultipartFile> bestanden,
+		MultipartFile rapportage,
+		MultipartFile vragenlijst)
+	{
+		var bestandenMap = bestanden.entrySet().stream()
+			.filter(e -> Arrays.stream(MammaVisitatieOnderdeel.values())
+				.anyMatch(enumVal -> enumVal.name().equals(e.getKey())))
+			.collect(Collectors.toMap(
+				e -> MammaVisitatieOnderdeel.valueOf(e.getKey()),
+				e ->
+				{
+					try
+					{
+						var fileUpload = e.getValue();
+						var extensie = FilenameUtils.getExtension(fileUpload.getOriginalFilename());
+						var file = File.createTempFile(fileUpload.getOriginalFilename(), extensie != null && !extensie.isEmpty() ? "." + extensie : null);
+						fileUpload.transferTo(file);
+						return file;
+					}
+					catch (Exception ex)
+					{
+						throw new RuntimeException("Fout bij opslaan van upload bestand voor onderdeel: " + e.getKey(), ex);
+					}
+				}
+			));
+
+		UploadDocument rapportageDocument = null;
+		UploadDocument vragenlijstDocument = null;
+		var visitatieResponse = new MammaVisitatieResponseDto();
+
+		try
+		{
+			rapportageDocument = uploadDocumentService.multipartToUploadDocument(rapportage);
+			vragenlijstDocument = uploadDocumentService.multipartToUploadDocument(vragenlijst);
+		}
+		catch (IOException | IllegalStateException e)
+		{
+			LOG.error("Fout bij opslaan van visitatie bijlagen.", e);
+			visitatieResponse.getMeldingen().add("Fout bij opslaan van visitatie bijlagen.");
+		}
+
+		visitatieResponse.getMeldingen().addAll(saveOrUpdateVisitatie(visitatie, bestandenMap, rapportageDocument, vragenlijstDocument));
+		visitatieResponse.setVisitatie(mammaVisitatieMapper.mammaVisitatieToDto(visitatie));
+		return visitatieResponse;
+	}
+
+	@Override
+	@Transactional
+	public List<String> saveOrUpdateVisitatie(MammaVisitatie visitatie, Map<MammaVisitatieOnderdeel, File> bestanden,
+		UploadDocument rapportageBijlage,
+		UploadDocument vragenlijstBijlage)
+	{
+		var messages = new ArrayList<String>();
 		hibernateService.saveOrUpdate(visitatie);
 		messages.addAll(saveOrUpdateVisitatieBijlagen(visitatie, rapportageBijlage, vragenlijstBijlage));
-		messages.addAll(verwerkCsvFiles(visitatie, fileMap, fileNameMap));
+		messages.addAll(verwerkCsvFiles(visitatie, bestanden));
 		hibernateService.saveOrUpdate(visitatie);
 		return messages;
 	}
@@ -458,9 +548,9 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 		return messages;
 	}
 
-	private List<String> verwerkCsvFiles(MammaVisitatie visitatie, Map<MammaVisitatieOnderdeel, File> fileMap, Map<File, String> fileNameMap)
+	private List<String> verwerkCsvFiles(MammaVisitatie visitatie, Map<MammaVisitatieOnderdeel, File> fileMap)
 	{
-		List<String> meldingen = new ArrayList<>();
+		var meldingen = new ArrayList<String>();
 		if (MapUtils.isNotEmpty(fileMap) && CollectionUtils.isNotEmpty(visitatie.getOnderzoeken()))
 		{
 			hibernateService.deleteAll(visitatie.getOnderzoeken());
@@ -468,16 +558,17 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 			hibernateService.saveOrUpdate(visitatie);
 		}
 
-		for (Entry<MammaVisitatieOnderdeel, File> fileEntry : fileMap.entrySet())
+		for (var fileEntry : fileMap.entrySet())
 		{
-			File file = fileEntry.getValue();
-			String fileName = fileNameMap.get(file);
+			var file = fileEntry.getValue();
 			if (file != null)
 			{
 				ClientenBestandVerwerkingContext context = null;
+				var fileName = file.getName();
 				try
 				{
 					context = new ClientenBestandVerwerkingContext(file);
+
 					while (context.isErEenNieuweRegel())
 					{
 						try
@@ -544,7 +635,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void kwaliteitscontroleAfronden(MammaIKwaliteitscontrole kwaliteitscontrole)
 	{
 		kwaliteitscontrole.setAfgerondOp(dateSuppier.getDate());
@@ -552,7 +643,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void visitatieAfronden(MammaVisitatie visitatie)
 	{
 		visitatie.setStatus(MammaVisitatieStatus.UITGEVOERD);
@@ -560,7 +651,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void wijzigOnderzoekStatus(MammaAdhocMeekijkverzoek onderzoek, MammaVisitatieOnderzoekStatus nieuweStatus)
 	{
 		onderzoek.setStatus(nieuweStatus);

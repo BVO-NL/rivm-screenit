@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.controller.algemeen;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
-import nl.rivm.screenit.service.FileService;
 import nl.rivm.screenit.service.UploadDocumentService;
 
 import org.springframework.core.io.InputStreamResource;
@@ -47,24 +46,22 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @Slf4j
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/algemeen/documenten")
+@RequestMapping("/api/algemeen/document")
 public class DocumentController
 {
-	private final FileService fileService;
-
 	private final UploadDocumentService uploadDocumentService;
 
 	@GetMapping("{id}")
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = {}, altijdToegestaan = true, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
-	public ResponseEntity getDocument(@PathVariable("id") Long id)
+	public ResponseEntity getDocument(@PathVariable Long id)
 	{
-		var document = uploadDocumentService.getById(id);
-		if (document.isEmpty())
+		var document = uploadDocumentService.getById(id).orElse(null);
+		if (document == null)
 		{
 			return ResponseEntity.notFound().build();
 		}
-		var file = uploadDocumentService.load(document.get());
+		var file = uploadDocumentService.load(document);
 		try
 		{
 			var resource = new InputStreamResource(new FileInputStream(file));
@@ -73,7 +70,7 @@ public class DocumentController
 			headers.setContentDisposition(ContentDisposition.builder("attachment").name(file.getName()).build());
 			return ResponseEntity.ok()
 				.headers(headers)
-				.contentType(MediaType.APPLICATION_PDF)
+				.contentType(MediaType.valueOf(document.getContentType()))
 				.contentLength(file.length())
 				.body(resource);
 		}

@@ -4,7 +4,7 @@ package nl.rivm.screenit.batch.jobs.mamma.herinneren.step;
  * ========================LICENSE_START=================================
  * screenit-batch-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,6 +22,10 @@ package nl.rivm.screenit.batch.jobs.mamma.herinneren.step;
  */
 
 import java.time.LocalDateTime;
+
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
 
 import lombok.AllArgsConstructor;
 
@@ -49,21 +53,16 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Range;
 
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Root;
-
 import static nl.rivm.screenit.specification.ExtendedSpecification.not;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.ScreeningRondeSpecification.isLopend;
 import static nl.rivm.screenit.specification.mamma.MammaScreeningRondeSpecification.heeftGeenUitstel;
-import static nl.rivm.screenit.specification.mamma.MammaScreeningRondeSpecification.isMinderValideOnderzoekZiekenhuis;
+import static nl.rivm.screenit.specification.mamma.MammaScreeningRondeSpecification.isMindervalideOnderzoekZiekenhuis;
 
 @Component
 @AllArgsConstructor
 public class MammaHerinnerenReader extends BaseSpecificationScrollableResultReader<MammaScreeningRonde>
 {
-
 	private final ICurrentDateSupplier currentDateSupplier;
 
 	private final SimplePreferenceService preferenceService;
@@ -82,7 +81,7 @@ public class MammaHerinnerenReader extends BaseSpecificationScrollableResultRead
 		var uitnodigingCreatieDatumLigtVoorHerinneringsPeriodeAfspraak = MammaUitnodigingSpecification.isGemaaktOpOfVoor(getMaxGeenAfspraakPeriode())
 			.withRoot(this::getLaatsteUitnodigingJoin);
 
-		return isMinderValideOnderzoekZiekenhuis(false)
+		return isMindervalideOnderzoekZiekenhuis(false)
 			.and(isLopend())
 			.and(heeftActiefDossierZonderTehuis)
 			.and(laatsteUitnodigingIsNietHerinnerd)

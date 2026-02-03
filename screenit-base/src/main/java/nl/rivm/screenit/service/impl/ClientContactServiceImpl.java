@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -352,11 +352,11 @@ public class ClientContactServiceImpl implements ClientContactService
 				actie = mammaAfspraakMakenWijzigen(actie, client, extraOpslaanParams, account, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN.equals(actie.getType()),
 					ClientContactActieType.MAMMA_AFSPRAAK_MAKEN_FORCEREN.equals(actie.getType()));
 				break;
-			case MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS:
-				actie = mammaMinderValideOnderzoekZiekenhuis(actie, client);
+			case MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS:
+				actie = mammaMindervalideOnderzoekZiekenhuis(actie, client);
 				break;
-			case MAMMA_MINDER_VALIDE_NIET_MEER_ZIEKENHUIS:
-				actie = mammaMinderValideNietMeerOnderzoekZiekenhuis(actie, client, account);
+			case MAMMA_MINDERVALIDE_NIET_MEER_ZIEKENHUIS:
+				actie = mammaMindervalideNietMeerOnderzoekZiekenhuis(actie, client, account);
 				break;
 			case MAMMA_INFOBRIEF_PROTHESEN:
 				actie = mammaInfobriefProthesen(actie, client, account);
@@ -701,12 +701,12 @@ public class ClientContactServiceImpl implements ClientContactService
 			.anyMatch(reservering -> reservering.getClient().equals(client) && reservering.getVanaf().equals(DateUtil.toLocalDateTime(afspraak.getVanaf())));
 	}
 
-	private ClientContactActie mammaMinderValideNietMeerOnderzoekZiekenhuis(ClientContactActie actie, Client client, Account account)
+	private ClientContactActie mammaMindervalideNietMeerOnderzoekZiekenhuis(ClientContactActie actie, Client client, Account account)
 	{
 		var laatsteRonde = client.getMammaDossier().getLaatsteScreeningRonde();
 		var laatsteBrief = laatsteRonde.getLaatsteBrief();
-		laatsteRonde.setMinderValideOnderzoekZiekenhuis(false);
-		if (laatsteBrief != null && BriefType.MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS.equals(laatsteBrief.getBriefType()) && !BriefUtil.isGegenereerd(laatsteBrief))
+		laatsteRonde.setMindervalideOnderzoekZiekenhuis(false);
+		if (laatsteBrief != null && BriefType.MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS.equals(laatsteBrief.getBriefType()) && !BriefUtil.isGegenereerd(laatsteBrief))
 		{
 			baseBriefService.briefTegenhouden(laatsteBrief, account);
 		}
@@ -714,7 +714,7 @@ public class ClientContactServiceImpl implements ClientContactService
 		return actie;
 	}
 
-	private ClientContactActie mammaMinderValideOnderzoekZiekenhuis(ClientContactActie actie, Client client)
+	private ClientContactActie mammaMindervalideOnderzoekZiekenhuis(ClientContactActie actie, Client client)
 	{
 		var laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
 
@@ -726,13 +726,13 @@ public class ClientContactServiceImpl implements ClientContactService
 
 		if (laatsteScreeningRonde.getLaatsteUitstel() != null)
 		{
-			mammaBaseUitstelService.uitstelAfzeggen(laatsteScreeningRonde.getLaatsteUitstel(), MammaUitstelGeannuleerdReden.MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS,
+			mammaBaseUitstelService.uitstelAfzeggen(laatsteScreeningRonde.getLaatsteUitstel(), MammaUitstelGeannuleerdReden.MINDERVALIDE_ONDERZOEK_ZIEKENHUIS,
 				currentDateSupplier.getDate());
 		}
 
-		laatsteScreeningRonde.setMinderValideOnderzoekZiekenhuis(true);
+		laatsteScreeningRonde.setMindervalideOnderzoekZiekenhuis(true);
 
-		baseBriefService.maakBvoBrief(laatsteScreeningRonde, BriefType.MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS);
+		baseBriefService.maakBvoBrief(laatsteScreeningRonde, BriefType.MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS);
 		hibernateService.saveOrUpdate(laatsteScreeningRonde);
 
 		return actie;
@@ -1312,8 +1312,8 @@ public class ClientContactServiceImpl implements ClientContactService
 	{
 		boolean afspraakMaken;
 		var verzetten = false;
-		var minderValideOnderzoekZiekenhuis = false;
-		var minderValideNietMeerOnderzoekZiekenhuis = false;
+		var mindervalideOnderzoekZiekenhuis = false;
+		var mindervalideNietMeerOnderzoekZiekenhuis = false;
 		var magClientVervolgOnderzoekAfwijzen = false;
 		var magClientVerzoekVoorContactOpsturen = false;
 		var infoBriefProthesenKlaarzetten = false;
@@ -1330,10 +1330,10 @@ public class ClientContactServiceImpl implements ClientContactService
 
 			if (laatsteRonde.getStatus() == ScreeningRondeStatus.LOPEND)
 			{
-				minderValideOnderzoekZiekenhuis = dossier.getDoelgroep() == MammaDoelgroep.MINDER_VALIDE && laatsteUitnodiging != null
-					&& !laatsteRonde.getMinderValideOnderzoekZiekenhuis() && (laatsteAfspraak == null || laatsteAfspraak.getStatus() == MammaAfspraakStatus.GEPLAND
+				mindervalideOnderzoekZiekenhuis = dossier.getDoelgroep() == MammaDoelgroep.MINDERVALIDE && laatsteUitnodiging != null
+					&& !laatsteRonde.getMindervalideOnderzoekZiekenhuis() && (laatsteAfspraak == null || laatsteAfspraak.getStatus() == MammaAfspraakStatus.GEPLAND
 					|| MammaAfspraakStatus.isGeannuleerd(laatsteAfspraak.getStatus()));
-				minderValideNietMeerOnderzoekZiekenhuis = laatsteRonde.getMinderValideOnderzoekZiekenhuis();
+				mindervalideNietMeerOnderzoekZiekenhuis = laatsteRonde.getMindervalideOnderzoekZiekenhuis();
 				var vorigeInfobriefProthesen = laatsteRonde.getBrieven().stream().filter(brief -> BriefType.MAMMA_INFOBRIEF_PROTHESEN.equals(brief.getBriefType()))
 					.max(Comparator.comparing(Brief::getCreatieDatum))
 					.orElse(null);
@@ -1341,7 +1341,7 @@ public class ClientContactServiceImpl implements ClientContactService
 				infoBriefProthesenKlaarzetten = vorigeInfobriefProthesen == null
 					|| BriefUtil.isMergedBrievenGeprint(vorigeInfobriefProthesen);
 			}
-			magDoelgroepWijzigen = !minderValideNietMeerOnderzoekZiekenhuis;
+			magDoelgroepWijzigen = !mindervalideNietMeerOnderzoekZiekenhuis;
 			if (dossier.getStatus() != DossierStatus.INACTIEF)
 			{
 				var laatsteOnderzoek = laatsteRonde.getLaatsteOnderzoek();
@@ -1385,10 +1385,10 @@ public class ClientContactServiceImpl implements ClientContactService
 			return magDoelgroepWijzigen;
 		case MAMMA_HUISARTS_WIJZIGEN:
 			return laatsteRonde != null;
-		case MAMMA_MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS:
-			return minderValideOnderzoekZiekenhuis;
-		case MAMMA_MINDER_VALIDE_NIET_MEER_ZIEKENHUIS:
-			return minderValideNietMeerOnderzoekZiekenhuis;
+		case MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS:
+			return mindervalideOnderzoekZiekenhuis;
+		case MAMMA_MINDERVALIDE_NIET_MEER_ZIEKENHUIS:
+			return mindervalideNietMeerOnderzoekZiekenhuis;
 		case MAMMA_INFOBRIEF_PROTHESEN:
 			return infoBriefProthesenKlaarzetten;
 		case MAMMA_CLIENT_WIL_GEEN_VERVOLG_ONDERZOEK:

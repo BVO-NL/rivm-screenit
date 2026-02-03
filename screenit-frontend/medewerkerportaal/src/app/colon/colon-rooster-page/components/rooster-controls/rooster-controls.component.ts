@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -32,7 +32,7 @@ import { SecurityConstraint } from '@shared/types/autorisatie/security-constrain
 import { Actie } from '@shared/types/autorisatie/actie'
 import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
-import { OrganisatieType } from '@shared/types/autorisatie/organisatie-type'
+import { OrganisatieType } from '@/shared/types/algemeen/organisatie-type'
 import { Required } from '@shared/types/autorisatie/required'
 import { Recht } from '@shared/types/autorisatie/recht'
 import { BlokkadeEditDialogComponent } from '@/colon/colon-rooster-page/components/blokkade-edit-dialog/blokkade-edit-dialog.component'
@@ -42,7 +42,7 @@ import { TijdslotsVerwijderenDialogComponent } from '@/colon/colon-rooster-page/
 import { NgForOf } from '@angular/common'
 import { ColonTijdslot } from '@shared/types/colon/colon-tijdslot'
 import { format, isValid } from 'date-fns'
-import { parseDate } from '@shared/date-utils'
+import { parseDate } from '@shared/utils/date-utils'
 import { NL_DATE_FORMAT } from '@shared/constants'
 
 @Component({
@@ -91,7 +91,7 @@ export class RoosterControlsComponent {
   private dialog: Dialog = inject(Dialog)
 
   zoomLevel = 30
-  isNavLinkDayClick: boolean = false
+  isNavLinkDayClick = false
   private zoomLevels = [5, 10, 15, 20, 30, 60, 120]
   viewRanges: SelectOption<string>[] = [
     { label: 'Week', value: 'week' },

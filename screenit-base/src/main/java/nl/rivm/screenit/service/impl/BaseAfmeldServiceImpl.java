@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -40,7 +40,6 @@ import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.colon.ColonAfmelding;
 import nl.rivm.screenit.model.colon.ColonDossier;
-import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.project.ProjectInactiefReden;
@@ -561,14 +560,9 @@ public class BaseAfmeldServiceImpl implements BaseAfmeldService
 		herAanTeMeldenAfmelding.setHeraanmeldStatus(AanvraagBriefStatus.VERWERKT);
 		herAanTeMeldenAfmelding.setStatusHeraanmeldDatum(currentDateSupplier.getDate());
 
-		if (dossier.getBevolkingsonderzoek() == Bevolkingsonderzoek.COLON && ((ColonDossier) dossier).getInactiveerReden() == null
-			|| dossier.getBevolkingsonderzoek() != Bevolkingsonderzoek.COLON)
-		{
-
-			dossier.setStatus(DossierStatus.ACTIEF);
-			dossier.setInactiefVanaf(null);
-			dossier.setInactiefTotMet(null);
-		}
+		dossier.setStatus(DossierStatus.ACTIEF);
+		dossier.setInactiefVanaf(null);
+		dossier.setInactiefTotMet(null);
 		dossier.setAangemeld(true);
 
 		hibernateService.saveOrUpdate(herAanTeMeldenAfmelding);
@@ -680,7 +674,7 @@ public class BaseAfmeldServiceImpl implements BaseAfmeldService
 	@Transactional
 	public void heraanmeldenAlsClientAfgemeldIs(Dossier dossier)
 	{
-		if (AfmeldingUtil.isEenmaligOfDefinitefAfgemeld(dossier))
+		if (AfmeldingUtil.isEenmaligOfDefinitiefAfgemeld(dossier))
 		{
 			var afmelding = AfmeldingUtil.getLaatsteAfmelding(dossier.getLaatsteScreeningRonde(), dossier);
 			heraanmeldenZonderVervolg(afmelding);

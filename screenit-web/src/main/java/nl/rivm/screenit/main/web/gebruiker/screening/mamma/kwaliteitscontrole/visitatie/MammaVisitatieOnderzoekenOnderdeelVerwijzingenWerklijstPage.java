@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.v
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,8 +21,22 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.v
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.main.web.security.SecurityConstraint;
+import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.enums.Actie;
+import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
+import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderdeel;
 
+import org.wicketstuff.shiro.ShiroConstraint;
+
+@SecurityConstraint(
+	actie = Actie.INZIEN,
+	checkScope = true,
+	constraint = ShiroConstraint.HasPermission,
+	recht = { Recht.MEDEWERKER_VISITATIE },
+	organisatieTypeScopes = { OrganisatieType.KWALITEITSPLATFORM, OrganisatieType.SCREENINGSORGANISATIE },
+	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaVisitatieOnderzoekenOnderdeelVerwijzingenWerklijstPage extends MammaVisitatieOnderzoekenWerklijstPage
 {
 	public MammaVisitatieOnderzoekenOnderdeelVerwijzingenWerklijstPage()

@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,6 +26,7 @@ import { SecurityConstraint } from '@shared/types/autorisatie/security-constrain
 import { Medewerker } from '@shared/types/autorisatie/medewerker'
 import { Actie } from '@shared/types/autorisatie/actie'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
+import { OrganisatieType } from '@/shared/types/algemeen/organisatie-type'
 
 interface AutorisatieState {
   medewerker: Medewerker
@@ -46,6 +47,11 @@ export class AutorisatieService extends BaseService<AutorisatieState> {
         this.set('medewerker', res)
       }),
     )
+  }
+
+  heeftOrganisatieType(organisatieType: OrganisatieType): boolean {
+    const medewerker = this.select('medewerker')
+    return medewerker().organisatie.organisatieType === organisatieType
   }
 
   isToegestaan(constraint: SecurityConstraint): boolean {

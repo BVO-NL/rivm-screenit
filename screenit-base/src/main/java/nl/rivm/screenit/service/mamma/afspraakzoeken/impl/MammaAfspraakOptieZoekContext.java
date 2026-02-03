@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.mamma.afspraakzoeken.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,6 +30,7 @@ import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
+import nl.rivm.screenit.util.mamma.MammaMindervalideUtil;
 import nl.rivm.screenit.util.mamma.MammaPlanningUtil;
 
 @Getter
@@ -62,8 +63,8 @@ class MammaAfspraakOptieZoekContext
 		dubbeleTijd = dossier.getDoelgroep().equals(MammaDoelgroep.DUBBELE_TIJD) || dossier.getTehuis() != null;
 		enkeleMammograaf = MammaPlanningUtil.isEnkeleMammograaf(screeningsEenheid);
 		benodigdeCapaciteit = MammaPlanningUtil.bepaalBenodigdeCapaciteitVoorNieuweAfspraakOptie(factor, voorlopigeOpkomstkans);
-		benodigdeCapaciteitPerMindervalideAfspraak = screeningOrganisatie.getFactorMinderValideBk();
-		benodigdeMinutenVoorMindervalideAfspraak = MammaPlanningUtil.benodigdeMinutenVoorMindervalideAfspraak(benodigdeCapaciteitPerMindervalideAfspraak);
+		benodigdeCapaciteitPerMindervalideAfspraak = screeningOrganisatie.getFactorMindervalideBk();
+		benodigdeMinutenVoorMindervalideAfspraak = MammaMindervalideUtil.benodigdeMinutenVoorMindervalideAfspraak(benodigdeCapaciteitPerMindervalideAfspraak);
 		this.vrijgevenMindervalideReserveringenTotEnMetDatum = vrijgevenMindervalideReserveringenTotEnMetDatum;
 	}
 }

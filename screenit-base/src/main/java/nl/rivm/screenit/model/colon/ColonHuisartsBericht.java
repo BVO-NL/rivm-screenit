@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.colon;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,6 +24,7 @@ package nl.rivm.screenit.model.colon;
 import java.util.Date;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -55,6 +56,7 @@ public class ColonHuisartsBericht extends HuisartsBericht
 	private ColonScreeningRonde screeningsRonde;
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private ColonHuisartsBerichtStatus status;
 
 	private Date verzendDatum;

@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.afspraken;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -48,9 +48,12 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
+import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
+import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
+import nl.rivm.screenit.model.mamma.enums.MammaBlokkadeType;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBaseBlokkadeService;
@@ -179,44 +182,7 @@ public class MammaAfsprakenDagOverzichtPage extends MammaAfsprakenBasePage
 		add(metaInfo.setOutputMarkupId(true));
 
 		datumModel = Model.of(startDatum);
-		var datumField = ComponentHelper.newDatePicker("datum", datumModel, true);
-		datumField.setOutputMarkupId(true);
-		add(datumField);
-		datumField.add(new AjaxFormComponentUpdatingBehavior("change")
-		{
-			@Override
-			protected void onUpdate(AjaxRequestTarget target)
-			{
-				if (datumModel.getObject() == null)
-				{
-					datumModel.setObject(startDatum);
-				}
-				target.add(datumField);
-				refreshKalender(target);
-			}
-		});
-		add(new IndicatingAjaxLink<Void>("prevDay")
-		{
-			@Override
-			public void onClick(AjaxRequestTarget target)
-			{
-				var datum = datumModel.getObject();
-				datumModel.setObject(DateUtil.toUtilDate(DateUtil.toLocalDate(datum).minusDays(1)));
-				target.add(datumField);
-				refreshKalender(target);
-			}
-		});
-		add(new IndicatingAjaxLink<Void>("nextDay")
-		{
-			@Override
-			public void onClick(AjaxRequestTarget target)
-			{
-				var datum = datumModel.getObject();
-				datumModel.setObject(DateUtil.toUtilDate(DateUtil.toLocalDate(datum).plusDays(1)));
-				target.add(datumField);
-				refreshKalender(target);
-			}
-		});
+		voegDatumNavigatieToe();
 		refreshKalender(null);
 	}
 
@@ -244,10 +210,68 @@ public class MammaAfsprakenDagOverzichtPage extends MammaAfsprakenBasePage
 		});
 	}
 
+	private void voegDatumNavigatieToe()
+	{
+		var datumField = maakDatumField();
+		add(datumField);
+		add(maakVorigeDagLink(datumField));
+		add(maakVolgendeDagLink(datumField));
+	}
+
+	private WebMarkupContainer maakDatumField()
+	{
+		var startDatum = datumModel.getObject();
+		var datumField = ComponentHelper.newDatePicker("datum", datumModel, true);
+		datumField.setOutputMarkupId(true);
+		datumField.add(new AjaxFormComponentUpdatingBehavior("change")
+		{
+			@Override
+			protected void onUpdate(AjaxRequestTarget target)
+			{
+				if (datumModel.getObject() == null)
+				{
+					datumModel.setObject(startDatum);
+				}
+				target.add(datumField);
+				refreshKalender(target);
+			}
+		});
+		return datumField;
+	}
+
+	private IndicatingAjaxLink<Void> maakVorigeDagLink(WebMarkupContainer datumField)
+	{
+		return new IndicatingAjaxLink<>("prevDay")
+		{
+			@Override
+			public void onClick(AjaxRequestTarget target)
+			{
+				var datum = datumModel.getObject();
+				datumModel.setObject(DateUtil.toUtilDate(DateUtil.toLocalDate(datum).minusDays(1)));
+				target.add(datumField);
+				refreshKalender(target);
+			}
+		};
+	}
+
+	private IndicatingAjaxLink<Void> maakVolgendeDagLink(WebMarkupContainer datumField)
+	{
+		return new IndicatingAjaxLink<>("nextDay")
+		{
+			@Override
+			public void onClick(AjaxRequestTarget target)
+			{
+				var datum = datumModel.getObject();
+				datumModel.setObject(DateUtil.toUtilDate(DateUtil.toLocalDate(datum).plusDays(1)));
+				target.add(datumField);
+				refreshKalender(target);
+			}
+		};
+	}
+
 	private void refreshKalender(AjaxRequestTarget target)
 	{
 		selectedAfspraken.setCheckForAll(false);
-		var blokken = new RepeatingView("calendar");
 
 		var datum = datumModel.getObject();
 		var volledigDagLabel = DateLabel.forDatePattern("dag", Model.of(datum), "EEEE dd MMMM yyyy").setOutputMarkupId(true);
@@ -261,41 +285,79 @@ public class MammaAfsprakenDagOverzichtPage extends MammaAfsprakenBasePage
 		var magNuVerzetten = magVerzetten && !gekozenDag.isBefore(minimaleDagVoorBulkVerzetten);
 		var magNuBulkVerzetten = magBulkVerzetten && !gekozenDag.isBefore(minimaleDagVoorBulkVerzetten);
 
-		var screeningsEenheid = screeningsEenheidModel.getObject();
-
 		var vanaf = DateUtil.toUtilDate(gekozenDag);
 		var totEnMet = DateUtil.toUtilDate(gekozenDag.plusDays(1));
+		var capaciteitBlokken = baseCapaciteitsBlokService.getScreeningCapaciteitBlokken(screeningsEenheidModel.getObject(), Range.closed(vanaf, totEnMet), true);
 
+		voegCapaciteitInfoToe(gekozenDag, capaciteitBlokken);
+		voegBlokkenMetAfsprakenToe(gekozenDag, capaciteitBlokken, magNuVerzetten, magNuBulkVerzetten);
+		voegBulkVerzettenComponentenToe(magNuBulkVerzetten);
+
+		if (target != null)
+		{
+			target.add(form);
+			target.add(volledigDagLabel);
+			target.add(metaInfo);
+			target.add(get("bulkVerzetten"));
+			target.appendJavaScript("$(\"[hidden]\").hide();");
+		}
+	}
+
+	private void voegCapaciteitInfoToe(LocalDate gekozenDag, List<MammaCapaciteitBlok> capaciteitBlokken)
+	{
+		var screeningsEenheid = screeningsEenheidModel.getObject();
 		var aantalAfspraken = baseAfspraakService.countAfspraken(screeningsEenheid, gekozenDag, gekozenDag,
 			MammaAfspraakStatus.NIET_GEANNULEERD.toArray(new MammaAfspraakStatus[0]));
 		capaciteitContainer.addOrReplace(new Label("aantalAfspraken", Model.of(aantalAfspraken)));
 
-		var afspraken = baseAfspraakService.getAfspraken(screeningsEenheid, gekozenDag, gekozenDag, MammaAfspraakStatus.GEPLAND);
-		var capaciteitsBlokken = baseCapaciteitsBlokService.getScreeningCapaciteitBlokken(screeningsEenheid, Range.closed(vanaf, totEnMet), true);
-		var afsprakenZonderCapaciteitsBlok = afspraken.stream().filter(afspraak -> afspraak.getCapaciteitBlok() == null).collect(Collectors.toList());
-		blokken.add(
-			new MammaAfsprakenZonderBlokPanel(blokken.newChildId(), screeningsEenheidModel, gekozenDag, selectedAfspraken, localDialog, magNuVerzetten, magNuBulkVerzetten,
-				afsprakenZonderCapaciteitsBlok));
-
 		var vrijeCapaciteit = BigDecimal.ZERO;
 		var beschikbareCapaciteit = BigDecimal.ZERO;
-		for (var blok : capaciteitsBlokken)
+		for (var blok : capaciteitBlokken)
 		{
-			blokken.add(
-				new MammaBlokMetAfsprakenPanel(blokken.newChildId(), ModelUtil.csModel(blok), selectedAfspraken, gekozenDag, magNuVerzetten, magNuBulkVerzetten));
 			vrijeCapaciteit = vrijeCapaciteit.add(blok.getVrijeCapaciteit());
 			beschikbareCapaciteit = beschikbareCapaciteit.add(blok.getBeschikbareCapaciteit());
 		}
 		capaciteitContainer.addOrReplace(new Label("vrijeCapaciteit", vrijeCapaciteit.setScale(1, RoundingMode.HALF_UP).toString()));
 		capaciteitContainer.addOrReplace(new Label("beschikbareCapaciteit", BigDecimalUtil.decimalToString(beschikbareCapaciteit)));
-		form.addOrReplace(blokken);
+	}
 
+	private void voegBlokkenMetAfsprakenToe(LocalDate gekozenDag, List<MammaCapaciteitBlok> capaciteitBlokken,
+		boolean magNuVerzetten, boolean magNuBulkVerzetten)
+	{
+		var screeningsEenheid = screeningsEenheidModel.getObject();
+		var blokken = new RepeatingView("calendar");
+
+		var afspraken = baseAfspraakService.getAfspraken(screeningsEenheid, gekozenDag, gekozenDag, MammaAfspraakStatus.GEPLAND);
+		var afsprakenZonderCapaciteitsBlokModel = ModelUtil.listRModel(afspraken.stream().filter(afspraak -> afspraak.getCapaciteitBlok() == null).
+			collect(Collectors.toList()));
+
+		blokken.add(
+			new MammaAfsprakenZonderBlokPanel(blokken.newChildId(), screeningsEenheidModel, gekozenDag, selectedAfspraken, magNuVerzetten, magNuBulkVerzetten,
+				afsprakenZonderCapaciteitsBlokModel));
+
+		for (var blok : capaciteitBlokken)
+		{
+			blokken.add(
+				new MammaBlokMetAfsprakenPanel(blokken.newChildId(), ModelUtil.csModel(blok), selectedAfspraken, gekozenDag, magNuVerzetten, magNuBulkVerzetten));
+		}
+
+		form.addOrReplace(blokken);
+	}
+
+	private void voegBulkVerzettenComponentenToe(boolean magNuBulkVerzetten)
+	{
 		var selectAllCheckboxContainer = new WebMarkupContainer("selectAllCheckboxContainer");
 		selectAllCheckboxContainer.setVisible(magNuBulkVerzetten);
 		selectAllCheckboxContainer.setOutputMarkupId(true);
 		selectAllCheckboxContainer.setOutputMarkupPlaceholderTag(true);
 		form.addOrReplace(selectAllCheckboxContainer);
 
+		var bulkVerzetten = maakBulkVerzettenButton(magNuBulkVerzetten);
+		addOrReplace(bulkVerzetten);
+	}
+
+	private IndicatingAjaxSubmitLink maakBulkVerzettenButton(boolean magNuBulkVerzetten)
+	{
 		var bulkVerzetten = new IndicatingAjaxSubmitLink("bulkVerzetten", form)
 		{
 			@Override
@@ -318,7 +380,7 @@ public class MammaAfsprakenDagOverzichtPage extends MammaAfsprakenBasePage
 				else
 				{
 					localDialog.openWith(target, new MammaBulkVerzettenPopup(IDialog.CONTENT_ID, afspraken, screeningsEenheidModel, datumModel,
-						ModelUtil.sModel(baseStandplaatsPeriodeService.getStandplaatsPeriodeOpDatum(screeningsEenheidModel.getObject(), datum)),
+						ModelUtil.sModel(baseStandplaatsPeriodeService.getStandplaatsPeriodeOpDatum(screeningsEenheidModel.getObject(), datumModel.getObject())),
 						standplaatsPeriodesVoorBulkVerzetten)
 					{
 						@Override
@@ -335,57 +397,38 @@ public class MammaAfsprakenDagOverzichtPage extends MammaAfsprakenBasePage
 		bulkVerzetten.setVisible(magNuBulkVerzetten);
 		bulkVerzetten.setOutputMarkupPlaceholderTag(true);
 		bulkVerzetten.setOutputMarkupId(true);
-		addOrReplace(bulkVerzetten);
-
-		if (target != null)
-		{
-			target.add(form);
-			target.add(volledigDagLabel);
-			target.add(metaInfo);
-			target.add(bulkVerzetten);
-			target.appendJavaScript("$(\"[hidden]\").hide();");
-		}
+		return bulkVerzetten;
 	}
 
 	private void addMetaInfo()
 	{
 		var screeningsEenheid = screeningsEenheidModel.getObject();
 		var datum = datumModel.getObject();
-
 		var standplaatsPeriode = baseStandplaatsPeriodeService.getStandplaatsPeriodeOpDatum(screeningsEenheid, datum);
+
+		voegStandplaatsPeriodeInfoToe(standplaatsPeriode);
+		voegBlokkadesInfoToe(screeningsEenheid, datum, standplaatsPeriode);
+	}
+
+	private void voegStandplaatsPeriodeInfoToe(MammaStandplaatsPeriode standplaatsPeriode)
+	{
 		var standplaatsPeriodeTekst = "Geen";
 		var format = new SimpleDateFormat("dd-MM-yyyy");
-		MammaStandplaats standplaats = null;
 		if (standplaatsPeriode != null)
 		{
-			standplaats = standplaatsPeriode.getStandplaatsRonde().getStandplaats();
 			standplaatsPeriodeTekst = StandplaatsPeriodeUtil.getStandplaatsPeriodeNaam(standplaatsPeriode) + " (" + format.format(standplaatsPeriode.getVanaf()) + " - "
 				+ format.format(standplaatsPeriode.getTotEnMet())
 				+ ")";
 		}
 		metaInfo.addOrReplace(new Label("standplaatsPeriodeTekst", standplaatsPeriodeTekst));
+	}
 
-		List<String> blokkadesStringList = new ArrayList<>();
-		for (var blokkade : baseBlokkadeService.getActieveBlokkadesVoorSE(standplaats, screeningsEenheid, DateUtil.toLocalDate(datum)))
-		{
-			var blokkadeString = "";
-			switch (blokkade.getType())
-			{
-			case SCREENINGS_EENHEID:
-				blokkadeString = "SE";
-				break;
-			case SCREENINGS_ORGANISATIE:
-				blokkadeString = "SO";
-				break;
-			case STANDPLAATS:
-				blokkadeString = "Standplaats";
-				break;
-			}
-			blokkadeString += " (" + format.format(blokkade.getVanaf()) + " - " + format.format(blokkade.getTotEnMet()) + ")";
-			blokkadesStringList.add(blokkadeString);
-		}
+	private void voegBlokkadesInfoToe(MammaScreeningsEenheid screeningsEenheid, Date datum, MammaStandplaatsPeriode standplaatsPeriode)
+	{
+		var standplaats = standplaatsPeriode != null ? standplaatsPeriode.getStandplaatsRonde().getStandplaats() : null;
+
+		var blokkadesStringList = maakBlokkadesStringList(standplaats, screeningsEenheid, DateUtil.toLocalDate(datum));
 		var blokkadesLabel = new Label("blokkades", StringUtils.join(blokkadesStringList, ", "));
-		add(blokkadesLabel);
 		if (!blokkadesStringList.isEmpty())
 		{
 			blokkadesLabel.add(new AttributeAppender("class", Model.of(" blokkades")));
@@ -394,7 +437,33 @@ public class MammaAfsprakenDagOverzichtPage extends MammaAfsprakenBasePage
 		{
 			blokkadesLabel.setDefaultModelObject("Geen");
 		}
+		add(blokkadesLabel);
 		metaInfo.addOrReplace(blokkadesLabel);
+	}
+
+	private List<String> maakBlokkadesStringList(MammaStandplaats standplaats, MammaScreeningsEenheid screeningsEenheid, LocalDate datum)
+	{
+		List<String> blokkadesStringList = new ArrayList<>();
+		var format = new SimpleDateFormat("dd-MM-yyyy");
+
+		for (var blokkade : baseBlokkadeService.getActieveBlokkadesVoorSE(standplaats, screeningsEenheid, datum))
+		{
+			var blokkadeString = geefBlokkadeTypeOmschrijving(blokkade.getType());
+			blokkadeString += " (" + format.format(blokkade.getVanaf()) + " - " + format.format(blokkade.getTotEnMet()) + ")";
+			blokkadesStringList.add(blokkadeString);
+		}
+
+		return blokkadesStringList;
+	}
+
+	private String geefBlokkadeTypeOmschrijving(MammaBlokkadeType type)
+	{
+		return switch (type)
+		{
+			case SCREENINGS_EENHEID -> "SE";
+			case SCREENINGS_ORGANISATIE -> "SO";
+			case STANDPLAATS -> "Standplaats";
+		};
 	}
 
 	@Override
@@ -416,5 +485,4 @@ public class MammaAfsprakenDagOverzichtPage extends MammaAfsprakenBasePage
 	{
 		return MammaAfsprakenSEZoekenPage.class;
 	}
-
 }

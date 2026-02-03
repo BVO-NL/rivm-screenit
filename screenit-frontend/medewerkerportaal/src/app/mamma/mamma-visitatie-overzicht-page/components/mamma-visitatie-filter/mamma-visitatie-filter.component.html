@@ -1,0 +1,78 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-card>
+  <div body>
+    <form [formGroup]="filterForm" class="clr-display-flex gap-4 clr-align-items-start">
+      <clr-combobox-container>
+        <label for="centraleEenheden">Centrale eenheden</label>
+        <clr-combobox id="centraleEenheden" formControlName="centraleEenheidIds" clrMulti="true" required data-testid="centrale-eenheden-combobox">
+          <ng-container *clrOptionSelected="let selectedId">
+            {{ getSelectedCentraleEenheid(selectedId)?.naam }}
+          </ng-container>
+          <clr-options>
+            <clr-option *clrOptionItems="let centraleEenheid of centraleEenheden(); field: 'naam'" [clrValue]="centraleEenheid.id">{{ centraleEenheid.naam }}</clr-option>
+          </clr-options>
+        </clr-combobox>
+      </clr-combobox-container>
+
+      <clr-combobox-container>
+        <label for="beoordelingseenheden">Beoordelingseenheden</label>
+        <clr-combobox id="beoordelingseenheden" formControlName="beoordelingseenheidIds" clrMulti="true" required data-testid="beoordelingseenheden-combobox">
+          <ng-container *clrOptionSelected="let selectedId">
+            {{ getSelectedBeoordelingseenheid(selectedId)?.naam }}
+          </ng-container>
+          <clr-options>
+            <clr-option *clrOptionItems="let beoordelingseenheid of beoordelingseenheden(); field: 'naam'" [clrValue]="beoordelingseenheid.id"
+            >{{ beoordelingseenheid.naam }}
+            </clr-option>
+          </clr-options>
+        </clr-combobox>
+      </clr-combobox-container>
+
+      <clr-combobox-container>
+        <label for="screeningseenheden">Screeningseenheden</label>
+        <clr-combobox formControlName="screeningseenheidIds" id="screeningseenheden" clrMulti="true" required data-testid="screeningseenheden-combobox">
+          <ng-container *clrOptionSelected="let selectedId">
+            {{ getSelectedScreeningseenheid(selectedId)?.naam }}
+          </ng-container>
+          <clr-options>
+            <clr-option *clrOptionItems="let screeningseenheid of screeningseenheden(); field: 'naam'" [clrValue]="screeningseenheid.id">{{ screeningseenheid.naam }}</clr-option>
+          </clr-options>
+        </clr-combobox>
+      </clr-combobox-container>
+
+      <clr-combobox-container>
+        <label for="statussen">Status</label>
+        <clr-combobox formControlName="statussen" id="statussen" clrMulti="true" required data-testid="statussen-combobox">
+          <ng-container *clrOptionSelected="let selectedEnum">
+            {{ getSelectedStatus(selectedEnum)?.weergave }}
+          </ng-container>
+          <clr-options>
+            <clr-option *clrOptionItems="let status of visitatieStatusLijst; field: 'weergave'" [clrValue]="status.enum">{{ status.weergave }}</clr-option>
+          </clr-options>
+        </clr-combobox>
+      </clr-combobox-container>
+    </form>
+  </div>
+  <div footer>
+    <button type="submit" class="btn btn-primary" (click)="filteren()" data-testid="filteren_btn">Filteren</button>
+  </div>
+</app-card>

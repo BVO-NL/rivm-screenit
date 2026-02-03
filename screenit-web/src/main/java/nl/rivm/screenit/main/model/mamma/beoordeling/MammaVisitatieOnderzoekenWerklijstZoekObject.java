@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.model.mamma.beoordeling;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,6 +21,9 @@ package nl.rivm.screenit.main.model.mamma.beoordeling;
  * =========================LICENSE_END==================================
  */
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.mamma.MammaVisitatie;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderdeel;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -31,7 +34,13 @@ public class MammaVisitatieOnderzoekenWerklijstZoekObject extends MammaBaseWerkl
 {
 	private IModel<MammaVisitatie> visitatie = null;
 
+	@Getter
+	@Setter
 	private MammaVisitatieOnderdeel onderdeel;
+
+	@Getter
+	@Setter
+	private Integer volgnummerVanaf;
 
 	public MammaVisitatie getVisitatie()
 	{
@@ -41,16 +50,6 @@ public class MammaVisitatieOnderzoekenWerklijstZoekObject extends MammaBaseWerkl
 	public void setVisitatie(MammaVisitatie visitatie)
 	{
 		this.visitatie = ModelUtil.sModel(visitatie);
-	}
-
-	public MammaVisitatieOnderdeel getOnderdeel()
-	{
-		return onderdeel;
-	}
-
-	public void setOnderdeel(MammaVisitatieOnderdeel onderdeel)
-	{
-		this.onderdeel = onderdeel;
 	}
 
 	@Override

@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * screenit-clientportaal-frontend
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -62,7 +62,10 @@ const TijdelijkAdresWijzigenForm = (props: TijdelijkAdresWijzigenFormProps) => {
 			.matches(REGEX_HUISNUMMER, getString(properties.form.error.huisnummer)),
 		huisletter: Yup.string().max(1, getString(properties.form.error.lengte))
 			.matches(REGEX_HUISLETTER, getString(properties.form.error.huisletter)),
-		huisnummerToevoeging: Yup.string().max(26, getString(properties.form.error.lengte)),
+		huisnummerToevoeging: Yup.string().max(26, getString(properties.form.error.lengte))
+			.test("dompurify", getString(properties.form.error.ongeldig), (value?: string): boolean => {
+				return value ? purifyInput(value).length > 0 : true
+			}),
 		huisnummerAanduiding: Yup.string().max(2, getString(properties.form.error.lengte)),
 		postcode: Yup.string().required(getString(properties.form.error.verplicht))
 			.max(6, getString(properties.form.error.lengte))
@@ -106,6 +109,7 @@ const TijdelijkAdresWijzigenForm = (props: TijdelijkAdresWijzigenFormProps) => {
 										plaats: purifyInput(values.plaats),
 										id: props.huidigTijdelijkAdres ? props.huidigTijdelijkAdres.id : undefined,
 										huisnummer: Number(values.huisnummer),
+										huisnummerToevoeging: purifyInput(values.huisnummerToevoeging),
 									})
 								}>
 			{formikProps => (

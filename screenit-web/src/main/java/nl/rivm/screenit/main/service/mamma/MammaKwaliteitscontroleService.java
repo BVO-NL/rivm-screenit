@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.service.mamma;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,7 +25,10 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieRequestDto;
+import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieResponseDto;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.mamma.MammaAdhocMeekijkverzoek;
 import nl.rivm.screenit.model.mamma.MammaFotobespreking;
@@ -36,6 +39,8 @@ import nl.rivm.screenit.model.mamma.MammaVisitatieOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammaFotobesprekingOnderzoekStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderdeel;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderzoekStatus;
+
+import org.springframework.web.multipart.MultipartFile;
 
 public interface MammaKwaliteitscontroleService
 {
@@ -53,8 +58,11 @@ public interface MammaKwaliteitscontroleService
 
 	void herbeoordeelFotobesprekingOnderzoek(MammaFotobesprekingOnderzoek fotobesprekingOnderzoek);
 
-	List<String> saveOrUpdateVisitatie(MammaVisitatie visitatie, Map<MammaVisitatieOnderdeel, File> fileMap, Map<File, String> fileNameMap, UploadDocument rapportageBijlage,
+	List<String> saveOrUpdateVisitatie(MammaVisitatie visitatie, Map<MammaVisitatieOnderdeel, File> bestanden, UploadDocument rapportageBijlage,
 		UploadDocument vragenlijstBijlage);
+
+	MammaVisitatieResponseDto maakOfBewerkVisitatie(MammaVisitatieRequestDto request, Map<String, MultipartFile> bestanden, MultipartFile rapportage,
+		MultipartFile vragenlijst, OrganisatieMedewerker medewerker);
 
 	void kwaliteitscontroleAfronden(MammaIKwaliteitscontrole kwaliteitscontrole);
 

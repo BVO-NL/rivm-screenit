@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -29,9 +29,9 @@ import { saveAs } from 'file-saver'
 export class FileService {
   private apiService: ApiService = inject(ApiService)
 
-  download(url: string, bestandsnaam: string) {
+  download(url: string, bestandsnaam: string, contentType: string) {
     return this.apiService.get<string>(url, undefined, { responseType: 'text' }).pipe(
-      map((res: string) => new Blob([res], { type: 'text/csv' })),
+      map((res: string) => new Blob([res], { type: contentType })),
       tap((blob) => saveAs(blob, bestandsnaam)),
     )
   }

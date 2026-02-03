@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.mamma.enums;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -27,7 +27,7 @@ public enum MammaUitstelGeannuleerdReden
 
 	TEHUIS_KOPPELING,
 
-	MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS,
+	MINDERVALIDE_ONDERZOEK_ZIEKENHUIS,
 
 	NIEUWE_AFSPRAAK,
 }

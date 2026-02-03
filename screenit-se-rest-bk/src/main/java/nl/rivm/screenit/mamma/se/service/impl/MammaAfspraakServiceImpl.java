@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.se.service.impl;
  * ========================LICENSE_START=================================
  * screenit-se-rest-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -67,6 +67,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import static nl.rivm.screenit.specification.mamma.MammaAfspraakSpecification.afsprakenWaarvanOnderzoekNietIsDoorgevoerdAfgelopen2Maanden;
+import static nl.rivm.screenit.util.DateUtil.toUtilDate;
 
 @Slf4j
 @Service
@@ -234,12 +235,12 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 
 	private MammaAfspraak maakAfspraak(OrganisatieMedewerker organisatieMedewerker, MammaScreeningsEenheid screeningsEenheid, Client client, MammaUitnodiging laatsteUitnodiging)
 	{
-		var nu = currentDateSupplier.getDate();
-		var standplaatsPeriode = baseStandplaatsPeriodeService.getStandplaatsPeriodeOpDatum(screeningsEenheid, nu);
+		var afspraakmoment = toUtilDate(DateUtil.rondAfNaarBovenOp5Minuten(currentDateSupplier.getLocalDateTime()));
+		var standplaatsPeriode = baseStandplaatsPeriodeService.getStandplaatsPeriodeOpDatum(screeningsEenheid, afspraakmoment);
 
 		if (standplaatsPeriode == null)
 		{
-			throw new IllegalStateException("Er is geen standplaatsperiode beschikbaar op " + nu.toString() + " voor SE: " + screeningsEenheid.getNaam());
+			throw new IllegalStateException("Er is geen standplaatsperiode beschikbaar op " + afspraakmoment + " voor SE: " + screeningsEenheid.getNaam());
 		}
 
 		var vorigeAfspraak = laatsteUitnodiging.getLaatsteAfspraak();
@@ -248,7 +249,7 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 
 		baseKansberekeningService.resetPreferences();
 		return baseAfspraakService.maakAfspraak(laatsteUitnodiging.getScreeningRonde(),
-			baseCapaciteitsBlokService.getCapaciteitsBlokOpTijdstipVoorSe(client, screeningsEenheid, nu), nu,
+			baseCapaciteitsBlokService.getCapaciteitsBlokVoorPassantAfspraak(client, screeningsEenheid, afspraakmoment), afspraakmoment,
 			standplaatsPeriode, MammaVerzettenReden.PASSANT, annuleerVorigeAfspraak, true, false, true, true, organisatieMedewerker, false);
 	}
 

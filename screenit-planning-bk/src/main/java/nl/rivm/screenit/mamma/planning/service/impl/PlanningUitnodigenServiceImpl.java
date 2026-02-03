@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.planning.service.impl;
  * ========================LICENSE_START=================================
  * screenit-planning-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -151,25 +151,12 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 	{
 		var mammaStandplaatsRonde = hibernateService.get(MammaStandplaatsRonde.class, standplaatsRonde.getId());
 
-		uitstellen(mammaStandplaatsRonde, uitTeStellenClientSet, mammaStandplaatsRonde.getAchtervangStandplaats(), MammaUitstelReden.ACHTERVANG_UITSTEL);
+		maakAchtervangUitstel(mammaStandplaatsRonde, uitTeStellenClientSet, mammaStandplaatsRonde.getAchtervangStandplaats());
 		mammaStandplaatsRonde.setAchtervangToegepast(true);
 
 		var laatsteMammaStandplaatsPeriode = hibernateService.get(MammaStandplaatsPeriode.class,
 			standplaatsRonde.getStandplaatsPeriodeNavigableSet().last().getId());
 		getStandplaatsPeriodeUitnodigenRapportage(rapportage, laatsteMammaStandplaatsPeriode).setUitgesteldAchtervangUitstel((long) uitTeStellenClientSet.size());
-	}
-
-	@Override
-	public void minderValideUitwijkUitstel(PlanningStandplaatsRonde standplaatsRonde, Set<PlanningClient> uitTeStellenClientSet, PlanningUitnodigenRapportageDto rapportage)
-	{
-		var mammaStandplaatsRonde = hibernateService.get(MammaStandplaatsRonde.class, standplaatsRonde.getId());
-
-		uitstellen(mammaStandplaatsRonde, uitTeStellenClientSet, mammaStandplaatsRonde.getMinderValideUitwijkStandplaats(),
-			MammaUitstelReden.MINDER_VALIDE_UITWIJK_UITSTEL);
-
-		var eersteMammaStandplaatsPeriode = hibernateService.get(MammaStandplaatsPeriode.class,
-			standplaatsRonde.getStandplaatsPeriodeNavigableSet().first().getId());
-		getStandplaatsPeriodeUitnodigenRapportage(rapportage, eersteMammaStandplaatsPeriode).setUitgesteldMinderValideUitgewijktUitstel((long) uitTeStellenClientSet.size());
 	}
 
 	@Override
@@ -213,7 +200,7 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 		}
 	}
 
-	private void uitstellen(MammaStandplaatsRonde standplaatsRonde, Set<PlanningClient> uitTeStellenClientSet, MammaStandplaats uitstellenNaar, MammaUitstelReden uitstelReden)
+	private void maakAchtervangUitstel(MammaStandplaatsRonde standplaatsRonde, Set<PlanningClient> uitTeStellenClientSet, MammaStandplaats uitstellenNaar)
 	{
 		for (var client : uitTeStellenClientSet)
 		{
@@ -227,7 +214,7 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 				screeningRonde = maakRondeEnUitnodiging(getDossier(client), null, standplaatsRonde, true);
 			}
 
-			var uitstel = baseFactory.maakUitstel(screeningRonde, uitstellenNaar, DateUtil.toUtilDate(client.getHuidigeStreefDatum()), uitstelReden);
+			var uitstel = baseFactory.maakUitstel(screeningRonde, uitstellenNaar, DateUtil.toUtilDate(client.getHuidigeStreefDatum()), MammaUitstelReden.ACHTERVANG_UITSTEL);
 			screeningRonde.setLaatsteUitstel(uitstel);
 			screeningRonde.getUitstellen().add(uitstel);
 
@@ -320,8 +307,8 @@ public class PlanningUitnodigenServiceImpl implements PlanningUitnodigenService
 		case MAMMA_AFSPRAAK_UITNODIGING:
 			standplaatsPeriodeUitnodigenRapportage.setUitgenodigdAfspraak(standplaatsPeriodeUitnodigenRapportage.getUitgenodigdAfspraak() + 1);
 			break;
-		case MAMMA_UITNODIGING_MINDER_VALIDE:
-			standplaatsPeriodeUitnodigenRapportage.setUitgenodigdMinderValide(standplaatsPeriodeUitnodigenRapportage.getUitgenodigdMinderValide() + 1);
+		case MAMMA_UITNODIGING_MINDERVALIDE:
+			standplaatsPeriodeUitnodigenRapportage.setUitgenodigdMindervalide(standplaatsPeriodeUitnodigenRapportage.getUitgenodigdMindervalide() + 1);
 			break;
 		case MAMMA_UITNODIGING_SUSPECT:
 			standplaatsPeriodeUitnodigenRapportage.setUitgenodigdSuspect(standplaatsPeriodeUitnodigenRapportage.getUitgenodigdSuspect() + 1);

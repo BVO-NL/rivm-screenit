@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@
 import { Component, inject, OnInit, Signal } from '@angular/core'
 import { ClrAlertModule } from '@clr/angular'
 import { RoosterService } from '@/colon/colon-rooster-page/services/rooster.service'
-import { Signaleringstermijn } from '@shared/types/signaleringstermijn'
+import { Signaleringstermijn } from '@shared/types/colon/signaleringstermijn'
 
 @Component({
   selector: 'app-signaleringstermijn-melding',

@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -37,7 +37,8 @@
 .datagrid {
   box-sizing: border-box !important;
 
-  .datagrid-table > .datagrid-row .datagrid-select .clr-checkbox-wrapper input[type="checkbox"] + .clr-control-label::before, .datagrid-table > .datagrid-row .datagrid-select .clr-checkbox-wrapper input[type="checkbox"] + .clr-control-label::after {
+  .datagrid-table > .datagrid-row .datagrid-select .clr-checkbox-wrapper input[type='checkbox'] + .clr-control-label::before,
+  .datagrid-table > .datagrid-row .datagrid-select .clr-checkbox-wrapper input[type='checkbox'] + .clr-control-label::after {
     top: 0.35rem;
   }
 }
@@ -107,7 +108,7 @@ cds-icon {
 
     .clr-control-label {
       max-width: 100%;
-      flex: 0 0 100%
+      flex: 0 0 100%;
     }
 
     @media (min-width: 768px) {

@@ -2,7 +2,7 @@
 # ========================LICENSE_START=================================
 # screenit-kansberekening
 # %%
-# Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+# Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
 # %%
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -23,6 +23,7 @@ import os
 import sys
 from argparse import ArgumentParser
 from logging.handlers import TimedRotatingFileHandler
+from urllib.parse import quote_plus
 
 import cherrypy
 from cherrypy.process import plugins
@@ -42,7 +43,7 @@ if not args.config and 'CONTAINER_IP' in os.environ:
         'server.socket_host': os.environ['CONTAINER_IP'],
         'server.socket_port': int(os.environ['CONTAINER_PORT']),
         'filestore': os.environ['FILESTORE_DIR'],
-        'connection_url': 'postgresql://%s:%s@%s:%d/%s' % (os.environ['DB_USER'], os.environ['DB_PASSWORD'],
+        'connection_url': 'postgresql://%s:%s@%s:%d/%s' % (quote_plus(os.environ['DB_USER']), quote_plus(os.environ['DB_PASSWORD']),
                                                            os.environ['DB_IP'], int(os.environ['DB_PORT']),
                                                            os.environ['DB_NAME'])
     }})

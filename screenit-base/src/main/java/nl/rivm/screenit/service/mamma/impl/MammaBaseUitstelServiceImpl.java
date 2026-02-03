@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.mamma.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -32,17 +32,14 @@ import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
-import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
-import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.model.mamma.MammaUitstel;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaUitstelGeannuleerdReden;
 import nl.rivm.screenit.model.mamma.enums.MammaUitstelReden;
 import nl.rivm.screenit.service.BaseBriefService;
-import nl.rivm.screenit.service.BerichtToBatchService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
@@ -79,18 +76,15 @@ public class MammaBaseUitstelServiceImpl implements MammaBaseUitstelService
 	private LogService logService;
 
 	@Autowired
-	private BerichtToBatchService berichtToBatchService;
-
-	@Autowired
 	private MammaBaseFactory baseFactory;
 
 	@Override
 	public void saveUitstel(MammaUitstel uitstel, boolean briefAanmaken, Account account)
 	{
-		MammaScreeningRonde screeningRonde = uitstel.getScreeningRonde();
-		MammaUitnodiging laatsteUitnodiging = screeningRonde.getLaatsteUitnodiging();
-		MammaAfspraak afspraak = laatsteUitnodiging != null ? laatsteUitnodiging.getLaatsteAfspraak() : null;
-		boolean wijziging = uitstel.getId() != null;
+		var screeningRonde = uitstel.getScreeningRonde();
+		var laatsteUitnodiging = screeningRonde.getLaatsteUitnodiging();
+		var afspraak = laatsteUitnodiging != null ? laatsteUitnodiging.getLaatsteAfspraak() : null;
+		var wijziging = uitstel.getId() != null;
 
 		screeningRonde.setLaatsteUitstel(uitstel);
 		screeningRonde.getUitstellen().add(uitstel);
@@ -110,24 +104,17 @@ public class MammaBaseUitstelServiceImpl implements MammaBaseUitstelService
 			baseBriefService.maakBvoBrief(screeningRonde, BriefType.MAMMA_UITSTEL);
 		}
 
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		sb.append("Streefdatum: ");
 		sb.append(new SimpleDateFormat("dd-MM-yyyy").format(uitstel.getStreefDatum()));
 		sb.append(", Standplaats: ");
 		sb.append(uitstel.getStandplaats().getNaam());
 
-		LogGebeurtenis logGebeurtenis = null;
-		switch (uitstel.getUitstelReden())
+		var logGebeurtenis = switch (uitstel.getUitstelReden())
 		{
-		case ACHTERVANG_UITSTEL:
-			logGebeurtenis = LogGebeurtenis.MAMMA_ACHTERVANG_UITSTEL;
-			break;
-		case MINDER_VALIDE_UITWIJK_UITSTEL:
-			logGebeurtenis = LogGebeurtenis.MAMMA_MINDER_VALIDE_UITWIJK;
-			break;
-		case CLIENT_CONTACT:
-			logGebeurtenis = LogGebeurtenis.MAMMA_UITSTEL;
-		}
+			case ACHTERVANG_UITSTEL -> LogGebeurtenis.MAMMA_ACHTERVANG_UITSTEL;
+			case CLIENT_CONTACT -> LogGebeurtenis.MAMMA_UITSTEL;
+		};
 
 		if (wijziging)
 		{
@@ -140,7 +127,7 @@ public class MammaBaseUitstelServiceImpl implements MammaBaseUitstelService
 	@Override
 	public MammaUitstel getOfMaakMammaUitstel(MammaScreeningRonde screeningRonde, MammaStandplaats standplaats, Date zoekDatum)
 	{
-		MammaUitstel laatsteUitstel = screeningRonde.getLaatsteUitstel();
+		var laatsteUitstel = screeningRonde.getLaatsteUitstel();
 
 		if (laatsteUitstel != null && laatsteUitstel.getUitnodiging() == null && laatsteUitstel.getGeannuleerdOp() == null)
 		{
@@ -171,21 +158,20 @@ public class MammaBaseUitstelServiceImpl implements MammaBaseUitstelService
 	{
 		if (!baseAfspraakService.valideUitstelStreefDatum(streefdatum, standplaatsPeriode))
 		{
-			Date vrijgegevenTotEnMet = standplaatsPeriode.getScreeningsEenheid().getVrijgegevenTotEnMet();
+			var vrijgegevenTotEnMet = standplaatsPeriode.getScreeningsEenheid().getVrijgegevenTotEnMet();
 			if (vrijgegevenTotEnMet == null)
 			{
 				return "Voor deze standplaatsperiode is het niet mogelijk om uitstel aan te vragen: de 'vrijgegeven tot en met' datum is leeg.";
 			}
 			else
 			{
-				LocalDate minStreefDatum = Collections
+				var minStreefDatum = Collections
 					.max(Arrays.asList(DateUtil.toLocalDate(vrijgegevenTotEnMet).plusDays(1), DateUtil.toLocalDate(standplaatsPeriode.getVanaf())));
-				String minStreefdatumText = DateUtil.LOCAL_DATE_FORMAT.format(minStreefDatum);
-				String maxStreefdatumText = DateUtil.LOCAL_DATE_FORMAT.format(DateUtil.toLocalDate(standplaatsPeriode.getTotEnMet()));
+				var minStreefdatumText = DateUtil.LOCAL_DATE_FORMAT.format(minStreefDatum);
+				var maxStreefdatumText = DateUtil.LOCAL_DATE_FORMAT.format(DateUtil.toLocalDate(standplaatsPeriode.getTotEnMet()));
 				return (MessageFormat.format("De uitstel streefdatum in de gekozen standplaats moet tussen {0} en {1} liggen.", minStreefdatumText, maxStreefdatumText));
 			}
 		}
 		return null;
 	}
-
 }

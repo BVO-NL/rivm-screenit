@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.service.impl;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -177,7 +177,6 @@ import com.google.common.primitives.Ints;
 @Slf4j
 public class DossierServiceImpl implements DossierService
 {
-
 	private final ClientContactService clientContactService;
 
 	private final HibernateService hibernateService;
@@ -1235,18 +1234,11 @@ public class DossierServiceImpl implements DossierService
 	{
 		for (MammaUitstel uitstel : screeningRonde.getUitstellen())
 		{
-			TypeGebeurtenis typeGebeurtenis;
-			switch (uitstel.getUitstelReden())
+			TypeGebeurtenis typeGebeurtenis = switch (uitstel.getUitstelReden())
 			{
-			case ACHTERVANG_UITSTEL:
-				typeGebeurtenis = TypeGebeurtenis.MAMMA_ACHTERVANG_UITSTEL;
-				break;
-			case MINDER_VALIDE_UITWIJK_UITSTEL:
-				typeGebeurtenis = TypeGebeurtenis.MAMMA_MINDER_VALIDE_UITWIJK;
-				break;
-			default:
-				typeGebeurtenis = TypeGebeurtenis.UITSTEL;
-			}
+				case ACHTERVANG_UITSTEL -> TypeGebeurtenis.MAMMA_ACHTERVANG_UITSTEL;
+				default -> TypeGebeurtenis.UITSTEL;
+			};
 
 			ScreeningRondeGebeurtenis screeningRondeGebeurtenis = new ScreeningRondeGebeurtenis();
 			screeningRondeGebeurtenis.setDatum(uitstel.getGemaaktOp());
@@ -1269,8 +1261,8 @@ public class DossierServiceImpl implements DossierService
 					case TEHUIS_KOPPELING:
 						extraOmschrijvingen.add("Geannuleerd reden: geannuleerd vanwege koppelen aan tehuis");
 						break;
-					case MINDER_VALIDE_ONDERZOEK_ZIEKENHUIS:
-						extraOmschrijvingen.add("Geannuleerd reden: mindervalide onderzoek in ziekenhuis");
+					case MINDERVALIDE_ONDERZOEK_ZIEKENHUIS:
+						extraOmschrijvingen.add("Geannuleerd reden: mindervalidenonderzoek in ziekenhuis");
 						break;
 					case NIEUWE_AFSPRAAK:
 						extraOmschrijvingen.add("Geannuleerd reden: geannuleerd vanwege nieuwe afspraak");

@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,38 +18,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-@import "styles/legacy";
-@import "styles/utils";
-@import "styles/clarity_overrides";
-@import "styles/fullcalendar";
+@import 'styles/legacy';
+@import 'styles/utils';
+@import 'styles/clarity_overrides';
+@import 'styles/fullcalendar';
 
 $clr-use-custom-properties: true;
 
 :root [cds-theme] {
   --fc-page-bg-color: #fff;
-  --fc-neutral-bg-color: hsla(0, 0%, 82%, .3);
+  --fc-neutral-bg-color: hsla(0, 0%, 82%, 0.3);
   --fc-neutral-text-color: grey;
   --fc-border-color: #e0e0e0;
   --fc-button-text-color: #fff;
   --fc-button-bg-color: #97a300;
-  --fc-button-border-color: #828D00;
-  --fc-button-hover-bg-color: #828D00;
-  --fc-button-hover-border-color: #828D00;
+  --fc-button-border-color: #828d00;
+  --fc-button-hover-bg-color: #828d00;
+  --fc-button-hover-border-color: #828d00;
   --fc-button-active-bg-color: #1a252f;
   --fc-button-active-border-color: #151e27;
   --fc-event-bg-color: #3788d8;
   --fc-event-border-color: #3788d8;
   --fc-event-text-color: #fff;
-  --fc-event-selected-overlay-color: rgba(0, 0, 0, .25);
+  --fc-event-selected-overlay-color: rgba(0, 0, 0, 0.25);
   --fc-more-link-bg-color: #d0d0d0;
   --fc-more-link-text-color: inherit;
   --fc-event-resizer-thickness: 8px;
   --fc-event-resizer-dot-total-width: 8px;
   --fc-event-resizer-dot-border-width: 1px;
-  --fc-non-business-color: hsla(0, 0%, 84%, .3);
+  --fc-non-business-color: hsla(0, 0%, 84%, 0.3);
   --fc-bg-event-color: #8fdf82;
   --fc-bg-event-opacity: 0.3;
-  --fc-highlight-color: rgba(188, 232, 241, .3);
+  --fc-highlight-color: rgba(188, 232, 241, 0.3);
   --fc-small-font-size: 12px;
   --fc-today-bg-color: var(--clr-color-neutral-0);
   --fc-today-header-bg-color: var(--cds-global-color-construction-50);
@@ -105,7 +105,7 @@ $clr-use-custom-properties: true;
   --cds-global-color-construction-700: #43015b;
   --cds-global-color-construction-800: #3a0151;
   --cds-global-color-construction-900: #29013f;
-  --cds-global-color-construction-1000: #1E012DFF;
+  --cds-global-color-construction-1000: #1e012dff;
 
   --cds-alias-object-interaction-background-hover: #f2f2f2;
   --cds-alias-object-interaction-background-active: #f2f2f2;
@@ -137,20 +137,19 @@ $clr-use-custom-properties: true;
   --page-width-full: 100%;
 }
 
-
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-input[type=number] {
+input[type='number'] {
   -moz-appearance: textfield;
 }
 
 .tippy-box {
   .tippy-content {
-    font-size: .65rem;
+    font-size: 0.65rem;
   }
 }
 
@@ -178,4 +177,8 @@ input[type=number] {
   .modal-dialog {
     height: 70vh;
   }
+}
+
+.btn-column {
+  width: 105px;
 }

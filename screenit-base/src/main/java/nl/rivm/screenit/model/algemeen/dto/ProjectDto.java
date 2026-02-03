@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.algemeen.dto;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,21 +21,20 @@ package nl.rivm.screenit.model.algemeen.dto;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
 import lombok.Getter;
 import lombok.Setter;
 
+import nl.rivm.screenit.dto.EntityDto;
+
 @Getter
 @Setter
-public class ProjectDto implements Serializable
+public class ProjectDto extends EntityDto
 {
 	private String naam;
 
 	private LocalDate startDatum;
 
 	private LocalDate eindDatum;
-
-	private Long id;
 }

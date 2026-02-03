@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.mamma.afspraakzoeken.impl;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -112,9 +112,7 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 
 	private MammaScreeningsEenheidDto screeningsEenheidDto;
 
-	private int minimaleDagCapaciteitMinderValideAfspraken;
-
-	private Long laatsteMinderValideAfspraakCapaciteitBlokId;
+	private Long laatsteMindervalideAfspraakCapaciteitBlokId;
 
 	private boolean isMindervalide;
 
@@ -124,7 +122,7 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 		Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen)
 	{
 		this.standplaatsPeriodeList = standplaatsPeriodeList;
-		isMindervalide = dossier.getDoelgroep().equals(MammaDoelgroep.MINDER_VALIDE);
+		isMindervalide = dossier.getDoelgroep().equals(MammaDoelgroep.MINDERVALIDE);
 		isDubbeleTijd = dossier.getDoelgroep().equals(MammaDoelgroep.DUBBELE_TIJD) || dossier.getTehuis() != null;
 
 		var standplaatsPeriode = standplaatsPeriodeList.get(0);
@@ -134,7 +132,6 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 
 		var screeningOrganisatie = (ScreeningOrganisatie) Hibernate.unproxy(screeningsEenheid.getBeoordelingsEenheid().getParent().getRegio());
 		factor = dossierService.getFactorType(dossier).getFactor(screeningOrganisatie);
-		minimaleDagCapaciteitMinderValideAfspraken = screeningOrganisatie.getMinimaleDagCapaciteitMinderValideAfspraken();
 
 		benodigdeCapaciteit = factor.multiply(voorlopigeOpkomstkans.compareTo(MINIMUM_OPKOMSTKANS) >= 0 ? voorlopigeOpkomstkans : MINIMUM_OPKOMSTKANS);
 
@@ -147,7 +144,7 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 			var laatsteAfspraak = dossier.getLaatsteScreeningRonde() != null ? MammaScreeningRondeUtil.getLaatsteAfspraak(dossier.getLaatsteScreeningRonde()) : null;
 			if (laatsteAfspraak != null && laatsteAfspraak.getCapaciteitBlok() != null)
 			{
-				laatsteMinderValideAfspraakCapaciteitBlokId = laatsteAfspraak.getCapaciteitBlok().getId();
+				laatsteMindervalideAfspraakCapaciteitBlokId = laatsteAfspraak.getCapaciteitBlok().getId();
 			}
 		}
 	}
@@ -209,10 +206,7 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 		capaciteit = capaciteitsBlokService.getCapaciteit(nietGeblokkeerdeCapaciteitsBlokken);
 
 		var capaciteitsBlokMap = new TreeMap<LocalDate, List<MammaCapaciteitBlokDto>>();
-		nietGeblokkeerdeCapaciteitsBlokken.forEach(blok ->
-		{
-			capaciteitsBlokMap.computeIfAbsent(blok.getDatum(), v -> new ArrayList<>()).add(blok);
-		});
+		nietGeblokkeerdeCapaciteitsBlokken.forEach(blok -> capaciteitsBlokMap.computeIfAbsent(blok.getDatum(), v -> new ArrayList<>()).add(blok));
 
 		capaciteitsBlokMap.forEach((key, value) -> value.sort(Comparator.comparing(MammaCapaciteitBlokDto::getVanaf)));
 
@@ -229,10 +223,6 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 		bepaalDeterminatiePeriode(client);
 
 		var kandidaatAfspraken = new ArrayList<MammaAfspraakOptie>();
-		if (isMindervalide && standplaatsPeriodeList.get(0).getStandplaatsRonde().getMinderValideUitwijkStandplaats() != null)
-		{
-			return kandidaatAfspraken;
-		}
 
 		var totaleVrijeCapaciteit = capaciteit.getVrijeCapaciteit(corrigeerNegatieveVrijeCapaciteit);
 
@@ -330,7 +320,7 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 
 		private final BigDecimal aflopendDag;
 
-		private final boolean genoegDagCapaciteitVoorMinderValide;
+		private final boolean genoegDagCapaciteitVoorMindervalide;
 
 		private DeterminatieDag(LocalDate datum)
 		{
@@ -353,7 +343,7 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 					}
 				});
 
-			genoegDagCapaciteitVoorMinderValide = totaleBeschikbareDagCapaciteit.get().compareTo(BigDecimal.valueOf(minimaleDagCapaciteitMinderValideAfspraken)) >= 0;
+			genoegDagCapaciteitVoorMindervalide = totaleBeschikbareDagCapaciteit.get().compareTo(BigDecimal.valueOf(1)) >= 0;
 		}
 
 		private MammaDeterminatieKandidaatAfspraakImpl getKandidaatAfspraak(BigDecimal benodigdeCapaciteit)
@@ -365,7 +355,7 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 				determinatieBlok.capaciteitBlokDto.isMinderValideAfspraakMogelijk(), determinatieBlok.beschikbareCapaciteit, determinatieBlok.benutteCapaciteit,
 				determinatieBlok.getRatioTekst(), determinatieBlok.capaciteitBlokDto.getId());
 			var kandidaatAfspraak = determinatieBlok.getKandidaatAfspraak(benodigdeCapaciteit);
-			if (kandidaatAfspraak.isMinderValide() && !genoegDagCapaciteitVoorMinderValide)
+			if (kandidaatAfspraak.isMindervalide() && !genoegDagCapaciteitVoorMindervalide)
 			{
 				kandidaatAfspraak.setGeldigeAfspraak(false);
 			}
@@ -417,7 +407,7 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 
 		private final List<MammaDeterminatieKandidaatAfspraakImpl> kandidaatAfspraakList = new ArrayList<>();
 
-		private final boolean blokHeeftAlMinderValideAfspraak;
+		private final boolean blokHeeftAlMindervalideAfspraak;
 
 		private final boolean minderValideAfspraakMogelijk;
 
@@ -456,7 +446,7 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 				});
 			}
 
-			blokHeeftAlMinderValideAfspraak = kandidaatAfspraakList.stream().anyMatch(MammaDeterminatieKandidaatAfspraakImpl::isMinderValide);
+			blokHeeftAlMindervalideAfspraak = kandidaatAfspraakList.stream().anyMatch(MammaDeterminatieKandidaatAfspraakImpl::isMindervalide);
 			heeftVrijeCapaciteit = beschikbareCapaciteit.subtract(benutteCapaciteit).compareTo(BigDecimal.ZERO) > 0;
 		}
 
@@ -558,7 +548,7 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 				}
 			}
 
-			if (kandidaatAfspraak.isMinderValide() && (clientHeeftGeenMinderValideAfspraakInDitBlok() && blokHeeftAlMinderValideAfspraak || !minderValideAfspraakMogelijk)
+			if (kandidaatAfspraak.isMindervalide() && (clientHeeftGeenMindervalideAfspraakInDitBlok() && blokHeeftAlMindervalideAfspraak || !minderValideAfspraakMogelijk)
 				|| !heeftVrijeCapaciteit)
 			{
 				kandidaatAfspraak.setGeldigeAfspraak(false);
@@ -574,9 +564,9 @@ public class MammaBaseKandidaatAfsprakenDeterminatiePeriodeImpl implements Mamma
 			return kandidaatAfspraak;
 		}
 
-		private boolean clientHeeftGeenMinderValideAfspraakInDitBlok()
+		private boolean clientHeeftGeenMindervalideAfspraakInDitBlok()
 		{
-			return !capaciteitBlokDto.getId().equals(laatsteMinderValideAfspraakCapaciteitBlokId);
+			return !capaciteitBlokDto.getId().equals(laatsteMindervalideAfspraakCapaciteitBlokId);
 		}
 
 		@Override

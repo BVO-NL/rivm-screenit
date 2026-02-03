@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.afspraken;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,37 +22,28 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.afspraken;
  */
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 
-import nl.rivm.screenit.main.service.mamma.MammaAfspraakService;
-import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
-import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
+import nl.topicuszorg.wicket.model.DetachableListModel;
 import nl.topicuszorg.wicket.search.column.HibernateCheckBoxListContainer;
 
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class MammaAfsprakenZonderBlokPanel extends GenericPanel<MammaScreeningsEenheid>
 {
-
-	private static final long serialVersionUID = 1L;
-
-	@SpringBean
-	private MammaAfspraakService afspraakService;
-
-	public MammaAfsprakenZonderBlokPanel(String id, IModel<MammaScreeningsEenheid> model, LocalDate datum, HibernateCheckBoxListContainer<MammaAfspraak> selectedAfspraken,
-		BootstrapDialog dialog, boolean magVerzetten, boolean magBulkVerzetten, List<MammaAfspraak> afspraken)
+	public MammaAfsprakenZonderBlokPanel(String id, IModel<MammaScreeningsEenheid> screeningsEenheidModel, LocalDate datum,
+		HibernateCheckBoxListContainer<MammaAfspraak> selectedAfspraken,
+		boolean magVerzetten, boolean magBulkVerzetten, IModel<List<MammaAfspraak>> afsprakenModel)
 	{
-		super(id, model);
+		super(id, screeningsEenheidModel);
 
-		setVisible(!afspraken.isEmpty());
-		afspraken.sort(Comparator.comparing(MammaAfspraak::getVanaf));
-		add(new MammaAfsprakenBlokPanel("afspraken", ModelUtil.listRModel(afspraken), selectedAfspraken, datum, magVerzetten, magBulkVerzetten));
+		setVisible(!afsprakenModel.getObject().isEmpty());
+		var afsprakenWrappersModel = new DetachableListModel<>(
+			afsprakenModel.getObject().stream().map(MammaAfspraakOfMindervalideReserveringWrapper::new).toList());
 
+		add(new MammaAfsprakenBlokPanel("afspraken", afsprakenWrappersModel, selectedAfspraken, datum, magVerzetten, magBulkVerzetten));
 	}
-
 }

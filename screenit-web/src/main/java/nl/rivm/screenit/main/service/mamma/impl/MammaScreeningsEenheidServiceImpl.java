@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.service.mamma.impl;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -72,10 +72,10 @@ import static nl.rivm.screenit.specification.mamma.MammaScreeningsEenheidSpecifi
 import static nl.rivm.screenit.specification.mamma.MammaScreeningsEenheidSpecification.filterNaamContaining;
 import static nl.rivm.screenit.specification.mamma.MammaScreeningsEenheidSpecification.filterScreeningOrganisatie;
 import static nl.rivm.screenit.specification.mamma.MammaScreeningsEenheidSpecification.heeftBeoordelingsEenheidIn;
+import static nl.rivm.screenit.specification.mamma.MammaScreeningsEenheidSpecification.heeftBeoordelingseenheidIdIn;
 import static nl.rivm.screenit.specification.mamma.MammaScreeningsEenheidSpecification.isActief;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheidService
 {
 	@Autowired
@@ -107,6 +107,16 @@ public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheid
 			return Collections.emptyList();
 		}
 		return screeningsEenheidRepository.findAll(isActief().and(heeftBeoordelingsEenheidIn(beoordelingsEenheden)), Sort.by(MammaScreeningsEenheid_.NAAM));
+	}
+
+	@Override
+	public List<MammaScreeningsEenheid> getActieveScreeningsEenhedenVoorBeoordelingseenheidIds(List<Long> beoordelingseenheidIds)
+	{
+		if (beoordelingseenheidIds == null || beoordelingseenheidIds.isEmpty())
+		{
+			return Collections.emptyList();
+		}
+		return screeningsEenheidRepository.findAll(isActief().and(heeftBeoordelingseenheidIdIn(beoordelingseenheidIds)), Sort.by(MammaScreeningsEenheid_.NAAM));
 	}
 
 	@Override
@@ -182,7 +192,7 @@ public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheid
 		{
 			melding += seMetCodeEnNaam(screeningsEenheid) + " aangemaakt.";
 		}
-		else if (diffToLatestVersion.length() > 0)
+		else if (!diffToLatestVersion.isEmpty())
 		{
 			melding += seMetCodeEnNaam(screeningsEenheid) + " gewijzigd (" + diffToLatestVersion + ").";
 		}
@@ -337,7 +347,7 @@ public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheid
 		{
 			return "mindervalide.tijdvak.beideveldengevuld";
 		}
-		if (minderValidePeriode1Vanaf.compareTo(minderValidePeriode1TotEnMet) >= 0)
+		if (!minderValidePeriode1Vanaf.isBefore(minderValidePeriode1TotEnMet))
 		{
 			return "mindervalide.tijdvak.vanafeerderdantotenmet";
 		}
@@ -351,11 +361,11 @@ public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheid
 			{
 				return "mindervalide.tijdvak.beideveldengevuld";
 			}
-			if (minderValidePeriode2Vanaf.compareTo(minderValidePeriode2TotEnMet) >= 0)
+			if (!minderValidePeriode2Vanaf.isBefore(minderValidePeriode2TotEnMet))
 			{
 				return "mindervalide.tijdvak.vanafeerderdantotenmet";
 			}
-			if (minderValidePeriode1TotEnMet.compareTo(minderValidePeriode2Vanaf) > 0)
+			if (minderValidePeriode1TotEnMet.isAfter(minderValidePeriode2Vanaf))
 			{
 				return "mindervalide.tijdvak.1eerdervan2";
 			}

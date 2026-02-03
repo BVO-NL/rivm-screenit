@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslage
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -68,11 +68,10 @@ public class MammaUitnodigenRapportageScreeningsOrganisatiePanel extends Generic
 				listItem.add(new Label("standplaatsPeriode.standplaatsRonde.standplaats.naam"));
 				listItem.add(new Label("uitgenodigdAfspraak"));
 				listItem.add(new Label("uitgenodigdOpen"));
-				listItem.add(new Label("uitgenodigdMinderValide"));
+				listItem.add(new Label("uitgenodigdMindervalide"));
 				listItem.add(new Label("uitgenodigdSuspect"));
 				listItem.add(new Label("uitgenodigdNaUitstel"));
 				listItem.add(new Label("uitgesteldAchtervangUitstel"));
-				listItem.add(new Label("uitgesteldMinderValideUitgewijktUitstel"));
 			}
 		});
 

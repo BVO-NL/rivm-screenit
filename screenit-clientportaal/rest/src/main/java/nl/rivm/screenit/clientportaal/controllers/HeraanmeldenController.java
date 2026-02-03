@@ -4,7 +4,7 @@ package nl.rivm.screenit.clientportaal.controllers;
  * ========================LICENSE_START=================================
  * screenit-clientportaal-rest
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -96,16 +96,12 @@ public class HeraanmeldenController extends AbstractController
 
 	private ClientContactActieType getClientContactActieType(Bevolkingsonderzoek bevolkingsonderzoek)
 	{
-		switch (bevolkingsonderzoek)
+		return switch (bevolkingsonderzoek)
 		{
-		case COLON:
-			return ClientContactActieType.COLON_HERAANMELDEN;
-		case MAMMA:
-			return ClientContactActieType.MAMMA_HERAANMELDEN;
-		case CERVIX:
-			return ClientContactActieType.CERVIX_HERAANMELDEN;
-		default:
-			return null;
-		}
+			case COLON -> ClientContactActieType.COLON_HERAANMELDEN;
+			case MAMMA -> ClientContactActieType.MAMMA_HERAANMELDEN;
+			case CERVIX -> ClientContactActieType.CERVIX_HERAANMELDEN;
+			default -> null;
+		};
 	}
 }

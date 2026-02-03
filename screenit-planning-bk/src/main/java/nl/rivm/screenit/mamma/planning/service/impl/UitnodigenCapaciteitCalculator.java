@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.planning.service.impl;
  * ========================LICENSE_START=================================
  * screenit-planning-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -69,7 +69,7 @@ public class UitnodigenCapaciteitCalculator
 		reserveerWijkSelectieEnUitstel();
 		reserveerGeplandeAfspraken();
 		reserveerUitverhuizers();
-		corrigeerExtraMinderValideUitnodigingen();
+		corrigeerExtraMindervalideUitnodigingen();
 		return capaciteitVoorUitnodigen;
 	}
 
@@ -174,7 +174,7 @@ public class UitnodigenCapaciteitCalculator
 		LOG.info("{}: na reserveringen uitverhuizers: {}. Aantal uitverhuizers: {}", logPrefix(), capaciteitVoorUitnodigen, uitverhuizers.size());
 	}
 
-	private void corrigeerExtraMinderValideUitnodigingen()
+	private void corrigeerExtraMindervalideUitnodigingen()
 	{
 		capaciteitVoorUitnodigen = capaciteitVoorUitnodigen.add(extraMindervalideCapaciteitUitgenodigd);
 		LOG.info("{}: na correctie extra mindervalide uitnodigingen: {}. extraMindervalideCapaciteitUitgenodigd: {}", logPrefix(), capaciteitVoorUitnodigen,

@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.service.mamma;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import nl.rivm.screenit.dto.mamma.afspraken.IMammaBulkVerzettenFilter;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakOptieMetAfstandDto;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
@@ -42,9 +41,7 @@ public interface MammaAfspraakService
 
 	Date getDatumLaatsteGeplandeAfspraak(Long standplaatsPeriodeId);
 
-	void bulkVerzetten(IMammaBulkVerzettenFilter filter, List<MammaAfspraak> afspraken, Account account, LocalDate date);
-
-	void verzetAfsprakenNaarStandplaatsPlusBrievenKlaarzettenVoorAfdrukken(Map<Long, List<Long>> afsprakenTeVerplatsen, Account account);
+	void verzetAfsprakenNaarStandplaatsPlusBrievenKlaarzettenVoorAfdrukken(Map<Long, List<Long>> afsprakenTeVerplaatsen, Account account);
 
 	boolean kortVoorVolgendeRonde(MammaAfspraak afspraak);
 

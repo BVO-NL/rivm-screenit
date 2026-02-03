@@ -2,7 +2,7 @@
   ========================LICENSE_START=================================
   medewerkerportaal
   %%
-  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
   %%
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -26,9 +26,19 @@
     [clrAlertType]="toast.type"
     [attr.data-testid]="'toast_' + i"
     (clrAlertClosedChange)="closeToast(toast.id)"
-    >
+  >
     <clr-alert-item>
-      <div class="alert-text" [innerHTML]="toast.message | sanitize"></div>
+      @if (Array.isArray(toast.message)) {
+        <div class="alert-text">
+          <ul>
+            @for (messagePart of toast.message; track messagePart) {
+              <li [innerHTML]="messagePart | sanitize"></li>
+            }
+          </ul>
+        </div>
+      } @else {
+        <div class="alert-text" [innerHTML]="toast.message | sanitize"></div>
+      }
     </clr-alert-item>
   </clr-alert>
 }

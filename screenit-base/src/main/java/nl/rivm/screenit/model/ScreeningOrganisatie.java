@@ -4,7 +4,7 @@ package nl.rivm.screenit.model;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -115,7 +115,7 @@ public class ScreeningOrganisatie extends Organisatie
 	private BigDecimal factorDubbeleTijdBk;
 
 	@Column(precision = HibernateMagicNumber.P3, scale = HibernateMagicNumber.S2)
-	private BigDecimal factorMinderValideBk;
+	private BigDecimal factorMindervalideBk;
 
 	@Column
 	private Integer wekenVanTevorenUitnodigen;
@@ -123,6 +123,4 @@ public class ScreeningOrganisatie extends Organisatie
 	@Column
 	private Integer vervallenCapaciteitsreserveringDagenBk;
 
-	@Column
-	private Integer minimaleDagCapaciteitMinderValideAfspraken;
 }

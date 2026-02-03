@@ -4,7 +4,7 @@ package nl.rivm.screenit.dto;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -28,7 +28,7 @@ import nl.rivm.screenit.model.OrganisatieType;
 
 @Getter
 @Setter
-public class OrganisatieDto
+public class OrganisatieDto extends EntityDto
 {
 	private boolean actief;
 

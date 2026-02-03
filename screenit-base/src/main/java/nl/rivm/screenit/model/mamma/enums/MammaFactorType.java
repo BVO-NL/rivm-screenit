@@ -4,7 +4,7 @@ package nl.rivm.screenit.model.mamma.enums;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,42 +30,33 @@ public enum MammaFactorType
 	GEEN,
 	EERSTE_ONDERZOEK,
 	DUBBELE_TIJD,
-	MINDER_VALIDE;
+	MINDERVALIDE;
 
 	public BigDecimal getFactor(ScreeningOrganisatie screeningOrganisatie)
 	{
-		switch (this)
+		return switch (this)
 		{
-		case GEEN:
-			return BigDecimal.ONE;
-		case EERSTE_ONDERZOEK:
-			return screeningOrganisatie.getFactorEersteOnderzoekBk();
-		case DUBBELE_TIJD:
-			return screeningOrganisatie.getFactorDubbeleTijdBk();
-		case MINDER_VALIDE:
-			return screeningOrganisatie.getFactorMinderValideBk();
-		default:
-			throw new IllegalStateException("Unexpected value: " + this);
-		}
+			case GEEN -> BigDecimal.ONE;
+			case EERSTE_ONDERZOEK -> screeningOrganisatie.getFactorEersteOnderzoekBk();
+			case DUBBELE_TIJD -> screeningOrganisatie.getFactorDubbeleTijdBk();
+			case MINDERVALIDE -> screeningOrganisatie.getFactorMindervalideBk();
+			default -> throw new IllegalStateException("Unexpected value: " + this);
+		};
 	}
 
 	public static MammaFactorType getFactorType(boolean isTehuisClient, MammaDoelgroep doelgroep, boolean eersteOnderzoek)
 	{
 		if (isTehuisClient)
 		{
-			return doelgroep.equals(MammaDoelgroep.MINDER_VALIDE) ? MINDER_VALIDE : DUBBELE_TIJD;
+			return doelgroep.equals(MammaDoelgroep.MINDERVALIDE) ? MINDERVALIDE : DUBBELE_TIJD;
 		}
 
-		switch (doelgroep)
+		return switch (doelgroep)
 		{
-		case REGULIER:
-			return eersteOnderzoek ? EERSTE_ONDERZOEK : GEEN;
-		case DUBBELE_TIJD:
-			return DUBBELE_TIJD;
-		case MINDER_VALIDE:
-			return MINDER_VALIDE;
-		default:
-			throw new IllegalStateException("Unexpected value: " + doelgroep);
-		}
+			case REGULIER -> eersteOnderzoek ? EERSTE_ONDERZOEK : GEEN;
+			case DUBBELE_TIJD -> DUBBELE_TIJD;
+			case MINDERVALIDE -> MINDERVALIDE;
+			default -> throw new IllegalStateException("Unexpected value: " + doelgroep);
+		};
 	}
 }

@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * screenit-se-proxy
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,7 +23,7 @@ import type {TijdelijkAdres} from "./TijdelijkAdres"
 import type {VorigOnderzoek, VorigOnderzoekDto} from "./VorigOnderzoek"
 import {vorigOnderzoekDtoToVorigOnderzoek} from "./VorigOnderzoek"
 
-export type Doelgroep = "REGULIER" | "DUBBELE_TIJD" | "MINDER_VALIDE";
+export type Doelgroep = "REGULIER" | "DUBBELE_TIJD" | "MINDERVALIDE";
 export type ClientDto = {
 	id: number;
 	bsn: string;

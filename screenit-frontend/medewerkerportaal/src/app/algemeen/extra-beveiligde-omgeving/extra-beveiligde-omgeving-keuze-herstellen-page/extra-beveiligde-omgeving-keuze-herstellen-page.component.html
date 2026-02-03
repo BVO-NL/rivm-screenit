@@ -2,7 +2,7 @@
   ========================LICENSE_START=================================
   medewerkerportaal
   %%
-  Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
   %%
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@
 <div class="content-container">
   <h2>Keuze gebruik gegevens herstellen</h2>
   <form clrForm [formGroup]="formGroup" (ngSubmit)="keuzeHerstellen()">
-    <div class="card mb-3  w-100">
+    <div class="card mb-3 w-100">
       <div class="card-block">
         <div class="clr-row">
           <div class="clr-col-12 clr-col-md-6">
@@ -44,9 +44,7 @@
               <label class="clr-required-mark" for="file">Bestand</label>
               <input type="file" id="file" formControlName="bestand" required clrFileInput accept="application/pdf"/>
               <clr-control-error *clrIfError="'required'">Het bestand is verplicht</clr-control-error>
-              <clr-control-error *clrIfError="'accept'">
-                Alleen PDF's zijn toegestaan
-              </clr-control-error>
+              <clr-control-error *clrIfError="'accept'"> Alleen PDF's zijn toegestaan</clr-control-error>
             </clr-file-input-container>
           </div>
         </div>
@@ -54,7 +52,6 @@
           <button class="btn btn-primary" type="submit">Bevestigen</button>
         </div>
       </div>
-
     </div>
   </form>
 </div>

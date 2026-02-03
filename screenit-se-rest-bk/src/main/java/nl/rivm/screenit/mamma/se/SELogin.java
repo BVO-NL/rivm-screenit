@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.se;
  * ========================LICENSE_START=================================
  * screenit-se-rest-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -46,6 +46,7 @@ import nl.rivm.screenit.service.AuthenticatieService;
 import nl.rivm.screenit.service.BaseMedewerkerService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.MedewerkerUtil;
+import nl.rivm.screenit.util.mamma.MammaScreeningsEenheidUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
@@ -230,7 +231,7 @@ public class SELogin
 				{
 					logGeenActieveOrganisatie(medewerker, screeningsEenheid, proxyDatumTijd);
 					result.setMessage("Inloggen mislukt. Medewerker is niet gekoppeld aan de Screeningsorganisatie "
-						+ screeningsEenheid.getBeoordelingsEenheid().getParent().getRegio().getNaam());
+						+ MammaScreeningsEenheidUtil.getScreeningsOrganisatie(screeningsEenheid).getNaam());
 				}
 			}
 		}

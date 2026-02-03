@@ -4,7 +4,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma;
  * ========================LICENSE_START=================================
  * screenit-web
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -63,7 +63,7 @@ public class MammaClientPaspoortPanel extends GenericPanel<MammaScreeningRonde>
 		add(new Label("persoon.naam", anoniem ? "Anoniem" : NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client)));
 		add(new Label("uitnodigingsNr"));
 		add(new Label("dossier.client.persoon.bsn").setVisible(!anoniem));
-		add(new EmptyPanel("rolstoelClient").setVisible(dossier.getDoelgroep().equals(MammaDoelgroep.MINDER_VALIDE)));
+		add(new EmptyPanel("rolstoelClient").setVisible(dossier.getDoelgroep().equals(MammaDoelgroep.MINDERVALIDE)));
 		add(new Label("mammaDossier.uitgenodigd", dossierService.aantalOproepen(dossier)));
 		add(new Label("mammaDossier.onderzocht", dossierService.aantalOpgekomenBE(dossier)));
 

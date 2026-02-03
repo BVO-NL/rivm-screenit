@@ -4,7 +4,7 @@ package nl.rivm.screenit.mamma.planning.service.impl;
  * ========================LICENSE_START=================================
  * screenit-planning-bk
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -48,7 +48,7 @@ import nl.rivm.screenit.mamma.planning.index.PlanningScreeningsOrganisatieIndex;
 import nl.rivm.screenit.mamma.planning.index.PlanningStandplaatsRondeIndex;
 import nl.rivm.screenit.mamma.planning.model.PlanningBlok;
 import nl.rivm.screenit.mamma.planning.model.PlanningConstanten;
-import nl.rivm.screenit.mamma.planning.model.PlanningMinderValideReservering;
+import nl.rivm.screenit.mamma.planning.model.PlanningMindervalideReservering;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsOrganisatie;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsPeriode;
@@ -273,7 +273,7 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 			if (!runDry)
 			{
 				persistentStandplaatsRonde.setInterval(standplaatsRonde.getInterval());
-				standplaatsRonde.setIntieelInterval(standplaatsRonde.getInterval());
+				standplaatsRonde.setInitieelInterval(standplaatsRonde.getInterval());
 				hibernateService.saveOrUpdateAll(persistentStandplaatsRonde, persistentStandplaatsRonde.getStandplaats());
 				hibernateService.saveOrUpdate(persistentStandplaatsPeriode);
 
@@ -323,17 +323,13 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 	{
 		persistentStandplaatsRonde.setAfspraakDrempel(standplaatsRonde.getAfspraakDrempel());
 		persistentStandplaatsRonde.setAchtervangToegepast(standplaatsRonde.getAchtervangToegepast());
-		persistentStandplaatsRonde.setMinderValideUitnodigenVanaf(DateUtil.toUtilDate(standplaatsRonde.getMinderValideUitnodigenVanaf()));
+		persistentStandplaatsRonde.setMindervalideUitnodigenVanaf(DateUtil.toUtilDate(standplaatsRonde.getMindervalideUitnodigenVanaf()));
 
 		var achtervangStandplaats = standplaatsRonde.getAchtervangStandplaats() != null
 			? hibernateService.get(MammaStandplaats.class, standplaatsRonde.getAchtervangStandplaats().getId())
 			: null;
 		persistentStandplaatsRonde.setAchtervangStandplaats(achtervangStandplaats);
 
-		var minderValideUitwijkStandplaats = standplaatsRonde.getMinderValideUitwijkStandplaats() != null
-			? hibernateService.get(MammaStandplaats.class, standplaatsRonde.getMinderValideUitwijkStandplaats().getId())
-			: null;
-		persistentStandplaatsRonde.setMinderValideUitwijkStandplaats(minderValideUitwijkStandplaats);
 		wijzigAfspraakcapaciteitBeschikbaarVoor(persistentStandplaatsRonde, standplaatsRonde.getAfspraakcapaciteitBeschikbaarVoor());
 
 		return EntityAuditUtil.getDiffToLatestVersion(persistentStandplaatsRonde, hibernateService.getHibernateSession());
@@ -458,10 +454,6 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 			}
 			ontkoppelAfsprakenCapaciteitBlokken.forEach(ontkoppelAfsprakenCapaciteitBlok -> ontkoppelAfspraken(ontkoppelAfsprakenCapaciteitBlok, false));
 		}
-		catch (MaxMeldingenVoorSeBereiktException e)
-		{
-			throw e;
-		}
 		finally
 		{
 			koppelAfsprakenCapaciteitBlokken.forEach(teKoppelenBlok ->
@@ -479,8 +471,8 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 	}
 
 	private void verwerkWijzigingenMvReserveringen(List<MammaMindervalideReservering> teVerwijderenMvReserveringen,
-		List<PlanningMinderValideReservering> conceptNieuweMvReserveringen,
-		List<PlanningMinderValideReservering> conceptMvReserveringenMetWijzigingen, MammaCapaciteitBlok persistentBlok)
+		List<PlanningMindervalideReservering> conceptNieuweMvReserveringen,
+		List<PlanningMindervalideReservering> conceptMvReserveringenMetWijzigingen, MammaCapaciteitBlok persistentBlok)
 	{
 		teVerwijderenMvReserveringen.forEach(hibernateService::delete);
 		persistentBlok.getMindervalideReserveringen().removeAll(teVerwijderenMvReserveringen);
@@ -488,7 +480,7 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 		slaConceptMvReserveringWijzigingenOp(conceptMvReserveringenMetWijzigingen);
 	}
 
-	private List<PlanningMinderValideReservering> bepaalNieuweConceptMvReserveringen(List<PlanningMinderValideReservering> conceptMindervalideReserveringen)
+	private List<PlanningMindervalideReservering> bepaalNieuweConceptMvReserveringen(List<PlanningMindervalideReservering> conceptMindervalideReserveringen)
 	{
 		return conceptMindervalideReserveringen.stream().filter(reservering -> reservering.getId() == null).toList();
 	}
@@ -498,7 +490,7 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 		return persistentReserveringen.stream().collect(Collectors.toMap(MammaMindervalideReservering::getId, r -> r));
 	}
 
-	private List<PlanningMinderValideReservering> bepaalConceptMvReserveringenMetWijzigingen(List<PlanningMinderValideReservering> bestaandeReserveringen,
+	private List<PlanningMindervalideReservering> bepaalConceptMvReserveringenMetWijzigingen(List<PlanningMindervalideReservering> bestaandeReserveringen,
 		Map<Long, MammaMindervalideReservering> persistentReserveringenMap)
 	{
 		return bestaandeReserveringen.stream()
@@ -511,43 +503,43 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 	}
 
 	private List<MammaMindervalideReservering> bepaalTeVerwijderenMvReserveringen(List<MammaMindervalideReservering> persistentMvReserveringen,
-		List<PlanningMinderValideReservering> conceptMindervalideReserveringen)
+		List<PlanningMindervalideReservering> conceptMindervalideReserveringen)
 	{
-		var bestaandeConceptMvReserveringIds = conceptMindervalideReserveringen.stream().map(PlanningMinderValideReservering::getId).filter(Objects::nonNull).toList();
+		var bestaandeConceptMvReserveringIds = conceptMindervalideReserveringen.stream().map(PlanningMindervalideReservering::getId).filter(Objects::nonNull).toList();
 		return persistentMvReserveringen.stream()
 			.filter(reservering -> !bestaandeConceptMvReserveringIds.contains(reservering.getId()))
 			.toList();
 	}
 
-	private String voegMeldingenToeVoorMvReserveringen(List<PlanningMinderValideReservering> conceptNieuweReserveringen,
-		List<PlanningMinderValideReservering> conceptReserveringenVoorWijzigen, List<MammaMindervalideReservering> teVerwijderenReserveringen)
+	private String voegMeldingenToeVoorMvReserveringen(List<PlanningMindervalideReservering> conceptNieuweReserveringen,
+		List<PlanningMindervalideReservering> conceptReserveringenVoorWijzigen, List<MammaMindervalideReservering> teVerwijderenReserveringen)
 	{
 		var melding = "";
 		if (!conceptNieuweReserveringen.isEmpty())
 		{
-			melding += " Nieuwe mindervalide reserveringen (#" + conceptNieuweReserveringen.size() + ").";
+			melding += " Nieuwe mindervalidenreserveringen (#" + conceptNieuweReserveringen.size() + ").";
 		}
 		if (!conceptReserveringenVoorWijzigen.isEmpty())
 		{
-			melding += " Gewijzigde mindervalide reserveringen (#" + conceptReserveringenVoorWijzigen.size() + ").";
+			melding += " Gewijzigde mindervalidenreserveringen (#" + conceptReserveringenVoorWijzigen.size() + ").";
 		}
 		if (!teVerwijderenReserveringen.isEmpty())
 		{
-			melding += " Verwijderde mindervalide reserveringen (#" + teVerwijderenReserveringen.size() + ").";
+			melding += " Verwijderde mindervalidenreserveringen (#" + teVerwijderenReserveringen.size() + ").";
 		}
 		return melding;
 	}
 
-	private void slaConceptMvReserveringWijzigingenOp(List<PlanningMinderValideReservering> teWijzigenReserveringen)
+	private void slaConceptMvReserveringWijzigingenOp(List<PlanningMindervalideReservering> teWijzigenReserveringen)
 	{
-		teWijzigenReserveringen.forEach(teWijzigenReserveringing ->
+		teWijzigenReserveringen.forEach(teWijzigenReservering ->
 		{
-			var reservering = hibernateService.get(MammaMindervalideReservering.class, teWijzigenReserveringing.getId());
-			reservering.setVanaf(teWijzigenReserveringing.getVanaf());
+			var reservering = hibernateService.get(MammaMindervalideReservering.class, teWijzigenReservering.getId());
+			reservering.setVanaf(teWijzigenReservering.getVanaf());
 		});
 	}
 
-	private void slaNieuweConceptMvReserveringenOp(List<PlanningMinderValideReservering> conceptReserveringen, MammaCapaciteitBlok persistentBlok)
+	private void slaNieuweConceptMvReserveringenOp(List<PlanningMindervalideReservering> conceptReserveringen, MammaCapaciteitBlok persistentBlok)
 	{
 		conceptReserveringen.forEach(reservering ->
 		{
@@ -577,17 +569,16 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 						melding += ". Gekoppelde afspraken (#" + persistentBlok.getAfspraken().size() + ") worden losgemaakt van dit capaciteitblok.";
 						niveau = MammaMeldingNiveau.WAARSCHUWING;
 					}
-					var minderValideReserveringen = persistentBlok.getMindervalideReserveringen();
-					if (!minderValideReserveringen.isEmpty())
+					var mindervalideReserveringen = persistentBlok.getMindervalideReserveringen();
+					if (!mindervalideReserveringen.isEmpty())
 					{
-						melding += " Verwijderde mindervalide reserveringen (#" + minderValideReserveringen.size() + ").";
+						melding += " Verwijderde mindervalidenreserveringen (#" + mindervalideReserveringen.size() + ").";
 					}
 					addMelding(meldingenDto, screeningsEenheid, melding, niveau, runDry);
 
 					if (!runDry)
 					{
 						ontkoppelAfspraken(persistentBlok, true);
-
 						hibernateService.delete(persistentBlok);
 					}
 				}

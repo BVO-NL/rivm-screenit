@@ -4,7 +4,7 @@ package nl.rivm.screenit.service.mamma;
  * ========================LICENSE_START=================================
  * screenit-base
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -46,7 +46,7 @@ public interface MammaBaseCapaciteitsBlokService
 
 	MammaCapaciteit getCapaciteit(Collection<MammaCapaciteitBlokDto> nietGeblokkeerdeCapaciteitsBlokDtos);
 
-	MammaCapaciteitBlok getCapaciteitsBlokOpTijdstipVoorSe(Client client, MammaScreeningsEenheid screeningsEenheid, Date nu);
+	MammaCapaciteitBlok getCapaciteitsBlokVoorPassantAfspraak(Client client, MammaScreeningsEenheid screeningsEenheid, Date afspraakmoment);
 
 	List<MammaCapaciteitBlok> getAlleCapaciteitBlokken(MammaScreeningsEenheid screeningsEenheid, Range<Date> zoekbereik);
 
@@ -55,5 +55,4 @@ public interface MammaBaseCapaciteitsBlokService
 	List<MammaCapaciteitBlok> getGeenScreeningCapaciteitBlokken(MammaScreeningsEenheid screeningsEenheid, Range<Date> zoekbereik);
 
 	Collection<MammaCapaciteitBlokDto> getNietGeblokkeerdeScreeningCapaciteitBlokDtos(MammaStandplaatsPeriode standplaatsPeriode, Date vanaf, Date totEnMet, Client client);
-
 }

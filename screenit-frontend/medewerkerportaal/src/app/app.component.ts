@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * medewerkerportaal
  * %%
- * Copyright (C) 2012 - 2025 Facilitaire Samenwerking Bevolkingsonderzoek
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,12 +26,9 @@ import { ColonRoosterPageComponent } from '@/colon/colon-rooster-page/colon-roos
 import { ColonFeestdagenBeheerPageComponent } from '@/colon/colon-feestdagen-beheer-page/colon-feestdagen-beheer-page.component'
 import { ColonWeekendWerkdagBeperkingenPageComponent } from '@/colon/colon-weekend-werkdag-beperkingen/colon-weekend-werkdag-beperkingen-page.component'
 import { MammaDense2UitwisselingPageComponent } from '@/mamma/mamma-dense2-uitwisseling-page/mamma-dense2-uitwisseling-page.component'
-import {
-  ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent
-} from '@/algemeen/extra-beveiligde-omgeving/extra-beveiligde-omgeving-keuze-herstellen-page/extra-beveiligde-omgeving-keuze-herstellen-page.component'
-import {
-  ExtraBeveiligdeOmgevingClientZoekenPageComponent
-} from '@/algemeen/extra-beveiligde-omgeving/extra-beveiligde-omgeving-client-zoeken-page/extra-beveiligde-omgeving-client-zoeken-page.component'
+import { ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent } from '@/algemeen/extra-beveiligde-omgeving/extra-beveiligde-omgeving-keuze-herstellen-page/extra-beveiligde-omgeving-keuze-herstellen-page.component'
+import { ExtraBeveiligdeOmgevingClientZoekenPageComponent } from '@/algemeen/extra-beveiligde-omgeving/extra-beveiligde-omgeving-client-zoeken-page/extra-beveiligde-omgeving-client-zoeken-page.component'
+import { MammaVisitatieOverzichtPageComponent } from '@/mamma/mamma-visitatie-overzicht-page/mamma-visitatie-overzicht-page.component'
 
 @Component({
   selector: 'app-root',
@@ -74,6 +71,9 @@ export class AppComponent implements AfterViewInit {
         break
       case 'extra-beveiligde-omgeving-client-zoeken':
         this.componentLoader.viewContainerRef.createComponent<ExtraBeveiligdeOmgevingClientZoekenPageComponent>(ExtraBeveiligdeOmgevingClientZoekenPageComponent)
+        break
+      case 'mamma-visitatie-overzicht':
+        this.componentLoader.viewContainerRef.createComponent<MammaVisitatieOverzichtPageComponent>(MammaVisitatieOverzichtPageComponent)
         break
     }
   }
