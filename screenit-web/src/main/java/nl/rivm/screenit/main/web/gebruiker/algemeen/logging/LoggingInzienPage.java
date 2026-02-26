@@ -59,7 +59,6 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieZoekService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.NaamUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.input.validator.BSNValidator;
@@ -84,6 +83,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 import org.wicketstuff.shiro.ShiroConstraint;
 import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 
@@ -162,7 +162,7 @@ public class LoggingInzienPage extends AlgemeenPage
 						gebruikerOrganisatie = logRegel.getIngelogdeOrganisatieMedewerker().getOrganisatie();
 					}
 
-					gebruikerOrganisatie = (Organisatie) HibernateHelper.deproxy(gebruikerOrganisatie);
+					gebruikerOrganisatie = (Organisatie) Hibernate.unproxy(gebruikerOrganisatie);
 					if (gebruikerOrganisatie instanceof ScreeningOrganisatie)
 					{
 						regio = (ScreeningOrganisatie) gebruikerOrganisatie;

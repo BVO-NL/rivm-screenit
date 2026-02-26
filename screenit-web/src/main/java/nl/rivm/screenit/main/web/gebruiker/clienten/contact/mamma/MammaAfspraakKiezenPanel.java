@@ -40,7 +40,6 @@ import nl.rivm.screenit.service.mamma.MammaAfspraakReserveringService;
 import nl.rivm.screenit.service.mamma.MammaBaseFactory;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
@@ -154,7 +153,7 @@ public class MammaAfspraakKiezenPanel extends AbstractClientContactActiePanel<Cl
 			throw new MammaTijdNietBeschikbaarException();
 		}
 		var opslaanObjecten = super.getOpslaanObjecten();
-		opslaanObjecten.put(ExtraOpslaanKey.AFSPRAAK, ModelProxyHelper.deproxy(getNieuweAfspraak()));
+		opslaanObjecten.put(ExtraOpslaanKey.AFSPRAAK, getNieuweAfspraak());
 		opslaanObjecten.put(ExtraOpslaanKey.MAMMA_AFSPRAAK_FILTER, ((MammaAfspraakZoekenPanel) afspraakZoekenPanel).getFilterModel().getObject());
 		if (nieuweAfspraakPanel instanceof AbstractClientContactActiePanel)
 		{

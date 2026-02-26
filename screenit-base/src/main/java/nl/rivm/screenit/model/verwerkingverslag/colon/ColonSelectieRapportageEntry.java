@@ -22,6 +22,7 @@ package nl.rivm.screenit.model.verwerkingverslag.colon;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -45,6 +46,7 @@ public class ColonSelectieRapportageEntry extends AbstractHibernateObject
 	private ColonSelectieRapportage rapportage;
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private ColonUitnodigingscategorie uitnodigingscategorie;
 
 	@Enumerated(EnumType.STRING)

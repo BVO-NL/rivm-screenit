@@ -58,11 +58,11 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
-@Component
+@Service
 public class BaseAfmeldServiceImpl implements BaseAfmeldService
 {
 	@Autowired

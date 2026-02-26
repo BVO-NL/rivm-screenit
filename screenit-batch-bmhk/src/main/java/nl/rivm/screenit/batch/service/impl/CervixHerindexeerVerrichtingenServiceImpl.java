@@ -40,7 +40,6 @@ import nl.rivm.screenit.service.cervix.Cervix2023StartBepalingService;
 import nl.rivm.screenit.service.cervix.CervixBaseBetalingService;
 import nl.rivm.screenit.service.cervix.CervixBaseVerrichtingService;
 import nl.rivm.screenit.util.cervix.CervixHuisartsToDtoUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.hibernate.Hibernate;
@@ -174,7 +173,7 @@ public class CervixHerindexeerVerrichtingenServiceImpl implements CervixHerindex
 		LogGebeurtenis gebeurtenis = LogGebeurtenis.CERVIX_HUISARTS_TARIEF_INDEXEERD;
 		if (!herindexatieDto.isHuisartsTarief())
 		{
-			CervixLabTarief labTarief = (CervixLabTarief) HibernateHelper.deproxy(oudeTarief);
+			CervixLabTarief labTarief = (CervixLabTarief) Hibernate.unproxy(oudeTarief);
 			melding = "BMHK laboratorium: " + labTarief.getBmhkLaboratorium().getNaam() + "; " + melding;
 			gebeurtenis = LogGebeurtenis.CERVIX_LAB_TARIEF_INDEXEERD;
 		}
@@ -197,7 +196,7 @@ public class CervixHerindexeerVerrichtingenServiceImpl implements CervixHerindex
 		LogGebeurtenis gebeurtenis = LogGebeurtenis.CERVIX_HUISARTS_TARIEF_INDEXEERD;
 		if (!herindexatieDto.isHuisartsTarief())
 		{
-			CervixLabTarief labTarief = (CervixLabTarief) HibernateHelper.deproxy(oudeTarief);
+			CervixLabTarief labTarief = (CervixLabTarief) Hibernate.unproxy(oudeTarief);
 			melding = "BMHK laboratorium: " + labTarief.getBmhkLaboratorium().getNaam() + "; " + melding;
 			gebeurtenis = LogGebeurtenis.CERVIX_LAB_TARIEF_INDEXEERD;
 		}
@@ -212,7 +211,7 @@ public class CervixHerindexeerVerrichtingenServiceImpl implements CervixHerindex
 		String melding = "";
 		if (herindexatieDto != null)
 		{
-			CervixTarief oudeTarief = (CervixTarief) HibernateHelper.deproxy(hibernateService.load(CervixTarief.class, herindexatieDto.getOudeTariefId()));
+			CervixTarief oudeTarief = (CervixTarief) Hibernate.unproxy(hibernateService.load(CervixTarief.class, herindexatieDto.getOudeTariefId()));
 
 			melding += "Er zijn wel " + totaalAantalVerrichtingen + " verrichtingen voor " + baseBetalingService.getTariefString(oudeTarief) + " bijgewerkt.";
 

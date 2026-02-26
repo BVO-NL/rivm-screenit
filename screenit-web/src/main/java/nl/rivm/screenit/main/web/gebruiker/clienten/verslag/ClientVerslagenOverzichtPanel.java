@@ -37,7 +37,6 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
 import nl.rivm.screenit.service.BaseVerslagService;
 import nl.rivm.screenit.service.RondeNummerService;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
 
@@ -55,6 +54,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 
 public abstract class ClientVerslagenOverzichtPanel<V extends Verslag<?, ?>> extends GenericPanel<Client>
 {
@@ -91,7 +91,7 @@ public abstract class ClientVerslagenOverzichtPanel<V extends Verslag<?, ?>> ext
 			{
 				IModel<?> dataModel = super.getDataModel(rowModel);
 				if (dataModel instanceof Model && rowModel.getObject().getType() == VerslagType.CERVIX_CYTOLOGIE
-					&& ((CervixCytologieVerslag) HibernateHelper.deproxy(rowModel.getObject())).getUitstrijkje().getVerwijderdDatum() != null)
+					&& ((CervixCytologieVerslag) Hibernate.unproxy(rowModel.getObject())).getUitstrijkje().getVerwijderdDatum() != null)
 				{
 					dataModel = new Model<>(dataModel.getObject() + " (Verwijderd)");
 				}

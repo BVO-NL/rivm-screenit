@@ -58,6 +58,7 @@ public class ColonFitAnalyseResultaat extends AbstractHibernateObject
 	private String barcode;
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	private Date analyseDatum;
 
 	private BigDecimal uitslag;

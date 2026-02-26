@@ -30,10 +30,10 @@ import nl.rivm.screenit.service.InpakcentrumService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
+@Service
 @AllArgsConstructor
 public class InpakcentrumServiceImpl implements InpakcentrumService
 {

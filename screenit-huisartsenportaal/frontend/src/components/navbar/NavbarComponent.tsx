@@ -21,7 +21,6 @@
 import classNames from "classnames"
 import styles from "./NavbarComponent.module.scss"
 import {Nav, Navbar, NavbarBrand, NavItem} from "react-bootstrap"
-import logo from "../../styling/media/screenit_logo.png"
 import {useAppSelector, useAppThunkDispatch} from "../../index"
 import NavbarCollapse from "react-bootstrap/NavbarCollapse"
 import NavbarToggle from "react-bootstrap/NavbarToggle"
@@ -42,7 +41,7 @@ const NavbarComponent = () => {
 	return <Navbar expand={"lg"} className={classNames(styles.style, "fixed-top", "navbar-dark")}>
 		<NavbarBrand className={classNames(styles.navBarBrand, "ms-3")}>
 			<a href={"/"}>
-				<img src={logo} alt={"Logo van het huisartsportaal"}/>
+				<img src="/screenit_logo.png" alt="Logo van het huisartsportaal"/>
 			</a>
 		</NavbarBrand>
 		<NavbarToggle className={styles.navBarToggle} aria-controls="navigation"/>

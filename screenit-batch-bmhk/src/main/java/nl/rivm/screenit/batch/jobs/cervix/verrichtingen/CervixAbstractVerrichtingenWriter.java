@@ -26,7 +26,7 @@ import nl.rivm.screenit.model.cervix.CervixMonster;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.enums.CervixTariefType;
 import nl.rivm.screenit.service.cervix.CervixVerrichtingFactory;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
+import org.hibernate.Hibernate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -43,7 +43,7 @@ public abstract class CervixAbstractVerrichtingenWriter<T extends CervixMonster>
 
 		if (ronde.getInVervolgonderzoekDatum() == null || uitstrijkje.getOntvangstdatum().before(ronde.getInVervolgonderzoekDatum()))
 		{
-			if (HibernateHelper.deproxy(ronde.getMonsterHpvUitslag()) instanceof CervixUitstrijkje)
+			if (Hibernate.unproxy(ronde.getMonsterHpvUitslag()) instanceof CervixUitstrijkje)
 			{
 
 				verrichtingenFactory.maakLabVerrichting(uitstrijkje, CervixTariefType.LAB_CYTOLOGIE_NA_HPV_UITSTRIJKJE, cytologieVerrichtingsDatum);

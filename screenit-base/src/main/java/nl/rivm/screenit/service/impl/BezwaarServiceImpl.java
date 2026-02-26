@@ -95,7 +95,7 @@ import nl.rivm.screenit.util.ProjectUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -111,7 +111,7 @@ import static nl.topicuszorg.util.collections.CollectionUtils.isEqualCollection;
 import static nl.topicuszorg.util.collections.CollectionUtils.isNotEmpty;
 
 @Slf4j
-@Component
+@Service
 public class BezwaarServiceImpl implements BezwaarService
 {
 	@Autowired

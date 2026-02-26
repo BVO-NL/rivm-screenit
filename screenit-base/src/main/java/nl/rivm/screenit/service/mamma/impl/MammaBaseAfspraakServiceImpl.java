@@ -32,6 +32,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
@@ -433,12 +434,14 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 		Account account, boolean isGeforceerdeAfspraak, SmsStatus smsStatus)
 	{
 		var laatsteUitnodiging = screeningRonde.getLaatsteUitnodiging();
+		var icalUid = UUID.randomUUID().toString();
 
 		var laatsteAfspraak = laatsteUitnodiging.getLaatsteAfspraak();
 		if (laatsteAfspraak != null)
 		{
 
 			afspraakAnnuleren(laatsteAfspraak, MammaAfspraakStatus.VERPLAATST, null, vorigeAfspraakVerzetten, false);
+			icalUid = laatsteAfspraak.getIcalUid();
 		}
 
 		if (screeningRonde.getLaatsteUitstel() != null)
@@ -449,7 +452,7 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 		baseBriefService.setNietGegenereerdeBrievenOpTegenhouden(screeningRonde, BriefType.MAMMA_OPEN_UITNODIGINGEN);
 
 		var afspraak = baseFactory.maakAfspraak(screeningRonde, capaciteitBlok, vanaf, standplaatsPeriode, verzettenReden, notificeerBetrokkenSe, stuurBerichtNaarSectra,
-			isGeforceerdeAfspraak, smsStatus);
+			isGeforceerdeAfspraak, smsStatus, icalUid);
 
 		if (logGebeurtenis)
 		{

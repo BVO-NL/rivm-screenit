@@ -276,6 +276,7 @@ public class ColonTestServiceImpl implements ColonTestService
 			var voor = new ColonVooraankondiging();
 			voor.setCreatieDatum(DateUtil.toUtilDate(currentDateSupplier.getLocalDateTime().minusDays(27)));
 			voor.setBrief(b);
+			voor.setClient(client);
 			dossier.setVooraankondiging(voor);
 			hibernateService.saveOrUpdate(voor);
 			hibernateService.saveOrUpdate(b);
@@ -776,6 +777,7 @@ public class ColonTestServiceImpl implements ColonTestService
 								uitnodigingscategorie = ColonUitnodigingscategorie.U6;
 								break;
 							default:
+								uitnodigingscategorie = ColonUitnodigingscategorie.U1;
 								break;
 							}
 						}

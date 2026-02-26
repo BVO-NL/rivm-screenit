@@ -44,7 +44,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBuilder;
-import org.springframework.orm.jpa.support.SharedEntityManagerBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 
@@ -108,13 +107,5 @@ public class BaseHibernateConfig
 		transactionManager.setSessionFactory(hibernateSessionFactory.getObject());
 		transactionManager.setTransactionSynchronization(AbstractPlatformTransactionManager.SYNCHRONIZATION_ON_ACTUAL_TRANSACTION);
 		return transactionManager;
-	}
-
-	@Bean
-	SharedEntityManagerBean sharedEntityManager(TopicusPostConfigurationSessionFactoryBean hibernateSessionFactory)
-	{
-		var sharedEntityManager = new SharedEntityManagerBean();
-		sharedEntityManager.setEntityManagerFactory(hibernateSessionFactory.getObject());
-		return sharedEntityManager;
 	}
 }

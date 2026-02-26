@@ -42,7 +42,6 @@ import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.cervix.Cervix2023StartBepalingService;
 import nl.rivm.screenit.service.cervix.CervixAfmeldService;
 import nl.rivm.screenit.service.cervix.CervixBaseScreeningrondeService;
 import nl.rivm.screenit.service.cervix.CervixFactory;
@@ -52,11 +51,11 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
+@Service
 @Transactional(propagation = Propagation.REQUIRED)
 public class CervixAfmeldServiceImpl implements CervixAfmeldService
 {
@@ -80,9 +79,6 @@ public class CervixAfmeldServiceImpl implements CervixAfmeldService
 
 	@Autowired
 	private CervixBaseScreeningrondeService screeningrondeService;
-
-	@Autowired
-	private Cervix2023StartBepalingService bmhk2023StartBepalingService;
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)

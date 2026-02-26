@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import jakarta.persistence.EntityManager;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -114,8 +116,6 @@ import nl.rivm.screenit.util.NaamUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
 import nl.rivm.screenit.util.mamma.MammaBeoordelingUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 import nl.topicuszorg.organisatie.model.Adres;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
@@ -125,7 +125,7 @@ import nl.topicuszorg.util.postcode.PostcodeFormatter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Session;
+import org.hibernate.Hibernate;
 import org.hibernate.envers.query.AuditEntity;
 import org.krysalis.barcode4j.impl.AbstractBarcodeBean;
 import org.krysalis.barcode4j.impl.fourstate.RoyalMailCBCBean;
@@ -2905,7 +2905,7 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				var deproxy = HibernateHelper.deproxy(context.getBrief());
+				var deproxy = Hibernate.unproxy(context.getBrief());
 				if (deproxy instanceof CervixBrief brief)
 				{
 					if (CervixMonsterUtil.isUitstrijkje(brief.getMonster()))
@@ -2926,7 +2926,7 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				var deproxy = HibernateHelper.deproxy(context.getBrief());
+				var deproxy = Hibernate.unproxy(context.getBrief());
 				if (deproxy instanceof CervixBrief brief)
 				{
 					return getBMHKLaboratoriumOndertekenaar(brief, false);
@@ -2945,7 +2945,7 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				var deproxy = HibernateHelper.deproxy(context.getBrief());
+				var deproxy = Hibernate.unproxy(context.getBrief());
 				if (deproxy instanceof CervixBrief brief)
 				{
 					return getBMHKLaboratoriumOndertekenaar(brief, true);
@@ -3877,7 +3877,8 @@ public enum MergeField
 				var persoon = context.getClient().getPersoon();
 				if (persoon.getGeslacht() == Geslacht.ONBEKEND)
 				{
-					var auditsVanAnderGeslacht = EntityAuditUtil.getEntityHistory(persoon, getHibernateSession(), AuditEntity.property("geslacht").ne(Geslacht.ONBEKEND), false, 1);
+					var auditsVanAnderGeslacht = EntityAuditUtil.getEntityHistory(persoon, getEntityManager(), AuditEntity.property("geslacht").ne(Geslacht.ONBEKEND),
+						false, 1);
 					if (auditsVanAnderGeslacht.isEmpty())
 					{
 						return getStringValueFromPreference(PreferenceKey.CLIENT_NIEUW_GENDERDIVERS_TEKST);
@@ -3916,7 +3917,7 @@ public enum MergeField
 					var volgendeUitnodiging = dossier.getVolgendeUitnodiging();
 					if (volgendeUitnodiging.getDatumVolgendeRonde() == null)
 					{
-						var vorigeVolgendeUitnodigingVersies = EntityAuditUtil.getEntityHistory(volgendeUitnodiging, MergeField.getHibernateSession(),
+						var vorigeVolgendeUitnodigingVersies = EntityAuditUtil.getEntityHistory(volgendeUitnodiging, getEntityManager(),
 							true);
 						for (var entiteitGeschiedenis : vorigeVolgendeUitnodigingVersies)
 						{
@@ -4681,9 +4682,9 @@ public enum MergeField
 		return preferenceService.getString(key.name(), "");
 	}
 
-	private static Session getHibernateSession()
+	private static EntityManager getEntityManager()
 	{
-		return getBean(HibernateService.class).getHibernateSession();
+		return getBean(EntityManager.class);
 	}
 
 }

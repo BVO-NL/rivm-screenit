@@ -44,7 +44,6 @@ import nl.rivm.screenit.model.verslag.DSValue_;
 import nl.rivm.screenit.service.BaseVerslagService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonVerwerkVerslagService;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -133,7 +132,7 @@ public abstract class ColonHandmatigVervolgbeleidVastleggenPanel extends Generic
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				var ingelogdeOrganisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
-				var verslag = ModelProxyHelper.deproxy(getModelObject());
+				var verslag = getModelObject();
 
 				verwerkVerslagService.handmatigMdlVerslagOpslaan(verslag, ingelogdeOrganisatieMedewerker);
 				close(target);

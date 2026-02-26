@@ -27,9 +27,6 @@ import nl.rivm.screenit.main.service.cervix.CervixTestTimelineService;
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.TestCervixVervolgKeuzeAction;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.service.cervix.CervixBaseTestTimelineService;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
-
-import org.hibernate.Hibernate;
 
 public class TestCervixNieuweRondeAction extends TestCervixVervolgKeuzeAction
 {
@@ -43,7 +40,7 @@ public class TestCervixNieuweRondeAction extends TestCervixVervolgKeuzeAction
 	{
 		for (Client client : clienten)
 		{
-			cervixBaseTestTimelineService.nieuweRonde((Client) Hibernate.unproxy(ModelProxyHelper.deproxy(client)));
+			cervixBaseTestTimelineService.nieuweRonde(client);
 		}
 	}
 }

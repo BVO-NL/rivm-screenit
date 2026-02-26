@@ -51,7 +51,6 @@ import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ProjectParameter;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
-import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.hibernate.annotations.Cascade;
@@ -77,7 +76,7 @@ public class Project extends AbstractHibernateObject implements INaam, IBevolkin
 	@Temporal(TemporalType.DATE)
 	private Date eindDatum;
 
-	@Column(nullable = true)
+	@Column
 	@Temporal(TemporalType.DATE)
 	private Date eindeInstroom;
 
@@ -85,7 +84,7 @@ public class Project extends AbstractHibernateObject implements INaam, IBevolkin
 	@Enumerated(EnumType.STRING)
 	@NotAudited
 	@CollectionTable(schema = "algemeen", name = "project_bevolkingsonderzoeken")
-	private List<Bevolkingsonderzoek> bevolkingsonderzoeken;
+	private List<Bevolkingsonderzoek> bevolkingsonderzoeken = new ArrayList<>();
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -103,12 +102,12 @@ public class Project extends AbstractHibernateObject implements INaam, IBevolkin
 	@Cascade({ CascadeType.SAVE_UPDATE })
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@JoinTable(schema = "algemeen", name = "project_medewerkers")
-	private List<OrganisatieMedewerker> medewerkers;
+	private List<OrganisatieMedewerker> medewerkers = new ArrayList<>();
 
 	@NotAudited
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(schema = "algemeen", name = "project_screening_organisaties")
-	private List<Organisatie> screeningOrganisaties = new ArrayList<Organisatie>();
+	private List<Organisatie> screeningOrganisaties = new ArrayList<>();
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = jakarta.persistence.CascadeType.ALL)
 	private List<ProjectClient> clienten = new ArrayList<>();
@@ -137,7 +136,7 @@ public class Project extends AbstractHibernateObject implements INaam, IBevolkin
 
 	private Boolean anoniem;
 
-	@Column(length = HibernateMagicNumber.L255)
+	@Column
 	private String opmerkingen;
 
 	@Column(nullable = false)
@@ -148,7 +147,7 @@ public class Project extends AbstractHibernateObject implements INaam, IBevolkin
 	private List<ProjectType> projectTypes = new ArrayList<>();
 
 	@Transient
-	private List<ProjectStatus> projectStatussen = new ArrayList<ProjectStatus>();
+	private List<ProjectStatus> projectStatussen = new ArrayList<>();
 
 	@Override
 	public Boolean getExactMatch()

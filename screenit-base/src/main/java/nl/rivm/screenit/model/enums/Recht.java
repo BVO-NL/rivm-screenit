@@ -565,24 +565,6 @@ public enum Recht implements INaam
 		Actie.AANPASSEN,
 		Actie.TOEVOEGEN),
 
-	COLON_KWALITEITSCONTROLE_FIT_ANALYSE_RESULTATEN_AANLEVERING(
-		"Beoordeling FIT",
-		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON },
-		new ToegangLevel[] { ToegangLevel.LANDELIJK },
-		Actie.INZIEN),
-
-	COLON_AUTORISATIE_FIT_ANALYSE_RESULTATEN_AANLEVERING(
-		"Autorisatie FIT",
-		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON },
-		new ToegangLevel[] { ToegangLevel.ORGANISATIE },
-		Actie.AANPASSEN),
-
-	COLON_VERWIJDEREN_FIT_ANALYSE_RESULTATEN_AANLEVERING(
-		"Verwijderen batches FIT",
-		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON },
-		new ToegangLevel[] { ToegangLevel.ORGANISATIE },
-		Actie.VERWIJDEREN),
-
 	MEDEWERKER_CERVIX_LABFORMULIEREN_AANVRAGEN(
 		"Aanvragen van BMHK labformulieren voor huisarts",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.CERVIX },

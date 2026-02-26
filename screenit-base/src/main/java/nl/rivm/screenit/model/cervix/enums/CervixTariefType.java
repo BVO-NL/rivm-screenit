@@ -36,7 +36,8 @@ import nl.rivm.screenit.model.cervix.facturatie.CervixHuisartsTarief_;
 import nl.rivm.screenit.model.cervix.facturatie.CervixLabTarief;
 import nl.rivm.screenit.model.cervix.facturatie.CervixLabTarief_;
 import nl.rivm.screenit.model.cervix.facturatie.CervixTarief;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
+
+import org.hibernate.Hibernate;
 
 @AllArgsConstructor
 @Getter
@@ -92,13 +93,13 @@ public enum CervixTariefType implements INaam
 
 	public static boolean isHuisartsTarief(CervixTarief tarief)
 	{
-		tarief = (CervixTarief) HibernateHelper.deproxy(tarief);
+		tarief = (CervixTarief) Hibernate.unproxy(tarief);
 		return tarief instanceof CervixHuisartsTarief;
 	}
 
 	public static CervixLabTarief getLabTarief(CervixTarief tarief)
 	{
-		tarief = (CervixTarief) HibernateHelper.deproxy(tarief);
+		tarief = (CervixTarief) Hibernate.unproxy(tarief);
 		if (tarief instanceof CervixLabTarief labTarief)
 		{
 			return labTarief;
@@ -108,7 +109,7 @@ public enum CervixTariefType implements INaam
 
 	public static CervixHuisartsTarief getHuisartsTarief(CervixTarief tarief)
 	{
-		tarief = (CervixTarief) HibernateHelper.deproxy(tarief);
+		tarief = (CervixTarief) Hibernate.unproxy(tarief);
 		if (tarief instanceof CervixHuisartsTarief huisartsTarief)
 		{
 			return huisartsTarief;

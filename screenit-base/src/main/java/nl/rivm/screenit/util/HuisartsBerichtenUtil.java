@@ -28,15 +28,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import nl.rivm.screenit.model.HuisartsBericht;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
+
+import org.hibernate.Hibernate;
 
 public class HuisartsBerichtenUtil
 {
 	public static boolean isLaatstVerstuurdeHuisartsbericht(HuisartsBericht huisartsBericht)
 	{
-		final HuisartsBericht deproxiedhuisartsBericht = (HuisartsBericht) HibernateHelper.deproxy(huisartsBericht);
+		final HuisartsBericht deproxiedhuisartsBericht = (HuisartsBericht) Hibernate.unproxy(huisartsBericht);
 		List<HuisartsBericht> huisartsBerichten = new ArrayList<>(deproxiedhuisartsBericht.getClient().getHuisartsBerichten()).stream()
-			.map(HibernateHelper::deproxy)
+			.map(Hibernate::unproxy)
 			.filter(bericht -> bericht.getClass().equals(deproxiedhuisartsBericht.getClass()))
 			.map(HuisartsBericht.class::cast)
 			.collect(Collectors.toList());

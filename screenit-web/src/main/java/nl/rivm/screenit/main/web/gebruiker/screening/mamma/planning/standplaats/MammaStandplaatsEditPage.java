@@ -45,7 +45,6 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaPostcodeReeks;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.service.OrganisatieService;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -63,6 +62,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(
@@ -291,7 +291,7 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 					protected void terug(AjaxRequestTarget target, IModel<MammaPostcodeReeks> model)
 					{
 						setResponsePage(new MammaStandplaatsEditPage(
-							ModelUtil.cModel((MammaStandplaats) HibernateHelper.deproxy(ModelProxyHelper.deproxy(model.getObject().getStandplaats())))));
+							ModelUtil.cModel((MammaStandplaats) Hibernate.unproxy(ModelProxyHelper.deproxy(model.getObject().getStandplaats())))));
 					}
 				});
 			}

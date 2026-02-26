@@ -33,15 +33,14 @@ import nl.rivm.screenit.main.web.gebruiker.base.ZoekenContextMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Organisatie;
-import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.service.OrganisatieZoekService;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.wicket.hibernate.SimpleHibernateModel;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -63,6 +62,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 import static nl.rivm.screenit.model.Gemeente_.CODE;
@@ -172,7 +172,7 @@ public class GemeenteZoeken extends GebiedenBeheerPage
 		var organisaties = organisatieZoekService.zoekOrganisaties(new Organisatie(), List.of(OrganisatieType.INTAKELOCATIE), null,
 			ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), -1, -1, Organisatie_.NAAM, true);
 		var intakelocaties = new ArrayList<ColonIntakelocatie>();
-		organisaties.forEach(org -> intakelocaties.add((ColonIntakelocatie) HibernateHelper.deproxy(org)));
+		organisaties.forEach(org -> intakelocaties.add((ColonIntakelocatie) Hibernate.unproxy(org)));
 		IModel<List<ColonIntakelocatie>> values = ModelUtil.listRModel(intakelocaties, false);
 		ScreenitDropdown<ColonIntakelocatie> intakelocatieSelect = new ScreenitDropdown<>("intakelocatie", new PropertyModel<ColonIntakelocatie>(this, "selectedIntakelocatie"),
 			values);

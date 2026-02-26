@@ -58,13 +58,13 @@ import nl.rivm.screenit.model.mamma.enums.MammaUitnodigingsintervalType;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.PreferenceService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -156,7 +156,7 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 		var oudCohort = cohorten.stream()
 			.filter(c ->
 			{
-				c = (UitnodigingCohort) HibernateHelper.deproxy(c);
+				c = (UitnodigingCohort) Hibernate.unproxy(c);
 				return c.getJaar().equals(nieuweGeboortejarenDto.getJaar());
 			})
 			.findFirst().orElse(null);

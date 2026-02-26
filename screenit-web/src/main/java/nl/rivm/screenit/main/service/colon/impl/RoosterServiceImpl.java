@@ -52,8 +52,8 @@ import nl.rivm.screenit.repository.colon.ColonTijdslotRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.colon.ColonTijdslotSpecification;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -169,7 +169,7 @@ public class RoosterServiceImpl implements RoosterService
 	public ColonIntakelocatie getIntakelocatieVanOrganisatieMedewerker(OrganisatieMedewerker organisatieMedewerker)
 	{
 		var organisatie = organisatieMedewerker.getOrganisatie();
-		return (ColonIntakelocatie) HibernateHelper.deproxy(organisatie);
+		return (ColonIntakelocatie) Hibernate.unproxy(organisatie);
 	}
 
 	@Override

@@ -28,7 +28,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.panels.CeRadioloog
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -76,7 +75,7 @@ public abstract class MammaCeVerslagAfkeurenDialog extends GenericPanel<MammaBeo
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				MammaBeoordeling beoordeling = ModelProxyHelper.deproxy(MammaCeVerslagAfkeurenDialog.this.getModelObject());
+				MammaBeoordeling beoordeling = MammaCeVerslagAfkeurenDialog.this.getModelObject();
 				beoordelingService.verslagAfkeurenDoorCE(beoordeling,
 					ModelUtil.nullSafeGet(radioloogZoekPanel.getSelectedOrganisatieMedewerkerModel()),
 					ScreenitSession.get().getIngelogdeOrganisatieMedewerker());

@@ -147,7 +147,7 @@ import org.hibernate.exception.GenericJDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate5.HibernateJdbcException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -158,7 +158,7 @@ import static nl.rivm.screenit.specification.algemeen.ClientContactSpecification
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
-@Component
+@Service
 @Slf4j
 @Transactional
 public class ClientContactServiceImpl implements ClientContactService

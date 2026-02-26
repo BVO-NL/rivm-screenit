@@ -27,6 +27,7 @@ import nl.rivm.screenit.model.logging.LogRegel;
 import nl.rivm.screenit.model.logging.RetourzendingLogEvent;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -37,7 +38,7 @@ public class IlmApplicatieLoggingVerwijderenWriter extends BaseWriter<LogRegel>
 	{
 		var logEvent = logRegel.getLogEvent();
 		var sanddBestand = logEvent != null && RetourzendingLogEvent.class.equals(HibernateHelper.getDeproxiedClass(logEvent))
-			? ((RetourzendingLogEvent) HibernateHelper.deproxy(logEvent)).getSanddBestand()
+			? ((RetourzendingLogEvent) Hibernate.unproxy(logEvent)).getSanddBestand()
 			: null;
 		getHibernateService().delete(logRegel);
 		deactiveerSanddBestand(sanddBestand);

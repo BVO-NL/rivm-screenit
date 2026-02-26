@@ -37,13 +37,13 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.cervix.CervixLabformulierService;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 
 import org.apache.wicket.markup.html.basic.EnumLabel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(
@@ -66,10 +66,10 @@ public class CervixLabformulierInzienPanel extends AbstractGebeurtenisDetailPane
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		CervixUitnodiging uitnodiging = (CervixUitnodiging) HibernateHelper.deproxy(getModelObject().getUitnodiging());
+		CervixUitnodiging uitnodiging = (CervixUitnodiging) Hibernate.unproxy(getModelObject().getUitnodiging());
 
 		CervixUitstrijkje uitstrijkje = CervixMonsterUtil.getUitstrijkje(uitnodiging.getMonster());
-		CervixLabformulier labformulier = (CervixLabformulier) HibernateHelper.deproxy(uitstrijkje.getLabformulier());
+		CervixLabformulier labformulier = (CervixLabformulier) Hibernate.unproxy(uitstrijkje.getLabformulier());
 		String objid = labformulier.getObjid();
 		add(new Label("monsterId", uitstrijkje.getMonsterId() + ""));
 		add(new Label("huisarts", getHuisartsInfo(labformulier)));

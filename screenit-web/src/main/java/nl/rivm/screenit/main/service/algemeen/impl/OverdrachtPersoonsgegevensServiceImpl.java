@@ -97,7 +97,6 @@ import nl.rivm.screenit.util.NaamUtil;
 import nl.rivm.screenit.util.StringUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.organisatie.model.Adres;
@@ -113,6 +112,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.Hibernate;
 import org.springframework.beans.support.PropertyComparator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -575,7 +575,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 				mapper.registerModule(simpleModule);
 				ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
 
-				addRow(sheet, label, writer.writeValueAsString(HibernateHelper.deproxy(verslagContent)), ontvangen,
+				addRow(sheet, label, writer.writeValueAsString(Hibernate.unproxy(verslagContent)), ontvangen,
 					cellStyleDateTime);
 			}
 			catch (JsonProcessingException e)

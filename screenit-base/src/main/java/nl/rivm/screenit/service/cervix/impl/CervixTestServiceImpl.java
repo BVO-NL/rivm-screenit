@@ -61,10 +61,10 @@ import nl.rivm.screenit.service.cervix.CervixBaseScreeningrondeService;
 import nl.rivm.screenit.service.cervix.CervixFactory;
 import nl.rivm.screenit.service.cervix.CervixTestService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -154,7 +154,7 @@ public class CervixTestServiceImpl implements CervixTestService
 	{
 		var uitnodiging = geefLaatsteUitnodiging(persoon);
 
-		var uitstrijkje = (CervixUitstrijkje) HibernateHelper.deproxy(uitnodiging.getMonster());
+		var uitstrijkje = (CervixUitstrijkje) Hibernate.unproxy(uitnodiging.getMonster());
 		if (uitstrijkjeStatus != null)
 		{
 			uitstrijkje.setUitstrijkjeStatus(uitstrijkjeStatus);
@@ -251,6 +251,7 @@ public class CervixTestServiceImpl implements CervixTestService
 		brief.setMergedBrieven(mergedBrieven);
 		var fakeMergeDocument = new UploadDocument();
 		fakeMergeDocument.setActief(true);
+		fakeMergeDocument.setContentType("application/pdf");
 		fakeMergeDocument.setNaam("dummy_testservice_brief_niet_openen");
 		hibernateService.saveOrUpdate(fakeMergeDocument);
 		mergedBrieven.setMergedBrieven(fakeMergeDocument);

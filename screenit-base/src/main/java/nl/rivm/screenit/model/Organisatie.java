@@ -144,7 +144,7 @@ public class Organisatie extends AbstractHibernateObject implements IActief
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "organisatie")
 	@NotAudited
-	private List<AfgeslotenOrganisatieOvereenkomst> afgeslotenOvereenkomsten;
+	private List<AfgeslotenOrganisatieOvereenkomst> afgeslotenOvereenkomsten = new ArrayList<>();
 
 	@Column
 	@Temporal(TemporalType.TIMESTAMP)

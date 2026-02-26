@@ -33,17 +33,16 @@ import nl.rivm.screenit.model.cervix.CervixLabformulier;
 import nl.rivm.screenit.model.cervix.CervixMonster;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 
 public abstract class TestCervixUitnodigingenLaboratoriaPopup extends TestCervixUitnodigingenPopup
 {
-
 	private static final long serialVersionUID = 1L;
 
 	protected IModel<BMHKLaboratorium> laboratoriumModel;
@@ -65,7 +64,7 @@ public abstract class TestCervixUitnodigingenLaboratoriaPopup extends TestCervix
 		CervixUitnodiging uitnodiging = getUitnodiging();
 		if (uitnodiging != null && uitnodiging.getMonster() != null)
 		{
-			CervixMonster monster = (CervixMonster) HibernateHelper.deproxy(uitnodiging.getMonster());
+			CervixMonster monster = (CervixMonster) Hibernate.unproxy(uitnodiging.getMonster());
 			if (monster.getLaboratorium() != null)
 			{
 				laboratorium = monster.getLaboratorium();

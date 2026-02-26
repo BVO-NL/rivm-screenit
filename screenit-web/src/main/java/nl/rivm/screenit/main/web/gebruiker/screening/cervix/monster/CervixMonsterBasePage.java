@@ -31,13 +31,13 @@ import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.CervixZas;
 import nl.rivm.screenit.model.cervix.enums.CervixMonsterType;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.hibernate.Hibernate;
 
 public abstract class CervixMonsterBasePage extends CervixBarcodeAfdrukkenBasePage
 {
@@ -86,7 +86,7 @@ public abstract class CervixMonsterBasePage extends CervixBarcodeAfdrukkenBasePa
 		{
 			if (uitnodiging.getMonsterType() == CervixMonsterType.UITSTRIJKJE)
 			{
-				newUitnodigingPanel = new CervixUitnodigingUitstrijkjePanel(this, "uitnodigingPanel", (CervixUitstrijkje) HibernateHelper.deproxy(uitnodiging.getMonster()))
+				newUitnodigingPanel = new CervixUitnodigingUitstrijkjePanel(this, "uitnodigingPanel", (CervixUitstrijkje) Hibernate.unproxy(uitnodiging.getMonster()))
 				{
 					@Override
 					protected boolean ontvangstMonster()
@@ -104,7 +104,7 @@ public abstract class CervixMonsterBasePage extends CervixBarcodeAfdrukkenBasePa
 			else
 			{
 				CervixUitnodigingZasPanel uitnodigingZasPanel = new CervixUitnodigingZasPanel(this, "uitnodigingPanel",
-					(CervixZas) HibernateHelper.deproxy(uitnodiging.getMonster()))
+					(CervixZas) Hibernate.unproxy(uitnodiging.getMonster()))
 				{
 					@Override
 					protected boolean ontvangstMonster()

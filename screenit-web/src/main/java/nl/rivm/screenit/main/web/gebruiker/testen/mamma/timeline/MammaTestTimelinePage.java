@@ -65,7 +65,6 @@ import nl.rivm.screenit.util.TestBsnGenerator;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.model.DetachableListModel;
 import nl.topicuszorg.wicket.model.SortingListModel;
@@ -353,7 +352,7 @@ public class MammaTestTimelinePage extends TestenBasePage
 		if (clientModel != null)
 		{
 			reloadClienten();
-			var client = ModelProxyHelper.deproxy(clientModel.getObject().get(0));
+			var client = clientModel.getObject().get(0);
 			var rondes = testTimelineService.getTimelineRondes(client);
 			rondes.sort((o1, o2) -> o2.getRondeNummer().compareTo(o1.getRondeNummer()));
 			rondesModel = new DetachableListModel<>(rondes);
@@ -448,7 +447,7 @@ public class MammaTestTimelinePage extends TestenBasePage
 					@Override
 					public List<TestVervolgKeuzeOptie> getOptions()
 					{
-						var client = ModelProxyHelper.deproxy(getModelObject().get(0));
+						var client = getModelObject().get(0);
 						return testTimelineService.getSnelKeuzeOpties(client);
 					}
 
@@ -488,7 +487,7 @@ public class MammaTestTimelinePage extends TestenBasePage
 						item.add(DateLabel.forDatePattern("datum", "dd-MM-yyyy HH:mm:ss"));
 						item.add(new EnumLabel<TypeGebeurtenis>("gebeurtenis"));
 						item.add(new EnumLabel<GebeurtenisBron>("bron"));
-						item.add(new AttributeAppender("class", new Model<String>("badge-not-clickable"), " "));
+						item.add(new AttributeAppender("class", new Model<>("badge-not-clickable"), " "));
 						item.add(new Label("extraOmschrijving", new IModel<String>()
 						{
 

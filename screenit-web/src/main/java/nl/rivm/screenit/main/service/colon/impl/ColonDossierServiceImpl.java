@@ -28,6 +28,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -82,7 +85,6 @@ import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -123,6 +125,9 @@ public class ColonDossierServiceImpl implements ColonDossierService
 
 	private final DashboardService dashboardService;
 
+	@PersistenceContext
+	private EntityManager entityManager;
+
 	@Override
 	@Transactional
 	public void conclusieOpslaan(ColonIntakeAfspraak afspraak, ColonVervolgonderzoekKeuzesDto keuzes, OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
@@ -156,7 +161,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 		if (!nieuweConclusie)
 		{
 			ColonConclusie oldAfspraakConclusie = null;
-			for (Object auditRow : EntityAuditUtil.getEntityHistory(afspraak, hibernateService.getHibernateSession(), false))
+			for (Object auditRow : EntityAuditUtil.getEntityHistory(afspraak, entityManager, false))
 			{
 				ColonIntakeAfspraak oldAfspraak = EntityAuditUtil.getRevisionEntity(auditRow);
 				if (oldAfspraakConclusie == null)
@@ -165,7 +170,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 				}
 				if (oldAfspraakConclusie != null)
 				{
-					for (Object auditConclusieRow : EntityAuditUtil.getEntityHistory(oldAfspraakConclusie, hibernateService.getHibernateSession(), false))
+					for (Object auditConclusieRow : EntityAuditUtil.getEntityHistory(oldAfspraakConclusie, entityManager, false))
 					{
 						ColonConclusie oldAditAfspraakConclusie = EntityAuditUtil.getRevisionEntity(auditConclusieRow);
 						conclusieDiff = diffConclusies(oldAditAfspraakConclusie, conclusie);
@@ -295,8 +300,6 @@ public class ColonDossierServiceImpl implements ColonDossierService
 	@Transactional
 	public void verwijderScannedAntwoordFormulier(ColonUitnodiging uitnodiging, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		uitnodiging = (ColonUitnodiging) HibernateHelper.deproxy(ModelProxyHelper.deproxy(uitnodiging));
-
 		var colonScreeningRonde = uitnodiging.getScreeningRonde();
 		var colonDossier = colonScreeningRonde.getDossier();
 		var client = colonDossier.getClient();
@@ -582,7 +585,7 @@ public class ColonDossierServiceImpl implements ColonDossierService
 	@Transactional
 	public void verwijderFitAnalyseResultaat(ColonFitRegistratie fitRegistratie, UploadDocument uploadDocument, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		var uitnodiging = (ColonUitnodiging) HibernateHelper.deproxy(ModelProxyHelper.deproxy(ColonFitRegistratieUtil.getUitnodiging(fitRegistratie)));
+		var uitnodiging = ColonFitRegistratieUtil.getUitnodiging(fitRegistratie);
 
 		var screeningRonde = fitRegistratie.getScreeningRonde();
 		var client = screeningRonde.getDossier().getClient();

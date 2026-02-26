@@ -32,9 +32,9 @@ import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.CervixZas;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CervixMonsterUtil
@@ -47,25 +47,25 @@ public class CervixMonsterUtil
 	public static CervixUitstrijkje getUitstrijkje(CervixMonster monster)
 	{
 		return monster != null
-			? (CervixUitstrijkje) HibernateHelper.deproxy(monster)
+			? (CervixUitstrijkje) Hibernate.unproxy(monster)
 			: null;
 	}
 
 	public static CervixZas getZAS(CervixMonster monster)
 	{
 		return monster != null
-			? (CervixZas) HibernateHelper.deproxy(monster)
+			? (CervixZas) Hibernate.unproxy(monster)
 			: null;
 	}
 
 	public static boolean isUitstrijkje(CervixMonster monster)
 	{
-		return HibernateHelper.deproxy(monster) instanceof CervixUitstrijkje;
+		return Hibernate.unproxy(monster) instanceof CervixUitstrijkje;
 	}
 
 	public static boolean isZAS(CervixMonster monster)
 	{
-		return HibernateHelper.deproxy(monster) instanceof CervixZas;
+		return Hibernate.unproxy(monster) instanceof CervixZas;
 	}
 
 	public static String getMonsterControleLetters(CervixDossier cervixDossier)

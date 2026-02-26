@@ -246,6 +246,7 @@ public class CervixFactoryImpl implements CervixFactory
 		uitnodiging.setMonsterType(monsterType);
 		Date nu = dateSupplier.getDate();
 		uitnodiging.setCreatieDatum(nu);
+		uitnodiging.setUitnodigingsDatum(nu);
 		uitnodiging.setHerinnering(false);
 		uitnodiging.setUitgesteld(false);
 
@@ -277,7 +278,6 @@ public class CervixFactoryImpl implements CervixFactory
 		default:
 			throw new IllegalStateException();
 		}
-		uitnodiging.setUitnodigingsDatum(nu);
 
 		hibernateService.saveOrUpdate(brief);
 		hibernateService.saveOrUpdate(uitnodiging);

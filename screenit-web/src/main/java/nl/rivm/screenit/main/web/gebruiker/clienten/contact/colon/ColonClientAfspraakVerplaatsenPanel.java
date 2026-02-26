@@ -337,7 +337,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 			}
 		};
 		datumTijdBuitenRoosterField.setRequired(true);
-		datumTijdBuitenRoosterContainer.setVisible(Boolean.TRUE.equals(buitenRooster.getObject()));
+		datumTijdBuitenRoosterContainer.setVisible(Boolean.TRUE.equals(buitenRooster.getObject()) && Boolean.TRUE.equals(binnenNietWijzigbaarPeriode.getObject()));
 		datumTijdBuitenRoosterContainer.add(datumTijdBuitenRoosterField);
 		nieuweAfspraakContainer.addOrReplace(datumTijdBuitenRoosterContainer);
 		if (target != null)
@@ -422,6 +422,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 				addOrReplaceMedischeRedenKeuze(target);
 				addOrReplaceMomentZoekenFilter(target);
 				addOrReplaceMomentZoekenTable(target);
+				addOrReplaceDatumTijdBuitenRoosterContainer(target);
 
 				if (Boolean.TRUE.equals(binnenNietWijzigbaarPeriode.getObject()))
 				{

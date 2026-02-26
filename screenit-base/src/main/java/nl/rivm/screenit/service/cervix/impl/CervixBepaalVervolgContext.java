@@ -39,7 +39,8 @@ import nl.rivm.screenit.model.cervix.enums.CervixUitstrijkjeStatus;
 import nl.rivm.screenit.model.cervix.enums.CervixZasStatus;
 import nl.rivm.screenit.service.cervix.CervixBaseMonsterService;
 import nl.rivm.screenit.service.cervix.CervixBepaalVervolgService;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
+
+import org.hibernate.Hibernate;
 
 public class CervixBepaalVervolgContext
 {
@@ -106,7 +107,7 @@ public class CervixBepaalVervolgContext
 	public CervixBepaalVervolgContext(CervixMonster monster, boolean isZasHoudbaar, LocalDateTime nu, LocalDate startDatumAanleveringGenotypering,
 		CervixBepaalVervolgService bepaalVervolgService, CervixBaseMonsterService monsterService, int intervalControleUitstrijkje, boolean digitaalLabformulier)
 	{
-		huidigeMonster = (CervixMonster) HibernateHelper.deproxy(monster);
+		huidigeMonster = (CervixMonster) Hibernate.unproxy(monster);
 		this.nu = nu;
 		startDatumGenotypering = startDatumAanleveringGenotypering;
 		this.bepaalVervolgService = bepaalVervolgService;
@@ -149,7 +150,7 @@ public class CervixBepaalVervolgContext
 
 		if (ontvangstRonde != null)
 		{
-			monsterHpvUitslag = (CervixMonster) HibernateHelper.deproxy(ontvangstRonde.getMonsterHpvUitslag());
+			monsterHpvUitslag = (CervixMonster) Hibernate.unproxy(ontvangstRonde.getMonsterHpvUitslag());
 			if (monsterHpvUitslag != null)
 			{
 				hpvUitslag = monsterHpvUitslag.getLaatsteHpvBeoordeling().getHpvUitslag();

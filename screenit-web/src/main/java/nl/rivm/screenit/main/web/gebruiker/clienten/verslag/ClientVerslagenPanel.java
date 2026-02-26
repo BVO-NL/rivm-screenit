@@ -31,12 +31,12 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.VerwerkVerslagService;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBasePaVerslagService;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 
 public class ClientVerslagenPanel extends GenericPanel<Client>
 {
@@ -88,7 +88,7 @@ public class ClientVerslagenPanel extends GenericPanel<Client>
 
 	private <T extends ScreeningRonde> T getLaatsteScreeningronde(VerslagType verslagType)
 	{
-		return (T) HibernateHelper.deproxy(verwerkVerslagService.getValideScreeningsRonde(verslagType, getModelObject(), null, null));
+		return (T) Hibernate.unproxy(verwerkVerslagService.getValideScreeningsRonde(verslagType, getModelObject(), null, null));
 	}
 
 }

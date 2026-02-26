@@ -34,7 +34,6 @@ import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.CervixZas;
 import nl.rivm.screenit.util.BriefUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -50,6 +49,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 
 public abstract class CervixUitnodigingenPanel extends Panel
 {
@@ -96,7 +96,7 @@ public abstract class CervixUitnodigingenPanel extends Panel
 					}
 					break;
 				case ZAS:
-					var zas = (CervixZas) HibernateHelper.deproxy(uitnodiging.getMonster());
+					var zas = (CervixZas) Hibernate.unproxy(uitnodiging.getMonster());
 					cellItem.add(new Label(componentId, zas.getVerstuurd()));
 					break;
 				}
@@ -111,11 +111,11 @@ public abstract class CervixUitnodigingenPanel extends Panel
 				switch (uitnodiging.getMonsterType())
 				{
 				case UITSTRIJKJE:
-					var uitstrijkje = (CervixUitstrijkje) HibernateHelper.deproxy(uitnodiging.getMonster());
+					var uitstrijkje = (CervixUitstrijkje) Hibernate.unproxy(uitnodiging.getMonster());
 					item.add(new EnumLabel<>(id, uitstrijkje.getUitstrijkjeStatus()));
 					break;
 				case ZAS:
-					var zas = (CervixZas) HibernateHelper.deproxy(uitnodiging.getMonster());
+					var zas = (CervixZas) Hibernate.unproxy(uitnodiging.getMonster());
 					item.add(new EnumLabel<>(id, zas.getZasStatus()));
 					break;
 				}

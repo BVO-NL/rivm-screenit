@@ -52,13 +52,13 @@ import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import static nl.rivm.screenit.model.AfmeldingType.DEFINITIEF;
 
-@Component
+@Service
 @Transactional(propagation = Propagation.REQUIRED)
 @Slf4j
 public class MammaAfmeldServiceImpl implements MammaAfmeldService

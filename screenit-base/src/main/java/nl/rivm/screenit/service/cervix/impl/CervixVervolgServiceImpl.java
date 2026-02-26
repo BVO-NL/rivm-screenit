@@ -24,6 +24,9 @@ package nl.rivm.screenit.service.cervix.impl;
 import java.time.LocalDate;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -47,10 +50,10 @@ import nl.rivm.screenit.service.cervix.CervixVervolgService;
 import nl.rivm.screenit.service.cervix.enums.CervixVervolgTekst;
 import nl.rivm.screenit.util.EntityAuditUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -84,6 +87,9 @@ public class CervixVervolgServiceImpl implements CervixVervolgService
 
 	@Autowired
 	private MessageService messageService;
+
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Override
 	public CervixVervolg bepaalVervolg(CervixMonster monster, LocalDate startdatumGenotypering)
@@ -168,7 +174,7 @@ public class CervixVervolgServiceImpl implements CervixVervolgService
 	{
 		boolean triggerHpvOrder = false;
 		var zas = CervixMonsterUtil.getZAS(monster);
-		var vorigeZasVersie = EntityAuditUtil.getPreviousVersionOfEntity(zas, hibernateService.getHibernateSession());
+		var vorigeZasVersie = EntityAuditUtil.getPreviousVersionOfEntity(zas, entityManager);
 		CervixZasStatus vorigeZasStatus = null;
 		if (vorigeZasVersie != null)
 		{
@@ -193,7 +199,7 @@ public class CervixVervolgServiceImpl implements CervixVervolgService
 	{
 		boolean triggerHpvOrder = false;
 		var uitstrijkje = CervixMonsterUtil.getUitstrijkje(monster);
-		var vorigeUitstrijkjeVersie = EntityAuditUtil.getPreviousVersionOfEntity(uitstrijkje, hibernateService.getHibernateSession());
+		var vorigeUitstrijkjeVersie = EntityAuditUtil.getPreviousVersionOfEntity(uitstrijkje, entityManager);
 		CervixUitstrijkjeStatus vorigeUitstrijkjeStatus = null;
 		if (vorigeUitstrijkjeVersie != null)
 		{
@@ -218,7 +224,7 @@ public class CervixVervolgServiceImpl implements CervixVervolgService
 	private void maakEnQueueHpvOrderMessageTrigger(CervixMonster monster, BMHKLaboratorium bmhkLaboratorium, boolean cancelOrder)
 	{
 		var triggerDto = new CervixHL7v24HpvOrderTriggerDto();
-		triggerDto.setClazz(((CervixMonster) HibernateHelper.deproxy(monster)).getClass());
+		triggerDto.setClazz(((CervixMonster) Hibernate.unproxy(monster)).getClass());
 		triggerDto.setMonsterId(monster.getId());
 		triggerDto.setCancelOrder(cancelOrder);
 		bmhkLaboratorium = getBmhkLaboratorium(monster, bmhkLaboratorium);

@@ -58,11 +58,11 @@ import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.MessageService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.OrganisatieService;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -634,7 +634,7 @@ public class CervixHl7v2TriggerMessageQueue
 				return null;
 			}
 			hibernateService.reload(monster);
-			monster = (CervixMonster) HibernateHelper.deproxy(monster);
+			monster = (CervixMonster) Hibernate.unproxy(monster);
 			return monster;
 		}
 

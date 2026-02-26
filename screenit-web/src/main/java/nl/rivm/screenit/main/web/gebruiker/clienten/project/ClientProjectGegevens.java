@@ -48,7 +48,6 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.util.ProjectUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.model.DetachableListModel;
 import nl.topicuszorg.wicket.model.SortingListModel;
@@ -190,7 +189,7 @@ public class ClientProjectGegevens extends ClientPage
 
 		ProjectClient pClient = projectClientModel.getObject();
 
-		List<ScreeningRondeGebeurtenis> dg = dossierService.getProjectGebeurtenissen(ModelProxyHelper.deproxy(pClient));
+		List<ScreeningRondeGebeurtenis> dg = dossierService.getProjectGebeurtenissen(pClient);
 		IModel<List<ScreeningRondeGebeurtenis>> dossierModel = new DetachableListModel<>(dg);
 
 		PropertyListView<ScreeningRondeGebeurtenis> gebeurtenissen = new PropertyListView<ScreeningRondeGebeurtenis>("gebeurtenissen",

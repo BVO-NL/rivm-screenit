@@ -24,7 +24,6 @@ package nl.rivm.screenit.service.mamma.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -439,7 +438,7 @@ public class MammaPalgaServiceImpl implements MammaPalgaService
 		ptnmEnGradering.setPt(getDsValue(dto.getPt(), "pt", MammaFollowUpPtnmEnGradering.class));
 		ptnmEnGradering.setPn(getDsValue(dto.getPn(), "pn", MammaFollowUpPtnmEnGradering.class));
 		followupPa.setPtnmEnGradering(ptnmEnGradering);
-		verslagContent.setFollowupPa(Collections.singletonList(followupPa));
+		verslagContent.getFollowupPa().add(followupPa);
 
 		var medischeObservatie = new MammaFollowUpPathologieMedischeObservatie();
 		medischeObservatie.setVerslagContent(verslagContent);
@@ -560,19 +559,16 @@ public class MammaPalgaServiceImpl implements MammaPalgaService
 			return "monstermateriaal incompleet";
 		}
 
-		switch (verkrijgingswijze.getCode())
+		return switch (verkrijgingswijze.getCode())
 		{
-		case "129300006": 
-			return !punctieValide(followupPa, ptnmEnGradering) ? "punctie" : null;
-
-		case "129249002": 
-			return !bioptValide(followupPa, ptnmEnGradering) ? "biopt" : null;
-
-		case "65801008": 
-			return !excisieValide(followupPa) ? "excisie" : null;
-		default:
-			return "verkrijginswijze code";
-		}
+			case "129300006" -> 
+				!punctieValide(followupPa, ptnmEnGradering) ? "punctie" : null;
+			case "129249002" -> 
+				!bioptValide(followupPa, ptnmEnGradering) ? "biopt" : null;
+			case "65801008" -> 
+				!excisieValide(followupPa) ? "excisie" : null;
+			default -> "verkrijginswijze code";
+		};
 	}
 
 	private boolean punctieValide(MammaFollowUpFollowupPa followupPa, MammaFollowUpPtnmEnGradering ptnmEnGradering)

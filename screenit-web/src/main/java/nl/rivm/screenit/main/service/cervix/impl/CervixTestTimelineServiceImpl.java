@@ -642,6 +642,7 @@ public class CervixTestTimelineServiceImpl implements CervixTestTimelineService
 		brief.setMergedBrieven(mergedBrieven);
 		var fakeMergeDocument = new UploadDocument();
 		fakeMergeDocument.setActief(true);
+		fakeMergeDocument.setContentType("application/pdf");
 		fakeMergeDocument.setNaam("dummy_testservice_brief_niet_openen");
 		hibernateService.saveOrUpdate(fakeMergeDocument);
 		mergedBrieven.setMergedBrieven(fakeMergeDocument);

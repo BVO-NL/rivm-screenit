@@ -45,7 +45,6 @@ import nl.rivm.screenit.model.project.GroepSelectieType;
 import nl.rivm.screenit.model.project.Project;
 import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
 
@@ -176,7 +175,7 @@ public class PopulatiePage extends ProjectBasePage
 				@Override
 				public void onClickDeleteAction(AjaxRequestTarget target, IModel<ProjectGroep> rowModel)
 				{
-					projectService.verwijderProjectGroep(ModelProxyHelper.deproxy(rowModel.getObject()), ScreenitSession.get().getIngelogdAccount());
+					projectService.verwijderProjectGroep(rowModel.getObject(), ScreenitSession.get().getIngelogdAccount());
 
 					WebMarkupContainer container = getGroepenDataTable();
 					PopulatiePage.this.groepenContainer.replaceWith(container);

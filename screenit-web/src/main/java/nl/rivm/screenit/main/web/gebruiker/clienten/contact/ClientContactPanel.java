@@ -67,7 +67,6 @@ import nl.rivm.screenit.service.mamma.MammaBaseDossierService;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.util.ExceptionConverter;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
 
@@ -723,7 +722,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 				}
 				else
 				{
-					clientContactService.saveClientContact(ModelProxyHelper.deproxy(contact), extraOpslaanObjecten, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+					clientContactService.saveClientContact(contact, extraOpslaanObjecten, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 					BasePage.markeerFormulierenOpgeslagen(target);
 
 					if (acties.stream().anyMatch(a -> a.getType().equals(ClientContactActieType.MAMMA_RONDE_FORCEREN))

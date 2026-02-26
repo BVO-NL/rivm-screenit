@@ -29,7 +29,8 @@ import nl.rivm.screenit.model.cervix.facturatie.CervixHuisartsTarief;
 import nl.rivm.screenit.model.cervix.facturatie.CervixLabTarief;
 import nl.rivm.screenit.model.cervix.facturatie.CervixTarief;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
+
+import org.hibernate.Hibernate;
 
 public class CervixTariefUtil
 {
@@ -52,13 +53,13 @@ public class CervixTariefUtil
 	public static BigDecimal getLabBedrag(CervixBoekRegel boekRegel)
 	{
 		CervixTariefType tariefType = boekRegel.getVerrichting().getType();
-		CervixLabTarief tarief = (CervixLabTarief) HibernateHelper.deproxy(boekRegel.getTarief());
+		CervixLabTarief tarief = (CervixLabTarief) Hibernate.unproxy(boekRegel.getTarief());
 		return tariefType.getBedragVanTarief(tarief);
 	}
 
 	public static BigDecimal getHuisartsBedrag(CervixBoekRegel boekRegel)
 	{
-		CervixHuisartsTarief tarief = (CervixHuisartsTarief) HibernateHelper.deproxy(boekRegel.getTarief());
+		CervixHuisartsTarief tarief = (CervixHuisartsTarief) Hibernate.unproxy(boekRegel.getTarief());
 		return tarief.getTarief();
 	}
 

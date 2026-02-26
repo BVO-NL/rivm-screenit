@@ -40,10 +40,10 @@ import nl.rivm.screenit.specification.mamma.MammaAfspraakReserveringSpecificatio
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
+@Service
 @RequiredArgsConstructor
 @Slf4j
 public class MammaAfspraakReserveringServiceImpl implements MammaAfspraakReserveringService

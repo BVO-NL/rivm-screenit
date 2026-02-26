@@ -21,11 +21,16 @@ package nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.contro
  * =========================LICENSE_END==================================
  */
 
+import java.io.File;
+
+import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.PdfViewer;
 import nl.rivm.screenit.service.cervix.CervixLabformulierService;
 
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+
+import static java.util.Objects.requireNonNull;
 
 public class CervixLabformulierPanel extends Panel
 {
@@ -39,10 +44,18 @@ public class CervixLabformulierPanel extends Panel
 		{
 			add(new S3LabformulierViewerContainer("labformulier", objid));
 		}
+		else if (betreftEenTestTimelineLabformlier(objid))
+		{
+			add(new PdfViewer("labformulier", new File(requireNonNull(CervixLabformulierPanel.class.getResource("/static/assets/pdf/blank.pdf")).getFile())));
+		}
 		else
 		{
 			add(new EmptyPanel("labformulier"));
 		}
 	}
 
+	private static boolean betreftEenTestTimelineLabformlier(String objid)
+	{
+		return objid.matches("\\d+");
+	}
 }

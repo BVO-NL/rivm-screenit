@@ -33,7 +33,6 @@ import nl.rivm.screenit.model.cervix.facturatie.CervixLabTarief;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.cervix.CervixTariefUtil;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -103,7 +102,7 @@ public abstract class CervixLaboratoriumTarievenPopupPanel extends GenericPanel<
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				var tarief = ModelProxyHelper.deproxy(form.getModelObject());
+				var tarief = form.getModelObject();
 				if (verrichtingService.heeftLaboratoriumTarief(tarief))
 				{
 					error("Er is al een tarief met dezelfde geldig vanaf datum, selecteer een andere datum.");

@@ -32,6 +32,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.Constants;
@@ -150,6 +153,9 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 
 	@Autowired
 	private MammaBeoordelingRepository beoordelingRepository;
+
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Override
 	public boolean isBiradsVerwijzen(MammaBIRADSWaarde biradsWaarde)
@@ -486,7 +492,7 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 		beoordeling.setToegewezenOrganisatieMedewerker(organisatieMedewerker);
 		beoordeling.setToegewezenOp(currentDateSupplier.getDate());
 		String melding;
-		var vorigeBeoordeling = EntityAuditUtil.getLastVersionOfEntity(beoordeling, hibernateService.getHibernateSession());
+		var vorigeBeoordeling = EntityAuditUtil.getLastVersionOfEntity(beoordeling, entityManager);
 		if (beoordeling.getVerslagLezing() != null && vorigeBeoordeling != null)
 		{
 			if (vorigeBeoordeling.getToegewezenOrganisatieMedewerker() != null && vorigeBeoordeling.getToegewezenOp() != null)
@@ -794,7 +800,7 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 	@Override
 	public MammaLezing getOrineleVerslagLezing(MammaBeoordeling beoordeling)
 	{
-		var entityHistory = EntityAuditUtil.getEntityHistory(beoordeling, hibernateService.getHibernateSession(), true);
+		var entityHistory = EntityAuditUtil.getEntityHistory(beoordeling, entityManager, true);
 		for (var i = entityHistory.size(); i > 0; i--)
 		{
 			MammaBeoordeling beoordelingRev = EntityAuditUtil.getRevisionEntity(entityHistory.get(i - 1));

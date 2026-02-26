@@ -54,7 +54,6 @@ import nl.rivm.screenit.service.cervix.enums.CervixVervolgTekst;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.NaamUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -79,6 +78,7 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 import org.wicketstuff.datetime.PatternDateConverter;
 import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
@@ -147,7 +147,7 @@ public abstract class CervixUitnodigingPanel<M extends CervixMonster> extends Ge
 
 		CervixUitnodiging uitnodiging = getModelObject().getUitnodiging();
 		Client client = uitnodiging.getScreeningRonde().getDossier().getClient();
-		BMHKLaboratorium ingelogdNamensLaboratorium = (BMHKLaboratorium) HibernateHelper.deproxy(ScreenitSession.get().getOrganisatie());
+		BMHKLaboratorium ingelogdNamensLaboratorium = (BMHKLaboratorium) Hibernate.unproxy(ScreenitSession.get().getOrganisatie());
 
 		logService.logGebeurtenis(LogGebeurtenis.CERVIX_UITNODIGING_INGEZIEN, ScreenitSession.get().getIngelogdAccount(), client, getString("titel") + " - " + getStatus(),
 			Bevolkingsonderzoek.CERVIX);

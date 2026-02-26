@@ -1,4 +1,4 @@
-package nl.rivm.screenit.main.service.colon;
+package nl.rivm.screenit.main.exception;
 
 /*-
  * ========================LICENSE_START=================================
@@ -21,22 +21,10 @@ package nl.rivm.screenit.main.service.colon;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
-import nl.rivm.screenit.main.model.colon.ColonHoudbaarheidFitReeksFilter;
-import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.colon.ColonFitAnalyseResultaatSet;
-
-import org.springframework.data.domain.Sort;
-
-public interface ColonFitAnalyseResultaatSetService
+public class CervixMonsterZoekenExceptie extends Exception
 {
-	List<ColonFitAnalyseResultaatSet> getResultaatSets(ColonHoudbaarheidFitReeksFilter filter, long first, long count, Sort sort);
-
-	long countResultaatSets(ColonHoudbaarheidFitReeksFilter filter);
-
-	void verwijderResultaatSets(List<ColonFitAnalyseResultaatSet> resultaatSets, Account ingelogdAccount);
-
-	void autoriseerResultaatSets(List<ColonFitAnalyseResultaatSet> resultaatSets, Account ingelogdAccount);
-
+	public CervixMonsterZoekenExceptie(String message)
+	{
+		super(message);
+	}
 }

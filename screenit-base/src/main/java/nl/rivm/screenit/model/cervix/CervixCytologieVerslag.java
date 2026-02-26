@@ -44,8 +44,8 @@ import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.cervix.enums.CervixCytologieUitslag;
 import nl.rivm.screenit.model.cervix.verslag.CervixVerslag;
 import nl.rivm.screenit.model.cervix.verslag.cytologie.CervixCytologieVerslagContent;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Proxy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -81,7 +81,7 @@ public class CervixCytologieVerslag extends CervixVerslag<CervixCytologieVerslag
 
 	public BMHKLaboratorium getLaboratorium()
 	{
-		return (BMHKLaboratorium) HibernateHelper.deproxy(getUitvoerderOrganisatie());
+		return (BMHKLaboratorium) Hibernate.unproxy(getUitvoerderOrganisatie());
 	}
 
 	public void setLaboratorium(BMHKLaboratorium laboratorium)

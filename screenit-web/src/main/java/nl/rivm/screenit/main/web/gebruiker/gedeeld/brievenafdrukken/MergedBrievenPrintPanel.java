@@ -34,7 +34,6 @@ import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.topicuszorg.documentupload.wicket.UploadDocumentLink;
 import nl.topicuszorg.documentupload.wicket.UploadDocumentPdfObjectContainer;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -43,6 +42,7 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 
 public abstract class MergedBrievenPrintPanel<MB extends MergedBrieven<?>> extends GenericPanel<MB>
 {
@@ -86,7 +86,7 @@ public abstract class MergedBrievenPrintPanel<MB extends MergedBrieven<?>> exten
 					mergedBrieven.setGeprint(true);
 					mergedBrieven.setPrintDatum(currentDateSupplier.getDate());
 					mergedBrieven.setAfgedruktDoor(ScreenitSession.get().getIngelogdeOrganisatieMedewerker().getMedewerker());
-					if (HibernateHelper.deproxy(mergedBrieven) instanceof CervixRegioMergedBrieven)
+					if (Hibernate.unproxy(mergedBrieven) instanceof CervixRegioMergedBrieven)
 					{
 						cervixHuisartsService.updateLabformulierAanvraag((CervixRegioMergedBrieven) mergedBrieven);
 					}

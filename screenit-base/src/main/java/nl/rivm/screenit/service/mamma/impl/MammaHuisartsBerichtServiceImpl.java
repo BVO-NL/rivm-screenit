@@ -35,9 +35,9 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.rivm.screenit.service.mamma.MammaEdiService;
 import nl.rivm.screenit.service.mamma.MammaHuisartsBerichtService;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -63,7 +63,7 @@ public class MammaHuisartsBerichtServiceImpl implements MammaHuisartsBerichtServ
 	public MammaHuisartsBericht verstuurHuisartsBericht(MammaBeoordeling beoordeling, EnovationHuisarts huisarts, HuisartsBerichtType huisartsBerichtType,
 		boolean isOpnieuwVerzonden)
 	{
-		Client client = (Client) HibernateHelper.deproxy(baseBeoordelingService.getClientVanBeoordeling(beoordeling));
+		Client client = (Client) Hibernate.unproxy(baseBeoordelingService.getClientVanBeoordeling(beoordeling));
 		MailMergeContext context = new MailMergeContext();
 		context.setClient(client);
 
@@ -88,8 +88,8 @@ public class MammaHuisartsBerichtServiceImpl implements MammaHuisartsBerichtServ
 
 	private MammaHuisartsBericht maakHuisartsbericht(MammaBeoordeling beoordeling, EnovationHuisarts huisarts, HuisartsBerichtType huisartsBerichtType, boolean isOpnieuwVerzonden)
 	{
-		ScreeningOrganisatie screeningOrganisatie = (ScreeningOrganisatie) HibernateHelper
-			.deproxy(beoordeling.getOnderzoek().getScreeningsEenheid().getBeoordelingsEenheid().getParent().getRegio());
+		ScreeningOrganisatie screeningOrganisatie = (ScreeningOrganisatie) Hibernate.unproxy(
+			beoordeling.getOnderzoek().getScreeningsEenheid().getBeoordelingsEenheid().getParent().getRegio());
 		final MammaHuisartsBericht huisartsBericht = new MammaHuisartsBericht();
 		huisartsBericht.setClient(baseBeoordelingService.getClientVanBeoordeling(beoordeling));
 		huisartsBericht.setBerichtType(huisartsBerichtType);

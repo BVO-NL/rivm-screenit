@@ -53,7 +53,6 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -353,7 +352,7 @@ public class ClientContactBezwaarPanel extends AbstractClientContactActiePanel<C
 					bezwaarMoment.setStatusDatum(currentDateSupplier.getDate());
 					hibernateService.saveOrUpdateAll(bezwaarMoment);
 
-					objecten.put(ExtraOpslaanKey.BEZWAAR, ModelProxyHelper.deproxy(bezwaarMomentModel.getObject()));
+					objecten.put(ExtraOpslaanKey.BEZWAAR, bezwaarMomentModel.getObject());
 					objecten.put(ExtraOpslaanKey.BEZWAAR_VRAGEN_OM_HANDTEKENING, bezwaarAanvragenMetHandtekeningHerinnering.getObject());
 				}
 				else if (moetOnderzoekresultatenActieAangemaaktWorden(wrappers))
@@ -372,7 +371,7 @@ public class ClientContactBezwaarPanel extends AbstractClientContactActiePanel<C
 			}
 		}
 
-		objecten.put(ExtraOpslaanKey.BEZWAAR, ModelProxyHelper.deproxy(bezwaarMomentModel.getObject()));
+		objecten.put(ExtraOpslaanKey.BEZWAAR, bezwaarMomentModel.getObject());
 		objecten.put(ExtraOpslaanKey.BEZWAAR_VRAGEN_OM_HANDTEKENING, bezwaarAanvragenMetHandtekeningHerinnering.getObject());
 		return objecten;
 	}

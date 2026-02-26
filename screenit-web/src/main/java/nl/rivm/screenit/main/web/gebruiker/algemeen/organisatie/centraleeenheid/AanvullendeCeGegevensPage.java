@@ -39,7 +39,6 @@ import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieService;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -48,6 +47,7 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(
@@ -72,7 +72,7 @@ public class AanvullendeCeGegevensPage extends OrganisatieBeheer
 
 	public AanvullendeCeGegevensPage()
 	{
-		CentraleEenheid organisatie = (CentraleEenheid) HibernateHelper.deproxy(getCurrentSelectedOrganisatie());
+		CentraleEenheid organisatie = (CentraleEenheid) Hibernate.unproxy(getCurrentSelectedOrganisatie());
 
 		add(new OrganisatiePaspoortPanel("paspoort", ModelUtil.sModel(organisatie)));
 

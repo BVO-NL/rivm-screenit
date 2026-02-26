@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
+import nl.rivm.screenit.main.exception.CervixMonsterZoekenExceptie;
 import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
@@ -32,8 +33,7 @@ import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 public interface CervixUitnodigingService
 {
 
-	String zoekMonsters(Organisatie ingelogdNamensOrganisatie, String monsterId, String bsn, Date geboortedatum, List<CervixUitnodiging> uitnodigingen,
-		UnaryOperator<String> getString);
+	List<CervixUitnodiging> zoekMonsters(Organisatie ingelogdNamensOrganisatie, String monsterId, String bsn, Date geboortedatum, UnaryOperator<String> getString) throws CervixMonsterZoekenExceptie;
 
 	char getVerwachteEersteZASMonsterIdLetter(Organisatie ingelogdNamensOrganisatie);
 

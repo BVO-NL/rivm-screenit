@@ -33,10 +33,15 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
 import nl.rivm.screenit.model.berichten.enums.BerichtType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
+@Setter
+@Getter
 @Entity(name = "cda_ontvangenbericht")
 @Table(schema = "gedeeld", indexes = { @Index(name = "idx_ontvangenbericht_status", columnList = "status") })
 public class OntvangenCdaBericht extends AbstractHibernateObject
@@ -45,6 +50,7 @@ public class OntvangenCdaBericht extends AbstractHibernateObject
 	private static final long serialVersionUID = 1L;
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	private Date ontvangen;
 
 	@Column(nullable = false)
@@ -55,98 +61,18 @@ public class OntvangenCdaBericht extends AbstractHibernateObject
 	@Enumerated(EnumType.STRING)
 	private BerichtType berichtType;
 
-	@Column
+	@Column(nullable = false)
 	private String berichtId;
 
-	@Column
+	@Column(nullable = false)
 	private String setId;
 
-	@Column
+	@Column(nullable = false)
 	private Long versie;
 
-	@Column(columnDefinition = "TEXT")
+	@Column(columnDefinition = "TEXT", nullable = false)
 	private String xmlBericht;
 
-	@Column
+	@Column(nullable = false)
 	private String projectVersion;
-
-	public Date getOntvangen()
-	{
-		return this.ontvangen;
-	}
-
-	public void setOntvangen(Date ontvangen)
-	{
-		this.ontvangen = ontvangen;
-	}
-
-	public BerichtType getBerichtType()
-	{
-		return berichtType;
-	}
-
-	public void setBerichtType(BerichtType berichtType)
-	{
-		this.berichtType = berichtType;
-	}
-
-	public String getXmlBericht()
-	{
-		return xmlBericht;
-	}
-
-	public void setXmlBericht(String xmlBericht)
-	{
-		this.xmlBericht = xmlBericht;
-	}
-
-	public void setBerichtId(String berichtId)
-	{
-		this.berichtId = berichtId;
-	}
-
-	public String getBerichtId()
-	{
-		return berichtId;
-	}
-
-	public String getSetId()
-	{
-		return setId;
-	}
-
-	public void setSetId(String setId)
-	{
-		this.setId = setId;
-	}
-
-	public Long getVersie()
-	{
-		return versie;
-	}
-
-	public void setVersie(Long versie)
-	{
-		this.versie = versie;
-	}
-
-	public BerichtStatus getStatus()
-	{
-		return status;
-	}
-
-	public void setStatus(BerichtStatus status)
-	{
-		this.status = status;
-	}
-
-	public String getProjectVersion()
-	{
-		return projectVersion;
-	}
-
-	public void setProjectVersion(String projectVersion)
-	{
-		this.projectVersion = projectVersion;
-	}
 }

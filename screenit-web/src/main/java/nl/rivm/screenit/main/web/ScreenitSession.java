@@ -573,7 +573,7 @@ public class ScreenitSession extends WebSession
 	public ScreeningOrganisatie getScreeningOrganisatie()
 	{
 
-		Organisatie organisatie = hibernateService.deproxy(getOrganisatie());
+		var organisatie = (Organisatie) Hibernate.unproxy(getOrganisatie());
 		if (OrganisatieType.SCREENINGSORGANISATIE.equals(organisatie.getOrganisatieType()))
 		{
 			return (ScreeningOrganisatie) organisatie;

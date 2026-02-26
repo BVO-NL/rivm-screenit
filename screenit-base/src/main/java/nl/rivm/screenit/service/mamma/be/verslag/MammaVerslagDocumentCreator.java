@@ -33,10 +33,10 @@ import nl.rivm.screenit.model.mamma.MammaMassaLaesie;
 import nl.rivm.screenit.service.mamma.MammaBaseAfbeeldingService;
 import nl.rivm.screenit.service.mamma.MammaBaseLaesieService;
 import nl.rivm.screenit.service.mamma.MammaBaseLezingService;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +64,7 @@ public class MammaVerslagDocumentCreator extends BaseDocumentCreator
 		afbeeldingService = ApplicationContextProvider.getApplicationContext().getBean(MammaBaseAfbeeldingService.class);
 		laesieService = ApplicationContextProvider.getApplicationContext().getBean(MammaBaseLaesieService.class);
 		baseLezingService = ApplicationContextProvider.getApplicationContext().getBean(MammaBaseLezingService.class);
-		this.verslagLezing = (MammaLezing) HibernateHelper.deproxy(verslagLezing);
+		this.verslagLezing = (MammaLezing) Hibernate.unproxy(verslagLezing);
 		if (verslagLezing != null)
 		{
 			createLaesieTables();

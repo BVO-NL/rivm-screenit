@@ -61,9 +61,9 @@ import nl.rivm.screenit.service.cervix.impl.CervixVervolg;
 import nl.rivm.screenit.util.AfmeldingUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
+import org.hibernate.Hibernate;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -100,7 +100,7 @@ public class CervixGevolgenLabprocesVerwerkenWriter extends BaseWriter<CervixMon
 	@Override
 	protected void write(CervixMonster monster) throws Exception
 	{
-		monster = (CervixMonster) HibernateHelper.deproxy(monster);
+		monster = (CervixMonster) Hibernate.unproxy(monster);
 		CervixVervolg vervolg;
 		try
 		{
@@ -370,7 +370,7 @@ public class CervixGevolgenLabprocesVerwerkenWriter extends BaseWriter<CervixMon
 		var client = monster.getOntvangstScreeningRonde().getDossier().getClient();
 		if (monster instanceof CervixUitstrijkje)
 		{
-			huisartsBerichtService.maakCervixHuisartsBericht(huisartsBerichtType, client, (CervixUitstrijkje) HibernateHelper.deproxy(monster), omissieType);
+			huisartsBerichtService.maakCervixHuisartsBericht(huisartsBerichtType, client, (CervixUitstrijkje) Hibernate.unproxy(monster), omissieType);
 
 			aantallenContextOphogen(CervixGevolgenLabprocesVerwerkenConstants.TOTAAL_AANTAL_HUISARTSBERICHTEN_KEY,
 				CervixGevolgenLabprocesVerwerkenConstants.HUISARTSBERICHT_TYPE_KEY, huisartsBerichtType);

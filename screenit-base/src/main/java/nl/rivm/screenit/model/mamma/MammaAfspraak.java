@@ -158,4 +158,7 @@ public class MammaAfspraak extends AbstractHibernateObject
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private SmsStatus smsStatus = SmsStatus.GEEN;
+
+	@Column(length = 36)
+	private String icalUid;
 }

@@ -85,13 +85,13 @@ import nl.rivm.screenit.service.cervix.CervixBaseVerrichtingService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.cervix.CervixHuisartsToDtoUtil;
 import nl.rivm.screenit.util.cervix.CervixTariefUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.IBANValidator;
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -383,7 +383,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 			}
 			else
 			{
-				CervixTarief deproxiedTarief = (CervixTarief) HibernateHelper.deproxy(oudeTarief);
+				CervixTarief deproxiedTarief = (CervixTarief) Hibernate.unproxy(oudeTarief);
 				if (CervixTariefType.isHuisartsTarief(oudeTarief))
 				{
 					melding += getLogMeldingHuisartsTariefVerwijderd((CervixHuisartsTarief) deproxiedTarief);
@@ -649,13 +649,13 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 		hibernateService.saveOrUpdate(tarief);
 		if (CervixTariefType.isHuisartsTarief(tarief))
 		{
-			var melding = getLogMeldingHuisartsTariefVerwijderd((CervixHuisartsTarief) HibernateHelper.deproxy(tarief));
+			var melding = getLogMeldingHuisartsTariefVerwijderd((CervixHuisartsTarief) Hibernate.unproxy(tarief));
 			berekenEinddatumCervixHuisartsTarief();
 			logService.logGebeurtenis(LogGebeurtenis.CERVIX_HUISARTS_TARIEF_VERWIJDERD, account, melding, Bevolkingsonderzoek.CERVIX);
 		}
 		else
 		{
-			var labTarief = (CervixLabTarief) HibernateHelper.deproxy(tarief);
+			var labTarief = (CervixLabTarief) Hibernate.unproxy(tarief);
 			var verwijderdMelding = getLogMeldingLabTariefVerwijderd(labTarief);
 			var melding = "Laboratorium: " + labTarief.getBmhkLaboratorium().getNaam() + verwijderdMelding;
 			berekenEinddatumCervixLaboratoriumTarief(CervixTariefType.getLabTarief(tarief).getBmhkLaboratorium());

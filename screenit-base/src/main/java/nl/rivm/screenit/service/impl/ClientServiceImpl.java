@@ -78,18 +78,18 @@ import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EntityAuditUtil;
 import nl.rivm.screenit.util.ProjectUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.organisatie.model.Adres;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.hibernate.Hibernate;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -116,7 +116,7 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Slf4j
-@Component
+@Service
 public class ClientServiceImpl implements ClientService
 {
 	@Autowired
@@ -671,7 +671,7 @@ public class ClientServiceImpl implements ClientService
 
 		if (periode != null)
 		{
-			return (CentraleEenheid) HibernateHelper.deproxy(periode.getScreeningsEenheid().getBeoordelingsEenheid().getParent());
+			return (CentraleEenheid) Hibernate.unproxy(periode.getScreeningsEenheid().getBeoordelingsEenheid().getParent());
 		}
 		return null;
 	}

@@ -42,7 +42,8 @@ import nl.rivm.screenit.model.mamma.MammaBrief;
 import nl.rivm.screenit.model.project.ProjectBrief;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.model.project.ProjectClient;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
+
+import org.hibernate.Hibernate;
 
 public class BriefUtil
 {
@@ -78,11 +79,11 @@ public class BriefUtil
 	{
 		if (brief != null)
 		{
-			brief = (Brief) HibernateHelper.deproxy(brief);
+			brief = (Brief) Hibernate.unproxy(brief);
 		}
 		if (brief instanceof ProjectBrief projectBrief && projectBrief.getBrief() != null)
 		{
-			brief = (ClientBrief<?, ?, ?>) HibernateHelper.deproxy(projectBrief.getBrief());
+			brief = (ClientBrief<?, ?, ?>) Hibernate.unproxy(projectBrief.getBrief());
 		}
 		return brief;
 	}
@@ -166,7 +167,7 @@ public class BriefUtil
 	{
 		if (brief != null)
 		{
-			brief = (Brief) HibernateHelper.deproxy(brief);
+			brief = (Brief) Hibernate.unproxy(brief);
 			if (brief instanceof ClientBrief<?, ?, ?> clientBrief)
 			{
 				ProjectBrief projectBrief = clientBrief.getProjectBrief();

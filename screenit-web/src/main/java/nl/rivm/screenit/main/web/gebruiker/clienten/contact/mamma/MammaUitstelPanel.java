@@ -45,7 +45,6 @@ import nl.rivm.screenit.model.mamma.MammaUitstel;
 import nl.rivm.screenit.service.mamma.MammaBaseUitstelService;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.lang.StringUtils;
@@ -83,6 +82,7 @@ public class MammaUitstelPanel extends AbstractClientContactActiePanel<MammaUits
 
 		this.standplaatsPeriodeModel = ModelUtil.sModel(standplaatsPeriode);
 	}
+
 	@Override
 	protected void onInitialize()
 	{
@@ -184,7 +184,7 @@ public class MammaUitstelPanel extends AbstractClientContactActiePanel<MammaUits
 	{
 		Map<ExtraOpslaanKey, Object> opslaanObjecten = new HashMap<>();
 
-		opslaanObjecten.put(ExtraOpslaanKey.MAMMA_UITSTEL, ModelProxyHelper.deproxy(getModelObject()));
+		opslaanObjecten.put(ExtraOpslaanKey.MAMMA_UITSTEL, getModelObject());
 		if (Boolean.TRUE.equals(briefAanmaken.getObject()))
 		{
 			opslaanObjecten.put(ExtraOpslaanKey.BEVESTIGINGS_TYPE, BevestigingsType.BRIEF);

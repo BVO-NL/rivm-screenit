@@ -80,6 +80,7 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.hibernate.Hibernate;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -149,8 +150,8 @@ public class OrganisatieServiceImpl implements OrganisatieService
 		return switch (organisatieType)
 		{
 			case RIVM, KWALITEITSPLATFORM -> getActieveOrganisaties(CentraleEenheid.class);
-			case BEOORDELINGSEENHEID -> Collections.singletonList((CentraleEenheid) hibernateService.deproxy(organisatie.getParent()));
-			case SCREENINGSORGANISATIE -> getActieveCentraleEenhedenBinnenRegio((ScreeningOrganisatie) hibernateService.deproxy(organisatie));
+			case BEOORDELINGSEENHEID -> Collections.singletonList((CentraleEenheid) Hibernate.unproxy(organisatie.getParent()));
+			case SCREENINGSORGANISATIE -> getActieveCentraleEenhedenBinnenRegio((ScreeningOrganisatie) Hibernate.unproxy(organisatie));
 			default -> Collections.emptyList();
 		};
 	}
@@ -316,7 +317,7 @@ public class OrganisatieServiceImpl implements OrganisatieService
 		return organisatieRepository
 			.findAll(OrganisatieSpecification.isActieveOrganisatie(organisatieClass), Sort.by(Sort.Order.asc(Organisatie_.NAAM)))
 			.stream()
-			.map(o -> (T) hibernateService.deproxy(o))
+			.map(o -> (T) Hibernate.unproxy(o))
 			.collect(Collectors.toList());
 	}
 
@@ -390,7 +391,7 @@ public class OrganisatieServiceImpl implements OrganisatieService
 		return organisatieRepository
 			.findAll(specification, Sort.by(Sort.Order.asc(Organisatie_.NAAM)))
 			.stream()
-			.map(o -> (T) hibernateService.deproxy(o))
+			.map(o -> (T) Hibernate.unproxy(o))
 			.collect(Collectors.toList());
 	}
 

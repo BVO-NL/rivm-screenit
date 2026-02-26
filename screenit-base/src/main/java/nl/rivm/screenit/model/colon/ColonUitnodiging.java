@@ -60,6 +60,7 @@ import org.hibernate.envers.NotAudited;
 public class ColonUitnodiging extends InpakbareUitnodiging<ColonScreeningRonde>
 {
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private ColonUitnodigingscategorie uitnodigingscategorie;
 
 	@OneToOne

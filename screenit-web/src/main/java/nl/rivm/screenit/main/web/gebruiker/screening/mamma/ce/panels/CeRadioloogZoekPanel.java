@@ -40,7 +40,7 @@ import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.rivm.screenit.util.EntityAuditUtil;
 import nl.rivm.screenit.util.NaamUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
+import org.hibernate.Hibernate;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -102,7 +102,7 @@ public abstract class CeRadioloogZoekPanel extends GenericPanel<MammaBeoordeling
 			.filter(beoordeling -> beoordeling.getToegewezenOp() != null && beoordeling.getToegewezenOrganisatieMedewerker() != null)
 			.filter(distinctByKey(MammaBeoordeling::getToegewezenOp))
 			.map(beoordelingRev -> new Label(repeatingView.newChildId(), String.format("Lezing toegewezen aan %s, op %s",
-				NaamUtil.getNaamMedewerker((Medewerker) HibernateHelper.deproxy(beoordelingRev.getToegewezenOrganisatieMedewerker().getMedewerker())),
+				NaamUtil.getNaamMedewerker((Medewerker) Hibernate.unproxy(beoordelingRev.getToegewezenOrganisatieMedewerker().getMedewerker())),
 				Constants.getDateTimeFormat().format(beoordelingRev.getToegewezenOp()))))
 			.peek(x -> repeatingView.setVisible(true))
 			.forEachOrdered(repeatingView::add);

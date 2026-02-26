@@ -64,7 +64,6 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.SimpleHibernateModel;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -91,6 +90,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 import org.wicketstuff.shiro.ShiroConstraint;
 import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 
@@ -384,7 +384,7 @@ public class CervixHuisartsOverzichtVerrichtingenPage extends OrganisatieBeheer
 			private BigDecimal getBoekregel(IModel<CervixBoekRegel> rowModel)
 			{
 				var boekRegel = rowModel.getObject();
-				var tarief = (CervixHuisartsTarief) HibernateHelper.deproxy(boekRegel.getTarief());
+				var tarief = (CervixHuisartsTarief) Hibernate.unproxy(boekRegel.getTarief());
 				var bedrag = tarief.getTarief();
 				if (boekRegel.getDebet())
 				{

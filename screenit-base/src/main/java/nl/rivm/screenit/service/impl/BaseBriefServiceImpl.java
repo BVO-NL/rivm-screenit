@@ -81,7 +81,7 @@ import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.JavaScriptPdfHelper;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
+import org.hibernate.Hibernate;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.organisatie.model.Adres;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
@@ -665,7 +665,7 @@ public class BaseBriefServiceImpl implements BaseBriefService
 		Client client = null;
 		if (ClientBrief.class.isAssignableFrom(Hibernate.getClass(brief)))
 		{
-			ClientBrief<?, ?, ?> clientBrief = (ClientBrief<?, ?, ?>) HibernateHelper.deproxy(brief);
+			ClientBrief<?, ?, ?> clientBrief = (ClientBrief<?, ?, ?>) Hibernate.unproxy(brief);
 			client = clientBrief.getClient();
 		}
 		return client;
@@ -677,7 +677,7 @@ public class BaseBriefServiceImpl implements BaseBriefService
 		var briefClass = Hibernate.getClass(brief);
 		if (ProjectBrief.class.isAssignableFrom(briefClass))
 		{
-			ProjectBrief projectBrief = (ProjectBrief) HibernateHelper.deproxy(brief);
+			ProjectBrief projectBrief = (ProjectBrief) Hibernate.unproxy(brief);
 			briefDefinitie = projectBrief.getDefinitie();
 		}
 		return briefDefinitie;

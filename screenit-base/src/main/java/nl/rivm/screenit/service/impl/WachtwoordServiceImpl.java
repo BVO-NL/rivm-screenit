@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -60,6 +63,9 @@ public class WachtwoordServiceImpl implements WachtwoordService
 
 	private final LogService logService;
 
+	@PersistenceContext
+	private EntityManager entityManager;
+
 	@Override
 	public String hashWachtwoord(Medewerker medewerker, String plainWachtwoord)
 	{
@@ -91,7 +97,7 @@ public class WachtwoordServiceImpl implements WachtwoordService
 	@Override
 	public List<String> getVorigeWachtwoorden(Medewerker medewerker, LocalDate vanaf)
 	{
-		return EntityAuditUtil.getEntityHistory(medewerker, hibernateService.getHibernateSession(),
+		return EntityAuditUtil.getEntityHistory(medewerker, entityManager,
 				AuditEntity.revisionProperty("timestamp").gt(DateUtil.toUtilDate(vanaf).getTime()), true)
 			.stream()
 			.map((Object auditRow) ->

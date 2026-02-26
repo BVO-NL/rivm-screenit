@@ -21,11 +21,11 @@ package nl.rivm.screenit.main.web.gebruiker.screening.cervix.monster;
  * =========================LICENSE_END==================================
  */
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import nl.rivm.screenit.main.exception.CervixMonsterZoekenExceptie;
 import nl.rivm.screenit.main.service.cervix.CervixUitnodigingService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
@@ -38,7 +38,6 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.input.validator.BSNValidator;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -111,13 +110,15 @@ public abstract class CervixMonsterZoekenPanel extends Panel
 				var bsn = bsnModel.getObject();
 				var geboortedatum = geboortedatumModel.getObject();
 
-				var uitnodigingen = new ArrayList<CervixUitnodiging>();
-				var melding = monstersZoekenService.zoekMonsters(ScreenitSession.get().getOrganisatie(), monsterId, bsn, geboortedatum, uitnodigingen, this::getString);
-				if (StringUtils.isNotBlank(melding))
+				try
 				{
-					error(melding);
+					var uitnodigingen = monstersZoekenService.zoekMonsters(ScreenitSession.get().getOrganisatie(), monsterId, bsn, geboortedatum, this::getString);
+					toonUitnodigingen(target, uitnodigingen);
 				}
-				toonUitnodigingen(target, uitnodigingen);
+				catch (CervixMonsterZoekenExceptie e)
+				{
+					error(e.getMessage());
+				}
 			}
 
 		};

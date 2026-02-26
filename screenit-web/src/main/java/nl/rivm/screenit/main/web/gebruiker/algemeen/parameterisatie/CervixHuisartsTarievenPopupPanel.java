@@ -33,7 +33,6 @@ import nl.rivm.screenit.model.cervix.facturatie.CervixHuisartsTarief;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -87,7 +86,7 @@ public abstract class CervixHuisartsTarievenPopupPanel extends GenericPanel<Cerv
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				var tarief = ModelProxyHelper.deproxy(form.getModelObject());
+				var tarief = form.getModelObject();
 				if (verrichtingService.heeftHuisartsTarief(tarief.getGeldigVanafDatum()))
 				{
 					error("Er is al een tarief met dezelfde geldig vanaf datum, selecteer een andere datum.");

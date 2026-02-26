@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.colon;
 
 /*-
@@ -23,19 +22,26 @@ package nl.rivm.screenit.model.colon;
  */
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.model.logging.IntakeMakenLogEvent;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+@Getter
+@Setter
 @Entity
 @Table(schema = "colon")
 public class IntakeMakenLogEventRegel extends AbstractHibernateObject
 {
 	@ManyToOne
+	@JoinColumn(nullable = false)
 	@JsonIgnore 
 	private IntakeMakenLogEvent logEvent;
 
@@ -44,44 +50,4 @@ public class IntakeMakenLogEventRegel extends AbstractHibernateObject
 	private Long clientId;
 
 	private String vrijSlot;
-
-	public IntakeMakenLogEvent getLogEvent()
-	{
-		return logEvent;
-	}
-
-	public void setLogEvent(IntakeMakenLogEvent logEvent)
-	{
-		this.logEvent = logEvent;
-	}
-
-	public String getVrijSlot()
-	{
-		return vrijSlot;
-	}
-
-	public void setVrijSlot(String vrijSlot)
-	{
-		this.vrijSlot = vrijSlot;
-	}
-
-	public Long getAfspraakId()
-	{
-		return afspraakId;
-	}
-
-	public void setAfspraakId(Long afspraakId)
-	{
-		this.afspraakId = afspraakId;
-	}
-
-	public Long getClientId()
-	{
-		return clientId;
-	}
-
-	public void setClientId(Long clientId)
-	{
-		this.clientId = clientId;
-	}
 }

@@ -52,7 +52,7 @@ public interface MammaBaseFactory
 		MammaVerzettenReden verzettenReden);
 
 	MammaAfspraak maakAfspraak(MammaScreeningRonde ronde, MammaCapaciteitBlok capaciteitBlok, Date vanaf, MammaStandplaatsPeriode standplaatsPeriode,
-		MammaVerzettenReden verzettenReden, boolean notificeerBetrokkenSe, boolean stuurBerichtNaarSectra, boolean isGeforceerdeAfspraak, SmsStatus smsStatus);
+		MammaVerzettenReden verzettenReden, boolean notificeerBetrokkenSe, boolean stuurBerichtNaarSectra, boolean isGeforceerdeAfspraak, SmsStatus smsStatus, String icalUid);
 
 	MammaUitstel maakUitstel(MammaScreeningRonde screeningRonde, MammaStandplaats standplaats, Date streefDatum, MammaUitstelReden uitstelReden);
 

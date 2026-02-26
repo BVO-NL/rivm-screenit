@@ -29,7 +29,6 @@ import nl.rivm.screenit.model.AbstractHoudbaarheid;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
@@ -100,7 +99,7 @@ public abstract class HoudbaarheidEditPage<H extends AbstractHoudbaarheid> exten
 			{
 				var nu = currentDateSupplier.getLocalDateTime();
 				H vervalDatum = model.getObject();
-				if (houdbaarheidService.overlaptBestaandeReeks(ModelProxyHelper.deproxy(vervalDatum)))
+				if (houdbaarheidService.overlaptBestaandeReeks(vervalDatum))
 				{
 					ScreenitSession.get().error(getString("error.overlappendereeks"));
 				}

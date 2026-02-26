@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import nl.rivm.screenit.Constants;
-import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
-import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.main.web.gebruiker.clienten.agenda.MammaAfspraakPanel;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContactActiePanel;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.ClientContactPanel;
@@ -34,15 +32,17 @@ import nl.rivm.screenit.main.web.gebruiker.clienten.contact.ClientContactPanel.C
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActie;
 import nl.rivm.screenit.model.ClientContactActieType;
+import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
+import nl.rivm.screenit.util.EnumStringUtil;
 import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.hibernate.Hibernate;
 
 public class MammaClientContactAfspraakWijzigenPanel extends AbstractClientContactActiePanel<ClientContactActie>
 {
@@ -65,7 +65,7 @@ public class MammaClientContactAfspraakWijzigenPanel extends AbstractClientConta
 			@Override
 			public void verzetten(AjaxRequestTarget target, MammaAfspraak afspraak)
 			{
-				afspraak = (MammaAfspraak) HibernateHelper.deproxy(ModelProxyHelper.deproxy(afspraak));
+				afspraak = (MammaAfspraak) Hibernate.unproxy(ModelProxyHelper.deproxy(afspraak));
 				MammaClientAfspraakVerzettenPanel newAfspraakWijzigenPanel = new MammaClientAfspraakVerzettenPanel("afspraakWijzigenPanel", afspraak);
 				newAfspraakWijzigenPanel.setOutputMarkupId(true);
 
@@ -77,7 +77,7 @@ public class MammaClientContactAfspraakWijzigenPanel extends AbstractClientConta
 			@Override
 			public void uitstellen(AjaxRequestTarget target, MammaAfspraak afspraak)
 			{
-				afspraak = (MammaAfspraak) HibernateHelper.deproxy(ModelProxyHelper.deproxy(afspraak));
+				afspraak = (MammaAfspraak) Hibernate.unproxy(ModelProxyHelper.deproxy(afspraak));
 				MammaClientAfspraakUitstellenPanel newAfspraakWijzigenPanel = new MammaClientAfspraakUitstellenPanel("afspraakWijzigenPanel", afspraak);
 				newAfspraakWijzigenPanel.setOutputMarkupId(true);
 
@@ -89,7 +89,6 @@ public class MammaClientContactAfspraakWijzigenPanel extends AbstractClientConta
 			@Override
 			public void afmelden(AjaxRequestTarget target, MammaAfspraak afspraak)
 			{
-				afspraak = (MammaAfspraak) HibernateHelper.deproxy(ModelProxyHelper.deproxy(afspraak));
 				target.appendJavaScript(
 					"$(\"label:contains('" + getString(EnumStringUtil.getPropertyString(ClientContactActieType.MAMMA_AFMELDEN)) + "') input:checkbox\").trigger('click')");
 			}
@@ -99,8 +98,8 @@ public class MammaClientContactAfspraakWijzigenPanel extends AbstractClientConta
 		clientContactPanelCreateContext.bkVanuitPlanning = extraPanelParams.stream().anyMatch(p -> Constants.CONTACT_EXTRA_PARAMETER_VANUIT_BK_PLANNING.equals(p.toString()));
 		if (extraPanelParams.size() > 1)
 		{
-			MammaAfspraak afspraak = (MammaAfspraak) extraPanelParams.stream().filter(p -> p instanceof MammaAfspraak).findFirst().orElse(null);
-			MammaAfspraakStatus afspraakStatus = (MammaAfspraakStatus) extraPanelParams.stream().filter(p -> p instanceof MammaAfspraakStatus).findFirst().orElse(null);
+			MammaAfspraak afspraak = (MammaAfspraak) extraPanelParams.stream().filter(MammaAfspraak.class::isInstance).findFirst().orElse(null);
+			MammaAfspraakStatus afspraakStatus = (MammaAfspraakStatus) extraPanelParams.stream().filter(MammaAfspraakStatus.class::isInstance).findFirst().orElse(null);
 
 			switch (afspraakStatus)
 			{

@@ -33,9 +33,7 @@ import nl.rivm.screenit.model.cervix.enums.CervixTariefType;
 import nl.rivm.screenit.model.cervix.facturatie.CervixLabTarief;
 import nl.rivm.screenit.model.cervix.facturatie.CervixTarief;
 import nl.rivm.screenit.util.cervix.CervixTariefUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.input.validator.DependantDateValidator;
 
@@ -110,7 +108,7 @@ public abstract class CervixLaboratoriumIndexerenPopupPanel extends GenericPanel
 			{
 				try
 				{
-					var nieuweTarief = (CervixTarief) HibernateHelper.deproxy(ModelProxyHelper.deproxy(form.getModelObject()));
+					var nieuweTarief = (CervixTarief) form.getModelObject();
 					var melding = betalingService.toevoegenIndexatieTarief(nieuweTarief, ScreenitSession.get().getIngelogdAccount());
 					opslaan(target, melding);
 				}

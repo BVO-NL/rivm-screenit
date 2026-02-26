@@ -24,6 +24,8 @@ package nl.rivm.screenit.main.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
+
 import nl.rivm.screenit.main.service.VerslagService;
 import nl.rivm.screenit.model.BerichtZoekFilter;
 import nl.rivm.screenit.model.berichten.Verslag;
@@ -49,7 +51,6 @@ import nl.rivm.screenit.specification.colon.ColonVerslagSpecification;
 import nl.rivm.screenit.specification.mamma.MammaFollowUpVerslagSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -63,32 +64,24 @@ import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.hee
 import static nl.rivm.screenit.specification.colon.ColonVerslagSpecification.heeftTypeInPaVerslag;
 
 @Service
+@RequiredArgsConstructor
 public class VerslagServiceImpl implements VerslagService
 {
+	private final BerichtToBatchService cdaBerichtToBatchService;
 
-	@Autowired
-	private BerichtToBatchService cdaBerichtToBatchService;
+	private final BaseVerslagService baseVerslagService;
 
-	@Autowired
-	private BaseVerslagService baseVerslagService;
+	private final ColonMdlVerslagRepository mdlVerslagRepository;
 
-	@Autowired
-	private ColonMdlVerslagRepository mdlVerslagRepository;
+	private final OntvangenCdaBerichtRepository ontvangenCdaBerichtRepository;
 
-	@Autowired
-	private OntvangenCdaBerichtRepository ontvangenCdaBerichtRepository;
+	private final ColonPaVerslagRepository paVerslagRepository;
 
-	@Autowired
-	private ColonPaVerslagRepository paVerslagRepository;
+	private final CervixCytologieVerslagRepository cervixCytologieVerslagRepository;
 
-	@Autowired
-	private CervixCytologieVerslagRepository cervixCytologieVerslagRepository;
+	private final MammaFollowUpVerslagRepository mammaVerslagRepository;
 
-	@Autowired
-	private MammaFollowUpVerslagRepository mammaVerslagRepository;
-
-	@Autowired
-	private ColonVerslagRepository colonVerslagRepository;
+	private final ColonVerslagRepository colonVerslagRepository;
 
 	@Override
 	public List<OntvangenCdaBericht> zoekBerichten(BerichtZoekFilter filter, long first, long count, String property, boolean ascending)

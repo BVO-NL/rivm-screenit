@@ -56,6 +56,7 @@ import nl.rivm.screenit.util.EntityAuditUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -150,7 +151,7 @@ public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheid
 	public List<MammaScreeningsEenheid> getActieveScreeningsEenhedenVoorBeoordelingsEenheid(BeoordelingsEenheid beoordelingsEenheid)
 	{
 		var zoekObject = new MammaScreeningsEenheid();
-		var be = hibernateService.deproxy(beoordelingsEenheid);
+		var be = (BeoordelingsEenheid) Hibernate.unproxy(beoordelingsEenheid);
 		zoekObject.setBeoordelingsEenheid(be);
 		zoekObject.setActief(true);
 		return zoekScreeningsEenheden(zoekObject, null, -1, -1, Sort.by(MammaScreeningsEenheid_.NAAM));

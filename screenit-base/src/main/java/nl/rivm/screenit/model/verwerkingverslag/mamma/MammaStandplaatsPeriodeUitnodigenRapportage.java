@@ -49,7 +49,7 @@ public class MammaStandplaatsPeriodeUitnodigenRapportage extends AbstractHiberna
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	private MammaStandplaatsPeriode standplaatsPeriode;
 
-	@Column
+	@Column(nullable = false)
 	@Temporal(TemporalType.DATE)
 	private Date uitnodigenTotEnMet;
 

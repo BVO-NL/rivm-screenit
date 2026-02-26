@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.annotation.Nullable;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -117,6 +119,9 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 	private final OrganisatieParameterService organisatieParameterService;
 
 	private final ICurrentDateSupplier currentDateSupplier;
+
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Override
 	@Transactional
@@ -359,7 +364,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 		}
 
 		var vanaf = afspraakslot.getVanaf();
-		var origAfspraakslot = EntityAuditUtil.getPreviousVersionOfEntity(afspraakslot, hibernateService.getHibernateSession());
+		var origAfspraakslot = EntityAuditUtil.getPreviousVersionOfEntity(afspraakslot, entityManager);
 		if (origAfspraakslot == null)
 		{
 			return;

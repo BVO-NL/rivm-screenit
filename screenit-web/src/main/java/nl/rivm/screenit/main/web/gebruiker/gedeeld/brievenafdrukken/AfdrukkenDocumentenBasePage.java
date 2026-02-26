@@ -58,7 +58,6 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.model.mamma.MammaMergedBrieven;
 import nl.rivm.screenit.model.project.ProjectMergedBrieven;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.Component;
@@ -77,6 +76,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 import static nl.rivm.screenit.main.util.WicketSpringDataUtil.toSpringSort;
@@ -232,7 +232,7 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 			@Override
 			public void populateItem(Item<ICellPopulator<MB>> item, String componentId, IModel<MB> rowModel)
 			{
-				MergedBrieven mBrieven = (MergedBrieven) HibernateHelper.deproxy(rowModel.getObject());
+				MergedBrieven mBrieven = (MergedBrieven) Hibernate.unproxy(rowModel.getObject());
 				if (mBrieven.getControle())
 				{
 					SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");

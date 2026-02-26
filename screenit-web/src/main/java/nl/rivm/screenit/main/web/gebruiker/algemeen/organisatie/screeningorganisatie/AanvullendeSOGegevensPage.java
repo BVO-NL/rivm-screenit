@@ -52,7 +52,6 @@ import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.GemeenteService;
 import nl.rivm.screenit.service.OrganisatieService;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.organisatie.model.Adres;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
@@ -72,6 +71,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.StringValidator;
+import org.hibernate.Hibernate;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(
@@ -241,11 +241,11 @@ public class AanvullendeSOGegevensPage extends OrganisatieBeheer
 				var retouradres = new ZASRetouradres();
 				retouradres.setLaboratorium(lab);
 				retouradres.setAdres(new Adres());
-				retouradres.setRegio((ScreeningOrganisatie) HibernateHelper.deproxy(organisatie));
+				retouradres.setRegio((ScreeningOrganisatie) Hibernate.unproxy(organisatie));
 				retouradressen.add(retouradres);
 			}
 		}
-		var retouradressenView = new ListView<ZASRetouradres>("retouradressen", retouradressenModel)
+		var retouradressenView = new ListView<>("retouradressen", retouradressenModel)
 		{
 			@Override
 			protected void populateItem(ListItem<ZASRetouradres> item)

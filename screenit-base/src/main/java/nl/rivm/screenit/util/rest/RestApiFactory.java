@@ -98,7 +98,7 @@ public final class RestApiFactory
 		var builder = RestClient.builder().requestFactory(requestFactory);
 		if (technischeBerichtenLoggingSaverService != null)
 		{
-			builder.requestInterceptor(new TechnischeLoggingRequestOutInterceptor(technischeBerichtenLoggingSaverService));
+			builder.requestInterceptor(new InpakcentrumTechnischeLoggingRequestOutInterceptor(technischeBerichtenLoggingSaverService));
 		}
 		return builder.build();
 	}

@@ -65,7 +65,6 @@ import nl.rivm.screenit.model.mamma.enums.MammaLezingRedenenFotobesprekingMbber;
 import nl.rivm.screenit.model.mamma.enums.MammaLezingRedenenFotobesprekingRadioloog;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -214,8 +213,8 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 						&& lezing.getBeperktBeoordeelbaarReden() == null
 						&& MammaBeoordelingOpschortenReden.NIET_OPSCHORTEN.equals(beoordeling.getOpschortReden()))
 					{
-						Client client = baseBeoordelingService.getClientVanBeoordeling(ModelProxyHelper.deproxy(beoordelingPanel.getModelObject()));
-						lezingService.logPopupPreBirads(client, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), ModelProxyHelper.deproxy(lezing),
+						Client client = baseBeoordelingService.getClientVanBeoordeling(beoordelingPanel.getModelObject());
+						lezingService.logPopupPreBirads(client, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), lezing,
 							prePopupBiradsWaardeLinks, prePopupBiradsWaardeRechts);
 					}
 					beoordelingPanel.lezingOpslaan(MammaBeoordelenLezingPanel.this.getModel(), target, laesieDtos.getObject());

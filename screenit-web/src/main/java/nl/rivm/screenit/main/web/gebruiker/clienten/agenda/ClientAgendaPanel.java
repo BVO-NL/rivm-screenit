@@ -37,7 +37,6 @@ import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -46,6 +45,7 @@ import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 
 public class ClientAgendaPanel extends GenericPanel<Client>
 {
@@ -119,7 +119,7 @@ public class ClientAgendaPanel extends GenericPanel<Client>
 			@Override
 			public void verzetten(AjaxRequestTarget target, MammaAfspraak afspraak)
 			{
-				afspraak = (MammaAfspraak) HibernateHelper.deproxy(ModelProxyHelper.deproxy(afspraak));
+				afspraak = (MammaAfspraak) Hibernate.unproxy(ModelProxyHelper.deproxy(afspraak));
 				List<Object> extraParameters = new ArrayList<>();
 				extraParameters.add(afspraak);
 				extraParameters.add(MammaAfspraakStatus.GEPLAND);
@@ -130,7 +130,7 @@ public class ClientAgendaPanel extends GenericPanel<Client>
 			@Override
 			public void uitstellen(AjaxRequestTarget target, MammaAfspraak afspraak)
 			{
-				afspraak = (MammaAfspraak) HibernateHelper.deproxy(ModelProxyHelper.deproxy(afspraak));
+				afspraak = (MammaAfspraak) Hibernate.unproxy(ModelProxyHelper.deproxy(afspraak));
 				List<Object> extraParameters = new ArrayList<>();
 				extraParameters.add(afspraak);
 				extraParameters.add(MammaAfspraakStatus.UITGESTELD);

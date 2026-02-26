@@ -21,6 +21,8 @@ package nl.rivm.screenit.main.service.cervix.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.UnaryOperator;
@@ -28,6 +30,7 @@ import java.util.function.UnaryOperator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.main.exception.CervixMonsterZoekenExceptie;
 import nl.rivm.screenit.main.repository.cervix.CervixMonsterRepository;
 import nl.rivm.screenit.main.service.cervix.CervixUitnodigingService;
 import nl.rivm.screenit.model.Client;
@@ -64,13 +67,13 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 	private final CervixMonsterRepository monsterRepository;
 
 	@Override
-	public String zoekMonsters(Organisatie ingelogdNamensOrganisatie, String monsterId, String bsn, Date geboortedatum, List<CervixUitnodiging> uitnodigingen,
-		UnaryOperator<String> getString)
+	public List<CervixUitnodiging> zoekMonsters(Organisatie ingelogdNamensOrganisatie, String monsterId, String bsn, Date geboortedatum, UnaryOperator<String> getString)
+		throws CervixMonsterZoekenExceptie
 	{
 		var aantalIngevuldeVelden = (StringUtils.isBlank(monsterId) ? 0 : 1) + (StringUtils.isBlank(bsn) ? 0 : 1) + (geboortedatum == null ? 0 : 1);
 		if (aantalIngevuldeVelden < 2)
 		{
-			return getString.apply("minstens.2.velden");
+			throw new CervixMonsterZoekenExceptie(getString.apply("minstens.2.velden"));
 		}
 
 		if (StringUtils.isNotBlank(monsterId))
@@ -78,44 +81,41 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 			var melding = valideerIngevuldMonsterId(monsterId, ingelogdNamensOrganisatie, getString);
 			if (melding != null)
 			{
-				return melding;
+				throw new CervixMonsterZoekenExceptie(melding);
 			}
 		}
 		if (StringUtils.isNotBlank(bsn) && !StringUtils.isNumeric(bsn))
 		{
-			return getString.apply("bsn.geen.nummer");
+			throw new CervixMonsterZoekenExceptie(getString.apply("bsn.geen.nummer"));
 		}
 
 		if (StringUtils.isNotBlank(monsterId))
 		{
-			return zoekUitnodigingOpBasisVanMonsterId(monsterId, bsn, geboortedatum, ingelogdNamensOrganisatie, uitnodigingen, getString);
+			return zoekUitnodigingOpBasisVanMonsterId(monsterId, bsn, geboortedatum, ingelogdNamensOrganisatie, getString);
 		}
 
-		return zoekOpBasisVanBsnEnGeboortedatum(ingelogdNamensOrganisatie, bsn, geboortedatum, uitnodigingen, getString);
+		return zoekOpBasisVanBsnEnGeboortedatum(ingelogdNamensOrganisatie, bsn, geboortedatum, getString);
 	}
 
 	@Nullable
-	private String zoekOpBasisVanBsnEnGeboortedatum(Organisatie ingelogdNamensOrganisatie, String bsn, Date geboortedatum, List<CervixUitnodiging> uitnodigingen,
-		UnaryOperator<String> getString)
+	private List<CervixUitnodiging> zoekOpBasisVanBsnEnGeboortedatum(Organisatie ingelogdNamensOrganisatie, String bsn, Date geboortedatum, UnaryOperator<String> getString)
+		throws CervixMonsterZoekenExceptie
 	{
 		var client = clientService.getClientByBsn(bsn);
 		if (client == null)
 		{
-			return getString.apply("bsn.onbekend");
+			throw new CervixMonsterZoekenExceptie(getString.apply("bsn.onbekend"));
 		}
 		else if (!client.getPersoon().getGeboortedatum().equals(geboortedatum))
 		{
-			return getString.apply("geen.met.bsn.en.geboortedatum");
+			throw new CervixMonsterZoekenExceptie(getString.apply("geen.met.bsn.en.geboortedatum"));
 		}
-		else
-		{
-			verzamelUitnodigingenUitLaatsteRondeDieHetLabMagZien(ingelogdNamensOrganisatie, uitnodigingen, client);
-		}
-		return null;
+		return verzamelUitnodigingenUitLaatsteRondeDieHetLabMagZien(ingelogdNamensOrganisatie, client);
 	}
 
-	private void verzamelUitnodigingenUitLaatsteRondeDieHetLabMagZien(Organisatie ingelogdNamensOrganisatie, List<CervixUitnodiging> uitnodigingen, Client client)
+	private List<CervixUitnodiging> verzamelUitnodigingenUitLaatsteRondeDieHetLabMagZien(Organisatie ingelogdNamensOrganisatie, Client client)
 	{
+		var uitnodigingen = new ArrayList<CervixUitnodiging>();
 		if (client.getCervixDossier() != null && client.getCervixDossier().getLaatsteScreeningRonde() != null
 			&& client.getCervixDossier().getLaatsteScreeningRonde().getUitnodigingen() != null)
 		{
@@ -128,6 +128,7 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 				}
 			}
 		}
+		return uitnodigingen;
 	}
 
 	private String valideerIngevuldMonsterId(String monsterId, Organisatie ingelogdNamensOrganisatie, UnaryOperator<String> getString)
@@ -156,29 +157,28 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 		return null;
 	}
 
-	private String zoekUitnodigingOpBasisVanMonsterId(String monsterId, String bsn, Date geboortedatum, Organisatie ingelogdNamensOrganisatie,
-		List<CervixUitnodiging> uitnodigingen, UnaryOperator<String> getString)
+	private List<CervixUitnodiging> zoekUitnodigingOpBasisVanMonsterId(String monsterId, String bsn, Date geboortedatum, Organisatie ingelogdNamensOrganisatie,
+		UnaryOperator<String> getString) throws CervixMonsterZoekenExceptie
 	{
 		var monster = monsterService.getMonster(monsterId).orElse(null);
 		if (monster == null)
 		{
-			return getString.apply("geen.met.monster.id");
+			throw new CervixMonsterZoekenExceptie(getString.apply("geen.met.monster.id"));
 		}
 		var persoon = monster.getUitnodiging().getScreeningRonde().getDossier().getClient().getPersoon();
 		if (StringUtils.isNotBlank(bsn) && !bsn.equals(persoon.getBsn()))
 		{
-			return getString.apply("geen.met.monster.id.en.bsn");
+			throw new CervixMonsterZoekenExceptie(getString.apply("geen.met.monster.id.en.bsn"));
 		}
 		if (geboortedatum != null && !geboortedatum.equals(persoon.getGeboortedatum()))
 		{
-			return getString.apply("geen.met.monster.id.en.geboortedatum");
+			throw new CervixMonsterZoekenExceptie(getString.apply("geen.met.monster.id.en.geboortedatum"));
 		}
 		if (!monsterService.magOrganisatieMonsterInzien(ingelogdNamensOrganisatie, monster))
 		{
-			return getString.apply("laboratorium.mag.monster.niet.inzien");
+			throw new CervixMonsterZoekenExceptie(getString.apply("laboratorium.mag.monster.niet.inzien"));
 		}
-		uitnodigingen.add(monster.getUitnodiging());
-		return null;
+		return new ArrayList<>(Collections.singletonList(monster.getUitnodiging()));
 	}
 
 	@Override

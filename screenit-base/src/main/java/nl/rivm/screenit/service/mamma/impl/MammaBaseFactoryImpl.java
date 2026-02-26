@@ -239,7 +239,7 @@ public class MammaBaseFactoryImpl implements MammaBaseFactory
 	@Override
 	public MammaAfspraak maakAfspraak(MammaScreeningRonde screeningRonde, MammaCapaciteitBlok capaciteitBlok, Date vanaf, MammaStandplaatsPeriode standplaatsPeriode,
 		MammaVerzettenReden verzettenReden, boolean notificeerBetrokkenSe, boolean stuurBerichtNaarSectra,
-		boolean isGeforceerdeAfspraak, SmsStatus smsStatus)
+		boolean isGeforceerdeAfspraak, SmsStatus smsStatus, String icalUid)
 	{
 		hibernateService.getHibernateSession().setFlushMode(FlushModeType.COMMIT);
 		var postcode = ApplicationContextProvider.getApplicationContext().getBean(ClientService.class).getGbaPostcode(screeningRonde.getDossier().getClient());
@@ -258,6 +258,7 @@ public class MammaBaseFactoryImpl implements MammaBaseFactory
 		afspraak.setOpkomstkans(opkomstkans);
 		afspraak.setGeforceerdeAfspraak(isGeforceerdeAfspraak);
 		afspraak.setSmsStatus(smsStatus);
+		afspraak.setIcalUid(icalUid);
 		opkomstkans.setAfspraak(afspraak);
 
 		var laatsteUitnodiging = screeningRonde.getLaatsteUitnodiging();

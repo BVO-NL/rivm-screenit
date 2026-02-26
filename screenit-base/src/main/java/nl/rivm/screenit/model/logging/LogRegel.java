@@ -26,6 +26,7 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -58,9 +59,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class LogRegel extends AbstractHibernateObject
 {
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private LogGebeurtenis logGebeurtenis;
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	private Date gebeurtenisDatum;
 
 	@ManyToOne(fetch = FetchType.LAZY)

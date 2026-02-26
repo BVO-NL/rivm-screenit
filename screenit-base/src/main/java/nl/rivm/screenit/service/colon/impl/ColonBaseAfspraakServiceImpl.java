@@ -90,11 +90,11 @@ import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PropertyComparator;
 import org.springframework.data.domain.Sort;
@@ -502,7 +502,7 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 
 	private void setStatus(ColonIntakeAfspraak nieuweAfspraak, Account account, ColonIntakeAfspraak laatsteAfspraak, boolean verwezenMedischeRedenenDoorInfolijn)
 	{
-		account = (Account) HibernateHelper.deproxy(account);
+		account = (Account) Hibernate.unproxy(account);
 		var lijktOpEenVerwijzing = laatsteAfspraak.getConclusie() == null
 			&& laatsteAfspraak.getVanaf().isBefore(currentDateSupplier.getLocalDateTime())
 			&& account instanceof OrganisatieMedewerker
@@ -874,14 +874,14 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 	@Override
 	public ColonIntakeAfspraak zoekBevestigdeDoorverwijzendeAfspraak(ColonIntakeAfspraak afspraak)
 	{
-		var oudeAfspraak = (ColonIntakeAfspraak) HibernateHelper.deproxy(afspraak.getOudeAfspraak());
+		var oudeAfspraak = (ColonIntakeAfspraak) Hibernate.unproxy(afspraak.getOudeAfspraak());
 		while (oudeAfspraak != null)
 		{
 			if (isAfspraakMedischeVerwijzing(oudeAfspraak))
 			{
 				return oudeAfspraak;
 			}
-			oudeAfspraak = (ColonIntakeAfspraak) HibernateHelper.deproxy(oudeAfspraak.getOudeAfspraak());
+			oudeAfspraak = (ColonIntakeAfspraak) Hibernate.unproxy(oudeAfspraak.getOudeAfspraak());
 		}
 		return null;
 	}

@@ -59,7 +59,6 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.util.NaamUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.Component;
@@ -251,8 +250,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 
 						OrganisatieMedewerker ingelogdeOrganisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 						conclusie.setOrganisatieMedewerker(ingelogdeOrganisatieMedewerker);
-						dossierService.conclusieOpslaan(ModelProxyHelper.deproxy(afspraak), vervolgonderzoekDto, ingelogdeOrganisatieMedewerker,
-							origConclusie);
+						dossierService.conclusieOpslaan(afspraak, vervolgonderzoekDto, ingelogdeOrganisatieMedewerker, origConclusie);
 
 						laatMeldingenZien(afspraak);
 

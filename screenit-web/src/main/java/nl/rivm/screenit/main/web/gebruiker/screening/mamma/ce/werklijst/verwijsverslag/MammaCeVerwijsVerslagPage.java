@@ -46,7 +46,6 @@ import nl.rivm.screenit.repository.mamma.MammaBeoordelingRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.rivm.screenit.service.mamma.MammaHuisartsService;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.Component;
@@ -197,7 +196,7 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				beoordelingService.verslagLaterGoedkeurenDoorCE(ModelProxyHelper.deproxy(beoordelingModel.getObject()), getIngelogdeOrganisatieMedewerker());
+				beoordelingService.verslagLaterGoedkeurenDoorCE(beoordelingModel.getObject(), getIngelogdeOrganisatieMedewerker());
 				ScreenitSession.get().info(getString("verslag.goedkeuring.opgeschort"));
 				setResponsePage(MammaCeVerwijsVerslagenWerklijstPage.class);
 			}
@@ -235,7 +234,7 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				MammaBeoordeling beoordeling = ModelProxyHelper.deproxy(beoordelingModel.getObject());
+				MammaBeoordeling beoordeling = beoordelingModel.getObject();
 				MammaScreeningRonde screeningRonde = baseBeoordelingService.getScreeningRonde(beoordeling);
 				beoordelingService.gunstigeUitslagMetNevenbevindingAfronden(beoordeling, rondeVoorAlternatieveHuisartsModel.getObject().getHuisarts(),
 					getIngelogdeOrganisatieMedewerker());
@@ -257,7 +256,7 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				MammaBeoordeling beoordeling = ModelProxyHelper.deproxy(beoordelingModel.getObject());
+				MammaBeoordeling beoordeling = beoordelingModel.getObject();
 
 				beoordeling.setStatus(beoordelingRepository.vindBeoordelingStatusVanId(beoordeling.getId()));
 

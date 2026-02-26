@@ -60,7 +60,6 @@ import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.util.ProjectUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.model.DetachableListModel;
@@ -79,6 +78,7 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 public class ClientInzienDossierPanel<D extends Dossier<?, ?>, A extends Afmelding<?, ?, ?>, B extends ClientBrief<?, ?, ?>> extends GenericPanel<D>
@@ -430,7 +430,7 @@ public class ClientInzienDossierPanel<D extends Dossier<?, ?>, A extends Afmeldi
 	{
 		StringBuilder omschrijving = new StringBuilder();
 		if (Bevolkingsonderzoek.COLON.equals(afmelding.getBevolkingsonderzoek())
-			&& ColonAfmeldingReden.ONTERECHT.equals(((ColonAfmelding) HibernateHelper.deproxy(afmelding)).getReden()))
+			&& ColonAfmeldingReden.ONTERECHT.equals(((ColonAfmelding) Hibernate.unproxy(afmelding)).getReden()))
 		{
 			omschrijving.append(getString("onterechte_afmelding"));
 		}
@@ -471,7 +471,7 @@ public class ClientInzienDossierPanel<D extends Dossier<?, ?>, A extends Afmeldi
 	{
 		StringBuilder omschrijving = new StringBuilder();
 		if (Bevolkingsonderzoek.COLON.equals(afmelding.getBevolkingsonderzoek())
-			&& ColonAfmeldingReden.ONTERECHT.equals(((ColonAfmelding) HibernateHelper.deproxy(afmelding)).getReden()))
+			&& ColonAfmeldingReden.ONTERECHT.equals(((ColonAfmelding) Hibernate.unproxy(afmelding)).getReden()))
 		{
 			omschrijving.append(getString("onterechteheraanmelding"));
 		}

@@ -49,9 +49,7 @@ import nl.rivm.screenit.service.cervix.impl.CervixVervolg;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.util.NaamUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -77,6 +75,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.StringValidator;
+import org.hibernate.Hibernate;
 import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 
 import static nl.rivm.screenit.model.cervix.enums.signaleringen.CervixLabformulierSignalering.AFNAMEDATUM_NIET_OF_VERKEERD_OVERGENOMEN_IN_SCREENIT;
@@ -445,7 +444,7 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 				{
 					labformulierService.valideerLabformulier(labformulier);
 
-					labformulier = ModelProxyHelper.deproxy((CervixLabformulier) HibernateHelper.deproxy(labformulier));
+					labformulier = (CervixLabformulier) Hibernate.unproxy(labformulier);
 					String diff = labformulierService.koppelEnBewaarLabformulier(labformulier);
 					setModel(ModelUtil.ccModel(labformulier));
 

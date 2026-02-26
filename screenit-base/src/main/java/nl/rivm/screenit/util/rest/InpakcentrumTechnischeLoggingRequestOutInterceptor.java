@@ -38,11 +38,11 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 
 @Slf4j
-public class TechnischeLoggingRequestOutInterceptor implements ClientHttpRequestInterceptor
+public class InpakcentrumTechnischeLoggingRequestOutInterceptor implements ClientHttpRequestInterceptor
 {
 	private final TechnischeBerichtenLoggingSaverService technischeBerichtenLoggingSaverService;
 
-	public TechnischeLoggingRequestOutInterceptor(TechnischeBerichtenLoggingSaverService technischeBerichtenLoggingSaverService)
+	public InpakcentrumTechnischeLoggingRequestOutInterceptor(TechnischeBerichtenLoggingSaverService technischeBerichtenLoggingSaverService)
 	{
 		this.technischeBerichtenLoggingSaverService = technischeBerichtenLoggingSaverService;
 	}
@@ -54,9 +54,16 @@ public class TechnischeLoggingRequestOutInterceptor implements ClientHttpRequest
 		long exchangeId = 0L;
 		try
 		{
+			var requestBody = new String(body, StandardCharsets.UTF_8);
+
+			if (requestBody.contains("\"datatype\":\"zip\""))
+			{
+				requestBody = requestBody.replaceAll("\"content\":\"[^\"]*\"", "\"content\":\"<omitted base64encode zip>\"");
+			}
+
 			exchangeId = technischeBerichtenLoggingSaverService.logRequest("REST_REQ_OUT",
 				"Method:" + request.getMethod() + "|URI:" + request.getURI(),
-				new String(body, StandardCharsets.UTF_8));
+				requestBody);
 			var response = execution.execute(request, body);
 			responseCopy = new BufferingClientHttpResponseWrapper(response);
 			var responseBody = "";

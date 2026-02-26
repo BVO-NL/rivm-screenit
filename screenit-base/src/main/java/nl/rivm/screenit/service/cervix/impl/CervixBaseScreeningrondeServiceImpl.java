@@ -64,11 +64,11 @@ import nl.rivm.screenit.specification.cervix.CervixUitnodigingSpecification;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -289,7 +289,7 @@ public class CervixBaseScreeningrondeServiceImpl implements CervixBaseScreeningr
 				switch (uitnodiging.getMonsterType())
 				{
 				case UITSTRIJKJE:
-					var uitstrijkje = (CervixUitstrijkje) HibernateHelper.deproxy(monster);
+					var uitstrijkje = (CervixUitstrijkje) Hibernate.unproxy(monster);
 					if (uitstrijkje != null)
 					{
 						if (uitstrijkje.getLabformulier() != null)
@@ -308,7 +308,7 @@ public class CervixBaseScreeningrondeServiceImpl implements CervixBaseScreeningr
 					}
 					break;
 				case ZAS:
-					var zas = (CervixZas) HibernateHelper.deproxy(monster);
+					var zas = (CervixZas) Hibernate.unproxy(monster);
 					hibernateService.delete(zas);
 					break;
 				}
@@ -350,7 +350,7 @@ public class CervixBaseScreeningrondeServiceImpl implements CervixBaseScreeningr
 				switch (uitnodiging.getMonsterType())
 				{
 				case UITSTRIJKJE:
-					var uitstrijkje = (CervixUitstrijkje) HibernateHelper.deproxy(monster);
+					var uitstrijkje = (CervixUitstrijkje) Hibernate.unproxy(monster);
 					var labformulier = uitstrijkje.getLabformulier();
 					if (uitstrijkje.getUitstrijkjeStatus() != CervixUitstrijkjeStatus.NIET_ONTVANGEN
 						|| labformulier != null && (labformulier.getStatus() == CervixLabformulierStatus.GECONTROLEERD
@@ -360,7 +360,7 @@ public class CervixBaseScreeningrondeServiceImpl implements CervixBaseScreeningr
 					}
 					break;
 				case ZAS:
-					if (((CervixZas) HibernateHelper.deproxy(monster)).getZasStatus() != CervixZasStatus.VERSTUURD)
+					if (((CervixZas) Hibernate.unproxy(monster)).getZasStatus() != CervixZasStatus.VERSTUURD)
 					{
 						return true; 
 					}

@@ -41,7 +41,6 @@ public class KwaliteitscontroleLabBasePage extends ColonScreeningBasePage
 	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
 		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
-		contextMenuItems.add(new MedewerkerMenuItem("label.tab.colonscreening.kwaliteitscontrole.batchoverzicht", KwaliteitscontroleBatchOverzichtPage.class));
 		contextMenuItems.add(new MedewerkerMenuItem("label.tab.colonscreening.kwaliteitscontrole.kwalteitscontroleaanmaken", KwaliteitscontroleLabAanmakenPage.class));
 		return contextMenuItems;
 	}

@@ -51,6 +51,7 @@ public abstract class Uitnodiging<SR extends ScreeningRonde<?, ?, ?, ?>> extends
 	private Date creatieDatum;
 
 	@Temporal(TemporalType.DATE)
+	@Column(nullable = false)
 	private Date uitnodigingsDatum;
 
 	public Uitnodiging()

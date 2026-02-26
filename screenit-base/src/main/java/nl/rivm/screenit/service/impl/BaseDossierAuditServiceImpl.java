@@ -21,112 +21,117 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.util.Date;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.enums.GebeurtenisBron;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.enums.GebeurtenisBron;
 import nl.rivm.screenit.model.envers.ScreenitRevisionEntity;
 import nl.rivm.screenit.service.BaseDossierAuditService;
 import nl.rivm.screenit.util.EntityAuditUtil;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+
 import org.hibernate.envers.query.AuditEntity;
-import org.hibernate.envers.query.AuditQuery;
 import org.hibernate.envers.query.criteria.AuditCriterion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-
 @Service
 @Transactional(propagation = Propagation.SUPPORTS)
 public class BaseDossierAuditServiceImpl implements BaseDossierAuditService
 {
+	@Autowired
+	private HibernateService hibernateService;
 
-    @Autowired
-    private HibernateService hibernateService;
+	@PersistenceContext
+	private EntityManager entityManager;
 
-    @Override
-    public GebeurtenisBron getGebeurtenisBron(ScreenitRevisionEntity revisionEntity, GebeurtenisBron defaultIfNull)
-    {
-        GebeurtenisBron bron;
-        if (revisionEntity == null)
-        {
-            bron = defaultIfNull;
-        }
-        else if (revisionEntity.getClient() != null)
-        {
-            bron = GebeurtenisBron.CLIENT;
-        }
-        else if (revisionEntity.getMedewerker() != null || revisionEntity.getOrganisatieMedewerker() != null)
-        {
-            bron = GebeurtenisBron.MEDEWERKER;
-        }
-        else
-        {
-            bron = GebeurtenisBron.AUTOMATISCH;
-        }
-        return bron;
-    }
+	@Override
+	public GebeurtenisBron getGebeurtenisBron(ScreenitRevisionEntity revisionEntity, GebeurtenisBron defaultIfNull)
+	{
+		GebeurtenisBron bron;
+		if (revisionEntity == null)
+		{
+			bron = defaultIfNull;
+		}
+		else if (revisionEntity.getClient() != null)
+		{
+			bron = GebeurtenisBron.CLIENT;
+		}
+		else if (revisionEntity.getMedewerker() != null || revisionEntity.getOrganisatieMedewerker() != null)
+		{
+			bron = GebeurtenisBron.MEDEWERKER;
+		}
+		else
+		{
+			bron = GebeurtenisBron.AUTOMATISCH;
+		}
+		return bron;
+	}
 
-    @Override
-    public GebeurtenisBron getGebeurtenisBron(ScreenitRevisionEntity revisionEntity)
-    {
-        return getGebeurtenisBron(revisionEntity, null);
-    }
+	@Override
+	public GebeurtenisBron getGebeurtenisBron(ScreenitRevisionEntity revisionEntity)
+	{
+		return getGebeurtenisBron(revisionEntity, null);
+	}
 
-    @Override
-    public ScreenitRevisionEntity getLastRevision(HibernateObject entity, AuditCriterion extraCriteria)
-    {
-        return getLastRevision(entity, extraCriteria, null);
-    }
+	@Override
+	public ScreenitRevisionEntity getLastRevision(HibernateObject entity, AuditCriterion extraCriteria)
+	{
+		return getLastRevision(entity, extraCriteria, null);
+	}
 
-    @Override
-    public ScreenitRevisionEntity getLastRevision(HibernateObject entity, AuditCriterion extraCriteria, Class<? extends Account> accountType)
-    {
-        AuditQuery query = EntityAuditUtil.createQuery(entity, hibernateService.getHibernateSession());
+	@Override
+	public ScreenitRevisionEntity getLastRevision(HibernateObject entity, AuditCriterion extraCriteria, Class<? extends Account> accountType)
+	{
+		var query = EntityAuditUtil.createQuery(entity, entityManager);
 
-        query.addProjection(AuditEntity.revisionNumber().max());
-        if (Client.class.equals(accountType))
-        {
-            query.add(AuditEntity.revisionProperty("client").isNotNull());
-        }
-        if (extraCriteria != null)
-        {
-            query.add(extraCriteria);
-        }
-        Number lastRevision = (Number) query.getSingleResult();
-        ScreenitRevisionEntity revisionEntity = null;
-        if (lastRevision != null)
-        {
-            revisionEntity = hibernateService.get(ScreenitRevisionEntity.class, lastRevision);
-        }
-        return revisionEntity;
-    }
+		query.addProjection(AuditEntity.revisionNumber().max());
+		if (Client.class.equals(accountType))
+		{
+			query.add(AuditEntity.revisionProperty("client").isNotNull());
+		}
+		if (extraCriteria != null)
+		{
+			query.add(extraCriteria);
+		}
+		var lastRevision = (Number) query.getSingleResult();
+		ScreenitRevisionEntity revisionEntity = null;
+		if (lastRevision != null)
+		{
+			revisionEntity = hibernateService.get(ScreenitRevisionEntity.class, lastRevision);
+		}
+		return revisionEntity;
+	}
 
-    @Override
-    public Date getLastRevisionDate(HibernateObject entity, AuditCriterion extraCriteria, Class<? extends Account> accountType)
-    {
-        Date actionDate = null;
-        ScreenitRevisionEntity revisionEntity = getLastRevision(entity, extraCriteria, accountType);
+	@Override
+	public Date getLastRevisionDate(HibernateObject entity, AuditCriterion extraCriteria, Class<? extends Account> accountType)
+	{
+		Date actionDate = null;
+		ScreenitRevisionEntity revisionEntity = getLastRevision(entity, extraCriteria, accountType);
 
-        if (revisionEntity != null && revisionEntity.getTimestamp() > 0)
-        {
-            actionDate = new Date(revisionEntity.getTimestamp());
-        }
-        return actionDate;
-    }
+		if (revisionEntity != null && revisionEntity.getTimestamp() > 0)
+		{
+			actionDate = new Date(revisionEntity.getTimestamp());
+		}
+		return actionDate;
+	}
 
-    @Override
-    public Date getDateForRevisionEntity(ScreenitRevisionEntity revisionEntity)
-    {
-        Date actionDate = null;
-        if (revisionEntity != null && revisionEntity.getTimestamp() > 0)
-        {
-            actionDate = new Date(revisionEntity.getTimestamp());
-        }
-        return actionDate;
-    }
+	@Override
+	public Date getDateForRevisionEntity(ScreenitRevisionEntity revisionEntity)
+	{
+		Date actionDate = null;
+		if (revisionEntity != null && revisionEntity.getTimestamp() > 0)
+		{
+			actionDate = new Date(revisionEntity.getTimestamp());
+		}
+		return actionDate;
+	}
 
 }

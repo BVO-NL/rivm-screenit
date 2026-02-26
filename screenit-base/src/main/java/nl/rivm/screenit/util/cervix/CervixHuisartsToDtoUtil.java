@@ -40,8 +40,8 @@ import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.facturatie.CervixBoekRegel;
 import nl.rivm.screenit.model.cervix.facturatie.CervixVerrichting;
 import nl.rivm.screenit.util.NaamUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,7 +127,7 @@ public class CervixHuisartsToDtoUtil
 			verrichtingDto.getBetalingen().add(betalingDto);
 		}
 
-		CervixUitstrijkje uitstrijkje = (CervixUitstrijkje) HibernateHelper.deproxy(verrichting.getMonster());
+		CervixUitstrijkje uitstrijkje = (CervixUitstrijkje) Hibernate.unproxy(verrichting.getMonster());
 		if (uitstrijkje.getLabformulier() != null)
 		{
 			verrichtingDto.setDatumUitstrijkje(uitstrijkje.getLabformulier().getDatumUitstrijkje());

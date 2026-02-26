@@ -26,7 +26,6 @@ import java.util.Iterator;
 import nl.rivm.screenit.main.service.VerslagService;
 import nl.rivm.screenit.model.BerichtZoekFilter;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
@@ -72,7 +71,7 @@ public class VerwerkteBerichtenOverzichtDataProvider extends SortableDataProvide
 
 	private BerichtZoekFilter getZoekObject()
 	{
-		return ModelProxyHelper.deproxy(ModelUtil.nullSafeGet(filter));
+		return ModelUtil.nullSafeGet(filter);
 	}
 
 }

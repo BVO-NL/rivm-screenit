@@ -55,6 +55,7 @@ public class UploadDocument extends AbstractHibernateObject
 
 	private String path;
 
+	@Column(nullable = false)
 	private String contentType;
 
 	@Transient

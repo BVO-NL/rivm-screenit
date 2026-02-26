@@ -69,7 +69,6 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.SimpleHibernateModel;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -410,7 +409,7 @@ public class CervixBmhkLaboratoriumOverzichtVerrichtingenPage extends Organisati
 			public void populateItem(Item<ICellPopulator<CervixBoekRegel>> cellItem, String componentId, IModel<CervixBoekRegel> rowModel)
 			{
 				CervixBoekRegel boekRegel = rowModel.getObject();
-				CervixLabTarief tarief = (CervixLabTarief) HibernateHelper.deproxy(boekRegel.getTarief());
+				CervixLabTarief tarief = (CervixLabTarief) Hibernate.unproxy(boekRegel.getTarief());
 
 				IModel<BigDecimal> labelModel = new PropertyModel<>(tarief, boekRegel.getVerrichting().getType().getBedragProperty());
 

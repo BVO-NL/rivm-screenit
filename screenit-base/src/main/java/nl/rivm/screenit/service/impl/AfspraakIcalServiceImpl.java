@@ -24,6 +24,7 @@ package nl.rivm.screenit.service.impl;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -32,21 +33,20 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.Attendee;
-import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Created;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.DtStamp;
 import net.fortuna.ical4j.model.property.Location;
-import net.fortuna.ical4j.model.property.Method;
 import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.Sequence;
 import net.fortuna.ical4j.model.property.Uid;
-import net.fortuna.ical4j.model.property.Version;
+import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale;
+import net.fortuna.ical4j.model.property.immutable.ImmutableMethod;
+import net.fortuna.ical4j.model.property.immutable.ImmutableVersion;
 
 import nl.rivm.screenit.service.AfspraakIcalService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -84,32 +84,29 @@ public class AfspraakIcalServiceImpl implements AfspraakIcalService
 		}
 		catch (Exception e)
 		{
-			LOG.error(" Er is iets misgegaan met het generen van een ics bestand {}" + e.getMessage());
+			LOG.error("Er is iets misgegaan met het generen van een ics bestand: {}", e.getMessage());
 		}
 		return Optional.empty();
 	}
 
 	@NotNull
-	private VEvent maakEventAan(LocalDateTime startDatum, LocalDateTime eindDatum, String ontvanger, String locatie, String afspraakId, String omschrijving, String content)
+	private VEvent maakEventAan(LocalDateTime startDatum, LocalDateTime eindDatum, String ontvanger, String locatie, String icalAfspraakId, String omschrijving, String content)
 	{
-		var registry = TimeZoneRegistryFactory.getInstance().createRegistry();
-		var timeZone = registry.getTimeZone(DateUtil.SCREENIT_DEFAULT_ZONE.getId());
-
-		var timeStampStartDatum = createDateTime(startDatum, timeZone);
-		var timeStampEindDatum = createDateTime(eindDatum, timeZone);
-		var timeStampNu = createDateTime(currentDateSupplier.getLocalDateTime(), timeZone);
+		var timeStampStartDatum = createZonedDateTime(startDatum);
+		var timeStampEindDatum = createZonedDateTime(eindDatum);
+		var timeStampNu = createZonedDateTime(currentDateSupplier.getLocalDateTime());
 
 		var event = new VEvent(timeStampStartDatum, timeStampEindDatum, omschrijving);
+		var bestaandeDtStamp = event.getProperty(DtStamp.DTSTAMP);
+		bestaandeDtStamp.ifPresent(event::remove);
 
-		var meetingProperties = event.getProperties();
-		meetingProperties.remove(event.getProperty("DTSTAMP")); 
-		meetingProperties.add(new DtStamp(timeStampNu));
-		meetingProperties.add(new Uid(afspraakId));
-		meetingProperties.add(new Attendee(URI.create(ontvanger)));
-		meetingProperties.add(new Location(locatie));
-		meetingProperties.add(new Description(content));
-		meetingProperties.add(new Sequence(0));
-		meetingProperties.add(new Created(timeStampNu));
+		event.add(new DtStamp(timeStampNu.toInstant()));
+		event.add(new Uid(icalAfspraakId));
+		event.add(new Attendee(URI.create(ontvanger)));
+		event.add(new Location(locatie));
+		event.add(new Description(content));
+		event.add(new Sequence(0));
+		event.add(new Created(timeStampNu.toInstant()));
 		return event;
 	}
 
@@ -117,19 +114,23 @@ public class AfspraakIcalServiceImpl implements AfspraakIcalService
 	private Calendar maakCalendarAan(VEvent event)
 	{
 		var calendar = new Calendar();
-		var calendarProperties = calendar.getProperties();
-		calendarProperties.add(new ProdId(ICALHEADER));
-		calendarProperties.add(Version.VERSION_2_0);
-		calendarProperties.add(CalScale.GREGORIAN);
-		calendarProperties.add(Method.PUBLISH);
-		calendar.getComponents().add(event);
+		calendar.add(new ProdId(ICALHEADER));
+		calendar.add(ImmutableVersion.VERSION_2_0);
+		calendar.add(ImmutableCalScale.GREGORIAN);
+		calendar.add(ImmutableMethod.PUBLISH);
+		calendar.add(event);
+		calendar.add(getTimezone().getVTimeZone());
 		return calendar;
 	}
 
-	private DateTime createDateTime(LocalDateTime date, TimeZone timeZone)
+	private TimeZone getTimezone()
 	{
-		var icalDateTime = new DateTime(date.atZone(DateUtil.SCREENIT_DEFAULT_ZONE).toInstant().toEpochMilli());
-		icalDateTime.setTimeZone(timeZone);
-		return icalDateTime;
+		var registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+		return registry.getTimeZone(DateUtil.SCREENIT_DEFAULT_ZONE.getId());
+	}
+
+	private ZonedDateTime createZonedDateTime(LocalDateTime date)
+	{
+		return date.atZone(getTimezone().toZoneId());
 	}
 }

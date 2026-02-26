@@ -46,7 +46,6 @@ import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BriefHerdrukkenService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.BriefUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.io.FilenameUtils;
@@ -67,6 +66,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 public abstract class HeraanmeldingInzienPopupPanel<A extends Afmelding<?, ?, ?>, B extends ClientBrief<?, ?, ?>> extends GenericPanel<A>
@@ -262,7 +262,7 @@ public abstract class HeraanmeldingInzienPopupPanel<A extends Afmelding<?, ?, ?>
 				switch (bron)
 				{
 				case MEDEWERKER:
-					if (ColonAfmeldingReden.ONTERECHT.equals(((ColonAfmelding) HibernateHelper.deproxy(afmelding)).getReden()))
+					if (ColonAfmeldingReden.ONTERECHT.equals(((ColonAfmelding) Hibernate.unproxy(afmelding)).getReden()))
 					{
 						wijzeHeraanmelding = "correctieantwoordformulier";
 					}
@@ -272,7 +272,7 @@ public abstract class HeraanmeldingInzienPopupPanel<A extends Afmelding<?, ?, ?>
 					}
 					break;
 				case AUTOMATISCH:
-					if (ColonAfmeldingReden.ONTERECHT.equals(((ColonAfmelding) HibernateHelper.deproxy(afmelding)).getReden()))
+					if (ColonAfmeldingReden.ONTERECHT.equals(((ColonAfmelding) Hibernate.unproxy(afmelding)).getReden()))
 					{
 						wijzeHeraanmelding = "correctieantwoordformulier";
 					}
@@ -288,7 +288,7 @@ public abstract class HeraanmeldingInzienPopupPanel<A extends Afmelding<?, ?, ?>
 					wijzeHeraanmelding = "";
 				}
 			}
-			else if (ColonAfmeldingReden.PROEF_BEVOLKINGSONDERZOEK.equals(((ColonAfmelding) HibernateHelper.deproxy(afmelding)).getReden()))
+			else if (ColonAfmeldingReden.PROEF_BEVOLKINGSONDERZOEK.equals(((ColonAfmelding) Hibernate.unproxy(afmelding)).getReden()))
 			{
 				wijzeHeraanmelding = "proefbevolkingsonderzoek";
 			}

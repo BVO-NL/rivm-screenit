@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.colon;
 
 /*-
@@ -22,73 +21,39 @@ package nl.rivm.screenit.model.colon;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
+@Getter
+@Setter
 @Entity
 @Table(schema = "colon")
 public class SAFTransactionTrail extends AbstractHibernateObject
 {
 
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(nullable = false)
 	private ScannedAntwoordFormulier scannedAntwoordFormulier;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date datumTijd;
 
+	@Column(nullable = false)
 	private String medewerker;
 
 	private String transactionId;
 
-	public Date getDatumTijd()
-	{
-		return datumTijd;
-	}
-
-	public void setDatumTijd(Date datumTijd)
-	{
-		this.datumTijd = datumTijd;
-	}
-
-	public String getMedewerker()
-	{
-		return medewerker;
-	}
-
-	public void setMedewerker(String medewerker)
-	{
-		this.medewerker = medewerker;
-	}
-
-	public String getTransactionId()
-	{
-		return transactionId;
-	}
-
-	public void setTransactionId(String transactionId)
-	{
-		this.transactionId = transactionId;
-	}
-
-	public ScannedAntwoordFormulier getScannedAntwoordFormulier()
-	{
-		return scannedAntwoordFormulier;
-	}
-
-	public void setScannedAntwoordFormulier(ScannedAntwoordFormulier scannedAntwoordFormulier)
-	{
-		this.scannedAntwoordFormulier = scannedAntwoordFormulier;
-	}
 }

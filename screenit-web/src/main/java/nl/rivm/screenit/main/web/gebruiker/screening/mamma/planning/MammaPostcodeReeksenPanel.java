@@ -31,7 +31,6 @@ import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.mamma.MammaPostcodeReeks;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaats_;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -41,6 +40,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColu
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.hibernate.Hibernate;
 
 import static nl.rivm.screenit.model.mamma.MammaPostcodeReeks_.STANDPLAATS;
 import static nl.rivm.screenit.model.mamma.MammaPostcodeReeks_.TOT_POSTCODE;
@@ -98,7 +98,7 @@ public class MammaPostcodeReeksenPanel extends GenericPanel<MammaPostcodeReeks>
 						else
 						{
 							setResponsePage(new MammaStandplaatsEditPage(
-								ModelUtil.ccModel((MammaStandplaats) HibernateHelper.deproxy(ModelProxyHelper.deproxy(model.getObject().getStandplaats())))));
+								ModelUtil.ccModel((MammaStandplaats) Hibernate.unproxy(ModelProxyHelper.deproxy(model.getObject().getStandplaats())))));
 						}
 					}
 				});

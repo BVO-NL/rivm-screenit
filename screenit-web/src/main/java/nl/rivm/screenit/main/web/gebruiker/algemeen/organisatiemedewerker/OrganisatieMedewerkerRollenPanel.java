@@ -45,7 +45,6 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.helper.OrganisatieMedewerkerRolComparator;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.wicket.hibernate.CglibListHibernateModel;
 import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -71,6 +70,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 
 public class OrganisatieMedewerkerRollenPanel extends GenericPanel<OrganisatieMedewerker>
 {
@@ -168,7 +168,7 @@ public class OrganisatieMedewerkerRollenPanel extends GenericPanel<OrganisatieMe
 				}
 
 				medewerkerService.saveOrUpdateRollen(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), initieleRollen.getObject(),
-					(OrganisatieMedewerker) HibernateHelper.deproxy(organisatieMedewerker));
+					(OrganisatieMedewerker) Hibernate.unproxy(organisatieMedewerker));
 				info(getLocalizer().getString("action.save.rol", this));
 				OrganisatieMedewerkerKoppelPage page = (OrganisatieMedewerkerKoppelPage) getPage();
 				page.clearCachedAuthorizationInfo(organisatieMedewerker);

@@ -24,7 +24,9 @@ package nl.rivm.screenit.batch.jobs.cervix.oudenietverstuurdezas;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collections;
-import java.util.List;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,9 +50,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 @Component
 @Slf4j
@@ -84,11 +83,13 @@ public class CervixOudeNietIngestuurdeZasJobListener extends BaseLogListener
 		if (StringUtils.isNotBlank(projectNaam))
 		{
 			var zoekObject = new Project();
+
 			zoekObject.setNaam(projectNaam);
-			zoekObject.setProjectStatussen(List.of(ProjectStatus.ACTIEF));
-			zoekObject.setProjectTypes(List.of(ProjectType.BRIEFPROJECT));
 			zoekObject.setGroepSelectieType(GroepSelectieType.DYNAMISCH);
-			zoekObject.setBevolkingsonderzoeken(List.of(Bevolkingsonderzoek.CERVIX));
+			zoekObject.getProjectStatussen().add(ProjectStatus.ACTIEF);
+			zoekObject.getProjectTypes().add(ProjectType.BRIEFPROJECT);
+			zoekObject.getBevolkingsonderzoeken().add(Bevolkingsonderzoek.CERVIX);
+
 			var projecten = projectService.getProjecten(zoekObject, Collections.emptyList(), Collections.emptyList(), -1, -1, new SortState<>("naam", true));
 			Project project = null;
 			if (!projecten.isEmpty())
@@ -132,7 +133,7 @@ public class CervixOudeNietIngestuurdeZasJobListener extends BaseLogListener
 		var event = super.eindLogging(jobExecution);
 		if (event.getLevel() == Level.INFO)
 		{
-			String melding = "";
+			String melding;
 			var executionContext = jobExecution.getExecutionContext();
 			if (executionContext.containsKey(CervixOudeNietIngestuurdeZasConstants.PROJECT_ID) && StringUtils.isNotBlank(projectNaam))
 			{

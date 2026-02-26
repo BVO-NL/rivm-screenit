@@ -53,7 +53,6 @@ import nl.rivm.screenit.service.BriefHerdrukkenService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.topicuszorg.documentupload.wicket.UploadDocumentLink;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.io.FilenameUtils;
@@ -73,6 +72,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 import org.hibernate.envers.query.AuditEntity;
 import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
@@ -192,7 +192,7 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 
 	private boolean isAfmeldingUitCISHistorie(A a)
 	{
-		if (HibernateHelper.deproxy(a) instanceof CervixAfmelding)
+		if (Hibernate.unproxy(a) instanceof CervixAfmelding)
 		{
 			CervixAfmelding afmelding = (CervixAfmelding) a;
 			return afmelding.getDossier().getCisHistorie() != null && afmelding.equals(afmelding.getDossier().getCisHistorie().getAfmelding());
@@ -309,8 +309,8 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 			{
 			case MEDEWERKER:
 				if (Bevolkingsonderzoek.COLON.equals(afmelding.getBevolkingsonderzoek())
-					&& (ColonAfmeldingReden.ONTERECHT.equals(((ColonAfmelding) HibernateHelper.deproxy(afmelding)).getReden())
-					|| ((ColonAfmelding) HibernateHelper.deproxy(afmelding)).getReden() == null))
+					&& (ColonAfmeldingReden.ONTERECHT.equals(((ColonAfmelding) Hibernate.unproxy(afmelding)).getReden())
+					|| ((ColonAfmelding) Hibernate.unproxy(afmelding)).getReden() == null))
 				{
 					wijzeAfmelding = "correctieantwoordformulier";
 				}
@@ -321,7 +321,7 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 				break;
 			case AUTOMATISCH:
 				if (Bevolkingsonderzoek.COLON.equals(afmelding.getBevolkingsonderzoek())
-					&& ColonAfmeldingReden.ONTERECHT.equals(((ColonAfmelding) HibernateHelper.deproxy(afmelding)).getReden()))
+					&& ColonAfmeldingReden.ONTERECHT.equals(((ColonAfmelding) Hibernate.unproxy(afmelding)).getReden()))
 				{
 					wijzeAfmelding = "correctieantwoordformulier";
 				}
@@ -338,7 +338,7 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 			}
 		}
 		else if (Bevolkingsonderzoek.COLON.equals(afmelding.getBevolkingsonderzoek())
-			&& ColonAfmeldingReden.PROEF_BEVOLKINGSONDERZOEK.equals(((ColonAfmelding) HibernateHelper.deproxy(afmelding)).getReden()))
+			&& ColonAfmeldingReden.PROEF_BEVOLKINGSONDERZOEK.equals(((ColonAfmelding) Hibernate.unproxy(afmelding)).getReden()))
 		{
 			wijzeAfmelding = "proefbevolkingsonderzoek";
 		}

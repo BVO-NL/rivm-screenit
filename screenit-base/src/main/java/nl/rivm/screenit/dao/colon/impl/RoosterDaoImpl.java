@@ -365,7 +365,7 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 		querySB.append(" join colon.tijdslot ts on afs.id=ts.id");
 		querySB.append(" join colon.intakekamer k on ts.kamer=k.id");
 
-//f27e764d-960d-4d42-9221-d9ff4e5d7e1e
+//d980b268-7e51-4bc4-9d98-fbcfccbfe161
 		var params = new HashMap<String, Object>();
 		querySB.append(" and k.actief = true");
 		querySB.append(" and not exists(select id from colon.intakeafspraak ia where ia.afspraakslot = afs.id and (ia.status=:status1 or ia.status=:status2))");

@@ -82,12 +82,12 @@ public class MammaMergeMailAttachmentServiceImpl implements MammaMergeMailAttach
 		var locatie = getLocatieVoorAgenda(mailMergeContext);
 		var locatieOmschrijving = maakLocatieOmschrijvingString(mailMergeContext);
 		var client = mailMergeContext.getClient();
+		var icalAfspraakId = client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getLaatsteAfspraak().getIcalUid();
 
 		var startDatum = DateUtil.toLocalDateTime(
 			client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getLaatsteAfspraak().getVanaf());
 		var eindDatum = startDatum.plusMinutes(15);
 		var ontvanger = client.getPersoon().getEmailadres();
-		var icalAfspraakId = client.getId().toString();
 		var onderwerp = "Afspraak bevolkingsonderzoek borstkanker";
 		var contentAgenda = "Afspraak bevolkingsonderzoek borstkanker op locatie: \n"
 			+ locatie + "\n"
@@ -146,7 +146,6 @@ public class MammaMergeMailAttachmentServiceImpl implements MammaMergeMailAttach
 		var valueLocatieOmschrijving = MergeField.MAMMA_SP_LOC_OMSCHRIJVING.getFieldValue(mailMergeContext);
 
 		return valueLocatieOmschrijving != null ? valueLocatieOmschrijving.toString() : "";
-
 	}
 
 	private Optional<MailAttachmentDto> voegSoLogoToe(MailMergeContext mailMergeContext)

@@ -52,7 +52,6 @@ import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieService;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.organisatie.model.Adres;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
@@ -69,6 +68,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.PatternValidator;
+import org.hibernate.Hibernate;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(
@@ -108,7 +108,7 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 
 	public OrganisatieBasisgegevens()
 	{
-		var currentSelectedOrganisatie = (Organisatie) HibernateHelper.deproxy(getCurrentSelectedOrganisatie());
+		var currentSelectedOrganisatie = (Organisatie) Hibernate.unproxy(getCurrentSelectedOrganisatie());
 		init(ModelUtil.ccModel(currentSelectedOrganisatie));
 	}
 
@@ -263,7 +263,7 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 				@Override
 				public void onClick(AjaxRequestTarget target)
 				{
-					var organisatie = (Organisatie) HibernateHelper.deproxy(OrganisatieEditForm.this.getModelObject());
+					var organisatie = (Organisatie) Hibernate.unproxy(OrganisatieEditForm.this.getModelObject());
 					String feedbackMessageId = bepaalFeedback(organisatie);
 
 					if (StringUtils.isNotBlank(feedbackMessageId))

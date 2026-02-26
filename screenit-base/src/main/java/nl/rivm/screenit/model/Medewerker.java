@@ -164,10 +164,10 @@ public class Medewerker extends AbstractHibernateObject implements Account, IAct
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "medewerker")
 	@NotAudited
-	private List<AfgeslotenMedewerkerOvereenkomst> afgeslotenKwaliteitsOvereenkomsten;
+	private List<AfgeslotenMedewerkerOvereenkomst> afgeslotenKwaliteitsOvereenkomsten = new ArrayList<>();
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "medewerker", cascade = jakarta.persistence.CascadeType.REMOVE)
-	private List<MedewerkerNieuwsItem> medewerkerNieuwsItems;
+	private List<MedewerkerNieuwsItem> medewerkerNieuwsItems = new ArrayList<>();
 
 	@OneToOne(fetch = FetchType.LAZY)
 	private UploadDocument handtekening;

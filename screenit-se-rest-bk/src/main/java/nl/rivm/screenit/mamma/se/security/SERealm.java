@@ -44,7 +44,6 @@ import nl.rivm.screenit.service.BaseMedewerkerService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.ScopeService;
 import nl.rivm.screenit.util.MedewerkerUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.yubikey.shiro.YubikeyAuthenticationInfo;
 import nl.topicuszorg.yubikey.shiro.YubikeyToken;
@@ -63,6 +62,7 @@ import org.apache.shiro.lang.util.SimpleByteSource;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -136,7 +136,7 @@ public class SERealm extends AuthorizingRealm implements IScreenitRealm
 										{
 											LOG.info("* " + recht.name());
 										}
-										info.addObjectPermission((Permission) HibernateHelper.deproxy(permissie));
+										info.addObjectPermission((Permission) Hibernate.unproxy(permissie));
 									}
 								}
 							}

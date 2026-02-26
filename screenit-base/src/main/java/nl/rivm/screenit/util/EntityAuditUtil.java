@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.Temporal;
 
 import lombok.AccessLevel;
@@ -48,8 +49,6 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.ObjectNotFoundException;
-import org.hibernate.Session;
-import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
@@ -61,9 +60,9 @@ import org.reflections.ReflectionUtils;
 @Slf4j
 public final class EntityAuditUtil
 {
-	public static <H extends HibernateObject> AuditQuery createQuery(H entity, Session session)
+	public static <H extends HibernateObject> AuditQuery createQuery(H entity, EntityManager entityManager)
 	{
-		AuditReader reader = AuditReaderFactory.get(session);
+		var reader = AuditReaderFactory.get(entityManager);
 		Class<?> clazz;
 		Object id;
 		try
@@ -77,15 +76,15 @@ public final class EntityAuditUtil
 			clazz = Hibernate.getClassLazy(entity);
 			id = HibernateHelper.getId(entity);
 		}
-		AuditQuery query = reader.createQuery().forRevisionsOfEntity(clazz, false, true);
+		var query = reader.createQuery().forRevisionsOfEntity(clazz, false, true);
 
 		query.add(AuditEntity.id().eq(id));
 		return query;
 	}
 
-	public static <H extends HibernateObject> H getPreviousVersionOfEntity(H entity, Session session)
+	public static <H extends HibernateObject> H getPreviousVersionOfEntity(H entity, EntityManager entityManager)
 	{
-		List<Object[]> results = EntityAuditUtil.getEntityHistory(entity, session, null, false, 2);
+		List<Object[]> results = EntityAuditUtil.getEntityHistory(entity, entityManager, null, false, 2);
 		if (results.size() > 1)
 		{
 			return EntityAuditUtil.getRevisionEntity(results.get(1));
@@ -93,9 +92,9 @@ public final class EntityAuditUtil
 		return null;
 	}
 
-	public static <H extends HibernateObject> H getLastVersionOfEntity(H entity, Session session)
+	public static <H extends HibernateObject> H getLastVersionOfEntity(H entity, EntityManager entityManager)
 	{
-		List<Object[]> results = getEntityHistory(entity, session, null, false, 1);
+		List<Object[]> results = getEntityHistory(entity, entityManager, null, false, 1);
 		if (!results.isEmpty())
 		{
 			return EntityAuditUtil.getRevisionEntity(results.get(0));
@@ -103,20 +102,20 @@ public final class EntityAuditUtil
 		return null;
 	}
 
-	public static <H extends HibernateObject> List<Object[]> getEntityHistory(H entity, Session session, boolean changedOnly)
+	public static <H extends HibernateObject> List<Object[]> getEntityHistory(H entity, EntityManager entityManager, boolean changedOnly)
 	{
-		return getEntityHistory(entity, session, null, changedOnly, null);
+		return getEntityHistory(entity, entityManager, null, changedOnly, null);
 	}
 
-	public static <H extends HibernateObject> List<Object[]> getEntityHistory(H entity, Session session, AuditCriterion additionalCriteria, boolean changedOnly)
+	public static <H extends HibernateObject> List<Object[]> getEntityHistory(H entity, EntityManager entityManager, AuditCriterion additionalCriteria, boolean changedOnly)
 	{
-		return getEntityHistory(entity, session, additionalCriteria, changedOnly, null);
+		return getEntityHistory(entity, entityManager, additionalCriteria, changedOnly, null);
 	}
 
-	public static <H extends HibernateObject> List<Object[]> getEntityHistory(H entity, Session session, AuditCriterion additionalCriteria, boolean changedOnly,
+	public static <H extends HibernateObject> List<Object[]> getEntityHistory(H entity, EntityManager entityManager, AuditCriterion additionalCriteria, boolean changedOnly,
 		Integer maxResults)
 	{
-		AuditQuery query = createQuery(entity, session);
+		var query = createQuery(entity, entityManager);
 		if (additionalCriteria != null)
 		{
 			query.add(additionalCriteria);
@@ -149,25 +148,25 @@ public final class EntityAuditUtil
 		return (RevisionType) ((Object[]) auditRow)[2];
 	}
 
-	public static <T extends HibernateObject> String getDiffFieldsToLatestVersion(T entity, Session session, String... fieldNames)
+	public static <T extends HibernateObject> String getDiffFieldsToLatestVersion(T entity, EntityManager entityManager, String... fieldNames)
 	{
 		T lastEntity = null;
 		if (entity.getId() != null)
 		{
-			lastEntity = getLastVersionOfEntity(entity, session);
+			lastEntity = getLastVersionOfEntity(entity, entityManager);
 		}
 		return diffEntities(lastEntity, entity, fieldNames);
 	}
 
-	public static <T extends HibernateObject> String getDiffToLatestVersion(T entity, Session session)
+	public static <T extends HibernateObject> String getDiffToLatestVersion(T entity, EntityManager entityManager)
 	{
-		return getDiffFieldsToLatestVersion(entity, session);
+		return getDiffFieldsToLatestVersion(entity, entityManager);
 	}
 
 	private static <T extends HibernateObject> String diffEntities(T oldEntity, T newEntity, String... specifiekFieldNames)
 	{
 		String diff = "";
-		newEntity = (T) HibernateHelper.deproxy(newEntity);
+		newEntity = (T) Hibernate.unproxy(newEntity);
 		SkipFieldsForDiff skipFieldsForDiff = newEntity.getClass().getAnnotation(SkipFieldsForDiff.class);
 		for (Field field : ReflectionUtils.getAllFields(newEntity.getClass()))
 		{

@@ -38,12 +38,9 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
 
-@Component
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+@Service
 public class ClientDoelgroepServiceImpl implements ClientDoelgroepService
 {
 	@Autowired

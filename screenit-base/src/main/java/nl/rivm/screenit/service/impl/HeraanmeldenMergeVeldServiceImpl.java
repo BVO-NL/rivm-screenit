@@ -28,9 +28,9 @@ import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonFitRegistratie;
 import nl.rivm.screenit.service.HeraanmeldenMergeVeldService;
 import nl.rivm.screenit.util.BriefUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -62,7 +62,7 @@ public class HeraanmeldenMergeVeldServiceImpl implements HeraanmeldenMergeVeldSe
 
 	private PreferenceKey getBriefPreferenceKey(ClientBrief clientBrief)
 	{
-		ClientBrief brief = (ClientBrief) HibernateHelper.deproxy(clientBrief);
+		ClientBrief brief = (ClientBrief) Hibernate.unproxy(clientBrief);
 		if (brief instanceof ColonBrief colonBrief)
 		{
 			ColonFitRegistratie fitRegistratie = colonBrief.getFitRegistratie();

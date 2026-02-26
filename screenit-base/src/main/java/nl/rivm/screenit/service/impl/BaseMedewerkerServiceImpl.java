@@ -46,10 +46,10 @@ import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
+@Service
 @AllArgsConstructor
 public class BaseMedewerkerServiceImpl implements BaseMedewerkerService
 {

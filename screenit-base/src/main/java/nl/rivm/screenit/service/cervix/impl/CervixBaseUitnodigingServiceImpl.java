@@ -48,9 +48,9 @@ import nl.rivm.screenit.service.cervix.CervixBaseScreeningrondeService;
 import nl.rivm.screenit.service.cervix.CervixBaseUitnodigingService;
 import nl.rivm.screenit.service.cervix.CervixLabformulierService;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,7 +94,7 @@ public class CervixBaseUitnodigingServiceImpl implements CervixBaseUitnodigingSe
 			{
 				monster.setOntvangstdatum(dateSupplier.getDate());
 				monster.setOntvangstScreeningRonde(baseScreeningrondeService.getOntvangstRondeVoorMonster(monster));
-				var bmhkLaboratorium = (BMHKLaboratorium) HibernateHelper.deproxy(ingelogdeOrganisatieMedewerker.getOrganisatie());
+				var bmhkLaboratorium = (BMHKLaboratorium) Hibernate.unproxy(ingelogdeOrganisatieMedewerker.getOrganisatie());
 				monster.setLaboratorium(bmhkLaboratorium);
 				labformulierService.updateLabformulierLaboratoriumNaOntvangstMonster(monster);
 			}

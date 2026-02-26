@@ -37,7 +37,6 @@ import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.service.BaseTestTimelineService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
@@ -45,6 +44,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.beanutils.converters.DateConverter;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -159,7 +159,7 @@ public class BaseTestTimelineServiceImpl implements BaseTestTimelineService
 
 	private List<Field> getAllDateFieldsFrom(Object object)
 	{
-		Class<?> clazz = HibernateHelper.deproxy(object).getClass();
+		Class<?> clazz = Hibernate.unproxy(object).getClass();
 		List<Field> dateFields = new ArrayList<Field>();
 		for (Class<?> c = clazz; c != null; c = c.getSuperclass())
 		{

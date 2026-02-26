@@ -86,12 +86,12 @@ import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.VerwerkVerslagService;
 import nl.rivm.screenit.util.MedewerkerUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -623,7 +623,7 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 		}
 		else if (verslag instanceof CervixCytologieVerslag)
 		{
-			var deproxiedVerslag = (CervixCytologieVerslag) HibernateHelper.deproxy(verslag);
+			var deproxiedVerslag = (CervixCytologieVerslag) Hibernate.unproxy(verslag);
 			getCervixCytologieUitvoerder(cdaDocument, deproxiedVerslag);
 		}
 		else if (verslag instanceof MammaFollowUpVerslag)

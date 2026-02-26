@@ -156,16 +156,7 @@ public class MedewerkerServiceImpl implements MedewerkerService
 			organisatieMedewerker.setActief(Boolean.TRUE);
 			organisatieMedewerker.setOrganisatie(organisatie);
 			organisatieMedewerker.setMedewerker(medewerker);
-			organisatieMedewerker.setRollen(new ArrayList<OrganisatieMedewerkerRol>());
-			if (medewerker.getOrganisatieMedewerkers() == null)
-			{
-				medewerker.setOrganisatieMedewerkers(new ArrayList<OrganisatieMedewerker>());
-			}
 			medewerker.getOrganisatieMedewerkers().add(organisatieMedewerker);
-			if (organisatie.getOrganisatieMedewerkers() == null)
-			{
-				organisatie.setOrganisatieMedewerkers(new ArrayList<OrganisatieMedewerker>());
-			}
 			organisatie.getOrganisatieMedewerkers().add(organisatieMedewerker);
 			medewerkerDao.saveOrUpdateOrganisatieMedewerker(organisatieMedewerker);
 		}

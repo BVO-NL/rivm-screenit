@@ -77,10 +77,11 @@ public class CervixVerlateDeelnameCovidJobListener extends BaseLogListener
 		{
 			var zoekObject = new Project();
 			zoekObject.setNaam(projectNaam);
-			zoekObject.setProjectStatussen(List.of(ProjectStatus.ACTIEF));
-			zoekObject.setProjectTypes(List.of(ProjectType.PROJECT));
+			zoekObject.getProjectStatussen().add(ProjectStatus.ACTIEF);
+			zoekObject.getProjectTypes().add(ProjectType.PROJECT);
 			zoekObject.setGroepSelectieType(GroepSelectieType.DYNAMISCH);
-			zoekObject.setBevolkingsonderzoeken(List.of(Bevolkingsonderzoek.CERVIX));
+			zoekObject.getBevolkingsonderzoeken().add(Bevolkingsonderzoek.CERVIX);
+
 			List<Project> projecten = projectService.getProjecten(zoekObject, Collections.emptyList(), Collections.emptyList(), -1, -1, new SortState<>("naam", true));
 			Project project = null;
 			if (!projecten.isEmpty())
@@ -124,7 +125,7 @@ public class CervixVerlateDeelnameCovidJobListener extends BaseLogListener
 		var event = super.eindLogging(jobExecution);
 		if (event.getLevel() == Level.INFO)
 		{
-			String melding = "";
+			String melding;
 			var executionContext = jobExecution.getExecutionContext();
 			if (executionContext.containsKey(CervixVerlateDeelnameCovidConstants.PROJECT_ID) && StringUtils.isNotBlank(projectNaam))
 			{

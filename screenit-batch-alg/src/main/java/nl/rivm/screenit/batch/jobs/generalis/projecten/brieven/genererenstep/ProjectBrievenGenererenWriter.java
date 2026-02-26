@@ -46,6 +46,7 @@ import nl.rivm.screenit.model.project.ProjectMergedBrieven;
 import nl.rivm.screenit.service.ClientService;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Hibernate;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -87,12 +88,12 @@ public class ProjectBrievenGenererenWriter extends AbstractBrievenGenererenWrite
 			switch (orgineleBrief.getBevolkingsonderzoek())
 			{
 			case COLON:
-				ColonBrief colonBrief = (ColonBrief) getHibernateService().deproxy(orgineleBrief);
+				ColonBrief colonBrief = (ColonBrief) Hibernate.unproxy(orgineleBrief);
 				context.setIntakeAfspraak(colonBrief.getIntakeAfspraak());
 				context.setVorigeIntakeAfspraak(colonBrief.getVorigeIntakeAfspraak());
 				break;
 			case CERVIX:
-				CervixBrief cervixBrief = (CervixBrief) getHibernateService().deproxy(orgineleBrief);
+				CervixBrief cervixBrief = (CervixBrief) Hibernate.unproxy(orgineleBrief);
 				if (cervixBrief.getUitnodiging() != null)
 				{
 					context.setCervixUitnodiging(cervixBrief.getUitnodiging());

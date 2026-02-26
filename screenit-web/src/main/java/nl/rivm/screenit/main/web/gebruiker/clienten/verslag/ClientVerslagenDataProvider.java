@@ -25,7 +25,6 @@ import java.util.Iterator;
 
 import nl.rivm.screenit.main.service.VerslagService;
 import nl.rivm.screenit.model.berichten.Verslag;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
@@ -79,6 +78,6 @@ public class ClientVerslagenDataProvider<V extends Verslag<?, ?>> extends Sortab
 
 	private V getZoekCriteria()
 	{
-		return ModelProxyHelper.deproxy(ModelUtil.nullSafeGet(zoekModel));
+		return ModelUtil.nullSafeGet(zoekModel);
 	}
 }

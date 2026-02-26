@@ -61,12 +61,12 @@ import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.service.mamma.MammaBaseFollowUpService;
 import nl.rivm.screenit.service.mamma.MammaBaseScreeningrondeService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -180,19 +180,19 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 		var type = verslag.getType();
 		if (type == VerslagType.MDL && VerslagStatus.AFGEROND == verslag.getStatus())
 		{
-			var mdlVerslag = (MdlVerslag) HibernateHelper.deproxy(verslag);
+			var mdlVerslag = (MdlVerslag) Hibernate.unproxy(verslag);
 			var colonScreeningRonde = mdlVerslag.getScreeningRonde();
 			colonScreeningRonde.getVerslagen().remove(mdlVerslag);
 		}
 		else if (type == VerslagType.PA_LAB)
 		{
-			var paVerslag = (PaVerslag) HibernateHelper.deproxy(verslag);
+			var paVerslag = (PaVerslag) Hibernate.unproxy(verslag);
 			var colonScreeningRonde = paVerslag.getScreeningRonde();
 			colonScreeningRonde.getVerslagen().remove(paVerslag);
 		}
 		else if (type == VerslagType.MAMMA_PA_FOLLOW_UP || type == VerslagType.MAMMA_PA_FOLLOW_UP_MONITOR)
 		{
-			var followupVerslag = (MammaFollowUpVerslag) HibernateHelper.deproxy(verslag);
+			var followupVerslag = (MammaFollowUpVerslag) Hibernate.unproxy(verslag);
 			var mammaScreeningRonde = followupVerslag.getScreeningRonde();
 			mammaScreeningRonde.getFollowUpVerslagen().remove(followupVerslag);
 		}
@@ -205,7 +205,7 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 		var type = verslag.getType();
 		if (type == VerslagType.MDL && VerslagStatus.AFGEROND == verslag.getStatus())
 		{
-			var mdlVerslag = (MdlVerslag) HibernateHelper.deproxy(verslag);
+			var mdlVerslag = (MdlVerslag) Hibernate.unproxy(verslag);
 			var vervolgbeleidHuidigVerslag = mdlVerslag.getVervolgbeleid();
 			MdlVerslag nieuweLaatsteAfgerondVerslag = null;
 			var screeningRonde = mdlVerslag.getScreeningRonde();
@@ -214,7 +214,7 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 			{
 				if (VerslagType.MDL == oneOfAllVerslagen.getType() && VerslagStatus.AFGEROND == oneOfAllVerslagen.getStatus() && !oneOfAllVerslagen.equals(mdlVerslag))
 				{
-					var anderMdlVerslag = (MdlVerslag) HibernateHelper.deproxy(oneOfAllVerslagen);
+					var anderMdlVerslag = (MdlVerslag) Hibernate.unproxy(oneOfAllVerslagen);
 					if (MdlVervolgbeleid.isDefinitief(anderMdlVerslag.getVervolgbeleid()))
 					{
 						geenAnderVerslagMetDefinitiefVervolgbeleid = false;
@@ -260,7 +260,7 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 
 		else if (type == VerslagType.MAMMA_PA_FOLLOW_UP)
 		{
-			var followupVerslag = (MammaFollowUpVerslag) HibernateHelper.deproxy(verslag);
+			var followupVerslag = (MammaFollowUpVerslag) Hibernate.unproxy(verslag);
 			followUpService.refreshUpdateFollowUpConclusie(followupVerslag.getScreeningRonde().getDossier());
 			var screeningRonde = followupVerslag.getScreeningRonde();
 			var screeningrondeVoorFollowUp = baseScreeningrondeService.getLaatsteScreeningRondeMetUitslag(screeningRonde.getDossier().getClient());
@@ -277,7 +277,7 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 	public String createLogMelding(Verslag<?, ?> verslag)
 	{
 		String melding;
-		var verwerktVerslag = (Verslag<?, ?>) HibernateHelper.deproxy(verslag);
+		var verwerktVerslag = (Verslag<?, ?>) Hibernate.unproxy(verslag);
 		var ontvangenBericht = verwerktVerslag.getOntvangenBericht();
 		if (ontvangenBericht != null)
 		{

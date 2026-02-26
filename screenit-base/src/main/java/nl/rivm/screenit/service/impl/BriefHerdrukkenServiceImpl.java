@@ -52,9 +52,9 @@ import nl.rivm.screenit.service.cervix.CervixFactory;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.util.ProjectUtil;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -91,7 +91,7 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 	@Transactional
 	public void opnieuwAanmaken(ClientBrief<?, ?, ?> brief, Account account)
 	{
-		brief = (ClientBrief<?, ?, ?>) HibernateHelper.deproxy(brief);
+		brief = (ClientBrief<?, ?, ?>) Hibernate.unproxy(brief);
 		Class<? extends ClientBrief> briefClass = brief.getClass();
 		LOG.info("Kopieer brief {} (clientId: {})", brief.getBriefType(), brief.getClient().getId());
 		if (ProjectBrief.class.equals(briefClass))

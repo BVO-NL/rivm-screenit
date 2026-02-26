@@ -251,9 +251,7 @@ public class CervixBaseTestTimelineServiceImpl implements CervixBaseTestTimeline
 		CervixScreeningRonde ronde = uitnodiging.getScreeningRonde().getDossier().getLaatsteScreeningRonde();
 		CervixUitstrijkje uitstrijkje = (CervixUitstrijkje) monster;
 
-		OntvangenCdaBericht ontvangenCdaBericht = new OntvangenCdaBericht();
-		ontvangenCdaBericht.setStatus(BerichtStatus.VERWERKT);
-		ontvangenCdaBericht.setBerichtType(BerichtType.CERVIX_CYTOLOGIE_VERSLAG);
+		var ontvangenCdaBericht = maakOntvangenCdaBericht();
 
 		CervixCytologieVerrichting cytologieVerrichting = new CervixCytologieVerrichting();
 		cytologieVerrichting.setEindeVerrichting(dateSupplier.getDate());
@@ -693,6 +691,7 @@ public class CervixBaseTestTimelineServiceImpl implements CervixBaseTestTimeline
 		brief.setMergedBrieven(mergedBrieven);
 		UploadDocument fakeMergeDocument = new UploadDocument();
 		fakeMergeDocument.setActief(true);
+		fakeMergeDocument.setContentType("application/pdf");
 		fakeMergeDocument.setNaam("dummy_testservice_brief_niet_openen");
 		hibernateService.saveOrUpdate(fakeMergeDocument);
 		mergedBrieven.setMergedBrieven(fakeMergeDocument);
@@ -717,6 +716,7 @@ public class CervixBaseTestTimelineServiceImpl implements CervixBaseTestTimeline
 
 		UploadDocument fakeMergeDocument = new UploadDocument();
 		fakeMergeDocument.setActief(true);
+		fakeMergeDocument.setContentType("application/pdf");
 		fakeMergeDocument.setNaam("dummy_testservice_brief_niet_openen");
 
 		CervixBrief brief = uitnodiging.getBrief();
@@ -748,5 +748,19 @@ public class CervixBaseTestTimelineServiceImpl implements CervixBaseTestTimeline
 		uitnodiging.setVerstuurdDoorInpakcentrum(true);
 		zas.setVerstuurd(dateSupplier.getDate());
 		hibernateService.saveOrUpdate(zas);
+	}
+
+	private OntvangenCdaBericht maakOntvangenCdaBericht()
+	{
+		OntvangenCdaBericht ontvangenCdaBericht = new OntvangenCdaBericht();
+		ontvangenCdaBericht.setBerichtId("Test BerichtID");
+		ontvangenCdaBericht.setOntvangen(dateSupplier.getDate());
+		ontvangenCdaBericht.setSetId("Test SetID");
+		ontvangenCdaBericht.setVersie(1L);
+		ontvangenCdaBericht.setXmlBericht("Test XmlBericht");
+		ontvangenCdaBericht.setProjectVersion("Test ProjectVersion");
+		ontvangenCdaBericht.setStatus(BerichtStatus.VERWERKT);
+		ontvangenCdaBericht.setBerichtType(BerichtType.CERVIX_CYTOLOGIE_VERSLAG);
+		return ontvangenCdaBericht;
 	}
 }

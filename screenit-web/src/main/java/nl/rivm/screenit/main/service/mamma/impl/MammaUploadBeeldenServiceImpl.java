@@ -50,10 +50,10 @@ import nl.rivm.screenit.repository.mamma.MammaUploadBeeldenVerzoekRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
-import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -146,7 +146,7 @@ public class MammaUploadBeeldenServiceImpl implements MammaUploadBeeldenService
 		uploadBeeldenVerzoek.setCreatieDatum(nu);
 		uploadBeeldenVerzoek.setStatus(MammaUploadBeeldenVerzoekStatus.WACHTEN_OP_UPLOAD);
 		uploadBeeldenVerzoek.setStatusDatum(nu);
-		uploadBeeldenVerzoek.setZiekenhuis((Organisatie) HibernateHelper.deproxy(uploadBeeldenVerzoek.getZiekenhuis()));
+		uploadBeeldenVerzoek.setZiekenhuis((Organisatie) Hibernate.unproxy(uploadBeeldenVerzoek.getZiekenhuis()));
 
 		hibernateService.saveOrUpdateAll(uploadBeeldenVerzoek, screeningRonde);
 		logService.logGebeurtenis(LogGebeurtenis.MAMMA_UPLOAD_VERZOEK, gemaaktDoor, uploadBeeldenVerzoek.getScreeningRonde().getDossier().getClient(), "Uploadverzoek aangemaakt",
