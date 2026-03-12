@@ -24,7 +24,6 @@ package nl.rivm.screenit.batch.jobs.brieven;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseLogListener;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
@@ -83,18 +82,19 @@ public abstract class AbstractBrievenGenererenListener extends BaseLogListener
 	@Override
 	protected LogEvent eindLogging(JobExecution jobExecution)
 	{
-		BrievenGenererenBeeindigdLogEvent event = (BrievenGenererenBeeindigdLogEvent) super.eindLogging(jobExecution);
+		var event = (BrievenGenererenBeeindigdLogEvent) super.eindLogging(jobExecution);
 
-		BrievenGenererenRapportage rapportage = new BrievenGenererenRapportage();
+		var rapportage = new BrievenGenererenRapportage();
 		rapportage.setDatumVerwerking(currentDateSupplier.getDate());
+		hibernateService.saveOrUpdate(rapportage);
 		event.setRapportage(rapportage);
 		var map = (Map<Long, Integer>) jobExecution.getExecutionContext().get(getRapportageAantalBrievenKey());
 
 		if (map != null)
 		{
-			for (Entry<Long, Integer> entry : map.entrySet())
+			for (var entry : map.entrySet())
 			{
-				BrievenGenererenRapportageEntry rapportageEntry = new BrievenGenererenRapportageEntry();
+				var rapportageEntry = new BrievenGenererenRapportageEntry();
 				rapportageEntry.setScreeningOrganisatie(hibernateService.get(ScreeningOrganisatie.class, entry.getKey()));
 				rapportageEntry.setRapportage(rapportage);
 				rapportageEntry.setAantalBrievenPerScreeningOrganisatie(entry.getValue());

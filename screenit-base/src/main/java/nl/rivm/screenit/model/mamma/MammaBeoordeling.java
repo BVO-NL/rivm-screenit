@@ -39,6 +39,9 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.UniqueConstraint;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
@@ -60,33 +63,35 @@ import org.hibernate.envers.Audited;
 		@UniqueConstraint(columnNames = "discrepantie_lezing"), @UniqueConstraint(columnNames = "arbitrage_lezing"), @UniqueConstraint(columnNames = "verslag_lezing") },
 	indexes = { @Index(name = "idx_mamma_beoordeling_status", columnList = "status") })
 @Audited
+@Getter
+@Setter
 public class MammaBeoordeling extends AbstractHibernateObject
 {
 	@Column(nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date statusDatum;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
+	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
 		jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaLezing eersteLezing;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
+	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
 		jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaLezing tweedeLezing;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
+	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
 		jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaLezing discrepantieLezing;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
+	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
 		jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaLezing arbitrageLezing;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
+	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
 		jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaLezing verslagLezing;
@@ -95,7 +100,7 @@ public class MammaBeoordeling extends AbstractHibernateObject
 	@Enumerated(EnumType.STRING)
 	private MammaBeoordelingStatus status = MammaBeoordelingStatus.EERSTE_LEZING;
 
-	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	private OrganisatieMedewerker reserveringhouder;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -104,7 +109,7 @@ public class MammaBeoordeling extends AbstractHibernateObject
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private MammaOnderzoek onderzoek;
 
-	@Column(nullable = true)
+	@Column
 	private String afkeurreden;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -114,225 +119,26 @@ public class MammaBeoordeling extends AbstractHibernateObject
 	@Enumerated(EnumType.STRING)
 	private MammaBeoordelingOpschortenReden opschortReden = MammaBeoordelingOpschortenReden.NIET_OPSCHORTEN;
 
-	@Column(nullable = true)
+	@Column
 	private String opschortRedenTekst;
 
-	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	private OrganisatieMedewerker opschortOrganisatieMedewerker;
 
-	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	private OrganisatieMedewerker toegewezenOrganisatieMedewerker;
 
-	@Column(nullable = true)
+	@Column
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date toegewezenOp;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "beoordeling")
 	private List<MammaHuisartsBericht> huisartsBerichten = new ArrayList<>();
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true)
+	@OneToOne(fetch = FetchType.LAZY)
 	private UploadDocument verslagPdf;
 
 	@Column
 	private String redenAnnuleren;
 
-	public List<MammaHuisartsBericht> getHuisartsBerichten()
-	{
-		return huisartsBerichten;
-	}
-
-	public void setHuisartsBerichten(List<MammaHuisartsBericht> huisartsBerichten)
-	{
-		this.huisartsBerichten = huisartsBerichten;
-	}
-
-	public Date getStatusDatum()
-	{
-		return statusDatum;
-	}
-
-	public void setStatusDatum(Date statusDatum)
-	{
-		this.statusDatum = statusDatum;
-	}
-
-	public MammaLezing getEersteLezing()
-	{
-		return eersteLezing;
-	}
-
-	public void setEersteLezing(MammaLezing eersteLezing)
-	{
-		this.eersteLezing = eersteLezing;
-	}
-
-	public MammaLezing getTweedeLezing()
-	{
-		return tweedeLezing;
-	}
-
-	public void setTweedeLezing(MammaLezing tweedeLezing)
-	{
-		this.tweedeLezing = tweedeLezing;
-	}
-
-	public MammaLezing getDiscrepantieLezing()
-	{
-		return discrepantieLezing;
-	}
-
-	public void setDiscrepantieLezing(MammaLezing discrepantie)
-	{
-		this.discrepantieLezing = discrepantie;
-	}
-
-	public MammaLezing getArbitrageLezing()
-	{
-		return arbitrageLezing;
-	}
-
-	public void setArbitrageLezing(MammaLezing consensus)
-	{
-		this.arbitrageLezing = consensus;
-	}
-
-	public MammaBeoordelingStatus getStatus()
-	{
-		return status;
-	}
-
-	public void setStatus(MammaBeoordelingStatus status)
-	{
-		this.status = status;
-	}
-
-	public OrganisatieMedewerker getReserveringhouder()
-	{
-		return reserveringhouder;
-	}
-
-	public void setReserveringhouder(OrganisatieMedewerker reserveringhouder)
-	{
-		this.reserveringhouder = reserveringhouder;
-	}
-
-	public Date getReserveringsmoment()
-	{
-		return reserveringsmoment;
-	}
-
-	public void setReserveringsmoment(Date reserveringsmoment)
-	{
-		this.reserveringsmoment = reserveringsmoment;
-	}
-
-	public MammaOnderzoek getOnderzoek()
-	{
-		return onderzoek;
-	}
-
-	public void setOnderzoek(MammaOnderzoek onderzoek)
-	{
-		this.onderzoek = onderzoek;
-	}
-
-	public MammaLezing getVerslagLezing()
-	{
-		return verslagLezing;
-	}
-
-	public void setVerslagLezing(MammaLezing verslagLezing)
-	{
-		this.verslagLezing = verslagLezing;
-	}
-
-	public void setAfkeurreden(String afkeurreden)
-	{
-		this.afkeurreden = afkeurreden;
-	}
-
-	public String getAfkeurreden()
-	{
-		return afkeurreden;
-	}
-
-	public BeoordelingsEenheid getBeoordelingsEenheid()
-	{
-		return beoordelingsEenheid;
-	}
-
-	public void setBeoordelingsEenheid(BeoordelingsEenheid beoordelingsEenheid)
-	{
-		this.beoordelingsEenheid = beoordelingsEenheid;
-	}
-
-	public MammaBeoordelingOpschortenReden getOpschortReden()
-	{
-		return opschortReden;
-	}
-
-	public void setOpschortReden(MammaBeoordelingOpschortenReden opschortenReden)
-	{
-		this.opschortReden = opschortenReden;
-	}
-
-	public String getOpschortRedenTekst()
-	{
-		return opschortRedenTekst;
-	}
-
-	public void setOpschortRedenTekst(String opschortenRedenTekst)
-	{
-		this.opschortRedenTekst = opschortenRedenTekst;
-	}
-
-	public OrganisatieMedewerker getOpschortOrganisatieMedewerker()
-	{
-		return opschortOrganisatieMedewerker;
-	}
-
-	public void setOpschortOrganisatieMedewerker(OrganisatieMedewerker opschortOrganisatieMedewerker)
-	{
-		this.opschortOrganisatieMedewerker = opschortOrganisatieMedewerker;
-	}
-
-	public OrganisatieMedewerker getToegewezenOrganisatieMedewerker()
-	{
-		return toegewezenOrganisatieMedewerker;
-	}
-
-	public void setToegewezenOrganisatieMedewerker(OrganisatieMedewerker toegewezenOrganisatieMedewerker)
-	{
-		this.toegewezenOrganisatieMedewerker = toegewezenOrganisatieMedewerker;
-	}
-
-	public Date getToegewezenOp()
-	{
-		return toegewezenOp;
-	}
-
-	public void setToegewezenOp(Date toegewezenOp)
-	{
-		this.toegewezenOp = toegewezenOp;
-	}
-
-	public void setVerslagPdf(UploadDocument verslag)
-	{
-		this.verslagPdf = verslag;
-	}
-
-	public UploadDocument getVerslagPdf()
-	{
-		return verslagPdf;
-	}
-
-	public String getRedenAnnuleren()
-	{
-		return redenAnnuleren;
-	}
-
-	public void setRedenAnnuleren(String redenAnnuleren)
-	{
-		this.redenAnnuleren = redenAnnuleren;
-	}
 }

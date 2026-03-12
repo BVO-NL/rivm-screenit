@@ -55,6 +55,7 @@ public class MammaUploadBeeldenVerzoek extends AbstractHibernateObject
 	private MammaScreeningRonde screeningRonde;
 
 	@Column(nullable = false)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date creatieDatum;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)

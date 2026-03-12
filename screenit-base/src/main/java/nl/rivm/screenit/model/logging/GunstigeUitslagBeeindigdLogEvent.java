@@ -21,6 +21,7 @@ package nl.rivm.screenit.model.logging;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -28,6 +29,7 @@ import jakarta.persistence.Table;
 @Table(schema = "gedeeld")
 public class GunstigeUitslagBeeindigdLogEvent extends LogEvent
 {
+	@Column(nullable = false)
 	private Integer aantalGunstigeBrievenUitGestuurd = 0;
 
 	public Integer getAantalGunstigeBrievenUitGestuurd()

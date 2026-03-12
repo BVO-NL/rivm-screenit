@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -47,22 +48,28 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 public class ColonFitAnalyseResultaatSet extends AbstractHibernateObject
 {
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private ColonFitAnalyseResultaatSetStatus status;
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	private Date statusDatum;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private ColonFitLaboratorium laboratorium;
 
 	@OneToMany(mappedBy = "analyseResultaatSet")
 	private List<ColonFitAnalyseResultaat> uitslagen = new ArrayList<>();
 
+	@Column(nullable = false)
 	private String naamBestand;
 
+	@Column(nullable = false)
 	private String pathBestand;
 
+	@Column(nullable = false)
 	private Integer aantalVerwerkt = 0;
 
+	@Column(nullable = false)
 	private Integer aantalControleUitslagen = 0;
 }

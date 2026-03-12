@@ -21,16 +21,16 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import lombok.Getter;
-import lombok.Setter;
-
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 @Getter
 @Setter
@@ -41,6 +41,7 @@ public class MailAttachment extends AbstractHibernateObject
 	@Column(nullable = false, columnDefinition = "TEXT")
 	private String content;
 
+	@Column
 	private String inlineContentId;
 
 	@Column(nullable = false)

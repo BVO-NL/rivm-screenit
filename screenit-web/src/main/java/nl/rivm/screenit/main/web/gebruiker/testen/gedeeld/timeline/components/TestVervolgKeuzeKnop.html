@@ -19,14 +19,15 @@
   =========================LICENSE_END==================================
   -->
 <wicket:panel>
-    <div class="pull-right snelkeuze dropdown">
-        <button class="btn btn-small" wicket:id="button"><b wicket:id="caret" class="caret right"></b><label wicket:id="buttonlabel">Snelkeuze(s)</label></button>
-        <ul wicket:id="dropdownList" class="dropdown-menu">
-            <li wicket:id="snelkeuze">
-                <a  wicket:id="link">
-                    <label wicket:id="label">Opnieuw aanvragen cli&euml;ntgegevens</label>
-                </a>
-            </li>
-        </ul>
-    </div>
+	<div class="pull-right snelkeuze dropdown">
+		<button class="btn btn-small" wicket:id="button"><b wicket:id="caret" class="caret right"></b><label
+				wicket:id="buttonlabel">Snelkeuze(s)</label></button>
+		<ul wicket:id="dropdownList" class="dropdown-menu" data-testid="snelkeuze_dropdown">
+			<li wicket:id="snelkeuze">
+				<a wicket:id="link">
+					<label wicket:id="label">Opnieuw aanvragen cli&euml;ntgegevens</label>
+				</a>
+			</li>
+		</ul>
+	</div>
 </wicket:panel>

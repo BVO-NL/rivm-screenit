@@ -21,6 +21,7 @@ package nl.rivm.screenit.specification.mamma;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -43,6 +44,10 @@ import nl.rivm.screenit.specification.SpecificationUtil;
 import nl.rivm.screenit.util.DateUtil;
 
 import org.springframework.data.jpa.domain.Specification;
+
+import com.google.common.collect.Range;
+
+import static nl.rivm.screenit.specification.DateSpecification.bevatLocalDateToDate;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MammaMammografieBaseSpecification
@@ -75,6 +80,11 @@ public class MammaMammografieBaseSpecification
 	public static ExtendedSpecification<MammaMammografie> heeftIlmStatusIn(List<MammaMammografieIlmStatus> ilmStatussen)
 	{
 		return (r, q, cb) -> r.get(MammaMammografie_.ilmStatus).in(ilmStatussen);
+	}
+
+	public static ExtendedSpecification<MammaMammografie> heeftAfgerondOpInRange(Range<LocalDate> range)
+	{
+		return bevatLocalDateToDate(range, r -> r.get(MammaMammografie_.afgerondOp));
 	}
 
 	private static Join<?, MammaScreeningRonde> screeningRondeJoin(From<?, ? extends MammaMammografie> root)

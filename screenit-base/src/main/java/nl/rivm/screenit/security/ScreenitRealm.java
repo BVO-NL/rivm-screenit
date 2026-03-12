@@ -110,7 +110,7 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 			OrganisatieMedewerker organisatieMedewerker = hibernateService.load(OrganisatieMedewerker.class,
 				screenitPrincipal.getAccountId());
 			final Medewerker medewerker = organisatieMedewerker.getMedewerker();
-			if (Boolean.TRUE.equals(organisatieMedewerker.getActief()) && MedewerkerUtil.isMedewerkerActief(medewerker, currentDateSupplier.getDate()))
+			if (Boolean.TRUE.equals(organisatieMedewerker.getActief()) && MedewerkerUtil.isMedewerkerActief(medewerker, currentDateSupplier.getDateMidnight()))
 			{
 				if (LOG.isTraceEnabled())
 				{

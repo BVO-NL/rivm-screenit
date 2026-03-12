@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.medewerker;
  */
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -594,11 +593,6 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 								}
 
 								logAction(LogGebeurtenis.MEDEWERKER_WIJZIG, medewerker);
-								Date actiefTotEnMet = medewerker.getActiefTotEnMet();
-								if (actiefTotEnMet != null)
-								{ 
-									medewerker.setActiefTotEnMet(DateUtil.eindDag(actiefTotEnMet));
-								}
 								medewerkerService.saveOrUpdateMedewerker(medewerker, isBestaande, wordGeblokkeerd);
 								if (handtekeningField.hasFile())
 								{

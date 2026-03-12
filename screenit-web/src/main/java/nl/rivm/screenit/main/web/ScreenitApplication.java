@@ -21,6 +21,9 @@ package nl.rivm.screenit.main.web;
  * =========================LICENSE_END==================================
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -61,6 +64,7 @@ import org.apache.wicket.IConverterLocator;
 import org.apache.wicket.Page;
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.Session;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxRequestTarget.IListener;
@@ -80,12 +84,16 @@ import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.http.handler.ErrorCodeRequestHandler;
+import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
+import org.apache.wicket.resource.FileSystemResource;
+import org.apache.wicket.resource.FileSystemResourceReference;
 import org.apache.wicket.resource.JQueryResourceReference;
 import org.apache.wicket.session.HttpSessionStore;
 import org.apache.wicket.settings.ExceptionSettings;
 import org.apache.wicket.settings.RequestLoggerSettings;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,6 +146,8 @@ public class ScreenitApplication extends WebApplication
 		getExceptionSettings().setUnexpectedExceptionDisplay(ExceptionSettings.SHOW_INTERNAL_ERROR_PAGE);
 
 		getSecuritySettings().setCryptFactory(new KeyInSessionSunJceCryptFactory());
+
+		mountResource("medewerkerportaal-frontend/${name}", getReference("medewerkerportaal-frontend/"));
 
 		mountPage("medewerkerportaal", MedewerkerLoginMethodPage.class);
 		mountPage("passwordchange", PasswordChangePage.class);
@@ -213,6 +223,39 @@ public class ScreenitApplication extends WebApplication
 		initRequestLogger();
 
 		initDistributedJettySessions();
+	}
+
+	private static @NotNull FileSystemResourceReference getReference(String resourceLocation)
+	{
+		return new FileSystemResourceReference("filesystem")
+		{
+			@Override
+			public IResource getResource()
+			{
+				return new FileSystemResource()
+				{
+					private static final long serialVersionUID = 1L;
+
+					protected ResourceResponse newResourceResponse(Attributes attributes)
+					{
+						try
+						{
+							var name = attributes.getParameters().get("name").toString();
+							var uri = new File(resourceLocation + name).toURI();
+							return createResourceResponse(attributes, FileSystemResourceReference.getPath(uri));
+						}
+						catch (IOException e)
+						{
+							throw new WicketRuntimeException("Fout bij het lezen van het bestand.", e);
+						}
+						catch (URISyntaxException e)
+						{
+							throw new WicketRuntimeException("Fout bij het opbouwen van het URI.", e);
+						}
+					}
+				};
+			}
+		};
 	}
 
 	protected void initSpring()

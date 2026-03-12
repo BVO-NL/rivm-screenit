@@ -84,7 +84,6 @@ public class AanvullendeLabGegevensPage extends OrganisatieBeheer
 
 		form.add(new TextField<String>("labId").setEnabled(!inzien));
 		form.add(new TextField<String>("labIdScanner").setEnabled(!inzien));
-		form.add(new TextField<String>("qbasenummer").setEnabled(!inzien));
 
 		form.add(new AjaxSubmitLink("submit")
 		{

@@ -21,6 +21,7 @@ package nl.rivm.screenit.model.logging.colon;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -40,9 +41,10 @@ import nl.rivm.screenit.model.logging.LogEvent;
 @Table(schema = "gedeeld")
 public class ColonNieuwFitAanvraagLogEvent extends LogEvent
 {
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private Client client;
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private ColonNieuwFitResultaat resultaat;
 }

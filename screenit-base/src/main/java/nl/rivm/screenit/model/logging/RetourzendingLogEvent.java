@@ -22,6 +22,7 @@ package nl.rivm.screenit.model.logging;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToOne;
@@ -49,6 +50,7 @@ public class RetourzendingLogEvent extends LogEvent
 
 	private Integer geweigerdBriefRegels = 0;
 
+	@Column(nullable = false)
 	private Integer skippedRegels = 0;
 
 	private String trackIdMelding;

@@ -455,27 +455,27 @@ public enum LogGebeurtenis
 	RETOURZENDINGEN_VERWERKT(Level.INFO, DashboardType.COLON_RETOURZENDINGEN, DashboardActieType.START),
 
 	IMPORT_CAP_VERDELING_VERWERKT(Level.INFO),
-
+	@Deprecated
 	SENTINEL_BARCODES_GEWIJZIGD(Level.INFO),
-
+	@Deprecated
 	SENTINEL_ONTVANGEN(Level.INFO),
 
 	QC_MONSTER_ONTVANGEN(Level.INFO),
-
+	@Deprecated
 	SKML_SCHEMA_IMPORT_GESTART(Level.INFO),
-
+	@Deprecated
 	SKML_SCHEMA_IMPORT_AFGEROND(Level.INFO),
-
+	@Deprecated
 	SKML_INTERN_CONTROLE_SET_GEWIJZIGD(Level.INFO),
-
+	@Deprecated
 	INTERNE_TEST_ONTVANGEN(Level.INFO),
-
+	@Deprecated
 	EXTERNE_TEST_ONTVANGEN(Level.INFO),
-
+	@Deprecated
 	INVOERGEN_INTERNE_TEST(Level.INFO),
-
+	@Deprecated
 	INVOERGEN_EXTERNE_TEST(Level.INFO),
-
+	@Deprecated
 	QBASE_BESTAND_GEMAAKT(Level.INFO),
 
 	@Deprecated

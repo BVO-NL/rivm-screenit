@@ -42,7 +42,7 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 @Setter
 public class ColonSelectieRapportageEntry extends AbstractHibernateObject
 {
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private ColonSelectieRapportage rapportage;
 
 	@Enumerated(EnumType.STRING)
@@ -52,6 +52,7 @@ public class ColonSelectieRapportageEntry extends AbstractHibernateObject
 	@Enumerated(EnumType.STRING)
 	private SelectieType selectieType;
 
+	@Column(nullable = false)
 	private Long aantal;
 
 	private Long waarvanGepusht;

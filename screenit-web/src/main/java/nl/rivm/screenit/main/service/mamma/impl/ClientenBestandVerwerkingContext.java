@@ -22,109 +22,50 @@ package nl.rivm.screenit.main.service.mamma.impl;
  */
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
+import nl.rivm.screenit.service.impl.BaseBestandVerwerkingContext;
 import nl.topicuszorg.util.collections.CollectionUtils;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import au.com.bytecode.opencsv.CSVReader;
-
-public class ClientenBestandVerwerkingContext
+@Slf4j
+public class ClientenBestandVerwerkingContext extends BaseBestandVerwerkingContext
 {
-
-	private static final Logger LOG = LoggerFactory.getLogger(ClientenBestandVerwerkingContext.class);
 
 	private static final String BSN = "bsn";
 
 	private static final String GEBOORTEDATUM = "geboortedatum";
 
-	private CSVReader reader = null;
-
-	private String[] huidigeLine = null;
-
 	private int bsnColumn = -1;
 
 	private int geboortedatumColumn = -1;
 
-	private int regelnummer;
-
 	public ClientenBestandVerwerkingContext(File file) throws Exception
 	{
-		getMostUsefullReader(file);
+		super(file, 2);
 		bepaalVolgordeHeaders();
-		regelnummer = 1;
 
 	}
 
-	private void getMostUsefullReader(File file) throws Exception
+	@Override
+	public void bepaalVolgordeHeaders()
 	{
-		CSVReader testReader = null;
-		try
-		{
-			testReader = new CSVReader(new FileReader(file), ',');
-			huidigeLine = testReader.readNext();
-			if (huidigeLine != null && Arrays.asList(huidigeLine).size() >= 2)
-			{
-				reader = testReader;
-			}
-			else
-			{
-				testReader.close();
-				huidigeLine = null;
-				testReader = new CSVReader(new FileReader(file), ';');
-				huidigeLine = testReader.readNext();
-				if (huidigeLine != null && Arrays.asList(huidigeLine).size() >= 2)
-				{
-					reader = testReader;
-				}
-				else
-				{
-					testReader.close();
-					testReader = null;
-					throw new IllegalStateException("File die is aangeleverd voldoet niet aan het juiste formaat");
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			if (testReader != null)
-			{
-				try
-				{
-
-					testReader.close();
-				}
-				catch (IOException e1)
-				{
-					LOG.error("Van het projectbestand kan de reader niet worden gesloten", e);
-					throw e;
-				}
-			}
-		}
-	}
-
-	private void bepaalVolgordeHeaders()
-	{
-		List<String> headers = getHuidigeRegel();
+		var headers = getHuidigeRegel();
 		if (CollectionUtils.isNotEmpty(headers))
 		{
 			for (String header : headers)
 			{
-				String geformateerdeHeader = header.toLowerCase().trim();
-				if (BSN.equals(geformateerdeHeader))
+				String geformatteerdeHeader = header.toLowerCase().trim();
+				if (BSN.equals(geformatteerdeHeader))
 				{
 					bsnColumn = headers.indexOf(header);
 				}
-				else if (GEBOORTEDATUM.equals(geformateerdeHeader))
+				else if (GEBOORTEDATUM.equals(geformatteerdeHeader))
 				{
 					geboortedatumColumn = headers.indexOf(header);
 				}
@@ -167,39 +108,4 @@ public class ClientenBestandVerwerkingContext
 		return huidigeLine[bsnColumn].trim();
 	}
 
-	public List<String> getHuidigeRegel()
-	{
-		return Arrays.asList(huidigeLine);
-	}
-
-	public boolean isErEenNieuweRegel() throws IOException
-	{
-		huidigeLine = reader.readNext();
-		if (huidigeLine != null)
-		{
-			regelnummer++;
-			return true;
-		}
-		return false;
-	}
-
-	public int getRegelnummer()
-	{
-		return regelnummer;
-	}
-
-	public void close()
-	{
-		if (reader != null)
-		{
-			try
-			{
-				reader.close();
-			}
-			catch (IOException e)
-			{
-				LOG.error("Fout bij sluiten van reader", e);
-			}
-		}
-	}
 }

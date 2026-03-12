@@ -65,6 +65,7 @@ public class ProjectGroep extends AbstractHibernateObject implements INaam, IAct
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date actiefDatum;
 
+	@Column(nullable = false)
 	private Integer populatie;
 
 	@Enumerated(EnumType.STRING)

@@ -114,7 +114,7 @@ public class ScreeningOrganisatie extends Organisatie
 	@Column(precision = HibernateMagicNumber.P3, scale = HibernateMagicNumber.S2)
 	private BigDecimal factorDubbeleTijdBk;
 
-	@Column(precision = HibernateMagicNumber.P3, scale = HibernateMagicNumber.S2)
+	@Column(precision = 1)
 	private BigDecimal factorMindervalideBk;
 
 	@Column

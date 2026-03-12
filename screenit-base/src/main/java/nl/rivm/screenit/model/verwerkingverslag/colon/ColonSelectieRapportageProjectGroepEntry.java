@@ -22,6 +22,7 @@ package nl.rivm.screenit.model.verwerkingverslag.colon;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -36,21 +37,23 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 @Table(schema = "colon", name = "selectie_rapportage_project_groep_entry")
 public class ColonSelectieRapportageProjectGroepEntry extends AbstractHibernateObject
 {
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private ColonSelectieRapportage rapportage;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private ProjectGroep projectGroep;
 
 	@Enumerated(EnumType.STRING)
 	private SelectieType selectieType;
 
+	@Column(nullable = false)
 	private Long aantal;
 
 	private Integer dagenNogTeGaan;
 
 	private Long clientenNogTeGaan;
 
+	@Column(nullable = false)
 	private Long waarvanGepusht = 0L;
 
 	public ColonSelectieRapportage getRapportage()

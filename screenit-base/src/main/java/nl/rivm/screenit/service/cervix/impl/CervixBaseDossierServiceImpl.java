@@ -26,11 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DossierStatus;
-import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.cervix.cis.CervixCISHistorie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
-import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectInactiefReden;
 import nl.rivm.screenit.repository.cervix.CervixFoutHL7v2BerichtRepository;
 import nl.rivm.screenit.service.BaseClientContactService;
@@ -83,7 +81,9 @@ public class CervixBaseDossierServiceImpl implements CervixBaseDossierService
 
 		try
 		{
-			Client client = dossier.getClient();
+			var client = dossier.getClient();
+
+			verwijderFoutHl7V2Berichten(client);
 
 			baseScreeningrondeService.verwijderScreeningRondes(dossier);
 
@@ -99,13 +99,11 @@ public class CervixBaseDossierServiceImpl implements CervixBaseDossierService
 			}
 			verwijderCisHistorie(dossier.getCisHistorie());
 
-			verwijderFoutHl7V2Berichten(client);
-
 			opruimenDossier(dossier);
 
 			hibernateService.saveOrUpdate(client);
 
-			ProjectClient projectClient = ProjectUtil.getHuidigeProjectClient(client, currentDateSupplier.getDate(), false);
+			var projectClient = ProjectUtil.getHuidigeProjectClient(client, currentDateSupplier.getDate(), false);
 			if (projectClient != null)
 			{
 				clientService.projectClientInactiveren(projectClient, ProjectInactiefReden.VERWIJDERING_VAN_DOSSIER, Bevolkingsonderzoek.CERVIX);
@@ -129,7 +127,7 @@ public class CervixBaseDossierServiceImpl implements CervixBaseDossierService
 	{
 		dossier.setInactiefVanaf(null);
 		dossier.setInactiefTotMet(null);
-		CervixBrief vooraankondigingsBrief = dossier.getVooraankondigingsBrief();
+		var vooraankondigingsBrief = dossier.getVooraankondigingsBrief();
 		if (vooraankondigingsBrief != null)
 		{
 			dossier.setVooraankondigingsBrief(null);

@@ -33,9 +33,8 @@ public enum ColonFitAnalyseResultaatType
 	CLIENT(null),
 	INTERN(LogGebeurtenis.INTERNE_TEST_ONTVANGEN),
 	EXTERN(LogGebeurtenis.EXTERNE_TEST_ONTVANGEN),
-	SENTINEEL(LogGebeurtenis.SENTINEL_ONTVANGEN),
-	CLIENT_EIKEN(null),
-	QC(LogGebeurtenis.QC_MONSTER_ONTVANGEN);
+	QC(LogGebeurtenis.QC_MONSTER_ONTVANGEN),
+	SENTINEEL(LogGebeurtenis.SENTINEL_ONTVANGEN);
 
 	private final LogGebeurtenis logGebeurtenis;
 }

@@ -22,6 +22,7 @@ package nl.rivm.screenit.model.verwerkingverslag.colon;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
@@ -37,6 +38,7 @@ public class ColonSelectieRapportageGewijzigdGebiedEntry extends AbstractHiberna
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private ColonSelectieRapportage rapportage;
 
+	@Column(nullable = false)
 	private Integer percentage;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)

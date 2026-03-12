@@ -24,6 +24,7 @@ package nl.rivm.screenit.model.colon;
 import java.util.Date;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
@@ -44,11 +45,12 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 public class ColonVooraankondiging extends AbstractHibernateObject
 {
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	private Date creatieDatum;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private Client client;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, optional = false)
 	private ColonBrief brief;
 }

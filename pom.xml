@@ -231,6 +231,10 @@
                     <argLine>
                         @{argLine}
                         --add-opens java.base/java.io=ALL-UNNAMED
+                        -Duser.timezone=Europe/Amsterdam
+                        -Duser.country=NL -Duser.country.format=NL
+                        -Duser.language=nl
+                        -Duser.language.format=nl
                     </argLine>
                     <includes>
                         <include>**/*Test.java</include>

@@ -33,9 +33,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 
 import lombok.Getter;
@@ -53,12 +54,10 @@ import org.hibernate.envers.Audited;
 @Setter
 public class OrganisatieMedewerkerRol extends AbstractHibernateObject implements IActief, IBevolkingsonderzoek
 {
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(nullable = false)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private OrganisatieMedewerker organisatieMedewerker;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(nullable = false)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private Rol rol;
 
 	@ElementCollection(targetClass = Bevolkingsonderzoek.class, fetch = FetchType.EAGER)
@@ -67,8 +66,10 @@ public class OrganisatieMedewerkerRol extends AbstractHibernateObject implements
 	@CollectionTable(schema = "algemeen", name = "organisatie_medewerker_rol_bevolkingsonderzoeken")
 	private List<Bevolkingsonderzoek> bevolkingsonderzoeken = new ArrayList<>();
 
+	@Temporal(TemporalType.DATE)
 	private Date beginDatum;
 
+	@Temporal(TemporalType.DATE)
 	private Date eindDatum;
 
 	@Column(nullable = false)

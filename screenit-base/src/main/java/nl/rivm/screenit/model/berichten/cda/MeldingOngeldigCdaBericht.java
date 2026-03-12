@@ -46,7 +46,7 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 public class MeldingOngeldigCdaBericht extends AbstractHibernateObject
 {
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private OntvangenCdaBericht ontvangenCdaBericht;
 
 	@ManyToOne
@@ -55,7 +55,7 @@ public class MeldingOngeldigCdaBericht extends AbstractHibernateObject
 	@ManyToOne
 	private Medewerker uitvoerder;
 
-	@Column(length = HibernateMagicNumber.L512)
+	@Column(length = HibernateMagicNumber.L512, nullable = false)
 	private String melding;
 
 	@Column(nullable = false)
@@ -67,10 +67,11 @@ public class MeldingOngeldigCdaBericht extends AbstractHibernateObject
 	@Column(length = HibernateMagicNumber.L20)
 	private String topdeskTicket;
 
-	@Column(length = HibernateMagicNumber.L12)
+	@Column(length = HibernateMagicNumber.L12, nullable = false)
 	private String bsn;
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	private Date datum;
 
 }

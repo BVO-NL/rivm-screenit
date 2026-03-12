@@ -58,7 +58,7 @@ public class MammaScreeningsEenheidStatus extends AbstractHibernateObject
 	@Column(nullable = false)
 	private Boolean mammografenAanwezig;
 
-	@Column(nullable = true)
+	@Column(nullable = false)
 	private String offlineDaglijsten;
 
 	@Column(nullable = true)

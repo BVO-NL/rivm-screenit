@@ -356,7 +356,7 @@ public class OrganisatieServiceImpl implements OrganisatieService
 			for (OrganisatieMedewerker organisatieMedewerker : organisatie.getOrganisatieMedewerkers())
 			{
 				final Medewerker medewerker = organisatieMedewerker.getMedewerker();
-				if (BooleanUtils.isNotFalse(organisatieMedewerker.getActief()) && MedewerkerUtil.isMedewerkerActief(medewerker, currentDateSupplier.getDate())
+				if (BooleanUtils.isNotFalse(organisatieMedewerker.getActief()) && MedewerkerUtil.isMedewerkerActief(medewerker, currentDateSupplier.getDateMidnight())
 					&& !medewerkers.contains(medewerker))
 				{
 					medewerkers.add(medewerker);

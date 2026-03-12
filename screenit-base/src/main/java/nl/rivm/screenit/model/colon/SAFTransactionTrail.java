@@ -26,7 +26,6 @@ import java.util.Date;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -44,16 +43,17 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 public class SAFTransactionTrail extends AbstractHibernateObject
 {
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(nullable = false)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	private ScannedAntwoordFormulier scannedAntwoordFormulier;
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	private Date datumTijd;
 
 	@Column(nullable = false)
 	private String medewerker;
 
+	@Column(nullable = false)
 	private String transactionId;
 
 }

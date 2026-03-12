@@ -513,6 +513,7 @@ public abstract class MedewerkerBasePage extends BasePage
 				container.add(contextMenu);
 				container.add(link);
 
+				link.add(new AttributeAppender("data-testid", medewerkerMenuItem.getResourceTag() + "_hoofdmenu_link", " "));
 				link.add(status);
 				link.add(caret);
 				link.add(new Label("naam", new SimpleStringResourceModel(item.getModelObject().getResourceTag())));

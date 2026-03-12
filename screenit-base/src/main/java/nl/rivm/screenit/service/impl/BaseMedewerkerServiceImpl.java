@@ -40,6 +40,7 @@ import nl.rivm.screenit.service.BaseMedewerkerService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.MailService;
 import nl.rivm.screenit.util.DatabaseSequence;
+import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.SequenceGenerator;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
@@ -161,7 +162,7 @@ public class BaseMedewerkerServiceImpl implements BaseMedewerkerService
 
 		if (medewerker.getActiefTotEnMet() == null)
 		{
-			medewerker.setActiefTotEnMet(currentDateSupplier.getDate());
+			medewerker.setActiefTotEnMet(DateUtil.minDagen(currentDateSupplier.getDateMidnight(), 1));
 		}
 		medewerker.setInlogstatus(InlogStatus.GEBLOKKEERD);
 		medewerker.getOrganisatieMedewerkers().forEach(organisatieMedewerker ->

@@ -34,6 +34,8 @@ import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieDto;
 import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieRequestDto;
 import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieResponseDto;
 import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieWerklijstFilterDto;
+import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatielijstRequestDto;
+import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatielijstResponseDto;
 import nl.rivm.screenit.main.service.mamma.MammaKwaliteitscontroleService;
 import nl.rivm.screenit.main.service.mamma.MammaVisitatieService;
 import nl.rivm.screenit.main.util.PagineringUtil;
@@ -97,7 +99,7 @@ public class MammaVisitatieController
 		bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA },
 		recht = { Recht.MEDEWERKER_VISITATIE, Recht.MEDEWERKER_VISITATIE_INSTELTECHNIEK },
 		organisatieTypeScopes = { OrganisatieType.KWALITEITSPLATFORM, OrganisatieType.SCREENINGSORGANISATIE, OrganisatieType.RIVM })
-	ResponseEntity<List<MammaVisitatieDto>> getUniekOmschrijving(@RequestParam("waarde") String waarde)
+	ResponseEntity<List<MammaVisitatieDto>> getUniekOmschrijving(@RequestParam String waarde)
 	{
 		if (StringUtils.isBlank(waarde))
 		{
@@ -119,8 +121,31 @@ public class MammaVisitatieController
 		@RequestParam(required = false) Map<String, MultipartFile> bestanden,
 		@RequestPart(value = "rapportage", required = false) MultipartFile rapportage, @RequestPart(value = "vragenlijst", required = false) MultipartFile vragenlijst)
 	{
-		var visitatieResponseDto = kwaliteitscontroleService.maakOfBewerkVisitatie(dto, bestanden, rapportage, vragenlijst, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+		var visitatieResponseDto = kwaliteitscontroleService.maakOfBewerkVisitatie(dto, bestanden, rapportage, vragenlijst,
+			ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 		return ResponseEntity.ok(visitatieResponseDto);
+	}
+
+	@PostMapping("/insteltechniek/genereren")
+	@SecurityConstraint(
+		constraint = ShiroConstraint.HasPermission,
+		bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA },
+		recht = { Recht.MEDEWERKER_VISITATIE_INSTELTECHNIEK },
+		organisatieTypeScopes = { OrganisatieType.RIVM })
+	ResponseEntity<MammaVisitatielijstResponseDto> genereerInsteltechniekVisitatielijst(@RequestPart("metadata") MammaVisitatielijstRequestDto dto,
+		@RequestPart(value = "bestand", required = false) MultipartFile bestand, @RequestParam boolean dryRun)
+	{
+		try
+		{
+			var visitatieResponseDto = kwaliteitscontroleService.genereerInsteltechniekVisitatielijst(dto, bestand, dryRun,
+				ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+			return ResponseEntity.ok(visitatieResponseDto);
+		}
+		catch (Exception e)
+		{
+			LOG.error("Fout bij genereren visitatielijst", e);
+			return ResponseEntity.internalServerError().build();
+		}
 	}
 
 	@PutMapping("{id}")
@@ -134,7 +159,8 @@ public class MammaVisitatieController
 		@RequestPart(value = "rapportage", required = false) MultipartFile rapportage, @RequestPart(value = "vragenlijst", required = false) MultipartFile vragenlijst)
 
 	{
-		var visitatieResponseDto = kwaliteitscontroleService.maakOfBewerkVisitatie(dto, bestanden, rapportage, vragenlijst, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+		var visitatieResponseDto = kwaliteitscontroleService.maakOfBewerkVisitatie(dto, bestanden, rapportage, vragenlijst,
+			ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 		return ResponseEntity.ok(visitatieResponseDto);
 	}
 

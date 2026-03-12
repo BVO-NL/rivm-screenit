@@ -24,6 +24,7 @@ package nl.rivm.screenit.model.overeenkomsten;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -48,16 +49,20 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 public class Overeenkomst extends AbstractHibernateObject implements IActief
 {
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private OvereenkomstType overeenkomst;
 
+	@Column(nullable = false)
 	private String naam;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private UploadDocument document;
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	private Date laatsteUpdateDocument;
 
+	@Column(nullable = false)
 	private Boolean actief = Boolean.TRUE;
 
 	@OneToMany(mappedBy = "overeenkomst")

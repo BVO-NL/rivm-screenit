@@ -103,9 +103,12 @@ public class UitnodigingenVersturenListener extends BaseLogListener
 		long totaalVerstuurd = 0;
 
 		var rapportage = new ColonSelectieRapportage();
+		rapportage.setDatumVerwerking(currentDateSupplier.getDate());
+		hibernateService.saveOrUpdate(rapportage);
+
 		for (var categorie : ColonUitnodigingscategorie.getCategorieen())
 		{
-			Long aantal = context.getLong(categorie.name());
+			var aantal = context.getLong(categorie.name());
 
 			ColonSelectieRapportageEntry entry = new ColonSelectieRapportageEntry();
 			entry.setSelectieType(SelectieType.UITNODIGING_VERSTUURD);
@@ -115,7 +118,6 @@ public class UitnodigingenVersturenListener extends BaseLogListener
 			hibernateService.saveOrUpdate(entry);
 			totaalVerstuurd += aantal;
 		}
-		rapportage.setDatumVerwerking(currentDateSupplier.getDate());
 
 		var projectCounterHolders = (List<UitnodigingenVersturenProjectGroepCounterHolder>) context.get(UitnodigingenVersturenConstants.PROJECTENCOUNTERS);
 		var rapportageProjectGroepen = new ArrayList<ColonSelectieRapportageProjectGroepEntry>();
@@ -131,7 +133,6 @@ public class UitnodigingenVersturenListener extends BaseLogListener
 		}
 		rapportage.setProjectGroepen(rapportageProjectGroepen);
 
-		hibernateService.saveOrUpdate(rapportage);
 		event.setRapportage(rapportage);
 
 		if (Level.INFO == event.getLevel())

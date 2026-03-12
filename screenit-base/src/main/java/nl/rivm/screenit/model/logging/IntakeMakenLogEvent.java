@@ -33,6 +33,8 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import nl.rivm.screenit.model.colon.IntakeMakenLogEventRegel;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
@@ -62,8 +64,10 @@ public class IntakeMakenLogEvent extends LogEvent
 
 	private Integer aantalBuitenMaximaleAfstand = 0;
 
+	@Temporal(TemporalType.DATE)
 	private Date beginTijd;
 
+	@Temporal(TemporalType.DATE)
 	private Date eindTijd;
 
 	public List<String> getExceptionStackTrace()

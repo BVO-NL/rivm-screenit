@@ -118,7 +118,6 @@ public class HuisartsServiceImpl implements HuisartsService
 			huisarts.setInlogCode(huisartsDto.getInlogCode());
 			huisarts.setInlogMethode(InlogMethode.INLOGCODE);
 		}
-		huisarts.setInlogCode(huisartsDto.getInlogCode());
 		if (huisartsDto.getPostadres() != null)
 		{
 			huisarts.setPostadres(adresService.updateAndGetAdres(huisartsDto.getPostadres()));

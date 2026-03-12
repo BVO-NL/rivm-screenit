@@ -66,7 +66,7 @@ public class ColonConclusie extends AbstractHibernateObject
 	@Column(nullable = false)
 	private Date datum;
 
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	@Column
 	private Date datumColoscopie;
 

@@ -37,7 +37,6 @@ import { subMonths } from 'date-fns'
   selector: 'app-mamma-visitatie-filter',
   imports: [CardComponent, ReactiveFormsModule, ClrComboboxModule],
   templateUrl: './mamma-visitatie-filter.component.html',
-  styleUrl: './mamma-visitatie-filter.component.scss',
 })
 export class MammaVisitatieFilterComponent {
   private readonly formBuilder = inject(FormBuilder)

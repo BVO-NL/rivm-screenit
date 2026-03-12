@@ -688,7 +688,7 @@ public class VerwerkCdaBerichtServiceImpl implements VerwerkCdaBerichtService
 				if (Boolean.TRUE.equals(om.getActief()))
 				{
 					var medewerker = om.getMedewerker();
-					if (MedewerkerUtil.isMedewerkerActief(medewerker, currentDateSupplier.getDate()) && patholoogId != null && patholoogId.equals(medewerker.getPatholoogId()))
+					if (MedewerkerUtil.isMedewerkerActief(medewerker, currentDateSupplier.getDateMidnight()) && patholoogId.equals(medewerker.getPatholoogId()))
 					{
 						organisatieMedewerker = om;
 						break;

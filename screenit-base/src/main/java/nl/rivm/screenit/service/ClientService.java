@@ -118,4 +118,8 @@ public interface ClientService
 	Integer getLeeftijd(Client client);
 
 	boolean isLevendeInwonerNederlandMetGbaIndicatie(Client client);
+
+	Client getClientByBeoordelingId(Long beoordelingId);
+
+	Long getClientIdByBeoordelingId(Long beoordelingId);
 }

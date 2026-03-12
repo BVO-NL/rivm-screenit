@@ -53,9 +53,11 @@ public class CervixUitstel extends AbstractHibernateObject
 	private CervixUitstelType uitstelType;
 
 	@Column(nullable = false)
+	@Temporal(TemporalType.DATE)
 	private Date uitstellenTotDatum;
 
 	@Column(nullable = false)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date wijzigingsDatum;
 
 	@Temporal(TemporalType.TIMESTAMP)

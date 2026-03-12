@@ -40,25 +40,25 @@
 							<div class="control-group">
 								<label class="control-label">Achternaam</label>
 								<div class="controls">
-									<input class="input-large" type="text" wicket:id="achternaam">
+									<input class="input-large" type="text" wicket:id="achternaam" data-testid="achternaam_input">
 								</div>
 							</div>
 							<div class="control-group">
 								<label class="control-label">Tussenvoegsel</label>
 								<div class="controls">
-									<input class="input-mini" type="text" wicket:id="tussenvoegsel">
+									<input class="input-mini" type="text" wicket:id="tussenvoegsel" data-testid="tussenvoegsel_input">
 								</div>
 							</div>
 							<div class="control-group">
 								<label class="control-label">Voorletter(s)</label>
 								<div class="controls">
-									<input class="input-mini" type="text" wicket:id="voorletters">
+									<input class="input-mini" type="text" wicket:id="voorletters" data-testid="voorletters_input">
 								</div>
 							</div>
 							<div class="control-group">
 								<label class="control-label">Voornaam</label>
 								<div class="controls">
-									<input class="input-large" type="text" wicket:id="voornaam">
+									<input class="input-large" type="text" wicket:id="voornaam" data-testid="voornaam_input">
 								</div>
 							</div>
 							<div class="control-group">
@@ -66,7 +66,7 @@
 								<div class="controls">
 									<div class="input-append">
 										<input wicket:id="geboortedatum" type="text" maxlength="10"
-											   class="input-small datum">
+											   class="input-small datum" data-testid="geboortedatum_input">
 									</div>
 								</div>
 							</div>
@@ -151,21 +151,21 @@
 							<div class="control-group">
 								<label class="control-label">Telefoonnummer werk</label>
 								<div class="controls">
-									<input class="input-large" type="text"
+									<input class="input-large" type="text" data-testid="telefoonnummer-werk_input"
 										   wicket:id="telefoonnummerwerk">
 								</div>
 							</div>
 							<div class="control-group">
 								<label class="control-label">Telefoonnummer priv&eacute;</label>
 								<div class="controls">
-									<input class="input-large" type="text"
+									<input class="input-large" type="text" data-testid="telefoonnummer-prive_input"
 										   wicket:id="telefoonnummerprive">
 								</div>
 							</div>
 							<div class="control-group">
 								<label class="control-label">Telefoonnummer extra</label>
 								<div class="controls">
-									<input class="input-large" type="text"
+									<input class="input-large" type="text" data-testid="telefoonnummer-extra_input"
 										   wicket:id="telefoonnummerextra">
 								</div>
 							</div>
@@ -174,13 +174,13 @@
 							<div class="control-group">
 								<label class="control-label">E-mailadres</label>
 								<div class="controls">
-									<input class="input-large" type="text" wicket:id="emailextra">
+									<input class="input-large" type="text" wicket:id="emailextra" data-testid="email_input">
 								</div>
 							</div>
 							<div class="control-group">
 								<label class="control-label">Woonplaats</label>
 								<div class="controls">
-									<input class="input-large" type="text"
+									<input class="input-large" type="text" data-testid="woonplaats_input"
 										   wicket:id="woonplaats">
 								</div>
 							</div>
@@ -204,7 +204,7 @@
 							<div class="control-group">
 								<label class="control-label">Gebruikersnaam</label>
 								<div class="controls">
-									<input wicket:id="gebruikersnaam" type="text" value="gebruikersnaam">
+									<input wicket:id="gebruikersnaam" type="text" value="gebruikersnaam" data-testid="gebruikersnaam_input">
 								</div>
 							</div>
 							<div class="control-group">
@@ -224,12 +224,12 @@
 						</div>
 						<div class="span6">
 							<div class="control-group">
-								<button wicket:id="resetWachtwoord" class="btn">Reset
+								<button wicket:id="resetWachtwoord" class="btn" data-testid="reset-wachtwoord_button">Reset
 									wachtwoord
 								</button>
 							</div>
 							<div class="control-group">
-								<button wicket:id="changeWachtwoord" class="btn">Wachtwoord
+								<button wicket:id="changeWachtwoord" class="btn" data-testid="wachtwoord-wijzigen_button">Wachtwoord
 									wijzigen
 								</button>
 							</div>
@@ -237,7 +237,7 @@
 								<label class="control-label">Actief vanaf</label>
 								<div class="controls">
 									<div class="input-append">
-										<input wicket:id="actiefVanaf" type="text" maxlength="10" class="input-small datum">
+										<input wicket:id="actiefVanaf" type="text" maxlength="10" class="input-small datum" data-testid="actief-vanaf_input">
 										<a class="btn js-datepicker-show">
 											<i class="icon-calendar"/>
 										</a>
@@ -248,7 +248,7 @@
 								<label class="control-label">Actief tot en met</label>
 								<div class="controls">
 									<div class="input-append">
-										<input wicket:id="actiefTotEnMet" type="text" maxlength="10" class="input-small datum">
+										<input wicket:id="actiefTotEnMet" type="text" maxlength="10" class="input-small datum" data-testid="actief-tot-en-met_input">
 										<a class="btn js-datepicker-show">
 											<i class="icon-calendar"/>
 										</a>
@@ -277,7 +277,7 @@
 							<div class="control-group">
 								<label class="control-label">UZI-nummer</label>
 								<div class="controls">
-									<input class="input-medium" type="text" wicket:id="uzinummer">
+									<input class="input-medium" type="text" wicket:id="uzinummer" data-testid="uzi-nummer_input">
 								</div>
 							</div>
 						</div>
@@ -295,7 +295,7 @@
 							<div class="control-group">
 								<label class="control-label">Patholoog ID</label>
 								<div class="controls">
-									<input class="input-mini" type="text" wicket:id="patholoogId">
+									<input class="input-mini" type="text" wicket:id="patholoogId" data-testid="patholoog-id_input">
 								</div>
 							</div>
 						</div>
@@ -313,7 +313,7 @@
 							<div class="control-group">
 								<label class="control-label">Private identity</label>
 								<div class="controls">
-									<input class="input-medium" type="password"
+									<input class="input-medium" type="password" data-testid="private-identity_input"
 										   wicket:id="privateYubiIdentity">
 								</div>
 							</div>
@@ -322,7 +322,7 @@
 							<div class="control-group">
 								<label class="control-label">Secret key</label>
 								<div class="controls">
-									<input class="input-medium" type="text"
+									<input class="input-medium" type="text" data-testid="secret-key_input"
 										   wicket:id="yubiKey.secretKey">
 								</div>
 							</div>
@@ -333,12 +333,12 @@
 				<div class="row-fluid">
 					<div class="span12">
 						<div class="form-actions btn-bottom">
-							<button wicket:id="inActiveren" class="btn">
+							<button wicket:id="inActiveren" class="btn" data-testid="inactiveren_button">
 								<i class="icon-minus-sign"></i> <span
 									wicket:id="inActiverenTitle">Verwijderen</span>
 							</button>
-							<button wicket:id="annuleren" class="btn">Annuleren</button>
-							<button wicket:id="opslaan" class="btn btn-primary">Opslaan</button>
+							<button wicket:id="annuleren" class="btn" data-testid="annuleren_button">Annuleren</button>
+							<button wicket:id="opslaan" class="btn btn-primary" data-testid="opslaan_button">Opslaan</button>
 						</div>
 					</div>
 				</div>

@@ -24,6 +24,7 @@ import {
   ClarityIcons,
   downloadIcon,
   eventIcon,
+  listIcon,
   minusIcon,
   pencilIcon,
   plusIcon,
@@ -36,5 +37,5 @@ import {
 import '@cds/core/icon/register.js'
 
 export function loadIcons() {
-  ClarityIcons.addIcons(angleIcon, eventIcon, zoomInIcon, zoomOutIcon, pencilIcon, trashIcon, twoWayArrowsIcon, arrowIcon, plusIcon, minusIcon, downloadIcon, popOutIcon)
+  ClarityIcons.addIcons(angleIcon, eventIcon, zoomInIcon, zoomOutIcon, pencilIcon, trashIcon, twoWayArrowsIcon, arrowIcon, plusIcon, minusIcon, downloadIcon, popOutIcon, listIcon)
 }

@@ -32,6 +32,8 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -65,6 +67,7 @@ public abstract class Huisarts extends AbstractHibernateObject
 
 	private String oorspronkelijkEdiadres;
 
+	@Temporal(TemporalType.DATE)
 	private Date gewijzigd;
 
 	private String klantnummer;

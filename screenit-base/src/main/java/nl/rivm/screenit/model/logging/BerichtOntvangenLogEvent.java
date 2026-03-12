@@ -33,7 +33,7 @@ import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
 @Table(schema = "gedeeld")
 public class BerichtOntvangenLogEvent extends LogEvent
 {
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private OntvangenCdaBericht bericht;
 
 	public OntvangenCdaBericht getBericht()

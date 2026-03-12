@@ -25,18 +25,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.ScannedFormulier;
-import nl.rivm.screenit.model.cervix.enums.CervixLabformulierStatus;
-import nl.rivm.screenit.model.cervix.enums.signaleringen.CervixLabformulierSignalering;
-import nl.rivm.screenit.util.DiffSpecs;
-import nl.rivm.screenit.util.SkipFieldForDiff;
-
-import org.hibernate.envers.Audited;
-
 import jakarta.annotation.Nullable;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -52,6 +40,18 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.UniqueConstraint;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import nl.rivm.screenit.model.BMHKLaboratorium;
+import nl.rivm.screenit.model.ScannedFormulier;
+import nl.rivm.screenit.model.cervix.enums.CervixLabformulierStatus;
+import nl.rivm.screenit.model.cervix.enums.signaleringen.CervixLabformulierSignalering;
+import nl.rivm.screenit.util.DiffSpecs;
+import nl.rivm.screenit.util.SkipFieldForDiff;
+
+import org.hibernate.envers.Audited;
 
 @Getter
 @Setter
@@ -97,7 +97,7 @@ public class CervixLabformulier extends ScannedFormulier
 	@Column(nullable = false)
 	private Boolean kunstmatig = Boolean.FALSE;
 
-	@Column
+	@Column(nullable = false)
 	private boolean digitaal = false;
 
 	@Temporal(TemporalType.DATE)

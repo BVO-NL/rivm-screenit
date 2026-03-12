@@ -51,7 +51,7 @@ public class HpvSendingMessageServiceImpl implements HpvSendingMessageService
 	private Integer hpvPort;
 
 	@Autowired
-	private String hpvHost;
+	private String hl7wsbHost;
 
 	@Override
 	public ScreenITResponseV251MessageWrapper verstuurHpvBericht(Message message) throws IOException
@@ -84,7 +84,7 @@ public class HpvSendingMessageServiceImpl implements HpvSendingMessageService
 		try
 		{
 			LOG.info("Poging tot connectie, ");
-			conn = context.newClient(hpvHost, hpvPort.intValue(), false);
+			conn = context.newClient(hl7wsbHost, hpvPort.intValue(), false);
 		}
 		catch (HL7Exception e)
 		{

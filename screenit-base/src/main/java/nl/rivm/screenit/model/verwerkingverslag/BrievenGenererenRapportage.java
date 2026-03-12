@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -42,6 +43,7 @@ public class BrievenGenererenRapportage extends AbstractHibernateObject
 	private List<BrievenGenererenRapportageEntry> entries = new ArrayList<>();
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	private Date datumVerwerking;
 
 	public List<BrievenGenererenRapportageEntry> getEntries()

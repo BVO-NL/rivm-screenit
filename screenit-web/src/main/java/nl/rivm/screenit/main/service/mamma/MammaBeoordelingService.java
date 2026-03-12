@@ -22,6 +22,7 @@ package nl.rivm.screenit.main.service.mamma;
  */
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.List;
 
 import nl.rivm.screenit.main.model.mamma.beoordeling.BeoordelingenReserveringResult;
@@ -34,6 +35,8 @@ import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.model.mamma.enums.MammaBeLezerSoort;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingOpschortenReden;
 import nl.rivm.screenit.model.mamma.enums.MammaLezingType;
+
+import com.google.common.collect.Range;
 
 public interface MammaBeoordelingService
 {
@@ -75,4 +78,8 @@ public interface MammaBeoordelingService
 	List<MammaBeoordelingOpschortenReden> getMogelijkeOpschortRedenen(MammaBeoordeling beoordeling, MammaLezingType lezingType);
 
 	void logBeoordelingIngezien(MammaBeoordeling beoordeling, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, boolean isCoordinerendRadioloog);
+
+	List<Long> getBeoordelingIdsVanMedewerker(OrganisatieMedewerker medewerker, Range<LocalDate> datumRange);
+
+	MammaBeoordeling getById(Long id);
 }

@@ -71,7 +71,8 @@ public class ColonFitRegistratie extends AbstractHibernateObject
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date verwerkingsDatum;
 
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
+	@Column(nullable = false)
 	private Date datumVerstuurd;
 
 	@ManyToOne(optional = false)

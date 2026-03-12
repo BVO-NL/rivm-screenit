@@ -21,6 +21,7 @@ package nl.rivm.screenit.model.logging;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -30,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 @Table(schema = "gedeeld")
 public class ZasKoppelingBeeindigdLogEvent extends LogEvent
 {
+	@Column(nullable = false)
 	private Integer aantalZasVerwerkt = 0;
 
 	public Integer getAantalZasVerwerkt()

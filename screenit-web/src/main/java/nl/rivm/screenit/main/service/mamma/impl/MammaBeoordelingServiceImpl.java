@@ -22,6 +22,7 @@ package nl.rivm.screenit.main.service.mamma.impl;
  */
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -51,6 +52,7 @@ import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling_;
 import nl.rivm.screenit.model.mamma.MammaBrief;
 import nl.rivm.screenit.model.mamma.MammaLezing;
+import nl.rivm.screenit.model.mamma.MammaOnderzoek_;
 import nl.rivm.screenit.model.mamma.enums.MammaBIRADSWaarde;
 import nl.rivm.screenit.model.mamma.enums.MammaBeLezerSoort;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingOpschortenReden;
@@ -76,6 +78,7 @@ import nl.rivm.screenit.service.mamma.MammaBaseVerslagService;
 import nl.rivm.screenit.service.mamma.MammaHuisartsBerichtService;
 import nl.rivm.screenit.service.mamma.MammaHuisartsService;
 import nl.rivm.screenit.service.mamma.be.verslag.MammaVerslagDocumentCreator;
+import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
@@ -89,15 +92,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Range;
+
 import static nl.rivm.screenit.specification.HibernateObjectSpecification.heeftNietId;
+import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.mamma.MammaBeoordelingSpecification.heeftDossier;
 import static nl.rivm.screenit.specification.mamma.MammaBeoordelingSpecification.heeftMammografieIlmStatus;
+import static nl.rivm.screenit.specification.mamma.MammaBeoordelingSpecification.heeftOnderzoekType;
 import static nl.rivm.screenit.specification.mamma.MammaBeoordelingSpecification.heeftOpschortReden;
 import static nl.rivm.screenit.specification.mamma.MammaBeoordelingSpecification.heeftStatus;
+import static nl.rivm.screenit.specification.mamma.MammaBeoordelingSpecification.heeftStatusIn;
+import static nl.rivm.screenit.specification.mamma.MammaBeoordelingSpecification.isDoorgevoerdDoorMedewerker;
+import static nl.rivm.screenit.specification.mamma.MammaMammografieBaseSpecification.heeftAfgerondOpInRange;
 
 @Slf4j
 @Service
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 {
 
@@ -293,7 +302,7 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 		return huidigeBeoordelingIndex + 1 < beoordelingenIds.size() ? beoordelingenIds.get(huidigeBeoordelingIndex + 1) : null;
 	}
 
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	@Override
 	public BeoordelingenReserveringResult openBeschikbareBeoordeling(Long startBeoordelingId, List<Long> beoordelingenIds, OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
 		MammaBeLezerSoort lezerSoort)
@@ -383,7 +392,7 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void gunstigeUitslagMetNevenbevindingAfronden(MammaBeoordeling beoordeling, EnovationHuisarts alternativeHuisarts, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		baseBeoordelingService.verwerkBeoordelingStatusGunstigMetNevenbevindingen(beoordeling);
@@ -405,7 +414,7 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public File verslagGoedkeurenDoorCE(MammaBeoordeling beoordeling, boolean directPrinten, EnovationHuisarts alternatieveHuisarts,
 		OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
@@ -464,7 +473,7 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void onbeoordeelbaarAfgehandeld(MammaBeoordeling beoordeling, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		baseBeoordelingService.setStatus(beoordeling, MammaBeoordelingStatus.ONBEOORDEELBAAR);
@@ -559,7 +568,7 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public File genereerPdfVoorOngunstigeUitslagBrief(MammaBeoordeling beoordeling)
 	{
 		var screeningRonde = baseBeoordelingService.getScreeningRonde(beoordeling);
@@ -635,7 +644,7 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void logBeoordelingIngezien(MammaBeoordeling beoordeling, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, boolean isCoordinerendRadioloog)
 	{
 		if (isCoordinerendRadioloog)
@@ -652,4 +661,23 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 		}
 	}
 
+	@Override
+	public List<Long> getBeoordelingIdsVanMedewerker(OrganisatieMedewerker medewerker, Range<LocalDate> datumRange)
+	{
+		var spec = isDoorgevoerdDoorMedewerker(medewerker)
+			.and(heeftOnderzoekType(MammaOnderzoekType.MAMMOGRAFIE))
+			.and(heeftStatusIn(MammaBeoordelingStatus.uitslagStatussen()))
+			.and(heeftAfgerondOpInRange(datumRange).with(r ->
+			{
+				var onderzoekJoin = join(r, MammaBeoordeling_.onderzoek);
+				return join(onderzoekJoin, MammaOnderzoek_.mammografie);
+			}));
+		return beoordelingRepository.findWith(spec, Long.class, q -> q.projection((cb, r) -> r.get(AbstractHibernateObject_.id))).all();
+	}
+
+	@Override
+	public MammaBeoordeling getById(Long id)
+	{
+		return beoordelingRepository.findById(id).orElse(null);
+	}
 }

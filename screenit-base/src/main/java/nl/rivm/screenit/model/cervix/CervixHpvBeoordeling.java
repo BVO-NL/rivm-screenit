@@ -32,6 +32,8 @@ import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -49,9 +51,11 @@ import org.hibernate.annotations.CascadeType;
 public class CervixHpvBeoordeling extends AbstractHibernateObject
 {
 	@Column(nullable = false)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date analyseDatum;
 
 	@Column(nullable = false)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date autorisatieDatum;
 
 	@Column(nullable = false)

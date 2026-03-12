@@ -533,22 +533,6 @@ public enum Recht implements INaam
 		new ToegangLevel[] { ToegangLevel.ORGANISATIE, ToegangLevel.REGIO, ToegangLevel.LANDELIJK },
 		Actie.INZIEN),
 
-	MEDEWERKER_BEHEER_SENTINELCONTROLES(
-		"Beheer Sentinelcontroles",
-		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON },
-		new ToegangLevel[] { ToegangLevel.LANDELIJK },
-		Actie.INZIEN,
-		Actie.AANPASSEN,
-		Actie.TOEVOEGEN),
-
-	MEDEWERKER_BEHEER_SKML_INTERNE_CONTROLE(
-		"Beheer SKML interne controle",
-		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON },
-		new ToegangLevel[] { ToegangLevel.LANDELIJK },
-		Actie.INZIEN,
-		Actie.AANPASSEN,
-		Actie.TOEVOEGEN),
-
 	MEDEWERKER_BEHEER_SCHEMA_EXTERNE_CONTROLE(
 		"Beheer schema externe kwaliteitscontroles",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON },
@@ -1042,7 +1026,7 @@ public enum Recht implements INaam
 	MEDEWERKER_VISITATIE_INSTELTECHNIEK(
 		"Visitatie Insteltechniek",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.MAMMA },
-		new ToegangLevel[] { ToegangLevel.LANDELIJK }, Actie.INZIEN),
+		new ToegangLevel[] { ToegangLevel.LANDELIJK }, Actie.INZIEN, Actie.AANPASSEN),
 
 	MEDEWERKER_AD_HOC_MEEMKIJKVERZOEK_WERKLIJST(
 		"Ad hoc meekijkverzoek werklijst",

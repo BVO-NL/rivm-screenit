@@ -56,7 +56,7 @@ public class ColonSelectieRondeBeeindigdLogEvent extends LogEvent
 	@CollectionTable(schema = "gedeeld", name = "colon_selectie_ronde_beeindigd_log_event_exception_stack_trace")
 	private List<String> exceptionStackTrace = new ArrayList<>();
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.REMOVE)
+	@OneToOne(fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.REMOVE, optional = false)
 	@Cascade(CascadeType.DELETE)
 	private ColonSelectieRapportage rapportage;
 }

@@ -63,7 +63,7 @@ public class ColonFitAnalyseResultaat extends AbstractHibernateObject
 
 	private BigDecimal uitslag;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@NotAudited
 	private ColonFitAnalyseResultaatSet analyseResultaatSet;
 

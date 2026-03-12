@@ -34,6 +34,7 @@ import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.enums.Termijn;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
@@ -41,6 +42,7 @@ import nl.rivm.screenit.model.mamma.MammaBeoordeling_;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaDossier_;
 import nl.rivm.screenit.model.mamma.MammaLezing;
+import nl.rivm.screenit.model.mamma.MammaMammografie_;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek_;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde_;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
@@ -209,5 +211,29 @@ public class MammaBeoordelingSpecification
 	{
 		return heeftNietBeoordeeldSindsSubquery(peilMoment).with(MammaBeoordeling_.eersteLezing, JoinType.LEFT)
 			.and(heeftNietBeoordeeldSindsSubquery(peilMoment).with(MammaBeoordeling_.tweedeLezing, JoinType.LEFT));
+	}
+
+	public static ExtendedSpecification<MammaBeoordeling> isDoorgevoerdDoorMedewerker(OrganisatieMedewerker organisatieMedewerker)
+	{
+		return (r, q, cb) ->
+		{
+			var onderzoekJoin = join(r, MammaBeoordeling_.onderzoek);
+			var mammografieJoin = join(onderzoekJoin, MammaOnderzoek_.mammografie);
+			return cb.equal(mammografieJoin.get(MammaMammografie_.afgerondDoor), organisatieMedewerker);
+		};
+	}
+
+	public static ExtendedSpecification<MammaBeoordeling> heeftOnderzoekType(MammaOnderzoekType onderzoekType)
+	{
+		return (r, q, cb) ->
+		{
+			var onderzoekJoin = join(r, MammaBeoordeling_.onderzoek);
+			return cb.equal(onderzoekJoin.get(MammaOnderzoek_.onderzoekType), onderzoekType);
+		};
+	}
+
+	public static ExtendedSpecification<MammaBeoordeling> heeftStatusIn(List<MammaBeoordelingStatus> statussen)
+	{
+		return skipWhenEmptyExtended(statussen, (r, q, cb) -> r.get(MammaBeoordeling_.status).in(statussen));
 	}
 }

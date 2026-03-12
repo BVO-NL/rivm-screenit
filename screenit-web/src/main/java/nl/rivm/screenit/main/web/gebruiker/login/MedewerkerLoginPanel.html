@@ -35,15 +35,15 @@
 						<wicket:message key="label.gebruikersnaam"/>
 					</label>
 					<div class="controls">
-						<input class="input-large" id="gebruikersnaam" type="text" wicket:id="gebruikersnaam"/>
+						<input class="input-large" id="gebruikersnaam" type="text" wicket:id="gebruikersnaam" data-testid="gebruikersnaam_input"/>
 					</div>
 				</div>
 				<div class="control-group">
 					<div wicket:id="wachtwoordField"></div>
-					<a class="wachtwoord-link" wicket:id="passwordRequest">Wachtwoord opnieuw instellen</a>
+					<a class="wachtwoord-link" wicket:id="passwordRequest" data-testid="wachtwoord_link">Wachtwoord opnieuw instellen</a>
 				</div>
 				<div class="form-actions">
-					<button class="btn btn-primary" type="submit" wicket:id="submit">Inloggen</button>
+					<button class="btn btn-primary" type="submit" wicket:id="submit" data-testid="inloggen_button">Inloggen</button>
 				</div>
 				<div wicket:id="keepalive"></div>
 			</form>

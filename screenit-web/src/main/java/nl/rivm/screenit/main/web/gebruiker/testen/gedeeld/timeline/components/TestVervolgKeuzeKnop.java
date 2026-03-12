@@ -127,7 +127,7 @@ public abstract class TestVervolgKeuzeKnop extends GenericPanel<List<Client>>
 		}
 		if (StringUtils.isNotBlank(getNameAttribuut()))
 		{
-			button.add(new AttributeAppender("name", getNameAttribuut()));
+			button.add(new AttributeAppender("name", getNameAttribuut())).add(new AttributeAppender("data-testid", getNameAttribuut() + "_button"));
 		}
 		add(button);
 
@@ -156,7 +156,8 @@ public abstract class TestVervolgKeuzeKnop extends GenericPanel<List<Client>>
 					}
 
 				};
-				link.add(new Label("label", option.getNaam()).add(new AttributeAppender("name", option.toString().toLowerCase().replace(" ", "_"))));
+				var naam = option.toString().toLowerCase().replace(" ", "_");
+				link.add(new Label("label", option.getNaam()).add(new AttributeAppender("name", naam)).add(new AttributeAppender("data-testid", naam + "_optie")));
 				item.add(link);
 			}
 		};

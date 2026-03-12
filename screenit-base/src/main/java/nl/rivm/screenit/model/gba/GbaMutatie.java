@@ -23,6 +23,7 @@ package nl.rivm.screenit.model.gba;
 
 import java.util.Date;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
@@ -43,8 +44,10 @@ import org.apache.commons.lang3.StringUtils;
 public class GbaMutatie extends AbstractHibernateObject
 {
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	private Date mutatieDatum;
 
+	@Column(nullable = false)
 	private String typeBericht;
 
 	private String berichtEref;

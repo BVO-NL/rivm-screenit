@@ -25,18 +25,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+
 import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.Session;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class MedewerkerUtil
 {
-
-	private MedewerkerUtil()
-	{
-	}
 
 	public static String getMedewerkerNamen(List<OrganisatieMedewerker> organisatieMedewerkers)
 	{
@@ -46,20 +46,20 @@ public class MedewerkerUtil
 			.collect(Collectors.joining(", "));
 	}
 
-	public static boolean isMedewerkerActief(Medewerker medewerker, Date now)
+	public static boolean isMedewerkerActief(Medewerker medewerker, Date peildatum)
 	{
 		return BooleanUtils.isNotFalse(medewerker.getActief())
-			&& (medewerker.getActiefVanaf() == null || !DateUtil.compareAfter(medewerker.getActiefVanaf(), now))
-			&& (medewerker.getActiefTotEnMet() == null || !DateUtil.compareBefore(medewerker.getActiefTotEnMet(), now));
+			&& (medewerker.getActiefVanaf() == null || !DateUtil.compareAfter(medewerker.getActiefVanaf(), peildatum))
+			&& (medewerker.getActiefTotEnMet() == null || !DateUtil.compareBefore(medewerker.getActiefTotEnMet(), peildatum));
 	}
 
-	public static String meldingNavActiefVanafEnTotEnMet(Medewerker medewerker, final Date now)
+	public static String meldingNavActiefVanafEnTotEnMet(Medewerker medewerker, final Date peildatum)
 	{
-		if (medewerker != null && medewerker.getActiefTotEnMet() != null && DateUtil.compareBefore(medewerker.getActiefTotEnMet(), now))
+		if (medewerker != null && medewerker.getActiefTotEnMet() != null && DateUtil.compareBefore(medewerker.getActiefTotEnMet(), peildatum))
 		{
 			return "Uw account is geïnactiveerd";
 		}
-		else if (medewerker != null && medewerker.getActiefVanaf() != null && DateUtil.compareAfter(medewerker.getActiefVanaf(), now))
+		else if (medewerker != null && medewerker.getActiefVanaf() != null && DateUtil.compareAfter(medewerker.getActiefVanaf(), peildatum))
 		{
 			return "Uw account is nog niet actief";
 		}

@@ -32,6 +32,8 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -63,6 +65,7 @@ public abstract class HuisartsBericht extends AbstractHibernateObject
 	private String berichtInhoud;
 
 	@Column(nullable = false)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date aanmaakDatum;
 
 	@Column(nullable = false)

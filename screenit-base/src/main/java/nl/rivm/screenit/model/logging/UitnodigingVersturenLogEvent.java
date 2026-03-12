@@ -39,7 +39,7 @@ import org.hibernate.annotations.CascadeType;
 @Setter
 public class UitnodigingVersturenLogEvent extends LogEvent
 {
-	@OneToOne(cascade = jakarta.persistence.CascadeType.REMOVE)
+	@OneToOne(cascade = jakarta.persistence.CascadeType.REMOVE, optional = false)
 	@Cascade(CascadeType.DELETE)
 	private ColonSelectieRapportage rapportage;
 }

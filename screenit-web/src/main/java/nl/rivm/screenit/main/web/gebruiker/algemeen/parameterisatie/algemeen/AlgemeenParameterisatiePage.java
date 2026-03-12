@@ -50,6 +50,7 @@ public class AlgemeenParameterisatiePage extends ParameterisatieBasePage
 		Parameterisatie parameterisatie = parameterisatieService.loadParameterisatie();
 		add(new DagdeelParametersPanel("dagdeelTijden", new Model<>(parameterisatie)));
 		add(new BewaartermijnenPrimaireParametersPanel("bewaartermijnen", new Model<>(parameterisatie)));
+		add(new BrpParametersPanel("brpParameters", new Model<>(parameterisatie)));
 		add(new AlgemeenSamenvoegveldenPanel("samenvoegvelden", new Model<>(parameterisatie)));
 	}
 }

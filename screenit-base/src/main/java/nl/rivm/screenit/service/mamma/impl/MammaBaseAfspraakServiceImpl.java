@@ -441,7 +441,10 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 		{
 
 			afspraakAnnuleren(laatsteAfspraak, MammaAfspraakStatus.VERPLAATST, null, vorigeAfspraakVerzetten, false);
-			icalUid = laatsteAfspraak.getIcalUid();
+			if (laatsteAfspraak.getIcalUid() != null)
+			{
+				icalUid = laatsteAfspraak.getIcalUid();
+			}
 		}
 
 		if (screeningRonde.getLaatsteUitstel() != null)

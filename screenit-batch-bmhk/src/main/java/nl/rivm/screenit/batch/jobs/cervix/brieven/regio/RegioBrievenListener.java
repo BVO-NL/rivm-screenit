@@ -125,6 +125,7 @@ public class RegioBrievenListener extends BaseLogListener
 
 			var rapportage = new BrievenGenererenRapportage();
 			rapportage.setDatumVerwerking(currentDateSupplier.getDate());
+			hibernateService.saveOrUpdate(rapportage);
 			brievenLogEvent.setRapportage(rapportage);
 			Map<Long, Integer> map = (Map<Long, Integer>) jobExecution.getExecutionContext().get(RegioBrievenConstants.RAPPORTAGEKEYAANTALBRIEVEN);
 

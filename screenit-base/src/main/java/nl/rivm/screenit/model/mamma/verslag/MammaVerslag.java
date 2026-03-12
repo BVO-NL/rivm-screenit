@@ -66,7 +66,7 @@ public abstract class MammaVerslag<T extends VerslagContent<?>> extends Abstract
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date datumVerwerkt;
 
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	private Date datumOnderzoek;
 
 	@ManyToOne(fetch = FetchType.LAZY)

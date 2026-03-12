@@ -37,13 +37,9 @@ import org.springframework.core.annotation.Order;
 public class HL7Config
 {
 
-	private String hpvHost;
-
 	private Integer hpvPort;
 
-	private String ifobtHost;
-
-	private Integer ifobtPort;
+	private String wsbHost;
 
 	private Integer imsPort;
 
@@ -54,27 +50,15 @@ public class HL7Config
 	private String dkFitOulUrl;
 
 	@Bean
-	String hpvHost()
-	{
-		return StringUtils.defaultIfBlank(hpvHost, "");
-	}
-
-	@Bean
 	Integer hpvPort()
 	{
 		return hpvPort != null ? hpvPort : 0;
 	}
 
 	@Bean
-	String hl7IfobtHost()
+	String hl7wsbHost()
 	{
-		return StringUtils.defaultIfBlank(ifobtHost, "");
-	}
-
-	@Bean
-	Integer hl7IfobtPort()
-	{
-		return ifobtPort != null ? ifobtPort : 0;
+		return StringUtils.defaultIfBlank(wsbHost, "");
 	}
 
 	@Bean

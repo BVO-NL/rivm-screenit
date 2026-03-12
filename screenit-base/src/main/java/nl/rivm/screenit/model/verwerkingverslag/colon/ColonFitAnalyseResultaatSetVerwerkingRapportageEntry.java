@@ -21,6 +21,7 @@ package nl.rivm.screenit.model.verwerkingverslag.colon;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -38,13 +39,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(schema = "colon", name = "fit_analyse_resultaat_set_verwerking_rapportage_entry")
 public class ColonFitAnalyseResultaatSetVerwerkingRapportageEntry extends AbstractHibernateObject
 {
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JsonIgnore
 	private ColonFitAnalyseResultaatSetVerwerkingRapportage rapportage;
 
+	@Column(nullable = false)
 	private Long fitAnalyseResultaatSetId;
 
+	@Column(nullable = false)
 	private String analyseResultaatSetNaam;
 
+	@Column(nullable = false)
 	private Long aantalVerwerkingen = Long.valueOf(0);
 }

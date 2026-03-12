@@ -105,6 +105,7 @@ public class FillerUtil
 		String projectNaam = project.getNaam();
 
 		ProjectGroep groep = new ProjectGroep();
+		groep.setPopulatie(10);
 		groep.setNaam(projectNaam + " - Groep 1");
 		groep.setActief(Boolean.TRUE);
 		groep.setActiefDatum(new Date());

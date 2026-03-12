@@ -128,6 +128,7 @@ public class BezwaarBrievenListener extends BaseLogListener
 
 			BrievenGenererenRapportage rapportage = new BrievenGenererenRapportage();
 			rapportage.setDatumVerwerking(currentDateSupplier.getDate());
+			hibernateService.saveOrUpdate(rapportage);
 			brievenLogEvent.setRapportage(rapportage);
 			Map<Long, Integer> map = (Map<Long, Integer>) jobExecution.getExecutionContext().get(BezwaarBrievenConstants.RAPPORTAGEKEYAANTALBRIEVEN);
 

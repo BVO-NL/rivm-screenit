@@ -23,7 +23,6 @@ package nl.rivm.screenit.model.colon;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -38,11 +37,10 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 @Getter
 public class ColoscopieCentrumColonCapaciteitVerdeling extends AbstractHibernateObject
 {
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private UitnodigingsGebied uitnodigingsGebied;
 
-	@ManyToOne
-	@JoinColumn(nullable = false)
+	@ManyToOne(optional = false)
 	private ColonIntakelocatie intakelocatie;
 
 	@Column(nullable = false)

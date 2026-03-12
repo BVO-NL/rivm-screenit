@@ -66,7 +66,7 @@ public class MammaIlmBeeldenStatusRapportageEntry extends AbstractHibernateObjec
 	@Column(nullable = false)
 	private boolean failedRetry;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private MammaIlmBeeldenStatusRapportage rapportage;
 
 }

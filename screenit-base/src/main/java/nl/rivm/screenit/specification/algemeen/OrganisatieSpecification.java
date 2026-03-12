@@ -21,7 +21,7 @@ package nl.rivm.screenit.specification.algemeen;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -227,7 +227,7 @@ public class OrganisatieSpecification
 	}
 
 	public static Specification<Organisatie> getZoekOrganisatiesSpecification(Organisatie organisatie, Map<OrganisatieType, List<Organisatie>> hierarchieCriteria,
-		List<OrganisatieType> excludeOrganisatieTypes, LocalDateTime peilMoment)
+		List<OrganisatieType> excludeOrganisatieTypes, LocalDate peildatum)
 	{
 		return (r, q, cb) ->
 		{
@@ -241,7 +241,7 @@ public class OrganisatieSpecification
 				.and(filterId(organisatie.getId()))
 				.and(heeftNietOrganisatieTypes(excludeOrganisatieTypes))
 				.and(filterUniekeCodeContaining(organisatie.getUziAbonneenummer()))
-				.and(getMedewerkerSpecifications(organisatie, peilMoment))
+				.and(getMedewerkerSpecifications(organisatie, peildatum))
 				.and(filterPlaatsPostcode(organisatie, cb));
 
 			predicates.add(spec.toPredicate(r, q, cb));
@@ -266,7 +266,7 @@ public class OrganisatieSpecification
 		return (r, q, cb) -> hierarchiePredicate(hierarchieCriteria, r, cb);
 	}
 
-	private static Specification<Organisatie> getMedewerkerSpecifications(Organisatie organisatie, LocalDateTime peilMoment)
+	private static Specification<Organisatie> getMedewerkerSpecifications(Organisatie organisatie, LocalDate peildatum)
 	{
 		if (CollectionUtils.isNotEmpty(organisatie.getOrganisatieMedewerkers()))
 		{
@@ -275,7 +275,7 @@ public class OrganisatieSpecification
 			{
 				return filterAchternaamContaining(medewerker.getAchternaam())
 					.and(filterUzinummerContaining(medewerker.getUzinummer())
-						.and(MedewerkerSpecification.isActiefEnActiefOpMoment(peilMoment))).with(medewerkerJoin())
+						.and(MedewerkerSpecification.isActiefEnActiefOpMoment(peildatum))).with(medewerkerJoin())
 					.and(OrganisatieMedewerkerSpecification.isActief().with(organisatieMedewerkerJoin()));
 			}
 		}

@@ -23,9 +23,11 @@ package nl.rivm.screenit.main.service.mamma.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -35,8 +37,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.mappers.mamma.MammaVisitatieMapper;
+import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieOnderzoekPerMedewerkerDto;
 import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieRequestDto;
 import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieResponseDto;
+import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatielijstRequestDto;
+import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatielijstResponseDto;
+import nl.rivm.screenit.main.service.MedewerkerService;
+import nl.rivm.screenit.main.service.mamma.MammaBeoordelingService;
 import nl.rivm.screenit.main.service.mamma.MammaBeoordelingsEenheidService;
 import nl.rivm.screenit.main.service.mamma.MammaFotobesprekingService;
 import nl.rivm.screenit.main.service.mamma.MammaKwaliteitscontroleService;
@@ -60,10 +67,13 @@ import nl.rivm.screenit.model.mamma.MammaVisitatie;
 import nl.rivm.screenit.model.mamma.MammaVisitatieOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaFotobesprekingOnderzoekStatus;
+import nl.rivm.screenit.model.mamma.enums.MammaFotorichting;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderdeel;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderzoekStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieStatus;
+import nl.rivm.screenit.repository.mamma.MammaVisitatieOnderzoekRepository;
+import nl.rivm.screenit.repository.mamma.MammaVisitatieRepository;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.UploadDocumentService;
@@ -83,6 +93,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.common.collect.Range;
+
+import static java.util.Collections.shuffle;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
@@ -121,6 +134,22 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 
 	@Autowired
 	private MammaBeoordelingsEenheidService beoordelingsEenheidService;
+
+	@Autowired
+	private MammaVisitatieRepository visitatieRepository;
+
+	@Autowired
+	private MedewerkerService medewerkerService;
+
+	@Autowired
+	private MammaBeoordelingService beoordelingService;
+
+	@Autowired
+	private MammaVisitatieOnderzoekRepository visitatieOnderzoekRepository;
+
+	public static final int MIN_AANTAL_BEOORDELINGEN_PER_FOTORICHTING = 60;
+
+	public static final int MIN_AANTAL_BEOORDELINGEN_PER_MEDEWERKER = MIN_AANTAL_BEOORDELINGEN_PER_FOTORICHTING * MammaFotorichting.values().length;
 
 	@Override
 	@Transactional
@@ -284,19 +313,10 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 			if (!BezwaarUtil.isBezwaarActiefVoor(client, BezwaarType.GEEN_WETENSCHAPPELIJK_ONDERZOEK, Bevolkingsonderzoek.MAMMA)
 				&& !BezwaarUtil.isBezwaarActiefVoor(client, BezwaarType.GEEN_KWALITEITSWAARBORGING, Bevolkingsonderzoek.MAMMA))
 			{
-				MammaBeoordeling beoordeling = getBeoordeling(visitatie.getBeoordelingsEenheid(), null, client);
+				var beoordeling = getBeoordeling(visitatie.getBeoordelingsEenheid(), null, client);
 				if (!visitatieService.isBeoordelingInVisitatieOnderdeel(beoordeling, visitatie, visitatieOnderdeel))
 				{
-					List<MammaVisitatieOnderzoek> onderzoeken = visitatie.getOnderzoeken();
-					MammaVisitatieOnderzoek visitatieOnderzoek = new MammaVisitatieOnderzoek();
-					visitatieOnderzoek.setVisitatie(visitatie);
-					visitatieOnderzoek.setBeoordeling(beoordeling);
-					visitatieOnderzoek.setStatus(MammaVisitatieOnderzoekStatus.NIET_GEZIEN);
-					visitatieOnderzoek.setOnderdeel(visitatieOnderdeel);
-					int volgnummer = onderzoeken.stream().filter(o -> o.getOnderdeel() == visitatieOnderdeel).mapToInt(MammaVisitatieOnderzoek::getVolgnummer).max().orElse(0) + 1;
-					visitatieOnderzoek.setVolgnummer(volgnummer);
-					onderzoeken.add(visitatieOnderzoek);
-					hibernateService.saveOrUpdateAll(visitatieOnderzoek, visitatie);
+					maakVisitatieOnderzoek(visitatie, beoordeling, visitatieOnderdeel);
 				}
 				else
 				{
@@ -321,6 +341,20 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 			}
 		}
 		return melding;
+	}
+
+	private void maakVisitatieOnderzoek(MammaVisitatie visitatie, MammaBeoordeling beoordeling, MammaVisitatieOnderdeel visitatieOnderdeel)
+	{
+		var onderzoeken = visitatie.getOnderzoeken();
+		var visitatieOnderzoek = new MammaVisitatieOnderzoek();
+		visitatieOnderzoek.setVisitatie(visitatie);
+		visitatieOnderzoek.setBeoordeling(beoordeling);
+		visitatieOnderzoek.setStatus(MammaVisitatieOnderzoekStatus.NIET_GEZIEN);
+		visitatieOnderzoek.setOnderdeel(visitatieOnderdeel);
+		int volgnummer = onderzoeken.stream().filter(o -> o.getOnderdeel() == visitatieOnderdeel).mapToInt(MammaVisitatieOnderzoek::getVolgnummer).max().orElse(0) + 1;
+		visitatieOnderzoek.setVolgnummer(volgnummer);
+		onderzoeken.add(visitatieOnderzoek);
+		visitatieOnderzoekRepository.save(visitatieOnderzoek);
 	}
 
 	private String verwerkRegel(MammaFotobespreking fotobespreking, ClientenBestandVerwerkingContext context)
@@ -485,10 +519,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 					try
 					{
 						var fileUpload = e.getValue();
-						var extensie = FilenameUtils.getExtension(fileUpload.getOriginalFilename());
-						var file = File.createTempFile(fileUpload.getOriginalFilename(), extensie != null && !extensie.isEmpty() ? "." + extensie : null);
-						fileUpload.transferTo(file);
-						return file;
+						return saveTempFile(fileUpload, "visitaties", "csv");
 					}
 					catch (Exception ex)
 					{
@@ -517,6 +548,18 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 		return visitatieResponse;
 	}
 
+	private File saveTempFile(MultipartFile fileUpload, String bestandsnaam, String toegestaneExtensie) throws IOException
+	{
+		var extensie = FilenameUtils.getExtension(fileUpload.getOriginalFilename());
+		if (!toegestaneExtensie.equalsIgnoreCase(extensie))
+		{
+			throw new IllegalStateException("Alleen bestanden met extensie " + toegestaneExtensie + " zijn toegestaan.");
+		}
+		var file = File.createTempFile(bestandsnaam, "." + toegestaneExtensie);
+		fileUpload.transferTo(file);
+		return file;
+	}
+
 	@Override
 	@Transactional
 	public List<String> saveOrUpdateVisitatie(MammaVisitatie visitatie, Map<MammaVisitatieOnderdeel, File> bestanden,
@@ -529,6 +572,176 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 		messages.addAll(verwerkCsvFiles(visitatie, bestanden));
 		hibernateService.saveOrUpdate(visitatie);
 		return messages;
+	}
+
+	@Override
+	@Transactional
+	public MammaVisitatielijstResponseDto genereerInsteltechniekVisitatielijst(MammaVisitatielijstRequestDto request, MultipartFile bestand, boolean dryRun,
+		OrganisatieMedewerker organisatieMedewerker)
+	{
+		var response = new MammaVisitatielijstResponseDto();
+
+		var visitaties = new ArrayList<MammaVisitatie>();
+		var medewerkers = getMedewerkersVanBestand(bestand, response.getMeldingen());
+
+		if (medewerkers.isEmpty())
+		{
+			response.getMeldingen().add("Er zijn geen geldige medewerkers gevonden in het aangeleverde bestand.");
+			return response;
+		}
+
+		var beoordelingIdToClientId = new HashMap<Long, Long>();
+
+		var beoordelingIdsPerMedewerker = getBeoordelingIdsVoorMedewerkers(medewerkers, response, beoordelingIdToClientId);
+
+		if (dryRun || beoordelingIdsPerMedewerker.isEmpty() || beoordelingIdsPerMedewerker.entrySet().stream()
+			.anyMatch(entry -> entry.getValue().size() < MIN_AANTAL_BEOORDELINGEN_PER_MEDEWERKER))
+		{
+			return response;
+		}
+
+		var startIndex = 0;
+		var endIndex = 0;
+
+		for (var fotorichting : MammaFotorichting.values())
+		{
+			var visitatie = maakVisitatieVoorInsteltechniek(request.getOmschrijving(), fotorichting, organisatieMedewerker);
+			visitaties.add(visitatie);
+			endIndex = startIndex + MIN_AANTAL_BEOORDELINGEN_PER_FOTORICHTING;
+
+			for (var entry : beoordelingIdsPerMedewerker.entrySet())
+			{
+				var beoordelingIds = entry.getValue();
+
+				if (beoordelingIds.size() < MIN_AANTAL_BEOORDELINGEN_PER_MEDEWERKER || endIndex > beoordelingIds.size())
+				{
+					continue;
+				}
+
+				var beoordelingIdsVoorRichting = beoordelingIds.subList(startIndex, endIndex);
+				vulVisitatieMetOnderzoeken(visitatie, beoordelingIdsVoorRichting, beoordelingIdToClientId);
+			}
+			startIndex = endIndex;
+		}
+
+		response.setVisitaties(visitaties.stream().map(mammaVisitatieMapper::mammaVisitatieToDto).toList());
+		return response;
+	}
+
+	private HashMap<Integer, List<Long>> getBeoordelingIdsVoorMedewerkers(List<OrganisatieMedewerker> organisatieMedewerkers,
+		MammaVisitatielijstResponseDto response, Map<Long, Long> beoordelingIdToClientId)
+	{
+		var alleBeoordelingIds = new HashMap<Integer, List<Long>>();
+		var peilDatum = dateSuppier.getLocalDate().minusWeeks(2);
+
+		for (var organisatieMedewerker : organisatieMedewerkers)
+		{
+			var beoordelingIds = zoekVoldoendeUniekeBeoordelingen(organisatieMedewerker, peilDatum, response, beoordelingIdToClientId);
+			if (beoordelingIds.size() >= MIN_AANTAL_BEOORDELINGEN_PER_MEDEWERKER)
+			{
+				alleBeoordelingIds.put(organisatieMedewerker.getMedewerker().getMedewerkercode(), beoordelingIds);
+			}
+		}
+		return alleBeoordelingIds;
+	}
+
+	private List<Long> zoekVoldoendeUniekeBeoordelingen(OrganisatieMedewerker organisatieMedewerker, LocalDate peilDatum,
+		MammaVisitatielijstResponseDto response, Map<Long, Long> beoordelingIdToClientId)
+	{
+		var range = Range.closed(peilDatum.minusMonths(2), peilDatum);
+		var beoordelingIds = beoordelingService.getBeoordelingIdsVanMedewerker(organisatieMedewerker, range);
+		var clientIdToBeoordelingId = new HashMap<Long, Long>();
+		var onderzoekenIn2Maanden = beoordelingIds.size();
+		voegUniekeBeoordelingenToe(clientIdToBeoordelingId, beoordelingIdToClientId, beoordelingIds);
+
+		var onderzoekenIn4Maanden = onderzoekenIn2Maanden;
+
+		if (onderzoekenIn2Maanden < MIN_AANTAL_BEOORDELINGEN_PER_MEDEWERKER)
+		{
+			range = Range.closed(peilDatum.minusMonths(4), peilDatum);
+			beoordelingIds = beoordelingService.getBeoordelingIdsVanMedewerker(organisatieMedewerker, range);
+			onderzoekenIn4Maanden = beoordelingIds.size();
+			voegUniekeBeoordelingenToe(clientIdToBeoordelingId, beoordelingIdToClientId, beoordelingIds);
+		}
+		updateRapport(response, organisatieMedewerker, onderzoekenIn2Maanden, onderzoekenIn4Maanden);
+
+		var uniekeBeoordelingIds = new ArrayList<>(clientIdToBeoordelingId.values());
+		shuffle(uniekeBeoordelingIds);
+		return uniekeBeoordelingIds.stream().limit(MIN_AANTAL_BEOORDELINGEN_PER_MEDEWERKER).toList();
+	}
+
+	private void updateRapport(MammaVisitatielijstResponseDto response, OrganisatieMedewerker organisatieMedewerker, int onderzoekenIn2Maanden, int onderzoekenIn4Maanden)
+	{
+		var onderzoekPerMedewerkerDto = response.getRapport()
+			.computeIfAbsent(organisatieMedewerker.getMedewerker().getMedewerkercode(), id -> new MammaVisitatieOnderzoekPerMedewerkerDto());
+		onderzoekPerMedewerkerDto.setAantalBeeldenBinnen2Maanden(onderzoekPerMedewerkerDto.getAantalBeeldenBinnen2Maanden() + onderzoekenIn2Maanden);
+		onderzoekPerMedewerkerDto.setAantalBeeldenBinnen4Maanden(onderzoekPerMedewerkerDto.getAantalBeeldenBinnen4Maanden() + onderzoekenIn4Maanden);
+	}
+
+	private void voegUniekeBeoordelingenToe(Map<Long, Long> clientIdToBeoordelingId, Map<Long, Long> beoordelingIdToClientId, List<Long> beoordelingIds)
+	{
+		for (var beoordelingId : beoordelingIds)
+		{
+			var clientId = clientService.getClientIdByBeoordelingId(beoordelingId);
+			clientIdToBeoordelingId.putIfAbsent(clientId, beoordelingId);
+			beoordelingIdToClientId.putIfAbsent(beoordelingId, clientId);
+		}
+	}
+
+	private void vulVisitatieMetOnderzoeken(MammaVisitatie visitatie, List<Long> beoordelingIds, Map<Long, Long> beoordelingIdToClientId)
+	{
+		for (var beoordelingId : beoordelingIds)
+		{
+			var beoordeling = beoordelingService.getById(beoordelingId);
+			var clientId = beoordelingIdToClientId.get(beoordelingId);
+			var client = clientService.getClientById(clientId).orElseThrow(() -> new IllegalStateException("Client met id " + clientId + " niet gevonden."));
+
+			if (!BezwaarUtil.isBezwaarActiefVoor(client, BezwaarType.GEEN_WETENSCHAPPELIJK_ONDERZOEK, Bevolkingsonderzoek.MAMMA)
+				&& !BezwaarUtil.isBezwaarActiefVoor(client, BezwaarType.GEEN_KWALITEITSWAARBORGING, Bevolkingsonderzoek.MAMMA))
+			{
+				maakVisitatieOnderzoek(visitatie, beoordeling, MammaVisitatieOnderdeel.INSTELTECHNIEK);
+			}
+		}
+	}
+
+	private MammaVisitatie maakVisitatieVoorInsteltechniek(String omschrijving, MammaFotorichting fotorichting, OrganisatieMedewerker organisatieMedewerker)
+	{
+		var visitatie = new MammaVisitatie();
+		visitatie.setOmschrijving(omschrijving + "-Insteltechniek-" + fotorichting.name());
+		visitatie.setAangemaaktDoor(organisatieMedewerker);
+		visitatie.setStatus(MammaVisitatieStatus.INGEPLAND);
+		visitatie.setAangemaaktOp(dateSuppier.getDate());
+
+		visitatieRepository.save(visitatie);
+		return visitatie;
+	}
+
+	private List<OrganisatieMedewerker> getMedewerkersVanBestand(MultipartFile fileUpload, List<String> meldingen)
+	{
+		var organisatieMedewerkers = new ArrayList<OrganisatieMedewerker>();
+		try
+		{
+			var bestand = saveTempFile(fileUpload, "visitatie_medewerkers_upload", "csv");
+			try (var context = new MedewerkersBestandVerwerkingContext(bestand))
+			{
+				while (context.isErEenNieuweRegel())
+				{
+					var medewerkercode = context.getMedewerkercodeVanHuidigeRegel();
+					var medewerkers = medewerkerService.getOrganisatieMedewerkersByMedewerkercode(medewerkercode);
+					organisatieMedewerkers.addAll(medewerkers);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			var errorMessage = e instanceof IllegalStateException ? e.getMessage() : "Onbekende fout bij verwerking van organisatieMedewerkers bestand.";
+			meldingen.add(errorMessage);
+			if (!(e instanceof IllegalStateException))
+			{
+				LOG.error(errorMessage, e);
+			}
+		}
+		return organisatieMedewerkers;
 	}
 
 	private List<String> saveOrUpdateVisitatieBijlagen(MammaVisitatie visitatie, UploadDocument rapportageBijlage, UploadDocument vragenlijstBijlage)

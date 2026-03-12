@@ -22,11 +22,14 @@ package nl.rivm.screenit.main.service.mamma;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieRequestDto;
 import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieResponseDto;
+import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatielijstRequestDto;
+import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatielijstResponseDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
@@ -63,6 +66,10 @@ public interface MammaKwaliteitscontroleService
 
 	MammaVisitatieResponseDto maakOfBewerkVisitatie(MammaVisitatieRequestDto request, Map<String, MultipartFile> bestanden, MultipartFile rapportage,
 		MultipartFile vragenlijst, OrganisatieMedewerker medewerker);
+
+	MammaVisitatielijstResponseDto genereerInsteltechniekVisitatielijst(MammaVisitatielijstRequestDto request, MultipartFile bestand, boolean dryRun,
+		OrganisatieMedewerker organisatieMedewerker)
+		throws IOException;
 
 	void kwaliteitscontroleAfronden(MammaIKwaliteitscontrole kwaliteitscontrole);
 

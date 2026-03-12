@@ -53,7 +53,11 @@ import org.hibernate.envers.Audited;
 @Setter
 @Entity
 @Table(schema = "colon", name = "intakeafspraak",
-	indexes = { @Index(name = "idx_colon_afspraak_bezwaar", columnList = "bezwaar") }
+	indexes = {
+		@Index(name = "idx_colon_afspraak_bezwaar", columnList = "bezwaar"),
+		@Index(name = "idx_afspraak_datumlaatstewijziging", columnList = "gewijzigdOp"),
+		@Index(name = "idx_afspraak_status", columnList = "status")
+	}
 )
 @Audited
 public class ColonIntakeAfspraak extends ColonTijdslot

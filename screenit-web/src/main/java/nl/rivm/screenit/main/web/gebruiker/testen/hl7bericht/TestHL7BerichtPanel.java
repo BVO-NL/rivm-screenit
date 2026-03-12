@@ -145,7 +145,7 @@ public class TestHL7BerichtPanel extends Panel
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				if (testBerichtTypeModel.getObject() == TestHL7BerichtTypeEnum.DK_FIT_MLLP || testBerichtTypeModel.getObject() == TestHL7BerichtTypeEnum.DK_FIT_HTTP)
+				if (testBerichtTypeModel.getObject() == TestHL7BerichtTypeEnum.DK_FIT_HTTP)
 				{
 					ormBerichtHandleiding.setVisible(Boolean.FALSE);
 					ifobtBerichtHandleiding.setVisible(Boolean.TRUE);
@@ -202,9 +202,6 @@ public class TestHL7BerichtPanel extends Panel
 					ScreenITResponseHL7v2MessageWrapper responseMessageWrapper = null;
 					switch (testBerichtTypeModel.getObject())
 					{
-					case DK_FIT_MLLP:
-						responseMessageWrapper = hl7TestMessageService.verstuurFitTestBerichtMetMLLP(hl7BerichtTekst.getObject());
-						break;
 					case DK_FIT_HTTP:
 						responseMessageWrapper = hl7TestMessageService.verstuurFitTestBerichtMetHTTP(hl7BerichtTekst.getObject());
 						break;

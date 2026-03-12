@@ -56,6 +56,6 @@ public class Message extends AbstractHibernateObject
 	@Column(nullable = false, columnDefinition = "TEXT")
 	private String content;
 
-	@Column
+	@Column(nullable = false)
 	private String context;
 }

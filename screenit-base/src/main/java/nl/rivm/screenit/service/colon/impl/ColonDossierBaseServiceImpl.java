@@ -30,8 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DossierStatus;
-import nl.rivm.screenit.model.colon.ColonBrief;
-import nl.rivm.screenit.model.colon.ColonConclusie;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonFitRegistratie;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
@@ -39,7 +37,6 @@ import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.ColonUitnodigingsinterval;
 import nl.rivm.screenit.model.colon.ColonVolgendeUitnodiging;
-import nl.rivm.screenit.model.colon.ColonVooraankondiging;
 import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
@@ -48,7 +45,6 @@ import nl.rivm.screenit.model.colon.enums.MdlVervolgbeleid;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlDefinitiefVervolgbeleidVoorBevolkingsonderzoekg;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.IntervalEenheidAanduiding;
-import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectInactiefReden;
 import nl.rivm.screenit.repository.colon.ColonUitnodigingsintervalRepository;
 import nl.rivm.screenit.service.BaseClientContactService;
@@ -100,7 +96,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 	@Override
 	public LocalDate getDatumVolgendeUitnodiging(ColonDossier dossier)
 	{
-		ColonVolgendeUitnodiging volgendeUitnodiging = dossier.getVolgendeUitnodiging();
+		var volgendeUitnodiging = dossier.getVolgendeUitnodiging();
 		if (volgendeUitnodiging == null ||
 			volgendeUitnodiging.getInterval().getAantal() == null
 			|| IntervalEenheidAanduiding.GEEN.equals(volgendeUitnodiging.getInterval().getEenheid()))
@@ -113,7 +109,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 			return volgendeUitnodiging.getDatumVolgendeRonde();
 		}
 
-		Date peildatum = volgendeUitnodiging.getPeildatum();
+		var peildatum = volgendeUitnodiging.getPeildatum();
 		if (volgendeUitnodiging.getProjectPeildatum() != null)
 		{
 			peildatum = DateUtil.toUtilDate(volgendeUitnodiging.getProjectPeildatum());
@@ -123,9 +119,9 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 
 	private LocalDate berekenDatumVolgendeUitnodiging(Date peildatumDate, ColonUitnodigingsinterval interval)
 	{
-		Integer aantal = interval.getAantal();
+		var aantal = interval.getAantal();
 
-		LocalDate peildatum = DateUtil.toLocalDate(peildatumDate);
+		var peildatum = DateUtil.toLocalDate(peildatumDate);
 		switch (interval.getEenheid())
 		{
 		case DAY:
@@ -162,7 +158,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 	private Date getPeildatum(ColonDossier dossier, ColonUitnodigingsintervalType type)
 	{
 		Date peildatum;
-		ColonScreeningRonde laatsteScreeningRonde = dossier.getLaatsteScreeningRonde();
+		var laatsteScreeningRonde = dossier.getLaatsteScreeningRonde();
 		switch (type.peildatumSoort())
 		{
 		case DATUM_START_RONDE:
@@ -202,12 +198,12 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 	@Transactional
 	public void updateIntervalReferentieDatums()
 	{
-		for (ColonUitnodigingsintervalType type : ColonUitnodigingsintervalType.values())
+		for (var type : ColonUitnodigingsintervalType.values())
 		{
-			ColonUitnodigingsinterval interval = getIntervalByType(type);
-			Integer aantal = interval.getAantal();
+			var interval = getIntervalByType(type);
+			var aantal = interval.getAantal();
 			LocalDate referentieDatum = null;
-			LocalDate vandaag = dateSupplier.getLocalDate();
+			var vandaag = dateSupplier.getLocalDate();
 			switch (interval.getEenheid())
 			{
 			case DAY:
@@ -233,7 +229,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 	@Transactional
 	public void setVolgendeUitnodigingVoorConclusie(ColonIntakeAfspraak afspraak)
 	{
-		ColonConclusie conclusie = afspraak.getConclusie();
+		var conclusie = afspraak.getConclusie();
 		ColonUitnodigingsintervalType interval = null;
 		if (conclusie != null)
 		{
@@ -333,7 +329,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 
 		try
 		{
-			Client client = dossier.getClient();
+			var client = dossier.getClient();
 
 			if (dossier.getLaatsteScreeningRonde() != null)
 			{
@@ -358,7 +354,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 
 			hibernateService.saveOrUpdate(client);
 
-			ProjectClient projectClient = ProjectUtil.getHuidigeProjectClient(client, currentDateSupplier.getDate(), false);
+			var projectClient = ProjectUtil.getHuidigeProjectClient(client, currentDateSupplier.getDate(), false);
 			if (projectClient != null)
 			{
 				clientService.projectClientInactiveren(projectClient, ProjectInactiefReden.VERWIJDERING_VAN_DOSSIER, Bevolkingsonderzoek.COLON);
@@ -397,10 +393,10 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 
 	private void verwijderRondesVanDossier(ColonDossier dossier)
 	{
-		List<ColonScreeningRonde> rondes = dossier.getScreeningRondes();
+		var rondes = dossier.getScreeningRondes();
 		dossier.setLaatsteScreeningRonde(null);
 		dossier.setScreeningRondes(new ArrayList<>());
-		for (ColonScreeningRonde ronde : rondes)
+		for (var ronde : rondes)
 		{
 			maakRondeLeeg(ronde);
 		}
@@ -410,7 +406,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 
 	private void maakRondeLeeg(ColonScreeningRonde ronde)
 	{
-		for (ColonBrief brief : ronde.getBrieven())
+		for (var brief : ronde.getBrieven())
 		{
 			brief.setFitRegistratie(null);
 
@@ -424,15 +420,9 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 	{
 		if (dossier.getVooraankondiging() != null)
 		{
-			ColonVooraankondiging vooraankondigiging = dossier.getVooraankondiging();
+			var vooraankondiging = dossier.getVooraankondiging();
 			dossier.setVooraankondiging(null);
-			ColonBrief vooraankondigigingBrief = vooraankondigiging.getBrief();
-			if (vooraankondigigingBrief != null && vooraankondigigingBrief.getScreeningRonde() != null)
-			{
-				vooraankondigiging.setBrief(null);
-				hibernateService.delete(vooraankondigigingBrief);
-			}
-			hibernateService.delete(vooraankondigiging);
+			hibernateService.delete(vooraankondiging);
 		}
 	}
 
@@ -464,7 +454,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 		{
 			uploadDocumentService.delete(verwijderBrief);
 		}
-		ColonScreeningRonde andereScreeningRonde = fitRegistratie.getScreeningRonde();
+		var andereScreeningRonde = fitRegistratie.getScreeningRonde();
 		andereScreeningRonde.setLaatsteFitRegistratie(null);
 		andereScreeningRonde.setLaatsteExtraFitRegistratie(null);
 		andereScreeningRonde.getFitRegistraties().remove(fitRegistratie);

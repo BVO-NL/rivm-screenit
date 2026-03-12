@@ -39,6 +39,4 @@ public class ColonFitLaboratorium extends Organisatie
 	private String labId;
 
 	private String labIdScanner;
-
-	private String qbasenummer;
 }

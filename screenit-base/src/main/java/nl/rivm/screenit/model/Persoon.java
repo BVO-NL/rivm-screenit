@@ -30,7 +30,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -133,7 +132,6 @@ public class Persoon extends AbstractHibernateObject
 	private Date geboortedatum;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
 	private Geslacht geslacht;
 
 	@Column(length = 20)
@@ -152,8 +150,7 @@ public class Persoon extends AbstractHibernateObject
 	@Column(length = 10)
 	private String partnerTussenvoegsel;
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(nullable = false)
+	@OneToOne(cascade = CascadeType.ALL, optional = false)
 	private Client client;
 
 	@Column(length = 20)

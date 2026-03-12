@@ -134,12 +134,6 @@
         <mapping class="nl.rivm.screenit.model.colon.ScannedAntwoordFormulier"/>
         <mapping class="nl.rivm.screenit.model.colon.SAFTransactionTrail"/>
         <mapping class="nl.rivm.screenit.model.algemeen.KoppelData"/>
-        <mapping class="nl.rivm.screenit.model.colon.SKMLControleBarcode"/>
-        <mapping class="nl.rivm.screenit.model.colon.SKMLSentineelControleBarcode"/>
-        <mapping class="nl.rivm.screenit.model.colon.SKMLInterneControleBarcode"/>
-        <mapping class="nl.rivm.screenit.model.colon.SKMLInterneControleSet"/>
-        <mapping class="nl.rivm.screenit.model.colon.SKMLExterneControleBarcode"/>
-        <mapping class="nl.rivm.screenit.model.colon.SKMLExternSchema"/>
         <mapping class="nl.rivm.screenit.model.colon.ColonFitAnalyseResultaat"/>
         <mapping class="nl.rivm.screenit.model.colon.ColonFitAnalyseResultaatSet"/>
         <mapping class="nl.rivm.screenit.model.colon.ColonMergedBrieven"/>

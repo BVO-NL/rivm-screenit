@@ -1,0 +1,92 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog titel="Visitatielijsten insteltechniek rapport">
+  <div body>
+    <div>
+      <table class="table">
+        <thead>
+        <tr>
+          <th>Aantal medewerkers</th>
+          <th>Voldoende beelden in 2 maanden</th>
+          <th>Voldoende beelden in 4 maanden</th>
+          <th>Onvoldoende beelden</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>{{ rapport.aantalMedewerkersVerwerkt }}</td>
+          <td>{{ rapport.aantalMedewerkersMetVoldoendeBeeldenBinnen2Maanden }}</td>
+          <td>{{ rapport.aantalMedewerkersMetVoldoendeBeeldenBinnen4Maanden }}</td>
+          <td>{{ rapport.aantalMedewerkersMetOnvoldoendeBeelden }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-3">
+      <strong>Overzicht van medewerkers met te weinig beelden: </strong>
+      <table class="table">
+        <thead>
+        <tr>
+          <th>Medewerkercode</th>
+          <th>Aantal beelden</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (detail of rapport.uitgeslotenMedewerkerIds; track detail) {
+            <tr>
+              <td>{{ detail.medewerkercode }}</td>
+              <td>{{ detail.aantal }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-3">
+      <strong>Overzicht resultaten per medewerker: </strong>
+      <table class="table">
+        <thead>
+        <tr>
+          <th>Medewerker</th>
+          <th>Aantal beelden in 2 maanden</th>
+          <th>Aantal beelden in 4 maanden</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (detail of rapport.aantalOnderzoekenLijst; track detail) {
+            <tr>
+              <td>{{ detail.medewerkercode }}</td>
+              <td>{{ detail.aantalBeeldenBinnen2Maanden }}</td>
+              <td>{{ detail.aantalBeeldenBinnen4Maanden }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="btn-group" buttons>
+    <button class="btn btn-secondary" (click)="sluitDialog()" data-testid="annuleren_btn">Annuleren</button>
+    <button class="btn btn-secondary" (click)="exporteren()" data-testid="exporteren_btn">Exporteren</button>
+    <button class="btn btn-primary" (click)="genereren()" data-testid="genereren_btn">Genereren</button>
+  </div>
+</app-base-dialog>

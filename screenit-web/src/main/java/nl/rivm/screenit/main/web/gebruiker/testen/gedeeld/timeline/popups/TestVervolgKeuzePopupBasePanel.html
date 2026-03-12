@@ -20,20 +20,20 @@
   -->
 <html xmlns:wicket="http://wicket.apache.org">
 <wicket:panel>
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h3>
-            <wicket:container wicket:id="gebeurtenis">Uitnodiging FIT verzonden</wicket:container>
-        </h3>
-    </div>
-    <div class="modal-body">
-        <form wicket:id="form">
-            <wicket:container wicket:id="details"></wicket:container>
-        </form>
-    </div>
-    <div class="modal-footer">
-        <a class="btn" data-dismiss="modal">Afbreken</a>
-        <a  class="btn btn-primary" wicket:id="opslaan"><span wicket:id="label"></span></a>
-    </div>
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		<h3>
+			<wicket:container wicket:id="gebeurtenis">Uitnodiging FIT verzonden</wicket:container>
+		</h3>
+	</div>
+	<div class="modal-body">
+		<form wicket:id="form">
+			<wicket:container wicket:id="details"></wicket:container>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<a class="btn" data-dismiss="modal" data-testid="afbreken_button">Afbreken</a>
+		<a class="btn btn-primary" wicket:id="opslaan" data-testid="doorvoeren_button"><span wicket:id="label"></span></a>
+	</div>
 </wicket:panel>
 </html>

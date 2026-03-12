@@ -70,7 +70,5 @@ public interface ColonBaseFitService
 
 	String getToonbareWaarde(ColonFitRegistratie fit);
 
-	boolean isDk2026Actief();
-
 	void koppelTestIndienMogelijk(String fitBarcode, ColonFitType fitType, ColonUitnodiging uitnodiging, Date datumVerstuurd, ColonScreeningRonde screeningRonde);
 }

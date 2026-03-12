@@ -22,7 +22,6 @@ package nl.rivm.screenit.model.colon;
  */
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -40,8 +39,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(schema = "colon")
 public class IntakeMakenLogEventRegel extends AbstractHibernateObject
 {
-	@ManyToOne
-	@JoinColumn(nullable = false)
+	@ManyToOne(optional = false)
 	@JsonIgnore 
 	private IntakeMakenLogEvent logEvent;
 

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import nl.rivm.screenit.Constants;
+import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.model.mamma.beoordeling.MammaVisitatieOnderzoekenWerklijstZoekObject;
 import nl.rivm.screenit.main.service.mamma.MammaKwaliteitscontroleService;
 import nl.rivm.screenit.main.service.mamma.MammaVisitatieService;
@@ -65,6 +66,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderdeel;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderzoekStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieStatus;
 import nl.rivm.screenit.util.DateUtil;
+import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
@@ -100,6 +102,12 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 
 	@SpringBean
 	private MammaVisitatieService visitatieService;
+
+	@SpringBean(name = "testModus")
+	private Boolean testModus;
+
+	@SpringBean
+	private SimplePreferenceService preferenceService;
 
 	private final IModel<MammaVisitatieOnderzoekenWerklijstZoekObject> zoekObjectModel;
 
@@ -225,6 +233,40 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 				return csv.toString();
 			}
 		});
+
+		var downloadCsvMetClientIdLink = new ExportToXslLink<>("csvMetClientId", zoekObjectModel.getObject().getVisitatie().getOmschrijving() + " onderzoek(en)",
+			"Download lijst met ClientId", null)
+		{
+			@Override
+			protected String getDatumTijdFormat()
+			{
+				return Constants.DATE_FORMAT_ISO8601;
+			}
+
+			@Override
+			protected String getCsv()
+			{
+				var csv = new StringBuilder();
+				csv.append("Datum,Medewerkercode,Volgnummer,Fotorichting,ClientId\n");
+				var iterator = onderzoekDataProvider.iterator(-1, -1);
+				while (iterator.hasNext())
+				{
+					var visitatieOnderzoek = iterator.next();
+					csv.append(new SimpleDateFormat(Constants.DEFAULT_DATE_TIME_SECONDS_FORMAT).format(visitatieOnderzoek.getBeoordeling().getOnderzoek().getCreatieDatum()))
+						.append(",");
+					csv.append(visitatieOnderzoek.getBeoordeling().getOnderzoek().getMammografie().getAfgerondDoor() != null
+						? visitatieOnderzoek.getBeoordeling().getOnderzoek().getMammografie().getAfgerondDoor().getMedewerker().getMedewerkercode()
+						: "").append(",");
+					csv.append(visitatieOnderzoek.getVolgnummer() != null ? visitatieOnderzoek.getVolgnummer() : "").append(",");
+					csv.append(visitatieOnderzoek.getVisitatie().getFotorichting() != null ? visitatieOnderzoek.getVisitatie().getFotorichting() : "").append(",");
+					csv.append(visitatieOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient().getId())
+						.append("\n");
+				}
+				return csv.toString();
+			}
+		};
+		downloadCsvMetClientIdLink.setVisible(testModus && preferenceService.getBoolean(PreferenceKey.TOON_TEST_ELEMENTEN.name(), false));
+		refreshContainer.add(downloadCsvMetClientIdLink);
 
 		addVisitatieAfrondenButton();
 		addNavigeerForm();

@@ -29,8 +29,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -44,7 +47,9 @@ import org.hibernate.envers.NotAudited;
 @Setter
 @Getter
 @Entity
-@Table(schema = "colon", name = "huisarts_bericht")
+@Table(schema = "colon", name = "huisarts_bericht", indexes = {
+	@Index(name = "idx_huisarts_bericht_status", columnList = "status"),
+	@Index(name = "idx_huisarts_bericht_aanmaak_datum", columnList = "aanmaakDatum") })
 @Audited
 public class ColonHuisartsBericht extends HuisartsBericht
 {
@@ -59,5 +64,6 @@ public class ColonHuisartsBericht extends HuisartsBericht
 	@Column(nullable = false)
 	private ColonHuisartsBerichtStatus status;
 
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date verzendDatum;
 }

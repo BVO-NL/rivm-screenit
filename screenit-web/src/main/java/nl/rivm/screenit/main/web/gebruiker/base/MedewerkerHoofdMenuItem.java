@@ -77,7 +77,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.colon.houdbaarheid.ColonHou
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.huisartsimport.HuisartsImportBeheerPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.importcapverdeling.ImportCapVerdelingPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.intake.ColonGeplandeIntakesWerklijstPage;
-import nl.rivm.screenit.main.web.gebruiker.screening.colon.kwaliteitscontrole.reeks.SentinelControlesPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.overeenkomstenzoeken.OvereenkomstZoekenBeheerPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.planning.rooster.RoosterAngularPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.proefbvo.ProefBVOAfmeldenPage;
@@ -207,7 +206,6 @@ public enum MedewerkerHoofdMenuItem
 				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.gebieden", GemeenteZoeken.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.importcapverdeling", ImportCapVerdelingPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.huisartsimport", HuisartsImportBeheerPage.class));
-				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.kwaliteitscontrole.reeks", SentinelControlesPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.fithoudbaarheid", ColonHoudbaarheidFitReeksOverzichtPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.screening.zoekenopbarcode", ColonZoekenOpBarcodePage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.colonscreening.verslagen", VerwerkteBerichtenOverzichtPage.class));

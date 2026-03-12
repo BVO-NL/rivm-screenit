@@ -284,7 +284,7 @@ public class ScreenitSession extends WebSession
 
 			securityManager.authenticate(token);
 
-			String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDate());
+			String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDateMidnight());
 			if (meldingNavActiefVanafEnTotEnMet != null)
 			{
 				error(meldingNavActiefVanafEnTotEnMet);
@@ -333,7 +333,7 @@ public class ScreenitSession extends WebSession
 
 			securityManager.authenticate(token);
 
-			String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDate());
+			String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDateMidnight());
 			if (meldingNavActiefVanafEnTotEnMet != null)
 			{
 				error(meldingNavActiefVanafEnTotEnMet);
@@ -745,7 +745,7 @@ public class ScreenitSession extends WebSession
 			}
 			if (uzipasMeldingen.isEmpty())
 			{
-				String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDate());
+				String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDateMidnight());
 				if (meldingNavActiefVanafEnTotEnMet != null)
 				{
 					uzipasMeldingen.add(meldingNavActiefVanafEnTotEnMet);

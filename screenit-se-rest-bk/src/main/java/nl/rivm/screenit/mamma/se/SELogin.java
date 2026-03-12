@@ -151,7 +151,7 @@ public class SELogin
 			else
 			{
 				securityManager.authenticate(token);
-				String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDate());
+				String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDateMidnight());
 				if (meldingNavActiefVanafEnTotEnMet != null)
 				{
 					result.setMessage(meldingNavActiefVanafEnTotEnMet);

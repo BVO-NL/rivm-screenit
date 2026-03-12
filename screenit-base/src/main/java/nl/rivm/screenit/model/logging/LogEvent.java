@@ -48,6 +48,7 @@ public class LogEvent extends AbstractHibernateObject
 	private String volledigeMelding;
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private Level level = Level.INFO;
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "logEvent")

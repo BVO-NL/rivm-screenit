@@ -39,6 +39,6 @@ import nl.rivm.screenit.model.verwerkingverslag.colon.ColonFitAnalyseResultaatSe
 @Setter
 public class ColonFitAnalyseResultaatSetVerwerkingBeeindigdLogEvent extends LogEvent
 {
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false)
 	private ColonFitAnalyseResultaatSetVerwerkingRapportage rapportage;
 }

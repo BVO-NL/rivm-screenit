@@ -106,7 +106,7 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 	private List<Organisatie> zoekOrganisaties(Organisatie searchObject, Map<OrganisatieType, List<Organisatie>> hierarchieCriteria, List<OrganisatieType> excludeOrganisatieTypes,
 		long first, long count, String sortProperty, boolean asc)
 	{
-		var spec = getZoekOrganisatiesSpecification(searchObject, hierarchieCriteria, excludeOrganisatieTypes, currentDateSupplier.getLocalDateTime());
+		var spec = getZoekOrganisatiesSpecification(searchObject, hierarchieCriteria, excludeOrganisatieTypes, currentDateSupplier.getLocalDate());
 
 		var alleGevondenOrganisaties = organisatieRepository.findWith(spec, q -> q.sortBy(getSort(sortProperty, asc), this::addJoinsForSortingOrCreateDedicatedOrders)).all();
 		var alleUniekeGevondenOrganisaties = new ArrayList<>(new LinkedHashSet<>(alleGevondenOrganisaties));
@@ -169,7 +169,7 @@ public class OrganisatieZoekServiceImpl implements OrganisatieZoekService
 		OrganisatieMedewerker organisatieMedewerker)
 	{
 		var hierarchieCriteria = getHierarchieCriteria(searchObject, selectedOrganisatieTypes, organisatieMedewerker);
-		var spec = getZoekOrganisatiesSpecification(searchObject, hierarchieCriteria, excludeOrganisatieTypes, currentDateSupplier.getLocalDateTime());
+		var spec = getZoekOrganisatiesSpecification(searchObject, hierarchieCriteria, excludeOrganisatieTypes, currentDateSupplier.getLocalDate());
 		return organisatieRepository.countDistinct(spec);
 	}
 

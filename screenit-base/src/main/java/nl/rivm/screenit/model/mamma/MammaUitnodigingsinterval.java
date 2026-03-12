@@ -58,5 +58,6 @@ public class MammaUitnodigingsinterval extends AbstractHibernateObject
 	private Integer aantalMaanden;
 
 	@NotAudited
+	@Column(nullable = false)
 	private LocalDate berekendeReferentieDatum;
 }

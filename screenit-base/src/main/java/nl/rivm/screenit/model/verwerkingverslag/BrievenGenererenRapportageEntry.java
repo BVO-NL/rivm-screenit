@@ -21,6 +21,7 @@ package nl.rivm.screenit.model.verwerkingverslag;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -32,12 +33,13 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 @Table(schema = "gedeeld")
 public class BrievenGenererenRapportageEntry extends AbstractHibernateObject
 {
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private BrievenGenererenRapportage rapportage;
 
 	@ManyToOne
 	private ScreeningOrganisatie screeningOrganisatie;
 
+	@Column(nullable = false)
 	private Integer aantalBrievenPerScreeningOrganisatie;
 
 	public BrievenGenererenRapportage getRapportage()

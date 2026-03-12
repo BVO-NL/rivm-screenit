@@ -60,7 +60,6 @@ import nl.rivm.screenit.repository.colon.ColonFitAnalyseResultaatSetVerwerkingRa
 import nl.rivm.screenit.repository.colon.ColonFitAnalyseResultaatSetVerwerkingRapportageRepository;
 import nl.rivm.screenit.repository.colon.ColonFitAnalyseResultatenBerichtRepository;
 import nl.rivm.screenit.repository.colon.ColonFitLaboratoriumRepository;
-import nl.rivm.screenit.repository.colon.ColonSKMLControleBarcodeRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieService;
@@ -95,8 +94,6 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 
 	private final ColonFitAnalyseResultatenBerichtRepository fitAnalyseResultatenBerichtRepository;
 
-	private final ColonSKMLControleBarcodeRepository skmlControleBarcodeRepository;
-
 	private final ColonFitAnalyseResultaatSetVerwerkingBeeindigdLogEventRepository fitVerwerkingBeeindigdLogEventRepository;
 
 	private final ColonFitAnalyseResultaatSetVerwerkingRapportageRepository fitVerwerkingRapportageRepository;
@@ -125,6 +122,7 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 	{
 		var verwerkingLogEvent = new ColonFitAnalyseResultaatSetVerwerkingBeeindigdLogEvent();
 		var rapportage = new ColonFitAnalyseResultaatSetVerwerkingRapportage();
+		rapportage.setDatumVerwerking(currentDateSupplier.getDate());
 		verwerkingLogEvent.setRapportage(rapportage);
 		fitVerwerkingRapportageRepository.save(rapportage);
 		fitVerwerkingBeeindigdLogEventRepository.save(verwerkingLogEvent);
@@ -136,7 +134,6 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 			var wrapper = new ColonHl7BerichtToFitAnalyseResultaatSetWrapper((OUL_R22) hapiMsg);
 			var verslagEntry = new ColonFitAnalyseResultaatSetVerwerkingRapportageEntry();
 
-			rapportage.setDatumVerwerking(currentDateSupplier.getDate());
 			verslagEntry.setAnalyseResultaatSetNaam(bericht.getMessageId());
 			verslagEntry.setRapportage(rapportage);
 
@@ -218,9 +215,8 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 		}
 		if (resultaatSet != null)
 		{
-			resultaatSet.setStatus(bepaalBestandStatus());
+			resultaatSet.setStatus(ColonFitAnalyseResultaatSetStatus.GEAUTORISEERD);
 		}
-
 	}
 
 	private @Nullable ColonFitAnalyseResultaatType bepaalResultaatType(String barcode)
@@ -229,21 +225,10 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 		ColonFitAnalyseResultaatType resultaatType = null;
 		if (fit == null || fit.getType() == ColonFitType.STUDIE)
 		{
-			if (fitService.isDk2026Actief())
-			{
 				if (barcode.startsWith(QC_BARCODE_PREFIX))
 				{
 					resultaatType = ColonFitAnalyseResultaatType.QC;
 				}
-			}
-			else
-			{
-				var skmlBarcode = skmlControleBarcodeRepository.findByBarcode(barcode);
-				if (skmlBarcode.isPresent())
-				{
-					resultaatType = skmlBarcode.get().getType();
-				}
-			}
 		}
 		else
 		{
@@ -320,11 +305,6 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 
 			return resultaatSet;
 		});
-	}
-
-	private @NotNull ColonFitAnalyseResultaatSetStatus bepaalBestandStatus()
-	{
-		return fitService.isDk2026Actief() ? ColonFitAnalyseResultaatSetStatus.GEAUTORISEERD : ColonFitAnalyseResultaatSetStatus.INGELEZEN;
 	}
 
 	private void logAction(ColonFitRegistratie fit)

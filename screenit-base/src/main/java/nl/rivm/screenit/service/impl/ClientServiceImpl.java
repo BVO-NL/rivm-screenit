@@ -104,6 +104,7 @@ import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftG
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftNietGbaStatus;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftNietGbaStatussen;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftTitelCode;
+import static nl.rivm.screenit.specification.algemeen.ClientSpecification.metBeoordelingId;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.heeftBsn;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.isNietOverleden;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.valtBinnenLeeftijdGrensRestricties;
@@ -712,4 +713,16 @@ public class ClientServiceImpl implements ClientService
 	{
 		return countUsedColonHandtekeningBrief(handtekeningBrief, handtekeningProperty) > 1;
 	}
-}	
+
+	@Override
+	public Client getClientByBeoordelingId(Long beoordelingId)
+	{
+		return clientRepository.findOne(metBeoordelingId(beoordelingId)).orElse(null);
+	}
+
+	@Override
+	public Long getClientIdByBeoordelingId(Long beoordelingId)
+	{
+		return clientRepository.findWith(metBeoordelingId(beoordelingId), Long.class, q -> q.projection((cb, r) -> r.get(Client_.id))).one().orElse(null);
+	}
+}

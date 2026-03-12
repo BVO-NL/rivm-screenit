@@ -21,6 +21,7 @@ package nl.rivm.screenit.main.web.component;
  * =========================LICENSE_END==================================
  */
 
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.form.PasswordTextField;
@@ -40,10 +41,16 @@ public class ScreenitWachtwoordField extends GenericPanel<String>
 
 	public ScreenitWachtwoordField(String id, IModel<String> model, boolean required, IValidator<String> validator)
 	{
+		this(id, model, required, validator, "wachtwoord_input");
+	}
+
+	public ScreenitWachtwoordField(String id, IModel<String> model, boolean required, IValidator<String> validator, String testId)
+	{
 		super(id, model);
 		PasswordTextField inputField = new PasswordTextField("wachtwoord", getModel());
 		inputField.setOutputMarkupId(true);
 		inputField.setRequired(required);
+		inputField.add(new AttributeAppender("data-testid", testId));
 		ComponentHelper.setAutocompleteOff(inputField);
 
 		if (validator != null)

@@ -30,6 +30,8 @@ import { ValidationErrors } from '@angular/forms'
 import { MammaVisitatieResponseDto } from '@/shared/types/mamma/dto/mamma-visitatie-response.dto'
 import { PagedResponse } from '@/shared/types/paged-response'
 import { MammaVisitatieOnderdeel } from '@shared/types/mamma/mamma-visitatie-onderdeel'
+import { MammaVisitatielijstRequestDto } from '@shared/types/mamma/dto/mamma-visitatielijst-request.dto'
+import { MammaVisitatielijstResponseDto } from '@shared/types/mamma/dto/mamma-visitatielijst-response.dto'
 
 @Injectable({
   providedIn: 'root',
@@ -77,6 +79,13 @@ export class MammaVisitatieService {
   ): Observable<MammaVisitatieResponseDto> {
     const payload = this.getVisitatiePayload(visitatie, bestanden, rapportageFile, vragenlijstFile)
     return this.http.put<MammaVisitatieResponseDto>(`${this.baseUrl}/${visitatie.id}`, payload)
+  }
+
+  genereerVisitatieLijst(visitatieLijst: MammaVisitatielijstRequestDto, bestand: File, dryRun: boolean): Observable<MammaVisitatielijstResponseDto> {
+    const formData = new FormData()
+    formData.append('metadata', new Blob([JSON.stringify(visitatieLijst)], { type: 'application/json' }))
+    formData.append('bestand', bestand)
+    return this.http.post<MammaVisitatielijstResponseDto>(`${this.baseUrl}/insteltechniek/genereren?dryRun=${dryRun}`, formData)
   }
 
   private getVisitatiePayload(visitatie: MammaVisitatieRequestDto, bestanden: Map<MammaVisitatieOnderdeel, File>, rapportageFile?: File, vragenlijstFile?: File): FormData {

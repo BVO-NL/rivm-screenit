@@ -1,0 +1,44 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog titel="Visitatielijsten insteltechniek genereren">
+  <form [formGroup]="genererenForm" body>
+    <clr-input-container>
+      <label class="clr-required-mark" for="omschrijving">Omschrijving</label>
+      <input clrInput id="omschrijving" type="text" formControlName="omschrijving"
+             data-testid="input_omschrijving"/>
+      <clr-control-error *clrIfError="'required'">De omschrijving is verplicht</clr-control-error>
+    </clr-input-container>
+
+    <clr-file-input-container>
+      <label for="bestand">Bestand</label>
+      <input clrFileInput type="file" [accept]="contentType.CSV" formControlName="bestand" id="bestand"
+             data-testid="bestand_input"/>
+      <clr-control-error *clrIfError="'extensie'">{{ bestandCtrl.getError('extensie') }}</clr-control-error>
+      <clr-control-error *clrIfError="'aantalBestanden'">{{ bestandCtrl!.getError('aantalBestanden') }}</clr-control-error>
+      <clr-control-error *clrIfError="'required'">Het bestand is verplicht</clr-control-error>
+    </clr-file-input-container>
+  </form>
+
+  <div class="btn-group" buttons>
+    <button class="btn btn-secondary" (click)="sluitDialog()" data-testid="annuleren_btn">Annuleren</button>
+    <button class="btn btn-primary" (click)="rapportGenereren()" data-testid="genereren_btn">Rapport genereren</button>
+  </div>
+</app-base-dialog>

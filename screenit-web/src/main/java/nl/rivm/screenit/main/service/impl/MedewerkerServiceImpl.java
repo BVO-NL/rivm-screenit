@@ -366,6 +366,12 @@ public class MedewerkerServiceImpl implements MedewerkerService
 		return spec;
 	}
 
+	@Override
+	public List<OrganisatieMedewerker> getOrganisatieMedewerkersByMedewerkercode(String medewerkercode)
+	{
+		return organisatieMedewerkerRepository.findAll(MedewerkerSpecification.heeftMedewerkercode(medewerkercode).with(OrganisatieMedewerker_.medewerker));
+	}
+
 	private Function<From<?, ? extends OrganisatieMedewerker>, From<?, ? extends Permissie>> permissieJoin()
 	{
 		return r ->

@@ -32,6 +32,11 @@ import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
 import nl.rivm.screenit.model.enums.GbaStatus;
+import nl.rivm.screenit.model.mamma.MammaAfspraak_;
+import nl.rivm.screenit.model.mamma.MammaDossier_;
+import nl.rivm.screenit.model.mamma.MammaOnderzoek_;
+import nl.rivm.screenit.model.mamma.MammaScreeningRonde_;
+import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectClient_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
@@ -185,6 +190,20 @@ public class ClientSpecification
 				));
 
 			return cb.not(cb.exists(subquery));
+		};
+	}
+
+	public static Specification<Client> metBeoordelingId(Long beoordelingId)
+	{
+		return (r, q, cb) ->
+		{
+			var dossierJoin = join(r, Client_.mammaDossier);
+			var screeningRondeJoin = join(dossierJoin, MammaDossier_.screeningRondes);
+			var uitnodigingJoin = join(screeningRondeJoin, MammaScreeningRonde_.uitnodigingen);
+			var afspraakJoin = join(uitnodigingJoin, MammaUitnodiging_.afspraken);
+			var onderzoekJoin = join(afspraakJoin, MammaAfspraak_.onderzoek);
+			var beoordelingJoin = join(onderzoekJoin, MammaOnderzoek_.beoordelingen);
+			return cb.equal(beoordelingJoin.get(AbstractHibernateObject_.id), beoordelingId);
 		};
 	}
 }

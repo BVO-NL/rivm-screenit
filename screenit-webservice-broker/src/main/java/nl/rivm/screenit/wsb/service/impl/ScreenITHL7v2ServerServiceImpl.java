@@ -26,7 +26,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.handler.CervixHpvHL7v251Handler;
-import nl.rivm.screenit.handler.ColonFitHl7v251Handler;
 import nl.rivm.screenit.handler.MammaHL7v24Handler;
 import nl.rivm.screenit.wsb.service.ScreenITHL7v2ServerService;
 import nl.rivm.screenit.wsb.service.mamma.MammaBeeldenOntvangenService;
@@ -57,10 +56,6 @@ public class ScreenITHL7v2ServerServiceImpl implements ScreenITHL7v2ServerServic
 	private Integer incomingHpvPort;
 
 	@Autowired
-	@Qualifier("hl7IfobtPort")
-	private Integer incomingIfobtPort;
-
-	@Autowired
 	@Qualifier("hl7ImsPort")
 	private Integer incomingORMIMSPort;
 
@@ -72,7 +67,6 @@ public class ScreenITHL7v2ServerServiceImpl implements ScreenITHL7v2ServerServic
 	public void init()
 	{
 		createHpvServer();
-		createIfobtServer();
 		createMammaServers();
 	}
 
@@ -127,22 +121,6 @@ public class ScreenITHL7v2ServerServiceImpl implements ScreenITHL7v2ServerServic
 		else
 		{
 			LOG.warn("Geen poortnummers in de configuratie gevonden voor HPV servers;");
-		}
-	}
-
-	private void createIfobtServer()
-	{
-		if (incomingIfobtPort != null)
-		{
-			LOG.info("FIT HL7v251 server wordt opgezet, op poort: {}", incomingIfobtPort);
-			Application handler = new ColonFitHl7v251Handler(OUL_R22.class);
-			ApplicationWrapper wrapper = new ApplicationWrapper(handler);
-			createServer(wrapper, incomingIfobtPort);
-			LOG.info("FIT HL7v251 server is aangemaakt.");
-		}
-		else
-		{
-			LOG.warn("Geen poortnummers in de configuratie gevonden voor FIT servers;");
 		}
 	}
 

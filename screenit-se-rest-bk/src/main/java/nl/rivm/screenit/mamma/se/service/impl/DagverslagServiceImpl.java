@@ -116,7 +116,7 @@ public class DagverslagServiceImpl implements DagverslagService
 
 	private DagProductieDto getOrCreateDagproductieDto(Long organisatieMedewerkerId, Map<String, DagProductieDto> result)
 	{
-		return result.computeIfAbsent(getDisplayName(organisatieMedewerkerId), k -> new DagProductieDto());
+		return result.computeIfAbsent(getDisplayName(organisatieMedewerkerId), _ -> new DagProductieDto());
 	}
 
 	private String getDisplayName(long organisatieMedewerkerId)

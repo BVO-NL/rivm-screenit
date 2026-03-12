@@ -28,6 +28,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -51,6 +53,7 @@ public class HuisartsBerichtTemplate extends AbstractHibernateObject
 	private HuisartsBerichtType berichtType;
 
 	@Column(nullable = false)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date aangepast;
 
 	@Column(length = HibernateMagicNumber.L5000)

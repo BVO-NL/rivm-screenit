@@ -47,10 +47,11 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 @DiscriminatorColumn(length = HibernateMagicNumber.L100)
 public abstract class AbstractAfgeslotenOvereenkomst extends AbstractHibernateObject
 {
-	@Column(unique = true)
+	@Column(unique = true, nullable = false)
 	private String code;
 
 	@Temporal(TemporalType.DATE)
+	@Column(nullable = false)
 	private Date startDatum;
 
 	@Temporal(TemporalType.DATE)

@@ -782,20 +782,12 @@ public class ColonBaseFitServiceImpl implements ColonBaseFitService
 		var betrouwbareLimiet = simplePreferenceService.getLong(PreferenceKey.COLON_BETROUWBARE_LIMIET_FIT.name(), 80L);
 		var waardeHogerDanLimiet = fitRegistratie.getUitslag() != null && fitRegistratie.getUitslag().compareTo(BigDecimal.valueOf(betrouwbareLimiet)) >= 0;
 		var heeftProFlag = ANALYSE_RESULTAAT_FLAG_PRO.equals(fitRegistratie.getFlag());
-		if (isDk2026Actief() && (waardeHogerDanLimiet || heeftProFlag))
+		if (waardeHogerDanLimiet || heeftProFlag)
 		{
 			return "> " + betrouwbareLimiet;
 		}
 
 		return fitRegistratie.getUitslag() != null ? fitRegistratie.getUitslag().toString() : "";
-	}
-
-	@Override
-	public boolean isDk2026Actief()
-	{
-		var peilDatum = currentDateSupplier.getLocalDate();
-		var startDk2026 = simplePreferenceService.getString(PreferenceKey.COLON_START_DK2026.name(), "20260101");
-		return !peilDatum.isBefore(DateUtil.parseLocalDateForPattern(startDk2026, Constants.DATE_FORMAT_YYYYMMDD));
 	}
 
 	@Override

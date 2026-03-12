@@ -21,8 +21,6 @@ package nl.rivm.screenit.model.cervix;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -32,6 +30,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.ClientBrief;
@@ -44,11 +45,10 @@ import org.hibernate.envers.Audited;
 @Table(schema = "cervix", name = "brief", indexes = { @Index(name = "idx_cervix_brief_gegenereerd", columnList = "gegenereerd"),
 	@Index(name = "idx_cervix_brief_vervangendeprojectbrief", columnList = "vervangendeprojectbrief") })
 @Audited
+@Setter
+@Getter
 public class CervixBrief extends ClientBrief<CervixScreeningRonde, CervixAfmelding, CervixBrief>
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	private CervixScreeningRonde screeningRonde;
@@ -81,115 +81,14 @@ public class CervixBrief extends ClientBrief<CervixScreeningRonde, CervixAfmeldi
 	private transient boolean aangevraagdeHerdruk = false;
 
 	@Override
-	public CervixScreeningRonde getScreeningRonde()
-	{
-		return screeningRonde;
-	}
-
-	@Override
-	public void setScreeningRonde(CervixScreeningRonde screeningRonde)
-	{
-		this.screeningRonde = screeningRonde;
-	}
-
-	public CervixUitnodiging getUitnodiging()
-	{
-		return uitnodiging;
-	}
-
-	public void setUitnodiging(CervixUitnodiging uitnodiging)
-	{
-		this.uitnodiging = uitnodiging;
-	}
-
-	public CervixMonster getMonster()
-	{
-		return monster;
-	}
-
-	public void setMonster(CervixMonster monster)
-	{
-		this.monster = monster;
-	}
-
-	@Override
-	public CervixAfmelding getAfmelding()
-	{
-		return afmelding;
-	}
-
-	@Override
-	public void setAfmelding(CervixAfmelding afmelding)
-	{
-		this.afmelding = afmelding;
-	}
-
-	@Override
 	public CervixMergedBrieven getMergedBrieven()
 	{
 		return mergedBrieven;
-	}
-
-	public void setMergedBrieven(CervixMergedBrieven mergedBrieven)
-	{
-		this.mergedBrieven = mergedBrieven;
 	}
 
 	@Override
 	public void setMergedBrieven(MergedBrieven mergedBrieven)
 	{
 		this.mergedBrieven = (CervixMergedBrieven) mergedBrieven;
-	}
-
-	public PreferenceKey getHeraanmeldenTekstKey()
-	{
-		return heraanmeldenTekstKey;
-	}
-
-	public void setHeraanmeldenTekstKey(PreferenceKey heraanmeldenTekstKey)
-	{
-		this.heraanmeldenTekstKey = heraanmeldenTekstKey;
-	}
-
-	public CervixLabformulier getLabformulier()
-	{
-		return labformulier;
-	}
-
-	public void setLabformulier(CervixLabformulier labformulier)
-	{
-		this.labformulier = labformulier;
-	}
-
-	@Override
-	public CervixBrief getHerdruk()
-	{
-		return herdruk;
-	}
-
-	@Override
-	public void setHerdruk(CervixBrief herdruk)
-	{
-		this.herdruk = herdruk;
-	}
-
-	public boolean isAangevraagdeHerdruk()
-	{
-		return aangevraagdeHerdruk;
-	}
-
-	public void setAangevraagdeHerdruk(boolean aangevraagdeHerdruk)
-	{
-		this.aangevraagdeHerdruk = aangevraagdeHerdruk;
-	}
-
-	public CervixOmissieType getOmissieType()
-	{
-		return omissieType;
-	}
-
-	public void setOmissieType(CervixOmissieType omissieType)
-	{
-		this.omissieType = omissieType;
 	}
 }

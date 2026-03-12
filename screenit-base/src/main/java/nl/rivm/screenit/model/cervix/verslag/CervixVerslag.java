@@ -77,7 +77,7 @@ public class CervixVerslag<T extends VerslagContent<?>> extends AbstractHibernat
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date datumVerwerkt;
 
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	private Date datumOnderzoek;
 
 	@ManyToOne(fetch = FetchType.LAZY)

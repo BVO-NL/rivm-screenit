@@ -58,11 +58,7 @@ public class HL7TestMessageServiceImpl implements HL7TestMessageService
 
 	private HapiContext context = new DefaultHapiContext();
 
-	@Qualifier("hl7IfobtPort")
-	@Autowired(required = false)
-	private Integer hl7IfobtPort;
-
-	@Qualifier("hl7IfobtHost")
+	@Qualifier("hl7wsbHost")
 	@Autowired(required = false)
 	private String hl7wsbHost;
 
@@ -106,24 +102,6 @@ public class HL7TestMessageServiceImpl implements HL7TestMessageService
 			LOG.error("Er ging iets mis met parsen van het bericht", e);
 		}
 		return null;
-	}
-
-	@Override
-	public ScreenITResponseV251MessageWrapper verstuurFitTestBerichtMetMLLP(String message) throws LLPException, IOException, HL7Exception
-	{
-		ScreenITResponseV251MessageWrapper wrapper = null;
-		Connection conn = getIfobtConnection();
-
-		Message hapiMsg = parseMessage(message);
-		if (conn != null)
-		{
-			Message response = conn.getInitiator().sendAndReceive(hapiMsg);
-			wrapper = new ScreenITResponseV251MessageWrapper(response);
-			LOG.info("Message verstuurd. Response was: " + wrapper.getAcknowledgmentCode());
-		}
-
-		closingConnection(conn);
-		return wrapper;
 	}
 
 	@Override
@@ -193,11 +171,11 @@ public class HL7TestMessageServiceImpl implements HL7TestMessageService
 
 	private ScreenITResponseV24MessageWrapper sendHL7v24Message(String message, Connection connection) throws LLPException, IOException, HL7Exception
 	{
-		LOG.info("HL7v24 bericht versturen naar {}:{}", connection.getRemoteAddress().getHostName(), connection.getRemotePort());
 		ScreenITResponseV24MessageWrapper wrapper = null;
 		Message hapiMsg = parseMessage(message);
 		if (connection != null)
 		{
+			LOG.info("HL7v24 bericht versturen naar {}:{}", connection.getRemoteAddress().getHostName(), connection.getRemotePort());
 			Message response = connection.getInitiator().sendAndReceive(hapiMsg);
 			wrapper = new ScreenITResponseV24MessageWrapper(response);
 			LOG.info("Message verstuurd. Response was: {}", wrapper.getAcknowledgmentCode());
@@ -205,11 +183,6 @@ public class HL7TestMessageServiceImpl implements HL7TestMessageService
 
 		closingConnection(connection);
 		return wrapper;
-	}
-
-	private Connection getIfobtConnection()
-	{
-		return getConnection(hl7wsbHost, hl7IfobtPort);
 	}
 
 	private Connection getImsAdtConnection()

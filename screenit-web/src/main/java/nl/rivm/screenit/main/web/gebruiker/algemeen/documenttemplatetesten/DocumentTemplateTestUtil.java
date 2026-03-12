@@ -224,6 +224,7 @@ public class DocumentTemplateTestUtil
 
 		try
 		{
+			fitRegistratie.setDatumVerstuurd(DateUtils.parseDate("23-04-2017", "dd-MM-yyyy"));
 			fitRegistratie.setAfnameDatum(DateUtils.parseDate("01-05-2017", "dd-MM-yyyy"));
 		}
 		catch (ParseException e)

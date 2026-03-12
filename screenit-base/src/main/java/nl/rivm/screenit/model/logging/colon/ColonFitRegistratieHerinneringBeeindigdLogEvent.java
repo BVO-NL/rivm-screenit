@@ -21,6 +21,7 @@ package nl.rivm.screenit.model.logging.colon;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -35,9 +36,12 @@ import nl.rivm.screenit.model.logging.LogEvent;
 @Setter
 public class ColonFitRegistratieHerinneringBeeindigdLogEvent extends LogEvent
 {
+	@Column(nullable = false)
 	private Integer aantalHerinnering = 0;
 
+	@Column(nullable = false)
 	private Integer aantalGeselecteerd = 0;
 
+	@Column(nullable = false)
 	private Integer aantalUitslagen = 0;
 }

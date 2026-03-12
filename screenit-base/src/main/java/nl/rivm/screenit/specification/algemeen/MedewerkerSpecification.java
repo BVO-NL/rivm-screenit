@@ -22,7 +22,6 @@ package nl.rivm.screenit.specification.algemeen;
  */
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -68,7 +67,7 @@ public class MedewerkerSpecification
 				cb.and(
 					cb.lessThanOrEqualTo(vanafExpression, intervalInDagen(cb, r.get(Medewerker_.laatsteKeerWachtwoordGewijzigd), dagenWachtwoordGeldig)),
 					cb.greaterThanOrEqualTo(totEnMetExpression, intervalInDagen(cb, r.get(Medewerker_.laatsteKeerWachtwoordGewijzigd), dagenWachtwoordGeldig)));
-			var nuActief = isActiefOpMoment(vandaag.atStartOfDay()).toPredicate(r, q, cb);
+			var nuActief = isActiefOpDatum(vandaag).toPredicate(r, q, cb);
 
 			var wachtwoordVerlooptInDeToekomst = cb.greaterThan(r.get(Medewerker_.laatsteKeerWachtwoordGewijzigd), peildatumLaatstGewijzigdDate);
 			return
@@ -124,7 +123,7 @@ public class MedewerkerSpecification
 		return (r, q, cb) ->
 		{
 			var totEnMetExpression = cb.coalesce(r.get(Medewerker_.actiefTotEnMet), DateUtil.END_OF_TIME);
-			return cb.lessThan(totEnMetExpression, DateUtil.toUtilDate(peilDatum));
+			return cb.lessThanOrEqualTo(totEnMetExpression, DateUtil.toUtilDate(peilDatum));
 		};
 	}
 
@@ -148,9 +147,9 @@ public class MedewerkerSpecification
 		return skipWhenNull(medewerkercode, (r, q, cb) -> cb.equal(r.get(Medewerker_.medewerkercode), medewerkercode));
 	}
 
-	public static ExtendedSpecification<Medewerker> isActiefEnActiefOpMoment(LocalDateTime peilmoment)
+	public static ExtendedSpecification<Medewerker> isActiefEnActiefOpMoment(LocalDate peildatum)
 	{
-		return isActief().and(isActiefOpMoment(peilmoment));
+		return isActief().and(isActiefOpDatum(peildatum));
 	}
 
 	public static ExtendedSpecification<Medewerker> isActief()
@@ -173,14 +172,14 @@ public class MedewerkerSpecification
 		return skipWhenNullExtended(waarde, (r, q, cb) -> cb.equal(r.get(Medewerker_.actiefTotEnMet), waarde));
 	}
 
-	private static @NotNull ExtendedSpecification<Medewerker> isActiefOpMoment(LocalDateTime peilmoment)
+	private static @NotNull ExtendedSpecification<Medewerker> isActiefOpDatum(LocalDate peildatum)
 	{
 		return (r, q, cb) ->
 		{
 			var vanafExpression = cb.coalesce(r.get(Medewerker_.actiefVanaf), DateUtil.BEGIN_OF_TIME);
 			var totEnMetExpression = cb.coalesce(r.get(Medewerker_.actiefTotEnMet), DateUtil.END_OF_TIME);
 
-			var bevat = bevat(ri -> vanafExpression, ri -> totEnMetExpression, Pair.of(BoundType.CLOSED, BoundType.CLOSED), DateUtil.toUtilDate(peilmoment));
+			var bevat = bevat(ri -> vanafExpression, ri -> totEnMetExpression, Pair.of(BoundType.CLOSED, BoundType.CLOSED), DateUtil.toUtilDate(peildatum));
 			return bevat.toPredicate(r, q, cb);
 		};
 	}
@@ -193,5 +192,10 @@ public class MedewerkerSpecification
 	public static Specification<Medewerker> filterFunctie(Functie functie)
 	{
 		return skipWhenNull(functie, (r, q, cb) -> cb.equal(r.get(Medewerker_.functie), functie));
+	}
+
+	public static ExtendedSpecification<Medewerker> heeftMedewerkercode(String medewerkercode)
+	{
+		return (r, q, cb) -> cb.equal(r.get(Medewerker_.medewerkercode), medewerkercode);
 	}
 }

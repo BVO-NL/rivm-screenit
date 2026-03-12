@@ -60,4 +60,6 @@ public interface MedewerkerService
 
 	List<OrganisatieMedewerkerRol> getOrganisatieMedewerkersMetRolEnBvos(Rol rol, List<Bevolkingsonderzoek> onderzoeken);
 
+	List<OrganisatieMedewerker> getOrganisatieMedewerkersByMedewerkercode(String medewerkercode);
+
 }

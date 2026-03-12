@@ -20,9 +20,10 @@
   -->
 <div class="visitatie-header">
   <h2>Visitatie overzicht</h2>
-  @if (magToevoegen) {
-    <clr-dropdown [clrCloseMenuOnItemClick]="true">
-      <button class="btn btn-primary header-btn" data-testid="visitatie_toevoegen_btn" clrDropdownTrigger>
+
+  <div>
+    <clr-dropdown [clrCloseMenuOnItemClick]="true" *appAutorisatie="toevoegenConstraint">
+      <button class="btn btn-primary mr-2" data-testid="visitatie_toevoegen_btn" clrDropdownTrigger>
         <cds-icon shape="plus"></cds-icon>
         Visitatie
       </button>
@@ -31,7 +32,12 @@
         <button clrDropdownItem (click)="openVisitatieToevoegenDialog('insteltechniek')" data-testid="visitatie_toevoegen_insteltechniek_btn">Visitatie voor insteltechniek</button>
       </clr-dropdown-menu>
     </clr-dropdown>
-  }
+    <button class="btn btn-primary header-btn" data-testid="visitatielijst_genereren_btn" (click)="openVisitatielijstGenererenDialog()"
+            *appAutorisatie="insteltechniekAanpassenConstraint">
+      <cds-icon shape="list"></cds-icon>
+      Visitatielijst genereren
+    </button>
+  </div>
 </div>
 
 <app-mamma-visitatie-filter (filter)="filterValidaties($event)" class="visitatie-filter"/>

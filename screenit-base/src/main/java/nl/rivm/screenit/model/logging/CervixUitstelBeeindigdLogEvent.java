@@ -34,7 +34,7 @@ import org.hibernate.annotations.CascadeType;
 @Table(schema = "gedeeld")
 public class CervixUitstelBeeindigdLogEvent extends LogEvent
 {
-	@OneToOne(cascade = jakarta.persistence.CascadeType.REMOVE)
+	@OneToOne(cascade = jakarta.persistence.CascadeType.REMOVE, optional = false)
 	@Cascade(CascadeType.DELETE)
 	private CervixUitstelRapportage rapportage;
 

@@ -120,10 +120,10 @@ public class Medewerker extends AbstractHibernateObject implements Account, IAct
 
 	private String wachtwoord;
 
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	private Date actiefVanaf;
 
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	private Date actiefTotEnMet;
 
 	@Column(unique = true, nullable = false)

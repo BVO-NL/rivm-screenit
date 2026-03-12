@@ -496,9 +496,9 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 			vooraankondiging.setClient(dossier.getClient());
 			var nu = currentDateSupplier.getDate();
 			vooraankondiging.setCreatieDatum(nu);
-			dossier.setVooraankondiging(vooraankondiging);
 			var brief = briefService.maakBvoBrief(ronde, BriefType.COLON_VOORAANKONDIGING);
 			vooraankondiging.setBrief(brief);
+			dossier.setVooraankondiging(vooraankondiging);
 			hibernateService.saveOrUpdateAll(vooraankondiging);
 		}
 		return vooraankondiging;

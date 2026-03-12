@@ -104,7 +104,7 @@ public class SeAutorisatieServiceImpl implements SeAutorisatieService
 		setEinddatumOpBasisVanRollen(seRechtDto, organisatieMedewerker, recht, benodigdeActie);
 
 		LocalDate gebruikerActiefTotEnMet = DateUtil.toLocalDate(organisatieMedewerker.getMedewerker().getActiefTotEnMet());
-		if (gebruikerActiefTotEnMet != null && (seRechtDto.getEindDatum() == null || gebruikerActiefTotEnMet.compareTo(seRechtDto.getEindDatum()) < 0))
+		if (gebruikerActiefTotEnMet != null && (seRechtDto.getEindDatum() == null || gebruikerActiefTotEnMet.isBefore(seRechtDto.getEindDatum())))
 		{
 			seRechtDto.setEindDatum(gebruikerActiefTotEnMet);
 		}

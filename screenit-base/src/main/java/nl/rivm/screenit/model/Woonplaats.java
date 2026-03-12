@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model;
 
 /*-
@@ -22,8 +21,6 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,53 +28,23 @@ import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
+@Getter
+@Setter
 @Entity
 @Table(schema = "gedeeld", indexes = @Index(columnList = "code", name = "IDX_WOONPLAATS_CODE", unique = true))
 public class Woonplaats extends AbstractHibernateObject implements INaam
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@Column(unique = true, length = 10, nullable = false)
 	private String code;
 
 	@Column(length = 255, nullable = false)
 	private String naam;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	private Gemeente gemeente;
-
-	public String getCode()
-	{
-		return code;
-	}
-
-	public void setCode(String code)
-	{
-		this.code = code;
-	}
-
-	@Override
-	public String getNaam()
-	{
-		return naam;
-	}
-
-	public void setNaam(String naam)
-	{
-		this.naam = naam;
-	}
-
-	public Gemeente getGemeente()
-	{
-		return gemeente;
-	}
-
-	public void setGemeente(Gemeente gemeente)
-	{
-		this.gemeente = gemeente;
-	}
 }

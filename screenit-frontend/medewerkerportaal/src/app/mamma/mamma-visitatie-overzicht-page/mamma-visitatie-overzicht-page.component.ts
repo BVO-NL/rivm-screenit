@@ -47,10 +47,24 @@ import { PagedResponse } from '@/shared/types/paged-response'
 import { SorteerParameterDto } from '@/shared/types/sort-param'
 import { ToastService } from '@/shared/toast/service/toast.service'
 import { MammaVisitatieStatus } from '@/shared/types/mamma/mamma-visitatie-status'
+import { MammaVisitatielijstGenererenDialogComponent } from '@/mamma/mamma-visitatie-overzicht-page/components/mamma-visitatielijst-genereren-dialog/mamma-visitatielijst-genereren-dialog.component'
+import { AutorisatieDirective } from '@/autorisatie/directive/autorisatie.directive'
+import { MammaVisitatielijstRapportDialogComponent } from '@/mamma/mamma-visitatie-overzicht-page/components/mamma-visitatielijst-rapport-dialog/mamma-visitatielijst-rapport-dialog.component'
+import { MammaVisitatielijstDialogData } from '@shared/types/mamma/dto/mamma-visitatielijst-dialog-data'
 
 @Component({
   selector: 'app-mamma-visitatie-overzicht-page',
-  imports: [ClrDatagridModule, DatePipe, ClrDatagridModule, ReactiveFormsModule, ClrIconModule, TitleCasePipe, MammaVisitatieFilterComponent, ClrDropdownModule],
+  imports: [
+    ClrDatagridModule,
+    DatePipe,
+    ClrDatagridModule,
+    ReactiveFormsModule,
+    ClrIconModule,
+    TitleCasePipe,
+    MammaVisitatieFilterComponent,
+    ClrDropdownModule,
+    AutorisatieDirective,
+  ],
   templateUrl: './mamma-visitatie-overzicht-page.component.html',
   styleUrl: './mamma-visitatie-overzicht-page.component.scss',
 })
@@ -70,8 +84,17 @@ export class MammaVisitatieOverzichtPageComponent {
     required: Required.ANY,
   }
 
+  protected insteltechniekAanpassenConstraint: SecurityConstraint = {
+    ...this.inzienConstraint,
+    recht: [Recht.MEDEWERKER_VISITATIE_INSTELTECHNIEK],
+    actie: Actie.AANPASSEN,
+    bevolkingsonderzoekScopes: [Bevolkingsonderzoek.MAMMA],
+    organisatieTypeScopes: [OrganisatieType.RIVM],
+  }
+
   protected toevoegenConstraint: SecurityConstraint = {
     ...this.inzienConstraint,
+    organisatieTypeScopes: [OrganisatieType.RIVM, OrganisatieType.SCREENINGSORGANISATIE],
     actie: Actie.TOEVOEGEN,
   }
 
@@ -92,10 +115,6 @@ export class MammaVisitatieOverzichtPageComponent {
 
   get magInzien(): boolean {
     return !this.autorisatieService.heeftOrganisatieType(OrganisatieType.RIVM)
-  }
-
-  get magToevoegen(): boolean {
-    return !this.isKwaliteitsplatform && this.autorisatieService.isToegestaan(this.toevoegenConstraint)
   }
 
   get magVerwijderen(): boolean {
@@ -150,6 +169,26 @@ export class MammaVisitatieOverzichtPageComponent {
         switchMap(() => this.visitatieService.verwijderVisitatie(visitatie)),
       )
       .subscribe(() => this.visitaties.update((visitaties) => visitaties.filter((v) => v.id !== visitatie.id)))
+  }
+
+  openVisitatielijstGenererenDialog() {
+    this.dialog
+      .open<MammaVisitatielijstDialogData>(MammaVisitatielijstGenererenDialogComponent)
+      .closed.pipe(
+        take(1),
+        filter((res) => !!res),
+      )
+      .subscribe((res: MammaVisitatielijstDialogData) => this.openVisitatielijstRapportDialog(res))
+  }
+
+  private openVisitatielijstRapportDialog(data: MammaVisitatielijstDialogData): void {
+    this.dialog
+      .open(MammaVisitatielijstRapportDialogComponent, { data })
+      .closed.pipe(
+        take(1),
+        filter((res) => !!res),
+      )
+      .subscribe((res) => this.visitaties.update((visitaties) => [...visitaties, ...(res as MammaVisitatieDto[])]))
   }
 
   navigeerNaarVisitatie(visitatieId: number) {

@@ -47,7 +47,7 @@ public class MammaHL7v24Message extends AbstractHibernateObject
 	@Column(nullable = false)
 	private MammaHL7BerichtType hl7BerichtType;
 
-	@Column(columnDefinition = "TEXT")
+	@Column(columnDefinition = "TEXT", nullable = false)
 	private String dtoJson;
 
 	public Date getCreateTime()

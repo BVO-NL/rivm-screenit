@@ -76,6 +76,8 @@ public class SubMenuPanel extends Panel
 					};
 					item.add(link);
 					link.add(new Label("subMenuNaam", new SimpleStringResourceModel(medewerkerMenuItem.getResourceTag())));
+					link.add(new AttributeAppender("data-testid", medewerkerMenuItem.getResourceTag() + "_submenu_link", " "));
+
 				}
 				else if (item.getModelObject() instanceof MenuDivider)
 				{

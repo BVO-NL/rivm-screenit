@@ -73,6 +73,7 @@ public class BezwaarMoment extends AbstractHibernateObject
 	@NotAudited
 	private UploadDocument bezwaarBrief;
 
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date bezwaarDatum;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "bezwaarMoment")
