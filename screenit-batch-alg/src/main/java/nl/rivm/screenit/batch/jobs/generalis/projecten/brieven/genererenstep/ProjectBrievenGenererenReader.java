@@ -24,7 +24,6 @@ package nl.rivm.screenit.batch.jobs.generalis.projecten.brieven.genererenstep;
 import nl.rivm.screenit.batch.jobs.brieven.genereren.AbstractBrievenGenererenReader;
 import nl.rivm.screenit.batch.jobs.generalis.projecten.brieven.ProjectBrievenConstants;
 import nl.rivm.screenit.model.project.ProjectBrief;
-import nl.rivm.screenit.specification.algemeen.ClientSpecification;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -45,8 +44,6 @@ public class ProjectBrievenGenererenReader extends AbstractBrievenGenererenReade
 	{
 		var specification = super.createSpecification();
 		var projectBriefActieId = getStepExecutionContext().getLong(ProjectBrievenConstants.KEY_PROJECT_ACTIE_ID);
-		return specification
-			.and(heeftDefinitieId(projectBriefActieId))
-			.and(ClientSpecification.heeftIndicatie().with(r -> clientJoin(r)));
+		return specification.and(heeftDefinitieId(projectBriefActieId));
 	}
 }

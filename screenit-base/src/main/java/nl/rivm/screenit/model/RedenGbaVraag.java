@@ -39,7 +39,7 @@ public enum RedenGbaVraag
 	AFGEMELD("Afgemeld voor alle bevolkingsonderzoeken binnen leeftijddoelgroep"), 
 	AANGEMELD("Heraanmelding met door BVO ingetrokken indicatie"), 
 
-	BOVENGRENS_LEEFTIJD("Bovengrens leeftijd BRP indicatie bereikt"), 
+	BOVENGRENS_LEEFTIJD("Bovengrensleeftijd BRP indicatie bereikt"), 
 	SELECTIEBLOKKADE("Geen reactie na selectieblokkade"), 
 
 	BRIEF_VERSTUREN("Brief versturen bij door BVO ingetrokken indicatie"), 
@@ -54,5 +54,4 @@ public enum RedenGbaVraag
 	{
 		return this.naam;
 	}
-
 }

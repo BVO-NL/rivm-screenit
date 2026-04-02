@@ -31,17 +31,22 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.batch.jobs.generalis.gba.GbaFtpConnection;
 import nl.rivm.screenit.config.GbaConfig;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
+import nl.rivm.screenit.model.gba.GbaFile;
 import nl.rivm.screenit.model.gba.GbaVerwerkingsLog;
 import nl.rivm.screenit.repository.algemeen.GbaVraagRepository;
 import nl.rivm.screenit.service.FileService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
+import nl.rivm.screenit.util.ZipUtil;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.jcraft.jsch.SftpException;
+
+import static nl.rivm.screenit.Constants.ZIP_FILE_EXTENSION;
 
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -85,7 +90,7 @@ public class Vo105FtpUploader extends GbaFtpConnection implements Vo105Uploader
 	{
 		prepareUpload();
 		var file = new File(vo105Bestand);
-		saveFileOnFileStore(file);
+		saveToFilestoreAsZip(file);
 		upload(file);
 		gbaVraagRepository.markeerVragenAlsVerstuurd(jobExecutionId.toString());
 	}
@@ -107,21 +112,43 @@ public class Vo105FtpUploader extends GbaFtpConnection implements Vo105Uploader
 		}
 	}
 
-	private void saveFileOnFileStore(File vo105File)
+	private void saveToFilestoreAsZip(File vo105File)
 	{
-		var directory = gbaConfig.voFileStorePath() + FileStoreLocation.relativePathForDate(dateSupplier.getLocalDate());
-		var uniqueFileName = UUID.randomUUID() + "-outgoing.vo105";
-		var fullPath = directory + File.separator + uniqueFileName;
+		var fileName = UUID.randomUUID() + "-outgoing" + ZIP_FILE_EXTENSION;
+		var datePath = FileStoreLocation.relativePathForDate(dateSupplier.getLocalDate());
+
+		var relativeFilestorePath = datePath + fileName;
+		var fileStorePath = gbaConfig.voFileStorePath()
+			+ File.separator
+			+ relativeFilestorePath;
+
+		File tempZipFile = null;
 
 		try
 		{
-			fileService.save(fullPath, vo105File);
-			LOG.info("vo105 bestand {} opgeslagen onder {}", vo105File.getPath(), fullPath);
+			tempZipFile = ZipUtil.maakTijdelijkZipBestand(vo105File, "vo105-");
 
+			fileService.save(fileStorePath, tempZipFile);
+			voegGbaFileToeAanVerwerkingsLog(vo105File.getName(), relativeFilestorePath);
+
+			LOG.info("vo105 bestand {} gezipt en opgeslagen onder {}", vo105File.getPath(), fileStorePath);
 		}
 		catch (IOException e)
 		{
-			LOG.error("Error bij opslaan van vo105 bestand", e);
+			LOG.error("Error bij zippen en opslaan van vo105 bestand", e);
 		}
+		finally
+		{
+			ZipUtil.verwijderTijdelijkBestand(tempZipFile);
+		}
+	}
+
+	private void voegGbaFileToeAanVerwerkingsLog(String fileName, String bestandPath)
+	{
+		var gbaFile = new GbaFile();
+		gbaFile.setNaam(FilenameUtils.removeExtension(fileName) + ZIP_FILE_EXTENSION);
+		gbaFile.setGbaVerwerkingsLog(gbaVerwerkingsLog);
+		gbaFile.setPath(bestandPath);
+		gbaVerwerkingsLog.getBestanden().add(gbaFile);
 	}
 }

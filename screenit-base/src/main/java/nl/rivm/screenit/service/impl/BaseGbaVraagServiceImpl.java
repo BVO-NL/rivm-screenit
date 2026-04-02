@@ -109,6 +109,14 @@ public class BaseGbaVraagServiceImpl implements BaseGbaVraagService
 
 	@Override
 	@Transactional
+	public void verzoekVerwijderIndicatie(Client client, RedenIntrekkenGbaIndicatie redenIntrekkenGbaIndicatie)
+	{
+
+		maakGbaVraag(GbaVraagType.VERWIJDER_INDICATIE, null, client, redenIntrekkenGbaIndicatie.getRedenGbaVraag(), null);
+	}
+
+	@Override
+	@Transactional
 	public void verzoekPlaatsIndicatieBijIntrekkenBezwaarBrp(Client client, Account account)
 	{
 		var gbaVraagReden = RedenGbaVraag.BEZWAAR_INGETROKKEN;

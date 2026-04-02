@@ -32,11 +32,15 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.BriefDefinitie;
 import nl.rivm.screenit.model.ProjectParameterKey;
+import nl.rivm.screenit.model.colon.ColonDossier_;
+import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
+import nl.rivm.screenit.model.colon.ColonUitnodiging_;
 import nl.rivm.screenit.model.colon.UitnodigingCohort;
 import nl.rivm.screenit.model.colon.UitnodigingCohortGeboortejaren;
 import nl.rivm.screenit.model.colon.UitnodigingCohort_;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.model.enums.RedenIntrekkenGbaIndicatie;
 import nl.rivm.screenit.repository.colon.ColonUitnodigingRepository;
 import nl.rivm.screenit.repository.colon.UitnodigingCohortRepository;
 import nl.rivm.screenit.service.BaseBriefService;
@@ -44,6 +48,7 @@ import nl.rivm.screenit.service.BaseUitnodigingService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonScreeningsrondeService;
 import nl.rivm.screenit.service.colon.ColonUitnodigingService;
+import nl.rivm.screenit.specification.algemeen.ClientSpecification;
 import nl.rivm.screenit.specification.algemeen.UitnodigingCohortSpecification;
 import nl.rivm.screenit.specification.colon.ColonUitnodigingSpecification;
 import nl.rivm.screenit.util.DateUtil;
@@ -57,6 +62,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
 @Service
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -189,6 +196,12 @@ public class ColonUitnodigingServiceImpl implements ColonUitnodigingService
 	public List<Long> getTeVersturenUitnodigingen()
 	{
 		var specification = ColonUitnodigingSpecification.heeftActieveClient()
+			.and(ClientSpecification.heeftRedenIntrekkenGbaIndicatie(RedenIntrekkenGbaIndicatie.NIET_INGETROKKEN).with(r ->
+			{
+				var ronde = join(r, ColonUitnodiging_.screeningRonde);
+				var dossier = join(ronde, ColonScreeningRonde_.dossier);
+				return join(dossier, ColonDossier_.client);
+			}))
 			.and(ColonUitnodigingSpecification.heeftGeenVerstuurdDatum())
 			.and(ColonUitnodigingSpecification.heeftUitnodigingsDatumVoorDatum(currentDateSupplier.getDate()))
 			.and(ColonUitnodigingSpecification.heeftGeenBriefTypes(List.of(BriefType.COLON_UITNODIGING_INTAKE, BriefType.COLON_GUNSTIGE_UITSLAG)));

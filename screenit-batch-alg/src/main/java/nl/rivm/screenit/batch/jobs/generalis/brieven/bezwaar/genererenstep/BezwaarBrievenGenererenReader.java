@@ -27,12 +27,14 @@ import nl.rivm.screenit.batch.jobs.brieven.genereren.AbstractBrievenGenererenRea
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.GbaStatus;
+import nl.rivm.screenit.model.enums.RedenIntrekkenGbaIndicatie;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefType;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftGbaStatusIn;
+import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftRedenIntrekkenGbaIndicatie;
 
 @Component
 public class BezwaarBrievenGenererenReader extends AbstractBrievenGenererenReader<BezwaarBrief>
@@ -48,8 +50,15 @@ public class BezwaarBrievenGenererenReader extends AbstractBrievenGenererenReade
 	{
 		var specification = super.createSpecification();
 		var briefType = BriefType.valueOf(getStepExecutionContext().getString(BezwaarBrievenGenererenPartitioner.KEY_BRIEFTYPE));
-		return specification
-			.and(heeftGbaStatusIn(List.of(GbaStatus.INDICATIE_AANWEZIG, GbaStatus.BEZWAAR)).with(r -> clientJoin(r)))
-			.and(heeftBriefType(briefType));
+		return specification.and(heeftBriefType(briefType));
 	}
+
+	@Override
+	public Specification<BezwaarBrief> maakGbaIndicatieSpecification()
+	{
+		return heeftGbaStatusIn(List.of(GbaStatus.INDICATIE_AANWEZIG, GbaStatus.BEZWAAR))
+			.and(heeftRedenIntrekkenGbaIndicatie(RedenIntrekkenGbaIndicatie.NIET_INGETROKKEN))
+			.with(r -> clientJoin(r));
+	}
+
 }

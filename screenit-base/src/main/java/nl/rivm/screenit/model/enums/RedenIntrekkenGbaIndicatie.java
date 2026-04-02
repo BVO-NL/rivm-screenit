@@ -21,10 +21,20 @@ package nl.rivm.screenit.model.enums;
  * =========================LICENSE_END==================================
  */
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import nl.rivm.screenit.model.RedenGbaVraag;
+
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum RedenIntrekkenGbaIndicatie
 {
-	NIET_INGETROKKEN,
-	BOVENGRENS_LEEFTIJD,
-	AFGEMELD,
-	SELECTIEBLOKKADE
+	NIET_INGETROKKEN(null),
+	BOVENGRENS_LEEFTIJD(RedenGbaVraag.BOVENGRENS_LEEFTIJD),
+	AFGEMELD(RedenGbaVraag.AFGEMELD),
+	SELECTIEBLOKKADE(RedenGbaVraag.SELECTIEBLOKKADE);
+
+	@Getter
+	private final RedenGbaVraag redenGbaVraag;
 }

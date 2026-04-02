@@ -26,6 +26,7 @@ import java.util.Optional;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.RedenGbaVraag;
+import nl.rivm.screenit.model.enums.RedenIntrekkenGbaIndicatie;
 import nl.rivm.screenit.model.gba.GbaVraag;
 
 public interface BaseGbaVraagService
@@ -41,6 +42,8 @@ public interface BaseGbaVraagService
 	void verzoekVerwijderIndicatieOnbekendeClient(String bsn);
 
 	void verzoekVerwijderIndicatieBijBezwaarBrp(Client client);
+
+	void verzoekVerwijderIndicatie(Client client, RedenIntrekkenGbaIndicatie redenIntrekkenGbaIndicatie);
 
 	void verzoekPlaatsIndicatieBijIntrekkenBezwaarBrp(Client client, Account account);
 }

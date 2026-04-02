@@ -37,22 +37,12 @@ public class BatchApplicationConfig
 {
 	private BatchApplicationType batchApplicationType;
 
-	@Deprecated(forRemoval = true, since = "nieuwe endpoint wordt gebruikt in PROD")
-	private String inpakCentrumEndpointUrl;
-
 	private String vanScreenitNaarInpakcentrumUrl;
 
 	@Bean
 	public BatchApplicationType batchApplicationType()
 	{
 		return batchApplicationType;
-	}
-
-	@Deprecated(forRemoval = true, since = "nieuwe endpoint wordt gebruikt in PROD")
-	@Bean
-	public String inpakCentrumEndpointUrl()
-	{
-		return StringUtils.defaultIfBlank(inpakCentrumEndpointUrl, "");
 	}
 
 	@Bean

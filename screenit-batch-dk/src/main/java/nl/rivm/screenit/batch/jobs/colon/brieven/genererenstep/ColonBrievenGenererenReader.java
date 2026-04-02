@@ -29,7 +29,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefType;
-import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftIndicatie;
 
 @Component
 public class ColonBrievenGenererenReader extends AbstractBrievenGenererenReader<ColonBrief>
@@ -46,8 +45,6 @@ public class ColonBrievenGenererenReader extends AbstractBrievenGenererenReader<
 	{
 		var specification = super.createSpecification();
 		var briefType = BriefType.valueOf(getStepExecutionContext().getString(ColonBrievenGenererenPartitioner.KEY_BRIEFTYPE));
-		return specification
-			.and(heeftIndicatie().with(r -> clientJoin(r)))
-			.and(heeftBriefType(briefType));
+		return specification.and(heeftBriefType(briefType));
 	}
 }

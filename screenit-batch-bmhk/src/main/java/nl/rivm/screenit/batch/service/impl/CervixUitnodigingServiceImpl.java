@@ -26,10 +26,15 @@ import java.util.List;
 import nl.rivm.screenit.batch.service.CervixUitnodigingService;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.Uitnodiging_;
+import nl.rivm.screenit.model.cervix.CervixDossier_;
+import nl.rivm.screenit.model.cervix.CervixScreeningRonde_;
+import nl.rivm.screenit.model.cervix.CervixUitnodiging_;
 import nl.rivm.screenit.model.cervix.enums.CervixMonsterType;
+import nl.rivm.screenit.model.enums.RedenIntrekkenGbaIndicatie;
 import nl.rivm.screenit.repository.cervix.CervixUitnodigingRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieParameterService;
+import nl.rivm.screenit.specification.algemeen.ClientSpecification;
 import nl.rivm.screenit.specification.algemeen.InpakbareUitnodigingSpecification;
 import nl.rivm.screenit.specification.cervix.CervixUitnodigingSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
@@ -37,6 +42,8 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
 @Service
 public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
@@ -54,6 +61,12 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 	public List<Long> getTeVersturenZasUitnodigingen()
 	{
 		var specification = CervixUitnodigingSpecification.heeftActieveClient()
+			.and(ClientSpecification.heeftRedenIntrekkenGbaIndicatie(RedenIntrekkenGbaIndicatie.NIET_INGETROKKEN).with(r ->
+			{
+				var ronde = join(r, CervixUitnodiging_.screeningRonde);
+				var dossier = join(ronde, CervixScreeningRonde_.dossier);
+				return join(dossier, CervixDossier_.client);
+			}))
 			.and(CervixUitnodigingSpecification.heeftGemeenteMetBmhkLaboratorium())
 			.and(CervixUitnodigingSpecification.heeftLopendeRonde())
 			.and(InpakbareUitnodigingSpecification.heeftGeenVerstuurdDatum())

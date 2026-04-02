@@ -46,6 +46,7 @@ import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.heeftScreeningsOrganisatieId;
 import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.isClientGekoppeldAanEenScreeningOrganisatie;
 import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.magGegenereerdWorden;
+import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftNietIngetrokkenIndicatie;
 
 public abstract class AbstractBrievenGenererenReader<B extends ClientBrief<?, ?, ?>> extends BaseSpecificationScrollableResultReader<B>
 {
@@ -64,7 +65,12 @@ public abstract class AbstractBrievenGenererenReader<B extends ClientBrief<?, ?,
 		{
 			specification = isClientGekoppeldAanEenScreeningOrganisatie();
 		}
-		return specification.and(magGegenereerdWorden());
+		return maakGbaIndicatieSpecification().and(specification).and(magGegenereerdWorden()); 
+	}
+
+	public Specification<B> maakGbaIndicatieSpecification()
+	{
+		return heeftNietIngetrokkenIndicatie().with(r -> clientJoin(r));
 	}
 
 	@Override

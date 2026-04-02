@@ -25,18 +25,16 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
-import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
 
 import nl.rivm.screenit.huisartsenportaal.dto.WachtwoordWijzigenDto;
 import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
 import nl.rivm.screenit.huisartsenportaal.model.enums.InlogMethode;
 import nl.rivm.screenit.huisartsenportaal.service.AuthenticatieService;
 
-import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
-import org.hibernate.envers.query.AuditQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -44,9 +42,8 @@ import org.springframework.validation.Errors;
 @Component
 public class WachtwoordWijzigenValidator extends BaseWachtwoordValidator<WachtwoordWijzigenDto>
 {
-
 	@Autowired
-	private EntityManagerFactory entityManagerFactory;
+	private EntityManager entityManager;
 
 	@Autowired
 	private AuthenticatieService authenticatieService;
@@ -96,8 +93,8 @@ public class WachtwoordWijzigenValidator extends BaseWachtwoordValidator<Wachtwo
 
 	protected List<String> getVorigeWachtwoordenAfgelopenJaren(Huisarts huisarts, int jaren)
 	{
-		AuditReader auditReader = AuditReaderFactory.get(entityManagerFactory.createEntityManager());
-		AuditQuery query = auditReader.createQuery().forRevisionsOfEntity(huisarts.getClass(), false, true);
+		var auditReader = AuditReaderFactory.get(entityManager);
+		var query = auditReader.createQuery().forRevisionsOfEntity(huisarts.getClass(), false, true);
 
 		query.add(AuditEntity.id().eq(huisarts.getHuisartsportaalId()));
 		query.add(AuditEntity.revisionType().eq(RevisionType.MOD));

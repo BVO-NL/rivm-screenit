@@ -42,7 +42,10 @@ import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import static nl.rivm.screenit.Constants.ZIP_FILE_EXTENSION;
 
 @Slf4j
 public final class ZipUtil
@@ -185,4 +188,25 @@ public final class ZipUtil
 		}
 	}
 
+	public static File maakTijdelijkZipBestand(File bronBestand, String tempFilePrefix) throws IOException
+	{
+		var tempZipFile = File.createTempFile(tempFilePrefix, ZIP_FILE_EXTENSION);
+		zipFileOrDirectory(bronBestand.getPath(), tempZipFile.getPath(), true);
+		return tempZipFile;
+	}
+
+	public static void verwijderTijdelijkBestand(File tijdelijkBestand)
+	{
+		if (tijdelijkBestand != null && tijdelijkBestand.exists())
+		{
+			try
+			{
+				FileUtils.delete(tijdelijkBestand);
+			}
+			catch (IOException e)
+			{
+				LOG.warn("Fout bij verwijderen tijdelijk bestand: {}", tijdelijkBestand.getPath(), e);
+			}
+		}
+	}
 }

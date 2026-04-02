@@ -32,6 +32,7 @@ import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
 import nl.rivm.screenit.model.enums.GbaStatus;
+import nl.rivm.screenit.model.enums.RedenIntrekkenGbaIndicatie;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaDossier_;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek_;
@@ -60,6 +61,11 @@ public class ClientSpecification
 	public static ExtendedSpecification<Client> heeftIndicatie()
 	{
 		return heeftGbaStatus(GbaStatus.INDICATIE_AANWEZIG);
+	}
+
+	public static ExtendedSpecification<Client> heeftNietIngetrokkenIndicatie()
+	{
+		return heeftGbaStatus(GbaStatus.INDICATIE_AANWEZIG).and(heeftRedenIntrekkenGbaIndicatie(RedenIntrekkenGbaIndicatie.NIET_INGETROKKEN));
 	}
 
 	public static ExtendedSpecification<Client> isNietAfgevoerd()
@@ -172,6 +178,11 @@ public class ClientSpecification
 			.and(heeftStatusNullOfActief().with(Client_.mammaDossier))
 			.and(heeftGbaAdresMetPostcode().with(Client_.persoon))
 			.and(heeftActieveClient());
+	}
+
+	public static ExtendedSpecification<Client> heeftRedenIntrekkenGbaIndicatie(RedenIntrekkenGbaIndicatie redenIntrekkenGbaIndicatie)
+	{
+		return (r, q, cb) -> cb.equal(r.get(Client_.redenIntrekkenGbaIndicatieDoorBvo), redenIntrekkenGbaIndicatie);
 	}
 
 	public static ExtendedSpecification<Client> heeftGeenActieveProjectClienten(List<Long> exclusieGroepIds)

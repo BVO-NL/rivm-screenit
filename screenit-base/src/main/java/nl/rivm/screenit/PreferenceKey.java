@@ -35,7 +35,9 @@ public enum PreferenceKey
 
 	START_AVOND("Start avond", LocalTime.class),
 
-	BRP_MAXIMAAL_AANTAL_INDICATIES_INTREK_AANVRAGEN("Maximaal aantal verwijderindicatie voor 80+, transgender en definitief afmelden", Integer.class),
+	BRP_MAXIMAAL_AANTAL_INDICATIES_INTREK_AANVRAGEN("Maximaal aantal verwijderindicatie voor bovengrensleeftijd, transgender en definitief afmelden", Integer.class),
+
+	BOVENGRENS_LEEFTIJD_VOOR_VERWIJDEREN_BRP_INDICATIES("Bovengrensleeftijd voor verwijderen indicaties", Integer.class),
 
 	VOORAANKONDIGINSPERIODE("Vooraankondingsperiode", Integer.class),
 
@@ -478,8 +480,6 @@ public enum PreferenceKey
 
 	LEEFTIJD_PERSOONSGEGEVENS_UIT_EXTRA_BEVEILIGDE_OMGEVING_VERWIJDEREN("Leeftijd van de client waarbij persoonsgegevens uit de extra beveiligde omgeving verwijderd worden",
 		Integer.class),
-
-	START_NIEUWE_INPAKCENTRUM_KOPPELING("Start nieuwe inpakcentrum koppeling", Date.class),
 
 	COLON_BETROUWBARE_LIMIET_FIT("Betrouwbare limiet FIT uitslag", Integer.class),
 

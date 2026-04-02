@@ -235,8 +235,7 @@ public class Vo107ItemReader implements ItemReader<Vo107Bericht>, ItemStream
 
 		try
 		{
-			tempZipFile = File.createTempFile(fileName, ZIP_FILE_EXTENSION);
-			ZipUtil.zipFileOrDirectory(vo107File.getTempFile().getPath(), tempZipFile.getPath(), true);
+			tempZipFile = ZipUtil.maakTijdelijkZipBestand(vo107File.getTempFile(), vo107File.getFilename());
 
 			fileService.save(fileStorePath, tempZipFile);
 
@@ -249,17 +248,7 @@ public class Vo107ItemReader implements ItemReader<Vo107Bericht>, ItemStream
 		}
 		finally
 		{
-			if (tempZipFile != null && tempZipFile.exists())
-			{
-				try
-				{
-					FileUtils.delete(tempZipFile);
-				}
-				catch (IOException e)
-				{
-					LOG.error("Fout bij verwijderen tijdelijk ZIP bestand");
-				}
-			}
+			ZipUtil.verwijderTijdelijkBestand(tempZipFile);
 		}
 		return relativeFilestorePath;
 	}

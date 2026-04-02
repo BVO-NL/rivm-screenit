@@ -47,8 +47,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import generated.KOPPELDATA;
-
 import static nl.rivm.screenit.specification.algemeen.InpakbareUitnodigingSpecification.heeftUitnodigingId;
 
 @Setter
@@ -66,20 +64,6 @@ public class BarcodeFitValiderenServiceImpl extends BaseValiderenService impleme
 
 	@Autowired
 	private ColonUitnodigingRepository uitnodigingRepository;
-
-	@Override
-	@Deprecated(forRemoval = true, since = "nieuwe endpoint wordt gebruikt in PROD")
-	public List<String> voerSemantischeValidatieUit(List<KOPPELDATA.VERZONDENUITNODIGING> koppeldata)
-	{
-		var foutmeldingen = new ArrayList<String>();
-		var barcodesUitKoppeldata = new ArrayList<String>();
-
-		var vandaag = currentDateSupplier.getLocalDate();
-		var minstensHoudbaarTotMet = houdbaarheidService.getMinstensHoudbaarTotMet(vandaag, PreferenceKey.COLON_PERIODE_MINIMALE_HOUDBAARHEID_FIT_MONSTERS_VOOR_CONTROLE);
-
-		koppeldata.forEach(koppelRegel -> valideerKoppelRegel(koppelRegel, foutmeldingen, minstensHoudbaarTotMet, barcodesUitKoppeldata));
-		return foutmeldingen;
-	}
 
 	@Override
 	public List<String> valideerOpSemantiek(List<InpakcentrumKoppelDataDto> koppeldata)
@@ -102,17 +86,6 @@ public class BarcodeFitValiderenServiceImpl extends BaseValiderenService impleme
 		var fitBarcodeExtra = koppelDataDto.getBarcodeExtra();
 
 		valideer(foutmeldingen, uitnodiging, koppelDataDto.getId(), fitBarcodeGold, fitBarcodeExtra, minstensHoudbaarTotMetColon, barcodesUitKoppeldata);
-	}
-
-	@Deprecated(forRemoval = true, since = "nieuwe endpoint wordt gebruikt in PROD")
-	private void valideerKoppelRegel(KOPPELDATA.VERZONDENUITNODIGING koppelRegel, List<String> foutmeldingen, LocalDate minstensHoudbaarTotMetColon,
-		List<String> barcodesUitKoppeldata)
-	{
-		var uitnodiging = getUitnodiging(koppelRegel.getID());
-		var fitBarcodeGold = getMatchingFieldValue(koppelRegel, KoppelConstants.COLON_KOPPEL_BARCODE_GOLD);
-		var fitBarcodeExtra = getMatchingFieldValue(koppelRegel, KoppelConstants.COLON_KOPPEL_BARCODE_EXTRA);
-
-		valideer(foutmeldingen, uitnodiging, koppelRegel.getID(), fitBarcodeGold, fitBarcodeExtra, minstensHoudbaarTotMetColon, barcodesUitKoppeldata);
 	}
 
 	private void valideer(List<String> foutmeldingen, ColonUitnodiging uitnodiging, Long uitnodigingId, String fitBarcodeGold, String fitBarcodeExtra,

@@ -28,7 +28,6 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import nl.dm_ict.photo._358.MERGEDATA.UITNODIGING;
 import nl.rivm.screenit.KoppelConstants;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.jobs.cervix.uitnodigingenversturen.ProjectCounterHolder;
@@ -257,7 +256,7 @@ public class ZasUitnodigingenVersturenTasklet extends AbstractUitnodigingenVerst
 		{
 			melding.append(onvolledigAdresMelding);
 			LOG.warn("client (id '{}'): {}", client.getId(), melding);
-				var dashboardOrganisaties = addLandelijkBeheerorganisatie(new ArrayList<>());
+			var dashboardOrganisaties = addLandelijkBeheerorganisatie(new ArrayList<>());
 			dashboardOrganisaties.addAll(clientService.getScreeningOrganisatieVan(client));
 			logService.logGebeurtenis(LogGebeurtenis.CERVIX_ADRES_ONVOLLEDIG_VOOR_INPAKCENTRUM, dashboardOrganisaties, null, client, melding.toString(),
 				Bevolkingsonderzoek.CERVIX);
@@ -280,16 +279,6 @@ public class ZasUitnodigingenVersturenTasklet extends AbstractUitnodigingenVerst
 			.setParameter("datum", currentDateSupplier.getDate())
 			.setParameter("uitnodigingIds", uitnodigingIds)
 			.executeUpdate();
-	}
-
-	@Override
-	protected void vulMetaDataMetWsdl(UITNODIGING inpakcentrumUitnodiging, ProjectBriefActie briefActie, MailMergeContext mailMergeContext, int uitnodigingVolgnummer,
-		UploadDocument uploadDocument)
-	{
-		super.vulMetaDataMetWsdl(inpakcentrumUitnodiging, briefActie, mailMergeContext, uitnodigingVolgnummer, uploadDocument);
-		var mergefieldContainer = inpakcentrumUitnodiging.getMERGEFIELDS().getMERGEFIELD();
-		var uitnodiging = mailMergeContext.getCervixUitnodiging();
-		addMergeFieldValue(mergefieldContainer, KoppelConstants.CERVIX_KOPPEL_TYPE, uitnodiging.getGecombineerdeZas() != null ? ZAS_TYPE_COMBI : ZAS_TYPE_STANDAARD);
 	}
 
 	@Override

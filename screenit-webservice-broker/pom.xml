@@ -24,13 +24,6 @@
                         <configuration>
                             <wsdlOptions>
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/wsdl/InpakcentrumKoppelService.wsdl</wsdl>
-                                    <bindingFiles>
-                                        <bindingFile>${basedir}/src/main/resources/bindings/jaxb-bindings-inpak.xml</bindingFile>
-                                        <bindingFile>${basedir}/src/main/resources/bindings/jaxws-bindings-inpak.xml</bindingFile>
-                                    </bindingFiles>
-                                </wsdlOption>
-                                <wsdlOption>
                                     <wsdl>${basedir}/src/main/resources/wsdl/ProvideDocument.wsdl</wsdl>
                                     <bindingFiles>
                                         <bindingFile>${basedir}/src/main/resources/bindings/jaxb-bindings-pd.xml</bindingFile>
@@ -55,25 +48,6 @@
                         <artifactId>Saxon-HE</artifactId>
                     </dependency>
                 </dependencies>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>xjc</id>
-                        <goals>
-                            <goal>xjc</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <sources>
-                        <source>${basedir}/src/main/resources/schemas/KOPPEL_DATA.xsd</source>
-                    </sources>
-                    <encoding>UTF-8</encoding>
-                    <extension>true</extension>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

@@ -21,11 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.inzien;
  * =========================LICENSE_END==================================
  */
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.PostcodeLabel;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
@@ -43,26 +38,20 @@ import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
-import nl.rivm.screenit.model.enums.GbaStatus;
-import nl.rivm.screenit.model.enums.GbaVraagType;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.model.gba.GbaVraag;
 import nl.rivm.screenit.model.mamma.MammaAfmelding;
 import nl.rivm.screenit.model.mamma.MammaBrief;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.util.AdresUtil;
-import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.EnumLabel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
@@ -123,31 +112,7 @@ public class ClientInzienPanel extends GenericPanel<Client>
 				&& clientService.isClientActief(client));
 		add(contactAanmaken);
 
-		var mutatie = client.getLaatsteGbaMutatie();
-		var laatsteGbaMutatie = DateLabel.forDatePattern("laatsteGbaMutatie", mutatie != null ? Model.of(mutatie.getMutatieDatum()) : null, "dd-MM-yyyy HH:mm:ss");
-		add(laatsteGbaMutatie);
-
-		laatsteGbaMutatie.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_GBA_AANVRAGEN, null));
-
 		add(new ClientPaspoortHorizontaal("paspoort", getModel()));
-		add(new DateLabel("laatstAangevraagd", (IModel<Date>) () ->
-		{
-			List<GbaVraag> gbaVragen = new ArrayList<>(getModelObject().getGbaVragen());
-			var momentLaatsteVerwijderIndicatie = gbaVragen.stream().filter(v -> v.getVraagType() == GbaVraagType.VERWIJDER_INDICATIE).map(GbaVraag::getDatum)
-				.max(Comparator.naturalOrder())
-				.orElse(null);
-			return DateUtil.toUtilDate(momentLaatsteVerwijderIndicatie);
-		}, new PatternDateConverter("dd-MM-yyyy HH:mm:ss", true))
-		{
-
-			@Override
-			protected void onConfigure()
-			{
-				super.onConfigure();
-				setVisible(CollectionUtils.isNotEmpty(ClientInzienPanel.this.getModelObject().getGbaVragen()));
-			}
-
-		});
 
 		var contactGegevens = new ClientContactGegevensPanel("contactGegevens", getModel());
 		add(contactGegevens);
@@ -185,17 +150,8 @@ public class ClientInzienPanel extends GenericPanel<Client>
 			}
 		});
 
-		add(new EnumLabel<GbaStatus>("gbaStatus")
-		{
-
-			@Override
-			protected void onConfigure()
-			{
-				super.onConfigure();
-				setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_GBA_AANVRAGEN, null, ClientInzienPanel.this.getModelObject()));
-			}
-
-		});
+		var magGbaStatusInzien = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_GBA_AANVRAGEN, null);
+		add(new GbaStatusInzienPanel("gbaStatusInzienPanel", getModel()).setVisible(magGbaStatusInzien));
 
 		add(new DateLabel("persoon.datumVertrokkenUitNederland", new PatternDateConverter("dd-MM-yyyy", true))
 		{
@@ -409,5 +365,4 @@ public class ClientInzienPanel extends GenericPanel<Client>
 				&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_GBA_TIJDELIJK_ADRES, Actie.INZIEN));
 		add(tijdelijkGbaAdres);
 	}
-
 }

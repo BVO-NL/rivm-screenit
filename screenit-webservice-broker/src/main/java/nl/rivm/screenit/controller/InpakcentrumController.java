@@ -31,10 +31,13 @@ import nl.rivm.screenit.model.batch.BatchJob;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.JobStartParameter;
 import nl.rivm.screenit.model.enums.JobType;
+import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.inpakcentrum.vaninpakcentrum.InpakcentrumKoppelDataRequestDto;
 import nl.rivm.screenit.model.inpakcentrum.vaninpakcentrum.InpakcentrumKoppelDataResponseDto;
+import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.JobService;
+import nl.rivm.screenit.service.LogService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang.StringUtils;
@@ -60,6 +63,8 @@ public class InpakcentrumController
 
 	private final HibernateService hibernateService;
 
+	private final LogService logService;
+
 	@PostMapping("/dk/mappingdata")
 	public InpakcentrumKoppelDataResponseDto verwerktDKKoppelData(@RequestBody InpakcentrumKoppelDataRequestDto inpakcentrumKoppelDataRequestDto)
 	{
@@ -74,6 +79,14 @@ public class InpakcentrumController
 
 	private InpakcentrumKoppelDataResponseDto verwerkResponse(Bevolkingsonderzoek bevolkingsonderzoek, InpakcentrumKoppelDataRequestDto inpakcentrumKoppelDataRequestDto)
 	{
+		if (Bevolkingsonderzoek.COLON.equals(bevolkingsonderzoek))
+		{
+			logService.logGebeurtenis(LogGebeurtenis.COLON_JOB_CONTROLE_FIT_KOPPELEN_GESTART, new LogEvent(), Bevolkingsonderzoek.COLON);
+		}
+		else if (Bevolkingsonderzoek.CERVIX.equals(bevolkingsonderzoek))
+		{
+			logService.logGebeurtenis(LogGebeurtenis.CERVIX_ZAS_CONTROLE_KOPPELEN_GESTART, new LogEvent(), Bevolkingsonderzoek.CERVIX);
+		}
 		var response = new InpakcentrumKoppelDataResponseDto();
 		var foutmelding = valideerRequest(bevolkingsonderzoek, inpakcentrumKoppelDataRequestDto);
 		if (foutmelding == null)

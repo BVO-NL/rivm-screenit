@@ -12,57 +12,6 @@
     <name>screenit-batch-base</name>
     <description>Base voor ScreenIT batch jobs</description>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>xjc</id>
-                        <goals>
-                            <goal>xjc</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <sources>
-                        <source>${basedir}/src/main/resources/schemas/KOPPEL_DATA.xsd</source>
-                        <source>${basedir}/src/main/resources/schemas/MERGE_DATA.xsd</source>
-                    </sources>
-                    <encoding>UTF-8</encoding>
-                    <extension>true</extension>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-codegen-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>generate-sources</id>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <wsdlOptions>
-                                <wsdlOption>
-                                    <wsdl>${project.basedir}/src/main/resources/wsdl/DaklapackWebService.wsdl</wsdl>
-                                    <wsdlLocation>/wsdl/DaklapackWebService.wsdl</wsdlLocation>
-                                    <extraargs>
-                                        <extraarg>-exsh</extraarg>
-                                        <extraarg>true</extraarg>
-                                    </extraargs>
-                                </wsdlOption>
-                            </wsdlOptions>
-                            <encoding>UTF-8</encoding>
-                        </configuration>
-                        <goals>
-                            <goal>wsdl2java</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
     <dependencies>
         <dependency>
             <groupId>nl.rivm.screenit</groupId>

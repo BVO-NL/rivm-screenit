@@ -32,26 +32,11 @@ import nl.rivm.screenit.service.LogService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import generated.KOPPELDATA;
-
 @Setter
 public abstract class BaseValiderenService
 {
 	@Autowired
 	protected LogService logService;
-
-	protected String getMatchingFieldValue(KOPPELDATA.VERZONDENUITNODIGING verzondenUitnodiging, String matchingFieldName)
-	{
-		for (var matchingField : verzondenUitnodiging.getMATCHINGFIELDS().getMATCHINGFIELD())
-		{
-			if (matchingField.getNAME().equalsIgnoreCase(matchingFieldName))
-			{
-				return matchingField.getVALUE();
-			}
-		}
-
-		return null;
-	}
 
 	protected void addFout(List<String> foutmeldingen, String melding)
 	{

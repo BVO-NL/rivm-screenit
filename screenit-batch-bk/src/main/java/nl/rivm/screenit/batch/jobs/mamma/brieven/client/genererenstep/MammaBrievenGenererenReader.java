@@ -58,7 +58,6 @@ import static nl.rivm.screenit.specification.HibernateObjectSpecification.heeftI
 import static nl.rivm.screenit.specification.SpecificationUtil.cast;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefType;
-import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftIndicatie;
 import static nl.rivm.screenit.specification.algemeen.MammaBriefSpecification.clientHeeftAfspraak;
 import static nl.rivm.screenit.specification.algemeen.MammaBriefSpecification.laatsteUitnodigingJoin;
 import static nl.rivm.screenit.specification.mamma.MammaStandplaatsLocatieSpecification.heeftBijlageOfApartPrinten;
@@ -128,9 +127,7 @@ public class MammaBrievenGenererenReader extends AbstractBrievenGenererenReader<
 			specification = specification.and(eersteOfVervolgRondeSpecification());
 		}
 
-		return specification
-			.and(heeftIndicatie().with(r -> clientJoin(r))) 
-			.and(super.createSpecification());
+		return specification.and(super.createSpecification());
 	}
 
 	private static ExtendedSpecification<MammaBrief> afspraakValtBinnenTijdelijkeLocatie()

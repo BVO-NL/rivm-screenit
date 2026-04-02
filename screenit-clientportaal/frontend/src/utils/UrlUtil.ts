@@ -38,15 +38,19 @@ export function getContactUrl() {
 }
 
 export function getBevolkingsonderzoekNederlandUrl() {
-	return "https:
+	return `https:
 }
 
 export function getBevolkingsonderzoekNederlandUrlNaam() {
 	return "bevolkingsonderzoeknederland.nl"
 }
 
-export function isExternalUrl(link: String) {
+export function isExternalUrl(link: string) {
 	const str = "https:
 	return link.match(str)
 
+}
+
+export function getHostname(): string {
+	return window.location.hostname
 }

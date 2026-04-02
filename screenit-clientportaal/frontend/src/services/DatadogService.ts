@@ -20,6 +20,7 @@
  */
 import {datadogRum, RumInitConfiguration} from "@datadog/browser-rum"
 import {AnalyticsCategorie} from "../datatypes/AnalyticsCategorie"
+import {getHostname} from "../utils/UrlUtil"
 
 const defaultRumInitConfiguration: Partial<RumInitConfiguration> = {
 	site: "datadoghq.eu",
@@ -31,8 +32,9 @@ const defaultRumInitConfiguration: Partial<RumInitConfiguration> = {
 
 class DatadogService {
 	init(): void {
-		const isAcceptatie = window.location.hostname === "acc.mijn.bevolkingsonderzoeknederland.nl"
-		const isProductie = window.location.hostname === "mijn.bevolkingsonderzoeknederland.nl"
+		const hostname = getHostname()
+		const isAcceptatie = hostname === "acc.mijn.bevolkingsonderzoeknederland.nl"
+		const isProductie = hostname === "mijn.bevolkingsonderzoeknederland.nl"
 
 		if (isAcceptatie || isProductie) {
 			datadogRum.init({

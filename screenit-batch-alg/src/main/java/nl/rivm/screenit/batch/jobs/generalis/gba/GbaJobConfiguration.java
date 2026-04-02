@@ -24,6 +24,8 @@ package nl.rivm.screenit.batch.jobs.generalis.gba;
 import nl.rivm.screenit.batch.jobs.AbstractJobConfiguration;
 import nl.rivm.screenit.batch.jobs.generalis.gba.dossiers.DossierReader;
 import nl.rivm.screenit.batch.jobs.generalis.gba.dossiers.DossierWriter;
+import nl.rivm.screenit.batch.jobs.generalis.gba.teoudeclientstep.TeOudeClientenReader;
+import nl.rivm.screenit.batch.jobs.generalis.gba.teoudeclientstep.TeOudeClientenWriter;
 import nl.rivm.screenit.batch.jobs.generalis.gba.upload105step.Vo105UploadTasklet;
 import nl.rivm.screenit.batch.jobs.generalis.gba.verwerk105step.GbaVraagItemReader;
 import nl.rivm.screenit.batch.jobs.generalis.gba.verwerk105step.Vo105ItemProcessor;
@@ -53,13 +55,15 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 {
 
 	@Bean
-	public Job gbaJob(GbaListener listener, Step verwerkVo107Step, Step verwerkVo105Step, Step uploadVo105Step, Step dossiersAanmakenStep)
+	public Job gbaJob(GbaListener listener, Step verwijderIndicatieTeOudeClientenStep, Step verwerkVo107Step, Step verwerkVo105Step, Step uploadVo105Step,
+		Step dossiersAanmakenStep)
 	{
 		return new JobBuilder(JobType.GBA.name(), repository)
 			.listener(listener)
 			.start(verwerkVo107Step)
-			.on("*").to(verwerkVo105Step)
+			.on("*").to(verwijderIndicatieTeOudeClientenStep)
 			.from(verwerkVo107Step).on(ExitStatus.FAILED.getExitCode()).to(dossiersAanmakenStep)
+			.from(verwijderIndicatieTeOudeClientenStep).on("*").to(verwerkVo105Step)
 			.from(verwerkVo105Step)
 			.on("*").to(uploadVo105Step)
 			.from(verwerkVo105Step).on(ExitStatus.FAILED.getExitCode()).to(dossiersAanmakenStep)
@@ -80,6 +84,16 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 			.from(verwerkVo107Step).on(ExitStatus.FAILED.getExitCode()).to(dossiersAanmakenStep)
 			.from(dossiersAanmakenStep)
 			.end().build();
+	}
+
+	@Bean
+	public Step verwijderIndicatieTeOudeClientenStep(ExecutionContextPromotionListener gbaPromotionListener, TeOudeClientenReader reader, TeOudeClientenWriter writer)
+	{
+		return new StepBuilder("verwijderIndicatieTeOudeClientenStep", repository).listener(gbaPromotionListener)
+			.<Long, Long> chunk(250, transactionManager)
+			.reader(reader)
+			.writer(writer)
+			.build();
 	}
 
 	@Bean

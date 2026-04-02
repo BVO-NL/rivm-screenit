@@ -29,7 +29,6 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.jobs.brieven.genereren.AbstractBrievenGenererenReader;
 import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.enums.BriefType;
-import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
@@ -42,7 +41,6 @@ import static nl.rivm.screenit.model.enums.BriefType.CERVIX_CYTOLOGIE_AFWIJKING;
 import static nl.rivm.screenit.model.enums.BriefType.CERVIX_VOLGEND_MONSTER_CYTOLOGIE_AFWIJKING;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefType;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.isAangemaaktVoorOfOp;
-import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftGbaStatus;
 import static nl.rivm.screenit.specification.algemeen.GemeenteSpecification.heeftBmhkLaboratorium;
 import static nl.rivm.screenit.specification.cervix.CervixBriefSpecification.heeftGeenUitnodiging;
 
@@ -65,9 +63,7 @@ public class CervixBrievenGenererenReader extends AbstractBrievenGenererenReader
 	protected Specification<CervixBrief> createSpecification()
 	{
 		var briefType = BriefType.valueOf(getStepExecutionContext().getString(CervixBrievenGenererenPartitioner.KEY_BRIEFTYPE));
-		var specification = super.createSpecification()
-			.and(heeftGbaStatus(GbaStatus.INDICATIE_AANWEZIG).with(r -> clientJoin(r)))
-			.and(heeftBriefType(briefType));
+		var specification = super.createSpecification().and(heeftBriefType(briefType));
 		if (List.of(CERVIX_CYTOLOGIE_AFWIJKING, CERVIX_VOLGEND_MONSTER_CYTOLOGIE_AFWIJKING, CERVIX_CONTROLEUITSTRIJKJE_AFWIJKING).contains(briefType))
 		{
 			specification = specification.and(isAangemaaktVoorOfOp(

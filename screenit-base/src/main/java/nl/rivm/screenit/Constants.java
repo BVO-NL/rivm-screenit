@@ -163,6 +163,8 @@ public class Constants
 
 	public static final String BMHK_BETALING_GENEREREN_LOCKNAAM = "BetalingGenereren";
 
+	public static final String ZIP_FILE_EXTENSION = ".zip";
+
 	static
 	{
 

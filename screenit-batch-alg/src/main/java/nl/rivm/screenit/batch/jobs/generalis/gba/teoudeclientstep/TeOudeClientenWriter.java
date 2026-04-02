@@ -1,8 +1,8 @@
-package nl.rivm.screenit.batch.jobs.helpers;
+package nl.rivm.screenit.batch.jobs.generalis.gba.teoudeclientstep;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-batch-base
+ * screenit-batch-alg
  * %%
  * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,26 +21,18 @@ package nl.rivm.screenit.batch.jobs.helpers;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.service.InpakcentrumService;
+import nl.rivm.screenit.batch.jobs.generalis.gba.abstractindicatieverwijderenvoordoelgroepstep.AbstractIndicatieVerwijderenVoorDoelgroepWriter;
+import nl.rivm.screenit.model.enums.RedenIntrekkenGbaIndicatie;
 
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.job.flow.FlowExecutionStatus;
-import org.springframework.batch.core.job.flow.JobExecutionDecider;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public class BaseKoppelenDecider implements JobExecutionDecider
+@Component
+public class TeOudeClientenWriter extends AbstractIndicatieVerwijderenVoorDoelgroepWriter
 {
-	@Autowired
-	private InpakcentrumService inpakcentrumService;
 
 	@Override
-	public FlowExecutionStatus decide(JobExecution jobExecution, StepExecution stepExecution)
+	protected RedenIntrekkenGbaIndicatie getRedenIntrekkenGbaIndicatie()
 	{
-		if (inpakcentrumService.gebruikNieuweInpakcentrumKoppeling())
-		{
-			return FlowExecutionStatus.COMPLETED;
-		}
-		return FlowExecutionStatus.FAILED;
+		return RedenIntrekkenGbaIndicatie.BOVENGRENS_LEEFTIJD;
 	}
 }

@@ -58,20 +58,6 @@ public class WsbApplicationConfig
 		return fqdncontrole != null ? fqdncontrole : false;
 	}
 
-	@Deprecated(forRemoval = true, since = "nieuwe endpoint wordt gebruikt in PROD")
-	@Bean
-	public String inpakcentrumInlognaam()
-	{
-		return StringUtils.defaultIfBlank(inpakcentrum.inlognaam, "");
-	}
-
-	@Deprecated(forRemoval = true, since = "nieuwe endpoint wordt gebruikt in PROD")
-	@Bean
-	public String inpakcentrumWachtwoord()
-	{
-		return StringUtils.defaultIfBlank(inpakcentrum.wachtwoord, "");
-	}
-
 	@Bean
 	public String idpIssuer()
 	{

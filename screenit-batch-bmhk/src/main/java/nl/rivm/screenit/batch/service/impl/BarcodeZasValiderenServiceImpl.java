@@ -23,7 +23,6 @@ package nl.rivm.screenit.batch.service.impl;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -46,8 +45,6 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
-import generated.KOPPELDATA;
-
 import static nl.rivm.screenit.specification.algemeen.InpakbareUitnodigingSpecification.heeftUitnodigingId;
 
 @Service
@@ -63,27 +60,6 @@ public class BarcodeZasValiderenServiceImpl extends BaseValiderenService impleme
 	private final ICurrentDateSupplier currentDateSupplier;
 
 	private final CervixUitnodigingRepository uitnodigingRepository;
-
-	@Override
-	public List<String> voerSemantischeValidatieUit(List<KOPPELDATA.VERZONDENUITNODIGING> koppeldata)
-	{
-		List<String> foutmeldingen = new ArrayList<>();
-		List<String> barcodesUitKoppeldata = new ArrayList<>();
-
-		var vandaag = currentDateSupplier.getLocalDate();
-		var minstensHoudbaarTotMetCervix = houdbaarheidService.getMinstensHoudbaarTotMet(vandaag, PreferenceKey.PERIODE_MINIMALE_HOUDBAARHEID_ZAS_MONSTERS_VOOR_CONTROLE);
-
-		for (var verzondenUitnodiging : koppeldata)
-		{
-
-			var zasBarcode = getMatchingFieldValue(verzondenUitnodiging, KoppelConstants.CERVIX_KOPPEL_BARCODE_ZAS);
-			var cervixUitnodiging = getCervixUitnodiging(verzondenUitnodiging);
-
-			valideer(foutmeldingen, cervixUitnodiging, verzondenUitnodiging.getID(), zasBarcode, minstensHoudbaarTotMetCervix, barcodesUitKoppeldata);
-		}
-
-		return foutmeldingen;
-	}
 
 	@Override
 	public List<String> valideerOpSemantiek(List<InpakcentrumKoppelDataDto> koppeldata)
@@ -154,13 +130,6 @@ public class BarcodeZasValiderenServiceImpl extends BaseValiderenService impleme
 				}
 			}
 		}
-	}
-
-	private CervixUitnodiging getCervixUitnodiging(KOPPELDATA.VERZONDENUITNODIGING verzondenUitnodiging)
-	{
-		var parameters = new HashMap<String, Long>();
-		parameters.put("uitnodigingsId", verzondenUitnodiging.getID());
-		return hibernateService.getUniqueByParameters(CervixUitnodiging.class, parameters);
 	}
 
 	@Override

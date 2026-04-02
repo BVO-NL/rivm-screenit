@@ -1,8 +1,8 @@
-package nl.rivm.screenit.service.impl;
+package nl.rivm.screenit.batch.jobs.generalis.gba.teoudeclientstep;
 
 /*-
  * ========================LICENSE_START=================================
- * screenit-base
+ * screenit-batch-alg
  * %%
  * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -21,32 +21,32 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.PreferenceKey;
+import nl.rivm.screenit.batch.jobs.generalis.gba.abstractindicatieverwijderenvoordoelgroepstep.AbstractIndicatieVerwijderenVoorDoelgroepReader;
+import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.InpakcentrumService;
-import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.specification.algemeen.PersoonSpecification;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 
-@Service
-@AllArgsConstructor
-public class InpakcentrumServiceImpl implements InpakcentrumService
+@Component
+@RequiredArgsConstructor
+public class TeOudeClientenReader extends AbstractIndicatieVerwijderenVoorDoelgroepReader
 {
-	private final SimplePreferenceService preferenceService;
-
 	private final ICurrentDateSupplier currentDateSupplier;
 
+	private final SimplePreferenceService preferenceService;
+
 	@Override
-	@Transactional(readOnly = true)
-	public boolean gebruikNieuweInpakcentrumKoppeling()
+	protected Specification<Client> createSpecification()
 	{
-		var startNieuweInpakcentrumKoppelingString = preferenceService.getString(PreferenceKey.START_NIEUWE_INPAKCENTRUM_KOPPELING.name(), "20260101");
-		var startNieuweInpakcentrumKoppeling = DateUtil.parseLocalDateForPattern(startNieuweInpakcentrumKoppelingString, Constants.DATE_FORMAT_YYYYMMDD);
-		return !currentDateSupplier.getLocalDate().isBefore(startNieuweInpakcentrumKoppeling);
+		var geboorteDatumVoorTachtigPlus = currentDateSupplier.getLocalDate()
+			.minusYears(preferenceService.getInteger(PreferenceKey.BOVENGRENS_LEEFTIJD_VOOR_VERWIJDEREN_BRP_INDICATIES.name(), 80));
+		var specification = super.createSpecification();
+		return specification.and(PersoonSpecification.isGeborenVoorOfOp(geboorteDatumVoorTachtigPlus).withRoot(getPersoonJoin()));
 	}
 }

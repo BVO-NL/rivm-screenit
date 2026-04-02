@@ -25,12 +25,7 @@ import java.util.List;
 
 import nl.rivm.screenit.model.inpakcentrum.vaninpakcentrum.InpakcentrumKoppelDataDto;
 
-import generated.KOPPELDATA;
-
 public interface BarcodeValiderenService
 {
-	@Deprecated(forRemoval = true, since = "nieuwe endpoint wordt gebruikt in PROD")
-	List<String> voerSemantischeValidatieUit(List<KOPPELDATA.VERZONDENUITNODIGING> koppeldata);
-
 	List<String> valideerOpSemantiek(List<InpakcentrumKoppelDataDto> koppeldata);
 }

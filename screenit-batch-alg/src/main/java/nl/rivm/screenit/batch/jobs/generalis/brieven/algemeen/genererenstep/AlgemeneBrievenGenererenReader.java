@@ -24,13 +24,11 @@ package nl.rivm.screenit.batch.jobs.generalis.brieven.algemeen.genererenstep;
 import nl.rivm.screenit.batch.jobs.brieven.genereren.AbstractBrievenGenererenReader;
 import nl.rivm.screenit.model.algemeen.AlgemeneBrief;
 import nl.rivm.screenit.model.enums.BriefType;
-import nl.rivm.screenit.model.enums.GbaStatus;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefType;
-import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftGbaStatus;
 
 @Component
 public class AlgemeneBrievenGenererenReader extends AbstractBrievenGenererenReader<AlgemeneBrief>
@@ -46,8 +44,6 @@ public class AlgemeneBrievenGenererenReader extends AbstractBrievenGenererenRead
 	{
 		var specification = super.createSpecification();
 		var briefType = BriefType.valueOf(getStepExecutionContext().getString(AlgemeneBrievenGenererenPartitioner.KEY_BRIEFTYPE));
-		return specification
-			.and(heeftGbaStatus(GbaStatus.INDICATIE_AANWEZIG).with(r -> clientJoin(r)))
-			.and(heeftBriefType(briefType));
+		return specification.and(heeftBriefType(briefType));
 	}
 }

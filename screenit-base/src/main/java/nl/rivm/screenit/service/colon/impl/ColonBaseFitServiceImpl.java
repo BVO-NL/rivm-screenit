@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ProjectParameterKey;
@@ -276,7 +275,7 @@ public class ColonBaseFitServiceImpl implements ColonBaseFitService
 	{
 
 		var ronde = teVerwerkenFit.getScreeningRonde();
-		if (!ColonFitRegistratieUtil.heeftSuccesvolleAnalyse(ronde))
+		if (!ColonFitRegistratieUtil.heeftSuccesvolleAnalyse(ronde) && !screeningsrondeService.isRondeStatusBuitenDoelgroep(ronde))
 		{
 			var nietTeBeoordelen = teVerwerkenFit.getStatus() == ColonFitRegistratieStatus.NIETTEBEOORDELEN;
 			var categorie = nietTeBeoordelen ? ColonUitnodigingscategorie.U3 : ColonUitnodigingscategorie.U6;
@@ -441,8 +440,7 @@ public class ColonBaseFitServiceImpl implements ColonBaseFitService
 	public void checkVervaldatumVerlopen(ColonFitRegistratie fitRegistratie)
 	{
 		if (fitRegistratie != null && ColonFitRegistratieUtil.isGunstig(fitRegistratie) && fitRegistratie.getStatus() != ColonFitRegistratieStatus.VERVALDATUMVERLOPEN
-			&& !houdbaarheidService.isFitHoudbaar(
-			fitRegistratie.getBarcode()))
+			&& !houdbaarheidService.isFitHoudbaar(fitRegistratie.getBarcode()))
 		{
 			var nu = currentDateSupplier.getDate();
 			setStatusEnDatum(fitRegistratie, ColonFitRegistratieStatus.VERVALDATUMVERLOPEN, nu);

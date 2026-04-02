@@ -204,6 +204,12 @@
             <groupId>com.aspose</groupId>
             <artifactId>aspose-words</artifactId>
             <classifier>jdk17</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.aspose</groupId>
+                    <artifactId>aspose-words</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

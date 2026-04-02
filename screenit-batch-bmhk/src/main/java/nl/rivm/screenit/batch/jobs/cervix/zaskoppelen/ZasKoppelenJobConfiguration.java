@@ -24,11 +24,6 @@ package nl.rivm.screenit.batch.jobs.cervix.zaskoppelen;
 import nl.rivm.screenit.batch.jobs.AbstractJobConfiguration;
 import nl.rivm.screenit.batch.jobs.cervix.zaskoppelen.koppelmetreststep.ZasKoppelMetRestReader;
 import nl.rivm.screenit.batch.jobs.cervix.zaskoppelen.koppelmetreststep.ZasKoppelMetRestWriter;
-import nl.rivm.screenit.batch.jobs.cervix.zaskoppelen.koppelstep.ZasKoppelReader;
-import nl.rivm.screenit.batch.jobs.cervix.zaskoppelen.koppelstep.ZasKoppelWriter;
-import nl.rivm.screenit.batch.jobs.helpers.BaseKoppelenDecider;
-import nl.rivm.screenit.batch.service.WebserviceInpakcentrumOpzettenService;
-import nl.rivm.screenit.batch.service.impl.WebserviceInpakcentrumOpzettenServiceImpl;
 import nl.rivm.screenit.model.enums.JobType;
 import nl.rivm.screenit.model.inpakcentrum.vaninpakcentrum.InpakcentrumKoppelDataDto;
 import nl.rivm.screenit.util.logging.cxf.ScreenITLoggingSaver;
@@ -42,24 +37,17 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import generated.KOPPELDATA.VERZONDENUITNODIGING;
-
 @Configuration
 public class ZasKoppelenJobConfiguration extends AbstractJobConfiguration
 {
 
 	@Bean
-	public Job zasKoppelenJob(ZasKoppelenListener listener, ExecutionContextPromotionListener koppelPromotionListener, Step koppelenStep, Step dummyStep,
-		BaseKoppelenDecider koppelDecider, Step koppelenMetRestStep)
+	public Job zasKoppelenJob(ZasKoppelenListener listener, ExecutionContextPromotionListener koppelPromotionListener, Step koppelenMetRestStep)
 	{
 		return new JobBuilder(JobType.CERVIX_KOPPELDATA_VERWERKING.name(), repository)
 			.listener(listener)
 			.listener(koppelPromotionListener)
-			.start(dummyStep)
-			.next(koppelDecider)
-			.on(ExitStatus.COMPLETED.getExitCode()).to(koppelenMetRestStep)
-			.from(koppelDecider)
-			.on(ExitStatus.FAILED.getExitCode()).to(koppelenStep).end()
+			.start(koppelenMetRestStep)
 			.build();
 	}
 
@@ -73,16 +61,6 @@ public class ZasKoppelenJobConfiguration extends AbstractJobConfiguration
 	}
 
 	@Bean
-	public Step koppelenStep(ZasKoppelReader reader, ZasKoppelWriter writer)
-	{
-		return new StepBuilder("koppelenStep", repository)
-			.<VERZONDENUITNODIGING, VERZONDENUITNODIGING> chunk(250, transactionManager)
-			.reader(reader)
-			.writer(writer)
-			.build();
-	}
-
-	@Bean
 	public Step koppelenMetRestStep(ZasKoppelMetRestReader reader, ZasKoppelMetRestWriter writer)
 	{
 		return new StepBuilder("koppelenMetRestStep", repository)
@@ -93,21 +71,8 @@ public class ZasKoppelenJobConfiguration extends AbstractJobConfiguration
 	}
 
 	@Bean
-	public BaseKoppelenDecider koppelDecider()
-	{
-		return new BaseKoppelenDecider();
-	}
-
-	@Bean
-	public WebserviceInpakcentrumOpzettenService webserviceInpakcentrumOpzettenService()
-	{
-		return new WebserviceInpakcentrumOpzettenServiceImpl();
-	}
-
-	@Bean
 	public ScreenITLoggingSaver screenITLoggingSaver()
 	{
 		return new ScreenITLoggingSaver();
 	}
-
 }
