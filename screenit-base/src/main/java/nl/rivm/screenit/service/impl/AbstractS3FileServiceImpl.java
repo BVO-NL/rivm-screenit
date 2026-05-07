@@ -307,15 +307,15 @@ public abstract class AbstractS3FileServiceImpl implements FileService, Initiali
 			.build();
 	}
 
-	private void setEndpointOverrideIfPresent(final S3ClientBuilder s3ClientBuilder) throws IllegalArgumentException
+	private void setEndpointOverrideIfPresent(S3ClientBuilder s3ClientBuilder) throws IllegalArgumentException
 	{
 		var s3bucketEndpointOverride = getS3bucketEndpointOverride();
 		if (StringUtils.isNotBlank(s3bucketEndpointOverride))
 		{
 			try
 			{
-				final var endpointOverrideURI = URI.create(s3bucketEndpointOverride);
-				s3ClientBuilder.endpointOverride(endpointOverrideURI);
+				var endpointOverrideURI = URI.create(s3bucketEndpointOverride);
+				s3ClientBuilder.endpointOverride(endpointOverrideURI).forcePathStyle(true);
 			}
 			catch (final IllegalArgumentException e)
 			{

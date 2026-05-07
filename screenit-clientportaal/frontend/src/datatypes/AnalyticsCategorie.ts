@@ -26,5 +26,6 @@ export enum AnalyticsCategorie {
 	MAMMA_AFSPRAAK = "mamma_afspraak",
 	MAMMA_HUISARTS = "mamma_huisarts",
 	MAMMA_AFMELDEN = "mamma_afmelden",
-	PROFIEL = "profiel"
+	PROFIEL = "profiel",
+	BVO_MIJN_ONDERZOEKEN = "bvo_mijnonderzoeken",
 }

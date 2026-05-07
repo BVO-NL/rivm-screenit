@@ -20,4 +20,5 @@
  */
 export interface EnvironmentData {
   session: string
+  fotobesprekingId: number
 }

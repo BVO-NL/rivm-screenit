@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {cpStore} from "../index"
+import {cpStore} from "../store"
 import {createShowToastAction} from "../actions/ToastAction"
 import {ToastMessageType} from "../datatypes/toast/ToastMessage"
 

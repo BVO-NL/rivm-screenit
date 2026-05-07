@@ -71,6 +71,7 @@ import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.csp.CSPDirective;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -599,7 +600,7 @@ public abstract class MedewerkerBasePage extends BasePage
 	{
 		if (heeftImsKoppelingRecht)
 		{
-			SecurityHeadersFilter.allowExtraConnectSrcInContentSecurityPolicy(response, imsContextBridgeUrl + " " + imsContextBridgeWebsocketUrl);
+			SecurityHeadersFilter.voegSrcToeAanContentSecurityPolicy(response, imsContextBridgeUrl + " " + imsContextBridgeWebsocketUrl, CSPDirective.CONNECT_SRC);
 		}
 		super.setHeaders(response);
 	}

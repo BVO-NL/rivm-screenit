@@ -26,6 +26,7 @@ import nl.rivm.screenit.main.web.filter.SecurityHeadersFilter;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.CallbackParameter;
+import org.apache.wicket.csp.CSPDirective;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.PriorityHeaderItem;
@@ -46,7 +47,7 @@ public abstract class CervixBarcodeAfdrukkenBasePage extends CervixScreeningBase
 	@Override
 	protected void setHeaders(WebResponse response)
 	{
-		SecurityHeadersFilter.allowExtraConnectSrcInContentSecurityPolicy(response, "https://localhost:9101");
+		SecurityHeadersFilter.voegSrcToeAanContentSecurityPolicy(response, "https://localhost:9101", CSPDirective.CONNECT_SRC);
 		super.setHeaders(response);
 	}
 

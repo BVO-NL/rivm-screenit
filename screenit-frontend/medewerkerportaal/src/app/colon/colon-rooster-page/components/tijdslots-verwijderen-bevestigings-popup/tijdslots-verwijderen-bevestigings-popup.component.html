@@ -18,9 +18,9 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog titel="Bevestiging" (sluiten)="handleNo()">
+<app-base-dialog titel="Bevestiging">
   <div body class="body">
-    <h3 cds-text="subsection" class="text-bold">Wordt verwijderd</h3>
+    <h3 class="text-bold">Wordt verwijderd</h3>
     <table aria-label="bulk verwijderen resultaten" class="table table-compact table-noborder">
       <tbody>
       <tr>
@@ -31,7 +31,7 @@
     </table>
 
     @if (dialogData.typeTijdslot.value === 'afspraakslots') {
-      <h3 cds-text="subsection" class="text-bold mt-3">Wordt niet verwijderd</h3>
+      <h3 class="text-bold mt-3">Wordt niet verwijderd</h3>
       <table aria-label="bulk verwijderen resultaten" class="table table-compact table-noborder">
         <tbody>
         <tr>
@@ -51,7 +51,7 @@
     <p class="mt-4">Wilt u doorgaan?</p>
   </div>
   <div buttons class="btn-group">
-    <button type="button" class="btn" (click)="handleNo()">Nee</button>
-    <button type="button" class="btn btn-primary" (click)="handleYes()">Ja</button>
+    <button ds-button-secondary (click)="handleNo()">Nee</button>
+    <button ds-button-primary (click)="handleYes()">Ja</button>
   </div>
 </app-base-dialog>

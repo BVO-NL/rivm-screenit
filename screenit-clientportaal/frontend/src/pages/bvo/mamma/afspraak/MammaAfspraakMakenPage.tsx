@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useEffect, useRef, useState} from "react"
+import {FC, useEffect, useRef, useState} from "react"
 import {BevolkingsonderzoekNaam} from "../../../../datatypes/Bevolkingsonderzoek"
 import {Col, Row} from "react-bootstrap"
 import styles from "./MammaAfspraakMakenPage.module.scss"
@@ -27,7 +27,6 @@ import {useThunkDispatch} from "../../../../index"
 import {useSelectedBvo, useWindowDimensions} from "../../../../utils/Hooks"
 import {getHuidigeAfspraak} from "../../../../api/MammaAfspraakMakenThunkAction"
 import {useSelector} from "react-redux"
-import {State} from "../../../../datatypes/State"
 import BasePage from "../../../BasePage"
 import SearchResultAfspraken from "../../../../components/search_results/SearchResultAfspraken"
 import {formatDateWithDayName, formatTime, zoekIndex} from "../../../../utils/DateUtil"
@@ -43,25 +42,21 @@ import ScreenitBackend from "../../../../utils/Backend"
 import MammaAfspraakMakenForm from "../../../../components/form/mamma/MammaAfspraakMakenForm"
 import {placeNonBreakingSpaceInDate} from "../../../../utils/StringUtil"
 import {compareAsc} from "date-fns"
-import MammaAfspraakBevestigingsWizard from "./bevestigingswizard/MammaAfspraakBevestigingsWizard"
 import {ClientContactActieType} from "../../../../datatypes/ClientContactActieType"
 import datadogService from "../../../../services/DatadogService"
 import {AnalyticsCategorie} from "../../../../datatypes/AnalyticsCategorie"
+import {setMammaAfspraakReduxAction} from "../../../../actions/MammaAfspraakAction"
+import {useNavigate} from "react-router"
+import {selectBeschikbareActies, selectClient} from "../../../../selectors/ClientSelectors"
+import {selectHuidigeAfspraak} from "../../../../selectors/MammaAfspraakSelectors"
+import {AfspraakZoekFilter} from "../../../../datatypes/mamma/AfspraakZoekFilter"
 
-export type AfspraakZoekFilter = {
-	vanaf?: Date,
-	plaats?: string,
-	afstand?: string,
-	meerOpties: boolean
-}
-
-const MammaAfspraakMakenPage = () => {
+const MammaAfspraakMakenPage: FC = () => {
 	const dispatch = useThunkDispatch()
 	const selectedBvo = useSelectedBvo()!
 	const {width} = useWindowDimensions()
 	const gevondenAfsprakenDiv = useRef<HTMLDivElement | null>(null)
 	const [dagenBeschikbaar, setDagenBeschikbaar] = useState<boolean>(true)
-	const [gekozenAfspraak, setGekozenAfspraak] = useState<AfspraakOptie | undefined>(undefined)
 	const [zoekFilter, setZoekFilter] = useState<AfspraakZoekFilter>({
 		vanaf: undefined,
 		plaats: undefined,
@@ -69,26 +64,27 @@ const MammaAfspraakMakenPage = () => {
 		meerOpties: false,
 	})
 	const [beschikbareDagen, setBeschikbareDagen] = useState<Date[]>([])
-	const beschikbareActies = useSelector((state: State) => state.client.beschikbareActies.beschikbareActies)
-	const client = useSelector((state: State) => state.client)
+	const beschikbareActies = useSelector(selectBeschikbareActies)
+	const client = useSelector(selectClient)
+	const navigate = useNavigate()
 
-	useEffect(() => {
+	useEffect((): void => {
 		ScreenitBackend.get<string[]>("mamma/afspraak/standplaatsPlaatsen").json()
 			.then((response) => setLaatsteStandplaatsZoekFilter(response))
 		dispatch(getHuidigeAfspraak())
 	}, [dispatch, selectedBvo])
 
-	function zoekMetFormulier(zoekFilter: AfspraakZoekFilter) {
+	const zoekMetFormulier = (zoekFilter: AfspraakZoekFilter): void => {
 		setZoekFilter(zoekFilter)
 		zoekAfspraken(zoekFilter)
 	}
 
-	function zoekAfspraken(zoekFilter: AfspraakZoekFilter) {
+	const zoekAfspraken = (zoekFilter: AfspraakZoekFilter): void => {
 		ScreenitBackend.post<AfspraakZoekResultaten>("mamma/afspraak/zoeken", {json: zoekFilter}).json()
 			.then((response: AfspraakZoekResultaten) => setLaatsteAfspraakZoekResultaten(response))
 	}
 
-	const huidigeAfspraak = useSelector((state: State) => state.client.mammaDossier.huidigeAfspraak)
+	const huidigeAfspraak = useSelector(selectHuidigeAfspraak)
 
 	const [laatsteStandplaatsZoekFilter, setLaatsteStandplaatsZoekFilter] = useState<string[]>([])
 	const [laatsteAfspraakZoekResultaten, setLaatsteAfspraakZoekResultaten] = useState<AfspraakZoekResultaten>(geenAfspraakZoekResultaten)
@@ -96,7 +92,7 @@ const MammaAfspraakMakenPage = () => {
 	const gesplitsteAdresStandplaats = huidigeAfspraak && huidigeAfspraak.adresStandplaats.split(",", 2)
 	const resultatenGevonden = laatsteAfspraakZoekResultaten.length !== 0
 
-	const stuurSecondaireActietegelEvent = (naam: string) => {
+	const stuurSecondaireActietegelEvent = (naam: string): void => {
 		datadogService.stuurEvent(
 			"secundaireActietegelGeklikt",
 			AnalyticsCategorie.MAMMA_AFSPRAAK,
@@ -106,7 +102,7 @@ const MammaAfspraakMakenPage = () => {
 		)
 	}
 
-	const afspraakGekozen = (afspraakOptie: AfspraakOptie) => {
+	const afspraakGekozen = (afspraakOptie: AfspraakOptie): void => {
 		datadogService.stuurEvent(
 			"mammaAfspraakOptieGekozen",
 			AnalyticsCategorie.MAMMA_AFSPRAAK,
@@ -117,7 +113,8 @@ const MammaAfspraakMakenPage = () => {
 			},
 		)
 		afspraakOptie.filter = zoekFilter
-		setGekozenAfspraak(afspraakOptie)
+		dispatch(setMammaAfspraakReduxAction(afspraakOptie))
+		navigate("/mamma/afspraak/bevestigen")
 	}
 
 	return (
@@ -226,12 +223,6 @@ const MammaAfspraakMakenPage = () => {
 						</div>}
 				</Col>
 			</Row>
-
-			{gekozenAfspraak && <MammaAfspraakBevestigingsWizard setGekozenAfspraak={setGekozenAfspraak}
-																 gekozenAfspraak={gekozenAfspraak}
-																 zoekAfspraken={zoekAfspraken}
-																 zoekFilter={zoekFilter}/>}
-
 		</BasePage>
 	)
 }

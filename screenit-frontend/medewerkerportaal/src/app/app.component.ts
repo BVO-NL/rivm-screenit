@@ -18,9 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { AfterViewInit, Component, ElementRef, inject, ViewChild } from '@angular/core'
+import { AfterViewInit, Component, ElementRef, inject, viewChild } from '@angular/core'
 import { ComponentLoaderDirective } from '@shared/directives/component-loader/component-loader.directive'
-import { ToastComponent } from '@/shared/toast/component/toast.component'
 import { SessionTimeoutService } from '@shared/session-timeout/service/session-timeout.service'
 import { ColonRoosterPageComponent } from '@/colon/colon-rooster-page/colon-rooster-page.component'
 import { ColonFeestdagenBeheerPageComponent } from '@/colon/colon-feestdagen-beheer-page/colon-feestdagen-beheer-page.component'
@@ -29,15 +28,15 @@ import { MammaDense2UitwisselingPageComponent } from '@/mamma/mamma-dense2-uitwi
 import { ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent } from '@/algemeen/extra-beveiligde-omgeving/extra-beveiligde-omgeving-keuze-herstellen-page/extra-beveiligde-omgeving-keuze-herstellen-page.component'
 import { ExtraBeveiligdeOmgevingClientZoekenPageComponent } from '@/algemeen/extra-beveiligde-omgeving/extra-beveiligde-omgeving-client-zoeken-page/extra-beveiligde-omgeving-client-zoeken-page.component'
 import { MammaVisitatieOverzichtPageComponent } from '@/mamma/mamma-visitatie-overzicht-page/mamma-visitatie-overzicht-page.component'
+import { MammaFotobesprekingOnderzoekenPageComponent } from '@/mamma/mamma-fotobespreking-onderzoeken-page/mamma-fotobespreking-onderzoeken-page.component'
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  imports: [ComponentLoaderDirective, ToastComponent],
+  template: `<ng-container appComponentLoader></ng-container>`,
+  imports: [ComponentLoaderDirective],
 })
 export class AppComponent implements AfterViewInit {
-  @ViewChild(ComponentLoaderDirective, { static: true })
-  componentLoader: ComponentLoaderDirective | undefined
+  componentLoader = viewChild(ComponentLoaderDirective)
   private elementRef: ElementRef = inject(ElementRef)
   private sessionTimeoutService: SessionTimeoutService = inject(SessionTimeoutService)
 
@@ -47,33 +46,37 @@ export class AppComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.sessionTimeoutService.startSessionTimer()
-    if (!this.componentLoader) {
+    if (!this.componentLoader()) {
       return
     }
 
-    this.componentLoader.viewContainerRef.clear()
+    const viewContainerRef = this.componentLoader()!.viewContainerRef
+    viewContainerRef.clear()
 
     switch (this.componentName) {
       case 'colon-rooster':
-        this.componentLoader.viewContainerRef.createComponent<ColonRoosterPageComponent>(ColonRoosterPageComponent)
+        viewContainerRef.createComponent<ColonRoosterPageComponent>(ColonRoosterPageComponent)
         break
       case 'feestdagen-beheer':
-        this.componentLoader.viewContainerRef.createComponent<ColonFeestdagenBeheerPageComponent>(ColonFeestdagenBeheerPageComponent)
+        viewContainerRef.createComponent<ColonFeestdagenBeheerPageComponent>(ColonFeestdagenBeheerPageComponent)
         break
       case 'weekend-werkdag-beheer':
-        this.componentLoader.viewContainerRef.createComponent<ColonWeekendWerkdagBeperkingenPageComponent>(ColonWeekendWerkdagBeperkingenPageComponent)
+        viewContainerRef.createComponent<ColonWeekendWerkdagBeperkingenPageComponent>(ColonWeekendWerkdagBeperkingenPageComponent)
         break
       case 'dense2-uitwisseling':
-        this.componentLoader.viewContainerRef.createComponent<MammaDense2UitwisselingPageComponent>(MammaDense2UitwisselingPageComponent)
+        viewContainerRef.createComponent<MammaDense2UitwisselingPageComponent>(MammaDense2UitwisselingPageComponent)
         break
       case 'extra-beveiligde-omgeving-keuze-herstellen':
-        this.componentLoader.viewContainerRef.createComponent<ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent>(ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent)
+        viewContainerRef.createComponent<ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent>(ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent)
         break
       case 'extra-beveiligde-omgeving-client-zoeken':
-        this.componentLoader.viewContainerRef.createComponent<ExtraBeveiligdeOmgevingClientZoekenPageComponent>(ExtraBeveiligdeOmgevingClientZoekenPageComponent)
+        viewContainerRef.createComponent<ExtraBeveiligdeOmgevingClientZoekenPageComponent>(ExtraBeveiligdeOmgevingClientZoekenPageComponent)
         break
       case 'mamma-visitatie-overzicht':
-        this.componentLoader.viewContainerRef.createComponent<MammaVisitatieOverzichtPageComponent>(MammaVisitatieOverzichtPageComponent)
+        viewContainerRef.createComponent<MammaVisitatieOverzichtPageComponent>(MammaVisitatieOverzichtPageComponent)
+        break
+      case 'mamma-fotobespreking-onderzoeken':
+        viewContainerRef.createComponent<MammaFotobesprekingOnderzoekenPageComponent>(MammaFotobesprekingOnderzoekenPageComponent)
         break
     }
   }

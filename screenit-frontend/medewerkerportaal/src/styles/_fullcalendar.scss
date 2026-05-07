@@ -24,11 +24,15 @@ button:focus {
 
 .fc {
   line-height: 20px !important;
+
+  th {
+    font-weight: 700;
+  }
 }
 
 .event-icon {
-  stroke: var(--clr-color-neutral-0);
-  fill: var(--clr-color-neutral-0);
+  stroke: #fff;
+  fill: #fff;
   stroke-width: 2;
 }
 

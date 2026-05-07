@@ -22,11 +22,9 @@ import { Component, effect, EffectRef, inject, OnDestroy } from '@angular/core'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
-import { ClrComboboxModule, ClrCommonFormsModule, ClrFileInputModule, ClrInputModule, ClrRadioModule } from '@clr/angular'
 import { MammaVisitatieStatus, mammaVisitatieStatusLijst } from '@shared/types/mamma/mamma-visitatie-status'
 import { OrganisatieService } from '@/algemeen/services/organisatie/organisatie.service'
 import { toSignal } from '@angular/core/rxjs-interop'
-import { RequiredMarkDirective } from '@shared/directives/required-mark/required-mark.directive'
 import { Actie } from '@shared/types/autorisatie/actie'
 import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
@@ -35,23 +33,24 @@ import { Required } from '@shared/types/autorisatie/required'
 import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { aantalBestandenValidator, extensieValidator } from '@shared/validators/file/file.validator'
 import { Recht } from '@shared/types/autorisatie/recht'
-import { EnumWeergave } from '@shared/types/enum-weergave'
+import { EnumOptie } from '@shared/types/enum-optie'
 import { isEmptyObject } from '@shared/utils/object-utils'
 import { MammaVisitatieService } from '@/mamma/mamma-visitatie-overzicht-page/services/mamma-visitatie.service'
 import { take } from 'rxjs'
 import { MammaVisitatieOnderdeel } from '@shared/types/mamma/mamma-visitatie-onderdeel'
 import { OrganisatieDto } from '@shared/types/algemeen/dto/organisatie.dto'
-import { MammaVisitatieRequestDto } from '@/shared/types/mamma/dto/mamma-visitatie-request.dto'
+import { MammaVisitatieRequestDto } from '@shared/types/mamma/dto/visitatie/mamma-visitatie-request.dto'
 import { uniekValidator } from '@shared/validators/uniek/uniek.validator'
-import { MammaVisitatieResponseDto } from '@/shared/types/mamma/dto/mamma-visitatie-response.dto'
-import { ToastService } from '@shared/toast/service/toast.service'
-import { ContentType } from '@/shared/types/content-type'
+import { MammaVisitatieResponseDto } from '@shared/types/mamma/dto/visitatie/mamma-visitatie-response.dto'
+import { NotificationService } from '@shared/services/notification/notification.service'
 import { MammaFotorichting } from '@shared/types/mamma/mamma-fotorichting'
-import { MammaVisitatieDto } from '@shared/types/mamma/dto/mamma-visitatie.dto'
+import { MammaVisitatieDto } from '@shared/types/mamma/dto/visitatie/mamma-visitatie.dto'
+import { DsButtonComponent, DsDropdownComponent, DsInputComponent, DsRadiobuttonComponent, DsRadiobuttonOption } from '@topicus-rgp-ds/web'
+import { SingleFileSelectorComponent } from '@shared/components/single-file-selector/single-file-selector.component'
 
 @Component({
   selector: 'app-mamma-visitatie-bewerken-dialog',
-  imports: [BaseDialogComponent, ReactiveFormsModule, ClrCommonFormsModule, ClrInputModule, ClrComboboxModule, RequiredMarkDirective, ClrFileInputModule, ClrRadioModule],
+  imports: [BaseDialogComponent, ReactiveFormsModule, DsInputComponent, DsDropdownComponent, DsRadiobuttonComponent, DsButtonComponent, SingleFileSelectorComponent],
   templateUrl: './mamma-visitatie-bewerken-dialog.component.html',
   styleUrl: './mamma-visitatie-bewerken-dialog.component.scss',
 })
@@ -61,16 +60,15 @@ export class MammaVisitatieBewerkenDialogComponent implements OnDestroy {
   private readonly organisatieService = inject(OrganisatieService)
   private readonly autorisatieService = inject(AutorisatieService)
   private readonly visitatieService = inject(MammaVisitatieService)
-  private toastService: ToastService = inject(ToastService)
+  private notificationService: NotificationService = inject(NotificationService)
 
   private cleanupEffect: EffectRef
-  private dialogData: { visitatieType: string; visitatie: MammaVisitatieDto } = inject(DIALOG_DATA)
+  private readonly dialogData: { visitatieType: string; visitatie: MammaVisitatieDto } = inject(DIALOG_DATA)
   protected readonly visitatie = this.dialogData.visitatie
   protected readonly visitatieType = this.dialogData.visitatieType
   protected beoordelingseenheden = toSignal(this.organisatieService.getBeoordelingseenheden(), { initialValue: [] })
-  protected mammaVisitatieStatusLijst = mammaVisitatieStatusLijst
-  protected contentType = ContentType
-  protected fotorichtingen = Object.values(MammaFotorichting)
+  protected mammaVisitatieStatusLijst: EnumOptie<MammaVisitatieStatus>[] = [...mammaVisitatieStatusLijst]
+  protected readonly fotorichtingen = Object.values(MammaFotorichting)
 
   get beoordelingseenheidCtrl(): FormControl {
     return this.editForm.get('beoordelingseenheid') as FormControl
@@ -90,16 +88,16 @@ export class MammaVisitatieBewerkenDialogComponent implements OnDestroy {
 
   editForm = this.formBuilder.group({
     omschrijving: ['', [Validators.required], [uniekValidator(this.visitatieService.getVisitatieByOmschrijving.bind(this.visitatieService))]],
-    status: [this.getStatusWeergave(MammaVisitatieStatus.INGEPLAND), Validators.required],
+    status: [MammaVisitatieStatus.INGEPLAND, Validators.required],
     beoordelingseenheid: this.formBuilder.control<OrganisatieDto | null>(null, Validators.required),
-    insteltechniek: [null, [extensieValidator(['csv']), aantalBestandenValidator(1)]],
-    fotorichting: this.formBuilder.control<EnumWeergave<MammaFotorichting> | null>(null),
-    intervalcarcinomen: [null, [extensieValidator(['csv']), aantalBestandenValidator(1)]],
-    screenDetected: [null, [extensieValidator(['csv']), aantalBestandenValidator(1)]],
-    verwijzingen: [null, [extensieValidator(['csv']), aantalBestandenValidator(1)]],
-    protheses: [null, [extensieValidator(['csv']), aantalBestandenValidator(1)]],
-    rapportage: [null, [extensieValidator(['xlsx']), aantalBestandenValidator(1)]],
-    vragenlijst: [null, [extensieValidator(['xlsx']), aantalBestandenValidator(1)]],
+    insteltechniek: this.getNewFileControl(),
+    fotorichting: this.formBuilder.control<EnumOptie<MammaFotorichting> | null>(null),
+    intervalcarcinomen: this.getNewFileControl(),
+    screenDetected: this.getNewFileControl(),
+    verwijzingen: this.getNewFileControl(),
+    protheses: this.getNewFileControl(),
+    rapportage: this.getNewFileControl(),
+    vragenlijst: this.getNewFileControl(),
   })
 
   constructor() {
@@ -107,12 +105,12 @@ export class MammaVisitatieBewerkenDialogComponent implements OnDestroy {
       if (this.visitatie && !isEmptyObject(this.visitatie)) {
         this.editForm.patchValue({
           omschrijving: this.visitatie.omschrijving,
-          status: this.getStatusWeergave(this.visitatie.status),
+          status: this.visitatie.status,
           beoordelingseenheid: this.getBeoordelingseenheid(this.visitatie.beoordelingseenheid?.id),
         })
 
         if (this.isNieuw && [MammaVisitatieStatus.INGEPLAND, MammaVisitatieStatus.VRIJGEGEVEN].includes(this.visitatie.status)) {
-          this.mammaVisitatieStatusLijst = mammaVisitatieStatusLijst.filter((status) => status.enum !== MammaVisitatieStatus.UITGEVOERD)
+          this.mammaVisitatieStatusLijst = [...mammaVisitatieStatusLijst].filter((status) => status.waarde !== MammaVisitatieStatus.UITGEVOERD)
         }
       }
     })
@@ -125,6 +123,10 @@ export class MammaVisitatieBewerkenDialogComponent implements OnDestroy {
     if (this.cleanupEffect) {
       this.cleanupEffect.destroy()
     }
+  }
+
+  private getNewFileControl() {
+    return this.formBuilder.control<File | null>(null, [extensieValidator(['csv']), aantalBestandenValidator(1)])
   }
 
   private disableFormAlsNodig() {
@@ -157,10 +159,6 @@ export class MammaVisitatieBewerkenDialogComponent implements OnDestroy {
     this.fotorichtingCtrl.updateValueAndValidity()
   }
 
-  getStatusWeergave(status: MammaVisitatieStatus): EnumWeergave<MammaVisitatieStatus> | undefined {
-    return this.mammaVisitatieStatusLijst.find((s) => s.enum === status)
-  }
-
   getBeoordelingseenheid(id?: number): OrganisatieDto | null {
     return this.beoordelingseenheden().find((org) => org.id === id) || null
   }
@@ -178,44 +176,61 @@ export class MammaVisitatieBewerkenDialogComponent implements OnDestroy {
     const nieuweVisitatie = {
       id: this.visitatie.id,
       omschrijving: formValue.omschrijving,
-      status: formValue.status!.enum,
+      status: formValue.status,
       beoordelingseenheidId: formValue.beoordelingseenheid?.id,
       fotorichting: formValue.fotorichting,
     } as MammaVisitatieRequestDto
-    const bestanden = new Map<MammaVisitatieOnderdeel, File>()
-    let vragenlijstFile: File | undefined
-    let rapportageFile: File | undefined
 
-    if (formValue.insteltechniek) {
-      bestanden.set(MammaVisitatieOnderdeel.INSTELTECHNIEK, formValue.insteltechniek[0])
+    const bestanden = new Map<MammaVisitatieOnderdeel, File>()
+
+    const insteltechniekFile = this.editForm.get('insteltechniek')?.value as File | undefined
+    if (insteltechniekFile) {
+      bestanden.set(MammaVisitatieOnderdeel.INSTELTECHNIEK, insteltechniekFile)
     }
-    if (formValue.intervalcarcinomen) {
-      bestanden.set(MammaVisitatieOnderdeel.INTERVALCARCINOMEN, formValue.intervalcarcinomen[0])
+
+    const intervalcarcinomenFile = this.editForm.get('intervalcarcinomen')?.value as File | undefined
+    if (intervalcarcinomenFile) {
+      bestanden.set(MammaVisitatieOnderdeel.INTERVALCARCINOMEN, intervalcarcinomenFile)
     }
-    if (formValue.screenDetected) {
-      bestanden.set(MammaVisitatieOnderdeel.T2_PLUS_SCREEN_DETECTED, formValue.screenDetected[0])
+
+    const screenDetectedFile = this.editForm.get('screenDetected')?.value as File | undefined
+    if (screenDetectedFile) {
+      bestanden.set(MammaVisitatieOnderdeel.T2_PLUS_SCREEN_DETECTED, screenDetectedFile)
     }
-    if (formValue.verwijzingen) {
-      bestanden.set(MammaVisitatieOnderdeel.VERWIJZINGEN, formValue.verwijzingen[0])
+
+    const verwijzingenFile = this.editForm.get('verwijzingen')?.value as File | undefined
+    if (verwijzingenFile) {
+      bestanden.set(MammaVisitatieOnderdeel.VERWIJZINGEN, verwijzingenFile)
     }
-    if (formValue.protheses) {
-      bestanden.set(MammaVisitatieOnderdeel.PROTHESES, formValue.protheses[0])
+
+    const prothesesFile = this.editForm.get('protheses')?.value as File | undefined
+    if (prothesesFile) {
+      bestanden.set(MammaVisitatieOnderdeel.PROTHESES, prothesesFile)
     }
-    if (formValue.vragenlijst) {
-      vragenlijstFile = formValue.vragenlijst[0]
-    }
-    if (formValue.rapportage) {
-      rapportageFile = formValue.rapportage[0]
-    }
+
+    const rapportageFile = this.editForm.get('rapportage')?.value as File | undefined
+    const vragenlijstFile = this.editForm.get('vragenlijst')?.value as File | undefined
 
     this.visitatieService
       .saveVisitatie(nieuweVisitatie, bestanden, rapportageFile, vragenlijstFile)
       .pipe(take(1))
       .subscribe((response: MammaVisitatieResponseDto) => {
         if (response.meldingen.length) {
-          this.toastService.warning(response.meldingen)
+          this.notificationService.warning(response.meldingen.join(', '))
         }
         this.dialogRef.close(response.visitatie)
       })
   }
+
+  protected getFotorichtingRadioItems() {
+    return this.fotorichtingen.map(
+      (richting) =>
+        ({
+          label: richting,
+          value: richting,
+        }) as DsRadiobuttonOption<string>,
+    )
+  }
+
+  protected readonly Validators = Validators
 }

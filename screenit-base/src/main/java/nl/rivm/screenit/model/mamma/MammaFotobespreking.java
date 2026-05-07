@@ -72,9 +72,6 @@ public class MammaFotobespreking extends AbstractHibernateObject implements Mamm
 	@ManyToOne(fetch = FetchType.LAZY)
 	private BeoordelingsEenheid beoordelingsEenheid;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	private MammaScreeningsEenheid screeningsEenheid;
-
 	@Column
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date gestartOp;

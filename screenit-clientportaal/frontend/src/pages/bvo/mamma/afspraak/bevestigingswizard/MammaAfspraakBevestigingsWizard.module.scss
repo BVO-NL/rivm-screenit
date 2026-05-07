@@ -18,3 +18,68 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+
+.bevestigenForm {
+	margin-top: 20px;
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+	flex-direction: row-reverse;
+	justify-content: flex-start;
+
+	&.metVorige {
+		justify-content: space-between;
+		flex-direction: row;
+
+	}
+
+	&.inPopup {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 0.25rem;
+	}
+
+	.knoppenRechts {
+		display: flex;
+		gap: 1rem;
+		flex-direction: row-reverse;
+		align-items: center;
+	}
+
+	.bevestigingsBrief {
+		position: relative;
+		display: block;
+		margin-bottom: 20px;
+
+		label {
+			@include center-in-div-vertically(50%);
+		}
+
+		&.hide {
+			display: none;
+		}
+	}
+
+	button, a {
+		text-align: center;
+		margin-bottom: 0;
+	}
+}
+
+.wizardIndicator {
+	margin-bottom: 10px;
+}
+
+.radiobuttons {
+	ul {
+		padding-inline-start: 0;
+		li {
+			list-style: none;
+		}
+	}
+}
+
+.infoText {
+	display: block;
+	margin-bottom: 5px;
+}

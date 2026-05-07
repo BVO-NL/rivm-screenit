@@ -22,26 +22,20 @@ import { Component, inject } from '@angular/core'
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
+import { DsButtonComponent } from '@topicus-rgp-ds/web'
 
 @Component({
   selector: 'app-confirmation-dialog',
-  imports: [BaseDialogComponent],
+  imports: [BaseDialogComponent, DsButtonComponent],
   template: `
     <app-base-dialog [titel]="dialogData.title">
-      <div body class="body">{{ dialogData.body }}</div>
+      <div body>{{ dialogData.body }}</div>
       <div buttons class="btn-group">
-        <button type="button" class="btn" (click)="handleNo()">Nee</button>
-        <button type="button" class="btn btn-primary" (click)="handleYes()">Ja</button>
+        <button (click)="handleNo()" data-testid="button_confirmation_nee" ds-button-secondary type="button">Nee</button>
+        <button (click)="handleYes()" data-testid="button_confirmation_ja" ds-button-primary type="button">Ja</button>
       </div>
     </app-base-dialog>
   `,
-  styles: [
-    `
-      .body {
-        white-space: pre-wrap;
-      }
-    `,
-  ],
 })
 export class ConfirmationDialogComponent {
   private dialogRef: DialogRef<boolean> = inject(DialogRef)

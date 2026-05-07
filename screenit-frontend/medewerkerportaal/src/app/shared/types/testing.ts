@@ -18,6 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-export type MockedService<S> = Record<keyof S, jasmine.Spy>
+import type { Mock } from 'vitest'
 
-export type DocumentMock<K extends keyof Document> = Record<K, jasmine.Spy>
+export type MockedService<S> = Record<keyof S, Mock>
+
+export type DocumentMock<K extends keyof Document> = Record<K, Mock>

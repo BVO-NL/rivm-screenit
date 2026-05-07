@@ -59,7 +59,7 @@ export type MbbSignaleringViewDispatchProps = {
 }
 
 const optionInsteltechniek: Array<SuboptimaleInsteltechniek> = ["FYSIEK_BEPERKT", "MOBIEL_BEPERKT", "MOEILIJK_TE_POSITIONEREN"]
-const optionFotobespreking: Array<RedenFotobespreking> = ["ARCHITECTUURVERSTORING", "ASYMMETRIE", "CALCIFICATIES", "MASSA", "INSTELTECHNIEK", "OVERIG"]
+const optionFotobespreking: Array<RedenFotobespreking> = ["ARCHITECTUURVERSTORING", "ASYMMETRIE", "CALCIFICATIES", "MASSA", "INSTELTECHNIEK", "TE_BESPREKEN_ONDERZOEK"]
 const maxOpmerkingLengte = 255
 export default class MbbSignaleringView extends Component<MbbSignaleringViewStateProps & MbbSignaleringViewDispatchProps> {
 

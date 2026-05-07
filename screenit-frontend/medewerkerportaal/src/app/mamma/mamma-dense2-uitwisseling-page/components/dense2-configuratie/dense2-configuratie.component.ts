@@ -19,26 +19,24 @@
  * =========================LICENSE_END==================================
  */
 import { Component, effect, inject, input, InputSignal } from '@angular/core'
-import { CardComponent } from '@shared/components/card/card.component'
-import { ClrCheckboxModule, ClrCommonFormsModule, ClrInputModule } from '@clr/angular'
-import { FormControl, FormGroup, FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
+import { FormControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ProjectSelectorComponent } from '@/algemeen/components/project-selector/project-selector.component'
 import { filter, take } from 'rxjs'
 import { MammaDense2Configuratie } from '@shared/types/mamma/mamma-dense2-configuratie'
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component'
-import { ToastService } from '@shared/toast/service/toast.service'
+import { NotificationService } from '@shared/services/notification/notification.service'
 import { Dialog } from '@angular/cdk/dialog'
 import { Dense2Service } from '@/mamma/mamma-dense2-uitwisseling-page/services/dense2/dense2.service'
+import { DsButtonComponent, DsCardComponent, DsFooterActionsRightDirective, DsInputComponent, DsToggleComponent } from '@topicus-rgp-ds/web'
 
 @Component({
   selector: 'app-dense2-configuratie',
-  imports: [CardComponent, ClrCheckboxModule, ClrCommonFormsModule, ClrInputModule, FormsModule, ProjectSelectorComponent, ReactiveFormsModule],
+  imports: [ProjectSelectorComponent, ReactiveFormsModule, DsInputComponent, DsToggleComponent, DsCardComponent, DsButtonComponent, DsFooterActionsRightDirective],
   templateUrl: './dense2-configuratie.component.html',
-  styleUrl: './dense2-configuratie.component.scss',
 })
 export class Dense2ConfiguratieComponent {
   private formBuilder: NonNullableFormBuilder = inject(NonNullableFormBuilder)
-  private toastService: ToastService = inject(ToastService)
+  private notificationService: NotificationService = inject(NotificationService)
   private dialog: Dialog = inject(Dialog)
   private dense2Service: Dense2Service = inject(Dense2Service)
   configuratie: InputSignal<MammaDense2Configuratie | undefined> = input()
@@ -89,7 +87,7 @@ export class Dense2ConfiguratieComponent {
       .updateConfiguratie(this.configuratieForm.value)
       .pipe(take(1))
       .subscribe(() => {
-        this.toastService.success('Configuratie is opgeslagen')
+        this.notificationService.success('Configuratie is opgeslagen')
       })
   }
 }

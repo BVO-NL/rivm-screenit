@@ -19,3 +19,5 @@
  * =========================LICENSE_END==================================
  */
 import "whatwg-fetch"
+
+process.env.TZ = "Europe/Amsterdam"

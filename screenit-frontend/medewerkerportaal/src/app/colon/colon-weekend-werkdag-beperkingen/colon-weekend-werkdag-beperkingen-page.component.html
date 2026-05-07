@@ -18,45 +18,29 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<div class="content-container">
-  <div class="content-area">
-    <h2>Roosterbeperkingen voor tijd en weekend</h2>
-    <form clrForm clrLayout="compact" [formGroup]="beperkingForm" (ngSubmit)="save()">
-      <div class="card mb-3">
-        <h3 class="card-header">Tijdsbeperking (elke dag)</h3>
-
-        <div class="card-block">
-          <app-colon-rooster-beperking [required]="true" formControlName="nachtBeperkingType" label="Beperking"/>
-
-          <div class="mt-3">
-            <clr-input-container class="nacht-beperking">
-              <label class="clr-required-mark" for="ochtend">Ochtend</label>
-              <input clrInput formControlName="nachtBeperkingEindDisabled" autocomplete="off" type="time" value="00:00"/>
-              <input clrInput autocomplete="off" formControlName="nachtBeperkingEind" id="ochtend" type="time" data-testid="input_nacht_beperking_eind"/>
-              <clr-control-error *clrIfError="'required'">De eindtijd is verplicht</clr-control-error>
-            </clr-input-container>
-
-            <clr-input-container class="nacht-beperking">
-              <label class="clr-required-mark not-greyed-out" for="avond">Avond</label>
-              <input clrInput autocomplete="off" class="not-greyed-out" formControlName="nachtBeperkingBegin" id="avond" type="time" data-testid="input_nacht_beperking_start"/>
-              <input clrInput formControlName="nachtBeperkingBeginDisabled" autocomplete="off" type="time" value="23:59"/>
-              <clr-control-error *clrIfError="'required'">De eindtijd is verplicht</clr-control-error>
-            </clr-input-container>
-          </div>
-        </div>
+<app-page titel="Roosterbeperkingen voor tijd en weekend">
+  <form [formGroup]="beperkingForm" (ngSubmit)="save()">
+    <ds-card cardTitle="Tijdsbeperking (elke dag)" class="mb-3 display-block">
+      <app-colon-rooster-beperking [required]="true" formControlName="nachtBeperkingType" label="Beperking"/>
+      <div class="nacht-beperking-row">
+        <app-timepicker formControlName="nachtBeperkingEindDisabled" label="Ochtend"/>
+        <app-timepicker [required]="true" data-testid="input_nacht_beperking_eind"
+                        formControlName="nachtBeperkingEind" id="ochtend"/>
       </div>
-      <div class="card mb-4">
-        <h3 class="card-header">Weekendbeperking</h3>
-        <div class="card-block">
-          <div class="mb-3">
-            <app-colon-rooster-beperking [required]="true" formControlName="zaterdagBeperkingType" label="Zaterdag"/>
-          </div>
-          <div class="mb-3">
-            <app-colon-rooster-beperking [required]="true" formControlName="zondagBeperkingType" label="Zondag"/>
-          </div>
-        </div>
+      <div class="nacht-beperking-row">
+        <app-timepicker [required]="true"
+                        formControlName="nachtBeperkingBegin"
+                        data-testid="input_nacht_beperking_start" label="Avond">
+        </app-timepicker>
+        <app-timepicker formControlName="nachtBeperkingBeginDisabled"></app-timepicker>
       </div>
-      <button class="btn btn-primary" type="submit" *appAutorisatie="constraint">Opslaan</button>
-    </form>
-  </div>
-</div>
+    </ds-card>
+
+    <ds-card cardTitle="Weekendbeperking" class="mb-4 display-block">
+      <app-colon-rooster-beperking [required]="true" formControlName="zaterdagBeperkingType" label="Zaterdag"/>
+      <app-colon-rooster-beperking [required]="true" formControlName="zondagBeperkingType" label="Zondag"/>
+    </ds-card>
+
+    <button ds-button-primary type="submit" *appAutorisatie="constraint"> Opslaan</button>
+  </form>
+</app-page>

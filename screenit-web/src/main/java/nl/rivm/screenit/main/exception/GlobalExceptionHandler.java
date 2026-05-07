@@ -59,6 +59,10 @@ public class GlobalExceptionHandler
 		LOG.error(message);
 		var node = objectMapper.createObjectNode();
 		node.put("message", message);
+		if (ex instanceof FeestdagValidatieException)
+		{
+			node.set("afspraakslots", objectMapper.valueToTree(((FeestdagValidatieException) ex).getParameters()));
+		}
 		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(node.toString());
 	}
 

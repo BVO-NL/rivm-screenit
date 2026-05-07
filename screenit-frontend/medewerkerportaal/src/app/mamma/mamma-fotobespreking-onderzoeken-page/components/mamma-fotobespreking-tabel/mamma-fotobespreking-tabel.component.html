@@ -1,0 +1,99 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<table [dataSource]="dataSource" [fullWidth]="true" ds-table matSort
+       matSortActive="naam"
+       [hoverable]="true"
+       matSortDirection="asc">
+  <ng-container dsColumnDef="selection">
+    <th *dsHeaderCellDef ds-header-cell>
+      <ds-checkbox
+        [ngModel]="allCheckboxesSelected()"
+        [indeterminate]="anyCheckboxSelected()"
+        (checkboxChanged)="toggleAll()"
+      />
+    </th>
+    <td *dsCellDef="let row" ds-cell>
+      <ds-checkbox
+        (click)="$event.stopPropagation()"
+        (checkboxChanged)="selecteerOnderzoek(row)"
+        [ngModel]="rowIsSelected(row)"
+        [disabled]="isAlInFotobespreking(row)"
+      />
+    </td>
+  </ng-container>
+  <ng-container dsColumnDef="naam">
+    <th *dsHeaderCellDef mat-sort-header="afspraak.uitnodiging.screeningRonde.dossier.client.persoon.achternaam" ds-header-cell>Naam</th>
+    <td *dsCellDef="let row" data-testid="fotobespreking_naam" ds-cell>{{ row.naam }}
+    </td>
+  </ng-container>
+  <ng-container dsColumnDef="bsn">
+    <th *dsHeaderCellDef mat-sort-header="afspraak.uitnodiging.screeningRonde.dossier.client.persoon.bsn" ds-header-cell>BSN</th>
+    <td *dsCellDef="let row" ds-cell>{{ row.bsn }}
+    </td>
+  </ng-container>
+  <ng-container dsColumnDef="geboortedatum">
+    <th *dsHeaderCellDef mat-sort-header="afspraak.uitnodiging.screeningRonde.dossier.client.persoon.geboortedatum" ds-header-cell>Geboortedatum</th>
+    <td *dsCellDef="let row" ds-cell
+    >{{ row.geboortedatum | date: NL_DATE_FORMAT }}
+    </td>
+  </ng-container>
+  <ng-container dsColumnDef="medewerker">
+    <th *dsHeaderCellDef mat-sort-header="mammografie.afgerondDoor.medewerker.achternaam" ds-header-cell>Medewerker</th>
+    <td *dsCellDef="let row" ds-cell>{{ row.medewerker }}
+    </td>
+  </ng-container>
+  <ng-container dsColumnDef="onderzoeksdatum">
+    <th *dsHeaderCellDef mat-sort-header="creatieDatum" ds-header-cell>Onderzoeksdatum</th>
+    <td *dsCellDef="let row" ds-cell>{{ row.onderzoeksdatum | date: NL_DATE_TIME_FORMAT }}</td>
+  </ng-container>
+  <ng-container dsColumnDef="redenFotobesprekingDoorMbber">
+    <th *dsHeaderCellDef ds-header-cell>Reden fotobespreking door MBB'er</th>
+    <td *dsCellDef="let row" ds-cell>{{ row.redenFotobesprekingDoorMbber | enumLabel: mammaOnderzoekRedenFotobesprekingLabels }}</td>
+  </ng-container>
+  <ng-container dsColumnDef="redenFotobesprekingDoorRadioloog">
+    <th *dsHeaderCellDef ds-header-cell>Reden fotobespreking door radioloog</th>
+    <td *dsCellDef="let row" ds-cell>{{ row.redenFotobesprekingDoorRadioloog | enumLabel: mammaLezingRedenenFotobesprekingRadioloogLabels }}</td>
+  </ng-container>
+  <ng-container dsColumnDef="redenFotobesprekingMetMbber">
+    <th *dsHeaderCellDef ds-header-cell>Reden fotobespreking met MBB'er</th>
+    <td *dsCellDef="let row" ds-cell>{{ row.redenFotobesprekingMetMbber | enumLabel: mammaLezingRedenenFotobesprekingMbberLabels }}</td>
+  </ng-container>
+  <ng-container dsColumnDef="redenDoorverwijzing">
+    <th *dsHeaderCellDef ds-header-cell>Reden doorverwijzing</th>
+    <td *dsCellDef="let row" ds-cell>{{ row.redenDoorverwijzing | enumLabel: mammaLaesieTypeLabels }}</td>
+  </ng-container>
+  <ng-container dsColumnDef="discrepantie">
+    <th *dsHeaderCellDef ds-header-cell>Discrepantie</th>
+    <td *dsCellDef="let row" ds-cell>{{ row.discrepantie | boolean }}</td>
+  </ng-container>
+  <ng-container dsColumnDef="followUp">
+    <th *dsHeaderCellDef ds-header-cell>Follow-up</th>
+    <td *dsCellDef="let row" ds-cell>{{ row.followUp | enumLabel: mammaFollowUpConclusieStatusLabel }}</td>
+  </ng-container>
+  <tr ds-header-row *dsHeaderRowDef="displayedColumns"></tr>
+  <tr [ds-selectable-row]="rowIsSelected(row)"
+      (click)="selecteerOnderzoek(row)" data-testid="visitatie_rij" *dsRowDef="let row; columns: displayedColumns"></tr>
+</table>
+<ds-paginator [totalNumberOfItems]="paginering().totaal"
+              [pageSize]="paginering().paginaGrootte"
+              [pageSizeOptions]="[10, 20, 50]"
+              (pageChanged)="handlePageChange($event)"
+></ds-paginator>

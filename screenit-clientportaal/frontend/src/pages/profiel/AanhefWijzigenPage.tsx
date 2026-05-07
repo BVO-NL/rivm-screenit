@@ -23,7 +23,6 @@ import * as Yup from "yup"
 import {useThunkDispatch} from "../../index"
 import {getString} from "../../utils/TekstPropertyUtil"
 import {useSelector} from "react-redux"
-import {State} from "../../datatypes/State"
 import properties from "./AanhefWijzigenPage.json"
 import {Formik} from "formik"
 import SubmitForm from "../../components/form/SubmitForm"
@@ -34,11 +33,12 @@ import {FormControl, FormControlLabel, Radio, RadioGroup} from "@mui/material"
 import {AanhefType} from "../../datatypes/aanhef/AanhefType"
 import {Persoon} from "../../datatypes/Persoon"
 import {Geslacht} from "../../datatypes/Geslacht"
+import {selectPersoon} from "../../selectors/ClientSelectors"
 
 const AanhefWijzigenPage = () => {
 	const dispatch = useThunkDispatch()
 	const navigate = useNavigate()
-	const persoon = useSelector((state: State) => state.client.persoon)
+	const persoon = useSelector(selectPersoon)
 
 	const initialValues = {
 		aanhef: gekozenAanhef(persoon),

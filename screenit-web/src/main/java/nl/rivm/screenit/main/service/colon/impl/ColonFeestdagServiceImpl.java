@@ -21,11 +21,13 @@ package nl.rivm.screenit.main.service.colon.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 import lombok.AllArgsConstructor;
 
+import nl.rivm.screenit.main.exception.FeestdagValidatieException;
 import nl.rivm.screenit.main.exception.ValidatieException;
 import nl.rivm.screenit.main.service.colon.ColonFeestdagService;
 import nl.rivm.screenit.main.service.colon.RoosterService;
@@ -155,24 +157,26 @@ public class ColonFeestdagServiceImpl implements ColonFeestdagService
 		overlaptMetBestaandeFeestdag(feestdagDto);
 	}
 
-	private void heeftAfspraakslots(ColonFeestdagDto feestdagDto) throws ValidatieException
+	private void heeftAfspraakslots(ColonFeestdagDto feestdagDto) throws FeestdagValidatieException
 	{
 		var afspraakslots = getAfspraakslotsOpFeestdag(feestdagDto);
 		if (!afspraakslots.isEmpty())
 		{
+			var parametersMap = new HashMap<String, List<String>>();
 			var afspraakslotsPerIntakelocatie = afspraakslots.stream().collect(groupingBy(afspraakslot -> afspraakslot.getKamer().getIntakelocatie()));
-			var validatieMessage = afspraakslotsPerIntakelocatie.entrySet().stream().map(a -> formatHeeftAfspraakBericht(a.getKey(), a.getValue())).collect(joining("<br />"));
-			throw new ValidatieException("error.feestdag.heeft.afspraken", validatieMessage);
+			afspraakslotsPerIntakelocatie.forEach((key, value) -> parametersMap.put(key.getNaam(),
+				value.stream().map(afspraakslot -> DateUtil.formatShortDateTime(afspraakslot.getVanaf()) + " - " + DateUtil.formatLocalTime(afspraakslot.getTot())).toList()));
+
+			throw new FeestdagValidatieException("error.feestdag.heeft.afspraken", parametersMap);
 		}
 	}
 
 	private String formatHeeftAfspraakBericht(ColonIntakelocatie intakelocatie, List<ColonAfspraakslot> afspraakslots)
 	{
-		var message = "<strong>" + intakelocatie.getNaam() + "</strong>";
 		var afsprakenString = afspraakslots.stream()
 			.map(afspraakslot -> DateUtil.formatShortDateTime(afspraakslot.getVanaf()) + "-" + DateUtil.formatLocalTime(afspraakslot.getTot())
 			).collect(joining(", "));
-		return message + ": " + afsprakenString;
+		return intakelocatie.getNaam() + ": " + afsprakenString;
 	}
 
 	private List<ColonAfspraakslot> getAfspraakslotsOpFeestdag(ColonFeestdagDto feestdag)

@@ -19,15 +19,16 @@
  * =========================LICENSE_END==================================
  */
 import DOMPurify from "dompurify"
+import {JSX} from "react"
 
 export type SpanWithHtmlProps = {
 	className?: string,
 	value: string,
 }
 
-export const ALLOWED_TAGS = ["b", "p", "a", "ul", "ol", "li", "br"]
+export const ALLOWED_TAGS = ["b", "p", "a", "ul", "ol", "li", "br", "strong"]
 
-const SpanWithHtml = (props: SpanWithHtmlProps) => {
+const SpanWithHtml = (props: SpanWithHtmlProps): JSX.Element => {
 	const sanitizedHtml = DOMPurify.sanitize(props.value, {ALLOWED_TAGS, ADD_ATTR: ["target"]})
 	return <span className={props.className} dangerouslySetInnerHTML={{__html: sanitizedHtml}}/>
 }

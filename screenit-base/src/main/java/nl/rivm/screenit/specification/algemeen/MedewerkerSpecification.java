@@ -123,7 +123,7 @@ public class MedewerkerSpecification
 		return (r, q, cb) ->
 		{
 			var totEnMetExpression = cb.coalesce(r.get(Medewerker_.actiefTotEnMet), DateUtil.END_OF_TIME);
-			return cb.lessThanOrEqualTo(totEnMetExpression, DateUtil.toUtilDate(peilDatum));
+			return cb.lessThan(totEnMetExpression, DateUtil.toUtilDate(peilDatum));
 		};
 	}
 

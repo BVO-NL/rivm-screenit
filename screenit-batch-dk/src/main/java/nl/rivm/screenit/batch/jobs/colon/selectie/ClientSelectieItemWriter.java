@@ -62,9 +62,9 @@ import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.service.colon.ColonScreeningsrondeService;
-import nl.rivm.screenit.service.colon.ColonUitnodigingService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ProjectUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
@@ -100,7 +100,7 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 
 	private final UitnodigingsDao uitnodigingsDao;
 
-	private final ColonUitnodigingService uitnodigingService;
+	private final ColonBaseUitnodigingService uitnodigingService;
 
 	private final ColonDossierBaseService dossierBaseService;
 

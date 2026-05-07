@@ -41,7 +41,7 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.OrganisatieParameterService;
-import nl.rivm.screenit.service.colon.ColonUitnodigingService;
+import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,7 +60,7 @@ public class ColonRoosterController
 
 	private final ColonIntakekamerService locatieService;
 
-	private final ColonUitnodigingService uitnodigingService;
+	private final ColonBaseUitnodigingService uitnodigingService;
 
 	private final ColonRoosterBeperkingService beperkingService;
 

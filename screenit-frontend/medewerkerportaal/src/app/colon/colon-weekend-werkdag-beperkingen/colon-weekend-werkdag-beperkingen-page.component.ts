@@ -19,8 +19,6 @@
  * =========================LICENSE_END==================================
  */
 import { Component, inject } from '@angular/core'
-
-import { ClrAlertModule, ClrCheckboxModule, ClrCommonFormsModule, ClrDatepickerModule, ClrIconModule, ClrInputModule, ClrRadioModule } from '@clr/angular'
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ColonRoosterBeperking } from '@shared/types/colon/colon-rooster-beperking'
 import { ColonRoosterBeperkingComponent } from '@/colon/components/colon-rooster-beperking/colon-rooster-beperking.component'
@@ -36,46 +34,34 @@ import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { OrganisatieType } from '@/shared/types/algemeen/organisatie-type'
 import { Required } from '@shared/types/autorisatie/required'
 import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
-import { ToastService } from '@shared/toast/service/toast.service'
+import { DsButtonComponent, DsCardComponent } from '@topicus-rgp-ds/web'
+import { NotificationService } from '@shared/services/notification/notification.service'
+import { PageComponent } from '@shared/components/page/page.component'
+import { convertLocalTimeStringToTimeString } from '@shared/utils/date-utils'
+import { TimepickerComponent } from '@shared/components/timepicker/timepicker.component'
 
 @Component({
   selector: 'app-colon-weekend-werkdag-beperkingen-page',
-  imports: [
-    ClrCommonFormsModule,
-    ClrInputModule,
-    FormsModule,
-    ClrDatepickerModule,
-    ClrCheckboxModule,
-    ReactiveFormsModule,
-    ClrRadioModule,
-    ColonRoosterBeperkingComponent,
-    ClrAlertModule,
-    ClrIconModule,
-    AutorisatieDirective,
-  ],
+  imports: [FormsModule, ReactiveFormsModule, ColonRoosterBeperkingComponent, AutorisatieDirective, DsButtonComponent, DsCardComponent, TimepickerComponent, PageComponent],
   templateUrl: './colon-weekend-werkdag-beperkingen-page.component.html',
   styles: [
     `
-      .not-greyed-out {
-        color: #454545;
-      }
-      .nacht-beperking {
+      .nacht-beperking-row {
         display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-
-        input {
-          margin-right: 1rem;
-        }
+        align-items: flex-end;
+        gap: 1rem;
+      }
+      .pagina {
+        max-width: var(--page-width-sm);
       }
     `,
   ],
 })
 export class ColonWeekendWerkdagBeperkingenPageComponent {
   private formBuilder: FormBuilder = inject(FormBuilder)
-  private roosterService: RoosterService = inject(RoosterService)
-  private toastService: ToastService = inject(ToastService)
-  private autorisatieService: AutorisatieService = inject(AutorisatieService)
+  private readonly roosterService: RoosterService = inject(RoosterService)
+  private readonly notificationService: NotificationService = inject(NotificationService)
+  private readonly autorisatieService: AutorisatieService = inject(AutorisatieService)
 
   beperkingForm: FormGroup = this.formBuilder.group({
     nachtBeperkingBegin: ['', Validators.required],
@@ -101,7 +87,11 @@ export class ColonWeekendWerkdagBeperkingenPageComponent {
       .pipe(takeUntilDestroyed())
       .subscribe((res: ColonRoosterBeperkingenDto) => {
         if (res.nachtBeperkingType) {
-          this.beperkingForm.patchValue(res)
+          this.beperkingForm.patchValue({
+            ...res,
+            nachtBeperkingBegin: convertLocalTimeStringToTimeString(res.nachtBeperkingBegin),
+            nachtBeperkingEind: convertLocalTimeStringToTimeString(res.nachtBeperkingEind),
+          })
         }
       })
 
@@ -127,9 +117,7 @@ export class ColonWeekendWerkdagBeperkingenPageComponent {
       .updateBeperkingen(beperking)
       .pipe(take(1))
       .subscribe(() => {
-        this.toastService.success('De beperkingen zijn opgeslagen')
+        this.notificationService.success('De beperkingen zijn opgeslagen')
       })
   }
-
-  isVeldDisabled = true
 }

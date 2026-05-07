@@ -23,8 +23,8 @@ package nl.rivm.screenit.main.service.mamma;
 
 import java.util.List;
 
+import nl.rivm.screenit.main.dto.mamma.visitatie.MammaVisitatieWerklijstFilterDto;
 import nl.rivm.screenit.main.model.mamma.beoordeling.MammaVisitatieOnderzoekenWerklijstZoekObject;
-import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieWerklijstFilterDto;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaVisitatie;
 import nl.rivm.screenit.model.mamma.MammaVisitatieOnderzoek;

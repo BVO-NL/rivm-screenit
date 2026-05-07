@@ -18,17 +18,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, forwardRef, Input } from '@angular/core'
-
-import { ClrCommonFormsModule, ClrRadioModule } from '@clr/angular'
-import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms'
+import { Component, effect, forwardRef, input } from '@angular/core'
+import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators } from '@angular/forms'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ColonRoosterBeperking } from '@shared/types/colon/colon-rooster-beperking'
+import { DsRadiobuttonComponent, DsRadiobuttonOption } from '@topicus-rgp-ds/web'
 
 @Component({
   selector: 'app-colon-rooster-beperking',
-  imports: [ClrCommonFormsModule, ClrRadioModule, ReactiveFormsModule],
-  templateUrl: './colon-rooster-beperking.component.html',
+  imports: [ReactiveFormsModule, DsRadiobuttonComponent],
+  template: ` <ds-radiobutton [label]="label()" [formControl]="formControl" [items]="items" [columnCount]="2" [columnWidth]="50"></ds-radiobutton>`,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -38,16 +37,23 @@ import { ColonRoosterBeperking } from '@shared/types/colon/colon-rooster-beperki
   ],
 })
 export class ColonRoosterBeperkingComponent implements ControlValueAccessor {
-  private onChange: ((value: string) => void) | undefined
-  private onTouched: (() => void) | undefined
-
-  @Input({ required: true }) label = 'label'
-  @Input() required = false
+  label = input.required<string>()
+  required = input<boolean>(false)
 
   formControl: FormControl = new FormControl<string>('ZACHT')
-  zachtId = Math.random().toString()
-  hardId = Math.random().toString()
-  colonRoosterBeperking = ColonRoosterBeperking
+  items: DsRadiobuttonOption<string>[] = [
+    {
+      label: 'Zacht',
+      value: ColonRoosterBeperking.ZACHT,
+    },
+    {
+      label: 'Hard',
+      value: ColonRoosterBeperking.HARD,
+    },
+  ]
+
+  private onChange: ((value: string) => void) | undefined
+  private onTouched: (() => void) | undefined
 
   constructor() {
     this.formControl.valueChanges.pipe(takeUntilDestroyed()).subscribe((res) => {
@@ -56,6 +62,14 @@ export class ColonRoosterBeperkingComponent implements ControlValueAccessor {
       }
       if (this.onTouched) {
         this.onTouched()
+      }
+    })
+
+    effect(() => {
+      if (this.required()) {
+        this.formControl.addValidators(Validators.required)
+      } else {
+        this.formControl.clearValidators()
       }
     })
   }

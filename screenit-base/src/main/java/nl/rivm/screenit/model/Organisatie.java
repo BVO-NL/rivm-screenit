@@ -114,7 +114,6 @@ public class Organisatie extends AbstractHibernateObject implements IActief
 	@Column(nullable = false)
 	private OrganisatieType organisatieType;
 
-	@NotAudited
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Organisatie parent;
 

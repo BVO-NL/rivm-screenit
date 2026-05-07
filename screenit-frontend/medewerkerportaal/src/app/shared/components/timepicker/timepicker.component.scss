@@ -1,0 +1,70 @@
+/*-
+ * ========================LICENSE_START=================================
+ * medewerkerportaal
+ * %%
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+
+.timepicker {
+  &__input-wrapper {
+    position: relative;
+  }
+
+  &__keuzelijst {
+    background: var(--ds-color-white, #fff);
+    border: 1px solid var(--ds-color-neutral-300, #d1d5db);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1.25rem rgba(15, 23, 42, 0.12);
+    overflow: hidden;
+  }
+
+  &__kolommen {
+    display: flex;
+  }
+
+  &__uren-kolom,
+  &__minuten-kolom {
+    width: 6rem;
+    max-height: 14rem;
+    overflow-y: auto;
+  }
+
+  &__uren-kolom {
+    border-right: 1px solid var(--ds-color-neutral-200, #e5e7eb);
+  }
+
+  &__optie {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 0;
+    background: transparent;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  &__optie:hover,
+  &__optie--geselecteerd {
+    background: var(--ds-color-primary-100, #eef6ff);
+  }
+
+  &__kolom--actief {
+    outline: 2px solid var(--ds-color-primary-400, #60a5fa);
+    outline-offset: -2px;
+    border-radius: 0.25rem;
+  }
+}
+

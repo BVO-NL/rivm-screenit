@@ -18,9 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { inject, Injectable } from '@angular/core'
+import { DOCUMENT, inject, Injectable } from '@angular/core'
 import { EnvironmentData } from '@shared/types/environment-data'
-import { DOCUMENT } from '@angular/common'
 
 @Injectable({
   providedIn: 'root',

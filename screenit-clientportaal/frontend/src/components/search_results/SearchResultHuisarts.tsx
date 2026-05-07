@@ -26,22 +26,22 @@ import ArrowIconComponent, {ArrowType} from "../vectors/ArrowIconComponent"
 import {Col, Row} from "react-bootstrap"
 
 export type SearchResultHuisartsProps = {
-    className?: string
-    col1?: string[]
-    col2?: string[]
-    onHoverText?: string
-    enlargeText?: boolean
-    onClickAction: () => void
+	className?: string
+	col1?: string[]
+	col2?: string[]
+	onHoverText?: string
+	enlargeText?: boolean
+	onClickAction: () => void
 }
 
 const SearchResultHuisarts = (props: SearchResultHuisartsProps) => {
-    return (
-        <div className={classNames(props.className, styles.content)}
-             onClick={(event) => {
-                 event.preventDefault();
-                 props.onClickAction();
-             }}>
-            <Row>
+	return (
+		<div className={classNames(props.className, styles.content)}
+			 onClick={(event) => {
+				 event.preventDefault()
+				 props.onClickAction()
+			 }}>
+			<Row>
 				<Col sm={8} className={styles.col}>
 					{props.col1 && <SearchResultColumn
 						head={props.col1[0]}
@@ -62,8 +62,8 @@ const SearchResultHuisarts = (props: SearchResultHuisartsProps) => {
 					</div>
 				</Col>
 			</Row>
-        </div>
-    )
+		</div>
+	)
 }
 
 export default SearchResultHuisarts

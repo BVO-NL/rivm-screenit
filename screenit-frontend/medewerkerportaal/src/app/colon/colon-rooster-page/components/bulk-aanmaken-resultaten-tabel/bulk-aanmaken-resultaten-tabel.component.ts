@@ -18,28 +18,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, Input } from '@angular/core'
-
-import { ColonBulkAanmakenException } from '@shared/types/colon/colon-bulk-aanmaken-exception'
+import {Component, input} from '@angular/core'
+import {ColonBulkAanmakenException} from '@shared/types/colon/colon-bulk-aanmaken-exception'
 
 @Component({
   selector: 'app-bulk-aanmaken-resultaten-tabel',
-  imports: [],
   template: `
-    <table aria-label="bulk aanmaken resultaten" class="table table-compact table-noborder">
+    <table class="ds-table">
       <thead>
-        <tr>
-          <th class="clr-text-left datum">Datum</th>
-          <th class="clr-text-left tijd">Tijd</th>
-          <th class="clr-text-left">Reden</th>
+        <tr class="ds-header-row">
+          <th class="ds-header-cell datum-kolom">Datum</th>
+          <th class="ds-header-cell datum-kolom">Tijd</th>
+          <th class="ds-header-cell">Reden</th>
         </tr>
       </thead>
       <tbody>
-        @for (exception of exceptions; track exception) {
-          <tr>
-            <td class="clr-text-left">{{ exception.tijdslot.datum }}</td>
-            <td class="clr-text-left">{{ exception.tijdslot.vanaf }} - {{ exception.tijdslot.tot }}</td>
-            <td class="clr-text-left">{{ exception.exception }}</td>
+        @for (exception of exceptions(); track exception) {
+          <tr class="ds-row">
+            <td class="ds-cell">{{ exception.tijdslot.datum }}</td>
+            <td class="ds-cell">{{ exception.tijdslot.vanaf }} - {{ exception.tijdslot.tot }}</td>
+            <td class="ds-cell">{{ exception.exception }}</td>
           </tr>
         }
       </tbody>
@@ -47,20 +45,12 @@ import { ColonBulkAanmakenException } from '@shared/types/colon/colon-bulk-aanma
   `,
   styles: [
     `
-      :host {
-        --clr-table-margin: 0.6rem 0 0 0;
-      }
-
-      .datum {
-        width: 60px;
-      }
-
-      .tijd {
-        width: 70px;
+      .datum-kolom {
+        width: 100px;
       }
     `,
   ],
 })
 export class BulkAanmakenResultatenTabelComponent {
-  @Input({ required: true }) exceptions: ColonBulkAanmakenException[] = []
+  exceptions = input.required<ColonBulkAanmakenException[]>()
 }

@@ -86,7 +86,6 @@ public abstract class MammaFotobesprekingEditPopupPanel extends GenericPanel<Mam
 		add(form);
 
 		List<BeoordelingsEenheid> beoordelingsEenheden = beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getOrganisatie());
-		List<MammaScreeningsEenheid> screeningsEenheden = screeningsEenheidService.getActieveScreeningsEenhedenVoorBeoordelingsEenheden(beoordelingsEenheden);
 		ComponentHelper.addTextField(form, "omschrijving", true, HibernateMagicNumber.L256, String.class, false)
 			.add(new ScreenitUniqueFieldValidator<>(MammaFotobespreking.class, getModelObject().getId(), "omschrijving", false));
 		WebMarkupContainer beContainer = new WebMarkupContainer("beoordelingsEenheidContainer");
@@ -94,18 +93,11 @@ public abstract class MammaFotobesprekingEditPopupPanel extends GenericPanel<Mam
 		ScreenitDropdown<BeoordelingsEenheid> beDropdown = new ScreenitDropdown<>("beoordelingsEenheid", ModelUtil.listRModel(beoordelingsEenheden, false),
 			new ChoiceRenderer<>("naam"));
 		beDropdown.setNullValid(true);
+		beDropdown.setRequired(true);
 		beContainer.setOutputMarkupId(true);
 		beContainer.setOutputMarkupPlaceholderTag(true);
 		beContainer.add(beDropdown);
-		WebMarkupContainer seContainer = new WebMarkupContainer("screeningsEenheidContainer");
-		form.add(seContainer);
-		ScreenitDropdown<MammaScreeningsEenheid> seDropdown = new ScreenitDropdown<>("screeningsEenheid", ModelUtil.listRModel(screeningsEenheden, false),
-			new ChoiceRenderer<>("naam"));
-		seDropdown.setNullValid(true);
-		seContainer.setOutputMarkupId(true);
-		seContainer.setOutputMarkupPlaceholderTag(true);
-		seContainer.add(seDropdown);
-		showBEEnOfSE(beContainer, seContainer, model.getObject());
+		showBE(beContainer, model.getObject());
 		ComponentHelper.addDropDownChoice(form, "type", true, Arrays.asList(MammaFotobesprekingType.values()), false).add(new AjaxFormComponentUpdatingBehavior("change")
 		{
 
@@ -113,8 +105,8 @@ public abstract class MammaFotobesprekingEditPopupPanel extends GenericPanel<Mam
 			protected void onUpdate(AjaxRequestTarget target)
 			{
 				MammaFotobespreking fotobespreking = form.getModelObject();
-				showBEEnOfSE(beContainer, seContainer, fotobespreking);
-				target.add(beContainer, seContainer);
+				showBE(beContainer, fotobespreking);
+				target.add(beContainer);
 			}
 
 		});
@@ -135,14 +127,9 @@ public abstract class MammaFotobesprekingEditPopupPanel extends GenericPanel<Mam
 				super.onSubmit(target);
 
 				MammaFotobespreking fotobespreking = MammaFotobesprekingEditPopupPanel.this.getModelObject();
-				if (fotobespreking.getBeoordelingsEenheid() == null && fotobespreking.getScreeningsEenheid() == null)
+				if (fotobespreking.getBeoordelingsEenheid() == null && fotobespreking.getType() == MammaFotobesprekingType.MAATSCHAP)
 				{
 					error(getString("niets.gekozen"));
-					return;
-				}
-				else if (fotobespreking.getBeoordelingsEenheid() != null && fotobespreking.getScreeningsEenheid() != null)
-				{
-					error(getString("beide.gekozen"));
 					return;
 				}
 				File file = null;
@@ -186,26 +173,20 @@ public abstract class MammaFotobesprekingEditPopupPanel extends GenericPanel<Mam
 		form.add(opslaan);
 	}
 
-	private void showBEEnOfSE(WebMarkupContainer beContainer, WebMarkupContainer seContainer, MammaFotobespreking fotobespreking)
+	private void showBE(WebMarkupContainer beContainer, MammaFotobespreking fotobespreking)
 	{
 		beContainer.setVisible(false);
-		seContainer.setVisible(false);
 		if (fotobespreking.getType() != null)
 		{
 			switch (fotobespreking.getType())
 			{
 			case INDIVIDUELE_TOETSING_INSTELTECHNIEK:
 			case TEAM_TOETSING_INSTELTECHNIEK:
+			case RADIOLOOG_MMBER:
 				fotobespreking.setBeoordelingsEenheid(null);
-				seContainer.setVisible(true);
 				break;
 			case MAATSCHAP:
-				fotobespreking.setScreeningsEenheid(null);
 				beContainer.setVisible(true);
-				break;
-			case RADIOLOOG_MMBER:
-				beContainer.setVisible(true);
-				seContainer.setVisible(true);
 				break;
 			default:
 				break;

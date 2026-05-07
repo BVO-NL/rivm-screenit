@@ -30,7 +30,7 @@ import lombok.Setter;
 @Setter
 public class EnvironmentData
 {
-	private String module;
+	private Long fotobesprekingId;
 
 	private String session;
 }

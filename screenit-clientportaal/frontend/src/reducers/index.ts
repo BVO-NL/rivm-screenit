@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import {combineReducers} from "redux"
-import mammaDossierReducer from "./MammaDossierReducer"
+import mammaDossierReducer from "./mamma/MammaDossierReducer"
 import PersoonReducer from "./PersoonReducer"
 import LandingOverzichtReducer from "./LandingOverzichtReducer"
 import {CLEAR_STATE, RootActions} from "../actions/RootAction"
@@ -32,6 +32,12 @@ import ToastsReducer from "./ToastsReducer"
 import ContactActiesReducer from "./ContactActiesReducer"
 import EnvironmentInfoReducer from "./EnvironmentInfoReducer"
 import SpinnerCounterReducer from "./SpinnerCounterReducer"
+import type {Reducer} from "redux"
+import type {OpenstaandeUitnodiging} from "../datatypes/uitnodiging/OpenstaandeUitnodiging"
+import {SET_OPENSTAANDE_UITNODIGINGEN} from "../actions/MammaDossierAction"
+
+import mammaAfspraakReducer from "./mamma/MammaAfspraakReducer"
+import openstaandeUitnodigingenReducer from "./OpenstaandeUitnodigingenReducer"
 
 const cpReducers = combineReducers({
 	authenticatie: AuthenticatieReducer,
@@ -43,6 +49,8 @@ const cpReducers = combineReducers({
 		laatsteBezwaarMoment: BezwaarReducer,
 		mammaDossier: mammaDossierReducer,
 		persoon: PersoonReducer,
+		openstaandeUitnodigingen: openstaandeUitnodigingenReducer,
+		mammaAfspraak: mammaAfspraakReducer,
 	}),
 	landingOverzicht: LandingOverzichtReducer,
 	toasts: ToastsReducer,

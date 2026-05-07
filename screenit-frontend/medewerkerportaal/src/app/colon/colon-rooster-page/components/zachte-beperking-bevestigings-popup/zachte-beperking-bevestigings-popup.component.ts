@@ -22,10 +22,11 @@ import { Component, inject } from '@angular/core'
 
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
+import { DsButtonComponent } from '@topicus-rgp-ds/web'
 
 @Component({
   selector: 'app-zachte-beperking-bevestigings-popup',
-  imports: [BaseDialogComponent],
+  imports: [BaseDialogComponent, DsButtonComponent],
   template: `
     <app-base-dialog titel="Bevestiging">
       <div body class="body">
@@ -34,16 +35,16 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
         }
         <p>Wilt u doorgaan?</p>
       </div>
-      <div buttons>
-        <button type="button" class="btn" (click)="handleNo()">Nee</button>
-        <button type="button" class="btn btn-primary" (click)="handleYes()">Ja</button>
+      <div buttons class="btn-group">
+        <button ds-button-secondary data-testid="button_zachte_beperking_nee" (click)="handleNo()">Nee</button>
+        <button ds-button-primary data-testid="button_zachte_beperking_ja" (click)="handleYes()">Ja</button>
       </div>
     </app-base-dialog>
   `,
 })
 export class ZachteBeperkingBevestigingsPopupComponent {
-  private dialogRef: DialogRef<boolean> = inject(DialogRef)
   dialogData: { messages: string[] } = inject(DIALOG_DATA)
+  private dialogRef: DialogRef<boolean> = inject(DialogRef)
 
   handleYes() {
     this.dialogRef.close(true)

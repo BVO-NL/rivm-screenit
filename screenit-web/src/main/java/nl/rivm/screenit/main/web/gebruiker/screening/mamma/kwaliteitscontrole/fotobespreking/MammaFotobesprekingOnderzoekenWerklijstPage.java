@@ -28,7 +28,6 @@ import java.util.Map;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.model.mamma.beoordeling.MammaFotobesprekingOnderzoekenWerklijstZoekObject;
-import nl.rivm.screenit.main.service.mamma.MammaBeoordelingService;
 import nl.rivm.screenit.main.service.mamma.MammaFotobesprekingService;
 import nl.rivm.screenit.main.service.mamma.MammaKwaliteitscontroleService;
 import nl.rivm.screenit.main.web.ScreenitSession;
@@ -63,9 +62,7 @@ import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid_;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.mamma.enums.MammaFotobesprekingOnderzoekStatus;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
-import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
 
@@ -96,23 +93,13 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobesprekingBasePage
 {
-
-	static final String SESSION_KEY = "fotobespreking";
-
-	@SpringBean
-	private MammaBeoordelingService beoordelingService;
-
-	@SpringBean
-	private MammaBaseBeoordelingService baseBeoordelingService;
+	public static final String SESSION_KEY = "fotobespreking";
 
 	@SpringBean
 	private MammaKwaliteitscontroleService kwaliteitscontroleService;
 
 	@SpringBean
 	private MammaFotobesprekingService fotobesprekingService;
-
-	@SpringBean
-	private HibernateService hibernateService;
 
 	private final IModel<MammaFotobesprekingOnderzoekenWerklijstZoekObject> zoekObjectModel;
 
@@ -129,6 +116,7 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 			throw new IllegalStateException("Zoekobject moet gevuld zijn met " + SESSION_KEY);
 		}
 		addOnderzoekToevoegenButton();
+		addOnderzoekenToevoegenButton();
 		wijzigIDS7Role(getFotobespreking().getRole());
 	}
 
@@ -275,9 +263,27 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 				openOnderzoekToevoegenPopupPanel(target);
 			}
 
-		}.setVisible(!ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID)
+		}.setVisible(magBewerken()));
+	}
+
+	private void addOnderzoekenToevoegenButton()
+	{
+		add(new IndicatingAjaxLink<Void>("onderzoekenToevoegen")
+		{
+			@Override
+			public void onClick(AjaxRequestTarget target)
+			{
+				ScreenitSession.get().setZoekObject(MammaFotobesprekingOnderzoekenAngularPage.SESSION_KEY, zoekObjectModel);
+				setResponsePage(MammaFotobesprekingOnderzoekenAngularPage.class);
+			}
+		}.setVisible(magBewerken()));
+	}
+
+	private boolean magBewerken()
+	{
+		return !ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.BEOORDELINGSEENHEID)
 			&& !ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.KWALITEITSPLATFORM)
-			&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_FOTOBESPREKING, Actie.TOEVOEGEN)));
+			&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_FOTOBESPREKING, Actie.TOEVOEGEN);
 	}
 
 	private void addFotobesprekingAfrondenButton()

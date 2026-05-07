@@ -24,7 +24,7 @@ import { forkJoin, map, Observable, of, Subject, switchMap, take, tap } from 'rx
 import { ApiService } from '@shared/services/api/api.service'
 import { ColonAfspraakslot } from '@shared/types/colon/colon-afspraakslot'
 import { ColonKamer } from '@shared/types/colon/colon-kamer'
-import { convertNLDateStringToDateString, formatDate, formatDateAsISO, formatNLDate, formatTimeAsISO, parseDate } from '@shared/utils/date-utils'
+import { formatDate, formatDateAsISO, formatNLDate, formatTimeAsISO, parseDate } from '@shared/utils/date-utils'
 import { ColonBlokkade } from '@shared/types/colon/colon-blokkade'
 import { ColonRoosterBeperkingenDto } from '@shared/types/colon/colon-rooster-beperkingen-dto'
 import { ColonRoosterInstellingen, ColonRoosterInstellingenDto } from '@shared/types/colon/colon-rooster-instellingen'
@@ -106,7 +106,7 @@ export class RoosterService extends BaseService<RoosterState> {
   }
 
   createAfspraakslots(afspraakslot: NotPersisted<ColonAfspraakslot>, alleenValidatie: boolean): Observable<unknown> {
-    return this.handleTijdslotChangeResponse(this.api.post<ColonAfspraakslot>(this.roosterAfspraakslotBaseUrl, { ...afspraakslot, alleenValidatie }), 'toevoegen')
+    return this.handleTijdslotChangeResponse(this.api.post<ColonAfspraakslot>(this.roosterAfspraakslotBaseUrl, { ...afspraakslot, alleenValidatie }), 'toevoegen', alleenValidatie)
   }
 
   updateAfspraakslot(afspraakslot: ColonAfspraakslot, alleenValidatie: boolean): Observable<unknown> {
@@ -116,6 +116,7 @@ export class RoosterService extends BaseService<RoosterState> {
         alleenValidatie,
       }),
       'aanpassen',
+      alleenValidatie,
     )
   }
 
@@ -146,8 +147,8 @@ export class RoosterService extends BaseService<RoosterState> {
 
   searchTijdslots(filter: ColonTijdslotFilter, type: string): Observable<ColonTijdslot[]> {
     const params: Record<string, string> = {
-      startDatum: convertNLDateStringToDateString(filter.startDatum),
-      eindDatum: convertNLDateStringToDateString(filter.eindDatum),
+      startDatum: formatDate(filter.startDatum),
+      eindDatum: formatDate(filter.eindDatum),
       startTijd: filter.startTijd,
       eindTijd: filter.eindTijd,
       dagen: filter.dagen.join(','),
@@ -260,6 +261,7 @@ export class RoosterService extends BaseService<RoosterState> {
     return this.handleTijdslotChangeResponse(
       this.api.del(`${this.roosterAfspraakslotBaseUrl}/${afspraakslotIds.join(',')}?alleenValidatie=${alleenValidatie}&bulk=true`),
       'verwijderen',
+      alleenValidatie,
     )
   }
 
@@ -267,13 +269,14 @@ export class RoosterService extends BaseService<RoosterState> {
     return this.handleTijdslotChangeResponse(this.api.del(`${this.roosterBlokkadeBaseUrl}/${blokkadeIds.join(',')}?alleenValidatie=${alleenValidatie}&bulk=true`))
   }
 
-  private handleTijdslotChangeResponse(response: Observable<unknown>, actie: 'toevoegen' | 'aanpassen' | 'verwijderen' | null = null): Observable<unknown> {
+  private handleTijdslotChangeResponse(response: Observable<unknown>, actie: 'toevoegen' | 'aanpassen' | 'verwijderen' | null = null, alleenValidatie = false): Observable<unknown> {
     return response.pipe(
       switchMap((response) => {
         if (
-          (actie === 'toevoegen' && this.heeftGeenCapaciteitBinnenSignaleringstermijn) ||
-          (actie === 'verwijderen' && !this.heeftGeenCapaciteitBinnenSignaleringstermijn) ||
-          actie === 'aanpassen'
+          !alleenValidatie &&
+          ((actie === 'toevoegen' && this.heeftGeenCapaciteitBinnenSignaleringstermijn) ||
+            (actie === 'verwijderen' && !this.heeftGeenCapaciteitBinnenSignaleringstermijn) ||
+            actie === 'aanpassen')
         ) {
           return this.fetchSignaleringstermijn()
         }

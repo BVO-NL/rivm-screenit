@@ -33,6 +33,7 @@ import HeraanmeldenIcon from "../../scss/media/icons_toptaken/HeraanmeldenIcon/H
 import FitAanvragenIcon from "../../scss/media/icons_toptaken/FitAanvragenIcon/FitAanvragenIcon"
 import AfspraakIcon from "../../scss/media/icons_toptaken/AfspraakIcon/AfspraakIcon"
 import HuisartsIcon from "../../scss/media/icons_toptaken/HuisartsIcon/HuisartsIcon"
+import {selectPersoon} from "../../selectors/ClientSelectors"
 
 export type ColonTopTakenComponentProps = {
 	className?: string
@@ -45,7 +46,7 @@ const ColonTopTakenComponent = (props: ColonTopTakenComponentProps) => {
 	const dispatch = useThunkDispatch()
 	const huisartsVorigeRondeIsBekend = useSelector((state: State) => !!state.client.colonDossier.huisartsVorigeRonde)
 	const huisartsHuidigeRondeIsBekend = useSelector((state: State) => !!state.client.colonDossier.huisartsHuidigeRonde)
-	const persoon = useSelector((state: State) => state.client.persoon)
+	const persoon = useSelector(selectPersoon)
 	const magNieuweAfspraakMaken = useSelector((state: State) =>
 		props.beschikbareActies.includes(ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN)
 		&& (state.client.colonDossier.intakeAfspraak?.afspraakAfgezegd

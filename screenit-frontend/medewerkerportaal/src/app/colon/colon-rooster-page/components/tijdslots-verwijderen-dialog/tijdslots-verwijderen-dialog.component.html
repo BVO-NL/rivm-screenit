@@ -18,31 +18,69 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog (sluiten)="cancel()" class="tijdslots-verwijderen-modal" size="xl" titel="{{ typeTijdslot.label }} verwijderen">
-  <div body class="clr-display-flex clr-flex-column">
+<app-base-dialog class="tijdslots-verwijderen-modal" size="xl" titel="{{ typeTijdslot.label }} verwijderen">
+  <div body class="display-flex flex-column">
     <app-tijdslots-verwijderen-filter (filter)="filter($event)"/>
 
-    <clr-datagrid #datagridEl [(clrDgSelected)]="selectedTijdslots">
-      <clr-dg-column>Kamer</clr-dg-column>
-      <clr-dg-column>Datum</clr-dg-column>
-      <clr-dg-column>Starttijd</clr-dg-column>
-      <clr-dg-column>Eindtijd</clr-dg-column>
-      <clr-dg-row *clrDgItems="let tijdslot of tijdslots" [clrDgItem]="tijdslot">
-        <clr-dg-cell>{{ tijdslot.kamer }}</clr-dg-cell>
-        <clr-dg-cell>{{ tijdslot.vanaf | date: NL_DATE_FORMAT }}</clr-dg-cell>
-        <clr-dg-cell>{{ tijdslot.vanaf | date: TIME_FORMAT }}</clr-dg-cell>
-        <clr-dg-cell>{{ tijdslot.tot | date: TIME_FORMAT }}</clr-dg-cell>
-      </clr-dg-row>
-      <clr-dg-footer>
-        <clr-dg-pagination #pagination [clrDgPageSize]="500" [(clrDgPage)]="huidigePagina" (clrDgPageChange)="clearSelection()">
-          <clr-dg-page-size [clrPageSizeOptions]="[10, 20, 50, 100, 500]">{{ typeTijdslot.label }} per pagina</clr-dg-page-size>
-          {{ pagination.firstItem + 1 }} - {{ pagination.lastItem + 1 }} van {{ pagination.totalItems }} {{ typeTijdslot.value }}
-        </clr-dg-pagination>
-      </clr-dg-footer>
-    </clr-datagrid>
+    <div class="resultaten-tabel">
+      <table [dataSource]="tijdslots()" [fullWidth]="true" ds-table matSort
+             matSortActive="kamer"
+             matSortDirection="asc"
+             [hoverable]="true">
+        <ng-container dsColumnDef="selection">
+          <th *dsHeaderCellDef ds-header-cell>
+            <ds-checkbox
+              [ngModel]="allCheckboxesSelected()"
+              [indeterminate]="anyCheckboxSelected()"
+              (checkboxChanged)="toggleAll()"
+            />
+          </th>
+          <td *dsCellDef="let row" ds-cell>
+            <ds-checkbox
+              (click)="$event.stopPropagation()"
+              (change)="$event ? selectRow(row) : null"
+              [ngModel]="rowIsSelected(row)"
+            />
+          </td>
+        </ng-container>
+        <ng-container dsColumnDef="kamer">
+          <th *dsHeaderCellDef ds-header-cell>Kamer</th>
+          <td *dsCellDef="let element" ds-cell>{{ element.kamer }}</td>
+        </ng-container>
+
+        <ng-container dsColumnDef="datum">
+          <th ds-header-cell *dsHeaderCellDef> Datum</th>
+          <td ds-cell *dsCellDef="let element"> {{ element.vanaf | date: NL_DATE_FORMAT }}</td>
+        </ng-container>
+
+        <ng-container dsColumnDef="starttijd">
+          <th ds-header-cell *dsHeaderCellDef> Starttijd</th>
+          <td ds-cell *dsCellDef="let element"> {{ element.vanaf | date: TIME_FORMAT }}</td>
+        </ng-container>
+
+        <ng-container dsColumnDef="eindtijd">
+          <th ds-header-cell *dsHeaderCellDef> Eindtijd</th>
+          <td ds-cell *dsCellDef="let element"> {{ element.tot | date: TIME_FORMAT }}</td>
+        </ng-container>
+
+        <tr ds-header-row *dsHeaderRowDef="displayedColumns"></tr>
+        <tr *dsRowDef="let row; columns: displayedColumns" [ds-selectable-row]="rowIsSelected(row)" (click)="selectRow(row)"></tr>
+        <ng-template dsNoDataRow>
+          <tr class="ds-row">
+            <td colspan="4" class="ds-cell">Er zijn geen {{ typeTijdslot.label | lowercase }} gevonden</td>
+          </tr>
+        </ng-template>
+      </table>
+      <ds-paginator [totalNumberOfItems]="alleTijdslots().length"
+                    [pageSize]="pageSize"
+                    [pageSizeOptions]="[10, 20, 50, 100, 500]"
+                    (pageChanged)="handlePageChange($event)"
+                    pageSizeSelectAppendTo="ds-footer"
+      />
+    </div>
   </div>
   <div buttons class="btn-group">
-    <button class="btn" (click)="cancel()">Annuleren</button>
-    <button (click)="verwijderen()" [disabled]="selectedTijdslots.length === 0" class="btn btn-danger">Verwijderen</button>
+    <button ds-button-secondary (click)="cancel()">Annuleren</button>
+    <button (click)="verwijderen()" [disabled]="selection.selected.length === 0" ds-button-delete-primary>Verwijderen</button>
   </div>
 </app-base-dialog>

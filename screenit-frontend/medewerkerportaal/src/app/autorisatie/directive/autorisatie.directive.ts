@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Directive, inject, Input, OnInit, TemplateRef, ViewContainerRef } from '@angular/core'
+import { Directive, inject, input, OnInit, TemplateRef, ViewContainerRef } from '@angular/core'
 import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { SecurityConstraint } from '@shared/types/autorisatie/security-constraint'
 
@@ -31,10 +31,10 @@ export class AutorisatieDirective implements OnInit {
   private templateRef = inject(TemplateRef)
   private autorisatieService = inject(AutorisatieService)
 
-  @Input({ required: true }) appAutorisatie: SecurityConstraint | undefined
+  appAutorisatie = input.required<SecurityConstraint>()
 
   ngOnInit() {
-    if (this.appAutorisatie && this.autorisatieService.isToegestaan(this.appAutorisatie)) {
+    if (this.appAutorisatie && this.autorisatieService.isToegestaan(this.appAutorisatie())) {
       if (this.viewContainer.length === 0) {
         this.viewContainer.createEmbeddedView(this.templateRef)
       }

@@ -123,11 +123,10 @@ export const HuisartsBevestigingsPopup = (props: HuisartsBevestigingsPopupProps)
 					</NavLink>
 					{HuisartsBevestigingsPopupType.DOORGEVEN === props.type && props.huisarts &&
 						<NavLink onClick={() => {
-									   datadogService.stuurEvent("GeenHuisartsDoorgeven", AnalyticsCategorie.MAMMA_AFSPRAAK)
-									   if (props.onTertiaireKnop) {
-										   props.onTertiaireKnop()
-									   }
-								   }} className={styles.andereHuisarts}>
+							if (props.onTertiaireKnop) {
+								props.onTertiaireKnop()
+							}
+						}} className={styles.andereHuisarts}>
 							{properties.doorgeven.bekend.button_annuleren}
 						</NavLink>}
 				</div>
@@ -180,8 +179,6 @@ export const HuisartsBevestigingsPopup = (props: HuisartsBevestigingsPopupProps)
 			case HuisartsBevestigingsPopupType.DOORGEVEN:
 				if (props.huisarts) {
 					datadogService.stuurEvent("HuisartsBevestigd", AnalyticsCategorie.MAMMA_HUISARTS)
-				} else {
-					datadogService.stuurEvent("HuisartsDoorgeven", AnalyticsCategorie.MAMMA_AFSPRAAK)
 				}
 				break
 		}

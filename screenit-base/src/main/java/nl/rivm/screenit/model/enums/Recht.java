@@ -566,7 +566,7 @@ public enum Recht implements INaam
 		"Bezwaar BRP",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA },
 		new ToegangLevel[] { ToegangLevel.LANDELIJK },
-		Actie.INZIEN, Actie.AANPASSEN),
+		Actie.INZIEN, Actie.AANPASSEN, Actie.VERWIJDEREN),
 
 	MEDEWERKER_KOPPELRESULTATEN_KANKERREGISTRATIE(
 		"Upload koppelbestand Kankerregistratie",

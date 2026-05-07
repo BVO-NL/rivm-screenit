@@ -21,8 +21,8 @@ package nl.rivm.screenit.clientportaal.exception;
  * =========================LICENSE_END==================================
  */
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -32,13 +32,20 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
+@Slf4j
 public class RestExceptionHandler
 {
-    private static final Logger LOG = LoggerFactory.getLogger(RestExceptionHandler.class);
+	@ExceptionHandler(NotValidException.class)
+	protected ResponseEntity<String> handleNotValidException(NotValidException ex)
+	{
+		LOG.warn("Validatiefout: {}", ex.getMessage());
+		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(ex.getMessage());
+	}
 
-    @ExceptionHandler(Exception.class)
-    protected ResponseEntity<Object> handleAllExceptions(Exception ex) {
-        LOG.error("Exception tegengehouden vanuit een controller: ", ex);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    }
+	@ExceptionHandler(Exception.class)
+	protected ResponseEntity<Object> handleAllExceptions(Exception ex)
+	{
+		LOG.error("Exception tegengehouden vanuit een controller: ", ex);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	}
 }

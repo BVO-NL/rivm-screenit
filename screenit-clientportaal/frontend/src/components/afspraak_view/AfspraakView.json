@@ -1,0 +1,9 @@
+{
+  "headers": {
+    "datumtijd": "Datum en tijd",
+    "locatie": "Locatie"
+  },
+  "button": {
+    "wijzigen": "Wijzigen"
+  }
+}

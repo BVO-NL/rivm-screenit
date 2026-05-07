@@ -24,6 +24,7 @@ package nl.rivm.screenit.util;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.Client;
@@ -273,4 +274,12 @@ public class BriefUtil
 		brief.setBriefType(type);
 	}
 
+	public static boolean isVerstuurd(ClientBrief<?, ?, ?> brief)
+	{
+		return Optional.ofNullable(brief)
+			.map(ClientBrief::getMergedBrieven)
+			.filter(MergedBrieven::getGeprint)
+			.filter(mergedBrieven -> mergedBrieven.getPrintDatum() != null)
+			.isPresent();
+	}
 }

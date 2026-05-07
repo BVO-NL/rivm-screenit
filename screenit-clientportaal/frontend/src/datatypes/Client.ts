@@ -21,9 +21,11 @@
 import {BezwaarMoment} from "./Bezwaar"
 import {Persoon} from "./Persoon"
 import {ContactActiesDto} from "./ContactActiesDto"
-import {MammaDossier} from "./MammaDossier"
+import {MammaDossier} from "./mamma/MammaDossier"
 import {CervixDossier} from "./CervixDossier"
-import {ColonDossier} from "./ColonDossier"
+import {OpenstaandeUitnodiging} from "./uitnodiging/OpenstaandeUitnodiging"
+import {ColonDossier} from "./colon/ColonDossier"
+import {MammaAfspraak} from "./mamma/MammaAfspraak"
 
 export type Client = {
 	beschikbareActies: ContactActiesDto,
@@ -32,4 +34,6 @@ export type Client = {
 	laatsteBezwaarMoment: BezwaarMoment,
 	mammaDossier: MammaDossier,
 	persoon: Persoon,
+	mammaAfspraak: MammaAfspraak
+	openstaandeUitnodigingen: OpenstaandeUitnodiging[]
 }

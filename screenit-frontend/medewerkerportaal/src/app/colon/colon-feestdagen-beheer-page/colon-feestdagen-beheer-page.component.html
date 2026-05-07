@@ -18,32 +18,46 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<div class="clr-display-flex clr-justify-content-between clr-align-items-center">
-  <h2>Roosterbeperkingen voor feestdagen</h2>
-  <button (click)="openFeestdagDialog()" *appAutorisatie="toevoegenConstraint" class="btn btn-primary header-btn">
-    <cds-icon shape="plus"></cds-icon>
-    Feestdag
-  </button>
-</div>
-<clr-datagrid class="feestdag-grid">
-  <clr-dg-column clrDgField="naam">Naam</clr-dg-column>
-  <clr-dg-column clrDgField="datum">Datum</clr-dg-column>
-  <clr-dg-column clrDgField="beperking">Beperking</clr-dg-column>
-  <clr-dg-column class="btn-column"></clr-dg-column>
+<app-page titel="Roosterbeperkingen voor feestdagen">
+  <ng-container header-actions>
+    <button ds-button-primary (click)="openFeestdagDialog()" *appAutorisatie="toevoegenConstraint">
+      <ds-icon [icon]="faAddIcon"></ds-icon>
+      Feestdag
+    </button>
+  </ng-container>
+  <table [dataSource]="dataSource()" [fullWidth]="true" ds-table matSort
+         matSortActive="datum"
+         matSortDirection="asc">
+    <ng-container dsColumnDef="naam">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="naam">Naam</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.naam }}</td>
+    </ng-container>
 
-  @if (feestdagen$ | async; as feestdagen) {
-    <clr-dg-row *clrDgItems="let feestdag of feestdagen">
-      <clr-dg-cell>{{ feestdag.naam }}</clr-dg-cell>
-      <clr-dg-cell>{{ feestdag.datum | date: 'dd-MM-yyyy' }}</clr-dg-cell>
-      <clr-dg-cell>{{ feestdag.beperking | titlecase }}</clr-dg-cell>
-      <clr-dg-cell>
-        <button class="btn btn-sm btn-link btn-icon" (click)="openFeestdagDialog(feestdag)" *appAutorisatie="bewerkenConstraint">
-          <cds-icon shape="pencil"></cds-icon>
+    <ng-container dsColumnDef="datum">
+      <th ds-header-cell *dsHeaderCellDef mat-sort-header="datum"> Datum</th>
+      <td ds-cell *dsCellDef="let element"> {{ element.datum | date: NL_DATE_FORMAT }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="beperking">
+      <th ds-header-cell *dsHeaderCellDef mat-sort-header="beperking"> Beperking</th>
+      <td ds-cell *dsCellDef="let element"> {{ element.beperking | titlecase }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="acties">
+      <th ds-header-cell *dsHeaderCellDef></th>
+      <td ds-cell *dsCellDef="let feestdag">
+        <button (click)="openFeestdagDialog(feestdag)" *appAutorisatie="bewerkenConstraint" ds-button-icon
+                ds-button-tertiary>
+          <ds-icon [icon]="faEditIcon"/>
         </button>
-        <button class="btn btn-sm btn-link btn-icon" (click)="confirmDeleteFeestdag(feestdag)" *appAutorisatie="verwijderenConstraint">
-          <cds-icon shape="trash"></cds-icon>
+        <button (click)="confirmDeleteFeestdag(feestdag)" *appAutorisatie="verwijderenConstraint" ds-button-icon
+                ds-button-tertiary>
+          <ds-icon [icon]="faDeleteIcon"/>
         </button>
-      </clr-dg-cell>
-    </clr-dg-row>
-  }
-</clr-datagrid>
+      </td>
+    </ng-container>
+
+    <tr ds-header-row *dsHeaderRowDef="displayedColumns"></tr>
+    <tr ds-row *dsRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</app-page>

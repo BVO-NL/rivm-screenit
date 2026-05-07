@@ -21,7 +21,6 @@
 import {useThunkDispatch} from "../../.."
 import {useNavigate} from "react-router"
 import {useSelector} from "react-redux"
-import {State} from "../../../datatypes/State"
 import * as Yup from "yup"
 import {getString} from "../../../utils/TekstPropertyUtil"
 import properties from "./EmailWijzigenPage.json"
@@ -36,11 +35,12 @@ import styles from "./EmailWijzigenPage.module.scss"
 import {EmailDto} from "../../../datatypes/mail/EmailDto"
 import datadogService from "../../../services/DatadogService"
 import {AnalyticsCategorie} from "../../../datatypes/AnalyticsCategorie"
+import {selectPersoon} from "../../../selectors/ClientSelectors"
 
 const EmailWijzigenPage = () => {
 	const dispatch = useThunkDispatch()
 	const navigate = useNavigate()
-	const persoon = useSelector((state: State) => state.client.persoon)
+	const persoon = useSelector(selectPersoon)
 
 	const initialValues = {
 		emailadres: persoon.emailadres || "",

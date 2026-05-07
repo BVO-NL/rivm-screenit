@@ -35,7 +35,7 @@ import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportage;
 import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageGewijzigdGebiedEntry;
 import nl.rivm.screenit.service.BaseProjectService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.colon.ColonUitnodigingService;
+import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.batch.core.JobParameters;
@@ -64,7 +64,7 @@ public class ClientSelectieMetCapaciteitItemReader extends AbstractClientSelecti
 	private BaseProjectService projectService;
 
 	@Autowired
-	private ColonUitnodigingService uitnodigingService;
+	private ColonBaseUitnodigingService uitnodigingService;
 
 	@Autowired
 	private ICurrentDateSupplier currentDateSupplier;

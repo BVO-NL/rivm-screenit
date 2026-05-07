@@ -44,6 +44,7 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Dossier_;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
@@ -66,6 +67,7 @@ import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
+import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekRedenFotobespreking;
 import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekStatus;
 import nl.rivm.screenit.model.mamma.enums.OnvolledigOnderzoekOption;
 import nl.rivm.screenit.specification.ExtendedSpecification;
@@ -126,38 +128,25 @@ public class MammaOnderzoekSpecification
 			var rondeJoin = screeningRondeJoin(r);
 			var dossierJoin = join(rondeJoin, MammaScreeningRonde_.dossier);
 
-			return cb.or(
-				cb.and(
-					cb.greaterThan(dossierJoin.get(Dossier_.datumLaatstGecontroleerdeSignalering), DateUtil.toUtilDate(signalerenVanaf)),
-					cb.greaterThan(truncate("day", r.get(MammaOnderzoek_.creatieDatum), cb),
-						truncate("day", dossierJoin.get(Dossier_.datumLaatstGecontroleerdeSignalering), cb))
-				),
-				cb.and(
-					cb.or(
-						cb.lessThanOrEqualTo(truncate("day", dossierJoin.get(Dossier_.datumLaatstGecontroleerdeSignalering), cb), DateUtil.toUtilDate(signalerenVanaf)),
-						cb.isNull(dossierJoin.get(Dossier_.datumLaatstGecontroleerdeSignalering))
-					),
-					cb.greaterThan(r.get(MammaOnderzoek_.creatieDatum), DateUtil.toUtilDate(signalerenVanaf))
-				)
-			);
+			return cb.or(cb.and(cb.greaterThan(dossierJoin.get(Dossier_.datumLaatstGecontroleerdeSignalering), DateUtil.toUtilDate(signalerenVanaf)),
+					cb.greaterThan(truncate("day", r.get(MammaOnderzoek_.creatieDatum), cb), truncate("day", dossierJoin.get(Dossier_.datumLaatstGecontroleerdeSignalering), cb))),
+				cb.and(cb.or(cb.lessThanOrEqualTo(truncate("day", dossierJoin.get(Dossier_.datumLaatstGecontroleerdeSignalering), cb), DateUtil.toUtilDate(signalerenVanaf)),
+						cb.isNull(dossierJoin.get(Dossier_.datumLaatstGecontroleerdeSignalering))),
+					cb.greaterThan(r.get(MammaOnderzoek_.creatieDatum), DateUtil.toUtilDate(signalerenVanaf))));
 		};
 
 	}
 
 	public static Specification<MammaOnderzoek> heeftOnderzoekStatusNietOnderbroken(LocalDate minimaleSignaleringsDatum)
 	{
-		return (r, q, cb) -> cb.and(
-			cb.notEqual(r.get(MammaOnderzoek_.status), MammaOnderzoekStatus.ONDERBROKEN),
-			cb.lessThanOrEqualTo(truncate("day", r.get(MammaOnderzoek_.creatieDatum), cb), DateUtil.toUtilDate(minimaleSignaleringsDatum))
-		);
+		return (r, q, cb) -> cb.and(cb.notEqual(r.get(MammaOnderzoek_.status), MammaOnderzoekStatus.ONDERBROKEN),
+			cb.lessThanOrEqualTo(truncate("day", r.get(MammaOnderzoek_.creatieDatum), cb), DateUtil.toUtilDate(minimaleSignaleringsDatum)));
 	}
 
 	public static Specification<MammaOnderzoek> heeftOnderzoekStatusOnderbroken(LocalDate minimaleSignaleringsDatumOnderbrokenOnderzoek)
 	{
-		return (r, q, cb) -> cb.and(
-			cb.equal(r.get(MammaOnderzoek_.status), MammaOnderzoekStatus.ONDERBROKEN),
-			cb.lessThanOrEqualTo(truncate("day", r.get(MammaOnderzoek_.creatieDatum), cb), DateUtil.toUtilDate(minimaleSignaleringsDatumOnderbrokenOnderzoek))
-		);
+		return (r, q, cb) -> cb.and(cb.equal(r.get(MammaOnderzoek_.status), MammaOnderzoekStatus.ONDERBROKEN),
+			cb.lessThanOrEqualTo(truncate("day", r.get(MammaOnderzoek_.creatieDatum), cb), DateUtil.toUtilDate(minimaleSignaleringsDatumOnderbrokenOnderzoek)));
 	}
 
 	public static ExtendedSpecification<MammaOnderzoek> heeftOnvolledigOnderzoek(OnvolledigOnderzoekOption onvolledigOnderzoek)
@@ -190,10 +179,7 @@ public class MammaOnderzoekSpecification
 
 	public static Specification<MammaOnderzoek> heeftOnderzoekZonderUitslagBrieven()
 	{
-		return (r, q, cb) -> cb.or(
-			cb.and(heeftGeenBrievenBijOnderzoek().toPredicate(r, q, cb)),
-			heeftOnderzoekNaLaatsteUitslagBrief().toPredicate(r, q, cb)
-		);
+		return (r, q, cb) -> cb.or(cb.and(heeftGeenBrievenBijOnderzoek().toPredicate(r, q, cb)), heeftOnderzoekNaLaatsteUitslagBrief().toPredicate(r, q, cb));
 	}
 
 	public static Specification<MammaOnderzoek> heeftActieveClient()
@@ -251,8 +237,7 @@ public class MammaOnderzoekSpecification
 			var rondeJoin = join(uitnodigingJoin, MammaUitnodiging_.screeningRonde);
 			var dossierJoin = join(rondeJoin, MammaScreeningRonde_.dossier);
 			return cb.and(cb.equal(dossierJoin.get(MammaDossier_.laatsteScreeningRonde), rondeJoin),
-				cb.equal(rondeJoin.get(MammaScreeningRonde_.laatsteUitnodiging), uitnodigingJoin),
-				cb.equal(uitnodigingJoin.get(MammaUitnodiging_.laatsteAfspraak), afspraakJoin));
+				cb.equal(rondeJoin.get(MammaScreeningRonde_.laatsteUitnodiging), uitnodigingJoin), cb.equal(uitnodigingJoin.get(MammaUitnodiging_.laatsteAfspraak), afspraakJoin));
 		};
 	}
 
@@ -274,8 +259,7 @@ public class MammaOnderzoekSpecification
 
 			var subquery = q.subquery(Long.class);
 			var subRoot = subquery.from(MammaBrief.class);
-			subquery.select(subRoot.get(AbstractHibernateObject_.id))
-				.where(maakPredicateVoorBriefSubquery(q, cb, subRoot, rondeJoin));
+			subquery.select(subRoot.get(AbstractHibernateObject_.id)).where(maakPredicateVoorBriefSubquery(q, cb, subRoot, rondeJoin));
 			return cb.not(cb.exists(subquery));
 		};
 	}
@@ -288,8 +272,7 @@ public class MammaOnderzoekSpecification
 
 			var subquery = q.subquery(Date.class);
 			var subRoot = subquery.from(MammaBrief.class);
-			subquery.select(cb.greatest(subRoot.get(Brief_.creatieDatum)))
-				.where(maakPredicateVoorBriefSubquery(q, cb, subRoot, rondeJoin));
+			subquery.select(cb.greatest(subRoot.get(Brief_.creatieDatum))).where(maakPredicateVoorBriefSubquery(q, cb, subRoot, rondeJoin));
 
 			return cb.greaterThan(r.get(MammaOnderzoek_.creatieDatum), subquery);
 		};
@@ -297,10 +280,8 @@ public class MammaOnderzoekSpecification
 
 	private static Predicate maakPredicateVoorBriefSubquery(CriteriaQuery<?> q, CriteriaBuilder cb, Root<MammaBrief> subRoot, Join<MammaUitnodiging, MammaScreeningRonde> rondeJoin)
 	{
-		return cb.and(
-			cb.equal(subRoot.get(MammaBrief_.screeningRonde), rondeJoin),
-			heeftGegenereerdeBriefOfProjectBriefVanType(BriefType.getMammaUitslagBriefTypen()).toPredicate(subRoot, q, cb)
-		);
+		return cb.and(cb.equal(subRoot.get(MammaBrief_.screeningRonde), rondeJoin),
+			heeftGegenereerdeBriefOfProjectBriefVanType(BriefType.getMammaUitslagBriefTypen()).toPredicate(subRoot, q, cb));
 	}
 
 	private static Join<Client, Persoon> persoonJoin(From<?, MammaOnderzoek> r)
@@ -331,18 +312,23 @@ public class MammaOnderzoekSpecification
 			var screeningRondeJoin = screeningRondeJoin(onderzoekJoin);
 			var dossierJoin = join(screeningRondeJoin, MammaScreeningRonde_.dossier);
 
-			subquery.select(dossierJoin).where(
-				cb.and(
-					subqueryRoot.get(MammaMammografie_.afgerondDoor).in(organisatieMedewerkers),
-					cb.equal(subqueryRoot.get(MammaMammografie_.ilmStatus), MammaMammografieIlmStatus.BESCHIKBAAR),
-					valtInPeriode(periode).toPredicate(onderzoekJoin, q, cb)
-				)
-			);
+			subquery.select(dossierJoin).where(cb.and(subqueryRoot.get(MammaMammografie_.afgerondDoor).in(organisatieMedewerkers),
+				cb.equal(subqueryRoot.get(MammaMammografie_.ilmStatus), MammaMammografieIlmStatus.BESCHIKBAAR), valtInPeriode(periode).toPredicate(onderzoekJoin, q, cb)));
 			return cb.in(r.get(Client_.mammaDossier)).value(subquery);
 		};
 	}
 
-	private static ExtendedSpecification<MammaOnderzoek> valtInPeriode(Range<LocalDate> periode)
+	public static ExtendedSpecification<MammaOnderzoek> filterOpCreatieDatumVanaf(LocalDate creatieDatum)
+	{
+		return skipWhenNullExtended(creatieDatum, (r, q, cb) -> cb.greaterThanOrEqualTo(r.get(MammaOnderzoek_.creatieDatum), DateUtil.toUtilDate(creatieDatum)));
+	}
+
+	public static ExtendedSpecification<MammaOnderzoek> filterOpCreatieDatumTotEnMet(LocalDate creatieDatum)
+	{
+		return skipWhenNullExtended(creatieDatum, (r, q, cb) -> cb.lessThanOrEqualTo(r.get(MammaOnderzoek_.creatieDatum), DateUtil.toUtilDate(creatieDatum)));
+	}
+
+	public static ExtendedSpecification<MammaOnderzoek> valtInPeriode(Range<LocalDate> periode)
 	{
 		return bevatLocalDateToDate(periode, o -> o.get(MammaOnderzoek_.creatieDatum));
 	}
@@ -352,10 +338,41 @@ public class MammaOnderzoekSpecification
 		return join(uitnodigingJoin(root), MammaUitnodiging_.screeningRonde);
 	}
 
+	public static ExtendedSpecification<MammaOnderzoek> filterOpAfgerondDoor(Long medewerkerId)
+	{
+		return skipWhenNullExtended(medewerkerId, (r, q, cb) ->
+		{
+			var mammografieJoin = join(r, MammaOnderzoek_.mammografie);
+			var afgerondDoorJoin = join(mammografieJoin, MammaMammografie_.afgerondDoor);
+			var medewerkerJoin = join(afgerondDoorJoin, OrganisatieMedewerker_.medewerker);
+			return cb.equal(medewerkerJoin.get(AbstractHibernateObject_.id), medewerkerId);
+		});
+	}
+
+	public static ExtendedSpecification<MammaOnderzoek> filterBeoordelingseenheidIds(Collection<Long> beoordelingseenheidIds)
+	{
+		return skipWhenEmptyExtended(beoordelingseenheidIds,
+			(r, q, cb) ->
+			{
+				var screeningseenheidJoin = join(r, MammaOnderzoek_.screeningsEenheid);
+				var beoordelingseenheidJoin = join(screeningseenheidJoin, MammaScreeningsEenheid_.beoordelingsEenheid);
+				return beoordelingseenheidJoin.get(AbstractHibernateObject_.id).in(beoordelingseenheidIds);
+			});
+	}
+
+	public static ExtendedSpecification<MammaOnderzoek> filterScreeningseenheidIds(Collection<Long> screeningseenheidIds)
+	{
+		return skipWhenEmptyExtended(screeningseenheidIds, (r, q, cb) -> r.get(MammaOnderzoek_.screeningsEenheid).get(AbstractHibernateObject_.id).in(screeningseenheidIds));
+	}
+
 	private static Join<MammaAfspraak, MammaUitnodiging> uitnodigingJoin(From<?, ? extends MammaOnderzoek> root)
 	{
 		var afspraakJoin = join(root, MammaOnderzoek_.afspraak);
 		return join(afspraakJoin, MammaAfspraak_.uitnodiging);
 	}
 
+	public static ExtendedSpecification<MammaOnderzoek> filterRedenFotobespreking(Collection<MammaOnderzoekRedenFotobespreking> redenen)
+	{
+		return skipWhenEmptyExtended(redenen, (r, q, cb) -> r.get(MammaOnderzoek_.redenFotobespreking).in(redenen));
+	}
 }

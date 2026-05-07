@@ -21,8 +21,8 @@ package nl.rivm.screenit.main.util;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.model.dto.PagineringDto;
-import nl.rivm.screenit.main.model.dto.SortParamDto;
+import nl.rivm.screenit.main.dto.PagineringDto;
+import nl.rivm.screenit.main.dto.SortParamDto;
 
 import org.springframework.data.domain.PageRequest;
 

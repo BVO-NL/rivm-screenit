@@ -47,9 +47,12 @@ export const setOffset = (val: Duration): void => {
 
 export const nu = (): Date => {
 	if (offset !== null) {
-		return add(new Date(), offset)
+		const doel = add(new Date(), offset)
+		const huidigeTijdzoneOffset = new Date().getTimezoneOffset()
+		const doelTijdzoneOffset = doel.getTimezoneOffset()
+		const minutenCorrectieVoorZomertijd = doelTijdzoneOffset - huidigeTijdzoneOffset
+		return add(doel, {minutes: minutenCorrectieVoorZomertijd})
 	}
-
 	return new Date()
 }
 

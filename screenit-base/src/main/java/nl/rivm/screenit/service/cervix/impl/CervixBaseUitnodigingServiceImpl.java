@@ -52,14 +52,13 @@ import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(propagation = Propagation.REQUIRED)
 @AllArgsConstructor
 public class CervixBaseUitnodigingServiceImpl implements CervixBaseUitnodigingService
 {
+
 	private LogService logService;
 
 	private HibernateService hibernateService;
@@ -73,12 +72,14 @@ public class CervixBaseUitnodigingServiceImpl implements CervixBaseUitnodigingSe
 	private ICurrentDateSupplier currentDateSupplier;
 
 	@Override
+	@Transactional
 	public void saveMonster(CervixZas zas, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, String logMessage)
 	{
 		saveMonster(zas, !CervixZasStatus.VERSTUURD.equals(zas.getZasStatus()), ingelogdeOrganisatieMedewerker, logMessage);
 	}
 
 	@Override
+	@Transactional
 	public void saveMonster(CervixUitstrijkje uitstrijkje, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, String logMessage)
 	{
 
@@ -124,6 +125,7 @@ public class CervixBaseUitnodigingServiceImpl implements CervixBaseUitnodigingSe
 	}
 
 	@Override
+	@Transactional
 	public void registreerMonsterBarcodeAfgedrukt(CervixMonster monster, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, LogGebeurtenis logGebeurtenis)
 	{
 		List<Date> barcodeAfgedruktList = monster.getBarcodeAfgedrukt();
@@ -135,6 +137,7 @@ public class CervixBaseUitnodigingServiceImpl implements CervixBaseUitnodigingSe
 	}
 
 	@Override
+	@Transactional
 	public void verwijderResultatenMonster(CervixMonster monster, UploadDocument uploadDocument, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		monster.setVerwijderdDatum(dateSupplier.getDate());
@@ -200,6 +203,7 @@ public class CervixBaseUitnodigingServiceImpl implements CervixBaseUitnodigingSe
 	}
 
 	@Override
+	@Transactional
 	public void vervangVerwijderdDocument(CervixMonster monster, UploadDocument uploadDocument)
 	{
 		if (uploadDocument != null)
@@ -212,5 +216,4 @@ public class CervixBaseUitnodigingServiceImpl implements CervixBaseUitnodigingSe
 			throw new IllegalStateException("Geen verwijderd brief geupload");
 		}
 	}
-
 }

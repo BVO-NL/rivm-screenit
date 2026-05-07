@@ -18,3 +18,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+.visitatie-bestanden-upload {
+  display: flex;
+  flex-direction: row;
+  flex: 0 0 100%;
+  max-width: 100%;
+  margin-top: 0.25rem;
+
+  .helft-width {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  .visitatie-form-links {
+    flex: 0 0 60%;
+    max-width: 60%;
+    padding: 0.5rem 0.5rem 0 0;
+  }
+
+  .visitatie-form-rechts {
+    flex: 0 0 40%;
+    max-width: 40%;
+    padding: 0.5rem 0 0 0.5rem;
+  }
+  .bestand-upload-rechts {
+    margin-top: 1.5rem;
+  }
+}
+
+.insteltechniek_input {
+  margin-bottom: 0.5rem;
+  display: block;
+}

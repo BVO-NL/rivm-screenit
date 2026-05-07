@@ -43,8 +43,8 @@ import static nl.rivm.screenit.specification.mamma.MammaFotobesprekingOnderzoekS
 import static nl.rivm.screenit.specification.mamma.MammaFotobesprekingOnderzoekSpecification.heeftFotobespreking;
 import static nl.rivm.screenit.specification.mamma.MammaFotobesprekingOnderzoekSpecification.heeftNietStatus;
 import static nl.rivm.screenit.specification.mamma.MammaFotobesprekingOnderzoekSpecification.heeftStatus;
+import static nl.rivm.screenit.specification.mamma.MammaFotobesprekingSpecification.filterOpBeoordelingseenheden;
 import static nl.rivm.screenit.specification.mamma.MammaFotobesprekingSpecification.filterOpGestartOpVanaf;
-import static nl.rivm.screenit.specification.mamma.MammaFotobesprekingSpecification.filterOpScreeningsEenheid;
 import static nl.rivm.screenit.specification.mamma.MammaFotobesprekingSpecification.filterOpType;
 
 @Service
@@ -110,10 +110,16 @@ public class MammaFotobesprekingServiceImpl implements MammaFotobesprekingServic
 		return fotobesprekingOnderzoekRepository.exists(heeftFotobespreking(fotobespreking).and(heeftStatus(NIEUWE_BEOORDELING_AANGEMAAKT)));
 	}
 
+	@Override
+	public MammaFotobespreking getFotobespreking(long id)
+	{
+		return fotobesprekingRepository.findById(id).orElse(null);
+	}
+
 	private Specification<MammaFotobespreking> fotobesprekingSpecification(MammaFotobesprekingWerklijstZoekObject zoekObject)
 	{
 		return filterOpGestartOpVanaf(zoekObject.getVanaf())
-			.and(filterOpScreeningsEenheid(zoekObject.getScreeningsEenheden()))
+			.and(filterOpBeoordelingseenheden(zoekObject.getBeoordelingsEenheden()))
 			.and(filterOpType(zoekObject.getTypes()));
 	}
 }

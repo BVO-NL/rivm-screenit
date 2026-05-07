@@ -18,74 +18,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { AfterViewInit, Component, ElementRef, inject, ViewChild } from '@angular/core'
+import { AfterViewInit, Component, ElementRef, inject, signal, viewChild, WritableSignal } from '@angular/core'
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid'
 import { CalendarApi, CalendarOptions, DateSelectArg, EventSourceInput, ViewApi } from '@fullcalendar/core'
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular'
 import interactionPlugin from '@fullcalendar/interaction'
 import nlLocale from '@fullcalendar/core/locales/nl'
-import { filter, identity, Observable, of, switchMap, tap } from 'rxjs'
+import { filter, identity, switchMap, take, tap } from 'rxjs'
 import { RoosterService } from '@/colon/colon-rooster-page/services/rooster.service'
-import { CommonModule } from '@angular/common'
 import { RoosterControlsComponent } from '@/colon/colon-rooster-page/components/rooster-controls/rooster-controls.component'
 import { CalendarView } from '@shared/types/calendar-view'
-import { Duration, format, isValid } from 'date-fns'
+import { Duration, isValid } from 'date-fns'
 import { CalendarKamer } from '@shared/types/calendar-kamer'
 import { WINDOW } from '@shared/tokens/window.token'
 import { ColonKamer } from '@shared/types/colon/colon-kamer'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Dialog } from '@angular/cdk/dialog'
-import { AfspraakslotEditDialogComponent } from '@/colon/colon-rooster-page/components/afspraakslot-edit-dialog/afspraakslot-edit-dialog.component'
+import { AfspraakslotBewerkenDialogComponent } from '@/colon/colon-rooster-page/components/afspraakslot-bewerken-dialog/afspraakslot-bewerken-dialog.component'
 import { ColonAfspraakslot } from '@shared/types/colon/colon-afspraakslot'
 import { ColonTijdslotStatus } from '@shared/types/colon/colon-tijdslot-status'
 import { ColonTijdslot } from '@shared/types/colon/colon-tijdslot'
 import { isColonAfspraakslot, isColonBlokkade } from '@shared/type-guards'
-import { BlokkadeEditDialogComponent } from '@/colon/colon-rooster-page/components/blokkade-edit-dialog/blokkade-edit-dialog.component'
+import { BlokkadeBewerkenDialogComponent } from '@/colon/colon-rooster-page/components/blokkade-bewerken-dialog/blokkade-bewerken-dialog.component'
 import { NotPersisted } from '@shared/types/not-presisted'
 import tippy from 'tippy.js'
 import { ResourceApi } from '@fullcalendar/resource'
 import { TIME_FORMAT } from '@shared/constants'
 import { environment } from '../../../../../environments/environment'
+import { formatDate } from '@shared/utils/date-utils'
+import { DatePipe } from '@angular/common'
 
 @Component({
   selector: 'app-rooster',
   templateUrl: './rooster.component.html',
-  imports: [FullCalendarModule, RoosterControlsComponent, CommonModule],
+  imports: [FullCalendarModule, RoosterControlsComponent, DatePipe],
 })
 export class RoosterComponent implements AfterViewInit {
-  @ViewChild('calendar')
-  private calendarComponent: FullCalendarComponent | undefined
-  @ViewChild('calendar', { static: true, read: ElementRef })
-  private calendarElement: ElementRef<HTMLDivElement> | undefined
-  private window: Window = inject(WINDOW)
-  private calendarApi: CalendarApi | undefined
-  private roosterService: RoosterService = inject(RoosterService)
   selectedDate: Date | undefined
-  viewRange: CalendarView = 'workWeek'
+  viewRange: CalendarView = 'werkweek'
   currentDate: Date | undefined
-  private dialog: Dialog = inject(Dialog)
-
-  private eventClasses: Record<string, string> = {
-    [ColonTijdslotStatus.BLOKKADE]: 'event_status_blocked',
-    [ColonTijdslotStatus.GEBRUIKT_VOOR_CAPACITEIT]: 'event_status_capacity',
-    [ColonTijdslotStatus.INTAKE_GEPLAND]: 'event_status_intake',
-    [ColonTijdslotStatus.VRIJ_TE_VERPLAATSEN]: 'event_status_free',
-    [ColonTijdslotStatus.BEPERKING]: 'event_status_beperking',
-    [ColonTijdslotStatus.FEESTDAG]: 'event_status_feestdag',
-  }
-
-  get toonIconen(): boolean {
-    const zoomLevel = this.calendarApi?.getOption('slotDuration') as Duration
-    return zoomLevel.minutes !== undefined && zoomLevel.minutes <= 15
-  }
-
-  tijdsloten$: Observable<EventSourceInput> = of([])
+  tijdsloten: WritableSignal<EventSourceInput> = signal([])
   kamers: CalendarKamer[] = []
   calendarOptions: CalendarOptions = {
     timeZone: 'CET',
     locale: nlLocale,
     weekNumbers: true,
-    initialView: 'workWeek',
+    initialView: 'werkweek',
     datesAboveResources: true,
     headerToolbar: false,
     nowIndicator: true,
@@ -96,11 +74,11 @@ export class RoosterComponent implements AfterViewInit {
         type: 'resourceTimeGridWeek',
         duration: { days: 7 },
       },
-      day: {
+      dag: {
         type: 'resourceTimeGridDay',
         dayHeaderFormat: { weekday: 'long', month: 'long', day: 'numeric' },
       },
-      workWeek: {
+      werkweek: {
         type: 'resourceTimeGridWeek',
         duration: { days: 5 },
       },
@@ -131,6 +109,22 @@ export class RoosterComponent implements AfterViewInit {
     navLinks: true,
     navLinkDayClick: (date) => this.handleNavLinkDayClick(date),
   }
+  protected readonly ColonTijdslotStatus = ColonTijdslotStatus
+  protected readonly TIME_FORMAT = TIME_FORMAT
+  private calendarComponent = viewChild<FullCalendarComponent>('calendar')
+  private calendarElement = viewChild('calendar', { read: ElementRef })
+  private calendarApi: CalendarApi | undefined
+  private readonly window: Window = inject(WINDOW)
+  private readonly roosterService: RoosterService = inject(RoosterService)
+  private readonly dialog: Dialog = inject(Dialog)
+  private eventClasses: Record<string, string> = {
+    [ColonTijdslotStatus.BLOKKADE]: 'event_status_blocked',
+    [ColonTijdslotStatus.GEBRUIKT_VOOR_CAPACITEIT]: 'event_status_capacity',
+    [ColonTijdslotStatus.INTAKE_GEPLAND]: 'event_status_intake',
+    [ColonTijdslotStatus.VRIJ_TE_VERPLAATSEN]: 'event_status_free',
+    [ColonTijdslotStatus.BEPERKING]: 'event_status_beperking',
+    [ColonTijdslotStatus.FEESTDAG]: 'event_status_feestdag',
+  }
 
   constructor() {
     this.roosterService
@@ -154,8 +148,13 @@ export class RoosterComponent implements AfterViewInit {
     this.roosterService.onRefresh.pipe(takeUntilDestroyed(), filter(identity)).subscribe(() => this.getTijdslots())
   }
 
+  get toonIconen(): boolean {
+    const zoomLevel = this.calendarApi?.getOption('slotDuration') as Duration
+    return zoomLevel.minutes !== undefined && zoomLevel.minutes <= 15
+  }
+
   ngAfterViewInit() {
-    this.calendarApi = this.calendarComponent?.getApi()
+    this.calendarApi = this.calendarComponent()?.getApi()
     setTimeout(() => {
       this.updateCalendarHeight()
       this.setZoomLevel(30)
@@ -163,7 +162,7 @@ export class RoosterComponent implements AfterViewInit {
   }
 
   updateCalendarHeight() {
-    const fixedDiv = this.calendarElement?.nativeElement
+    const fixedDiv = this.calendarElement()?.nativeElement
     const yPosition = fixedDiv?.getBoundingClientRect().top ?? 0
     const windowHeight = this.window.innerHeight
 
@@ -178,14 +177,17 @@ export class RoosterComponent implements AfterViewInit {
       return
     }
 
-    this.tijdsloten$ = this.roosterService.getTijdslots(startDate, endDate)
+    this.roosterService
+      .getTijdslots(startDate, endDate)
+      .pipe(take(1))
+      .subscribe((tijdsloten) => this.tijdsloten.set(tijdsloten))
   }
 
   editTijdslot(tijdslot: ColonTijdslot) {
     if (isColonBlokkade(tijdslot)) {
-      this.dialog.open(BlokkadeEditDialogComponent, { data: tijdslot })
+      this.dialog.open(BlokkadeBewerkenDialogComponent, { data: tijdslot })
     } else if (isColonAfspraakslot(tijdslot)) {
-      this.dialog.open(AfspraakslotEditDialogComponent, { data: tijdslot })
+      this.dialog.open(AfspraakslotBewerkenDialogComponent, { data: tijdslot })
     }
   }
 
@@ -200,7 +202,7 @@ export class RoosterComponent implements AfterViewInit {
   onToggleView(view: CalendarView) {
     this.calendarApi?.changeView(view)
     this.viewRange = view
-    this.calendarApi?.setOption('dateAlignment', view === 'day' ? 'day' : 'week')
+    this.calendarApi?.setOption('dateAlignment', view === 'dag' ? 'day' : 'week')
     this.getTijdslots()
     this.getCurrentDate()
   }
@@ -211,7 +213,7 @@ export class RoosterComponent implements AfterViewInit {
       vanaf: startDatumTijd,
       kamerId,
     }
-    this.dialog.open(AfspraakslotEditDialogComponent, { data: nieuwTijdslot })
+    this.dialog.open(AfspraakslotBewerkenDialogComponent, { data: nieuwTijdslot })
   }
 
   handleResourceDidMount(resource: ResourceApi, element: HTMLElement) {
@@ -226,21 +228,6 @@ export class RoosterComponent implements AfterViewInit {
     this.navigateCalendar('prev')
   }
 
-  private navigateCalendar(direction: 'next' | 'prev') {
-    if (direction === 'next') {
-      this.calendarApi?.next()
-    } else {
-      this.calendarApi?.prev()
-    }
-    if (this.viewRange !== 'day') {
-      this.selectedDate = undefined
-    } else {
-      this.selectedDate = this.calendarApi?.getDate()
-      this.currentDate = this.calendarApi?.getDate()
-    }
-    this.getTijdslots()
-  }
-
   gotoToday() {
     this.calendarApi?.today()
     this.getTijdslots()
@@ -248,7 +235,7 @@ export class RoosterComponent implements AfterViewInit {
 
   gotoDate(date: Date) {
     if (isValid(date)) {
-      this.calendarApi?.gotoDate(format(date, 'yyyy-MM-dd'))
+      this.calendarApi?.gotoDate(formatDate(date))
       this.getTijdslots()
     }
   }
@@ -267,7 +254,7 @@ export class RoosterComponent implements AfterViewInit {
   }
 
   handleDatesSet(view: ViewApi) {
-    if (view.type === 'day') {
+    if (view.type === 'dag') {
       this.selectedDate = view.currentStart
     } else {
       this.selectedDate = undefined
@@ -275,7 +262,7 @@ export class RoosterComponent implements AfterViewInit {
   }
 
   handleNavLinkDayClick(date: Date) {
-    this.onToggleView('day')
+    this.onToggleView('dag')
     this.gotoDate(date)
   }
 
@@ -284,6 +271,19 @@ export class RoosterComponent implements AfterViewInit {
     this.calendarApi?.scrollToTime({ hours: 8 })
   }
 
-  protected readonly ColonTijdslotStatus = ColonTijdslotStatus
-  protected readonly TIME_FORMAT = TIME_FORMAT
+  private navigateCalendar(direction: 'next' | 'prev') {
+    if (direction === 'next') {
+      this.calendarApi?.next()
+    } else {
+      this.calendarApi?.prev()
+    }
+    if (this.viewRange !== 'dag') {
+      this.selectedDate = undefined
+    } else {
+      const date = this.calendarApi?.getDate()
+      this.selectedDate = date
+      this.currentDate = date
+    }
+    this.getTijdslots()
+  }
 }

@@ -24,4 +24,8 @@ export class WicketUtils {
   public static toVisitatie(visitatieId: number): void {
     new WicketActionBuilder().setAction('toVisitatiePage').setVisitatieId(visitatieId).build().send()
   }
+
+  public static toFotobespreking(fotobesprekingId: number): void {
+    new WicketActionBuilder().setAction('toFotobesprekingPage').setFotobesprekingId(fotobesprekingId).build().send()
+  }
 }

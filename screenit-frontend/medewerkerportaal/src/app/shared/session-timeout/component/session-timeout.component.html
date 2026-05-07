@@ -20,10 +20,10 @@
   -->
 <app-base-dialog titel="Uw sessie verloopt">
   <div body>
-    <p>Uw sessie verloopt over: {{ timer }}</p>
+    <p>Uw sessie verloopt over: {{ timer() }}</p>
     <p>Klik op "Ok" om ingelogd te blijven.</p>
   </div>
   <div buttons>
-    <button (click)="keepAlive()" class="btn btn-primary" data-testid="okButton">Ok</button>
+    <button ds-button-primary (click)="keepAlive()" data-testid="okButton">Ok</button>
   </div>
 </app-base-dialog>

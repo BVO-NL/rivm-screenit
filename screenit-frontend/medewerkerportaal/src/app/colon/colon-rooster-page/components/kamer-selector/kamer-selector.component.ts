@@ -18,18 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, forwardRef, inject, Signal } from '@angular/core'
-
-import { ClrComboboxModule, ClrCommonFormsModule } from '@clr/angular'
-import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, ValidationErrors, Validator } from '@angular/forms'
+import { Component, computed, effect, forwardRef, inject, input, Signal } from '@angular/core'
+import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, ValidationErrors, Validator, Validators } from '@angular/forms'
 import { RoosterService } from '@/colon/colon-rooster-page/services/rooster.service'
 import { ColonKamer } from '@shared/types/colon/colon-kamer'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { filter } from 'rxjs'
+import { DsDropdownComponent } from '@topicus-rgp-ds/web'
 
 @Component({
   selector: 'app-kamer-selector',
-  imports: [ClrComboboxModule, ClrCommonFormsModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule, DsDropdownComponent],
   styles: [
     `
       :host {
@@ -37,16 +36,17 @@ import { filter } from 'rxjs'
       }
     `,
   ],
-  template: ` <clr-combobox-container class="no-error-icon">
-    <label class="clr-required-mark" for="kamer">Kamer</label>
-    <clr-combobox [formControl]="kamerCtrl" required id="kamer" data-testid="cb_kamer_selector">
-      <clr-options>
-        <clr-option [clrValue]="alleKamers">{{ alleKamers.naam }}</clr-option>
-        <clr-option [clrValue]="kamer" *clrOptionItems="let kamer of kamers$(); field: 'naam'">{{ kamer.naam }}</clr-option>
-      </clr-options>
-    </clr-combobox>
-    <clr-control-error>De kamer is verplicht</clr-control-error>
-  </clr-combobox-container>`,
+  template: ` <ds-dropdown
+    label="Kamer"
+    [items]="kamerOpties()"
+    [formControl]="kamerCtrl"
+    data-testid="cb_kamer_selector"
+    bindValue="id"
+    bindLabel="naam"
+    [clearable]="!required()"
+    [required]="required()"
+    [errorMessage]="{ required: 'De kamer is verplicht' }"
+  />`,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -61,13 +61,17 @@ import { filter } from 'rxjs'
   ],
 })
 export class KamerSelectorComponent implements ControlValueAccessor, Validator {
-  private roosterService: RoosterService = inject(RoosterService)
-  private onChange: ((value: number | undefined) => void) | undefined
-  private onTouched: (() => void) | undefined
-
-  kamers$: Signal<ColonKamer[]> = this.roosterService.kamers
-  kamerCtrl = new FormControl<ColonKamer | null>(null)
+  private readonly roosterService: RoosterService = inject(RoosterService)
   alleKamers: ColonKamer = { id: 0, naam: 'Alle kamers' }
+  kamerCtrl = new FormControl<number | null>(null)
+
+  required = input<boolean>(false)
+  inclusiefAlleKamers = input<boolean>(false)
+
+  kamerOpties: Signal<ColonKamer[]> = computed(() => (this.inclusiefAlleKamers() ? [this.alleKamers, ...this.roosterService.kamers()] : this.roosterService.kamers()))
+
+  private onChange: ((value: number | null) => void) | undefined
+  private onTouched: (() => void) | undefined
 
   constructor() {
     this.kamerCtrl.valueChanges
@@ -75,10 +79,18 @@ export class KamerSelectorComponent implements ControlValueAccessor, Validator {
         takeUntilDestroyed(),
         filter(() => this.onChange != undefined),
       )
-      .subscribe((kamer) => this.onChange!(kamer?.id))
+      .subscribe((kamerId) => this.onChange!(kamerId))
+
+    effect(() => {
+      if (this.required()) {
+        this.kamerCtrl.addValidators(Validators.required)
+      } else {
+        this.kamerCtrl.clearValidators()
+      }
+    })
   }
 
-  registerOnChange(fn: (value: number | undefined) => void): void {
+  registerOnChange(fn: (value: number | null) => void): void {
     this.onChange = fn
   }
 
@@ -87,10 +99,7 @@ export class KamerSelectorComponent implements ControlValueAccessor, Validator {
   }
 
   writeValue(value: number): void {
-    const kamer = this.kamers$().find((kamer) => kamer.id === value)
-    if (kamer) {
-      this.kamerCtrl.patchValue(kamer)
-    }
+    this.kamerCtrl.patchValue(value)
   }
 
   setDisabledState(isDisabled: boolean) {
@@ -102,6 +111,6 @@ export class KamerSelectorComponent implements ControlValueAccessor, Validator {
   }
 
   validate(): ValidationErrors | null {
-    return this.kamerCtrl.valid ? null : { invalid: true }
+    return this.kamerCtrl.errors
   }
 }

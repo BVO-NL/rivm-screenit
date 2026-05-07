@@ -24,7 +24,6 @@ import {saveTelefoonNummers} from "../../api/TelefoonnummerWijzigenThunkAction"
 import {useThunkDispatch} from "../../index"
 import {getString} from "../../utils/TekstPropertyUtil"
 import {useSelector} from "react-redux"
-import {State} from "../../datatypes/State"
 import properties from "./TelefoonnummerWijzigenPage.json"
 import {Formik} from "formik"
 import SubmitForm from "../../components/form/SubmitForm"
@@ -34,11 +33,12 @@ import {useNavigate} from "react-router"
 import {showToast} from "../../utils/ToastUtil"
 import datadogService from "../../services/DatadogService"
 import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
+import {selectPersoon} from "../../selectors/ClientSelectors"
 
 const TelefoonnummerWijzigenPage = () => {
 	const dispatch = useThunkDispatch()
 	const navigate = useNavigate()
-	const persoon = useSelector((state: State) => state.client.persoon)
+	const persoon = useSelector(selectPersoon)
 
 	const initialValues = {
 		telefoonnummer1: persoon.telefoonnummer1 || "",

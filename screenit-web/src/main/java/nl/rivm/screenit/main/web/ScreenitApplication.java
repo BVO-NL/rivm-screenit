@@ -147,7 +147,8 @@ public class ScreenitApplication extends WebApplication
 
 		getSecuritySettings().setCryptFactory(new KeyInSessionSunJceCryptFactory());
 
-		mountResource("medewerkerportaal-frontend/${name}", getReference("medewerkerportaal-frontend/"));
+		mountResource("medewerkerportaal-frontend/${dir}/${name}", getReference("medewerkerportaal-frontend/", true));
+		mountResource("medewerkerportaal-frontend/${name}", getReference("medewerkerportaal-frontend/", false));
 
 		mountPage("medewerkerportaal", MedewerkerLoginMethodPage.class);
 		mountPage("passwordchange", PasswordChangePage.class);
@@ -225,7 +226,7 @@ public class ScreenitApplication extends WebApplication
 		initDistributedJettySessions();
 	}
 
-	private static @NotNull FileSystemResourceReference getReference(String resourceLocation)
+	protected static @NotNull FileSystemResourceReference getReference(String resourceLocation, boolean metSubmap)
 	{
 		return new FileSystemResourceReference("filesystem")
 		{
@@ -240,8 +241,18 @@ public class ScreenitApplication extends WebApplication
 					{
 						try
 						{
-							var name = attributes.getParameters().get("name").toString();
-							var uri = new File(resourceLocation + name).toURI();
+							String bestandspad;
+							if (metSubmap)
+							{
+								var dir = attributes.getParameters().get("dir").toString();
+								var name = attributes.getParameters().get("name").toString();
+								bestandspad = dir + "/" + name;
+							}
+							else
+							{
+								bestandspad = attributes.getParameters().get("name").toString();
+							}
+							var uri = new File(resourceLocation + bestandspad).toURI();
 							return createResourceResponse(attributes, FileSystemResourceReference.getPath(uri));
 						}
 						catch (IOException e)

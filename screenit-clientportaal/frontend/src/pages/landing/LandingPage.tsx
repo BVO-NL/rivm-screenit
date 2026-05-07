@@ -33,17 +33,17 @@ import properties from "./LandingPage.json"
 import {getString} from "../../utils/TekstPropertyUtil"
 import SpanWithHtml from "../../components/span/SpanWithHtml"
 import {Persoon} from "../../datatypes/Persoon"
-import {State} from "../../datatypes/State"
 import {AanhefType} from "../../datatypes/aanhef/AanhefType"
 import {Geslacht} from "../../datatypes/Geslacht"
 import {isNullOfLeeg} from "../../utils/EmptyUtil"
 import {useThunkDispatch} from "../../index"
 import datadogService from "../../services/DatadogService"
 import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
+import {selectPersoon} from "../../selectors/ClientSelectors"
 
 const LandingPage = () => {
 	const dispatch = useThunkDispatch()
-	const persoon = useSelector((state: State) => state.client.persoon)
+	const persoon = useSelector(selectPersoon)
 
 	useEffect(() => {
 		dispatch(getLandingOverzicht())

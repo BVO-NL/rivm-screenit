@@ -25,10 +25,11 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
 import { ColonRoosterBeperking } from '@shared/types/colon/colon-rooster-beperking'
 import { ColonBulkAanmakenException } from '@shared/types/colon/colon-bulk-aanmaken-exception'
 import { BulkAanmakenResultatenTabelComponent } from '@/colon/colon-rooster-page/components/bulk-aanmaken-resultaten-tabel/bulk-aanmaken-resultaten-tabel.component'
+import { DsButtonComponent } from '@topicus-rgp-ds/web'
 
 @Component({
   selector: 'app-bulk-aanmaken-bevestigings-popup',
-  imports: [BaseDialogComponent, BulkAanmakenResultatenTabelComponent],
+  imports: [BaseDialogComponent, BulkAanmakenResultatenTabelComponent, DsButtonComponent],
   templateUrl: './bulk-aanmaken-bevestigings-popup.component.html',
 })
 export class BulkAanmakenBevestigingsPopupComponent {

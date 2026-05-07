@@ -34,11 +34,11 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.wicket.ThreadContext;
+import org.apache.wicket.csp.CSPDirective;
 import org.apache.wicket.csp.CSPHeaderMode;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.http.WebResponse;
-
-import static org.apache.wicket.ThreadContext.getRequestCycle;
 
 @Slf4j
 public class SecurityHeadersFilter implements Filter
@@ -46,9 +46,14 @@ public class SecurityHeadersFilter implements Filter
 	private static final String DEFAULT_CONTENT_SECURITY_POLICY_WITH_UNSAFE_SCRIPT_INLINE = "form-action 'self'; frame-ancestors 'self'; default-src 'self'; " +
 		"script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; object-src 'self'";
 
+	private static final String CONTENT_SECURITY_POLICY_HEADER = "Content-Security-Policy";
+
+	private static final String REQUEST_ATTR_CSP_BUFFER = "SecurityHeadersFilter.cspBuffer";
+
 	public static void allowUnsafeInlineSecurityPolicy(WebResponse response)
 	{
-		response.setHeader("Content-Security-Policy", SecurityHeadersFilter.DEFAULT_CONTENT_SECURITY_POLICY_WITH_UNSAFE_SCRIPT_INLINE);
+		response.setHeader(CONTENT_SECURITY_POLICY_HEADER, SecurityHeadersFilter.DEFAULT_CONTENT_SECURITY_POLICY_WITH_UNSAFE_SCRIPT_INLINE);
+		zetCspInRequestBuffer(SecurityHeadersFilter.DEFAULT_CONTENT_SECURITY_POLICY_WITH_UNSAFE_SCRIPT_INLINE);
 	}
 
 	@Override
@@ -72,18 +77,85 @@ public class SecurityHeadersFilter implements Filter
 		filterChain.doFilter(servletRequest, servletResponse);
 	}
 
-	public static void allowExtraConnectSrcInContentSecurityPolicy(WebResponse response, String extraConnectSrc)
+	public static void voegSrcToeAanContentSecurityPolicy(WebResponse response, String src, CSPDirective srcType)
 	{
+		var httpServletResponse = (HttpServletResponse) response.getContainerResponse();
+		var bestaandeCsp = leesBestaandeCsp(httpServletResponse);
+
+		var directive = srcType.getValue();
+		var startIndex = bestaandeCsp.indexOf(directive);
+		if (startIndex == -1)
+		{
+			var nieuweCsp = bestaandeCsp.trim();
+			if (!nieuweCsp.endsWith(";"))
+			{
+				nieuweCsp += ";";
+			}
+			nieuweCsp += " " + directive + " " + src + ";";
+			response.setHeader(CONTENT_SECURITY_POLICY_HEADER, nieuweCsp);
+			httpServletResponse.setHeader(CONTENT_SECURITY_POLICY_HEADER, nieuweCsp);
+			zetCspInRequestBuffer(nieuweCsp);
+			return;
+		}
+		var endIndex = bestaandeCsp.indexOf(";", startIndex);
+		if (endIndex == -1)
+		{
+			endIndex = bestaandeCsp.length();
+		}
+		var directiveString = bestaandeCsp.substring(startIndex, endIndex);
+		if (directiveString.contains(src))
+		{
+			response.setHeader(CONTENT_SECURITY_POLICY_HEADER, bestaandeCsp);
+			httpServletResponse.setHeader(CONTENT_SECURITY_POLICY_HEADER, bestaandeCsp);
+			zetCspInRequestBuffer(bestaandeCsp);
+			return;
+		}
+		var nieuweDirectiveString = directiveString + " " + src;
+		var nieuweCsp = bestaandeCsp.substring(0, startIndex) + nieuweDirectiveString + bestaandeCsp.substring(endIndex);
+		response.setHeader(CONTENT_SECURITY_POLICY_HEADER, nieuweCsp);
+		httpServletResponse.setHeader(CONTENT_SECURITY_POLICY_HEADER, nieuweCsp);
+		zetCspInRequestBuffer(nieuweCsp);
+	}
+
+	private static String leesBestaandeCsp(HttpServletResponse httpServletResponse)
+	{
+		var requestCycle = ThreadContext.getRequestCycle();
+		if (requestCycle != null)
+		{
+			var containerRequest = requestCycle.getRequest().getContainerRequest();
+			if (containerRequest instanceof HttpServletRequest httpServletRequest)
+			{
+				var bufferedCsp = (String) httpServletRequest.getAttribute(REQUEST_ATTR_CSP_BUFFER);
+				if (bufferedCsp != null)
+				{
+					return bufferedCsp;
+				}
+			}
+		}
+
+		var bestaandeCsp = httpServletResponse.getHeader(CONTENT_SECURITY_POLICY_HEADER);
+		if (bestaandeCsp != null)
+		{
+			return bestaandeCsp;
+		}
+
 		var cspSettings = WebApplication.get().getCspSettings();
 		var cspHeaderConfiguration = cspSettings.getConfiguration().get(CSPHeaderMode.BLOCKING);
-		var headerValue = cspHeaderConfiguration.renderHeaderValue(cspSettings, getRequestCycle());
+		return cspHeaderConfiguration.renderHeaderValue(cspSettings, ThreadContext.getRequestCycle());
+	}
 
-		var connectSrcStartIndex = headerValue.indexOf("connect-src");
-		var connectSrcEndIndex = headerValue.indexOf(";", connectSrcStartIndex);
-		var connectSrcString = headerValue.substring(connectSrcStartIndex, connectSrcEndIndex) + " " + extraConnectSrc;
-		var cspString = headerValue.substring(0, connectSrcStartIndex) + connectSrcString + headerValue.substring(connectSrcEndIndex);
-
-		response.setHeader("Content-Security-Policy", cspString);
+	private static void zetCspInRequestBuffer(String csp)
+	{
+		var requestCycle = ThreadContext.getRequestCycle();
+		if (requestCycle == null)
+		{
+			return;
+		}
+		var containerRequest = requestCycle.getRequest().getContainerRequest();
+		if (containerRequest instanceof HttpServletRequest httpServletRequest)
+		{
+			httpServletRequest.setAttribute(REQUEST_ATTR_CSP_BUFFER, csp);
+		}
 	}
 
 	@Override

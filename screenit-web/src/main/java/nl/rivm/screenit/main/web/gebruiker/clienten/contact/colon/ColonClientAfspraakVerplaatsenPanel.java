@@ -58,7 +58,7 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
-import nl.rivm.screenit.service.colon.ColonUitnodigingService;
+import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
 import nl.rivm.screenit.service.colon.PlanningService;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.DateUtil;
@@ -109,7 +109,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 	private SimplePreferenceService preferenceService;
 
 	@SpringBean
-	private ColonUitnodigingService colonUitnodigingService;
+	private ColonBaseUitnodigingService colonUitnodigingService;
 
 	@SpringBean
 	private HibernateService hibernateService;

@@ -18,64 +18,71 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {MammaDossier} from "../datatypes/MammaDossier"
+import {MammaDossier} from "../datatypes/mamma/MammaDossier"
 import {Huisarts, MammaGeenHuisartsOptie} from "../datatypes/Huisarts"
 import {HuidigeAfspraak} from "../datatypes/mamma/HuidigeAfspraak"
+import {OpenstaandeUitnodiging} from "../datatypes/uitnodiging/OpenstaandeUitnodiging"
 
 export type MammaDossierActions =
-    MammaDossierAction
-    | SetMammaHuisartsHuidigeRonde
-    | SetMammaHuisartsVorigeRonde
-    | SetMagMammaHuisartsOntkoppelen
-    | SetMammaGeenHuisartsOptieHuidigeRonde
-    | SetMammaGeenHuisartsOptieVorigeRonde
-    | SetHuidigeMammaAfspraak
+	MammaDossierAction
+	| SetMammaHuisartsHuidigeRonde
+	| SetMammaHuisartsVorigeRonde
+	| SetMagMammaHuisartsOntkoppelen
+	| SetMammaGeenHuisartsOptieHuidigeRonde
+	| SetMammaGeenHuisartsOptieVorigeRonde
+	| SetHuidigeMammaAfspraak
 
 export const SET_MAMMA_DOSSIER = "SET_MAMMA_DOSSIER"
 export type MammaDossierAction = { type: typeof SET_MAMMA_DOSSIER, dossier: MammaDossier }
 export const createMammaDossierAction = (dossier: MammaDossier): MammaDossierAction => ({
-    type: SET_MAMMA_DOSSIER,
-    dossier: dossier,
+	type: SET_MAMMA_DOSSIER,
+	dossier: dossier,
 })
 
 export const SET_MAMMA_HUISARTS_VORIGE_RONDE = "SET_MAMMA_HUISARTS_VORIGE_RONDE"
 export type SetMammaHuisartsVorigeRonde = { type: typeof SET_MAMMA_HUISARTS_VORIGE_RONDE, huisarts: Huisarts | undefined }
 export const setMammaHuisartsVorigeRondeReduxAction = (huisarts: Huisarts | undefined): SetMammaHuisartsVorigeRonde => ({
-    type: SET_MAMMA_HUISARTS_VORIGE_RONDE,
-    huisarts: huisarts,
+	type: SET_MAMMA_HUISARTS_VORIGE_RONDE,
+	huisarts: huisarts,
 })
 
 export const SET_MAMMA_HUISARTS_HUIDIGE_RONDE = "SET_MAMMA_HUISARTS_HUIDIGE_RONDE"
 export type SetMammaHuisartsHuidigeRonde = { type: typeof SET_MAMMA_HUISARTS_HUIDIGE_RONDE, huisarts: Huisarts | undefined }
 export const setMammaHuisartsHuidigeRondeReduxAction = (huisarts: Huisarts | undefined): SetMammaHuisartsHuidigeRonde => ({
-    type: SET_MAMMA_HUISARTS_HUIDIGE_RONDE,
-    huisarts: huisarts,
+	type: SET_MAMMA_HUISARTS_HUIDIGE_RONDE,
+	huisarts: huisarts,
 })
 
 export const SET_MAMMA_HUISARTS_MAG_ONTKOPPELEN = "SET_MAMMA_HUISARTS_MAG_ONTKOPPELEN"
 export type SetMagMammaHuisartsOntkoppelen = { type: typeof SET_MAMMA_HUISARTS_MAG_ONTKOPPELEN, magOntkoppelen: boolean }
 export const setMammaGeenHuisartsOptieHuidigeRondeReduxAction = (geenHuisartsOptie: MammaGeenHuisartsOptie | undefined): SetMammaGeenHuisartsOptieHuidigeRonde => ({
-    type: SET_MAMMA_GEEN_HUISARTS_OPTIE_HUIDIGE_RONDE,
-    geenHuisartsOptie: geenHuisartsOptie,
+	type: SET_MAMMA_GEEN_HUISARTS_OPTIE_HUIDIGE_RONDE,
+	geenHuisartsOptie: geenHuisartsOptie,
 })
 
 export const SET_HUIDIGE_MAMMA_AFSPRAAK = "SET_HUIDIGE_MAMMA_AFSPRAAK"
 export type SetHuidigeMammaAfspraak = { type: typeof SET_HUIDIGE_MAMMA_AFSPRAAK, huidigeAfspraak: HuidigeAfspraak | undefined }
 export const setMammaGeenHuisartsOptieVorigeRondeReduxAction = (geenHuisartsOptie: MammaGeenHuisartsOptie | undefined): SetMammaGeenHuisartsOptieVorigeRonde => ({
-    type: SET_MAMMA_GEEN_HUISARTS_OPTIE_VORIGE_RONDE,
-    geenHuisartsOptie: geenHuisartsOptie,
+	type: SET_MAMMA_GEEN_HUISARTS_OPTIE_VORIGE_RONDE,
+	geenHuisartsOptie: geenHuisartsOptie,
 })
 
 export const SET_MAMMA_GEEN_HUISARTS_OPTIE_HUIDIGE_RONDE = "SET_MAMMA_GEEN_HUISARTS_OPTIE_HUIDIGE_RONDE"
 export type SetMammaGeenHuisartsOptieHuidigeRonde = { type: typeof SET_MAMMA_GEEN_HUISARTS_OPTIE_HUIDIGE_RONDE, geenHuisartsOptie: MammaGeenHuisartsOptie | undefined }
 export const magMammaHuisartsOntkoppelenReduxAction = (magOntkoppelen: boolean): SetMagMammaHuisartsOntkoppelen => ({
-    type: SET_MAMMA_HUISARTS_MAG_ONTKOPPELEN,
-    magOntkoppelen: magOntkoppelen,
+	type: SET_MAMMA_HUISARTS_MAG_ONTKOPPELEN,
+	magOntkoppelen: magOntkoppelen,
 })
 
 export const SET_MAMMA_GEEN_HUISARTS_OPTIE_VORIGE_RONDE = "SET_MAMMA_GEEN_HUISARTS_OPTIE_VORIGE_RONDE"
 export type SetMammaGeenHuisartsOptieVorigeRonde = { type: typeof SET_MAMMA_GEEN_HUISARTS_OPTIE_VORIGE_RONDE, geenHuisartsOptie: MammaGeenHuisartsOptie | undefined }
 export const setHuidigeMammaAfspraakReduxAction = (huidigeAfspraak: HuidigeAfspraak | undefined): SetHuidigeMammaAfspraak => ({
-    type: SET_HUIDIGE_MAMMA_AFSPRAAK,
-    huidigeAfspraak: huidigeAfspraak,
+	type: SET_HUIDIGE_MAMMA_AFSPRAAK,
+	huidigeAfspraak: huidigeAfspraak,
+})
+export const SET_OPENSTAANDE_UITNODIGINGEN = "SET_OPENSTAANDE_UITNODIGINGEN"
+export type SetOpenstaandeUitnodigingen = { type: typeof SET_OPENSTAANDE_UITNODIGINGEN, openstaandeUitnodigingen: OpenstaandeUitnodiging[] }
+export const setOpenstaandeUitnodigingenReduxAction = (openstaandeUitnodigingen: OpenstaandeUitnodiging[]): SetOpenstaandeUitnodigingen => ({
+	type: SET_OPENSTAANDE_UITNODIGINGEN,
+	openstaandeUitnodigingen: openstaandeUitnodigingen,
 })

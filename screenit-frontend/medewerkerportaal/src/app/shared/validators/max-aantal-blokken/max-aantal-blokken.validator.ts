@@ -20,9 +20,9 @@
  */
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms'
 import { parse } from 'date-fns'
-import { ToastService } from '@shared/toast/service/toast.service'
+import { NotificationService } from '@shared/services/notification/notification.service'
 
-export const createMaxAantalBlokkenValidator = (duurAfspraakInMinuten: number, toastService?: ToastService): ValidatorFn => {
+export const createMaxAantalBlokkenValidator = (duurAfspraakInMinuten: number, notificationService?: NotificationService): ValidatorFn => {
   return (control: AbstractControl): ValidationErrors | null => {
     if (!control.dirty || control.get('id')?.value != null) {
       return null
@@ -51,11 +51,11 @@ export const createMaxAantalBlokkenValidator = (duurAfspraakInMinuten: number, t
       }
     }
 
-    if (toastService) {
+    if (notificationService) {
       if (validationError) {
-        toastService.error(validationError['maxAantalBlokken'])
+        notificationService.error(validationError['maxAantalBlokken'])
       } else {
-        toastService.hide(validatieBericht)
+        notificationService.hide(validatieBericht)
       }
     }
 

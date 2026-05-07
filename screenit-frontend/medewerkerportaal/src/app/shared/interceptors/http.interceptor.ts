@@ -27,15 +27,20 @@ import { finalize } from 'rxjs'
 export const httpInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
   const sessionTimeoutService = inject(SessionTimeoutService)
   const loaderService: LoaderService = inject(LoaderService)
+  let loaderTimeout: ReturnType<typeof setTimeout> | undefined
 
   if (req.url.includes('/api')) {
     if (req.method !== 'GET') {
-      loaderService.showLoader()
+      loaderTimeout = setTimeout(() => loaderService.showLoader(), 500)
     }
     sessionTimeoutService.resetTimer()
   }
   return next(req).pipe(
     finalize(() => {
+      if (loaderTimeout) {
+        clearTimeout(loaderTimeout)
+        loaderTimeout = undefined
+      }
       if (req.method !== 'GET') {
         loaderService.hideLoader()
       }

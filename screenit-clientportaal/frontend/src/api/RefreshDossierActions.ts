@@ -23,9 +23,9 @@ import ScreenitBackend from "../utils/Backend"
 import {createColonDossierAction} from "../actions/ColonDossierAction"
 import {createCervixDossierAction} from "../actions/CervixDossierAction"
 import {createMammaDossierAction} from "../actions/MammaDossierAction"
-import {ColonDossier} from "../datatypes/ColonDossier"
+import {ColonDossier} from "../datatypes/colon/ColonDossier"
 import {CervixDossier} from "../datatypes/CervixDossier"
-import {MammaDossier} from "../datatypes/MammaDossier"
+import {MammaDossier} from "../datatypes/mamma/MammaDossier"
 
 export const refreshColonDossier = () => (dispatch: Dispatch) => {
 

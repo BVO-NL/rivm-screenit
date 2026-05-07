@@ -111,7 +111,6 @@ public class BaseGbaVraagServiceImpl implements BaseGbaVraagService
 	@Transactional
 	public void verzoekVerwijderIndicatie(Client client, RedenIntrekkenGbaIndicatie redenIntrekkenGbaIndicatie)
 	{
-
 		maakGbaVraag(GbaVraagType.VERWIJDER_INDICATIE, null, client, redenIntrekkenGbaIndicatie.getRedenGbaVraag(), null);
 	}
 

@@ -19,42 +19,42 @@
  * =========================LICENSE_END==================================
  */
 import { Dense2Service } from '@/mamma/mamma-dense2-uitwisseling-page/services/dense2/dense2.service'
-import { ToastService } from '@shared/toast/service/toast.service'
+import { NotificationService } from '@shared/services/notification/notification.service'
 import { Component, inject, input } from '@angular/core'
-import { CardComponent } from '@shared/components/card/card.component'
 import { take } from 'rxjs'
+import { DsButtonComponent, DsCardComponent, DsFooterActionsRightDirective } from '@topicus-rgp-ds/web'
 
 export { Component, inject, input } from '@angular/core'
-export { CardComponent } from '@shared/components/card/card.component'
 export { take } from 'rxjs'
 export { Dense2Service } from '@/mamma/mamma-dense2-uitwisseling-page/services/dense2/dense2.service'
-export { ToastService } from '@shared/toast/service/toast.service'
+export { NotificationService } from '@shared/services/notification/notification.service'
 
 @Component({
   selector: 'app-dense2-export',
-  imports: [CardComponent],
+  imports: [DsCardComponent, DsButtonComponent, DsFooterActionsRightDirective],
   template: `
-    <app-card>
-      <div header>Export</div>
-      <div body class="clr-row">
-        <div class="clr-col-3">Bestandsnaam</div>
-        <div class="clr-col-9">{{ exportBestandsnaam() }}</div>
+    <ds-card cardTitle="Export">
+      <div class="row">
+        <div class="col-3">Bestandsnaam</div>
+        <div class="col-9">{{ exportBestandsnaam() }}</div>
       </div>
-      <button footer class="btn btn-primary" (click)="export()">Download</button>
-    </app-card>
+      <ng-template ds-footer-actions-right>
+        <button ds-button-primary (click)="export()">Download</button>
+      </ng-template>
+    </ds-card>
   `,
 })
 export class Dense2ExportComponent {
   exportBestandsnaam = input('')
   private dense2Service: Dense2Service = inject(Dense2Service)
-  private toastService: ToastService = inject(ToastService)
+  private notificationService: NotificationService = inject(NotificationService)
 
   export() {
     this.dense2Service
       .export(this.exportBestandsnaam())
       .pipe(take(1))
       .subscribe(() => {
-        this.toastService.success('Bestand is gedownload')
+        this.notificationService.success('Bestand is gedownload')
       })
   }
 }

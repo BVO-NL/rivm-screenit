@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import styles from "./ScreenitTextfield.module.scss"
-import {ChangeEvent, useEffect, useState} from "react"
+import {ChangeEvent, ReactElement, useEffect, useState} from "react"
 import classNames from "classnames"
 
 export type TextfieldProps = {
@@ -29,9 +29,10 @@ export type TextfieldProps = {
 	value?: string,
 	invalidMessage?: string,
 	onChange: (value: string) => void;
+	disabled?: boolean;
 }
 
-const ScreenitTextfield = (props: TextfieldProps) => {
+const ScreenitTextfield = (props: TextfieldProps): ReactElement => {
 	const [active, setActive] = useState<boolean>(false)
 
 	useEffect(() => {
@@ -40,17 +41,17 @@ const ScreenitTextfield = (props: TextfieldProps) => {
 		}
 	}, [props.value])
 
-	const activateField = () => {
+	const activateField = (): void => {
 		setActive(true)
 	}
 
-	const disableField = () => {
+	const disableField = (): void => {
 		if (props.value === "") {
 			setActive(false)
 		}
 	}
 
-	const updateInputValue = (e: ChangeEvent<HTMLInputElement>) => {
+	const updateInputValue = (e: ChangeEvent<HTMLInputElement>): void => {
 		props.onChange(e.target.value)
 		activateField()
 	}
@@ -59,15 +60,16 @@ const ScreenitTextfield = (props: TextfieldProps) => {
 		<div className={classNames(props.className, styles.inputDiv, props.invalidMessage && styles.inputInvalid)}>
 			<label className={active ? styles.labelActive : styles.labelInactive} htmlFor={props.name}>{props.placeholder}</label>
 
-			<input data-testid={`input_${  props.name}`}
+			<input data-testid={`input_${props.name}`}
 				   className={styles.inputField} type="text" id={props.name} name={props.name}
 				   autoComplete={"off"}
 				   value={props.value}
 				   onFocus={activateField}
 				   onBlur={disableField}
-				   onChange={updateInputValue}/>
+				   onChange={updateInputValue}
+				   disabled={props.disabled}/>
 
-			{props.invalidMessage && <label data-testid={`error_${  props.name}`} className={styles.errorLabel}>{props.invalidMessage}</label>}
+			{props.invalidMessage && <label data-testid={`error_${props.name}`} className={styles.errorLabel}>{props.invalidMessage}</label>}
 		</div>
 	)
 

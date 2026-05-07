@@ -19,73 +19,12 @@
  * =========================LICENSE_END==================================
  */
 import { Component } from '@angular/core'
+import { DsTooltipDirective } from '@topicus-rgp-ds/web'
 
 @Component({
   selector: 'app-rooster-legenda',
-  imports: [],
-  template: ` <div class="legenda tooltip">
-    <div class="legenda-item tooltip">
-      <div class="legenda-item-square legenda-item-square-vrij"></div>
-      <span>Vrij</span>
-      <div class="tooltip-content">Vrij te verplaatsen</div>
-    </div>
-    <div class="legenda-item tooltip">
-      <div class=" legenda-item-square legenda-item-square-capaciteit"></div>
-      <span>Capaciteit</span>
-      <div class="tooltip-content">Gebruikt voor capaciteitsberekening</div>
-    </div>
-    <div class="legenda-item tooltip">
-      <div class=" legenda-item-square legenda-item-square-intake"></div>
-      <span>Intake</span>
-      <div class="tooltip-content">Intake ingepland</div>
-    </div>
-    <div class="legenda-item tooltip">
-      <div class=" legenda-item-square legenda-item-square-blokkade"></div>
-      <span>Geblokkeerd</span>
-      <div class="tooltip-content">Geblokkeerd door een blokkade</div>
-    </div>
-    <div class="legenda-item tooltip">
-      <div class=" legenda-item-square legenda-item-square-beperking"></div>
-      <span>Beperkt planbaar</span>
-      <div class="tooltip-content">Weekend, tijd en feestdag beperkt planbaar</div>
-    </div>
-  </div>`,
-  styles: [
-    `
-      .legenda {
-        max-width: 615px;
-        display: flex;
-
-        .legenda-item {
-          padding: 0.3rem 0.5rem;
-          display: flex;
-          align-items: center;
-
-          .legenda-item-square {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            margin-right: 8px;
-
-            &-vrij {
-              background-color: var(--event-status-free-background-color);
-            }
-            &-capaciteit {
-              background-color: var(--event-status-capacity-background-color);
-            }
-            &-intake {
-              background-color: var(--event-status-intake-background-color);
-            }
-            &-blokkade {
-              background-color: var(--event-status-blocked-background-color);
-            }
-            &-beperking {
-              background-color: var(--event-status-beperking-background-color);
-            }
-          }
-        }
-      }
-    `,
-  ],
+  imports: [DsTooltipDirective],
+  templateUrl: './rooster-legenda.component.html',
+  styleUrls: ['./rooster-legenda.component.scss'],
 })
 export class RoosterLegendaComponent {}

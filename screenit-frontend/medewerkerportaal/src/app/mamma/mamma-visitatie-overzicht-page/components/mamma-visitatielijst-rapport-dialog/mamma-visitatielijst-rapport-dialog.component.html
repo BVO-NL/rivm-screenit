@@ -18,43 +18,41 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog titel="Visitatielijsten insteltechniek rapport">
+<app-base-dialog titel="Visitatielijsten insteltechniek rapport" size="lg">
   <div body>
-    <div>
-      <table class="table">
-        <thead>
-        <tr>
-          <th>Aantal medewerkers</th>
-          <th>Voldoende beelden in 2 maanden</th>
-          <th>Voldoende beelden in 4 maanden</th>
-          <th>Onvoldoende beelden</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td>{{ rapport.aantalMedewerkersVerwerkt }}</td>
-          <td>{{ rapport.aantalMedewerkersMetVoldoendeBeeldenBinnen2Maanden }}</td>
-          <td>{{ rapport.aantalMedewerkersMetVoldoendeBeeldenBinnen4Maanden }}</td>
-          <td>{{ rapport.aantalMedewerkersMetOnvoldoendeBeelden }}</td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
+    <table class="ds-table">
+      <thead>
+      <tr class="ds-header-row">
+        <th class="ds-header-cell">Aantal medewerkers</th>
+        <th class="ds-header-cell">Voldoende beelden in 2 maanden</th>
+        <th class="ds-header-cell">Voldoende beelden in 4 maanden</th>
+        <th class="ds-header-cell">Onvoldoende beelden</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="ds-row">
+        <td class="ds-cell">{{ rapport.aantalMedewerkersVerwerkt }}</td>
+        <td class="ds-cell">{{ rapport.aantalMedewerkersMetVoldoendeBeeldenBinnen2Maanden }}</td>
+        <td class="ds-cell">{{ rapport.aantalMedewerkersMetVoldoendeBeeldenBinnen4Maanden }}</td>
+        <td class="ds-cell">{{ rapport.aantalMedewerkersMetOnvoldoendeBeelden }}</td>
+      </tr>
+      </tbody>
+    </table>
 
     <div class="mt-3">
-      <strong>Overzicht van medewerkers met te weinig beelden: </strong>
-      <table class="table">
+      <div class="section-header">Overzicht van medewerkers met te weinig beelden:</div>
+      <table class="ds-table">
         <thead>
-        <tr>
-          <th>Medewerkercode</th>
-          <th>Aantal beelden</th>
+        <tr class="ds-header-row">
+          <th class="ds-header-cell">Medewerkercode</th>
+          <th class="ds-header-cell">Aantal beelden</th>
         </tr>
         </thead>
         <tbody>
           @for (detail of rapport.uitgeslotenMedewerkerIds; track detail) {
-            <tr>
-              <td>{{ detail.medewerkercode }}</td>
-              <td>{{ detail.aantal }}</td>
+            <tr class="ds-row">
+              <td class="ds-cell">{{ detail.medewerkercode }}</td>
+              <td class="ds-cell">{{ detail.aantal }}</td>
             </tr>
           }
         </tbody>
@@ -62,21 +60,21 @@
     </div>
 
     <div class="mt-3">
-      <strong>Overzicht resultaten per medewerker: </strong>
-      <table class="table">
+      <div class="section-header">Overzicht resultaten per medewerker:</div>
+      <table class="ds-table">
         <thead>
-        <tr>
-          <th>Medewerker</th>
-          <th>Aantal beelden in 2 maanden</th>
-          <th>Aantal beelden in 4 maanden</th>
+        <tr class="ds-header-row">
+          <th class="ds-header-cell">Medewerker</th>
+          <th class="ds-header-cell">Aantal beelden in 2 maanden</th>
+          <th class="ds-header-cell">Aantal beelden in 4 maanden</th>
         </tr>
         </thead>
         <tbody>
           @for (detail of rapport.aantalOnderzoekenLijst; track detail) {
-            <tr>
-              <td>{{ detail.medewerkercode }}</td>
-              <td>{{ detail.aantalBeeldenBinnen2Maanden }}</td>
-              <td>{{ detail.aantalBeeldenBinnen4Maanden }}</td>
+            <tr class="ds-row">
+              <td class="ds-cell">{{ detail.medewerkercode }}</td>
+              <td class="ds-cell">{{ detail.aantalBeeldenBinnen2Maanden }}</td>
+              <td class="ds-cell">{{ detail.aantalBeeldenBinnen4Maanden }}</td>
             </tr>
           }
         </tbody>
@@ -85,8 +83,8 @@
   </div>
 
   <div class="btn-group" buttons>
-    <button class="btn btn-secondary" (click)="sluitDialog()" data-testid="annuleren_btn">Annuleren</button>
-    <button class="btn btn-secondary" (click)="exporteren()" data-testid="exporteren_btn">Exporteren</button>
-    <button class="btn btn-primary" (click)="genereren()" data-testid="genereren_btn">Genereren</button>
+    <button ds-button-secondary (click)="sluitDialog()" data-testid="annuleren_btn">Annuleren</button>
+    <button ds-button-secondary (click)="exporteren()" data-testid="exporteren_btn">Exporteren</button>
+    <button ds-button-primary (click)="genereren()" data-testid="genereren_btn">Genereren</button>
   </div>
 </app-base-dialog>

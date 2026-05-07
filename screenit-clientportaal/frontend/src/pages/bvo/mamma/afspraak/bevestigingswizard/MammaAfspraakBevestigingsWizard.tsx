@@ -18,198 +18,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {AfspraakOptie} from "../../../../../datatypes/mamma/AfspraakOptie"
-import {Dispatch, SetStateAction, useState} from "react"
-import {AfspraakZoekFilter} from "../MammaAfspraakMakenPage"
-import MammaAfspraakMakenPopup from "./wizard_componenten/MammaAfspraakMakenPopup"
-import ProgressiePanel from "../../../../../components/pagina_progressie/ProgressiePanel"
-import MammaAfspraakAfsluitendPopup from "./wizard_componenten/MammaAfspraakAfsluitendPopup"
-import MammaHerinneringSmsPopup from "./wizard_componenten/MammaHerinneringSmsPopup"
-import {AfspraakBevestigingOpties} from "../../../../../datatypes/mamma/AfspraakBevestigingOpties"
-import ScreenitBackend from "../../../../../utils/Backend"
-import {showToast} from "../../../../../utils/ToastUtil"
+import BasePage from "../../../../BasePage"
+import {BevolkingsonderzoekNaam} from "../../../../../datatypes/Bevolkingsonderzoek"
+import properties from "./MammaAfspraakBevestigingsWizard.json"
 import {getString} from "../../../../../utils/TekstPropertyUtil"
-import properties from "./wizard_componenten/MammaAfspraakMakenWizardModuleProperties.json"
-import huisartsProperties from "../../../gedeeld/huisarts/HuisartsPage.json"
-import {ToastMessageType} from "../../../../../datatypes/toast/ToastMessage"
-import {AfspraakBevestigingsWizardStap, getAfspraakBevestingWizardStappen} from "../../../../../datatypes/mamma/AfspraakBevestigingsWizardStap"
-import MammaBevestigingsOptiePopup from "./wizard_componenten/MammaBevestigingsOptiePopup"
+import React, {ReactNode, useEffect, useState} from "react"
+import WizardIndicator from "../../../../../components/wizard_indicator/WizardIndicator"
+import styles from "./MammaAfspraakBevestigingsWizard.module.scss"
+import {WizardIndicatorProvider} from "../../../../../components/wizard_indicator/WizardIndicatorContext"
 import {useSelector} from "react-redux"
-import {State} from "../../../../../datatypes/State"
-import {HuisartsBevestigingsPopup, HuisartsBevestigingsPopupType} from "../../../gedeeld/huisarts/HuisartsBevestigingsPopup"
-import {Huisarts, MammaGeenHuisartsOptie} from "../../../../../datatypes/Huisarts"
-import {bevestigVorige} from "../../../../../api/HuisartsThunkAction"
-import {getBvoBaseUrl} from "../../../../../utils/UrlUtil"
-import {useThunkDispatch} from "../../../../../index"
-import {useSelectedBvo} from "../../../../../utils/Hooks"
-import {useNavigate} from "react-router"
-import {Bevolkingsonderzoek} from "../../../../../datatypes/Bevolkingsonderzoek"
-import datadogService from "../../../../../services/DatadogService"
-import {AnalyticsCategorie} from "../../../../../datatypes/AnalyticsCategorie"
+import {selectMammaAfspraakOptie} from "../../../../../selectors/MammaAfspraakSelectors"
 
-export type MammaAfspraakBevestigingsWizardProps = {
-	setGekozenAfspraak: Dispatch<SetStateAction<AfspraakOptie | undefined>>,
-	gekozenAfspraak: AfspraakOptie | undefined,
-	zoekAfspraken: (zoekFilter: AfspraakZoekFilter) => void,
-	zoekFilter: AfspraakZoekFilter
+export type AfspraakMakenBasePageProps = {
+	children: ReactNode,
 }
 
-const MammaAfspraakBevestigingsWizard = (props: MammaAfspraakBevestigingsWizardProps) => {
-	const dispatch = useThunkDispatch()
-	const bvo = useSelectedBvo()
-	const navigate = useNavigate()
+const MammaAfspraakBevestigingsWizard = (props: AfspraakMakenBasePageProps): React.JSX.Element => {
+	const alleStappen = [
+		{url: "bevestigen", label: "Uw afspraak"},
+		{label: "Bevestigen", url: "bevestiging-selectie"},
+		{label: "Herinneren", url: "herinnering"},
+		{url: "overzicht", label: "Overzicht"},
+		{url: "uw-huisarts", label: "Uw huisarts"},
+	]
 
-	const [afspraakBevestiging, setAfspraakBevestiging] = useState<AfspraakBevestigingOpties | undefined>(undefined)
-	const [wizardStap, setWizardStap] = useState<AfspraakBevestigingsWizardStap>(AfspraakBevestigingsWizardStap.AFSPRAAK_MAKEN)
+	const [wizardStappen, setWizardStappen] = useState(alleStappen)
 
-	const huidigeHuisarts = useSelector((state: State) => state.client.mammaDossier.huisartsHuidigeRonde)
-	const vorigeHuisarts = useSelector((state: State) => state.client.mammaDossier.huisartsVorigeRonde)
-	const vorigeGeenHuisartsOptie: MammaGeenHuisartsOptie | undefined = useSelector((state: State) => state.client.mammaDossier.geenHuisartsOptieVorigeRonde)
-
-	const stappenInWizard: AfspraakBevestigingsWizardStap[] = props.gekozenAfspraak === undefined ? [] : getAfspraakBevestingWizardStappen(props.gekozenAfspraak.toonSmsHerinneringOptie)
-	const huisartsVanClientBekend: boolean = !!geefMeestRecenteHuisarts()
-
-	function maakBevestiging(afspraakBevestiging: AfspraakBevestigingOpties) {
-		ScreenitBackend.post("mamma/afspraak/bevestiging", {json: afspraakBevestiging})
-			.catch((error) => {
-				if (error.response.data === "afspraak.bevestiging.niet.mogelijk") {
-					showToast(getString(properties.afspraak_maken.toast.geen_bevestiging), getString(properties.afspraak_maken.toast.error.algemeen), ToastMessageType.ERROR)
-				}
-			})
-	}
-
-	function geefMeestRecenteHuisarts(): Huisarts | undefined {
-		return huidigeHuisarts ? huidigeHuisarts : vorigeHuisarts
-	}
-
-	function bevestigHuisarts() {
-		if (geefMeestRecenteHuisarts() === vorigeHuisarts) {
-			dispatch(bevestigVorige(vorigeHuisarts, vorigeGeenHuisartsOptie, Bevolkingsonderzoek.MAMMA)).then(() => {
-				showToast(getString(huisartsProperties.gedeeld.toasts.opgeslagen.title), getString(huisartsProperties.gedeeld.toasts.opgeslagen.description))
-				navigate(getBvoBaseUrl(bvo))
-			})
+	const afspraakOptie = useSelector(selectMammaAfspraakOptie)
+	useEffect(() => {
+		if (!afspraakOptie?.toonSmsHerinneringOptie) {
+			setWizardStappen(alleStappen.filter(stap => stap.url !== "herinnering"))
 		} else {
-			showToast(getString(huisartsProperties.gedeeld.toasts.opgeslagen.title), getString(huisartsProperties.gedeeld.toasts.opgeslagen.description))
-			navigate(getBvoBaseUrl(bvo))
+			setWizardStappen(alleStappen)
 		}
-	}
-
-	function navigeerNaarHuisartsKiezen() {
-		navigate("/mamma/huisarts/zoeken")
-	}
-
-	function gaNaarVolgendePopup() {
-		setWizardStap(stappenInWizard.at(stappenInWizard.indexOf(wizardStap) + 1)!)
-	}
-
-	function gaNaarVorigePopup() {
-		setWizardStap(stappenInWizard.at(stappenInWizard.indexOf(wizardStap) - 1)!)
-	}
-
-	function bepaalWelkePopupGetoondMoetWorden() {
-		switch (wizardStap) {
-			case AfspraakBevestigingsWizardStap.AFSPRAAK_MAKEN_MISLUKT:
-				return toonAfspraakMakenMisluktPopup()
-			case AfspraakBevestigingsWizardStap.AFSPRAAK_MAKEN:
-				return toonAfspraakMakenPopup()
-			case AfspraakBevestigingsWizardStap.AFSPRAAK_BEVESTIGINGSMAIL:
-				return toonAfspraakBevestigingsOptieKiezenPopup()
-			case AfspraakBevestigingsWizardStap.AFSPRAAK_SMS_HERINNERING:
-				return toonSMSHerinneringPopup()
-			case AfspraakBevestigingsWizardStap.AFSPRAAK_OVERZICHT:
-				return toonAfspraakAfsluitendOverzichtPopup()
-			case AfspraakBevestigingsWizardStap.HUISARTS_DOORGEVEN:
-				return toonHuisartsDoorgevenPopup()
-		}
-	}
-
-	function toonAfspraakMakenMisluktPopup() {
-		return <MammaAfspraakMakenPopup afspraak={props.gekozenAfspraak!}
-										isBevestigingsPopup={false}
-										onAndereAfspraakKiezen={() => {
-											props.setGekozenAfspraak(undefined)
-											props.zoekAfspraken(props.zoekFilter)
-											setAfspraakBevestiging(undefined)
-										}}/>
-	}
-
-	function toonAfspraakMakenPopup() {
-		return <MammaAfspraakMakenPopup afspraak={props.gekozenAfspraak!}
-										isBevestigingsPopup={true}
-										onNext={() => gaNaarVolgendePopup()}
-										onFailure={() => {
-											setAfspraakBevestiging(undefined)
-											setWizardStap(AfspraakBevestigingsWizardStap.AFSPRAAK_MAKEN_MISLUKT)
-										}}
-										onAndereAfspraakKiezen={() => {
-											props.zoekAfspraken(props.zoekFilter)
-											props.setGekozenAfspraak(undefined)
-										}}
-										setAfspraakBevestiging={setAfspraakBevestiging}>
-			{geefProgressiePanel()}
-		</MammaAfspraakMakenPopup>
-	}
-
-	function toonAfspraakBevestigingsOptieKiezenPopup() {
-		return <MammaBevestigingsOptiePopup afspraakBevestiging={afspraakBevestiging!}
-											onVolgende={(eventNaam: string) => {
-												datadogService.stuurEvent(eventNaam, AnalyticsCategorie.MAMMA_AFSPRAAK)
-												if (!afspraakBevestiging?.toonSmsOptie) {
-													maakBevestiging(afspraakBevestiging!)
-												}
-												gaNaarVolgendePopup()
-											}}>
-			{geefProgressiePanel()}
-		</MammaBevestigingsOptiePopup>
-	}
-
-	function toonSMSHerinneringPopup() {
-		return <MammaHerinneringSmsPopup afspraakBevestiging={afspraakBevestiging!}
-										 onVolgende={(eventNaam: string) => {
-											 datadogService.stuurEvent(eventNaam, AnalyticsCategorie.MAMMA_AFSPRAAK)
-											 maakBevestiging(afspraakBevestiging!)
-											 gaNaarVolgendePopup()
-										 }}>
-			{geefProgressiePanel(() => {
-				afspraakBevestiging!.resetKeuzes()
-				gaNaarVorigePopup()
-			})}
-		</MammaHerinneringSmsPopup>
-	}
-
-	function toonAfspraakAfsluitendOverzichtPopup() {
-		return <MammaAfspraakAfsluitendPopup afspraakBevestiging={afspraakBevestiging!}
-											 onHuisartsControleren={() => gaNaarVolgendePopup()}>
-			{geefProgressiePanel()}
-		</MammaAfspraakAfsluitendPopup>
-	}
-
-	function toonHuisartsDoorgevenPopup() {
-		return <HuisartsBevestigingsPopup type={HuisartsBevestigingsPopupType.DOORGEVEN}
-										  huisarts={geefMeestRecenteHuisarts()}
-										  onPrimaireKnop={() => huisartsVanClientBekend ? bevestigHuisarts() : navigeerNaarHuisartsKiezen()}
-										  onSecundaireKnop={() => huisartsVanClientBekend ? navigeerNaarHuisartsKiezen() : navigate(getBvoBaseUrl(bvo))}
-										  onTertiaireKnop={() => navigate(getBvoBaseUrl(bvo))}
-		/>
-	}
-
-	function geefProgressiePanel(onTerug?: () => void | undefined) {
-		return <ProgressiePanel
-			aantalPaginas={geefAantalProgressieBollen()}
-			huidigePagina={bepaalHuidigPaginaNummer()}
-			onTerug={onTerug}/>
-	}
-
-	function geefAantalProgressieBollen() {
-		return stappenInWizard.length - 1
-	}
-
-	function bepaalHuidigPaginaNummer() {
-		return stappenInWizard.indexOf(wizardStap) + 1
-	}
+	}, [afspraakOptie])
 
 	return (
-		<div>{bepaalWelkePopupGetoondMoetWorden()}</div>
+		<BasePage bvoName={BevolkingsonderzoekNaam.MAMMA}
+				  title={getString(properties.page.title.afspraak_maken)}
+				  toonBlob={false}>
+			<WizardIndicatorProvider stappen={wizardStappen}>
+				<WizardIndicator stappen={wizardStappen} className={styles.wizardIndicator}/>
+				{props.children}
+			</WizardIndicatorProvider>
+		</BasePage>
 	)
 }
 

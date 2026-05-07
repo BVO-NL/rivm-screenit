@@ -28,7 +28,7 @@ import {
 	setMammaHuisartsVorigeRondeReduxAction,
 } from "../actions/MammaDossierAction"
 import {Bevolkingsonderzoek} from "../datatypes/Bevolkingsonderzoek"
-import {Huisarts, MammaGeenHuisartsOptie} from "../datatypes/Huisarts"
+import {Huisarts, HuisartsZoekobject, MammaGeenHuisartsOptie} from "../datatypes/Huisarts"
 import {setColonHuisartsHuidigeRondeReduxAction, setColonHuisartsVorigeRondeReduxAction} from "../actions/ColonDossierAction"
 import {getBvoBaseUrl} from "../utils/UrlUtil"
 import {assertUnreachable} from "../utils/EnumUtil"
@@ -148,4 +148,14 @@ export const bevestigVorige = (vorigeHuisarts?: Huisarts, mammaVorigeGeenHuisart
 					assertUnreachable(bvo)
 			}
 		})
+}
+
+export const zoekHuisartsenAction = (zoek: HuisartsZoekobject, pagina: number) => {
+	return async () => {
+		const result = await ScreenitBackend
+			.post<Huisarts[]>(`huisarts?paginaNummer=${pagina}`, {json: zoek})
+			.json()
+
+		return result as Huisarts[]
+	}
 }

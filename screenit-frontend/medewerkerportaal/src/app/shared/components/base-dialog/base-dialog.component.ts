@@ -18,38 +18,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, EventEmitter, Input, Output } from '@angular/core'
-
-import { ClrModalModule } from '@clr/angular'
+import { Component, input, OnInit } from '@angular/core'
+import { DsFooterActionsLeftDirective, DsFooterActionsRightDirective, DsModalComponent, DsModalConfig } from '@topicus-rgp-ds/web'
 
 @Component({
   selector: 'app-base-dialog',
-  imports: [ClrModalModule],
-  template: ` <clr-modal [clrModalOpen]="true" [clrModalSize]="size" (clrModalOpenChange)="sluiten.emit()">
-    <h3 class="modal-title">{{ titel }}</h3>
-    <div class="modal-body">
+  imports: [DsModalComponent, DsFooterActionsRightDirective, DsFooterActionsLeftDirective],
+  template: `
+    <ds-modal [config]="modalConfig" [header]="titel()" data-testid="modal-titel">
       <ng-content select="[body]"></ng-content>
-    </div>
-    <div class="modal-footer" [class.justify-buttons]="justifyButtons">
-      <ng-content select="[buttons]"></ng-content>
-    </div>
-  </clr-modal>`,
-  styles: [
-    `
-      .modal-footer {
-        display: flex;
-        justify-content: end;
-        &.justify-buttons {
-          justify-content: space-between;
-        }
-        width: 100%;
-      }
-    `,
-  ],
+      <ng-template ds-footer-actions-left>
+        <ng-content select="[verwijder-button]"></ng-content>
+      </ng-template>
+      <ng-template ds-footer-actions-right>
+        <ng-content select="[buttons]"></ng-content>
+      </ng-template>
+    </ds-modal>
+  `,
 })
-export class BaseDialogComponent {
-  @Output() sluiten = new EventEmitter<void>()
-  @Input({ required: true }) titel = 'Titel'
-  @Input() justifyButtons = false
-  @Input() size = 'md'
+export class BaseDialogComponent implements OnInit {
+  modalConfig: DsModalConfig = new DsModalConfig()
+  titel = input.required<string>()
+  size = input<string>('md')
+  contentPadding = input<string>('1rem')
+
+  private static readonly MODAL_BREEDTES: Record<string, string> = {
+    md: '30rem',
+    lg: '40rem',
+    xl: '60rem',
+    xxl: '80vw',
+  }
+
+  public ngOnInit(): void {
+    this.modalConfig.enableClose = false
+    this.modalConfig.width = BaseDialogComponent.MODAL_BREEDTES[this.size()] ?? BaseDialogComponent.MODAL_BREEDTES['md']
+    this.modalConfig.maxWidth = BaseDialogComponent.MODAL_BREEDTES['xxl']
+    this.modalConfig.contentPadding = this.contentPadding()
+  }
 }

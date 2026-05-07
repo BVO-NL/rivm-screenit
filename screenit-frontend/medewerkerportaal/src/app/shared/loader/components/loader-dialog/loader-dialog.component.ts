@@ -19,16 +19,13 @@
  * =========================LICENSE_END==================================
  */
 import { Component } from '@angular/core'
-import { ClrModalModule } from '@clr/angular'
 import { LoaderComponent } from '@shared/loader/components/loader/loader.component'
 
 @Component({
   selector: 'app-loader-dialog',
-  imports: [ClrModalModule, LoaderComponent],
-  template: ` <clr-modal [clrModalClosable]="false" [clrModalOpen]="true" [clrModalStaticBackdrop]="true" clrModalSize="sm">
-    <div class="modal-body clr-display-flex clr-align-content-center">
-      <app-loader />
-    </div>
-  </clr-modal>`,
+  imports: [LoaderComponent],
+  template: ` <div class="display-flex align-content-center">
+    <app-loader />
+  </div>`,
 })
 export class LoaderDialogComponent {}

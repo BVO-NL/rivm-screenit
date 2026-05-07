@@ -40,7 +40,6 @@
 		padding: 15px 30px;
 		background-color: var(--blauw-base);
 		font-weight: 500;
-		margin-bottom: 10px;
 
 		@include respond-below(md) {
 			border-radius: 20px;

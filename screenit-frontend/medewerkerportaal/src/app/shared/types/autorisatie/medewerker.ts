@@ -23,6 +23,7 @@ import { MedewerkerRol } from '@shared/types/autorisatie/medewerker-rol'
 import { OrganisatieDto } from '../algemeen/dto/organisatie.dto'
 
 export interface Medewerker {
+  id: number
   rollen: MedewerkerRol[]
   actief: boolean
   bevolkingsonderzoeken: Bevolkingsonderzoek[]

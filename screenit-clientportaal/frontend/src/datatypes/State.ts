@@ -18,16 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {leegMammaDossier} from "./MammaDossier"
+import {leegMammaDossier} from "./mamma/MammaDossier"
 import {Client} from "./Client"
 import {LandingOverzicht, legeLandingOverzicht} from "./landing/LandingOverzicht"
-import {leegColonDossier} from "./ColonDossier"
+import {leegColonDossier} from "./colon/ColonDossier"
 import {ToastMessage} from "./toast/ToastMessage"
 import {legePersoon} from "./Persoon"
 import {AuthenticatieState, legeAuthenticatieState} from "./authenticatie/AuthenticatieState"
 import {geenBeschikbareContactActies} from "./ContactActiesDto"
 import {leegCervixDossier} from "./CervixDossier"
 import {EnvironmentInfo, geenEnvironmentInfo} from "./EnvironmentInfo"
+import {legeMammaAfspraak} from "./mamma/MammaAfspraak"
 
 export type State = {
 	authenticatie: AuthenticatieState,
@@ -48,6 +49,8 @@ export const legeState: State = {
 		laatsteBezwaarMoment: [],
 		mammaDossier: leegMammaDossier,
 		persoon: legePersoon,
+		openstaandeUitnodigingen: [],
+		mammaAfspraak: legeMammaAfspraak,
 	},
 	landingOverzicht: legeLandingOverzicht,
 	toasts: [],

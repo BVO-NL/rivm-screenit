@@ -23,7 +23,7 @@ package nl.rivm.screenit.main.model.mamma;
 
 public enum MammaFollowUpConclusieChoice
 {
-    NEGATIEF,
-    POSITIEF,
-    NIET_TE_VERWACHTEN
+	NEGATIEF,
+	POSITIEF,
+	NIET_TE_VERWACHTEN
 }

@@ -21,8 +21,13 @@ package nl.rivm.screenit.model.mamma.enums;
  * =========================LICENSE_END==================================
  */
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import nl.rivm.screenit.model.INaam;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum MammaLezingRedenenFotobesprekingRadioloog implements INaam
 {
 	BELANGRIJKE_DISCREPANTIE("Belangrijke discrepantie"),
@@ -34,16 +39,6 @@ public enum MammaLezingRedenenFotobesprekingRadioloog implements INaam
 	DISTORSIE_ARCHITECTUUR_VERSTORING("Distorsie/architectuurverstoring"),
 	CALCIFICATIES("Calcificaties");
 
+	@Getter
 	private final String naam;
-
-	MammaLezingRedenenFotobesprekingRadioloog(String naam)
-	{
-		this.naam = naam;
-	}
-
-	@Override
-	public String getNaam()
-	{
-		return naam;
-	}
 }

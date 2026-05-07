@@ -371,6 +371,8 @@ public enum PreferenceKey
 
 	CERVIX_UITSTEL_UITSLAGBRIEF_PAP3A2_OF_HOGER("Uitstel uitslagbrief na PAP3a2 of hoger", Integer.class),
 
+	CERVIX_WEKEN_NA_AANMAAK_HERINNERING("Weken na aanmaak herinnering", Integer.class),
+
 	CERVIX_VOORAANKONDIGINGS_PERIODE("Het aantal dagen voor de 30e verjaardag dat de vooraankondiging gegenereerd wordt", Integer.class),
 
 	INTERNAL_WSB_SCHEMATRON_VERSIONPATHMAPPING("Schematron version path mapping", String.class),
@@ -482,6 +484,8 @@ public enum PreferenceKey
 		Integer.class),
 
 	COLON_BETROUWBARE_LIMIET_FIT("Betrouwbare limiet FIT uitslag", Integer.class),
+
+	COLON_WEKEN_NA_AANMAAK_HERINNERING("Weken na aanmaak herinnering", Integer.class),
 
 	TOON_TEST_ELEMENTEN("Toon test elementen (knoppen, inputs etc) in de UI", Boolean.class),
 	;

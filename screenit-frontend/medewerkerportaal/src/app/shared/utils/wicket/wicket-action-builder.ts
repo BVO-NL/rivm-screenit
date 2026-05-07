@@ -44,6 +44,11 @@ export class WicketActionBuilder {
     return this
   }
 
+  setFotobesprekingId(fotobesprekingId: number): this {
+    this.params = this.params.append('fotobespreking', fotobesprekingId)
+    return this
+  }
+
   setAction(action: string): this {
     this.params = this.params.append('action', action)
     return this

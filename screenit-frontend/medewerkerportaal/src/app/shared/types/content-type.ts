@@ -22,4 +22,7 @@ export enum ContentType {
   CSV = 'text/csv',
   PDF = 'application/pdf',
   XLSX = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  XLS = 'application/vnd.ms-excel',
+  DOCX = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  DOC = 'application/msword',
 }

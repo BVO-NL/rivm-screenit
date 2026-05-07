@@ -25,7 +25,7 @@ export class AfspraakBevestigingOpties {
 	afspraakId: string
 	toonBriefOptie: boolean
 	toonSmsOptie: boolean
-	bevestigingsType: BevestigingsType = BevestigingsType.GEEN
+	bevestigingsType: BevestigingsType = BevestigingsType.MAIL
 	wilHerinneringsSms: boolean = false
 	clientNieuwEmailAdres: string = ""
 	clientNieuwMobielNummer: string = ""
@@ -34,6 +34,7 @@ export class AfspraakBevestigingOpties {
 		this.afspraakId = id
 		this.toonBriefOptie = gemaakteAfspraak.toonBevestigingsBriefOptie
 		this.toonSmsOptie = gemaakteAfspraak.toonSmsHerinneringOptie
+		this.wilHerinneringsSms = this.toonSmsOptie
 		if (gemaakteAfspraak.clientEmailAdres != null) {
 			this.clientNieuwEmailAdres = gemaakteAfspraak.clientEmailAdres
 		}
@@ -42,9 +43,9 @@ export class AfspraakBevestigingOpties {
 		}
 	}
 
-	resetKeuzes() {
-		this.bevestigingsType = BevestigingsType.GEEN
-		this.wilHerinneringsSms = false
+	resetKeuzes(): void {
+		this.bevestigingsType = BevestigingsType.MAIL
+		this.wilHerinneringsSms = true
 	}
 
 }

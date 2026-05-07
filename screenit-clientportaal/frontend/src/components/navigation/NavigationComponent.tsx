@@ -32,12 +32,13 @@ import {getContactUrl} from "../../utils/UrlUtil"
 import datadogService from "../../services/DatadogService"
 import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 import {BevolkingsonderzoekNaam} from "../../datatypes/Bevolkingsonderzoek"
+import {selectPersoon} from "../../selectors/ClientSelectors"
 
 const NavigationComponent = () => {
 	const [sticky, setSticky] = useState(true)
 	const [expanded, setExpanded] = useState(false)
 
-	const persoon = useSelector((state: State) => state.client.persoon)
+	const persoon = useSelector(selectPersoon)
 	const landingOverzicht = useSelector((state: State) => state.landingOverzicht)
 	const nietTonenHamburger = persoon.id !== undefined
 

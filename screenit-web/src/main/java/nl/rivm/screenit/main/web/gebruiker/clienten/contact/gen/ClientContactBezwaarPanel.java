@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,6 +43,7 @@ import nl.rivm.screenit.model.ClientContactManier;
 import nl.rivm.screenit.model.OnderzoeksresultatenActie;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.algemeen.BezwaarGroupViewWrapper;
+import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.BezwaarType;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
@@ -324,8 +326,7 @@ public class ClientContactBezwaarPanel extends AbstractClientContactActiePanel<C
 
 	private boolean heeftRechtVoor(Recht... rechten)
 	{
-		var ingelogdeOrganisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
-		return autorisatieService.getActieVoorMedewerker(ingelogdeOrganisatieMedewerker, null, rechten) != null;
+		return Stream.of(rechten).anyMatch(recht -> ScreenitSession.get().checkPermission(recht, Actie.VERWIJDEREN));
 	}
 
 	@Override

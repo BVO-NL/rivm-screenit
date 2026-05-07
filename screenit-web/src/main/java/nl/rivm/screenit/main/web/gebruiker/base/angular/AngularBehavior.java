@@ -26,9 +26,12 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.main.model.mamma.beoordeling.MammaFotobesprekingOnderzoekenWerklijstZoekObject;
 import nl.rivm.screenit.main.model.mamma.beoordeling.MammaVisitatieOnderzoekenWerklijstZoekObject;
+import nl.rivm.screenit.main.service.mamma.MammaFotobesprekingService;
 import nl.rivm.screenit.main.service.mamma.MammaVisitatieService;
 import nl.rivm.screenit.main.web.ScreenitSession;
+import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.fotobespreking.MammaFotobesprekingOnderzoekenWerklijstPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.visitatie.MammaVisitatieOnderzoekenOnderdeelInsteltechniekWerklijstPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.visitatie.MammaVisitatieOnderzoekenOnderdeelIntervalcarcinomenWerklijstPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.visitatie.MammaVisitatieOnderzoekenWerklijstPage;
@@ -57,6 +60,9 @@ public class AngularBehavior extends AbstractDefaultAjaxBehavior
 	@SpringBean
 	private MammaVisitatieService mammaVisitatieService;
 
+	@SpringBean
+	private MammaFotobesprekingService mammaFotobesprekingService;
+
 	@Override
 	protected void respond(AjaxRequestTarget ajaxRequestTarget)
 	{
@@ -68,6 +74,10 @@ public class AngularBehavior extends AbstractDefaultAjaxBehavior
 			case "toVisitatiePage":
 				var visitatieId = getAngularURLParameter("visitatie");
 				gaNaarVisitatie(visitatieId);
+				break;
+			case "toFotobesprekingPage":
+				var fotobesprekingId = getAngularURLParameter("fotobespreking");
+				gaNaarFotobespreking(fotobesprekingId);
 				break;
 
 			}
@@ -92,6 +102,15 @@ public class AngularBehavior extends AbstractDefaultAjaxBehavior
 		{
 			this.getComponent().setResponsePage(new MammaVisitatieOnderzoekenOnderdeelIntervalcarcinomenWerklijstPage());
 		}
+	}
+
+	private void gaNaarFotobespreking(String fotobesprekingId)
+	{
+		var fotobespreking = mammaFotobesprekingService.getFotobespreking(Long.parseLong(fotobesprekingId));
+		var zoekObjectModel = new CompoundPropertyModel<>(new MammaFotobesprekingOnderzoekenWerklijstZoekObject());
+		zoekObjectModel.getObject().setFotobespreking(fotobespreking);
+		ScreenitSession.get().setZoekObject(MammaFotobesprekingOnderzoekenWerklijstPage.SESSION_KEY, zoekObjectModel);
+		this.getComponent().setResponsePage(new MammaFotobesprekingOnderzoekenWerklijstPage());
 	}
 
 	private String getAngularURLParameter(final String keyVanParameter)

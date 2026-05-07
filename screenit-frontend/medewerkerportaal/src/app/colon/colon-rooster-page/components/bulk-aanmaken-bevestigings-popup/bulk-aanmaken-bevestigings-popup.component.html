@@ -18,10 +18,10 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog titel="Bevestiging" (sluiten)="handleNo()" size="lg">
+<app-base-dialog (sluiten)="handleNo()" size="lg" titel="Bevestiging">
   <div body class="body">
     @if (heeftHardeBeperkingen) {
-      <div class="mb-5">
+      <div>
         <div>Onderstaande {{ dialogData.typeTijdslot }} kunnen niet worden aangemaakt:</div>
         <app-bulk-aanmaken-resultaten-tabel [exceptions]="exceptions.hard"/>
       </div>
@@ -35,7 +35,7 @@
     <p>Wilt u doorgaan?</p>
   </div>
   <div buttons class="btn-group">
-    <button type="button" class="btn" (click)="handleNo()">Nee</button>
-    <button type="button" class="btn btn-primary" (click)="handleYes()">Ja</button>
+    <button (click)="handleNo()" ds-button-secondary>Nee</button>
+    <button (click)="handleYes()" ds-button-primary>Ja</button>
   </div>
 </app-base-dialog>

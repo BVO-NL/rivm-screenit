@@ -21,30 +21,13 @@
 import { Component, inject } from '@angular/core'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
-import { MammaVisitatieDto } from '@shared/types/mamma/dto/mamma-visitatie.dto'
+import { MammaVisitatieDto } from '@shared/types/mamma/dto/visitatie/mamma-visitatie.dto'
+import { DsButtonComponent } from '@topicus-rgp-ds/web'
 
 @Component({
   selector: 'app-mamma-visitatie-verwijderen-dialog',
-  imports: [BaseDialogComponent],
-  template: `<app-base-dialog titel="Visistatie verwijderen">
-    <div body class="body">
-      <div class="mb-2">Onderstaande visitatie definitief verwijderen?</div>
-      <table>
-        <tr>
-          <td>Omschrijving</td>
-          <td>{{ visitatie.omschrijving }}</td>
-        </tr>
-        <tr>
-          <td>Aangemaakt door</td>
-          <td>{{ visitatie.aangemaaktDoor }}</td>
-        </tr>
-      </table>
-    </div>
-    <div buttons class="btn-group">
-      <button type="button" class="btn" (click)="sluitDialog()" data-testid="annuleren_button">Annuleren</button>
-      <button type="button" class="btn btn-danger" (click)="bevestigVerwijderen()" data-testid="verwijderen_button">Verwijderen</button>
-    </div>
-  </app-base-dialog>`,
+  imports: [BaseDialogComponent, DsButtonComponent],
+  templateUrl: './mamma-visitatie-verwijderen-dialog.component.html',
   styles: `
     .body table td {
       padding-right: 1rem;

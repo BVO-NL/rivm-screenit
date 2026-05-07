@@ -18,15 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import {installCryptoPolyfills} from "./utils/CryptoPolyfill"
 import * as serviceWorker from "./serviceWorker"
 import "./index.css"
-import {Action, applyMiddleware, compose, createStore, Store} from "redux"
-import cpReducers from "./reducers"
-import {loadState, saveState} from "./utils/StorageUtil"
+import {Action} from "redux"
 import {Provider, useDispatch} from "react-redux"
 import {BrowserRouter} from "react-router"
 import App from "./App"
-import {thunk, ThunkDispatch} from "redux-thunk"
+import {ThunkDispatch} from "redux-thunk"
 import {State} from "./datatypes/State"
 import IdleTimerWrapper from "./wrapper/IdleTimerWrapper"
 import AuthenticationWrapper from "./wrapper/AuthenticationWrapper"
@@ -37,26 +36,15 @@ import ErrorBoundary from "./components/error_boundary/ErrorBoundary"
 import KeycloakProvider from "./components/KeycloakProvider"
 import {setLoggingOutAction} from "./actions/AuthenticatieAction"
 import datadogService from "./services/DatadogService"
+import {cpStore} from "./store"
+
+installCryptoPolyfills()
 
 export type ReduxThunkDispatch = ThunkDispatch<State, any, Action>;
 
 export function useThunkDispatch(): ReduxThunkDispatch {
 	return useDispatch<ReduxThunkDispatch>()
 }
-
-const composeEnhancers =
-	(process.env.NODE_ENV !== "production" &&
-		(window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
-	compose
-
-export const cpStore: Store = createStore(
-	cpReducers,
-	loadState(),
-	composeEnhancers(applyMiddleware(thunk)),
-)
-cpStore.subscribe(() => {
-	saveState()
-})
 
 datadogService.init()
 

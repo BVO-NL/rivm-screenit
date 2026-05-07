@@ -22,13 +22,11 @@ package nl.rivm.screenit.specification.algemeen;
  */
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -37,13 +35,14 @@ import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.RangeUtil;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 
+import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 
 import static nl.rivm.screenit.specification.DateSpecification.bevatLocalDateToDate;
 import static nl.rivm.screenit.specification.DateSpecification.extractYear;
-import static nl.rivm.screenit.specification.SpecificationUtil.composePredicates;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenEmpty;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenEmptyExtended;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNullExtended;
@@ -109,30 +108,30 @@ public class PersoonSpecification
 
 	public static ExtendedSpecification<Persoon> valtBinnenLeeftijdGrensRestricties(Integer minLeeftijd, Integer maxLeeftijd, Integer interval, LocalDate peildatum)
 	{
-		return (r, q, cb) ->
-		{
-			var predicates = new ArrayList<Predicate>();
-			if (minLeeftijd != null)
-			{
-				var geboortedatumMaximaal = peildatum.minusYears(minLeeftijd);
-				predicates.add(isGeborenVoorOfOp(geboortedatumMaximaal).toPredicate(r, q, cb));
-			}
-			if (maxLeeftijd != null)
-			{
-				var geboortedatumMinimaal = peildatum.minusYears(maxLeeftijd + 1L);
-				if (interval != null)
-				{
-					geboortedatumMinimaal = geboortedatumMinimaal.minusDays(interval);
-				}
-				predicates.add(isGeborenNa(geboortedatumMinimaal).toPredicate(r, q, cb));
-			}
-			return composePredicates(cb, predicates);
-		};
+		return bevatLocalDateToDate(maakGeboortedatumRange(minLeeftijd, maxLeeftijd, interval, peildatum), r -> r.get(Persoon_.geboortedatum));
+	}
+
+	public static ExtendedSpecification<Persoon> valtBuitenLeeftijdGrensRestricties(Integer minLeeftijd, Integer maxLeeftijd, Integer interval, LocalDate peildatum)
+	{
+		return ExtendedSpecification.not(valtBinnenLeeftijdGrensRestricties(minLeeftijd, maxLeeftijd, interval, peildatum));
+	}
+
+	private static Range<LocalDate> maakGeboortedatumRange(Integer minLeeftijd, Integer maxLeeftijd, Integer interval, LocalDate peildatum)
+	{
+		var minimaleDatum = maxLeeftijd != null ? peildatum.minusYears(maxLeeftijd + 1L).minusDays(interval != null ? interval : 0) : null;
+		var maximaleDatum = minLeeftijd != null ? peildatum.minusYears(minLeeftijd) : null;
+
+		return RangeUtil.range(minimaleDatum, BoundType.OPEN, maximaleDatum, BoundType.CLOSED);
 	}
 
 	public static ExtendedSpecification<Persoon> valtBinnenLeeftijd(Integer minLeeftijd, Integer maxLeeftijd, LocalDate peilDatum)
 	{
 		return valtBinnenLeeftijdGrensRestricties(minLeeftijd, maxLeeftijd, null, peilDatum);
+	}
+
+	public static ExtendedSpecification<Persoon> valtBuitenLeeftijd(Integer minLeeftijd, Integer maxLeeftijd, LocalDate peilDatum)
+	{
+		return valtBuitenLeeftijdGrensRestricties(minLeeftijd, maxLeeftijd, null, peilDatum);
 	}
 
 	public static ExtendedSpecification<Persoon> isGeborenVoor(LocalDate peilDatum)

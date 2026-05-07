@@ -1,0 +1,91 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog [size]="isNieuw ? 'xl' : 'lg'" [titel]="title">
+  <form [formGroup]="blokkadeForm" body class="form-in-modal" novalidate>
+    <div class="blokkade-layout">
+      <div class="blokkade-kolom-links">
+        <div class="blokkade-form-grid">
+          <app-kamer-selector formControlName="kamer" [required]="!alleKamersCtrl.value" [inclusiefAlleKamers]="false"/>
+
+          @if (isNieuw) {
+            <ds-checkbox
+              class="grid-alle-kamers"
+              data-testid="checkbox_alle_kamers"
+              formControlName="alleKamers">
+              Alle kamers
+            </ds-checkbox>
+          }
+
+          <ds-datepicker
+            [min]="minDatum"
+            class="grid-datum"
+            data-testid="input_datum"
+            formControlName="datum"
+            label="Datum"
+          />
+
+          <ds-checkbox class="grid-hele-dag" data-testid="checkbox_hele_dag" formControlName="heleDag">Hele dag</ds-checkbox>
+
+          <div class="grid-starteindtijd">
+            <app-timepicker
+              data-testid="input_start_tijd"
+              formControlName="vanaf"
+              label="Starttijd"
+              [required]="!heleDagCtrl.value"
+            />
+
+            <app-timepicker
+              data-testid="input_eind_tijd"
+              formControlName="tot"
+              label="Eindtijd"
+              [required]="!heleDagCtrl.value"
+            />
+          </div>
+
+          <ds-input
+            [errorMessage]="{required: 'Omschrijving is verplicht'}"
+            class="grid-omschrijving"
+            data-testid="input_omschrijving"
+            formControlName="omschrijving"
+            label="Omschrijving"
+            required
+            type="text"
+          />
+        </div>
+      </div>
+      @if (isNieuw) {
+        <div class="blokkade-kolom-rechts">
+          <app-bulk-aanmaken class="grid-herhalen" formControlName="herhaling"/>
+        </div>
+      }
+
+    </div>
+  </form>
+  @if (verwijderenToegestaan) {
+    <button verwijder-button (click)="confirmDelete()" data-testid="btn-verwijderen" ds-button-delete type="button">Verwijderen</button>
+  }
+  <div buttons class="btn-group">
+    <button (click)="cancel()" data-testid="btn_annuleren" ds-button-secondary type="button">{{ bewerkenToegestaan ? 'Annuleren' : 'Sluiten' }}</button>
+    @if (bewerkenToegestaan) {
+      <button (click)="save()" [disabled]="blokkadeForm.invalid" data-testid="btn_opslaan" ds-button-primary type="button">Opslaan</button>
+    }
+  </div>
+</app-base-dialog>

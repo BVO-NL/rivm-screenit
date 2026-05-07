@@ -21,21 +21,19 @@
 import { Component, inject, output, signal } from '@angular/core'
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms'
 import { MammaVisitatieWerklijstFilter } from '@shared/types/mamma/mamma-visitatie-werklijst-filter'
-import { CardComponent } from '@shared/components/card/card.component'
 import { OrganisatieService } from '@/algemeen/services/organisatie/organisatie.service'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { ClrComboboxModule } from '@clr/angular'
 import { OrganisatieDto } from '@/shared/types/algemeen/dto/organisatie.dto'
 import { iif, startWith, switchMap, take } from 'rxjs'
 import { MammaVisitatieStatus, mammaVisitatieStatusLijst } from '@shared/types/mamma/mamma-visitatie-status'
 import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { OrganisatieType } from '@shared/types/algemeen/organisatie-type'
-import { EnumWeergave } from '@shared/types/enum-weergave'
 import { subMonths } from 'date-fns'
+import { DsButtonComponent, DsDropdownComponent } from '@topicus-rgp-ds/web'
 
 @Component({
   selector: 'app-mamma-visitatie-filter',
-  imports: [CardComponent, ReactiveFormsModule, ClrComboboxModule],
+  imports: [ReactiveFormsModule, DsButtonComponent, DsDropdownComponent],
   templateUrl: './mamma-visitatie-filter.component.html',
 })
 export class MammaVisitatieFilterComponent {
@@ -44,7 +42,7 @@ export class MammaVisitatieFilterComponent {
   private readonly autorisatieService = inject(AutorisatieService)
   private firstRun = true
 
-  visitatieStatusLijst = mammaVisitatieStatusLijst.filter((status) => !(this.isKwaliteitsplatform && status.enum === MammaVisitatieStatus.INGEPLAND))
+  visitatieStatusLijst = mammaVisitatieStatusLijst.filter((status) => !(this.isKwaliteitsplatform && status.waarde === MammaVisitatieStatus.INGEPLAND))
   filterForm = this.formBuilder.group({
     beoordelingseenheidIds: [],
     centraleEenheidIds: [],
@@ -124,22 +122,6 @@ export class MammaVisitatieFilterComponent {
           this.filteren()
         }
       })
-  }
-
-  getSelectedBeoordelingseenheid(id: number): OrganisatieDto | undefined {
-    return this.beoordelingseenheden().find((be) => be.id === id)
-  }
-
-  getSelectedScreeningseenheid(id: number): OrganisatieDto | undefined {
-    return this.screeningseenheden().find((se) => se.id === id)
-  }
-
-  getSelectedCentraleEenheid(id: number): OrganisatieDto | undefined {
-    return this.centraleEenheden().find((ce) => ce.id === id)
-  }
-
-  getSelectedStatus(waarde: MammaVisitatieStatus): EnumWeergave<MammaVisitatieStatus> | undefined {
-    return this.visitatieStatusLijst.find((status) => status.enum === waarde)
   }
 
   filteren() {

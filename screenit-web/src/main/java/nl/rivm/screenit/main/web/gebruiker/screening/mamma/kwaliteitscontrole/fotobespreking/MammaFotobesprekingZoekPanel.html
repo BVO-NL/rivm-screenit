@@ -19,16 +19,51 @@
   =========================LICENSE_END==================================
   -->
 <html xmlns:wicket="http://wicket.apache.org">
-<wicket:extend>
-	<wicket:container wicket:id="typeContainer">
-		<div class="span3">
-			<div class="control-group">
-				<label class="control-label">Type</label>
-				<select class="span6" multiple="multiple" wicket:id="types">
-					<option>0</option>
-				</select>
+<wicket:panel>
+	<form wicket:id="form">
+		<fieldset class="form-horizontal">
+			<div class="row-fluid">
+
+				<wicket:container wicket:id="centraleEenhedenContainer">
+					<div class="span3">
+						<div class="control-group">
+							<label class="control-label">Centrale eenheden</label>
+							<select class="span6" multiple="multiple" wicket:id="centraleEenheden">
+								<option>0</option>
+							</select>
+						</div>
+					</div>
+				</wicket:container>
+
+				<wicket:container wicket:id="beoordelingsEenhedenContainer">
+					<div class="span3">
+						<div class="control-group">
+							<label class="control-label">Beoordelingseenheden</label>
+							<select class="span6" multiple="multiple" wicket:id="beoordelingsEenheden">
+								<option>0</option>
+							</select>
+						</div>
+					</div>
+				</wicket:container>
+
+				<wicket:container wicket:id="typeContainer">
+					<div class="span3">
+						<div class="control-group">
+							<label class="control-label">Type</label>
+							<select class="span6" multiple="multiple" wicket:id="types">
+								<option>0</option>
+							</select>
+						</div>
+					</div>
+				</wicket:container>
+
+				<div class="form-actions clearfix">
+					<button class="btn btn-primary" wicket:id="zoeken">
+						<i class="icon-search icon-white"></i> Zoeken
+					</button>
+				</div>
 			</div>
-		</div>
-	</wicket:container>
-</wicket:extend>
+		</fieldset>
+	</form>
+</wicket:panel>
 </html>

@@ -31,7 +31,7 @@
   [viewRange]="viewRange"
 />
 
-<full-calendar class="aantal-kamers-{{ kamers.length }}" #calendar id="roosterCalendar" [options]="calendarOptions" [resources]="kamers" [events]="tijdsloten$ | async">
+<full-calendar class="aantal-kamers-{{ kamers.length }}" #calendar id="roosterCalendar" [options]="calendarOptions" [resources]="kamers" [events]="tijdsloten()">
   <ng-template #eventContent let-arg>
     <div
       class="fc-event-main-frames"

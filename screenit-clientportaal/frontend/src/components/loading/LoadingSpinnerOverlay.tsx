@@ -26,7 +26,7 @@ import {State} from "../../datatypes/State"
 
 const LoadingSpinnerOverlay = () => {
 	const requestMinusResponseCount = useSelector((state: State) => state.requestMinusResponseCounter)
-	const spinnerNodig = requestMinusResponseCount !== 0
+	const spinnerNodig = requestMinusResponseCount > 0
 
 	return <div className={classNames(styles.style, spinnerNodig && styles.visible)}>
 		<div className={styles.spinnerContainer}>

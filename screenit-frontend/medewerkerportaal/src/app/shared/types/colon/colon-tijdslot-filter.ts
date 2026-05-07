@@ -19,8 +19,8 @@
  * =========================LICENSE_END==================================
  */
 export interface ColonTijdslotFilter {
-  startDatum: string
-  eindDatum: string
+  startDatum: Date
+  eindDatum: Date
   startTijd: string
   eindTijd: string
   kamerId?: number

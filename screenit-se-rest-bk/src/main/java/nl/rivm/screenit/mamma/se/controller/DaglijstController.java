@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import nl.rivm.screenit.mamma.se.dto.AfspraakSeDto;
 import nl.rivm.screenit.mamma.se.service.DaglijstService;
 import nl.rivm.screenit.mamma.se.service.MammaScreeningsEenheidService;
@@ -40,16 +42,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/daglijst")
 public class DaglijstController extends AuthorizedController
 {
 	private static final Logger LOG = LoggerFactory.getLogger(DaglijstController.class);
+
+	private static final String VERSIE_HEADER = "versie";
 
 	@Autowired
 	private DaglijstService daglijstService;
@@ -58,10 +61,11 @@ public class DaglijstController extends AuthorizedController
 	private MammaScreeningsEenheidService screeningsEenheidService;
 
 	@GetMapping(value = "/{datum}")
-	public ResponseEntity readDaglijst(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate datum, HttpServletRequest request)
+	public ResponseEntity readDaglijst(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate datum, HttpServletRequest request,
+		@RequestHeader(value = VERSIE_HEADER, required = false) String seVersie)
 	{
 		var seCode = getSeCode(request);
-		DaglijstOphaler daglijstOphaler = new DaglijstOphaler(datum, seCode);
+		var daglijstOphaler = new DaglijstOphaler(datum, seCode, seVersie);
 		var future = executorService.submit(daglijstOphaler);
 
 		try
@@ -94,13 +98,16 @@ public class DaglijstController extends AuthorizedController
 
 		private final String seCode;
 
+		private final String seVersie;
+
 		private List<AfspraakSeDto> afspraken;
 
-		DaglijstOphaler(LocalDate opTeHalenDatum, String seCode)
+		DaglijstOphaler(LocalDate opTeHalenDatum, String seCode, String seVersie)
 		{
 			super(true);
 			this.opTeHalenDatum = opTeHalenDatum;
 			this.seCode = seCode;
+			this.seVersie = seVersie;
 		}
 
 		@Override
@@ -108,7 +115,7 @@ public class DaglijstController extends AuthorizedController
 		{
 			if (screeningsEenheidService.magSeDaglijstInzienVanDatum(seCode, opTeHalenDatum))
 			{
-				afspraken = daglijstService.readDaglijst(opTeHalenDatum, seCode);
+				afspraken = daglijstService.readDaglijst(opTeHalenDatum, seCode, seVersie);
 			}
 			else
 			{

@@ -236,7 +236,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 		var intakelocatie = roosterService.getIntakelocatieVanOrganisatieMedewerker(organisatieMedewerker);
 		var dbAfspraakslot = roosterService.getAfspraakslot(id).orElseThrow(() -> new ValidatieException("error.afspraakslot.niet.gevonden"));
 		var afspraakslotStatus = getAfspraakslotStatus(dbAfspraakslot);
-		magAfsrpaakslotOpslaanVerwijderen(dbAfspraakslot, false);
+		magAfspraakslotOpslaanVerwijderen(dbAfspraakslot, false);
 
 		if (afspraakslotStatus == ColonAfspraakslotStatus.GEBRUIKT_VOOR_CAPACITEIT)
 		{
@@ -265,7 +265,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 					return;
 				}
 				var afspraakslotStatus = getAfspraakslotStatus(dbAfspraakslot);
-				magAfsrpaakslotOpslaanVerwijderen(dbAfspraakslot, true);
+				magAfspraakslotOpslaanVerwijderen(dbAfspraakslot, true);
 
 				if (afspraakslotStatus == ColonAfspraakslotStatus.GEBRUIKT_VOOR_CAPACITEIT)
 				{
@@ -452,7 +452,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 	{
 		valideerBeperkingen(afspraakslot, ColonRoosterBeperking.HARD);
 		roosterService.valideerTijdslot(afspraakslot);
-		magAfsrpaakslotOpslaanVerwijderen(afspraakslot, wijzigen);
+		magAfspraakslotOpslaanVerwijderen(afspraakslot, wijzigen);
 
 		checkCapaciteitBerekening(afspraakslot, intakelocatie);
 		checkEindTijdOpZelfdeDag(afspraakslot.getVanaf(), afspraakslot.getTot(), intakelocatie);
@@ -474,7 +474,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 			{
 				valideerBeperkingen(afspraakslot, ColonRoosterBeperking.HARD);
 				roosterService.valideerTijdslot(afspraakslot);
-				magAfsrpaakslotOpslaanVerwijderen(afspraakslot, true);
+				magAfspraakslotOpslaanVerwijderen(afspraakslot, true);
 				checkCapaciteitBerekening(afspraakslot, intakelocatie);
 				checkEindTijdOpZelfdeDag(afspraakslot.getVanaf(), afspraakslot.getTot(), intakelocatie);
 				valideerBeperkingen(afspraakslot, ColonRoosterBeperking.ZACHT);
@@ -498,7 +498,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 		}
 	}
 
-	public void magAfsrpaakslotOpslaanVerwijderen(ColonAfspraakslot afspraakslot, boolean wijzigen)
+	public void magAfspraakslotOpslaanVerwijderen(ColonAfspraakslot afspraakslot, boolean wijzigen)
 		throws OpslaanVerwijderenTijdBlokException
 	{
 		if (afspraakslot.getId() != null)

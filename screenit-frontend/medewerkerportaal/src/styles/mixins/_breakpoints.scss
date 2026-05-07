@@ -1,0 +1,106 @@
+/*-
+ * ========================LICENSE_START=================================
+ * medewerkerportaal
+ * %%
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+@use '../variables';
+@use 'sass:map';
+@use 'sass:list';
+
+@function breakpoint-next(
+  $name,
+  $breakpoints: variables.$grid-breakpoints,
+  $breakpoint-names: map.keys($breakpoints)
+) {
+  $n: list.index($breakpoint-names, $name);
+  @return if(sass($n < list.length($breakpoint-names)): list.nth($breakpoint-names, $n + 1));
+}
+
+@function breakpoint-min($name, $breakpoints: variables.$grid-breakpoints) {
+  $min: map.get($breakpoints, $name);
+  @return if(sass($min != 0): $min);
+}
+
+@function breakpoint-max($name, $breakpoints: variables.$grid-breakpoints) {
+  $next: breakpoint-next($name, $breakpoints);
+  @return if(sass($next): breakpoint-min($next, $breakpoints) - 0.02px);
+}
+
+@function breakpoint-infix($name, $breakpoints: variables.$grid-breakpoints) {
+  @return  if(sass(breakpoint-min($name, $breakpoints) == null): ""; else: "-#{$name}");
+}
+
+@mixin media-breakpoint-up($name, $breakpoints: variables.$grid-breakpoints) {
+  $min: breakpoint-min($name, $breakpoints);
+  @if $min {
+    @media (min-width: $min) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}
+
+@mixin media-breakpoint-down($name, $breakpoints: variables.$grid-breakpoints) {
+  $max: breakpoint-max($name, $breakpoints);
+  @if $max {
+    @media (max-width: $max) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}
+
+@mixin media-breakpoint-between($lower, $upper, $breakpoints: variables.$grid-breakpoints) {
+  $min: breakpoint-min($lower, $breakpoints);
+  $max: breakpoint-max($upper, $breakpoints);
+
+  @if $min != null and $max != null {
+    @media (min-width: $min) and (max-width: $max) {
+      @content;
+    }
+  } @else if $max == null {
+    @include media-breakpoint-up($lower, $breakpoints) {
+      @content;
+    }
+  } @else if $min == null {
+    @include media-breakpoint-down($upper, $breakpoints) {
+      @content;
+    }
+  }
+}
+
+@mixin media-breakpoint-only($name, $breakpoints: variables.$grid-breakpoints) {
+  $min: breakpoint-min($name, $breakpoints);
+  $max: breakpoint-max($name, $breakpoints);
+
+  @if $min != null and $max != null {
+    @media (min-width: $min) and (max-width: $max) {
+      @content;
+    }
+  } @else if $max == null {
+    @include media-breakpoint-up($name, $breakpoints) {
+      @content;
+    }
+  } @else if $min == null {
+    @include media-breakpoint-down($name, $breakpoints) {
+      @content;
+    }
+  }
+}

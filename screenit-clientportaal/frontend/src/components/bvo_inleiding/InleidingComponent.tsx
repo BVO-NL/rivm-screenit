@@ -34,12 +34,12 @@ import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 export type InleidingComponentProps = {
 	bvoNaam: string,
 	groteTitel: string,
-	inleidingBvoTekst: string,
+	inleidingBvoTekst?: string,
 	hintTekst?: string,
 	link?: string,
 	linkTekst?: string,
 	toonAlgemeneInleidingTekst: boolean,
-	volgendeUitnodigingTekst?: string
+	volgendeUitnodigingTekst?: string,
 }
 
 const InleidingComponent = (props: InleidingComponentProps) => {
@@ -48,12 +48,11 @@ const InleidingComponent = (props: InleidingComponentProps) => {
 
 	return (
 		<div className={BevolkingsonderzoekStyle[selectedBvo!]}>
-			<h4
-				className={classNames(bvoStyles.bvoText)}>{getString(properties.bvo_title, [props.bvoNaam])}</h4>
+			<h4 className={classNames(bvoStyles.bvoText)}>{getString(properties.bvo_title, [props.bvoNaam])}</h4>
 			<h1 className={styles.bvoNaam}>{props.groteTitel}</h1>
-			<div className={styles.infoContainer}>
+			{props.inleidingBvoTekst && <div className={styles.infoContainer}>
 				<SpanWithHtml className={styles.infoText} value={props.inleidingBvoTekst}/>
-			</div>
+			</div>}
 			{props.hintTekst && <HintComponent><SpanWithHtml value={props.hintTekst}/></HintComponent>}
 			{props.volgendeUitnodigingTekst && <SpanWithHtml value={props.volgendeUitnodigingTekst}/>}
 			{props.link && props.linkTekst &&

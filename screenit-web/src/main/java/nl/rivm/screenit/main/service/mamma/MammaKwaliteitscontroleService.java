@@ -26,10 +26,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieRequestDto;
-import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieResponseDto;
-import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatielijstRequestDto;
-import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatielijstResponseDto;
+import nl.rivm.screenit.main.dto.mamma.visitatie.MammaVisitatieRequestDto;
+import nl.rivm.screenit.main.dto.mamma.visitatie.MammaVisitatieResponseDto;
+import nl.rivm.screenit.main.dto.mamma.visitatie.MammaVisitatielijstRequestDto;
+import nl.rivm.screenit.main.dto.mamma.visitatie.MammaVisitatielijstResponseDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
@@ -86,4 +86,5 @@ public interface MammaKwaliteitscontroleService
 	void deleteVisitatie(MammaVisitatie visitatie);
 
 	String addVisitatieOnderzoek(MammaVisitatie visitatie, MammaVisitatieOnderdeel visitatieOnderdeel, Client client);
+
 }

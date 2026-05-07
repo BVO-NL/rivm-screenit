@@ -30,8 +30,10 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.model.testen.TestTimeLineDossierTijdstip;
 import nl.rivm.screenit.main.service.colon.ColonTestTimelineTimeService;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
+import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonFitRegistratie;
+import nl.rivm.screenit.model.colon.ColonMergedBrieven;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonVerslag;
 import nl.rivm.screenit.service.BaseTestTimelineService;
@@ -154,12 +156,31 @@ public class ColonTestTimelineTimeServiceImpl implements ColonTestTimelineTimeSe
 			baseTestTimelineService.rekenObjectTerug(ronde, dagen);
 
 			rekenAlleUitnodigingenTerug(ronde, dagen);
-			baseTestTimelineService.rekenObjectTerug(ronde.getBrieven(), dagen); 
+			baseTestTimelineService.rekenObjectTerug(ronde.getBrieven(), dagen);
+			rekenBriefTerug(ronde.getLaatsteBrief(), dagen);
 			rekenAlleIntakeAfsprakenTerug(ronde, dagen);
 			rekenAlleVerslagenTerug(ronde, dagen);
 			baseTestTimelineService.rekenObjectTerug(ronde.getHuisartsBerichten(), dagen);
 			baseTestTimelineService.rekenObjectTerug(ronde.getAfmeldingen(), dagen);
 		}
+	}
+
+	private void rekenBriefTerug(ColonBrief brief, int aantalDagen)
+	{
+		if (brief == null)
+		{
+			return;
+		}
+		var mergedBrieven = (ColonMergedBrieven) brief.getMergedBrieven();
+		if (mergedBrieven != null)
+		{
+			rekenMergedBrievenTerug(mergedBrieven, aantalDagen);
+		}
+	}
+
+	private void rekenMergedBrievenTerug(ColonMergedBrieven mergedBrieven, int aantalDagen)
+	{
+		baseTestTimelineService.rekenObjectTerug(mergedBrieven, aantalDagen);
 	}
 
 	private void rekenAlleVerslagenTerug(ColonScreeningRonde ronde, int dagen)

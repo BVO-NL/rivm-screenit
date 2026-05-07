@@ -1,0 +1,101 @@
+/*-
+ * ========================LICENSE_START=================================
+ * screenit-clientportaal-frontend
+ * %%
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+$step-inactive: #d0dbe7;
+
+.stepsContainer {
+	display: flex;
+	padding-top: 20px;
+	max-width: 550px;
+}
+
+.step {
+	text-align: center;
+	flex: 1;
+	cursor: default;
+	position: relative;
+
+	.line {
+		height: 0;
+		border-width: 2px;
+		border-style: solid;
+		position: absolute;
+		bottom: 12px;
+		left: calc(50% + 14px);
+		width: calc(100% - 28px);
+	}
+
+	.circle {
+		padding: 4px 9px;
+		display: inline-block;
+		border-radius: 50%;
+		font-size: 10px;
+	}
+
+	.label {
+		margin-bottom: 5px;
+	}
+}
+
+.stepActive {
+	.circle {
+		border: 2px solid var(--blauw-base);
+		background: #fff;
+		color: var(--blauw-base);
+	}
+
+	.label {
+		color: var(--blauw-base);
+		font-weight: bold;
+	}
+	.line {
+		border-color: $step-inactive;
+	}
+}
+
+.stepDone {
+	.circle {
+		background: var(--blauw-base);
+		color: #eee;
+	}
+	.label {
+		color: var(--blauw-base);
+	}
+
+	.line {
+		border-color: var(--blauw-base);
+	}
+}
+
+.stepInactive {
+	.circle {
+		background: $step-inactive;
+		color: #000;
+	}
+
+
+	.label {
+		color: #000;
+	}
+
+	.line {
+		border-color: $step-inactive;
+	}
+}

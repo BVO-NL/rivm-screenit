@@ -21,30 +21,29 @@
 import { Component, inject } from '@angular/core'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
-import { ClrFileInputModule, ClrInputModule } from '@clr/angular'
 import { MammaVisitatieService } from '@/mamma/mamma-visitatie-overzicht-page/services/mamma-visitatie.service'
 import { aantalBestandenValidator, extensieValidator } from '@shared/validators/file/file.validator'
-import { ContentType } from '@shared/types/content-type'
 import { take } from 'rxjs'
 import { DialogRef } from '@angular/cdk/dialog'
-import { MammaVisitatielijstResponseDto } from '@shared/types/mamma/dto/mamma-visitatielijst-response.dto'
-import { ToastService } from '@shared/toast/service/toast.service'
+import { MammaVisitatielijstResponseDto } from '@shared/types/mamma/dto/visitatie/mamma-visitatielijst-response.dto'
+import { NotificationService } from '@shared/services/notification/notification.service'
+import { DsButtonComponent, DsInputComponent } from '@topicus-rgp-ds/web'
+import { SingleFileSelectorComponent } from '@shared/components/single-file-selector/single-file-selector.component'
 
 @Component({
   selector: 'app-mamma-visitatielijst-genereren-dialog',
-  imports: [BaseDialogComponent, ReactiveFormsModule, ClrInputModule, ClrFileInputModule],
+  imports: [BaseDialogComponent, ReactiveFormsModule, DsInputComponent, SingleFileSelectorComponent, DsButtonComponent],
   templateUrl: './mamma-visitatielijst-genereren-dialog.component.html',
 })
 export class MammaVisitatielijstGenererenDialogComponent {
   private readonly formBuilder = inject(FormBuilder)
   private readonly visitatieService = inject(MammaVisitatieService)
   private readonly dialogRef = inject(DialogRef)
-  private readonly toastService = inject(ToastService)
-  protected contentType = ContentType
+  private readonly notificationService = inject(NotificationService)
 
   genererenForm = this.formBuilder.group({
     omschrijving: ['', Validators.required],
-    bestand: this.formBuilder.control<FileList | null>(null, [Validators.required, extensieValidator(['csv']), aantalBestandenValidator(1)]),
+    bestand: this.formBuilder.control<File | null>(null, [Validators.required, extensieValidator(['csv']), aantalBestandenValidator(1)]),
   })
 
   protected get bestandCtrl(): FormControl {
@@ -65,13 +64,13 @@ export class MammaVisitatielijstGenererenDialogComponent {
     }
 
     const request = { omschrijving: this.omschrijvingCtrl.value as string }
-    const bestand = this.bestandCtrl.value[0]
+    const bestand = this.bestandCtrl.value
     this.visitatieService
       .genereerVisitatieLijst(request, bestand, true)
       .pipe(take(1))
       .subscribe((response: MammaVisitatielijstResponseDto) => {
         if (response.meldingen.length) {
-          this.toastService.warning(response.meldingen)
+          this.notificationService.warning(response.meldingen.join(', '))
         }
         this.dialogRef.close({ request, bestand, rapport: response.rapport })
       })

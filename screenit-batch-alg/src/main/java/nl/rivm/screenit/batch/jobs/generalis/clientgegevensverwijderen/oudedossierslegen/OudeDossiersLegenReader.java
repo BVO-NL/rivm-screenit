@@ -37,7 +37,7 @@ public class OudeDossiersLegenReader extends AbstractGegevensVerwijderenReader
 	protected Specification<Client> createSpecification()
 	{
 		return super.createSpecification()
-			.and(ClientSpecification.heeftDossiers())
+			.and(ClientSpecification.heeftMinimaalEenDossier())
 			.and(PersoonSpecification.heeftGbaAdres().with(Client_.persoon));
 	}
 }

@@ -21,7 +21,6 @@
 import { inject, Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
 import { BezwaarClient } from '@shared/types/algemeen/bezwaar-client'
-import { formatDate } from '@shared/utils/date-utils'
 import { ApiService } from '@shared/services/api/api.service'
 
 @Injectable({
@@ -31,8 +30,8 @@ export class ExtraBeveiligdeOmgevingService {
   private readonly apiService = inject(ApiService)
   private readonly baseUrl = '/api/algemeen/bezwaar'
 
-  getClienten(bsn: string, geboortedatum: Date): Observable<BezwaarClient[]> {
-    return this.apiService.get<BezwaarClient[]>(`${this.baseUrl}/clienten?bsn=${bsn}&geboortedatum=${formatDate(geboortedatum)}`)
+  getClienten(bsn: string, geboortedatum: string): Observable<BezwaarClient[]> {
+    return this.apiService.get<BezwaarClient[]>(`${this.baseUrl}/clienten?bsn=${bsn}&geboortedatum=${geboortedatum}`)
   }
 
   bezwaarHerstellen(bsn: string, geboortedatum: string, bestand: File): Observable<void> {

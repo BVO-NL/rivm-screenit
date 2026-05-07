@@ -30,6 +30,7 @@ public enum OrganisatieParameterKey
 	COLON_DUUR_AFSPRAAK_IN_MINUTEN(OrganisatieType.INTAKELOCATIE, Integer.class, 360, Bevolkingsonderzoek.COLON),
 
 	COLON_DIGITALE_INTAKE(OrganisatieType.INTAKELOCATIE, String.class, null, Bevolkingsonderzoek.COLON),
+	COLON_CLIENTEN_HOGE_ASA_SCORE_NIET_BEHANDELEN(OrganisatieType.INTAKELOCATIE, Boolean.class, null, Bevolkingsonderzoek.COLON),
 
 	COLON_DIGITALE_INTAKE_ENABLED(OrganisatieType.INTAKELOCATIE, Boolean.class, null, Bevolkingsonderzoek.COLON),
 

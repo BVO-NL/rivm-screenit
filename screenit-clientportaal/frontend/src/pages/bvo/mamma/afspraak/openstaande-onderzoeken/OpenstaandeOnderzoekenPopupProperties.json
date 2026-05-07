@@ -1,0 +1,12 @@
+{
+  "titel": "Doet u ook mee aan…?",
+  "omschrijving": "Fijn dat u meedoet aan het bevolkingsonderzoek borstkanker! U heeft ook een uitnodiging gehad voor het bevolkingsonderzoek:",
+  "uitleg": {
+    "regel1": "U kunt hier nog aan meedoen.",
+    "regel2": "Wilt u dat? Klik dan verder."
+  },
+  "knoppen": {
+    "primair": "Naar overige onderzoeken",
+    "secundair": "Terug naar home"
+  }
+}

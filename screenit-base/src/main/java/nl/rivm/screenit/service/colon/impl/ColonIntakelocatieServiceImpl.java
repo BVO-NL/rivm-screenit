@@ -115,12 +115,17 @@ public class ColonIntakelocatieServiceImpl implements ColonIntakelocatieService
 
 	@Override
 	@Transactional
-	public void saveIntakelocatieDigitaleIntake(ColonIntakelocatie intakelocatie, String digitaleIntakeTekst, Boolean digitaleIntakeEnabled, OrganisatieMedewerker organisatieMedewerker)
+	public void saveIntakelocatieDigitaleIntake(ColonIntakelocatie intakelocatie, String digitaleIntakeTekst, Boolean digitaleIntakeEnabled,
+		Boolean clientenHogeAsaScoreNietBehandelen, OrganisatieMedewerker organisatieMedewerker)
 	{
 		var digitaleIntakeTekstParameter = organisatieParameterService.maakOfUpdateOrganisatieParameter(OrganisatieParameterKey.COLON_DIGITALE_INTAKE,
 			digitaleIntakeTekst, intakelocatie);
 		var digitaleIntakeEnabledParameter = organisatieParameterService.maakOfUpdateOrganisatieParameter(OrganisatieParameterKey.COLON_DIGITALE_INTAKE_ENABLED,
 			digitaleIntakeEnabled.toString(), intakelocatie);
-		organisatieParameterService.saveOrUpdateOrganisatieParameters(List.of(digitaleIntakeTekstParameter, digitaleIntakeEnabledParameter), organisatieMedewerker);
+		var clientenHogeAsaScoreNietBehandelenParameter = organisatieParameterService.maakOfUpdateOrganisatieParameter(
+			OrganisatieParameterKey.COLON_CLIENTEN_HOGE_ASA_SCORE_NIET_BEHANDELEN,
+			clientenHogeAsaScoreNietBehandelen.toString(), intakelocatie);
+		organisatieParameterService.saveOrUpdateOrganisatieParameters(
+			List.of(digitaleIntakeTekstParameter, digitaleIntakeEnabledParameter, clientenHogeAsaScoreNietBehandelenParameter), organisatieMedewerker);
 	}
 }

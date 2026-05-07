@@ -25,7 +25,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -45,13 +44,18 @@ public class DateUtil
 
 	public static void setOffset(Duration newOffset)
 	{
-		LOG.info("De tijd is gewijzigd van {} naar {}", getCurrentDateTime(), ZonedDateTime.now(SCREENIT_DEFAULT_ZONE).plus(newOffset));
+		LOG.info("De tijd is gewijzigd van {} naar {}", getCurrentDateTime(), systemTimePlusOffset(newOffset));
 		DateUtil.offset = newOffset;
+	}
+
+	private static LocalDateTime systemTimePlusOffset(Duration offset)
+	{
+		return LocalDateTime.now(SCREENIT_DEFAULT_ZONE).plus(offset);
 	}
 
 	public static LocalDateTime getCurrentDateTime()
 	{
-		return LocalDateTime.now(SCREENIT_DEFAULT_ZONE).plus(DateUtil.offset);
+		return systemTimePlusOffset(DateUtil.offset);
 	}
 
 	public static LocalDate getCurrentDate()

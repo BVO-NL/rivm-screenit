@@ -21,17 +21,17 @@
 import {useEffect} from "react"
 import {useSelectedBvo} from "../../../utils/Hooks"
 import {useSelector} from "react-redux"
-import {State} from "../../../datatypes/State"
 import {Bevolkingsonderzoek} from "../../../datatypes/Bevolkingsonderzoek"
 import MammaLandingPage from "./MammaLandingPage"
 import CervixLandingPage from "./CervixLandingPage"
 import ColonLandingPage from "./ColonLandingPage"
 import {assertUnreachable} from "../../../utils/EnumUtil"
 import LadenComponent from "../../../components/laden/LadenComponent"
+import {selectClient} from "../../../selectors/ClientSelectors"
 
 const BvoLandingPageController = () => {
 	const bvo = useSelectedBvo()
-	const client = useSelector((state: State) => state.client)
+	const client = useSelector(selectClient)
 	const beschikbareActies = client.beschikbareActies.beschikbareActies
 
 	useEffect(() => {

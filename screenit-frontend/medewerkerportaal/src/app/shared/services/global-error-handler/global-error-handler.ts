@@ -20,11 +20,11 @@
  */
 import { ErrorHandler, inject, Injectable, isDevMode, NgZone } from '@angular/core'
 import { HttpErrorResponse } from '@angular/common/http'
-import { ToastService } from '@shared/toast/service/toast.service'
+import { NotificationService } from '@shared/services/notification/notification.service'
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class GlobalErrorHandler implements ErrorHandler {
-  private toastService: ToastService = inject(ToastService)
+  private notificationService: NotificationService = inject(NotificationService)
   private zone: NgZone = inject(NgZone)
 
   handleError(error: Error) {
@@ -59,6 +59,6 @@ export class GlobalErrorHandler implements ErrorHandler {
   }
 
   private showError(message: string): void {
-    this.zone.run(() => this.toastService.error(message))
+    this.zone.run(() => this.notificationService.error(message))
   }
 }

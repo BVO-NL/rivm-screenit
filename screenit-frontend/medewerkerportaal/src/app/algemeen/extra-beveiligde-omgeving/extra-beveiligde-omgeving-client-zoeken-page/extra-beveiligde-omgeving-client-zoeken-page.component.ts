@@ -18,8 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, signal } from '@angular/core'
-import { ClrCommonFormsModule, ClrDatagridModule, ClrDatepickerModule, ClrFileInputModule, ClrInputModule } from '@clr/angular'
+import { Component, inject, signal } from '@angular/core'
 import { FormControl, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
 import { formatDate } from '@shared/utils/date-utils'
 import { valideDatumValidator } from '@shared/validators/datum/datum.validator'
@@ -29,29 +28,79 @@ import { ExtraBeveiligdeOmgevingService } from '@/algemeen/extra-beveiligde-omge
 import { BezwaarClient } from '@shared/types/algemeen/bezwaar-client'
 import { take } from 'rxjs'
 import { DatePipe } from '@angular/common'
-import { parse } from 'date-fns'
 import { PdfViewerComponent } from '@shared/components/pdf-viewer/pdf-viewer.component'
 import { BriefInzienDialogComponent } from '@/algemeen/components/brief-inzien-dialog/brief-inzien-dialog.component'
+import {
+  DsButtonComponent,
+  DsCell,
+  DsCellDef,
+  DsColumnDef,
+  DsDatepickerComponent,
+  DsHeaderCell,
+  DsHeaderCellDef,
+  DsHeaderRowComponent,
+  DsHeaderRowDef,
+  DsIconComponent,
+  DsInputComponent,
+  DsNoDataRow,
+  DsRowComponent,
+  DsRowDef,
+  DsTableComponent,
+} from '@topicus-rgp-ds/web'
+import { NL_DATE_FORMAT } from '@shared/constants'
+import { faEye } from '@fortawesome/pro-light-svg-icons'
+import { PageComponent } from '@shared/components/page/page.component'
 
 @Component({
   selector: 'app-extra-beveiligde-omgeving-client-zoeken-page',
-  imports: [ClrCommonFormsModule, ClrDatepickerModule, ClrFileInputModule, ClrInputModule, ReactiveFormsModule, DatePipe, ClrDatagridModule, PdfViewerComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [
+    ReactiveFormsModule,
+    DatePipe,
+    PdfViewerComponent,
+    DsDatepickerComponent,
+    DsInputComponent,
+    DsTableComponent,
+    DsColumnDef,
+    DsRowComponent,
+    DsRowDef,
+    DsCellDef,
+    DsCell,
+    DsHeaderCellDef,
+    DsHeaderRowDef,
+    DsHeaderRowComponent,
+    DsHeaderCell,
+    DsButtonComponent,
+    DsIconComponent,
+    DsNoDataRow,
+    PageComponent,
+  ],
   templateUrl: './extra-beveiligde-omgeving-client-zoeken-page.component.html',
-  styleUrl: './extra-beveiligde-omgeving-client-zoeken-page.component.scss',
+  styles: `
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .filter {
+      width: var(--page-width-md);
+    }
+  `,
 })
 export class ExtraBeveiligdeOmgevingClientZoekenPageComponent {
   private readonly formBuilder = inject(NonNullableFormBuilder)
   private readonly dialogService = inject(Dialog)
   private readonly extraBeveiligdeOmgevingService = inject(ExtraBeveiligdeOmgevingService)
+  protected readonly eyeIcon = faEye
+  protected readonly NL_DATE_FORMAT = NL_DATE_FORMAT
 
   formGroup = this.formBuilder.group({
-    geboortedatum: ['', [Validators.required, valideDatumValidator]],
+    geboortedatum: this.formBuilder.control<Date | null>(null, [Validators.required, valideDatumValidator]),
     bsn: ['', [Validators.required, bsnValidator]],
   })
   maxGeboorteDatum = formatDate(new Date())
-  clienten = signal<BezwaarClient[] | null>(null)
+  clienten = signal<BezwaarClient[]>([])
   document: string | undefined | null
+  displayedColumns = ['bsn', 'geboortedatum', 'inzien']
 
   get bsnCtrl(): FormControl {
     return this.formGroup.get('bsn') as FormControl
@@ -67,10 +116,8 @@ export class ExtraBeveiligdeOmgevingClientZoekenPageComponent {
     }
 
     const formValue = this.formGroup.getRawValue()
-    const geboortedatum = parse(formValue.geboortedatum, 'dd-MM-yyyy', new Date())
-
     this.extraBeveiligdeOmgevingService
-      .getClienten(formValue.bsn, geboortedatum)
+      .getClienten(formValue.bsn, formatDate(formValue.geboortedatum!))
       .pipe(take(1))
       .subscribe((response: BezwaarClient[]) => {
         this.clienten.set(response)

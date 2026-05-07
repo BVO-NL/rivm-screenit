@@ -20,55 +20,22 @@
   -->
 <div class="toolbar">
   <form [formGroup]="filterForm">
-    <div class="clr-row">
-      <app-kamer-selector formControlName="kamerId" data-testid="cb_kamer_selector" class="clr-col-md-3"/>
-      <app-weekdagen-selector type="select" [metLabel]="true" formControlName="dagen" class="clr-col-6"/>
+    <div class="display-flex gap-3">
+      <app-kamer-selector [required]="true" formControlName="kamerId" data-testid="cb_kamer_selector" [inclusiefAlleKamers]="true"/>
+      <ds-weekday-selector [required]="true" label="Dagen" formControlName="dagen" data-testid="tds_weekdagen_selector"/>
     </div>
 
-    <div class="clr-row">
-      <clr-date-container class="clr-col-12 clr-col-md-3">
-        <label class="clr-required-mark" for="startDatum">Vanaf</label>
-        <input type="date" clrDate formControlName="startDatum" id="startDatum" [min]="minDatum"/>
-        <clr-control-error *clrIfError="'required'">De datum is verplicht</clr-control-error>
-        <clr-control-error *clrIfError="'datumInVerleden'">{{ startDatumCtrl.getError('datumInVerleden') }}</clr-control-error>
-        <clr-control-error *clrIfError="'valideDatum'">{{ startDatumCtrl.getError('valideDatum') }}</clr-control-error>
-      </clr-date-container>
+    <div class="display-flex justify-content-between align-items-center">
+      <div class="datum-tijd-grid">
+        <ds-datepicker label="Vanaf" [required]="true" formControlName="startDatum" [min]="minDatum"/>
+        <ds-datepicker label="Tot en met" [required]="true" formControlName="eindDatum" [min]="startDatumCtrl.value?.toISOString()"
+                       [errorMessage]="{lessThanMinDate: 'De Vanaf datum moet voor de Tot en met datum liggen'}"/>
 
-      <clr-date-container class="clr-col-12 clr-col-md-3">
-        <label class="clr-required-mark" for="eindDatum">Tot en met</label>
-        <input type="date" clrDate formControlName="eindDatum" id="eindDatum" [min]="minDatum"/>
-        <clr-control-error *clrIfError="'required'">De datum is verplicht</clr-control-error>
-        <clr-control-error *clrIfError="'datumInVerleden'">{{ eindDatumCtrl.getError('datumInVerleden') }}</clr-control-error>
-        <clr-control-error *clrIfError="'valideDatum'">{{ eindDatumCtrl.getError('valideDatum') }}</clr-control-error>
-      </clr-date-container>
-
-      <div class="clr-col-md-5 clr-flex-row clr-display-flex">
-        <clr-input-container class="clr-col-12 clr-col-md-3">
-          <label class="clr-required-mark" for="startTijd">Starttijd</label>
-          <input clrInput autocomplete="off" formControlName="startTijd" id="startTijd" type="time" data-testid="input_start_tijd"/>
-          <clr-control-error *clrIfError="'required'">De starttijd is verplicht</clr-control-error>
-        </clr-input-container>
-
-        <clr-input-container class="clr-col-12 clr-col-md-3">
-          <label class="clr-required-mark" for="eindTijd">Eindtijd</label>
-          <input clrInput autocomplete="off" formControlName="eindTijd" id="eindTijd" type="time" data-testid="input_eind_tijd"/>
-          <clr-control-error *clrIfError="'required'">De eindtijd is verplicht</clr-control-error>
-          <clr-control-error *clrIfError="'tijdStappen'">{{ eindTijdCtrl.getError('tijdStappen') }}</clr-control-error>
-        </clr-input-container>
-
-        <div class="pt-3 clr-col-12 clr-col-md-3">
-          <clr-checkbox-container clrInline>
-            <clr-checkbox-wrapper>
-              <input type="checkbox" clrCheckbox id="heleDag" formControlName="heleDag"/>
-              <label for="heleDag">Hele dag</label>
-            </clr-checkbox-wrapper>
-          </clr-checkbox-container>
-        </div>
+        <app-timepicker label="Starttijd" [required]="true" formControlName="startTijd" data-testid="start_tijd_input"/>
+        <app-timepicker label="Eindtijd" [required]="true" formControlName="eindTijd" data-testid="eind_tijd_input"/>
+        <ds-checkbox formControlName="heleDag" class="align-self-end pb-1">Hele dag</ds-checkbox>
       </div>
-    </div>
-
-    <div class="clr-row clr-justify-content-end mt-3">
-      <button class="btn btn-primary" (click)="doFilter()" [disabled]="filterForm.invalid">Filteren</button>
+      <button ds-button-primary (click)="doFilter()" class="filter-btn" [disabled]="filterForm.invalid">Filteren</button>
     </div>
   </form>
 </div>

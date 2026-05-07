@@ -21,10 +21,14 @@ package nl.rivm.screenit.specification.colon;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.criteria.JoinType;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.Dossier_;
+import nl.rivm.screenit.model.ScreeningRondeStatus;
+import nl.rivm.screenit.model.ScreeningRonde_;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonDossier_;
 import nl.rivm.screenit.model.colon.ColonUitnodigingsinterval_;
@@ -50,6 +54,15 @@ public class ColonDossierSpecification
 			var volgendeUitnodiging = join(r, ColonDossier_.volgendeUitnodiging);
 			var intervalJoin = join(volgendeUitnodiging, ColonVolgendeUitnodiging_.interval);
 			return cb.greaterThan(volgendeUitnodiging.get(ColonVolgendeUitnodiging_.peildatum), intervalJoin.get(ColonUitnodigingsinterval_.berekendeReferentieDatum));
+		};
+	}
+
+	public static ExtendedSpecification<ColonDossier> heeftGeenLopendeLaatsteScreeningronde()
+	{
+		return (r, q, cb) ->
+		{
+			var rondeJoin = join(r, ColonDossier_.laatsteScreeningRonde, JoinType.LEFT);
+			return cb.or(cb.isNull(rondeJoin), cb.notEqual(rondeJoin.get(ScreeningRonde_.status), ScreeningRondeStatus.LOPEND));
 		};
 	}
 }

@@ -33,6 +33,7 @@ import VerticalDividerComponent from "../vectors/VerticalDividerComponent"
 import SpanWithHtml from "../span/SpanWithHtml"
 import {useWindowDimensions} from "../../utils/Hooks"
 import {JSX} from "react"
+import {selectClient} from "../../selectors/ClientSelectors"
 
 export type BvoCardProps = {
 	bvo: Bevolkingsonderzoek;
@@ -43,7 +44,7 @@ export type BvoCardProps = {
 const BvoCard = (props: BvoCardProps) => {
 	const {width} = useWindowDimensions()
 	const bvoNaam = props.bvo === (width > 576 && Bevolkingsonderzoek.CERVIX) ? properties.BMHK_NAAM_GESPLITST : BevolkingsonderzoekNaam[props.bvo]
-	const client = useSelector((state: State) => state.client)
+	const client = useSelector(selectClient)
 	const bvoParameters: BvoParameters | undefined = useSelector((state: State) => {
 		switch (props.bvo) {
 			case Bevolkingsonderzoek.MAMMA:

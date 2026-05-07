@@ -51,4 +51,5 @@ public interface MammaFotobesprekingService
 
 	boolean nieuweBeoordelingenAangevraagdNavFotobespreking(MammaFotobespreking fotobespreking);
 
+	MammaFotobespreking getFotobespreking(long id);
 }

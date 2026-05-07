@@ -1,0 +1,138 @@
+/*-
+ * ========================LICENSE_START=================================
+ * medewerkerportaal
+ * %%
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+@use 'sass:math';
+@use '../variables';
+@use './breakpoints';
+@use 'sass:map';
+
+@mixin make-container() {
+  width: 100%;
+  padding-right: (variables.$grid-gutter-width * 0.5);
+  padding-left: (variables.$grid-gutter-width * 0.5);
+  margin-right: auto;
+  margin-left: auto;
+  padding-bottom: (variables.$grid-gutter-width * 0.5);
+}
+
+@mixin make-container-max-widths(
+  $max-widths: variables.$container-max-widths,
+  $breakpoints: variables.$grid-breakpoints
+) {
+  @each $breakpoint, $container-max-width in $max-widths {
+    @include breakpoints.media-breakpoint-up($breakpoint, $breakpoints) {
+      max-width: $container-max-width;
+    }
+  }
+}
+
+@mixin make-row() {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: math.div(variables.$grid-gutter-width, -2);
+  margin-left: math.div(variables.$grid-gutter-width, -2);
+}
+
+@mixin make-col-ready() {
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-right: (variables.$grid-gutter-width * 0.5);
+  padding-left: (variables.$grid-gutter-width * 0.5);
+}
+
+@mixin make-col($size, $columns: variables.$grid-columns) {
+  flex: 0 0 math.percentage(math.div($size, $columns));
+  max-width: math.percentage(math.div($size, $columns));
+}
+
+@mixin make-col-offset($size, $columns: variables.$grid-columns) {
+  $num: math.div($size, $columns);
+  margin-left: if(sass($num == 0): 0; else: math.percentage($num));
+}
+
+@mixin make-grid-columns(
+  $columns: variables.$grid-columns,
+  $gutter: variables.$grid-gutter-width,
+  $breakpoints: variables.$grid-breakpoints
+) {
+  %grid-column {
+    position: relative;
+    width: 100%;
+    min-height: 1px;
+    padding-right: ($gutter * 0.5);
+    padding-left: ($gutter * 0.5);
+  }
+
+  @each $breakpoint in map.keys($breakpoints) {
+    $infix: breakpoints.breakpoint-infix($breakpoint, $breakpoints);
+
+    @for $i from 1 through $columns {
+      .col#{$infix}-#{$i} {
+        @extend %grid-column;
+      }
+    }
+    .col#{$infix},
+    .col#{$infix}-auto {
+      @extend %grid-column;
+    }
+
+    @include breakpoints.media-breakpoint-up($breakpoint, $breakpoints) {
+      .col#{$infix} {
+        flex-basis: 0;
+        flex-grow: 1;
+        max-width: 100%;
+      }
+      .col#{$infix}-auto {
+        flex: 0 0 auto;
+        width: auto;
+        max-width: none;
+      }
+
+      @for $i from 1 through $columns {
+        .col#{$infix}-#{$i} {
+          @include make-col($i, $columns);
+        }
+      }
+
+      .order#{$infix}-first {
+        order: -1;
+      }
+
+      .order#{$infix}-last {
+        order: $columns + 1;
+      }
+
+      @for $i from 0 through $columns {
+        .order#{$infix}-#{$i} {
+          order: $i;
+        }
+      }
+
+      @for $i from 0 through ($columns - 1) {
+        @if not($infix == '' and $i == 0) {
+          .offset#{$infix}-#{$i} {
+            @include make-col-offset($i, $columns);
+          }
+        }
+      }
+    }
+  }
+}

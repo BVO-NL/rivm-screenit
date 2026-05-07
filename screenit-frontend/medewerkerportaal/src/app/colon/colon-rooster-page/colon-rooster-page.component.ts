@@ -18,37 +18,61 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, inject, OnInit, Signal } from '@angular/core'
+import { Component, effect, inject, Signal } from '@angular/core'
 import { RoosterComponent } from '@/colon/colon-rooster-page/components/rooster/rooster.component'
 import { ColonService } from '@/colon/services/colon.service'
 import { Intakelocatie } from '@shared/types/intakelocatie'
-import { ClrCommonFormsModule, ClrIconModule } from '@clr/angular'
-import { SignaleringstermijnMeldingComponent } from '@/colon/colon-rooster-page/components/signaleringstermijn-melding/signaleringstermijn-melding.component'
+import { DsContextualNotificationsComponent, DsContextualNotificationService } from '@topicus-rgp-ds/web'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { RoosterService } from '@/colon/colon-rooster-page/services/rooster.service'
+import { PageComponent } from '@shared/components/page/page.component'
+import { take } from 'rxjs'
 
 @Component({
   selector: 'app-colon-rooster-page',
   template: `
-    <div class="card">
-      <h3 class="card-header">{{ intakelocatie()?.naam }}</h3>
-      <div class="card-block">
-        <div class="mb-2">
-          Geprognosticeerde aantal afspraakslots: {{ intakelocatie()?.aantalGeprognosticeerdeAfspraakslots }} / Huidige aantal gemaakte afspraakslots dit jaar:
-          {{ intakelocatie()?.huidigAantalAfspraakslots }}
-        </div>
-        <div class="mb-3 mt-3">
-          <app-signaleringstermijn-melding />
-        </div>
-        <app-rooster />
+    <app-page [titel]="intakelocatie()?.naam ?? ''" class="pagina">
+      <div>
+        Geprognosticeerde aantal afspraakslots: {{ intakelocatie()?.aantalGeprognosticeerdeAfspraakslots }} / Huidige aantal gemaakte afspraakslots dit jaar:
+        {{ intakelocatie()?.huidigAantalAfspraakslots }}
       </div>
-    </div>
+      <ds-contextual-notifications context="signaleringstermijn" class="mb-3 mt-3" />
+      <app-rooster class="rooster" />
+    </app-page>
   `,
-  imports: [RoosterComponent, ClrCommonFormsModule, ClrIconModule, SignaleringstermijnMeldingComponent],
+  styles: `
+    .pagina {
+      height: calc(100vh - 168px);
+      & > .rooster {
+        flex: 1 1 auto;
+        min-height: 0;
+      }
+    }
+  `,
+  imports: [RoosterComponent, DsContextualNotificationsComponent, PageComponent],
 })
-export class ColonRoosterPageComponent implements OnInit {
-  private colonService: ColonService = inject(ColonService)
-  intakelocatie: Signal<Intakelocatie | undefined> = this.colonService.intakelocatie
+export class ColonRoosterPageComponent {
+  private readonly colonService: ColonService = inject(ColonService)
+  private readonly roosterService: RoosterService = inject(RoosterService)
+  private readonly notificationService = inject(DsContextualNotificationService)
+  intakelocatie: Signal<Intakelocatie | undefined> = toSignal(this.colonService.fetchIntakelocatie())
 
-  ngOnInit() {
-    this.colonService.fetchIntakelocatie().subscribe()
+  constructor() {
+    this.roosterService.fetchSignaleringstermijn().pipe(take(1)).subscribe()
+
+    effect(() => {
+      const signaleringstermijn = this.roosterService.signaleringstermijn()
+      this.notificationService.removeNotificationByContext('signaleringstermijn')
+      if (signaleringstermijn?.heeftGeenCapaciteitBinnenSignaleringsTermijn) {
+        this.notificationService.warning(
+          'signaleringstermijn',
+          {
+            message: `De afspraakslots voor de periode ${signaleringstermijn.tekst} zijn nog niet ingevoerd. Om cliënten uit te kunnen nodigen is het noodzakelijk dat deze slots voor ${signaleringstermijn.signaleringsTermijnDeadline} in ScreenIT worden ingevoerd.`,
+            closeable: true,
+          },
+          'page',
+        )
+      }
+    })
   }
 }

@@ -24,7 +24,7 @@ import { Component, effect, ElementRef, inject, input, output, Renderer2, viewCh
   selector: 'app-pdf-viewer',
   imports: [],
   template: ` <iframe #iframeElement (load)="refreshStyle()" width="100%" height="100%">
-    De pdf kon niet worden geladen, klik <a href="#" (click)="opslaan.emit()">hier</a> om de PDF te downloaden
+    De pdf kon niet worden geladen, klik <a href="#" data-testid="button_pdf_opslaan" (click)="opslaan.emit()">hier</a> om de PDF te downloaden
   </iframe>`,
   styles: `
     :host {

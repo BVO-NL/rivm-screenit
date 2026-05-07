@@ -30,8 +30,6 @@ import jakarta.persistence.criteria.Root;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.ClientBrief;
-import nl.rivm.screenit.model.ClientBrief_;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.GbaStatus;
@@ -44,12 +42,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftGbaStatusIn;
+import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftNogTeVersturenBmhkUitnodigingen;
+import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftNogTeVersturenDkUitnodigingen;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftRedenIntrekkenGbaIndicatie;
+import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftTePrintenBrieven;
+import static org.springframework.data.jpa.domain.Specification.not;
 
 public abstract class AbstractIndicatieVerwijderenVoorDoelgroepReader extends BaseSpecificationScrollableResultReader<Client>
 {
 	@Autowired
-	private SimplePreferenceService preferenceService;
+	protected SimplePreferenceService preferenceService;
 
 	@Override
 	protected Specification<Client> createSpecification()
@@ -58,30 +60,16 @@ public abstract class AbstractIndicatieVerwijderenVoorDoelgroepReader extends Ba
 			.and(heeftRedenIntrekkenGbaIndicatie(RedenIntrekkenGbaIndicatie.NIET_INGETROKKEN));
 		var persoonSpecification = PersoonSpecification.isNietOverledenEnWoontInNederland();
 
-		return clientSpecification.and(persoonSpecification.withRoot(getPersoonJoin())).and(heeftGeenTePrintenBrieven());
-
+		return clientSpecification.and(persoonSpecification.withRoot(getPersoonJoin()))
+			.and(not(heeftTePrintenBrieven()))
+			.and(not(heeftNogTeVersturenBmhkUitnodigingen()))
+			.and(not(heeftNogTeVersturenDkUitnodigingen()));
 	}
 
 	@Override
 	protected Class<Client> getEntityClass()
 	{
 		return Client.class;
-	}
-
-	private static Specification<Client> heeftGeenTePrintenBrieven()
-	{
-		return (r, q, cb) ->
-		{
-			var subquery = q.subquery(Client.class);
-			var subRoot = subquery.from(ClientBrief.class);
-			subquery.select(subRoot.get(ClientBrief_.client)).where(
-				cb.and(cb.isFalse(subRoot.get(ClientBrief_.gegenereerd)),
-					cb.isFalse(subRoot.get(ClientBrief_.vervangendeProjectBrief)),
-					cb.isFalse(subRoot.get(ClientBrief_.vervangen)),
-					cb.isFalse(subRoot.get(ClientBrief_.tegenhouden)))
-			);
-			return cb.not(r.in(subquery));
-		};
 	}
 
 	protected Function<Root<Client>, From<?, ? extends Persoon>> getPersoonJoin()

@@ -41,10 +41,13 @@ import lombok.Setter;
 import nl.rivm.screenit.model.colon.enums.ColonFitAnalyseResultaatSetStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
+import org.hibernate.envers.Audited;
+
 @Entity
 @Table(schema = "colon", name = "fit_analyse_resultaat_set")
 @Setter
 @Getter
+@Audited
 public class ColonFitAnalyseResultaatSet extends AbstractHibernateObject
 {
 	@Enumerated(EnumType.STRING)

@@ -35,6 +35,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.hibernate.Hibernate;
+import org.hibernate.collection.spi.PersistentCollection;
 import org.springframework.stereotype.Component;
 
 @Aspect
@@ -54,6 +55,10 @@ public class EntityDeproxyProcessorAspect
 
 	private Object deproxyLijstOfObject(Object arg)
 	{
+		if (arg instanceof PersistentCollection<?>)
+		{
+			return arg;
+		}
 		if (arg instanceof List<?> lijst)
 		{
 			return deproxyLijst(lijst);

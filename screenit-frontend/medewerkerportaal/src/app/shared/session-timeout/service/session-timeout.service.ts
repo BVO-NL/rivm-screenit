@@ -30,6 +30,7 @@ export class SessionTimeoutService {
   tijdGestart = 0
   meldingTimeout = 1500000
   checkTijdInterval: number | undefined
+  private dialogOpen = false
   private dialog: Dialog = inject(Dialog)
   private window: Window = inject(WINDOW)
 
@@ -37,8 +38,14 @@ export class SessionTimeoutService {
     this.tijdGestart = new Date().getTime()
   }
 
+  closeDialog() {
+    this.dialogOpen = false
+  }
+
   startSessionTimer(): void {
+    this.window.clearInterval(this.checkTijdInterval)
     this.tijdGestart = new Date().getTime()
+    this.closeDialog()
     this.checkTijdInterval = this.window.setInterval(() => {
       const huidigeTijd: number = new Date().getTime()
       const tijdVerschil: number = huidigeTijd - this.tijdGestart
@@ -51,9 +58,16 @@ export class SessionTimeoutService {
   }
 
   sessieBijnaVerlopen(): void {
+    if (this.dialogOpen) {
+      return
+    }
+    this.dialogOpen = true
     this.dialog.open(SessionTimeoutComponent, {
       data: {
-        reset: () => this.startSessionTimer(),
+        reset: () => {
+          this.closeDialog()
+          this.startSessionTimer()
+        },
         logout: () => this.logout(),
         eindeTimeout: this.tijdGestart + this.meldingTimeout + 300000,
       },

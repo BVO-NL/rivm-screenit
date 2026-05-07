@@ -346,7 +346,8 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 		{
 			verwijderAlternatieveHuisarts(target);
 		}
-		MammaScreeningRonde screeningRonde = baseBeoordelingService.getScreeningRonde(beoordelingModel.getObject());
+		var screeningRonde = beoordelingModel.getObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde();
+		huisartsService.koppelHuisarts(huisarts, screeningRonde, getIngelogdeOrganisatieMedewerker());
 		screeningRonde.setHuisarts(huisarts);
 		screeningRonde.setGeenHuisartsOptie(geenHuisartsOptie);
 		screeningRonde.setDatumVastleggenHuisarts(currentDateSupplier.getDate());

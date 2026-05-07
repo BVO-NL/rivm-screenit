@@ -1,0 +1,42 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog [titel]="modalTitle" size="md">
+  <form [formGroup]="feestdagForm" body class="row form-in-modal" novalidate>
+    <div class="col">
+      <ds-input [errorMessage]="{'required': 'De naam is verplicht'}" data-testid="input_feestdag_naam"
+                formControlName="naam"
+                label="Naam"
+                maxlength="255"/>
+      <ds-datepicker
+        [errorMessage]="{required: 'De datum is verplicht', invalidDate: 'De ingevoerde datum is niet valide'}"
+        [min]="minDatum"
+        formControlName="datum"
+        label="Datum"/>
+      <app-colon-rooster-beperking formControlName="beperking" label="Beperking"/>
+    </div>
+  </form>
+  <div buttons class="btn-group">
+    <button (click)="cancel()" ds-button-secondary>Annuleren</button>
+    <button (click)="save()" [disabled]="feestdagForm.invalid" ds-button-primary>
+      Opslaan
+    </button>
+  </div>
+</app-base-dialog>

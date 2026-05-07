@@ -24,7 +24,7 @@ export type RedenFotobespreking =
 	| "CALCIFICATIES"
 	| "MASSA"
 	| "INSTELTECHNIEK"
-	| "OVERIG";
+	| "TE_BESPREKEN_ONDERZOEK";
 
 export function getRedenFotobesprekingString(redenFotobespreking: RedenFotobespreking): string {
 	switch (redenFotobespreking) {
@@ -38,8 +38,8 @@ export function getRedenFotobesprekingString(redenFotobespreking: RedenFotobespr
 			return "Massa"
 		case "INSTELTECHNIEK":
 			return "Insteltechniek"
-		case "OVERIG":
-			return "Overig"
+		case "TE_BESPREKEN_ONDERZOEK":
+			return "Te bespreken onderzoek"
 		default:
 			return ""
 	}

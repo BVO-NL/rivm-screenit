@@ -19,6 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms'
+import { getExtensieVanBestand } from '@shared/utils/file-utils'
 
 export const aantalBestandenValidator = (maxAantal: number): ValidatorFn => {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -36,7 +37,7 @@ export const extensieValidator = (toegestaneExtensies: string[]): ValidatorFn =>
     if (files) {
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
-        const extensie = file.name.split('.').pop()?.toLowerCase()
+        const extensie = getExtensieVanBestand(file.name)
         if (extensie && !toegestaneExtensies.map((ext) => ext.toLowerCase()).includes(extensie)) {
           return { extensie: `'${file.name}' heeft niet de juiste extensie. U moet een bestand met extensie '${toegestaneExtensies}' uploaden.` }
         }

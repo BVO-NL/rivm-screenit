@@ -34,6 +34,7 @@ import AfspraakIcon from "../../scss/media/icons_toptaken/AfspraakIcon/AfspraakI
 import HuisartsIcon from "../../scss/media/icons_toptaken/HuisartsIcon/HuisartsIcon"
 import properties from "./MammaTopTakenComponent.json"
 import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
+import {selectHuidigeAfspraak} from "../../selectors/MammaAfspraakSelectors"
 
 export type MammaTopTakenComponentProps = {
 	className?: string
@@ -50,7 +51,7 @@ const MammaTopTakenComponent = (props: MammaTopTakenComponentProps) => {
 	const huisartsHuidigeRondeIsBekend = useSelector((state: State) => !!state.client.mammaDossier.huisartsHuidigeRonde)
 	const geenHuisartsOptieVorigeRonde = useSelector((state: State) => !!state.client.mammaDossier.geenHuisartsOptieVorigeRonde)
 
-	const huidigeAfspraak = useSelector((state: State) => state.client.mammaDossier.huidigeAfspraak)
+	const huidigeAfspraak = useSelector(selectHuidigeAfspraak)
 
 	useEffect(() => {
 		dispatch(getVorigeHuisarts(Bevolkingsonderzoek.MAMMA))

@@ -28,3 +28,7 @@ export function rerender(component: RenderResult): DocumentFragment {
 export function enterDate(testId: string, datum: string): Promise<void> {
 	return userEvent.type(screen.getByTestId(testId), ` ${datum}`)
 }
+
+export function clickRadioButton(testId: string): Promise<void> {
+	return userEvent.click(screen.getByTestId(testId).getElementsByTagName("input")[0])
+}

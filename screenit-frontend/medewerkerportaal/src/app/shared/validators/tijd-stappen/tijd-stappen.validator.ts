@@ -19,12 +19,13 @@
  * =========================LICENSE_END==================================
  */
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms'
+import { isValideTijd } from '@shared/utils/date-utils'
 
 export const tijdStappenValidator: ValidatorFn = (tijdCtrl: AbstractControl): ValidationErrors | null => {
-  if (!tijdCtrl.value || !tijdCtrl.dirty) {
+  if (!tijdCtrl.value || !tijdCtrl.dirty || !isValideTijd(tijdCtrl.value)) {
     return null
   }
   const minutenString = tijdCtrl.value.split(':')[1]
   const minutes = Number(minutenString)
-  return minutes % 5 !== 0 ? { tijdStappen: 'Minuten van start mogen alleen een veelvoud van 5 zijn.' } : null
+  return minutes % 5 !== 0 ? { tijdStappen: 'Dit is een ongeldige starttijd (minuten van start mogen alleen een veelvoud van 5 zijn).' } : null
 }

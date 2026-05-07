@@ -18,59 +18,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, EventEmitter, inject, Output } from '@angular/core'
-
-import { ClrCheckboxModule, ClrCommonFormsModule, ClrDatepickerModule, ClrInputModule } from '@clr/angular'
+import { Component, inject, output } from '@angular/core'
 import { KamerSelectorComponent } from '@/colon/colon-rooster-page/components/kamer-selector/kamer-selector.component'
-import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
-import { WeekdagenSelectorComponent } from '@/colon/colon-rooster-page/components/weekdagen-selector/weekdagen-selector.component'
-import { formatDate } from '@shared/utils/date-utils'
-import { createStartEindDatumValidator, createStartEindTijdValidator, datumInVerledenValidator, valideDatumValidator } from '@shared/validators/datum/datum.validator'
+import { FormControl, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
+import { createStartEindTijdValidator } from '@shared/validators/datum/datum.validator'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ColonTijdslotFilter } from '@shared/types/colon/colon-tijdslot-filter'
-import { dagenSelectieSelectValidator } from '@shared/validators/dagen-selectie/dagen-selectie.validator'
-import { WEEK_DAGEN } from '@shared/constants'
-import { ToastService } from '@shared/toast/service/toast.service'
+import { TDS_DAGEN } from '@shared/constants'
+import { NotificationService } from '@shared/services/notification/notification.service'
+import { DsButtonComponent, DsCheckboxComponent, DsDatepickerComponent, DsWeekdaySelectorComponent } from '@topicus-rgp-ds/web'
+import { WeekdagOptie } from '@shared/types/weekdag-optie'
+import { TimepickerComponent } from '@shared/components/timepicker/timepicker.component'
+import { filter } from 'rxjs'
 
 @Component({
   selector: 'app-tijdslots-verwijderen-filter',
-  imports: [ClrCheckboxModule, ClrCommonFormsModule, ClrDatepickerModule, ClrInputModule, KamerSelectorComponent, ReactiveFormsModule, WeekdagenSelectorComponent],
+  imports: [KamerSelectorComponent, ReactiveFormsModule, DsCheckboxComponent, DsButtonComponent, DsWeekdaySelectorComponent, TimepickerComponent, DsDatepickerComponent],
   templateUrl: './tijdslots-verwijderen-filter.component.html',
+  styleUrl: './tijdslots-verwijderen-filter.component.scss',
 })
 export class TijdslotsVerwijderenFilterComponent {
-  private formBuilder: FormBuilder = inject(FormBuilder)
-  @Output() filter: EventEmitter<ColonTijdslotFilter> = new EventEmitter<ColonTijdslotFilter>()
-  private toastService: ToastService = inject(ToastService)
+  private readonly formBuilder: NonNullableFormBuilder = inject(NonNullableFormBuilder)
+  private readonly notificationService: NotificationService = inject(NotificationService)
+  filter = output<ColonTijdslotFilter>()
 
-  minDatum = formatDate(new Date())
+  minDatum = new Date().toISOString()
   filterForm = this.formBuilder.group(
     {
-      startDatum: ['', { validators: [Validators.required, datumInVerledenValidator, valideDatumValidator], updateOn: 'blur' }],
-      eindDatum: ['', { validators: [Validators.required, datumInVerledenValidator, valideDatumValidator], updateOn: 'blur' }],
-      startTijd: ['', { validators: [Validators.required], updateOn: 'blur' }],
-      eindTijd: ['', { validators: [Validators.required], updateOn: 'blur' }],
-      kamerId: [undefined, { validators: [Validators.required] }],
-      dagen: this.formBuilder.control<number[]>(
-        WEEK_DAGEN.map((dag) => dag.value),
-        [dagenSelectieSelectValidator, Validators.required],
-      ),
+      startDatum: this.formBuilder.control<Date | null>(null, [Validators.required]),
+      eindDatum: this.formBuilder.control<Date | null>(null, [Validators.required]),
+      startTijd: ['', [Validators.required]],
+      eindTijd: ['', [Validators.required]],
+      kamerId: this.formBuilder.control<number | undefined>(undefined, [Validators.required]),
+      dagen: [TDS_DAGEN.map((dag: WeekdagOptie) => ({ ...dag, selected: true })), [Validators.required]],
       heleDag: false,
+      alleKamers: false,
     },
     {
-      validators: [
-        createStartEindTijdValidator('startTijd', 'eindTijd'),
-        createStartEindDatumValidator('startDatum', 'eindDatum', 'De Vanaf datum moet voor de Tot en met datum liggen'),
-      ],
+      validators: [createStartEindTijdValidator('startTijd', 'eindTijd')],
     },
   )
-
-  get startTijdCtrl(): FormControl {
-    return this.filterForm.get('startTijd') as FormControl
-  }
-
-  get eindTijdCtrl(): FormControl {
-    return this.filterForm.get('eindTijd') as FormControl
-  }
 
   get startDatumCtrl(): FormControl {
     return this.filterForm.get('startDatum') as FormControl
@@ -80,8 +67,20 @@ export class TijdslotsVerwijderenFilterComponent {
     return this.filterForm.get('eindDatum') as FormControl
   }
 
+  get startTijdCtrl(): FormControl {
+    return this.filterForm.get('startTijd') as FormControl
+  }
+
+  get eindTijdCtrl(): FormControl {
+    return this.filterForm.get('eindTijd') as FormControl
+  }
+
   get heleDagCtrl(): FormControl {
     return this.filterForm.get('heleDag') as FormControl
+  }
+
+  get kamerCtrl(): FormControl {
+    return this.filterForm.get('kamerId') as FormControl
   }
 
   constructor() {
@@ -108,15 +107,12 @@ export class TijdslotsVerwijderenFilterComponent {
       }
     })
 
-    this.filterForm.statusChanges.pipe(takeUntilDestroyed()).subscribe(() => {
-      this.toastService.clear()
-      if (this.filterForm.hasError('startEindTijd')) {
-        this.toastService.error(this.filterForm.getError('startEindTijd'))
-      }
-      if (this.filterForm.hasError('startEindDatum')) {
-        this.toastService.error(this.filterForm.getError('startEindDatum'))
-      }
-    })
+    this.filterForm.statusChanges
+      .pipe(
+        takeUntilDestroyed(),
+        filter(() => this.filterForm.hasError('startEindTijd')),
+      )
+      .subscribe(() => this.notificationService.error(this.filterForm.getError('startEindTijd')))
   }
 
   doFilter() {
@@ -124,6 +120,21 @@ export class TijdslotsVerwijderenFilterComponent {
       return
     }
 
-    this.filter.emit(this.filterForm.getRawValue() as ColonTijdslotFilter)
+    const filterValue = this.filterForm.getRawValue()
+    const kamerId = this.kamerCtrl.value === 0 ? undefined : this.kamerCtrl.value
+    const alleKamers = this.kamerCtrl.value === 0
+    this.filter.emit({
+      alleKamers: alleKamers,
+      kamerId: kamerId,
+      startTijd: filterValue.startTijd,
+      eindTijd: filterValue.eindTijd,
+      heleDag: filterValue.heleDag,
+      dagen: this.filterForm
+        .getRawValue()
+        .dagen.filter((dag: WeekdagOptie) => dag.selected)
+        .map((dag: WeekdagOptie) => dag.value),
+      startDatum: this.startDatumCtrl.value,
+      eindDatum: this.eindDatumCtrl.value,
+    })
   }
 }

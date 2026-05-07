@@ -152,6 +152,13 @@ public class ColonIntakekamerBeheer extends OrganisatieBeheer
 			.setVisible(Boolean.TRUE.equals(digitaleIntakeEnabledModel.getObject()));
 		digitaleIntakeForm.add(digitaleIntakeTextArea);
 
+		Boolean clientenHogeAsaScoreNietBehandelen = organisatieParameterService.getOrganisatieParameter(intakelocatie,
+			OrganisatieParameterKey.COLON_CLIENTEN_HOGE_ASA_SCORE_NIET_BEHANDELEN);
+		var clientenHogeAsaScoreNietBehandelenModel = Model.of(clientenHogeAsaScoreNietBehandelen);
+		var clientenHogeAsaScoreNietBehandelenCheckBox = new CheckBox("clientenHogeAsaScoreNietBehandelen", clientenHogeAsaScoreNietBehandelenModel);
+		clientenHogeAsaScoreNietBehandelenCheckBox.setOutputMarkupId(true);
+		digitaleIntakeForm.add(clientenHogeAsaScoreNietBehandelenCheckBox);
+
 		digitaleIntakeEnabledCheckBox.add(new AjaxFormComponentUpdatingBehavior("change")
 		{
 			@Override
@@ -167,8 +174,9 @@ public class ColonIntakekamerBeheer extends OrganisatieBeheer
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				intakelocatieService.saveIntakelocatieDigitaleIntake((ColonIntakelocatie) getForm().getDefaultModelObject(), digitaleIntakeTekstModel.getObject(), digitaleIntakeEnabledModel.getObject(),
-					ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+				intakelocatieService.saveIntakelocatieDigitaleIntake((ColonIntakelocatie) getForm().getDefaultModelObject(), digitaleIntakeTekstModel.getObject(),
+					digitaleIntakeEnabledModel.getObject(),
+					clientenHogeAsaScoreNietBehandelenModel.getObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				info("Digitale intake informatie is opgeslagen");
 				BasePage.markeerFormulierenOpgeslagen(target);
 			}

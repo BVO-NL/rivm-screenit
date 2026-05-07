@@ -22,14 +22,21 @@ import {Dispatch} from "redux"
 import ScreenitBackend from "../utils/Backend"
 import {AfspraakOptie} from "../datatypes/mamma/AfspraakOptie"
 import {setHuidigeMammaAfspraakReduxAction} from "../actions/MammaDossierAction"
-import {Bevolkingsonderzoek} from "../datatypes/Bevolkingsonderzoek"
 import {HuidigeAfspraak} from "../datatypes/mamma/HuidigeAfspraak"
+import {AfspraakBevestigingOpties} from "../datatypes/mamma/AfspraakBevestigingOpties"
+import {SetMammaAfspraakBevestigingsoptie, setMammaAfspraakBevestigingsoptieReduxAction} from "../actions/MammaAfspraakAction"
 
-export const maakAfspraak = (bvo: Bevolkingsonderzoek, afspraak: AfspraakOptie): () => Promise<string> => () => {
-	return ScreenitBackend.post<string>("mamma/afspraak/maak", {json: afspraak}).json()
+export const maakAfspraak = (afspraakOptie: AfspraakOptie): (dispatch: Dispatch) => Promise<SetMammaAfspraakBevestigingsoptie> => (dispatch: Dispatch) => {
+	return ScreenitBackend.post<string>("mamma/afspraak/maak", {json: afspraakOptie}).json()
+		.then(response => dispatch(setMammaAfspraakBevestigingsoptieReduxAction(new AfspraakBevestigingOpties(response, afspraakOptie))))
 }
 
 export const getHuidigeAfspraak = () => (dispatch: Dispatch) => {
 	return ScreenitBackend.get<HuidigeAfspraak>("mamma/afspraak/huidige").json()
 		.then(response => dispatch(setHuidigeMammaAfspraakReduxAction(response)))
+}
+
+export const maakAfspraakBevestiging = (afspraakBevestiging: AfspraakBevestigingOpties) => (dispatch: Dispatch) => {
+	return ScreenitBackend.post("mamma/afspraak/bevestiging", {json: afspraakBevestiging})
+		.then(() => dispatch(setMammaAfspraakBevestigingsoptieReduxAction(afspraakBevestiging)))
 }

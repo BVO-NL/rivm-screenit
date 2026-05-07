@@ -65,8 +65,8 @@ import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.service.cervix.CervixBaseScreeningrondeService;
 import nl.rivm.screenit.service.cervix.CervixFactory;
 import nl.rivm.screenit.service.colon.ColonBaseFitService;
+import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
 import nl.rivm.screenit.service.colon.ColonScreeningsrondeService;
-import nl.rivm.screenit.service.colon.ColonUitnodigingService;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
@@ -95,7 +95,7 @@ public class RetourzendingServiceImpl implements RetourzendingService
 	private BaseUitnodigingService baseUitnodigingsService;
 
 	@Autowired
-	private ColonUitnodigingService colonUitnodigingsService;
+	private ColonBaseUitnodigingService colonUitnodigingsService;
 
 	@Autowired
 	private ICurrentDateSupplier currentDateSupplier;

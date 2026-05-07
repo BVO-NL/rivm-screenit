@@ -71,6 +71,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class DaglijstServiceImpl implements DaglijstService
 {
 
+	private final AfspraakDtoMapper afspraakDtoMapper = new AfspraakDtoMapper();
+
+	private final VorigOnderzoekDtoMapper vorigOnderzoekDtoMapper = new VorigOnderzoekDtoMapper();
+
 	@Autowired
 	private MammaAfsprakenDao afsprakenDao;
 
@@ -110,19 +114,15 @@ public class DaglijstServiceImpl implements DaglijstService
 	@Autowired
 	private MammaBaseScreeningrondeService baseScreeningrondeService;
 
-	private final AfspraakDtoMapper afspraakDtoMapper = new AfspraakDtoMapper();
-
-	private final VorigOnderzoekDtoMapper vorigOnderzoekDtoMapper = new VorigOnderzoekDtoMapper();
-
 	@Override
-	public List<AfspraakSeDto> readDaglijst(LocalDate datum, String seCode)
+	public List<AfspraakSeDto> readDaglijst(LocalDate datum, String seCode, String seVersie)
 	{
 		var afspraakDtos = afspraakService
 			.getAfspraken(seCode, datum, datum, MammaAfspraakStatus.NIET_GEANNULEERD.toArray(new MammaAfspraakStatus[] {}))
 			.stream()
 			.filter(afspraak -> afspraak.getId().equals(afspraak.getUitnodiging().getLaatsteAfspraak().getId())
 				&& afspraak.getUitnodiging().getScreeningRonde().getStatus() == ScreeningRondeStatus.LOPEND)
-			.map(this::createAfspraakDto)
+			.map(afspraak -> createAfspraakDto(afspraak, seVersie))
 			.collect(Collectors.toList());
 
 		if (afsprakenKunnenGeopendWordenOpSe(datum))
@@ -136,20 +136,20 @@ public class DaglijstServiceImpl implements DaglijstService
 	@Override
 	public void verstuurUpdate(String seCodeEnDatum)
 	{
-		LOG.info("SE met code en datum " + seCodeEnDatum + " moet de daglijst opnieuw binnenhalen.");
+		LOG.info("SE met code en datum {} moet de daglijst opnieuw binnenhalen.", seCodeEnDatum);
 		seProxyWebsocket.sendDaglijstUpdate(seCodeEnDatum);
 	}
 
-	private AfspraakSeDto createAfspraakDto(MammaAfspraak afspraak)
+	private AfspraakSeDto createAfspraakDto(MammaAfspraak afspraak, String seVersie)
 	{
-		var afspraakSeDto = afspraakDtoMapper.createAfspraakSeDto(afspraak);
+		var afspraakSeDto = afspraakDtoMapper.createAfspraakSeDto(afspraak, seVersie);
 		updateAfspraakDtoBijzonderhedenZelfdeRonde(afspraak, afspraakSeDto);
 		updateAfspraakDtoMetOpkomstTellers(afspraak, afspraakSeDto);
-		updateClientDtoMetVorigeOnderzoeken(afspraak, afspraakSeDto.getClient());
+		updateClientDtoMetVorigeOnderzoeken(afspraak, afspraakSeDto.getClient(), seVersie);
 		return afspraakSeDto;
 	}
 
-	private void updateClientDtoMetVorigeOnderzoeken(MammaAfspraak afspraak, ClientSeDto clientSeDto)
+	private void updateClientDtoMetVorigeOnderzoeken(MammaAfspraak afspraak, ClientSeDto clientSeDto, String seVersie)
 	{
 		var dossier = afspraak.getUitnodiging().getScreeningRonde().getDossier();
 		var daglijstSe = afspraak.getStandplaatsPeriode().getScreeningsEenheid();
@@ -157,15 +157,15 @@ public class DaglijstServiceImpl implements DaglijstService
 		clientSeDto.setJaarLaatsteVerwijzing(baseScreeningrondeService.getJaarLaatsteVerwijzing(dossier.getClient()));
 		clientSeDto.setVorigeOnderzoeken(
 			baseDossierService.laatste3AfgerondeRondesMetOnderzoek(dossier)
-				.map(ronde -> createVorigOnderzoekDto(ronde, daglijstSe))
+				.map(ronde -> createVorigOnderzoekDto(ronde, daglijstSe, seVersie))
 				.filter(Objects::nonNull).collect(Collectors.toList()));
 	}
 
-	private VorigOnderzoekDto createVorigOnderzoekDto(MammaScreeningRonde ronde, MammaScreeningsEenheid daglijstSe)
+	private VorigOnderzoekDto createVorigOnderzoekDto(MammaScreeningRonde ronde, MammaScreeningsEenheid daglijstSe, String seVersie)
 	{
 		try
 		{
-			return vorigOnderzoekDtoMapper.createVorigOnderzoekDto(ronde, beoordelingService, mammaBaseOnderzoekService);
+			return vorigOnderzoekDtoMapper.createVorigOnderzoekDto(ronde, beoordelingService, mammaBaseOnderzoekService, seVersie);
 		}
 		catch (Exception exception)
 		{

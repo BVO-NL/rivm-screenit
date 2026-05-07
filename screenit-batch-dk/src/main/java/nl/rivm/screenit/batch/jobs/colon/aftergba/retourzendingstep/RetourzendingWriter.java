@@ -28,8 +28,8 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
+import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
 import nl.rivm.screenit.service.colon.ColonScreeningsrondeService;
-import nl.rivm.screenit.service.colon.ColonUitnodigingService;
 
 import org.springframework.stereotype.Component;
 
@@ -40,7 +40,7 @@ public class RetourzendingWriter extends BaseRetourzendingWriter<Client, ColonUi
 
 	private final ColonScreeningsrondeService screeningsrondeService;
 
-	private final ColonUitnodigingService uitnodigingsService;
+	private final ColonBaseUitnodigingService uitnodigingsService;
 
 	@Override
 	protected ColonUitnodiging maakNieuweUitnodiging(ColonUitnodiging uitnoding)

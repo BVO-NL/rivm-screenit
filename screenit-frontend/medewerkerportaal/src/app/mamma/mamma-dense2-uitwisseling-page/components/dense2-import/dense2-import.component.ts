@@ -19,60 +19,45 @@
  * =========================LICENSE_END==================================
  */
 import { Component, inject } from '@angular/core'
-import { CardComponent } from '@shared/components/card/card.component'
-import { ToastService } from '@shared/toast/service/toast.service'
+import { NotificationService } from '@shared/services/notification/notification.service'
 import { FormsModule } from '@angular/forms'
 import { Dense2Service } from '@/mamma/mamma-dense2-uitwisseling-page/services/dense2/dense2.service'
-import { catchError, of, throwError } from 'rxjs'
+import { take } from 'rxjs'
+import { DsButtonComponent, DsCardComponent, DsFooterActionsRightDirective } from '@topicus-rgp-ds/web'
+import { SingleFileSelectorComponent } from '@shared/components/single-file-selector/single-file-selector.component'
 
 @Component({
   selector: 'app-dense2-import',
-  imports: [CardComponent, FormsModule],
+  imports: [FormsModule, DsCardComponent, DsButtonComponent, DsFooterActionsRightDirective, SingleFileSelectorComponent],
   template: `
-    <app-card>
-      <div header>Import</div>
-      <div class="clr-row clr-align-items-center" body>
-        <div class="clr-col-3">Bestandsnaam</div>
-        <div class="clr-col-9 upload-file">
-          <label for="uploadFile" class="btn">Bladeren</label>
-          <input type="file" id="uploadFile" accept="text/csv" (change)="changeFile($event)" />
-        </div>
-      </div>
-      <button footer class="btn btn-primary" [disabled]="!file" (click)="import()">Verwerken</button>
-    </app-card>
+    <ds-card cardTitle="Import">
+      <app-single-file-selector class="display-block" acceptedExtensie="csv" [(ngModel)]="file" />
+      <ng-template ds-footer-actions-right>
+        <button ds-button-primary data-testid="button_import" [disabled]="!file" (click)="import()">Verwerken</button>
+      </ng-template>
+    </ds-card>
   `,
-  styleUrl: './dense2-import.component.scss',
 })
 export class Dense2ImportComponent {
   file: File | undefined
-  private toastService: ToastService = inject(ToastService)
+  private notificationService: NotificationService = inject(NotificationService)
   private dense2Service: Dense2Service = inject(Dense2Service)
 
-  changeFile(event: Event) {
-    const target = event.target as HTMLInputElement
-    if (target.files) {
-      this.file = target.files[0]
-    }
-  }
-
   import() {
-    if (this.file) {
-      this.dense2Service
-        .import(this.file)
-        .pipe(
-          catchError((err) => {
-            if (err.status === 403) {
-              this.toastService.error('Type bestand kan niet verwerkt worden.')
-              return of(null)
-            }
-            return throwError(() => err)
-          }),
-        )
-        .subscribe((melding) => {
-          if (melding) {
-            this.toastService.success(melding)
-          }
-        })
+    if (!this.file) {
+      return
     }
+
+    this.dense2Service
+      .import(this.file)
+      .pipe(take(1))
+      .subscribe({
+        next: (melding) => this.notificationService.success(melding),
+        error: (err) => {
+          if (err.status === 403) {
+            this.notificationService.error('Type bestand kan niet verwerkt worden.')
+          }
+        },
+      })
   }
 }

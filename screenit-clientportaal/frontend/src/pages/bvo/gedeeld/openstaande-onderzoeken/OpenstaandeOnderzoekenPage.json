@@ -1,0 +1,87 @@
+{
+  "page": {
+    "titel": "Doet u ook mee aan…?"
+  },
+  "intro": {
+    "titel": "Bevolkingsonderzoeken",
+    "omschrijving": "U heeft nog een uitnodiging voor:"
+  },
+  "colon": {
+    "titel": "Bevolkingsonderzoek darmkanker",
+    "omschrijving": "U heeft eerder een uitnodiging met daarbij een ontlastingstest ontvangen. U kunt de ontlastingstest thuis doen. U stuurt de test daarna op naar het laboratorium.",
+    "keuzeTitel": "Maak uw keuze:",
+    "heeftVervaldatumTekst": "U kunt de ontlastingstest nog gebruiken.",
+    "testVerlopenTekst": "De houdbaarheid van de ontlastingstest die u eerder heeft gekregen is verlopen.",
+    "opties": {
+      "AANVRAGEN_NIEUW": "Ik wil graag een ontlastingstest aanvragen",
+      "HEB_NOG": "Ik heb nog een ontlastingstest die ik kan gebruiken",
+      "HEB_NOG_VERLOPEN": "Ik wil geen ontlastingstest aanvragen"
+    },
+    "validatie": "Maak een keuze voor het bevolkingsonderzoek darmkanker"
+  },
+  "cervix": {
+    "titel": "Bevolkingsonderzoek baarmoederhalskanker",
+    "omschrijving": "U heeft eerder een uitnodiging en/of zelftest ontvangen. Met de uitnodigingsbrief kunt u bij de huisarts een afspraak maken voor een uitstrijkje.",
+    "keuzeTitel": "Maak uw keuze:",
+    "heeftVervaldatumTekst": "U kunt de uitnodigingsbrief/zelftest nog gebruiken.",
+    "testVerlopenTekst": "De houdbaarheid van de zelftest die u eerder heeft gekregen is verlopen.",
+    "opties": {
+      "AANVRAGEN_ZELFTEST": "Ik wil graag een zelftest aanvragen",
+      "AANVRAGEN_BRIEF": "Ik wil graag een uitnodigingsbrief ontvangen",
+      "HEB_NOG": "Ik heb nog een uitnodigingsbrief/ zelftest die ik kan gebruiken",
+      "HEB_NOG_VERLOPEN": " Ik heb nog een uitnodigingsbrief die ik kan gebruiken"
+    },
+    "validatie": "Maak een keuze voor het bevolkingsonderzoek baarmoederhalskanker"
+  },
+  "knoppen": {
+    "afsluiten": "Afsluiten",
+    "afronden": "Afronden"
+  },
+  "api": {
+    "verwerkUitnodigingen": "mamma/afspraak/openstaandeUitnodigingen/meedoen"
+  },
+  "toast": {
+    "fout": {
+      "title": "Aanvraag kon niet worden verwerkt",
+      "description": "Er ging iets fout in de applicatie, probeer het opnieuw of neem contact op met een beheerder.",
+      "MAX_ZAS_AANVRAGEN_BEREIKT": {
+        "title": "Aanvraag kon niet worden verwerkt",
+        "description": "U heeft het maximaal aantal zelftesten bereikt."
+      },
+      "ZAS_AANVRAAG_IN_BEHANDELING": {
+        "title": "U heeft kort geleden al een zelftest aangevraagd.",
+        "description": "U ontvangt deze binnenkort per post."
+      }
+    },
+    "succes": {
+      "title": "Succesvol verwerkt",
+      "description": "Uitnodigingen voor bevolkingsonderzoeken succesvol verwerkt"
+    },
+    "colon": {
+      "nieuweTest": {
+        "title": "U heeft een nieuwe ontlastingstest aangevraagd.",
+        "description": "U krijgt de ontlastingstest binnen 14 dagen per post."
+      }
+    },
+    "cervix": {
+      "nieuweBrief": {
+        "title": "U heeft een nieuwe uitnodigingsbrief aangevraagd.",
+        "description": "U krijgt de uitnodigingsbrief binnen 14 dagen per post."
+      },
+      "nieuweTest": {
+        "title": "U heeft een nieuwe zelftest aangevraagd.",
+        "description": "U krijgt de zelftest binnen 14 dagen per post."
+      }
+    },
+    "gecombineerd": {
+      "nieuweTest": {
+        "title": "U heeft een ontlastingstest en een zelftest aangevraagd.",
+        "description": "U krijgt deze binnen 14 dagen per post."
+      },
+      "nieuweBrief": {
+        "title": "U heeft een ontlastingstest en een uitnodigingsbrief aangevraagd.",
+        "description": "U krijgt deze binnen 14 dagen per post."
+      }
+    }
+  }
+}

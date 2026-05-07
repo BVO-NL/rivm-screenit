@@ -18,92 +18,118 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, ElementRef, inject, Renderer2, ViewChild } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { Component, inject, signal } from '@angular/core'
+import { DatePipe, LowerCasePipe } from '@angular/common'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
 import { Dialog, DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
-import { ClrCheckboxModule, ClrComboboxModule, ClrDatagridModule, ClrDatagridPagination, ClrDatepickerModule, ClrInputModule, ClrRangeModule } from '@clr/angular'
 import { RoosterService } from '@/colon/colon-rooster-page/services/rooster.service'
-import { ReactiveFormsModule } from '@angular/forms'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { ColonTijdslotFilter } from '@shared/types/colon/colon-tijdslot-filter'
 import { TijdslotsVerwijderenBevestigingsPopupComponent } from '@/colon/colon-rooster-page/components/tijdslots-verwijderen-bevestigings-popup/tijdslots-verwijderen-bevestigings-popup.component'
-import { catchError, filter, switchMap, take, throwError } from 'rxjs'
+import { catchError, EMPTY, switchMap, take, throwError } from 'rxjs'
 import { HttpErrorResponse } from '@angular/common/http'
 import { TijdslotsVerwijderenFilterComponent } from '@/colon/colon-rooster-page/components/tijdslots-verwijderen-filter/tijdslots-verwijderen-filter.component'
 import { ColonTijdslot } from '@shared/types/colon/colon-tijdslot'
 import { SelectOption } from '@shared/types/select-option'
 import { NL_DATE_FORMAT, TIME_FORMAT } from '@shared/constants'
+import {
+  DsAbstractSelectableTable,
+  DsButtonComponent,
+  DsCell,
+  DsCellDef,
+  DsCheckboxComponent,
+  DsColumnDef,
+  DsHeaderCell,
+  DsHeaderCellDef,
+  DsHeaderRowComponent,
+  DsHeaderRowDef,
+  DsNoDataRow,
+  DsPageEvent,
+  DsPaginatorComponent,
+  DsRowDef,
+  DsSelectableRowComponent,
+  DsTableComponent,
+} from '@topicus-rgp-ds/web'
+import { MatSort } from '@angular/material/sort'
+import { NotificationService } from '@shared/services/notification/notification.service'
 
 @Component({
   selector: 'app-tijdslots-verwijderen-dialog',
   imports: [
-    CommonModule,
     BaseDialogComponent,
-    ClrDatagridModule,
-    ClrRangeModule,
-    ClrDatepickerModule,
     ReactiveFormsModule,
-    ClrInputModule,
-    ClrCheckboxModule,
-    ClrComboboxModule,
+    FormsModule,
     TijdslotsVerwijderenFilterComponent,
+    DsButtonComponent,
+    DsHeaderRowComponent,
+    DsHeaderCellDef,
+    DsCellDef,
+    DsColumnDef,
+    DsHeaderRowDef,
+    DsRowDef,
+    DsHeaderCell,
+    DsCell,
+    MatSort,
+    DsTableComponent,
+    DatePipe,
+    DsPaginatorComponent,
+    DsNoDataRow,
+    DsSelectableRowComponent,
+    DsCheckboxComponent,
+    LowerCasePipe,
   ],
   templateUrl: './tijdslots-verwijderen-dialog.component.html',
-  styles: [
-    `
-      .checkbox-kolom {
-        min-width: 0;
-        width: 30px;
-      }
-
-      .datagrid {
-        overflow: hidden;
-      }
-    `,
-  ],
 })
-export class TijdslotsVerwijderenDialogComponent {
-  private dialogRef: DialogRef = inject(DialogRef)
-  private roosterService: RoosterService = inject(RoosterService)
-  private dialogService: Dialog = inject(Dialog)
-  private renderer: Renderer2 = inject(Renderer2)
-  tijdslots: ColonTijdslot[] = []
+export class TijdslotsVerwijderenDialogComponent extends DsAbstractSelectableTable<ColonTijdslot> {
+  tijdslots = signal<ColonTijdslot[]>([])
+  alleTijdslots = signal<ColonTijdslot[]>([])
 
-  @ViewChild('datagridEl', { read: ElementRef }) datagrid: ElementRef | undefined
-  @ViewChild(ClrDatagridPagination) pagination: ClrDatagridPagination | undefined
-  selectedTijdslots: ColonTijdslot[] = []
   typeTijdslot: SelectOption<string> = inject(DIALOG_DATA)
-  huidigePagina = 1
+  displayedColumns = ['selection', 'kamer', 'datum', 'starttijd', 'eindtijd']
+  pageSize = 500
+
+  protected readonly NL_DATE_FORMAT = NL_DATE_FORMAT
+  protected readonly TIME_FORMAT = TIME_FORMAT
+  private readonly dialogRef: DialogRef = inject(DialogRef)
+  private readonly roosterService: RoosterService = inject(RoosterService)
+  private readonly dialogService: Dialog = inject(Dialog)
+  private readonly notificationService = inject(NotificationService)
 
   filter(filter: ColonTijdslotFilter) {
     this.roosterService
       .searchTijdslots(filter, this.typeTijdslot.value)
       .pipe(take(1))
       .subscribe((res) => {
-        this.tijdslots = res
-        const pageSize = this.pagination?.pageSize ?? 500
-        this.selectedTijdslots = res.slice(0, Math.min(res.length, pageSize))
-        this.huidigePagina = 1
-        this.updateDatagridHeight()
+        this.alleTijdslots.set(res)
+        this.tijdslots.set(res.slice(0, this.pageSize))
+        this.selection.setSelection(...this.tijdslots())
       })
   }
 
-  clearSelection() {
-    this.selectedTijdslots = []
-  }
-
-  updateDatagridHeight() {
-    if (this.datagrid) {
-      this.renderer.setStyle(this.datagrid.nativeElement, 'max-height', 'calc(70vh - 210px)')
-    }
+  handlePageChange($event: DsPageEvent): void {
+    this.tijdslots.set(this.alleTijdslots().slice($event.pageIndex * $event.pageSize, ($event.pageIndex + 1) * $event.pageSize))
+    this.selection.clear()
   }
 
   cancel() {
     this.dialogRef.close()
   }
 
+  override toggleAll() {
+    this.allCheckboxesSelected() ? this.selection.clear() : this.tijdslots().forEach((row) => this.selection.select(row))
+  }
+
+  override allCheckboxesSelected() {
+    if (this.selection && this.tijdslots()) {
+      const numSelected = this.selection.selected.length
+      const numRows = this.tijdslots().length
+      return numSelected === numRows
+    }
+    return true
+  }
+
   verwijderen() {
-    const selectedTijdslotIds = this.selectedTijdslots.map((slot) => Number(slot.id))
+    const selectedTijdslotIds = this.selection.selected.map((slot) => Number(slot.id))
     if (selectedTijdslotIds.length === 0) {
       return
     }
@@ -121,20 +147,16 @@ export class TijdslotsVerwijderenDialogComponent {
                   typeTijdslot: this.typeTijdslot,
                 },
               })
-              .closed.pipe(
-                take(1),
-                filter((response: unknown) => response === true),
-              )
+              .closed.pipe(take(1))
           }
+
           return throwError(() => response)
         }),
-        switchMap(() => this.roosterService.bulkDeleteTijdslots(selectedTijdslotIds, false, this.typeTijdslot.value)),
+        switchMap((bevestigd) => (bevestigd ? this.roosterService.bulkDeleteTijdslots(selectedTijdslotIds, false, this.typeTijdslot.value) : EMPTY)),
       )
-      .subscribe(() => {
-        this.dialogRef.close()
+      .subscribe({
+        next: () => this.dialogRef.close(),
+        error: () => this.notificationService.error('Er is een fout opgetreden bij het verwijderen van de tijdslots. Probeer het opnieuw.'),
       })
   }
-
-  protected readonly NL_DATE_FORMAT = NL_DATE_FORMAT
-  protected readonly TIME_FORMAT = TIME_FORMAT
 }

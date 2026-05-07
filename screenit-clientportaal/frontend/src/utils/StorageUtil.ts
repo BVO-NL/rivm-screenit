@@ -19,8 +19,8 @@
  * =========================LICENSE_END==================================
  */
 import {legeState, State} from "../datatypes/State"
-import {cpStore} from "../index"
 import {transformDates} from "./DateTransformUtil"
+import {cpStore} from "../store"
 
 export const loadState = (): State => {
 	try {

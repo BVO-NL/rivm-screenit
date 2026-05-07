@@ -27,18 +27,14 @@ import java.util.Collection;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.mamma.MammaFotobespreking;
 import nl.rivm.screenit.model.mamma.MammaFotobespreking_;
-import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
-import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid_;
 import nl.rivm.screenit.model.mamma.enums.MammaFotobesprekingType;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import static nl.rivm.screenit.specification.HibernateObjectSpecification.heeftIdIn;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenEmpty;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNull;
 
@@ -51,25 +47,15 @@ public class MammaFotobesprekingSpecification
 			cb.greaterThan(cb.coalesce(r.get(MammaFotobespreking_.gestartOp), DateUtil.END_OF_TIME), DateUtil.toUtilDate(vanaf)));
 	}
 
-	public static Specification<MammaFotobespreking> filterOpScreeningsEenheid(Collection<MammaScreeningsEenheid> screeningsEenheden)
-	{
-		return skipWhenEmpty(screeningsEenheden, (r, q, cb) ->
-		{
-			var subquery = q.subquery(Long.class);
-			var subqueryRoot = subquery.from(MammaScreeningsEenheid.class);
-			var screeningsEenheidIds = screeningsEenheden.stream().map(AbstractHibernateObject::getId).toList();
-
-			subquery.select(subqueryRoot.get(MammaScreeningsEenheid_.beoordelingsEenheid).get(AbstractHibernateObject_.id)).distinct(true)
-				.where(heeftIdIn(screeningsEenheidIds).toPredicate(subqueryRoot, q, cb));
-
-			return cb.or(
-				r.get(MammaFotobespreking_.screeningsEenheid).get(AbstractHibernateObject_.id).in(screeningsEenheidIds),
-				r.get(MammaFotobespreking_.beoordelingsEenheid).get(AbstractHibernateObject_.id).in(subquery));
-		});
-	}
-
 	public static Specification<MammaFotobespreking> filterOpType(Collection<MammaFotobesprekingType> types)
 	{
 		return skipWhenEmpty(types, (r, q, cb) -> r.get(MammaFotobespreking_.type).in(types));
+	}
+
+	public static Specification<MammaFotobespreking> filterOpBeoordelingseenheden(Collection<BeoordelingsEenheid> eenheden)
+	{
+		return skipWhenEmpty(eenheden, (r, q, cb) -> cb.or(
+			r.get(MammaFotobespreking_.beoordelingsEenheid).in(eenheden),
+			r.get(MammaFotobespreking_.beoordelingsEenheid).isNull()));
 	}
 }

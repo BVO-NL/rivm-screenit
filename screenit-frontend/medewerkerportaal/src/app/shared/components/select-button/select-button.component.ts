@@ -18,16 +18,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, forwardRef, Input } from '@angular/core'
-
-import { ClrDropdownModule } from '@clr/angular'
+import { ChangeDetectorRef, Component, forwardRef, inject, input, viewChild } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
-import { SelectOption } from '@shared/types/select-option'
+import { DsButtonComponent, DsButtonMenuDirective, DsContextMenuItem, DsIconComponent, DsMenuItem } from '@topicus-rgp-ds/web'
+import { faAngleDown } from '@fortawesome/pro-light-svg-icons'
+import { filter, fromEvent, take } from 'rxjs'
 
 @Component({
   selector: 'app-select-button',
-  imports: [ClrDropdownModule],
-  templateUrl: './select-button.component.html',
+  imports: [DsButtonComponent, DsButtonMenuDirective, DsIconComponent],
+  template: `<button
+    ds-button-secondary
+    dsButtonMenu
+    [menu]="options()"
+    (menuItemClicked)="menuItemClicked($event)"
+    [disabled]="disabled"
+    (menuOpened)="setCloseOnClick()"
+    data-testid="calendar-view-select-button"
+  >
+    {{ selectedRange }}
+    <ds-icon [icon]="faAngleDown"></ds-icon>
+  </button>`,
   styles: [
     `
       .dropdown-toggle {
@@ -37,25 +48,30 @@ import { SelectOption } from '@shared/types/select-option'
   ],
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => SelectButtonComponent), multi: true }],
 })
-export class SelectButtonComponent<T> implements ControlValueAccessor {
-  @Input() closeOnItemClick = false
-  @Input() options: SelectOption<T>[] = []
-  @Input() position: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right' = 'bottom-left'
-  onChange: ((value: T) => void) | undefined
-  onTouch: ((value: T) => void) | undefined
+export class SelectButtonComponent<CalendarView> implements ControlValueAccessor {
+  options = input<DsContextMenuItem[][]>([])
+  cdr = inject(ChangeDetectorRef)
+  private buttonMenuDirective = viewChild(DsButtonMenuDirective)
+  onChange: ((value: CalendarView) => void) | undefined
+  onTouch: ((value: CalendarView) => void) | undefined
   disabled = false
-  value: T | undefined
-  color: 'primary' | 'secondary' | 'default' = 'default'
+  value: CalendarView | undefined
+
+  protected readonly faAngleDown = faAngleDown
 
   get selectedRange(): string {
-    return this.options.find((option: SelectOption<T>) => option.value === this.value)?.label ?? 'Onbekend'
+    return (
+      this.options()
+        .flat()
+        .find((optie: DsContextMenuItem) => optie.label.toLowerCase() === this.value)?.label ?? 'Onbekend'
+    )
   }
 
-  registerOnChange(fn: (value: T) => void): void {
+  registerOnChange(fn: (value: CalendarView) => void): void {
     this.onChange = fn
   }
 
-  registerOnTouched(fn: (value: T) => void): void {
+  registerOnTouched(fn: (value: CalendarView) => void): void {
     this.onTouch = fn
   }
 
@@ -63,14 +79,26 @@ export class SelectButtonComponent<T> implements ControlValueAccessor {
     this.disabled = isDisabled
   }
 
-  updateValue(value: T) {
-    this.value = value
+  menuItemClicked($event: DsMenuItem) {
+    this.value = $event.label === 'Dag' ? ('dag' as CalendarView) : $event.label === 'Werkweek' ? ('werkweek' as CalendarView) : ('week' as CalendarView)
     if (this.onChange) {
-      this.onChange(value)
+      this.onChange(this.value)
     }
   }
 
-  writeValue(obj: T): void {
+  writeValue(obj: CalendarView): void {
     this.value = obj
+  }
+
+  setCloseOnClick(): void {
+    fromEvent<MouseEvent>(document, 'mousedown')
+      .pipe(
+        filter((event: MouseEvent) => {
+          const clickTarget = event.target as HTMLElement
+          return !clickTarget.closest('.ds-context-menu') && !clickTarget.closest(`#${this.buttonMenuDirective()!.elementClass}`)
+        }),
+        take(1),
+      )
+      .subscribe(() => this.cdr.markForCheck())
   }
 }

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { MammaVisitatieLijstRapportData } from '@shared/types/mamma/dto/mamma-visitatielijst-dialog-data'
+import { MammaVisitatieLijstRapportData } from '@shared/types/mamma/dto/visitatie/mamma-visitatielijst-dialog-data'
 
 export class MammaVisitatielijstRapport {
   private minimumBeeldenPerMedewerker = 240

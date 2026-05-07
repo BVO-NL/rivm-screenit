@@ -31,7 +31,7 @@ import KruimelpadComponent from "../components/kruimelpad/KruimelpadComponent"
 export type BasePageProps = {
 	bvoName: string,
 	title: string,
-	description: string,
+	description?: string,
 	hint?: string,
 	toonBlob: boolean,
 	blobTitle?: string,
@@ -67,7 +67,7 @@ const BasePage = (props: BasePageProps) => {
 							linkTekst={props.blobLinkText}/>}
 				</Col>
 			</Row>
-			<div className={styles.childrenContainer}>
+			<div className={classNames(styles.childrenContainer, {[styles.zonderDescription]: !props.description})}>
 				{props.children}
 			</div>
 		</Container>

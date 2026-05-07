@@ -31,7 +31,6 @@ import nl.rivm.screenit.clientportaal.services.cervix.CervixZasService;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
-import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.cervix.CervixUitstel;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.cervix.CervixBaseScreeningrondeService;
@@ -89,15 +88,21 @@ public class CervixZasServiceImpl implements CervixZasService
 
 	private void valideerAanvraag(CervixScreeningRonde laatsteScreeningRonde)
 	{
-		CervixUitnodiging laatsteZasUitnodiging = laatsteScreeningRonde.getLaatsteZasUitnodiging();
 		if (screeningrondeService.heeftMaxAantalZASsenBereikt(laatsteScreeningRonde, true))
 		{
 			throw new NotValidException("MAX_ZAS_AANVRAGEN_BEREIKT");
 		}
-		if (laatsteZasUitnodiging != null && laatsteZasUitnodiging.getMonster() == null && laatsteZasUitnodiging.getGeannuleerdDatum() == null)
+		if (heeftOpenstaandeAanvraag(laatsteScreeningRonde))
 		{
 			throw new NotValidException("ZAS_AANVRAAG_IN_BEHANDELING");
 		}
+	}
+
+	@Override
+	public boolean heeftOpenstaandeAanvraag(CervixScreeningRonde ronde)
+	{
+		var laatsteZasUitnodiging = ronde.getLaatsteZasUitnodiging();
+		return laatsteZasUitnodiging != null && laatsteZasUitnodiging.getMonster() == null && laatsteZasUitnodiging.getGeannuleerdDatum() == null;
 	}
 
 	@Override

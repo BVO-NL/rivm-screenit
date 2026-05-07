@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import {createCountRequestAction, createCountResponseAction} from "../actions/SpinnerCounterAction"
-import {cpStore} from "../index"
+import {cpStore} from "../store"
 
 export function countRequest(): void {
 	cpStore.dispatch(createCountRequestAction())

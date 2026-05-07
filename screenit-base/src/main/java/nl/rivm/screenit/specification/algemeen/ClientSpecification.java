@@ -28,8 +28,18 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.ClientBrief;
+import nl.rivm.screenit.model.ClientBrief_;
 import nl.rivm.screenit.model.Client_;
+import nl.rivm.screenit.model.InpakbareUitnodiging_;
 import nl.rivm.screenit.model.Persoon_;
+import nl.rivm.screenit.model.cervix.CervixScreeningRonde_;
+import nl.rivm.screenit.model.cervix.CervixUitnodiging;
+import nl.rivm.screenit.model.cervix.CervixUitnodiging_;
+import nl.rivm.screenit.model.cervix.enums.CervixMonsterType;
+import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
+import nl.rivm.screenit.model.colon.ColonUitnodiging;
+import nl.rivm.screenit.model.colon.ColonUitnodiging_;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.RedenIntrekkenGbaIndicatie;
@@ -41,6 +51,7 @@ import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectClient_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
+import nl.rivm.screenit.specification.SpecificationUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
@@ -152,22 +163,22 @@ public class ClientSpecification
 		return (r, q, cb) -> r.get(Client_.gbaStatus).in(statussen);
 	}
 
-	public static Specification<Client> heeftMammaDossier()
+	public static ExtendedSpecification<Client> heeftMammaDossier()
 	{
 		return (r, q, cb) -> cb.isNotNull(r.get(Client_.mammaDossier));
 	}
 
-	public static Specification<Client> heeftColonDossier()
+	public static ExtendedSpecification<Client> heeftColonDossier()
 	{
 		return (r, q, cb) -> cb.isNotNull(r.get(Client_.colonDossier));
 	}
 
-	public static Specification<Client> heeftCervixDossier()
+	public static ExtendedSpecification<Client> heeftCervixDossier()
 	{
 		return (r, q, cb) -> cb.isNotNull(r.get(Client_.cervixDossier));
 	}
 
-	public static Specification<Client> heeftDossiers()
+	public static Specification<Client> heeftMinimaalEenDossier()
 	{
 		return heeftCervixDossier().or(heeftColonDossier()).or(heeftMammaDossier());
 	}
@@ -204,6 +215,23 @@ public class ClientSpecification
 		};
 	}
 
+	public static Specification<Client> heeftTePrintenBrieven()
+	{
+		return (r, q, cb) ->
+		{
+			var subquery = q.subquery(Client.class);
+			var subRoot = subquery.from(ClientBrief.class);
+			subquery.select(subRoot.get(ClientBrief_.client)).where(
+				cb.and(cb.equal(subRoot.get(ClientBrief_.client), r),
+					cb.and(cb.isFalse(subRoot.get(ClientBrief_.gegenereerd)),
+						cb.isFalse(subRoot.get(ClientBrief_.vervangendeProjectBrief)),
+						cb.isFalse(subRoot.get(ClientBrief_.vervangen)),
+						cb.isFalse(subRoot.get(ClientBrief_.tegenhouden)))
+				));
+			return cb.exists(subquery);
+		};
+	}
+
 	public static Specification<Client> metBeoordelingId(Long beoordelingId)
 	{
 		return (r, q, cb) ->
@@ -215,6 +243,47 @@ public class ClientSpecification
 			var onderzoekJoin = join(afspraakJoin, MammaAfspraak_.onderzoek);
 			var beoordelingJoin = join(onderzoekJoin, MammaOnderzoek_.beoordelingen);
 			return cb.equal(beoordelingJoin.get(AbstractHibernateObject_.id), beoordelingId);
+		};
+	}
+
+	public static Specification<Client> heeftNogTeVersturenBmhkUitnodigingen()
+	{
+		return (r, q, cb) ->
+		{
+			var subquery = q.subquery(CervixUitnodiging.class);
+			var uitnodigingRoot = subquery.from(CervixUitnodiging.class);
+			var screeningRondeJoin = join(uitnodigingRoot, CervixUitnodiging_.screeningRonde);
+			var dossierJoin = join(screeningRondeJoin, CervixScreeningRonde_.dossier);
+			subquery.select(uitnodigingRoot).where(
+				cb.and(
+					cb.equal(r.get(Client_.cervixDossier), dossierJoin),
+					cb.or(
+						cb.isFalse(uitnodigingRoot.get(InpakbareUitnodiging_.verstuurd)),
+						cb.isNull(uitnodigingRoot.get(InpakbareUitnodiging_.verstuurdDatum))
+					),
+					cb.equal(uitnodigingRoot.get(CervixUitnodiging_.monsterType), CervixMonsterType.ZAS)
+				));
+			return cb.exists(subquery);
+		};
+	}
+
+	public static Specification<Client> heeftNogTeVersturenDkUitnodigingen()
+	{
+		return (r, q, cb) ->
+		{
+			var subquery = q.subquery(ColonUitnodiging.class);
+			var uitnodigingRoot = subquery.from(ColonUitnodiging.class);
+			var screeningRondeJoin = SpecificationUtil.join(uitnodigingRoot, ColonUitnodiging_.screeningRonde);
+			var dossierJoin = SpecificationUtil.join(screeningRondeJoin, ColonScreeningRonde_.dossier);
+			subquery.select(uitnodigingRoot).where(
+				cb.and(
+					cb.equal(r.get(Client_.colonDossier), dossierJoin),
+					cb.or(
+						cb.isFalse(uitnodigingRoot.get(InpakbareUitnodiging_.verstuurd)),
+						cb.isNull(uitnodigingRoot.get(InpakbareUitnodiging_.verstuurdDatum))
+					)
+				));
+			return cb.exists(subquery);
 		};
 	}
 }

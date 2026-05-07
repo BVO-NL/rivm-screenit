@@ -21,8 +21,8 @@
 import { inject, Injectable } from '@angular/core'
 import { map, Observable } from 'rxjs'
 import { ColonFeestdag, ColonFeestdagDto } from '@shared/types/colon/colon-feestdag'
-import { format } from 'date-fns'
 import { ApiService } from '@shared/services/api/api.service'
+import { formatDate, parseDate } from '@shared/utils/date-utils'
 
 @Injectable({
   providedIn: 'root',
@@ -36,7 +36,7 @@ export class FeestdagenService {
       map((feestdagen: ColonFeestdagDto[]) =>
         feestdagen.map((feestdag: ColonFeestdagDto) => ({
           ...feestdag,
-          datum: new Date(feestdag.datum),
+          datum: parseDate(feestdag.datum),
         })),
       ),
     )
@@ -46,12 +46,12 @@ export class FeestdagenService {
     return this.apiService.post<ColonFeestdagDto>(this.baseUrl, {
       ...feestdag,
       actief: true,
-      datum: format(feestdag.datum, 'yyyy-MM-dd'),
+      datum: formatDate(feestdag.datum),
     })
   }
 
   updateFeestdag(feestdag: ColonFeestdag): Observable<ColonFeestdagDto> {
-    return this.apiService.put<ColonFeestdagDto>(`${this.baseUrl}/${feestdag.id}`, { ...feestdag, datum: format(feestdag.datum, 'yyyy-MM-dd') })
+    return this.apiService.put<ColonFeestdagDto>(`${this.baseUrl}/${feestdag.id}`, { ...feestdag, datum: formatDate(feestdag.datum) })
   }
 
   removeFeestdag(feestdag: ColonFeestdag): Observable<void> {

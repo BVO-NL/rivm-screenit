@@ -25,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.factory.colon.DefaultVrijSlotFactory;
 import nl.rivm.screenit.repository.impl.BaseJpaRepositoryImpl;
-import nl.topicuszorg.wicket.session.DozerSessionFinderImpl;
 import nl.topicuszorg.zorgid.webservice.ZorgidWebservice;
 
 import org.springframework.boot.SpringApplication;

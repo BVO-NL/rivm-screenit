@@ -1,0 +1,69 @@
+/*-
+ * ========================LICENSE_START=================================
+ * medewerkerportaal
+ * %%
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+@use 'sass:map';
+@use './functions';
+
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1263px
+) !default;
+
+@include functions.assert-ascending($container-max-widths, '$container-max-widths');
+
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1400px
+) !default;
+
+@include functions.assert-ascending($grid-breakpoints, '$grid-breakpoints');
+@include functions.assert-starts-at-zero($grid-breakpoints);
+$grid-columns: 12 !default;
+$grid-gutter-width: 30px !default;
+
+$spacer: 1rem !default;
+$spacers: () !default;
+$spacers: map.merge(
+    (
+      0: 0,
+      1: (
+        $spacer * 0.25
+      ),
+      2:
+        (
+          $spacer * 0.5
+        ),
+      3: $spacer,
+      4:
+        (
+          $spacer * 1.5
+        ),
+      5:
+        (
+          $spacer * 3
+        )
+    ),
+    $spacers
+);

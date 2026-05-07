@@ -1,0 +1,78 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog [size]="isNieuw ? 'xl' : 'md'" [titel]="title">
+  <form [formGroup]="afspraakslotForm" body class="row form-in-modal" novalidate>
+    <div class="col">
+      <app-kamer-selector [required]="true" formControlName="kamer" [inclusiefAlleKamers]="false"/>
+      <ds-datepicker
+        [errorMessage]="{required: 'De datum is verplicht', invalidDate: 'De ingevoerde datum is niet valide'}"
+        [min]="minDatum"
+        formControlName="datum"
+        label="Datum"/>
+      @if (isNieuw) {
+        <ds-input
+          [errorMessage]="{required: 'Het aantal afspraakslots is verplicht'}"
+          [label]="'Aantal afspraakslots (van ' + instellingen().duurAfspraakInMinuten + ' minuten)'"
+          formControlName="aantalBlokken"
+          minValue="1"
+          type="number"
+        />
+      }
+
+      <div class="tijd-grid">
+        <app-timepicker
+          [required]="true"
+          formControlName="vanaf"
+          label="Starttijd"
+        />
+        <app-timepicker
+          formControlName="tot"
+          label="Eindtijd"
+        />
+      </div>
+    </div>
+    @if (isNieuw) {
+      <app-bulk-aanmaken class="col" formControlName="herhaling"/>
+    }
+  </form>
+  <ng-container verwijder-button>
+    @if (verwijderenToegestaan) {
+      <button (click)="confirmDeleteSlot()"
+              data-testid="btn-verwijderen"
+              ds-button-delete>
+        Verwijderen
+      </button>
+    }
+  </ng-container>
+  <ng-container buttons>
+    <div class="btn-group">
+      <button (click)="cancel()" data-testid="btn_annuleren" ds-button-secondary type="button">{{ bewerkenToegestaan ? 'Annuleren' : 'Sluiten' }}</button>
+      @if (bewerkenToegestaan) {
+        <button (click)="save()"
+                [disabled]="afspraakslotForm.invalid"
+                data-testid="btn_opslaan"
+                ds-button-primary>
+          Opslaan
+        </button>
+      }
+    </div>
+  </ng-container>
+</app-base-dialog>

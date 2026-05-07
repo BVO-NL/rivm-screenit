@@ -18,4 +18,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-export type CalendarView = 'day' | 'week' | 'workWeek'
+export type CalendarView = 'dag' | 'week' | 'werkweek'

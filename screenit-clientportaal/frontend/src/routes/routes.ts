@@ -47,6 +47,12 @@ import {capitalize} from "@mui/material"
 import AanhefWijzigenPage from "../pages/profiel/AanhefWijzigenPage"
 import EmailWijzigenPage from "../pages/profiel/email/EmailWijzigenPage"
 import BezwaarWijzigenPage from "../pages/profiel/BezwaarWijzigenPage"
+import MammaAfspraakBevestigenPage from "../pages/bvo/mamma/afspraak/bevestigingswizard/MammaAfspraakBevestigenPage"
+import MammaAfspraakBevestigingSelectiePage from "../pages/bvo/mamma/afspraak/bevestigingswizard/MammaAfspraakBevestigingSelectiePage"
+import MammaAfspraakHerinneringPage from "../pages/bvo/mamma/afspraak/bevestigingswizard/MammaAfspraakHerinneringPage"
+import MammaAfspraakOverzichtPage from "../pages/bvo/mamma/afspraak/bevestigingswizard/MammaAfspraakOverzichtPage"
+import MammaAfspraakHuisartsPage from "../pages/bvo/mamma/afspraak/bevestigingswizard/MammaAfspraakHuisartsPage"
+import OpenstaandeOnderzoekenPage from "../pages/bvo/gedeeld/openstaande-onderzoeken/OpenstaandeOnderzoekenPage"
 
 export type RoutePath =
 	"/"
@@ -55,6 +61,7 @@ export type RoutePath =
 	| "/logout/"
 	| "/inloggen-geannuleerd/"
 	| "/niet-in-bevolkingsonderzoek/"
+	| "/openstaande-onderzoeken/"
 
 	| "/cervix/"
 	| "/cervix/afmelden/"
@@ -75,6 +82,12 @@ export type RoutePath =
 
 	| "/mamma/"
 	| "/mamma/afspraak/"
+	| "/mamma/afspraak-oud/"
+	| "/mamma/afspraak/bevestigen/"
+	| "/mamma/afspraak/bevestiging-selectie/"
+	| "/mamma/afspraak/herinnering/"
+	| "/mamma/afspraak/overzicht/"
+	| "/mamma/afspraak/uw-huisarts/"
 	| "/mamma/afmelden/"
 	| "/mamma/heraanmelden/"
 	| "/mamma/huisarts/"
@@ -164,6 +177,79 @@ const routes: RouteDef[] = [
 	},
 	{
 		private: true,
+		path: "/mamma/afmelden/",
+		name: "Afmelden",
+		component: AfmeldenPage,
+		requiredContactActions: [ClientContactActieType.MAMMA_AFMELDEN],
+		redirectPage: "/mamma/",
+	},
+	{
+		private: true,
+		path: "/mamma/heraanmelden/",
+		name: "Opnieuw aanmelden",
+		component: HeraanmeldenPage,
+		bvo: Bevolkingsonderzoek.MAMMA,
+		requiredContactActions: [ClientContactActieType.MAMMA_HERAANMELDEN],
+		redirectPage: "/mamma/",
+	},
+	{
+		private: true,
+		path: "/mamma/afspraak/",
+		name: "Afspraak",
+		component: MammaAfspraakMakenPage,
+		bvo: Bevolkingsonderzoek.MAMMA,
+		requiredContactActions: [ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN],
+	},
+	{
+		private: true,
+		path: "/mamma/afspraak/bevestigen/",
+		name: "Uw afspraak",
+		component: MammaAfspraakBevestigenPage,
+		bvo: Bevolkingsonderzoek.MAMMA,
+		requiredContactActions: [ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN],
+	},
+	{
+		private: true,
+		path: "/mamma/afspraak/bevestiging-selectie/",
+		name: "Bevestigen",
+		component: MammaAfspraakBevestigingSelectiePage,
+		bvo: Bevolkingsonderzoek.MAMMA,
+		requiredContactActions: [ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN],
+	},
+	{
+		private: true,
+		path: "/mamma/afspraak/herinnering/",
+		name: "Herinneren",
+		component: MammaAfspraakHerinneringPage,
+		bvo: Bevolkingsonderzoek.MAMMA,
+		requiredContactActions: [ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN],
+	},
+	{
+		private: true,
+		path: "/mamma/afspraak/overzicht/",
+		name: "Overzicht",
+		component: MammaAfspraakOverzichtPage,
+		bvo: Bevolkingsonderzoek.MAMMA,
+		requiredContactActions: [ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN],
+	},
+	{
+		private: true,
+		path: "/mamma/afspraak/uw-huisarts/",
+		name: "Uw huisarts",
+		component: MammaAfspraakHuisartsPage,
+		bvo: Bevolkingsonderzoek.MAMMA,
+		requiredContactActions: [ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN],
+	},
+	{
+		private: true,
+		path: "/mamma/uitstellen/",
+		name: "Onderzoek uitstellen",
+		component: MammaAfspraakUitstellenPage,
+		bvo: Bevolkingsonderzoek.MAMMA,
+		requiredContactActions: [ClientContactActieType.MAMMA_UITSTELLEN],
+	},
+	{
+		private: true,
 		path: "/cervix/",
 		name: capitalize(BevolkingsonderzoekNaam[Bevolkingsonderzoek.CERVIX]),
 		component: BvoLandingPageController,
@@ -195,6 +281,24 @@ const routes: RouteDef[] = [
 		component: CervixHerdrukAanvragenPage,
 		bvo: Bevolkingsonderzoek.CERVIX,
 		requiredContactActions: [ClientContactActieType.CERVIX_HERDRUK],
+		redirectPage: "/cervix/",
+	},
+	{
+		private: true,
+		path: "/cervix/afmelden/",
+		name: "Afmelden",
+		component: AfmeldenPage,
+		bvo: Bevolkingsonderzoek.CERVIX,
+		requiredContactActions: [ClientContactActieType.CERVIX_AFMELDEN],
+		redirectPage: "/cervix/",
+	},
+	{
+		private: true,
+		path: "/cervix/heraanmelden/",
+		name: "Opnieuw aanmelden",
+		component: HeraanmeldenPage,
+		bvo: Bevolkingsonderzoek.CERVIX,
+		requiredContactActions: [ClientContactActieType.CERVIX_HERAANMELDEN],
 		redirectPage: "/cervix/",
 	},
 	{
@@ -234,20 +338,12 @@ const routes: RouteDef[] = [
 	},
 	{
 		private: true,
-		path: "/mamma/afmelden/",
-		name: "Afmelden",
-		component: AfmeldenPage,
-		requiredContactActions: [ClientContactActieType.MAMMA_AFMELDEN],
-		redirectPage: "/mamma/",
-	},
-	{
-		private: true,
-		path: "/cervix/afmelden/",
-		name: "Afmelden",
-		component: AfmeldenPage,
-		bvo: Bevolkingsonderzoek.CERVIX,
-		requiredContactActions: [ClientContactActieType.CERVIX_AFMELDEN],
-		redirectPage: "/cervix/",
+		path: "/colon/heraanmelden/",
+		name: "Opnieuw aanmelden",
+		component: HeraanmeldenPage,
+		bvo: Bevolkingsonderzoek.COLON,
+		requiredContactActions: [ClientContactActieType.COLON_HERAANMELDEN],
+		redirectPage: "/colon/",
 	},
 	{
 		private: true,
@@ -260,29 +356,29 @@ const routes: RouteDef[] = [
 	},
 	{
 		private: true,
-		path: "/mamma/heraanmelden/",
-		name: "Opnieuw aanmelden",
-		component: HeraanmeldenPage,
-		bvo: Bevolkingsonderzoek.MAMMA,
-		requiredContactActions: [ClientContactActieType.MAMMA_HERAANMELDEN],
-		redirectPage: "/mamma/",
-	},
-	{
-		private: true,
-		path: "/cervix/heraanmelden/",
-		name: "Opnieuw aanmelden",
-		component: HeraanmeldenPage,
-		bvo: Bevolkingsonderzoek.CERVIX,
-		requiredContactActions: [ClientContactActieType.CERVIX_HERAANMELDEN],
-		redirectPage: "/cervix/",
-	},
-	{
-		private: true,
-		path: "/colon/heraanmelden/",
-		name: "Opnieuw aanmelden",
-		component: HeraanmeldenPage,
+		path: "/colon/afspraak-wijzigen/",
+		name: "Afspraak verzetten",
+		component: ColonAfspraakMakenPage,
 		bvo: Bevolkingsonderzoek.COLON,
-		requiredContactActions: [ClientContactActieType.COLON_HERAANMELDEN],
+		requiredContactActions: [ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN],
+		redirectPage: "/colon/",
+	},
+	{
+		private: true,
+		path: "/colon/afspraak-maken-heraanmelding/",
+		name: "Afspraak maken",
+		component: ColonAfspraakMakenPage,
+		bvo: Bevolkingsonderzoek.COLON,
+		requiredContactActions: [ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN],
+		redirectPage: "/colon/",
+	},
+	{
+		private: true,
+		path: "/colon/afspraak-maken/",
+		name: "Afspraak maken",
+		component: ColonAfspraakMakenPage,
+		bvo: Bevolkingsonderzoek.COLON,
+		requiredContactActions: [ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN],
 		redirectPage: "/colon/",
 	},
 	{
@@ -373,6 +469,14 @@ const routes: RouteDef[] = [
 		bvo: Bevolkingsonderzoek.COLON,
 		requiredContactActions: [ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN],
 		redirectPage: "/colon/",
+	},
+	{
+		private: true,
+		path: "/openstaande-onderzoeken/",
+		name: "Onderzoeken",
+		component: OpenstaandeOnderzoekenPage,
+		bvo: Bevolkingsonderzoek.MAMMA,
+		redirectPage: "/",
 	},
 ]
 

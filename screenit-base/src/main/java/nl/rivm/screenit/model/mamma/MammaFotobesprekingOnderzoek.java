@@ -30,6 +30,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.mamma.enums.MammaFotobesprekingOnderzoekStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
@@ -38,6 +41,8 @@ import org.hibernate.envers.NotAudited;
 
 @Entity
 @Audited
+@Getter
+@Setter
 @Table(
 	schema = "mamma",
 	name = "fotobespreking_onderzoek",
@@ -57,44 +62,4 @@ public class MammaFotobesprekingOnderzoek extends AbstractHibernateObject
 	@Column(nullable = false)
 	@NotAudited
 	private Integer volgnummer;
-
-	public MammaFotobespreking getFotobespreking()
-	{
-		return fotobespreking;
-	}
-
-	public void setFotobespreking(MammaFotobespreking fotobespreking)
-	{
-		this.fotobespreking = fotobespreking;
-	}
-
-	public MammaFotobesprekingOnderzoekStatus getStatus()
-	{
-		return status;
-	}
-
-	public void setStatus(MammaFotobesprekingOnderzoekStatus status)
-	{
-		this.status = status;
-	}
-
-	public Integer getVolgnummer()
-	{
-		return volgnummer;
-	}
-
-	public void setVolgnummer(Integer volgnummer)
-	{
-		this.volgnummer = volgnummer;
-	}
-
-	public MammaBeoordeling getBeoordeling()
-	{
-		return beoordeling;
-	}
-
-	public void setBeoordeling(MammaBeoordeling beoordeling)
-	{
-		this.beoordeling = beoordeling;
-	}
 }

@@ -18,9 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import { DsWeekday } from '@topicus-rgp-ds/web'
+import { WeekdagOptie } from '@shared/types/weekdag-optie'
+
 export const NL_DATE_FORMAT = 'dd-MM-yyyy'
 export const NL_DATE_TIME_FORMAT = 'dd-MM-yyyy HH:mm'
 export const DATE_FORMAT = 'yyyy-MM-dd'
+export const ISO_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
 export const LOCAL_TIME_FORMAT = 'HH:mm:ss'
 export const TIME_FORMAT = 'HH:mm'
 export const WEEK_DAGEN = [
@@ -58,6 +62,43 @@ export const WEEK_DAGEN = [
     label: 'Zondag',
     value: 7,
     afkorting: 'zo',
+  },
+]
+export const TDS_DAGEN: WeekdagOptie[] = [
+  {
+    day: DsWeekday.Maandag,
+    selected: false,
+    value: 1,
+  },
+  {
+    day: DsWeekday.Dinsdag,
+    selected: false,
+    value: 2,
+  },
+  {
+    day: DsWeekday.Woensdag,
+    selected: false,
+    value: 3,
+  },
+  {
+    day: DsWeekday.Donderdag,
+    selected: false,
+    value: 4,
+  },
+  {
+    day: DsWeekday.Vrijdag,
+    selected: false,
+    value: 5,
+  },
+  {
+    day: DsWeekday.Zaterdag,
+    selected: false,
+    value: 6,
+  },
+  {
+    day: DsWeekday.Zondag,
+    selected: false,
+    value: 7,
   },
 ]
 export const COLON_ROOSTER_MAX_HERHALING_IN_MAANDEN = 18

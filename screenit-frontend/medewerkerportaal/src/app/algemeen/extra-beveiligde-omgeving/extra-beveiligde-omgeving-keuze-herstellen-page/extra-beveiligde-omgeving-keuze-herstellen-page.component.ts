@@ -19,30 +19,41 @@
  * =========================LICENSE_END==================================
  */
 import { Component, inject } from '@angular/core'
-import { ClrCommonFormsModule, ClrDatepickerModule, ClrFileInputModule, ClrInputModule } from '@clr/angular'
 import { FormControl, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
-import { formatDate } from '@shared/utils/date-utils'
-import { valideDatumValidator } from '@shared/validators/datum/datum.validator'
+import { formatDate, formatNLDate } from '@shared/utils/date-utils'
 import { bsnValidator } from '@shared/validators/bsn/bsn.validator'
-import { ToastService } from '@shared/toast/service/toast.service'
+import { NotificationService } from '@shared/services/notification/notification.service'
 import { ExtraBeveiligdeOmgevingService } from '@/algemeen/extra-beveiligde-omgeving/services/extra-beveiligde-omgeving/extra-beveiligde-omgeving.service'
 import { take } from 'rxjs'
+import { DsButtonComponent, DsDatepickerComponent, DsInputComponent } from '@topicus-rgp-ds/web'
+import { extensieValidator } from '@shared/validators/file/file.validator'
+import { SingleFileSelectorComponent } from '@shared/components/single-file-selector/single-file-selector.component'
+import { PageComponent } from '@shared/components/page/page.component'
 
 @Component({
   selector: 'app-extra-beveiligde-omgeving-keuze-herstellen-page',
-  imports: [ClrCommonFormsModule, ReactiveFormsModule, ClrInputModule, ClrDatepickerModule, ClrFileInputModule],
+  imports: [ReactiveFormsModule, DsDatepickerComponent, DsInputComponent, DsButtonComponent, SingleFileSelectorComponent, PageComponent],
   templateUrl: './extra-beveiligde-omgeving-keuze-herstellen-page.component.html',
-  styleUrl: './extra-beveiligde-omgeving-keuze-herstellen-page.component.scss',
+  styles: `
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .filter {
+      width: var(--page-width-md);
+    }
+  `,
 })
 export class ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent {
   private readonly formBuilder = inject(NonNullableFormBuilder)
-  private readonly toastService = inject(ToastService)
+  private readonly notificationService = inject(NotificationService)
   private readonly extraBeveiligdeOmgevingService = inject(ExtraBeveiligdeOmgevingService)
 
   formGroup = this.formBuilder.group({
-    geboortedatum: ['', [Validators.required, valideDatumValidator]],
+    geboortedatum: this.formBuilder.control<Date | null>(null, [Validators.required]),
     bsn: ['', [Validators.required, bsnValidator]],
-    bestand: this.formBuilder.control<FileList | null>(null, [Validators.required]),
+    bestand: this.formBuilder.control<File | null>(null, [Validators.required, extensieValidator(['pdf'])]),
   })
   maxGeboorteDatum = formatDate(new Date())
 
@@ -60,10 +71,10 @@ export class ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent {
     }
     const formValue = this.formGroup.getRawValue()
     this.extraBeveiligdeOmgevingService
-      .bezwaarHerstellen(formValue.bsn, formValue.geboortedatum, formValue.bestand![0])
+      .bezwaarHerstellen(formValue.bsn, formatNLDate(formValue.geboortedatum!), formValue.bestand!)
       .pipe(take(1))
       .subscribe(() => {
-        this.toastService.success('Keuze gebruik gegevens BRP hersteld')
+        this.notificationService.success('Keuze gebruik gegevens BRP hersteld')
       })
   }
 }

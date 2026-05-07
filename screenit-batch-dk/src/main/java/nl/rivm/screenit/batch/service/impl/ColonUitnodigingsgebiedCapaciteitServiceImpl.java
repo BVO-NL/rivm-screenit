@@ -53,7 +53,7 @@ import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieService;
-import nl.rivm.screenit.service.colon.ColonUitnodigingService;
+import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
 import nl.rivm.screenit.service.colon.ColonUitnodigingsgebiedService;
 import nl.rivm.screenit.service.colon.PlanningService;
 import nl.rivm.screenit.util.BigDecimalUtil;
@@ -92,7 +92,7 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 	private OrganisatieService organisatieService;
 
 	@Autowired
-	private ColonUitnodigingService uitnodigingService;
+	private ColonBaseUitnodigingService uitnodigingService;
 
 	@Autowired
 	private ColonUitnodigingsgebiedService uitnodigingsGebiedService;

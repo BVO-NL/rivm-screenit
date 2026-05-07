@@ -1,0 +1,66 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<div class="ds-form-element">
+  <div class="ds-form-element__label">
+    {{ label() }}
+    @if (required()) {
+      <span class="ds-form-element__label__required-icon">*</span>
+    }
+  </div>
+  <div class="ds-form-element-container">
+    <div class="ds-form-element__input-container">
+      @if (file) {
+        <button ds-button-secondary (click)="clearFile()" [disabled]="isDisabled">
+          <span>{{ file.name }}</span>
+          <ds-icon [icon]="deleteIcon"></ds-icon>
+        </button>
+
+      } @else {
+        <button ds-button-secondary (click)="openFileSelector()" [disabled]="isDisabled">
+          <ds-icon [icon]="fileUpload"/>
+          <span>Bladeren</span>
+        </button>
+      }
+    </div>
+  </div>
+  <span class="ds-form-element-hint-error-container" [class.ds-form-element-hint-error-container--has-error]="fileCtrl.invalid">
+    @if (fileCtrl.dirty) {
+      <span class="ds-form-element-hint-error-container__error">
+      @if (fileCtrl.hasError('required')) {
+        <span>Het bestand is verplicht</span>
+      }
+
+        @if (fileCtrl.hasError('extensie')) {
+          <span>{{ fileCtrl.getError('extensie') }}</span>
+        }
+    </span>
+    }
+  </span>
+</div>
+
+<input
+  #fileSelector
+  [disabled]="isDisabled"
+  type="file"
+  [accept]="acceptedMimetype()"
+  [hidden]="true"
+  (change)="verwerkBestand($event)"
+>

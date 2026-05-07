@@ -45,6 +45,7 @@ import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode_;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde_;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
+import nl.rivm.screenit.model.mamma.enums.MammaFollowUpConclusieStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
@@ -54,6 +55,7 @@ import org.springframework.data.jpa.domain.Specification;
 import static nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus.UITSLAG_GUNSTIG;
 import static nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus.BESCHIKBAAR;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
+import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenEmptyExtended;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNull;
 import static nl.rivm.screenit.specification.algemeen.ScreeningRondeSpecification.isAfgerond;
 
@@ -180,6 +182,11 @@ public class MammaScreeningRondeSpecification
 	public static ExtendedSpecification<MammaScreeningRonde> heeftUitnodigingsNummer(long uitnodigingsNummer)
 	{
 		return (r, q, cb) -> cb.equal(r.get(MammaScreeningRonde_.uitnodigingsNr), uitnodigingsNummer);
+	}
+
+	public static ExtendedSpecification<MammaScreeningRonde> filterFollowUpConclusieStatus(List<MammaFollowUpConclusieStatus> statussen)
+	{
+		return skipWhenEmptyExtended(statussen, (r, q, cb) -> r.get(MammaScreeningRonde_.followUpConclusieStatus).in(statussen));
 	}
 
 	private static Join<MammaOnderzoek, MammaBeoordeling> beoordelingenJoin(Root<MammaScreeningRonde> r)

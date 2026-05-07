@@ -1,0 +1,45 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog [titel]="error.message" contentPadding="0">
+  <table class="ds-table w-100" body>
+    <thead>
+    <tr class="ds-header-row">
+      <th class="ds-header-cell">Intakelocatie</th>
+      <th class="ds-header-cell">Afspraakslots</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (locatie of error.afspraakslots | keyvalue; track locatie) {
+        <tr class="ds-row">
+          <td class="ds-cell">{{ locatie.key }}</td>
+          <td class="ds-cell">
+            @for (slot of locatie.value; track slot) {
+              <div>{{ slot }}</div>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  <div buttons>
+    <button ds-button-secondary data-testid="btn_sluiten" (click)="sluiten()">Sluiten</button>
+  </div>
+</app-base-dialog>

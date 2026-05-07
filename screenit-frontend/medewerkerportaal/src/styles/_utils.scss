@@ -19,36 +19,15 @@
  * =========================LICENSE_END==================================
  */
 @use 'sass:map';
-@import '@clr/ui/src/utils/variables/variables.layout';
-@import '@clr/ui/src/layout/grid/mixins/breakpoint';
+@use './mixins/breakpoints';
+@use './variables';
 
-$spacer: 1rem !default;
-$spacers: () !default;
-$spacers: map-merge(
-    (
-      0: 0,
-      1: (
-        $spacer * 0.25,
-      ),
-      2: (
-        $spacer * 0.5,
-      ),
-      3: $spacer,
-      4: (
-        $spacer * 1.5,
-      ),
-      5: (
-        $spacer * 3,
-      ),
-    ),
-    $spacers
-);
 
 @each $prop, $abbrev in (margin: m, padding: p) {
-  @each $size, $length in $spacers {
-    @each $breakpoint in map.keys($clr-grid-breakpoints) {
-      @include clr-media-breakpoint-up($breakpoint) {
-        $infix: clr-breakpoint-infix($breakpoint, $clr-grid-breakpoints);
+  @each $size, $length in variables.$spacers {
+    @each $breakpoint in map.keys(variables.$grid-breakpoints) {
+      @include breakpoints.media-breakpoint-up($breakpoint) {
+        $infix: breakpoints.breakpoint-infix($breakpoint, variables.$grid-breakpoints);
         .#{$abbrev}#{$infix}-#{$size} {
           #{$prop}: $length !important;
         }
@@ -92,7 +71,7 @@ $spacers: map-merge(
   }
 }
 
-@each $size, $length in $spacers {
+@each $size, $length in variables.$spacers {
   .gap-#{$size} {
     gap: $length;
   }
@@ -138,10 +117,72 @@ $spacers: map-merge(
   width: 100%;
 }
 
+.h-100 {
+  height: 100%;
+}
+
 .capitalize {
   text-transform: capitalize;
 }
 
 .text-bold {
   font-weight: bold;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.display-flex {
+  display: flex;
+}
+
+.display-block {
+  display: block;
+}
+
+.display-grid {
+  display: grid;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+.justify-content-end {
+  justify-content: flex-end;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.align-items-end {
+  align-items: flex-end;
+}
+
+.align-items-start {
+  align-items: flex-start;
+}
+
+.align-self-end {
+  align-self: flex-end;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.actions-right {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 1rem;
+}
+
+.pb-1 {
+  padding-bottom: 0.25rem;
 }

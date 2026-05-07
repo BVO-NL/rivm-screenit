@@ -30,7 +30,7 @@ import BvoTakenComponent from "../../../components/bvo_acties/BvoTakenComponent"
 import ColonTopTakenComponent from "../../../components/bvo_acties/ColonTopTakenComponent"
 import ImageBlobComponent from "../../../components/blob/ImageBlobComponent"
 import blob_personen from "../../../scss/media/blob-personen.jpg"
-import {ColonDossier} from "../../../datatypes/ColonDossier"
+import {ColonDossier} from "../../../datatypes/colon/ColonDossier"
 import {ClientContactActieType} from "../../../datatypes/ClientContactActieType"
 import bvoStyles from "../../../components/BvoStyle.module.scss"
 import {useSelector} from "react-redux"
@@ -49,7 +49,7 @@ const ColonLandingPage = (props: Props) => {
 	const {dossier, beschikbareActies} = props
 
 	const dispatch = useThunkDispatch()
-	const locatieIntakeAfspraak = dossier.intakeAfspraak ? `${dossier.intakeAfspraak.naamIntakelocatie  }<br>${  splitAdresString(dossier.intakeAfspraak.adresString)}` : ""
+	const locatieIntakeAfspraak = dossier.intakeAfspraak ? `${dossier.intakeAfspraak.naamIntakelocatie}<br>${splitAdresString(dossier.intakeAfspraak.adresString)}` : ""
 	const toonVervangendeTekst: boolean = useSelector((state: State) => state.landingOverzicht.colonParameters.toonVervangendeTekst)
 
 	useEffect(() => {

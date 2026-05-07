@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {AfspraakZoekFilter} from "../../pages/bvo/mamma/afspraak/MammaAfspraakMakenPage"
+import {AfspraakZoekFilter} from "./AfspraakZoekFilter"
 
 export type AfspraakOptie = {
 	capaciteitBlokId: number,

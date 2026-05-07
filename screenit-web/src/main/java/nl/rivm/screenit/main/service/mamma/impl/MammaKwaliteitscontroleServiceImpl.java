@@ -36,12 +36,12 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.Constants;
+import nl.rivm.screenit.main.dto.mamma.visitatie.MammaVisitatieOnderzoekPerMedewerkerDto;
+import nl.rivm.screenit.main.dto.mamma.visitatie.MammaVisitatieRequestDto;
+import nl.rivm.screenit.main.dto.mamma.visitatie.MammaVisitatieResponseDto;
+import nl.rivm.screenit.main.dto.mamma.visitatie.MammaVisitatielijstRequestDto;
+import nl.rivm.screenit.main.dto.mamma.visitatie.MammaVisitatielijstResponseDto;
 import nl.rivm.screenit.main.mappers.mamma.MammaVisitatieMapper;
-import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieOnderzoekPerMedewerkerDto;
-import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieRequestDto;
-import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatieResponseDto;
-import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatielijstRequestDto;
-import nl.rivm.screenit.main.model.mamma.dto.MammaVisitatielijstResponseDto;
 import nl.rivm.screenit.main.service.MedewerkerService;
 import nl.rivm.screenit.main.service.mamma.MammaBeoordelingService;
 import nl.rivm.screenit.main.service.mamma.MammaBeoordelingsEenheidService;
@@ -62,7 +62,6 @@ import nl.rivm.screenit.model.mamma.MammaFotobesprekingOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaIKwaliteitscontrole;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
-import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaVisitatie;
 import nl.rivm.screenit.model.mamma.MammaVisitatieOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
@@ -215,11 +214,11 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 		String melding = null;
 		try
 		{
-			var beoordeling = getBeoordeling(fotobespreking.getBeoordelingsEenheid(), fotobespreking.getScreeningsEenheid(), client);
+			var beoordeling = getBeoordeling(fotobespreking.getBeoordelingsEenheid(), client);
 
 			if (fotobesprekingService.isBeoordelingInBespreking(beoordeling, fotobespreking))
 			{
-				throw new IllegalStateException(String.format("Onderzoek van cliënt met bsn %s en geboortedatum %s kan niet worden toegevoegd: Onderzoek staat al in de werklijst",
+				throw new IllegalStateException(String.format("Onderzoek van cliënt met bsn %s en geboortedatum %s kan niet worden toegevoegd: Onderzoek staat al in de werklijst.",
 					client.getPersoon().getBsn(), DateUtil.getGeboortedatum(client)));
 			}
 
@@ -229,14 +228,14 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 			fotobesprekingOnderzoek.setBeoordeling(beoordeling);
 			fotobesprekingOnderzoek.setStatus(MammaFotobesprekingOnderzoekStatus.NIET_BESPROKEN);
 			int volgnummer = onderzoeken.isEmpty() ? 1 : onderzoeken.stream().mapToInt(MammaFotobesprekingOnderzoek::getVolgnummer).max()
-				.orElseThrow(NoSuchElementException::new) + 1;
+														 .orElseThrow(NoSuchElementException::new) + 1;
 			fotobesprekingOnderzoek.setVolgnummer(volgnummer);
 			onderzoeken.add(fotobesprekingOnderzoek);
 			hibernateService.saveOrUpdateAll(fotobesprekingOnderzoek, fotobespreking);
 		}
 		catch (Exception e)
 		{
-			melding = e instanceof IllegalStateException ? e.getMessage() : "Onbekende fout.";
+			melding = e instanceof IllegalStateException ? e.getMessage() : "Onbekende fout, neem contact op met een beheerder.";
 			if (!(e instanceof IllegalStateException))
 			{
 				LOG.error(melding, e);
@@ -313,7 +312,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 			if (!BezwaarUtil.isBezwaarActiefVoor(client, BezwaarType.GEEN_WETENSCHAPPELIJK_ONDERZOEK, Bevolkingsonderzoek.MAMMA)
 				&& !BezwaarUtil.isBezwaarActiefVoor(client, BezwaarType.GEEN_KWALITEITSWAARBORGING, Bevolkingsonderzoek.MAMMA))
 			{
-				var beoordeling = getBeoordeling(visitatie.getBeoordelingsEenheid(), null, client);
+				var beoordeling = getBeoordeling(visitatie.getBeoordelingsEenheid(), client);
 				if (!visitatieService.isBeoordelingInVisitatieOnderdeel(beoordeling, visitatie, visitatieOnderdeel))
 				{
 					maakVisitatieOnderzoek(visitatie, beoordeling, visitatieOnderdeel);
@@ -321,7 +320,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 				else
 				{
 					throw new IllegalStateException(
-						String.format("Onderzoek van cliënt met bsn %s en geboortedatum %s kan niet worden toegevoegd: Onderzoek staat al in de werklijst",
+						String.format("Onderzoek van cliënt met bsn %s en geboortedatum %s kan niet worden toegevoegd: Onderzoek staat al in de werklijst.",
 							client.getPersoon().getBsn(), DateUtil.getGeboortedatum(client)));
 				}
 			}
@@ -378,7 +377,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 		}
 	}
 
-	private MammaBeoordeling getBeoordeling(BeoordelingsEenheid beoordelingsEenheid, MammaScreeningsEenheid screeningsEenheid, Client client)
+	private MammaBeoordeling getBeoordeling(BeoordelingsEenheid beoordelingsEenheid, Client client)
 	{
 		String foutPrefix = "Client met bsn " + client.getPersoon().getBsn() + " en geboortedatum " + DateUtil.getGeboortedatum(client)
 			+ ": ";
@@ -403,10 +402,6 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 		if (beoordelingsEenheid != null && !beoordeling.getBeoordelingsEenheid().equals(beoordelingsEenheid))
 		{
 			throw new IllegalStateException(foutPrefix + "beoordeling is niet doorgevoerd in opgegeven beoordelingseenheid.");
-		}
-		if (screeningsEenheid != null && !onderzoek.getScreeningsEenheid().equals(screeningsEenheid))
-		{
-			throw new IllegalStateException(foutPrefix + "onderzoek is niet doorgevoerd in opgegeven screeningseenheid.");
 		}
 		return beoordeling;
 	}

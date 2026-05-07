@@ -18,22 +18,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, signal, WritableSignal } from '@angular/core'
+import { Component, inject, signal, WritableSignal } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
-import { ClrCheckboxModule, ClrCommonFormsModule, ClrInputModule } from '@clr/angular'
 import { take } from 'rxjs'
 import { Dense2Service } from '@/mamma/mamma-dense2-uitwisseling-page/services/dense2/dense2.service'
 import { MammaDense2Configuratie } from '@shared/types/mamma/mamma-dense2-configuratie'
 import { Dense2ImportComponent } from '@/mamma/mamma-dense2-uitwisseling-page/components/dense2-import/dense2-import.component'
 import { Dense2ExportComponent } from '@/mamma/mamma-dense2-uitwisseling-page/components/dense2-export/dense2-export.component'
 import { Dense2ConfiguratieComponent } from '@/mamma/mamma-dense2-uitwisseling-page/components/dense2-configuratie/dense2-configuratie.component'
+import { PageComponent } from '@shared/components/page/page.component'
 
 @Component({
   selector: 'app-mamma-dense2-uitwisseling-page',
-  imports: [ReactiveFormsModule, ClrCommonFormsModule, ClrInputModule, ClrCheckboxModule, Dense2ImportComponent, Dense2ExportComponent, Dense2ConfiguratieComponent],
-  templateUrl: './mamma-dense2-uitwisseling-page.component.html',
-  styleUrl: './mamma-dense2-uitwisseling-page.component.scss',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [ReactiveFormsModule, Dense2ImportComponent, Dense2ExportComponent, Dense2ConfiguratieComponent, PageComponent],
+  template: ` <app-page titel="DENSE-2 uitwisseling">
+    <app-dense2-export class="mb-3" [exportBestandsnaam]="exportBestandsnaam()" />
+    <app-dense2-import class="mb-3" />
+    <app-dense2-configuratie [configuratie]="configuratie()" />
+  </app-page>`,
+  styles: `
+    .pagina {
+      max-width: var(--page-width-sm);
+    }
+  `,
 })
 export class MammaDense2UitwisselingPageComponent {
   private dense2Service: Dense2Service = inject(Dense2Service)

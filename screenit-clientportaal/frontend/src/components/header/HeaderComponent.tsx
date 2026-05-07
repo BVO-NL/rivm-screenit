@@ -25,15 +25,15 @@ import styles from "./HeaderComponent.module.scss"
 import NavigationComponent from "../navigation/NavigationComponent"
 import {useSelector} from "react-redux"
 import {getBevolkingsonderzoekNederlandUrl, getBevolkingsonderzoekNederlandUrlNaam} from "../../utils/UrlUtil"
-import {State} from "../../datatypes/State"
 import {Persoon} from "../../datatypes/Persoon"
 import {useNavigate} from "react-router"
 import {KeycloakContext} from "../KeycloakProvider"
 import ArrowIconComponent, {ArrowType} from "../vectors/ArrowIconComponent"
+import {selectPersoon} from "../../selectors/ClientSelectors"
 
 const HeaderComponent = () => {
 	const {keycloak} = useContext(KeycloakContext)
-	const persoon = useSelector((state: State) => state.client.persoon)
+	const persoon = useSelector(selectPersoon)
 	const navigate = useNavigate()
 
 	return (

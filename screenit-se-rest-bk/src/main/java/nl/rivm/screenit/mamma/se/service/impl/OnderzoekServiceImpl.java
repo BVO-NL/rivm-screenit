@@ -117,7 +117,7 @@ public class OnderzoekServiceImpl implements OnderzoekService
 			onderzoekSeDto.getEerderMammogramZorginstellingId() == null ? null : hibernateService.get(ZorgInstelling.class, onderzoekSeDto.getEerderMammogramZorginstellingId()));
 		onderzoek.setEerderMammogramJaartal(onderzoekSeDto.getEerderMammogramJaartal());
 		onderzoek.setSuboptimaleInsteltechniek(onderzoekSeDto.getSuboptimaleInsteltechniek());
-		onderzoek.setRedenFotobespreking(onderzoekSeDto.getRedenFotobespreking());
+		onderzoek.setRedenFotobespreking(onderzoekSeDto.getRedenFotobespreking() == null ? null : onderzoekSeDto.getRedenFotobespreking().normaliseerOudNaarNieuw());
 		onderzoek.setExtraMedewerker(
 			onderzoekSeDto.getExtraMedewerkerId() == null ? null : hibernateService.get(OrganisatieMedewerker.class, onderzoekSeDto.getExtraMedewerkerId()));
 		onderzoek.setOpmerkingMbber(onderzoekSeDto.getOpmerkingMbber());

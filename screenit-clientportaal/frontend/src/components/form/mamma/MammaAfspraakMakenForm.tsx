@@ -23,7 +23,6 @@ import {getString} from "../../../utils/TekstPropertyUtil"
 import properties from "../../../pages/bvo/mamma/afspraak/MammaAfspraakMakenPage.json"
 import {useSelector} from "react-redux"
 import {State} from "../../../datatypes/State"
-import {AfspraakZoekFilter} from "../../../pages/bvo/mamma/afspraak/MammaAfspraakMakenPage"
 import {Formik, FormikProps} from "formik"
 import classNames from "classnames"
 import bvoStyle from "../../BvoStyle.module.scss"
@@ -41,6 +40,7 @@ import {lijstBevatMeegegevenDatum} from "../../../utils/DateUtil"
 import {isValid} from "date-fns"
 import datadogService from "../../../services/DatadogService"
 import {AnalyticsCategorie} from "../../../datatypes/AnalyticsCategorie"
+import {AfspraakZoekFilter} from "../../../datatypes/mamma/AfspraakZoekFilter"
 
 export type MammaAfspraakMakenFormProps = {
 	zoekFilter: AfspraakZoekFilter
@@ -216,7 +216,9 @@ const MammaAfspraakMakenForm = (props: MammaAfspraakMakenFormProps) => {
 								handleSubmit()
 								props.onZoekenClick && props.onZoekenClick()
 							}
-						}}/>
+						}}
+						testId={"button_zoek_afspraken"}
+				/>
 			</SearchForm>
 		)}
 	</Formik>

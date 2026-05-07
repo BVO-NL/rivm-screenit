@@ -118,10 +118,10 @@ import nl.rivm.screenit.service.cervix.CervixBaseUitnodigingService;
 import nl.rivm.screenit.service.cervix.CervixFactory;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.colon.ColonBaseFitService;
+import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
 import nl.rivm.screenit.service.colon.ColonHuisartsService;
 import nl.rivm.screenit.service.colon.ColonScreeningsrondeService;
 import nl.rivm.screenit.service.colon.ColonTijdelijkAfmeldenJaartallenService;
-import nl.rivm.screenit.service.colon.ColonUitnodigingService;
 import nl.rivm.screenit.service.mamma.MammaAfmeldService;
 import nl.rivm.screenit.service.mamma.MammaAfspraakReserveringService;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
@@ -155,6 +155,7 @@ import static nl.rivm.screenit.model.ClientContactManier.AANVRAGEN_FORMULIEREN;
 import static nl.rivm.screenit.specification.algemeen.ClientContactSpecification.heeftClient;
 import static nl.rivm.screenit.specification.algemeen.ClientContactSpecification.heeftClientId;
 import static nl.rivm.screenit.specification.algemeen.ClientContactSpecification.heeftOpmerking;
+import static nl.rivm.screenit.util.colon.ColonFitRegistratieUtil.ANALYSE_RESULTAAT_FLAG_PRO;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
@@ -194,7 +195,7 @@ public class ClientContactServiceImpl implements ClientContactService
 	private BezwaarService bezwaarService;
 
 	@Autowired
-	private ColonUitnodigingService colonUitnodigingsService;
+	private ColonBaseUitnodigingService colonUitnodigingsService;
 
 	@Autowired
 	private ColonBaseFitService fitService;
@@ -1219,7 +1220,8 @@ public class ClientContactServiceImpl implements ClientContactService
 			if (heeftNietVerlopenLaatsteScreeningRonde)
 			{
 				return laatsteScreeningRonde.getFitRegistraties().stream()
-					.anyMatch(test -> !ColonFitRegistratieStatus.VERWIJDERD.equals(test.getStatus()) && test.getUitslag() != null);
+					.anyMatch(
+						test -> !ColonFitRegistratieStatus.VERWIJDERD.equals(test.getStatus()) && (test.getUitslag() != null || ANALYSE_RESULTAAT_FLAG_PRO.equals(test.getFlag())));
 			}
 			return false;
 		default:

@@ -18,53 +18,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {ColonDossier, leegColonDossier} from "../../datatypes/ColonDossier"
+import {ColonDossier, leegColonDossier} from "../../datatypes/colon/ColonDossier"
 import {
-    ColonDossierActions,
-    HUIDIGE_INTAKE_AFSPRAAK,
-    RESET_HERAANMELDENOPTIES,
-    RESET_HUIDIGE_FIT_STATUS,
-    SET_COLON_DOSSIER,
-    SET_COLON_HUISARTS_HUIDIGE_RONDE,
-    SET_COLON_HUISARTS_VORIGE_RONDE,
+	ColonDossierActions,
+	HUIDIGE_INTAKE_AFSPRAAK,
+	RESET_HERAANMELDENOPTIES,
+	RESET_HUIDIGE_FIT_STATUS,
+	SET_COLON_DOSSIER,
+	SET_COLON_HUISARTS_HUIDIGE_RONDE,
+	SET_COLON_HUISARTS_VORIGE_RONDE,
 } from "../../actions/ColonDossierAction"
 
 function colonDossierReducer(stateSlice: ColonDossier = leegColonDossier, action: ColonDossierActions): ColonDossier {
-    switch (action.type) {
-        case SET_COLON_DOSSIER:
-            return {
-                ...stateSlice,
-                ...action.dossier,
-                isInSync: true
-            }
-        case SET_COLON_HUISARTS_HUIDIGE_RONDE:
-            return {
-                ...stateSlice,
-                huisartsHuidigeRonde: action.huisarts,
-            }
-        case SET_COLON_HUISARTS_VORIGE_RONDE:
-            return {
-                ...stateSlice,
-                huisartsVorigeRonde: action.huisarts,
-            }
-        case RESET_HUIDIGE_FIT_STATUS:
-            return {
-                ...stateSlice,
-                fitStatus: action.fitStatus,
-            }
-        case HUIDIGE_INTAKE_AFSPRAAK:
-            return {
-                ...stateSlice,
-                intakeAfspraak: action.colonIntakeAfspraakDto,
-            }
-        case RESET_HERAANMELDENOPTIES:
-            return {
-                ...stateSlice,
-                heraanmeldenOpties: action.heraanmeldenOpties,
-            }
-        default:
-            return stateSlice
-    }
+	switch (action.type) {
+		case SET_COLON_DOSSIER:
+			return {
+				...stateSlice,
+				...action.dossier,
+				isInSync: true,
+			}
+		case SET_COLON_HUISARTS_HUIDIGE_RONDE:
+			return {
+				...stateSlice,
+				huisartsHuidigeRonde: action.huisarts,
+			}
+		case SET_COLON_HUISARTS_VORIGE_RONDE:
+			return {
+				...stateSlice,
+				huisartsVorigeRonde: action.huisarts,
+			}
+		case RESET_HUIDIGE_FIT_STATUS:
+			return {
+				...stateSlice,
+				fitStatus: action.fitStatus,
+			}
+		case HUIDIGE_INTAKE_AFSPRAAK:
+			return {
+				...stateSlice,
+				intakeAfspraak: action.colonIntakeAfspraakDto,
+			}
+		case RESET_HERAANMELDENOPTIES:
+			return {
+				...stateSlice,
+				heraanmeldenOpties: action.heraanmeldenOpties,
+			}
+		default:
+			return stateSlice
+	}
 }
 
 export default colonDossierReducer

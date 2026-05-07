@@ -1,0 +1,9 @@
+{
+  "headers": {
+    "naam": "Naam",
+    "locatie": "Locatie"
+  },
+  "button": {
+    "wijzigen": "Wijzigen"
+  }
+}

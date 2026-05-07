@@ -23,7 +23,6 @@ package nl.rivm.screenit.mamma.se.service.dtomapper;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import nl.rivm.screenit.mamma.se.dto.AdresSeDto;
@@ -43,7 +42,6 @@ import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
-import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaGeenHuisartsOption;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
@@ -55,10 +53,10 @@ import nl.topicuszorg.organisatie.model.Adres;
 public class AfspraakDtoMapper
 {
 
-	public AfspraakSeDto createAfspraakSeDto(MammaAfspraak afspraak)
+	public AfspraakSeDto createAfspraakSeDto(MammaAfspraak afspraak, String seVersie)
 	{
-		ClientSeDto clientSeDto = createClientSeDto(afspraak);
-		AfspraakSeDto afspraakSeDto = new AfspraakSeDto();
+		var clientSeDto = createClientSeDto(afspraak);
+		var afspraakSeDto = new AfspraakSeDto();
 		afspraakSeDto.setId(afspraak.getId());
 		afspraakSeDto.setClient(clientSeDto);
 		afspraakSeDto.setVanaf(DateUtil.toLocalDateTime(afspraak.getVanaf()));
@@ -67,10 +65,10 @@ public class AfspraakDtoMapper
 		afspraakSeDto.setIdentificatiesoort(afspraak.getIdentificatiesoort());
 		afspraakSeDto.setIdentificatienummer(afspraak.getIdentificatienummer());
 		afspraakSeDto.setBezwaarAangevraagd(afspraak.getBezwaarAangevraagd());
-		afspraakSeDto.setHuidigOnderzoek(createHuidigOnderzoekDto(afspraak));
+		afspraakSeDto.setHuidigOnderzoek(createHuidigOnderzoekDto(afspraak, seVersie));
 		afspraakSeDto.setMammografie(createMammografieDto(afspraak));
 		afspraakSeDto.setSignaleren(createSignalerenDto(afspraak));
-		final EnovationHuisarts huisarts = getHuisarts(afspraak);
+		var huisarts = getHuisarts(afspraak);
 		afspraakSeDto.setHuisartsId(huisarts != null ? huisarts.getId() : null);
 		afspraakSeDto.setGeenHuisartsOptie(getGeenHuisartsOptie(afspraak));
 		afspraakSeDto.setDoorgevoerd(afspraak.getOnderzoek() != null && afspraak.getOnderzoek().isDoorgevoerd());
@@ -84,14 +82,14 @@ public class AfspraakDtoMapper
 
 	public PassantSeDto createPassantDto(MammaDossier mammaDossier)
 	{
-		MammaUitnodiging uitnodiging = mammaDossier.getLaatsteScreeningRonde().getLaatsteUitnodiging();
-		MammaAfspraak afspraak = uitnodiging.getLaatsteAfspraak();
+		var uitnodiging = mammaDossier.getLaatsteScreeningRonde().getLaatsteUitnodiging();
+		var afspraak = uitnodiging.getLaatsteAfspraak();
 
-		ClientSeDto clientSeDto = createClientSeDto(mammaDossier);
+		var clientSeDto = createClientSeDto(mammaDossier);
 		LocalDateTime afspraakVanaf = null;
 		String afspraakScreeningsEenheid = null;
 		LocalDateTime uitnodigingsDatum = null;
-		boolean eenmaligeAfmelding = false;
+		var eenmaligeAfmelding = false;
 
 		if (!mammaDossier.getLaatsteScreeningRonde().getAangemeld() && mammaDossier.getAangemeld())
 		{
@@ -112,20 +110,20 @@ public class AfspraakDtoMapper
 
 	public ClientSeDto createClientSeDto(MammaDossier dossier)
 	{
-		Client client = dossier.getClient();
-		Persoon persoon = client.getPersoon();
+		var client = dossier.getClient();
+		var persoon = client.getPersoon();
 		return getClientSeDto(dossier, client, persoon);
 	}
 
 	private EnovationHuisarts getHuisarts(MammaAfspraak afspraak)
 	{
-		MammaScreeningRonde ronde = afspraak.getUitnodiging().getScreeningRonde();
+		var ronde = afspraak.getUitnodiging().getScreeningRonde();
 		if (geenHuisartsGekozen(afspraak))
 		{
-			MammaScreeningRonde vorigeRonde = getVorigeRonde(afspraak);
+			var vorigeRonde = getVorigeRonde(afspraak);
 			if (vorigeRonde != null)
 			{
-				EnovationHuisarts huisarts = vorigeRonde.getHuisarts();
+				var huisarts = vorigeRonde.getHuisarts();
 				if (huisarts != null && !huisarts.isVerwijderd())
 				{
 					return huisarts;
@@ -137,10 +135,10 @@ public class AfspraakDtoMapper
 
 	private MammaGeenHuisartsOption getGeenHuisartsOptie(MammaAfspraak afspraak)
 	{
-		MammaScreeningRonde ronde = afspraak.getUitnodiging().getScreeningRonde();
+		var ronde = afspraak.getUitnodiging().getScreeningRonde();
 		if (geenHuisartsGekozen(afspraak))
 		{
-			MammaScreeningRonde vorigeRonde = getVorigeRonde(afspraak);
+			var vorigeRonde = getVorigeRonde(afspraak);
 			if (vorigeRonde != null)
 			{
 				return vorigeRonde.getGeenHuisartsOptie();
@@ -151,13 +149,13 @@ public class AfspraakDtoMapper
 
 	private boolean geenHuisartsGekozen(MammaAfspraak afspraak)
 	{
-		MammaScreeningRonde ronde = afspraak.getUitnodiging().getScreeningRonde();
+		var ronde = afspraak.getUitnodiging().getScreeningRonde();
 		return ronde.getHuisarts() == null && ronde.getGeenHuisartsOptie() == null;
 	}
 
 	private MammaScreeningRonde getVorigeRonde(MammaAfspraak afspraak)
 	{
-		List<MammaScreeningRonde> alleRondes = afspraak.getUitnodiging().getScreeningRonde().getDossier().getScreeningRondes()
+		var alleRondes = afspraak.getUitnodiging().getScreeningRonde().getDossier().getScreeningRondes()
 			.stream().sorted(Comparator.comparing(ScreeningRonde::getCreatieDatum)).collect(Collectors.toList());
 		if (alleRondes.size() > 1)
 		{
@@ -173,7 +171,7 @@ public class AfspraakDtoMapper
 
 	private ClientSeDto getClientSeDto(MammaDossier dossier, Client client, Persoon persoon)
 	{
-		ClientSeDto clientSeDto = new ClientSeDto();
+		var clientSeDto = new ClientSeDto();
 		clientSeDto.setId(client.getId());
 		clientSeDto.setVoorletters(NaamUtil.getVoorlettersClient(client));
 		clientSeDto.setGeboorteTussenvoegsel(persoon.getTussenvoegsel());
@@ -200,7 +198,7 @@ public class AfspraakDtoMapper
 		{
 			return null;
 		}
-		AdresSeDto adres = new AdresSeDto();
+		var adres = new AdresSeDto();
 		adres.setId(gbaAdres.getId());
 		adres.setLocatieBeschrijving(AdresUtil.getAdres(gbaAdres));
 		adres.setPostcode(gbaAdres.getPostcode());
@@ -216,7 +214,7 @@ public class AfspraakDtoMapper
 			return null;
 		}
 
-		TijdelijkAdresSeDto adres = new TijdelijkAdresSeDto();
+		var adres = new TijdelijkAdresSeDto();
 		adres.setId(tijdelijkAdres.getId());
 		adres.setStraat(tijdelijkAdres.getStraat());
 		adres.setHuisnummer(tijdelijkAdres.getHuisnummer());
@@ -250,9 +248,9 @@ public class AfspraakDtoMapper
 		}
 	}
 
-	private OnderzoekSeDto createHuidigOnderzoekDto(MammaAfspraak afspraak)
+	private OnderzoekSeDto createHuidigOnderzoekDto(MammaAfspraak afspraak, String seVersie)
 	{
-		return new OnderzoekDtoMapper().createOnderzoekDto(afspraak.getOnderzoek());
+		return new OnderzoekDtoMapper().createOnderzoekDto(afspraak.getOnderzoek(), seVersie);
 	}
 
 	private MammografieSeDto createMammografieDto(MammaAfspraak afspraak)

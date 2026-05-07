@@ -18,91 +18,102 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<div class="visitatie-header">
-  <h2>Visitatie overzicht</h2>
-
-  <div>
-    <clr-dropdown [clrCloseMenuOnItemClick]="true" *appAutorisatie="toevoegenConstraint">
-      <button class="btn btn-primary mr-2" data-testid="visitatie_toevoegen_btn" clrDropdownTrigger>
-        <cds-icon shape="plus"></cds-icon>
+<app-page titel="Visitatie overzicht">
+  <ng-container header-actions>
+    @if (magToevoegen) {
+      <button ds-button-primary dsButtonMenu [menu]="toevoegenMenuItems" (menuItemClicked)="openVisitatieToevoegenDialog($event.label.toLowerCase())"
+              data-testid="toevoegen_visitatie_btn" class="mr-2">
+        <ds-icon [icon]="faAddIcon"/>
         Visitatie
       </button>
-      <clr-dropdown-menu clrPosition="bottom-right">
-        <button clrDropdownItem (click)="openVisitatieToevoegenDialog('be')" data-testid="visitatie_toevoegen_be_btn">Visitatie voor BE</button>
-        <button clrDropdownItem (click)="openVisitatieToevoegenDialog('insteltechniek')" data-testid="visitatie_toevoegen_insteltechniek_btn">Visitatie voor insteltechniek</button>
-      </clr-dropdown-menu>
-    </clr-dropdown>
-    <button class="btn btn-primary header-btn" data-testid="visitatielijst_genereren_btn" (click)="openVisitatielijstGenererenDialog()"
+    }
+    <button ds-button-primary data-testid="visitatielijst_genereren_btn" (click)="openVisitatielijstGenererenDialog()"
             *appAutorisatie="insteltechniekAanpassenConstraint">
-      <cds-icon shape="list"></cds-icon>
+      <ds-icon [icon]="faListIcon"/>
       Visitatielijst genereren
     </button>
-  </div>
-</div>
+  </ng-container>
 
-<app-mamma-visitatie-filter (filter)="filterValidaties($event)" class="visitatie-filter"/>
+  <app-mamma-visitatie-filter (filter)="filterValidaties($event)" class="visitatie-filter"/>
 
-<clr-datagrid class="visitatie-grid" data-testid="visitatie_grid" (clrDgRefresh)="refreshData($event)">
-  <clr-dg-column clrDgSortBy="omschrijving" data-testid="omschrijving_column-header">Omschrijving</clr-dg-column>
-  <clr-dg-column clrDgSortBy="gestartOp" data-testid="gestart_column-header">Gestart</clr-dg-column>
-  <clr-dg-column clrDgSortBy="afgerondOp" data-testid="afgerondOp_column-header">Afgerond</clr-dg-column>
-  <clr-dg-column clrDgSortBy="aangemaaktOp" data-testid="aangemaaktOp_column-header">Aangemaakt</clr-dg-column>
-  <clr-dg-column clrDgSortBy="aangemaaktDoor" data-testid="aangemaaktDoor_column-header">Door</clr-dg-column>
-  <clr-dg-column clrDgSortBy="status" data-testid="status_column-header">Status</clr-dg-column>
-  <clr-dg-column clrDgSortBy="beoordelingsEenheid.naam" data-testid="beoordelingseenheid_column-header">BE</clr-dg-column>
-  <clr-dg-column class="btn-column">Rapportage</clr-dg-column>
-  <clr-dg-column class="btn-column">Vragenlijst</clr-dg-column>
-  <clr-dg-column class="btn-column"></clr-dg-column>
-  <clr-dg-column class="btn-column"></clr-dg-column>
-
-  @if (visitaties().length) {
-    @for (visitatie of visitaties(); track visitatie) {
-      <clr-dg-row data-testid="visitatie_rij" [clrDgItem]="visitatie">
-        <clr-dg-cell (click)="openVisitatieEditDialog(visitatie)">{{ visitatie.omschrijving }}</clr-dg-cell>
-        <clr-dg-cell (click)="openVisitatieEditDialog(visitatie)">{{ visitatie.gestartOp | date: NL_DATE_TIME_FORMAT }}</clr-dg-cell>
-        <clr-dg-cell (click)="openVisitatieEditDialog(visitatie)">{{ visitatie.afgerondOp | date: NL_DATE_TIME_FORMAT }}</clr-dg-cell>
-        <clr-dg-cell (click)="openVisitatieEditDialog(visitatie)">{{ visitatie.aangemaaktOp | date: NL_DATE_TIME_FORMAT }}</clr-dg-cell>
-        <clr-dg-cell (click)="openVisitatieEditDialog(visitatie)">{{ visitatie.aangemaaktDoor }}</clr-dg-cell>
-        <clr-dg-cell (click)="openVisitatieEditDialog(visitatie)">{{ visitatie.status | titlecase }}</clr-dg-cell>
-        <clr-dg-cell (click)="openVisitatieEditDialog(visitatie)">{{ visitatie.beoordelingseenheid?.naam }}</clr-dg-cell>
-        <clr-dg-cell class="clr-justify-content-center">
-          @if (visitatie.rapportageDocumentId) {
-            <button class="btn btn-icon" (click)="downloadDocument(visitatie.rapportageDocumentId!, 'rapportage.xlsx')" data-testid="download_rapportage_btn">
-              <cds-icon shape="download" title="Rapportage downloaden"></cds-icon>
-            </button>
-          }
-        </clr-dg-cell>
-        <clr-dg-cell class="clr-justify-content-center">
-          @if (visitatie.vragenlijstDocumentId) {
-            <button class="btn btn-icon" (click)="downloadDocument(visitatie.vragenlijstDocumentId!, 'vragenlijst.xlsx')" data-testid="download_vragenlijst_btn">
-              <cds-icon shape="download" title="Vragenlijst downloaden"></cds-icon>
-            </button>
-          }
-        </clr-dg-cell>
-        <clr-dg-cell class="clr-justify-content-center">
-          @if (magInzien) {
-            <button class="btn btn-icon" (click)="navigeerNaarVisitatie(visitatie.id)" data-testid="inzien_visitatie_btn">
-              <cds-icon shape="pop-out" title="Naar visitatie gaan"></cds-icon>
-            </button>
-          }
-        </clr-dg-cell>
-        <clr-dg-cell class="clr-justify-content-center">
-          @if (magVerwijderen) {
-            <button class="btn btn-icon btn-danger" (click)="openVerwijderenDialog(visitatie)" data-testid="verwijderen_visitatie_btn">
-              <cds-icon shape="trash" title="Visitatie verwijderen"></cds-icon>
-            </button>
-          }
-        </clr-dg-cell>
-      </clr-dg-row>
-    }
-  }
-  <clr-dg-footer>
-    <clr-dg-pagination
-      #pagination
-      [clrDgPageSize]="paginering().paginaGrootte"
-      [clrDgTotalItems]="paginering().totaal"
-      [clrDgPage]="paginering().paginaNummer"
-      [clrDgLastPage]="laatstePagina()"
-    />
-  </clr-dg-footer>
-</clr-datagrid>
+  <table [dataSource]="alleVisitaties()" [fullWidth]="true" ds-table matSort
+         matSortActive="omschrijving"
+         [hoverable]="magDetailsInzien"
+         matSortDirection="asc">
+    <ng-container dsColumnDef="omschrijving">
+      <th *dsHeaderCellDef [mat-sort-header]="'omschrijving'" ds-header-cell>Omschrijving</th>
+      <td *dsCellDef="let row" data-testid="visitatie_omschrijving" ds-cell (click)="openVisitatieEditDialog(row)">{{ row.omschrijving }}</td>
+    </ng-container>
+    <ng-container dsColumnDef="gestartOp">
+      <th *dsHeaderCellDef [mat-sort-header]="'gestartOp'" ds-header-cell>Gestart</th>
+      <td *dsCellDef="let row" ds-cell (click)="openVisitatieEditDialog(row)">{{ row.gestartOp | date: NL_DATE_TIME_FORMAT }}</td>
+    </ng-container>
+    <ng-container dsColumnDef="afgerondOp">
+      <th *dsHeaderCellDef [mat-sort-header]="'afgerondOp'" ds-header-cell>Afgerond</th>
+      <td *dsCellDef="let row" ds-cell (click)="openVisitatieEditDialog(row)">{{ row.afgerondOp | date: NL_DATE_TIME_FORMAT }}</td>
+    </ng-container>
+    <ng-container dsColumnDef="aangemaaktOp">
+      <th *dsHeaderCellDef [mat-sort-header]="'aangemaaktOp'" ds-header-cell>Aangemaakt</th>
+      <td *dsCellDef="let row" ds-cell (click)="openVisitatieEditDialog(row)">{{ row.aangemaaktOp | date: NL_DATE_TIME_FORMAT }}</td>
+    </ng-container>
+    <ng-container dsColumnDef="aangemaaktDoor">
+      <th *dsHeaderCellDef [mat-sort-header]="'aangemaaktDoor'" ds-header-cell>Door</th>
+      <td *dsCellDef="let row" ds-cell (click)="openVisitatieEditDialog(row)">{{ row.aangemaaktDoor }}</td>
+    </ng-container>
+    <ng-container dsColumnDef="status">
+      <th *dsHeaderCellDef [mat-sort-header]="'status'" ds-header-cell>Status</th>
+      <td *dsCellDef="let row" ds-cell (click)="openVisitatieEditDialog(row)">{{ row.status | titlecase }}</td>
+    </ng-container>
+    <ng-container dsColumnDef="beoordelingsEenheid.naam">
+      <th *dsHeaderCellDef [mat-sort-header]="'beoordelingsEenheid.naam'" ds-header-cell>BE</th>
+      <td *dsCellDef="let row" ds-cell (click)="openVisitatieEditDialog(row)">{{ row.beoordelingseenheid?.naam }}</td>
+    </ng-container>
+    <ng-container dsColumnDef="rapportage">
+      <th *dsHeaderCellDef ds-header-cell class="visitatie-kolom-smal">Rapportage</th>
+      <td *dsCellDef="let visitatie" ds-cell class="visitatie-acties-cel">
+        @if (visitatie.rapportageDocumentId) {
+          <button ds-button-icon ds-button-secondary (click)="downloadDocument(visitatie.rapportageDocumentId!, 'rapportage.xlsx')" data-testid="download_rapportage_btn">
+            <ds-icon [icon]="faDownloadIcon" title="Rapportage downloaden"></ds-icon>
+          </button>
+        }
+      </td>
+    </ng-container>
+    <ng-container dsColumnDef="vragenlijst">
+      <th *dsHeaderCellDef ds-header-cell class="visitatie-kolom-smal">Vragenlijst</th>
+      <td *dsCellDef="let visitatie" ds-cell class="visitatie-acties-cel">
+        @if (visitatie.vragenlijstDocumentId) {
+          <button ds-button-icon ds-button-secondary (click)="downloadDocument(visitatie.vragenlijstDocumentId!, 'vragenlijst.xlsx')" data-testid="download_vragenlijst_btn">
+            <ds-icon [icon]="faDownloadIcon" title="Vragenlijst downloaden"></ds-icon>
+          </button>
+        }
+      </td>
+    </ng-container>
+    <ng-container dsColumnDef="inzien">
+      <th *dsHeaderCellDef ds-header-cell class="visitatie-kolom-smal"></th>
+      <td *dsCellDef="let visitatie" ds-cell class="visitatie-acties-cel">
+        @if (magInzien) {
+          <button ds-button-icon ds-button-secondary (click)="navigeerNaarVisitatie(visitatie.id)" data-testid="inzien_visitatie_btn">
+            <ds-icon [icon]="faPopoutIcon" title="Naar visitatie gaan"></ds-icon>
+          </button>
+        }
+      </td>
+    </ng-container>
+    <ng-container dsColumnDef="verwijderen">
+      <th *dsHeaderCellDef ds-header-cell class="visitatie-kolom-smal"></th>
+      <td *dsCellDef="let visitatie" ds-cell class="visitatie-acties-cel">
+        @if (magVerwijderen) {
+          <button ds-button-icon ds-button-delete-primary (click)="openVerwijderenDialog(visitatie)" data-testid="verwijderen_visitatie_btn">
+            <ds-icon [icon]="faDeleteIcon" title="Visitatie verwijderen"></ds-icon>
+          </button>
+        }
+      </td>
+    </ng-container>
+    <tr ds-header-row *dsHeaderRowDef="displayedColumns"></tr>
+    <tr ds-row data-testid="visitatie_rij" *dsRowDef="let _; columns: displayedColumns"></tr>
+  </table>
+  <ds-paginator [totalNumberOfItems]="paginering().totaal"
+                [pageSize]="paginering().paginaGrootte"
+                [pageSizeOptions]="[10, 20, 50]"
+                (pageChanged)="handlePageChange($event)"
+  ></ds-paginator>
+</app-page>

@@ -18,24 +18,3 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {
-  angleIcon,
-  arrowIcon,
-  ClarityIcons,
-  downloadIcon,
-  eventIcon,
-  listIcon,
-  minusIcon,
-  pencilIcon,
-  plusIcon,
-  popOutIcon,
-  trashIcon,
-  twoWayArrowsIcon,
-  zoomInIcon,
-  zoomOutIcon,
-} from '@cds/core/icon'
-import '@cds/core/icon/register.js'
-
-export function loadIcons() {
-  ClarityIcons.addIcons(angleIcon, eventIcon, zoomInIcon, zoomOutIcon, pencilIcon, trashIcon, twoWayArrowsIcon, arrowIcon, plusIcon, minusIcon, downloadIcon, popOutIcon, listIcon)
-}

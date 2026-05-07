@@ -25,10 +25,11 @@ import { PdfViewerComponent } from '@shared/components/pdf-viewer/pdf-viewer.com
 import { DocumentService } from '@/shared/services/document/document.service'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { saveAs } from 'file-saver'
+import { DsButtonComponent } from '@topicus-rgp-ds/web'
 
 @Component({
   selector: 'app-brief-inzien-dialog',
-  imports: [BaseDialogComponent, PdfViewerComponent],
+  imports: [BaseDialogComponent, PdfViewerComponent, DsButtonComponent],
   templateUrl: './brief-inzien-dialog.component.html',
 })
 export class BriefInzienDialogComponent {

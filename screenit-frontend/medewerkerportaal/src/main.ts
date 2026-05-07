@@ -22,13 +22,11 @@ import { bootstrapApplication } from '@angular/platform-browser'
 import localeNL from '@angular/common/locales/nl'
 import { appConfig } from '@/config/app.config'
 import { AppComponent } from '@/app.component'
-import { loadIcons } from '@/config/icons.config'
 import setupWebApis from '@/config/web-apis'
 import setupDatadog from '@/config/datadog'
 import { registerLocaleData } from '@angular/common'
 
 document.addEventListener('DOMContentLoaded', function () {
-  loadIcons()
   setupWebApis()
   setupDatadog()
   registerLocaleData(localeNL)

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { EnumWeergave } from '@shared/types/enum-weergave'
+import { EnumOptie } from '@shared/types/enum-optie'
 
 export enum MammaVisitatieStatus {
   INGEPLAND = 'INGEPLAND',
@@ -26,8 +26,8 @@ export enum MammaVisitatieStatus {
   UITGEVOERD = 'UITGEVOERD',
 }
 
-export const mammaVisitatieStatusLijst: EnumWeergave<MammaVisitatieStatus>[] = [
-  { enum: MammaVisitatieStatus.INGEPLAND, weergave: 'Ingepland' },
-  { enum: MammaVisitatieStatus.VRIJGEGEVEN, weergave: 'Vrijgegeven' },
-  { enum: MammaVisitatieStatus.UITGEVOERD, weergave: 'Uitgevoerd' },
+export const mammaVisitatieStatusLijst: EnumOptie<MammaVisitatieStatus>[] = [
+  { waarde: MammaVisitatieStatus.INGEPLAND, naam: 'Ingepland' },
+  { waarde: MammaVisitatieStatus.VRIJGEGEVEN, naam: 'Vrijgegeven' },
+  { waarde: MammaVisitatieStatus.UITGEVOERD, naam: 'Uitgevoerd' },
 ]

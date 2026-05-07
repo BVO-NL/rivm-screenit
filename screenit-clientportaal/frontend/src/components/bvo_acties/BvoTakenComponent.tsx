@@ -25,7 +25,6 @@ import TaakComponent from "../taken/TaakComponent"
 import {useSelectedBvo} from "../../utils/Hooks"
 import {getString} from "../../utils/TekstPropertyUtil"
 import {useSelector} from "react-redux"
-import {State} from "../../datatypes/State"
 import {Bevolkingsonderzoek} from "../../datatypes/Bevolkingsonderzoek"
 import {AfmeldType} from "../../datatypes/afmelden/AfmeldType"
 import {ClientContactActieType} from "../../datatypes/ClientContactActieType"
@@ -36,6 +35,7 @@ import TelefoonnummerIcon from "../../scss/media/icons_toptaken/TelefoonnummerWi
 import ScreenitBackend from "../../utils/Backend"
 import {AfmeldOptiesDto, geenAfmeldOpties} from "../../datatypes/afmelden/AfmeldOptiesDto"
 import properties from "./BvoTakenComponent.json"
+import {selectPersoon} from "../../selectors/ClientSelectors"
 
 export type BvoTakenComponentProps = {
 	beschikbareActies: ClientContactActieType[],
@@ -44,7 +44,7 @@ export type BvoTakenComponentProps = {
 
 const BvoTakenComponent = (props: BvoTakenComponentProps) => {
 	const bvo = useSelectedBvo()!
-	const persoon = useSelector((state: State) => state.client.persoon)
+	const persoon = useSelector(selectPersoon)
 	const beschikbareActies = props.beschikbareActies
 	const [afmeldOpties, setAfmeldOpties] = useState<AfmeldOptiesDto>(geenAfmeldOpties)
 	const {vertrokkenUitNederland} = persoon

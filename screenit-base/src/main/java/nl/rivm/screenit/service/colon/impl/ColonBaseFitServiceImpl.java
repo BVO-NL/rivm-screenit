@@ -63,10 +63,10 @@ import nl.rivm.screenit.service.BaseHoudbaarheidService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonBaseFitService;
+import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.service.colon.ColonScreeningsrondeService;
 import nl.rivm.screenit.service.colon.ColonStudieRegistratieService;
-import nl.rivm.screenit.service.colon.ColonUitnodigingService;
 import nl.rivm.screenit.util.AfmeldingUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ProjectUtil;
@@ -123,7 +123,7 @@ public class ColonBaseFitServiceImpl implements ColonBaseFitService
 	private BaseBriefService briefService;
 
 	@Autowired
-	private ColonUitnodigingService uitnodigingService;
+	private ColonBaseUitnodigingService uitnodigingService;
 
 	@Autowired
 	private ColonStudieRegistratieService studieRegistratieService;

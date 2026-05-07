@@ -120,6 +120,10 @@ import static org.springframework.data.jpa.domain.Specification.where;
 @Service
 public class ClientServiceImpl implements ClientService
 {
+	public static final String BSN_PROPERTY = Client_.PERSOON + "." + Persoon_.BSN;
+
+	public static final String ACHTERNAAM_PROPERTY = Client_.PERSOON + "." + Persoon_.ACHTERNAAM;
+
 	@Autowired
 	private ClientRepository clientRepository;
 
@@ -147,9 +151,15 @@ public class ClientServiceImpl implements ClientService
 	@Autowired(required = false)
 	private MammaBaseStandplaatsService baseStandplaatsService;
 
-	public static final String BSN_PROPERTY = Client_.PERSOON + "." + Persoon_.BSN;
-
-	public static final String ACHTERNAAM_PROPERTY = Client_.PERSOON + "." + Persoon_.ACHTERNAAM;
+	@NotNull
+	private static Function<From<?, ? extends Client>, From<?, ? extends Adres>> adresJoin()
+	{
+		return q ->
+		{
+			var persoon = join(q, Client_.persoon);
+			return join(persoon, Persoon_.gbaAdres);
+		};
+	}
 
 	@Override
 	public Client getClientByBsn(String bsn)
@@ -295,16 +305,6 @@ public class ClientServiceImpl implements ClientService
 
 		var limit = PageRequest.of(0, 3);
 		return clientRepository.findAll(spec, limit).getContent();
-	}
-
-	@NotNull
-	private static Function<From<?, ? extends Client>, From<?, ? extends Adres>> adresJoin()
-	{
-		return q ->
-		{
-			var persoon = join(q, Client_.persoon);
-			return join(persoon, Persoon_.gbaAdres);
-		};
 	}
 
 	@Override

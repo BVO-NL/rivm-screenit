@@ -25,10 +25,11 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
 import { ColonBulkVerwijderenException } from '@shared/types/colon/colon-bulk-verwijderen-exception'
 import { SelectOption } from '@shared/types/select-option'
 import { LowerCasePipe } from '@angular/common'
+import { DsButtonComponent } from '@topicus-rgp-ds/web'
 
 @Component({
   selector: 'app-tijdslots-verwijderen-bevestigings-popup',
-  imports: [BaseDialogComponent, LowerCasePipe],
+  imports: [BaseDialogComponent, LowerCasePipe, DsButtonComponent],
   styles: [
     `
       td {

@@ -20,18 +20,20 @@
  */
 import { AbstractControl, FormControl, ValidationErrors, ValidatorFn } from '@angular/forms'
 import { addDays, addMonths, isAfter, isBefore, isValid, parse, startOfDay } from 'date-fns'
-import { formatNLDate, parseDate } from '@shared/utils/date-utils'
+import { formatNLDate, isValideTijd, normaliseerNaarDate, parseDate } from '@shared/utils/date-utils'
 import { TIME_FORMAT } from '@shared/constants'
-import { ToastService } from '@shared/toast/service/toast.service'
+import { NotificationService } from '@shared/services/notification/notification.service'
 
 export const datumInVerledenValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   if (!control.dirty) {
     return null
   }
-  let datum = control.value
-  if (typeof datum === 'string') {
-    datum = parseDate(datum)
+
+  const datum = normaliseerNaarDate(control.value)
+  if (!datum) {
+    return null
   }
+
   return startOfDay(datum) < startOfDay(new Date()) ? { datumInVerleden: 'De datum ligt in het verleden. Dit is niet toegestaan.' } : null
 }
 
@@ -39,15 +41,12 @@ export const valideDatumValidator: ValidatorFn = (control: AbstractControl): Val
   if (!control.dirty || !control.value) {
     return null
   }
-  let datum = control.value
-  if (typeof datum === 'string') {
-    datum = parseDate(datum)
-  }
-  return !isValid(datum) ? { valideDatum: 'De ingevoerde datum is niet valide.' } : null
+  const datum = normaliseerNaarDate(control.value)
+  return datum && isValid(datum) ? null : { valideDatum: 'De ingevoerde datum is niet valide.' }
 }
 
 export const createDatumTijdInVerledenValidator =
-  (datumVeld: string, tijdVeld: string, toastService?: ToastService): ValidatorFn =>
+  (datumVeld: string, tijdVeld: string, notificationService?: NotificationService): ValidatorFn =>
   (control: AbstractControl): ValidationErrors | null => {
     if (!control.dirty) {
       return null
@@ -73,7 +72,7 @@ export const createDatumTijdInVerledenValidator =
 
     const validatieBericht = 'Datum en/of tijd liggen in het verleden. Dit is niet toegestaan.'
     const validatieError = invalid ? { datumTijdInVerleden: validatieBericht } : null
-    toonOfLeegNotificaties(validatieError == null, validatieBericht, toastService)
+    toonOfLeegNotificaties(validatieError == null, validatieBericht, notificationService)
     return validatieError
   }
 
@@ -84,13 +83,14 @@ export const createMinimumDatumValidator =
       return null
     }
 
-    const datumString: string = datumCtrl.value
-    if (datumString == null) {
+    const controleDatum = normaliseerNaarDate(datumCtrl.value)
+    const ingevoerdeDatum = normaliseerNaarDate(control.value)
+    if (controleDatum == null || ingevoerdeDatum == null) {
       return null
     }
 
-    const datum = addDays(parseDate(datumString), plusDagen)
-    return isBefore(parseDate(control.value), datum) ? { minimumDatum: `De datum mag niet voor ${formatNLDate(datum)} liggen` } : null
+    const peilDatum = addDays(controleDatum, plusDagen)
+    return isBefore(ingevoerdeDatum, peilDatum) ? { minimumDatum: `De datum mag niet voor ${formatNLDate(peilDatum)} liggen` } : null
   }
 
 export const createMaximumDatumValidator =
@@ -100,21 +100,22 @@ export const createMaximumDatumValidator =
       return null
     }
 
-    const datumString: string = datumCtrl.value
-    if (datumString == null) {
+    const controleDatum = normaliseerNaarDate(datumCtrl.value)
+    const ingevoerdeDatum = normaliseerNaarDate(control.value)
+    if (controleDatum == null || ingevoerdeDatum == null) {
       return null
     }
 
-    const datum = addMonths(parseDate(datumString), maxMaanden)
-    return isAfter(parseDate(control.value), datum) ? { maximumDatum: `De datum mag niet na ${formatNLDate(datum)} liggen` } : null
+    const peilDatum = addMonths(controleDatum, maxMaanden)
+    return isAfter(ingevoerdeDatum, peilDatum) ? { maximumDatum: `De datum mag niet na ${formatNLDate(peilDatum)} liggen` } : null
   }
 
-export const createStartEindTijdValidator = (startVeld: string, eindVeld: string, toastService?: ToastService): ValidatorFn => {
+export const createStartEindTijdValidator = (startVeld: string, eindVeld: string, notificationService?: NotificationService): ValidatorFn => {
   return (control: AbstractControl): ValidationErrors | null => {
     const startTijd: string | undefined = control.get(startVeld)?.value
     const eindTijd: string | undefined = control.get(eindVeld)?.value
 
-    if (!control.dirty || !startTijd || !eindTijd) {
+    if (!control.dirty || !startTijd || !eindTijd || !isValideTijd(startTijd) || !isValideTijd(eindTijd)) {
       return null
     }
 
@@ -123,7 +124,7 @@ export const createStartEindTijdValidator = (startVeld: string, eindVeld: string
 
     const validatieBericht = 'De starttijd moet voor de eindtijd liggen'
     const validatieError = eindDatum <= startDatum ? { startEindTijd: validatieBericht } : null
-    toonOfLeegNotificaties(validatieError == null, validatieBericht, toastService)
+    toonOfLeegNotificaties(validatieError == null, validatieBericht, notificationService)
     return validatieError
   }
 }
@@ -132,32 +133,29 @@ export const createStartEindDatumValidator = (
   startVeld: string,
   eindVeld: string,
   validatieBericht = 'De startdatum moet voor de einddatum liggen',
-  toastService?: ToastService,
+  notificationService?: NotificationService,
 ): ValidatorFn => {
   return (control: AbstractControl): ValidationErrors | null => {
-    const startDatumString: string | undefined = control.get(startVeld)?.value
-    const eindDatumString: string | undefined = control.get(eindVeld)?.value
+    const startDatum: Date | undefined = control.get(startVeld)?.value
+    const eindDatum: Date | undefined = control.get(eindVeld)?.value
 
-    if (!control.dirty || !startDatumString || !eindDatumString) {
+    if (!control.dirty || !startDatum || !eindDatum) {
       return null
     }
 
-    const startDatum = startOfDay(parseDate(startDatumString))
-    const eindDatum = startOfDay(parseDate(eindDatumString))
-
     const validatieError = eindDatum < startDatum ? { startEindDatum: validatieBericht } : null
-    toonOfLeegNotificaties(validatieError == null, validatieBericht, toastService)
+    toonOfLeegNotificaties(validatieError == null, validatieBericht, notificationService)
     return validatieError
   }
 }
 
-function toonOfLeegNotificaties(valide: boolean, error: string, toastService?: ToastService): void {
-  if (!toastService) {
+function toonOfLeegNotificaties(valide: boolean, error: string, notificationService?: NotificationService): void {
+  if (!notificationService) {
     return
   }
   if (!valide) {
-    toastService.error(error)
+    notificationService.error(error)
   } else {
-    toastService.hide(error)
+    notificationService.hide(error)
   }
 }

@@ -19,12 +19,11 @@
  * =========================LICENSE_END==================================
  */
 import * as React from "react"
-import {useCallback, useEffect, useState} from "react"
+import {useEffect, useState} from "react"
 import {Bevolkingsonderzoek, BevolkingsonderzoekNaam} from "../../../../datatypes/Bevolkingsonderzoek"
 import BasePage from "../../../BasePage"
 import styles from "./HuisartsPage.module.scss"
-import {geenHuisartsZoekresultaten, Huisarts, HuisartsZoekobject, leegHuisartsZoekobject, MammaGeenHuisartsOptie} from "../../../../datatypes/Huisarts"
-import {Col, Row} from "react-bootstrap"
+import {Huisarts, MammaGeenHuisartsOptie} from "../../../../datatypes/Huisarts"
 import {useSelector} from "react-redux"
 import {State} from "../../../../datatypes/State"
 import {
@@ -35,35 +34,24 @@ import {
 	getVorigeMammaGeenHuisartsOptie,
 	magHuisartsKoppelen,
 } from "../../../../api/HuisartsThunkAction"
-import ScreenitBackend from "../../../../utils/Backend"
 import {useThunkDispatch} from "../../../../index"
-import {ArrowType} from "../../../../components/vectors/ArrowIconComponent"
-import {createShowToastAction} from "../../../../actions/ToastAction"
 import {getString} from "../../../../utils/TekstPropertyUtil"
 import {useSelectedBvo} from "../../../../utils/Hooks"
 import {getBvoBaseUrl, getContactUrl} from "../../../../utils/UrlUtil"
 import ActieBasePage from "../../../ActieBasePage"
-import {Formik, FormikValues} from "formik"
+import {Formik} from "formik"
 import * as Yup from "yup"
-import bvoStyle from "../../../../components/BvoStyle.module.scss"
 import HuisartsHintComponent from "./HuisartsHintComponent"
-import Button from "../../../../components/input/Button"
-import {concatWithSpace} from "../../../../utils/StringUtil"
 import {HuisartsBevestigingsPopup, HuisartsBevestigingsPopupType} from "./HuisartsBevestigingsPopup"
-import {REGEX_POSTCODE_SEARCH} from "../../../../validators/AdresValidator"
-import ScreenitTextfield from "../../../../components/input/ScreenitTextfield"
-import {FormErrorComponent} from "../../../../components/form_error/FormErrorComponent"
-import BigUrlButton from "../../../../components/bigUrlButton/BigUrlButton"
-import AdvancedSearchLinkComponent from "../../../../components/form/AdvancedSearchLinkComponent"
-import SearchResultHuisarts from "../../../../components/search_results/SearchResultHuisarts"
 import SubmitForm from "../../../../components/form/SubmitForm"
 import {FormControl, FormControlLabel, Radio, RadioGroup} from "@mui/material"
-import SearchForm from "../../../../components/form/SearchForm"
 import {useLocation, useNavigate} from "react-router"
 import {showToast} from "../../../../utils/ToastUtil"
 import properties from "./HuisartsPage.json"
 import datadogService from "../../../../services/DatadogService"
 import {AnalyticsCategorie} from "../../../../datatypes/AnalyticsCategorie"
+import HuisartsSelectieComponent from "../../../../components/huisarts_selectie/HuisartsSelectieComponent"
+import {concatWithSpace} from "../../../../utils/StringUtil"
 
 const HuisartsPage = () => {
 	const dispatch = useThunkDispatch()
@@ -74,20 +62,13 @@ const HuisartsPage = () => {
 	const [gekozenHuisarts, setGekozenHuisarts] = useState<Huisarts | undefined>(undefined)
 	const [wiltHuisartsVerwijderen, setWiltHuisartsVerwijderen] = useState<boolean>(false)
 
-	const [disableZoekMeerButton, setDisableZoekMeerButton] = useState<boolean>(true)
-	const [zoekObject, setZoekObject] = useState<HuisartsZoekobject>(leegHuisartsZoekobject)
-	const [zoekResultaten, setZoekResultaten] = useState<Huisarts[]>(geenHuisartsZoekresultaten)
 	const [wilZoeken, setWilZoeken] = useState<boolean>(location.pathname.includes("zoeken"))
-	const [gezocht, setGezocht] = useState<boolean>(false)
-	const [isAdvancedSearch, setAdvancedSearch] = useState<boolean>(false)
 
 	const huidigeHuisarts = useSelector((state: State) => bvo === Bevolkingsonderzoek.MAMMA ? state.client.mammaDossier.huisartsHuidigeRonde : state.client.colonDossier.huisartsHuidigeRonde)
 	const vorigeHuisarts = useSelector((state: State) => bvo === Bevolkingsonderzoek.MAMMA ? state.client.mammaDossier.huisartsVorigeRonde : state.client.colonDossier.huisartsVorigeRonde)
 	const magHuisartsOntkoppelen = useSelector((state: State) => bvo === Bevolkingsonderzoek.MAMMA ? state.client.mammaDossier.magHuisartsOntkoppelen : true)
 	const mammaHuidigeGeenHuisartsOptie: MammaGeenHuisartsOptie | undefined = useSelector((state: State) => bvo === Bevolkingsonderzoek.MAMMA ? state.client.mammaDossier.geenHuisartsOptieHuidigeRonde : undefined)
 	const mammaVorigeGeenHuisartsOptie: MammaGeenHuisartsOptie | undefined = useSelector((state: State) => bvo === Bevolkingsonderzoek.MAMMA ? state.client.mammaDossier.geenHuisartsOptieVorigeRonde : undefined)
-
-	const geenResultaten = zoekResultaten.length === 0 && gezocht
 
 	const bevolkingsonderzoekNaam = bvo === Bevolkingsonderzoek.MAMMA ? BevolkingsonderzoekNaam.MAMMA : BevolkingsonderzoekNaam.COLON
 
@@ -96,25 +77,6 @@ const HuisartsPage = () => {
 		ZOEKEN = "ZOEKEN",
 		ANNULEREN = "ANNULEREN",
 	}
-
-	const initialSearchFormValues = {
-		naam: "",
-		adres: {
-			plaats: "",
-			postcode: "",
-			straat: "",
-		},
-	}
-
-	const searchFormValidatieSchema: Yup.AnyObjectSchema = Yup.object({
-		adres: Yup.object().shape({
-			postcode: Yup.string().matches(REGEX_POSTCODE_SEARCH, properties.gedeeld.zoekpagina.zoekform.validation.postcode),
-		}),
-	})
-
-	useEffect(() => {
-		setDisableZoekMeerButton(zoekResultaten.length === 0 || zoekResultaten.length % 10 !== 0)
-	}, [setDisableZoekMeerButton, zoekResultaten])
 
 	useEffect(() => {
 		dispatch(getHuidigeHuisarts(bvo))
@@ -125,39 +87,6 @@ const HuisartsPage = () => {
 			dispatch(getVorigeMammaGeenHuisartsOptie(bvo))
 		}
 	}, [dispatch, bvo])
-
-	const zoekHuisartsen = useCallback((zoekobject: HuisartsZoekobject, paginaNummer: number) => {
-		return ScreenitBackend.post<Huisarts[]>(`huisarts?paginaNummer=${paginaNummer}`, {json: zoekobject}).json()
-			.then((response) => {
-				paginaNummer > 0 ? setZoekResultaten(zoekResultaten.concat(response)) : setZoekResultaten(response)
-				setGezocht(true)
-			})
-	}, [setZoekResultaten, zoekResultaten])
-
-	const zoek = useCallback((zoekObject: HuisartsZoekobject) => {
-		setZoekObject(zoekObject)
-		setZoekResultaten(geenHuisartsZoekresultaten)
-		zoekHuisartsen(zoekObject, 0)
-		setDisableZoekMeerButton(false)
-	}, [setZoekObject, setDisableZoekMeerButton, zoekHuisartsen, setZoekResultaten])
-
-	const zoekMeer = useCallback(() => {
-		const paginaNummer = zoekResultaten.length / 10
-		zoekHuisartsen(zoekObject, paginaNummer)
-	}, [zoekResultaten, zoekHuisartsen, zoekObject])
-
-	function kiesHuisarts(huisarts: Huisarts): void {
-		datadogService.stuurEvent("huisartsOptieGekozen", AnalyticsCategorie.MAMMA_HUISARTS)
-		if (huidigeHuisarts && huidigeHuisarts.id === huisarts.id) {
-			dispatch(createShowToastAction({
-				title: getString(properties.gedeeld.toasts.zelfde.title),
-				description: getString(properties.gedeeld.toasts.zelfde.description),
-				alGetoond: false,
-			}))
-		} else {
-			setGekozenHuisarts(huisarts)
-		}
-	}
 
 	function getGeenHuisartsOptieTekst(optie?: MammaGeenHuisartsOptie): string {
 		switch (optie) {
@@ -257,16 +186,6 @@ const HuisartsPage = () => {
 	}
 
 	function toonZoekpagina() {
-		const stuurDatadogEventEnHandleSubmit = (values: FormikValues, handleSubmit: (e?: React.FormEvent<HTMLFormElement>) => void) => {
-			datadogService.stuurEvent("huisartsZoeken", AnalyticsCategorie.MAMMA_HUISARTS, {
-				praktijk: values.naam,
-				plaats: values.adres.plaats,
-				postcode: values.adres.postcode,
-				straat: values.adres.straat,
-			})
-			handleSubmit()
-		}
-
 		return (
 			<BasePage
 				bvoName={bevolkingsonderzoekNaam}
@@ -289,108 +208,70 @@ const HuisartsPage = () => {
 				}}
 				blobLinkText={getString(properties.gedeeld.zoekpagina.blob.link)}>
 
-				<Row>
-					<Col md={5}>
-						<Formik initialValues={initialSearchFormValues}
-								validationSchema={searchFormValidatieSchema}
-								onSubmit={zoek}>
-							{({errors, values, initialValues, setFieldValue, handleSubmit}) => (
-								<SearchForm title={getString(properties.gedeeld.zoekpagina.zoekform.title)}>
+				<HuisartsSelectieComponent
+					description=""
+					huidigeHuisarts={huidigeHuisarts}
+					mammaHuidigeGeenHuisartsOptie={mammaHuidigeGeenHuisartsOptie}
+					magOntkoppelen={magHuisartsOntkoppelen}
+					contactUrl={getContactUrl()}
+					analyticsCategorie={AnalyticsCategorie.MAMMA_HUISARTS}
 
-									<ScreenitTextfield onChange={value => setFieldValue("naam", value)}
-													   value={values.naam}
-													   name={"naam"}
-													   placeholder={getString(properties.gedeeld.zoekpagina.zoekform.placeholders.naam)}/>
+					onHuisartsGekozen={(huisarts) => {
+						setGekozenHuisarts(huisarts)
+						navigate(getBvoBaseUrl(bvo))
+					}}
 
-									<ScreenitTextfield onChange={value => setFieldValue("adres.plaats", value)}
-													   value={values.adres.plaats}
-													   name={"adres.plaats"}
-													   placeholder={getString(properties.gedeeld.zoekpagina.zoekform.placeholders.plaats)}/>
+					onHuisartsVerwijderen={() => {
+						setWiltHuisartsVerwijderen(true)
+					}}
 
-									<div className={styles.advancedSearchButton}
-										 onClick={async () => {
-											 await setFieldValue("adres.postcode", "")
-											 await setFieldValue("adres.straat", "")
-											 setAdvancedSearch(!isAdvancedSearch)
-										 }}>
-										<AdvancedSearchLinkComponent advancedSearch={isAdvancedSearch}
-																	 onClickStuurDatadogEvent={() => datadogService.stuurEvent("huisartsmeerZoekopties", AnalyticsCategorie.MAMMA_HUISARTS)}/>
-									</div>
-									{isAdvancedSearch && <div>
-										<ScreenitTextfield onChange={value => setFieldValue("adres.postcode", value)}
-														   value={values.adres.postcode}
-														   name={"adres.postcode"}
-														   placeholder={getString(properties.gedeeld.zoekpagina.zoekform.placeholders.postcode)}
-														   invalidMessage={errors.adres?.postcode}/>
+					onAnnulerenVerwijderen={() => {
+						setWiltHuisartsVerwijderen(false)
+					}}
 
-										<ScreenitTextfield onChange={value => setFieldValue("adres.straat", value)}
-														   value={values.adres.straat}
-														   name={"adres.straat"}
-														   placeholder={getString(properties.gedeeld.zoekpagina.zoekform.placeholders.straat)}/>
-									</div>}
-									<Button className={bvoStyle.darkBackgroundColor}
-											label={getString(properties.gedeeld.zoekpagina.zoekform.submit)}
-											displayArrow={ArrowType.ARROW_RIGHT}
-											onClick={() => stuurDatadogEventEnHandleSubmit(values, handleSubmit)}/>
-								</SearchForm>)}
-						</Formik>
-					</Col>
-					<Col md={7} className={styles.results}>
+					onBevestigenVerwijderen={() => {
+						showToast(
+							getString(properties.gedeeld.toasts.geen.title),
+							getString(properties.gedeeld.toasts.geen.description),
+						)
 
-						{geenResultaten &&
-							<FormErrorComponent text={getString(properties.gedeeld.zoekpagina.resultaten.geen)}/>}
+						navigate(getBvoBaseUrl(bvo))
+					}}
+					toonBlob={false}
+				/>
 
-						{geenResultaten &&
-							<BigUrlButton title={getString(properties.gedeeld.zoekpagina.resultaten.button.header)}
-										  text={getString(properties.gedeeld.zoekpagina.resultaten.button.text)}
-										  link={getContactUrl()}/>}
+				{gekozenHuisarts && (
+					<HuisartsBevestigingsPopup
+						huisarts={gekozenHuisarts}
+						type={HuisartsBevestigingsPopupType.BEVESTIGEN}
+						onPrimaireKnop={() => {
+							showToast(
+								getString(properties.gedeeld.toasts.opgeslagen.title),
+								getString(properties.gedeeld.toasts.opgeslagen.description),
+							)
 
-						{zoekResultaten.map((resultaat) =>
-							<SearchResultHuisarts
-								key={resultaat.id}
-								className={styles.results}
-								col1={["", resultaat.praktijknaam, concatWithSpace(resultaat.voorletters, resultaat.achternaam)]}
-								col2={[getString(properties.gedeeld.zoekpagina.resultaten.resultaat.locatie_header), concatWithSpace(resultaat.adres.straat, resultaat.adres.huisnummer), concatWithSpace(resultaat.adres.postcode, resultaat.adres.plaats)]}
-								onHoverText={getString(properties.gedeeld.zoekpagina.resultaten.resultaat.hover)}
-								onClickAction={() => kiesHuisarts(resultaat)}
-							/>,
-						)}
-						{gezocht && !disableZoekMeerButton && !geenResultaten && <div className={styles.showMoreResultsButtonArea}>
-							<Button
-								label={getString(properties.gedeeld.zoekpagina.resultaten.meer)}
-								displayArrow={ArrowType.ARROW_DOWN}
-								arrowBeforeLabel={false}
-								onClick={zoekMeer}/>
-						</div>}
-					</Col>
-				</Row>
-				{
-					(gekozenHuisarts &&
-						<HuisartsBevestigingsPopup
-							huisarts={gekozenHuisarts}
-							type={HuisartsBevestigingsPopupType.BEVESTIGEN}
-							onPrimaireKnop={() => {
-								showToast(getString(properties.gedeeld.toasts.opgeslagen.title), getString(properties.gedeeld.toasts.opgeslagen.description))
-								navigate(getBvoBaseUrl(bvo))
-							}}
-							onSecundaireKnop={() => setGekozenHuisarts(undefined)}
-						/>)
-					|| (wiltHuisartsVerwijderen && (huidigeHuisarts || mammaHuidigeGeenHuisartsOptie) &&
-						<HuisartsBevestigingsPopup
-							huisarts={huidigeHuisarts}
-							geenHuisartsOpie={mammaHuidigeGeenHuisartsOptie ? getGeenHuisartsOptieTekst(mammaHuidigeGeenHuisartsOptie) : undefined}
-							type={HuisartsBevestigingsPopupType.VERWIJDEREN}
-							onPrimaireKnop={() => {
-								showToast(getString(properties.gedeeld.toasts.geen.title), getString(properties.gedeeld.toasts.geen.description))
-								datadogService.stuurEvent("HuisartsVerwijderd", AnalyticsCategorie.MAMMA)
-								navigate(getBvoBaseUrl(bvo))
-							}}
-							onSecundaireKnop={() => {
-								datadogService.stuurEvent("HuisartsVerwijderenAnnuleren", AnalyticsCategorie.MAMMA)
-								setWiltHuisartsVerwijderen(false)
-							}}
-						/>)
-				}
+							navigate(getBvoBaseUrl(bvo))
+						}}
+						onSecundaireKnop={() => setGekozenHuisarts(undefined)}
+					/>
+				)}
+
+				{wiltHuisartsVerwijderen && huidigeHuisarts && (
+					<HuisartsBevestigingsPopup
+						huisarts={huidigeHuisarts}
+						type={HuisartsBevestigingsPopupType.VERWIJDEREN}
+						onPrimaireKnop={() => {
+							showToast(
+								getString(properties.gedeeld.toasts.geen.title),
+								getString(properties.gedeeld.toasts.geen.description),
+							)
+
+							navigate(getBvoBaseUrl(bvo))
+						}}
+						onSecundaireKnop={() => setWiltHuisartsVerwijderen(false)}
+					/>
+				)}
+
 			</BasePage>
 		)
 	}

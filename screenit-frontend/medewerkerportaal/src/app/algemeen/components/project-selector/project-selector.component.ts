@@ -18,19 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, effect, forwardRef, inject, input, InputSignal } from '@angular/core'
-import { ClrComboboxModule, ClrCommonFormsModule } from '@clr/angular'
+import { Component, effect, forwardRef, inject, input, InputSignal, signal } from '@angular/core'
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ProjectService } from '@/algemeen/services/project/project.service'
 import { Project } from '@shared/types/algemeen/project'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { filter, take } from 'rxjs'
-import { NgIf } from '@angular/common'
+
 import { ProjectType } from '@shared/types/algemeen/project-type'
+import { DsDropdownComponent } from '@topicus-rgp-ds/web'
 
 @Component({
   selector: 'app-project-selector',
-  imports: [ClrComboboxModule, ClrCommonFormsModule, ReactiveFormsModule, NgIf],
+  imports: [ReactiveFormsModule, DsDropdownComponent],
   styles: [
     `
       :host {
@@ -38,18 +38,17 @@ import { ProjectType } from '@shared/types/algemeen/project-type'
       }
     `,
   ],
-  template: ` <clr-combobox-container>
-    <label [class.clr-required-mark]="required()" for="project">{{ label() }}</label>
-    <clr-combobox [clrMulti]="true" [formControl]="projectCtrl" required id="project" data-testid="cb_project_selector">
-      <ng-container *clrOptionSelected="let selected">
-        {{ selected?.naam }}
-      </ng-container>
-      <clr-options>
-        <clr-option [clrValue]="project" *clrOptionItems="let project of projecten; field: 'naam'">{{ project.naam }}</clr-option>
-      </clr-options>
-    </clr-combobox>
-    <clr-control-error *ngIf="required() && projectCtrl.invalid">De kamer is verplicht</clr-control-error>
-  </clr-combobox-container>`,
+  template: `<ds-dropdown
+    [formControl]="projectCtrl"
+    [label]="label()"
+    [required]="required()"
+    [clearable]="!required()"
+    data-testid="dd_project_selector"
+    [items]="projecten()"
+    [multiple]="true"
+    bindLabel="naam"
+    bindValue="id"
+  />`,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -60,14 +59,14 @@ import { ProjectType } from '@shared/types/algemeen/project-type'
 })
 export class ProjectSelectorComponent implements ControlValueAccessor {
   private projectService: ProjectService = inject(ProjectService)
-  projectCtrl = new FormControl<Project[] | null>(null)
-  projecten: Project[] = []
+  projectCtrl = new FormControl<number[] | null>([])
+  projecten = signal<Project[]>([])
 
   required = input(false)
   label = input('Projecten')
   projectType: InputSignal<ProjectType | undefined> = input()
 
-  private onChange: ((value: number[]) => void) | undefined
+  private onChange: ((value: number[] | null) => void) | undefined
   private onTouched: (() => void) | undefined
   private value: number[] | null = null
 
@@ -89,10 +88,8 @@ export class ProjectSelectorComponent implements ControlValueAccessor {
         takeUntilDestroyed(),
         filter(() => this.onChange != undefined),
       )
-      .subscribe((value: Project[] | null) => {
-        const projecten: Project[] = value ?? []
-        const projectIds = projecten.map((project: Project) => project.id)
-        this.onChange!(projectIds)
+      .subscribe((value: number[] | null) => {
+        this.onChange!(value)
       })
   }
 
@@ -101,15 +98,14 @@ export class ProjectSelectorComponent implements ControlValueAccessor {
       .getProjecten(projectType)
       .pipe(take(1))
       .subscribe((res) => {
-        this.projecten = res
+        this.projecten.set(res)
         this.setProject()
       })
   }
 
   private setProject() {
     if (this.value) {
-      const projecten: Project[] = this.projecten.filter((project) => this.value?.includes(project.id))
-      this.projectCtrl.setValue(projecten, { emitEvent: false })
+      this.projectCtrl.setValue(this.value, { emitEvent: false })
     }
   }
 
@@ -118,7 +114,7 @@ export class ProjectSelectorComponent implements ControlValueAccessor {
     this.setProject()
   }
 
-  registerOnChange(fn: (value: number[]) => void): void {
+  registerOnChange(fn: (value: number[] | null) => void): void {
     this.onChange = fn
   }
 

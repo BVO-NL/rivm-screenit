@@ -32,7 +32,6 @@ import {getAdresStringMetHtmlSeparator} from "../../utils/AdresUtil"
 import SpanWithHtml from "../../components/span/SpanWithHtml"
 import {isNullOfLeeg, isNullOfUndefined} from "../../utils/EmptyUtil"
 import {useSelector} from "react-redux"
-import {State} from "../../datatypes/State"
 import TelefoonnummerIcon from "../../scss/media/icons_toptaken/TelefoonnummerWijzigenIcon/TelefoonnummerWijzigenIcon"
 import EmailadresWijzigenIcon from "../../scss/media/icons_toptaken/EmailadresWijzigenIcon/EmailadresWijzigenIcon"
 import HuisIcon from "../../scss/media/icons_toptaken/AdresWijzigenIcon/HuisIcon"
@@ -43,11 +42,12 @@ import {AanhefType} from "../../datatypes/aanhef/AanhefType"
 import AanspreekVormIcon from "../../scss/media/icons_toptaken/AanspreekVormIcon/AanspreekVormIcon"
 import BezwaarMakenIcon from "../../scss/media/icons_toptaken/BezwaarMakenIcon/BezwaarMakenIcon"
 import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
+import {selectBeschikbareActies, selectPersoon} from "../../selectors/ClientSelectors"
 
 const ProfielPage = () => {
-	const persoon = useSelector((state: State) => state.client.persoon)
+	const persoon = useSelector(selectPersoon)
 	const toonTijdelijkAdres = !isNullOfLeeg(persoon.tijdelijkAdresTekst) && (isNullOfUndefined(persoon.tijdelijkAdres?.eindDatum) || isDatumVandaagOfLater(persoon.tijdelijkAdres!.eindDatum!))
-	const beschikbareActies = useSelector((state: State) => state.client.beschikbareActies.beschikbareActies)
+	const beschikbareActies = useSelector(selectBeschikbareActies)
 	return (
 		<Container fluid className={classNames(styles.content)}>
 			<KruimelpadComponent/>

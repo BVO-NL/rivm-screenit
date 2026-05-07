@@ -20,27 +20,33 @@
  */
 import { Component, inject } from '@angular/core'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
-import { ClrButtonModule } from '@clr/angular'
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
-import { MammaVisitatielijstResponseDto } from '@shared/types/mamma/dto/mamma-visitatielijst-response.dto'
+import { MammaVisitatielijstResponseDto } from '@shared/types/mamma/dto/visitatie/mamma-visitatielijst-response.dto'
 import { MammaVisitatieService } from '@/mamma/mamma-visitatie-overzicht-page/services/mamma-visitatie.service'
 import { take } from 'rxjs'
-import { ToastService } from '@shared/toast/service/toast.service'
 import * as ExcelJS from 'exceljs'
 import { saveAs } from 'file-saver'
-import { MammaVisitatielijstDialogData } from '@shared/types/mamma/dto/mamma-visitatielijst-dialog-data'
+import { MammaVisitatielijstDialogData } from '@shared/types/mamma/dto/visitatie/mamma-visitatielijst-dialog-data'
 import { MammaVisitatielijstRapport } from '@shared/types/mamma/mamma-visitatielijst-rapport'
+import { DsButtonComponent } from '@topicus-rgp-ds/web'
+import { NotificationService } from '@shared/services/notification/notification.service'
 
 @Component({
   selector: 'app-mamma-visitatielijst-rapport-dialog',
-  imports: [BaseDialogComponent, ClrButtonModule],
+  imports: [BaseDialogComponent, DsButtonComponent],
   templateUrl: './mamma-visitatielijst-rapport-dialog.component.html',
+  styles: `
+    .section-header {
+      font-weight: bold;
+      font-size: 16px;
+    }
+  `,
 })
 export class MammaVisitatielijstRapportDialogComponent {
   private readonly dialogRef = inject(DialogRef)
   private readonly dialogData: MammaVisitatielijstDialogData = inject(DIALOG_DATA)
   private readonly visitatieService = inject(MammaVisitatieService)
-  private readonly toastService = inject(ToastService)
+  private readonly notificationService = inject(NotificationService)
   protected rapport = new MammaVisitatielijstRapport(this.dialogData.rapport)
 
   sluitDialog() {
@@ -78,7 +84,7 @@ export class MammaVisitatielijstRapportDialogComponent {
       .pipe(take(1))
       .subscribe((response: MammaVisitatielijstResponseDto) => {
         if (response.meldingen.length) {
-          this.toastService.warning(response.meldingen)
+          this.notificationService.warning(response.meldingen.join(', '))
         }
         this.dialogRef.close(response.visitaties)
       })

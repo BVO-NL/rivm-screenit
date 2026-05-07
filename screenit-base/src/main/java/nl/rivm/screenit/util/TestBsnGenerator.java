@@ -21,7 +21,9 @@ package nl.rivm.screenit.util;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -29,60 +31,36 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.topicuszorg.util.bsn.BsnUtils;
 
-import com.google.common.math.DoubleMath;
-
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TestBsnGenerator
 {
-	private static Random randomNum = new Random();
+	private static final Set<String> generatedBsns = ConcurrentHashMap.newKeySet();
 
 	public static String getValideBsn()
 	{
-		String bsn = "";
-
-		do
+		while (true)
 		{
-			bsn = "";
-			int totaal = 0;
-			for (int i = 9; i > 1; i--)
+			var candidate = generateValidBsn();
+			if (generatedBsns.add(candidate))
 			{
-				int random = randomNum.nextInt(9);
-				bsn = bsn + random;
-				totaal = totaal + random * i;
-			}
-
-			int lastNumber = getLastNumber(totaal);
-			bsn = bsn + lastNumber;
-		}
-		while (!BsnUtils.isValidBSN(bsn));
-		return bsn;
-	}
-
-	private static int getLastNumber(Integer totaal)
-	{
-		int lastNumber = 0;
-		for (int i = 0; i < 10; i++)
-		{
-			if (calculateWithLastNumber(totaal, i))
-			{
-				lastNumber = i;
-				break;
+				return candidate;
 			}
 		}
-		return lastNumber;
 	}
 
-	private static boolean calculateWithLastNumber(Integer totaal, Integer lastNumber)
+	private static String generateValidBsn()
 	{
-		int value = (-1) * lastNumber;
-		int waarde = totaal + value;
+		while (true)
+		{
+			var number = ThreadLocalRandom.current().nextInt(100_000_000, 1_000_000_000);
+			var bsn = String.format("%09d", number);
 
-		double uitkomst = (double) waarde / (double) 11;
-
-		LOG.trace("totaal: " + totaal + " Uitkomst: " + uitkomst + " lastNumber: " + lastNumber + " value-1:  " + value);
-
-		return DoubleMath.isMathematicalInteger(uitkomst);
+			if (BsnUtils.isValidBSN(bsn))
+			{
+				return bsn;
+			}
+		}
 	}
 
 }

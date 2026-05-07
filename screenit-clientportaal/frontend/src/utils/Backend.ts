@@ -29,6 +29,7 @@ import {getCookie} from "./CookieUtil"
 import ky, {HTTPError} from "ky"
 
 const BASE_URL = "/api"
+const statussen = [httpStatus.NOT_MODIFIED, httpStatus.NOT_FOUND, httpStatus.CONFLICT, httpStatus.UNPROCESSABLE_ENTITY]
 
 export const ScreenitBackend = ky.create({
 	prefixUrl: BASE_URL,
@@ -56,7 +57,7 @@ export const ScreenitBackend = ky.create({
 		beforeError: [
 			(error: HTTPError) => {
 				countResponse()
-				if (error.response?.status !== httpStatus.NOT_MODIFIED && error.response?.status !== httpStatus.CONFLICT && error.response?.status !== httpStatus.NOT_FOUND) {
+				if (!statussen.includes(error.response?.status)) {
 					showToast(undefined, properties.foutmelding, ToastMessageType.ERROR)
 				}
 				return error

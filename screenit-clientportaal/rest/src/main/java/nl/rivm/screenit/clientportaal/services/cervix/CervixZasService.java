@@ -32,5 +32,7 @@ public interface CervixZasService
 
 	void vraagZasAan(Client client, boolean ontvangenNaUitstel);
 
-    boolean rondeHeeftCervixUitstel(CervixScreeningRonde screeningRonde);
+	boolean rondeHeeftCervixUitstel(CervixScreeningRonde screeningRonde);
+
+	boolean heeftOpenstaandeAanvraag(CervixScreeningRonde ronde);
 }

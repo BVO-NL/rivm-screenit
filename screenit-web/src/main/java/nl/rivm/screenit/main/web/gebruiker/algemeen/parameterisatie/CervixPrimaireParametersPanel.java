@@ -73,6 +73,7 @@ public class CervixPrimaireParametersPanel extends BasePrimaireParametersPanel
 		form.add(new TextField<>("cervixMaxZasAanvragenClient", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
 
 		form.add(new TextField<>("cervixUitstelUitslagbriefPap3a2OfHoger", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
+		form.add(new TextField<>("cervixWekenNaAanmaakHerinnering", Integer.class).add(RangeValidator.minimum(1)).setRequired(true));
 		form.add(new TextField<>("cervixVooraankondigingsPeriode", Integer.class).add(RangeValidator.minimum(0)).add(RangeValidator.maximum(180)).setRequired(true));
 		form.add(ComponentHelper.newDatePicker("cervixStartAanleveringGenotyperingEnInvoeringTriage", magAanpassen()).setRequired(true));
 

@@ -31,12 +31,13 @@ import LadenComponent from "../components/laden/LadenComponent"
 import {LandingOverzicht} from "../datatypes/landing/LandingOverzicht"
 import {Bevolkingsonderzoek} from "../datatypes/Bevolkingsonderzoek"
 import {KeycloakContext} from "../components/KeycloakProvider"
+import {selectBeschikbareActies} from "../selectors/ClientSelectors"
 
 export const AppRoutes = () => {
 	const {initialized, keycloak} = useContext(KeycloakContext)
 	const authenticatie = useSelector((state: State) => state.authenticatie)
 
-	const contactActions = useSelector((state: State) => state.client.beschikbareActies.beschikbareActies)
+	const contactActions = useSelector(selectBeschikbareActies)
 	const landingOverzicht = useSelector((state: State) => state.landingOverzicht)
 
 	if (!initialized || authenticatie.isLoggingOut || (!authenticatie.isLoggedIn && keycloak.authenticated)) {

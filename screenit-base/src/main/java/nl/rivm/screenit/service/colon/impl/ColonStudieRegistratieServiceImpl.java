@@ -36,8 +36,8 @@ import nl.rivm.screenit.repository.colon.ColonFitAnalyseResultaatRepository;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonBaseFitService;
+import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
 import nl.rivm.screenit.service.colon.ColonStudieRegistratieService;
-import nl.rivm.screenit.service.colon.ColonUitnodigingService;
 import nl.rivm.screenit.service.impl.ProjectUitslagenUploadException;
 import nl.rivm.screenit.util.ProjectUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
@@ -66,7 +66,7 @@ public class ColonStudieRegistratieServiceImpl implements ColonStudieRegistratie
 	private HibernateService hibernateService;
 
 	@Autowired
-	private ColonUitnodigingService uitnodigingService;
+	private ColonBaseUitnodigingService uitnodigingService;
 
 	@Autowired
 	private ColonFitAnalyseResultaatRepository fitAnalyseResultaatRepository;

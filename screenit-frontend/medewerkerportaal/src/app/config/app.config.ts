@@ -18,30 +18,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { ApplicationConfig, ErrorHandler, importProvidersFrom, inject, LOCALE_ID, provideAppInitializer } from '@angular/core'
+import { ApplicationConfig, ErrorHandler, importProvidersFrom, inject, LOCALE_ID, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core'
 import { provideHttpClient, withInterceptors } from '@angular/common/http'
 import { provideAnimations } from '@angular/platform-browser/animations'
-import { ClarityModule, ClrCommonStringsService } from '@clr/angular'
 import { DEFAULT_DIALOG_CONFIG, DialogModule } from '@angular/cdk/dialog'
-import { clarityTranslations } from './clarity-translations'
 import { NoopScrollStrategy } from '@angular/cdk/overlay'
 import { WINDOW } from '@shared/tokens/window.token'
 import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { GlobalErrorHandler } from '@shared/services/global-error-handler/global-error-handler'
 import { httpInterceptor } from '@shared/interceptors/http.interceptor'
+import { provideRouter } from '@angular/router'
+import { HashLocationStrategy, LocationStrategy } from '@angular/common'
+import { provideDsDateFormats, provideDsDateTimeFormats, provideDsLocalStorageNotificationAdapter, provideDsTimeAdapter } from '@topicus-rgp-ds/web'
+import { provideDateFnsAdapter } from '@angular/material-date-fns-adapter'
+import { nl } from 'date-fns/locale'
+import { MAT_DATE_LOCALE } from '@angular/material/core'
+import { DatepickerLocaleNl } from '@/config/mat-translations'
+import { MatDatepickerIntl } from '@angular/material/datepicker'
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(withInterceptors([httpInterceptor])),
     provideAnimations(),
-    { provide: LOCALE_ID, useValue: 'nl' },
-    importProvidersFrom(ClarityModule, DialogModule),
+    provideRouter([]),
+    importProvidersFrom(DialogModule),
     provideAppInitializer(() => {
-      const commonStrings = inject(ClrCommonStringsService)
       const autorisatieService = inject(AutorisatieService)
-      commonStrings.localize(clarityTranslations)
       return autorisatieService.getMedewerker()
     }),
+    provideDsDateTimeFormats(),
+    provideDsDateFormats(),
+    provideDsTimeAdapter(),
+    provideDateFnsAdapter(),
+    provideDsLocalStorageNotificationAdapter(),
+    provideBrowserGlobalErrorListeners(),
+    { provide: LOCALE_ID, useValue: 'nl' },
+    { provide: MAT_DATE_LOCALE, useValue: nl },
+    { provide: MatDatepickerIntl, useClass: DatepickerLocaleNl },
     {
       provide: WINDOW,
       useFactory: windowFactory,
@@ -55,6 +68,10 @@ export const appConfig: ApplicationConfig = {
       useValue: {
         scrollStrategy: new NoopScrollStrategy(),
       },
+    },
+    {
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy,
     },
   ],
 }

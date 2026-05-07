@@ -47,7 +47,6 @@ import nl.rivm.screenit.model.mamma.MammaFotobespreking;
 import nl.rivm.screenit.model.mamma.MammaFotobespreking_;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid_;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
 
@@ -79,9 +78,6 @@ public class MammaFotobesprekingOverzichtPage extends MammaFotobesprekingBasePag
 
 	@SpringBean
 	private ICurrentDateSupplier dateSupplier;
-
-	@SpringBean
-	private HibernateService hibernateService;
 
 	private ScreenitDataTable<MammaFotobespreking, String> overzicht;
 
@@ -143,7 +139,6 @@ public class MammaFotobesprekingOverzichtPage extends MammaFotobesprekingBasePag
 		columns.add(new EnumPropertyColumn<>(Model.of("Type"), MammaFotobespreking_.TYPE, "type", this));
 		columns.add(new EnumPropertyColumn<>(Model.of("Role"), MammaFotobespreking_.ROLE, "role", this));
 		columns.add(new PropertyColumn<>(Model.of("BE"), propertyChain(MammaFotobespreking_.BEOORDELINGS_EENHEID, Organisatie_.NAAM), "beoordelingsEenheid.naam"));
-		columns.add(new PropertyColumn<>(Model.of("SE"), propertyChain(MammaFotobespreking_.SCREENINGS_EENHEID, MammaScreeningsEenheid_.NAAM), "screeningsEenheid.naam"));
 		if (!ScreenitSession.get().getOrganisatie().getOrganisatieType().equals(OrganisatieType.RIVM))
 		{
 			columns.add(new AbstractColumn<MammaFotobespreking, String>(Model.of(""))

@@ -55,7 +55,8 @@ public class VorigOnderzoekDtoMapper
 
 	private SignalerenDtoMapper signalerenDtoMapper = new SignalerenDtoMapper();
 
-	public VorigOnderzoekDto createVorigOnderzoekDto(MammaScreeningRonde ronde, MammaBaseBeoordelingService beoordelingService, MammaBaseOnderzoekService mammaBaseOnderzoekService)
+	public VorigOnderzoekDto createVorigOnderzoekDto(MammaScreeningRonde ronde, MammaBaseBeoordelingService beoordelingService, MammaBaseOnderzoekService mammaBaseOnderzoekService,
+		String seVersie)
 	{
 		VorigOnderzoekDto vorigOnderzoekDto = new VorigOnderzoekDto();
 
@@ -71,7 +72,7 @@ public class VorigOnderzoekDtoMapper
 			vorigOnderzoekDto.setExtraMedewerker(onderzoek.getExtraMedewerker() == null ? null : NaamUtil.getNaamMedewerker(onderzoek.getExtraMedewerker().getMedewerker()));
 			vorigOnderzoekDto.setMeerdereOnderzoekenInRondeOnderbrokenRedenen(geefRedenMeerdereRondeWanneerHetGeval(ronde));
 			vorigOnderzoekDto.setMeerdereOnderzoekenInRondeOpschortRedenen(geefOpschortRedenMeerdereRondeWanneerHetGeval(ronde));
-			vorigOnderzoekDto.setOnderzoek(onderzoekDtoMapper.createOnderzoekDto(onderzoek));
+			vorigOnderzoekDto.setOnderzoek(onderzoekDtoMapper.createOnderzoekDto(onderzoek, seVersie));
 			vorigOnderzoekDto.setBeeldenBeschikbaar(MammaMammografieIlmStatus.beeldenBeschikbaar(mammografie != null ? mammografie.getIlmStatus() : null));
 			vorigOnderzoekDto.setVisueleInspectieAfbeelding(
 				afbeeldingDtoMapper.createAfbeeldingDto(mammografie != null ? mammografie.getVisueleInspectieAfbeelding() : null));

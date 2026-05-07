@@ -20,8 +20,8 @@
  */
 import {addBusinessDays, addDays, addMonths, differenceInDays, format, isWeekend, max, min, startOfDay, subDays, subMonths} from "date-fns"
 import {isNullOfUndefined} from "./EmptyUtil"
-import {cpStore} from "../index"
 import {nl} from "date-fns/locale"
+import {cpStore} from "../store"
 
 export const berekenOffset = (datumTijd: Date): number => {
 	const lokaalDatum = new Date()
@@ -76,7 +76,7 @@ export const formatDateTime = (datum?: Date): string => {
 		return ""
 	}
 
-	return formatDate(datum) + " " + formatTime(datum)
+	return `${formatDate(datum)} ${formatTime(datum)}`
 }
 
 export const formatDateText = (datum?: Date | null): string => {
@@ -147,6 +147,6 @@ export function zoekIndex(lijst: Date[] | undefined, value: Date | undefined): n
 	return (!!lijst && !!value) ? lijst.findIndex((d) => d.getTime() === value.getTime()) : -1
 }
 
-export function getAantalDagenTussenDatums(eersteDatum: Date, tweedeDatum: Date) {
+export function getAantalDagenTussenDatums(eersteDatum: Date, tweedeDatum: Date): number {
 	return differenceInDays(eersteDatum, tweedeDatum)
 }

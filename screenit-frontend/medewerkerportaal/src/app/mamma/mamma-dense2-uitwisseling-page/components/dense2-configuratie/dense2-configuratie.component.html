@@ -18,49 +18,21 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-card>
-  <div header>Configuratie</div>
-  <div body>
-    <div class="mb-3">Vul hier de configuratie in voor de DENSE-2 studie. Links ziet u de projecten waarvoor de configuratie geldt en rechts de projectnaam.</div>
+<ds-card cardTitle="Configuratie"
+         cardSubHeader="Vul hier de configuratie in voor de DENSE-2 studie. Links ziet u de projecten waarvoor de configuratie geldt en rechts de projectnaam.">
+  <form [formGroup]="configuratieForm">
+    <ds-input label="DENSE-2 CEM" formControlName="cem" data-testid="input_cem"/>
+    <ds-input label="DENSE-2 MRI" formControlName="mri" data-testid="input_mri"/>
+    <ds-input label="DENSE-2 Controlegroep" formControlName="controleGroep" data-testid="input_controleGroep"/>
+    <ds-input label="DENSE-2 Herinnering CEM" formControlName="herinneringCem" data-testid="input_herinnering_cem"/>
+    <ds-input label="DENSE-2 Herinnering MRI" formControlName="herinneringMri" data-testid="input_herinnering_mri"/>
 
-    <form [formGroup]="configuratieForm" clrForm clrLayout="horizontal" clrLabelSize="4">
-      <clr-input-container>
-        <label class="clr-required-mark" for="cem">DENSE-2 CEM</label>
-        <input clrInput autocomplete="off" formControlName="cem" id="cem" type="text" data-testid="input_cem"/>
-        <clr-control-error *clrIfError="'required'">CEM is verplicht</clr-control-error>
-      </clr-input-container>
-      <clr-input-container>
-        <label class="clr-required-mark" for="mri">DENSE-2 MRI</label>
-        <input clrInput autocomplete="off" formControlName="mri" id="mri" type="text" data-testid="input_mri"/>
-        <clr-control-error *clrIfError="'required'">MRI is verplicht</clr-control-error>
-      </clr-input-container>
-      <clr-input-container>
-        <label class="clr-required-mark" for="controleGroep">DENSE-2 Controlegroep</label>
-        <input clrInput autocomplete="off" formControlName="controleGroep" id="controleGroep" type="text" data-testid="input_controlegroep"/>
-        <clr-control-error *clrIfError="'required'">Controlegroep is verplicht</clr-control-error>
-      </clr-input-container>
-      <clr-input-container>
-        <label class="clr-required-mark" for="herinneringCem">DENSE-2 Herinnering CEM</label>
-        <input clrInput autocomplete="off" formControlName="herinneringCem" id="herinneringCem" type="text" data-testid="input_herinnering_cem"/>
-        <clr-control-error *clrIfError="'required'">Herinnering CEM is verplicht</clr-control-error>
-      </clr-input-container>
+    <app-project-selector formControlName="excludeProjecten" label="Deelnemers uit deze projecten excluderen"/>
 
-      <clr-input-container>
-        <label class="clr-required-mark" for="herinneringMri">DENSE-2 Herinnering MRI</label>
-        <input clrInput autocomplete="off" formControlName="herinneringMri" id="herinneringMri" type="text" data-testid="input_herinnering_mri"/>
-        <clr-control-error *clrIfError="'required'">Herinnering MRI is verplicht</clr-control-error>
-      </clr-input-container>
+    <ds-toggle label="Densiteit meting DENSE-2 opslaan" formControlName="metingOpslaan" [message]="metingOpslaanCtrl.value ? 'Aan' : 'Uit'"/>
 
-      <app-project-selector formControlName="excludeProjecten" label="Deelnemers uit deze projecten excluderen"/>
-
-      <clr-toggle-container>
-        <label for="metingOpslaan" class="meting-opslaan">Densiteit meting DENSE-2 opslaan</label>
-        <clr-toggle-wrapper>
-          <input type="checkbox" clrToggle id="metingOpslaan" value="true" formControlName="metingOpslaan" class="clr-col-md-8 clr-col-12"/>
-          <label for="metingOpslaan">{{ metingOpslaanCtrl.value ? 'Aan' : 'Uit' }}</label>
-        </clr-toggle-wrapper>
-      </clr-toggle-container>
-    </form>
-  </div>
-  <button footer class="btn btn-primary" [disabled]="configuratieForm.invalid" (click)="configuratieOpslaan()">Opslaan</button>
-</app-card>
+  </form>
+  <ng-template ds-footer-actions-right>
+    <button ds-button-primary [disabled]="configuratieForm.invalid" (click)="configuratieOpslaan()">Opslaan</button>
+  </ng-template>
+</ds-card>

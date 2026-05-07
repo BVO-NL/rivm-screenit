@@ -22,10 +22,16 @@ package nl.rivm.screenit.batch.jobs.generalis.gba;
  */
 
 import nl.rivm.screenit.batch.jobs.AbstractJobConfiguration;
+import nl.rivm.screenit.batch.jobs.generalis.gba.definitieveafmeldingstep.DefinitieveAfmeldingIndicatieVerwijderenReader;
+import nl.rivm.screenit.batch.jobs.generalis.gba.definitieveafmeldingstep.DefinitieveAfmeldingIndicatieVerwijderenWriter;
 import nl.rivm.screenit.batch.jobs.generalis.gba.dossiers.DossierReader;
 import nl.rivm.screenit.batch.jobs.generalis.gba.dossiers.DossierWriter;
+import nl.rivm.screenit.batch.jobs.generalis.gba.indicatieterugzettenvoordoelgroepstep.IndicatieTerugzettenVoorDoelgroepReader;
+import nl.rivm.screenit.batch.jobs.generalis.gba.indicatieterugzettenvoordoelgroepstep.IndicatieTerugzettenVoorDoelgroepWriter;
 import nl.rivm.screenit.batch.jobs.generalis.gba.teoudeclientstep.TeOudeClientenReader;
 import nl.rivm.screenit.batch.jobs.generalis.gba.teoudeclientstep.TeOudeClientenWriter;
+import nl.rivm.screenit.batch.jobs.generalis.gba.transgenderstep.TransgenderIndicatieVerwijderenReader;
+import nl.rivm.screenit.batch.jobs.generalis.gba.transgenderstep.TransgenderIndicatieVerwijderenWriter;
 import nl.rivm.screenit.batch.jobs.generalis.gba.upload105step.Vo105UploadTasklet;
 import nl.rivm.screenit.batch.jobs.generalis.gba.verwerk105step.GbaVraagItemReader;
 import nl.rivm.screenit.batch.jobs.generalis.gba.verwerk105step.Vo105ItemProcessor;
@@ -56,14 +62,23 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 
 	@Bean
 	public Job gbaJob(GbaListener listener, Step verwijderIndicatieTeOudeClientenStep, Step verwerkVo107Step, Step verwerkVo105Step, Step uploadVo105Step,
-		Step dossiersAanmakenStep)
+		Step dossiersAanmakenStep,
+		Step verwijderIndicatieDefinitieveAfmeldingStep,
+		Step verwijderIndicatieTransgenderStep,
+		Step terugzettenIndicatieVoorDoelgroepStep)
 	{
 		return new JobBuilder(JobType.GBA.name(), repository)
 			.listener(listener)
 			.start(verwerkVo107Step)
+			.on("*").to(terugzettenIndicatieVoorDoelgroepStep)
 			.on("*").to(verwijderIndicatieTeOudeClientenStep)
+			.on("*").to(verwijderIndicatieDefinitieveAfmeldingStep)
+			.on("*").to(verwijderIndicatieTransgenderStep)
 			.from(verwerkVo107Step).on(ExitStatus.FAILED.getExitCode()).to(dossiersAanmakenStep)
 			.from(verwijderIndicatieTeOudeClientenStep).on("*").to(verwerkVo105Step)
+			.from(terugzettenIndicatieVoorDoelgroepStep).on("*").to(verwerkVo105Step)
+			.from(verwijderIndicatieDefinitieveAfmeldingStep).on("*").to(verwerkVo105Step)
+			.from(verwijderIndicatieTransgenderStep).on("*").to(verwerkVo105Step)
 			.from(verwerkVo105Step)
 			.on("*").to(uploadVo105Step)
 			.from(verwerkVo105Step).on(ExitStatus.FAILED.getExitCode()).to(dossiersAanmakenStep)
@@ -90,6 +105,39 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 	public Step verwijderIndicatieTeOudeClientenStep(ExecutionContextPromotionListener gbaPromotionListener, TeOudeClientenReader reader, TeOudeClientenWriter writer)
 	{
 		return new StepBuilder("verwijderIndicatieTeOudeClientenStep", repository).listener(gbaPromotionListener)
+			.<Long, Long> chunk(250, transactionManager)
+			.reader(reader)
+			.writer(writer)
+			.build();
+	}
+
+	@Bean
+	public Step verwijderIndicatieDefinitieveAfmeldingStep(ExecutionContextPromotionListener gbaPromotionListener, DefinitieveAfmeldingIndicatieVerwijderenReader reader,
+		DefinitieveAfmeldingIndicatieVerwijderenWriter writer)
+	{
+		return new StepBuilder("verwijderIndicatieDefinitieveAfmeldingStep", repository).listener(gbaPromotionListener)
+			.<Long, Long> chunk(250, transactionManager)
+			.reader(reader)
+			.writer(writer)
+			.build();
+	}
+
+	@Bean
+	public Step verwijderIndicatieTransgenderStep(ExecutionContextPromotionListener gbaPromotionListener, TransgenderIndicatieVerwijderenReader reader,
+		TransgenderIndicatieVerwijderenWriter writer)
+	{
+		return new StepBuilder("verwijderIndicatieTransgenderStep", repository).listener(gbaPromotionListener)
+			.<Long, Long> chunk(250, transactionManager)
+			.reader(reader)
+			.writer(writer)
+			.build();
+	}
+
+	@Bean
+	public Step terugzettenIndicatieVoorDoelgroepStep(ExecutionContextPromotionListener gbaPromotionListener, IndicatieTerugzettenVoorDoelgroepReader reader,
+		IndicatieTerugzettenVoorDoelgroepWriter writer)
+	{
+		return new StepBuilder("terugzettenIndicatieVoorDoelgroepStep", repository).listener(gbaPromotionListener)
 			.<Long, Long> chunk(250, transactionManager)
 			.reader(reader)
 			.writer(writer)
@@ -161,5 +209,4 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 		listener.setStatuses(new String[] { FlowExecutionStatus.COMPLETED.getName(), FlowExecutionStatus.FAILED.getName() });
 		return listener;
 	}
-
 }

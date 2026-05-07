@@ -31,6 +31,7 @@ import nl.rivm.screenit.service.EnvironmentInfoService;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
+import org.apache.wicket.csp.CSPDirective;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.CssUrlReferenceHeaderItem;
@@ -78,6 +79,7 @@ public abstract class AngularBasePage extends MedewerkerBasePage
 
 		var environmentData = new EnvironmentData();
 		environmentData.setSession(ScreenitSession.get().getId());
+		environmentDataAanvullen(environmentData);
 
 		var appRoot = new WebMarkupContainer("appRoot")
 		{
@@ -143,7 +145,9 @@ public abstract class AngularBasePage extends MedewerkerBasePage
 	{
 		if (applicationEnvironment.equalsIgnoreCase("development"))
 		{
-			SecurityHeadersFilter.allowExtraConnectSrcInContentSecurityPolicy(response, "http://localhost:4200 ws://localhost:4200");
+			SecurityHeadersFilter.voegSrcToeAanContentSecurityPolicy(response, "http://localhost:4200 ws://localhost:4200", CSPDirective.CONNECT_SRC);
+			SecurityHeadersFilter.voegSrcToeAanContentSecurityPolicy(response, "http://localhost:4200", CSPDirective.FONT_SRC);
+			SecurityHeadersFilter.voegSrcToeAanContentSecurityPolicy(response, "http://localhost:4200", CSPDirective.IMG_SRC);
 		}
 		super.setHeaders(response);
 	}
@@ -177,5 +181,10 @@ public abstract class AngularBasePage extends MedewerkerBasePage
 	protected void initAngularComponent(String namespace)
 	{
 		AngularUtils.initAngularComponent(this, namespace);
+	}
+
+	protected void environmentDataAanvullen(EnvironmentData environmentData)
+	{
+
 	}
 }

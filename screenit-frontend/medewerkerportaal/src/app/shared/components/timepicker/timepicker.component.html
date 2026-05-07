@@ -1,0 +1,88 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<div class="timepicker" (focusin)="openKeuzelijst()" (focusout)="onFocusUit($event)">
+  <div class="timepicker__input-wrapper">
+    <ds-input cdkOverlayOrigin #oorsprong="cdkOverlayOrigin" [errorMessage]="foutmeldingen()" [formControl]="tijdCtrl" [inForm]="inForm()"
+              [label]="label()" [required]="required()" type="text">
+      <ng-template dsCallToAction>
+        <button ds-button-icon ds-button-secondary (click)="wisselKeuzelijst()" (mousedown)="voorkomFocusVerlies($event)"
+                [disabled]="tijdCtrl.disabled" aria-label="Open timepicker">
+          <ds-icon [icon]="klokIcoon"/>
+        </button>
+      </ng-template>
+    </ds-input>
+  </div>
+
+  <ng-template
+    cdkConnectedOverlay
+    [cdkConnectedOverlayOrigin]="oorsprong"
+    [cdkConnectedOverlayOpen]="toonKeuzelijst() && !tijdCtrl.disabled"
+    [cdkConnectedOverlayPositions]="overlayPosities"
+    [cdkConnectedOverlayHasBackdrop]="true"
+    cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
+    (backdropClick)="sluitKeuzelijst()"
+  >
+    <div class="timepicker__keuzelijst" role="listbox" aria-label="Tijdkiezer">
+      <div class="timepicker__kolommen">
+        <div
+          class="timepicker__uren-kolom"
+          [class.timepicker__kolom--actief]="actieveKolom() === 'uren'"
+          role="group"
+          aria-label="Uren"
+          #uurKolom
+        >
+          @for (uur of uurOpties; track uur) {
+            <button
+              class="timepicker__optie"
+              [class.timepicker__optie--geselecteerd]="uur === geselecteerdUur()"
+              role="option"
+              [attr.aria-selected]="uur === geselecteerdUur()"
+              type="button"
+              (mousedown)="selecteerUur($event, uur)"
+            >
+              {{ formatTijd(uur) }}
+            </button>
+          }
+        </div>
+        <div
+          class="timepicker__minuten-kolom"
+          [class.timepicker__kolom--actief]="actieveKolom() === 'minuten'"
+          role="group"
+          aria-label="Minuten"
+          #minutenKolom
+        >
+          @for (minuut of minutenOpties; track minuut) {
+            <button
+              class="timepicker__optie"
+              [class.timepicker__optie--geselecteerd]="minuut === geselecteerdMinuut()"
+              role="option"
+              [attr.aria-selected]="minuut === geselecteerdMinuut()"
+              type="button"
+              (mousedown)="selecteerMinuut($event, minuut)"
+            >
+              {{ formatTijd(minuut) }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</div>

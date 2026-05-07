@@ -50,7 +50,7 @@ import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieService;
-import nl.rivm.screenit.service.colon.ColonUitnodigingService;
+import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.ProjectUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
@@ -63,7 +63,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class ColonUitnodigingenVersturenTasklet extends AbstractUitnodigingenVersturenTasklet<ColonUitnodiging>
 {
-	private ColonUitnodigingService uitnodigingService;
+	private ColonBaseUitnodigingService uitnodigingService;
 
 	private HibernateService hibernateService;
 

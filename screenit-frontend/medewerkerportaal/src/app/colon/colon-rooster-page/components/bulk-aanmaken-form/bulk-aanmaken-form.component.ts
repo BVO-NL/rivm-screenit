@@ -18,9 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { AfterViewInit, Component, DestroyRef, forwardRef, inject, OnInit } from '@angular/core'
-
-import { ClrCheckboxModule, ClrComboboxModule, ClrCommonFormsModule, ClrDatepickerModule, ClrInputModule } from '@clr/angular'
+import { afterNextRender, Component, DestroyRef, forwardRef, inject, Injector, OnInit } from '@angular/core'
 import {
   ControlContainer,
   ControlValueAccessor,
@@ -28,7 +26,6 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
-  FormsModule,
   NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
@@ -37,20 +34,19 @@ import {
   Validators,
 } from '@angular/forms'
 import { ColonHerhaling } from '@shared/types/colon/colon-herhaling'
-import { COLON_ROOSTER_MAX_HERHALING_IN_MAANDEN, WEEK_DAGEN } from '@shared/constants'
-import { SelectOption } from '@shared/types/select-option'
+import { COLON_ROOSTER_MAX_HERHALING_IN_MAANDEN, TDS_DAGEN } from '@shared/constants'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { formatDate, formatNLDate, parseDate } from '@shared/utils/date-utils'
-import { add, addWeeks, isValid } from 'date-fns'
 import { distinctUntilChanged, filter, startWith } from 'rxjs'
 import { ColonHerhalingsfrequentie } from '@shared/types/colon/colon-herhaling-frequentie'
-import { WeekdagenSelectorComponent } from '@/colon/colon-rooster-page/components/weekdagen-selector/weekdagen-selector.component'
 import { dagenSelectieCheckboxValidator } from '@shared/validators/dagen-selectie/dagen-selectie.validator'
-import { createMaximumDatumValidator, createMinimumDatumValidator, valideDatumValidator } from '@shared/validators/datum/datum.validator'
+import { DsCheckboxComponent, DsDatepickerComponent, DsDropdownComponent, DsWeekdaySelectorComponent } from '@topicus-rgp-ds/web'
+import { WeekdagOptie } from '@shared/types/weekdag-optie'
+import { addDays, addMonths, addWeeks, isValid } from 'date-fns'
+import { formatDate } from '@shared/utils/date-utils'
 
 @Component({
   selector: 'app-bulk-aanmaken',
-  imports: [ClrComboboxModule, ClrCommonFormsModule, FormsModule, ReactiveFormsModule, ClrCheckboxModule, ClrDatepickerModule, ClrInputModule, WeekdagenSelectorComponent],
+  imports: [ReactiveFormsModule, DsCheckboxComponent, DsDatepickerComponent, DsDropdownComponent, DsWeekdaySelectorComponent],
   templateUrl: './bulk-aanmaken-form.component.html',
   providers: [
     {
@@ -65,38 +61,12 @@ import { createMaximumDatumValidator, createMinimumDatumValidator, valideDatumVa
     },
   ],
 })
-export class BulkAanmakenFormComponent implements ControlValueAccessor, Validator, OnInit, AfterViewInit {
-  private formBuilder: FormBuilder = inject(FormBuilder)
-  private destroyRef: DestroyRef = inject(DestroyRef)
+export class BulkAanmakenFormComponent implements ControlValueAccessor, Validator, OnInit {
   parentForm = inject(ControlContainer, { optional: true, host: true, skipSelf: true })
-
-  private onChange: ((value: ColonHerhaling) => void) | undefined
-  private onTouched: (() => void) | undefined
-
-  get geselecteerdeFrequentie(): ColonHerhalingsfrequentie | undefined {
-    return this.herhalingsFrequentieCtrl.value?.value
-  }
-
-  get herhalingsFrequentieCtrl(): FormControl {
-    return this.herhalingForm.get('frequentie') as FormControl
-  }
-
-  get eindDatumCtrl(): FormControl {
-    return this.herhalingForm.get('eindDatum') as FormControl
-  }
-
-  get dagenCtrl(): FormArray {
-    return this.herhalingForm.get('dagen') as FormArray
-  }
-
-  get tijdslotDatumCtrl(): FormControl {
-    return this.parentForm?.control?.get('datum') as FormControl
-  }
-
   herhalingsfrequentie = ColonHerhalingsfrequentie
-  dagen: SelectOption<number>[] = WEEK_DAGEN
-  maxDatum = formatDate(add(new Date(), { months: COLON_ROOSTER_MAX_HERHALING_IN_MAANDEN }))
-  minDatum = formatDate(add(new Date(), { days: 1 }))
+  dagen = TDS_DAGEN
+  maxDatum: string = addMonths(new Date(), COLON_ROOSTER_MAX_HERHALING_IN_MAANDEN).toISOString()
+  minDatum: string = addDays(new Date(), 1).toISOString()
   herhalingOpties = [
     {
       label: 'Niet herhalen',
@@ -115,16 +85,20 @@ export class BulkAanmakenFormComponent implements ControlValueAccessor, Validato
       value: ColonHerhalingsfrequentie.TWEE_WEKELIJKS,
     },
   ]
-
+  private formBuilder: FormBuilder = inject(FormBuilder)
   herhalingForm: FormGroup = this.formBuilder.group({
-    frequentie: this.herhalingOpties[0],
-    dagen: [[], dagenSelectieCheckboxValidator],
+    frequentie: [this.herhalingOpties[0].value, Validators.required],
+    dagen: [TDS_DAGEN, Validators.required],
     alleenWerkdagen: true,
-    eindDatum: [null, { updateOn: 'blur' }],
+    eindDatum: [null, Validators.required],
   })
+  private destroyRef: DestroyRef = inject(DestroyRef)
+  private injector = inject(Injector)
+  private onChange: ((value: ColonHerhaling) => void) | undefined
+  private onTouched: (() => void) | undefined
 
   constructor() {
-    this.herhalingsFrequentieCtrl.valueChanges.pipe(takeUntilDestroyed(), distinctUntilChanged()).subscribe((option: SelectOption<string>) => {
+    this.herhalingsFrequentieCtrl.valueChanges.pipe(takeUntilDestroyed(), distinctUntilChanged()).subscribe((option: string) => {
       if (option == null) {
         return
       }
@@ -134,7 +108,7 @@ export class BulkAanmakenFormComponent implements ControlValueAccessor, Validato
           alleenWerkdagen: true,
           frequentie: option,
           eindDatum: this.eindDatumVanTijdslot,
-          dagen: [],
+          dagen: TDS_DAGEN,
         },
         { emitEvent: false },
       )
@@ -152,96 +126,37 @@ export class BulkAanmakenFormComponent implements ControlValueAccessor, Validato
     })
   }
 
+  get geselecteerdeFrequentie(): ColonHerhalingsfrequentie | undefined {
+    return this.herhalingsFrequentieCtrl.value
+  }
+
+  get herhalingsFrequentieCtrl(): FormControl {
+    return this.herhalingForm.get('frequentie') as FormControl
+  }
+
+  get eindDatumCtrl(): FormControl {
+    return this.herhalingForm.get('eindDatum') as FormControl
+  }
+
+  get dagenCtrl(): FormArray {
+    return this.herhalingForm.get('dagen') as FormArray
+  }
+
+  get tijdslotDatumCtrl(): FormControl {
+    return this.parentForm?.control?.get('datum') as FormControl
+  }
+
+  private get eindDatumVanTijdslot(): Date | null {
+    return isValid(this.tijdslotDatumCtrl.value) ? addWeeks(this.tijdslotDatumCtrl.value, 2) : null
+  }
+
   ngOnInit(): void {
     this.handleAfspraakslotDatumChange()
   }
 
-  ngAfterViewInit(): void {
-    this.handleChange()
-  }
-
-  private handleAfspraakslotDatumChange(): void {
-    this.tijdslotDatumCtrl.valueChanges
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        distinctUntilChanged(),
-        filter(() => this.tijdslotDatumCtrl.value != null && isValid(parseDate(this.tijdslotDatumCtrl.value))),
-        startWith(this.tijdslotDatumCtrl.value),
-      )
-      .subscribe(() => {
-        const afspraakslotDatum = parseDate(this.tijdslotDatumCtrl.value)
-        this.minDatum = formatDate(add(afspraakslotDatum, { days: 1 }))
-        this.maxDatum = formatDate(add(afspraakslotDatum, { months: COLON_ROOSTER_MAX_HERHALING_IN_MAANDEN }))
-
-        if (!this.eindDatumCtrl.dirty) {
-          this.eindDatumCtrl.setValue(this.eindDatumVanTijdslot)
-        }
-
-        this.updateValidaties()
-      })
-  }
-
-  private get eindDatumVanTijdslot(): string | null {
-    return isValid(parseDate(this.tijdslotDatumCtrl.value)) ? formatNLDate(addWeeks(parseDate(this.tijdslotDatumCtrl.value), 2)) : null
-  }
-
-  private setValidators() {
-    const option: SelectOption<string> = this.herhalingsFrequentieCtrl.value
-    switch (option.value) {
-      case ColonHerhalingsfrequentie.GEEN_HERHALING:
-        this.eindDatumCtrl.clearValidators()
-        this.dagenCtrl.clearValidators()
-        break
-      case ColonHerhalingsfrequentie.DAGELIJKS:
-        this.eindDatumCtrl.setValidators([
-          Validators.required,
-          valideDatumValidator,
-          createMinimumDatumValidator(this.tijdslotDatumCtrl, 1),
-          createMaximumDatumValidator(this.tijdslotDatumCtrl, COLON_ROOSTER_MAX_HERHALING_IN_MAANDEN),
-        ])
-        this.dagenCtrl.clearValidators()
-        break
-      case ColonHerhalingsfrequentie.WEKELIJKS:
-      case ColonHerhalingsfrequentie.TWEE_WEKELIJKS:
-        this.eindDatumCtrl.setValidators([
-          Validators.required,
-          valideDatumValidator,
-          createMinimumDatumValidator(this.tijdslotDatumCtrl, 1),
-          createMaximumDatumValidator(this.tijdslotDatumCtrl, COLON_ROOSTER_MAX_HERHALING_IN_MAANDEN),
-        ])
-        this.dagenCtrl.setValidators(dagenSelectieCheckboxValidator)
-    }
-
-    this.updateValidaties()
-  }
-
-  private updateValidaties() {
-    setTimeout(() => {
-      Object.keys(this.herhalingForm.controls).forEach((field) => {
-        const control = this.herhalingForm.get(field)
-        control?.updateValueAndValidity()
-      })
-    }, 0)
-  }
-
-  private handleChange() {
-    if (this.onChange === undefined) {
-      return
-    }
-    const rawValue = this.herhalingForm.value
-    const herhaling = {
-      ...rawValue,
-      frequentie: rawValue.frequentie?.value,
-      weekdag: rawValue.weekdag?.value,
-      eindDatum: rawValue.eindDatum && isValid(parseDate(rawValue.eindDatum)) ? formatDate(parseDate(rawValue.eindDatum)) : null,
-      dagen: rawValue.dagen,
-    }
-
-    this.onChange(herhaling)
-  }
-
   registerOnChange(fn: (value: ColonHerhaling) => void): void {
     this.onChange = fn
+    this.handleChange()
   }
 
   registerOnTouched(fn: () => void): void {
@@ -256,11 +171,85 @@ export class BulkAanmakenFormComponent implements ControlValueAccessor, Validato
     }
   }
 
-  writeValue(obj: ColonHerhaling): void {
-    this.herhalingForm.patchValue(obj, { emitEvent: false })
+  writeValue(obj: ColonHerhaling | null): void {
+    if (obj == null) {
+      this.herhalingForm.reset(
+        {
+          frequentie: this.herhalingOpties[0].value,
+          dagen: [],
+          alleenWerkdagen: true,
+          eindDatum: null,
+        },
+        { emitEvent: false },
+      )
+    } else {
+      this.herhalingForm.patchValue(obj, { emitEvent: false })
+    }
   }
 
   validate(): ValidationErrors | null {
     return this.herhalingForm.valid ? null : { invalid: true }
+  }
+
+  private handleAfspraakslotDatumChange(): void {
+    this.tijdslotDatumCtrl.valueChanges
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        distinctUntilChanged(),
+        filter(() => this.tijdslotDatumCtrl.value != null && isValid(this.tijdslotDatumCtrl.value)),
+        startWith(this.tijdslotDatumCtrl.value),
+      )
+      .subscribe((afspraakslotDatum: Date) => {
+        this.minDatum = addDays(afspraakslotDatum, 1).toISOString()
+        this.maxDatum = addMonths(afspraakslotDatum, COLON_ROOSTER_MAX_HERHALING_IN_MAANDEN).toISOString()
+
+        if (!this.eindDatumCtrl.dirty) {
+          this.eindDatumCtrl.setValue(this.eindDatumVanTijdslot)
+        }
+
+        this.updateValidaties()
+      })
+  }
+
+  private setValidators() {
+    switch (this.herhalingsFrequentieCtrl.value) {
+      case ColonHerhalingsfrequentie.GEEN_HERHALING:
+        this.eindDatumCtrl.clearValidators()
+        this.dagenCtrl.clearValidators()
+        break
+      case ColonHerhalingsfrequentie.DAGELIJKS:
+        this.eindDatumCtrl.setValidators([Validators.required])
+        this.dagenCtrl.clearValidators()
+        break
+      case ColonHerhalingsfrequentie.WEKELIJKS:
+      case ColonHerhalingsfrequentie.TWEE_WEKELIJKS:
+        this.eindDatumCtrl.setValidators([Validators.required])
+        this.dagenCtrl.setValidators(dagenSelectieCheckboxValidator)
+    }
+
+    this.updateValidaties()
+  }
+
+  private updateValidaties() {
+    afterNextRender(
+      () => {
+        Object.keys(this.herhalingForm.controls).forEach((field) => {
+          const control = this.herhalingForm.get(field)
+          control?.updateValueAndValidity({ emitEvent: false })
+        })
+      },
+      { injector: this.injector },
+    )
+  }
+
+  private handleChange() {
+    const rawValue = this.herhalingForm.value
+    const herhaling = {
+      ...rawValue,
+      eindDatum: rawValue.eindDatum != null ? formatDate(rawValue.eindDatum) : null,
+      dagen: rawValue.dagen.filter((dag: WeekdagOptie) => dag.selected).map((dag: WeekdagOptie) => dag.value),
+    }
+
+    this.onChange!(herhaling)
   }
 }
