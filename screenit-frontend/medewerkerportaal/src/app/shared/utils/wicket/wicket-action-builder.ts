@@ -49,6 +49,11 @@ export class WicketActionBuilder {
     return this
   }
 
+  setClientId(clientId: number): this {
+    this.params = this.params.append('client', clientId)
+    return this
+  }
+
   setAction(action: string): this {
     this.params = this.params.append('action', action)
     return this

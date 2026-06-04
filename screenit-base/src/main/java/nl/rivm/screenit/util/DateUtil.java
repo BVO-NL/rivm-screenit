@@ -53,6 +53,7 @@ import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import com.google.common.primitives.Ints;
 
+import static nl.rivm.screenit.Constants.LOCALE_NL;
 import static nl.rivm.screenit.util.RangeUtil.range;
 
 @Slf4j
@@ -68,15 +69,17 @@ public final class DateUtil
 	public static final DateTimeFormatter LOCAL_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern(Constants.DEFAULT_DATE_FORMAT + " " + Constants.DEFAULT_TIME_FORMAT);
 
 	public static final DateTimeFormatter LOCAL_DATE_TIME_FORMAT_DAY = DateTimeFormatter.ofPattern(Constants.DEFAULT_DATE_FORMAT_DAY + " " + Constants.DEFAULT_TIME_FORMAT,
-		Constants.LOCALE_NL);
+		LOCALE_NL);
 
-	public static final DateTimeFormatter LOCAL_DATE_UITGEBREID_DAG_UITEGEBREID_MAAND_FORMAT = DateTimeFormatter.ofPattern("EEEE dd MMMM yyyy", Constants.LOCALE_NL);
+	public static final DateTimeFormatter LOCAL_DATE_UITGEBREID_DAG_UITEGEBREID_MAAND_FORMAT = DateTimeFormatter.ofPattern("EEEE dd MMMM yyyy", LOCALE_NL);
 
-	public static final DateTimeFormatter LOCAL_DATE_DAG_UITGEBREID_MAAND_FORMAT = DateTimeFormatter.ofPattern("dd MMMM yyyy", Constants.LOCALE_NL);
+	public static final DateTimeFormatter LOCAL_DATE_DAG_UITGEBREID_MAAND_FORMAT = DateTimeFormatter.ofPattern("dd MMMM yyyy", LOCALE_NL);
 
-	public static final DateTimeFormatter LOCAL_DATE_TIME_WEERGAVE_CLIENTPORTAAL_FORMAT_INCL_DAG = DateTimeFormatter.ofPattern("EEEE d MMMM HH:mm", Constants.LOCALE_NL);
+	public static final DateTimeFormatter LOCAL_DATE_TIME_WEERGAVE_CLIENTPORTAAL_FORMAT_INCL_DAG = DateTimeFormatter.ofPattern("EEEE d MMMM HH:mm", LOCALE_NL);
 
-	public static final DateTimeFormatter LOCAL_DATE_WEERGAVE_CLIENTPORTAAL_FORMAT = DateTimeFormatter.ofPattern("d MMMM yyyy", Constants.LOCALE_NL);
+	public static final DateTimeFormatter LOCAL_DATE_WEERGAVE_CLIENTPORTAAL_FORMAT = DateTimeFormatter.ofPattern("d MMMM yyyy", LOCALE_NL);
+
+	public static final DateTimeFormatter LOCAL_DATE_WEERGAVE_CLIENTPORTAAL_WEEK_FORMAT = DateTimeFormatter.ofPattern("d MMMM yyyy", LOCALE_NL);
 
 	public static final Date BEGIN_OF_TIME = parseDateForPattern("01-01-1900", Constants.DEFAULT_DATE_FORMAT);
 
@@ -349,7 +352,7 @@ public final class DateUtil
 
 	public static int getWeekNr(TemporalAccessor tempAcc)
 	{
-		return tempAcc.get(WeekFields.of(Constants.LOCALE_NL).weekOfWeekBasedYear());
+		return tempAcc.get(WeekFields.of(LOCALE_NL).weekOfWeekBasedYear());
 	}
 
 	public static Date startDag(Date date)
@@ -742,5 +745,27 @@ public final class DateUtil
 			return null;
 		}
 		return localDateTime.toLocalDate();
+	}
+
+	public static LocalDateTime getStartVanDeWeek(LocalDateTime datum)
+	{
+		Preconditions.checkNotNull(datum, "Datum mag niet null zijn");
+		var weekFields = WeekFields.of(Constants.LOCALE_NL);
+		var startDate = datum.toLocalDate().with(weekFields.dayOfWeek(), 1);
+		return startDate.atStartOfDay();
+	}
+
+	public static LocalDateTime getEindVanDeWeek(LocalDateTime datum)
+	{
+		Preconditions.checkNotNull(datum, "Datum mag niet null zijn");
+		var start = getStartVanDeWeek(datum);
+		return start.plusDays(6).with(LocalTime.MAX);
+	}
+
+	public static String formatWeekRange(LocalDateTime datum)
+	{
+		var start = getStartVanDeWeek(datum);
+		var eind = getEindVanDeWeek(datum);
+		return formatForPattern("d MMMM", DateUtil.toUtilDate(start)) + " t/m " + formatForPattern("d MMMM", toUtilDate(eind));
 	}
 }

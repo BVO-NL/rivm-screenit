@@ -28,12 +28,12 @@ import java.util.Map;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
-import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.colon.ColonAfspraakUtil;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
@@ -47,8 +47,7 @@ public class ColonClientAfspraakAfzeggenPanel extends GenericPanel<ColonIntakeAf
 	public ColonClientAfspraakAfzeggenPanel(String id, IModel<ColonIntakeAfspraak> afspraakModel)
 	{
 		super(id, afspraakModel);
-		add(new Label("vanaf", DateUtil.LOCAL_DATE_TIME_FORMAT.format(afspraakModel.getObject().getVanaf())));
-
+		add(new Label("vanaf", getAfspraakMoment(afspraakModel.getObject())));
 		add(new Label("kamer.intakelocatie.naam"));
 		briefTegenhoudenContainer();
 	}
@@ -74,9 +73,10 @@ public class ColonClientAfspraakAfzeggenPanel extends GenericPanel<ColonIntakeAf
 
 	public List<String> getOpslaanMeldingen()
 	{
-		ColonIntakeAfspraak afspraak = getModelObject();
-		ColonScreeningRonde ronde = afspraak.getScreeningRonde();
-		String melding = String.format("coloscopie intake afspraak van %1$s in %2$s van %3$s afzeggen.", DateUtil.formatShortDateTime(afspraak.getVanaf()),
+		var afspraak = getModelObject();
+		var ronde = afspraak.getScreeningRonde();
+		var melding = String.format("coloscopie intake afspraak van %1$s in %2$s van %3$s afzeggen.",
+			getAfspraakMoment(afspraak),
 			afspraak.getKamer().getNaam(),
 			afspraak.getKamer().getIntakelocatie().getNaam());
 
@@ -85,5 +85,12 @@ public class ColonClientAfspraakAfzeggenPanel extends GenericPanel<ColonIntakeAf
 			melding += " Hiermee wordt de lopende ronde afgerond.";
 		}
 		return List.of(melding);
+	}
+
+	private String getAfspraakMoment(ColonIntakeAfspraak afspraak)
+	{
+		return ColonAfspraakUtil.isDigitaal(afspraak) ?
+			ColonAfspraakUtil.formatWeekDigitaleIntake(afspraak.getVanaf()).toLowerCase() :
+			DateUtil.formatShortDateTime(afspraak.getVanaf());
 	}
 }

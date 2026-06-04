@@ -94,7 +94,6 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class RolEditPanel extends GenericPanel<Rol>
 {
-
 	@SpringBean
 	private RolService rolService;
 
@@ -674,9 +673,6 @@ public class RolEditPanel extends GenericPanel<Rol>
 		{
 			comp.getFeedbackMessages().clear(new IFeedbackMessageFilter()
 			{
-
-				private static final long serialVersionUID = 1L;
-
 				@Override
 				public boolean accept(FeedbackMessage message)
 				{

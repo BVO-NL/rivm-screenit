@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.main.exception.OngeldigeBestandsTypeException;
 import nl.rivm.screenit.main.service.mamma.MammaDense2Service;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.FileType;
@@ -55,7 +56,8 @@ public class MammaDense2ServiceImpl implements MammaDense2Service
 		{
 			if (!FileType.CSV.getAllowedContentTypes().contains(importBestand.getContentType()))
 			{
-				throw new IllegalStateException("Bestandstype niet toegestaan.");
+				LOG.warn("{} is geen CSV (content type: {})", importBestand.getOriginalFilename(), importBestand.getContentType());
+				throw new OngeldigeBestandsTypeException(importBestand.getOriginalFilename() + " is geen CSV-bestand");
 			}
 			importBestand.transferTo(convFile);
 			try (var context = new MammaDense2ImportVerwerkingContext(convFile.toFile()))
@@ -68,11 +70,6 @@ public class MammaDense2ServiceImpl implements MammaDense2Service
 				logGebeurtenis(context.heeftMislukt() ? Level.ERROR : Level.INFO, context.getRapportage() + "<br>" + context.getMeldingen(), organisatieMedewerker);
 				return "Resultaat verwerking: " + context.getRapportage();
 			}
-		}
-		catch (IllegalStateException e)
-		{
-			LOG.error("Er is een fout opgetreden", e);
-			logGebeurtenis(Level.ERROR, e.getMessage(), organisatieMedewerker);
 		}
 		catch (Exception e)
 		{

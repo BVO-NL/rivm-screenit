@@ -54,13 +54,11 @@ public class PlanningBlok extends PlanningConceptEntiteit
 
 	private String opmerkingen;
 
-	private boolean minderValideAfspraakMogelijk;
-
 	@Setter(AccessLevel.NONE)
 	private List<PlanningMindervalideReservering> mindervalideReserveringen = new ArrayList<>();
 
 	public PlanningBlok(Long id, LocalTime vanaf, LocalTime tot, int aantalOnderzoeken, MammaCapaciteitBlokType capaciteitBlokType, String opmerkingen,
-		boolean minderValideAfspraakMogelijk, List<PlanningMindervalideReservering> mindervalideReserveringen)
+		List<PlanningMindervalideReservering> mindervalideReserveringen)
 	{
 		super(id);
 		this.vanaf = vanaf;
@@ -68,7 +66,6 @@ public class PlanningBlok extends PlanningConceptEntiteit
 		this.aantalOnderzoeken = aantalOnderzoeken;
 		this.capaciteitBlokType = capaciteitBlokType;
 		this.opmerkingen = opmerkingen;
-		this.minderValideAfspraakMogelijk = minderValideAfspraakMogelijk;
 		this.mindervalideReserveringen.addAll(mindervalideReserveringen);
 	}
 

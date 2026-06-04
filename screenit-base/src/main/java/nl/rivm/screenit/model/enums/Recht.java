@@ -146,7 +146,6 @@ public enum Recht implements INaam
 			{
 				return Arrays.asList(OrganisatieType.RIVM, OrganisatieType.SCREENINGSORGANISATIE);
 			}
-
 		},
 
 	COLON_BEHEER_GEBIEDEN_FIT_RETOUR_PERC(
@@ -188,6 +187,8 @@ public enum Recht implements INaam
 	MEDEWERKER_SCREENING_SCANNING("Screening scanning", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON }),
 
 	MEDEWERKER_BEHEER("Medewerker beheer", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA }),
+
+	MEDEWERKER_VOORKEUREN("Medewerker voorkeuren", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA }),
 
 	MEDEWERKER_GBA_AANVRAGEN("Gba gegevens opvragen", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA }),
 
@@ -313,6 +314,12 @@ public enum Recht implements INaam
 
 	MEDEWERKER_CLIENT_ZOEKEN(
 		"Cli\u00EBnt zoeken",
+		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA },
+		null,
+		Actie.INZIEN),
+
+	MEDEWERKER_CLIENT_ZOEKEN_UITGEBREID(
+		"Uitgebreid zoeken cli\u00EBnten",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA },
 		null,
 		Actie.INZIEN),
@@ -475,8 +482,8 @@ public enum Recht implements INaam
 
 	MEDEWERKER_SCREENING_ZOEKENOPBARCODE("Zoeken op barcode monster", new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX }),
 
-	HANDLEIDINGEN_DOWNLOADEN(
-		"Handleidingen downloaden",
+	HANDLEIDINGEN(
+		"Handleidingen",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA },
 		new ToegangLevel[] { ToegangLevel.LANDELIJK }),
 

@@ -22,8 +22,6 @@ package nl.rivm.screenit.main.service.mamma.impl;
  */
 
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -51,7 +49,6 @@ import nl.rivm.screenit.repository.mamma.MammaScreeningsEenheidRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
-import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EntityAuditUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
@@ -328,53 +325,4 @@ public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheid
 		return ipBlokken[0] + "." + ipBlokken[1] + "." + ipBlokken[2];
 	}
 
-	@Override
-	public String valideerMinderValideAfspraakPeriodes(MammaScreeningsEenheid screeningsEenheid)
-	{
-		LocalTime minderValidePeriode1Vanaf = DateUtil.toLocalTime(screeningsEenheid.getMinderValidePeriode1Vanaf());
-		LocalTime minderValidePeriode1TotEnMet = DateUtil.toLocalTime(screeningsEenheid.getMinderValidePeriode1TotEnMet());
-		LocalTime minderValidePeriode2Vanaf = DateUtil.toLocalTime(screeningsEenheid.getMinderValidePeriode2Vanaf());
-		LocalTime minderValidePeriode2TotEnMet = DateUtil.toLocalTime(screeningsEenheid.getMinderValidePeriode2TotEnMet());
-
-		boolean periode1Ingevuld = minderValidePeriode1Vanaf != null || minderValidePeriode1TotEnMet != null;
-		boolean periode2Ingevuld = minderValidePeriode2Vanaf != null || minderValidePeriode2TotEnMet != null;
-		int duurMinderValideAfspraak = screeningsEenheid.getDuurMinderValideAfspraak().getMinuten();
-
-		if (!periode1Ingevuld && !periode2Ingevuld)
-		{
-			return "";
-		}
-		if (minderValidePeriode1Vanaf == null || minderValidePeriode1TotEnMet == null)
-		{
-			return "mindervalide.tijdvak.beideveldengevuld";
-		}
-		if (!minderValidePeriode1Vanaf.isBefore(minderValidePeriode1TotEnMet))
-		{
-			return "mindervalide.tijdvak.vanafeerderdantotenmet";
-		}
-		if (ChronoUnit.MINUTES.between(minderValidePeriode1Vanaf, minderValidePeriode1TotEnMet) < duurMinderValideAfspraak)
-		{
-			return "mindervalide.tijdvak.minimaalparameter";
-		}
-		if (periode2Ingevuld)
-		{
-			if ((minderValidePeriode2Vanaf == null || minderValidePeriode2TotEnMet == null))
-			{
-				return "mindervalide.tijdvak.beideveldengevuld";
-			}
-			if (!minderValidePeriode2Vanaf.isBefore(minderValidePeriode2TotEnMet))
-			{
-				return "mindervalide.tijdvak.vanafeerderdantotenmet";
-			}
-			if (minderValidePeriode1TotEnMet.isAfter(minderValidePeriode2Vanaf))
-			{
-				return "mindervalide.tijdvak.1eerdervan2";
-			}
-			if (ChronoUnit.MINUTES.between(minderValidePeriode2Vanaf, minderValidePeriode2TotEnMet) < duurMinderValideAfspraak)
-			{
-				return "mindervalide.tijdvak.minimaalparameter";
-			}
-		}
-		return "";
-	}
 }

@@ -20,18 +20,20 @@
   -->
 <app-page titel="Visitatie overzicht">
   <ng-container header-actions>
-    @if (magToevoegen) {
-      <button ds-button-primary dsButtonMenu [menu]="toevoegenMenuItems" (menuItemClicked)="openVisitatieToevoegenDialog($event.label.toLowerCase())"
-              data-testid="toevoegen_visitatie_btn" class="mr-2">
-        <ds-icon [icon]="faAddIcon"/>
-        Visitatie
+    <div>
+      @if (magToevoegen) {
+        <button ds-button-primary dsButtonMenu [menu]="toevoegenMenuItems" (menuItemClicked)="openVisitatieToevoegenDialog($event.label.toLowerCase())"
+                data-testid="toevoegen_visitatie_btn" class="mr-2">
+          <ds-icon [icon]="faAddIcon"/>
+          Visitatie
+        </button>
+      }
+      <button ds-button-primary data-testid="visitatielijst_genereren_btn" (click)="openVisitatielijstGenererenDialog()"
+              *appAutorisatie="insteltechniekAanpassenConstraint">
+        <ds-icon [icon]="faListIcon"/>
+        Visitatielijst genereren
       </button>
-    }
-    <button ds-button-primary data-testid="visitatielijst_genereren_btn" (click)="openVisitatielijstGenererenDialog()"
-            *appAutorisatie="insteltechniekAanpassenConstraint">
-      <ds-icon [icon]="faListIcon"/>
-      Visitatielijst genereren
-    </button>
+    </div>
   </ng-container>
 
   <app-mamma-visitatie-filter (filter)="filterValidaties($event)" class="visitatie-filter"/>

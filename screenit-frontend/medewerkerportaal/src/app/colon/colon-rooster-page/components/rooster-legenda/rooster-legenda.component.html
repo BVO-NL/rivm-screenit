@@ -31,6 +31,12 @@
     <div class=" legenda-item-square legenda-item-square-intake"></div>
     <span>Intake</span>
   </div>
+  @if (isDigitaleIntakeBeschikbaar()) {
+    <div class="legenda-item tooltip" dsTooltip content="Digitale intake">
+      <div class=" legenda-item-square legenda-item-square-digitale-intake"></div>
+      <span>Digitale intake</span>
+    </div>
+  }
   <div class="legenda-item tooltip" dsTooltip content="Geblokkeerd door een blokkade">
     <div class=" legenda-item-square legenda-item-square-blokkade"></div>
     <span>Geblokkeerd</span>

@@ -190,7 +190,6 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 					blok.screeningsEenheidId = getModelObject().getId();
 					blok.vanaf = range.getStart();
 					blok.tot = range.getEnd();
-					blok.minderValideAfspraakMogelijk = true;
 					openEventPopup(response, blokModel);
 				}
 			}

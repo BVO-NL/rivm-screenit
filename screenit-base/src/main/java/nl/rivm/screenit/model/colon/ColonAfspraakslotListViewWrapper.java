@@ -39,7 +39,6 @@ import nl.rivm.screenit.util.DateUtil;
 @AllArgsConstructor
 public class ColonAfspraakslotListViewWrapper implements Serializable
 {
-
 	private Date startDatum;
 
 	private Date eindDatum;

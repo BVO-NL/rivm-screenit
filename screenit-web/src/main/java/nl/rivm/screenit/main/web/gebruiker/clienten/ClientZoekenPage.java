@@ -25,15 +25,19 @@ package nl.rivm.screenit.main.web.gebruiker.clienten;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.base.ZoekenContextMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
+import nl.rivm.screenit.model.MedewerkerParameterKey;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
+import nl.rivm.screenit.service.MedewerkerParameterService;
 
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_ZOEKEN, bevolkingsonderzoekScopes = {
@@ -41,12 +45,24 @@ import org.wicketstuff.shiro.ShiroConstraint;
 @ZoekenContextMenuItem
 public class ClientZoekenPage extends MedewerkerBasePage
 {
-
-	private static final long serialVersionUID = 1L;
+	@SpringBean
+	private MedewerkerParameterService medewerkerParameterService;
 
 	public ClientZoekenPage()
 	{
+
+		if (isNieuwClientDossierBeschikbaar())
+		{
+			setResponsePage(ClientZoekenAngularPage.class);
+			return;
+		}
+
 		add(new ClientZoekenPanel("panel"));
+	}
+
+	private boolean isNieuwClientDossierBeschikbaar()
+	{
+		return medewerkerParameterService.getMedewerkerParameter(ScreenitSession.get().getIngelogdeOrganisatieMedewerker().getMedewerker(), MedewerkerParameterKey.NIEUW_CLIENTDOSSIER, false);
 	}
 
 	@Override
@@ -62,5 +78,4 @@ public class ClientZoekenPage extends MedewerkerBasePage
 		contextMenuItems.add(new MedewerkerMenuItem("label.clientzoeken", ClientZoekenPage.class));
 		return contextMenuItems;
 	}
-
 }

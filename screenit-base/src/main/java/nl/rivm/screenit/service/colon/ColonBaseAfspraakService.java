@@ -78,4 +78,8 @@ public interface ColonBaseAfspraakService
 	ColonIntakeAfspraak zoekBevestigdeDoorverwijzendeAfspraak(ColonIntakeAfspraak afspraak);
 
 	boolean heeftClientIntakeAfspraakMetConclusieBezwaar(String bsn);
+
+	void saveIntakeafspraak(ColonIntakeAfspraak afspraak);
+
+	boolean isDigitaleAfspraakBeschikbaar();
 }

@@ -106,7 +106,7 @@ public class MammaSignalerenMindervalideReserveringTasklet implements Tasklet
 
 				var vanafDatum = Collections.max(Arrays.asList(vandaag, standplaatsPeriodeVanaf));
 				var totEnMetDatum = Collections.min(Arrays.asList(vrijgegevenTotEnMet, standplaatsPeriodeTotEnMet));
-				return mindervalideAfspraakOptieAlgoritme.getAfspraakOpties(dossier, standplaatsPeriode, vanafDatum, totEnMetDatum, true, opkomstkans, null, false)
+				return mindervalideAfspraakOptieAlgoritme.getAfspraakOpties(dossier, standplaatsPeriode, vanafDatum, totEnMetDatum, true, opkomstkans, null)
 					.size();
 			})
 			.sum();

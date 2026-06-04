@@ -47,6 +47,7 @@ import nl.rivm.screenit.model.colon.ScannedAntwoordFormulier;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
 import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
+import nl.rivm.screenit.model.colon.enums.ColonIntakeafspraakType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BezwaarType;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -57,11 +58,12 @@ import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaUitstelReden;
 import nl.rivm.screenit.service.BaseClientGebeurtenisService;
 import nl.rivm.screenit.service.BaseDossierAuditService;
-import nl.rivm.screenit.service.colon.ColonDossierBaseService;
+import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.util.BezwaarUtil;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.colon.ColonAfspraakUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 
 import org.hibernate.envers.query.AuditEntity;
@@ -83,7 +85,7 @@ public class BaseClientGebeurtenisServiceImpl implements BaseClientGebeurtenisSe
 	private BaseDossierAuditService dossierAuditService;
 
 	@Autowired
-	private ColonDossierBaseService colonDossierBaseService;
+	private ColonBaseAfspraakService colonBaseAfspraakService;
 
 	@Override
 	public List<ClientGebeurtenis> getClientColonGebeurtenissen(Client client)
@@ -100,8 +102,15 @@ public class BaseClientGebeurtenisServiceImpl implements BaseClientGebeurtenisSe
 				gebeurtenis.setDatum(DateUtil.toUtilDate(afspraak.getGewijzigdOp()));
 				gebeurtenis.setType(ClientGebeurtenisType.INTAKE_AFSPRAAK_GEMAAKT);
 
-				gebeurtenis.setExtraParam(afspraak.getVanaf().format(DateUtil.LOCAL_DATE_WEERGAVE_CLIENTPORTAAL_FORMAT),
-					DateUtil.formatLocalTime(afspraak.getVanaf()));
+				if (colonBaseAfspraakService.isDigitaleAfspraakBeschikbaar() && ColonAfspraakUtil.isDigitaal(afspraak))
+				{
+					gebeurtenis.setExtraParam(DateUtil.formatWeekRange(afspraak.getVanaf()), ColonIntakeafspraakType.DIGITAAL.name());
+				}
+				else
+				{
+					gebeurtenis.setExtraParam(afspraak.getVanaf().format(DateUtil.LOCAL_DATE_WEERGAVE_CLIENTPORTAAL_FORMAT),
+						DateUtil.formatLocalTime(afspraak.getVanaf()), ColonIntakeafspraakType.OP_LOCATIE.name());
+				}
 				gebeurtenissen.add(gebeurtenis);
 
 				if (ColonAfspraakStatus.VERPLAATST.equals(afspraak.getStatus()))

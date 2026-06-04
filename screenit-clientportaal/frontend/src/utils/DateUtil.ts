@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {addBusinessDays, addDays, addMonths, differenceInDays, format, isWeekend, max, min, startOfDay, subDays, subMonths} from "date-fns"
+import {addBusinessDays, addDays, addMonths, differenceInDays, endOfWeek, format, isWeekend, max, min, startOfDay, startOfWeek, subDays, subMonths} from "date-fns"
 import {isNullOfUndefined} from "./EmptyUtil"
 import {nl} from "date-fns/locale"
 import {cpStore} from "../store"
@@ -149,4 +149,29 @@ export function zoekIndex(lijst: Date[] | undefined, value: Date | undefined): n
 
 export function getAantalDagenTussenDatums(eersteDatum: Date, tweedeDatum: Date): number {
 	return differenceInDays(eersteDatum, tweedeDatum)
+}
+
+export function formatWeekRange(date: Date): string {
+	const weekStart = startOfWeek(date, {weekStartsOn: 1})
+	const weekEnd = endOfWeek(date, {weekStartsOn: 1})
+	const startDay = format(weekStart, "d LLLL", {locale: nl})
+	const endDay = format(weekEnd, "d LLLL", {locale: nl})
+	return `${startDay} t/m ${endDay}`
+}
+
+export function weergaveColonIntake(datum: Date): string {
+	return datum ? format(datum, "EEEE d MMMM HH:mm", {locale: nl}) : ""
+}
+
+export function weergaveColonDigitaleIntakeWeek(datum: Date): string {
+	const weekStart = startOfWeek(datum, {weekStartsOn: 1})
+	const weekEnd = endOfWeek(datum, {weekStartsOn: 1})
+	const weekNummer = format(datum, "w", {locale: nl})
+	const startDatumTekst = format(weekStart, "d MMMM", {locale: nl})
+	const eindDatumTekst = format(weekEnd, "d MMMM", {locale: nl})
+	return `Week ${weekNummer} - ${startDatumTekst} t/m ${eindDatumTekst} (digitaal)`
+}
+
+export function getWeekNummer(datum: Date): string {
+	return format(datum, "w")
 }

@@ -27,6 +27,7 @@ import java.util.List;
 import lombok.Getter;
 
 import nl.rivm.screenit.service.MergeMailAttachmentService;
+import nl.rivm.screenit.service.colon.ColonMergeMailAttachmentService;
 import nl.rivm.screenit.service.mamma.MammaMergeMailAttachmentService;
 import nl.rivm.screenit.util.functionalinterfaces.BvoHouder;
 
@@ -75,6 +76,33 @@ public enum DigitaalBerichtTemplateType implements BvoHouder
 			public List<MergeField> getMergeFields()
 			{
 				return List.of(MergeField.IL_NAAM, MergeField.COLON_GEEN_CAPACITEIT_TERMIJN);
+			}
+		},
+	COLON_AFSPRAAK_BEVESTIGING_DIGITALE_INTAKE(DigitaalBerichtType.EMAIL, ColonMergeMailAttachmentService.class, Bevolkingsonderzoek.COLON)
+		{
+			@Override
+			public List<MergeField> getMergeFields()
+			{
+				return List.of(MergeField.IL_NAAM, MergeField.CLIENT_AANHEF,
+					MergeField.CLIENT_GEBOORTEDATUM,
+					MergeField.DATUM_VANDAAG,
+					MergeField.SO_WEBSITE,
+					MergeField.SO_VERTEGENWOORDIGER,
+					MergeField.SO_LOGO_EMAIL,
+					MergeField.IL_NAAM,
+					MergeField.SO_TEL_DK,
+					MergeField.SO_OPENINGSTIJDEN_TEKST_DK,
+					MergeField.SO_EMAILADRES_DK,
+					MergeField.SO_TEL_DK,
+					MergeField.SO_RCMDL,
+					MergeField.IL_LOKATIE,
+					MergeField.IL_STRAATNAAM,
+					MergeField.IL_HUISNUMMER_TOEV,
+					MergeField.IL_POSTCODE,
+					MergeField.IL_PLAATS,
+					MergeField.DATUM_INTAKE_DIGITAAL,
+					MergeField.IL_DIGITALE_INTAKE
+				);
 			}
 		};
 

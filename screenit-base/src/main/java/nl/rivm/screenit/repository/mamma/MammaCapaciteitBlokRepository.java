@@ -77,7 +77,6 @@ public interface MammaCapaciteitBlokRepository extends BaseJpaRepository<MammaCa
 						r.get(MammaCapaciteitBlok_.vanaf).alias("blokVanaf"),
 						r.get(MammaCapaciteitBlok_.tot).alias("blokTot"),
 						r.get(MammaCapaciteitBlok_.aantalOnderzoeken).alias("aantalOnderzoeken"),
-						r.get(MammaCapaciteitBlok_.minderValideAfspraakMogelijk).alias("minderValideAfspraakMogelijk"),
 						afspraakJoin.get(MammaAfspraak_.vanaf).alias("afspraakVanaf"),
 						opkomstkansJoin(afspraakJoin).get(MammaOpkomstkans_.opkomstkans).alias("opkomstkans"),
 						dossierJoin.get(MammaDossier_.doelgroep).alias("doelgroep"),

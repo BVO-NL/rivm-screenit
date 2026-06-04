@@ -29,6 +29,8 @@ import {formatDate, formatTime} from "../../utils/DateUtil"
 import SpanWithHtml from "../span/SpanWithHtml"
 import VerticalDividerComponent from "../vectors/VerticalDividerComponent"
 import properties from "./BvoHistorieCard.json"
+import {isDigitaleIntakeBeschikbaar} from "../../utils/FeatureFlagsUtil"
+import {ColonIntakeafspraakType} from "../../datatypes/colon/ColonIntakeafspraakType"
 
 export type BvoHistorieCardProps = {
 	datumTijd: Date
@@ -54,7 +56,9 @@ const BvoHistorieCard = (props: BvoHistorieCardProps) => {
 
 	function getHistorieTekst(tekstKey: string): string {
 		if ("EENMALIGE_AFMELDING" === tekstKey) {
-			return selectedBvo === Bevolkingsonderzoek.MAMMA ? getString(properties["EENMALIGE_AFMELDING_BK"]) : getString(properties["EENMALIGE_AFMELDING_DK_BMHK"])
+			return selectedBvo === Bevolkingsonderzoek.MAMMA ? getString(properties.EENMALIGE_AFMELDING_BK) : getString(properties.EENMALIGE_AFMELDING_DK_BMHK)
+		} else if (isDigitaleIntakeBeschikbaar() && "INTAKE_AFSPRAAK_GEMAAKT" === tekstKey && props.extraParameters[1] === ColonIntakeafspraakType.DIGITAAL.toString()) {
+			return getString(properties.INTAKE_AFSPRAAK_GEMAAKT_DIGITAAL, props.extraParameters)
 		} else {
 			const tekst = props.tekstKey as keyof typeof properties
 			return getString(properties[tekst], props.extraParameters)

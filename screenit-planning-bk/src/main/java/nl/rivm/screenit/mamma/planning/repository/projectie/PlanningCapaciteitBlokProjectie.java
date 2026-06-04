@@ -46,11 +46,8 @@ public class PlanningCapaciteitBlokProjectie
 
 	private String opmerkingen;
 
-	private boolean minderValideAfspraakMogelijk;
-
-	public PlanningCapaciteitBlokProjectie(long id, Date vanaf, Date tot, Integer aantalOnderzoeken, MammaCapaciteitBlokType blokType, String opmerkingen,
-		boolean minderValideAfspraakMogelijk)
+	public PlanningCapaciteitBlokProjectie(long id, Date vanaf, Date tot, Integer aantalOnderzoeken, MammaCapaciteitBlokType blokType, String opmerkingen)
 	{
-		this(id, DateUtil.toLocalDateTime(vanaf), DateUtil.toLocalDateTime(tot), aantalOnderzoeken, blokType, opmerkingen, minderValideAfspraakMogelijk);
+		this(id, DateUtil.toLocalDateTime(vanaf), DateUtil.toLocalDateTime(tot), aantalOnderzoeken, blokType, opmerkingen);
 	}
 }

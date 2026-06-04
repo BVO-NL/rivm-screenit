@@ -20,6 +20,7 @@
  */
 import {getBvoBaseUrl} from "../../utils/UrlUtil"
 import {useSelectedBvo} from "../../utils/Hooks"
+import {JSX} from "react"
 import {useNavigate} from "react-router"
 import {NavLink} from "react-bootstrap"
 import {getString} from "../../utils/TekstPropertyUtil"
@@ -29,7 +30,7 @@ export type AfsluitenLinkProps = {
 	onAfsluitenKlik?: () => void
 }
 
-const AfsluitenLink = (props: AfsluitenLinkProps) => {
+const AfsluitenLink = (props: AfsluitenLinkProps): JSX.Element => {
 	const bvo = useSelectedBvo()
 	const navigate = useNavigate()
 

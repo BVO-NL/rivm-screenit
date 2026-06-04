@@ -21,8 +21,8 @@ package nl.rivm.screenit.service.mamma;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.service.MergeMailAttachmentService;
+import nl.rivm.screenit.service.BaseMailMergeService;
 
-public interface MammaMergeMailAttachmentService extends MergeMailAttachmentService
+public interface MammaMergeMailAttachmentService extends BaseMailMergeService
 {
 }

@@ -34,6 +34,7 @@ import {createSetEnvironmentInfoAction} from "../actions/EnvironmentInfoAction"
 import {createHideAllToastsAction} from "../actions/ToastAction"
 import {EnvironmentInfoDto} from "../datatypes/EnvironmentInfo"
 import {Persoon} from "../datatypes/Persoon"
+import {getParameters} from "../api/ParametersThunkAction"
 
 export const useSelectedBvo = (): Bevolkingsonderzoek | undefined => {
 	const location = useLocation()
@@ -74,6 +75,7 @@ export const useRefreshClient = () => {
 				.then(result => {
 					dispatch(createPersoonAction(result))
 					dispatch(getBeschikbareContactActies())
+					dispatch(getParameters())
 				})
 		}
 	}, [location.pathname, authenticatie, dispatch, authenticated])

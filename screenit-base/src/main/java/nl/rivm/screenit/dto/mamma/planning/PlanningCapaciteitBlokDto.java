@@ -55,8 +55,6 @@ public class PlanningCapaciteitBlokDto extends PlanningConceptEntiteitDto
 
 	public Long screeningsEenheidId;
 
-	public boolean minderValideAfspraakMogelijk;
-
 	@Getter
 	@Setter
 	private List<PlanningMindervalideReserveringDto> mindervalideReserveringen = new ArrayList<>();
@@ -76,7 +74,6 @@ public class PlanningCapaciteitBlokDto extends PlanningConceptEntiteitDto
 		kopie.opmerkingen = this.opmerkingen;
 		kopie.blokType = this.blokType;
 		kopie.screeningsEenheidId = this.screeningsEenheidId;
-		kopie.minderValideAfspraakMogelijk = this.minderValideAfspraakMogelijk;
 		kopie.getMindervalideReserveringen().addAll(
 			this.getMindervalideReserveringen().stream()
 				.map(reservering -> new PlanningMindervalideReserveringDto(reservering.getId(), reservering.conceptId,
@@ -94,7 +91,6 @@ public class PlanningCapaciteitBlokDto extends PlanningConceptEntiteitDto
 		opmerkingen = gewijzigdBlok.opmerkingen;
 		blokType = gewijzigdBlok.blokType;
 		screeningsEenheidId = gewijzigdBlok.screeningsEenheidId;
-		minderValideAfspraakMogelijk = gewijzigdBlok.minderValideAfspraakMogelijk;
 		getMindervalideReserveringen().clear();
 		getMindervalideReserveringen().addAll(
 			gewijzigdBlok.getMindervalideReserveringen().stream()

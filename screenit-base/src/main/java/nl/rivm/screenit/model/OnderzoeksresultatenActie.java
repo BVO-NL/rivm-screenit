@@ -42,6 +42,7 @@ import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.enums.OnderzoeksresultatenActieType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -59,7 +60,8 @@ public class OnderzoeksresultatenActie extends AbstractHibernateObject
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private Client client;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.PERSIST })
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@NotAudited
 	private UploadDocument getekendeBrief;
 

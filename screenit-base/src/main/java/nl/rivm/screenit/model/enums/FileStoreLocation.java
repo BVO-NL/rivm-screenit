@@ -171,7 +171,9 @@ public enum FileStoreLocation
 
 	REGRESSIETEST(File.separator + "test" + File.separator, false, false),
 
-	MAMMA_DENSE2_CSV_EXPORT(File.separator + "mamma" + File.separator + "dense2", false, false);
+	MAMMA_DENSE2_CSV_EXPORT(File.separator + "mamma" + File.separator + "dense2", false, false),
+
+	ALGEMEEN_HANDLEIDINGEN(File.separator + "algemeen" + File.separator + "handleidingen" + File.separator, false, false);
 
 	private final String path;
 

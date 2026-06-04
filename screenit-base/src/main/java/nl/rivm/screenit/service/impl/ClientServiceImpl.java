@@ -105,6 +105,7 @@ import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftN
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftNietGbaStatussen;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftTitelCode;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.metBeoordelingId;
+import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.filterGeboortedatum;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.heeftBsn;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.isNietOverleden;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.valtBinnenLeeftijdGrensRestricties;
@@ -260,13 +261,24 @@ public class ClientServiceImpl implements ClientService
 	@Override
 	public List<Client> zoekClienten(Client zoekObject)
 	{
+		var clienten = zoekClientenLijst(zoekObject);
+		clienten.removeIf(client -> !isGeboortedatumGelijk(DateUtil.toLocalDate(zoekObject.getPersoon().getGeboortedatum()), client));
+
+		return clienten;
+	}
+
+	@Override
+	public List<Client> zoekClientenLijst(Client zoekObject)
+	{
 		var persoon = zoekObject.getPersoon();
+		var geboortedatum = persoon.getGeboortedatum();
 		var gbaAdres = persoon.getGbaAdres();
 		var bsn = persoon.getBsn();
 		var postcode = gbaAdres.getPostcode();
 
 		boolean specificationToegevoegd = false;
 		var spec = heeftNietGbaStatussen(List.of(GbaStatus.AFGEVOERD, GbaStatus.BEZWAAR));
+		spec = spec.and(filterGeboortedatum(geboortedatum).with(Client_.persoon));
 
 		if (StringUtils.isNotBlank(bsn))
 		{
@@ -288,11 +300,7 @@ public class ClientServiceImpl implements ClientService
 				"Er zijn geen bsn en/of postcode opgegeven. Zonder de info kan niet gezocht worden naar clienten.");
 		}
 
-		var clienten = clientRepository.findAll(spec, Sort.by(ASC, ACHTERNAAM_PROPERTY));
-
-		clienten.removeIf(client -> !isGeboortedatumGelijk(DateUtil.toLocalDate(persoon.getGeboortedatum()), client));
-
-		return clienten;
+		return clientRepository.findAll(spec, Sort.by(ASC, ACHTERNAAM_PROPERTY));
 	}
 
 	@Override

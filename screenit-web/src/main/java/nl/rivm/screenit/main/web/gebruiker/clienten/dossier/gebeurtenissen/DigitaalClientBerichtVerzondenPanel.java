@@ -25,13 +25,20 @@ import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
 import nl.rivm.screenit.main.web.gebruiker.gedeeld.DigitaalClientBerichtInfoPanel;
 import nl.rivm.screenit.main.web.gebruiker.gedeeld.MailOpnieuwVerzendenPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
+import nl.rivm.screenit.model.DigitaalClientBericht;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
+import nl.rivm.screenit.model.enums.DigitaalBerichtType;
 import nl.rivm.screenit.model.enums.Recht;
+import nl.rivm.screenit.service.DigitaalClientBerichtService;
 
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(
@@ -42,6 +49,9 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class DigitaalClientBerichtVerzondenPanel extends AbstractGebeurtenisDetailPanel
 {
+	@SpringBean
+	private DigitaalClientBerichtService digitaalClientBerichtService;
+
 	public DigitaalClientBerichtVerzondenPanel(String id, IModel<ScreeningRondeGebeurtenis> model)
 	{
 		super(id, model);
@@ -52,8 +62,26 @@ public class DigitaalClientBerichtVerzondenPanel extends AbstractGebeurtenisDeta
 	{
 		super.onInitialize();
 
+		var digitaalClientBericht = getModelObject().getDigitaalClientBericht();
 		var digitaalClientBerichtModel = new CompoundPropertyModel(new PropertyModel(getModel(), "digitaalClientBericht"));
 		add(new DigitaalClientBerichtInfoPanel("digitaalClientBerichtInfo", digitaalClientBerichtModel));
 		add(new MailOpnieuwVerzendenPanel("mailOpnieuwVerzenden", digitaalClientBerichtModel));
+
+		var isSms = DigitaalBerichtType.SMS == digitaalClientBericht.getDigitaalBerichtTemplateType().getBerichtType();
+		var smsBerichtContainer = new WebMarkupContainer("smsBerichtContainer");
+		smsBerichtContainer.setVisible(isSms);
+		smsBerichtContainer.add(new Label("smsBericht", isSms ? Model.of(haalInhoudOp(digitaalClientBericht)) : Model.of("")));
+		add(smsBerichtContainer);
+	}
+
+	private String haalInhoudOp(DigitaalClientBericht<?> digitaalClientBericht)
+	{
+		var smsInhoudOfKey = digitaalClientBerichtService.haalSmsBerichtOp(digitaalClientBericht);
+		if (DigitaalClientBerichtService.GEEN_BERICHT_BESCHIKBAAR_KEY.equals(smsInhoudOfKey)
+			|| DigitaalClientBerichtService.BERICHT_KON_NIET_WORDEN_OPGEHAALD_KEY.equals(smsInhoudOfKey))
+		{
+			return getString(smsInhoudOfKey);
+		}
+		return smsInhoudOfKey;
 	}
 }

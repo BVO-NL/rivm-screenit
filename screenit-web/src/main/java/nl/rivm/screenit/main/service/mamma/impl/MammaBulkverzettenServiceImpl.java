@@ -110,20 +110,14 @@ public class MammaBulkverzettenServiceImpl implements MammaBulkverzettenService
 
 	private BigDecimal gereserveerdeMindervalideCapaciteit(Collection<MammaCapaciteitBlokDto> capaciteitsBlokken, IMammaBulkVerzettenFilter filter)
 	{
-		var minderValideReserveringIngeschakeld = preferenceService.getBoolean(PreferenceKey.MAMMA_MINDERVALIDE_RESERVERING_ACTIEF.name(), false);
-		if (!minderValideReserveringIngeschakeld)
-		{
-			return BigDecimal.ZERO;
-		}
-
 		var vrijgevenMindervalideReserveringenTotEnMetDatum = getVrijgevenMindervalideReserveringenTotEnMetDatum();
 		var factorMindervalide = MammaScreeningsEenheidUtil.getScreeningsOrganisatie(filter.getStandplaatsPeriode().getScreeningsEenheid()).getFactorMindervalideBk();
 
-		var aantalOnbezetteMinderValideReserveringen = capaciteitsBlokken.stream()
+		var aantalOnbezetteMindervalidenReserveringen = capaciteitsBlokken.stream()
 			.filter(blok -> !MammaMindervalideUtil.zijnMindervalideReserveringenVrijgegeven(blok, vrijgevenMindervalideReserveringenTotEnMetDatum))
 			.flatMap(this::onbezetteMindervalideReserveringen)
 			.count();
-		return factorMindervalide.multiply(BigDecimal.valueOf(aantalOnbezetteMinderValideReserveringen));
+		return factorMindervalide.multiply(BigDecimal.valueOf(aantalOnbezetteMindervalidenReserveringen));
 	}
 
 	private Stream<LocalTime> onbezetteMindervalideReserveringen(MammaCapaciteitBlokDto capaciteitBlokDto)

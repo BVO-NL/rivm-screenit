@@ -212,7 +212,6 @@ public class PlanningCapaciteitAgendaServiceImpl implements PlanningCapaciteitAg
 							teHerhalenBlok.getAantalOnderzoeken(),
 							teHerhalenBlok.getCapaciteitBlokType(),
 							teHerhalenBlok.getOpmerkingen(),
-							teHerhalenBlok.isMinderValideAfspraakMogelijk(),
 							teHerhalenReserveringen);
 
 						changedBlokList.add(naarBlok);

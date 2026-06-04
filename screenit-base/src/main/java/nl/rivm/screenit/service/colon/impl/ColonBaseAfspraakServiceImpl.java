@@ -35,6 +35,8 @@ import jakarta.persistence.criteria.JoinType;
 
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.Constants;
+import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
@@ -59,12 +61,14 @@ import nl.rivm.screenit.model.colon.WerklijstIntakeFilter;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
 import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
+import nl.rivm.screenit.model.colon.enums.ColonIntakeafspraakType;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
 import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 import nl.rivm.screenit.model.colon.planning.ColonTijdslot_;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.model.enums.DigitaalBerichtTemplateType;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.HuisartsBerichtType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -73,8 +77,10 @@ import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.repository.colon.ColonAfspraakslotRepository;
 import nl.rivm.screenit.repository.colon.ColonIntakeAfspraakRepository;
 import nl.rivm.screenit.service.BaseBriefService;
+import nl.rivm.screenit.service.DigitaalBerichtTemplateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.MailService;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.service.colon.ColonHuisartsBerichtService;
@@ -88,10 +94,12 @@ import nl.rivm.screenit.specification.colon.ColonScreeningRondeSpecification;
 import nl.rivm.screenit.specification.colon.ColonTijdslotSpecification;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.colon.ColonAfspraakUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
@@ -111,6 +119,7 @@ import static nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecificat
 import static nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification.heeftAfspraakVoor;
 import static nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification.heeftBezwaar;
 import static nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification.heeftGeenNieuweAfspraak;
+import static nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification.heeftIntakeafspraakType;
 import static nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification.heeftStatus;
 import static nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification.heeftStatusIn;
 import static nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification.onderdeelVanLaatsteScreeningRonde;
@@ -151,6 +160,15 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 
 	@Autowired
 	private ClientRepository clientRepository;
+
+	@Autowired
+	private SimplePreferenceService preferenceService;
+
+	@Autowired
+	private DigitaalBerichtTemplateService digitaalBerichtTemplateService;
+
+	@Autowired
+	private MailService mailService;
 
 	@Override
 	@Transactional
@@ -360,6 +378,10 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 				specification = specification.and((ColonConclusieSpecification.heeftTypeIn(zoekFilter.getConclusieTypeFilter().getConclusieTypes()).with(conclusieJoin())));
 			}
 		}
+		if (zoekFilter.getIntakeafspraakType() != null)
+		{
+			specification = specification.and(heeftIntakeafspraakType(zoekFilter.getIntakeafspraakType()));
+		}
 		return specification;
 	}
 
@@ -440,8 +462,7 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 		var screeningRonde = nieuweAfspraak.getScreeningRonde();
 
 		var laatsteAfspraak = screeningRonde.getLaatsteAfspraak();
-		if (nieuweAfspraak == null || nieuweAfspraak.getId() != null || nieuweAfspraak.equals(laatsteAfspraak) || laatsteAfspraak.getStatus()
-			.equals(ColonAfspraakStatus.VERPLAATST))
+		if (nieuweAfspraak.getId() != null || nieuweAfspraak.equals(laatsteAfspraak) || laatsteAfspraak.getStatus().equals(ColonAfspraakStatus.VERPLAATST))
 		{
 
 			return;
@@ -472,23 +493,33 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 			hibernateService.saveOrUpdate(afspraakslot);
 		}
 
-		if (briefType == null)
+		if (isDigitaleAfspraakBeschikbaar() && ColonAfspraakUtil.isDigitaal(nieuweAfspraak))
 		{
-			briefType = BriefType.COLON_INTAKE_GEWIJZIGD;
+			var intakelocatie = nieuweAfspraak.getKamer().getIntakelocatie();
+			var digitaalBericht = digitaalBerichtTemplateService.maakDigitaalBericht(DigitaalBerichtTemplateType.COLON_AFSPRAAK_BEVESTIGING_DIGITALE_INTAKE, intakelocatie,
+				nieuweAfspraak);
+			mailService.queueMailAanClient(client, digitaalBericht.getSubject(), digitaalBericht.getBody(), digitaalBericht.getAttachments());
 		}
-		var brief = briefService.maakBvoBrief(screeningRonde, briefType);
-		brief.setIntakeAfspraak(nieuweAfspraak);
-		if (briefTegenhouden)
+		else
 		{
-			hibernateService.saveOrUpdate(BriefUtil.setTegenhouden(brief, true));
+			if (briefType == null)
+			{
+				briefType = BriefType.COLON_INTAKE_GEWIJZIGD;
+			}
+			var brief = briefService.maakBvoBrief(screeningRonde, briefType);
+			brief.setIntakeAfspraak(nieuweAfspraak);
+			if (briefTegenhouden)
+			{
+				hibernateService.saveOrUpdate(BriefUtil.setTegenhouden(brief, true));
+			}
+			hibernateService.saveOrUpdate(brief);
 		}
-		hibernateService.saveOrUpdate(brief);
 
 		var format = DateUtil.LOCAL_DATE_TIME_FORMAT;
 		var melding = String.format("Verplaatst van %1$s in %2$s van %3$s naar %4$s in %5$s van %6$s", format.format(laatsteAfspraak.getVanaf()),
 			laatsteAfspraak.getKamer().getNaam(), laatsteAfspraak.getKamer().getIntakelocatie().getNaam(), format.format(nieuweAfspraak.getVanaf()),
 			nieuweAfspraak.getKamer().getNaam(), nieuweAfspraak.getKamer().getIntakelocatie().getNaam());
-		if (!briefType.equals(BriefType.COLON_INTAKE_GEWIJZIGD))
+		if (briefType != null && !briefType.equals(BriefType.COLON_INTAKE_GEWIJZIGD))
 		{
 			melding += "; afwijkende brief";
 		}
@@ -622,31 +653,42 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 		}
 		client.getAfspraken().add(nieuweAfspraak);
 		hibernateService.saveOrUpdate(client);
-		ColonBrief brief;
-		var creatieDatumColonBrief = DateUtil.toUtilDate(nu.plus(150, ChronoUnit.MILLIS));
-		if (openUitnodiging != null && !heefAlOpenUitnodigingsBriefGehad)
+
+		if (isDigitaleAfspraakBeschikbaar() && ColonAfspraakUtil.isDigitaal(nieuweAfspraak))
 		{
-			brief = briefService.maakBvoBrief(laatsteScreeningRonde, BriefType.COLON_BEVESTIGING_INTAKE_AFSRPAAK_NA_OPEN_UITNODIGING, creatieDatumColonBrief);
-			brief.setIntakeAfspraak(nieuweAfspraak);
+			var intakelocatie = nieuweAfspraak.getKamer().getIntakelocatie();
+			var digitaalBericht = digitaalBerichtTemplateService.maakDigitaalBericht(DigitaalBerichtTemplateType.COLON_AFSPRAAK_BEVESTIGING_DIGITALE_INTAKE, intakelocatie,
+				nieuweAfspraak);
+			mailService.queueMailAanClient(client, digitaalBericht.getSubject(), digitaalBericht.getBody(), List.of());
 		}
 		else
 		{
-			if (briefType != null)
+			ColonBrief brief;
+			var creatieDatumColonBrief = DateUtil.toUtilDate(nu.plus(150, ChronoUnit.MILLIS));
+			if (openUitnodiging != null && !heefAlOpenUitnodigingsBriefGehad)
 			{
-				brief = briefService.maakBvoBrief(laatsteScreeningRonde, briefType, creatieDatumColonBrief);
+				brief = briefService.maakBvoBrief(laatsteScreeningRonde, BriefType.COLON_BEVESTIGING_INTAKE_AFSRPAAK_NA_OPEN_UITNODIGING, creatieDatumColonBrief);
 				brief.setIntakeAfspraak(nieuweAfspraak);
 			}
 			else
 			{
-				brief = briefService.maakBvoBrief(laatsteScreeningRonde, BriefType.COLON_INTAKE_GEWIJZIGD, creatieDatumColonBrief);
-				brief.setIntakeAfspraak(nieuweAfspraak);
+				if (briefType != null)
+				{
+					brief = briefService.maakBvoBrief(laatsteScreeningRonde, briefType, creatieDatumColonBrief);
+					brief.setIntakeAfspraak(nieuweAfspraak);
+				}
+				else
+				{
+					brief = briefService.maakBvoBrief(laatsteScreeningRonde, BriefType.COLON_INTAKE_GEWIJZIGD, creatieDatumColonBrief);
+					brief.setIntakeAfspraak(nieuweAfspraak);
+				}
 			}
+			if (briefTegenhouden)
+			{
+				hibernateService.saveOrUpdate(BriefUtil.setTegenhouden(brief, true));
+			}
+			hibernateService.saveOrUpdate(brief);
 		}
-		if (briefTegenhouden)
-		{
-			hibernateService.saveOrUpdate(BriefUtil.setTegenhouden(brief, true));
-		}
-		hibernateService.saveOrUpdate(brief);
 
 		laatsteScreeningRonde.setStatus(ScreeningRondeStatus.LOPEND);
 		laatsteScreeningRonde.setStatusDatum(DateUtil.toUtilDate(nu.plus(200, ChronoUnit.MILLIS)));
@@ -831,19 +873,20 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 	}
 
 	@Override
-	public ColonAfspraakslot getAfspraakslotVoorAfspraak(ColonIntakeAfspraak newAfspraak)
+	public ColonAfspraakslot getAfspraakslotVoorAfspraak(ColonIntakeAfspraak nieuweAfspraak)
 	{
-		var range = Range.open(newAfspraak.getVanaf(), newAfspraak.getTot());
-		return afspraakslotRepository.findFirst(ColonTijdslotSpecification.<ColonAfspraakslot> heeftKamer(newAfspraak.getKamer())
-				.and(overlapt(range, r -> r.get(ColonTijdslot_.vanaf), r -> r.get(ColonTijdslot_.tot))),
+		var range = Range.open(nieuweAfspraak.getVanaf(), nieuweAfspraak.getTot());
+		return afspraakslotRepository.findFirst(ColonTijdslotSpecification.<ColonAfspraakslot> heeftKamer(nieuweAfspraak.getKamer())
+				.and(overlapt(range, r -> r.get(ColonTijdslot_.vanaf), r -> r.get(ColonTijdslot_.tot)))
+				.and(heeftGeenAfspraak()),
 			Sort.by(Sort.Order.asc(ColonTijdslot_.VANAF))).orElse(null);
 	}
 
 	@Override
-	public ColonAfspraakslot getVrijAfspraakslotVoorAfspraak(ColonIntakeAfspraak newAfspraak)
+	public ColonAfspraakslot getVrijAfspraakslotVoorAfspraak(ColonIntakeAfspraak nieuweAfspraak)
 	{
-		return afspraakslotRepository.findFirst(ColonTijdslotSpecification.<ColonAfspraakslot> heeftKamer(newAfspraak.getKamer())
-				.and(heeftVanaf(newAfspraak.getVanaf()))
+		return afspraakslotRepository.findFirst(ColonTijdslotSpecification.<ColonAfspraakslot> heeftKamer(nieuweAfspraak.getKamer())
+				.and(heeftVanaf(nieuweAfspraak.getVanaf()))
 				.and(heeftGeenAfspraak()),
 			Sort.by(Sort.Order.asc(ColonTijdslot_.VANAF))).orElse(null);
 	}
@@ -904,5 +947,24 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 		}));
 
 		return clientRepository.exists(spec);
+	}
+
+	@Override
+	@Transactional
+	public void saveIntakeafspraak(ColonIntakeAfspraak afspraak)
+	{
+		afspraakRepository.save(afspraak);
+	}
+
+	public boolean isDigitaleAfspraakBeschikbaar()
+	{
+		var digitaleIntakeStartDatumString = preferenceService.getString(PreferenceKey.COLON_START_DIGITALE_INTAKE.name());
+		if (StringUtils.isBlank(digitaleIntakeStartDatumString))
+		{
+			return false;
+		}
+		var digitaleIntakeDatum = DateUtil.parseLocalDateForPattern(digitaleIntakeStartDatumString, Constants.DATE_FORMAT_YYYYMMDD);
+		var vandaag = currentDateSupplier.getLocalDate();
+		return !vandaag.isBefore(digitaleIntakeDatum);
 	}
 }

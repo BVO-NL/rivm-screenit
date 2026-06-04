@@ -164,7 +164,6 @@ public class ScreenITEventSourceFactory implements Serializable
 		blokDto.screeningsEenheidId = screeningsEenheid.getId();
 		blokDto.opmerkingen = blok.getOpmerkingen();
 		blokDto.aantalOnderzoeken = blok.getAantalOnderzoeken();
-		blokDto.minderValideAfspraakMogelijk = blok.getMinderValideAfspraakMogelijk();
 		weekDto.blokken.add(blokDto);
 
 		totaalAantalOnderzoeken.set(totaalAantalOnderzoeken.get() + blok.getBeschikbareCapaciteit().intValue());

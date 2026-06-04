@@ -30,6 +30,6 @@ export function isNullOfUndefined(obj: any): boolean {
 	return obj === null || obj === undefined
 }
 
-export function isNullOfLeeg(tekst: string): boolean {
+export function isNullOfLeeg(tekst?: string): boolean {
 	return (tekst === null || tekst === undefined || tekst === "")
 }

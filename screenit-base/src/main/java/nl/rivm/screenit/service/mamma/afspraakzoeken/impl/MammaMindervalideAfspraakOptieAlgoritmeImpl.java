@@ -75,7 +75,7 @@ public class MammaMindervalideAfspraakOptieAlgoritmeImpl implements MammaAfspraa
 
 	@Override
 	public List<MammaAfspraakOptie> getAfspraakOpties(MammaDossier dossier, MammaStandplaatsPeriode standplaatsPeriode, LocalDate vanaf, LocalDate totEnMet, boolean extraOpties,
-		BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen, boolean corrigeerNegatieveVrijeCapaciteit)
+		BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen)
 	{
 		var nietGeblokkeerdeScreeningCapaciteitBlokDtos = capaciteitsBlokService.getNietGeblokkeerdeScreeningCapaciteitBlokDtos(standplaatsPeriode, toUtilDate(vanaf),
 			toUtilDate(totEnMet.atTime(Constants.BK_EINDTIJD_DAG)), dossier.getClient());

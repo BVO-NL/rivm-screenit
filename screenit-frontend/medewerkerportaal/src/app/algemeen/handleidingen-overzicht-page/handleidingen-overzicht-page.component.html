@@ -1,0 +1,62 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-page titel="Handleidingen">
+  <ng-container header-actions>
+    <button ds-button-primary (click)="openHandleidingDialog()" *appAutorisatie="toevoegenConstraint">
+      <ds-icon [icon]="faAddIcon"/>
+      Handleiding toevoegen
+    </button>
+  </ng-container>
+  <table ds-table matSort matSortActive="bestandsnaam"
+         matSortDirection="asc" [dataSource]="dataSource()">
+    <ng-container dsColumnDef="bestandsnaam">
+      <th ds-header-cell *dsHeaderCellDef [mat-sort-header]="'bestandsnaam'">Bestand</th>
+      <td ds-cell *dsCellDef="let row">{{ row.bestandsnaam }}</td>
+    </ng-container>
+    <ng-container dsColumnDef="bewerkingsdatum">
+      <th ds-header-cell *dsHeaderCellDef [mat-sort-header]="'bewerkingsdatum'">Laatst bijgewerkt op</th>
+      <td ds-cell *dsCellDef="let row">{{ row.bewerkingsdatum | date: NL_DATE_TIME_FORMAT }}</td>
+    </ng-container>
+    <ng-container dsColumnDef="laatstGewijzigdDoor">
+      <th ds-header-cell *dsHeaderCellDef [mat-sort-header]="'laatstGewijzigdDoor'">Gewijzigd door</th>
+      <td ds-cell *dsCellDef="let row">{{ row.laatstGewijzigdDoor }}</td>
+    </ng-container>
+    <ng-container dsColumnDef="acties">
+      <th ds-header-cell *dsHeaderCellDef>Acties</th>
+      <td ds-cell *dsCellDef="let row">
+        <button ds-button-secondary ds-button-icon *appAutorisatie="inzienConstraint" (click)="downloadHandleiding(row.id, row.bestandsnaam)" title="Downloaden" class="mr-2"
+                data-testid="handleiding_downloaden">
+          <ds-icon [icon]="faDownloadIcon"/>
+        </button>
+        <button ds-button-secondary ds-button-icon (click)="openHandleidingBewerkenDialog(row.id, row.bestandsnaam)" *appAutorisatie="bewerkenConstraint" title="Bewerken"
+                class="mr-2" data-testid="handleiding_bewerken">
+          <ds-icon [icon]="faPenIcon"/>
+        </button>
+        <button ds-button-quaternary ds-button-icon (click)="openHandleidingVerwijderenDialog(row.id, row.bestandsnaam)" *appAutorisatie="verwijderenConstraint" title="Verwijderen"
+                class="mr-2" data-testid="handleiding_verwijderen">
+          <ds-icon [icon]="faTrashIcon"/>
+        </button>
+      </td>
+    </ng-container>
+    <tr ds-header-row *matHeaderRowDef="columnsToDisplay()"></tr>
+    <tr ds-row *matRowDef="let _; columns: columnsToDisplay()"></tr>
+  </table>
+</app-page>

@@ -28,4 +28,6 @@ export enum AnalyticsCategorie {
 	MAMMA_AFMELDEN = "mamma_afmelden",
 	PROFIEL = "profiel",
 	BVO_MIJN_ONDERZOEKEN = "bvo_mijnonderzoeken",
+	COLON_AFSPRAAK = "colon_afspraak",
+	AFSPRAAK_VERZETTEN = "afspraak_verzetten"
 }

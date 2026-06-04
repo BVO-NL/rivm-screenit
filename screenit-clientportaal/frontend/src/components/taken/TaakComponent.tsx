@@ -31,8 +31,11 @@ import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 
 export type TaakComponentProps = {
 	tekst: string,
-	link: RoutePath,
+	link?: RoutePath,
 	icon?: ReactNode,
+	onClick?: () => void,
+	titel?: string
+	className?: string
 }
 
 const TaakComponent = (props: TaakComponentProps): ReactNode => {
@@ -47,14 +50,18 @@ const TaakComponent = (props: TaakComponentProps): ReactNode => {
 				{naam: props.tekst},
 			)
 		}
-		navigate(props.link)
+		if (props.link) {
+			navigate(props.link)
+		} else if (props.onClick) {
+			props.onClick()
+		}
 	}
 
 	return (
-		<div className={classNames(styles.topTaak, selectedBvo && BevolkingsonderzoekStyle[selectedBvo])}
-			 onClick={stuurDatadogEventEnNavigeer}>
+		<div className={classNames(styles.topTaak, selectedBvo && BevolkingsonderzoekStyle[selectedBvo], props.className)}
+		     onClick={stuurDatadogEventEnNavigeer}>
 			<div className={classNames(styles.icon, BevolkingsonderzoekToptaakStyle[selectedBvo!])}>{props.icon}</div>
-			<span className={bvoStyle.bvoText}>Ik wil graag</span>
+			<span className={bvoStyle.bvoText}>{props.titel ?? "Ik wil graag"}</span>
 			<br/>
 			<span>{props.tekst}</span>
 		</div>

@@ -35,7 +35,6 @@ import nl.rivm.screenit.model.enums.ToegangLevel;
 
 public interface AutorisatieService
 {
-
 	boolean mustChangePassword(OrganisatieMedewerker organisatieMedewerker);
 
 	Actie getActieVoorMedewerker(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, Medewerker currentSelectedMedewerker, Recht... rechten);
@@ -53,5 +52,4 @@ public interface AutorisatieService
 	List<Recht> getRechtWithBevolkingsonderzoek(List<Bevolkingsonderzoek> onderzoeken);
 
 	void inactiveerRolKoppeling(OrganisatieMedewerkerRol rolKoppeling);
-
 }

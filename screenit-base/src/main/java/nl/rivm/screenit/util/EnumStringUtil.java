@@ -32,7 +32,6 @@ import nl.rivm.screenit.util.functionalinterfaces.BvoHouder;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EnumStringUtil
 {
-
 	public static <T extends Enum<T>> String getPropertyString(T value)
 	{
 		return getPropertyString(value, null);
@@ -42,17 +41,13 @@ public final class EnumStringUtil
 	{
 		if (value != null)
 		{
-
 			return value.getDeclaringClass().getSimpleName() + '.' + value.name();
 		}
 		else if (nullValidClass != null)
 		{
 			return nullValidClass.getSimpleName() + ".null";
 		}
-		else
-		{
-			return null;
-		}
+		return null;
 	}
 
 	public static <T extends Enum<T> & BvoHouder> String maakStringMetBvoEnEnumPropertyString(T enumMetBvo,

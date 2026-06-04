@@ -66,6 +66,9 @@ public abstract class DigitaalClientBericht<SR extends ScreeningRonde> extends A
 	@Enumerated(EnumType.STRING)
 	private DigitaalBerichtTemplateType digitaalBerichtTemplateType;
 
+	@Column(length = 36)
+	private String smsComHubGuid;
+
 	public abstract SR getScreeningRonde();
 
 	public abstract void setScreeningRonde(SR screeningRonde);

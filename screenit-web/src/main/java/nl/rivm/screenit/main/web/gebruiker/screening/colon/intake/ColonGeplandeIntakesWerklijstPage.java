@@ -50,6 +50,10 @@ public class ColonGeplandeIntakesWerklijstPage extends WerklijstIntakePage
 		addDatumBriefAfspraakColumn(columns);
 		addHuisartsColumn(columns);
 		addVerwezenColumn(columns);
+		if (afspraakService.isDigitaleAfspraakBeschikbaar())
+		{
+			addDigitaleIntakeVerstuurdColumn(columns);
+		}
 		return columns;
 	}
 }

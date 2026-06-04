@@ -226,4 +226,14 @@ public class SpecificationUtil
 	{
 		return ((HibernateCriteriaBuilder) cb).cast((JpaExpression<F>) expression, castNaarType);
 	}
+
+	public static Expression<String> regexReplace(CriteriaBuilder cb, Expression<?> input, String find, String replace)
+	{
+		return cb.function("regexp_replace", String.class, input, cb.literal(find), cb.literal(replace));
+	}
+
+	public static Expression<String> regexReplace(CriteriaBuilder cb, Expression<?> input, String find, String replace, String flags)
+	{
+		return cb.function("regexp_replace", String.class, input, cb.literal(find), cb.literal(replace), cb.literal(flags));
+	}
 }

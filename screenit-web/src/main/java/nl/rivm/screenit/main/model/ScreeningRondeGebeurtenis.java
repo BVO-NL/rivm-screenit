@@ -24,6 +24,9 @@ package nl.rivm.screenit.main.model;
 import java.util.Arrays;
 import java.util.Date;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.DigitaalClientBericht;
 import nl.rivm.screenit.model.InpakbareUitnodiging;
@@ -77,6 +80,10 @@ public class ScreeningRondeGebeurtenis implements IDetachable
 	private GebeurtenisBron bron;
 
 	private boolean clickable = true;
+
+	@Setter
+	@Getter
+	private boolean smsVerstuurd;
 
 	public TypeGebeurtenis getGebeurtenis()
 	{
@@ -145,14 +152,14 @@ public class ScreeningRondeGebeurtenis implements IDetachable
 		this.screeningRondeGebeurtenissen = screeningsronde;
 	}
 
-	public void setVerslag(Verslag<?, ?> verslag)
-	{
-		this.verslag = ModelUtil.sModel(verslag);
-	}
-
 	public Verslag<?, ?> getVerslag()
 	{
 		return ModelUtil.nullSafeGet(verslag);
+	}
+
+	public void setVerslag(Verslag<?, ?> verslag)
+	{
+		this.verslag = ModelUtil.sModel(verslag);
 	}
 
 	public ColonIntakeAfspraak getAfspraak()
@@ -203,14 +210,14 @@ public class ScreeningRondeGebeurtenis implements IDetachable
 		this.brief = ModelUtil.sModel(brief);
 	}
 
-	public void setDigitaalClientBericht(DigitaalClientBericht<?> mail)
-	{
-		this.digitaalClientBericht = ModelUtil.sModel(mail);
-	}
-
 	public DigitaalClientBericht<?> getDigitaalClientBericht()
 	{
 		return ModelUtil.nullSafeGet(digitaalClientBericht);
+	}
+
+	public void setDigitaalClientBericht(DigitaalClientBericht<?> bericht)
+	{
+		this.digitaalClientBericht = ModelUtil.sModel(bericht);
 	}
 
 	public GebeurtenisBron getBron()

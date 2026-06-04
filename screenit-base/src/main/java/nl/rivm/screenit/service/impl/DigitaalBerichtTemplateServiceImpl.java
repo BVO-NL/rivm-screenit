@@ -32,6 +32,7 @@ import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DigitaalBerichtTemplate;
 import nl.rivm.screenit.model.MailMergeContext;
+import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.enums.DigitaalBerichtTemplateType;
 import nl.rivm.screenit.model.enums.DigitaalBerichtType;
@@ -102,7 +103,16 @@ public class DigitaalBerichtTemplateServiceImpl implements DigitaalBerichtTempla
 	{
 		var template = getDigitaalBerichtTemplate(type);
 		var context = maakMailMergeContext(intakelocatie);
+		return maakDigitaalBericht(template, context);
+	}
 
+	@Override
+	public DigitaalBerichtDTO maakDigitaalBericht(DigitaalBerichtTemplateType type, ColonIntakelocatie intakelocatie, ColonIntakeAfspraak afspraak)
+	{
+		var template = getDigitaalBerichtTemplate(type);
+		var context = maakMailMergeContext(intakelocatie);
+		context.setIntakeAfspraak(afspraak);
+		context.setClient(afspraak.getClient());
 		return maakDigitaalBericht(template, context);
 	}
 

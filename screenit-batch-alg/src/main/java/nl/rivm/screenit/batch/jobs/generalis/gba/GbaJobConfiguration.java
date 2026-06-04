@@ -36,6 +36,7 @@ import nl.rivm.screenit.batch.jobs.generalis.gba.upload105step.Vo105UploadTaskle
 import nl.rivm.screenit.batch.jobs.generalis.gba.verwerk105step.GbaVraagItemReader;
 import nl.rivm.screenit.batch.jobs.generalis.gba.verwerk105step.Vo105ItemProcessor;
 import nl.rivm.screenit.batch.jobs.generalis.gba.verwerk105step.Vo105ItemWriter;
+import nl.rivm.screenit.batch.jobs.generalis.gba.verwerk105step.Vo105TellingListener;
 import nl.rivm.screenit.batch.jobs.generalis.gba.verwerk107step.ClientItemWriter;
 import nl.rivm.screenit.batch.jobs.generalis.gba.verwerk107step.IVo107Provider;
 import nl.rivm.screenit.batch.jobs.generalis.gba.verwerk107step.VertrouwdVerbondenVo107Provider;
@@ -46,6 +47,7 @@ import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo105Bericht;
 import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo107Bericht;
 
 import org.springframework.batch.core.ExitStatus;
+import org.springframework.batch.core.ItemProcessListener;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -156,14 +158,17 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 	}
 
 	@Bean
-	public Step verwerkVo105Step(ExecutionContextPromotionListener gbaPromotionListener, GbaVraagItemReader reader, Vo105ItemProcessor processor, Vo105ItemWriter writer)
+	public Step verwerkVo105Step(ExecutionContextPromotionListener gbaPromotionListener, GbaVraagItemReader reader, Vo105ItemProcessor processor, Vo105ItemWriter writer,
+		Vo105TellingListener tellingListener)
 	{
 		return new StepBuilder("verwerkVo105Step", repository)
 			.listener(gbaPromotionListener)
+			.listener(tellingListener)
 			.<Long, Vo105Bericht> chunk(10, transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)
+			.listener((ItemProcessListener<Long, Vo105Bericht>) tellingListener)
 			.build();
 	}
 

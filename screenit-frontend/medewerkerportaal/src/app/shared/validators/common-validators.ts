@@ -18,6 +18,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Validators } from '@angular/forms'
+import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms'
+
+export function trimmedValidator(validator: ValidatorFn): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value || typeof control.value !== 'string') {
+      return validator(control)
+    }
+    const trimmed = control.value.trim()
+    const trimmedControl = { ...control, value: trimmed } as AbstractControl
+    return validator(trimmedControl)
+  }
+}
 
 export const positiveIntegerValidator = Validators.pattern('^[0-9]*$')
+export const huisnummerValidator = [trimmedValidator(Validators.maxLength(10)), trimmedValidator(Validators.pattern(/^\d*$/))]
+export const briefkenmerkValidator = trimmedValidator(Validators.pattern(/^[Kk].+$/))
+export const telefoonnummerValidator = Validators.pattern(/^(06|\+316|00316)[- ]?[0-9]{8}$/)

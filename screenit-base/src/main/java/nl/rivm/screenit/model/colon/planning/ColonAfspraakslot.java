@@ -62,5 +62,4 @@ public class ColonAfspraakslot extends ColonTijdslot
 		item.setAfspraak(null);
 		return item;
 	}
-
 }

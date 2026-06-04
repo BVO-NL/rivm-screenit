@@ -37,7 +37,7 @@
           [items]="mammaVisitatieStatusLijst"
           bindValue="waarde"
           bindLabel="naam"
-          appendTo="body"
+          appendTo=".ds-modal"
           data-testid="status_dropdown"
           [clearable]="false"
         />
@@ -48,7 +48,7 @@
             formControlName="beoordelingseenheid"
             [clearable]="beoordelingseenheidCtrl.hasValidator(Validators.required)"
             [items]="beoordelingseenheden()"
-            appendTo="body"
+            appendTo=".ds-modal"
             bindLabel="naam"
             data-testid="beoordelingseenheid_dropdown"
           />

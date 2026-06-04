@@ -56,6 +56,6 @@ public class IndicatieTerugzettenVoorDoelgroepWriter extends BaseWriter<Client>
 		client.setGbaStatus(GbaStatus.INDICATIE_AANGEVRAAGD);
 		logService.logGebeurtenis(LogGebeurtenis.CLIENT_BRP_INDICATIE_AANGEVRAAGD, clientService.getScreeningOrganisatieVan(client), client,
 			RedenIntrekkenGbaIndicatie.NIET_INGETROKKEN.name());
-		gbaVraagService.verzoekPlaatsIndicatie(null, client, RedenGbaVraag.AANGEMELD, null);
+		gbaVraagService.verzoekPlaatsIndicatie(null, client, RedenGbaVraag.BRIEF_VERSTUREN, null);
 	}
 }

@@ -37,33 +37,17 @@
             </plugin>
 
             <plugin>
-                <groupId>nl.geodienstencentrum.maven</groupId>
-                <artifactId>sass-maven-plugin</artifactId>
+                <groupId>io.github.cleydyr</groupId>
+                <artifactId>dart-sass-maven-plugin</artifactId>
                 <configuration>
-                    <resources>
-                        <resource>
-                            <source>
-                                <directory>${basedir}/src/main/resources/static/assets/sass</directory>
-                                <includes>
-                                    <include>**</include>
-                                </includes>
-                                <excludes>
-                                    <exclude>**/_svn/**</exclude>
-                                    <exclude>**/.svn/**</exclude>
-                                </excludes>
-                            </source>
-                            <destination>${project.build.directory}/classes/static/assets/css</destination>
-                        </resource>
-                    </resources>
-                    <sassOptions>
-                        <always_update>true</always_update>
-                    </sassOptions>
+                    <inputFolder>${basedir}/src/main/resources/static/assets/sass</inputFolder>
+                    <outputFolder>${project.build.directory}/classes/static/assets/css</outputFolder>
                 </configuration>
                 <executions>
                     <execution>
                         <id>build</id>
                         <goals>
-                            <goal>update-stylesheets</goal>
+                            <goal>compile-sass</goal>
                         </goals>
                         <phase>generate-sources</phase>
                     </execution>

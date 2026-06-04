@@ -81,6 +81,8 @@ import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 public class ClientDossierPanel extends GenericPanel<Client>
 {
+	private final BootstrapDialog dialog;
+
 	@SpringBean
 	private DossierService dossierService;
 
@@ -95,8 +97,6 @@ public class ClientDossierPanel extends GenericPanel<Client>
 
 	@SpringBean
 	private ClientService clientService;
-
-	private final BootstrapDialog dialog;
 
 	private IModel<List<ScreeningRondeGebeurtenissen>> dossierModel;
 
@@ -125,7 +125,6 @@ public class ClientDossierPanel extends GenericPanel<Client>
 
 		var contactBvoFilter = new ClientDossierFilterBvoPanel("contactBvoFilter", zoekObjectModel)
 		{
-
 			@Override
 			protected void doFilter(IModel<ClientDossierFilter> filterModel, AjaxRequestTarget target)
 			{
@@ -140,7 +139,6 @@ public class ClientDossierPanel extends GenericPanel<Client>
 
 		IndicatingAjaxLink<Void> contactAanmaken = new IndicatingAjaxLink<>("contactAanmaken")
 		{
-
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
@@ -172,7 +170,6 @@ public class ClientDossierPanel extends GenericPanel<Client>
 
 		ListView<ScreeningRondeGebeurtenissen> rondeListView = new ListView<>("rondes", dossierModel)
 		{
-
 			@Override
 			protected void populateItem(ListItem<ScreeningRondeGebeurtenissen> item)
 			{
@@ -215,7 +212,6 @@ public class ClientDossierPanel extends GenericPanel<Client>
 		item.add(new PropertyListView<>("gebeurtenissen",
 			new SortingListModel<>(new PropertyModel<>(item.getModel(), "gebeurtenissen"), new GebeurtenisComparator()))
 		{
-
 			@Override
 			protected void populateItem(final ListItem<ScreeningRondeGebeurtenis> item)
 			{
@@ -272,7 +268,6 @@ public class ClientDossierPanel extends GenericPanel<Client>
 				{
 					item.add(new AjaxEventBehavior("click")
 					{
-
 						@Override
 						protected void onEvent(AjaxRequestTarget target)
 						{
@@ -377,8 +372,8 @@ public class ClientDossierPanel extends GenericPanel<Client>
 			@Override
 			protected void populateItem(final ListItem<ScreeningRondeGebeurtenis> item)
 			{
-				ScreeningRondeGebeurtenis screeningRondeGebeurtenis = item.getModelObject();
-				final TypeGebeurtenis gebeurtenis = screeningRondeGebeurtenis.getGebeurtenis();
+				var screeningRondeGebeurtenis = item.getModelObject();
+				final var gebeurtenis = screeningRondeGebeurtenis.getGebeurtenis();
 
 				item.add(DateLabel.forDatePattern("datum", "dd-MM-yyyy HH:mm:ss"));
 				item.add(new EnumLabel<TypeGebeurtenis>("gebeurtenis"));

@@ -23,42 +23,53 @@ package nl.rivm.screenit.service.mamma.impl;
 
 import java.util.Comparator;
 
-import lombok.AllArgsConstructor;
-
+import nl.rivm.screenit.config.CommunicationHubClientConfig;
 import nl.rivm.screenit.model.DigitaalClientBericht;
 import nl.rivm.screenit.model.enums.DigitaalBerichtType;
 import nl.rivm.screenit.model.mamma.MammaDigitaalClientBericht;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.repository.mamma.MammaDigitaalClientBerichtRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
+import nl.rivm.screenit.service.impl.DigitaalClientBerichtServiceImpl;
 import nl.rivm.screenit.service.mamma.MammaDigitaalClientBerichtService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
+import nl.topicuszorg.communicationhub.api.MessageServiceCommunicationHubClientApi;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@AllArgsConstructor
-@Transactional(propagation = Propagation.REQUIRED)
-public class MammaDigitaalClientBerichtServiceImpl implements MammaDigitaalClientBerichtService
+@Transactional
+public class MammaDigitaalClientBerichtServiceImpl extends DigitaalClientBerichtServiceImpl<MammaDigitaalClientBericht> implements MammaDigitaalClientBerichtService
 {
-	private MammaDigitaalClientBerichtRepository digitaalClientBerichtRepository;
+	private final MammaDigitaalClientBerichtRepository digitaalClientBerichtRepository;
 
-	private ICurrentDateSupplier currentDateSupplier;
+	private final ICurrentDateSupplier currentDateSupplier;
 
-	private HibernateService hibernateService;
+	private final HibernateService hibernateService;
+
+	public MammaDigitaalClientBerichtServiceImpl(MessageServiceCommunicationHubClientApi messageServiceApi,
+		CommunicationHubClientConfig communicationHubClientConfig,
+		MammaDigitaalClientBerichtRepository digitaalClientBerichtRepository,
+		ICurrentDateSupplier currentDateSupplier,
+		HibernateService hibernateService)
+	{
+		super(messageServiceApi, communicationHubClientConfig);
+		this.digitaalClientBerichtRepository = digitaalClientBerichtRepository;
+		this.currentDateSupplier = currentDateSupplier;
+		this.hibernateService = hibernateService;
+	}
 
 	@Override
 	public void saveOrUpdate(MammaDigitaalClientBericht digitaalBericht)
 	{
 		var clientBerichtNieuw = digitaalClientBerichtRepository.save(digitaalBericht);
-		updateAfspraakEnRondeBijNieuwBericht(clientBerichtNieuw);
+		updateRondeBijNieuwBericht(clientBerichtNieuw);
 	}
 
-	private void updateAfspraakEnRondeBijNieuwBericht(MammaDigitaalClientBericht digitaalBericht)
+	private void updateRondeBijNieuwBericht(MammaDigitaalClientBericht digitaalBericht)
 	{
 		var ronde = digitaalBericht.getScreeningRonde();
 		ronde.getBerichten().add(digitaalBericht);

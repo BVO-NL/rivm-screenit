@@ -54,6 +54,12 @@ button:focus {
   border: 1px solid var(--event-status-border-color);
 }
 
+.event_status_digitale_intake {
+  background-color: var(--event-status-digitale-intake-background-color);
+  color: var(--event-status-digitale-intake-text-color);
+  border: 1px solid var(--event-status-border-color);
+}
+
 .event_status_blocked {
   background-color: var(--event-status-blocked-background-color);
   color: var(--event-status-blocked-text-color);

@@ -84,7 +84,6 @@ public class PlanningMapper
 		dto.tot = blok.getDateTot();
 		dto.opmerkingen = blok.getOpmerkingen();
 		dto.conceptId = blok.getConceptId();
-		dto.minderValideAfspraakMogelijk = blok.isMinderValideAfspraakMogelijk();
 		dto.getMindervalideReserveringen().addAll(
 			blok.getMindervalideReserveringen().stream()
 				.map(teMappenReservering -> new PlanningMindervalideReserveringDto(teMappenReservering.getId(), teMappenReservering.getConceptId(),

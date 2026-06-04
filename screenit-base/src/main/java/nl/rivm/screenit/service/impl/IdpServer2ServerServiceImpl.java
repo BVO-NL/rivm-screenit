@@ -21,7 +21,6 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
 import java.security.Key;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +28,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.config.CommunicationHubProperties;
 import nl.rivm.screenit.model.enums.IdpServer2ServerType;
 import nl.rivm.screenit.service.IdpServer2ServerService;
 import nl.rivm.screenit.service.KeyStoreService;
@@ -36,24 +36,56 @@ import nl.rivm.screenit.util.EnvironmentUtil;
 import nl.topicuszorg.idp.client.credentials.IdpClient;
 import nl.topicuszorg.idp.client.credentials.IdpClientCredentialsService;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class IdpServer2ServerServiceImpl implements IdpServer2ServerService
+public class IdpServer2ServerServiceImpl implements IdpServer2ServerService  
 {
 
 	private static final String GEEN_IDP = "geenIdp";
 
+	private static final String AUDIENCE_ENV = "IDP_S2S_CLIENT_AUDIENCE";
+
+	private static final String CLIENT_ID_ENV = "IDP_S2S_CLIENTID";
+
+	private static final String KEYSTORE_LOCATION_ENV = "IDP_S2S_KEYSTORE_LOCATION";
+
+	private static final String KEYSTORE_PASSWORD_ENV = "IDP_S2S_KEYSTORE_PASSWORD";
+
+	private static final String DEFAULT_AUDIENCE = "https://test.login.topicuszorg.nl/auth/realms/Apps";
+
+	private static final String DEFAULT_CLIENT_ID = "screenit-client-credentials";
+
+	private static final String DEFAULT_KEYSTORE_LOCATION = "keystore/screenit-client-credentials-test.jks";
+
+	private static final String DEFAULT_KEYSTORE_PASSWORD = "Dc7GsIHO7Ix7Q0tx2AAFjBejOl";
+
 	private final KeyStoreService keyStoreService;
 
-	private IdpClientCredentialsService idpClientCredentialsService;
+	private final CommunicationHubProperties communicationHubProperties;
 
 	private final Map<IdpServer2ServerType, IdpClient> idpClients = new HashMap<>();
 
+	private IdpClientCredentialsService idpClientCredentialsService;
+
 	@Override
 	public synchronized String getIdpAccessToken(IdpServer2ServerType type)
+	{
+		try
+		{
+			return getPrivateKeyJwtAccessToken(type);
+		}
+		catch (Exception e)
+		{
+			LOG.error("Fout bij het opvragen Idp token voor type '{}'", type, e);
+			return null;
+		}
+	}
+
+	private String getPrivateKeyJwtAccessToken(IdpServer2ServerType type) throws Exception
 	{
 		var idpClient = idpClients.get(type);
 		if (idpClient == null)
@@ -64,15 +96,7 @@ public class IdpServer2ServerServiceImpl implements IdpServer2ServerService
 				return null;
 			}
 		}
-		try
-		{
-			return getIdpClientCredentialsService().getAccessToken(idpClient);
-		}
-		catch (Exception e)
-		{
-			LOG.error("Fout bij het opvragen Idp token voor type '{}'", type, e);
-			return null;
-		}
+		return getIdpClientCredentialsService().getAccessToken(idpClient);
 	}
 
 	private IdpClientCredentialsService getIdpClientCredentialsService()
@@ -86,13 +110,14 @@ public class IdpServer2ServerServiceImpl implements IdpServer2ServerService
 
 	private IdpClient maakIdpClient(IdpServer2ServerType type)
 	{
-		var audience = getIdpAudience();
+		var audience = getIdpAudience(type);
 		var idpTokenEndpoint = audience + "/protocol/openid-connect/token";
 		var scope = getScope(type);
 		IdpClient idpClient = null;
 		if (!GEEN_IDP.equalsIgnoreCase(scope))
 		{
-			idpClient = new IdpClient(audience, getIdpClientId(), getSigningKey(), getClientAssertionLifespan(), idpTokenEndpoint, getExpirationOffsetSeconds(), scope);
+			idpClient = new IdpClient(audience, getIdpClientId(type), getSigningKey(type), getClientAssertionLifespan(), idpTokenEndpoint, getExpirationOffsetSeconds(),
+				scope);
 			LOG.info("Idp client gemaakt voor type '{}'.", type);
 		}
 		else if (!idpClients.containsKey(type))
@@ -103,19 +128,29 @@ public class IdpServer2ServerServiceImpl implements IdpServer2ServerService
 		return idpClient;
 	}
 
-	private Key getSigningKey()
+	private Key getSigningKey(IdpServer2ServerType type)
 	{
-		return keyStoreService.getFirstKeyFromKeyStore(getKeystoreLocationOnFilestore(), getKeyStorePassword(), getKeyStorePassword());
+		var keystoreLocation = getKeystoreLocationOnFilestore(type);
+		var keystorePassword = getKeyStorePassword(type);
+		return keyStoreService.getFirstKeyFromKeyStore(keystoreLocation, keystorePassword, keystorePassword);
 	}
 
-	private String getIdpAudience()
+	private String getIdpAudience(IdpServer2ServerType type)
 	{
-		return EnvironmentUtil.getStringEnvironmentVariable("IDP_S2S_CLIENT_AUDIENCE", "https://test.login.topicuszorg.nl/auth/realms/Apps");
+		if (type == IdpServer2ServerType.COMM_HUB)
+		{
+			return communicationHubProperties.getIdpAudience();
+		}
+		return getPropertyOfDefault(AUDIENCE_ENV, DEFAULT_AUDIENCE);
 	}
 
-	private String getIdpClientId()
+	private String getIdpClientId(IdpServer2ServerType type)
 	{
-		return EnvironmentUtil.getStringEnvironmentVariable("IDP_S2S_CLIENTID", "screenit-client-credentials"); 
+		if (type == IdpServer2ServerType.COMM_HUB)
+		{
+			return communicationHubProperties.getIdpClientId();
+		}
+		return getPropertyOfDefault(CLIENT_ID_ENV, DEFAULT_CLIENT_ID);
 	}
 
 	private int getClientAssertionLifespan()
@@ -132,17 +167,38 @@ public class IdpServer2ServerServiceImpl implements IdpServer2ServerService
 
 	private String getScope(IdpServer2ServerType type)
 	{
-		return EnvironmentUtil.getStringEnvironmentVariable(type.getScope(), GEEN_IDP); 
+		if (type == IdpServer2ServerType.COMM_HUB)
+		{
+			return communicationHubProperties.getIdpScope();
+		}
+		return getPropertyOfDefault(type.getScope(), GEEN_IDP);
 	}
 
-	private String getKeystoreLocationOnFilestore()
+	private String getKeystoreLocationOnFilestore(IdpServer2ServerType type)
 	{
-		return EnvironmentUtil.getStringEnvironmentVariable("IDP_S2S_KEYSTORE_LOCATION", "keystore" + File.separator + "screenit-client-credentials-test.jks");
+		if (type == IdpServer2ServerType.COMM_HUB)
+		{
+			return communicationHubProperties.getIdpKeystoreLocation();
+		}
+		return getPropertyOfDefault(KEYSTORE_LOCATION_ENV, DEFAULT_KEYSTORE_LOCATION);
 	}
 
-	private String getKeyStorePassword()
+	private String getKeyStorePassword(IdpServer2ServerType type)
 	{
 
-		return EnvironmentUtil.getStringEnvironmentVariable("IDP_S2S_KEYSTORE_PASSWORD", "Dc7GsIHO7Ix7Q0tx2AAFjBejOl");
+		if (type == IdpServer2ServerType.COMM_HUB)
+		{
+			return communicationHubProperties.getIdpKeystorePassword();
+		}
+		return getPropertyOfDefault(KEYSTORE_PASSWORD_ENV, DEFAULT_KEYSTORE_PASSWORD);
+	}
+
+	private String getPropertyOfDefault(String key, String defaultValue)
+	{
+		if (StringUtils.isBlank(key))
+		{
+			return defaultValue;
+		}
+		return EnvironmentUtil.getStringEnvironmentVariable(key, defaultValue);
 	}
 }

@@ -205,7 +205,7 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 				var totEnMetDatum = Collections.min(Arrays.asList(filter.getTotEnMet(), vrijgegevenTotEnMetDatum, standplaatsPeriodeTotEnMet));
 				var afspraakOptiesStandplaatsPeriode = maakAfspraakOptieZoekAlgoritme(dossier).getAfspraakOpties(dossier, standplaatsPeriode,
 					vroegstMogelijkeUitnodigingsDatum(dossier, vanafDatum, minimaleIntervalMammografieOnderzoeken), totEnMetDatum, filter.getExtraOpties(), voorlopigeOpkomstkans,
-					capaciteitVolledigBenutTotEnMetAantalWerkdagen, true);
+					capaciteitVolledigBenutTotEnMetAantalWerkdagen);
 
 				afspraakOptiesStandplaatsPeriode.forEach(afspraakOptie ->
 				{
@@ -226,8 +226,8 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 		BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen)
 	{
 		return maakAfspraakOptieZoekAlgoritme(dossier)
-			.getAfspraakOpties(dossier, standplaatsPeriode, vanaf, totEnMet, false, voorlopigeOpkomstkans, capaciteitVolledigBenutTotEnMetAantalWerkdagen, false)
-			.get(0); 
+			.getAfspraakOpties(dossier, standplaatsPeriode, vanaf, totEnMet, false, voorlopigeOpkomstkans, capaciteitVolledigBenutTotEnMetAantalWerkdagen)
+			.getFirst(); 
 	}
 
 	@Override
@@ -242,13 +242,8 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 
 	private MammaAfspraakOptieAlgoritme maakAfspraakOptieZoekAlgoritme(MammaDossier dossier)
 	{
-		var minderValideReserveringIngeschakeld = preferenceService.getBoolean(PreferenceKey.MAMMA_MINDERVALIDE_RESERVERING_ACTIEF.name(), false);
 		String beanNaam;
-		if (!minderValideReserveringIngeschakeld)
-		{
-			beanNaam = "mammaBaseKandidaatAfsprakenDeterminatiePeriode";
-		}
-		else if (dossier.getDoelgroep() == MammaDoelgroep.MINDERVALIDE)
+		if (dossier.getDoelgroep() == MammaDoelgroep.MINDERVALIDE)
 		{
 			beanNaam = "mammaMindervalideAfspraakOptieAlgoritme";
 		}

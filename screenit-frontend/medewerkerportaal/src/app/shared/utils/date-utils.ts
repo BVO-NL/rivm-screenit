@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import { format, isValid, parse, parseISO } from 'date-fns'
-import { DATE_FORMAT, ISO_DATE_FORMAT, LOCAL_TIME_FORMAT, NL_DATE_FORMAT, TIME_FORMAT } from '@shared/constants'
+import { COMPACT_DATE_FORMAT, DATE_FORMAT, ISO_DATE_FORMAT, LOCAL_TIME_FORMAT, NL_DATE_FORMAT, TIME_FORMAT } from '@shared/constants'
 
 export function getDateFormat(date: string): string {
   if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(date)) {
@@ -30,6 +30,9 @@ export function getDateFormat(date: string): string {
   }
   if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     return DATE_FORMAT
+  }
+  if (/^\d{8}$/.test(date)) {
+    return COMPACT_DATE_FORMAT
   }
   return DATE_FORMAT
 }

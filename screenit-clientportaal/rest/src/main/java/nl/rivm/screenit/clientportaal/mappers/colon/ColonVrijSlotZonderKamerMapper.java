@@ -36,6 +36,7 @@ public interface ColonVrijSlotZonderKamerMapper
 		@Mapping(target = "adres", ignore = true),
 		@Mapping(target = "postcode", ignore = true),
 		@Mapping(target = "ziekenhuis", ignore = true),
+		@Mapping(target = "type", ignore = true),
 
 	})
 	ColonVrijSlotZonderKamerDto vrijSlotToColonVrijSlotZonderKamerDto(VrijSlotZonderKamer vrijSlotZonderKamer);

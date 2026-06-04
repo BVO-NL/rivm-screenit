@@ -61,6 +61,8 @@
   --event-status-capacity-text-color: #FAFAFAFF;
   --event-status-intake-background-color: #e50000;
   --event-status-intake-text-color: #FAFAFAFF;
+  --event-status-digitale-intake-background-color: #1e6ae6;
+  --event-status-digitale-intake-text-color: #FAFAFAFF;
   --event-status-blocked-background-color: #e2b4ff;
   --event-status-blocked-text-color: #000000FF;
   --event-status-beperking-background-color: #CCCCCCFF;
@@ -104,7 +106,6 @@ input[type='number'] {
   background: #fff;
   font-family: Inter, Arial, "sans-serif";
   border-radius: .5rem;
-  flex-direction: column;
   z-index: 9;
   pointer-events: auto;
   box-shadow: 0 .125rem .25rem #0000000f;

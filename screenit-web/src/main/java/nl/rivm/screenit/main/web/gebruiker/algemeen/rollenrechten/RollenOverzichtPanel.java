@@ -86,7 +86,6 @@ public class RollenOverzichtPanel extends GenericPanel<Rol>
 				ScreenitSession.get().setZoekObject(RollenOverzichtPanel.class, filterModel);
 				target.add(refreshContainer);
 			}
-
 		});
 
 		refreshContainer = new WebMarkupContainer("refreshContainer");

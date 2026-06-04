@@ -26,12 +26,15 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public
-enum IdpServer2ServerType
+public enum IdpServer2ServerType
 {
 	ZORG_ID("IDP_S2S_ZORGID_SCOPE"),
+
 	INPAKCENTRUM("IDP_S2S_INPAKCENTRUM_SCOPE"),
-	DVA_BRON("IDP_S2S_DVA_BRON_SCOPE");
+
+	DVA_BRON("IDP_S2S_DVA_BRON_SCOPE"),
+
+	COMM_HUB("COMMHUB_IDP_SCOPE");
 
 	private final String scope;
 

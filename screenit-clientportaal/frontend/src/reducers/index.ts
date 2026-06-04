@@ -32,12 +32,10 @@ import ToastsReducer from "./ToastsReducer"
 import ContactActiesReducer from "./ContactActiesReducer"
 import EnvironmentInfoReducer from "./EnvironmentInfoReducer"
 import SpinnerCounterReducer from "./SpinnerCounterReducer"
-import type {Reducer} from "redux"
-import type {OpenstaandeUitnodiging} from "../datatypes/uitnodiging/OpenstaandeUitnodiging"
-import {SET_OPENSTAANDE_UITNODIGINGEN} from "../actions/MammaDossierAction"
 
 import mammaAfspraakReducer from "./mamma/MammaAfspraakReducer"
 import openstaandeUitnodigingenReducer from "./OpenstaandeUitnodigingenReducer"
+import ParametersReducer from "./ParametersReducer"
 
 const cpReducers = combineReducers({
 	authenticatie: AuthenticatieReducer,
@@ -55,6 +53,7 @@ const cpReducers = combineReducers({
 	landingOverzicht: LandingOverzichtReducer,
 	toasts: ToastsReducer,
 	requestMinusResponseCounter: SpinnerCounterReducer,
+	parameters: ParametersReducer,
 })
 
 const rootReducer = (state: any, action: any | RootActions) => {

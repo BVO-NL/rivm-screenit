@@ -20,11 +20,11 @@
  */
 import {Component, ErrorInfo, ReactNode} from "react"
 import {Grid, IconButton} from "@mui/material"
-import CloseIcon from "@mui/icons-material/Close"
 import styles from "../../App.module.scss"
-import supportedBrowsers from "../../supportedBrowsers"
 import MijnBevolkingsOnderzoekLogo from "../../scss/media/MijnBevolkingsOnderzoekLogo"
 import {datadogRum} from "@datadog/browser-rum"
+import classNames from "classnames"
+import supportedBrowsers from "../../supportedBrowsers"
 
 interface Props {
 	children?: ReactNode;
@@ -68,8 +68,11 @@ class ErrorBoundary extends Component<Props, State> {
 				<div className={styles.appErrorBoundary}>
 					<Grid container justifyContent="flex-end">
 						<IconButton href="https:
-									aria-label="close">
-							<CloseIcon/>
+						            aria-label="close">
+							<svg className={classNames("MuiSvgIcon-root", "MuiSvgIcon-fontSizeMedium", styles.closeIcon)} focusable="false" aria-hidden="true" viewBox="0 0 24 24"
+							     data-testid="CloseIcon">
+								<path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+							</svg>
 						</IconButton>
 					</Grid>
 					<Grid

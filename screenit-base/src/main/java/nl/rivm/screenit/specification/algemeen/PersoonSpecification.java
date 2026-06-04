@@ -26,6 +26,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.JoinType;
 
 import lombok.AccessLevel;
@@ -43,6 +46,7 @@ import com.google.common.collect.Range;
 
 import static nl.rivm.screenit.specification.DateSpecification.bevatLocalDateToDate;
 import static nl.rivm.screenit.specification.DateSpecification.extractYear;
+import static nl.rivm.screenit.specification.SpecificationUtil.regexReplace;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenEmpty;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenEmptyExtended;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNullExtended;
@@ -177,5 +181,24 @@ public class PersoonSpecification
 	public static ExtendedSpecification<Persoon> heeftGbaAdres()
 	{
 		return (r, q, cb) -> cb.isNotNull(r.get(Persoon_.gbaAdres));
+	}
+
+	public static ExtendedSpecification<Persoon> filterTelefoonNummer1(String telefoonNummer)
+	{
+
+		var genormaliseerdTelefoonnummer = telefoonNummer.replace("^00", "+").replace("^\\+31", "0").replaceAll("[- ]", ""); 
+		return skipWhenEmptyExtended(genormaliseerdTelefoonnummer, (r, q, cb) ->
+			cb.equal(
+				normaliseerTelefoonnummer(r, cb),
+				genormaliseerdTelefoonnummer));
+	}
+
+	private static Expression<String> normaliseerTelefoonnummer(From<?, ? extends Persoon> root, CriteriaBuilder cb)
+	{
+		return regexReplace(cb,
+			regexReplace(cb,
+				regexReplace(cb, root.get(Persoon_.telefoonnummer1), "^00", "+"),
+				"^\\+31", "0"),
+			"[- ]", "", "g"); 
 	}
 }

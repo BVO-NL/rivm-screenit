@@ -23,10 +23,16 @@ package nl.rivm.screenit.service;
 
 import nl.rivm.screenit.model.DigitaalClientBericht;
 
-public interface DigitaalClientBerichtService<CB extends DigitaalClientBericht>
+public interface DigitaalClientBerichtService<CB extends DigitaalClientBericht<?>>
 {
+	String GEEN_BERICHT_BESCHIKBAAR_KEY = "geen.bericht.beschikbaar";
+
+	String BERICHT_KON_NIET_WORDEN_OPGEHAALD_KEY = "bericht.kon.niet.worden.opgehaald";
+
 	void saveOrUpdate(CB digitaalClientBericht);
 
 	boolean digitaalClientBerichtMagOpnieuwVerzondenWorden(CB digitaalClientBericht);
+
+	String haalSmsBerichtOp(CB digitaalClientBericht);
 
 }

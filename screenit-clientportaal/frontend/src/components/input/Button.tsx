@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import React from "react"
 import styles from "./Button.module.scss"
 import classNames from "classnames"
 import ArrowIconComponent, {ArrowType} from "../vectors/ArrowIconComponent"
@@ -33,7 +34,7 @@ export type ButtonProps = {
 	testId?: string
 }
 
-const Button = (props: ButtonProps) => {
+const Button = (props: ButtonProps): React.JSX.Element => {
 	return (
 		<button
 			type={"submit"}
@@ -50,7 +51,6 @@ const Button = (props: ButtonProps) => {
             </span>
 		</button>
 	)
-
 }
 
 export default Button

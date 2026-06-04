@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {JSX, useContext} from "react"
+import {FC, JSX, useContext} from "react"
 import {Navigate, Route, Routes} from "react-router"
 import NotFound from "../pages/NotFoundPage"
 import {ClientContactActieType} from "../datatypes/ClientContactActieType"
@@ -33,7 +33,7 @@ import {Bevolkingsonderzoek} from "../datatypes/Bevolkingsonderzoek"
 import {KeycloakContext} from "../components/KeycloakProvider"
 import {selectBeschikbareActies} from "../selectors/ClientSelectors"
 
-export const AppRoutes = () => {
+export const AppRoutes: FC = () => {
 	const {initialized, keycloak} = useContext(KeycloakContext)
 	const authenticatie = useSelector((state: State) => state.authenticatie)
 
@@ -52,15 +52,13 @@ export const AppRoutes = () => {
 	)
 }
 
-function createRoute(route: RouteDef, contactActions: ClientContactActieType[], landingOverzicht: LandingOverzicht) {
+function createRoute(route: RouteDef, contactActions: ClientContactActieType[], landingOverzicht: LandingOverzicht): JSX.Element {
 	const {requiredContactActions, bvo} = route
 
-	if (bvo && !behoortTotDoelgroep(bvo, landingOverzicht)) {
+	if ((bvo && !behoortTotDoelgroep(bvo, landingOverzicht)) || (requiredContactActions && isNotAllowed(requiredContactActions, contactActions)) || (route.activateGuard && !route.activateGuard())) {
 		return redirect(route)
 	}
-	if (requiredContactActions && isNotAllowed(requiredContactActions, contactActions)) {
-		return redirect(route)
-	}
+
 	return createPublicOrPrivateRoute(route)
 }
 
@@ -90,8 +88,8 @@ function behoortTotDoelgroep(bvo: Bevolkingsonderzoek, landingOverzicht: Landing
 	return false
 }
 
-function redirect(route: RouteDef) {
+function redirect(route: RouteDef): JSX.Element {
 	const {name, redirectPage} = route
 	return <Route key={name} {...{...route, component: undefined}}
-				  element={<Navigate to={redirectPage ?? "/"}/>}/>
+	              element={<Navigate to={redirectPage ?? "/"}/>}/>
 }

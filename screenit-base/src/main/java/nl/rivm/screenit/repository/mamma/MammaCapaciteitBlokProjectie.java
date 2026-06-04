@@ -43,8 +43,6 @@ public class MammaCapaciteitBlokProjectie
 
 	private Integer aantalOnderzoeken;
 
-	private boolean minderValideAfspraakMogelijk;
-
 	private Date afspraakVanaf;
 
 	private BigDecimal opkomstkans;

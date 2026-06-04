@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.base.angular;
  */
 
 import java.io.IOException;
-import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.filter.SecurityHeadersFilter;
@@ -55,15 +54,6 @@ public abstract class AngularBasePage extends MedewerkerBasePage
 	@SpringBean(name = "medewerkerPortaalResourceUrl")
 	private String medewerkerPortaalResourceUrl;
 
-	private final List<String> scripts = List.of(
-		"polyfills.js",
-		"main.js"
-	);
-
-	private final List<String> styles = List.of(
-		"styles.css"
-	);
-
 	protected abstract String getComponent();
 
 	@SpringBean(name = "applicationEnvironment")
@@ -94,7 +84,7 @@ public abstract class AngularBasePage extends MedewerkerBasePage
 		};
 		add(appRoot);
 
-		var scriptElements = getAngularScriptElements();
+		var scriptElements = getAngularScriptElement();
 		add(scriptElements);
 
 		try
@@ -111,26 +101,24 @@ public abstract class AngularBasePage extends MedewerkerBasePage
 		}
 	}
 
-	private RepeatingView getAngularScriptElements()
+	private RepeatingView getAngularScriptElement()
 	{
 		var scriptElements = new RepeatingView("angularScripts");
-		for (var script : scripts)
+		var script = "main.js";
+		var scriptEl = new WebMarkupContainer(script)
 		{
-			var scriptEl = new WebMarkupContainer(script)
+			@Override
+			protected void onComponentTag(ComponentTag tag)
 			{
-				@Override
-				protected void onComponentTag(ComponentTag tag)
-				{
-					super.onComponentTag(tag);
+				super.onComponentTag(tag);
 
-					tag.getAttributes().put(JavaScriptUtils.ATTR_CSP_NONCE, WebApplication.get().getCspSettings().getNonce(RequestCycle.get()));
-					tag.getAttributes().put(JavaScriptUtils.ATTR_SCRIPT_SRC, medewerkerPortaalResourceUrl + script + "?version=" + environmentInfoService.getVersion());
-					tag.getAttributes().put(JavaScriptUtils.ATTR_TYPE, "module");
-				}
-			};
-			scriptEl.setOutputMarkupId(true);
-			scriptElements.add(scriptEl);
-		}
+				tag.getAttributes().put(JavaScriptUtils.ATTR_CSP_NONCE, WebApplication.get().getCspSettings().getNonce(RequestCycle.get()));
+				tag.getAttributes().put(JavaScriptUtils.ATTR_SCRIPT_SRC, medewerkerPortaalResourceUrl + script + "?version=" + environmentInfoService.getVersion());
+				tag.getAttributes().put(JavaScriptUtils.ATTR_TYPE, "module");
+			}
+		};
+		scriptEl.setOutputMarkupId(true);
+		scriptElements.add(scriptEl);
 		return scriptElements;
 	}
 
@@ -157,11 +145,9 @@ public abstract class AngularBasePage extends MedewerkerBasePage
 	{
 		super.renderHead(response);
 
-		for (var style : styles)
-		{
-			response.render(
-				new CssUrlReferenceHeaderItem(medewerkerPortaalResourceUrl + style + "?version=" + environmentInfoService.getVersion(), "screen", "stylesheet"));
-		}
+		var style = "styles.css";
+		response.render(
+			new CssUrlReferenceHeaderItem(medewerkerPortaalResourceUrl + style + "?version=" + environmentInfoService.getVersion(), "screen", "stylesheet"));
 		if (Boolean.TRUE.equals(testModus))
 		{
 			response.render(CssHeaderItem.forUrl("assets/css/test.css"));

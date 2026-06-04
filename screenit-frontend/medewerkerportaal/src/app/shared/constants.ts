@@ -24,6 +24,7 @@ import { WeekdagOptie } from '@shared/types/weekdag-optie'
 export const NL_DATE_FORMAT = 'dd-MM-yyyy'
 export const NL_DATE_TIME_FORMAT = 'dd-MM-yyyy HH:mm'
 export const DATE_FORMAT = 'yyyy-MM-dd'
+export const COMPACT_DATE_FORMAT = 'yyyyMMdd'
 export const ISO_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
 export const LOCAL_TIME_FORMAT = 'HH:mm:ss'
 export const TIME_FORMAT = 'HH:mm'

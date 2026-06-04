@@ -94,8 +94,6 @@ public class PlanningCapaciteitBlokController
 		LocalDateTime vanaf = DateUtil.toLocalDateTime(capaciteitBlokDto.vanaf);
 		blok.setVanaf(vanaf.toLocalTime());
 		blok.setTot(DateUtil.toLocalTime(capaciteitBlokDto.tot));
-
-		blok.setMinderValideAfspraakMogelijk(capaciteitBlokDto.minderValideAfspraakMogelijk);
 		capaciteitBlokService.updateMindervalideReserveringenVoorCapaciteitBlok(capaciteitBlokDto.getMindervalideReserveringen(), blok);
 
 		if (MammaCapaciteitBlokType.GEEN_SCREENING.equals(blok.getCapaciteitBlokType()))

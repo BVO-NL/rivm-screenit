@@ -21,12 +21,10 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.screeningse
  * =========================LICENSE_END==================================
  */
 
-import java.util.Arrays;
 import java.util.List;
 
 import lombok.Getter;
 
-import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.service.mamma.MammaScreeningsEenheidService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.base.BasePage;
@@ -47,13 +45,10 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
-import nl.rivm.screenit.model.mamma.enums.MammaDuurMinderValideAfspraak;
 import nl.rivm.screenit.service.OrganisatieService;
-import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
-import nl.topicuszorg.wicket.input.timefield.TimeField;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -61,10 +56,8 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
-import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -142,8 +135,6 @@ public class MammaSEEditPage extends MammaPlanningBasePage
 
 		seWijzigenForm.add(new ScreenitBooleanDropdown("tomosyntheseMogelijk", true, magSeAanpassen));
 
-		maakMindervalideAfsprakenPanel();
-
 		var isMobielDropdownChoice = new ScreenitBooleanDropdown("isMobiel", "Mobiel", "Vast", true, !magAanpassen);
 		seWijzigenForm.add(isMobielDropdownChoice);
 		seWijzigenForm.add(new TijdelijkeBeAanSeValidator(this, (s) -> getString((String) s),
@@ -154,13 +145,6 @@ public class MammaSEEditPage extends MammaPlanningBasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				var meldingMinderValidePeriodes = screeningsEenheidService.valideerMinderValideAfspraakPeriodes(getScreeningsEenheid());
-				if (StringUtils.isNotBlank(meldingMinderValidePeriodes))
-				{
-					error(getString(meldingMinderValidePeriodes));
-					return;
-				}
-
 				var seProxyEnMammograafIpsMatchen = screeningsEenheidService.ipAdressenHebbenZelfdeGemeenschappelijkeBlokken(getScreeningsEenheid());
 				if (!seProxyEnMammograafIpsMatchen)
 				{
@@ -202,28 +186,6 @@ public class MammaSEEditPage extends MammaPlanningBasePage
 		mammografentabel.setVisible(screeningsEenheid.getId() != null); 
 
 		add(mammografentabel);
-	}
-
-	private void maakMindervalideAfsprakenPanel()
-	{
-		var mindervalideContainer = new WebMarkupContainer("mindervalideAfsprakenContainer");
-		var duurMinderValideAfspraak = new ScreenitDropdown<>("duurMinderValideAfspraak", Arrays.asList(MammaDuurMinderValideAfspraak.values()),
-			new EnumChoiceRenderer<>(this));
-		duurMinderValideAfspraak.setRequired(true);
-		mindervalideContainer.add(duurMinderValideAfspraak);
-
-		var minderValidePeriode1Vanaf = new MinderValideAfspraakPeriodeTimeField("minderValidePeriode1Vanaf");
-		var minderValidePeriode1TotEnMet = new MinderValideAfspraakPeriodeTimeField("minderValidePeriode1TotEnMet");
-		mindervalideContainer.add(minderValidePeriode1Vanaf);
-		mindervalideContainer.add(minderValidePeriode1TotEnMet);
-
-		var minderValidePeriode2Vanaf = new MinderValideAfspraakPeriodeTimeField("minderValidePeriode2Vanaf");
-		var minderValidePeriode2TotEnMet = new MinderValideAfspraakPeriodeTimeField("minderValidePeriode2TotEnMet");
-		mindervalideContainer.add(minderValidePeriode2Vanaf);
-		mindervalideContainer.add(minderValidePeriode2TotEnMet);
-
-		mindervalideContainer.setVisible(!preferenceService.getBoolean(PreferenceKey.MAMMA_MINDERVALIDE_RESERVERING_ACTIEF.name(), false));
-		seWijzigenForm.add(mindervalideContainer);
 	}
 
 	private void createOrReplaceCodeComponent(Form<MammaScreeningsEenheid> seWijzigenForm)
@@ -387,26 +349,4 @@ public class MammaSEEditPage extends MammaPlanningBasePage
 		return MammaSEZoekenPage.class;
 	}
 
-	private static class MinderValideAfspraakPeriodeTimeField extends TimeField
-	{
-		MinderValideAfspraakPeriodeTimeField(String id)
-		{
-			super(id, true);
-		}
-
-		@Override
-		public void convertInput()
-		{
-			super.convertInput();
-			if (getInput().startsWith(":"))
-			{
-				setDate(null);
-			}
-			else
-			{
-				setDate(DateUtil.zetSeconden(getDate(), 0));
-			}
-			setConvertedInput(getDate());
-		}
-	}
 }

@@ -173,12 +173,6 @@ public class MammaBaseTestServiceImpl implements MammaBaseTestService
 
 		baseIlmService.verwijderIlmBezwaarPogingen(dossier);
 
-		var deelnamekans = dossier.getDeelnamekans();
-		if (deelnamekans != null)
-		{
-			hibernateService.delete(deelnamekans);
-		}
-
 		baseHL7v24MessageService.verwijderBerichtVoorClient(client, verwijderAlleBerichten);
 
 		var overgeblevenBrieven = hibernateService.getByParameters(MammaBrief.class, Map.of("client", client));

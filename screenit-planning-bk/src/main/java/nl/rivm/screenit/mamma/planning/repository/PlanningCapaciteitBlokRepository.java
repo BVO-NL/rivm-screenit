@@ -57,8 +57,7 @@ public interface PlanningCapaciteitBlokRepository extends BaseJpaRepository<Mamm
 					r.get(MammaCapaciteitBlok_.tot),
 					r.get(MammaCapaciteitBlok_.aantalOnderzoeken),
 					r.get(MammaCapaciteitBlok_.blokType),
-					r.get(MammaCapaciteitBlok_.opmerkingen),
-					r.get(MammaCapaciteitBlok_.minderValideAfspraakMogelijk)))
+					r.get(MammaCapaciteitBlok_.opmerkingen)))
 				.all());
 
 	}

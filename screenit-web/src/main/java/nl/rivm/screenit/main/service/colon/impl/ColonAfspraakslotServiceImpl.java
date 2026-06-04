@@ -61,6 +61,7 @@ import nl.rivm.screenit.model.colon.dto.ColonRoosterBeperkingenDto;
 import nl.rivm.screenit.model.colon.dto.ColonTijdslotDto;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakslotStatus;
+import nl.rivm.screenit.model.colon.enums.ColonIntakeafspraakType;
 import nl.rivm.screenit.model.colon.enums.ColonRoosterBeperking;
 import nl.rivm.screenit.model.colon.enums.ColonTijdslotType;
 import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
@@ -399,9 +400,17 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 			}
 
 			var afspraak = afspraakslot.getAfspraak();
-			if (afspraak != null && ColonAfspraakStatus.VOOR_AGENDA.contains(afspraak.getStatus()))
+			if (afspraak == null)
+			{
+				return afspraakslotStatus;
+			}
+			if (ColonAfspraakStatus.VOOR_AGENDA.contains(afspraak.getStatus()))
 			{
 				afspraakslotStatus = ColonAfspraakslotStatus.INTAKE_GEPLAND;
+			}
+			if (ColonIntakeafspraakType.DIGITAAL == afspraak.getIntakeafspraakType())
+			{
+				afspraakslotStatus = ColonAfspraakslotStatus.DIGITALE_INTAKE;
 			}
 		}
 		return afspraakslotStatus;

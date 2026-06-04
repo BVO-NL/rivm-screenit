@@ -23,6 +23,7 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.contact.colon;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,6 +63,7 @@ import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
 import nl.rivm.screenit.service.colon.PlanningService;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.colon.ColonAfspraakUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -232,7 +234,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 
 		add(new Label("ccAdres", (IModel<String>) () -> Strings
 			.escapeMarkup(AdresUtil.getVolledigeAdresString(getModelObject().getKamer().getIntakelocatie().getAdres())).toString()).setEscapeModelStrings(false));
-		add(new Label("vanaf", DateTimeFormatter.ofPattern("EEEE dd-MM-yyyy HH:mm").format(afspraak.getVanaf())));
+		add(new Label("vanaf", getAfspraakDatumString(ColonClientAfspraakVerplaatsenPanel.this.getModelObject().getVanaf(), DateTimeFormatter.ofPattern("EEEE dd-MM-yyyy HH:mm"))));
 	}
 
 	private void addOrReplaceMedischeRedenKeuze(AjaxRequestTarget target)
@@ -386,8 +388,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 		tijdContainer.setVisible(!buitenRooster.getObject());
 		afspraakDetails.add(tijdContainer);
 
-		var vanaf = DateLabel.forDatePattern("vanaf", Model.of(gekozenVrijSlotZonderKamer.getStartTijd()), "EEEE dd-MM-yyyy HH:mm");
-		tijdContainer.add(vanaf);
+		tijdContainer.add(DateLabel.forDatePattern("vanaf", Model.of(gekozenVrijSlotZonderKamer.getStartTijd()), "EEEE dd-MM-yyyy HH:mm"));
 
 		var tijdWijzigen = new IndicatingAjaxLink<Void>("tijdWijzigen")
 		{
@@ -677,7 +678,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 			if (laatsteAfspraak != null)
 			{
 				return List.of(String.format("coloscopie intake afspraak van %1$s in %2$s van %3$s verplaatsen naar %4$s in %5$s van %6$s",
-					format.format(laatsteAfspraak.getVanaf()), laatsteAfspraak.getKamer().getNaam(), laatsteAfspraak.getKamer().getIntakelocatie().getNaam(),
+					getAfspraakDatumString(laatsteAfspraak.getVanaf(), format), laatsteAfspraak.getKamer().getNaam(), laatsteAfspraak.getKamer().getIntakelocatie().getNaam(),
 					format.format(nieuweAfspraak.getVanaf()), nieuweAfspraak.getKamer().getNaam(), nieuweAfspraak.getKamer().getIntakelocatie().getNaam()));
 			}
 			else
@@ -690,6 +691,17 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 		{
 			return List.of("Coloscopie intake afspraak kan niet worden verplaatst. Niet alle gegevens zijn geselecteerd");
 		}
+	}
+
+	private String getAfspraakDatumString(LocalDateTime vanaf, DateTimeFormatter formatter)
+	{
+		if (vanaf == null)
+		{
+			return "";
+		}
+
+		return afspraakService.isDigitaleAfspraakBeschikbaar() && ColonAfspraakUtil.isDigitaal(getModelObject()) ?
+			ColonAfspraakUtil.formatWeekDigitaleIntake(vanaf).toLowerCase() : formatter.format(vanaf);
 	}
 
 	public Map<ExtraOpslaanKey, Object> getOpslaanObjecten()

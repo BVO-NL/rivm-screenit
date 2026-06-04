@@ -337,6 +337,8 @@ public class GbaServiceImpl implements GbaService
 		}
 		client.setGbaStatus(GbaStatus.AFGEVOERD);
 		client.setRedenIntrekkenGbaIndicatieDoorBvo(RedenIntrekkenGbaIndicatie.NIET_INGETROKKEN);
+		var aantalIndicatiesIngetrokkenAfgevoerd = verwerkingLog.getAantalIndicatiesIngetrokkenAfgevoerd();
+		verwerkingLog.setAantalIndicatiesIngetrokkenAfgevoerd(aantalIndicatiesIngetrokkenAfgevoerd != null ? aantalIndicatiesIngetrokkenAfgevoerd + 1 : 1);
 		hibernateService.saveOrUpdate(client);
 		hibernateService.getHibernateSession().flush();
 

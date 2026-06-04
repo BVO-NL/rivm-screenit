@@ -19,6 +19,6 @@
  * =========================LICENSE_END==================================
  */
 export type TelefoonNummerDto = {
-    telefoonnummer1: string,
-    telefoonnummer2: string
+	telefoonnummer1: string,
+	telefoonnummer2?: string
 }

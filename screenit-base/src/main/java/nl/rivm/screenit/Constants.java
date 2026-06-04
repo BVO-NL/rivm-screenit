@@ -149,6 +149,8 @@ public class Constants
 
 	public static final String HTTP_HEADER_SSL_CLIENT_CERT = "SSL_CLIENT_CERT";
 
+	public static final String HTTP_HEADER_CF_CERT_SUBJECT_DN = "cf-cert-subject-dn";
+
 	public static final String BK_TNUMMER_ELEKTRONISCH = "T8888888";
 
 	public static final String RONDE_AFROND_REDEN_BUITEN_DOELGROEP = "Cli\u00EBnt behoort niet meer tot de doelgroep";

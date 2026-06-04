@@ -22,8 +22,10 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.medewerker;
  */
 
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -32,12 +34,10 @@ import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.service.MedewerkerService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.base.BasePage;
-import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxLink;
 import nl.rivm.screenit.main.web.component.ScreenitDateTextField;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.ScreenitIndicatingAjaxSubmitLink;
-import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.component.validator.AchternaamValidator;
 import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
@@ -50,10 +50,9 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.UploadMedewerker
 import nl.rivm.screenit.main.web.gebruiker.login.PasswordChangePanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Aanhef;
-import nl.rivm.screenit.model.Functie;
 import nl.rivm.screenit.model.InlogStatus;
 import nl.rivm.screenit.model.Medewerker;
-import nl.rivm.screenit.model.Titel;
+import nl.rivm.screenit.model.MedewerkerParameterKey;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.InlogMethode;
@@ -63,9 +62,11 @@ import nl.rivm.screenit.service.AuthenticatieService;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.BaseMedewerkerService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.MedewerkerParameterService;
 import nl.rivm.screenit.service.StamtabellenService;
 import nl.rivm.screenit.service.WachtwoordService;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.EnumStringUtil;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.yubikey.model.YubiKey;
 
@@ -82,10 +83,11 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -94,6 +96,14 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.PatternValidator;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.wicketstuff.shiro.ShiroConstraint;
+
+import static java.util.stream.Collectors.toList;
+import static nl.rivm.screenit.main.web.component.ComponentHelper.addDropDownChoice;
+import static nl.rivm.screenit.main.web.component.ComponentHelper.addDropDownChoiceINaam;
+import static nl.rivm.screenit.main.web.component.ComponentHelper.addTextField;
+import static nl.rivm.screenit.main.web.component.ComponentHelper.newCheckBox;
+import static nl.rivm.screenit.main.web.component.ComponentHelper.newDatePicker;
+import static nl.rivm.screenit.main.web.component.ComponentHelper.newDropDownChoice;
 
 @SecurityConstraint(
 	actie = Actie.INZIEN,
@@ -125,6 +135,9 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 	@SpringBean
 	private AuthenticatieService authenticatieService;
 
+	@SpringBean
+	private MedewerkerParameterService medewerkerParameterService;
+
 	private Label bigNummerLabel;
 
 	private Component bigNummer;
@@ -149,14 +162,14 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 
 	private void init(IModel<Medewerker> model)
 	{
-		Medewerker medewerker = model.getObject();
+		var medewerker = model.getObject();
 
 		if (medewerker.getYubiKey() == null)
 		{
 			medewerker.setYubiKey(new YubiKey());
 		}
 
-		Label label = new Label("label", Model.of("Bewerk medewerker"));
+		var label = new Label("label", Model.of("Bewerk medewerker"));
 		if (medewerker.getId() == null)
 		{
 			label = new Label("label", Model.of("Medewerker toevoegen"));
@@ -182,7 +195,6 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 
 	public class MedewerkerEditForm extends ScreenitForm<Medewerker>
 	{
-
 		@Getter
 		@Setter
 		private String wachtwoordControle;
@@ -209,6 +221,10 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 
 		private UploadMedewerkerImageFormComponent handtekeningField;
 
+		private boolean voorkeurenZichtbaar;
+
+		private Map<MedewerkerParameterKey, Boolean> voorkeuren = new EnumMap<>(MedewerkerParameterKey.class);
+
 		public MedewerkerEditForm(String id, IModel<Medewerker> model)
 		{
 			super(id, model);
@@ -218,39 +234,44 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 		protected void onInitialize()
 		{
 			super.onInitialize();
-			Medewerker medewerker = getModelObject();
-			Actie actie = autorisatieService.getActieVoorMedewerker(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), getModelObject(), Recht.MEDEWERKER_BEHEER);
+			var medewerker = getModelObject();
+			var actie = autorisatieService.getActieVoorMedewerker(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), getModelObject(), Recht.MEDEWERKER_BEHEER);
 
 			isBestaande = medewerker.getId() != null;
 			inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 			isBeheerder = isMinimumActie(actie, Actie.VERWIJDEREN);
-			isZorgverlener = medewerker.getZorgverlener() != null && medewerker.getZorgverlener() == Boolean.TRUE;
+			isZorgverlener = medewerker.getZorgverlener() != null && medewerker.getZorgverlener();
 			eigenGegevens = medewerker.equals(ScreenitSession.get().getIngelogdeOrganisatieMedewerker().getMedewerker()) && isMinimumActie(actie, Actie.AANPASSEN);
 			bestaandUziNummer = medewerker.getUzinummer() != null;
+
+			var voorkeurenActie = autorisatieService.getActieVoorMedewerker(
+				ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), getModelObject(), Recht.MEDEWERKER_VOORKEUREN);
+			voorkeurenZichtbaar = isMinimumActie(voorkeurenActie, Actie.AANPASSEN) && isBestaande;
 
 			addOpslaanButton();
 			addVerwijderenButton(medewerker);
 			addAnnulerenButton();
+			addFields(medewerker);
+		}
 
-			Map<String, Object> restrictions = new HashMap<>();
-			restrictions.put("actief", Boolean.TRUE);
+		private void addFields(Medewerker medewerker)
+		{
+			addTextField(this, "achternaam", true, 100, inzien).add(new AchternaamValidator()).setLabel(Model.of("Achternaam"));
 
-			ComponentHelper.addTextField(this, "achternaam", true, 100, inzien).add(new AchternaamValidator()).setLabel(Model.of("Achternaam"));
+			addDropDownChoice(this, "aanhef", false, Aanhef.aanhefVormenMedewerkers(), inzien);
 
-			ComponentHelper.addDropDownChoice(this, "aanhef", false, Aanhef.aanhefVormenMedewerkers(), inzien);
-
-			ScreenitDropdown<Titel> titel = ComponentHelper.addDropDownChoiceINaam(this, "titel", false, ModelUtil.listRModel(stamtabellenService.getTitels(medewerker), false),
+			var titel = addDropDownChoiceINaam(this, "titel", false, ModelUtil.listRModel(stamtabellenService.getTitels(medewerker), false),
 				inzien);
 			titel.setNullValid(true);
-			ScreenitDropdown<Functie> functie = ComponentHelper.addDropDownChoiceINaam(this, "functie", false,
+			var functie = addDropDownChoiceINaam(this, "functie", false,
 				ModelUtil.listRModel(stamtabellenService.getFuncties(medewerker), false), inzien);
 			functie.setNullValid(true);
-			ComponentHelper.addTextField(this, "voornaam", false, 50, inzien).add(new VoornaamValidator());
-			ComponentHelper.addTextField(this, "voorletters", false, 20, inzien).add(new VoorlettersValidator());
-			ComponentHelper.addTextField(this, "tussenvoegsel", false, 20, inzien).add(new TussenvoegselValidator());
+			addTextField(this, "voornaam", false, 50, inzien).add(new VoornaamValidator());
+			addTextField(this, "voorletters", false, 20, inzien).add(new VoorlettersValidator());
+			addTextField(this, "tussenvoegsel", false, 20, inzien).add(new TussenvoegselValidator());
 			handtekeningField = new UploadMedewerkerImageFormComponent("handtekening", getModel(), UploadMedewerkerImageType.HANDTEKENING);
 			add(handtekeningField.setEnabled(!inzien));
-			Component ondertekenaar = new TextArea<>("ondertekenaar").add(StringValidator.maximumLength(255));
+			var ondertekenaar = new TextArea<>("ondertekenaar").add(StringValidator.maximumLength(255));
 			ondertekenaar.setEnabled(!inzien);
 			add(ondertekenaar);
 
@@ -259,7 +280,7 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 			bigNummerLabel.setOutputMarkupPlaceholderTag(true);
 			add(bigNummerLabel);
 
-			bigNummer = ComponentHelper.addTextField(this, "bignummer", false, 11, inzien)
+			bigNummer = addTextField(this, "bignummer", false, 11, inzien)
 				.add(new ScreenitUniqueFieldValidator<>(Medewerker.class, medewerker.getId(), "bignummer", false)).setVisible(isZorgverlener);
 			bigNummer.setOutputMarkupPlaceholderTag(true);
 			DateTextField geboortedatum = new ScreenitDateTextField("geboortedatum");
@@ -268,13 +289,31 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 			add(geboortedatum);
 			uziContainer = new WebMarkupContainer("uzi-container");
 			uziContainer.setOutputMarkupPlaceholderTag(true);
-			ComponentHelper.addTextField(uziContainer, "uzinummer", false, 9, inzien)
+			addTextField(uziContainer, "uzinummer", false, 9, inzien)
 				.add(new ScreenitUniqueFieldValidator<>(Medewerker.class, medewerker.getId(), "uzinummer", false)).add(new PatternValidator("[0-9]*"));
 			add(uziContainer);
 
-			ComponentHelper.addTextField(this, "patholoogId", false, 25, inzien).setEnabled(!inzien);
+			addTextField(this, "patholoogId", false, 25, inzien).setEnabled(!inzien);
+			addZorgverlenerCheckbox();
+			addTextField(this, "telefoonnummerwerk", false, 25, inzien);
+			addTextField(this, "telefoonnummerextra", false, 25, inzien);
 
-			Component zorgverlenerCheckbox = new CheckBox("zorgverlener").add(new OnChangeAjaxBehavior()
+			Map<String, Object> restrictions = new HashMap<>();
+			restrictions.put("actief", Boolean.TRUE);
+
+			addTextField(this, "emailextra", false, 255, inzien).add(EmailAddressValidator.getInstance()).setLabel(Model.of("E-mailadres"))
+				.add(new ScreenitUniqueFieldValidator<>(Medewerker.class, medewerker.getId(), "emailextra", restrictions));
+			addTextField(this, "woonplaats", false, 80, inzien);
+			addTextField(this, "telefoonnummerprive", false, 25, inzien);
+
+			addYubiContainer();
+			addWachtwoordFragment(medewerker);
+			addVoorkeuren(medewerker);
+		}
+
+		private void addZorgverlenerCheckbox()
+		{
+			var zorgverlenerCheckbox = new CheckBox("zorgverlener").add(new OnChangeAjaxBehavior()
 			{
 				@Override
 				protected void onUpdate(AjaxRequestTarget target)
@@ -286,53 +325,74 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 					else
 					{
 						isZorgverlener = Boolean.FALSE;
-
 					}
 					bigNummer.setVisible(isZorgverlener);
 					bigNummerLabel.setVisible(isZorgverlener);
 					target.add(bigNummerLabel, bigNummer);
-
 				}
-
 			});
 			zorgverlenerCheckbox.setEnabled(!inzien && isBeheerder);
 			zorgverlenerCheckbox.setOutputMarkupId(true);
 			add(zorgverlenerCheckbox);
+		}
 
-			ComponentHelper.addTextField(this, "telefoonnummerwerk", false, 25, inzien);
-			ComponentHelper.addTextField(this, "telefoonnummerextra", false, 25, inzien);
-
-			ComponentHelper.addTextField(this, "emailextra", false, 255, inzien).add(EmailAddressValidator.getInstance()).setLabel(Model.of("E-mailadres"))
-				.add(new ScreenitUniqueFieldValidator<>(Medewerker.class, medewerker.getId(), "emailextra", restrictions));
-			ComponentHelper.addTextField(this, "woonplaats", false, 80, inzien);
-			ComponentHelper.addTextField(this, "telefoonnummerprive", false, 25, inzien);
-
+		private void addYubiContainer()
+		{
 			yubiContainer = new WebMarkupContainer("yubi-container");
 			yubiContainer.add(new PasswordTextField("privateYubiIdentity", new PropertyModel<>(MedewerkerEditForm.this, "privateYubiIdentity")).setRequired(false)
 				.setOutputMarkupId(true).setEnabled(!inzien && isBeheerder).add(StringValidator.maximumLength(18)));
-			ComponentHelper.addTextField(yubiContainer, "yubiKey.secretKey", false, 48, inzien || !isBeheerder);
+			addTextField(yubiContainer, "yubiKey.secretKey", false, 48, inzien || !isBeheerder);
 			yubiContainer.setOutputMarkupPlaceholderTag(true);
 			add(yubiContainer);
-			addWachtwoordFragment(medewerker);
 		}
 
-		private void addAnnulerenButton()
+		private void addVoorkeuren(Medewerker medewerker)
 		{
-			AjaxLink<Medewerker> annuleren = new AjaxLink<>("annuleren")
+			var voorkeurenContainer = new WebMarkupContainer("voorkeuren");
+			voorkeurenContainer.setVisible(voorkeurenZichtbaar);
+
+			var booleanKeys = Stream.of(MedewerkerParameterKey.values())
+				.filter(key -> Boolean.class.equals(key.getValueType()))
+				.collect(toList());
+
+			for (var key : booleanKeys)
+			{
+				var waarde = medewerkerParameterService.getMedewerkerParameter(medewerker, key, Boolean.FALSE);
+				voorkeuren.put(key, waarde);
+			}
+
+			var parameters = new ListView<MedewerkerParameterKey>("parameters", booleanKeys)
 			{
 				@Override
-				public void onClick(AjaxRequestTarget target)
+				protected void populateItem(ListItem<MedewerkerParameterKey> item)
 				{
-					setResponsePage(MedewerkerZoeken.class);
+					var key = item.getModelObject();
+					item.add(new Label("parameterLabel", getString(EnumStringUtil.getPropertyString(key))));
+					IModel<Boolean> checkboxModel = new IModel<>()
+					{
+						@Override
+						public Boolean getObject()
+						{
+							return Boolean.TRUE.equals(voorkeuren.get(key));
+						}
+
+						@Override
+						public void setObject(Boolean waarde)
+						{
+							voorkeuren.put(key, Boolean.TRUE.equals(waarde));
+						}
+					};
+					item.add(newCheckBox("parameterCheckbox", checkboxModel, true));
 				}
 			};
-			add(annuleren);
-			annuleren.setVisible(false);
+
+			voorkeurenContainer.add(parameters);
+			add(voorkeurenContainer);
 		}
 
 		private void addWachtwoordFragment(Medewerker medewerker)
 		{
-			FormComponent<String> gebruikersnaam = ComponentHelper.addTextField(this, "gebruikersnaam", true, 30, inzien);
+			var gebruikersnaam = addTextField(this, "gebruikersnaam", true, 30, inzien);
 			gebruikersnaam.setEnabled(!inzien && isBeheerder);
 			gebruikersnaam.add(new ScreenitUniqueFieldValidator<>(Medewerker.class, medewerker.getId(), "gebruikersnaam", true));
 			gebruikersnaam.setLabel(Model.of("Gebruikersnaam"));
@@ -343,7 +403,7 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 
 			add(geenWachtwoordContainer);
 
-			ScreenitDropdown<InlogMethode> inlogMethode = ComponentHelper.newDropDownChoice("inlogMethode", new ListModel<>(Arrays.asList(InlogMethode.values())),
+			var inlogMethode = newDropDownChoice("inlogMethode", new ListModel<>(Arrays.asList(InlogMethode.values())),
 				new EnumChoiceRenderer<>(), true);
 
 			inlogMethode.add(new OnChangeAjaxBehavior()
@@ -377,18 +437,18 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 
 			});
 			inlogMethode.setEnabled(!inzien && isBeheerder);
-			WebMarkupContainer inlogMethodeContainer = new WebMarkupContainer("inlogMethodeContainer");
+			var inlogMethodeContainer = new WebMarkupContainer("inlogMethodeContainer");
 			inlogMethodeContainer.setOutputMarkupId(true);
 			add(inlogMethodeContainer);
 			inlogMethodeContainer.add(inlogMethode);
 
-			ComponentHelper.addTextField(this, "medewerkercode", false, 30, true);
+			addTextField(this, "medewerkercode", false, 30, true);
 
-			final WebMarkupContainer blokkeerContainer = new WebMarkupContainer("blokkeerContainer");
+			final var blokkeerContainer = new WebMarkupContainer("blokkeerContainer");
 			blokkeerContainer.setOutputMarkupPlaceholderTag(true);
 
 			geblokkeerd = !InlogStatus.OK.equals(medewerker.getInlogstatus());
-			final Model<Boolean> geblokkeerdModel = Model.of(geblokkeerd);
+			final var geblokkeerdModel = Model.of(geblokkeerd);
 			Component blokkeer = new CheckBox("disabledOfGeblokkeerd", geblokkeerdModel);
 			blokkeer.setEnabled(!inzien);
 			blokkeerContainer.setVisible(isBeheerder);
@@ -405,8 +465,8 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 			blokkeerContainer.add(blokkeer);
 			add(blokkeerContainer);
 
-			add(ComponentHelper.newDatePicker("actiefVanaf").setEnabled(!inzien));
-			add(ComponentHelper.newDatePicker("actiefTotEnMet").setEnabled(!inzien));
+			add(newDatePicker("actiefVanaf").setEnabled(!inzien));
+			add(newDatePicker("actiefTotEnMet").setEnabled(!inzien));
 
 			laatsteWachtwoordWijzigingContainer = new WebMarkupContainer("laatsteWachtwoordWijzigingContainer");
 			var laatsteWachtwoordWijziging = new TextField<>("laatsteWachtwoordWijziging", Model.of(DateUtil.formatShortDateTime(medewerker.getLaatsteKeerWachtwoordGewijzigd())));
@@ -418,13 +478,18 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 
 			add(laatsteWachtwoordWijzigingContainer);
 
-			IndicatingAjaxLink<Object> resetWachtwoord = new IndicatingAjaxLink<>("resetWachtwoord")
+			addResetWachtwoordLink();
+			addChangeWachtwoordLink();
+		}
+
+		private void addResetWachtwoordLink()
+		{
+			var resetWachtwoord = new IndicatingAjaxLink<>("resetWachtwoord")
 			{
 				@Override
 				public void onClick(AjaxRequestTarget target)
 				{
-
-					Medewerker medewerker = MedewerkerEditForm.this.getModelObject();
+					var medewerker = MedewerkerEditForm.this.getModelObject();
 					if (StringUtils.isNotBlank(medewerker.getEmailextra()))
 					{
 						medewerkerService.resetWachtwoord(medewerker);
@@ -435,17 +500,19 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 						error(getString("error.geenmailadres.voor.reset.wachtwoord"));
 					}
 				}
-
 			};
 			resetWachtwoord.setVisible(isBestaande && !eigenGegevens && isBeheerder);
 			add(resetWachtwoord);
+		}
 
-			IndicatingAjaxLink<Object> changeWachtwoord = new IndicatingAjaxLink<>("changeWachtwoord")
+		private void addChangeWachtwoordLink()
+		{
+			var changeWachtwoord = new IndicatingAjaxLink<>("changeWachtwoord")
 			{
 				@Override
 				public void onClick(AjaxRequestTarget target)
 				{
-					Medewerker medewerker = MedewerkerEditForm.this.getModelObject();
+					var medewerker = MedewerkerEditForm.this.getModelObject();
 					dialog.setContent(new PasswordChangePanel(IDialog.CONTENT_ID, medewerker)
 					{
 						@Override
@@ -456,7 +523,6 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 					});
 					dialog.open(target);
 				}
-
 			};
 			changeWachtwoord.setVisible(isBestaande && eigenGegevens);
 			add(changeWachtwoord);
@@ -480,7 +546,7 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 				@Override
 				public void onClick(AjaxRequestTarget target)
 				{
-					Medewerker medewerker = MedewerkerEditForm.this.getModelObject();
+					var medewerker = MedewerkerEditForm.this.getModelObject();
 
 					baseMedewerkerService.inActiveerMedewerker(medewerker);
 					if (Boolean.FALSE.equals(medewerker.getActief()))
@@ -499,7 +565,6 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 				{
 					return Boolean.FALSE.equals(MedewerkerEditForm.this.getModelObject().getActief());
 				}
-
 			};
 
 			if (Boolean.FALSE.equals(medewerker.getActief()))
@@ -516,16 +581,16 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 
 		private void addOpslaanButton()
 		{
-			ScreenitIndicatingAjaxSubmitLink opslaan = new ScreenitIndicatingAjaxSubmitLink("opslaan", this)
+			var opslaan = new ScreenitIndicatingAjaxSubmitLink("opslaan", this)
 			{
 				@Override
 				protected void onSubmit(AjaxRequestTarget target)
 				{
-					Medewerker medewerker = getModelObject();
+					var medewerker = getModelObject();
 					if (medewerker.getInlogMethode().equals(InlogMethode.UZIPAS) || medewerker.getEmailextra() != null)
 					{
-						InlogStatus oldInlogstatus = medewerker.getInlogstatus();
-						boolean wordGeblokkeerd = false;
+						var oldInlogstatus = medewerker.getInlogstatus();
+						var wordGeblokkeerd = false;
 						if (Boolean.TRUE.equals(geblokkeerd))
 						{
 							if (InlogStatus.OK.equals(oldInlogstatus))
@@ -544,13 +609,13 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 							medewerker.setInlogstatus(InlogStatus.OK);
 						}
 
-						YubiKey yubiKey = medewerker.getYubiKey();
+						var yubiKey = medewerker.getYubiKey();
 						if (yubiKey != null && yubiKey.getSecretKey() != null)
 						{
 							yubiKey.setSecretKey(yubiKey.getSecretKey().replaceAll(" ", ""));
 						}
 
-						boolean error = false;
+						var error = false;
 						if (eigenGegevens)
 						{
 							if (StringUtils.isBlank(wachtwoord))
@@ -594,6 +659,10 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 
 								logAction(LogGebeurtenis.MEDEWERKER_WIJZIG, medewerker);
 								medewerkerService.saveOrUpdateMedewerker(medewerker, isBestaande, wordGeblokkeerd);
+								if (voorkeurenZichtbaar)
+								{
+									medewerkerParameterService.saveVoorkeuren(medewerker, voorkeuren);
+								}
 								if (handtekeningField.hasFile())
 								{
 									handtekeningField.uploadImage(target);
@@ -633,10 +702,8 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 									ScreenitSession.get().info(getLocalizer().getString("action.save.medewerkernew", this));
 									BasePage.markeerFormulierenOpgeslagen(target);
 								}
-
 							}
 						}
-
 					}
 					else
 					{
@@ -645,6 +712,20 @@ public class MedewerkerBasisgegevens extends MedewerkerBeheer
 				}
 			};
 			add(opslaan);
+		}
+
+		private void addAnnulerenButton()
+		{
+			AjaxLink<Medewerker> annuleren = new AjaxLink<>("annuleren")
+			{
+				@Override
+				public void onClick(AjaxRequestTarget target)
+				{
+					setResponsePage(MedewerkerZoeken.class);
+				}
+			};
+			add(annuleren);
+			annuleren.setVisible(false);
 		}
 	}
 }

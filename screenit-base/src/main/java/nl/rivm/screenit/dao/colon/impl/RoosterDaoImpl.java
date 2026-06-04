@@ -36,8 +36,10 @@ import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamerFilter;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
+import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
+import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.query.NativeQuery;
@@ -55,6 +57,12 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 
 	@Autowired
 	private ICurrentDateSupplier currentDateSupplier;
+
+	@Autowired
+	private SimplePreferenceService preferenceService;
+
+	@Autowired
+	private ColonBaseAfspraakService afspraakService;
 
 	@Override
 	public List<ColonAfspraakslotListViewWrapper> getAlleAfspraakslotsInPeriode(String sortProperty, boolean asc, RoosterListViewFilter filter,
@@ -239,6 +247,24 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 				   from colon.tijdslot b \
 				   where b.type='BLOKKADE'\
 				)""");
+
+			if (filter.isDigitaleAfspraak() && afspraakService.isDigitaleAfspraakBeschikbaar())
+			{
+
+				querySB.append("""
+					, eerste_vrije_slots AS MATERIALIZED ( \
+					   SELECT k_sub.intakelocatie AS intakelocatie_id, DATE_TRUNC('week', ts_sub.vanaf) AS week, MIN(ts_sub.vanaf) AS min_vanaf \
+					   FROM colon.tijdslot ts_sub \
+					   JOIN colon.afspraakslot afs_sub ON afs_sub.id = ts_sub.id \
+					   JOIN colon.intakekamer k_sub ON ts_sub.kamer = k_sub.id AND k_sub.actief = true \
+					   WHERE ts_sub.type != 'BLOKKADE' \
+					   AND NOT EXISTS(SELECT 1 FROM colon.intakeafspraak ia_sub WHERE ia_sub.afspraakslot = afs_sub.id AND (ia_sub.status = :status1 OR ia_sub.status = :status2)) \
+					   AND NOT EXISTS(SELECT 1 FROM blokkades b_sub WHERE b_sub.kamer = ts_sub.kamer AND b_sub.vanaf < ts_sub.tot AND b_sub.tot > ts_sub.vanaf) \
+					   AND DATE_TRUNC('week', ts_sub.vanaf) >= DATE_TRUNC('week', CAST(:vanaf AS TIMESTAMP)) \
+					   AND DATE_TRUNC('week', ts_sub.vanaf) <= DATE_TRUNC('week', CAST(:totEnMet AS TIMESTAMP) - INTERVAL '1 day') \
+					   GROUP BY k_sub.intakelocatie, DATE_TRUNC('week', ts_sub.vanaf) \
+					)""");
+			}
 		}
 
 		if (!Boolean.TRUE.equals(filter.getAlleenIntakelocaties()))
@@ -283,12 +309,21 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 		querySB.append(" and k.actief = true");
 		if (!Boolean.TRUE.equals(filter.getAlleenIntakelocaties()))
 		{
-			querySB.append(" and not exists(select id from colon.intakeafspraak ia where ia.afspraakslot = afs.id and (ia.status=:status1 or ia.status=:status2))");
-			params.put("status1", ColonAfspraakStatus.GEPLAND.name());
-			params.put("status2", ColonAfspraakStatus.UITGEVOERD.name());
-			querySB.append(" and not exists(select 1 from blokkades b where b.kamer=ts.kamer and b.vanaf<ts.tot and b.tot>ts.vanaf) ");
 
-			querySB.append(" and ts.vanaf>:vanaf and ts.vanaf<:totEnMet");
+			if (!filter.isDigitaleAfspraak())
+			{
+				querySB.append(" and not exists(select id from colon.intakeafspraak ia where ia.afspraakslot = afs.id and (ia.status=:status1 or ia.status=:status2))");
+				params.put("status1", ColonAfspraakStatus.GEPLAND.name());
+				params.put("status2", ColonAfspraakStatus.UITGEVOERD.name());
+				querySB.append(" and not exists(select 1 from blokkades b where b.kamer=ts.kamer and b.vanaf<ts.tot and b.tot>ts.vanaf) ");
+				querySB.append(" and ts.vanaf>:vanaf and ts.vanaf<:totEnMet");
+			}
+			else
+			{
+
+				querySB.append(" and DATE_TRUNC('week', ts.vanaf) >= DATE_TRUNC('week', CAST(:vanaf AS TIMESTAMP))");
+				querySB.append(" and DATE_TRUNC('week', ts.vanaf) <= DATE_TRUNC('week', CAST(:totEnMet AS TIMESTAMP) - INTERVAL '1 day')");
+			}
 			params.put("vanaf", filter.getVanaf());
 			params.put("totEnMet", DateUtil.plusDagen(filter.getTotEnMet(), 1));
 			if (filter.getIntakelocatieId() != null)
@@ -302,7 +337,6 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 				params.put("nietIntakelocatieId", filter.getNietIntakelocatieId());
 			}
 		}
-
 		if (StringUtils.isNotBlank(filter.getNaam()))
 		{
 			querySB.append(" and il.naam ILIKE '%' || :naam || '%'");
@@ -312,6 +346,25 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 		{
 			querySB.append(" and plaats ILIKE '%' || :plaats || '%'");
 			params.put("plaats", filter.getPlaats());
+		}
+
+		if (afspraakService.isDigitaleAfspraakBeschikbaar())
+		{
+			if (filter.isDigitaleAfspraak())
+			{
+				params.put("status1", ColonAfspraakStatus.GEPLAND.name());
+				params.put("status2", ColonAfspraakStatus.UITGEVOERD.name());
+				querySB.append(
+					" and exists(select 1 from algemeen.organisatie_parameter op where op.organisatie = il.id and op.key = 'COLON_DIGITALE_INTAKE_ENABLED' and lower(op.value) = 'true')");
+
+				querySB.append(
+					" and exists(select 1 from eerste_vrije_slots evs where evs.intakelocatie_id = il.id and evs.min_vanaf = ts.vanaf)");
+			}
+			if (filter.isAsaScoreBovenDrie())
+			{
+				querySB.append(
+					" and exists(select 1 from algemeen.organisatie_parameter op where op.organisatie = il.id and op.key = 'COLON_CLIENTEN_HOGE_ASA_SCORE_NIET_BEHANDELEN' and lower(op.value) = 'false')");
+			}
 		}
 
 		if (sortProperty != null && !sortProperty.equals("niet"))
@@ -361,11 +414,12 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 
 		querySB.append("select {k.*}");
 
+//6163cfe2-9665-4467-8b99-19c916a053f7
 		querySB.append(" from colon.afspraakslot afs");
 		querySB.append(" join colon.tijdslot ts on afs.id=ts.id");
 		querySB.append(" join colon.intakekamer k on ts.kamer=k.id");
 
-//82bc81ef-248a-48e8-b752-9a5de33a088f
+//6163cfe2-9665-4467-8b99-19c916a053f7
 		var params = new HashMap<String, Object>();
 		querySB.append(" and k.actief = true");
 		querySB.append(" and not exists(select id from colon.intakeafspraak ia where ia.afspraakslot = afs.id and (ia.status=:status1 or ia.status=:status2))");

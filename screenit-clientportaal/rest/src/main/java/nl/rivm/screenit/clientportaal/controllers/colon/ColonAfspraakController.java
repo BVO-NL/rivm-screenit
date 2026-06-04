@@ -29,8 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.clientportaal.controllers.AbstractController;
 import nl.rivm.screenit.clientportaal.mappers.colon.ColonAfspraakZoekFilterMapper;
+import nl.rivm.screenit.clientportaal.mappers.colon.ColonIntakeAfspraakMapper;
 import nl.rivm.screenit.clientportaal.model.colon.ColonAfspraakZoekFilterDto;
-import nl.rivm.screenit.clientportaal.model.colon.ColonIntakeAfspraakDto;
+import nl.rivm.screenit.clientportaal.model.colon.ColonIntakeafspraakDto;
 import nl.rivm.screenit.clientportaal.model.colon.ColonVrijSlotZonderKamerDto;
 import nl.rivm.screenit.clientportaal.services.colon.ColonAfspraakService;
 import nl.rivm.screenit.model.Client;
@@ -47,8 +48,6 @@ import nl.rivm.screenit.util.ExceptionConverter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -63,7 +62,6 @@ import static nl.rivm.screenit.model.enums.BriefType.COLON_INTAKE_GEWIJZIGD;
 @RestController
 @Slf4j
 @AllArgsConstructor
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class ColonAfspraakController extends AbstractController
 {
 	private final ClientContactService clientContactService;
@@ -76,7 +74,9 @@ public class ColonAfspraakController extends AbstractController
 
 	private final ICurrentDateSupplier dateSupplier;
 
-	private final ColonAfspraakZoekFilterMapper colonAfspraakZoekFilterMapper;
+	private final ColonAfspraakZoekFilterMapper afspraakZoekFilterMapper;
+
+	private final ColonIntakeAfspraakMapper intakeAfspraakMapper;
 
 	private static final int MAX_RESULTS_PER_SEARCH_ITERATION = 100;
 
@@ -118,7 +118,7 @@ public class ColonAfspraakController extends AbstractController
 			if (controleerFilterWaarde(filter))
 			{
 				int resultsSearchIteration;
-				VrijSlotZonderKamerFilter zoekOpFilter = colonAfspraakZoekFilterMapper.vrijSlotToColonVrijSlotZonderKamerDto(filter);
+				VrijSlotZonderKamerFilter zoekOpFilter = afspraakZoekFilterMapper.vrijSlotToColonVrijSlotZonderKamerDto(filter);
 
 				if (filter.getMaxResultsPerSearchInteration() != null)
 				{
@@ -148,14 +148,17 @@ public class ColonAfspraakController extends AbstractController
 	}
 
 	@GetMapping("/huidig")
-	public ResponseEntity<ColonIntakeAfspraakDto> getHuidigeIntakeAfspraak(Authentication authentication)
+	public ResponseEntity<ColonIntakeafspraakDto> getHuidigeIntakeAfspraak(Authentication authentication)
 	{
 		var client = getClient(authentication);
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN)
 			|| clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN))
 		{
 			var huidigeIntakeAfspraak = afspraakService.getHuidigeIntakeAfspraak(client);
-			return ResponseEntity.ok(new ColonIntakeAfspraakDto(huidigeIntakeAfspraak));
+			if (huidigeIntakeAfspraak != null)
+			{
+				return ResponseEntity.ok(intakeAfspraakMapper.intakeAfspraakNaarDto(huidigeIntakeAfspraak));
+			}
 		}
 		return ResponseEntity.ok().build();
 	}

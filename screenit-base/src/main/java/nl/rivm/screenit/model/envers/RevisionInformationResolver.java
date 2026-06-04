@@ -38,9 +38,10 @@ public class RevisionInformationResolver
 	{
 		for (RevisionInformationResolverDelegate delegate : delegates)
 		{
-			if (delegate.getAccount() != null)
+			var account = delegate.getAccount();
+			if (account != null)
 			{
-				return delegate.getAccount();
+				return account;
 			}
 		}
 
@@ -50,6 +51,11 @@ public class RevisionInformationResolver
 	public static void registerDelegate(RevisionInformationResolverDelegate delegate)
 	{
 		delegates.add(delegate);
+	}
+
+	public static void clearDelegates()
+	{
+		delegates.clear();
 	}
 
 	public static RevisionKenmerk getKenmerk()

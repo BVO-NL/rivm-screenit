@@ -74,14 +74,14 @@ public final class AdresUtil
 
 			String postcode = adres.getPostcode();
 			String plaats = getTeGebruikenWoonplaats(adres);
-			if (adresString.length() > 0 && (StringUtils.isNotBlank(postcode) || StringUtils.isNotBlank(plaats)))
+			if (!adresString.isEmpty() && (StringUtils.isNotBlank(postcode) || StringUtils.isNotBlank(plaats)))
 			{
 				adresString.append(",");
 			}
 
 			if (StringUtils.isNotBlank(postcode))
 			{
-				if (adresString.length() > 0)
+				if (!adresString.isEmpty())
 				{
 					adresString.append(" ");
 				}
@@ -89,7 +89,7 @@ public final class AdresUtil
 			}
 			if (StringUtils.isNotBlank(plaats))
 			{
-				if (adresString.length() > 0)
+				if (!adresString.isEmpty())
 				{
 					adresString.append(" ");
 				}
@@ -119,7 +119,7 @@ public final class AdresUtil
 
 		if (!Strings.isNullOrEmpty(adres.getHuisletter()))
 		{
-			if (adresString.length() > 0)
+			if (!adresString.isEmpty())
 			{
 				adresString.append(" ");
 			}
@@ -128,7 +128,7 @@ public final class AdresUtil
 
 		if (!Strings.isNullOrEmpty(adres.getHuisnummerToevoeging()))
 		{
-			if (adresString.length() > 0)
+			if (!adresString.isEmpty())
 			{
 				adresString.append(" ");
 			}
@@ -137,7 +137,7 @@ public final class AdresUtil
 
 		if (!Strings.isNullOrEmpty(adres.getHuisnummerAanduiding()))
 		{
-			if (adresString.length() > 0)
+			if (!adresString.isEmpty())
 			{
 				adresString.append(" ");
 			}

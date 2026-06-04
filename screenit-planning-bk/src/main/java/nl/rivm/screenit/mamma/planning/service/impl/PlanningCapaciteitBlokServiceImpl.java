@@ -99,7 +99,7 @@ public class PlanningCapaciteitBlokServiceImpl implements PlanningCapaciteitBlok
 	{
 		var vanaf = blokProjectie.getVanaf();
 		var blok = new PlanningBlok(blokProjectie.getId(), vanaf.toLocalTime(), blokProjectie.getTot().toLocalTime(), blokProjectie.getAantalOnderzoeken(),
-			blokProjectie.getBlokType(), blokProjectie.getOpmerkingen(), blokProjectie.isMinderValideAfspraakMogelijk(), mindervalideReserveringen);
+			blokProjectie.getBlokType(), blokProjectie.getOpmerkingen(), mindervalideReserveringen);
 		var dag = screeningsEenheid.getDagNavigableMap().get(vanaf.toLocalDate());
 		blok.setDag(dag);
 		blok.setScreeningsEenheid(screeningsEenheid);
@@ -116,7 +116,7 @@ public class PlanningCapaciteitBlokServiceImpl implements PlanningCapaciteitBlok
 		var vanaf = DateUtil.toLocalDateTime(blokDto.vanaf);
 		var mindervalideReserveringen = maakMindervalideReserveringen(blokDto);
 		var blok = new PlanningBlok(null, vanaf.toLocalTime(), DateUtil.toLocalTime(blokDto.tot), blokDto.aantalOnderzoeken, blokDto.blokType, blokDto.opmerkingen,
-			blokDto.minderValideAfspraakMogelijk, mindervalideReserveringen);
+			mindervalideReserveringen);
 		blok.setScreeningsEenheid(screeningsEenheid);
 		screeningsEenheid.getBlokSet().add(blok);
 

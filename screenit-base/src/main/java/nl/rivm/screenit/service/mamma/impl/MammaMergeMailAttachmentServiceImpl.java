@@ -21,15 +21,11 @@ package nl.rivm.screenit.service.mamma.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.dto.alg.client.contact.MailAttachmentDto;
 import nl.rivm.screenit.model.DigitaalBerichtTemplate;
@@ -43,11 +39,8 @@ import nl.rivm.screenit.util.DateUtil;
 
 import org.springframework.stereotype.Service;
 
-import static nl.rivm.screenit.Constants.INLINE_ID_SO_LOGO_EMAIL;
-
 @Service
 @AllArgsConstructor
-@Slf4j
 public class MammaMergeMailAttachmentServiceImpl implements MammaMergeMailAttachmentService
 {
 	private final AfspraakIcalService afspraakIcalService;
@@ -64,7 +57,7 @@ public class MammaMergeMailAttachmentServiceImpl implements MammaMergeMailAttach
 
 		if (mergefields.contains(MergeField.SO_LOGO_EMAIL) && bodyTekst.contains(searchString))
 		{
-			var logo = voegSoLogoToe(mailMergeContext);
+			var logo = voegSoLogoToe(mailMergeContext, uploadDocumentService);
 			logo.ifPresent(mailAttachmentList::add);
 		}
 
@@ -146,27 +139,5 @@ public class MammaMergeMailAttachmentServiceImpl implements MammaMergeMailAttach
 		var valueLocatieOmschrijving = MergeField.MAMMA_SP_LOC_OMSCHRIJVING.getFieldValue(mailMergeContext);
 
 		return valueLocatieOmschrijving != null ? valueLocatieOmschrijving.toString() : "";
-	}
-
-	private Optional<MailAttachmentDto> voegSoLogoToe(MailMergeContext mailMergeContext)
-	{
-		var logoBrief = mailMergeContext.getClient().getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie().getLogoBrief();
-		var logoBestand = uploadDocumentService.load(logoBrief);
-
-		try (InputStream inputStream = new FileInputStream(logoBestand))
-		{
-			var encodedImage = Base64.getEncoder().encodeToString(inputStream.readAllBytes());
-			MailAttachmentDto mailAttachment = new MailAttachmentDto();
-			mailAttachment.setContent(encodedImage);
-			mailAttachment.setContentType("image/jpg");
-			mailAttachment.setInlineContentId(INLINE_ID_SO_LOGO_EMAIL);
-			mailAttachment.setFileName("logo.jpg");
-			return Optional.of(mailAttachment);
-		}
-		catch (Exception e)
-		{
-			LOG.error("bvo logo omzetten naar bytes mislukt " + e.getMessage());
-		}
-		return Optional.empty();
 	}
 }

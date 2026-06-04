@@ -69,6 +69,10 @@ public class ColonOpenstaanteIntakesWerklijstPage extends WerklijstIntakePage
 		addDagenTotVolgendeUitnodigingColumn(columns);
 		addStatusColumn(columns);
 		addVerwezenColumn(columns);
+		if (afspraakService.isDigitaleAfspraakBeschikbaar())
+		{
+			addDigitaleIntakeVerstuurdColumn(columns);
+		}
 		return columns;
 	}
 }

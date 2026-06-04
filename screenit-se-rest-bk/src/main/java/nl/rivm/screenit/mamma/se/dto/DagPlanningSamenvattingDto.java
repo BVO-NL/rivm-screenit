@@ -35,8 +35,6 @@ public class DagPlanningSamenvattingDto
 
 	private BigDecimal vrijeCapaciteit = BigDecimal.ZERO;
 
-	private BigDecimal beschikbaarheid = BigDecimal.ZERO; 
-
 	private LocalDateTime starttijd;
 
 	private LocalDateTime eindtijd;

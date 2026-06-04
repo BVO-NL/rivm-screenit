@@ -19,22 +19,24 @@
  * =========================LICENSE_END==================================
  */
 import {useThunkDispatch} from "../../../index"
-import {useEffect} from "react"
+import {FC, useEffect} from "react"
 import ActieBasePage from "../../ActieBasePage"
 import {Bevolkingsonderzoek, BevolkingsonderzoekNaam} from "../../../datatypes/Bevolkingsonderzoek"
 import {getString} from "../../../utils/TekstPropertyUtil"
-import {getHuidigeIntakeAfspraak} from "../../../api/ColonAfspraakAfzeggenThunkAction"
+import {getHuidigeIntakeAfspraak} from "../../../api/ColonIntakeAfspraakThunkAction"
 import {useSelector} from "react-redux"
-import {State} from "../../../datatypes/State"
 import properties from "./ColonAfspraakAfzeggenPage.json"
 import LadenComponent from "../../../components/laden/LadenComponent"
 import {splitAdresString} from "../../../utils/StringUtil"
 import ColonAfspraakAfzeggenForm from "../../../components/form/colon/ColonAfspraakAfzeggenForm"
+import {getVolledigeAdresString} from "../../../utils/AdresUtil"
+import {selectIntakeAfspraak} from "../../../selectors/ColonSelectors"
+import {ColonIntakeafspraakType} from "../../../datatypes/colon/ColonIntakeafspraakType"
+import {weergaveColonDigitaleIntakeWeek, weergaveColonIntake} from "../../../utils/DateUtil"
 
-const ColonAfspraakAfzeggenPage = () => {
+const ColonAfspraakAfzeggenPage: FC = () => {
 	const dispatch = useThunkDispatch()
-	const huidigeIntakeAfspraak = useSelector((state: State) => state.client.colonDossier.intakeAfspraak)
-
+	const huidigeIntakeAfspraak = useSelector(selectIntakeAfspraak)
 	useEffect(() => {
 		dispatch(getHuidigeIntakeAfspraak())
 	}, [dispatch])
@@ -43,11 +45,13 @@ const ColonAfspraakAfzeggenPage = () => {
 		return <LadenComponent/>
 	}
 
+	const datumWeergave = huidigeIntakeAfspraak.type === ColonIntakeafspraakType.OP_LOCATIE ? `${weergaveColonIntake(huidigeIntakeAfspraak.vanaf)} uur` : weergaveColonDigitaleIntakeWeek(huidigeIntakeAfspraak.vanaf)
+
 	return (
 		<ActieBasePage bvoName={BevolkingsonderzoekNaam[Bevolkingsonderzoek.COLON]}
-					   title={getString(properties.page.title)}
-					   description={getString(properties.page.description)}
-					   hintBegin={getString(properties.huidige_afspraak, [huidigeIntakeAfspraak.weergaveAfspraakmoment, huidigeIntakeAfspraak.naamIntakelocatie, splitAdresString(huidigeIntakeAfspraak.adresString)])}>
+		               title={getString(properties.page.title)}
+		               description={getString(properties.page.description)}
+		               hintBegin={getString(properties.huidige_afspraak, [datumWeergave, huidigeIntakeAfspraak.naamIntakelocatie, splitAdresString(getVolledigeAdresString(huidigeIntakeAfspraak.adres))])}>
 
 			<ColonAfspraakAfzeggenForm/>
 

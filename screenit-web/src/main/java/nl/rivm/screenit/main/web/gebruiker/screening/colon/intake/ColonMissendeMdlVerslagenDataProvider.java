@@ -23,7 +23,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon.intake;
 
 import java.util.Iterator;
 
-import nl.rivm.screenit.main.service.colon.ColonIntakeAfspraakService;
+import nl.rivm.screenit.main.service.colon.ColonIntakeafspraakService;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.WerklijstIntakeFilter;
@@ -41,7 +41,7 @@ public class ColonMissendeMdlVerslagenDataProvider extends SortableDataProvider<
 	private final IModel<WerklijstIntakeFilter> zoekModel;
 
 	@SpringBean
-	private ColonIntakeAfspraakService intakeAfspraakService;
+	private ColonIntakeafspraakService intakeAfspraakService;
 
 	private final int aantalPerPagina;
 

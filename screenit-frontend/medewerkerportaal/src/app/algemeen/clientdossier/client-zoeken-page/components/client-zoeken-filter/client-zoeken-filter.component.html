@@ -1,0 +1,74 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<form [formGroup]="zoekenForm" class="filter">
+  <div class="zoeken-velden">
+    <ds-datepicker
+      #geboortedatum
+      label="Geboortedatum"
+      placeholder="DD-MM-JJJJ"
+      formControlName="geboortedatum"
+      data-testid="geboortedatum_datepicker"
+      [required]="!geavanceerdZoekenActief()"
+      [errorMessage]="{required: 'De geboortedatum is verplicht', invalidDate: 'De ingevoerde datum is niet valide', maximumDatum: 'De geboortedatum mag niet in de toekomst liggen'}"
+    />
+    <div class="adres-velden">
+      <ds-input label="Postcode + huisnummer" placeholder="Postcode" formControlName="postcode" data-testid="postcode_input"
+                [errorMessage]="{ invalidPostcode: 'Voer een geldige postcode in (bijv. 1234AB)' }"/>
+      <ds-input label="&#160;" placeholder="Huisnr" formControlName="huisnummer" data-testid="huisnummer_input"
+                inputmode="numeric" appAlleenCijfers
+                [errorMessage]="{ maxlength: 'Huisnummer mag maximaal 10 tekens zijn', pattern: 'Huisnummer mag alleen cijfers bevatten' }"/>
+    </div>
+    <ds-input label="BSN" placeholder="BSN" formControlName="bsn" data-testid="bsn_input"
+              [errorMessage]="{ invalidBsn: 'Voer een geldig BSN in' }"/>
+    <ds-input label="Briefkenmerk" placeholder="KXXXX" formControlName="briefkenmerk" data-testid="briefkenmerk_input"
+              [errorMessage]="{ pattern: 'Briefkenmerk moet beginnen met een K' }"/>
+  </div>
+
+  @if (geavanceerdZoekenActief()) {
+    <div class="geavanceerde-velden-card" data-testid="geavanceerde_velden">
+      <span class="geavanceerde-velden-titel">Geavanceerd zoeken</span>
+      <div class="zoeken-velden geavanceerde-velden">
+        <ds-input label="A-nummer" placeholder="A-nummer" formControlName="anummer" data-testid="anummer_input"/>
+        <ds-input label="Mobiel nummer" placeholder="06-34567890" formControlName="mobielnummer" data-testid="mobielnummer_input"
+                  [errorMessage]="'Het telefoonnummer is incorrect.'"/>
+        <ds-input label="E-mailadres" placeholder="E-mailadres" formControlName="emailadres" data-testid="emailadres_input"
+                  [errorMessage]="'Het emailadres is incorrect.'"/>
+        <ds-input label="BK uitnodigingsnummer" placeholder="BK uitnodigingsnummer" formControlName="bkUitnodigingsnummer" data-testid="bk_uitnodigingsnummer_input" type="number"/>
+        <ds-input label="BMHK monsterID" placeholder="BMHK monsterID" formControlName="bmhkMonsterId" data-testid="bmhk_monster_id_input"/>
+        <ds-input label="BMHK uitnodigingsID" placeholder="BMHK uitnodigingsID" formControlName="bmhkUitnodigingsId" data-testid="bmhk_uitnodigings_id_input" type="number"/>
+        <ds-input label="DK barcode" placeholder="Barcode" formControlName="dkBarcode" data-testid="dk_barcode_input"/>
+        <ds-input label="DK uitnodigingsID" placeholder="DK uitnodigingsID" formControlName="dkUitnodigingsId" data-testid="dk_uitnodigings_id_input" type="number"/>
+      </div>
+    </div>
+  }
+
+  <div class="zoeken-acties">
+    <ds-toggle *appAutorisatie="geavanceerdZoekenConstraint"
+               [formControl]="geavanceerdZoekenControl"
+               message="Geavanceerd zoeken"
+               data-testid="geavanceerd_zoeken_toggle">
+    </ds-toggle>
+    <button ds-button-primary ds-button-icon data-testid="client_zoeken_btn" (click)="zoekClienten()">
+      <ds-icon [icon]="searchIcon" size="xs"/>
+      Zoeken
+    </button>
+  </div>
+</form>

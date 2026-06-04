@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useEffect} from "react"
+import {FC, useEffect} from "react"
 import {Col, Container, Row} from "react-bootstrap"
 import styles from "./BvoLandingPage.module.scss"
 import landingPageStyle from "../../landing/LandingPage.module.scss"
@@ -34,9 +34,8 @@ import {ColonDossier} from "../../../datatypes/colon/ColonDossier"
 import {ClientContactActieType} from "../../../datatypes/ClientContactActieType"
 import bvoStyles from "../../../components/BvoStyle.module.scss"
 import {useSelector} from "react-redux"
-import {getHuidigeIntakeAfspraak} from "../../../api/ColonAfspraakAfzeggenThunkAction"
-import BvoLandingBlobComponent from "../../../components/blob/BvoLandingBlobComponent"
-import {splitAdresString} from "../../../utils/StringUtil"
+import {getHuidigeIntakeAfspraak} from "../../../api/ColonIntakeAfspraakThunkAction"
+import ColonLandingBlobComponent from "../../../components/blob/ColonLandingBlobComponent"
 import {State} from "../../../datatypes/State"
 import {useThunkDispatch} from "../../../index"
 
@@ -45,11 +44,10 @@ type Props = {
 	beschikbareActies: ClientContactActieType[]
 }
 
-const ColonLandingPage = (props: Props) => {
-	const {dossier, beschikbareActies} = props
+const ColonLandingPage: FC<Props> = ({dossier, beschikbareActies}) => {
+	const intakeAfspraak = dossier.intakeAfspraak
 
 	const dispatch = useThunkDispatch()
-	const locatieIntakeAfspraak = dossier.intakeAfspraak ? `${dossier.intakeAfspraak.naamIntakelocatie}<br>${splitAdresString(dossier.intakeAfspraak.adresString)}` : ""
 	const toonVervangendeTekst: boolean = useSelector((state: State) => state.landingOverzicht.colonParameters.toonVervangendeTekst)
 
 	useEffect(() => {
@@ -64,9 +62,8 @@ const ColonLandingPage = (props: Props) => {
 					<BvoInleidingComponent/>
 				</Col>
 				<Col md={4}>
-					{dossier.intakeAfspraak && !dossier.intakeAfspraak.afspraakAfgezegd && !toonVervangendeTekst ?
-						<BvoLandingBlobComponent afspraakMoment={dossier.intakeAfspraak.weergaveAfspraakmoment}
-												 afspraakLocatie={locatieIntakeAfspraak}/>
+					{intakeAfspraak && !intakeAfspraak.afspraakAfgezegd && !toonVervangendeTekst ?
+						<ColonLandingBlobComponent intakeAfspraak={intakeAfspraak}/>
 						: <ImageBlobComponent image={blob_personen}/>}
 				</Col>
 			</Row>
@@ -81,7 +78,7 @@ const ColonLandingPage = (props: Props) => {
 								   toonVervangendeTekst={toonVervangendeTekst}/>
 			}
 
-			{!toonVervangendeTekst && <BvoHistorieComponent gebeurtenissen={props.dossier.gebeurtenissenLaatsteRonde}/>}
+			{!toonVervangendeTekst && <BvoHistorieComponent gebeurtenissen={dossier.gebeurtenissenLaatsteRonde}/>}
 			<h5 className={landingPageStyle.sectieHeader}>Mijn onderzoeken</h5>
 			<BvoSelectieComponent/>
 		</Container>
@@ -97,7 +94,6 @@ const ColonLandingPage = (props: Props) => {
 			return "opgeven"
 		}
 	}
-
 }
 
 export default ColonLandingPage

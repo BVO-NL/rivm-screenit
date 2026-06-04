@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model;
 
 /*-
@@ -22,48 +21,24 @@ package nl.rivm.screenit.model;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.enums.ClientGebeurtenisType;
-
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import nl.rivm.screenit.model.enums.ClientGebeurtenisType;
+
+@Getter
 public class ClientGebeurtenis implements Serializable, Comparable<ClientGebeurtenis>
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
-
+	@Setter
 	private Date datum;
 
+	@Setter
 	private ClientGebeurtenisType type;
 
 	private String[] extraParam = new String[0];
-
-	public Date getDatum()
-	{
-		return datum;
-	}
-
-	public void setDatum(Date datum)
-	{
-		this.datum = new Date(datum.getTime());
-	}
-
-	public ClientGebeurtenisType getType()
-	{
-		return type;
-	}
-
-	public void setType(ClientGebeurtenisType type)
-	{
-		this.type = type;
-	}
-
-	public String[] getExtraParam()
-	{
-		return extraParam;
-	}
 
 	public void setExtraParam(String... extraParam)
 	{

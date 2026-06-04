@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.main.service.colon.ColonDossierService;
+import nl.rivm.screenit.main.service.colon.ColonIntakeafspraakService;
 import nl.rivm.screenit.main.service.colon.ColonVervolgonderzoekKeuzesDto;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.AjaxButtonGroup;
@@ -60,6 +61,7 @@ import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.util.NaamUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
+import nl.topicuszorg.wicket.input.BooleanLabel;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -78,6 +80,8 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.datetime.markup.html.basic.DateLabel;
+
+import static nl.rivm.screenit.model.colon.enums.ColonIntakeafspraakType.DIGITAAL;
 
 public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIntakeAfspraak>
 {
@@ -180,8 +184,15 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 		Form<ColonIntakeAfspraak> form = new ConclusieForm("form", model);
 		add(form);
 		Client client = model.getObject().getScreeningRonde().getDossier().getClient();
+		add(new Label("popupTitel", getPopupTitel()));
 		add(new Label("client.persoon.bsn"));
 		add(new Label("client.persoon.geboortedatum", DateUtil.getGeboortedatum(client)));
+	}
+
+	private IModel<String> getPopupTitel()
+	{
+		var heeftAanpassenRecht = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_CONCLUSIE, Actie.INZIEN);
+		return heeftAanpassenRecht ? Model.of("Vastleggen resultaten intake") : Model.of("Cliëntgegevens");
 	}
 
 	private class ConclusieForm extends Form<ColonIntakeAfspraak>
@@ -196,11 +207,39 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 			dialog = new BootstrapDialog("dialog");
 			add(dialog);
 
-			ColonIntakeAfspraak intakeAfspraak = ModelUtil.nullSafeGet(model);
-
+			var intakeAfspraak = ModelUtil.nullSafeGet(getModel());
 			initKeuzes();
 
-			add(new VraagFragment("eersteVraag", "intakeConclusie", intakeconclusieOptionsModel)
+			addVastleggenIntakeResultaten(intakeAfspraak);
+		}
+
+		private void addVastleggenIntakeResultaten(ColonIntakeAfspraak intakeAfspraak)
+		{
+			var vastleggenResultatenContainer = new WebMarkupContainer("vastleggenResultatenContainer");
+			add(vastleggenResultatenContainer);
+
+			var modalFooterContainer = new WebMarkupContainer("modalFooterContainer");
+			add(modalFooterContainer);
+
+			if (afspraakService.isDigitaleAfspraakBeschikbaar())
+			{
+				var heeftAanpassenRecht = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_CONCLUSIE, Actie.INZIEN);
+				vastleggenResultatenContainer.setVisible(heeftAanpassenRecht);
+				modalFooterContainer.setVisible(heeftAanpassenRecht);
+			}
+
+			addEersteVraagEnDatumLabels(vastleggenResultatenContainer, intakeAfspraak);
+			addClientEnDigitaleIntake(vastleggenResultatenContainer, intakeAfspraak);
+			addOudeAfspraak(vastleggenResultatenContainer);
+			addAsaEnBezwaar(vastleggenResultatenContainer, intakeAfspraak);
+			addOpslaanLink(modalFooterContainer, intakeAfspraak);
+			addVerwijderenLink(modalFooterContainer, intakeAfspraak);
+			addOverigeContainers(modalFooterContainer, intakeAfspraak);
+		}
+
+		private void addEersteVraagEnDatumLabels(WebMarkupContainer container, ColonIntakeAfspraak intakeAfspraak)
+		{
+			container.add(new VraagFragment("eersteVraag", "intakeConclusie", intakeconclusieOptionsModel)
 			{
 				@Override
 				protected Component onJa(String id)
@@ -215,16 +254,28 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 				}
 
 			});
-			add(DateLabel.forDatePattern("printDatum", Model.of(getOngunstigeUitslagBriefDatum(intakeAfspraak)), "dd-MM-yyyy"));
+			container.add(DateLabel.forDatePattern("printDatum", Model.of(getOngunstigeUitslagBriefDatum(intakeAfspraak)), "dd-MM-yyyy"));
 
-			add(DateLabel.forDatePattern("conclusie.datum", "dd-MM-yyyy HH:mm"));
-			add(DateLabel.forDatePattern("datumEerstOngunstigeUitslag", Model.of(getDatumEersteOngunstigeUitslagInRonde(intakeAfspraak)), "dd-MM-yyyy"));
+			container.add(DateLabel.forDatePattern("conclusie.datum", "dd-MM-yyyy HH:mm"));
+			container.add(DateLabel.forDatePattern("datumEerstOngunstigeUitslag", Model.of(getDatumEersteOngunstigeUitslagInRonde(intakeAfspraak)), "dd-MM-yyyy"));
+		}
 
+		private void addClientEnDigitaleIntake(WebMarkupContainer container, ColonIntakeAfspraak intakeAfspraak)
+		{
 			Client client = intakeAfspraak.getScreeningRonde().getDossier().getClient();
-			add(new Label("client.persoon.achternaam", NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client)));
-			add(new Label("conclusie.organisatieMedewerker.medewerker.naamVolledig"));
-			addOudeAfspraak();
+			container.add(new Label("conclusie.organisatieMedewerker.medewerker.naamVolledig"));
+			container.add(createDigitaleIntakeLabel(intakeAfspraak));
+			var paspoortComponent = maakPaspoortComponent(client, intakeAfspraak.getIntakeafspraakType() == DIGITAAL);
+			add(paspoortComponent);
+			var paspoortAlleenNaamContainer = new WebMarkupContainer("paspoortAlleenNaamContainer");
+			paspoortAlleenNaamContainer.add(new Label("persoonNaam", NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client)));
+			add(paspoortAlleenNaamContainer);
+			paspoortAlleenNaamContainer.setVisible(!afspraakService.isDigitaleAfspraakBeschikbaar());
+			paspoortComponent.setVisible(afspraakService.isDigitaleAfspraakBeschikbaar());
+		}
 
+		private void addAsaEnBezwaar(WebMarkupContainer container, ColonIntakeAfspraak intakeAfspraak)
+		{
 			List<Integer> choices = new ArrayList<>();
 			choices.add(null);
 			for (int i = 1; i <= 5; i++)
@@ -233,11 +284,14 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 			}
 			AjaxButtonGroup<Integer> asaScoreChoice = new AjaxButtonGroup<>("conclusie.asaScore", new ListModel<>(choices), new IntegerChoiceRenderer());
 			asaScoreChoice.setEnabled(!mdlVerslagVerwerkt);
-			add(asaScoreChoice);
+			container.add(asaScoreChoice);
 
-			add(new AjaxButtonGroup<>("bezwaar", BOOLEAN_OPTIONS_MODEL, new BooleanChoiceRenderer()).setEnabled(!mdlVerslagVerwerkt)
+			container.add(new AjaxButtonGroup<>("bezwaar", BOOLEAN_OPTIONS_MODEL, new BooleanChoiceRenderer()).setEnabled(!mdlVerslagVerwerkt)
 				.setVisible(intakeAfspraak.isBezwaar()));
+		}
 
+		private void addOpslaanLink(WebMarkupContainer container, ColonIntakeAfspraak intakeAfspraak)
+		{
 			opslaan = new ConfirmingIndicatingAjaxSubmitLink<>("conclusieOpslaan", dialog, null)
 			{
 				@Override
@@ -315,7 +369,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 					return vervolgonderzoekDto.redenGeenVervolgOnderzoek == null;
 				}
 			};
-			add(opslaan);
+			container.add(opslaan);
 			opslaan.setVisible(!ColonAfspraakStatus.isGeannuleerd(intakeAfspraak.getStatus()) && !mdlVerslagVerwerkt);
 			opslaan.setEnabled(intakeAfspraak.getConclusie().getId() != null);
 			opslaan.setOutputMarkupId(true);
@@ -328,6 +382,10 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 			{
 				opslaan.add(new Label("opslaanTekst", "Opslaan"));
 			}
+		}
+
+		private void addVerwijderenLink(WebMarkupContainer container, ColonIntakeAfspraak intakeAfspraak)
+		{
 			final ConfirmingIndicatingAjaxLink<ColonIntakeAfspraak> verwijderen = new ConfirmingIndicatingAjaxLink<>("conclusieVerwijderen", dialog,
 				"conclusie.verwijderen")
 			{
@@ -357,19 +415,60 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 			verwijderen.setVisible(dossierService.magConclusieAanpassenVerwijderen(intakeAfspraak, origConclusie)
 				&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_INTAKE_WERKLIJST, Actie.VERWIJDEREN));
 			verwijderen.setEnabled(true);
-			add(verwijderen);
+			container.add(verwijderen);
+		}
 
-			add(new WebMarkupContainer("tekstOntvangenMDLverslag").setVisible(mdlVerslagVerwerkt));
-			add(new WebMarkupContainer("tekstGeenLaatsteAfspraak")
+		private void addOverigeContainers(WebMarkupContainer container, ColonIntakeAfspraak intakeAfspraak)
+		{
+			container.add(new WebMarkupContainer("tekstOntvangenMDLverslag").setVisible(mdlVerslagVerwerkt));
+			container.add(new WebMarkupContainer("tekstGeenLaatsteAfspraak")
 				.setVisible(!mdlVerslagVerwerkt && !intakeAfspraak.getScreeningRonde().getLaatsteAfspraak().equals(intakeAfspraak) && !(getModelObject().getConclusie() != null
 					&& ColonConclusieType.DOORVERWIJZEN_NAAR_ANDER_CENTRUM.equals(getModelObject().getConclusie().getType()))));
 		}
 
-		private void addOudeAfspraak()
+		private BooleanLabel createDigitaleIntakeLabel(ColonIntakeAfspraak intakeAfspraak)
+		{
+			var isDigitaal = DIGITAAL == intakeAfspraak.getIntakeafspraakType();
+			var digitaleIntake = new BooleanLabel("digitaleIntake", Model.of(isDigitaal));
+			digitaleIntake.setVisible(afspraakService.isDigitaleAfspraakBeschikbaar());
+			return digitaleIntake;
+		}
+
+		private WebMarkupContainer maakPaspoortComponent(Client client, boolean digitaal)
+		{
+			var paspoortContainer = new WebMarkupContainer("paspoortContainer");
+			paspoortContainer.add(new Label("client.persoon.achternaam", NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client)));
+			paspoortContainer.add(new Label("straatLocatieBeschrijving", Model.of(client.getPersoon().getGbaAdres().getAdres())));
+			paspoortContainer.add(new Label("postcode", Model.of(client.getPersoon().getGbaAdres().getPostcode())));
+			paspoortContainer.add(new Label("woonplaats", Model.of(client.getPersoon().getGbaAdres().getPlaats())));
+
+			addContactInfo(client, paspoortContainer, digitaal);
+
+			return paspoortContainer;
+		}
+
+		private void addContactInfo(final Client client, WebMarkupContainer paspoortContainer, boolean digitaal)
+		{
+			var telefoonnummerContainer = new WebMarkupContainer("telefoonnummerContainer");
+			var telefoonnummer = new Label("telefoonnummer", Model.of(client.getPersoon().getTelefoonnummer1()));
+			var emailContainer = new WebMarkupContainer("emailContainer");
+			var email = new Label("email", Model.of(client.getPersoon().getEmailadres()));
+			telefoonnummerContainer.add(telefoonnummer).setVisible(digitaal);
+			emailContainer.add(email).setVisible(digitaal);
+			paspoortContainer.add(telefoonnummerContainer);
+			paspoortContainer.add(emailContainer);
+			if (!digitaal)
+			{
+				telefoonnummerContainer.setVisible(false);
+				emailContainer.setVisible(false);
+			}
+		}
+
+		private void addOudeAfspraak(WebMarkupContainer container)
 		{
 			var oudeAfspraak = afspraakService.zoekBevestigdeDoorverwijzendeAfspraak(getModelObject());
 
-			add(new Label("verwezenDoor", new PropertyModel<>(ModelUtil.sModel(oudeAfspraak), "kamer.intakelocatie.naam")).setVisible(
+			container.add(new Label("verwezenDoor", new PropertyModel<>(ModelUtil.sModel(oudeAfspraak), "kamer.intakelocatie.naam")).setVisible(
 				oudeAfspraak != null));
 		}
 

@@ -1,0 +1,87 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<table [dataSource]="dataSource" [fullWidth]="true" ds-table matSort
+       matSortActive="naam"
+       [hoverable]="true"
+       matSortDirection="asc">
+  <ng-container dsColumnDef="naam">
+    <th *dsHeaderCellDef ds-header-cell mat-sort-header="achternaam">Naam</th>
+    <td *dsCellDef="let row" ds-cell>
+        <span class="naam-met-icoon">
+          {{ row | voornaamTussenvoegselAchternaam }}
+          @if (row.geslacht | geslachtIcoon; as icoon) {
+            <ds-icon [icon]="icoon" class="geslacht-icoon"/>
+          }
+        </span>
+    </td>
+  </ng-container>
+
+  <ng-container dsColumnDef="bsn">
+    <th *dsHeaderCellDef ds-header-cell mat-sort-header="bsn">BSN</th>
+    <td *dsCellDef="let row" ds-cell>{{ row.bsn }}</td>
+  </ng-container>
+
+  <ng-container dsColumnDef="geboortedatum">
+    <th ds-header-cell *dsHeaderCellDef mat-sort-header="geboortedatum"> Geboortedatum</th>
+    <td ds-cell *dsCellDef="let element"> {{ element.geboortedatum | date: NL_DATE_FORMAT }} ({{ berekenLeeftijd(element.geboortedatum) }} jaar oud)</td>
+  </ng-container>
+
+  <ng-container dsColumnDef="overlijdensdatum">
+    <th ds-header-cell *dsHeaderCellDef mat-sort-header="overlijdensdatum"> Overlijdensdatum</th>
+    <td ds-cell *dsCellDef="let element">
+      @if (element.overlijdensdatum) {
+        <ds-badge
+          type="error"
+          label="Overleden" [secondaryLabel]="(element.overlijdensdatum | date: NL_DATE_FORMAT)!"/>
+      }
+    </td>
+  </ng-container>
+
+  <ng-container dsColumnDef="plaats">
+    <th ds-header-cell *dsHeaderCellDef mat-sort-header="plaats"> Plaats</th>
+    <td ds-cell *dsCellDef="let element"> {{ element.plaats }}</td>
+  </ng-container>
+
+  <ng-container dsColumnDef="postcode">
+    <th ds-header-cell *dsHeaderCellDef mat-sort-header="postcode"> Postcode</th>
+    <td ds-cell *dsCellDef="let element"> {{ element.postcode }}</td>
+  </ng-container>
+
+  <ng-container dsColumnDef="straat">
+    <th ds-header-cell *dsHeaderCellDef mat-sort-header="straat"> Straat</th>
+    <td ds-cell *dsCellDef="let element">{{ element.volledigeAdres }}</td>
+  </ng-container>
+
+  <ng-container dsColumnDef="navigeer">
+    <th ds-header-cell *dsHeaderCellDef></th>
+    <td ds-cell *dsCellDef class="navigeer-cel">
+      <ds-icon [icon]="navigeerIcoon"/>
+    </td>
+  </ng-container>
+
+  <tr ds-header-row *dsHeaderRowDef="displayedColumns()"></tr>
+  <tr ds-row *dsRowDef="let row; columns: displayedColumns()" (click)="navigeerNaarClient(row)"></tr>
+  <ng-template dsNoDataRow>
+    <tr class="ds-row">
+      <td [attr.colspan]="displayedColumns().length" class="ds-cell">Geen cliënten gevonden</td>
+    </tr>
+  </ng-template>
+</table>

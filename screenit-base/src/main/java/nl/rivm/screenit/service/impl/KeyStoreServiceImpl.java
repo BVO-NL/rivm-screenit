@@ -43,17 +43,36 @@ public class KeyStoreServiceImpl implements KeyStoreService
 	@Override
 	public Key getFirstKeyFromKeyStore(String keyStoreLocationOnFilestore, String keyStorePassword, String keyPassword)
 	{
+		var keyStore = getKeyStore(keyStoreLocationOnFilestore, keyStorePassword);
+		return getFirstKey(keyStore, keyPassword);
+	}
+
+	@Override
+	public KeyStore getKeyStore(String keyStoreLocationOnFilestore, String keyStorePassword)
+	{
 		var keyStoreLocation = locatieFilestore + File.separator + keyStoreLocationOnFilestore;
 
-		try (final FileInputStream is = new FileInputStream(keyStoreLocation))
+		try (var is = new FileInputStream(keyStoreLocation))
 		{
 			var keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
 			keyStore.load(is, keyStorePassword.toCharArray());
-			return keyStore.getKey(keyStore.aliases().nextElement(), keyPassword.toCharArray());
+			return keyStore;
 		}
 		catch (IOException | GeneralSecurityException e)
 		{
-			throw new IllegalStateException("Kon key niet uit keystore laden uit keystore: " + keyStoreLocation, e);
+			throw new IllegalStateException("Kan keystore niet laden vanaf: " + keyStoreLocation, e);
+		}
+	}
+
+	private Key getFirstKey(KeyStore keyStore, String keyPassword)
+	{
+		try
+		{
+			return keyStore.getKey(keyStore.aliases().nextElement(), keyPassword.toCharArray());
+		}
+		catch (GeneralSecurityException e)
+		{
+			throw new IllegalStateException("Kon key niet uit keystore laden", e);
 		}
 	}
 }

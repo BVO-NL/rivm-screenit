@@ -121,6 +121,7 @@ export class RoosterComponent implements AfterViewInit {
     [ColonTijdslotStatus.BLOKKADE]: 'event_status_blocked',
     [ColonTijdslotStatus.GEBRUIKT_VOOR_CAPACITEIT]: 'event_status_capacity',
     [ColonTijdslotStatus.INTAKE_GEPLAND]: 'event_status_intake',
+    [ColonTijdslotStatus.DIGITALE_INTAKE]: 'event_status_digitale_intake',
     [ColonTijdslotStatus.VRIJ_TE_VERPLAATSEN]: 'event_status_free',
     [ColonTijdslotStatus.BEPERKING]: 'event_status_beperking',
     [ColonTijdslotStatus.FEESTDAG]: 'event_status_feestdag',

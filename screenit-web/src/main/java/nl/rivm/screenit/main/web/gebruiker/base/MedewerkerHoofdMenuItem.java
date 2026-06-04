@@ -29,7 +29,7 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.brieventemplates.BriefBeheer
 import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.DocumentTemplateTestenPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.extrabeveiligdeomgeving.ExtraBeveiligdeOmgevingClientZoekenPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.extrabeveiligdeomgeving.ExtraBeveiligdeOmgevingKeuzeHerstellenPage;
-import nl.rivm.screenit.main.web.gebruiker.algemeen.handleidingen.HandleidingenDownloadPage;
+import nl.rivm.screenit.main.web.gebruiker.algemeen.handleidingen.HandleidingenOverzichtPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.intervalcarcinoom.UploadKoppelresultatenKankerregistratiePage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.LoggingInzienPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.medewerker.MedewerkerZoeken;
@@ -239,7 +239,7 @@ public enum MedewerkerHoofdMenuItem
 				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.nieuwsbeheer", BeheerNieuwsPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.nieuws", NieuwsPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.projecten", ProjectOverzicht.class));
-				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.handleidingen", HandleidingenDownloadPage.class));
+				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.handleidingen", HandleidingenOverzichtPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.retourzendingen", RetourzendingenVerwerkenPage.class));
 				contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.extra.beveiligde.omgeving", ExtraBeveiligdeOmgevingKeuzeHerstellenPage.class,
 					ExtraBeveiligdeOmgevingClientZoekenPage.class));

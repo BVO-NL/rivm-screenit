@@ -68,6 +68,4 @@ public interface MammaScreeningsEenheidService
 	String getCsvString(Iterator<? extends MammaScreeningsEenheid> screeningsEenheidIterator);
 
 	boolean ipAdressenHebbenZelfdeGemeenschappelijkeBlokken(MammaScreeningsEenheid screeningsEenheid);
-
-	String valideerMinderValideAfspraakPeriodes(MammaScreeningsEenheid screeningsEenheid);
 }

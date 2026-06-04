@@ -18,40 +18,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {Dispatch} from "redux"
 import ScreenitBackend from "../utils/Backend"
 import {ToastMessageType} from "../datatypes/toast/ToastMessage"
 import {getString} from "../utils/TekstPropertyUtil"
-import {VrijSlotZonderKamer} from "../pages/bvo/colon/afspraak/ColonAfspraakMakenPage"
 import {ExceptieOmschrijvingDto} from "../datatypes/ExceptieOmschrijvingDto"
 import HttpStatusCode from "../datatypes/HttpStatus"
 import properties from "../pages/bvo/colon/afspraak/ColonAfspraakMakenBevestigingsPopup.json"
+import propertiesExceptie from "../pages/bvo/colon/afspraak/ColonAfspraakMakenBevestigingsPopup.json"
 import {showToast} from "../utils/ToastUtil"
+import {VrijSlotZonderKamer} from "../datatypes/VrijSlotZonderKamer"
+import {ColonIntakeafspraakType} from "../datatypes/colon/ColonIntakeafspraakType"
 
-export const afspraakVerplaatsen = (nieuweAfspraak: VrijSlotZonderKamer, onError: () => void) => (dispatch: Dispatch) => {
-	return voerActieUit("colon/afspraak/verplaatsen", nieuweAfspraak, dispatch, onError)
+export const afspraakVerplaatsen = (nieuweAfspraak: VrijSlotZonderKamer, onError?: () => void) => () => {
+	return voerActieUit("colon/afspraak/verplaatsen", nieuweAfspraak, onError)
 }
 
-export const nieuweAfspraak = (nieuweAfspraak: VrijSlotZonderKamer, onError: () => void) => (dispatch: Dispatch) => {
-	return voerActieUit("colon/afspraak/maken", nieuweAfspraak, dispatch, onError)
+export const nieuweAfspraak = (nieuweAfspraak: VrijSlotZonderKamer, onError?: () => void) => () => {
+	return voerActieUit("colon/afspraak/maken", nieuweAfspraak, onError)
 }
 
-function voerActieUit(backendUrl: string, nieuweAfspraak: VrijSlotZonderKamer, dispatch: Dispatch, onError: () => void) {
+function voerActieUit(backendUrl: string, nieuweAfspraak: VrijSlotZonderKamer, onError?: () => void): Promise<void> {
 	return ScreenitBackend.put(backendUrl, {json: nieuweAfspraak})
 		.then(() => {
-			showToast(getString(properties.toast.bevestiging.title), getString(properties.toast.bevestiging.message))
+			showToast(getToastTitel(nieuweAfspraak.type), getString(nieuweAfspraak.type === ColonIntakeafspraakType.OP_LOCATIE ? properties.toast.bevestiging.message.op_locatie : properties.toast.bevestiging.message.digitaal))
 		})
 		.catch((error) => {
 			if (error.response.status === HttpStatusCode.CONFLICT) {
 				setExceptieOmschrijvingDto(error.response.data)
 			}
-			onError()
+
+			if (onError) {
+				onError()
+			}
 		})
 }
 
-function setExceptieOmschrijvingDto(data: string) {
-	const propertiesExceptie = require("../pages/bvo/colon/afspraak/ColonAfspraakMakenBevestigingsPopup.json")
+function getToastTitel(nieuweAfspraakType: string) {
+	return nieuweAfspraakType === ColonIntakeafspraakType.OP_LOCATIE ? properties.toast.bevestiging.title.op_locatie : properties.toast.bevestiging.title.digitaal
+}
+
+function setExceptieOmschrijvingDto(data: string): void {
 	const jsonOutput: ExceptieOmschrijvingDto = JSON.parse(data)
 
-	showToast(getString(propertiesExceptie.toast.errors.verplaatsen[jsonOutput.keyValue]), jsonOutput.additionalMessage, ToastMessageType.ERROR)
+	showToast(getString(propertiesExceptie.toast.errors.verplaatsen["afspraak.niet.gemaakt"]), jsonOutput.additionalMessage, ToastMessageType.ERROR)
 }

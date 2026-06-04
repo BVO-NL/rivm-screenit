@@ -28,4 +28,8 @@ export class WicketUtils {
   public static toFotobespreking(fotobesprekingId: number): void {
     new WicketActionBuilder().setAction('toFotobesprekingPage').setFotobesprekingId(fotobesprekingId).build().send()
   }
+
+  public static toClientgegevens(clientId: number): void {
+    new WicketActionBuilder().setAction('toClientgegevens').setClientId(clientId).build().send()
+  }
 }

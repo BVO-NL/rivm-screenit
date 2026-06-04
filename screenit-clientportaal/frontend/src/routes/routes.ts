@@ -52,7 +52,13 @@ import MammaAfspraakBevestigingSelectiePage from "../pages/bvo/mamma/afspraak/be
 import MammaAfspraakHerinneringPage from "../pages/bvo/mamma/afspraak/bevestigingswizard/MammaAfspraakHerinneringPage"
 import MammaAfspraakOverzichtPage from "../pages/bvo/mamma/afspraak/bevestigingswizard/MammaAfspraakOverzichtPage"
 import MammaAfspraakHuisartsPage from "../pages/bvo/mamma/afspraak/bevestigingswizard/MammaAfspraakHuisartsPage"
+import ColonAfspraakOverzichtPage from "../pages/bvo/colon/afspraak/ColonAfspraakOverzichtPage"
+import {isDigitaleIntakeBeschikbaar} from "../utils/FeatureFlagsUtil"
 import OpenstaandeOnderzoekenPage from "../pages/bvo/gedeeld/openstaande-onderzoeken/OpenstaandeOnderzoekenPage"
+import ColonAfspraakIntakePage from "../pages/bvo/colon/afspraak/ColonAfspraakIntakePage"
+import ColonAfspraakGezondheidPage from "../pages/bvo/colon/afspraak/ColonAfspraakGezondheidPage"
+import ColonAfspraakMakenWizardPage from "../pages/bvo/colon/afspraak/ColonAfspraakMakenWizardPage"
+import ColonAfspraakContactPage from "../pages/bvo/colon/afspraak/ColonAfspraakContactPage"
 
 export type RoutePath =
 	"/"
@@ -75,6 +81,11 @@ export type RoutePath =
 	| "/colon/afspraak-maken-heraanmelding/"
 	| "/colon/afspraak-maken/"
 	| "/colon/afspraak-wijzigen/"
+	| "/colon/afspraak/intake/"
+	| "/colon/afspraak/contact/"
+	| "/colon/afspraak/uw-gezondheid/"
+	| "/colon/afspraak/kiezen/"
+	| "/colon/afspraak/overzicht/"
 	| "/colon/afzeggen/"
 	| "/colon/fit/"
 	| "/colon/heraanmelden/"
@@ -82,7 +93,6 @@ export type RoutePath =
 
 	| "/mamma/"
 	| "/mamma/afspraak/"
-	| "/mamma/afspraak-oud/"
 	| "/mamma/afspraak/bevestigen/"
 	| "/mamma/afspraak/bevestiging-selectie/"
 	| "/mamma/afspraak/herinnering/"
@@ -105,11 +115,11 @@ export type RouteDef = RouteProps & {
 	name: string
 	path: RoutePath
 	private: boolean
-	component:
-		| React.ComponentType<any>
+	component: React.ComponentType<any>
 	requiredContactActions?: ClientContactActieType[]
 	bvo?: Bevolkingsonderzoek
 	redirectPage?: RoutePath
+	activateGuard?: () => boolean
 }
 
 const routes: RouteDef[] = [
@@ -177,11 +187,99 @@ const routes: RouteDef[] = [
 	},
 	{
 		private: true,
+		path: "/cervix/",
+		name: capitalize(BevolkingsonderzoekNaam[Bevolkingsonderzoek.CERVIX]),
+		component: BvoLandingPageController,
+		bvo: Bevolkingsonderzoek.CERVIX,
+		redirectPage: "/",
+	},
+	{
+		private: true,
+		path: "/cervix/uitstellen/",
+		name: "Uitstellen deelname",
+		component: CervixUitstelAanvragenPage,
+		bvo: Bevolkingsonderzoek.CERVIX,
+		requiredContactActions: [ClientContactActieType.CERVIX_UITSTEL],
+		redirectPage: "/cervix/",
+	},
+	{
+		private: true,
+		path: "/cervix/zas/",
+		name: "Zelfafnameset aanvragen",
+		component: ZasAanvragenPage,
+		bvo: Bevolkingsonderzoek.CERVIX,
+		requiredContactActions: [ClientContactActieType.CERVIX_ZAS_AANVRAGEN],
+		redirectPage: "/cervix/",
+	},
+	{
+		private: true,
+		path: "/cervix/herdrukken/",
+		name: "Nieuwe uitnodiging aanvragen",
+		component: CervixHerdrukAanvragenPage,
+		bvo: Bevolkingsonderzoek.CERVIX,
+		requiredContactActions: [ClientContactActieType.CERVIX_HERDRUK],
+		redirectPage: "/cervix/",
+	},
+	{
+		private: true,
+		path: "/colon/",
+		name: capitalize(BevolkingsonderzoekNaam[Bevolkingsonderzoek.COLON]),
+		component: BvoLandingPageController,
+		bvo: Bevolkingsonderzoek.COLON,
+		redirectPage: "/",
+	},
+	{
+		private: true,
+		path: "/colon/huisarts/",
+		name: "Huisarts",
+		component: HuisartsPage,
+		bvo: Bevolkingsonderzoek.COLON,
+		requiredContactActions: [ClientContactActieType.COLON_HUISARTS_WIJZIGEN],
+		redirectPage: "/colon/",
+	},
+	{
+		private: true,
+		path: "/colon/fit/",
+		name: "Nieuwe ontlastingstest aanvragen",
+		component: ColonFitAanvragenPage,
+		bvo: Bevolkingsonderzoek.COLON,
+		requiredContactActions: [ClientContactActieType.COLON_AANVRAGEN_NIEUWE_FIT],
+		redirectPage: "/colon/",
+	},
+	{
+		private: true,
+		path: "/colon/afzeggen/",
+		name: "Afzeggen afspraak",
+		component: ColonAfspraakAfzeggenPage,
+		bvo: Bevolkingsonderzoek.COLON,
+		requiredContactActions: [ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN],
+		redirectPage: "/colon/",
+	},
+	{
+		private: true,
 		path: "/mamma/afmelden/",
 		name: "Afmelden",
 		component: AfmeldenPage,
 		requiredContactActions: [ClientContactActieType.MAMMA_AFMELDEN],
 		redirectPage: "/mamma/",
+	},
+	{
+		private: true,
+		path: "/cervix/afmelden/",
+		name: "Afmelden",
+		component: AfmeldenPage,
+		bvo: Bevolkingsonderzoek.CERVIX,
+		requiredContactActions: [ClientContactActieType.CERVIX_AFMELDEN],
+		redirectPage: "/cervix/",
+	},
+	{
+		private: true,
+		path: "/colon/afmelden/",
+		name: "Afmelden",
+		component: AfmeldenPage,
+		bvo: Bevolkingsonderzoek.COLON,
+		requiredContactActions: [ClientContactActieType.COLON_AFMELDEN],
+		redirectPage: "/",
 	},
 	{
 		private: true,
@@ -191,6 +289,70 @@ const routes: RouteDef[] = [
 		bvo: Bevolkingsonderzoek.MAMMA,
 		requiredContactActions: [ClientContactActieType.MAMMA_HERAANMELDEN],
 		redirectPage: "/mamma/",
+	},
+	{
+		private: true,
+		path: "/cervix/heraanmelden/",
+		name: "Opnieuw aanmelden",
+		component: HeraanmeldenPage,
+		bvo: Bevolkingsonderzoek.CERVIX,
+		requiredContactActions: [ClientContactActieType.CERVIX_HERAANMELDEN],
+		redirectPage: "/cervix/",
+	},
+	{
+		private: true,
+		path: "/colon/heraanmelden/",
+		name: "Opnieuw aanmelden",
+		component: HeraanmeldenPage,
+		bvo: Bevolkingsonderzoek.COLON,
+		requiredContactActions: [ClientContactActieType.COLON_HERAANMELDEN],
+		redirectPage: "/colon/",
+	},
+	{
+		private: true,
+		path: "/profiel/",
+		name: "Profiel",
+		component: ProfielPage,
+	},
+	{
+		private: true,
+		path: "/profiel/telefoonnummer/",
+		name: "Telefoonnummer",
+		component: TelefoonnummerWijzigenPage,
+		requiredContactActions: [ClientContactActieType.INZAGE_PERSOONSGEGEVENS],
+		redirectPage: "/profiel/",
+	},
+	{
+		private: true,
+		path: "/profiel/email/",
+		name: "E-mailadres",
+		component: EmailWijzigenPage,
+		requiredContactActions: [ClientContactActieType.INZAGE_PERSOONSGEGEVENS],
+		redirectPage: "/profiel/",
+	},
+	{
+		private: true,
+		path: "/profiel/adres/",
+		name: "Tijdelijk adres",
+		component: TijdelijkAdresWijzigenPage,
+		requiredContactActions: [ClientContactActieType.TIJDELIJK_ADRES],
+		redirectPage: "/profiel/",
+	},
+	{
+		private: true,
+		path: "/profiel/aanspreekvorm/",
+		name: "Aanspreekvorm",
+		component: AanhefWijzigenPage,
+		requiredContactActions: [ClientContactActieType.INZAGE_PERSOONSGEGEVENS],
+		redirectPage: "/profiel/",
+	},
+	{
+		private: true,
+		path: "/profiel/gebruikgegevens/",
+		name: "Gebruik gegevens",
+		component: BezwaarWijzigenPage,
+		requiredContactActions: [ClientContactActieType.BEZWAAR],
+		redirectPage: "/profiel/",
 	},
 	{
 		private: true,
@@ -250,203 +412,8 @@ const routes: RouteDef[] = [
 	},
 	{
 		private: true,
-		path: "/cervix/",
-		name: capitalize(BevolkingsonderzoekNaam[Bevolkingsonderzoek.CERVIX]),
-		component: BvoLandingPageController,
-		bvo: Bevolkingsonderzoek.CERVIX,
-		redirectPage: "/",
-	},
-	{
-		private: true,
-		path: "/cervix/uitstellen/",
-		name: "Uitstellen deelname",
-		component: CervixUitstelAanvragenPage,
-		bvo: Bevolkingsonderzoek.CERVIX,
-		requiredContactActions: [ClientContactActieType.CERVIX_UITSTEL],
-		redirectPage: "/cervix/",
-	},
-	{
-		private: true,
-		path: "/cervix/zas/",
-		name: "Zelfafnameset aanvragen",
-		component: ZasAanvragenPage,
-		bvo: Bevolkingsonderzoek.CERVIX,
-		requiredContactActions: [ClientContactActieType.CERVIX_ZAS_AANVRAGEN],
-		redirectPage: "/cervix/",
-	},
-	{
-		private: true,
-		path: "/cervix/herdrukken/",
-		name: "Nieuwe uitnodiging aanvragen",
-		component: CervixHerdrukAanvragenPage,
-		bvo: Bevolkingsonderzoek.CERVIX,
-		requiredContactActions: [ClientContactActieType.CERVIX_HERDRUK],
-		redirectPage: "/cervix/",
-	},
-	{
-		private: true,
-		path: "/cervix/afmelden/",
-		name: "Afmelden",
-		component: AfmeldenPage,
-		bvo: Bevolkingsonderzoek.CERVIX,
-		requiredContactActions: [ClientContactActieType.CERVIX_AFMELDEN],
-		redirectPage: "/cervix/",
-	},
-	{
-		private: true,
-		path: "/cervix/heraanmelden/",
-		name: "Opnieuw aanmelden",
-		component: HeraanmeldenPage,
-		bvo: Bevolkingsonderzoek.CERVIX,
-		requiredContactActions: [ClientContactActieType.CERVIX_HERAANMELDEN],
-		redirectPage: "/cervix/",
-	},
-	{
-		private: true,
-		path: "/colon/",
-		name: capitalize(BevolkingsonderzoekNaam[Bevolkingsonderzoek.COLON]),
-		component: BvoLandingPageController,
-		bvo: Bevolkingsonderzoek.COLON,
-		redirectPage: "/",
-	},
-	{
-		private: true,
-		path: "/colon/huisarts/",
-		name: "Huisarts",
-		component: HuisartsPage,
-		bvo: Bevolkingsonderzoek.COLON,
-		requiredContactActions: [ClientContactActieType.COLON_HUISARTS_WIJZIGEN],
-		redirectPage: "/colon/",
-	},
-	{
-		private: true,
-		path: "/colon/fit/",
-		name: "Nieuwe ontlastingstest aanvragen",
-		component: ColonFitAanvragenPage,
-		bvo: Bevolkingsonderzoek.COLON,
-		requiredContactActions: [ClientContactActieType.COLON_AANVRAGEN_NIEUWE_FIT],
-		redirectPage: "/colon/",
-	},
-	{
-		private: true,
-		path: "/colon/afzeggen/",
-		name: "Afzeggen afspraak",
-		component: ColonAfspraakAfzeggenPage,
-		bvo: Bevolkingsonderzoek.COLON,
-		requiredContactActions: [ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN],
-		redirectPage: "/colon/",
-	},
-	{
-		private: true,
-		path: "/colon/heraanmelden/",
-		name: "Opnieuw aanmelden",
-		component: HeraanmeldenPage,
-		bvo: Bevolkingsonderzoek.COLON,
-		requiredContactActions: [ClientContactActieType.COLON_HERAANMELDEN],
-		redirectPage: "/colon/",
-	},
-	{
-		private: true,
-		path: "/colon/afmelden/",
-		name: "Afmelden",
-		component: AfmeldenPage,
-		bvo: Bevolkingsonderzoek.COLON,
-		requiredContactActions: [ClientContactActieType.COLON_AFMELDEN],
-		redirectPage: "/",
-	},
-	{
-		private: true,
 		path: "/colon/afspraak-wijzigen/",
-		name: "Afspraak verzetten",
-		component: ColonAfspraakMakenPage,
-		bvo: Bevolkingsonderzoek.COLON,
-		requiredContactActions: [ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN],
-		redirectPage: "/colon/",
-	},
-	{
-		private: true,
-		path: "/colon/afspraak-maken-heraanmelding/",
-		name: "Afspraak maken",
-		component: ColonAfspraakMakenPage,
-		bvo: Bevolkingsonderzoek.COLON,
-		requiredContactActions: [ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN],
-		redirectPage: "/colon/",
-	},
-	{
-		private: true,
-		path: "/colon/afspraak-maken/",
-		name: "Afspraak maken",
-		component: ColonAfspraakMakenPage,
-		bvo: Bevolkingsonderzoek.COLON,
-		requiredContactActions: [ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN],
-		redirectPage: "/colon/",
-	},
-	{
-		private: true,
-		path: "/profiel/",
-		name: "Profiel",
-		component: ProfielPage,
-	},
-	{
-		private: true,
-		path: "/profiel/telefoonnummer/",
-		name: "Telefoonnummer",
-		component: TelefoonnummerWijzigenPage,
-		requiredContactActions: [ClientContactActieType.INZAGE_PERSOONSGEGEVENS],
-		redirectPage: "/profiel/",
-	},
-	{
-		private: true,
-		path: "/profiel/email/",
-		name: "E-mailadres",
-		component: EmailWijzigenPage,
-		requiredContactActions: [ClientContactActieType.INZAGE_PERSOONSGEGEVENS],
-		redirectPage: "/profiel/",
-	},
-	{
-		private: true,
-		path: "/profiel/adres/",
-		name: "Tijdelijk adres",
-		component: TijdelijkAdresWijzigenPage,
-		requiredContactActions: [ClientContactActieType.TIJDELIJK_ADRES],
-		redirectPage: "/profiel/",
-	},
-	{
-		private: true,
-		path: "/profiel/aanspreekvorm/",
-		name: "Aanspreekvorm",
-		component: AanhefWijzigenPage,
-		requiredContactActions: [ClientContactActieType.INZAGE_PERSOONSGEGEVENS],
-		redirectPage: "/profiel/",
-	},
-	{
-		private: true,
-		path: "/profiel/gebruikgegevens/",
-		name: "Gebruik gegevens",
-		component: BezwaarWijzigenPage,
-		requiredContactActions: [ClientContactActieType.BEZWAAR],
-		redirectPage: "/profiel/",
-	},
-	{
-		private: true,
-		path: "/mamma/afspraak/",
-		name: "Afspraak",
-		component: MammaAfspraakMakenPage,
-		bvo: Bevolkingsonderzoek.MAMMA,
-		requiredContactActions: [ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN],
-	},
-	{
-		private: true,
-		path: "/mamma/uitstellen/",
-		name: "Onderzoek uitstellen",
-		component: MammaAfspraakUitstellenPage,
-		bvo: Bevolkingsonderzoek.MAMMA,
-		requiredContactActions: [ClientContactActieType.MAMMA_UITSTELLEN],
-	},
-	{
-		private: true,
-		path: "/colon/afspraak-wijzigen/",
-		name: "Afspraak verzetten",
+		name: "Afspraak veranderen",
 		component: ColonAfspraakMakenPage,
 		bvo: Bevolkingsonderzoek.COLON,
 		requiredContactActions: [ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN],
@@ -477,6 +444,55 @@ const routes: RouteDef[] = [
 		component: OpenstaandeOnderzoekenPage,
 		bvo: Bevolkingsonderzoek.MAMMA,
 		redirectPage: "/",
+	},
+	{
+		private: true,
+		path: "/colon/afspraak/intake/",
+		name: "Intake",
+		component: ColonAfspraakIntakePage,
+		bvo: Bevolkingsonderzoek.COLON,
+		requiredContactActions: [ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN, ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN],
+		redirectPage: "/colon/",
+		activateGuard: isDigitaleIntakeBeschikbaar,
+	},
+	{
+		private: true,
+		path: "/colon/afspraak/uw-gezondheid/",
+		name: "Uw gezondheid",
+		component: ColonAfspraakGezondheidPage,
+		bvo: Bevolkingsonderzoek.COLON,
+		requiredContactActions: [ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN, ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN],
+		redirectPage: "/colon/",
+		activateGuard: isDigitaleIntakeBeschikbaar,
+	},
+	{
+		private: true,
+		path: "/colon/afspraak/kiezen/",
+		name: "Afspraak kiezen",
+		component: ColonAfspraakMakenWizardPage,
+		bvo: Bevolkingsonderzoek.COLON,
+		requiredContactActions: [ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN, ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN],
+		redirectPage: "/colon/",
+		activateGuard: isDigitaleIntakeBeschikbaar,
+	}, {
+		private: true,
+		path: "/colon/afspraak/contact/",
+		name: "Contactgegevens",
+		component: ColonAfspraakContactPage,
+		bvo: Bevolkingsonderzoek.COLON,
+		requiredContactActions: [ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN, ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN],
+		redirectPage: "/colon/",
+		activateGuard: isDigitaleIntakeBeschikbaar,
+	},
+	{
+		private: true,
+		path: "/colon/afspraak/overzicht/",
+		name: "Overzicht",
+		component: ColonAfspraakOverzichtPage,
+		bvo: Bevolkingsonderzoek.COLON,
+		requiredContactActions: [ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN, ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN],
+		redirectPage: "/colon/",
+		activateGuard: isDigitaleIntakeBeschikbaar,
 	},
 ]
 

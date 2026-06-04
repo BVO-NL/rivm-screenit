@@ -18,8 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {AfspraakOptie} from "../../datatypes/mamma/AfspraakOptie"
-import {formatDateText, formatTime} from "../../utils/DateUtil"
+import {formatDateText, formatTime, formatWeekRange, getWeekNummer} from "../../utils/DateUtil"
 import {BevolkingsonderzoekStyle} from "../../datatypes/Bevolkingsonderzoek"
 import VerticalDividerComponent from "../vectors/VerticalDividerComponent"
 import classNames from "classnames"
@@ -32,10 +31,14 @@ import properties from "./AfspraakView.json"
 import {JSX} from "react"
 
 export type AfspraakViewProps = {
-	afspraakOptie: AfspraakOptie,
+	datumTijd: Date
 	andereAfspraakKiezen?: () => void
 	magWijzigen: boolean
-
+	adres: string
+	postcode: string
+	plaats: string
+	digitaleIntake?: boolean
+	naamIntakelocatie?: string
 }
 
 const AfspraakView = (props: AfspraakViewProps): JSX.Element => {
@@ -43,17 +46,23 @@ const AfspraakView = (props: AfspraakViewProps): JSX.Element => {
 
 	return (
 		<div className={classNames(BevolkingsonderzoekStyle[bvo!], styles.afspraakDiv)}>
-			<VerticalDividerComponent className={styles.verticalRectangle} heightSubtraction={15}/>
+			<VerticalDividerComponent className={styles.verticalRectangle}/>
 			<Row className={styles.afspraakGegevensRow}>
 				<Col sm={5}>
-					<span className={classNames(bvoStyles.bvoText)}>{getString(properties.headers.datumtijd)}</span>
-					<span>{formatDateText(props.afspraakOptie.datumTijd)}</span>
-					<span>{`${formatTime(props.afspraakOptie.datumTijd)} uur`}</span>
+					{props.digitaleIntake ? <>
+						<span className={classNames(bvoStyles.bvoText)}>{getString(properties.headers.digitale_intake.voorbereiding, [getWeekNummer(props.datumTijd)])}</span>
+						<span>{formatWeekRange(props.datumTijd)}</span>
+					</> : <>
+						<span className={classNames(bvoStyles.bvoText)}>{getString(properties.headers.datumtijd)}</span>
+						<span>{formatDateText(props.datumTijd)}</span>
+						<span>{`${formatTime(props.datumTijd)} uur`}</span>
+					</>}
 				</Col>
 				<Col sm={5} className={styles.locatieColumn}>
-					<span className={classNames(bvoStyles.bvoText)}>{getString(properties.headers.locatie)}</span>
-					<span>{props.afspraakOptie.adres}</span>
-					<span>{`${props.afspraakOptie.postcode} ${props.afspraakOptie.plaats}`}</span>
+					<span className={classNames(bvoStyles.bvoText)}>{getString(props.digitaleIntake ? properties.headers.digitale_intake.locatie : properties.headers.locatie)}</span>
+					<span>{props.naamIntakelocatie}</span>
+					<span>{props.adres}</span>
+					<span>{props.postcode} {props.plaats}</span>
 				</Col>
 				{props.magWijzigen && <Col sm={2} className={styles.wijzigenColumn}>
 					<NavLink onClick={props.andereAfspraakKiezen}>

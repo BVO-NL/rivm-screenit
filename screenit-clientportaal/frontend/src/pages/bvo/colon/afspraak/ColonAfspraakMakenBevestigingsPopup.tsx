@@ -28,7 +28,6 @@ import {useSelectedBvo} from "../../../../utils/Hooks"
 import {Bevolkingsonderzoek, BevolkingsonderzoekStyle} from "../../../../datatypes/Bevolkingsonderzoek"
 import {getString} from "../../../../utils/TekstPropertyUtil"
 import VerticalDividerComponent from "../../../../components/vectors/VerticalDividerComponent"
-import {VrijSlotZonderKamer} from "./ColonAfspraakMakenPage"
 import properties from "./ColonAfspraakMakenBevestigingsPopup.json"
 import {afspraakVerplaatsen, nieuweAfspraak} from "../../../../api/ColonAfspraakMakenThunkAction"
 import {useThunkDispatch} from "../../../../index"
@@ -36,6 +35,7 @@ import {ArrowType} from "../../../../components/vectors/ArrowIconComponent"
 import SubmitButton from "../../../../components/input/SubmitButton"
 import {getBvoBaseUrl} from "../../../../utils/UrlUtil"
 import {useNavigate} from "react-router"
+import {VrijSlotZonderKamer} from "../../../../datatypes/VrijSlotZonderKamer"
 
 export type ColonAfspraakMakenBevestigingsPopupProps = {
 	afspraak: VrijSlotZonderKamer
@@ -66,7 +66,7 @@ const ColonAfspraakMakenBevestigingsPopup = (props: ColonAfspraakMakenBevestigin
 											   className={classNames(bvoStyles.bvoText)}>{getString(properties.appointment.description.location)}</span>
 							<span>{props.afspraak.ziekenhuis}</span>
 							<span>{props.afspraak.adres}</span>
-							<span>{`${props.afspraak.postcode  } ${  props.afspraak.plaats}`}</span>
+							<span>{`${props.afspraak.postcode} ${props.afspraak.plaats}`}</span>
 						</Col>
 					</Row>
 				</div>

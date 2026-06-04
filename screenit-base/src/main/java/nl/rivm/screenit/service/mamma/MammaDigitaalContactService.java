@@ -22,9 +22,10 @@ package nl.rivm.screenit.service.mamma;
  */
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-import nl.rivm.screenit.dto.SmsVersturenSqsDto;
+import nl.rivm.screenit.dto.SmsVersturenDto;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaDigitaalClientBericht;
@@ -35,10 +36,10 @@ public interface MammaDigitaalContactService
 
 	List<Long> getAfsprakenVoorSmsVersturen();
 
-	void administreerSmsVerstuurd(List<Long> afspraakIds);
+	void administreerSmsVerstuurd(Map<Long, String> afspraakIdGuidMap);
 
 	void herzendBevestigAfspraakMail(MammaDigitaalClientBericht mammaClientMail, String ontvangendeEmailAdres, Account ingelogdeOrganisatieMedewerker);
 
-	Optional<SmsVersturenSqsDto> maakSmsVersturenDTO(Long afspraakId);
+	Optional<SmsVersturenDto> maakSmsVersturenDTO(Long afspraakId);
 
 }

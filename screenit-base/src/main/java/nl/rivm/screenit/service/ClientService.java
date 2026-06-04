@@ -63,6 +63,8 @@ public interface ClientService
 
 	List<Client> zoekClienten(Client zoekObject);
 
+	List<Client> zoekClientenLijst(Client zoekObject);
+
 	List<Client> getClientenOpAdresMetLimiet(BagAdres adres, Integer minimaleLeeftijd, Integer maximaleLeeftijd, int uitnodigingsInterval);
 
 	void saveOrUpdateClient(Client client);

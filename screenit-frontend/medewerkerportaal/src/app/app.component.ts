@@ -28,7 +28,9 @@ import { MammaDense2UitwisselingPageComponent } from '@/mamma/mamma-dense2-uitwi
 import { ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent } from '@/algemeen/extra-beveiligde-omgeving/extra-beveiligde-omgeving-keuze-herstellen-page/extra-beveiligde-omgeving-keuze-herstellen-page.component'
 import { ExtraBeveiligdeOmgevingClientZoekenPageComponent } from '@/algemeen/extra-beveiligde-omgeving/extra-beveiligde-omgeving-client-zoeken-page/extra-beveiligde-omgeving-client-zoeken-page.component'
 import { MammaVisitatieOverzichtPageComponent } from '@/mamma/mamma-visitatie-overzicht-page/mamma-visitatie-overzicht-page.component'
-import { MammaFotobesprekingOnderzoekenPageComponent } from '@/mamma/mamma-fotobespreking-onderzoeken-page/mamma-fotobespreking-onderzoeken-page.component'
+import { HandleidingenOverzichtPageComponent } from '@/algemeen/handleidingen-overzicht-page/handleidingen-overzicht-page.component'
+import {ClientZoekenPageComponent} from '@algemeen/clientdossier/client-zoeken-page/client-zoeken-page.component'
+import {MammaFotobesprekingOnderzoekenPageComponent} from '@mamma/mamma-fotobespreking-onderzoeken-page/mamma-fotobespreking-onderzoeken-page.component'
 
 @Component({
   selector: 'app-root',
@@ -77,6 +79,12 @@ export class AppComponent implements AfterViewInit {
         break
       case 'mamma-fotobespreking-onderzoeken':
         viewContainerRef.createComponent<MammaFotobesprekingOnderzoekenPageComponent>(MammaFotobesprekingOnderzoekenPageComponent)
+        break
+      case 'handleidingen-overzicht':
+        viewContainerRef.createComponent<HandleidingenOverzichtPageComponent>(HandleidingenOverzichtPageComponent)
+        break
+      case 'client-zoeken':
+        viewContainerRef.createComponent<ClientZoekenPageComponent>(ClientZoekenPageComponent)
         break
     }
   }

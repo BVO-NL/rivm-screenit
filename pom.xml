@@ -22,8 +22,8 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>nl.geodienstencentrum.maven</groupId>
-                    <artifactId>sass-maven-plugin</artifactId>
+                    <groupId>io.github.cleydyr</groupId>
+                    <artifactId>dart-sass-maven-plugin</artifactId>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -289,37 +289,6 @@
                     <stylesheet>java</stylesheet>
                     <author>false</author>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>enforce-all</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <fail>true</fail>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>enforce-wicket-extensions</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>nl.topicuszorg</groupId>
-                        <artifactId>enforcer</artifactId>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

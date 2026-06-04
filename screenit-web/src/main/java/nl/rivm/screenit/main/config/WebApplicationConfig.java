@@ -43,8 +43,6 @@ public class WebApplicationConfig
 
 	private String antwoordFormulierUrl;
 
-	private String handleidingenPath;
-
 	private String huisartsPortaalUrl;
 
 	private String imsContextBridgeUrl;
@@ -67,12 +65,6 @@ public class WebApplicationConfig
 	public String antwoordFormulierUrl()
 	{
 		return StringUtils.defaultIfBlank(antwoordFormulierUrl, "");
-	}
-
-	@Bean
-	public String handleidingenPath()
-	{
-		return StringUtils.defaultIfBlank(handleidingenPath, "");
 	}
 
 	@Bean

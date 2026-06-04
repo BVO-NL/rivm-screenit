@@ -29,6 +29,7 @@
         <mapping class="nl.rivm.screenit.model.envers.ScreenitRevisionEntity"/>
 
         <mapping class="nl.rivm.screenit.model.Medewerker"/>
+        <mapping class="nl.rivm.screenit.model.MedewerkerParameter"/>
         <mapping class="nl.topicuszorg.yubikey.model.YubiKey"/>
         <mapping class="nl.rivm.screenit.model.Organisatie"/>
         <mapping class="nl.rivm.screenit.model.OrganisatieParameter"/>

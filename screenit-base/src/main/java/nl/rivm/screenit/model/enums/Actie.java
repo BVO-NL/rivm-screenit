@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.enums;
 
 /*-
@@ -22,17 +21,16 @@ package nl.rivm.screenit.model.enums;
  * =========================LICENSE_END==================================
  */
 
+import lombok.Getter;
+
 import nl.rivm.screenit.model.INaam;
 
+@Getter
 public enum Actie implements INaam
 {
-
 	INZIEN("Inzien", 1),
-
 	AANPASSEN("Wijzigen", 2),
-
 	TOEVOEGEN("Toevoegen", 3),
-
 	VERWIJDEREN("Verwijderen", 4);
 
 	private final String naam;
@@ -43,15 +41,5 @@ public enum Actie implements INaam
 	{
 		this.naam = naam;
 		this.niveau = niveau;
-	}
-
-	public String getNaam()
-	{
-		return this.naam;
-	}
-
-	public int getNiveau()
-	{
-		return this.niveau;
 	}
 }

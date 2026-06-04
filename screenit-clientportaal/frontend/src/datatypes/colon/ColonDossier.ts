@@ -21,9 +21,12 @@
 import {ClientGebeurtenis} from "../ClientGebeurtenis"
 import {Huisarts} from "../Huisarts"
 import {FitStatus, geenFitStatus} from "./FitStatus"
-import {ColonIntakeAfspraakDto} from "./ColonIntakeAfspraakDto"
+import {ColonIntakeafspraakDto} from "./ColonIntakeafspraakDto"
 import {geenHeraanmeldenOpties, HeraanmeldenOptiesDto} from "../afmelden/HeraanmeldenOptiesDto"
 import {BackendObject} from "../BackendObject"
+import {VrijSlotZonderKamer} from "../VrijSlotZonderKamer"
+import {ColonIntakeafspraakType} from "./ColonIntakeafspraakType"
+import {ColonHeeftAsaScoreBovenDrie} from "./ColonHeeftAsaScoreBovenDrie"
 
 export type ColonDossier = BackendObject & {
 	id: number,
@@ -33,8 +36,11 @@ export type ColonDossier = BackendObject & {
 	huisartsVorigeRonde?: Huisarts,
 	huisartsHuidigeRonde?: Huisarts,
 	fitStatus: FitStatus,
-	intakeAfspraak?: ColonIntakeAfspraakDto,
+	intakeAfspraak?: ColonIntakeafspraakDto,
+	geselecteerdeIntakeafspraakType?: ColonIntakeafspraakType,
+	heeftAsaScoreBovenDrie?: ColonHeeftAsaScoreBovenDrie,
 	heraanmeldenOpties: HeraanmeldenOptiesDto,
+	slot: VrijSlotZonderKamer | null,
 }
 
 export const leegColonDossier: ColonDossier = {
@@ -45,4 +51,5 @@ export const leegColonDossier: ColonDossier = {
 	fitStatus: geenFitStatus,
 	heraanmeldenOpties: geenHeraanmeldenOpties,
 	isInSync: false,
+	slot: null,
 }

@@ -140,7 +140,7 @@ export class AfspraakslotBewerkenDialogComponent {
         organisatieTypeScopes: [OrganisatieType.INTAKELOCATIE],
         required: Required.ANY,
       }) &&
-      this.afspraakslot.status != ColonTijdslotStatus.GEBRUIKT_VOOR_CAPACITEIT
+      ![ColonTijdslotStatus.GEBRUIKT_VOOR_CAPACITEIT.toString(), ColonTijdslotStatus.DIGITALE_INTAKE.toString()].includes(this.afspraakslot.status!)
 
     this.bewerkenToegestaan =
       this.autorisatieService.isToegestaan({
@@ -151,7 +151,7 @@ export class AfspraakslotBewerkenDialogComponent {
         organisatieTypeScopes: [OrganisatieType.INTAKELOCATIE],
         required: Required.ANY,
       }) &&
-      (this.isNieuw || this.afspraakslot?.status !== ColonTijdslotStatus.INTAKE_GEPLAND)
+      (this.isNieuw || (this.afspraakslot && ![ColonTijdslotStatus.INTAKE_GEPLAND.toString(), ColonTijdslotStatus.DIGITALE_INTAKE.toString()].includes(this.afspraakslot.status!)))
 
     if (!this.bewerkenToegestaan) {
       this.afspraakslotForm.disable()

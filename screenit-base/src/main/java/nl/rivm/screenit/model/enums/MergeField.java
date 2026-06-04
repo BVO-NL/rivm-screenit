@@ -1607,6 +1607,20 @@ public enum MergeField
 			}
 		},
 
+	DATUM_INTAKE_DIGITAAL("_DATUM_INTAKE_DIGITAAL")
+		{
+			@Override
+			public Object getFieldValue(MailMergeContext context)
+			{
+				if (context.getIntakeAfspraak() != null)
+				{
+					var datumAfspraak = context.getIntakeAfspraak().getVanaf();
+					return DateUtil.formatWeekRange(datumAfspraak);
+				}
+				return null;
+			}
+		},
+
 	COLON_HERAANMELDEN_TEKST(
 		"_COLON_HERAANMELDEN_TEKST",
 		MergeFieldTestType.OVERIGE,

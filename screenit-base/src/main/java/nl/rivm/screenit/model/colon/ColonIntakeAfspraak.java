@@ -40,6 +40,7 @@ import lombok.Setter;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
+import nl.rivm.screenit.model.colon.enums.ColonIntakeafspraakType;
 import nl.rivm.screenit.model.colon.enums.ColonTijdslotType;
 import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
 import nl.rivm.screenit.model.colon.planning.ColonTijdslot;
@@ -108,4 +109,11 @@ public class ColonIntakeAfspraak extends ColonTijdslot
 
 	@OneToOne(fetch = FetchType.LAZY)
 	private ColonAfspraakslot afspraakslot;
+
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private ColonIntakeafspraakType intakeafspraakType = ColonIntakeafspraakType.OP_LOCATIE;
+
+	@Column
+	private boolean digitaleIntakeVerstuurd;
 }

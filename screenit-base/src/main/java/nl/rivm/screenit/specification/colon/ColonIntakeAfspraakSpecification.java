@@ -53,6 +53,7 @@ import nl.rivm.screenit.model.colon.ColonVerslag_;
 import nl.rivm.screenit.model.colon.WerklijstIntakeFilter;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
+import nl.rivm.screenit.model.colon.enums.ColonIntakeafspraakType;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer_;
 import nl.rivm.screenit.model.colon.planning.ColonTijdslot_;
@@ -259,5 +260,10 @@ public class ColonIntakeAfspraakSpecification
 	public static ExtendedSpecification<ColonIntakeAfspraak> heeftNieuweAfspraak()
 	{
 		return (r, q, cb) -> cb.isNotNull(r.get(ColonIntakeAfspraak_.nieuweAfspraak));
+	}
+
+	public static ExtendedSpecification<ColonIntakeAfspraak> heeftIntakeafspraakType(ColonIntakeafspraakType intakeafspraakType)
+	{
+		return (r, q, cb) -> cb.equal(r.get(ColonIntakeAfspraak_.intakeafspraakType), intakeafspraakType);
 	}
 }

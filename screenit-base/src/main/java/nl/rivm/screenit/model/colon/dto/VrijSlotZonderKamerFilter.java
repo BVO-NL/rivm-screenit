@@ -46,4 +46,8 @@ public class VrijSlotZonderKamerFilter implements Serializable
 	private Long nietIntakelocatieId;
 
 	private Boolean alleenIntakelocaties;
+
+	private boolean asaScoreBovenDrie;
+
+	private boolean digitaleAfspraak;
 }

@@ -18,8 +18,14 @@
   },
   "toast": {
     "bevestiging": {
-      "title": "U heeft een afspraak gemaakt voor een gesprek over vervolgonderzoek.",
-      "message": "U krijgt binnen een paar dagen een brief met de gegevens van uw afspraak."
+      "title": {
+        "op_locatie": "U heeft een afspraak gemaakt voor een gesprek over vervolgonderzoek.",
+        "digitaal": "U heeft een afspraak gemaakt voor een online voorbereiding."
+      },
+      "message": {
+        "op_locatie": "U krijgt binnen een paar dagen een brief met de gegevens van uw afspraak.",
+        "digitaal": "U krijgt binnen enkele minuten een e-mail met de bevestiging van uw afspraak."
+      }
     },
     "errors": {
       "geen_wijzigingen": "Geen wijzigingen opgeslagen",

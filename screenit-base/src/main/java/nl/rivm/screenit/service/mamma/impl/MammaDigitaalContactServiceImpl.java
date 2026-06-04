@@ -25,13 +25,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.dto.SmsVersturenSqsDto;
+import nl.rivm.screenit.dto.SmsVersturenDto;
 import nl.rivm.screenit.dto.alg.client.contact.MailAttachmentDto;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
@@ -120,7 +121,7 @@ public class MammaDigitaalContactServiceImpl implements MammaDigitaalContactServ
 	}
 
 	@Override
-	public Optional<SmsVersturenSqsDto> maakSmsVersturenDTO(Long afspraakId)
+	public Optional<SmsVersturenDto> maakSmsVersturenDTO(Long afspraakId)
 	{
 		if (checkSmsVerzendenStatus())
 		{
@@ -156,20 +157,20 @@ public class MammaDigitaalContactServiceImpl implements MammaDigitaalContactServ
 		return smsVerzenden == SmsVerzenden.ALTERNATIEF_MOBIELNUMMER || smsVerzenden == SmsVerzenden.AAN;
 	}
 
-	private Optional<SmsVersturenSqsDto> maakAfspraakSmsHerinnering(MammaAfspraak afspraak)
+	private Optional<SmsVersturenDto> maakAfspraakSmsHerinnering(MammaAfspraak afspraak)
 	{
 		var client = afspraak.getUitnodiging().getScreeningRonde().getDossier().getClient();
 		var smsBerichtTekst = templateService.maakDigitaalBericht(DigitaalBerichtTemplateType.MAMMA_AFSPRAAK_HERINNERING, client).getBody();
-		return maakSmsVersturenSqsDto(client, smsBerichtTekst);
+		return maakSmsVersturenDto(client, smsBerichtTekst);
 	}
 
 	@NotNull
-	private Optional<SmsVersturenSqsDto> maakSmsVersturenSqsDto(Client client, String smsBericht)
+	private Optional<SmsVersturenDto> maakSmsVersturenDto(Client client, String smsBericht)
 	{
 		var telefoonNummer = client.getPersoon().getTelefoonnummer1();
 		if (TelefoonnummerUtil.isCorrectNederlandsMobielNummer(telefoonNummer))
 		{
-			var sms = new SmsVersturenSqsDto();
+			var sms = new SmsVersturenDto();
 			if (getSmsVerzenden() == SmsVerzenden.ALTERNATIEF_MOBIELNUMMER)
 			{
 				sms.setTekst(smsBericht + " [SMS verstuurd naar " + telefoonNummer + "]");
@@ -203,16 +204,25 @@ public class MammaDigitaalContactServiceImpl implements MammaDigitaalContactServ
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void administreerSmsVerstuurd(List<Long> afspraakIds)
+	public void administreerSmsVerstuurd(Map<Long, String> afspraakIdGuidMap)
 	{
-		for (Long afspraak : afspraakIds)
+		for (var entry : afspraakIdGuidMap.entrySet())
 		{
-			var opgehaaldeAfspraak = baseAfspraakRepository.findById(afspraak).orElseThrow(() -> new IllegalStateException("Kan geen afspraak vinden met id: " + afspraak));
+			var opgehaaldeAfspraak = baseAfspraakRepository.findById(entry.getKey())
+				.orElseThrow(() -> new IllegalStateException("Kan geen afspraak vinden met id: " + entry.getKey()));
 
 			opgehaaldeAfspraak.setSmsStatus(SmsStatus.VERSTUURD);
 			baseAfspraakRepository.save(opgehaaldeAfspraak);
-			clientDigitaalBerichtService.saveOrUpdate(maakClientBericht(opgehaaldeAfspraak, DigitaalBerichtTemplateType.MAMMA_AFSPRAAK_HERINNERING));
+
+			clientDigitaalBerichtService.saveOrUpdate(maakClientBerichtSmsVerstuurd(opgehaaldeAfspraak, entry.getValue()));
 		}
+	}
+
+	private MammaDigitaalClientBericht maakClientBerichtSmsVerstuurd(MammaAfspraak afspraak, String smsComHubGuid)
+	{
+		var clientBericht = maakClientBericht(afspraak, DigitaalBerichtTemplateType.MAMMA_AFSPRAAK_HERINNERING);
+		clientBericht.setSmsComHubGuid(smsComHubGuid);
+		return clientBericht;
 	}
 
 	private void administreerSmsGefaald(MammaAfspraak afspraak)

@@ -48,4 +48,8 @@ public class ColonAfspraakZoekFilterDto extends ClientportaalBaseDto
 	private Integer pagecount;
 
 	private Integer maxResultsPerSearchInteration;
+
+	private boolean asaScoreBovenDrie;
+
+	private boolean digitaleAfspraak;
 }

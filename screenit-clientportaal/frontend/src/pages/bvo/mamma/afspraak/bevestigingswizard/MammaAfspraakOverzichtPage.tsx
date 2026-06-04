@@ -50,23 +50,23 @@ const MammaAfspraakOverzichtPage: FC = () => {
 	return (
 		<div>
 			<SpanWithHtml value={properties.bevestiging.description}/>
-			<AfspraakView afspraakOptie={afspraakOptie} magWijzigen={false}/>
+			<AfspraakView adres={afspraakOptie.adres} postcode={afspraakOptie.postcode} plaats={afspraakOptie.plaats} datumTijd={afspraakOptie.datumTijd} magWijzigen={false}/>
 			<SpanWithHtml value={maakOmschrijving()}/>
 
 			<div className={classNames(styles.bevestigenForm, styles.metVorige)}>
 				<Button lightStyle={true}
-						displayArrow={ArrowType.ARROW_LEFT}
-						onClick={navigeerNaarVorigePagina}
-						label={properties.afspraak_maken.button.vorige}/>
+				        displayArrow={ArrowType.ARROW_LEFT}
+				        onClick={navigeerNaarVorigePagina}
+				        label={properties.afspraak_maken.button.vorige}/>
 				<div className={styles.knoppenRechts}>
 					<Button label={properties.afspraak_maken.button.volgende}
-							onClick={() => {
+					        onClick={() => {
 								datadogService.stuurEvent("afspraakoverzichtBekeken", AnalyticsCategorie.MAMMA_AFSPRAAK, {
 									stap: huidigeStap,
 								})
 								navigate("/mamma/afspraak/uw-huisarts")
 							}}
-							displayArrow={ArrowType.ARROW_RIGHT}/>
+					        displayArrow={ArrowType.ARROW_RIGHT}/>
 					<AfsluitenLink/>
 				</div>
 			</div>

@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.web.gebruiker.algemeen.medewerker;
 
 /*-
@@ -28,13 +27,9 @@ import java.util.List;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
-import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 
 public abstract class MedewerkerBeheer extends AlgemeenPage
 {
-
-	private static final long serialVersionUID = 1L;
-
 	@Override
 	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
@@ -44,7 +39,6 @@ public abstract class MedewerkerBeheer extends AlgemeenPage
 	@Override
 	protected boolean bevatFormulieren()
 	{
-
 		return Boolean.TRUE;
 	}
 
@@ -57,10 +51,8 @@ public abstract class MedewerkerBeheer extends AlgemeenPage
 		{
 			contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.medewerkers.overeenkomsten", MedewerkerOvereenkomstenPage.class));
 			contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.medewerkers.organisaties", MedewerkerKoppelPage.class));
-
 		}
 
 		return contextMenuItems;
 	}
-
 }

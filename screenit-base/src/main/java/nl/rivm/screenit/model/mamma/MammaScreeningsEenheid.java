@@ -29,8 +29,6 @@ import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -47,7 +45,6 @@ import nl.rivm.screenit.dto.mamma.planning.PlanningScreeningsEenheidMetaDataDto;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.IActief;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
-import nl.rivm.screenit.model.mamma.enums.MammaDuurMinderValideAfspraak;
 import nl.rivm.screenit.util.DiffSpecs;
 import nl.rivm.screenit.util.SkipFieldForDiff;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
@@ -127,33 +124,8 @@ public class MammaScreeningsEenheid extends AbstractHibernateObject implements I
 	@Column(precision = HibernateMagicNumber.P9, scale = HibernateMagicNumber.S5)
 	private BigDecimal interval;
 
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-
-	private MammaDuurMinderValideAfspraak duurMinderValideAfspraak;
-
 	@Transient
 	private PlanningScreeningsEenheidMetaDataDto metaDataDto;
-
-	@Column
-	@Temporal(TemporalType.TIME)
-
-	private Date minderValidePeriode1Vanaf;
-
-	@Column
-	@Temporal(TemporalType.TIME)
-
-	private Date minderValidePeriode1TotEnMet;
-
-	@Column
-	@Temporal(TemporalType.TIME)
-
-	private Date minderValidePeriode2Vanaf;
-
-	@Column
-	@Temporal(TemporalType.TIME)
-
-	private Date minderValidePeriode2TotEnMet;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "screeningsEenheid")
 	@Getter

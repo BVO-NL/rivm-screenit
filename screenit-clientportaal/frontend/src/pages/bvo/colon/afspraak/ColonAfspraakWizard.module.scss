@@ -1,0 +1,157 @@
+/*-
+ * ========================LICENSE_START=================================
+ * screenit-clientportaal-frontend
+ * %%
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+.infoText {
+	display: block;
+	margin-bottom: 5px;
+}
+
+.description {
+	margin-left: 40px;
+}
+
+.errorLabel {
+	position: relative;
+	color: var(--rood-base);
+	width: 100%;
+	margin-bottom: 0;
+	margin-left: 40px;
+}
+
+.radiobuttons {
+	list-style-type: none;
+}
+
+.radioOptie {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	margin: 15px 0;
+	background: #fff;
+	padding: 20px;
+	border-radius: 10px;
+}
+
+.radioOptieLabel {
+	font-weight: 500;
+	margin-left: 31px;
+	margin-bottom: 8px;
+}
+
+.radioOptieBeschrijving {
+	margin-top: 0;
+	margin-left: 31px;
+	font-size: 0.9rem;
+	color: var(--grijs-donker);
+	margin-bottom: 0;
+}
+
+.wizardIndicator {
+	margin-bottom: 24px;
+}
+
+.bevestigenForm {
+	margin-top: 20px;
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+	flex-direction: row-reverse;
+	justify-content: flex-start;
+
+	&.metVorige {
+		justify-content: space-between;
+		flex-direction: row;
+	}
+
+	&.inPopup {
+		flex-direction: column;
+		align-items: stretch;
+		margin-top: 0;
+	}
+
+	.knoppenRechts {
+		display: flex;
+		gap: 1rem;
+		flex-direction: row-reverse;
+		align-items: center;
+	}
+
+	button, a {
+		text-align: center;
+		margin-bottom: 0;
+	}
+}
+
+.style {
+	.results {
+		.showMoreResultsButtonArea {
+			text-align: center;
+		}
+		.navigationButtons {
+			.left {
+				float: left;
+			}
+			.right {
+				float: right;
+			}
+			.left svg, .right svg {
+				fill: var(--blauw-base)
+			}
+		}
+	}
+
+	.datepicker {
+		width: 100%;
+	}
+
+	.searchbutton {
+		width: 100%;
+		color: white;
+		text-align: center;
+	}
+
+	.advancedSearchButton {
+		margin-top: 15px;
+		margin-bottom: 15px;
+		display: block;
+		cursor: pointer;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	}
+}
+
+.contactGegevensContainer {
+	position: relative;
+	margin: 15px 0;
+	background: #fff;
+	padding: 20px;
+	border-radius: 10px;
+}
+
+.contactGegevensHeader {
+	font-size: 0.75rem;
+}
+
+.wijzigenLink {
+	display: inline;
+	padding: 0;
+}

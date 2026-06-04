@@ -21,44 +21,44 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import nl.rivm.screenit.config.CommunicationHubClientConfig;
 import nl.rivm.screenit.model.DigitaalClientBericht;
-import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.service.DigitaalClientBerichtService;
-import nl.rivm.screenit.service.mamma.MammaDigitaalClientBerichtService;
+import nl.topicuszorg.communicationhub.api.MessageServiceCommunicationHubClientApi;
+import nl.topicuszorg.communicationhub.api.model.SmsMessage;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
-
-@SuppressWarnings("unchecked")
-@Primary
-@Service
-public class DigitaalClientBerichtServiceImpl implements DigitaalClientBerichtService
+@Slf4j
+@RequiredArgsConstructor
+public abstract class DigitaalClientBerichtServiceImpl<CB extends DigitaalClientBericht<?>> implements DigitaalClientBerichtService<CB>
 {
-	@Autowired
-	private MammaDigitaalClientBerichtService mammaDigitaalClientBerichtService;
+
+	private final MessageServiceCommunicationHubClientApi messageServiceApi;
+
+	private final CommunicationHubClientConfig communicationHubClientConfig;
 
 	@Override
-	public void saveOrUpdate(DigitaalClientBericht digitaalClientBericht)
+	public String haalSmsBerichtOp(CB digitaalClientBericht)
 	{
-		bvoDigitaalClientBerichtService(digitaalClientBericht).saveOrUpdate(digitaalClientBericht);
-	}
-
-	@Override
-	public boolean digitaalClientBerichtMagOpnieuwVerzondenWorden(DigitaalClientBericht digitaalClientBericht)
-	{
-		return bvoDigitaalClientBerichtService(digitaalClientBericht).digitaalClientBerichtMagOpnieuwVerzondenWorden(digitaalClientBericht);
-	}
-
-	private DigitaalClientBerichtService bvoDigitaalClientBerichtService(DigitaalClientBericht digitaalClientBericht)
-	{
-		if (Bevolkingsonderzoek.MAMMA == digitaalClientBericht.getScreeningRonde().getBevolkingsonderzoek())
+		var smsComHubGuid = digitaalClientBericht.getSmsComHubGuid();
+		if (smsComHubGuid != null)
 		{
-			return mammaDigitaalClientBerichtService;
+			try
+			{
+				var response = messageServiceApi.getMessageChanges(communicationHubClientConfig.getTenant(), smsComHubGuid);
+				if ((response.getMessage() instanceof SmsMessage smsMessage))
+				{
+					return smsMessage.getContent();
+				}
+			}
+			catch (Exception e)
+			{
+				LOG.error("Fout bij ophalen SMS bericht met guid: {}", smsComHubGuid, e);
+				return BERICHT_KON_NIET_WORDEN_OPGEHAALD_KEY;
+			}
 		}
-		else
-		{
-			throw new IllegalStateException();
-		}
+		return GEEN_BERICHT_BESCHIKBAAR_KEY;
 	}
 }

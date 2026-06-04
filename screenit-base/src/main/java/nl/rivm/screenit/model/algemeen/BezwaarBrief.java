@@ -21,6 +21,12 @@ package nl.rivm.screenit.model.algemeen;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,13 +38,7 @@ import nl.rivm.screenit.model.OnderzoeksresultatenActie;
 import nl.rivm.screenit.model.ScreeningRonde;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 
 @Entity
 @Table(schema = "algemeen")
@@ -53,11 +53,12 @@ public class BezwaarBrief extends ClientBrief<ScreeningRonde, Afmelding, Bezwaar
 	@ManyToOne(fetch = FetchType.LAZY)
 	private OnderzoeksresultatenActie onderzoeksresultatenActie;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.SAVE_UPDATE })
+	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE })
 	private BezwaarMergedBrieven mergedBrieven;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@Cascade({ org.hibernate.annotations.CascadeType.DELETE })
 	private BezwaarBrief herdruk;
 
 	private boolean vragenOmHandtekening = false;

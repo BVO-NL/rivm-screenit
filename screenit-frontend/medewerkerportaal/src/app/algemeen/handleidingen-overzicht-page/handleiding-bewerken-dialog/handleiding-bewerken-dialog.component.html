@@ -1,0 +1,47 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog titel="Handleiding bewerken" size="md">
+  <form [formGroup]="handleidingForm" body class="row form-in-modal" novalidate>
+    <div class="col">
+      <app-single-file-selector
+        label="Handleiding"
+        formControlName="bestand"
+        acceptedExtensie="pdf"
+        data-testid="handleiding_uploaden"
+      />
+      <ds-input
+        label="Bestandsnaam"
+        formControlName="bestandsnaam"
+        [errorMessage]="{minlength: 'De bestandsnaam moet minimaal 3 tekens bevatten', maxlength: 'De bestandsnaam mag maximaal 50 tekens bevatten'}"
+        data-testid="bestandsnaam_input"
+        required
+        minlength="3"
+        maxlength="50"
+      />
+    </div>
+  </form>
+  <div buttons class="btn-group">
+    <button (click)="annuleren()" data-testid="annuleren_btn" ds-button-secondary>Annuleren</button>
+    <button (click)="opslaan()" [disabled]="!isFormGeldig" ds-button-primary data-testid="opslaan_btn">
+      Opslaan
+    </button>
+  </div>
+</app-base-dialog>

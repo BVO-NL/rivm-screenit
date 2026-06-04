@@ -33,13 +33,18 @@ import nl.rivm.screenit.model.ClientBrief_;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.InpakbareUitnodiging_;
 import nl.rivm.screenit.model.Persoon_;
+import nl.rivm.screenit.model.cervix.CervixMonster;
+import nl.rivm.screenit.model.cervix.CervixMonster_;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde_;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging_;
 import nl.rivm.screenit.model.cervix.enums.CervixMonsterType;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie;
+import nl.rivm.screenit.model.colon.ColonFitRegistratie_;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.ColonUitnodiging_;
+import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.RedenIntrekkenGbaIndicatie;
@@ -282,6 +287,99 @@ public class ClientSpecification
 						cb.isFalse(uitnodigingRoot.get(InpakbareUitnodiging_.verstuurd)),
 						cb.isNull(uitnodigingRoot.get(InpakbareUitnodiging_.verstuurdDatum))
 					)
+				));
+			return cb.exists(subquery);
+		};
+	}
+
+	public static Specification<Client> heeftBkUitnodigingsnummer(long uitnodigingsnummer)
+	{
+		return (r, q, cb) ->
+		{
+			var subquery = q.subquery(Long.class);
+			var rondeRoot = subquery.from(MammaScreeningRonde.class);
+			subquery.select(cb.literal(1L)).where(
+				cb.and(
+					cb.equal(rondeRoot.get(MammaScreeningRonde_.dossier), r.get(Client_.mammaDossier)),
+					cb.equal(rondeRoot.get(MammaScreeningRonde_.uitnodigingsNr), uitnodigingsnummer)
+				));
+			return cb.exists(subquery);
+		};
+	}
+
+	public static Specification<Client> heeftBmhkMonsterId(String monsterId)
+	{
+		return (r, q, cb) ->
+		{
+			var subquery = q.subquery(Long.class);
+			var monsterRoot = subquery.from(CervixMonster.class);
+			var uitnodigingJoin = join(monsterRoot, CervixMonster_.uitnodiging);
+			var screeningRondeJoin = join(uitnodigingJoin, CervixUitnodiging_.screeningRonde);
+			var dossierJoin = join(screeningRondeJoin, CervixScreeningRonde_.dossier);
+			subquery.select(cb.literal(1L)).where(
+				cb.and(
+					cb.equal(dossierJoin, r.get(Client_.cervixDossier)),
+					cb.equal(monsterRoot.get(CervixMonster_.monsterId), StringUtils.trimToEmpty(monsterId))
+				));
+			return cb.exists(subquery);
+		};
+	}
+
+	public static Specification<Client> heeftDkBarcode(String barcode)
+	{
+		return (r, q, cb) ->
+		{
+			var subquery = q.subquery(Long.class);
+			var fitRoot = subquery.from(ColonFitRegistratie.class);
+			var screeningRondeJoin = join(fitRoot, ColonFitRegistratie_.screeningRonde);
+			var dossierJoin = join(screeningRondeJoin, ColonScreeningRonde_.dossier);
+			subquery.select(cb.literal(1L)).where(
+				cb.and(
+					cb.equal(dossierJoin, r.get(Client_.colonDossier)),
+					cb.equal(fitRoot.get(ColonFitRegistratie_.barcode), barcode)
+				));
+			return cb.exists(subquery);
+		};
+	}
+
+	public static Specification<Client> heeftEmailadres(String emailadres)
+	{
+		return (r, q, cb) ->
+		{
+			var persoonJoin = join(r, Client_.persoon);
+			return SpecificationUtil.exactCaseInsensitive(cb, persoonJoin.get(Persoon_.emailadres), emailadres);
+		};
+	}
+
+	public static Specification<Client> heeftBmhkUitnodigingsId(long uitnodigingsId)
+	{
+		return (r, q, cb) ->
+		{
+			var subquery = q.subquery(Long.class);
+			var uitnodigingRoot = subquery.from(CervixUitnodiging.class);
+			var screeningRondeJoin = join(uitnodigingRoot, CervixUitnodiging_.screeningRonde);
+			var dossierJoin = join(screeningRondeJoin, CervixScreeningRonde_.dossier);
+			subquery.select(cb.literal(1L)).where(
+				cb.and(
+					cb.equal(dossierJoin, r.get(Client_.cervixDossier)),
+					cb.equal(uitnodigingRoot.get(InpakbareUitnodiging_.uitnodigingsId), uitnodigingsId)
+				));
+			return cb.exists(subquery);
+		};
+	}
+
+	public static Specification<Client> heeftDkUitnodigingsId(long uitnodigingsId)
+	{
+		return (r, q, cb) ->
+		{
+			var subquery = q.subquery(Long.class);
+			var uitnodigingRoot = subquery.from(ColonUitnodiging.class);
+			var screeningRondeJoin = join(uitnodigingRoot, ColonUitnodiging_.screeningRonde);
+			var dossierJoin = join(screeningRondeJoin, ColonScreeningRonde_.dossier);
+			subquery.select(cb.literal(1L)).where(
+				cb.and(
+					cb.equal(dossierJoin, r.get(Client_.colonDossier)),
+					cb.equal(uitnodigingRoot.get(InpakbareUitnodiging_.uitnodigingsId), uitnodigingsId)
 				));
 			return cb.exists(subquery);
 		};

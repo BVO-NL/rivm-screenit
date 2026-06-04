@@ -22,8 +22,11 @@ package nl.rivm.screenit.service;
  */
 
 import java.security.Key;
+import java.security.KeyStore;
 
 public interface KeyStoreService
 {
 	Key getFirstKeyFromKeyStore(String keyStoreLocation, String keyStorePassword, String keyPassword);
+
+	KeyStore getKeyStore(String keyStoreLocationOnFilestore, String keyStorePassword);
 }

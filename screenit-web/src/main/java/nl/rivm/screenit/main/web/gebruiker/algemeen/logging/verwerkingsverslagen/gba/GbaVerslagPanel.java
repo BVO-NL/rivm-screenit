@@ -21,11 +21,11 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslage
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.Client;
@@ -70,11 +70,21 @@ public class GbaVerslagPanel extends GenericPanel<GbaVerwerkingsLog>
 		super(id, new CompoundPropertyModel<>(model));
 
 		add(DateLabel.forDatePattern("datumVerwerking", "dd-MM-yyyy HH:mm:ss"));
-		add(new Label("aantalNieuweBurgers", getAantalNieuweBurgers(model)));
-		add(new Label("aantalBijgewerkteBugers", getAantalBijgewerkteBurgers(model)));
+		add(new Label("aantalNieuweBurgers", getAantalBurgers(model, GbaVerwerkingsLog::getAantalNieuweBurgers, GbaVerwerkingEntry::getAantalNieuweBurgers)));
+		add(new Label("aantalBijgewerkteBugers", getAantalBurgers(model, GbaVerwerkingsLog::getAantalBijgewerkteBugers, GbaVerwerkingEntry::getAantalBijgewerkteBugers)));
 		add(new Label("aantalNieuweColonDossiers"));
 		add(new Label("aantalNieuweCervixDossiers"));
 		add(new Label("aantalNieuweMammaDossiers"));
+		add(new Label("aantalIndicatieIntrekkingenBovengrensleeftijd",
+			getAantalIndicatieIntrekkingen(model, GbaVerwerkingsLog::getAantalIndicatiesIngetrokkenBovengrensleeftijd)));
+		add(new Label("aantalIndicatieIntrekkingenAfgemeld",
+			getAantalIndicatieIntrekkingen(model, GbaVerwerkingsLog::getAantalIndicatiesIngetrokkenDefinitiefAfgemeld)));
+		add(new Label("aantalIndicatieIntrekkingenSelectieblokkade",
+			getAantalIndicatieIntrekkingen(model, GbaVerwerkingsLog::getAantalIndicatiesIngetrokkenSelectieblokkade)));
+		add(new Label("aantalIndicatieIntrekkingenBezwaar",
+			getAantalIndicatieIntrekkingen(model, GbaVerwerkingsLog::getAantalIndicatiesIngetrokkenBezwaar)));
+		add(new Label("aantalIndicatieIntrekkingenAfgevoerd",
+			getAantalIndicatieIntrekkingen(model, GbaVerwerkingsLog::getAantalIndicatiesIngetrokkenAfgevoerd)));
 		add(new PropertyListView<GbaFile>("bestanden")
 		{
 			@Override
@@ -107,17 +117,17 @@ public class GbaVerslagPanel extends GenericPanel<GbaVerwerkingsLog>
 		});
 	}
 
-	private String getAantalNieuweBurgers(IModel<GbaVerwerkingsLog> model)
+	private String getAantalBurgers(IModel<GbaVerwerkingsLog> model, Function<GbaVerwerkingsLog, Integer> logGetter, Function<GbaVerwerkingEntry, Integer> entryGetter)
 	{
 		if (model.getObject() == null)
 		{
 			return null;
 		}
 
-		ToegangLevel toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_GBA_VERWERKING_VERSLAG);
+		var toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_GBA_VERWERKING_VERSLAG);
 		if (toegangLevel == ToegangLevel.LANDELIJK)
 		{
-			return model.getObject().getAantalNieuweBurgers().toString();
+			return logGetter.apply(model.getObject()).toString();
 		}
 		else if (toegangLevel == ToegangLevel.REGIO && ScreenitSession.get().getScreeningOrganisatie() != null)
 		{
@@ -125,34 +135,25 @@ public class GbaVerslagPanel extends GenericPanel<GbaVerwerkingsLog>
 			{
 				if (entry.getScreeningOrganisatie().equals(ScreenitSession.get().getScreeningOrganisatie().getId()))
 				{
-					return entry.getAantalNieuweBurgers().toString();
+					return entryGetter.apply(entry).toString();
 				}
 			}
 		}
 		return null;
 	}
 
-	private String getAantalBijgewerkteBurgers(IModel<GbaVerwerkingsLog> model)
+	private String getAantalIndicatieIntrekkingen(IModel<GbaVerwerkingsLog> model, Function<GbaVerwerkingsLog, Integer> logGetter)
 	{
 		if (model.getObject() == null)
 		{
 			return null;
 		}
 
-		ToegangLevel toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_GBA_VERWERKING_VERSLAG);
+		var toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_GBA_VERWERKING_VERSLAG);
 		if (toegangLevel == ToegangLevel.LANDELIJK)
 		{
-			return model.getObject().getAantalBijgewerkteBugers().toString();
-		}
-		else if (toegangLevel == ToegangLevel.REGIO && ScreenitSession.get().getScreeningOrganisatie() != null)
-		{
-			for (GbaVerwerkingEntry entry : model.getObject().getEntries())
-			{
-				if (entry.getScreeningOrganisatie().equals(ScreenitSession.get().getScreeningOrganisatie().getId()))
-				{
-					return entry.getAantalBijgewerkteBugers().toString();
-				}
-			}
+			var aantal = logGetter.apply(model.getObject());
+			return aantal != null ? aantal.toString() : "";
 		}
 		return null;
 	}

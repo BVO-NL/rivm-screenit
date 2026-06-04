@@ -1,7 +1,11 @@
 {
   "headers": {
     "datumtijd": "Datum en tijd",
-    "locatie": "Locatie"
+    "locatie": "Locatie",
+    "digitale_intake": {
+      "voorbereiding": "Online voorbereiding in week %s",
+      "locatie": "Locatie vervolgonderzoek"
+    }
   },
   "button": {
     "wijzigen": "Wijzigen"

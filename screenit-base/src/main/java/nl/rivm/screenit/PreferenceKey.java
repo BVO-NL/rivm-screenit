@@ -61,6 +61,8 @@ public enum PreferenceKey
 
 	COLON_MAX_AANTAL_FITS("Maximale aantal FIT's", Integer.class),
 
+	COLON_START_DIGITALE_INTAKE("Start DK digitale intake", Date.class),
+
 	WACHTWOORDEMAIL("Wachtwoordaanvragen e-mail", String.class),
 
 	WACHTWOORDEMAILSUBJECT("Wachtwoordaanvragen e-mailonderwerp", String.class),
@@ -366,8 +368,6 @@ public enum PreferenceKey
 	MAMMA_CLIENTPORTAAL_VERVANGENDE_TEKST("BK clientportaal: Vervangende tekst", String.class),
 
 	MAMMA_CLIENTPORTAAL_TIJDELIJKE_MELDING("BK clientportaal: Tijdelijke melding", String.class),
-
-	MAMMA_MINDERVALIDE_RESERVERING_ACTIEF("BK mindervalidenreservering actief", Boolean.class),
 
 	CERVIX_UITSTEL_UITSLAGBRIEF_PAP3A2_OF_HOGER("Uitstel uitslagbrief na PAP3a2 of hoger", Integer.class),
 

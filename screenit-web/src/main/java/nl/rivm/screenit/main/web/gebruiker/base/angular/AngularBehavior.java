@@ -31,12 +31,15 @@ import nl.rivm.screenit.main.model.mamma.beoordeling.MammaVisitatieOnderzoekenWe
 import nl.rivm.screenit.main.service.mamma.MammaFotobesprekingService;
 import nl.rivm.screenit.main.service.mamma.MammaVisitatieService;
 import nl.rivm.screenit.main.web.ScreenitSession;
+import nl.rivm.screenit.main.web.gebruiker.clienten.inzien.ClientInzienPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.fotobespreking.MammaFotobesprekingOnderzoekenWerklijstPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.visitatie.MammaVisitatieOnderzoekenOnderdeelInsteltechniekWerklijstPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.visitatie.MammaVisitatieOnderzoekenOnderdeelIntervalcarcinomenWerklijstPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.visitatie.MammaVisitatieOnderzoekenWerklijstPage;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
+import nl.rivm.screenit.service.ClientService;
+import nl.topicuszorg.wicket.hibernate.SimpleHibernateModel;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
@@ -63,6 +66,9 @@ public class AngularBehavior extends AbstractDefaultAjaxBehavior
 	@SpringBean
 	private MammaFotobesprekingService mammaFotobesprekingService;
 
+	@SpringBean
+	private ClientService clientService;
+
 	@Override
 	protected void respond(AjaxRequestTarget ajaxRequestTarget)
 	{
@@ -79,7 +85,10 @@ public class AngularBehavior extends AbstractDefaultAjaxBehavior
 				var fotobesprekingId = getAngularURLParameter("fotobespreking");
 				gaNaarFotobespreking(fotobesprekingId);
 				break;
-
+			case "toClientgegevens":
+				var clientgegevensId = getAngularURLParameter("client");
+				gaNaarClientgegevens(clientgegevensId);
+				break;
 			}
 		}
 		catch (Exception e)
@@ -113,6 +122,13 @@ public class AngularBehavior extends AbstractDefaultAjaxBehavior
 		this.getComponent().setResponsePage(new MammaFotobesprekingOnderzoekenWerklijstPage());
 	}
 
+	private void gaNaarClientgegevens(String clientId)
+	{
+		var client = clientService.getClientById(Long.parseLong(clientId)).orElseThrow();
+		var clientModel = new SimpleHibernateModel<>(client);
+		this.getComponent().setResponsePage(new ClientInzienPage(clientModel));
+	}
+
 	private String getAngularURLParameter(final String keyVanParameter)
 	{
 		return RequestCycle.get().getRequest().getRequestParameters().getParameterValue(keyVanParameter).toString();
@@ -131,5 +147,4 @@ public class AngularBehavior extends AbstractDefaultAjaxBehavior
 		final var builder = new ScriptBuilder(namespace, serverUrl, callbackUrl);
 		response.render(JavaScriptHeaderItem.forScript(builder.bouwWicketPropertiesScript(), null));
 	}
-
 }

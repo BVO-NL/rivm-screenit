@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.web.gebruiker.algemeen;
 
 /*-
@@ -30,12 +29,8 @@ import nl.rivm.screenit.model.Organisatie;
 
 public class AlgemeenPage extends MedewerkerBasePage
 {
-
-	private static final long serialVersionUID = 1L;
-
 	public AlgemeenPage()
 	{
-
 	}
 
 	protected void setCurrentSelectedMedewerker(Medewerker medewerker)
@@ -63,5 +58,4 @@ public class AlgemeenPage extends MedewerkerBasePage
 	{
 		return MedewerkerHoofdMenuItem.ALGEMEEN;
 	}
-
 }

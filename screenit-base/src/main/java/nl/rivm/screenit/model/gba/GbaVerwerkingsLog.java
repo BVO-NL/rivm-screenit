@@ -65,6 +65,21 @@ public class GbaVerwerkingsLog extends AbstractHibernateObject
 	@Column
 	private Long aantalNieuweMammaDossiers = 0L;
 
+	@Column
+	private Integer aantalIndicatiesIngetrokkenAfgevoerd;
+
+	@Column
+	private Integer aantalIndicatiesIngetrokkenBovengrensleeftijd;
+
+	@Column
+	private Integer aantalIndicatiesIngetrokkenDefinitiefAfgemeld;
+
+	@Column
+	private Integer aantalIndicatiesIngetrokkenSelectieblokkade;
+
+	@Column
+	private Integer aantalIndicatiesIngetrokkenBezwaar;
+
 	@OneToMany(mappedBy = "verwerkingsLog", cascade = CascadeType.REMOVE)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE)
 	private List<GbaVerwerkingEntry> entries = new ArrayList<>();

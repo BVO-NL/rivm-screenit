@@ -76,7 +76,7 @@ export class AutorisatieService extends BaseService<AutorisatieState> {
   }
 
   private inScope(medewerker: Medewerker, constraint: SecurityConstraint): boolean {
-    if (constraint.bevolkingsonderzoekScopes) {
+    if (constraint.organisatieTypeScopes) {
       let valtBinnenOrganisatieTypeScopes = false
       for (const type of constraint.organisatieTypeScopes) {
         if (medewerker.organisatie.organisatieType === type) {

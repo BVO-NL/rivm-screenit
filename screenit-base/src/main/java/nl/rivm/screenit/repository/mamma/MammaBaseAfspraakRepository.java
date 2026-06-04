@@ -23,7 +23,9 @@ package nl.rivm.screenit.repository.mamma;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
+import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.repository.BaseJpaRepository;
@@ -44,4 +46,6 @@ public interface MammaBaseAfspraakRepository extends BaseJpaRepository<MammaAfsp
 
 	boolean existsByStandplaatsPeriode_StandplaatsRonde(MammaStandplaatsRonde standplaatsRonde);
 
+	@Query("select d.client from MammaAfspraak a join a.uitnodiging u join u.screeningRonde sr join sr.dossier d where a.id = :afspraakId")
+	Optional<Client> findClientByAfspraakId(@Param("afspraakId") Long afspraakId);
 }

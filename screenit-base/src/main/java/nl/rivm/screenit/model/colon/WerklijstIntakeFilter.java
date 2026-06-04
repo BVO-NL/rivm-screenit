@@ -29,6 +29,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
+import nl.rivm.screenit.model.colon.enums.ColonIntakeafspraakType;
 
 @Getter
 @Setter
@@ -52,5 +53,7 @@ public class WerklijstIntakeFilter implements Serializable
 	private Integer maxLeeftijd;
 
 	private Integer interval;
+
+	private ColonIntakeafspraakType intakeafspraakType;
 
 }

@@ -42,7 +42,7 @@ $margin-left-errorlabel: 40px;
 
 .errorLabel {
 	position: relative;
-	color: var(-rood-base);
+	color: var(--rood-base);
 	font-size: 0.7rem;
 	width: 100%;
 	margin-left: $margin-left-errorlabel;

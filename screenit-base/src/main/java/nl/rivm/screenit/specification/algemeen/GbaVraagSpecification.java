@@ -25,6 +25,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.enums.GbaVraagType;
 import nl.rivm.screenit.model.gba.GbaVraag;
 import nl.rivm.screenit.model.gba.GbaVraag_;
 
@@ -37,14 +38,19 @@ public class GbaVraagSpecification
 {
 	public static Specification<GbaVraag> heeftBsnOfClient(String bsn, Client client)
 	{
-		return (r, q, cb) -> cb.or(
+		return (r, _, cb) -> cb.or(
 			equalsOrFalseIfParamNull(r.get(GbaVraag_.bsn), bsn, cb),
 			equalsOrFalseIfParamNull(r.get(GbaVraag_.client), client, cb));
 	}
 
+	public static Specification<GbaVraag> heeftVraagType(GbaVraagType vraagType)
+	{
+		return (r, _, cb) -> cb.equal(r.get(GbaVraag_.vraagType), vraagType);
+	}
+
 	public static Specification<GbaVraag> isVerstuurd(boolean verstuurd)
 	{
-		return (r, q, cb) -> cb.equal(r.get(GbaVraag_.verstuurd), verstuurd);
+		return (r, _, cb) -> cb.equal(r.get(GbaVraag_.verstuurd), verstuurd);
 	}
 
 }

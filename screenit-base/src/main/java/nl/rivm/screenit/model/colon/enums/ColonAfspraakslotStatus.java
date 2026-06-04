@@ -29,5 +29,7 @@ public enum ColonAfspraakslotStatus
 
 	INTAKE_GEPLAND,
 
+	DIGITALE_INTAKE,
+
 	VRIJ_TE_VERPLAATSEN
 }

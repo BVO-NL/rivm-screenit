@@ -1,0 +1,54 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog titel="Handleiding aanmaken" size="md">
+  <form [formGroup]="handleidingForm" body class="row form-in-modal">
+    <div class="col">
+      <ds-file-uploader
+        class="file-uploader"
+        formControlName="handleidingenUpload"
+        [options]="fileUploaderOptions"
+        label="Handleiding uploaden"
+        data-testid="handleidingen_uploaden"
+      />
+      <div>
+        @for (handleiding of handleidingen; track handleiding.name; let i = $index) {
+          <ds-file-uploader-file
+            [file]="handleiding"
+            (deleteClicked)="verwijderHandleidingVanLijst(handleiding)"
+          />
+          <ds-input
+            label="Bestandsnaam"
+            [errorMessage]="{'maxlength': 'De bestandsnaam mag maximaal 50 tekens bevatten', 'minlength': 'De bestandsnaam moet minimaal 3 tekens bevatten'}"
+            [formControl]="bestandsnamen.at(i)"
+            data-testid="bestandsnaam_input"
+            required
+            minlength="3"
+            maxlength="50"
+          />
+        }
+      </div>
+    </div>
+  </form>
+  <div buttons class="btn-group">
+    <button (click)="annuleren()" data-testid="annuleren_btn" ds-button-secondary>Annuleren</button>
+    <button (click)="opslaan()" data-testid="opslaan_btn" [disabled]="!isFormGeldig" ds-button-primary>Opslaan</button>
+  </div>
+</app-base-dialog>

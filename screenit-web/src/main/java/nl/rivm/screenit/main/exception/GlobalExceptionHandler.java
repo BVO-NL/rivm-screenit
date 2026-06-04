@@ -37,6 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -101,6 +102,42 @@ public class GlobalExceptionHandler
 	{
 		LOG.error(ex.getMessage());
 		return ResponseEntity.unprocessableEntity().body(ex.toJson());
+	}
+
+	@ExceptionHandler(BestandNietGevondenException.class)
+	public ResponseEntity<String> handleBestandNietGevondenException(BestandNietGevondenException ex)
+	{
+		LOG.warn(ex.getMessage());
+		var node = objectMapper.createObjectNode();
+		node.put("foutmelding", ex.getMessage());
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(node.toString());
+	}
+
+	@ExceptionHandler(BestandsnaamInGebruikException.class)
+	public ResponseEntity<String> handleBestandsnaamInGebruikException(BestandsnaamInGebruikException ex)
+	{
+		LOG.warn(ex.getMessage());
+		var node = objectMapper.createObjectNode();
+		node.put("foutmelding", ex.getMessage());
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(node.toString());
+	}
+
+	@ExceptionHandler(OngeldigeBestandsTypeException.class)
+	public ResponseEntity<String> handleOngeldigeBestandsTypeException(OngeldigeBestandsTypeException ex)
+	{
+		LOG.warn(ex.getMessage());
+		var node = objectMapper.createObjectNode();
+		node.put("foutmelding", ex.getMessage());
+		return ResponseEntity.badRequest().body(node.toString());
+	}
+
+	@ExceptionHandler(MaxUploadSizeExceededException.class)
+	public ResponseEntity<String> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex)
+	{
+		LOG.warn(ex.getMessage());
+		var node = objectMapper.createObjectNode();
+		node.put("foutmelding", "Bestand is te groot om te uploaden");
+		return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(node.toString());
 	}
 
 	@ExceptionHandler(IllegalStateException.class)

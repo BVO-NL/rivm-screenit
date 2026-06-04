@@ -34,6 +34,8 @@ import FitAanvragenIcon from "../../scss/media/icons_toptaken/FitAanvragenIcon/F
 import AfspraakIcon from "../../scss/media/icons_toptaken/AfspraakIcon/AfspraakIcon"
 import HuisartsIcon from "../../scss/media/icons_toptaken/HuisartsIcon/HuisartsIcon"
 import {selectPersoon} from "../../selectors/ClientSelectors"
+import {isDigitaleIntakeBeschikbaar} from "../../utils/FeatureFlagsUtil"
+import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 
 export type ColonTopTakenComponentProps = {
 	className?: string
@@ -62,34 +64,35 @@ const ColonTopTakenComponent = (props: ColonTopTakenComponentProps) => {
 		<Row className={props.className}>
 			{props.beschikbareActies.includes(ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN) && persoon.vertrokkenUitNederland === false && <Col lg={4}>
 				<TopTaakComponent icon={<AfspraakIcon/>}
-								  link="/colon/afspraak-wijzigen/"
-								  titel={getString(properties.afspraak.verzetten)}/>
+				                  link={isDigitaleIntakeBeschikbaar() ? "/colon/afspraak/intake/" : "/colon/afspraak-wijzigen/"}
+				                  titel={getString(properties.afspraak.verzetten)}/>
 			</Col>}
 			{props.beschikbareActies.includes(ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN) && <Col lg={4}>
 				<TopTaakComponent icon={<AfspraakIcon/>}
-								  link="/colon/afzeggen/"
-								  titel={getString(properties.afspraak.afzeggen)}/>
+				                  link="/colon/afzeggen/"
+				                  titel={getString(properties.afspraak.afzeggen)}/>
 			</Col>}
 			{magNieuweAfspraakMaken &&
 				<Col lg={4}>
 					<TopTaakComponent icon={<AfspraakIcon/>}
-									  link="/colon/afspraak-maken/"
-									  titel={getString(properties.afspraak.aanmaken)}/>
+					                  link={isDigitaleIntakeBeschikbaar() ? "/colon/afspraak/intake/" : "/colon/afspraak-maken/"}
+					                  datadogEventVoorCategorie={AnalyticsCategorie.AFSPRAAK_VERZETTEN}
+					                  titel={getString(properties.afspraak.aanmaken)}/>
 				</Col>}
 			{props.beschikbareActies.includes(ClientContactActieType.COLON_HERAANMELDEN) && <Col lg={4}>
 				<TopTaakComponent icon={<HeraanmeldenIcon/>}
-								  link="/colon/heraanmelden/"
-								  titel={getString(properties.heraanmelden)}/>
+				                  link="/colon/heraanmelden/"
+				                  titel={getString(properties.heraanmelden)}/>
 			</Col>}
 			{props.beschikbareActies.includes(ClientContactActieType.COLON_HUISARTS_WIJZIGEN) && <Col lg={4}>
 				<TopTaakComponent icon={<HuisartsIcon/>}
-								  link="/colon/huisarts/"
-								  titel={getString(properties.huisarts[props.getTekstHuisartsToptaak(huisartsHuidigeRondeIsBekend, huisartsVorigeRondeIsBekend)])}/>
+				                  link="/colon/huisarts/"
+				                  titel={getString(properties.huisarts[props.getTekstHuisartsToptaak(huisartsHuidigeRondeIsBekend, huisartsVorigeRondeIsBekend)])}/>
 			</Col>}
 			{props.beschikbareActies.includes(ClientContactActieType.COLON_AANVRAGEN_NIEUWE_FIT) && <Col lg={4}>
 				<TopTaakComponent icon={<FitAanvragenIcon/>}
-								  link="/colon/fit/"
-								  titel={getString(properties.fit_aanvragen)}/>
+				                  link="/colon/fit/"
+				                  titel={getString(properties.fit_aanvragen)}/>
 			</Col>}
 		</Row>
 	)

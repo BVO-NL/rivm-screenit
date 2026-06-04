@@ -32,5 +32,7 @@ public class EnvironmentData
 {
 	private Long fotobesprekingId;
 
+	private Long clientId;
+
 	private String session;
 }

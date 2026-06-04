@@ -93,7 +93,7 @@ public class MammaAfspraakOptieAlgoritmeImpl implements MammaAfspraakOptieAlgori
 
 	@Override
 	public List<MammaAfspraakOptie> getAfspraakOpties(MammaDossier dossier, MammaStandplaatsPeriode standplaatsPeriode, LocalDate vanaf, LocalDate totEnMet,
-		boolean extraOpties, BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen, boolean corrigeerNegatieveVrijeCapaciteit)
+		boolean extraOpties, BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen)
 	{
 		this.extraOpties = extraOpties;
 		standplaatsPeriodesMetZoekBereik = List.of(new MammaStandplaatsPeriodeMetZoekbereik(standplaatsPeriode, vanaf, totEnMet));
@@ -116,7 +116,7 @@ public class MammaAfspraakOptieAlgoritmeImpl implements MammaAfspraakOptieAlgori
 		{
 			throw new MammaOnvoldoendeVrijeCapaciteitException();
 		}
-		return afspraakOpties.get(0);
+		return afspraakOpties.getFirst();
 	}
 
 	private List<MammaStandplaatsPeriodeMetZoekbereik> standplaatsPeriodesMetZoekBereikVoorUitnodigen(MammaStandplaatsRonde standplaatsRonde,
@@ -135,7 +135,7 @@ public class MammaAfspraakOptieAlgoritmeImpl implements MammaAfspraakOptieAlgori
 
 	private void initialiseerZoekContext(MammaDossier dossier, BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen)
 	{
-		var screeningsEenheid = standplaatsPeriodesMetZoekBereik.get(0).standplaatsPeriode().getScreeningsEenheid();
+		var screeningsEenheid = standplaatsPeriodesMetZoekBereik.getFirst().standplaatsPeriode().getScreeningsEenheid();
 		var screeningOrganisatie = MammaScreeningsEenheidUtil.getScreeningsOrganisatie(screeningsEenheid);
 		var factor = dossierService.getFactorType(dossier).getFactor(screeningOrganisatie);
 		var vrijgevenMindervalideReserveringenBinnenAantalDagen = simplePreferenceService.getInteger(

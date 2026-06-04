@@ -49,7 +49,6 @@ import org.hibernate.envers.Audited;
 @NoArgsConstructor
 public class Permissie extends AbstractHibernateObject implements Permission
 {
-
 	@Enumerated(EnumType.STRING)
 	private Actie actie;
 
@@ -110,5 +109,4 @@ public class Permissie extends AbstractHibernateObject implements Permission
 	{
 		return getRecht().name();
 	}
-
 }

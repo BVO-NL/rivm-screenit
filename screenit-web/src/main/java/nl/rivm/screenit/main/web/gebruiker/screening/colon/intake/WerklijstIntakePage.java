@@ -25,21 +25,27 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.StringJoiner;
 
+import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.PreferenceKey;
+import nl.rivm.screenit.main.service.colon.ColonIntakeafspraakService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.ScreenitDateTextField;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
+import nl.rivm.screenit.main.web.component.table.AjaxCheckboxCellPanel;
 import nl.rivm.screenit.main.web.component.table.AjaxImageCellPanel;
 import nl.rivm.screenit.main.web.component.table.ClientColumn;
 import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
-import nl.rivm.screenit.main.web.component.table.ExportToCsvLink;
+import nl.rivm.screenit.main.web.component.table.ExportToXslLink;
 import nl.rivm.screenit.main.web.component.table.GeboortedatumColumn;
+import nl.rivm.screenit.main.web.component.table.NotClickableAbstractColumn;
 import nl.rivm.screenit.main.web.component.table.NotClickablePropertyColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.component.table.ScreenitDateTimePropertyColumn;
@@ -50,7 +56,6 @@ import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.OrganisatieType;
-import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonConclusie_;
@@ -65,6 +70,7 @@ import nl.rivm.screenit.model.colon.MdlVerslag;
 import nl.rivm.screenit.model.colon.WerklijstIntakeFilter;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
+import nl.rivm.screenit.model.colon.enums.ColonIntakeafspraakType;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer_;
 import nl.rivm.screenit.model.colon.planning.ColonTijdslot_;
 import nl.rivm.screenit.model.enums.Actie;
@@ -80,7 +86,7 @@ import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.util.NaamUtil;
-import nl.topicuszorg.organisatie.model.Adres;
+import nl.rivm.screenit.util.colon.ColonAfspraakUtil;
 import nl.topicuszorg.organisatie.model.Adres_;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.util.postcode.PostcodeFormatter;
@@ -102,11 +108,13 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
@@ -135,9 +143,14 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 
 	protected ScreenitDropdown<ConclusieTypeFilter> conclusieType;
 
+	protected ScreenitDropdown<ColonIntakeafspraakType> intakeafspraakType;
+
 	protected Form<WerklijstIntakeFilter> bsnGebroortedatumForm;
 
-	protected ExportToCsvLink<ColonIntakeAfspraak, String> exportToCsvLink;
+	protected ExportToXslLink<ColonIntakeAfspraak, String> exportToCsvLink;
+
+	@SpringBean
+	protected ColonIntakeafspraakService intakeAfspraakService;
 
 	@SpringBean
 	private ICurrentDateSupplier dateSupplier;
@@ -146,7 +159,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 	private ColonDossierBaseService dossierBaseService;
 
 	@SpringBean
-	private ColonBaseAfspraakService afspraakService;
+	protected ColonBaseAfspraakService afspraakService;
 
 	@SpringBean
 	private SimplePreferenceService preferenceService;
@@ -252,11 +265,25 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 		form.add(conclusieType);
 		conclusieType.add(new AjaxFormComponentUpdatingBehavior("change")
 		{
-
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
 				onFilter(target);
+			}
+		});
+
+		var intakeafspraakTypesFilter = Arrays.stream(ColonIntakeafspraakType.values()).toList();
+		intakeafspraakType = ComponentHelper.newDropDownChoice("intakeafspraakType", new ListModel<>(intakeafspraakTypesFilter), new EnumChoiceRenderer<>(this));
+		intakeafspraakType.setOutputMarkupId(true);
+		intakeafspraakType.setNullValid(true);
+		intakeafspraakType.setVisible(afspraakService.isDigitaleAfspraakBeschikbaar());
+		form.add(intakeafspraakType);
+		intakeafspraakType.add(new AjaxFormComponentUpdatingBehavior("change")
+		{
+			@Override
+			protected void onUpdate(AjaxRequestTarget ajaxRequestTarget)
+			{
+				onFilter(ajaxRequestTarget);
 			}
 		});
 
@@ -287,7 +314,14 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 
 		addBsnGeboortedatumForm(afgerondeAfspraken);
 
-		exportToCsvLink = new ExportToCsvLink<>("csv", "Intake Afspraken", table.getDataProvider(), getColumns());
+		exportToCsvLink = new ExportToXslLink<>("csv", "Intake Afspraken")
+		{
+			@Override
+			protected String getCsv()
+			{
+				return getCsvInhoud();
+			}
+		};
 		add(exportToCsvLink);
 	}
 
@@ -348,6 +382,11 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 		});
 		columns.add(
 			new PropertyColumn<>(Model.of("Kamer"), propertyChain(ColonTijdslot_.KAMER, ColonIntakekamer_.NAAM), propertyChain(ColonTijdslot_.KAMER, ColonIntakekamer_.NAAM)));
+		if (afspraakService.isDigitaleAfspraakBeschikbaar())
+		{
+			columns.add(
+				new EnumPropertyColumn<>(Model.of("Type"), ColonIntakeAfspraak_.INTAKEAFSPRAAK_TYPE, ColonIntakeAfspraak_.INTAKEAFSPRAAK_TYPE));
+		}
 		columns.add(new ClientColumn<>(propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, Persoon_.ACHTERNAAM), ColonIntakeAfspraak_.CLIENT));
 		columns.add(
 			new PropertyColumn<>(Model.of("BSN"), propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, Persoon_.BSN),
@@ -356,33 +395,121 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 			propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON)));
 		columns.add(new EnumPropertyColumn<>(Model.of("Gender"), propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, Persoon_.GESLACHT),
 			propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, Persoon_.GESLACHT)));
-		columns.add(new PropertyColumn<>(Model.of("Adres"), propertyChain(ColonIntakeAfspraak_.CLIENT, Persoon_.GBA_ADRES, Adres_.STRAAT))
+		if (!afspraakService.isDigitaleAfspraakBeschikbaar())
 		{
-
-			@Override
-			public IModel<String> getDataModel(IModel<ColonIntakeAfspraak> rowModel)
+			columns.add(new PropertyColumn<>(Model.of("Adres"), propertyChain(ColonIntakeAfspraak_.CLIENT, Persoon_.GBA_ADRES, Adres_.STRAAT))
 			{
-				Persoon persoon = rowModel.getObject().getClient().getPersoon();
 
-				Adres adres = AdresUtil.getAdres(persoon, dateSupplier.getLocalDate());
-				return new Model<>(AdresUtil.getAdres(adres));
-			}
-		});
+				@Override
+				public IModel<String> getDataModel(IModel<ColonIntakeAfspraak> rowModel)
+				{
+					var persoon = rowModel.getObject().getClient().getPersoon();
 
-		columns.add(new PropertyColumn<>(Model.of("PC/Plaats"), propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, Persoon_.GBA_ADRES, Adres_.PLAATS))
-		{
+					var adres = AdresUtil.getAdres(persoon, dateSupplier.getLocalDate());
+					return new Model<>(AdresUtil.getAdres(adres));
+				}
+			});
 
-			@Override
-			public IModel<String> getDataModel(IModel<ColonIntakeAfspraak> rowModel)
+			columns.add(new PropertyColumn<>(Model.of("PC/Plaats"), propertyChain(ColonIntakeAfspraak_.CLIENT, Client_.PERSOON, Persoon_.GBA_ADRES, Adres_.PLAATS))
 			{
-				Persoon persoon = rowModel.getObject().getClient().getPersoon();
 
-				Adres adres = AdresUtil.getAdres(persoon, dateSupplier.getLocalDate());
-				return new Model<>(PostcodeFormatter.formatPostcode(adres.getPostcode(), true) + " " + adres.getPlaats());
-			}
-		});
+				@Override
+				public IModel<String> getDataModel(IModel<ColonIntakeAfspraak> rowModel)
+				{
+					var persoon = rowModel.getObject().getClient().getPersoon();
 
+					var adres = AdresUtil.getAdres(persoon, dateSupplier.getLocalDate());
+					return new Model<>(PostcodeFormatter.formatPostcode(adres.getPostcode(), true) + " " + adres.getPlaats());
+				}
+			});
+		}
 		return columns;
+	}
+
+	private String getCsvInhoud()
+	{
+		var digitaalBeschikbaar = afspraakService.isDigitaleAfspraakBeschikbaar();
+		var csv = new StringBuilder();
+		var koptekst = new StringJoiner(",");
+		koptekst.add("Intakeafspraak").add("Kamer");
+		if (digitaalBeschikbaar)
+		{
+			koptekst.add("Type");
+		}
+		koptekst.add("Cliënt").add("BSN").add("Geboortedatum").add("Gender");
+		if (digitaalBeschikbaar)
+		{
+			koptekst.add("Straat").add("Postcode").add("Woonplaats").add("Telefoonnummer").add("E-mailadres");
+		}
+		csv.append(koptekst).append("\n");
+
+		var iterator = table.getDataProvider().iterator(-1, -1);
+		while (iterator.hasNext())
+		{
+			var afspraak = iterator.next();
+			var persoon = afspraak.getClient().getPersoon();
+			var adres = persoon.getGbaAdres();
+
+			var rij = new StringJoiner(",");
+			var afspraakDatumTijd = DateUtil.formatForPattern(Constants.DEFAULT_DATE_TIME_FORMAT, DateUtil.toUtilDate(afspraak.getVanaf()));
+			if (afspraak.getAfspraakslot() == null && afspraak.getVanaf() != null)
+			{
+				afspraakDatumTijd += " *";
+			}
+			rij.add(afspraakDatumTijd);
+			rij.add(afspraak.getKamer().getNaam());
+			if (digitaalBeschikbaar)
+			{
+				rij.add(getString(EnumStringUtil.getPropertyString(afspraak.getIntakeafspraakType())));
+			}
+			rij.add(NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(afspraak.getClient()));
+			rij.add(persoon.getBsn());
+			rij.add(DateUtil.getGeboortedatum(persoon));
+			rij.add(persoon.getGeslacht() != null ? getString(EnumStringUtil.getPropertyString(persoon.getGeslacht())) : "");
+			if (digitaalBeschikbaar)
+			{
+				rij.add(adres != null && adres.getAdres() != null ? adres.getAdres() : "");
+				rij.add(adres != null && adres.getPostcode() != null ? adres.getPostcode() : "");
+				rij.add(adres != null && adres.getPlaats() != null ? adres.getPlaats() : "");
+				if (ColonAfspraakUtil.isDigitaal(afspraak))
+				{
+					rij.add(persoon.getTelefoonnummer1() != null ? "\"\\\"" + persoon.getTelefoonnummer1() + "\"" : "");
+					rij.add(persoon.getEmailadres() != null ? persoon.getEmailadres() : "");
+				}
+				else
+				{
+					rij.add("").add("");
+				}
+			}
+			csv.append(rij).append("\n");
+		}
+		return csv.toString();
+	}
+
+	protected void addDigitaleIntakeVerstuurdColumn(List<IColumn<ColonIntakeAfspraak, String>> columns)
+	{
+		columns.add(new NotClickableAbstractColumn<>(Model.of("Digitale intake verstuurd"))
+		{
+			@Override
+			public void populateItem(Item<ICellPopulator<ColonIntakeAfspraak>> item, String componentId, IModel<ColonIntakeAfspraak> rowModel)
+			{
+				if (ColonAfspraakUtil.isDigitaal(rowModel.getObject()))
+				{
+					item.add(new AjaxCheckboxCellPanel<>(componentId, rowModel, new PropertyModel<>(rowModel, "digitaleIntakeVerstuurd"))
+					{
+						@Override
+						protected void onUpdate(AjaxRequestTarget target)
+						{
+							afspraakService.saveIntakeafspraak(rowModel.getObject());
+						}
+					});
+				}
+				else
+				{
+					item.add(new EmptyPanel(componentId));
+				}
+			}
+		});
 	}
 
 	protected void addHandmatigVervolgbeleidColumn(List<IColumn<ColonIntakeAfspraak, String>> columns)
@@ -426,7 +553,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 					}
 					else
 					{
-						cellItem.add(new Label(componentId, ""));
+						cellItem.add(new EmptyPanel(componentId));
 					}
 				}
 			});
@@ -671,6 +798,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 			filter.setVanaf(null);
 			filter.setTotEnMet(null);
 			filter.setConclusieTypeFilter(null);
+			filter.setIntakeafspraakType(null);
 		}
 		else
 		{

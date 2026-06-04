@@ -126,6 +126,7 @@ import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.service.BaseDossierAuditService;
 import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.RondeNummerService;
+import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.colon.ColonVerwerkVerslagService;
 import nl.rivm.screenit.service.mamma.MammaBaseFollowUpService;
 import nl.rivm.screenit.util.BriefUtil;
@@ -134,6 +135,7 @@ import nl.rivm.screenit.util.EntityAuditUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.util.NaamUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
+import nl.rivm.screenit.util.colon.ColonAfspraakUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
@@ -171,6 +173,8 @@ public class DossierServiceImpl implements DossierService
 	private final MammaBaseFollowUpService baseFollowUpService;
 
 	private final ColonVerwerkVerslagService colonVerwerkVerslagService;
+
+	private final ColonBaseAfspraakService afspraakService;
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -318,11 +322,10 @@ public class DossierServiceImpl implements DossierService
 		screeningRondeGebeurtenis
 			.setBron(bepaalGebeurtenisBron(afspraak, AuditEntity.property("status").in(new ColonAfspraakStatus[] { ColonAfspraakStatus.GEPLAND, ColonAfspraakStatus.UITGEVOERD })));
 
-		var afspraakTime = DateUtil.formatShortDateTime(afspraak.getVanaf());
-
+		var afspraakMoment = getAfspraakMoment(afspraak);
 		var intakelocatie = afspraak.getKamer().getIntakelocatie();
 
-		screeningRondeGebeurtenis.setExtraOmschrijving(afspraakTime, " Intakelocatie: " + intakelocatie.getNaam() + ", " + intakelocatie.getAdres().getPlaats());
+		screeningRondeGebeurtenis.setExtraOmschrijving(afspraakMoment, " Intakelocatie: " + intakelocatie.getNaam() + ", " + intakelocatie.getAdres().getPlaats());
 
 		rondeDossier.addGebeurtenis(screeningRondeGebeurtenis);
 
@@ -336,6 +339,15 @@ public class DossierServiceImpl implements DossierService
 		}
 
 		conclusieIntakeGebeurtenissen(rondeDossier, afspraak);
+	}
+
+	private String getAfspraakMoment(ColonIntakeAfspraak afspraak)
+	{
+		if (afspraakService.isDigitaleAfspraakBeschikbaar() && ColonAfspraakUtil.isDigitaal(afspraak))
+		{
+			return ColonAfspraakUtil.formatWeekDigitaleIntake(afspraak.getVanaf());
+		}
+		return DateUtil.formatShortDateTime(afspraak.getVanaf());
 	}
 
 	private void maakDKAntwoordFormulierGebeurtenis(ScreeningRondeGebeurtenissen rondeDossier, ColonUitnodiging colonUitnodiging, ScannedAntwoordFormulier antwoordFormulier)

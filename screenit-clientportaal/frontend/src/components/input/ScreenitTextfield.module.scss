@@ -39,7 +39,7 @@
 	}
 
 	&.inputInvalid {
-		border: 2px solid var(-rood-base);
+		border: 2px solid var(--rood-base);
 	}
 
 	@include respond-below(xs) {
@@ -114,7 +114,7 @@
 	}
 
 	.errorLabel {
-		color: var(-rood-base);
+		color: var(--rood-base);
 		line-height: 10px;
 		font-size: 0.7rem;
 		margin-left: 17px;

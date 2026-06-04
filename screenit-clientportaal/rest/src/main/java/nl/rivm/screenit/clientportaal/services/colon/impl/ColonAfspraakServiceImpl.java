@@ -112,39 +112,40 @@ public class ColonAfspraakServiceImpl implements ColonAfspraakService
 	public ColonIntakeAfspraak initNieuweAfspraak(ColonIntakeAfspraak oudeAfspraak, ColonVrijSlotZonderKamerDto gekozenVrijSlotZonderKamer)
 	{
 
-		if (gekozenVrijSlotZonderKamer.getIntakelocatieId() != null && (gekozenVrijSlotZonderKamer.getStartTijd() != null))
+		if (gekozenVrijSlotZonderKamer.getIntakelocatieId() == null || gekozenVrijSlotZonderKamer.getStartTijd() == null)
 		{
-			var beschikbareKamer = planningService.getBeschikbareKamer(DateUtil.toLocalDateTime(gekozenVrijSlotZonderKamer.getStartTijd()),
-				gekozenVrijSlotZonderKamer.getIntakelocatieId());
-
-			if (beschikbareKamer == null)
-			{
-				throw new IllegalStateException("Iemand anders heeft het gekozen tijdstip in de tussentijd gevuld.");
-			}
-
-			ColonIntakeAfspraak nieuweAfspraak = new ColonIntakeAfspraak();
-			nieuweAfspraak.setKamer(beschikbareKamer);
-			nieuweAfspraak.setBezwaar(false);
-			nieuweAfspraak.setGewijzigdOp(currentDateSupplier.getLocalDateTime());
-			nieuweAfspraak.setStatus(ColonAfspraakStatus.GEPLAND);
-			nieuweAfspraak.setAangemaaktOp(currentDateSupplier.getLocalDateTime());
-
-			if (gekozenVrijSlotZonderKamer.getAfstand() != null)
-			{
-				nieuweAfspraak.setAfstand(BigDecimal.valueOf(gekozenVrijSlotZonderKamer.getAfstand()));
-			}
-			else
-			{
-				nieuweAfspraak.setAfstand(BigDecimal.valueOf(45));
-			}
-
-			nieuweAfspraak.setScreeningRonde(oudeAfspraak.getScreeningRonde());
-			nieuweAfspraak.setClient(oudeAfspraak.getClient());
-			nieuweAfspraak.setVanaf(DateUtil.toLocalDateTime(gekozenVrijSlotZonderKamer.getStartTijd()));
-			nieuweAfspraak.setTot(DateUtil.toLocalDateTime(gekozenVrijSlotZonderKamer.getEindTijd()));
-
-			return nieuweAfspraak;
+			return null;
 		}
-		return null;
+
+		var beschikbareKamer = planningService.getBeschikbareKamer(DateUtil.toLocalDateTime(gekozenVrijSlotZonderKamer.getStartTijd()),
+			gekozenVrijSlotZonderKamer.getIntakelocatieId());
+
+		if (beschikbareKamer == null)
+		{
+			throw new IllegalStateException("Iemand anders heeft het gekozen tijdstip in de tussentijd gevuld.");
+		}
+
+		var nieuweAfspraak = new ColonIntakeAfspraak();
+		nieuweAfspraak.setKamer(beschikbareKamer);
+		nieuweAfspraak.setBezwaar(false);
+		nieuweAfspraak.setGewijzigdOp(currentDateSupplier.getLocalDateTime());
+		nieuweAfspraak.setStatus(ColonAfspraakStatus.GEPLAND);
+		nieuweAfspraak.setAangemaaktOp(currentDateSupplier.getLocalDateTime());
+
+		if (gekozenVrijSlotZonderKamer.getAfstand() != null)
+		{
+			nieuweAfspraak.setAfstand(BigDecimal.valueOf(gekozenVrijSlotZonderKamer.getAfstand()));
+		}
+		else
+		{
+			nieuweAfspraak.setAfstand(BigDecimal.valueOf(45));
+		}
+
+		nieuweAfspraak.setScreeningRonde(oudeAfspraak.getScreeningRonde());
+		nieuweAfspraak.setClient(oudeAfspraak.getClient());
+		nieuweAfspraak.setVanaf(DateUtil.toLocalDateTime(gekozenVrijSlotZonderKamer.getStartTijd()));
+		nieuweAfspraak.setTot(DateUtil.toLocalDateTime(gekozenVrijSlotZonderKamer.getEindTijd()));
+		nieuweAfspraak.setIntakeafspraakType(gekozenVrijSlotZonderKamer.getType());
+		return nieuweAfspraak;
 	}
 }

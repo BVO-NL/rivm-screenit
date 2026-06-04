@@ -29,6 +29,6 @@ export interface SecurityConstraint {
   required: Required
   level: ToegangLevel
   recht: string[]
-  organisatieTypeScopes: OrganisatieType[]
+  organisatieTypeScopes?: OrganisatieType[]
   bevolkingsonderzoekScopes: Bevolkingsonderzoek[]
 }

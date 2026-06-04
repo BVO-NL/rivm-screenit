@@ -82,6 +82,7 @@ public class ColonMissendeMdlVerslagenWerklijstPage extends WerklijstIntakePage
 		conclusieType.setVisible(false);
 		bsnGebroortedatumForm.setVisible(false);
 		datepickerVandaag.setVisible(false);
+		intakeafspraakType.setVisible(false);
 	}
 
 	@Override

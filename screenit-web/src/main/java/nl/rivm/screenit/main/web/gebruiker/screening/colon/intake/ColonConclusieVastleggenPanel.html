@@ -23,7 +23,7 @@
 <wicket:panel>
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal">x</button>
-		<h3>Vastleggen resultaten intake (BSN:
+		<h3><wicket: wicket:id="popupTitel"></wicket:> (BSN:
 			<wicket: wicket:id="client.persoon.bsn"></wicket:>
 			/ Geb.datum:
 			<wicket: wicket:id="client.persoon.geboortedatum"></wicket:>
@@ -32,10 +32,44 @@
 	</div>
 	<form wicket:id="form">
 		<div class="modal-body">
-			<fieldset class="hero-unit">
-				<h2 class="form-title margin-0" wicket:id="client.persoon.achternaam"></h2>
+			<fieldset class="hero-unit" wicket:id="paspoortAlleenNaamContainer">
+				<h2 class="form-title margin-0" wicket:id="persoonNaam"></h2>
 			</fieldset>
+			<fieldset class="form-horizontal hero-unit" wicket:id="paspoortContainer">
+				<h2 class="form-title margin-0" wicket:id="client.persoon.achternaam"></h2>
+				<div class="control-group value">
+					<label class="control-label">Straat/locatiebeschrijving</label>
+					<div class="controls" wicket:id="straatLocatieBeschrijving"></div>
+				</div>
+				<div class="control-group value">
+					<label class="control-label">Postcode</label>
+					<div class="controls" wicket:id="postcode"></div>
+				</div>
+				<div class="control-group value">
+					<label class="control-label">Woonplaats</label>
+					<div class="controls" wicket:id="woonplaats"></div>
+				</div>
+				<div class="control-group value" wicket:id="telefoonnummerContainer">
+					<label class="control-label">Telefoonnummer</label>
+					<div class="controls" wicket:id="telefoonnummer"></div>
+				</div>
+				<div class="control-group value" wicket:id="emailContainer">
+					<label class="control-label">Emailadres</label>
+					<div class="controls" wicket:id="email"></div>
+				</div>
+			</fieldset>
+			<div wicket:id="vastleggenResultatenContainer">
 			<fieldset class="form-horizontal fieldset-last">
+               <wicket:enclosure child="digitaleIntake">
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="control-group value">
+							<label class="control-label">Digitale intake</label>
+							<div class="controls" wicket:id="digitaleIntake"></div>
+						</div>
+					</div>
+				</div>
+				</wicket:enclosure>
 				<div wicket:id="eersteVraag"></div>
 				<hr/>
 				<div class="row-fluid">
@@ -97,7 +131,8 @@
 				</wicket:enclosure>
 			</fieldset>
 		</div>
-		<div class="modal-footer">
+		</div>
+		<div class="modal-footer" wicket:id="modalFooterContainer">
 			<div class="row-fluid">
 				<div class="span9 form-horizontal">
 					<div class="control-group geselecteerde-organisatie value" wicket:id="tekstOntvangenMDLverslag">

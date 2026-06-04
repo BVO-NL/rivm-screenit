@@ -20,6 +20,8 @@
  */
 import {ColonDossier, leegColonDossier} from "../../datatypes/colon/ColonDossier"
 import {
+	COLON_HEEFT_ASA_SCORE_BOVEN_DRIE,
+	COLON_INTAKEAFSPRAAK_TYPE,
 	ColonDossierActions,
 	HUIDIGE_INTAKE_AFSPRAAK,
 	RESET_HERAANMELDENOPTIES,
@@ -27,6 +29,7 @@ import {
 	SET_COLON_DOSSIER,
 	SET_COLON_HUISARTS_HUIDIGE_RONDE,
 	SET_COLON_HUISARTS_VORIGE_RONDE,
+	VRIJ_SLOT_ZONDER_KAMER,
 } from "../../actions/ColonDossierAction"
 
 function colonDossierReducer(stateSlice: ColonDossier = leegColonDossier, action: ColonDossierActions): ColonDossier {
@@ -55,12 +58,27 @@ function colonDossierReducer(stateSlice: ColonDossier = leegColonDossier, action
 		case HUIDIGE_INTAKE_AFSPRAAK:
 			return {
 				...stateSlice,
-				intakeAfspraak: action.colonIntakeAfspraakDto,
+				intakeAfspraak: action.colonIntakeafspraakDto,
+			}
+		case COLON_INTAKEAFSPRAAK_TYPE:
+			return {
+				...stateSlice,
+				geselecteerdeIntakeafspraakType: action.intakeafspraakType,
+			}
+		case COLON_HEEFT_ASA_SCORE_BOVEN_DRIE:
+			return {
+				...stateSlice,
+				heeftAsaScoreBovenDrie: action.heeftAsaScoreBovenDrie,
 			}
 		case RESET_HERAANMELDENOPTIES:
 			return {
 				...stateSlice,
 				heraanmeldenOpties: action.heraanmeldenOpties,
+			}
+		case VRIJ_SLOT_ZONDER_KAMER:
+			return {
+				...stateSlice,
+				slot: action.slot,
 			}
 		default:
 			return stateSlice

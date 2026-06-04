@@ -29,6 +29,11 @@ const extensieMimetypes: Record<string, string> = {
   xlsx: ContentType.XLSX,
 }
 
+export interface HandleidingUpload {
+  bestand: File
+  bestandsnaam: string
+}
+
 export function getMimetypeVanExtensie(extensie: string): string {
   if (!extensie) {
     return ''

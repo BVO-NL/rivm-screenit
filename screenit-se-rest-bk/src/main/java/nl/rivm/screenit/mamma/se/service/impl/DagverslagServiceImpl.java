@@ -190,7 +190,6 @@ public class DagverslagServiceImpl implements DagverslagService
 		var statistiekenDto = new DagPlanningSamenvattingDto();
 		statistiekenDto.setDagCapaciteit(beschikbareCapaciteit);
 		statistiekenDto.setVrijeCapaciteit(vrijeCapaciteit.setScale(1, RoundingMode.HALF_UP));
-		statistiekenDto.setBeschikbaarheid(statistiekenDto.getVrijeCapaciteit());
 		statistiekenDto.setStarttijd(starttijd);
 		statistiekenDto.setEindtijd(eindtijd);
 

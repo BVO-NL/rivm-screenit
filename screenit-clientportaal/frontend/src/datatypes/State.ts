@@ -29,6 +29,7 @@ import {geenBeschikbareContactActies} from "./ContactActiesDto"
 import {leegCervixDossier} from "./CervixDossier"
 import {EnvironmentInfo, geenEnvironmentInfo} from "./EnvironmentInfo"
 import {legeMammaAfspraak} from "./mamma/MammaAfspraak"
+import {Parameter} from "./Parameter"
 
 export type State = {
 	authenticatie: AuthenticatieState,
@@ -36,7 +37,8 @@ export type State = {
 	client: Client,
 	landingOverzicht: LandingOverzicht,
 	toasts: ToastMessage[],
-	requestMinusResponseCounter: number
+	requestMinusResponseCounter: number,
+	parameters: Parameter[]
 }
 
 export const legeState: State = {
@@ -55,4 +57,5 @@ export const legeState: State = {
 	landingOverzicht: legeLandingOverzicht,
 	toasts: [],
 	requestMinusResponseCounter: 0,
+	parameters: [],
 }

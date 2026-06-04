@@ -26,6 +26,8 @@ import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
 
+import nl.rivm.screenit.model.colon.enums.ColonIntakeafspraakType;
+
 @Getter
 @Setter
 public class ColonVrijSlotZonderKamerDto
@@ -46,4 +48,6 @@ public class ColonVrijSlotZonderKamerDto
 	private String postcode;
 
 	private String ziekenhuis;
+
+	private ColonIntakeafspraakType type;
 }

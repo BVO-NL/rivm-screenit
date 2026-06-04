@@ -30,6 +30,7 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.colon.ColonAfspraakUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -68,14 +69,16 @@ public abstract class ColonAfspraakPanel extends GenericPanel<Client>
 			@Override
 			protected void populateItem(ListItem<ColonIntakeAfspraak> item)
 			{
+				var afspraak = item.getModelObject();
+				var vanafDatum = afspraak.getVanaf();
 				item.setDefaultModel(new CompoundPropertyModel<>(item.getModel()));
-				item.add(new Label("vanaf", DateUtil.formatLongDateTime(item.getModelObject().getVanaf())));
+				item.add(
+					new Label("vanaf", ColonAfspraakUtil.isDigitaal(afspraak) ? ColonAfspraakUtil.formatWeekDigitaleIntake(vanafDatum) : DateUtil.formatLongDateTime(vanafDatum)));
 				item.add(new Label("kamer.intakelocatie.naam"));
 				item.add(new Label("kamer.intakelocatie.adres.straat"));
 				item.add(new Label("kamer.intakelocatie.adres.huisnummer"));
 				item.add(new Label("kamer.intakelocatie.adres.postcode"));
 				item.add(new Label("kamer.intakelocatie.adres.plaats"));
-				var afspraak = item.getModelObject();
 				String locatieBeschrijving = organisatieParameterService.getOrganisatieParameter(afspraak.getKamer().getIntakelocatie(),
 					OrganisatieParameterKey.COLON_INTAKELOCATIE_BESCHRIJVING);
 				item.add(new Label("locatieBeschrijving", locatieBeschrijving));

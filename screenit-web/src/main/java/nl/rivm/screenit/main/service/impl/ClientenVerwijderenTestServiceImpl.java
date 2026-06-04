@@ -22,25 +22,22 @@ package nl.rivm.screenit.main.service.impl;
  */
 
 import java.util.ArrayList;
-import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.ApplicationEnvironment;
 import nl.rivm.screenit.main.service.ClientenVerwijderenTestService;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.ClientContact;
+import nl.rivm.screenit.model.OnderzoeksresultatenActie;
 import nl.rivm.screenit.model.algemeen.AlgemeneBrief;
-import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
 import nl.rivm.screenit.model.exception.VerwijderClientException;
-import nl.rivm.screenit.model.gba.GbaVraag;
 import nl.rivm.screenit.model.logging.colon.ColonNieuwFitAanvraagLogEvent;
-import nl.rivm.screenit.model.mamma.MammaDeelnamekans;
 import nl.rivm.screenit.service.BaseProjectService;
 import nl.rivm.screenit.service.BezwaarService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.TestService;
+import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.service.cervix.CervixTestService;
 import nl.rivm.screenit.service.colon.ColonTestService;
 import nl.rivm.screenit.service.mamma.MammaBaseScreeningrondeService;
@@ -92,14 +89,18 @@ public class ClientenVerwijderenTestServiceImpl implements ClientenVerwijderenTe
 	@Autowired
 	private BezwaarService bezwaarService;
 
+	@Autowired
+	private UploadDocumentService uploadDocumentService;
+
 	@Override
 	public String clientenVerwijderen(String bsns)
 	{
-		int verwijderdeClienten = 0;
-		String[] bsnList = bsns.split(",");
-		String result = "Succesvol";
-		for (String bsn : bsnList)
+		var verwijderdeClienten = 0;
+		var bsnList = bsns.split(",");
+		var result = "Succesvol";
+		for (var bsn : bsnList)
 		{
+			Long clientId = null;
 			try
 			{
 				if (StringUtils.isBlank(bsn) || bsn.trim().length() != 9)
@@ -107,13 +108,13 @@ public class ClientenVerwijderenTestServiceImpl implements ClientenVerwijderenTe
 					continue;
 				}
 				bsn = bsn.trim();
-				Client client = clientService.getClientByBsn(bsn);
+				var client = clientService.getClientByBsn(bsn);
 				if (client == null)
 				{
 					continue;
 				}
 
-				boolean isKetenEnvironment = ApplicationEnvironment.KTN.getEnvNaam().equalsIgnoreCase(applicationEnvironment);
+				var isKetenEnvironment = ApplicationEnvironment.KTN.getEnvNaam().equalsIgnoreCase(applicationEnvironment);
 				if (isKetenEnvironment && heeftBeelden(client))
 				{
 					throw new VerwijderClientException("Ronde bevat beelden. Client moet eerst gereset worden.");
@@ -129,48 +130,45 @@ public class ClientenVerwijderenTestServiceImpl implements ClientenVerwijderenTe
 
 				logService.verwijderLogRegelsVanClient(client);
 
-				List<ColonNieuwFitAanvraagLogEvent> logEvents = hibernateService.getByParameters(ColonNieuwFitAanvraagLogEvent.class, ImmutableMap.of("client", client));
+				var logEvents = hibernateService.getByParameters(ColonNieuwFitAanvraagLogEvent.class, ImmutableMap.of("client", client));
 				logEvents.forEach(le -> hibernateService.delete(le.getLogRegel()));
 
 				bezwaarService.verwijderBezwaarMomenten(client);
-				List<GbaVraag> gbaVragen = client.getGbaVragen();
+				var gbaVragen = client.getGbaVragen();
 				hibernateService.deleteAll(gbaVragen);
 
-				List<ClientContact> clientContacten = client.getContacten();
+				var clientContacten = client.getContacten();
 				hibernateService.deleteAll(clientContacten);
 
-				Long clientId = client.getId();
+				clientId = client.getId();
 				hibernateService.executeSql("update screenit_revision_entity set client = null where client = " + clientId);
 
-				if (client.getMammaDossier() != null)
-				{
-					MammaDeelnamekans deelnamekans = client.getMammaDossier().getDeelnamekans();
-					if (deelnamekans != null)
-					{
-						hibernateService.delete(deelnamekans);
-					}
-				}
-
-				List<OverdrachtPersoonsgegevens> overdrachtPersoonsgegevensLijst = new ArrayList<>(client.getOverdrachtPersoonsgegevensLijst());
+				var overdrachtPersoonsgegevensLijst = new ArrayList<>(client.getOverdrachtPersoonsgegevensLijst());
 				hibernateService.deleteAll(overdrachtPersoonsgegevensLijst);
 				client.getOverdrachtPersoonsgegevensLijst().clear();
 
-				List<AlgemeneBrief> overgeblevenBrieven = hibernateService.getByParameters(AlgemeneBrief.class, ImmutableMap.of("client", client));
+				var overgeblevenBrieven = hibernateService.getByParameters(AlgemeneBrief.class, ImmutableMap.of("client", client));
 				hibernateService.deleteAll(overgeblevenBrieven);
+
+				var overgeblevenOnderzoeksresultatenActies = hibernateService.getByParameters(OnderzoeksresultatenActie.class, ImmutableMap.of("client", client));
+				overgeblevenOnderzoeksresultatenActies.forEach(actie -> uploadDocumentService.delete(actie.getGetekendeBrief()));
+				hibernateService.deleteAll(overgeblevenOnderzoeksresultatenActies);
 
 				hibernateService.delete(client);
 
 				verwijderdeClienten++;
+
+				LOG.info("Client met BSN '{}' verwijderd en client id '{}'", bsn, clientId);
 			}
 			catch (VerwijderClientException e)
 			{
 				result = e.getMessage();
-				LOG.error("error bij bsn " + bsn, e);
+				LOG.error("error bij bsn '{}' met client id '{}'", bsn, clientId, e);
 			}
 			catch (Exception e)
 			{
 				result = "Fout bij verwijderen van client met BSN " + bsn;
-				LOG.error("error bij bsn " + bsn, e);
+				LOG.error("error bij bsn '{}' met client id '{}'", bsn, clientId, e);
 			}
 		}
 		return result + ". #" + verwijderdeClienten + " clienten verwijderd.";

@@ -40,6 +40,7 @@ import nl.rivm.screenit.model.colon.RoosterListViewFilter;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakslotStatus;
 import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
+import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
@@ -76,6 +77,9 @@ public class RoosterListViewPage extends PlanningBasePage
 	@SpringBean
 	private ICurrentDateSupplier currentDateSupplier;
 
+	@SpringBean
+	private ColonBaseAfspraakService colonIntakeAfspraakService;
+
 	private final ScreenitDataTable<ColonAfspraakslotListViewWrapper, String> table;
 
 	public RoosterListViewPage()
@@ -109,7 +113,6 @@ public class RoosterListViewPage extends PlanningBasePage
 				var periode = Range.closed(startDatum.atStartOfDay(), eindDatum.plusDays(1).atStartOfDay());
 				setDefaultModelObject(afspraakslotService.getCurrentAantalAfspraakslots(ScreenitSession.get().getIntakelocatie(), periode));
 			}
-
 		};
 		totaalBlokken.setOutputMarkupId(true);
 		add(totaalBlokken);
@@ -127,7 +130,6 @@ public class RoosterListViewPage extends PlanningBasePage
 				label += " - " + new SimpleDateFormat("HH:mm").format(embeddedModel.getObject().getEindDatum());
 				return new Model(label);
 			}
-
 		});
 		columns.add(new PropertyColumn<>(Model.of("Kamer"), "kamer", "kamer"));
 		columns.add(new AbstractColumn<>(Model.of("Status"))
@@ -140,7 +142,6 @@ public class RoosterListViewPage extends PlanningBasePage
 				var afspraakslot = hibernateService.load(ColonAfspraakslot.class, wrapper.getAfspraakslotId());
 				cellItem.add(new EnumLabel<>(componentId, afspraakslotService.getAfspraakslotStatus(afspraakslot)));
 			}
-
 		});
 
 		table = new ScreenitDataTable<>("tabel", columns, new RoosterListViewDataProvider(zoekModel, intakelocatie), 10,
@@ -149,7 +150,6 @@ public class RoosterListViewPage extends PlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<ColonAfspraakslotListViewWrapper> model)
 			{
-
 			}
 
 			@Override
@@ -163,8 +163,14 @@ public class RoosterListViewPage extends PlanningBasePage
 		Form<RoosterListViewFilter> form = new Form<>("form", new CompoundPropertyModel<>(zoekModel));
 		add(form);
 
-		form.add(new AjaxButtonGroup<>("status", new ListModel<>(Arrays.asList(null, ColonAfspraakslotStatus.BLOKKADE,
-			ColonAfspraakslotStatus.GEBRUIKT_VOOR_CAPACITEIT, ColonAfspraakslotStatus.INTAKE_GEPLAND, ColonAfspraakslotStatus.VRIJ_TE_VERPLAATSEN)), new SimpleChoiceRenderer<>()
+		var statusOpties = new ArrayList<>(Arrays.asList(null, ColonAfspraakslotStatus.BLOKKADE,
+			ColonAfspraakslotStatus.GEBRUIKT_VOOR_CAPACITEIT, ColonAfspraakslotStatus.INTAKE_GEPLAND, ColonAfspraakslotStatus.VRIJ_TE_VERPLAATSEN));
+		if (colonIntakeAfspraakService.isDigitaleAfspraakBeschikbaar())
+		{
+			statusOpties.add(3, ColonAfspraakslotStatus.DIGITALE_INTAKE);
+		}
+
+		form.add(new AjaxButtonGroup<>("status", new ListModel<>(statusOpties), new SimpleChoiceRenderer<>()
 		{
 			@Override
 			public Object getDisplayValue(ColonAfspraakslotStatus object)
@@ -178,7 +184,6 @@ public class RoosterListViewPage extends PlanningBasePage
 					return getString(EnumStringUtil.getPropertyString(object));
 				}
 			}
-
 		})
 		{
 			@Override
@@ -199,7 +204,6 @@ public class RoosterListViewPage extends PlanningBasePage
 				target.add(table);
 				target.add(totaalBlokken);
 			}
-
 		});
 
 		FormComponent<Date> eindDatum = ComponentHelper.addTextField(form, "eindDatum", true, 10, Date.class, false);
@@ -212,10 +216,8 @@ public class RoosterListViewPage extends PlanningBasePage
 				target.add(totaalBlokken);
 				target.add(table);
 			}
-
 		});
 
 		add(new ExportToXslLink<>("csv", "Afspraakslots", table));
-
 	}
 }

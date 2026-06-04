@@ -26,7 +26,7 @@ import java.time.LocalTime;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.exception.ValidatieException;
-import nl.rivm.screenit.main.service.colon.ColonIntakeAfspraakService;
+import nl.rivm.screenit.main.service.colon.ColonIntakeafspraakService;
 import nl.rivm.screenit.main.service.colon.ColonRoosterBeperkingService;
 import nl.rivm.screenit.model.colon.dto.ColonRoosterBeperkingenDto;
 import nl.rivm.screenit.model.colon.enums.ColonRoosterBeperking;
@@ -43,7 +43,7 @@ public class ColonRoosterBeperkingServiceImpl implements ColonRoosterBeperkingSe
 	private SimplePreferenceService preferenceService;
 
 	@Autowired
-	private ColonIntakeAfspraakService intakeAfspraakService;
+	private ColonIntakeafspraakService intakeAfspraakService;
 
 	@Override
 	public ColonRoosterBeperkingenDto getRoosterBeperkingen()

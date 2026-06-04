@@ -62,7 +62,6 @@ import org.hibernate.envers.NotAudited;
 @Audited
 public class Persoon extends AbstractHibernateObject
 {
-
 	public static final int MAX_EMAIL_LENGTH = 100;
 
 	public static final int MAX_PHONE_LENGTH = 20;

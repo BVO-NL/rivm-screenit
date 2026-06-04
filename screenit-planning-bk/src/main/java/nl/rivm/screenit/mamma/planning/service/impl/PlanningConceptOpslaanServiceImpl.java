@@ -395,7 +395,6 @@ public class PlanningConceptOpslaanServiceImpl implements PlanningConceptOpslaan
 				persistentBlok.setOpmerkingen(blok.getOpmerkingen());
 				persistentBlok.setTot(blok.getDateTot());
 				persistentBlok.setVanaf(blok.getDateVanaf());
-				persistentBlok.setMinderValideAfspraakMogelijk(blok.isMinderValideAfspraakMogelijk());
 				var persistentMvReserveringen = persistentBlok.getMindervalideReserveringen();
 				var persistentMvReserveringenMap = maakPersistentMvReserveringMap(persistentMvReserveringen);
 				var conceptMvReserveringen = blok.getMindervalideReserveringen();

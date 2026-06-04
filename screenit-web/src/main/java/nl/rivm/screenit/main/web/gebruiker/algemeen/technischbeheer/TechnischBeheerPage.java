@@ -38,12 +38,10 @@ import org.wicketstuff.shiro.ShiroConstraint;
 	Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class TechnischBeheerPage extends AlgemeenPage
 {
-
 	private static final long serialVersionUID = 1L;
 
 	public TechnischBeheerPage()
 	{
-
 	}
 
 	@Override

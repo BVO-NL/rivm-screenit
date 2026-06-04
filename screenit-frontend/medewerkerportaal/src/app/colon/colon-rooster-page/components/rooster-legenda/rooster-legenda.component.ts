@@ -18,8 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component } from '@angular/core'
+import { Component, computed, inject } from '@angular/core'
 import { DsTooltipDirective } from '@topicus-rgp-ds/web'
+import { ParameterService } from '@/algemeen/services/parameter/parameter.service'
 
 @Component({
   selector: 'app-rooster-legenda',
@@ -27,4 +28,7 @@ import { DsTooltipDirective } from '@topicus-rgp-ds/web'
   templateUrl: './rooster-legenda.component.html',
   styleUrls: ['./rooster-legenda.component.scss'],
 })
-export class RoosterLegendaComponent {}
+export class RoosterLegendaComponent {
+  private readonly parameterService = inject(ParameterService)
+  protected readonly isDigitaleIntakeBeschikbaar = computed(() => this.parameterService.isDigitaleIntakeBeschikbaar())
+}

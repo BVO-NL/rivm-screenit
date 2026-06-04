@@ -51,8 +51,6 @@ public class MammaCapaciteitBlokDto extends EntityDto
 
 	private Long standplaatsPeriodeId;
 
-	private boolean minderValideAfspraakMogelijk;
-
 	public LocalDate getDatum()
 	{
 		return vanaf.toLocalDate();

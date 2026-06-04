@@ -38,6 +38,8 @@ public interface ColonAfspraakZoekFilterMapper
 		@Mapping(target = "intakelocatieId", ignore = true),
 		@Mapping(target = "nietIntakelocatieId", ignore = true),
 		@Mapping(target = "alleenIntakelocaties", ignore = true),
+		@Mapping(target = "digitaleAfspraak", source = "digitaleAfspraak"),
+		@Mapping(target = "asaScoreBovenDrie", source = "asaScoreBovenDrie"),
 	})
 	VrijSlotZonderKamerFilter vrijSlotToColonVrijSlotZonderKamerDto(ColonAfspraakZoekFilterDto colonAfspraakZoekFilterDto);
 

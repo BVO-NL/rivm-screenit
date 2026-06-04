@@ -106,6 +106,11 @@ public class ColonHl7BerichtToFitAnalyseResultaatSetWrapper
 		{
 			analyseResultaatDto.setResultValue(nm.getValue());
 		}
+		else if (obxHasFlag(obx))
+		{
+
+			throw new DataTypeException("OBX.2: Geen numeriek analyse resultaat. Barcode: " + barcode + ", Lab ID: " + analyseResultaatDto.getLabID());
+		}
 		else
 		{
 
@@ -135,9 +140,9 @@ public class ColonHl7BerichtToFitAnalyseResultaatSetWrapper
 				throw new DataTypeException("SPM.21: Waarde (" + onbeoordeelbaarReden + ") is niet numeriek. Barcode: " + barcode);
 			}
 		}
-		else if (observationValue.getData() instanceof ST st && StringUtils.isNotBlank(flag.getValue()))
+		else if (obxHasFlag(resultOBX))
 		{
-			kopieerFlag(analyseResultaatDto, barcode, st, flag);
+			kopieerFlag(analyseResultaatDto, barcode, (ST) observationValue.getData(), flag);
 		}
 
 		else if (observationValue.getData() instanceof NM nm && StringUtils.isNotBlank(nm.getValue()))
@@ -148,6 +153,13 @@ public class ColonHl7BerichtToFitAnalyseResultaatSetWrapper
 		{
 			throw new DataTypeException("Combinatie van SPM en OBX waardes klopt niet samen. Barcode: " + barcode);
 		}
+	}
+
+	private static boolean obxHasFlag(OBX obx)
+	{
+		var observationValue = obx.getObx5_ObservationValue(0);
+		var flag = obx.getObx8_AbnormalFlags(0);
+		return observationValue.getData() instanceof ST && StringUtils.isNotBlank(flag.getValue());
 	}
 
 	private static void kopieerFlag(ColonFitAnalyseResultaatDto analyseResultaatDto, String barcode, ST st, IS flag) throws DataTypeException

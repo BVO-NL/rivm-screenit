@@ -1,0 +1,71 @@
+{
+  "page": {
+    "title": {
+      "afspraak_verzetten": "Afspraak veranderen",
+      "afspraak_maken": "Afspraak maken"
+    },
+    "description": "Hieronder ziet u de gegevens van uw afspraak."
+  },
+  "intake": {
+    "description": "U wilt uw afspraak veranderen. Wilt u:",
+    "op_locatie": {
+      "label": "Een afspraak in het ziekenhuis",
+      "description": "U krijgt dan een gesprek met een verpleegkundige of arts."
+    },
+    "digitaal": {
+      "label": "Een online voorbereiding",
+      "description": "Dit kan nog niet in alle ziekenhuizen, maar er komen steeds meer ziekenhuizen bij waar dit kan. Een online voorbereiding is geen gesprek, maar een voorbereiding die u thuis op uw eigen computer, tablet of telefoon doet: U bekijkt en leest informatie over het vervolgonderzoek (video’s en tekst). Daarna vult u online een vragenlijst in. Heeft u alles bekeken, ingevuld en verstuurd? Dan neemt het ziekenhuis contact met u op over het vervolg."
+    },
+    "error": "Maak uw keuze"
+  },
+  "uw-gezondheid": {
+    "description": "Wij willen u <strong>goed verwijzen</strong>, daarom stellen we deze vraag.<br/><br/>Heeft u 1 of meer van deze punten:<ul><li>een ICD</li><li>(zeer) ernstige COPD (graad 3 of graad 4)</li><li>slaapapneu en gebruikt u een CPAP-apparaat</li><li>ernstig overgewicht (BMI hoger dan 40)</li><li>andere ernstige gezondheidsproblemen</li></ul>",
+    "antwoord": {
+      "ja": "Ja",
+      "nee": "Nee",
+      "weet_ik_niet": "Weet ik niet/wil ik niet zeggen"
+    },
+    "niet_bewaard": "Uw antwoord op deze vraag wordt <strong>niet bewaard</strong>.",
+    "error": "Maak uw keuze"
+  },
+  "afspraak_maken": {
+    "button": {
+      "andere_afspraak": "Wijzigen",
+      "afsluiten": "Afsluiten",
+      "volgende": "Volgende",
+      "vorige": "Vorige",
+      "bevestigen": "Bevestigen"
+    },
+    "annuleren_bevestigingspopup": {
+      "title": "Uw afspraak is nog niet ingepland",
+      "description": "Wilt u uw afspraak definitief maken? Ga dan verder en klik op de blauwe knop. <br /> Als u deze pagina verlaat of kiest voor 'Afspraak annuleren' wordt uw afspraak geannuleerd.",
+      "button_bevestigen": "Verder met afspraak maken",
+      "button_annuleren": "Afspraak annuleren"
+    },
+    "description": {
+      "op_locatie": "Hieronder kunt u de datum en tijd kiezen voor uw afspraak in het ziekenhuis/behandelcentrum.",
+      "digitaal": "<p>Hieronder kunt u <strong>een week kiezen</strong> voor uw online voorbereiding. U bepaalt zelf op welke dag en tijd binnen die week u de online voorbereiding doet.</p><p>U kiest ook een <strong>ziekenhuis</strong> voor uw online voorbereiding. Kies een ziekenhuis dicht bij u in de buurt. Krijgt u na de online voorbereiding een afspraak voor vervolgonderzoek? Dan moet u daarvoor naar het ziekenhuis dat u hier kiest.</p><p>Soms is een afspraak voor een gesprek in het ziekenhuis sneller en dichterbij.</p>"
+    }
+  },
+  "contact": {
+    "description": "<p>Het is belangrijk dat het ziekenhuis contact met u op kan nemen over de online voorbereiding.</p><p>Vul alstublieft uw e-mailadres en mobiel telefoonnummer in.</p>",
+    "uitleg": "Het ziekenhuis stuurt u via e-mail een link naar de online voorbereiding.  Heeft u alles bekeken en de vragenlijst opgestuurd? Dan neemt het ziekenhuis contact met u op voor het mogelijke kijkonderzoek.",
+    "email_validatie": {
+      "niet_aanwezig": "E-mailadres ontbreekt",
+      "fout": "Vul een correct e-mailadres in",
+      "te_lang": "E-mailadres is te lang"
+    },
+    "sms_validatie": {
+      "niet_aanwezig": "Telefoonnummer ontbreekt",
+      "fout": "Vul een correct telefoonnummer in"
+    }
+  },
+  "overzicht": {
+    "description": "Controleer alstublieft uw gegevens voor u de afspraak bevestigt.",
+    "afspraakgegevens": "U heeft deze afspraak gekozen voor de online voorbereiding:",
+    "contactgegevens": "U heeft deze contactgegevens ingevuld:",
+    "digitaal_intake_info": "<strong>Let op: </strong><p>De online voorbereiding doet u thuis op de computer, tablet of telefoon. Het ziekenhuis neemt hierover contact met u op.</p><p>Het mogelijke vervolgonderzoek is in <strong>%s</strong></p><strong>Is dit voor u te ver reizen</strong>?<br />Kies dan een ander ziekenhuis voor de online voorbereiding.<br />",
+    "digitaal_intake_link": "Dit doet u door te klikken op ",
+    "digitaal_intake_uitleg_knoppen": "<strong>Kloppen uw gegevens en is uw afspraak voor de online voorbereiding akkoord?</strong><br />Klik dan hieronder op de knop Bevestigen. Het ziekenhuis neemt dan contact met u op over de online voorbereiding.</p><p><strong>Wilt u toch liever de oorspronkelijke afspraak laten staan?</strong><br />Klik dan hieronder op de knop Afsluiten."
+  }
+}

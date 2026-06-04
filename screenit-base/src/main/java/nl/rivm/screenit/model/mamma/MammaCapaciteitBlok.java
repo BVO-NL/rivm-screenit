@@ -72,7 +72,6 @@ public class MammaCapaciteitBlok extends AbstractHibernateObject
 		this.screeningsEenheid = copy.screeningsEenheid;
 		this.vanaf = DateUtil.plusDagen(copy.vanaf, daysOffSet);
 		this.tot = DateUtil.plusDagen(copy.tot, daysOffSet);
-		this.minderValideAfspraakMogelijk = copy.minderValideAfspraakMogelijk;
 	}
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -101,10 +100,6 @@ public class MammaCapaciteitBlok extends AbstractHibernateObject
 
 	@Transient
 	private BigDecimal vrijeCapaciteit;
-
-	@Column(nullable = false)
-
-	private Boolean minderValideAfspraakMogelijk;
 
 	@OneToMany(mappedBy = "capaciteitBlok", fetch = FetchType.LAZY)
 	private final List<MammaAfspraak> afspraken = new ArrayList<>();

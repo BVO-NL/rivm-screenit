@@ -44,8 +44,6 @@ import org.apache.wicket.validation.validator.RangeValidator;
 
 public class TechnischeParametersPanel extends BaseTechnischBeheerParametersPanel
 {
-	private static final long serialVersionUID = 1L;
-
 	@SpringBean
 	private OrganisatieParameterService organisatieParameterService;
 
@@ -53,7 +51,7 @@ public class TechnischeParametersPanel extends BaseTechnischBeheerParametersPane
 	{
 		super(id, new ParameterisatiePropertyModel<>(model));
 
-		boolean magAanpassen = magAanpassen();
+		var magAanpassen = magAanpassen();
 
 		bmhkLabParameters(magAanpassen);
 		sosParameters(magAanpassen);
@@ -63,11 +61,10 @@ public class TechnischeParametersPanel extends BaseTechnischBeheerParametersPane
 	{
 		add(new EditOrganisatieParametersHorizontalPanel("soParameters", List.of(OrganisatieParameterKey.MAX_MERGED_BRIEVEN_PDF_SIZE_MB), magAanpassen)
 		{
-
 			@Override
 			protected void addOpslaanButton(Form<Void> form)
 			{
-				IndicatingAjaxSubmitLink parametersOpslaan = new IndicatingAjaxSubmitLink("parametersOpslaan", form)
+				var parametersOpslaan = new IndicatingAjaxSubmitLink("parametersOpslaan", form)
 				{
 					@Override
 					protected void onSubmit(AjaxRequestTarget target)
@@ -80,7 +77,6 @@ public class TechnischeParametersPanel extends BaseTechnischBeheerParametersPane
 				parametersOpslaan.setVisible(magAanpassen);
 				TechnischeParametersPanel.this.add(parametersOpslaan);
 			}
-
 		});
 	}
 
@@ -92,11 +88,10 @@ public class TechnischeParametersPanel extends BaseTechnischBeheerParametersPane
 				OrganisatieParameterKey.CERVIX_CYTOLOGIE_ORDER_HOST, OrganisatieParameterKey.CERVIX_CYTOLOGIE_ORDER_PORT
 			), magAanpassen)
 		{
-
 			@Override
 			protected void addOpslaanButton(Form<Void> form)
 			{
-				IndicatingAjaxSubmitLink parametersOpslaan = new IndicatingAjaxSubmitLink("bmhkLabParametersOpslaan", form)
+				var parametersOpslaan = new IndicatingAjaxSubmitLink("bmhkLabParametersOpslaan", form)
 				{
 					@Override
 					protected void onSubmit(AjaxRequestTarget target)
@@ -109,19 +104,19 @@ public class TechnischeParametersPanel extends BaseTechnischBeheerParametersPane
 				parametersOpslaan.setVisible(magAanpassen);
 				TechnischeParametersPanel.this.add(parametersOpslaan);
 			}
-
 		});
 	}
 
 	@Override
 	protected Form<Parameterisatie> createAndGetForm()
 	{
-		Form<Parameterisatie> form = new Form<>("form");
+		var form = new Form<Parameterisatie>("form");
 		form.add(ComponentHelper.newDatePicker("startdatumBmhk", magAanpassen()).setRequired(true));
 		form.add(ComponentHelper.newDatePicker("cervixStartBmhk2023", magAanpassen()).setRequired(true));
+		form.add(ComponentHelper.newDatePicker("colonStartDigitaleIntake", magAanpassen()));
 		form.add(new TextField<>("internalZorgmailBestandUrl", String.class).setRequired(true));
 		form.add(new TextField<>("internalWsbSchematronVersionpathmapping", String.class).setRequired(true));
-		int maxKiloBytesZip = 129000;
+		var maxKiloBytesZip = 129000;
 		form.add(new TextField<>("internalMaxGrootteZip", Integer.class).setRequired(true).add(RangeValidator.range(1, maxKiloBytesZip)));
 		form.add(new TextField<>("internalMammaUploadlimietUploadportaal", Integer.class).setRequired(true).add(RangeValidator.minimum(1)));
 		form.add(new TextField<>("internalHerinneringsperiodeLogregelOnvolledigAdres", Integer.class).setRequired(true).add(RangeValidator.range(0, 99)));

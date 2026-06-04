@@ -18,86 +18,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useCallback, useEffect, useRef, useState} from "react"
+import {useEffect, useState} from "react"
 import {BevolkingsonderzoekNaam} from "../../../../datatypes/Bevolkingsonderzoek"
-import styles from "./ColonAfspraakMakenPage.module.scss"
-import ScreenitDropdown, {DropdownOption} from "../../../../components/input/ScreenitDropdown"
 import BasePage from "../../../BasePage"
-import SearchResultAfspraken from "../../../../components/search_results/SearchResultAfspraken"
-import * as Yup from "yup"
-import {FormErrorComponent} from "../../../../components/form_error/FormErrorComponent"
-import Button from "../../../../components/input/Button"
-import {ArrowType} from "../../../../components/vectors/ArrowIconComponent"
-import BeforeSearching from "../../../../components/search_results/BeforeSearching"
-import ColonAfspraakMakenBevestigingsPopup from "./ColonAfspraakMakenBevestigingsPopup"
-import BigUrlButton from "../../../../components/bigUrlButton/BigUrlButton"
 import {getString} from "../../../../utils/TekstPropertyUtil"
-import {getHuidigeIntakeAfspraak} from "../../../../api/ColonAfspraakAfzeggenThunkAction"
+import {getHuidigeIntakeAfspraak} from "../../../../api/ColonIntakeAfspraakThunkAction"
 import {useSelector} from "react-redux"
-import {State} from "../../../../datatypes/State"
-import {Formik} from "formik"
-import bvoStyle from "../../../../components/BvoStyle.module.scss"
-import ScreenitBackend from "../../../../utils/Backend"
 import {useThunkDispatch} from "../../../../index"
-import {formatDate, formatDateWithDayName, formatTime, plusDagen, plusMaanden, plusWerkdagen, vandaag} from "../../../../utils/DateUtil"
 import properties from "./ColonAfspraakMakenPage.json"
-import ScreenitTextfield from "../../../../components/input/ScreenitTextfield"
-import {createShowToastAction} from "../../../../actions/ToastAction"
-import {ToastMessageType} from "../../../../datatypes/toast/ToastMessage"
-import {Col, Row} from "react-bootstrap"
-import {placeNonBreakingSpaceInDate, splitAdresString} from "../../../../utils/StringUtil"
-import {getContactUrl} from "../../../../utils/UrlUtil"
-import {useWindowDimensions} from "../../../../utils/Hooks"
-import AdvancedSearchLinkComponent from "../../../../components/form/AdvancedSearchLinkComponent"
-import SearchForm from "../../../../components/form/SearchForm"
-import ScreenitDatePicker from "../../../../components/input/ScreenitDatePicker"
+import {splitAdresString} from "../../../../utils/StringUtil"
 import {useLocation} from "react-router"
-
-export type VrijSlotZonderKamerFilter = {
-	ziekenhuisnaam?: string,
-	vanaf?: Date,
-	totEnMet?: Date,
-	plaats?: string,
-	pagecount: number
-	afstand?: number
-	maxResultsPerSearchInteration?: number
-}
-export type VrijSlotZonderKamer = {
-	startTijd: Date,
-	eindTijd: Date,
-	intakelocatieid: number,
-	plaats: string,
-	afstand: string,
-	adres: string,
-	postcode: string,
-	ziekenhuis: string,
-}
-
-const afstandOpties = () => {
-	const afstanden = ["5", "10", "15", "20", "25", "30", "35", "40", "45"]
-	const afstandOpties: Array<DropdownOption> = []
-	for (const afstand of afstanden) {
-		afstandOpties.push({value: afstand, label: `${afstand  } km`})
-	}
-	return afstandOpties
-}
+import {selectIntakeAfspraak} from "../../../../selectors/ColonSelectors"
+import {VrijSlotZonderKamer} from "../../../../datatypes/VrijSlotZonderKamer"
+import ColonAfspraakZoekenComponent from "../../../../components/colon_afspraak_zoeken/ColonAfspraakZoekenComponent"
+import ColonAfspraakMakenBevestigingsPopup from "./ColonAfspraakMakenBevestigingsPopup"
+import {getVolledigeAdresString} from "../../../../utils/AdresUtil"
+import {weergaveColonIntake} from "../../../../utils/DateUtil"
+import {ColonIntakeafspraakType} from "../../../../datatypes/colon/ColonIntakeafspraakType"
 
 const ColonAfspraakMakenPage = () => {
 	const [isNieuweAfspraak, setIsNieuweAfspraak] = useState<boolean>(false)
-	const [vrijeSloten, setVrijeSloten] = useState<VrijSlotZonderKamer[]>([])
 	const dispatch = useThunkDispatch()
-	const huidigeIntakeAfspraak = useSelector((state: State) => state.client.colonDossier.intakeAfspraak)
-	const [gezocht, setGezocht] = useState<boolean>(false)
+	const huidigeIntakeAfspraak = useSelector(selectIntakeAfspraak)
 	const [gekozenAfspraak, setGekozenAfspraak] = useState<VrijSlotZonderKamer | undefined>(undefined)
-	const [isAdvancedSearch, setAdvancedSearch] = useState<boolean>(false)
-	const [zoekFilter, setZoekFilter] = useState<VrijSlotZonderKamerFilter>({
-		pagecount: 1,
-	})
-	const minWeekDaysBeforeDateSelection = 3
-	const maxResultsPerSearchInteration = 10
-	const [visibleZoekMeerButton, setVisibleZoekMeerButton] = useState<boolean>(true)
-	const {width} = useWindowDimensions()
-	const gevondenAfsprakenDiv = useRef<HTMLDivElement | null>(null)
 	const afspraakNaHeraanmelding = useLocation().pathname.includes("heraanmelding")
 
 	useEffect(() => {
@@ -105,190 +48,30 @@ const ColonAfspraakMakenPage = () => {
 	}, [dispatch])
 
 	useEffect(() => {
-		setVisibleZoekMeerButton(vrijeSloten.length === zoekFilter.pagecount * maxResultsPerSearchInteration)
-	}, [setVisibleZoekMeerButton, vrijeSloten, zoekFilter.pagecount])
-
-	useEffect(() => {
 		if (huidigeIntakeAfspraak && (huidigeIntakeAfspraak.afspraakAfgezegd || huidigeIntakeAfspraak.andereIntakelocatieOpVerzoekClient)) {
 			setIsNieuweAfspraak(huidigeIntakeAfspraak.afspraakAfgezegd || huidigeIntakeAfspraak.andereIntakelocatieOpVerzoekClient)
 		}
 	}, [huidigeIntakeAfspraak])
 
-	function getMinimumSearchDate() {
-		return plusWerkdagen(vandaag(), minWeekDaysBeforeDateSelection)
-	}
-
-	const initialValues = {
-		ziekenhuisnaam: undefined,
-		vanaf: getMinimumSearchDate(),
-		totEnMet: plusMaanden(getMinimumSearchDate(), 1),
-		plaats: undefined,
-		pagecount: 1,
-		afstand: undefined,
-		maxResultsPerSearchInteration: maxResultsPerSearchInteration,
-	}
-
-	const validationSchema: Yup.AnyObjectSchema = Yup.object()
-		.shape({
-			vanaf: Yup.date().required(getString(properties.searchitems.datefrom.error.verplicht))
-				.nullable()
-				.typeError(getString(properties.searchitems.datefrom.error.type))
-				.min(getMinimumSearchDate(), getString(properties.searchitems.datefrom.error.date_too_early, [formatDate(getMinimumSearchDate())])),
-			totEnMet: Yup.date().required(getString(properties.searchitems.datefrom.error.verplicht))
-				.nullable()
-				.typeError(getString(properties.searchitems.datefrom.error.type))
-				.min(plusDagen(getMinimumSearchDate(), 1), getString(properties.searchitems.datetil.error_date_too_early, [formatDate(plusDagen(getMinimumSearchDate(), 1))])),
-		})
-
-	const zoekAfspraken = useCallback((filter: VrijSlotZonderKamerFilter) => {
-		setZoekFilter(filter)
-		return ScreenitBackend.post<VrijSlotZonderKamer[]>("colon/afspraak/zoeken", {json: filter}).json()
-			.then((response: VrijSlotZonderKamer[]) => setVrijeSloten(response))
-			.catch(() => {
-				dispatch(createShowToastAction({
-					title: getString(properties.toast.errors.zoeken.title),
-					description: getString(properties.toast.errors.zoeken.message),
-					type: ToastMessageType.ERROR,
-					alGetoond: false,
-				}))
-			})
-			.finally(() => {
-				setGezocht(true)
-			})
-	}, [dispatch])
-
-	const geenResultaten = vrijeSloten.length === 0 && gezocht
-
 	return (
 		<BasePage bvoName={BevolkingsonderzoekNaam.COLON}
-				  toonBlob={!isNieuweAfspraak}
-				  title={getString(!isNieuweAfspraak ? properties.page.title.verzetten : properties.page.title.maken)}
-				  description={getString(!isNieuweAfspraak ? properties.page.description.verzetten :
+		          toonBlob={!isNieuweAfspraak}
+		          title={getString(!isNieuweAfspraak ? properties.page.title.verzetten : properties.page.title.maken)}
+		          description={getString(!isNieuweAfspraak ? properties.page.description.verzetten :
 					  afspraakNaHeraanmelding ? properties.page.description.heraangemeld + properties.page.description.maken :
 						  properties.page.description.maken)}
-				  blobTitle={!isNieuweAfspraak ? getString(properties.blob.title) : ""}
-				  blobText={!isNieuweAfspraak && huidigeIntakeAfspraak ? getString(properties.blob.afspraak.moment, [huidigeIntakeAfspraak.weergaveAfspraakmoment]) : ""}
-				  blobAdresLocatie={!isNieuweAfspraak && huidigeIntakeAfspraak ? getString(properties.blob.afspraak.locatie, [huidigeIntakeAfspraak.naamIntakelocatie, splitAdresString(huidigeIntakeAfspraak.adresString)]) : ""}>
+		          blobTitle={!isNieuweAfspraak ? getString(properties.blob.title) : ""}
+		          blobText={!isNieuweAfspraak && huidigeIntakeAfspraak ? getString(properties.blob.afspraak.moment, [weergaveColonIntake(huidigeIntakeAfspraak.vanaf)]) : ""}
+		          blobAdresLocatie={!isNieuweAfspraak && huidigeIntakeAfspraak ? getString(properties.blob.afspraak.locatie, [huidigeIntakeAfspraak.naamIntakelocatie, splitAdresString(getVolledigeAdresString(huidigeIntakeAfspraak.adres))]) : ""}>
 
-			<Row className={styles.style}>
-				<Col md={5}>
-					<Formik initialValues={initialValues}
-							validationSchema={validationSchema}
-							onSubmit={async (values) => {
-								await zoekAfspraken(values as VrijSlotZonderKamerFilter)
-								if (width <= 768 && gevondenAfsprakenDiv.current) {
-									window.scrollTo(0, gevondenAfsprakenDiv.current.offsetTop - 100)
-								}
-							}}>
-						{({errors, values, initialValues, setFieldValue, handleSubmit}) => (
-							<SearchForm title={getString(properties.search.title)}>
-								<ScreenitTextfield onChange={async value => {
-									await setFieldValue("plaats", value)
-									await setFieldValue("afstand", "")
-								}}
-												   value={values.plaats}
-												   invalidMessage={errors.plaats}
-												   name={"plaats"}
-												   placeholder={getString(properties.searchitems.plaats.placeholder)}/>
+			<ColonAfspraakZoekenComponent
+				onAfspraakGeselecteerd={afspraak => setGekozenAfspraak({...afspraak, type: ColonIntakeafspraakType.OP_LOCATIE})}></ColonAfspraakZoekenComponent>
 
-								<ScreenitTextfield onChange={async value => {
-									await setFieldValue("ziekenhuisnaam", value)
-									await setFieldValue("afstand", "")
-								}}
-												   value={values.ziekenhuisnaam}
-												   invalidMessage={errors.ziekenhuisnaam}
-												   name={"ziekenhuisnaam"}
-												   placeholder={getString(properties.searchitems.ziekenhuis.placeholder)}/>
-
-								<ScreenitDatePicker className={styles.datepicker}
-													propertyName={"vanaf"}
-													label={getString(properties.searchitems.datefrom.placeholder)}
-													value={values.vanaf}
-													errorLabel={errors.vanaf}
-													onChange={value => setFieldValue("vanaf", value)}/>
-								<ScreenitDatePicker className={styles.datepicker}
-													propertyName={"totEnMet"}
-													label={getString(properties.searchitems.datetil.placeholder)}
-													value={values.totEnMet}
-													errorLabel={errors.totEnMet}
-													onChange={value => setFieldValue("totEnMet", value)}/>
-								<div>
-									<div className={styles.advancedSearchButton}
-										 onClick={async () => {
-											 await setFieldValue("afstand", "")
-											 setAdvancedSearch(!isAdvancedSearch)
-										 }}>
-										<AdvancedSearchLinkComponent advancedSearch={isAdvancedSearch}/>
-									</div>
-								</div>
-								{isAdvancedSearch &&
-									<ScreenitDropdown propertyName={"afstand"}
-													  invalidMessage={errors.afstand}
-													  value={values.afstand}
-													  options={afstandOpties()}
-													  placeholder={getString(properties.searchitems.afstand.placeholder)}
-													  onChange={async (event) => {
-														  await setFieldValue("afstand", event.target.value)
-														  await setFieldValue("plaats", "")
-														  await setFieldValue("ziekenhuisnaam", "")
-													  }}/>}
-								<Button className={bvoStyle.darkBackgroundColor}
-										label={getString(properties.search.do_search)}
-										displayArrow={ArrowType.ARROW_RIGHT}
-										onClick={handleSubmit}/>
-							</SearchForm>)}
-					</Formik>
-				</Col>
-				<Col md={7} className={styles.results} ref={gevondenAfsprakenDiv}>
-					{gezocht && vrijeSloten.map((kiesbareLocatie, index) =>
-						<SearchResultAfspraken
-							key={index}
-							className={styles.result}
-							enlargeText
-
-							col1={["", placeNonBreakingSpaceInDate(formatDateWithDayName(kiesbareLocatie.startTijd)), getString(properties.search.result.tijdstip, [formatTime(kiesbareLocatie.startTijd)])]}
-							col2={["Locatie", kiesbareLocatie.ziekenhuis]}
-							col3={["Adres", getString(properties.search.result.locatie, [kiesbareLocatie.adres, kiesbareLocatie.postcode, kiesbareLocatie.plaats])]}
-
-							onHoverText={getString(properties.search.hovertext)}
-							onClickAction={() => {
-								setZoekFilter(zoekFilter)
-								setGekozenAfspraak(kiesbareLocatie)
-							}}
-						/>,
-					)}
-					{geenResultaten && <FormErrorComponent text={getString(properties.search.search_no_results)}/>}
-					{geenResultaten &&
-						<BigUrlButton title={getString(properties.search.search_no_results_contact_header)}
-									  text={getString(properties.search.search_no_results_contact_text)}
-									  link={getContactUrl()}/>}
-					<div className={styles.navigationButtons}>
-						{gezocht && !geenResultaten && visibleZoekMeerButton &&
-							<div className={styles.showMoreResultsButtonArea}>
-								<Button
-									label={getString(properties.search.navigation_more_results)}
-									displayArrow={ArrowType.ARROW_DOWN}
-									onClick={() => {
-										const nieuwZoekFilter = {
-											...zoekFilter,
-										}
-										nieuwZoekFilter.pagecount = nieuwZoekFilter.pagecount + 1
-										setGezocht(true)
-										zoekAfspraken(nieuwZoekFilter)
-									}}/>
-							</div>}
-					</div>
-					{!gezocht &&
-						<BeforeSearching text={getString(properties.search.before_search)}/>}
-				</Col>
-			</Row>
 			{gekozenAfspraak &&
 				<ColonAfspraakMakenBevestigingsPopup afspraak={gekozenAfspraak}
-													 heraanmelding={isNieuweAfspraak}
-													 onClose={() => {
-														 setGekozenAfspraak(undefined)
-														 zoekAfspraken(zoekFilter)
-													 }}/>}
+				                                     heraanmelding={isNieuweAfspraak}
+				                                     onClose={() => setGekozenAfspraak(undefined)}/>
+			}
 		</BasePage>
 	)
 }
