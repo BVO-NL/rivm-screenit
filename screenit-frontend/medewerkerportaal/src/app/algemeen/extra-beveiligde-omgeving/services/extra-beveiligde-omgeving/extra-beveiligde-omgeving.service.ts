@@ -28,7 +28,7 @@ import { ApiService } from '@shared/services/api/api.service'
 })
 export class ExtraBeveiligdeOmgevingService {
   private readonly apiService = inject(ApiService)
-  private readonly baseUrl = '/api/algemeen/bezwaar'
+  private readonly baseUrl = '/api/bezwaar'
 
   getClienten(bsn: string, geboortedatum: string): Observable<BezwaarClient[]> {
     return this.apiService.get<BezwaarClient[]>(`${this.baseUrl}/clienten?bsn=${bsn}&geboortedatum=${geboortedatum}`)

@@ -74,6 +74,7 @@ import nl.rivm.screenit.repository.cervix.CervixLabTariefRepository;
 import nl.rivm.screenit.repository.cervix.CervixVerrichtingRepository;
 import nl.rivm.screenit.service.AsposeService;
 import nl.rivm.screenit.service.DistributedLockService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.HuisartsenportaalSyncService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
@@ -85,8 +86,7 @@ import nl.rivm.screenit.service.cervix.CervixBaseVerrichtingService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.cervix.CervixHuisartsToDtoUtil;
 import nl.rivm.screenit.util.cervix.CervixTariefUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
+import nl.rivm.screenit.util.hibernate.OpenEntityManagerInThread;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -685,7 +685,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 		return betalingenDataProviderService.size(null);
 	}
 
-	private class CervixBetalingsBestandenThread extends OpenHibernateSessionInThread
+	private class CervixBetalingsBestandenThread extends OpenEntityManagerInThread
 	{
 		@Autowired
 		private CervixBetalingService cervixBetalingService;

@@ -28,7 +28,7 @@ import nl.rivm.screenit.mamma.se.filter.SeRequestLimitFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.hibernate5.support.OpenSessionInViewFilter;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 
 import com.thetransactioncompany.cors.CORSFilter;
 
@@ -45,11 +45,10 @@ public class FilterConfig
 	}
 
 	@Bean
-	public FilterRegistrationBean<OpenSessionInViewFilter> openSessionInViewFilter()
+	public FilterRegistrationBean<OpenEntityManagerInViewFilter> openEntityManagerInViewFilter()
 	{
-		var filter = new FilterRegistrationBean<OpenSessionInViewFilter>();
-		filter.setFilter(new OpenSessionInViewFilter());
-		filter.addInitParameter("sessionFactoryBeanName", "hibernateSessionFactory");
+		var filter = new FilterRegistrationBean<OpenEntityManagerInViewFilter>();
+		filter.setFilter(new OpenEntityManagerInViewFilter());
 		filter.addUrlPatterns("/api/*");
 		filter.setOrder(FilterOrder.OPEN_SESSION_IN_VIEW.ordinal());
 		return filter;
@@ -71,7 +70,6 @@ public class FilterConfig
 	{
 		var filter = new FilterRegistrationBean<SELogFilter>();
 		filter.setFilter(new SELogFilter());
-		filter.addInitParameter("sessionFactoryBeanName", "hibernateSessionFactory");
 		filter.addUrlPatterns("/api/*");
 		filter.setOrder(FilterOrder.LOG.ordinal());
 		return filter;
@@ -82,7 +80,6 @@ public class FilterConfig
 	{
 		var filter = new FilterRegistrationBean<SeRequestLimitFilter>();
 		filter.setFilter(new SeRequestLimitFilter());
-		filter.addInitParameter("sessionFactoryBeanName", "hibernateSessionFactory");
 		filter.addUrlPatterns("/api/*");
 		filter.setOrder(FilterOrder.REQUEST_LIMIT.ordinal());
 		return filter;

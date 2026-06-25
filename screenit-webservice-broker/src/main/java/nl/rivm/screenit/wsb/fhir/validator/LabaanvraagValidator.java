@@ -35,6 +35,7 @@ import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.service.ClientService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.cervix.CervixBaseMonsterService;
 import nl.rivm.screenit.service.cervix.CervixBaseScreeningrondeService;
@@ -46,7 +47,6 @@ import nl.rivm.screenit.wsb.fhir.mapper.LabaanvraagMapper;
 import nl.rivm.screenit.wsb.fhir.resource.dstu3.v1.CodeSystem;
 import nl.rivm.screenit.wsb.fhir.resource.dstu3.v1.LabaanvraagBundle;
 import nl.rivm.screenit.wsb.fhir.resource.dstu3.v1.LabaanvraagResource;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 import nl.topicuszorg.util.bsn.BsnUtils;
 

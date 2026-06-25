@@ -23,6 +23,10 @@ package nl.rivm.screenit.main.dto.mamma.fotobespreking;
 
 import java.util.List;
 
-public record MammaFotobesprekingOnderzoekResponseDto(List<String> meldingen)
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(name = "MammaFotobesprekingOnderzoekResponseDto", description = "Resultaat van het koppelen van onderzoeken aan een fotobespreking.")
+public record MammaFotobesprekingOnderzoekResponseDto(
+	@Schema(description = "Meldingen die tijdens het koppelen zijn ontstaan") List<String> meldingen)
 {
 }

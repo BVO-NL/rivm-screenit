@@ -34,7 +34,7 @@ public class CervixGevolgenLabprocesVerwerkenReader extends BaseSpecificationScr
 
 	public CervixGevolgenLabprocesVerwerkenReader()
 	{
-		super.setFetchSize(1000);
+		setFetchSize(1000);
 	}
 
 	@Override

@@ -26,13 +26,18 @@ import lombok.Setter;
 
 import nl.rivm.screenit.Constants;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Setter
 @Getter
+@Schema(name = "PagineringDto", description = "Paginagegevens voor verzoeken en responses.")
 public class PagineringDto
 {
 	private int totaal;
 
+	@Schema(description = "Opgevraagde of huidige pagina")
 	private int paginaNummer;
 
+	@Schema(description = "Aantal resultaten per pagina")
 	private Integer paginaGrootte = Constants.AANTAL_RIJEN;
 }

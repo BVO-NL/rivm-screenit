@@ -61,13 +61,13 @@ import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.service.AsposeService;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BaseProjectService;
+import nl.rivm.screenit.service.DatabaseRunner;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.MailService;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.ZipUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.io.FileUtils;
@@ -131,6 +131,9 @@ public abstract class AbstractUitnodigingenVersturenTasklet<U extends InpakbareU
 
 	@Autowired
 	private OrganisatieService organisatieService;
+
+	@Autowired
+	private DatabaseRunner databaseRunner;
 
 	private ConcurrentLinkedQueue<UploadDocument> inpakcentrumBrieven;
 
@@ -289,7 +292,7 @@ public abstract class AbstractUitnodigingenVersturenTasklet<U extends InpakbareU
 			var startMetGenererenTijd = System.currentTimeMillis();
 			for (var uitnodigingId : uitnodigingIds)
 			{
-				forkJoinPool.submit(() -> OpenHibernateSession.withCommittedTransaction().run(() ->
+				forkJoinPool.submit(() -> databaseRunner.runInNewTransaction(() ->
 					genereerDtoUitnodiging(uitnodigingId)));
 			}
 			forkJoinPool.shutdown();

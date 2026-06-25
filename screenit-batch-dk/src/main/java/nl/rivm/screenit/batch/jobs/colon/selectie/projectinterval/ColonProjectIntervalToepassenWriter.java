@@ -30,10 +30,10 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.model.ProjectParameterKey;
 import nl.rivm.screenit.model.project.ProjectClient;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ProjectUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;

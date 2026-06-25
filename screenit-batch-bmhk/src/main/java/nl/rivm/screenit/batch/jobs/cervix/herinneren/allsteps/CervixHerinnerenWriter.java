@@ -30,9 +30,9 @@ import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.service.BaseBriefService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.cervix.Cervix2023StartBepalingService;
 import nl.rivm.screenit.service.cervix.CervixFactory;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;

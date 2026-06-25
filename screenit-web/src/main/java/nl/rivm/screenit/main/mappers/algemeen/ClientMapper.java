@@ -27,7 +27,9 @@ import nl.rivm.screenit.mappers.config.ScreenitMapperConfig;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.BezwaarType;
+import nl.rivm.screenit.service.ClientService;
 
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -69,9 +71,11 @@ public interface ClientMapper
 		@Mapping(target = "volledigeAdres", source = "persoon.gbaAdres", qualifiedByName = "getVolledigeAdres"),
 		@Mapping(target = "overlijdensdatum", source = "persoon.overlijdensdatum"),
 		@Mapping(target = "tijdelijkAdres", source = "client", qualifiedByName = "isTijdelijkAdres"),
+		@Mapping(target = "screeningsorganisatie", source = "persoon.gbaAdres.gbaGemeente.screeningOrganisatie.naam"),
+		@Mapping(target = "actief", source = "client", qualifiedByName = "isActief")
 
 	})
-	ClientDto clientToClientDto(Client client);
+	ClientDto clientToClientDto(Client client, @Context ClientService clientService);
 
 	@Named("isTijdelijkAdres")
 	default boolean isTijdelijkAdres(Client client)
@@ -87,5 +91,11 @@ public interface ClientMapper
 			return null;
 		}
 		return "%s %s".formatted(adres.getStraat(), adres.getVolledigeHuisaanduiding());
+	}
+
+	@Named("isActief")
+	default boolean isActief(Client client, @Context ClientService clientService)
+	{
+		return clientService.isClientActief(client);
 	}
 }

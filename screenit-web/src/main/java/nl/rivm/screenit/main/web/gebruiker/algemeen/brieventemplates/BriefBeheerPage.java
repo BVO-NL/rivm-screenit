@@ -46,8 +46,8 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.model.project.Project;
 import nl.rivm.screenit.service.BaseBriefService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.topicuszorg.documentupload.wicket.UploadDocumentLink;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.AttributeModifier;

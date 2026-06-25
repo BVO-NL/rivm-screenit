@@ -23,6 +23,8 @@ package nl.rivm.screenit.main.model.algemeen.dto;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,9 +32,12 @@ import nl.rivm.screenit.model.OrganisatieType;
 
 @Getter
 @Setter
+@Schema(name = "OrganisatieZoekFilterDto", description = "Filtercriteria voor het zoeken van organisaties.")
 public class OrganisatieZoekFilterDto
 {
+	@Schema(description = "Type organisatie waarop gefilterd wordt")
 	private OrganisatieType organisatieType;
 
+	@Schema(description = "Ids van organisaties waarop gefilterd wordt")
 	private List<Long> organisatieIds;
 }

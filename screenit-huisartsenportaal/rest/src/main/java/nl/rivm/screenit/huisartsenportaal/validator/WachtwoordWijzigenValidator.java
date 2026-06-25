@@ -26,6 +26,7 @@ import java.time.Instant;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import nl.rivm.screenit.huisartsenportaal.dto.WachtwoordWijzigenDto;
 import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
@@ -42,7 +43,8 @@ import org.springframework.validation.Errors;
 @Component
 public class WachtwoordWijzigenValidator extends BaseWachtwoordValidator<WachtwoordWijzigenDto>
 {
-	@Autowired
+
+	@PersistenceContext
 	private EntityManager entityManager;
 
 	@Autowired

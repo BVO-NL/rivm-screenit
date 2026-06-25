@@ -59,7 +59,7 @@ public class CervixVooraankondigingSelectieReader extends BaseSpecificationScrol
 
 	public CervixVooraankondigingSelectieReader(ICurrentDateSupplier dateSupplier, SimplePreferenceService preferenceService)
 	{
-		super.setFetchSize(50);
+		setFetchSize(50);
 		this.dateSupplier = dateSupplier;
 		this.preferenceService = preferenceService;
 	}

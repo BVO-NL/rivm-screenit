@@ -62,7 +62,7 @@ class MammaRationaalDag extends MammaRationaal
 		streefcapaciteit = beschikbareCapaciteit;
 	}
 
-	MammaRationaalAfspraakOptie getAfspraakOptie()
+	MammaRationaalAfspraak getAfspraakOptie()
 	{
 		var rationaalBlok = MammaCapaciteitZoeken.elementMetRelatiefMeesteVrijeCapaciteit(rationaalBlokken);
 		var afspraakOptie = rationaalBlok.getAfspraakOptie();

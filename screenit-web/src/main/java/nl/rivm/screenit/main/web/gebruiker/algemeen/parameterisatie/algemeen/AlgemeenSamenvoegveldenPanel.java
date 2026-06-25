@@ -29,7 +29,9 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.validation.validator.RangeValidator;
 
 public class AlgemeenSamenvoegveldenPanel extends BasePrimaireParametersPanel
 {
@@ -41,7 +43,8 @@ public class AlgemeenSamenvoegveldenPanel extends BasePrimaireParametersPanel
 	@Override
 	protected Form<Parameterisatie> createAndGetForm()
 	{
-		Form<Parameterisatie> form = new Form<>("form");
+		var form = new Form<Parameterisatie>("form");
+		form.add(new TextField<>("pgoUitslagenBeschikbaarTermijn", Integer.class).add(RangeValidator.range(0, 9999)));
 		addTextAreaField(form, "clientNieuwGenderdiversTekst");
 		addTextAreaField(form, "clientGenderidentiteitswijzigingTekst");
 		addTextAreaField(form, "geenHandtekeningBriefTekst");

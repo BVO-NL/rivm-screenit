@@ -29,6 +29,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -38,8 +42,8 @@ import nl.rivm.screenit.model.enums.BatchApplicationType;
 import nl.rivm.screenit.model.enums.JobStartParameter;
 import nl.rivm.screenit.model.enums.JobType;
 import nl.rivm.screenit.model.enums.MailPriority;
+import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.MailService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.activemq.command.ActiveMQObjectMessage;
@@ -58,10 +62,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-
-import jakarta.jms.JMSException;
-import jakarta.jms.Message;
-import jakarta.jms.Session;
 
 @Slf4j
 @EnableScheduling
@@ -92,6 +92,9 @@ public class JMSStartJobListener implements SessionAwareMessageListener<ActiveMQ
 
 	@Autowired
 	private BatchJobService batchJobService;
+
+	@Autowired
+	private DatabaseRunner databaseRunner;
 
 	private final BatchApplicationType batchApplicationType;
 
@@ -364,7 +367,7 @@ public class JMSStartJobListener implements SessionAwareMessageListener<ActiveMQ
 			try
 			{
 				AtomicReference<String> emailadressen = new AtomicReference<>();
-				OpenHibernateSession.withoutTransaction().run(() ->
+				databaseRunner.runInSessionOnly(() ->
 					emailadressen.set(simplePreferenceService.getString(PreferenceKey.DASHBOARDEMAIL.name()))
 				);
 				if (emailadressen.get() != null)

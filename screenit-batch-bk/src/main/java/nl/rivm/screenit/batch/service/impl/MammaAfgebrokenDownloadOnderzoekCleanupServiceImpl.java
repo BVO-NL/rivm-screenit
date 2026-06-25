@@ -30,7 +30,6 @@ import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoek;
 import nl.rivm.screenit.repository.mamma.MammaDownloadOnderzoekenVerzoekRepository;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -41,7 +40,7 @@ public class MammaAfgebrokenDownloadOnderzoekCleanupServiceImpl implements Mamma
 	private final MammaDownloadOnderzoekenVerzoekRepository downloadOnderzoekenVerzoekRepository;
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void checkAfgebrokenDownloadOnderzoekenVerzoekEnRuimOp()
 	{
 		var onderbrokenDownloadOnderzoekenVerzoeken = downloadOnderzoekenVerzoekRepository.getMammaDownloadOnderzoekenVerzoekByStatus(BestandStatus.BEZIG_MET_VERWERKEN);

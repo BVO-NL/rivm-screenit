@@ -63,6 +63,7 @@ import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BerichtToBatchService;
 import nl.rivm.screenit.service.BerichtToSeRestBkService;
 import nl.rivm.screenit.service.ClientService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.mamma.MammaBaseFactory;
@@ -70,7 +71,6 @@ import nl.rivm.screenit.service.mamma.MammaBaseKansberekeningService;
 import nl.rivm.screenit.service.mamma.MammaBaseKwaliteitscontroleService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.service.mamma.MammaVolgendeUitnodigingService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -322,7 +322,7 @@ public class MammaBaseFactoryImpl implements MammaBaseFactory
 		mammografie.setVisueleInspectieAfbeelding(afbeelding);
 		onderzoek.setMammografie(mammografie);
 
-		hibernateService.saveOrUpdateAll(onderzoek, mammografie);
+		hibernateService.saveOrUpdateAll(mammografie, onderzoek);
 
 		kansberekeningService.dossierEventHerzien(onderzoek.getAfspraak().getUitnodiging().getScreeningRonde().getDossier());
 

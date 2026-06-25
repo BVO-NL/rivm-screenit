@@ -26,4 +26,6 @@ import nl.rivm.screenit.model.enums.IdpServer2ServerType;
 public interface IdpServer2ServerService
 {
 	String getIdpAccessToken(IdpServer2ServerType type);
+
+	boolean heeftOntbrekendeCommHubCredentials(IdpServer2ServerType type);
 }

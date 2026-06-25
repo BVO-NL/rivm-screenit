@@ -23,16 +23,9 @@ package nl.rivm.screenit.batch.jobs.generalis.projecten.brieven;
 
 public class ProjectBrievenConstants
 {
-
 	private ProjectBrievenConstants()
 	{
 	}
-
-	public static final String THREAD_NAME = "key.projecten.thread";
-
-	public static final String longs = "key.projecten.projecten.ids";
-
-	public static final String KEY_PROJECT_SCREENINGORGANISATIE_ID = "key.projecten.screeningorganisatie.id";
 
 	public static final String KEY_PROJECT_ACTIE_ID = "key.projecten.actie.id";
 

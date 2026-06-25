@@ -26,7 +26,7 @@ import lombok.AllArgsConstructor;
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.model.gba.GbaMutatie;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.service.HibernateService;
 
 import org.springframework.stereotype.Component;
 

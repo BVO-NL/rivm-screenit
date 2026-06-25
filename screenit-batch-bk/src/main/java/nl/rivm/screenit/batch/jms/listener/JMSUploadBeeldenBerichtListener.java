@@ -23,23 +23,20 @@ package nl.rivm.screenit.batch.jms.listener;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import jakarta.jms.Session;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.service.MammaCStoreService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
+import nl.rivm.screenit.service.DatabaseRunner;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.jms.Session;
-
-@Transactional(propagation = Propagation.SUPPORTS)
 @Component
 @Slf4j
 @AllArgsConstructor
@@ -49,16 +46,18 @@ public class JMSUploadBeeldenBerichtListener implements SessionAwareMessageListe
 
 	private final SimplePreferenceService preferenceService;
 
+	private final DatabaseRunner databaseRunner;
+
 	@Override
 	public void onMessage(ActiveMQTextMessage message, Session session)
 	{
 		LOG.info("Uploaden van beelden is getriggerd.");
 
-		AtomicReference<String> sopClasses = new AtomicReference<>();
-		OpenHibernateSession.withoutTransaction().run(() ->
+		var sopClasses = new AtomicReference<String>();
+		databaseRunner.runInSessionOnly(() ->
 			sopClasses.set(preferenceService.getString(PreferenceKey.MAMMA_DICOM_SOP_CONFIG.name()))
 		);
 
-		uploadBeeldenService.getOpenstaandeUploadVerzoeken().forEach(uploadBeeldenVerzoek -> uploadBeeldenService.verstuurBeelden(uploadBeeldenVerzoek, sopClasses.get()));
+		uploadBeeldenService.getOpenstaandeUploadVerzoekenIds().forEach(id -> uploadBeeldenService.verstuurBeelden(id, sopClasses.get()));
 	}
 }

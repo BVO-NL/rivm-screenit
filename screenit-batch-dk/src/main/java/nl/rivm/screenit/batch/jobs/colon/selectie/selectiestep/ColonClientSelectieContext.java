@@ -33,9 +33,10 @@ import nl.rivm.screenit.batch.service.ColonUitnodigingSelectieService;
 import nl.rivm.screenit.batch.service.ColonUitnodigingsgebiedCapaciteitService;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.model.project.ProjectGroep;
+import nl.rivm.screenit.service.DatabaseRunner;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 @Slf4j
 public class ColonClientSelectieContext
@@ -189,6 +190,8 @@ public class ColonClientSelectieContext
 	public ColonBaseUitnodigingService uitnodigingService;
 
 	public ColonBaseFitService fitService;
+
+	public DatabaseRunner databaseRunner;
 
 	public void init(List<Integer> uitnodigingsJaren, List<ProjectGroep> projectGroepen)
 	{

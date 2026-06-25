@@ -84,4 +84,6 @@ public interface OrganisatieService
 	ScreeningOrganisatie getScreeningOrganisatie(long screeningOrganisatieId);
 
 	List<Long> getOrganisatieIdsMetType(OrganisatieType type);
+
+	ScreeningOrganisatie getLandelijkeScreeningsorganisatie();
 }

@@ -55,6 +55,7 @@ import nl.rivm.screenit.repository.algemeen.DSValueRepository;
 import nl.rivm.screenit.repository.colon.ColonMdlVerslagRepository;
 import nl.rivm.screenit.repository.colon.ColonPaVerslagRepository;
 import nl.rivm.screenit.service.BaseVerslagService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
@@ -62,7 +63,6 @@ import nl.rivm.screenit.service.mamma.MammaBaseFollowUpService;
 import nl.rivm.screenit.service.mamma.MammaBaseScreeningrondeService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;

@@ -38,9 +38,9 @@ import nl.rivm.screenit.model.cervix.CervixCytologieOrder;
 import nl.rivm.screenit.model.cervix.enums.CervixCytologieOrderStatus;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.stereotype.Component;
 

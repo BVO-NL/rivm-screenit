@@ -37,13 +37,13 @@ import nl.rivm.screenit.model.gba.GbaFile;
 import nl.rivm.screenit.model.gba.GbaFoutCategorie;
 import nl.rivm.screenit.model.gba.GbaFoutRegel;
 import nl.rivm.screenit.model.gba.GbaVerwerkingsLog;
+import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.FileService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.ZipUtil;
 import nl.topicuszorg.gba.vertrouwdverbonden.exceptions.Vo107ParseException;
 import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo107Bericht;
 import nl.topicuszorg.gba.vertrouwdverbonden.services.VO107Service;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -55,8 +55,6 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemStream;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 public class Vo107ItemReader implements ItemReader<Vo107Bericht>, ItemStream
@@ -74,6 +72,9 @@ public class Vo107ItemReader implements ItemReader<Vo107Bericht>, ItemStream
 
 	@Autowired
 	private ICurrentDateSupplier dateSupplier;
+
+	@Autowired
+	private DatabaseRunner databaseRunner;
 
 	private GbaVerwerkingsLog verwerkingLog;
 
@@ -145,7 +146,6 @@ public class Vo107ItemReader implements ItemReader<Vo107Bericht>, ItemStream
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.NEVER)
 	public void open(ExecutionContext executionContext) throws ItemStreamException
 	{
 		berichtIterator = null;
@@ -153,7 +153,7 @@ public class Vo107ItemReader implements ItemReader<Vo107Bericht>, ItemStream
 		fileIterator = null;
 		offset = 0;
 
-		OpenHibernateSession.withCommittedTransaction().run(() ->
+		databaseRunner.runInNewTransaction(() ->
 		{
 			GbaVerwerkingsLog verwerkingsLog = (GbaVerwerkingsLog) stepExecution.getJobExecution().getExecutionContext().get(GbaConstants.RAPPORTAGEKEYGBA);
 

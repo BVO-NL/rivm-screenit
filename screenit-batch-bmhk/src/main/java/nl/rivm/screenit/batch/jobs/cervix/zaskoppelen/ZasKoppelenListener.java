@@ -29,7 +29,7 @@ import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.logging.ZasKoppelingBeeindigdLogEvent;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.service.HibernateService;
 
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;

@@ -26,7 +26,5 @@ import nl.rivm.screenit.model.Client;
 public interface ClientDao
 {
 
-	void saveOrUpdateClient(Client client);
-
 	boolean heeftDossierMetRondeOfAfmelding(Client client);
 }

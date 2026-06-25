@@ -162,7 +162,7 @@ public enum BriefType
 	COLON_UITNODIGING_WANT_GEEN_BRIEF(
 		OrganisatieType.INPAKCENTRUM,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY },
-		true, "1_20_701- Uitnodiging geen antwoordformulier ontvangen",
+		true, "1_20_701 - Uitnodiging geen antwoordformulier ontvangen",
 		Bevolkingsonderzoek.COLON),
 
 	COLON_GUNSTIGE_UITSLAG(
@@ -171,10 +171,22 @@ public enum BriefType
 		true, "1_40_101 - Uitslagbrief gunstig",
 		Bevolkingsonderzoek.COLON),
 
+	COLON_GUNSTIGE_UITSLAG_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		true, "1_40_101_P - Uitslagbrief gunstig",
+		Bevolkingsonderzoek.COLON),
+
 	COLON_UITNODIGING_INTAKE(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY },
 		true, "1_40_102 - Uitslagbrief ongunstig",
+		Bevolkingsonderzoek.COLON),
+
+	COLON_UITNODIGING_INTAKE_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		true, "1_40_102_P - Uitslagbrief ongunstig",
 		Bevolkingsonderzoek.COLON),
 
 	COLON_INTAKE_NO_SHOW(
@@ -233,6 +245,12 @@ public enum BriefType
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY },
 		false, "1_40_203 - Uitslagbrief ongunstig, buiten doelgroep",
+		Bevolkingsonderzoek.COLON),
+
+	COLON_UITSLAGBRIEF_ONGUNSTIGE_BUITEN_DOELGROEP_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "1_40_203_P - Uitslagbrief ongunstig, buiten doelgroep",
 		Bevolkingsonderzoek.COLON),
 
 	COLON_HERINNERING_ANDERE_INTAKELOCATIE(
@@ -551,10 +569,22 @@ public enum BriefType
 		false, "2_40_201 - HPV negatief, volgende ronde 5 jaar",
 		Bevolkingsonderzoek.CERVIX),
 
+	CERVIX_HPV_NEGATIEF_VOLGENDE_RONDE_5_JAAR_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "2_40_201_P - HPV negatief, volgende ronde 5 jaar",
+		Bevolkingsonderzoek.CERVIX),
+
 	CERVIX_HPV_NEGATIEF_LAATSTE_RONDE(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY },
 		false, "2_40_202 - HPV negatief, laatste ronde",
+		Bevolkingsonderzoek.CERVIX),
+
+	CERVIX_HPV_NEGATIEF_LAATSTE_RONDE_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "2_40_202_P - HPV negatief, laatste ronde",
 		Bevolkingsonderzoek.CERVIX),
 
 	CERVIX_HPV_NEGATIEF_VOLGENDE_RONDE_10_JAAR(
@@ -563,10 +593,22 @@ public enum BriefType
 		false, "2_40_203 - HPV negatief, volgende ronde 10 jaar",
 		Bevolkingsonderzoek.CERVIX),
 
+	CERVIX_HPV_NEGATIEF_VOLGENDE_RONDE_10_JAAR_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "2_40_203_P - HPV negatief, volgende ronde 10 jaar",
+		Bevolkingsonderzoek.CERVIX),
+
 	CERVIX_ZAS_HPV_POSITIEF(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY },
 		false, "2_40_301 - Uitslag ZAS HPV positief",
+		Bevolkingsonderzoek.CERVIX),
+
+	CERVIX_ZAS_HPV_POSITIEF_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "2_40_301_P - Uitslag ZAS HPV positief",
 		Bevolkingsonderzoek.CERVIX),
 
 	CERVIX_CYTOLOGIE_NEGATIEF(
@@ -575,10 +617,22 @@ public enum BriefType
 		false, "2_40_302 - Uitslag cytologie negatief",
 		Bevolkingsonderzoek.CERVIX),
 
+	CERVIX_CYTOLOGIE_NEGATIEF_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "2_40_302_P - Uitslag cytologie negatief",
+		Bevolkingsonderzoek.CERVIX),
+
 	CERVIX_CYTOLOGIE_LICHTE_AFWIJKING(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY },
 		false, "2_40_303 - Uitslag cytologie lichte afwijking",
+		Bevolkingsonderzoek.CERVIX),
+
+	CERVIX_CYTOLOGIE_LICHTE_AFWIJKING_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "2_40_303_P - Uitslag cytologie lichte afwijking",
 		Bevolkingsonderzoek.CERVIX),
 
 	CERVIX_CYTOLOGIE_LICHTE_AFWIJKING_HPVOTHER(
@@ -587,10 +641,22 @@ public enum BriefType
 		false, "2_40_312 - Uitslag cytologie lichte afwijking, vervolgonderzoek",
 		Bevolkingsonderzoek.CERVIX),
 
+	CERVIX_CYTOLOGIE_LICHTE_AFWIJKING_HPVOTHER_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "2_40_312_P - Uitslag cytologie lichte afwijking, vervolgonderzoek",
+		Bevolkingsonderzoek.CERVIX),
+
 	CERVIX_CYTOLOGIE_AFWIJKING(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY },
 		false, "2_40_304 - Uitslag cytologie afwijking",
+		Bevolkingsonderzoek.CERVIX),
+
+	CERVIX_CYTOLOGIE_AFWIJKING_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "2_40_304_P - Uitslag cytologie afwijking",
 		Bevolkingsonderzoek.CERVIX),
 
 	CERVIX_VOLGEND_MONSTER_CYTOLOGIE_NEGATIEF(
@@ -599,10 +665,22 @@ public enum BriefType
 		false, "2_40_305 - Uitslag volgend monster cytologie negatief",
 		Bevolkingsonderzoek.CERVIX),
 
+	CERVIX_VOLGEND_MONSTER_CYTOLOGIE_NEGATIEF_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "2_40_305_P - Uitslag volgend monster cytologie negatief",
+		Bevolkingsonderzoek.CERVIX),
+
 	CERVIX_VOLGEND_MONSTER_CYTOLOGIE_LICHTE_AFWIJKING(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY },
 		false, "2_40_306 - Uitslag volgend monster cytologie lichte afwijking",
+		Bevolkingsonderzoek.CERVIX),
+
+	CERVIX_VOLGEND_MONSTER_CYTOLOGIE_LICHTE_AFWIJKING_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "2_40_306_P - Uitslag volgend monster cytologie lichte afwijking",
 		Bevolkingsonderzoek.CERVIX),
 
 	CERVIX_VOLGEND_MONSTER_CYTOLOGIE_LICHTE_AFWIJKING_HPVOTHER(
@@ -611,10 +689,22 @@ public enum BriefType
 		false, "2_40_313 - Uitslag volgend monster cytologie lichte afwijking, vervolgonderzoek",
 		Bevolkingsonderzoek.CERVIX),
 
+	CERVIX_VOLGEND_MONSTER_CYTOLOGIE_LICHTE_AFWIJKING_HPVOTHER_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "2_40_313_P - Uitslag volgend monster cytologie lichte afwijking, vervolgonderzoek",
+		Bevolkingsonderzoek.CERVIX),
+
 	CERVIX_VOLGEND_MONSTER_CYTOLOGIE_AFWIJKING(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY },
 		false, "2_40_307 - Uitslag volgend monster cytologie afwijking",
+		Bevolkingsonderzoek.CERVIX),
+
+	CERVIX_VOLGEND_MONSTER_CYTOLOGIE_AFWIJKING_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "2_40_307_P - Uitslag volgend monster cytologie afwijking",
 		Bevolkingsonderzoek.CERVIX),
 
 	CERVIX_HUISARTS_ONBEKEND(
@@ -629,16 +719,34 @@ public enum BriefType
 		false, "2_40_309 - Uitslag controle-uitstrijkje negatief",
 		Bevolkingsonderzoek.CERVIX),
 
+	CERVIX_CONTROLEUITSTRIJKJE_NEGATIEF_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "2_40_309_P - Uitslag controle-uitstrijkje negatief",
+		Bevolkingsonderzoek.CERVIX),
+
 	CERVIX_CONTROLEUITSTRIJKJE_LICHTE_AFWIJKING(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY },
 		false, "2_40_310 - Uitslag controle-uitstrijkje lichte afwijking",
 		Bevolkingsonderzoek.CERVIX),
 
+	CERVIX_CONTROLEUITSTRIJKJE_LICHTE_AFWIJKING_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "2_40_310_P - Uitslag controle-uitstrijkje lichte afwijking",
+		Bevolkingsonderzoek.CERVIX),
+
 	CERVIX_CONTROLEUITSTRIJKJE_AFWIJKING(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY },
 		false, "2_40_311 - Uitslag controle-uitstrijkje afwijking",
+		Bevolkingsonderzoek.CERVIX),
+
+	CERVIX_CONTROLEUITSTRIJKJE_AFWIJKING_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "2_40_311_P - Uitslag controle-uitstrijkje afwijking",
 		Bevolkingsonderzoek.CERVIX),
 
 	CERVIX_MONSTER_NA_HPV_NEGATIEF(
@@ -784,10 +892,22 @@ public enum BriefType
 		false, "3_40_101 - Uitslag cliënt negatief",
 		Bevolkingsonderzoek.MAMMA),
 
+	MAMMA_GUNSTIGE_UITSLAG_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "3_40_101_P - Uitslag cliënt negatief",
+		Bevolkingsonderzoek.MAMMA),
+
 	MAMMA_ONGUNSTIGE_UITSLAG_BIRADS_0(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY, ProjectBriefActieType.XMETY },
 		false, "3_40_102 - Uitslag cliënt positief BIRADS 0",
+		Bevolkingsonderzoek.MAMMA),
+
+	MAMMA_ONGUNSTIGE_UITSLAG_BIRADS_0_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "3_40_102_P - Uitslag cliënt positief BIRADS 0",
 		Bevolkingsonderzoek.MAMMA),
 
 	MAMMA_ONGUNSTIGE_UITSLAG_BIRADS_4_5(
@@ -796,10 +916,22 @@ public enum BriefType
 		false, "3_40_103 - Uitslag cliënt positief BIRADS 4-5",
 		Bevolkingsonderzoek.MAMMA),
 
+	MAMMA_ONGUNSTIGE_UITSLAG_BIRADS_4_5_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "3_40_103_P - Uitslag cliënt positief BIRADS 4-5",
+		Bevolkingsonderzoek.MAMMA),
+
 	MAMMA_ONGUNSTIGE_UITSLAG_BIRADS_0_ZONDER_HUISARTS(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY, ProjectBriefActieType.XMETY },
 		false, "3_40_107 - Uitslag cliënt positief zonder huisarts BI-RADS 0",
+		Bevolkingsonderzoek.MAMMA),
+
+	MAMMA_ONGUNSTIGE_UITSLAG_BIRADS_0_ZONDER_HUISARTS_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "3_40_107_P - Uitslag cliënt positief zonder huisarts BI-RADS 0",
 		Bevolkingsonderzoek.MAMMA),
 
 	MAMMA_ONGUNSTIGE_UITSLAG_BIRADS_4_5_ZONDER_HUISARTS(
@@ -808,10 +940,22 @@ public enum BriefType
 		false, "3_40_110 - Uitslag cliënt positief zonder huisarts BI-RADS 4-5",
 		Bevolkingsonderzoek.MAMMA),
 
+	MAMMA_ONGUNSTIGE_UITSLAG_BIRADS_4_5_ZONDER_HUISARTS_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "3_40_110_P - Uitslag cliënt positief zonder huisarts BI-RADS 4-5",
+		Bevolkingsonderzoek.MAMMA),
+
 	MAMMA_FOTOBESPREKING_ONGUNSTIGE_UITSLAG_BIRADS_0(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY, ProjectBriefActieType.XMETY },
 		false, "3_40_108 - Uitslag cliënt positief BI-RADS 0 na eerder negatief",
+		Bevolkingsonderzoek.MAMMA),
+
+	MAMMA_FOTOBESPREKING_ONGUNSTIGE_UITSLAG_BIRADS_0_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "3_40_108_P - Uitslag cliënt positief BI-RADS 0 na eerder negatief",
 		Bevolkingsonderzoek.MAMMA),
 
 	MAMMA_FOTOBESPREKING_ONGUNSTIGE_UITSLAG_BIRADS_4_5(
@@ -820,16 +964,34 @@ public enum BriefType
 		false, "3_40_109 - Uitslag cliënt positief BIRADS 4-5 na eerder negatief",
 		Bevolkingsonderzoek.MAMMA),
 
+	MAMMA_FOTOBESPREKING_ONGUNSTIGE_UITSLAG_BIRADS_4_5_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "3_40_109_P - Uitslag cliënt positief BIRADS 4-5 na eerder negatief",
+		Bevolkingsonderzoek.MAMMA),
+
 	MAMMA_FOTOBESPREKING_ONGUNSTIGE_UITSLAG_BIRADS_0_ZONDER_HUISARTS(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY, ProjectBriefActieType.XMETY },
 		false, "3_40_114 - Uitslag cliënt positief zonder huisarts BI-RADS 0 na eerder negatief",
 		Bevolkingsonderzoek.MAMMA),
 
+	MAMMA_FOTOBESPREKING_ONGUNSTIGE_UITSLAG_BIRADS_0_ZONDER_HUISARTS_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "3_40_114_P - Uitslag cliënt positief zonder huisarts BI-RADS 0 na eerder negatief",
+		Bevolkingsonderzoek.MAMMA),
+
 	MAMMA_FOTOBESPREKING_ONGUNSTIGE_UITSLAG_BIRADS_4_5_ZONDER_HUISARTS(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY, ProjectBriefActieType.XMETY },
 		false, "3_40_115 - Uitslag cliënt positief zonder huisarts BI-RADS 4-5 na eerder negatief",
+		Bevolkingsonderzoek.MAMMA),
+
+	MAMMA_FOTOBESPREKING_ONGUNSTIGE_UITSLAG_BIRADS_4_5_ZONDER_HUISARTS_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "3_40_115_P - Uitslag cliënt positief zonder huisarts BI-RADS 4-5 na eerder negatief",
 		Bevolkingsonderzoek.MAMMA),
 
 	MAMMA_HERINNERING(
@@ -854,6 +1016,12 @@ public enum BriefType
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY, ProjectBriefActieType.XMETY },
 		false, "3_40_105 - Uitslag cliënt negatief beperkt beoordeelbaar",
+		Bevolkingsonderzoek.MAMMA),
+
+	MAMMA_BEPERKT_BEOORDEELBAAR_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "3_40_105_P - Uitslag cliënt negatief beperkt beoordeelbaar",
 		Bevolkingsonderzoek.MAMMA),
 
 	MAMMA_BEPERKT_BEOORDEELBAAR_PROTHESE(
@@ -887,6 +1055,8 @@ public enum BriefType
 		Bevolkingsonderzoek.MAMMA),
 
 	;
+
+	public static final String FALLBACK_BRIEF_CODE = "9_90_101";
 
 	private static final List<BriefType> MAMMA_UITNODIGINGEN = Arrays.asList(
 		BriefType.MAMMA_AFSPRAAK_UITNODIGING, BriefType.MAMMA_AFSPRAAK_VERZET,
@@ -1178,6 +1348,11 @@ public enum BriefType
 	public static List<BriefType> getCervixZasUitnodigingNietDirectHerzendbaarBrieven()
 	{
 		return CERVIX_ZAS_NIET_DIRECT_HERZENDBAAR;
+	}
+
+	public static boolean isCervixUitslagbrief(BriefType briefType)
+	{
+		return CERVIX_UITSLAG_BRIEVEN.contains(briefType);
 	}
 
 	public boolean isActief()

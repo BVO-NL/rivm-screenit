@@ -24,11 +24,13 @@ package nl.rivm.screenit.main.dto.mamma.visitatie;
 import lombok.Getter;
 import lombok.Setter;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Getter
 @Setter
+@Schema(name = "MammaVisitatieOnderzoekPerMedewerkerDto", description = "Rapportagegegevens van onderzoeken per medewerker binnen een visitatie.")
 public class MammaVisitatieOnderzoekPerMedewerkerDto
 {
 	int aantalBeeldenBinnen2Maanden;
-
 	int aantalBeeldenBinnen4Maanden;
 }

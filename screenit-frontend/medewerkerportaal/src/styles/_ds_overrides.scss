@@ -78,3 +78,13 @@ table[ds-table] {
 .ds-modal {
   position: relative;
 }
+
+.ds-card__content-container {
+  font-size: .8125rem;
+}
+
+.ds-badge--no-color {
+  .ds-badge__category-color {
+    display: none;
+  }
+}

@@ -33,7 +33,6 @@ import nl.rivm.screenit.document.bezwaar.BezwaarDocumentCreatorOneDatasetCoupleT
 import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.MailMergeContext;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.algemeen.BezwaarGroupViewWrapper;
 import nl.rivm.screenit.model.algemeen.BezwaarMergedBrieven;
@@ -59,11 +58,9 @@ public class BezwaarBrievenGenererenWriter extends AbstractBrievenGenererenWrite
 	{
 		ExecutionContext context = getStepExecutionContext();
 		BriefType briefType = BriefType.valueOf(context.getString(BezwaarBrievenGenererenPartitioner.KEY_BRIEFTYPE));
-		ScreeningOrganisatie screeningOrganisatie = getHibernateService().load(ScreeningOrganisatie.class,
-			context.getLong(BezwaarBrievenGenererenPartitioner.KEY_SCREENINGORGANISATIEID));
 
 		BezwaarMergedBrieven mergedBrieven = new BezwaarMergedBrieven();
-		mergedBrieven.setScreeningOrganisatie(screeningOrganisatie);
+		mergedBrieven.setScreeningOrganisatie(getScreeningOrganisatie());
 		mergedBrieven.setCreatieDatum(aangemaaktOp);
 		mergedBrieven.setBriefType(briefType);
 		return mergedBrieven;

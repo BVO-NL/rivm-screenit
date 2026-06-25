@@ -53,6 +53,7 @@ import nl.rivm.screenit.model.enums.InlogMethode;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.service.BaseBriefService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.HuisartsenportaalSyncService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
@@ -60,8 +61,7 @@ import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.service.WoonplaatsService;
 import nl.rivm.screenit.util.CodeGenerator;
 import nl.rivm.screenit.util.cervix.CervixHuisartsToDtoUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
+import nl.rivm.screenit.util.hibernate.OpenEntityManagerInThread;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.NonUniqueResultException;
@@ -112,7 +112,7 @@ public class CervixBulkHuisartsenServiceImpl implements CervixBulkHuisartsenServ
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void verwerkBulkHuisartsen(CervixBulkUpload cervixBulkUpload)
 	{
-		executorService.submit(new OpenHibernateSessionInThread()
+		executorService.submit(new OpenEntityManagerInThread()
 		{
 			@Override
 			protected void runInternal()
@@ -260,34 +260,34 @@ public class CervixBulkHuisartsenServiceImpl implements CervixBulkHuisartsenServ
 		}
 		arts.setTelefoon(telefoon);
 
-			var organisatieMedewerker = new OrganisatieMedewerker();
-			arts.getOrganisatieMedewerkers().add(organisatieMedewerker);
-			var medewerker = new Medewerker();
-			medewerker.setAanhef(getAanhef(aanhef));
-			medewerker.setInlogMethode(InlogMethode.GEBRUIKERSNAAM_WACHTWOORD);
-			medewerker.setTussenvoegsel(tussenvoegsel);
-			medewerker.setAchternaam(achternaam);
-			medewerker.setVoorletters(voorletter);
-			medewerker.setActief(true);
-			medewerker.setOrganisatieMedewerkers(new ArrayList<>());
-			medewerker.getOrganisatieMedewerkers().add(organisatieMedewerker);
-			medewerker.setGebruikersnaam("ua-" + agbCode);
-			organisatieMedewerker.setMedewerker(medewerker);
-			organisatieMedewerker.setOrganisatie(arts);
-			organisatieMedewerker.setActief(true);
+		var organisatieMedewerker = new OrganisatieMedewerker();
+		arts.getOrganisatieMedewerkers().add(organisatieMedewerker);
+		var medewerker = new Medewerker();
+		medewerker.setAanhef(getAanhef(aanhef));
+		medewerker.setInlogMethode(InlogMethode.GEBRUIKERSNAAM_WACHTWOORD);
+		medewerker.setTussenvoegsel(tussenvoegsel);
+		medewerker.setAchternaam(achternaam);
+		medewerker.setVoorletters(voorletter);
+		medewerker.setActief(true);
+		medewerker.setOrganisatieMedewerkers(new ArrayList<>());
+		medewerker.getOrganisatieMedewerkers().add(organisatieMedewerker);
+		medewerker.setGebruikersnaam("ua-" + agbCode);
+		organisatieMedewerker.setMedewerker(medewerker);
+		organisatieMedewerker.setOrganisatie(arts);
+		organisatieMedewerker.setActief(true);
 
 		var codeB = CodeGenerator.genereerCode(3, 3);
 		medewerker.setDatumWachtwoordAanvraag(currentDateSupplier.getDate());
 		medewerker.setWachtwoordChangeCode(codeB);
 
-			var adres = new CervixHuisartsAdres();
-			adres.setStraat(straat);
-			adres.setPostcode(postcode);
-			adres.setHuisnummer(Integer.valueOf(huisnummer));
-			adres.setHuisnummerToevoeging(huisnummertoevoeging);
-			adres.setWoonplaats(woonplaats);
-			arts.setPostadres(adres);
-			hibernateService.saveOrUpdateAll(medewerker, arts, organisatieMedewerker, adres);
+		var adres = new CervixHuisartsAdres();
+		adres.setStraat(straat);
+		adres.setPostcode(postcode);
+		adres.setHuisnummer(Integer.valueOf(huisnummer));
+		adres.setHuisnummerToevoeging(huisnummertoevoeging);
+		adres.setWoonplaats(woonplaats);
+		arts.setPostadres(adres);
+		hibernateService.saveOrUpdateAll(medewerker, arts, organisatieMedewerker, adres);
 
 		sendBriefNaarHuisarts(arts);
 		synchroniseerHuisarts(arts);

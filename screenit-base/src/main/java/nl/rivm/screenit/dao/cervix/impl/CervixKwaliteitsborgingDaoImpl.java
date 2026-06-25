@@ -21,23 +21,26 @@ package nl.rivm.screenit.dao.cervix.impl;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import nl.rivm.screenit.dao.cervix.CervixKwaliteitsborgingDao;
 import nl.rivm.screenit.util.DatabaseSequence;
 import nl.rivm.screenit.util.SequenceGenerator;
-import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
 
+import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional(propagation = Propagation.SUPPORTS)
-public class CervixKwaliteitsborgingDaoImpl extends AbstractAutowiredDao implements CervixKwaliteitsborgingDao
+public class CervixKwaliteitsborgingDaoImpl implements CervixKwaliteitsborgingDao
 {
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Override
 	public Long getNextKwaliteitsborgingBarcode()
 	{
-		return getSession().doReturningWork(new SequenceGenerator(DatabaseSequence.HPTV_KWALITEITSBORGING_ID, getSessionFactory()));
+		var session = entityManager.unwrap(Session.class);
+		return session.doReturningWork(new SequenceGenerator(DatabaseSequence.HPTV_KWALITEITSBORGING_ID, entityManager.getEntityManagerFactory()));
 	}
 }

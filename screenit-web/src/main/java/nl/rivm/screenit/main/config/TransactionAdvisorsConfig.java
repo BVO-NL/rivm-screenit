@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.config;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.annotation.AnnotationTransactionAttributeSource;
 import org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
@@ -48,7 +48,7 @@ public class TransactionAdvisorsConfig
 	}
 
 	@Bean
-	public TransactionInterceptor transactionInterceptor(HibernateTransactionManager transactionManager)
+	public TransactionInterceptor transactionInterceptor(JpaTransactionManager transactionManager)
 	{
 		TransactionInterceptor bean = new TransactionInterceptor();
 		bean.setTransactionManager(transactionManager);

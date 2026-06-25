@@ -80,13 +80,13 @@ import nl.rivm.screenit.repository.cervix.CervixCytologieOrderRepository;
 import nl.rivm.screenit.service.BaseCdaVerslagService;
 import nl.rivm.screenit.service.BaseMedewerkerService;
 import nl.rivm.screenit.service.ClientService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.KwaliteitsovereenkomstService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.VerwerkVerslagService;
 import nl.rivm.screenit.util.MedewerkerUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;

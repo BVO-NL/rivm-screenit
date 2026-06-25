@@ -47,6 +47,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.service.BaseAfmeldService;
 import nl.rivm.screenit.service.BaseDossierService;
 import nl.rivm.screenit.service.DossierFactory;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.TestService;
 import nl.rivm.screenit.service.mamma.MammaBaseDossierService;
@@ -55,7 +56,6 @@ import nl.rivm.screenit.service.mamma.MammaBaseHL7v24MessageService;
 import nl.rivm.screenit.service.mamma.MammaBaseIlmService;
 import nl.rivm.screenit.service.mamma.MammaBaseKansberekeningService;
 import nl.rivm.screenit.service.mamma.MammaBaseTestService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 import nl.topicuszorg.util.postcode.PostcodeFormatter;
 
@@ -179,8 +179,8 @@ public class MammaBaseTestServiceImpl implements MammaBaseTestService
 		hibernateService.deleteAll(overgeblevenBrieven);
 
 		client.setMammaDossier(null);
-		hibernateService.delete(dossier);
 		hibernateService.saveOrUpdate(client);
+		hibernateService.delete(dossier);
 
 		dossierFactory.maakDossiers(client);
 

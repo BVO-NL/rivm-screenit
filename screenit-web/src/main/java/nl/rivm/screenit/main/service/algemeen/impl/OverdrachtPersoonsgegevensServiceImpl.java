@@ -85,6 +85,7 @@ import nl.rivm.screenit.model.verslag.NullFlavourQuantity;
 import nl.rivm.screenit.model.verslag.Quantity;
 import nl.rivm.screenit.model.verslag.VraagElement;
 import nl.rivm.screenit.service.BaseBriefService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.RondeNummerService;
@@ -98,7 +99,6 @@ import nl.rivm.screenit.util.StringUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.organisatie.model.Adres;
 
 import org.apache.commons.beanutils.PropertyUtilsBean;

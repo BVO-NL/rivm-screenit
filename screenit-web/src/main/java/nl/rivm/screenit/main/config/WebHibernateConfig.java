@@ -23,20 +23,28 @@ package nl.rivm.screenit.main.config;
 
 import java.util.List;
 
+import nl.rivm.screenit.config.hibernate.HibernateOrmMappingResourceProvider;
+import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.topicuszorg.hibernate.spring.dao.impl.HibernateServiceImpl;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 @Configuration
 public class WebHibernateConfig
 {
+	public static final String WEB_ORM_MAPPING_RESOURCE = "META-INF/screenit-web-orm.xml";
 
 	@Bean
-	public List<Resource> additionalHibernateConfigLocations()
+	HibernateOrmMappingResourceProvider hibernateOrmMappingResourceProvider()
 	{
-		return List.of(new ClassPathResource("hibernate-wicket-password.cfg.xml"),
-			new ClassPathResource("hibernate-mapping-web.cfg.xml"));
+		return () -> List.of(WEB_ORM_MAPPING_RESOURCE);
 	}
 
+	@Bean
+	@Deprecated
+	HibernateService hibernateServiceOud()
+	{
+		return new HibernateServiceImpl();
+	}
 }

@@ -33,11 +33,6 @@ import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBr
 @Component
 public class AlgemeneBrievenGenererenReader extends AbstractBrievenGenererenReader<AlgemeneBrief>
 {
-	@Override
-	protected Long getScreeningOrganisatieId()
-	{
-		return null;
-	}
 
 	@Override
 	protected Specification<AlgemeneBrief> createSpecification()

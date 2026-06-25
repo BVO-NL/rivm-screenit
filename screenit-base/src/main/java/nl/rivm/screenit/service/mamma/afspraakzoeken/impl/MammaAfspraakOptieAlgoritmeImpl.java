@@ -27,7 +27,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -35,12 +34,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
+import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaCapaciteitBlokDto;
 import nl.rivm.screenit.model.mamma.MammaDossier;
-import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
-import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
 import nl.rivm.screenit.service.mamma.MammaBaseDossierService;
 import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaAfspraakOptie;
@@ -49,6 +46,7 @@ import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaOnvoldoendeVrijeCapaci
 import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaStandplaatsPeriodeMetZoekbereik;
 import nl.rivm.screenit.service.mamma.impl.MammaCapaciteit;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.mamma.MammaPlanningUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningsEenheidUtil;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
@@ -59,7 +57,6 @@ import org.springframework.stereotype.Component;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
-import static nl.rivm.screenit.util.DateUtil.toLocalDate;
 
 @Component("mammaAfspraakOptieAlgoritme")
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -73,13 +70,11 @@ public class MammaAfspraakOptieAlgoritmeImpl implements MammaAfspraakOptieAlgori
 
 	private final MammaBaseDossierService dossierService;
 
-	private final MammaBaseAfspraakService afspraakService;
-
 	private final SimplePreferenceService simplePreferenceService;
 
 	private final ICurrentDateSupplier currentDateSupplier;
 
-	private List<MammaStandplaatsPeriodeMetZoekbereik> standplaatsPeriodesMetZoekBereik;
+	private List<MammaStandplaatsPeriodeMetZoekbereik> standplaatsPeriodesMetZoekbereik;
 
 	private MammaAfspraakOptieZoekContext zoekContext;
 
@@ -92,22 +87,36 @@ public class MammaAfspraakOptieAlgoritmeImpl implements MammaAfspraakOptieAlgori
 	private List<MammaRationaalDag> rationaalDagen;
 
 	@Override
-	public List<MammaAfspraakOptie> getAfspraakOpties(MammaDossier dossier, MammaStandplaatsPeriode standplaatsPeriode, LocalDate vanaf, LocalDate totEnMet,
+	public List<MammaAfspraakOptie> getAfspraakOpties(MammaDossier dossier, MammaStandplaatsPeriodeMetZoekbereik standplaatsPeriodeMetZoekbereik,
 		boolean extraOpties, BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen)
 	{
+		return getAfspraakOpties(dossier, standplaatsPeriodeMetZoekbereik, extraOpties, voorlopigeOpkomstkans, capaciteitVolledigBenutTotEnMetAantalWerkdagen, false);
+	}
+
+	@Override
+	public List<MammaAfspraakOptie> getAfspraakOptieBulkVerzetten(MammaDossier dossier, MammaStandplaatsPeriodeMetZoekbereik standplaatsPeriodeMetZoekbereik,
+		BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen)
+	{
+		return getAfspraakOpties(dossier, standplaatsPeriodeMetZoekbereik, false, voorlopigeOpkomstkans, capaciteitVolledigBenutTotEnMetAantalWerkdagen, true);
+	}
+
+	private List<MammaAfspraakOptie> getAfspraakOpties(MammaDossier dossier, MammaStandplaatsPeriodeMetZoekbereik standplaatsPeriodeMetZoekbereik,
+		boolean extraOpties, BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen, boolean enkeleOptie)
+	{
 		this.extraOpties = extraOpties;
-		standplaatsPeriodesMetZoekBereik = List.of(new MammaStandplaatsPeriodeMetZoekbereik(standplaatsPeriode, vanaf, totEnMet));
+		this.enkeleOptie = enkeleOptie;
+		this.standplaatsPeriodesMetZoekbereik = List.of(standplaatsPeriodeMetZoekbereik);
 		initialiseerZoekContext(dossier, voorlopigeOpkomstkans, capaciteitVolledigBenutTotEnMetAantalWerkdagen);
 
 		return zoekAfspraakOpties();
 	}
 
 	@Override
-	public MammaAfspraakOptie getAfspraakOptieUitnodiging(MammaDossier dossier, MammaStandplaatsRonde standplaatsRonde, BigDecimal voorlopigeOpkomstkans,
-		Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen, Integer afspraakBijUitnodigenVanafAantalWerkdagen)
+	public MammaAfspraakOptie getAfspraakOptieUitnodiging(MammaDossier dossier, List<MammaStandplaatsPeriodeMetZoekbereik> standplaatsPeriodesMetZoekbereik,
+		BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen)
 		throws MammaOnvoldoendeVrijeCapaciteitException
 	{
-		standplaatsPeriodesMetZoekBereik = standplaatsPeriodesMetZoekBereikVoorUitnodigen(standplaatsRonde, afspraakBijUitnodigenVanafAantalWerkdagen);
+		this.standplaatsPeriodesMetZoekbereik = standplaatsPeriodesMetZoekbereik;
 		initialiseerZoekContext(dossier, voorlopigeOpkomstkans, capaciteitVolledigBenutTotEnMetAantalWerkdagen);
 		enkeleOptie = true;
 
@@ -119,23 +128,9 @@ public class MammaAfspraakOptieAlgoritmeImpl implements MammaAfspraakOptieAlgori
 		return afspraakOpties.getFirst();
 	}
 
-	private List<MammaStandplaatsPeriodeMetZoekbereik> standplaatsPeriodesMetZoekBereikVoorUitnodigen(MammaStandplaatsRonde standplaatsRonde,
-		Integer afspraakBijUitnodigenVanafAantalWerkdagen)
-	{
-		var huidigeDagVoorPlannenAfspraken = afspraakService.getHuidigeDagVoorPlannenAfspraken();
-		var uitnodigenVanafDatum = DateUtil.plusWerkdagen(huidigeDagVoorPlannenAfspraken, afspraakBijUitnodigenVanafAantalWerkdagen);
-
-		return standplaatsRonde.getStandplaatsPerioden().stream()
-			.filter(spp -> spp.getScreeningsEenheid().getUitnodigenTotEnMet() != null)
-			.map(spp -> new MammaStandplaatsPeriodeMetZoekbereik(spp,
-				Collections.max(List.of(uitnodigenVanafDatum, toLocalDate(spp.getVanaf()))),
-				toLocalDate(Collections.min(List.of(spp.getScreeningsEenheid().getUitnodigenTotEnMet(), spp.getTotEnMet())))))
-			.toList();
-	}
-
 	private void initialiseerZoekContext(MammaDossier dossier, BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen)
 	{
-		var screeningsEenheid = standplaatsPeriodesMetZoekBereik.getFirst().standplaatsPeriode().getScreeningsEenheid();
+		var screeningsEenheid = standplaatsPeriodesMetZoekbereik.getFirst().standplaatsPeriode().getScreeningsEenheid();
 		var screeningOrganisatie = MammaScreeningsEenheidUtil.getScreeningsOrganisatie(screeningsEenheid);
 		var factor = dossierService.getFactorType(dossier).getFactor(screeningOrganisatie);
 		var vrijgevenMindervalideReserveringenBinnenAantalDagen = simplePreferenceService.getInteger(
@@ -169,7 +164,7 @@ public class MammaAfspraakOptieAlgoritmeImpl implements MammaAfspraakOptieAlgori
 			var afspraakOptie = MammaCapaciteitZoeken.elementMetRelatiefMeesteVrijeCapaciteit(rationaalDagen).getAfspraakOptie();
 			if (afspraakOptie.isGeldigeAfspraak())
 			{
-				afspraakOpties.add(afspraakOptie);
+				afspraakOpties.add(new MammaBaseAfspraakOptieDto(afspraakOptie.getCapaciteitBlokId(), afspraakOptie.getDatumTijd(), afspraakOptie.getStandplaatsPeriodeId()));
 			}
 		}
 		return afspraakOpties;
@@ -196,7 +191,7 @@ public class MammaAfspraakOptieAlgoritmeImpl implements MammaAfspraakOptieAlgori
 
 		capaciteit = capaciteitsBlokService.getCapaciteit(nietGeblokkeerdeCapaciteitBlokken);
 
-		var huidigeDagVoorPlannenAfspraken = afspraakService.getHuidigeDagVoorPlannenAfspraken();
+		var huidigeDagVoorPlannenAfspraken = MammaPlanningUtil.bepaalHuidigeDagVoorPlannenAfspraken(currentDateSupplier.getLocalDateTime());
 		var aflopendVanaf = DateUtil.plusWerkdagen(huidigeDagVoorPlannenAfspraken, zoekContext.getCapaciteitVolledigBenutTotEnMetAantalWerkdagen());
 
 		var capaciteitBlokkenPerDag = groepeerEnSorteerCapaciteitBlokkenPerDag(nietGeblokkeerdeCapaciteitBlokken);
@@ -210,7 +205,7 @@ public class MammaAfspraakOptieAlgoritmeImpl implements MammaAfspraakOptieAlgori
 	private List<MammaCapaciteitBlokDto> getNietGeblokkeerdeCapaciteitBlokkenInZoekPeriode()
 	{
 		var client = zoekContext.getDossier().getClient();
-		return standplaatsPeriodesMetZoekBereik.stream()
+		return standplaatsPeriodesMetZoekbereik.stream()
 			.map(spp -> capaciteitsBlokService.getNietGeblokkeerdeScreeningCapaciteitBlokDtos(spp.standplaatsPeriode(), spp.vanafUtilDate(), spp.totEnMetUtilDate(), client))
 			.flatMap(Collection::stream)
 			.toList();

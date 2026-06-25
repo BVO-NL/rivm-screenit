@@ -37,7 +37,7 @@ import nl.rivm.screenit.model.gba.GbaFoutRegel;
 import nl.rivm.screenit.model.gba.GbaVerwerkingEntry;
 import nl.rivm.screenit.model.gba.GbaVerwerkingsLog;
 import nl.rivm.screenit.service.FileService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
 
 import org.apache.wicket.markup.html.basic.Label;

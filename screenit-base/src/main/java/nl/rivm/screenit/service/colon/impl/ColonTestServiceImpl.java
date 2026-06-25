@@ -72,6 +72,7 @@ import nl.rivm.screenit.service.BaseDossierService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.DossierFactory;
 import nl.rivm.screenit.service.GemeenteService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.TestService;
@@ -82,7 +83,6 @@ import nl.rivm.screenit.service.impl.ImportBvoViaCsv;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.TestBsnGenerator;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
@@ -173,8 +173,6 @@ public class ColonTestServiceImpl implements ColonTestService
 		var dossier = client.getColonDossier();
 		maakVooraankonding(client, dossier);
 		var screeningRonde = geefScreeningRonde(dossier);
-		hibernateService.saveOrUpdate(dossier);
-		hibernateService.saveOrUpdate(screeningRonde);
 
 		var b2 = maakBrief(client, screeningRonde, BriefType.COLON_UITNODIGING_INTAKE);
 
@@ -195,10 +193,6 @@ public class ColonTestServiceImpl implements ColonTestService
 		}
 		uitnodiging.setCreatieDatum(DateUtil.toUtilDate(currentDateSupplier.getLocalDateTime().minusDays(20)));
 		uitnodiging.setVerstuurdDatum(DateUtil.toUtilDate(currentDateSupplier.getLocalDateTime().minusDays(20)));
-		hibernateService.saveOrUpdate(uitnodiging);
-		hibernateService.saveOrUpdate(dossier);
-		hibernateService.saveOrUpdate(screeningRonde);
-		hibernateService.saveOrUpdate(b2);
 
 		var alleInakekamers = hibernateService.loadAll(ColonIntakekamer.class);
 		alleInakekamers.sort(Comparator.comparing(ColonIntakekamer::getId));
@@ -235,9 +229,7 @@ public class ColonTestServiceImpl implements ColonTestService
 			intakeAfspraak.setTot(intakeAfspraak.getVanaf().plusMinutes(duurAfspraakInMinuten));
 		}
 		b2.setIntakeAfspraak(intakeAfspraak);
-		hibernateService.saveOrUpdate(b2);
 		hibernateService.saveOrUpdate(intakeAfspraak);
-		hibernateService.saveOrUpdate(screeningRonde);
 		hibernateService.saveOrUpdate(client);
 		dossierService.setDatumVolgendeUitnodiging(screeningRonde.getDossier(), ColonUitnodigingsintervalType.GEPLANDE_INTAKE_AFSPRAAK);
 		return intakeAfspraak;

@@ -20,6 +20,7 @@
  */
 import { NaamGebruik } from '@shared/types/algemeen/enum/naam-gebruik'
 import { Geslacht } from '@shared/types/algemeen/enum/geslacht'
+
 export interface ClientDto {
   id: number
   voornaam: string
@@ -38,4 +39,6 @@ export interface ClientDto {
   geslacht: Geslacht
   tijdelijkAdres: boolean
   overlijdensdatum?: Date
+  screeningsorganisatie?: string
+  actief: boolean
 }

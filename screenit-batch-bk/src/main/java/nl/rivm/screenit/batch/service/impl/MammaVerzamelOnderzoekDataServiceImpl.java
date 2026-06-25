@@ -21,86 +21,78 @@ package nl.rivm.screenit.batch.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import lombok.extern.slf4j.Slf4j;
+
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.service.MammaVerzamelOnderzoekDataService;
 import nl.rivm.screenit.batch.service.impl.dicom.CMoveSCU;
 import nl.rivm.screenit.batch.service.impl.dicom.DicomDir;
 import nl.rivm.screenit.model.enums.BestandStatus;
 import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoek;
-import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.dicom.CMoveConfig;
 import nl.rivm.screenit.service.mamma.MammaBaseUitwisselportaalService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
-import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
-@Transactional(propagation = Propagation.REQUIRED)
 public class MammaVerzamelOnderzoekDataServiceImpl implements MammaVerzamelOnderzoekDataService
 {
-
-	private static final Logger LOG = LoggerFactory.getLogger(MammaVerzamelOnderzoekDataServiceImpl.class);
 
 	@Autowired
 	private SimplePreferenceService preferenceService;
 
 	@Autowired
-	private HibernateService hibernateService;
-
-	@Autowired
 	private MammaBaseUitwisselportaalService uitwisselPortaalservice;
 
 	@Override
+	@Transactional
 	public void addVerslagAanVerzoek(MammaDownloadOnderzoek onderzoek)
 	{
 		uitwisselPortaalservice.kopieerVerslagPdfNaarDownloadVerzoekMap(onderzoek);
 	}
 
 	@Override
+	@Transactional
 	public boolean addBeeldenAanVerzoek(MammaDownloadOnderzoek downloadOnderzoek)
 	{
-		boolean success = true;
+		boolean success;
 
-		String connectionString = preferenceService.getString(PreferenceKey.INTERNAL_MAMMA_IMS_DICOM_CMOVE_CONFIG.toString());
-		CMoveConfig moveConfig = CMoveConfig.parse(connectionString);
-		CMoveSCU moveSCU = new CMoveSCU();
-		MammaOnderzoek onderzoek = downloadOnderzoek.getOnderzoek();
-		Long downloadOnderzoekId = downloadOnderzoek.getId();
-		Long uitnodigingsNr = onderzoek.getAfspraak().getUitnodiging().getScreeningRonde().getUitnodigingsNr();
-		LOG.info("Start verzamelen van beelden voor download onderzoek " + downloadOnderzoekId + " (Creatiedatum " + onderzoek.getCreatieDatum() + ", uitnodigingsNr: "
-			+ uitnodigingsNr + ")");
+		var connectionString = preferenceService.getString(PreferenceKey.INTERNAL_MAMMA_IMS_DICOM_CMOVE_CONFIG.toString());
+		var moveConfig = CMoveConfig.parse(connectionString);
+		var moveSCU = new CMoveSCU();
+		var onderzoek = downloadOnderzoek.getOnderzoek();
+		var downloadOnderzoekId = downloadOnderzoek.getId();
+		var uitnodigingsNr = onderzoek.getAfspraak().getUitnodiging().getScreeningRonde().getUitnodigingsNr();
+		LOG.info("Start verzamelen van beelden voor download onderzoek {} (Creatiedatum {}, uitnodigingsNr: {})", downloadOnderzoekId, onderzoek.getCreatieDatum(), uitnodigingsNr);
 		success = moveSCU.retrieve(moveConfig, uitnodigingsNr);
-		Attributes result = moveSCU.getResult();
+		var result = moveSCU.getResult();
 		if (result != null)
 		{
-			int status = result.getInt(Tag.Status, 0);
-			int nrOfCompeleteSuboperations = result.getInt(Tag.NumberOfCompletedSuboperations, 0);
+			var status = result.getInt(Tag.Status, 0);
+			var nrOfCompeleteSuboperations = result.getInt(Tag.NumberOfCompletedSuboperations, 0);
 			LOG.info("Response van Sectra op CMove: \n" + result);
 			if (status > 0)
 			{
-				String errorComment = result.getString(Tag.ErrorComment);
+				var errorComment = result.getString(Tag.ErrorComment);
 				if (StringUtils.isNotBlank(errorComment))
 				{
-					LOG.error("Error from IMS: " + errorComment + " Download onderzoek: " + downloadOnderzoekId);
+					LOG.error("Error from IMS: {} Download onderzoek: {}", errorComment, downloadOnderzoekId);
 					downloadOnderzoek.setStatusMelding("Foutmelding ontvangen van IMS. Neem contact op met helpdesk.");
 				}
 				else
 				{
-					int nrOfFailedSuboperations = result.getInt(Tag.NumberOfFailedSuboperations, 0);
-					int nrOfWarningSuboperations = result.getInt(Tag.NumberOfWarningSuboperations, 0);
+					var nrOfFailedSuboperations = result.getInt(Tag.NumberOfFailedSuboperations, 0);
+					var nrOfWarningSuboperations = result.getInt(Tag.NumberOfWarningSuboperations, 0);
 					downloadOnderzoek
 						.setStatusMelding("#" + (nrOfFailedSuboperations + nrOfWarningSuboperations) + " (E" + nrOfFailedSuboperations + "/W" + nrOfWarningSuboperations
 							+ ") beelden van totaal #" + (nrOfFailedSuboperations + nrOfWarningSuboperations + nrOfCompeleteSuboperations) + " niet kunnen ophalen.");
-					LOG.error("Status melding van IMS: " + downloadOnderzoek.getStatusMelding() + " Download onderzoek: " + downloadOnderzoekId);
+					LOG.error("Status melding van IMS: {} Download onderzoek: {}", downloadOnderzoek.getStatusMelding(), downloadOnderzoekId);
 				}
 				downloadOnderzoek.setStatus(BestandStatus.CRASH);
 				success = false;
@@ -109,7 +101,7 @@ public class MammaVerzamelOnderzoekDataServiceImpl implements MammaVerzamelOnder
 			{
 				downloadOnderzoek.setStatusMelding("#" + nrOfCompeleteSuboperations + " beelden opgehaald.");
 				downloadOnderzoek.setStatus(BestandStatus.VERWERKT);
-				LOG.info(downloadOnderzoek.getStatusMelding() + " Download onderzoek: " + downloadOnderzoekId);
+				LOG.info("{} Download onderzoek: {}", downloadOnderzoek.getStatusMelding(), downloadOnderzoekId);
 				createDicomDirFile(uitwisselPortaalservice.getOnderzoekRootPath(downloadOnderzoek));
 			}
 		}
@@ -117,16 +109,15 @@ public class MammaVerzamelOnderzoekDataServiceImpl implements MammaVerzamelOnder
 		{
 			downloadOnderzoek.setStatus(BestandStatus.CRASH);
 			downloadOnderzoek.setStatusMelding("Geen reactie van IMS");
-			LOG.error(downloadOnderzoek.getStatusMelding() + " Download onderzoek: " + downloadOnderzoekId);
+			LOG.error("{} Download onderzoek: {}", downloadOnderzoek.getStatusMelding(), downloadOnderzoekId);
 			success = false;
 		}
-		hibernateService.saveOrUpdate(downloadOnderzoek);
 		return success;
 	}
 
 	private void createDicomDirFile(String onderzoekRootPath)
 	{
-		DicomDir dicomDir = new DicomDir(onderzoekRootPath);
+		var dicomDir = new DicomDir(onderzoekRootPath);
 		try
 		{
 			dicomDir.create();

@@ -34,10 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.BatchConstants;
 import nl.rivm.screenit.model.enums.Level;
+import nl.rivm.screenit.service.DatabaseRunner;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
@@ -46,8 +45,6 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemStream;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.SessionHolder;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -56,7 +53,7 @@ public abstract class BaseCsvFileReader<T> implements ItemReader<T>, ItemStream
 {
 
 	@Autowired
-	private SessionFactory sessionFactory;
+	private DatabaseRunner databaseRunner;
 
 	@Setter
 	private CsvFileProvider csvFileProvider;
@@ -213,43 +210,28 @@ public abstract class BaseCsvFileReader<T> implements ItemReader<T>, ItemStream
 	@Override
 	public void open(ExecutionContext executionContext) throws ItemStreamException
 	{
-
-		current = null;
-		currentResults = null;
-		readers = null;
-
-		Session hibernateSession = null;
-		try
+		databaseRunner.runInSessionOnly(() ->
 		{
-			if (sessionFactory != null)
+
+			current = null;
+			currentResults = null;
+			readers = null;
+
+			try
 			{
-				hibernateSession = sessionFactory.openSession();
-				TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(hibernateSession));
+				readers = csvFileProvider.getReaders();
 			}
-
-			readers = csvFileProvider.getReaders();
-		}
-		catch (IllegalStateException e)
-		{
-			crashMelding(e.getMessage(), e);
-			throw e;
-		}
-		catch (Exception e)
-		{
-			crashMelding("Er is een probleem bij openen van bestand.", e);
-			throw new ItemStreamException(e);
-		}
-		finally
-		{
-			if (sessionFactory != null)
+			catch (IllegalStateException e)
 			{
-				TransactionSynchronizationManager.unbindResource(sessionFactory);
-				if (hibernateSession != null)
-				{
-					hibernateSession.close();
-				}
+				crashMelding(e.getMessage(), e);
+				throw e;
 			}
-		}
+			catch (Exception e)
+			{
+				crashMelding("Er is een probleem bij openen van bestand.", e);
+				throw new ItemStreamException(e);
+			}
+		});
 	}
 
 	@Override

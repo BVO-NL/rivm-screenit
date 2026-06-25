@@ -30,9 +30,9 @@ import java.util.stream.Collectors;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
 import nl.rivm.screenit.util.NaamUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.basic.Label;

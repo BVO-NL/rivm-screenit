@@ -24,8 +24,7 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
 import { MammaVisitatielijstResponseDto } from '@shared/types/mamma/dto/visitatie/mamma-visitatielijst-response.dto'
 import { MammaVisitatieService } from '@/mamma/mamma-visitatie-overzicht-page/services/mamma-visitatie.service'
 import { take } from 'rxjs'
-import * as ExcelJS from 'exceljs'
-import { saveAs } from 'file-saver'
+import writeXlsxFile from 'write-excel-file/browser'
 import { MammaVisitatielijstDialogData } from '@shared/types/mamma/dto/visitatie/mamma-visitatielijst-dialog-data'
 import { MammaVisitatielijstRapport } from '@shared/types/mamma/mamma-visitatielijst-rapport'
 import { DsButtonComponent } from '@topicus-rgp-ds/web'
@@ -54,28 +53,30 @@ export class MammaVisitatielijstRapportDialogComponent {
   }
 
   async exporteren() {
-    const workbook = new ExcelJS.Workbook()
-    const worksheet = workbook.addWorksheet('Rapport')
+    const toCell = (value: string | number | null | undefined) => ({ value: value ?? undefined })
 
-    worksheet.addRow(['aantalMedewerkersVerwerkt', 'aantalMedewerkersMetVoldoendeBeeldenBinnen2Maanden', 'aantalMedewerkersMetVoldoendeBeeldenBinnen4Maanden'])
-    worksheet.addRow([
-      this.rapport.aantalMedewerkersVerwerkt,
-      this.rapport.aantalMedewerkersMetVoldoendeBeeldenBinnen2Maanden,
-      this.rapport.aantalMedewerkersMetVoldoendeBeeldenBinnen4Maanden,
-    ])
-    worksheet.addRow([])
+    const rows = [
+      [toCell('aantalMedewerkersVerwerkt'), toCell('aantalMedewerkersMetVoldoendeBeeldenBinnen2Maanden'), toCell('aantalMedewerkersMetVoldoendeBeeldenBinnen4Maanden')],
+      [
+        toCell(this.rapport.aantalMedewerkersVerwerkt),
+        toCell(this.rapport.aantalMedewerkersMetVoldoendeBeeldenBinnen2Maanden),
+        toCell(this.rapport.aantalMedewerkersMetVoldoendeBeeldenBinnen4Maanden),
+      ],
+      [],
+      [toCell('Overzicht van medewerkers met te weinig beelden')],
+      [toCell('medewerkercode'), toCell('aantalBeelden')],
+      ...this.rapport.uitgeslotenMedewerkerIds.map((medewerker) => [toCell(medewerker.medewerkercode), toCell(medewerker.aantal)]),
+      [],
+      [toCell('Overzicht resultaten per medewerker')],
+      [toCell('medewerkercode'), toCell('aantalBeeldenBinnen2Maanden'), toCell('aantalBeeldenBinnen4Maanden')],
+      ...this.rapport.aantalOnderzoekenLijst.map((aantal) => [
+        toCell(aantal.medewerkercode),
+        toCell(aantal.aantalBeeldenBinnen2Maanden),
+        toCell(aantal.aantalBeeldenBinnen4Maanden),
+      ]),
+    ]
 
-    worksheet.addRow(['Overzicht van medewerkers met te weinig beelden'])
-    worksheet.addRow(['medewerkercode', 'aantalBeelden'])
-    this.rapport.uitgeslotenMedewerkerIds.forEach((m) => worksheet.addRow([m.medewerkercode, m.aantal]))
-    worksheet.addRow([])
-
-    worksheet.addRow(['Overzicht resultaten per medewerker'])
-    worksheet.addRow(['medewerkercode', 'aantalBeeldenBinnen2Maanden', 'aantalBeeldenBinnen4Maanden'])
-    this.rapport.aantalOnderzoekenLijst.forEach((aantal) => worksheet.addRow([aantal.medewerkercode, aantal.aantalBeeldenBinnen2Maanden, aantal.aantalBeeldenBinnen4Maanden]))
-
-    const buffer = await workbook.xlsx.writeBuffer()
-    saveAs(new Blob([buffer]), 'rapport.xlsx')
+    await writeXlsxFile(rows).toFile('rapport.xlsx')
   }
 
   genereren() {

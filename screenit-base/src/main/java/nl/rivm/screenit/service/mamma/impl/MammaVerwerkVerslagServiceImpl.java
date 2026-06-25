@@ -36,11 +36,11 @@ import nl.rivm.screenit.model.mamma.verslag.followup.MammaFollowUpPathologieMedi
 import nl.rivm.screenit.model.mamma.verslag.followup.MammaFollowUpPtnmEnGradering;
 import nl.rivm.screenit.model.mamma.verslag.followup.MammaFollowUpVerrichting;
 import nl.rivm.screenit.model.mamma.verslag.followup.MammaFollowUpVerslagContent;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.mamma.MammaBaseFollowUpService;
 import nl.rivm.screenit.service.mamma.MammaBaseScreeningrondeService;
 import nl.rivm.screenit.service.mamma.MammaVerwerkVerslagService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;

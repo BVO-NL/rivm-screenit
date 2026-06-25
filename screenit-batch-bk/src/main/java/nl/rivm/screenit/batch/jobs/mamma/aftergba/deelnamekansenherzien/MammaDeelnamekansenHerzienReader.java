@@ -41,7 +41,7 @@ public class MammaDeelnamekansenHerzienReader extends BaseSpecificationScrollabl
 
 	public MammaDeelnamekansenHerzienReader()
 	{
-		super.setFetchSize(AFTER_GBA_JOB_READER_FETCH_SIZE);
+		setFetchSize(AFTER_GBA_JOB_READER_FETCH_SIZE);
 	}
 
 	@Override

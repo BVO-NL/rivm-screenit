@@ -26,6 +26,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.persistence.TemporalType;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.dao.ProjectDao;
@@ -36,12 +41,9 @@ import nl.rivm.screenit.model.project.ProjectStatus;
 import nl.rivm.screenit.model.project.ProjectType;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.query.SQLQueryUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.util.CollectionUtils;
-import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
@@ -49,16 +51,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Repository
-public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
+public class ProjectDaoImpl implements ProjectDao
 {
-
-	@Autowired
-	private HibernateService hibernateService;
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Autowired
 	private ICurrentDateSupplier currentDateSupplier;
 
-	private NativeQuery getDefaultSqlProjectQuery(Project zoekObject, List<Long> organisatieIdsProject, List<Long> organisatieIdsBriefproject, SortState<String> order)
+	private Query getDefaultSqlProjectQuery(Project zoekObject, List<Long> organisatieIdsProject, List<Long> organisatieIdsBriefproject, SortState<String> order)
 	{
 		var vandaag = currentDateSupplier.getDate();
 		var parameters = new HashMap<String, Object>();
@@ -183,7 +184,7 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 
 		var projectenSql = select + from + where + orderby;
 		LOG.debug(projectenSql);
-		var criteria = getSession().createNativeQuery(projectenSql);
+		var criteria = entityManager.createNativeQuery(projectenSql);
 		for (var param : parameters.entrySet())
 		{
 			criteria.setParameter(param.getKey(), param.getValue());
@@ -232,7 +233,6 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 		SortState<String> sortState)
 	{
 		var query = getDefaultSqlProjectQuery(zoekObject, organisatieIdsProject, organisatieIdsBriefproject, sortState);
-		query.addScalar("id", Long.class);
 		if (count > 0)
 		{
 			query.setMaxResults((int) count);
@@ -241,12 +241,12 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 		{
 			query.setFirstResult((int) first);
 		}
-		List<Long> projectLongs = query.list();
+		var projectLongs = query.getResultList();
 
-		List<Project> projecten = new ArrayList<Project>();
+		var projecten = new ArrayList<Project>();
 		for (var l : projectLongs)
 		{
-			projecten.add(hibernateService.load(Project.class, l));
+			projecten.add(entityManager.find(Project.class, l));
 		}
 		return projecten;
 	}
@@ -255,7 +255,7 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 	public long getCountProjecten(Project zoekObject, List<Long> organisatieIdsProject, List<Long> organisatieIdsBriefproject)
 	{
 		var query = getDefaultSqlProjectQuery(zoekObject, organisatieIdsProject, organisatieIdsBriefproject, null);
-		return ((Number) query.uniqueResult()).longValue();
+		return ((Number) query.getResultList().stream().findFirst().orElse(0)).longValue();
 	}
 
 	@Override
@@ -264,7 +264,7 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 	{
 		var sql = "update %s.dossier set wacht_op_start_project = false where wacht_op_start_project = true or wacht_op_start_project is null".formatted(
 			getSchema(bvo));
-		var query = getSession().createNativeQuery(sql);
+		var query = entityManager.createNativeQuery(sql);
 		var aantal = query.executeUpdate();
 		LOG.debug("Aantal gereset {}", aantal);
 	}
@@ -286,9 +286,9 @@ public class ProjectDaoImpl extends AbstractAutowiredDao implements ProjectDao
 			"and projectClient_.actief=true " +
 			"and projectBevolkingsonderzoeken3_.bevolkingsonderzoeken='%s')").formatted(
 			getSchema(bvo), getSchema(bvo), getJoinColumn(bvo), bvo.name());
-		var query = getSession().createNativeQuery(sql);
-		query.setParameter("startDatum", nu, Date.class);
-		query.setParameter("eindDatum", nu, Date.class);
+		var query = entityManager.createNativeQuery(sql);
+		query.setParameter("startDatum", nu, TemporalType.DATE);
+		query.setParameter("eindDatum", nu, TemporalType.DATE);
 		var aantal = query.executeUpdate();
 		LOG.debug("Aantal geset {}", aantal);
 	}

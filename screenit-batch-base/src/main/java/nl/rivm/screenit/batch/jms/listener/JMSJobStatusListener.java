@@ -21,6 +21,9 @@ package nl.rivm.screenit.batch.jms.listener;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Session;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.model.batch.BatchServerStatus;
@@ -41,9 +44,6 @@ import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.stereotype.Component;
-
-import jakarta.jms.JMSException;
-import jakarta.jms.Session;
 
 @Slf4j
 @Component
@@ -119,7 +119,7 @@ public class JMSJobStatusListener implements SessionAwareMessageListener<ActiveM
 
 					for (var jobName : jobs)
 					{
-						LOG.info("Stop job " + jobName);
+						LOG.info("Stop job {}", jobName);
 						try
 						{
 							var executionIDs = jobOperator.getRunningExecutions(jobName);
@@ -130,7 +130,7 @@ public class JMSJobStatusListener implements SessionAwareMessageListener<ActiveM
 						}
 						catch (NoSuchJobException | NoSuchJobExecutionException | JobExecutionNotRunningException e)
 						{
-							LOG.error("Fout bij stoppen job " + jobName, e);
+							LOG.error("Fout bij stoppen job {}", jobName, e);
 						}
 
 					}

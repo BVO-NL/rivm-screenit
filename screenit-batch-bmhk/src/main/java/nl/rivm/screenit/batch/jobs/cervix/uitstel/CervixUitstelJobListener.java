@@ -29,8 +29,8 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.CervixUitstelBeeindigdLogEvent;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.verwerkingverslag.cervix.CervixUitstelRapportage;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.batch.core.JobExecution;
 import org.springframework.stereotype.Component;

@@ -31,11 +31,11 @@ import nl.rivm.screenit.model.enums.HuisartsBerichtType;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.berichten.MammaHuisartsBericht;
 import nl.rivm.screenit.model.mamma.enums.MammaHuisartsBerichtStatus;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.rivm.screenit.service.mamma.MammaEdiService;
 import nl.rivm.screenit.service.mamma.MammaHuisartsBerichtService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;

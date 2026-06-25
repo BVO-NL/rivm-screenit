@@ -25,7 +25,7 @@ import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.model.mamma.MammaDossier;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.service.HibernateService;
 
 import org.springframework.stereotype.Component;
 

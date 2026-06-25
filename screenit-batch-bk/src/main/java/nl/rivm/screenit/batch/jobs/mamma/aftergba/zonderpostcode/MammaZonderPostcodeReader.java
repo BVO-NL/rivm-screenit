@@ -44,7 +44,7 @@ public class MammaZonderPostcodeReader extends BaseSpecificationScrollableResult
 
 	public MammaZonderPostcodeReader()
 	{
-		super.setFetchSize(AFTER_GBA_JOB_READER_FETCH_SIZE);
+		setFetchSize(AFTER_GBA_JOB_READER_FETCH_SIZE);
 	}
 
 	@Override

@@ -26,8 +26,8 @@ import java.util.List;
 
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.popups.TestAbstractVerzetDatumPopup;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.cervix.CervixTestTimelineTimeService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;

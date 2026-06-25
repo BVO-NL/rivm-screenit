@@ -32,9 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakDto;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaCapaciteitBlokDto;
-import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaAfspraakOptie;
 import nl.rivm.screenit.util.mamma.MammaMindervalideUtil;
-import nl.rivm.screenit.util.mamma.MammaPlanningUtil;
 
 import static nl.rivm.screenit.util.BigDecimalUtil.isPositive;
 
@@ -45,7 +43,7 @@ class MammaRationaalBlok extends MammaRationaal
 
 	private final MammaAfspraakOptieZoekContext zoekContext;
 
-	private final List<MammaRationaalAfspraakOptie> afspraakOptiesInBlok = new ArrayList<>();
+	private final List<MammaRationaalAfspraak> rationaalAfsprakenInBlok = new ArrayList<>();
 
 	private final boolean heeftInitieelVrijeCapaciteit;
 
@@ -60,7 +58,7 @@ class MammaRationaalBlok extends MammaRationaal
 
 		capaciteitBlokDto.getAfspraakDtos().forEach(bestaandeAfspraak ->
 		{
-			var afspraakOptie = MammaRationaalAfspraakOptie.vanBestaandeAfspraak(bestaandeAfspraak, zoekContext);
+			var afspraakOptie = MammaRationaalAfspraak.vanBestaandeAfspraak(bestaandeAfspraak, zoekContext);
 			addAfspraakOptie(afspraakOptie);
 			gebruikteCapaciteit = gebruikteCapaciteit.add(bestaandeAfspraak.getBenodigdeCapaciteit());
 		});
@@ -73,19 +71,36 @@ class MammaRationaalBlok extends MammaRationaal
 
 	private void voegMindervalideReserveringenToeAlsAfsprakenAanCapaciteitBlok(MammaCapaciteitBlokDto capaciteitBlokDto)
 	{
-		if (MammaMindervalideUtil.zijnMindervalideReserveringenVrijgegeven(capaciteitBlokDto, zoekContext.getVrijgevenMindervalideReserveringenTotEnMetDatum()))
+		if (!MammaMindervalideUtil.zijnMindervalideReserveringenVrijgegeven(capaciteitBlokDto, zoekContext.getVrijgevenMindervalideReserveringenTotEnMetDatum()))
 		{
-			return;
+			var onbezetteMindervalideReserveringAfspraken = capaciteitBlokDto.getMindervalideReserveringen().stream()
+				.filter(mvReserveringVanaf -> MammaMindervalideUtil.isMindervalideReserveringOnbezet(capaciteitBlokDto, mvReserveringVanaf))
+				.map(mvReserveringVanaf ->
+					maakMindervalideAfspraakVoorMindervalideReservering(capaciteitBlokDto, mvReserveringVanaf)
+				).toList();
+
+			capaciteitBlokDto.getAfspraakDtos().addAll(onbezetteMindervalideReserveringAfspraken);
 		}
-		var onbezetteMindervalideReserveringAfspraken = capaciteitBlokDto.getMindervalideReserveringen().stream()
-			.filter(mvReserveringVanaf -> MammaMindervalideUtil.isMindervalideReserveringOnbezet(capaciteitBlokDto, mvReserveringVanaf))
-			.map(mvReserveringVanaf ->
-				maakMindervalideAfspraakVoorMindervalideReservering(capaciteitBlokDto, mvReserveringVanaf)
-			).toList();
 
-		capaciteitBlokDto.getAfspraakDtos().addAll(onbezetteMindervalideReserveringAfspraken);
+		sorteerAfsprakenOpVanafTijdEnZetAfspraakTot(capaciteitBlokDto);
+	}
 
-		MammaPlanningUtil.sorteerCapaciteitBlokOpAfspraakTijdEnZetAfspraakTot(capaciteitBlokDto);
+	private static void sorteerAfsprakenOpVanafTijdEnZetAfspraakTot(MammaCapaciteitBlokDto capaciteitBlokDto)
+	{
+		capaciteitBlokDto.getAfspraakDtos().sort(Comparator.comparing(MammaAfspraakDto::getVanaf));
+		MammaAfspraakDto vorigeAfspraakDto = null;
+		for (var afspraakDto : capaciteitBlokDto.getAfspraakDtos())
+		{
+			if (vorigeAfspraakDto != null)
+			{
+				vorigeAfspraakDto.setTot(afspraakDto.getVanaf().toLocalTime());
+			}
+			vorigeAfspraakDto = afspraakDto;
+		}
+		if (vorigeAfspraakDto != null)
+		{
+			vorigeAfspraakDto.setTot(capaciteitBlokDto.getTot());
+		}
 	}
 
 	private MammaAfspraakDto maakMindervalideAfspraakVoorMindervalideReservering(MammaCapaciteitBlokDto capaciteitBlokDto, LocalTime reserveringVanaf)
@@ -95,29 +110,29 @@ class MammaRationaalBlok extends MammaRationaal
 		return new MammaAfspraakDto(capaciteitBlokDto, afspraakVanaf, afspraakTot, zoekContext.getBenodigdeCapaciteitPerMindervalideAfspraak(), true, false);
 	}
 
-	MammaRationaalAfspraakOptie getAfspraakOptie()
+	MammaRationaalAfspraak getAfspraakOptie()
 	{
 		LOG.debug("getAfspraakOptie op blok vanaf: {}, beschikbaar: {}, gebruikt: {}, ratio: {}, blokId: {} ",
 			capaciteitBlokDto.getVanaf(), capaciteitBlokDto.getBeschikbareCapaciteit(), gebruikteCapaciteit, getRatioTekst(), capaciteitBlokDto.getId());
 
-		MammaRationaalAfspraakOptie afspraakOptie;
+		MammaRationaalAfspraak afspraakOptie;
 		var capaciteitBlokVanaf = capaciteitBlokDto.getVanaf();
-		if (afspraakOptiesInBlok.isEmpty())
+		if (rationaalAfsprakenInBlok.isEmpty())
 		{
 
-			afspraakOptie = MammaRationaalAfspraakOptie.voorNieuweOptie(capaciteitBlokVanaf.toLocalTime(), capaciteitBlokDto.getTot(), capaciteitBlokDto, zoekContext);
+			afspraakOptie = MammaRationaalAfspraak.voorNieuweOptie(capaciteitBlokVanaf.toLocalTime(), capaciteitBlokDto.getTot(), capaciteitBlokDto, zoekContext);
 		}
 		else
 		{
-			var eersteAfspraakOptieVanaf = afspraakOptiesInBlok.get(0).getTijd();
+			var eersteAfspraakOptieVanaf = rationaalAfsprakenInBlok.getFirst().getVanaf();
 			if (!eersteAfspraakOptieVanaf.equals(capaciteitBlokVanaf.toLocalTime()))
 			{
 
-				afspraakOptie = MammaRationaalAfspraakOptie.voorNieuweOptie(capaciteitBlokVanaf.toLocalTime(), eersteAfspraakOptieVanaf, capaciteitBlokDto, zoekContext);
+				afspraakOptie = MammaRationaalAfspraak.voorNieuweOptie(capaciteitBlokVanaf.toLocalTime(), eersteAfspraakOptieVanaf, capaciteitBlokDto, zoekContext);
 			}
 			else
 			{
-				afspraakOptie = MammaCapaciteitZoeken.elementMetRelatiefMeesteVrijeCapaciteit(afspraakOptiesInBlok)
+				afspraakOptie = MammaCapaciteitZoeken.elementMetRelatiefMeesteVrijeCapaciteit(rationaalAfsprakenInBlok)
 					.splitsNieuweAfspraakOptie(zoekContext);
 			}
 		}
@@ -131,10 +146,10 @@ class MammaRationaalBlok extends MammaRationaal
 		return addAfspraakOptie(afspraakOptie);
 	}
 
-	private MammaRationaalAfspraakOptie addAfspraakOptie(MammaRationaalAfspraakOptie afspraakOptie)
+	private MammaRationaalAfspraak addAfspraakOptie(MammaRationaalAfspraak afspraakOptie)
 	{
-		afspraakOptiesInBlok.add(afspraakOptie);
-		afspraakOptiesInBlok.sort(Comparator.comparing(MammaAfspraakOptie::getTijd));
+		rationaalAfsprakenInBlok.add(afspraakOptie);
+		rationaalAfsprakenInBlok.sort(Comparator.comparing(MammaRationaalAfspraak::getVanaf));
 		return afspraakOptie;
 	}
 

@@ -33,11 +33,11 @@ import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.service.AsposeService;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.ClientService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.rivm.screenit.service.mamma.MammaBaseVerslagService;
 import nl.rivm.screenit.service.mamma.be.verslag.MammaVerslagDocumentCreator;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +89,7 @@ public class MammaBaseVerslagServiceImpl implements MammaBaseVerslagService
 	}
 
 	@Override
-	public void  verslagNaarFileStoreSchrijven(MammaBeoordeling beoordeling) throws Exception
+	public void verslagNaarFileStoreSchrijven(MammaBeoordeling beoordeling) throws Exception
 	{
 		File tmpVerslag = maakFileVoorPdfViewer(beoordeling);
 		UploadDocument document = new UploadDocument();

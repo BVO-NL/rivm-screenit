@@ -37,10 +37,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class CervixBrievenGenererenPartitioner extends AbstractBrievenGenererenPartitioner
 {
-	public static final String KEY_SCREENINGORGANISATIEID = "cervix.screeningorganisatie.id";
-
-	public static final String KEY_BRIEFTYPE = "cervix.brieftype";
-
 	@Override
 	protected void fillingData(Map<String, ExecutionContext> partities, ScreeningOrganisatie organisatie)
 	{

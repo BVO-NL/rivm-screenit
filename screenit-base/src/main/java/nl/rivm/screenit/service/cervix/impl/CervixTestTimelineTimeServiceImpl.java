@@ -45,10 +45,10 @@ import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.CervixZas;
 import nl.rivm.screenit.model.cervix.verslag.CervixVerslag;
 import nl.rivm.screenit.service.BaseTestTimelineService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.cervix.CervixTestTimelineTimeService;
 import nl.rivm.screenit.service.cervix.enums.CervixTestTimeLineDossierTijdstip;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,7 +154,6 @@ public class CervixTestTimelineTimeServiceImpl implements CervixTestTimelineTime
 		{
 			rekenMergedBrievenTerug(mergedBrieven, aantalDagen);
 		}
-
 	}
 
 	private void rekenMergedBrievenTerug(CervixMergedBrieven mergedBrieven, int aantalDagen)

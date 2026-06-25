@@ -30,7 +30,7 @@ import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenissen;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.ClientContact;
-import nl.rivm.screenit.model.algemeen.AlgemeneBrief;
+import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.GebeurtenisBron;
 import nl.rivm.screenit.model.project.ProjectClient;
@@ -61,4 +61,5 @@ public interface DossierService
 
 	List<DossierGebeurtenis> getCervixDossierGebeurtenissen(Client client);
 
+	boolean isDossierActief(Dossier dossier);
 }

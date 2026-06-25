@@ -30,15 +30,15 @@ import nl.rivm.screenit.model.enums.BestandStatus;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.project.ProjectBestand;
 import nl.rivm.screenit.model.project.ProjectBestandVerwerking;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
+import nl.rivm.screenit.util.hibernate.OpenEntityManagerInThread;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
-public class ProjectUitslagVerwerkThread extends OpenHibernateSessionInThread
+public class ProjectUitslagVerwerkThread extends OpenEntityManagerInThread
 {
 	@Autowired
 	private HibernateService hibernateService;

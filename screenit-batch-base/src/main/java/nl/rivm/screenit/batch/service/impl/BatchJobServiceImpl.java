@@ -30,6 +30,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import nl.rivm.screenit.batch.service.BatchJobService;
 import nl.rivm.screenit.model.batch.BatchQueue;
 import nl.rivm.screenit.model.enums.BatchApplicationType;
@@ -42,9 +45,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
@@ -124,9 +124,9 @@ public class BatchJobServiceImpl implements BatchJobService
 	@Override
 	public void enqueue(JobType jobType, Map<String, Serializable> jobArgs)
 	{
-		LOG.debug("Start enqueue " + jobType.name());
+		LOG.info("Start enqueue {}", jobType.name());
 		queueJob(jobType, jobArgs);
-		LOG.debug("End enqueue " + jobType.name());
+		LOG.info("End enqueue {}", jobType.name());
 	}
 
 	@Override
@@ -143,9 +143,9 @@ public class BatchJobServiceImpl implements BatchJobService
 	@Override
 	public Map<String, Serializable> dequeueHead(JobType jobType)
 	{
-		LOG.debug("Start dequeueHead");
+		LOG.info("Start dequeueHead");
 		Map<String, Serializable> jobArgs = pollQueuedEntry(jobType);
-		LOG.debug("End dequeueHead " + jobArgs);
+		LOG.info("End dequeueHead {}", jobArgs);
 		return jobArgs;
 	}
 
@@ -208,7 +208,7 @@ public class BatchJobServiceImpl implements BatchJobService
 				{
 					Object[] queueRow = (Object[]) queueEntry;
 					JobType selectedJobType = JobType.valueOf((String) queueRow[0]);
-					LOG.debug("poll jobType " + selectedJobType.name());
+					LOG.info("poll jobType " + selectedJobType.name());
 					jobArgs = stringToMap((String) queueRow[1]);
 				}
 
@@ -246,7 +246,7 @@ public class BatchJobServiceImpl implements BatchJobService
 		List<JobType> dependendJobs = new ArrayList<>(EnumSet.allOf(JobType.class));
 		dependendJobs.removeAll(jobType.getParallelleJobs());
 
-		LOG.debug("Afhankelijke jobs locken. (" + dependendJobs.size() + ") jobs.");
+		LOG.info("Afhankelijke jobs locken. ({}) jobs.", dependendJobs.size());
 		for (JobType jt : dependendJobs)
 		{
 

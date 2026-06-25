@@ -59,6 +59,7 @@ import nl.rivm.screenit.model.logging.RetourzendingLogEvent;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BaseGbaVraagService;
 import nl.rivm.screenit.service.BaseUitnodigingService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
@@ -68,7 +69,6 @@ import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
 import nl.rivm.screenit.service.colon.ColonScreeningsrondeService;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;

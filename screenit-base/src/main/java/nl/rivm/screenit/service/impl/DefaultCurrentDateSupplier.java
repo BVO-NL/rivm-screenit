@@ -78,8 +78,7 @@ public class DefaultCurrentDateSupplier implements ICurrentDateSupplier
 
 	public void setOffset(Duration offset)
 	{
-		LOG.debug("'Nu' gewijzigd van " + LocalDateTime.now().plus(this.offset) + " naar "
-			+ LocalDateTime.now().plus(offset));
+		LOG.info("'Nu' gewijzigd van {} naar {}", LocalDateTime.now().plus(this.offset), LocalDateTime.now().plus(offset));
 
 		this.offset = offset;
 	}

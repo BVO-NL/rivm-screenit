@@ -24,11 +24,13 @@ package nl.rivm.screenit.main.dto.algemeen;
 import lombok.Getter;
 import lombok.Setter;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Getter
 @Setter
+@Schema(name = "ParameterDto", description = "Parameternaam met de bijbehorende waarde.")
 public class ParameterDto<T>
 {
 	private String naam;
-
 	private T waarde;
 }

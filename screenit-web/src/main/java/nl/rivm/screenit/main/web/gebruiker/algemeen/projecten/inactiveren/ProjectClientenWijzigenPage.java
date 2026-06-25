@@ -46,8 +46,8 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.project.Project;
 import nl.rivm.screenit.model.project.ProjectBestand;
 import nl.rivm.screenit.model.project.ProjectBestandType;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.UploadDocumentService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;

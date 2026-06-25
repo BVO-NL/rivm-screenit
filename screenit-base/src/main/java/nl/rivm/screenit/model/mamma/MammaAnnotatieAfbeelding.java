@@ -45,8 +45,8 @@ public class MammaAnnotatieAfbeelding extends AbstractHibernateObject
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	@OneToMany(mappedBy = "afbeelding", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
-		jakarta.persistence.CascadeType.MERGE })
+	@OneToMany(mappedBy = "afbeelding", fetch = FetchType.LAZY, orphanRemoval = true,
+		cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	@NotAudited
 	private List<MammaAnnotatieIcoon> iconen = new ArrayList<>();

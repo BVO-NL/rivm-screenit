@@ -38,7 +38,7 @@ import nl.rivm.screenit.exceptions.HL7SendMessageException;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.berichten.ScreenITResponseV24MessageWrapper;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7ADTBerichtType;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.slf4j.Logger;
@@ -101,7 +101,6 @@ public class MammaHL7v24SendServiceImpl implements MammaHL7v24SendService
 	{
 		LOG.info("Creating HL7v24 ADT message {} for client id {}", adtBerichtTriggerDto.getStatus(), adtBerichtTriggerDto.getClientId());
 		Client client = hibernateService.load(Client.class, adtBerichtTriggerDto.getClientId());
-		reloadClientData(client);
 		Message bericht = createADTMessage(client, adtBerichtTriggerDto);
 		sendMessageAndHandleResponse(bericht, messageConnection);
 	}
@@ -128,7 +127,6 @@ public class MammaHL7v24SendServiceImpl implements MammaHL7v24SendService
 		LOG.info("Creating HL7v24 ORM message {} for client id {} {}", hl7BerichtTrigger.getStatus().getLabel(), hl7BerichtTrigger.getClientId(),
 			(hl7BerichtTrigger.isUploaded() ? "ihkv. upload beelden" : ""));
 		Client client = hibernateService.load(Client.class, hl7BerichtTrigger.getClientId());
-		reloadClientData(client);
 		Message bericht = createORMMessage(client, hl7BerichtTrigger);
 		sendMessageAndHandleResponse(bericht, messageConnection);
 	}
@@ -149,13 +147,6 @@ public class MammaHL7v24SendServiceImpl implements MammaHL7v24SendService
 			LOG.error(melding, e);
 			throw new HL7CreateMessageException(melding, e);
 		}
-	}
-
-	private void reloadClientData(Client client)
-	{
-		client.getMammaDossier().getId(); 
-		hibernateService.getHibernateSession().evict(client);
-		hibernateService.reload(client.getMammaDossier());
 	}
 
 	private void handleIMSResponse(ScreenITResponseV24MessageWrapper responseV24MessageWrapper, Message message) throws HL7SendMessageException

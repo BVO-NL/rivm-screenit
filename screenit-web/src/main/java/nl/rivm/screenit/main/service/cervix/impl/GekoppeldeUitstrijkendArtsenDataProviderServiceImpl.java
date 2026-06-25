@@ -40,7 +40,6 @@ import static nl.rivm.screenit.specification.cervix.CervixHuisartsLocatieSpecifi
 @Service("gekoppeldeUitstrijkendArtsenDataProviderService")
 public class GekoppeldeUitstrijkendArtsenDataProviderServiceImpl
 	extends RepositoryDataProviderService<CervixHuisartsLocatie, CervixHuisartsLocatieRepository, GekoppeldeUitstrijkendArtsZoekObject>
-
 {
 	@Override
 	protected Specification<CervixHuisartsLocatie> getSpecification(GekoppeldeUitstrijkendArtsZoekObject zoekObject, Sort sortParam)

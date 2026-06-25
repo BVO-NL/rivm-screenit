@@ -55,10 +55,10 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaUitnodigingsinterval;
 import nl.rivm.screenit.model.mamma.enums.MammaUitnodigingsintervalType;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.PreferenceService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 

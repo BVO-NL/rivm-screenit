@@ -33,8 +33,8 @@ import nl.rivm.screenit.model.colon.UitnodigingsGebied;
 import nl.rivm.screenit.repository.algemeen.BagAdresRepository;
 import nl.rivm.screenit.repository.algemeen.GemeenteRepository;
 import nl.rivm.screenit.service.GemeenteService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.organisatie.model.Adres_;
 
 import org.springframework.beans.factory.annotation.Autowired;

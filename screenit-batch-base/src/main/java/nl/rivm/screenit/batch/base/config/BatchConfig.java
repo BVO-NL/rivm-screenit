@@ -36,7 +36,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -92,7 +92,7 @@ public class BatchConfig
 	}
 
 	@Bean
-	public Step dummyStep(JobRepository jobRepository, HibernateTransactionManager transactionManager)
+	public Step dummyStep(JobRepository jobRepository, JpaTransactionManager transactionManager)
 	{
 		return new StepBuilder("dummyStep", jobRepository)
 			.tasklet((contribution, chunkContext) -> RepeatStatus.FINISHED, transactionManager)

@@ -1,1 +1,1 @@
- nl.rivm.screenit.ScreenITPostgresFunctionContributor
+ nl.rivm.screenit.config.hibernate.ScreenITFunctionContributor

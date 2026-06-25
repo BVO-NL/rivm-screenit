@@ -38,8 +38,8 @@ import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportage;
 import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageEntry;
 import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageProjectGroepEntry;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.batch.core.JobExecution;
 import org.springframework.stereotype.Component;

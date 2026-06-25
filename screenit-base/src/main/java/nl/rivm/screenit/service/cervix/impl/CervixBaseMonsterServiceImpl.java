@@ -24,6 +24,9 @@ package nl.rivm.screenit.service.cervix.impl;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.model.Organisatie;
@@ -41,15 +44,12 @@ import nl.rivm.screenit.repository.cervix.CervixUitstrijkjeRepository;
 import nl.rivm.screenit.repository.cervix.CervixZasRepository;
 import nl.rivm.screenit.service.cervix.CervixBaseMonsterService;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import static nl.rivm.screenit.specification.cervix.CervixMonsterSpecification.heeftActieveClient;
 import static nl.rivm.screenit.specification.cervix.CervixMonsterSpecification.heeftBsn;
@@ -64,7 +64,6 @@ import static nl.rivm.screenit.specification.cervix.CervixMonsterSpecification.h
 
 @Service
 @AllArgsConstructor
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class CervixBaseMonsterServiceImpl implements CervixBaseMonsterService
 {
 	private final CervixUitstrijkjeRepository uitstrijkjeRepository;
@@ -73,7 +72,8 @@ public class CervixBaseMonsterServiceImpl implements CervixBaseMonsterService
 
 	private final CervixBaseMonsterRepository monsterRepository;
 
-	private final HibernateService hibernateService;
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Override
 	public Optional<CervixUitstrijkje> getUitstrijkjeByClientBsnAndMonsterId(String bsn, String monsterId)
@@ -132,7 +132,7 @@ public class CervixBaseMonsterServiceImpl implements CervixBaseMonsterService
 	@Override
 	public boolean isVerwijderdMonster(String monsterId)
 	{
-		var auditReader = AuditReaderFactory.get(hibernateService.getHibernateSession());
+		var auditReader = AuditReaderFactory.get(entityManager);
 		var auditQuery = auditReader.createQuery().forRevisionsOfEntity(CervixMonster.class, false, true)
 			.add(AuditEntity.property("monsterId").eq(monsterId))
 			.addProjection(AuditEntity.id().count());

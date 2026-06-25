@@ -34,6 +34,7 @@ import nl.rivm.screenit.model.project.ProjectBestand;
 import nl.rivm.screenit.model.project.ProjectInactiefReden;
 import nl.rivm.screenit.repository.colon.ColonFitAnalyseResultaatRepository;
 import nl.rivm.screenit.service.ClientService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
@@ -41,7 +42,6 @@ import nl.rivm.screenit.service.colon.ColonStudieRegistratieService;
 import nl.rivm.screenit.service.impl.ProjectUitslagenUploadException;
 import nl.rivm.screenit.util.ProjectUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;

@@ -21,13 +21,13 @@ package nl.rivm.screenit.batch.jobs.generalis.projecten.brieven.genererenstep;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
 import java.util.Map;
 
 import nl.rivm.screenit.batch.jobs.brieven.genereren.AbstractBrievenGenererenPartitioner;
 import nl.rivm.screenit.batch.jobs.generalis.projecten.brieven.ProjectBrievenConstants;
 import nl.rivm.screenit.batch.repository.ProjectBriefRepository;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
+import nl.rivm.screenit.service.BaseBriefService;
 
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,16 +39,19 @@ public class ProjectBrievenGenererenPartitioner extends AbstractBrievenGenereren
 	@Autowired
 	private ProjectBriefRepository projectBriefRepository;
 
+	@Autowired
+	private BaseBriefService briefService;
+
 	@Override
 	protected void fillingData(Map<String, ExecutionContext> partities, ScreeningOrganisatie organisatie)
 	{
-		List<Long> projectBriefActies = projectBriefRepository.getActieveProjectBriefActieDefinities(organisatie);
-		for (Long projectBriefActieId : projectBriefActies)
+		var projectBriefActies = projectBriefRepository.getActieveProjectBriefActieDefinities(briefService.isOverbruggingssituatieParagonStarted() ? null : organisatie);
+		for (var projectBriefActieId : projectBriefActies)
 		{
-			ExecutionContext executionContext = new ExecutionContext();
-			executionContext.put(ProjectBrievenConstants.KEY_PROJECT_SCREENINGORGANISATIE_ID, organisatie.getId());
+			var executionContext = new ExecutionContext();
+			executionContext.put(KEY_SCREENINGORGANISATIEID, organisatie.getId());
 			executionContext.put(ProjectBrievenConstants.KEY_PROJECT_ACTIE_ID, projectBriefActieId);
-			partities.put(organisatie.getId().toString() + "_" + projectBriefActieId.toString(), executionContext);
+			partities.put(organisatie.getId() + "_" + projectBriefActieId.toString(), executionContext);
 		}
 	}
 }

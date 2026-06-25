@@ -31,11 +31,8 @@ import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.repository.mamma.MammaBaseFollowUpRepository;
-import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseFollowUpService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,20 +40,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class MammaBaseFollowUpServiceImpl implements MammaBaseFollowUpService
 {
 	@Autowired
-	private HibernateService hibernateService;
-
-	@Autowired
 	private MammaBaseFollowUpRepository followUpRepository;
-
-	@Autowired
-	private SimplePreferenceService preferenceService;
-
-	@Autowired
-	private ICurrentDateSupplier dateSupplier;
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
@@ -66,7 +53,6 @@ public class MammaBaseFollowUpServiceImpl implements MammaBaseFollowUpService
 		if (!dossier.getUpdateFollowUpConclusie().equals(heeftOpenstaandeFollowUpConclusie))
 		{
 			dossier.setUpdateFollowUpConclusie(heeftOpenstaandeFollowUpConclusie);
-			hibernateService.saveOrUpdate(dossier);
 		}
 	}
 

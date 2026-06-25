@@ -38,7 +38,7 @@ import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaVisitatieOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammaBeLezerSoort;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeFocusMode;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -118,7 +118,7 @@ public class MammaVisitatieOnderzoekInzienPage extends AbstractMammaBeoordelenPa
 		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.visitatie.overzicht",
 			MammaVisitatieOverzichtAngularPage.class));
 		contextMenuItems.addAll(MammaVisitatieOnderdeelWrapper.getContextMenuItems(
-		    ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VISITATIE_INSTELTECHNIEK, Actie.INZIEN),
+			ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VISITATIE_INSTELTECHNIEK, Actie.INZIEN),
 			ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VISITATIE, Actie.INZIEN)));
 
 		return contextMenuItems;

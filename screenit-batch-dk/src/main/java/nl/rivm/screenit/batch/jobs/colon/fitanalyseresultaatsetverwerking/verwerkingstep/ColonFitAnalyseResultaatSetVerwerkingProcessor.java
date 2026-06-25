@@ -24,7 +24,7 @@ package nl.rivm.screenit.batch.jobs.colon.fitanalyseresultaatsetverwerking.verwe
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.model.colon.ColonFitAnalyseResultaat;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.service.HibernateService;
 
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;

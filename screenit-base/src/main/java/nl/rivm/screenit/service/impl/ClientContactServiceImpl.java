@@ -111,6 +111,7 @@ import nl.rivm.screenit.service.ClientDoelgroepService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.CoordinatenService;
 import nl.rivm.screenit.service.DeelnamemodusDossierService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.cervix.CervixBaseScreeningrondeService;
@@ -139,14 +140,13 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.hibernate.Hibernate;
 import org.hibernate.exception.GenericJDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Sort;
-import org.springframework.orm.hibernate5.HibernateJdbcException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -155,7 +155,6 @@ import static nl.rivm.screenit.model.ClientContactManier.AANVRAGEN_FORMULIEREN;
 import static nl.rivm.screenit.specification.algemeen.ClientContactSpecification.heeftClient;
 import static nl.rivm.screenit.specification.algemeen.ClientContactSpecification.heeftClientId;
 import static nl.rivm.screenit.specification.algemeen.ClientContactSpecification.heeftOpmerking;
-import static nl.rivm.screenit.util.colon.ColonFitRegistratieUtil.ANALYSE_RESULTAAT_FLAG_PRO;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
@@ -275,7 +274,7 @@ public class ClientContactServiceImpl implements ClientContactService
 	@Override
 	@Transactional(
 		propagation = Propagation.REQUIRED,
-		rollbackFor = { HibernateJdbcException.class, MammaTijdNietBeschikbaarException.class, GenericJDBCException.class,
+		rollbackFor = { DataAccessException.class, MammaTijdNietBeschikbaarException.class, GenericJDBCException.class,
 			MammaStandplaatsVanPostcodeOnbekendException.class })
 	public void saveClientContact(ClientContact contact, Map<ClientContactActieType, Map<ExtraOpslaanKey, Object>> extraOpslaanObjecten, Account account)
 	{
@@ -462,7 +461,7 @@ public class ClientContactServiceImpl implements ClientContactService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = { HibernateJdbcException.class, MammaTijdNietBeschikbaarException.class, GenericJDBCException.class })
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = { DataAccessException.class, MammaTijdNietBeschikbaarException.class, GenericJDBCException.class })
 	public ClientContactActie mammaAfspraakMakenWijzigen(ClientContactActie actie, Client client, Map<ExtraOpslaanKey, Object> extraOpslaanParams, Account account,
 		boolean isNieuweAfspraak, boolean isGeforceerdeAfspraak)
 	{
@@ -1219,9 +1218,7 @@ public class ClientContactServiceImpl implements ClientContactService
 		case COLON_VERWIJDEREN_UITSLAG_BRIEF_AANVRAGEN:
 			if (heeftNietVerlopenLaatsteScreeningRonde)
 			{
-				return laatsteScreeningRonde.getFitRegistraties().stream()
-					.anyMatch(
-						test -> !ColonFitRegistratieStatus.VERWIJDERD.equals(test.getStatus()) && (test.getUitslag() != null || ANALYSE_RESULTAAT_FLAG_PRO.equals(test.getFlag())));
+				return laatsteScreeningRonde.getFitRegistraties().stream().anyMatch(ColonFitRegistratieUtil::magVerwijderen);
 			}
 			return false;
 		default:

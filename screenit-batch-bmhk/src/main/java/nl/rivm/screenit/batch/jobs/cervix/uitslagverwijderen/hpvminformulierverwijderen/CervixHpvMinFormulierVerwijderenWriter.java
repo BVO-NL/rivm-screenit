@@ -26,8 +26,8 @@ import lombok.AllArgsConstructor;
 import nl.rivm.screenit.batch.jobs.cervix.uitslagverwijderen.CervixHpvMinFormulierVerwijderenConstants;
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.stereotype.Component;
 

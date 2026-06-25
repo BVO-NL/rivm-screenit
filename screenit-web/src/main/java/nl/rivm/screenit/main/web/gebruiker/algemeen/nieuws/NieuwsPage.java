@@ -31,9 +31,9 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
 import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.nieuws.MedewerkerNieuwsItem;
 import nl.rivm.screenit.model.nieuws.NieuwsItem;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.NieuwsService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;

@@ -48,7 +48,7 @@ import nl.rivm.screenit.service.impl.EdiServiceBaseImpl;
 import nl.rivm.screenit.service.mamma.MammaEdiService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.NaamUtil;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
+import nl.rivm.screenit.util.hibernate.OpenEntityManagerInThread;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -91,7 +91,7 @@ public class MammaEdiServiceImpl extends EdiServiceBaseImpl implements MammaEdiS
 	private void verstuurAsync(Long huisartsBerichtId, String transactionId, MedVryOut medVry)
 	{
 		LOG.debug("Start nieuwe BK HA bericht versturen thread voor bericht id {}, transaction id {} 1/3", huisartsBerichtId, transactionId);
-		executorService.submit(new OpenHibernateSessionInThread()
+		executorService.submit(new OpenEntityManagerInThread()
 		{
 			@Override
 			protected void runInternal()

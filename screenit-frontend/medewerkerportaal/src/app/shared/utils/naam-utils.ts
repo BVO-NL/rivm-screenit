@@ -20,6 +20,7 @@
  */
 import { ClientDto } from '../types/algemeen/dto/client.dto'
 import { NaamGebruik } from '../types/algemeen/enum/naam-gebruik'
+import { isStringNullOfLeeg } from '@shared/utils/string-utils'
 
 export class NaamUtils {
   static titelVoorlettersTussenvoegselEnAanspreekAchternaam(client: ClientDto): string {
@@ -28,7 +29,7 @@ export class NaamUtils {
     }
 
     let naam = ''
-    if (client.titel != null) {
+    if (!isStringNullOfLeeg(client.titel)) {
       naam += `${client.titel} `
     }
 
@@ -82,7 +83,7 @@ export class NaamUtils {
       return ''
     }
     let volledigeNaam = this.getTussenvoegsel(client)
-    if (volledigeNaam.length > 0) {
+    if (!isStringNullOfLeeg(volledigeNaam)) {
       volledigeNaam += ' '
     }
     volledigeNaam += this.getAanspreekNaamZonderTussenvoegsel(client)
@@ -93,7 +94,7 @@ export class NaamUtils {
     let volledigeNaam = ''
     const naamGebruik = client.naamGebruik
     if (naamGebruik == NaamGebruik.EIGEN || naamGebruik == NaamGebruik.EIGEN_PARTNER) {
-      if (client.achternaam) {
+      if (!isStringNullOfLeeg(client.achternaam)) {
         volledigeNaam += client.achternaam
       }
       if (naamGebruik == NaamGebruik.EIGEN_PARTNER) {

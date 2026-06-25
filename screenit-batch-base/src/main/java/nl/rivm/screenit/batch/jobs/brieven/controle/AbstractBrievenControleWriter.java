@@ -23,7 +23,7 @@ package nl.rivm.screenit.batch.jobs.brieven.controle;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.model.MergedBrieven;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.service.HibernateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

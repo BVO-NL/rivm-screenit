@@ -31,6 +31,12 @@ import VerticalDividerComponent from "../vectors/VerticalDividerComponent"
 import properties from "./BvoHistorieCard.json"
 import {isDigitaleIntakeBeschikbaar} from "../../utils/FeatureFlagsUtil"
 import {ColonIntakeafspraakType} from "../../datatypes/colon/ColonIntakeafspraakType"
+import {Button} from "@mui/material"
+import ScreenitBackend from "../../utils/Backend"
+import {JSX} from "react"
+import {downloadFile} from "../../utils/FileUtil"
+import datadogService from "../../services/DatadogService"
+import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 
 export type BvoHistorieCardProps = {
 	datumTijd: Date
@@ -38,8 +44,15 @@ export type BvoHistorieCardProps = {
 	extraParameters: string[]
 }
 
-const BvoHistorieCard = (props: BvoHistorieCardProps) => {
+const BvoHistorieCard = (props: BvoHistorieCardProps): JSX.Element => {
 	const selectedBvo = useSelectedBvo()
+	const dvaBeschikbaar = props.extraParameters[0] === "DVA"
+
+	async function downloadDva(): Promise<void> {
+		datadogService.stuurEvent("dvaDownload", AnalyticsCategorie.DVA, {bvo: selectedBvo})
+		const response = await ScreenitBackend.get(`dvabron/${props.extraParameters[1]}`)
+		downloadFile(await response.blob(), `${props.extraParameters[2]}.pdf`)
+	}
 
 	return (
 		<Row className={classNames(styles.historyCard, BevolkingsonderzoekStyle[selectedBvo!])}>
@@ -48,9 +61,14 @@ const BvoHistorieCard = (props: BvoHistorieCardProps) => {
 				<span className={classNames(styles.datum)}>{formatDate(props.datumTijd)}</span>
 				<span>{formatTime(props.datumTijd)} uur</span>
 			</Col>
-			<Col md={10} className={styles.tekst}>
+			<Col md={dvaBeschikbaar ? 8 : 10} className={styles.tekst}>
 				<SpanWithHtml value={getHistorieTekst(props.tekstKey)}/>
 			</Col>
+			{dvaBeschikbaar && <Col md={2} className={styles.dva}>
+				<Button variant="outlined" color="primary" size="small" onClick={downloadDva}>
+					{getString(properties.DVA_BUTTON)}
+				</Button>
+			</Col>}
 		</Row>
 	)
 

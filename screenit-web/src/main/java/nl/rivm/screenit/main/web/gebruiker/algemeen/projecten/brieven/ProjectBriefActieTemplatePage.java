@@ -39,14 +39,16 @@ import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.project.Project;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.model.project.ProjectBriefActieType;
+import nl.rivm.screenit.model.project.ProjectBriefActie_;
 import nl.rivm.screenit.service.AsposeService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.ajax.markup.html.AjaxEditableLabel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
@@ -205,6 +207,15 @@ public class ProjectBriefActieTemplatePage extends ProjectTemplateTestenBasePage
 		form.add(new Label("herrinering", Model.of(getHerrineringTekst())));
 		form.add(new Label("orionWerkbak", new PropertyModel<>(briefactieModel, "misluktBak")));
 		form.add(new Label("formulierNummer", new PropertyModel<>(briefactieModel, "formulierNummer")));
+		form.add(new AjaxEditableLabel<String>("printomschrijving", new PropertyModel<>(briefactieModel, ProjectBriefActie_.PRINTOMSCHRIJVING))
+		{
+			@Override
+			protected void onSubmit(AjaxRequestTarget target)
+			{
+				super.onSubmit(target);
+				hibernateService.saveOrUpdate(briefactieModel.getObject());
+			}
+		});
 		form.add(new NavigeerNaarCellPanel<>("herrinneringPrinten", briefactieModel)
 		{
 			@Override

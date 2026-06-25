@@ -28,7 +28,7 @@ import { saveAs } from 'file-saver'
 })
 export class DocumentService {
   private readonly apiService: ApiService = inject(ApiService)
-  private readonly baseUrl = '/api/algemeen/document'
+  private readonly baseUrl = '/api/document'
 
   getDocumentUrlById(id: number): Observable<string> {
     return this.apiService.get<Blob>(`${this.baseUrl}/${id}`, undefined, { responseType: 'blob' }).pipe(map((blob: Blob) => URL.createObjectURL(blob)))

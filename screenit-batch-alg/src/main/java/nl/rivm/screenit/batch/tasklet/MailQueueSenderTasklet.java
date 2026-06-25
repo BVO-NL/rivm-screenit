@@ -29,8 +29,8 @@ import nl.rivm.screenit.batch.service.MailSenderService;
 import nl.rivm.screenit.model.Mail;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.repository.algemeen.MailRepository;
+import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.LogService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -54,6 +54,9 @@ public class MailQueueSenderTasklet
 	@Autowired
 	private LogService logService;
 
+	@Autowired
+	private DatabaseRunner databaseRunner;
+
 	private static final Pageable BATCH_SIZE = PageRequest.of(0, 500);
 
 	private static final int QUEUE_WARNING_THRESHOLD = 5000;
@@ -75,7 +78,7 @@ public class MailQueueSenderTasklet
 		try
 		{
 			wachtBijProblemen();
-			OpenHibernateSession.withoutTransaction().run(() -> verwerkMailQueue());
+			databaseRunner.runInSessionOnly(this::verwerkMailQueue);
 		}
 		catch (Exception e)
 		{

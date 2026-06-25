@@ -37,10 +37,10 @@ import nl.rivm.screenit.model.inpakcentrum.vaninpakcentrum.InpakcentrumKoppelDat
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.repository.cervix.CervixUitnodigingRepository;
 import nl.rivm.screenit.service.BaseHoudbaarheidService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.cervix.CervixBaseMonsterService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;

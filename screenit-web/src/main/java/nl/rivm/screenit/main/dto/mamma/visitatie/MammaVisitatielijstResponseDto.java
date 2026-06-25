@@ -26,16 +26,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Schema(name = "MammaVisitatielijstResponseDto", description = "Resultaat van het genereren van een mamma-visitatielijst.")
 public class MammaVisitatielijstResponseDto
 {
+	@Schema(description = "Meldingen die tijdens het genereren zijn ontstaan")
 	private List<String> meldingen = new ArrayList<>();
 
+	@Schema(description = "Gegenereerde visitaties")
 	private List<MammaVisitatieDto> visitaties = new ArrayList<>();
 
+	@Schema(description = "Rapportage per medewerker, gegroepeerd op medewerker-id")
 	private Map<Integer, MammaVisitatieOnderzoekPerMedewerkerDto> rapport = new HashMap<>();
 }

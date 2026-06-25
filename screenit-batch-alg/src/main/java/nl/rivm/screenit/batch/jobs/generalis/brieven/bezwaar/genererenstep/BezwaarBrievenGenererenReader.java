@@ -39,11 +39,6 @@ import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftR
 @Component
 public class BezwaarBrievenGenererenReader extends AbstractBrievenGenererenReader<BezwaarBrief>
 {
-	@Override
-	protected Long getScreeningOrganisatieId()
-	{
-		return getStepExecutionContext().getLong(BezwaarBrievenGenererenPartitioner.KEY_SCREENINGORGANISATIEID);
-	}
 
 	@Override
 	protected Specification<BezwaarBrief> createSpecification()

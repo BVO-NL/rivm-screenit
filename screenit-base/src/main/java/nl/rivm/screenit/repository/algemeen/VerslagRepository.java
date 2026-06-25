@@ -24,6 +24,8 @@ package nl.rivm.screenit.repository.algemeen;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.Join;
 
 import lombok.RequiredArgsConstructor;
@@ -34,51 +36,50 @@ import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht_;
 import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
-import org.hibernate.SessionFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.query.QueryUtils;
 import org.springframework.stereotype.Repository;
+
+import static nl.rivm.screenit.model.colon.ColonVerslag_.ONTVANGEN_CDA_BERICHT;
+import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
 @Repository
 @RequiredArgsConstructor
 public class VerslagRepository
 {
-	private final SessionFactory sessionFactory;
-
-	private static final String ONTVANGEN_CDA_BERICHT_ATTR = "ontvangenCdaBericht";
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	public Optional<? extends Verslag> getVerslagVoorBerichtId(String berichtId, Class<? extends Verslag> verslagType)
 	{
-		var em = sessionFactory.getCurrentSession();
-		var cb = em.getCriteriaBuilder();
+		var cb = entityManager.getCriteriaBuilder();
 		var q = cb.createQuery(verslagType);
-		var r = q.from(em.getMetamodel().entity(verslagType));
+		var r = q.from(entityManager.getMetamodel().entity(verslagType));
 
-		Join<?, OntvangenCdaBericht> ontvangenCdaBericht = r.join(ONTVANGEN_CDA_BERICHT_ATTR);
+		Join<?, OntvangenCdaBericht> ontvangenCdaBericht = r.join(ONTVANGEN_CDA_BERICHT);
 		q.where(cb.equal(ontvangenCdaBericht.get(OntvangenCdaBericht_.berichtId), berichtId))
 			.orderBy(QueryUtils.toOrders(Sort.by(Sort.Order.asc(AbstractHibernateObject_.ID)), r, cb));
 
-		var query = em.createQuery(q);
+		var query = entityManager.createQuery(q);
 		query.setMaxResults(1); 
 
-		return Optional.ofNullable(query.uniqueResult());
+		return query.getResultList().stream().findFirst();
 	}
 
 	public Optional<? extends Verslag> getVerslagVoorSetId(String setId, Class<? extends Verslag> verslagType)
 	{
-		var em = sessionFactory.getCurrentSession();
-		var cb = em.getCriteriaBuilder();
+		var cb = entityManager.getCriteriaBuilder();
 		var q = cb.createQuery(verslagType);
-		var r = q.from(em.getMetamodel().entity(verslagType));
+		var r = q.from(entityManager.getMetamodel().entity(verslagType));
 
-		Join<?, OntvangenCdaBericht> ontvangenCdaBericht = r.join(ONTVANGEN_CDA_BERICHT_ATTR);
+		Join<?, OntvangenCdaBericht> ontvangenCdaBericht = r.join(ONTVANGEN_CDA_BERICHT);
 		q.where(cb.and(cb.equal(ontvangenCdaBericht.get(OntvangenCdaBericht_.setId), setId),
 				ontvangenCdaBericht.get(OntvangenCdaBericht_.status).in(List.of(BerichtStatus.VERWERKT, BerichtStatus.VERWERKING))))
-			.orderBy(QueryUtils.toOrders(Sort.by(Sort.Order.asc(ONTVANGEN_CDA_BERICHT_ATTR + "." + OntvangenCdaBericht_.VERSIE)), r, cb));
+			.orderBy(QueryUtils.toOrders(Sort.by(Sort.Order.asc(propertyChain(ONTVANGEN_CDA_BERICHT, OntvangenCdaBericht_.VERSIE))), r, cb));
 
-		var query = em.createQuery(q);
+		var query = entityManager.createQuery(q);
 		query.setMaxResults(1);
 
-		return Optional.ofNullable(query.uniqueResult());
+		return query.getResultList().stream().findFirst();
 	}
 }

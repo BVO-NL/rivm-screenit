@@ -34,6 +34,8 @@ import jakarta.inject.Inject;
 
 import javax.net.ssl.SSLContext;
 
+import lombok.extern.slf4j.Slf4j;
+
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.service.ZorgIdSessieService;
 import nl.rivm.screenit.main.service.impl.zorgid.ClosedSessieState;
@@ -41,10 +43,10 @@ import nl.rivm.screenit.main.service.impl.zorgid.InitializedSessieState;
 import nl.rivm.screenit.main.service.impl.zorgid.OpenCancelledSessieState;
 import nl.rivm.screenit.main.service.impl.zorgid.OpenedSessieState;
 import nl.rivm.screenit.main.service.impl.zorgid.SessieState;
+import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.IdpServer2ServerService;
 import nl.topicuszorg.cloud.distributedsessions.RedisConfig;
 import nl.topicuszorg.cloud.distributedsessions.jedis.JedisFactory;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.zorgid.client.ZorgidClient;
 import nl.topicuszorg.zorgid.client.impl.ZorgidClientImpl;
@@ -61,8 +63,6 @@ import org.apache.hc.core5.http.io.SocketConfig;
 import org.apache.hc.core5.util.TimeValue;
 import org.apache.hc.core5.util.Timeout;
 import org.apache.http.ssl.SSLContexts;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
@@ -84,11 +84,11 @@ import redis.clients.jedis.JedisPool;
 
 import static nl.rivm.screenit.model.enums.IdpServer2ServerType.ZORG_ID;
 
+@Slf4j
 @Configuration
 @EnableScheduling
 public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, ApplicationListener<ContextRefreshedEvent>
 {
-	private static final Logger LOG = LoggerFactory.getLogger(ZorgIdSessieServiceImpl.class);
 
 	private static final int MAX_CONCURRENT_CONNECTIONS = 16;
 
@@ -105,12 +105,19 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 	private IdpServer2ServerService idpService;
 
 	@Inject
+	private DatabaseRunner databaseRunner;
+
+	@Inject
 	@Qualifier("applicationEnvironment")
 	private String applicationEnvironment;
 
 	@Inject
 	@Qualifier("applicationInstance")
 	private String applicationInstance;
+
+	@Inject
+	@Qualifier("applicationUrl")
+	private String applicationUrl;
 
 	private ZorgidClient zorgidClient;
 
@@ -138,7 +145,7 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 			objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.NONE);
 			objectMapper.addMixIn(Object.class, MixInByPropName.class);
 			LOG.info("doInit");
-			OpenHibernateSession.withCommittedTransaction().run(() ->
+			databaseRunner.runInNewTransaction(() ->
 			{
 				try
 				{
@@ -363,7 +370,7 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 
 	private String zorgidCallbackUrl()
 	{
-		return String.format(getStringValue(PreferenceKey.INTERNAL_ZORGID_CALLBACKURL, "http://localhost:14800/rest/zorgid"), applicationInstance.toLowerCase());
+		return applicationUrl + "/rest/zorgid";
 	}
 
 	private String zorgidServerUrl()
@@ -462,7 +469,7 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 
 	private ZorgidClient zorgidClient(RestTemplate zorgidClientTemplate)
 	{
-		String zorgidCallbackUrl = zorgidCallbackUrl();
+		var zorgidCallbackUrl = zorgidCallbackUrl();
 		LOG.info("Opgestart met zorgidCallbackUrl: {}", zorgidCallbackUrl);
 		Supplier<String> oAuthTokenSupplier = this::getIdpAccesssTokenVoorZorgId;
 		return new ZorgidClientImpl(zorgidServerUrl(), zorgidCallbackUrl, zorgidClientTemplate, oAuthTokenSupplier);

@@ -53,6 +53,13 @@ public class RangeSpecification
 		return (r, q, cb) -> maakRangePredicates(cb, range, databaseColumnEndRange.apply(r), databaseColumnStartRange.apply(r));
 	}
 
+	public static <T, V extends Comparable<?>> ExtendedSpecification<T> overlapt(Range<V> range,
+		TriFunction<From<?, ? extends T>, CriteriaQuery<?>, CriteriaBuilder, Expression<V>> databaseColumnStartRange,
+		TriFunction<From<?, ? extends T>, CriteriaQuery<?>, CriteriaBuilder, Expression<V>> databaseColumnEndRange)
+	{
+		return (r, q, cb) -> maakRangePredicates(cb, range, databaseColumnEndRange.apply(r, q, cb), databaseColumnStartRange.apply(r, q, cb));
+	}
+
 	public static <T, V extends Comparable<?>> ExtendedSpecification<T> bevat(Function<From<?, ? extends T>, Expression<V>> databaseColumnStartRange,
 		Function<From<?, ? extends T>, Expression<V>> databaseColumnEndRange,
 		Pair<BoundType, BoundType> boundTypes, V waarde)

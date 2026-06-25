@@ -47,6 +47,7 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Persoon;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BoundType;
@@ -767,5 +768,10 @@ public final class DateUtil
 		var start = getStartVanDeWeek(datum);
 		var eind = getEindVanDeWeek(datum);
 		return formatForPattern("d MMMM", DateUtil.toUtilDate(start)) + " t/m " + formatForPattern("d MMMM", toUtilDate(eind));
+	}
+
+	public static @Nullable Date transformObjectToDate(Object datum)
+	{
+		return datum instanceof Date ? (Date) datum : datum instanceof Temporal ? toUtilDate((Temporal) datum) : null;
 	}
 }

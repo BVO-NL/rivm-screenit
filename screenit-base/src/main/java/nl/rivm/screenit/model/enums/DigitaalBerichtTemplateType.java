@@ -44,6 +44,7 @@ public enum DigitaalBerichtTemplateType implements BvoHouder
 					MergeField.SO_WEBSITE,
 					MergeField.MAMMA_CE_EMAIL_INFOLIJN,
 					MergeField.CLIENT_AANHEF,
+					MergeField.CLIENT_NAAM,
 					MergeField.MAMMA_AFSPRAAK_BETREFT,
 					MergeField.MAMMA_AFSPRAAK_REDEN_VERZET,
 					MergeField.MAMMA_AFSPRAAK_DATUM,
@@ -83,7 +84,9 @@ public enum DigitaalBerichtTemplateType implements BvoHouder
 			@Override
 			public List<MergeField> getMergeFields()
 			{
-				return List.of(MergeField.IL_NAAM, MergeField.CLIENT_AANHEF,
+				return List.of(MergeField.IL_NAAM,
+					MergeField.CLIENT_AANHEF,
+					MergeField.CLIENT_NAAM,
 					MergeField.CLIENT_GEBOORTEDATUM,
 					MergeField.DATUM_VANDAAG,
 					MergeField.SO_WEBSITE,
@@ -93,7 +96,6 @@ public enum DigitaalBerichtTemplateType implements BvoHouder
 					MergeField.SO_TEL_DK,
 					MergeField.SO_OPENINGSTIJDEN_TEKST_DK,
 					MergeField.SO_EMAILADRES_DK,
-					MergeField.SO_TEL_DK,
 					MergeField.SO_RCMDL,
 					MergeField.IL_LOKATIE,
 					MergeField.IL_STRAATNAAM,

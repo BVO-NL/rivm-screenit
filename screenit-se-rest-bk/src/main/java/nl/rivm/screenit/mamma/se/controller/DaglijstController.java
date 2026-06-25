@@ -32,7 +32,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import nl.rivm.screenit.mamma.se.dto.AfspraakSeDto;
 import nl.rivm.screenit.mamma.se.service.DaglijstService;
 import nl.rivm.screenit.mamma.se.service.MammaScreeningsEenheidService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
+import nl.rivm.screenit.util.hibernate.OpenEntityManagerInThread;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +92,7 @@ public class DaglijstController extends AuthorizedController
 		}
 	}
 
-	private class DaglijstOphaler extends OpenHibernateSessionInThread
+	private class DaglijstOphaler extends OpenEntityManagerInThread
 	{
 		private final LocalDate opTeHalenDatum;
 

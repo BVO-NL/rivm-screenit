@@ -37,10 +37,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ColonBrievenGenererenPartitioner extends AbstractBrievenGenererenPartitioner
 {
-	public static final String KEY_SCREENINGORGANISATIEID = "screeningorganisatie.id";
-
-	public static final String KEY_BRIEFTYPE = "brieftype";
-
 	@Override
 	protected void fillingData(Map<String, ExecutionContext> partities, ScreeningOrganisatie organisatie)
 	{

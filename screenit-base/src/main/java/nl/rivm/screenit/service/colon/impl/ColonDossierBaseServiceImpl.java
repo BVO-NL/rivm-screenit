@@ -50,13 +50,13 @@ import nl.rivm.screenit.repository.colon.ColonUitnodigingsintervalRepository;
 import nl.rivm.screenit.service.BaseClientContactService;
 import nl.rivm.screenit.service.BaseDossierService;
 import nl.rivm.screenit.service.ClientService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ProjectUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,6 +142,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 	public void setDatumVolgendeUitnodiging(ColonDossier dossier, ColonUitnodigingsintervalType type)
 	{
 		var volgendeUitnodiging = dossier.getVolgendeUitnodiging();
+		var intervalByType = getIntervalByType(type);
 		if (volgendeUitnodiging == null)
 		{
 			volgendeUitnodiging = new ColonVolgendeUitnodiging();
@@ -151,7 +152,7 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 		volgendeUitnodiging.setPeildatum(getPeildatum(dossier, type));
 		volgendeUitnodiging.setProjectPeildatum(null);
 		volgendeUitnodiging.setDatumVolgendeRonde(null);
-		volgendeUitnodiging.setInterval(getIntervalByType(type));
+		volgendeUitnodiging.setInterval(intervalByType);
 		hibernateService.saveOrUpdate(volgendeUitnodiging);
 	}
 
@@ -378,8 +379,6 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 		{
 			dossier.setStatus(DossierStatus.ACTIEF);
 		}
-
-		hibernateService.saveOrUpdate(dossier);
 	}
 
 	private void opruimenAfspraken(Client client)
@@ -409,8 +408,6 @@ public class ColonDossierBaseServiceImpl implements ColonDossierBaseService
 		for (var brief : ronde.getBrieven())
 		{
 			brief.setFitRegistratie(null);
-
-			hibernateService.saveOrUpdate(brief);
 		}
 		baseDossierService.verwijderAlleAfmeldingenUitRonde(ronde);
 		verwijderFitRegistratiesVoorUitnodigingen(ronde.getUitnodigingen());

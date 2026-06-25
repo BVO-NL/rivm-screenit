@@ -30,7 +30,6 @@ import nl.rivm.screenit.batch.jobs.brieven.genereren.AbstractBrievenGenererenWri
 import nl.rivm.screenit.batch.jobs.mamma.brieven.client.MammaBriefConstants;
 import nl.rivm.screenit.document.BaseDocumentCreator;
 import nl.rivm.screenit.model.MailMergeContext;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -69,10 +68,9 @@ public class MammaBrievenGenererenWriter extends AbstractBrievenGenererenWriter<
 	{
 		var executionContext = getStepExecutionContext();
 		var briefType = BriefType.valueOf(executionContext.getString(MammaBrievenGenererenPartitioner.KEY_BRIEFTYPE));
-		var screeningOrganisatie = getHibernateService().load(ScreeningOrganisatie.class, executionContext.getLong(MammaBrievenGenererenPartitioner.KEY_SCREENINGORGANISATIEID));
 
 		var mergedBrieven = new MammaMergedBrieven();
-		mergedBrieven.setScreeningOrganisatie(screeningOrganisatie);
+		mergedBrieven.setScreeningOrganisatie(getScreeningOrganisatie());
 		mergedBrieven.setCreatieDatum(aangemaaktOp);
 		mergedBrieven.setBriefType(briefType);
 
@@ -86,13 +84,26 @@ public class MammaBrievenGenererenWriter extends AbstractBrievenGenererenWriter<
 		var tijdelijk = (Boolean) getStepExecutionContext().get(MammaBrievenGenererenPartitioner.KEY_TIJDELIJK);
 		var eersteRonde = (Boolean) getStepExecutionContext().get(MammaBrievenGenererenPartitioner.KEY_EERSTE_RONDE);
 
-		String naam = "";
+		var naam = "";
 		var dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm");
+		if (isOverbruggingssituatieParagonStarted && brieven.getBriefType() != null)
+		{
+			naam += brieven.getBriefType().getBriefCode();
+			if (Boolean.TRUE.equals(tijdelijk) || standplaatsId != null)
+			{
+				naam += "MF";
+			}
+			if (Boolean.TRUE.equals(eersteRonde))
+			{
+				naam += "R1";
+			}
+			naam += "_";
+		}
 		if (brieven.getCreatieDatum() != null)
 		{
 			naam += dateFormat.format(brieven.getCreatieDatum()) + "-";
 		}
-		if (brieven.getScreeningOrganisatie() != null)
+		if (!isOverbruggingssituatieParagonStarted && brieven.getScreeningOrganisatie() != null)
 		{
 			var soNaam = brieven.getScreeningOrganisatie().getNaam();
 			soNaam = soNaam.replaceAll(" ", "_");
@@ -111,12 +122,10 @@ public class MammaBrievenGenererenWriter extends AbstractBrievenGenererenWriter<
 		{
 			naam += brieven.getBriefType().name().toLowerCase();
 		}
-
 		if (Boolean.TRUE.equals(eersteRonde))
 		{
 			naam += MammaBrievenGenererenPartitioner.KEY_EERSTE_RONDE;
 		}
-
 		naam = addPdfCounter(naam);
 
 		return naam + ".pdf";

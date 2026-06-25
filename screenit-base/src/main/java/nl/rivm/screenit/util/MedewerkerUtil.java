@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.EntityManager;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -69,8 +71,9 @@ public class MedewerkerUtil
 		}
 	}
 
-	public static int getNextMedewerkercode(Session session)
+	public static int getNextMedewerkercode(EntityManager entityManager)
 	{
-		return session.doReturningWork(new SequenceGenerator(DatabaseSequence.MEDEWERKERCODE, session.getSessionFactory())).intValue();
+		var session = entityManager.unwrap(Session.class);
+		return session.doReturningWork(new SequenceGenerator(DatabaseSequence.MEDEWERKERCODE, entityManager.getEntityManagerFactory())).intValue();
 	}
 }

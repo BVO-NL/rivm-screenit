@@ -23,6 +23,8 @@ package nl.rivm.screenit.batch.repository;
 
 import java.util.List;
 
+import jakarta.persistence.criteria.From;
+
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientBrief_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
@@ -31,10 +33,9 @@ import nl.rivm.screenit.model.project.ProjectBrief_;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
-import jakarta.persistence.criteria.From;
-
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.heeftScreeningsOrganisatie;
+import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.isClientGekoppeldAanEenScreeningOrganisatie;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftActieveClient;
 import static nl.rivm.screenit.specification.algemeen.ProjectBriefSpecification.heeftGeenMergedBrieven;
 
@@ -43,7 +44,7 @@ public interface ProjectBriefRepository extends BaseJpaRepository<ProjectBrief>
 	default List<Long> getActieveProjectBriefActieDefinities(ScreeningOrganisatie screeningOrganisatie)
 	{
 		var specification = heeftGeenMergedBrieven()
-			.and(heeftScreeningsOrganisatie(screeningOrganisatie))
+			.and(screeningOrganisatie != null ? heeftScreeningsOrganisatie(screeningOrganisatie) : isClientGekoppeldAanEenScreeningOrganisatie())
 			.and(heeftActieveClient().with(r -> clientJoin(r)));
 
 		return findWith(specification, Long.class, q -> q.projection((cb, r) -> r.get(ProjectBrief_.definitie).get(AbstractHibernateObject_.id)).distinct().all());

@@ -36,9 +36,9 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.service.BaseTestTimelineService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;

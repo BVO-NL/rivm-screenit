@@ -51,9 +51,9 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.security.IScreenitRealm;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.DashboardService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingReserveringService;
 import nl.rivm.screenit.util.NaamUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.bootstrap.BootstrapFeedbackPanel;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 

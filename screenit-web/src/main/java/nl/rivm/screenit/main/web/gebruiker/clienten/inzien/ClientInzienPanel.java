@@ -43,8 +43,8 @@ import nl.rivm.screenit.model.mamma.MammaAfmelding;
 import nl.rivm.screenit.model.mamma.MammaBrief;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.service.ClientService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.util.AdresUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.lang.StringUtils;
@@ -260,7 +260,7 @@ public class ClientInzienPanel extends GenericPanel<Client>
 		IModel<String> laatseBekendeRegioBijRni = null;
 		if (gbaAdres.getGbaGemeente() == null || gbaAdres.getGbaGemeente().getCode().equals(Gemeente.RNI_CODE) || gbaAdres.getGbaGemeente().getScreeningOrganisatie() == null)
 		{
-			var reader = AuditReaderFactory.get(hibernateService.getHibernateSession());
+			var reader = AuditReaderFactory.get(hibernateService.getEntityManager());
 			var query = reader.createQuery().forRevisionsOfEntity(BagAdres.class, false, true);
 			query.add(AuditEntity.id().eq(gbaAdres.getId()));
 

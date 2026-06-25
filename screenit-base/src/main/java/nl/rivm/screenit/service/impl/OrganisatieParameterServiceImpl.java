@@ -42,12 +42,12 @@ import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.repository.algemeen.OrganisatieParameterRepository;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.rivm.screenit.util.EntityAuditUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -266,7 +266,7 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 		String key = maakParamKey(organisatie, parameterKey);
 		var keyId = paramKeyIds.get(key);
 		LOG.debug("Use id {} voor Key {} uit cache", keyId, key);
-		var parameter = hibernateService.get(OrganisatieParameter.class, keyId); 
+		var parameter = hibernateService.get(OrganisatieParameter.class, keyId);
 		if (parameter == null)
 		{
 			LOG.debug("Cached Id {} for key {} not in database (anymore)", keyId, key);

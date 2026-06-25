@@ -27,9 +27,12 @@ import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
 import nl.rivm.screenit.model.colon.berichten.ColonFitAnalyseResultatenBericht;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 
+import org.springframework.data.jpa.repository.Query;
+
 public interface ColonFitAnalyseResultatenBerichtRepository extends BaseJpaRepository<ColonFitAnalyseResultatenBericht>
 {
-	List<ColonFitAnalyseResultatenBericht> findByStatus(BerichtStatus status);
+	@Query("select b.id from ColonFitAnalyseResultatenBericht b where b.status = :status")
+	List<Long> findIdByStatus(BerichtStatus status);
 
 	boolean existsByMessageId(String messageId);
 }

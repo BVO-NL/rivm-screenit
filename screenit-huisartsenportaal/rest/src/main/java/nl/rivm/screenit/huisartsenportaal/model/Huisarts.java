@@ -25,15 +25,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import nl.rivm.screenit.huisartsenportaal.model.enums.AanmeldStatus;
-
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.envers.Audited;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -43,6 +34,13 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import nl.rivm.screenit.huisartsenportaal.model.enums.AanmeldStatus;
+
+import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
@@ -73,8 +71,7 @@ public class Huisarts extends Medewerker
 	@Enumerated(EnumType.STRING)
 	private AanmeldStatus aanmeldStatus;
 
-	@OneToMany(mappedBy = "huisarts")
-	@LazyCollection(LazyCollectionOption.FALSE)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "huisarts")
 	private List<Locatie> locaties = new ArrayList<Locatie>();
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "huisarts")

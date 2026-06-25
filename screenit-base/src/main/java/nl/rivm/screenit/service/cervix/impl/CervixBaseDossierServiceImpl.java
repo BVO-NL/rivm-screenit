@@ -34,11 +34,11 @@ import nl.rivm.screenit.repository.cervix.CervixFoutHL7v2BerichtRepository;
 import nl.rivm.screenit.service.BaseClientContactService;
 import nl.rivm.screenit.service.BaseDossierService;
 import nl.rivm.screenit.service.ClientService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.cervix.CervixBaseDossierService;
 import nl.rivm.screenit.service.cervix.CervixBaseScreeningrondeService;
 import nl.rivm.screenit.util.ProjectUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,7 +98,6 @@ public class CervixBaseDossierServiceImpl implements CervixBaseDossierService
 				baseDossierService.verwijderNietLaatsteDefinitieveAfmeldingenUitDossier(dossier);
 			}
 			verwijderCisHistorie(dossier.getCisHistorie());
-
 			opruimenDossier(dossier);
 
 			hibernateService.saveOrUpdate(client);

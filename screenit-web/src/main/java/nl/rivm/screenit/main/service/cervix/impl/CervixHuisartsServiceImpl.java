@@ -65,6 +65,7 @@ import nl.rivm.screenit.repository.cervix.CervixRegioBriefRepository;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BaseMedewerkerService;
 import nl.rivm.screenit.service.EnovationHuisartsService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.WoonplaatsService;
@@ -78,7 +79,6 @@ import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.CodeGenerator;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.NaamUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.util.collections.CollectionUtils;
 
 import org.apache.commons.lang3.StringUtils;

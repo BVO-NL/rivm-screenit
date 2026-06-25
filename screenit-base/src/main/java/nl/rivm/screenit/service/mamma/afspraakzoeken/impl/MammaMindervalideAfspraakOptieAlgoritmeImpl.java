@@ -39,11 +39,10 @@ import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaCapaciteitBlokDto;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
-import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
-import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
 import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaAfspraakOptie;
 import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaAfspraakOptieAlgoritme;
+import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaStandplaatsPeriodeMetZoekbereik;
 import nl.rivm.screenit.util.RangeUtil;
 import nl.rivm.screenit.util.mamma.MammaMindervalideUtil;
 import nl.rivm.screenit.util.mamma.MammaPlanningUtil;
@@ -67,18 +66,27 @@ public class MammaMindervalideAfspraakOptieAlgoritmeImpl implements MammaAfspraa
 	private static final BigDecimal MINIMALE_CAPACITEIT_NA_MAKEN_MINDERVALIDE_AFSPRAAK = BigDecimal.valueOf(-1);
 
 	@Override
-	public MammaAfspraakOptie getAfspraakOptieUitnodiging(MammaDossier dossier, MammaStandplaatsRonde standplaatsRonde, BigDecimal voorlopigeOpkomstkans,
-		Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen, Integer afspraakBijUitnodigenVanafAantalWerkdagen)
+	public MammaAfspraakOptie getAfspraakOptieUitnodiging(MammaDossier dossier, List<MammaStandplaatsPeriodeMetZoekbereik> standplaatsPeriodenMetZoekbereik,
+		BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen)
 	{
 		throw new IllegalStateException("Mindervaliden krijgen geen datumtijd uitnodiging");
 	}
 
 	@Override
-	public List<MammaAfspraakOptie> getAfspraakOpties(MammaDossier dossier, MammaStandplaatsPeriode standplaatsPeriode, LocalDate vanaf, LocalDate totEnMet, boolean extraOpties,
+	public List<MammaAfspraakOptie> getAfspraakOptieBulkVerzetten(MammaDossier dossier, MammaStandplaatsPeriodeMetZoekbereik standplaatsPeriodeMetZoekbereik,
 		BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen)
 	{
-		var nietGeblokkeerdeScreeningCapaciteitBlokDtos = capaciteitsBlokService.getNietGeblokkeerdeScreeningCapaciteitBlokDtos(standplaatsPeriode, toUtilDate(vanaf),
-			toUtilDate(totEnMet.atTime(Constants.BK_EINDTIJD_DAG)), dossier.getClient());
+		throw new IllegalStateException("Mindervalidenafspraken mogen niet verzet worden via bulk verzetten");
+	}
+
+	@Override
+	public List<MammaAfspraakOptie> getAfspraakOpties(MammaDossier dossier, MammaStandplaatsPeriodeMetZoekbereik standplaatsPeriodeMetZoekbereik, boolean extraOpties,
+		BigDecimal voorlopigeOpkomstkans, Integer capaciteitVolledigBenutTotEnMetAantalWerkdagen)
+	{
+		var standplaatsPeriode = standplaatsPeriodeMetZoekbereik.standplaatsPeriode();
+		var nietGeblokkeerdeScreeningCapaciteitBlokDtos = capaciteitsBlokService.getNietGeblokkeerdeScreeningCapaciteitBlokDtos(standplaatsPeriode,
+			standplaatsPeriodeMetZoekbereik.vanafUtilDate(), toUtilDate(standplaatsPeriodeMetZoekbereik.totEnMet().atTime(Constants.BK_EINDTIJD_DAG)), dossier.getClient());
+
 		var screeningsEenheid = standplaatsPeriode.getScreeningsEenheid();
 		var factorMindervalideBk = getFactorMindervalideBk(screeningsEenheid);
 		var benodigdeCapaciteitVoorNieuweAfspraakOptie = MammaPlanningUtil.bepaalBenodigdeCapaciteitVoorNieuweAfspraakOptie(factorMindervalideBk, voorlopigeOpkomstkans);
@@ -178,7 +186,7 @@ public class MammaMindervalideAfspraakOptieAlgoritmeImpl implements MammaAfspraa
 		}
 		if (afspraakDto.isDubbeleTijd())
 		{
-			return MammaRationaalAfspraakOptie.BENODIGDE_MINUTEN_VOOR_DUBBELE_TIJD_AFSPRAAK;
+			return MammaRationaalAfspraak.BENODIGDE_MINUTEN_VOOR_DUBBELE_TIJD_AFSPRAAK;
 		}
 		return Constants.BK_TIJDVAK_MIN;
 	}

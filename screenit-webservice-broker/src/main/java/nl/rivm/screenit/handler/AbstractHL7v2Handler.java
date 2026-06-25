@@ -25,8 +25,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.TechnischeBerichtenLoggingSaverService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 import nl.topicuszorg.hl7v2.services.server.impl.TypedHL7BerichtTypeHandlerImpl;
 
@@ -41,17 +41,20 @@ public abstract class AbstractHL7v2Handler<T extends Message> extends TypedHL7Be
 {
 	private final TechnischeBerichtenLoggingSaverService technischeBerichtenLoggingSaverService;
 
+	private final DatabaseRunner databaseRunner;
+
 	protected AbstractHL7v2Handler(Class<T> berichtType)
 	{
 		super(berichtType);
-		this.technischeBerichtenLoggingSaverService = ApplicationContextProvider.getApplicationContext().getBean(TechnischeBerichtenLoggingSaverService.class);
+		technischeBerichtenLoggingSaverService = ApplicationContextProvider.getApplicationContext().getBean(TechnischeBerichtenLoggingSaverService.class);
+		databaseRunner = ApplicationContextProvider.getApplicationContext().getBean(DatabaseRunner.class);
 	}
 
 	@Override
 	public Message processTypedMessage(T message) throws ApplicationException, HL7Exception
 	{
 		AtomicReference<Message> response = new AtomicReference<>();
-		OpenHibernateSession.withoutTransaction().run(() ->
+		databaseRunner.runInSessionOnly(() ->
 			{
 				long exchangeId = technischeBerichtenLoggingSaverService.logRequest("HL7V2_REQ_IN", getBerichtType().getSimpleName(), message.toString());
 				response.set(verwerkTypedMessage(message));

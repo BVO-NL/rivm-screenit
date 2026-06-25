@@ -39,6 +39,7 @@ import nl.rivm.screenit.model.batch.popupconfig.MammaPalgaExportConfig;
 import nl.rivm.screenit.model.batch.popupconfig.MammaPalgaGrondslag;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.JobStartParameter;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.service.mamma.MammaPalgaService;
@@ -46,7 +47,6 @@ import nl.rivm.screenit.util.CsvUtil;
 import nl.rivm.screenit.util.NaamUtil;
 import nl.rivm.screenit.util.StringUtil;
 import nl.rivm.screenit.util.ZipUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.core.StepContribution;
@@ -169,14 +169,13 @@ public class MammaPalgaCsvExportTasklet implements Tasklet
 
 		gegevens.add(Long.toString(client.getMammaDossier().getId()));
 		var voorlettersClient = NaamUtil.getVoorlettersClient(client);
-		var voorletterClient = StringUtils.isNoneBlank(voorlettersClient) && voorlettersClient.length() > 0 && StringUtil.isAlfabetKarakter(voorlettersClient.charAt(0))
+		var voorletterClient = StringUtils.isNoneBlank(voorlettersClient) && !voorlettersClient.isEmpty() && StringUtil.isAlfabetKarakter(voorlettersClient.charAt(0))
 			? voorlettersClient.substring(0, 1) : "";
 		gegevens.add(voorletterClient);
 		gegevens.add(persoon.getAchternaam().trim());
 		gegevens.add(dateFormat.format(persoon.getGeboortedatum()));
 		gegevens.add(persoon.getGeslacht().getMnem());
 		gegevens.add(persoon.getBsn());
-		hibernateService.getHibernateSession().evict(client);
 		return gegevens;
 	}
 

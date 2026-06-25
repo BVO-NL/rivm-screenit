@@ -21,36 +21,25 @@ package nl.rivm.screenit.dao.impl;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import nl.rivm.screenit.dao.ClientDao;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional(propagation = Propagation.SUPPORTS)
-public class ClientDaoImpl extends AbstractAutowiredDao implements ClientDao
+public class ClientDaoImpl implements ClientDao
 {
-	@Autowired
-	private ICurrentDateSupplier currentDateSupplier;
 
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
-	public void saveOrUpdateClient(Client client)
-	{
-		this.getSession().saveOrUpdate(client.getPersoon().getGbaAdres());
-		this.getSession().saveOrUpdate(client.getPersoon());
-		this.getSession().saveOrUpdate(client);
-	}
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Override
 	public boolean heeftDossierMetRondeOfAfmelding(Client client)
 	{
-		var query = getSession().createNativeQuery("SELECT 1"
+		var query = entityManager.createNativeQuery("SELECT 1"
 			+ " FROM gedeeld.client client"
 			+ "  LEFT JOIN colon.dossier co ON client.colon_dossier = co.id"
 			+ "  LEFT JOIN cervix.dossier ce ON client.cervix_dossier = ce.id"
@@ -60,6 +49,6 @@ public class ClientDaoImpl extends AbstractAutowiredDao implements ClientDao
 			+ "   OR ce.laatste_screening_ronde IS NOT NULL OR ce.laatste_afmelding IS NOT NULL"
 			+ "   OR ma.laatste_screening_ronde IS NOT NULL OR ma.laatste_afmelding IS NOT NULL);");
 		query.setParameter("clientId", client.getId());
-		return query.uniqueResult() != null;
+		return !query.getResultList().isEmpty();
 	}
 }

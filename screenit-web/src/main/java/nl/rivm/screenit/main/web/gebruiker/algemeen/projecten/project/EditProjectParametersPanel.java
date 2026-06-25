@@ -38,9 +38,9 @@ import nl.rivm.screenit.model.ProjectParameterKey;
 import nl.rivm.screenit.model.colon.ColonOnderzoeksVariant;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.project.Project;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.markup.html.WebMarkupContainer;

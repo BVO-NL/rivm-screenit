@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.main.web.gebruiker.clienten.contact.mamma;
 
 /*-
@@ -28,19 +27,17 @@ import java.util.List;
 import java.util.Map;
 
 import nl.rivm.screenit.dto.mamma.afspraken.MammaStandplaatsPeriodeMetAfstandDto;
-import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContactActiePanel;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.mamma.MammaAfspraak;
+import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 import nl.rivm.screenit.model.mamma.MammaUitstel;
-import nl.rivm.screenit.model.mamma.enums.MammaUitstelReden;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseFactory;
 import nl.rivm.screenit.service.mamma.MammaBaseUitstelService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -51,9 +48,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class MammaUitstelKiezenPanel extends AbstractClientContactActiePanel<Client>
 {
-
-	private static final long serialVersionUID = 1L;
-
 	private Panel nieuweUitstelPanel;
 
 	private MammaUitstelZoekenPanel uitstelZoekenPanel;

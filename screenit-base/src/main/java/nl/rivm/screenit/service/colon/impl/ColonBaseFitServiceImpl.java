@@ -32,6 +32,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,6 +64,7 @@ import nl.rivm.screenit.service.BaseAfmeldService;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BaseHoudbaarheidService;
 import nl.rivm.screenit.service.ClientService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
@@ -72,11 +76,9 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ProjectUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.SessionFactory;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,8 +139,8 @@ public class ColonBaseFitServiceImpl implements ColonBaseFitService
 	@Autowired
 	private ColonFitAnalyseResultaatSetRepository fitAnalyseResultaatSetRepository;
 
-	@Autowired
-	private SessionFactory sessionFactory;
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Autowired
 	private ColonUitnodigingRepository uitnodigingRepository;
@@ -509,7 +511,7 @@ public class ColonBaseFitServiceImpl implements ColonBaseFitService
 		var fobGold = uitnodiging.getGekoppeldeFitRegistratie();
 		var extra = uitnodiging.getGekoppeldeExtraFitRegistratie();
 		var datum = currentDateSupplier.getDate();
-		if (fobGold != null && fobGold.getUitslag() != null)
+		if (fobGold != null && (fobGold.getUitslag() != null || fobGold.getGeinterpreteerdeUitslag() != null))
 		{
 			uitslagVerwijderen(fobGold);
 			setStatusEnDatum(fobGold, ColonFitRegistratieStatus.VERWIJDERD, datum);
@@ -761,7 +763,7 @@ public class ColonBaseFitServiceImpl implements ColonBaseFitService
 	@Override
 	public boolean isVerwijderdeBarcode(String barcode)
 	{
-		var reader = AuditReaderFactory.get(sessionFactory.getCurrentSession());
+		var reader = AuditReaderFactory.get(entityManager);
 		var auditQuery = reader.createQuery().forRevisionsOfEntity(ColonFitRegistratie.class, false, true)
 			.add(AuditEntity.property("barcode").eq(barcode))
 			.addProjection(AuditEntity.id().count());

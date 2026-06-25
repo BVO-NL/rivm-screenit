@@ -53,6 +53,7 @@ import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsRondeUitno
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaUitnodigenRapportage_;
 import nl.rivm.screenit.repository.mamma.MammaStandplaatsPeriodeRepository;
 import nl.rivm.screenit.repository.mamma.MammaStandplaatsRondeUitnodigenRapportageRepository;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
@@ -61,7 +62,6 @@ import nl.rivm.screenit.specification.mamma.MammaScreeningsEenheidSpecification;
 import nl.rivm.screenit.specification.mamma.MammaStandplaatsRondeUitnodigenRapportageSpecification;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.mamma.MammaPlanningUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.domain.Sort;
@@ -128,7 +128,8 @@ public class MammaStandplaatsPeriodeServiceImpl implements MammaStandplaatsPerio
 
 	@Override
 	@Transactional
-	public void updateSortList(int nieuwVolgnummer, PlanningStandplaatsPeriodeDto item, MammaScreeningsEenheid screeningsEenheid, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	public void updateSortList(int nieuwVolgnummer, PlanningStandplaatsPeriodeDto item, MammaScreeningsEenheid screeningsEenheid,
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		item.screeningsEenheidVolgNr = nieuwVolgnummer;
 		baseConceptPlanningsApplicatie.changeRoute(item, screeningsEenheid, ingelogdeOrganisatieMedewerker);

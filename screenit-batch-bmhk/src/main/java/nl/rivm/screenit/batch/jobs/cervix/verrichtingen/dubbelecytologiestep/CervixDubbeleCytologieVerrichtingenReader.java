@@ -43,7 +43,7 @@ public class CervixDubbeleCytologieVerrichtingenReader extends BaseSpecification
 
 	public CervixDubbeleCytologieVerrichtingenReader()
 	{
-		super.setFetchSize(CERVIX_BEPALEN_VERRICHTINGEN_JOB_FETCH_SIZE);
+		setFetchSize(CERVIX_BEPALEN_VERRICHTINGEN_JOB_FETCH_SIZE);
 	}
 
 	@Override

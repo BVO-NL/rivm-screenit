@@ -37,6 +37,7 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.Persoon_;
+import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.service.ClientService;
@@ -156,6 +157,31 @@ public class ClientZoekenServiceImpl implements ClientZoekenService
 			.stream()
 			.sorted(Comparator.comparingInt(client -> client.getGbaStatus() == GbaStatus.AFGEVOERD ? 1 : 0))
 			.toList();
+	}
+
+	@Override
+	public List<Bevolkingsonderzoek> getActieveBvos(Long clientId)
+	{
+		var client = clientService.getClientById(clientId)
+			.orElseThrow();
+		var colonDossier = client.getColonDossier();
+		var cervixDossier = client.getCervixDossier();
+		var mammaDossier = client.getMammaDossier();
+
+		var actieveBvos = new ArrayList<Bevolkingsonderzoek>();
+		if (colonDossier != null && !colonDossier.getScreeningRondes().isEmpty())
+		{
+			actieveBvos.add(Bevolkingsonderzoek.COLON);
+		}
+		if (cervixDossier != null && !cervixDossier.getScreeningRondes().isEmpty())
+		{
+			actieveBvos.add(Bevolkingsonderzoek.CERVIX);
+		}
+		if (mammaDossier != null && !mammaDossier.getScreeningRondes().isEmpty())
+		{
+			actieveBvos.add(Bevolkingsonderzoek.MAMMA);
+		}
+		return actieveBvos;
 	}
 
 	private static boolean zijnGeavanceerdeVeldenGevuld(ClientZoekenFilterDto filter)

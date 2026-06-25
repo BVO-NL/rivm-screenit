@@ -41,12 +41,13 @@ import nl.rivm.screenit.model.project.Project;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.model.project.ProjectBriefActieType;
 import nl.rivm.screenit.model.project.ProjectType;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.EnumStringUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
+import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -184,7 +185,7 @@ public class BriefActieEditPage extends ProjectBasePage
 						actie.setDocument(uploadDocument);
 						actie.setUploader(getIngelogdeOrganisatieMedewerker());
 						actie.setLaatstGewijzigd(nu);
-						hibernateService.saveOrUpdate(actie);
+						hibernateService.saveOrUpdate(ModelProxyHelper.deproxy(actie));
 
 						if (actie.isHerinneren())
 						{
@@ -196,7 +197,7 @@ public class BriefActieEditPage extends ProjectBasePage
 							herinnerActie.setLaatstGewijzigd(nu);
 							herinnerActie.setType(ProjectBriefActieType.HERINNERING);
 							herinnerActie.setActief(true);
-							hibernateService.saveOrUpdate(herinnerActie);
+							hibernateService.saveOrUpdate(ModelProxyHelper.deproxy(herinnerActie));
 							actie.setHerinneringsActie(herinnerActie);
 							hibernateService.saveOrUpdate(actie);
 						}
@@ -222,8 +223,7 @@ public class BriefActieEditPage extends ProjectBasePage
 					}
 					catch (Exception e)
 					{
-
-						LOG.debug("Kon file niet wegschrijven naar temp", e);
+						LOG.error("Kon file niet wegschrijven naar temp", e);
 						ScreenitSession.get().error("Fout bij opslaan van bestand (" + e.getMessage() + ")");
 					}
 				}

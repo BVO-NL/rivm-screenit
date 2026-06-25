@@ -24,7 +24,7 @@ package nl.rivm.screenit.util.mamma;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.Comparator;
+import java.time.LocalDateTime;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -53,24 +53,6 @@ public class MammaPlanningUtil
 		return factor.setScale(0, RoundingMode.HALF_DOWN).multiply(new BigDecimal(Constants.BK_TIJDVAK_MIN)).intValue();
 	}
 
-	public static void sorteerCapaciteitBlokOpAfspraakTijdEnZetAfspraakTot(MammaCapaciteitBlokDto capaciteitBlokDto) 
-	{
-		capaciteitBlokDto.getAfspraakDtos().sort(Comparator.comparing(MammaAfspraakDto::getVanaf));
-		MammaAfspraakDto vorigeAfspraakDto = null;
-		for (var afspraakDto : capaciteitBlokDto.getAfspraakDtos())
-		{
-			if (vorigeAfspraakDto != null)
-			{
-				vorigeAfspraakDto.setTot(afspraakDto.getVanaf().toLocalTime());
-			}
-			vorigeAfspraakDto = afspraakDto;
-		}
-		if (vorigeAfspraakDto != null)
-		{
-			vorigeAfspraakDto.setTot(capaciteitBlokDto.getTot());
-		}
-	}
-
 	public static BigDecimal bepaalBenodigdeCapaciteitVoorNieuweAfspraakOptie(BigDecimal factor, BigDecimal voorlopigeOpkomstkans)
 	{
 		return factor.multiply(voorlopigeOpkomstkans.compareTo(MINIMUM_OPKOMSTKANS) >= 0 ? voorlopigeOpkomstkans : MINIMUM_OPKOMSTKANS);
@@ -81,6 +63,11 @@ public class MammaPlanningUtil
 		var totaalBenodigdeCapaciteitVoorAlleAfspraken = capaciteitBlokDto.getAfspraakDtos().stream().map(MammaAfspraakDto::getBenodigdeCapaciteit).reduce(BigDecimal.ZERO,
 			BigDecimal::add);
 		return capaciteitBlokDto.getBeschikbareCapaciteit().subtract(totaalBenodigdeCapaciteitVoorAlleAfspraken);
+	}
+
+	public static LocalDate bepaalHuidigeDagVoorPlannenAfspraken(LocalDateTime nu)
+	{
+		return nu.toLocalTime().isBefore(Constants.BK_EINDTIJD_DAG) ? nu.toLocalDate() : nu.toLocalDate().plusDays(1);
 	}
 
 	public static boolean isEnkeleMammograaf(MammaScreeningsEenheid screeningsEenheid)

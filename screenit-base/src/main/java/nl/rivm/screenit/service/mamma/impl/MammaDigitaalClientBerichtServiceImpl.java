@@ -29,13 +29,13 @@ import nl.rivm.screenit.model.enums.DigitaalBerichtType;
 import nl.rivm.screenit.model.mamma.MammaDigitaalClientBericht;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.repository.mamma.MammaDigitaalClientBerichtRepository;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.impl.DigitaalClientBerichtServiceImpl;
 import nl.rivm.screenit.service.mamma.MammaDigitaalClientBerichtService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.communicationhub.api.MessageServiceCommunicationHubClientApi;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

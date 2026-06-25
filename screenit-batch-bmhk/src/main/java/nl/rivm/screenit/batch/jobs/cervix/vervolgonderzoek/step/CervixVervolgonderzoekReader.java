@@ -59,7 +59,7 @@ public class CervixVervolgonderzoekReader extends BaseSpecificationScrollableRes
 
 	public CervixVervolgonderzoekReader()
 	{
-		super.setFetchSize(50);
+		setFetchSize(50);
 	}
 
 	@Override

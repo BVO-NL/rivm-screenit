@@ -37,8 +37,8 @@ import nl.rivm.screenit.model.logging.BrievenGenererenBeeindigdLogEvent;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.verwerkingverslag.BrievenGenererenRapportage;
 import nl.rivm.screenit.model.verwerkingverslag.BrievenGenererenRapportageEntry;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.batch.core.ExitStatus;

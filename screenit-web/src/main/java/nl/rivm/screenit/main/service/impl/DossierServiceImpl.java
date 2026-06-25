@@ -64,6 +64,8 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.ClientContact;
 import nl.rivm.screenit.model.DigitaalClientBericht;
+import nl.rivm.screenit.model.Dossier;
+import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.InpakbareUitnodiging;
 import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.ScreeningRonde;
@@ -105,6 +107,7 @@ import nl.rivm.screenit.model.colon.enums.RetourzendingWijze;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.DigitaalBerichtType;
+import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.GebeurtenisBron;
 import nl.rivm.screenit.model.enums.OpenUitnodigingUitslag;
 import nl.rivm.screenit.model.envers.ScreenitRevisionEntity;
@@ -140,7 +143,6 @@ import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Hibernate;
@@ -149,20 +151,15 @@ import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.criteria.AuditCriterion;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.primitives.Ints;
 
-@Service
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-@AllArgsConstructor
 @Slf4j
+@Service
+@AllArgsConstructor
 public class DossierServiceImpl implements DossierService
 {
 	private final ClientContactService clientContactService;
-
-	private final HibernateService hibernateService;
 
 	private final CervixMonsterRepository monsterRepository;
 
@@ -1348,7 +1345,7 @@ public class DossierServiceImpl implements DossierService
 	{
 		var gebeurtenis = new MammaOnderzoekGebeurtenis(onderzoek);
 
-		var auditReader = AuditReaderFactory.get(hibernateService.getHibernateSession());
+		var auditReader = AuditReaderFactory.get(entityManager);
 		var revisionNumbers = auditReader.getRevisions(MammaOnderzoek.class, onderzoek.getId());
 		if (revisionNumbers.isEmpty())
 		{
@@ -2200,7 +2197,7 @@ public class DossierServiceImpl implements DossierService
 		ScreenitRevisionEntity revisionEntity = null;
 		if (lastRevision != null)
 		{
-			revisionEntity = hibernateService.get(ScreenitRevisionEntity.class, lastRevision);
+			revisionEntity = entityManager.find(ScreenitRevisionEntity.class, lastRevision);
 		}
 		bron = dossierAuditService.getGebeurtenisBron(revisionEntity);
 		return bron;
@@ -2527,6 +2524,14 @@ public class DossierServiceImpl implements DossierService
 			screeningRondeGebeurtenis.setExtraOmschrijving(documentName);
 		}
 		return screeningRondeGebeurtenis;
+	}
+
+	@Override
+	public boolean isDossierActief(Dossier dossier)
+	{
+		return dossier != null && (dossier.getLaatsteAfmelding() != null || dossier.getLaatsteScreeningRonde() != null) && DossierStatus.ACTIEF.equals(dossier.getStatus())
+			&& dossier.getClient().getPersoon().getOverlijdensdatum() == null && dossier.getClient().getPersoon().getDatumVertrokkenUitNederland() == null
+			&& GbaStatus.INDICATIE_AANWEZIG.equals(dossier.getClient().getGbaStatus());
 	}
 
 }

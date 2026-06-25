@@ -26,6 +26,9 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,9 +52,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -71,6 +71,7 @@ public class MailSenderServiceImpl implements MailSenderService
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void verzendEnVerwijderQueuedMail(Mail mail) throws MessagingException, MailException
 	{
+		mail = mailRepository.findById(mail.getId()).orElseThrow();
 		if (sendEmail(mail.getRecipient(), mail.getSubject(), mail.getContent(), mail.getPriority(), mail.getMailserver(), mail.getAttachments()))
 		{
 			mailRepository.delete(mail);

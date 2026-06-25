@@ -41,6 +41,7 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsPeriodeService;
 import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaAfspraakOptieAlgoritme;
+import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaStandplaatsPeriodeMetZoekbereik;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningsEenheidUtil;
 
@@ -100,13 +101,13 @@ public class MammaSignalerenMindervalideReserveringTasklet implements Tasklet
 		return standplaatsPerioden.stream()
 			.mapToInt(standplaatsPeriode ->
 			{
-
 				var standplaatsPeriodeVanaf = DateUtil.toLocalDate(standplaatsPeriode.getVanaf());
 				var standplaatsPeriodeTotEnMet = DateUtil.toLocalDate(standplaatsPeriode.getTotEnMet());
 
 				var vanafDatum = Collections.max(Arrays.asList(vandaag, standplaatsPeriodeVanaf));
 				var totEnMetDatum = Collections.min(Arrays.asList(vrijgegevenTotEnMet, standplaatsPeriodeTotEnMet));
-				return mindervalideAfspraakOptieAlgoritme.getAfspraakOpties(dossier, standplaatsPeriode, vanafDatum, totEnMetDatum, true, opkomstkans, null)
+				var standplaatsPeriodeMetZoekbereik = new MammaStandplaatsPeriodeMetZoekbereik(standplaatsPeriode, vanafDatum, totEnMetDatum);
+				return mindervalideAfspraakOptieAlgoritme.getAfspraakOpties(dossier, standplaatsPeriodeMetZoekbereik, true, opkomstkans, null)
 					.size();
 			})
 			.sum();

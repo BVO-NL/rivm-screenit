@@ -27,7 +27,7 @@ import nl.rivm.screenit.wsb.filter.WsbRestControllerLoggingFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.hibernate5.support.OpenSessionInViewFilter;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 
 @Configuration
 public class FilterConfig
@@ -40,11 +40,10 @@ public class FilterConfig
 	}
 
 	@Bean
-	public FilterRegistrationBean<OpenSessionInViewFilter> openSessionInViewFilter()
+	public FilterRegistrationBean<OpenEntityManagerInViewFilter> openEntityManagerInViewFilter()
 	{
-		var filter = new FilterRegistrationBean<OpenSessionInViewFilter>();
-		filter.setFilter(new OpenSessionInViewFilter());
-		filter.addInitParameter("sessionFactoryBeanName", "hibernateSessionFactory");
+		var filter = new FilterRegistrationBean<OpenEntityManagerInViewFilter>();
+		filter.setFilter(new OpenEntityManagerInViewFilter());
 		filter.addUrlPatterns("/*");
 		filter.setOrder(FilterOrder.OPEN_SESSION_IN_VIEW.ordinal());
 		return filter;
@@ -68,6 +67,7 @@ public class FilterConfig
 		filter.addUrlPatterns("/services/rest/*");
 		filter.addUrlPatterns("/api/inpakcentrum/v2/*");
 		filter.addUrlPatterns("/api/rest/dvabron/v1/*");
+		filter.addUrlPatterns("/api/rest/dvabron/fhir/stu3/v1/*");
 		filter.setOrder(FilterOrder.LOG.ordinal());
 		return filter;
 	}

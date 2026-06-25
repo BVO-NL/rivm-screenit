@@ -23,13 +23,18 @@ package nl.rivm.screenit.wsb.config;
 
 import java.util.List;
 
-import nl.rivm.screenit.wsb.fhir.servlet.dstu3.v1.RestfulServlet;
+import nl.rivm.screenit.wsb.fhir.servlet.dstu3.v1.CervixDigitaleLabformulierenFhirRestfulServlet;
 import nl.rivm.screenit.wsb.servlet.hoh.Hl7v2OverHttpServlet;
 
 import org.apache.cxf.transport.servlet.CXFServlet;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import ca.uhn.fhir.rest.server.RestfulServer;
+
+import static nl.rivm.screenit.dvabron.fhir.stu3.v1.configuration.DvaBronFhirConfiguration.STU3_SERVLET_BEAN_NAME;
 
 @Configuration
 public class ServletConfig
@@ -47,12 +52,22 @@ public class ServletConfig
 	}
 
 	@Bean
-	public ServletRegistrationBean<RestfulServlet> restfulServlet()
+	public ServletRegistrationBean<CervixDigitaleLabformulierenFhirRestfulServlet> cervixDigitaleLabformulierenFhirRestfulServlet()
 	{
-		var servlet = new ServletRegistrationBean<RestfulServlet>();
-		servlet.setServlet(new RestfulServlet());
+		var servlet = new ServletRegistrationBean<CervixDigitaleLabformulierenFhirRestfulServlet>();
+		servlet.setServlet(new CervixDigitaleLabformulierenFhirRestfulServlet());
 		servlet.setLoadOnStartup(1);
 		servlet.setUrlMappings(List.of("/services/rest/bmhk/huisarts/fhir/dstu3/v1/*"));
+		return servlet;
+	}
+
+	@Bean
+	public ServletRegistrationBean<RestfulServer> dvaBronFhirRestfulServlet(@Qualifier(STU3_SERVLET_BEAN_NAME) RestfulServer stu3FhirServer)
+	{
+		var servlet = new ServletRegistrationBean<RestfulServer>();
+		servlet.setServlet(stu3FhirServer);
+		servlet.setLoadOnStartup(1);
+		servlet.setUrlMappings(List.of("/api/rest/dvabron/fhir/stu3/v1/*"));
 		return servlet;
 	}
 

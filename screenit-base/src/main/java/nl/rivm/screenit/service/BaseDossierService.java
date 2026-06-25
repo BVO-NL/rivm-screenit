@@ -34,4 +34,5 @@ public interface BaseDossierService
 	<D extends Dossier<?, A>, A extends Afmelding<?, ?, ?>> void verwijderLaatsteAfmelding(D dossier);
 
 	<D extends Dossier<?, A>, A extends Afmelding<?, ?, ?>> void verwijderAlleAfmeldingenUitDossier(D dossier);
+
 }

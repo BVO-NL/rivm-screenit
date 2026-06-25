@@ -26,5 +26,5 @@ import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 
 public interface CervixUitnodigingService
 {
-	CervixUitnodiging getOpenstaandeUitnodiging(Client client);
+	CervixUitnodiging getOpenstaandeZasUitnodiging(Client client);
 }

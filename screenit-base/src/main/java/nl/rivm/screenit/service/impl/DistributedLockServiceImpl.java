@@ -51,7 +51,7 @@ public class DistributedLockServiceImpl implements DistributedLockService
 	@Qualifier("applicationEnvironment")
 	private String applicationEnvironment;
 
-	private Map<DistributedLockKey, InterProcessSemaphoreMutex> locks = new HashMap<>();
+	private final Map<DistributedLockKey, InterProcessSemaphoreMutex> locks = new HashMap<>();
 
 	private CuratorFramework curatorFramework = null;
 
@@ -70,7 +70,7 @@ public class DistributedLockServiceImpl implements DistributedLockService
 
 		lock(lockKey);
 
-		LOG.debug("Lock on '{}' acquired in {}ms", locknaam, eindtijdStopwatch(stopWatch));
+		LOG.debug("Lock on '{}' acquired in {}ms", locknaam, duurWachtOpLock(stopWatch));
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class DistributedLockServiceImpl implements DistributedLockService
 
 		try
 		{
-			LOG.debug("Try to lock: '{}'", locknaam);
+			LOG.info("Try to lock: '{}'", locknaam);
 			var lockVerkregen = lock.acquire(3, TimeUnit.MILLISECONDS);
 
 			if (lockVerkregen)
@@ -90,7 +90,7 @@ public class DistributedLockServiceImpl implements DistributedLockService
 				locks.put(lockKey, lock);
 			}
 
-			LOG.debug("Lock met naam {} is {} verkregen", lockKey.getLocknaam(), lockVerkregen ? "wel" : "niet");
+			LOG.info("Lock met naam {} is {} verkregen", lockKey.getLocknaam(), lockVerkregen ? "wel" : "niet");
 
 			return lockVerkregen;
 		}
@@ -130,7 +130,7 @@ public class DistributedLockServiceImpl implements DistributedLockService
 
 	private void unlock(DistributedLockKey lockKey)
 	{
-		LOG.debug("Try to unlock: " + lockKey);
+		LOG.debug("Try to unlock: {}", lockKey);
 
 		InterProcessSemaphoreMutex lock = locks.get(lockKey);
 		if (lock != null)
@@ -141,7 +141,15 @@ public class DistributedLockServiceImpl implements DistributedLockService
 				{
 					StopWatch stopWatch = startNewStopwatch();
 					lock.release();
-					LOG.debug("Unlocked '" + lockKey.getLocknaam() + "' in " + eindtijdStopwatch(stopWatch) + " ms");
+					long duurWachtOpLock = duurWachtOpLock(stopWatch);
+					if (duurWachtOpLock > 1000)
+					{
+						LOG.info("Unlocked '{}' in {} ms", lockKey.getLocknaam(), duurWachtOpLock);
+					}
+					else
+					{
+						LOG.debug("Unlocked '{}' in {} ms", lockKey.getLocknaam(), duurWachtOpLock);
+					}
 				}
 			}
 			catch (Exception e)
@@ -177,9 +185,9 @@ public class DistributedLockServiceImpl implements DistributedLockService
 		return stopWatch;
 	}
 
-	private long eindtijdStopwatch(StopWatch stopWatch)
+	private long duurWachtOpLock(StopWatch stopWatch)
 	{
 		stopWatch.stop();
-		return stopWatch.getLastTaskTimeMillis();
+		return stopWatch.lastTaskInfo().getTimeMillis();
 	}
 }

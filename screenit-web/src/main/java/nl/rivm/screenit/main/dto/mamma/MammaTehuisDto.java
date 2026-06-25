@@ -29,10 +29,12 @@ import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import org.apache.wicket.model.IDetachable;
 import org.apache.wicket.model.IModel;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(name = "MammaTehuisDto", description = "Gegevens van een mamma-tehuis.")
 public class MammaTehuisDto implements IMammaTehuisDto, IDetachable
 {
 	private IModel<MammaTehuis> tehuis;
-
 	private IModel<MammaStandplaatsPeriode> periode;
 
 	@Override

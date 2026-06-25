@@ -66,8 +66,8 @@ import nl.rivm.screenit.model.verslag.Quantity;
 import nl.rivm.screenit.model.verslag.VerslagContent;
 import nl.rivm.screenit.model.verslag.VraagElement;
 import nl.rivm.screenit.service.BaseVerslagService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.IOUtils;
@@ -130,13 +130,13 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 							/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.211']]]/
 							hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.551']]]""",
 
-							"hl7:organizer/hl7:specimen/hl7:specimenRole/hl7:id/@extension", 
+						"hl7:organizer/hl7:specimen/hl7:specimenRole/hl7:id/@extension", 
 
 						"""
 							/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.211']]]/
 							hl7:section/hl7:entry[hl7:organizer[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.137.10.551']]]""",
 
-							"hl7:organizer/hl7:specimen/hl7:specimenRole/hl7:id/@extension" 
+						"hl7:organizer/hl7:specimen/hl7:specimenRole/hl7:id/@extension" 
 					);
 				}
 			};

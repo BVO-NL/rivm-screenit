@@ -27,9 +27,7 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
-import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Component
 @StepScope
@@ -39,33 +37,15 @@ public class ClientSelectieItemReader extends AbstractClientSelectieReader
 
 	public ClientSelectieItemReader(ICurrentDateSupplier currentDateSupplier)
 	{
-		super.setFetchSize(50);
+		setFetchSize(50);
 		this.currentDateSupplier = currentDateSupplier;
 	}
 
 	@Override
-	public void open(ExecutionContext executionContext) throws ItemStreamException
+	protected void openInternal(ExecutionContext executionContext) throws ItemStreamException
 	{
-		boolean unbindSessionFromThread = false;
-		try
-		{
-			hibernateSession = sessionFactory.openSession();
-			if (!TransactionSynchronizationManager.hasResource(sessionFactory))
-			{
-				TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(hibernateSession));
-				unbindSessionFromThread = true;
-			}
-			context = executionContext;
-			cursor = new ClientSelectieItemCursor(hibernateSession, fetchSize, context, uitgenodigdeClientIds, fitService, currentDateSupplier.getLocalDate(), clientRepository);
-
-		}
-		finally
-		{
-			if (unbindSessionFromThread)
-			{
-				TransactionSynchronizationManager.unbindResource(sessionFactory);
-			}
-		}
+		cursor = new ClientSelectieItemCursor(entityManager, fetchSize, executionContext, uitgenodigdeClientIds, fitService, currentDateSupplier.getLocalDate(),
+			clientRepository);
 	}
 
 	@Override

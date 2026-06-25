@@ -30,8 +30,8 @@ import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.enums.ColonAfmeldingReden;
 import nl.rivm.screenit.service.BaseDossierService;
 import nl.rivm.screenit.service.ClientService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.UploadDocumentService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -111,7 +111,10 @@ public class BaseDossierServiceImpl implements BaseDossierService
 	{
 		if (dossier.getLaatsteAfmelding() != null)
 		{
-			verwijderAfmeldingEnDocumenten(dossier.getLaatsteAfmelding());
+			var afmelding = dossier.getLaatsteAfmelding();
+			dossier.getAfmeldingen().remove(afmelding);
+			dossier.setLaatsteAfmelding(null);
+			verwijderAfmeldingEnDocumenten(afmelding);
 		}
 	}
 

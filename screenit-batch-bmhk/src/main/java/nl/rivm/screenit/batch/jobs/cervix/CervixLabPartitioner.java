@@ -29,8 +29,8 @@ import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BasePartitioner;
 import nl.rivm.screenit.model.BMHKLaboratorium;
+import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.OrganisatieService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.stereotype.Component;
@@ -44,11 +44,13 @@ public class CervixLabPartitioner extends BasePartitioner
 
 	private final OrganisatieService organisatieService;
 
+	private final DatabaseRunner databaseRunner;
+
 	@Override
 	public Map<String, ExecutionContext> setPartition(int gridSize)
 	{
-		Map<String, ExecutionContext> partities = new HashMap<>(gridSize);
-		OpenHibernateSession.withoutTransaction().run(() ->
+		var partities = new HashMap<String, ExecutionContext>(gridSize);
+		databaseRunner.runInSessionOnly(() ->
 		{
 			List<BMHKLaboratorium> bmhkLabs = organisatieService.getActieveOrganisaties(BMHKLaboratorium.class);
 

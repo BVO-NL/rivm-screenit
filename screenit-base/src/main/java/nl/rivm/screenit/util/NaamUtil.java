@@ -201,6 +201,25 @@ public abstract class NaamUtil
 		return naam.toString();
 	}
 
+	public static String voornamenTussenvoegselEnAanspreekAchternaam(Client client)
+	{
+		if (client == null)
+		{
+			return null;
+		}
+
+		var naam = new StringBuilder();
+		naam.append(client.getPersoon().getVoornaam());
+		if (!naam.isEmpty())
+		{
+			naam.append(" ");
+		}
+
+		naam.append(getAanspreekTussenvoegselEnAchternaam(client));
+
+		return naam.toString();
+	}
+
 	public static String getAanspreekTussenvoegselEnAchternaam(Client client)
 	{
 		if (client == null)

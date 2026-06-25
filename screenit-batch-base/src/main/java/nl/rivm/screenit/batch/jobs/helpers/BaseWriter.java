@@ -28,8 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.BatchConstants;
 import nl.rivm.screenit.model.enums.Level;
+import nl.rivm.screenit.service.HibernateService;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.hibernate.HibernateException;
 import org.springframework.batch.core.JobExecution;

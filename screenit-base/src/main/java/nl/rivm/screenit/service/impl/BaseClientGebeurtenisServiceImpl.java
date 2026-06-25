@@ -30,11 +30,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.AanvraagBriefStatus;
 import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.AfmeldingType;
 import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.ClientGebeurtenis;
 import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.MergedBrieven;
@@ -58,6 +60,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaUitstelReden;
 import nl.rivm.screenit.service.BaseClientGebeurtenisService;
 import nl.rivm.screenit.service.BaseDossierAuditService;
+import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.util.BezwaarUtil;
@@ -65,16 +68,14 @@ import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.colon.ColonAfspraakUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
+import nl.topicuszorg.preferencemodule.service.KeyPreferenceService;
 
 import org.hibernate.envers.query.AuditEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PropertyComparator;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
 public class BaseClientGebeurtenisServiceImpl implements BaseClientGebeurtenisService
 {
 
@@ -86,6 +87,12 @@ public class BaseClientGebeurtenisServiceImpl implements BaseClientGebeurtenisSe
 
 	@Autowired
 	private ColonBaseAfspraakService colonBaseAfspraakService;
+
+	@Autowired
+	private KeyPreferenceService preferenceService;
+
+	@Autowired
+	private ICurrentDateSupplier currentDateSupplier;
 
 	@Override
 	public List<ClientGebeurtenis> getClientColonGebeurtenissen(Client client)
@@ -188,6 +195,7 @@ public class BaseClientGebeurtenisServiceImpl implements BaseClientGebeurtenisSe
 						if (mergedBrieven.getPrintDatum() != null)
 						{
 							gebeurtenis.setDatum(mergedBrieven.getPrintDatum());
+							setDvaParams(gebeurtenis, brief);
 						}
 						else
 						{
@@ -248,6 +256,31 @@ public class BaseClientGebeurtenisServiceImpl implements BaseClientGebeurtenisSe
 					gebeurtenis.setType(ClientGebeurtenisType.CERVIX_HERDRUK);
 					gebeurtenissen.add(gebeurtenis);
 				}
+				else if (BriefUtil.isGegenereerd(brief) && BriefType.isCervixUitslagbrief(brief.getBriefType()))
+				{
+					MergedBrieven<?> mergedBrieven = BriefUtil.getMergedBrieven(brief);
+					Date printDatum = null;
+					if (mergedBrieven != null)
+					{
+						if (mergedBrieven.getPrintDatum() != null)
+						{
+							printDatum = mergedBrieven.getPrintDatum();
+						}
+					}
+					else
+					{
+						printDatum = brief.getCreatieDatum();
+					}
+					if (printDatum != null)
+					{
+						var gebeurtenis = new ClientGebeurtenis();
+						gebeurtenis.setType(ClientGebeurtenisType.UITSLAG_GECOMMUNICEERD);
+						gebeurtenis.setDatum(printDatum);
+						setDvaParams(gebeurtenis, brief);
+						gebeurtenissen.add(gebeurtenis);
+					}
+				}
+
 			}
 
 			var monsterHpvUitslag = screeningRonde.getMonsterHpvUitslag();
@@ -407,6 +440,10 @@ public class BaseClientGebeurtenisServiceImpl implements BaseClientGebeurtenisSe
 						var gebeurtenis = new ClientGebeurtenis();
 						gebeurtenis.setType(gebeurtenisType);
 						gebeurtenis.setDatum(printDatum);
+						if (BriefType.getMammaUitslagBriefTypen().contains(brief.getBriefType()))
+						{
+							setDvaParams(gebeurtenis, brief);
+						}
 						gebeurtenissen.add(gebeurtenis);
 					}
 				}
@@ -586,5 +623,15 @@ public class BaseClientGebeurtenisServiceImpl implements BaseClientGebeurtenisSe
 			}
 		}
 		return verplaatsDatum;
+	}
+
+	private void setDvaParams(ClientGebeurtenis gebeurtenis, ClientBrief brief)
+	{
+		var uitslagBeschikbaarTermijn = preferenceService.getInteger(PreferenceKey.PGO_UITSLAGEN_BESCHIKBAAR_TERMIJN, 7);
+
+		if (DateUtil.toLocalDate(gebeurtenis.getDatum()).plusDays(uitslagBeschikbaarTermijn.orElse(7)).isBefore(currentDateSupplier.getLocalDate()))
+		{
+			gebeurtenis.setExtraParam("DVA", brief.getId().toString(), brief.getBriefType().getWeergaveNaam());
+		}
 	}
 }

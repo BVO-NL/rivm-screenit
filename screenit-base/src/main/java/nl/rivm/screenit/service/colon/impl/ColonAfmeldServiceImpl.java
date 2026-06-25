@@ -38,6 +38,7 @@ import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.OpenUitnodigingUitslag;
 import nl.rivm.screenit.service.BaseBriefService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OpenUitnodigingService;
 import nl.rivm.screenit.service.colon.ColonAfmeldService;
@@ -47,7 +48,6 @@ import nl.rivm.screenit.service.colon.ColonScreeningsrondeService;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;

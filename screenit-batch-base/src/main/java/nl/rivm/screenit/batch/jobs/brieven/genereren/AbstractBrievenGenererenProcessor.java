@@ -24,7 +24,7 @@ package nl.rivm.screenit.batch.jobs.brieven.genereren;
 import java.lang.reflect.ParameterizedType;
 
 import nl.rivm.screenit.model.Brief;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.service.HibernateService;
 
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;

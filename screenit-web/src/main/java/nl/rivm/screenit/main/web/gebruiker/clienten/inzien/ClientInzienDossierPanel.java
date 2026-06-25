@@ -45,22 +45,20 @@ import nl.rivm.screenit.model.AfmeldingType;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.Dossier;
-import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.colon.ColonAfmelding;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.OpenUitnodiging;
 import nl.rivm.screenit.model.colon.enums.ColonAfmeldingReden;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
-import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.OpenUitnodigingUitslag;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.service.ClientDoelgroepService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.util.ProjectUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.model.DetachableListModel;
 
@@ -91,7 +89,7 @@ public class ClientInzienDossierPanel<D extends Dossier<?, ?>, A extends Afmeldi
 	private DossierService dossierService;
 
 	@SpringBean
-	private ColonDossierBaseService dossierBaseService;
+	private ColonDossierBaseService colonDossierBaseService;
 
 	@SpringBean
 	private ICurrentDateSupplier currentDateSupplier;
@@ -201,9 +199,7 @@ public class ClientInzienDossierPanel<D extends Dossier<?, ?>, A extends Afmeldi
 	private boolean showActief()
 	{
 		D dossier = getModelObject();
-		return dossier != null && (dossier.getLaatsteAfmelding() != null || dossier.getLaatsteScreeningRonde() != null) && DossierStatus.ACTIEF.equals(dossier.getStatus())
-			&& dossier.getClient().getPersoon().getOverlijdensdatum() == null && dossier.getClient().getPersoon().getDatumVertrokkenUitNederland() == null
-			&& GbaStatus.INDICATIE_AANWEZIG.equals(dossier.getClient().getGbaStatus());
+		return dossierService.isDossierActief(dossier);
 	}
 
 	private WebMarkupContainer getProjectBadge(Bevolkingsonderzoek onderzoek)
@@ -243,7 +239,7 @@ public class ClientInzienDossierPanel<D extends Dossier<?, ?>, A extends Afmeldi
 		ColonDossier colonDossier = (ColonDossier) dossier;
 		if (doelgroepService.behoortTotDoelgroep(dossier.getClient(), bevolkingsonderzoek) && colonDossier.getVolgendeUitnodiging() != null)
 		{
-			LocalDate indicatieveUitnodigingdDatum = dossierBaseService.getDatumVolgendeUitnodiging(colonDossier);
+			LocalDate indicatieveUitnodigingdDatum = colonDossierBaseService.getDatumVolgendeUitnodiging(colonDossier);
 			String datumString = indicatieveUitnodigingdDatum == null ? "Nooit meer uitnodigen" : indicatieveUitnodigingdDatum.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 			return "Indicatie volgende uitnodigingsdatum: " + datumString + " ("
 				+ getString(EnumStringUtil.getPropertyString(colonDossier.getVolgendeUitnodiging().getInterval().getType())) + ")";

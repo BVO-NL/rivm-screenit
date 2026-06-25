@@ -49,8 +49,10 @@ import nl.rivm.screenit.model.mamma.enums.MammaUitstelGeannuleerdReden;
 import nl.rivm.screenit.model.mamma.enums.MammaUitstelReden;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.ClientService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.impl.IBrievenGeneratorHelper;
 import nl.rivm.screenit.service.mamma.MammaBaseFactory;
 import nl.rivm.screenit.service.mamma.MammaBaseKansberekeningService;
@@ -61,7 +63,6 @@ import nl.rivm.screenit.service.mamma.MammaVolgendeUitnodigingService;
 import nl.rivm.screenit.service.mamma.enums.MammaTehuisSelectie;
 import nl.rivm.screenit.util.EntityAuditUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,6 +108,9 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 
 	@Autowired
 	private MammaVolgendeUitnodigingService volgendeUitnodigingService;
+
+	@Autowired
+	private OrganisatieService organisatieService;
 
 	private static final BriefType BRIEF_TYPE_TEHUIS_UITNODIGING = BriefType.MAMMA_UITNODIGING_TEHUIS_ZONDER_DATUM;
 
@@ -301,7 +305,9 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 		var nu = dateSupplier.getDate();
 
 		var mergedBrieven = new MammaMergedBrieven();
-		mergedBrieven.setScreeningOrganisatie(tehuis.getStandplaats().getRegio());
+		var overbruggingssituatieParagonStarted = briefService.isOverbruggingssituatieParagonStarted();
+		mergedBrieven.setScreeningOrganisatie(
+			overbruggingssituatieParagonStarted ? organisatieService.getLandelijkeScreeningsorganisatie() : tehuis.getStandplaats().getRegio());
 		mergedBrieven.setCreatieDatum(nu);
 		mergedBrieven.setBriefType(briefType);
 		mergedBrieven.setActief(false);
@@ -311,7 +317,7 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 
 		try
 		{
-			briefService.createOrAddMergedBrieven(uitnodigingen, new TehuisBrievenGeneratorHelper(tehuis, mergedBrieven));
+			briefService.createOrAddMergedBrieven(uitnodigingen, new TehuisBrievenGeneratorHelper(tehuis, mergedBrieven, overbruggingssituatieParagonStarted));
 			briefService.completePdf(mergedBrieven);
 			aantalClienten.set(uitnodigingen.size());
 		}
@@ -328,11 +334,13 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 
 		private final MammaMergedBrieven mergedBrieven;
 
-		TehuisBrievenGeneratorHelper(MammaTehuis tehuis, MammaMergedBrieven mergedBrieven)
+		private final boolean overbruggingssituatieParagonStarted;
+
+		TehuisBrievenGeneratorHelper(MammaTehuis tehuis, MammaMergedBrieven mergedBrieven, boolean overbruggingssituatieParagonStarted)
 		{
 			this.tehuis = tehuis;
 			this.mergedBrieven = mergedBrieven;
-
+			this.overbruggingssituatieParagonStarted = overbruggingssituatieParagonStarted;
 		}
 
 		@Override
@@ -340,11 +348,15 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 		{
 			var naam = "";
 			var sdf = new SimpleDateFormat("yyyy-MM-dd_HH.mm");
+			if (overbruggingssituatieParagonStarted && brieven.getBriefType() != null)
+			{
+				naam += brieven.getBriefType().getBriefCode() + "_";
+			}
 			if (brieven.getCreatieDatum() != null)
 			{
 				naam += sdf.format(brieven.getCreatieDatum()) + "-";
 			}
-			if (brieven.getScreeningOrganisatie() != null)
+			if (!overbruggingssituatieParagonStarted && brieven.getScreeningOrganisatie() != null)
 			{
 				var soNaam = brieven.getScreeningOrganisatie().getNaam();
 				soNaam = soNaam.replace(" ", "_");
@@ -357,6 +369,7 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 			{
 				naam += brieven.getBriefType().name().toLowerCase();
 			}
+
 			return naam + ".pdf";
 		}
 

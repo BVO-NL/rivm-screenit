@@ -38,7 +38,7 @@ public class CervixHuisartsBepalenReader extends BaseSpecificationScrollableResu
 
 	public CervixHuisartsBepalenReader()
 	{
-		super.setFetchSize(CERVIX_HUISARTSENBERICHTEN_JOB_READERS_FETCH_SIZE);
+		setFetchSize(CERVIX_HUISARTSENBERICHTEN_JOB_READERS_FETCH_SIZE);
 	}
 
 	@Override

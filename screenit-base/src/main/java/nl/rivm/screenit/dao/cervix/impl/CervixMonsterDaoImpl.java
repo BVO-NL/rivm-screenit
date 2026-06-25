@@ -21,23 +21,28 @@ package nl.rivm.screenit.dao.cervix.impl;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import nl.rivm.screenit.dao.cervix.CervixMonsterDao;
 import nl.rivm.screenit.util.DatabaseSequence;
 import nl.rivm.screenit.util.SequenceGenerator;
-import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
 
+import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-public class CervixMonsterDaoImpl extends AbstractAutowiredDao implements CervixMonsterDao
+public class CervixMonsterDaoImpl implements CervixMonsterDao
 {
+	@PersistenceContext
+	private EntityManager entityManager;
+
 	@Override
 	@Transactional
 	public Long getNextMonsterId()
 	{
-		return getSession().doReturningWork(new SequenceGenerator(DatabaseSequence.MONSTER_ID, getSessionFactory()));
+		var session = entityManager.unwrap(Session.class);
+		return session.doReturningWork(new SequenceGenerator(DatabaseSequence.MONSTER_ID, entityManager.getEntityManagerFactory()));
 	}
 }

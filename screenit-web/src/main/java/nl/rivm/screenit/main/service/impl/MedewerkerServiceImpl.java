@@ -34,7 +34,6 @@ import jakarta.persistence.criteria.From;
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.dto.OrganisatieMedewerkerRolDto;
-import nl.rivm.screenit.main.dao.MedewerkerDao;
 import nl.rivm.screenit.main.service.MedewerkerService;
 import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.Medewerker_;
@@ -55,6 +54,7 @@ import nl.rivm.screenit.repository.algemeen.MedewerkerRepository;
 import nl.rivm.screenit.repository.algemeen.OrganisatieMedewerkerRepository;
 import nl.rivm.screenit.repository.algemeen.OrganisatieMedewerkerRolRepository;
 import nl.rivm.screenit.service.AuthenticatieService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.specification.HibernateObjectSpecification;
@@ -63,7 +63,6 @@ import nl.rivm.screenit.specification.algemeen.OrganisatieMedewerkerRolSpecifica
 import nl.rivm.screenit.specification.algemeen.OrganisatieMedewerkerSpecification;
 import nl.rivm.screenit.specification.algemeen.PermissieSpecification;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -79,8 +78,6 @@ import static nl.rivm.screenit.specification.algemeen.PermissieSpecification.hee
 @AllArgsConstructor
 public class MedewerkerServiceImpl implements MedewerkerService
 {
-	private final MedewerkerDao medewerkerDao;
-
 	private final HibernateService hibernateService;
 
 	private final AuthenticatieService authenticatieService;
@@ -146,7 +143,7 @@ public class MedewerkerServiceImpl implements MedewerkerService
 			if (Boolean.FALSE.equals(organisatieMedewerker.getActief()))
 			{
 				organisatieMedewerker.setActief(Boolean.TRUE);
-				medewerkerDao.saveOrUpdateOrganisatieMedewerker(organisatieMedewerker);
+				saveOrUpdateOrganisatieMedewerker(organisatieMedewerker);
 			}
 		}
 		else
@@ -158,7 +155,7 @@ public class MedewerkerServiceImpl implements MedewerkerService
 			organisatieMedewerker.setMedewerker(medewerker);
 			medewerker.getOrganisatieMedewerkers().add(organisatieMedewerker);
 			organisatie.getOrganisatieMedewerkers().add(organisatieMedewerker);
-			medewerkerDao.saveOrUpdateOrganisatieMedewerker(organisatieMedewerker);
+			saveOrUpdateOrganisatieMedewerker(organisatieMedewerker);
 		}
 	}
 
@@ -167,7 +164,7 @@ public class MedewerkerServiceImpl implements MedewerkerService
 	public void saveOrUpdateRollen(
 		OrganisatieMedewerker ingelogdeOrganisatieMedewerker, List<OrganisatieMedewerkerRolDto> initieleRollen, OrganisatieMedewerker organisatieMedewerker)
 	{
-		medewerkerDao.saveOrUpdateOrganisatieMedewerker(organisatieMedewerker);
+		saveOrUpdateOrganisatieMedewerker(organisatieMedewerker);
 		organisatieMedewerker.getRollen().forEach(rol -> saveLogInformatieVoorGewijzigdeRol(ingelogdeOrganisatieMedewerker, initieleRollen, rol, organisatieMedewerker));
 		hibernateService.saveOrUpdateAll(organisatieMedewerker.getRollen());
 	}
@@ -386,6 +383,13 @@ public class MedewerkerServiceImpl implements MedewerkerService
 	{
 		return r ->
 			join(r, Medewerker_.organisatieMedewerkers);
+	}
+
+	private void saveOrUpdateOrganisatieMedewerker(OrganisatieMedewerker organisatieMedewerker)
+	{
+		hibernateService.saveOrUpdate(organisatieMedewerker);
+		hibernateService.saveOrUpdate(organisatieMedewerker.getOrganisatie());
+		hibernateService.saveOrUpdate(organisatieMedewerker.getMedewerker());
 	}
 
 }

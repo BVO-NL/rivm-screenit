@@ -36,10 +36,10 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsLocatie;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 import nl.rivm.screenit.model.mamma.MammaUitstel;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.service.mamma.MammaBaseUitstelService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -103,7 +103,8 @@ public class MammaUitstelServiceImpl implements MammaUitstelService
 		MammaAfspraakWijzigenFilterDto filter = afspraakService.toAfspraakFilter(standplaatsPeriodeDto.getFilter(), client, false);
 		List<MammaStandplaatsPeriodeMetAfstandDto> beschikbareStandplaatsPeriodes = standplaatsService.getStandplaatsPeriodeMetAfstandDtos(client, filter, true);
 
-		return beschikbareStandplaatsPeriodes.stream().anyMatch(standplaatsPeriode -> standplaatsPeriode.getStandplaatsPeriodeId().equals(standplaatsPeriodeDto.getStandplaatsPeriodeId()));
+		return beschikbareStandplaatsPeriodes.stream()
+			.anyMatch(standplaatsPeriode -> standplaatsPeriode.getStandplaatsPeriodeId().equals(standplaatsPeriodeDto.getStandplaatsPeriodeId()));
 	}
 
 }

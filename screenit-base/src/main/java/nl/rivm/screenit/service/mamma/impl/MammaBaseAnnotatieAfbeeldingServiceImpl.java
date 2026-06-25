@@ -23,32 +23,41 @@ package nl.rivm.screenit.service.mamma.impl;
 
 import java.util.List;
 
+import jakarta.persistence.EntityManager;
+
+import lombok.RequiredArgsConstructor;
+
 import nl.rivm.screenit.model.mamma.MammaAnnotatieAfbeelding;
 import nl.rivm.screenit.model.mamma.MammaAnnotatieIcoon;
 import nl.rivm.screenit.service.mamma.MammaBaseAnnotatieAfbeeldingService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(propagation = Propagation.REQUIRED)
+@RequiredArgsConstructor
 public class MammaBaseAnnotatieAfbeeldingServiceImpl implements MammaBaseAnnotatieAfbeeldingService
 {
-
-	@Autowired
-	private HibernateService hibernateService;
+	private final EntityManager entityManager;
 
 	@Override
+	@Transactional
 	public void updateIconenInAfbeelding(List<MammaAnnotatieIcoon> iconen, MammaAnnotatieAfbeelding afbeelding)
 	{
-		hibernateService.deleteAll(afbeelding.getIconen());
-		afbeelding.setIconen(iconen);
-		iconen.forEach(icoon -> icoon.setAfbeelding(afbeelding));
+		var afbeeldingIconen = afbeelding.getIconen();
+		afbeeldingIconen.clear();
 
-		hibernateService.saveOrUpdate(afbeelding);
-		iconen.forEach(icoon -> hibernateService.save(icoon));
+		iconen.forEach(icoon ->
+		{
+			icoon.setAfbeelding(afbeelding);
+			if (icoon.getId() == null)
+			{
+				afbeeldingIconen.add(icoon);
+			}
+			else
+			{
+				afbeeldingIconen.add(entityManager.merge(icoon));
+			}
+		});
 	}
 }

@@ -21,6 +21,7 @@ package nl.rivm.screenit.repository.algemeen;
  * =========================LICENSE_END==================================
  */
 
+import java.util.List;
 import java.util.Optional;
 
 import nl.rivm.screenit.model.Client;
@@ -38,4 +39,6 @@ public interface ProjectClientRepository extends BaseJpaRepository<ProjectClient
 	Long countByProject(Project project);
 
 	Optional<ProjectClient> findOneByProjectAndClient(Project project, Client client);
+
+	List<ProjectClient> findAllByClientId(Long id);
 }

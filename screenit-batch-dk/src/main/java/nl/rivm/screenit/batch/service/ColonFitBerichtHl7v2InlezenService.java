@@ -21,16 +21,18 @@ package nl.rivm.screenit.batch.service;
  * =========================LICENSE_END==================================
  */
 
+import java.io.IOException;
 import java.util.List;
 
-import nl.rivm.screenit.model.colon.berichten.ColonFitAnalyseResultatenBericht;
 import nl.rivm.screenit.model.logging.colon.ColonFitAnalyseResultaatSetVerwerkingBeeindigdLogEvent;
+
+import ca.uhn.hl7v2.HL7Exception;
 
 public interface ColonFitBerichtHl7v2InlezenService
 {
-	List<ColonFitAnalyseResultatenBericht> getAlleNietVerwerkteFitBerichten();
+	List<Long> getAlleNietVerwerkteFitBerichtIds();
 
-	void verwerkOntvangenFitBericht(ColonFitAnalyseResultatenBericht bericht);
+	void verwerkOntvangenFitBericht(Long berichtId) throws HL7Exception, IOException;
 
-	void logError(ColonFitAnalyseResultatenBericht ontvangenBericht, String message, ColonFitAnalyseResultaatSetVerwerkingBeeindigdLogEvent verwerkingLogEvent);
+	void logError(Long berichtId, String message, ColonFitAnalyseResultaatSetVerwerkingBeeindigdLogEvent verwerkingLogEvent);
 }

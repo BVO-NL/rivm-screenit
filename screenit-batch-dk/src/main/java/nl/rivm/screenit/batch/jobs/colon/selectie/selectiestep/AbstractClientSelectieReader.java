@@ -25,13 +25,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+
+import lombok.Setter;
+
 import nl.rivm.screenit.model.colon.ClientCategorieEntry;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ExecutionContext;
@@ -39,24 +42,20 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemStream;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.SessionFactoryUtils;
+import org.springframework.orm.jpa.EntityManagerFactoryUtils;
+import org.springframework.orm.jpa.EntityManagerHolder;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 public abstract class AbstractClientSelectieReader implements ItemReader<ClientCategorieEntry>, ItemStream
 {
-	protected Session hibernateSession;
-
 	protected ClientSelectieItemIterator cursor;
 
+	@Setter
 	protected int fetchSize;
 
 	protected StepExecution stepExecution;
 
-	protected ExecutionContext context;
-
 	protected final List<Long> uitgenodigdeClientIds = Collections.synchronizedList(new ArrayList<>());
-
-	@Autowired
-	protected SessionFactory sessionFactory;
 
 	@Autowired
 	protected SimplePreferenceService preferenceService;
@@ -67,10 +66,29 @@ public abstract class AbstractClientSelectieReader implements ItemReader<ClientC
 	@Autowired
 	protected ClientRepository clientRepository;
 
-	public void setFetchSize(int fetchSize)
+	@Autowired
+	private EntityManagerFactory entityManagerFactory;
+
+	protected EntityManager entityManager;
+
+	@Override
+	public void open(ExecutionContext executionContext) throws ItemStreamException
 	{
-		this.fetchSize = fetchSize;
+		var bindEntityManager = false;
+		entityManager = entityManagerFactory.createEntityManager();
+		if (!TransactionSynchronizationManager.hasResource(entityManagerFactory))
+		{
+			TransactionSynchronizationManager.bindResource(entityManagerFactory, new EntityManagerHolder(entityManager));
+			bindEntityManager = true;
+		}
+		openInternal(executionContext);
+		if (bindEntityManager)
+		{
+			TransactionSynchronizationManager.unbindResource(entityManagerFactory);
+		}
 	}
+
+	protected abstract void openInternal(ExecutionContext executionContext) throws ItemStreamException;
 
 	@Override
 	public void update(ExecutionContext executionContext) throws ItemStreamException
@@ -86,7 +104,7 @@ public abstract class AbstractClientSelectieReader implements ItemReader<ClientC
 		{
 			cursor.close();
 		}
-		SessionFactoryUtils.closeSession(hibernateSession);
+		EntityManagerFactoryUtils.closeEntityManager(entityManager);
 	}
 
 	protected final ClientCategorieEntry getNextEntry()

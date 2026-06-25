@@ -23,9 +23,7 @@ package nl.rivm.screenit.batch.jobs.cervix.brieven.regio.labformulierenstep;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -45,12 +43,12 @@ import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.service.AsposeService;
 import nl.rivm.screenit.service.BaseBriefService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.HuisartsenportaalSyncService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.cervix.CervixHuisartsToDtoUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.validator.routines.IBANValidator;
@@ -75,7 +73,7 @@ import com.aspose.words.ImportFormatMode;
 public class LabformulierGenererenWriter implements ItemStreamWriter<Long>
 {
 
-	private static int MAXBRIEVENPDF = 500;
+	private static final int MAXBRIEVENPDF = 500;
 
 	@Autowired
 	private HuisartsenportaalSyncService huisartsenportaalSyncService;
@@ -97,9 +95,6 @@ public class LabformulierGenererenWriter implements ItemStreamWriter<Long>
 
 	@Autowired
 	private LogService logService;
-
-	@Autowired
-	private BaseBriefService baseBriefService;
 
 	private int volgnummerBatch;
 
@@ -177,7 +172,7 @@ public class LabformulierGenererenWriter implements ItemStreamWriter<Long>
 			{
 				var melding = String.format("Foutief IBAN voor AGB: %s, locatie: %s", aanvraag.getHuisartsLocatie().getHuisarts().getAgbcode(),
 					aanvraag.getHuisartsLocatie().getNaam());
-				List<Organisatie> organisaties = Collections.singletonList(aanvraag.getHuisartsLocatie().getLocatieAdres().getGbaGemeente().getScreeningOrganisatie());
+				List<Organisatie> organisaties = List.of(aanvraag.getHuisartsLocatie().getLocatieAdres().getGbaGemeente().getScreeningOrganisatie());
 				logService.logGebeurtenis(LogGebeurtenis.CERVIX_LABFORMULIER_GENEREREN_IBAN_FOUT, organisaties, null, melding, Bevolkingsonderzoek.CERVIX);
 			}
 
@@ -287,7 +282,7 @@ public class LabformulierGenererenWriter implements ItemStreamWriter<Long>
 	{
 		try
 		{
-			baseBriefService.completePdf(cervixRegioMergedBrieven);
+			briefService.completePdf(cervixRegioMergedBrieven);
 		}
 		catch (Exception e)
 		{
@@ -300,14 +295,19 @@ public class LabformulierGenererenWriter implements ItemStreamWriter<Long>
 	{
 		var naam = "";
 		var sdf = new SimpleDateFormat("yyyy-MM-dd_HH.mm");
+		var overbruggingssituatieParagonStarted = briefService.isOverbruggingssituatieParagonStarted();
+		if (overbruggingssituatieParagonStarted && mergedBrieven.getBriefType() != null)
+		{
+			naam += mergedBrieven.getBriefType().getBriefCode() + "-";
+		}
 		if (mergedBrieven.getCreatieDatum() != null)
 		{
 			naam += sdf.format(mergedBrieven.getCreatieDatum()) + "-";
 		}
-		if (mergedBrieven.getScreeningOrganisatie() != null)
+		if (!overbruggingssituatieParagonStarted && mergedBrieven.getScreeningOrganisatie() != null)
 		{
 			var soNaam = mergedBrieven.getScreeningOrganisatie().getNaam();
-			soNaam = soNaam.replaceAll(" ", "_");
+			soNaam = soNaam.replace(" ", "_");
 			naam += soNaam + "-";
 		}
 		if (BriefType.REGIO_UITSTRIJKEND_ARTS_LABFORMULIER == mergedBrieven.getBriefType())
@@ -319,7 +319,7 @@ public class LabformulierGenererenWriter implements ItemStreamWriter<Long>
 			naam += "Oplegbrieven_labformulieren-";
 		}
 		naam += getVolgnummersTekst();
-		return naam += ".pdf";
+		return naam + ".pdf";
 	}
 
 	private String getVolgnummersTekst()
@@ -358,7 +358,7 @@ public class LabformulierGenererenWriter implements ItemStreamWriter<Long>
 		return mergedBrieven;
 	}
 
-	private void mergePDF(CervixLabformulierAanvraag aanvraag, File mergedPdfFile, CervixRegioMergedBrieven mergedBrieven) throws IOException, Exception
+	private void mergePDF(CervixLabformulierAanvraag aanvraag, File mergedPdfFile, CervixRegioMergedBrieven mergedBrieven) throws Exception
 	{
 		if (mergedBrieven.getMergedBrieven() == null)
 		{

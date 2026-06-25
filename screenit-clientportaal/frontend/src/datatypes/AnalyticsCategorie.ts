@@ -29,5 +29,6 @@ export enum AnalyticsCategorie {
 	PROFIEL = "profiel",
 	BVO_MIJN_ONDERZOEKEN = "bvo_mijnonderzoeken",
 	COLON_AFSPRAAK = "colon_afspraak",
-	AFSPRAAK_VERZETTEN = "afspraak_verzetten"
+	AFSPRAAK_VERZETTEN = "afspraak_verzetten",
+	DVA = "dva"
 }

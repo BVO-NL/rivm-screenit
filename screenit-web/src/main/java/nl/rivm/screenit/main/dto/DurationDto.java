@@ -23,6 +23,11 @@ package nl.rivm.screenit.main.dto;
 
 import java.time.LocalDate;
 
-public record DurationDto(LocalDate startDate, LocalDate endDate)
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(name = "DurationDto", description = "Datumrange met een start- en einddatum.")
+public record DurationDto(
+	LocalDate startDate,
+	LocalDate endDate)
 {
 }

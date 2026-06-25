@@ -31,9 +31,9 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.GebeurtenisBron;
 import nl.rivm.screenit.model.envers.ScreenitRevisionEntity;
 import nl.rivm.screenit.service.BaseDossierAuditService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.util.EntityAuditUtil;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.criteria.AuditCriterion;
@@ -46,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation = Propagation.SUPPORTS)
 public class BaseDossierAuditServiceImpl implements BaseDossierAuditService
 {
+
 	@Autowired
 	private HibernateService hibernateService;
 

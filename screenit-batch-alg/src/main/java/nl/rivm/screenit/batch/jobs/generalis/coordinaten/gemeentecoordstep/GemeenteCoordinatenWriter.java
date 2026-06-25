@@ -21,11 +21,13 @@ package nl.rivm.screenit.batch.jobs.generalis.coordinaten.gemeentecoordstep;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.service.CoordinatenService;
 import nl.rivm.screenit.service.WoonplaatsService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
@@ -35,8 +37,8 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class GemeenteCoordinatenWriter implements ItemWriter<String>
 {
-
-	private final HibernateService hibernateService;
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	private final CoordinatenService coordinatenService;
 
@@ -61,7 +63,7 @@ public class GemeenteCoordinatenWriter implements ItemWriter<String>
 				woonplaatsService.saveOrUpdateWoonplaats(plaatscode, woonplaats, gemcode);
 			}
 		}
-		hibernateService.getHibernateSession().flush();
-		hibernateService.getHibernateSession().clear();
+		entityManager.flush();
+		entityManager.clear();
 	}
 }

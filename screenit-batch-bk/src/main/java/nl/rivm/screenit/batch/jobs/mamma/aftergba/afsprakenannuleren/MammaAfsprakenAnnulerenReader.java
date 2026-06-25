@@ -21,6 +21,9 @@ package nl.rivm.screenit.batch.jobs.mamma.aftergba.afsprakenannuleren;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
@@ -39,9 +42,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Range;
 
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
-
 import static nl.rivm.screenit.batch.jobs.mamma.aftergba.AfterGbaJobConfiguration.AFTER_GBA_JOB_READER_FETCH_SIZE;
 import static nl.rivm.screenit.specification.mamma.MammaAfspraakSpecification.heeftStatus;
 import static nl.rivm.screenit.specification.mamma.MammaAfspraakSpecification.valtInDatumTijdPeriode;
@@ -55,7 +55,7 @@ public class MammaAfsprakenAnnulerenReader extends BaseSpecificationScrollableRe
 
 	public MammaAfsprakenAnnulerenReader(ICurrentDateSupplier dateSupplier)
 	{
-		super.setFetchSize(AFTER_GBA_JOB_READER_FETCH_SIZE);
+		setFetchSize(AFTER_GBA_JOB_READER_FETCH_SIZE);
 		this.dateSupplier = dateSupplier;
 	}
 

@@ -36,7 +36,7 @@ public class MammaAdresGewijzigdMarkerResetReader extends BaseSpecificationScrol
 {
 	public MammaAdresGewijzigdMarkerResetReader()
 	{
-		super.setFetchSize(AFTER_GBA_JOB_READER_FETCH_SIZE);
+		setFetchSize(AFTER_GBA_JOB_READER_FETCH_SIZE);
 	}
 
 	@Override

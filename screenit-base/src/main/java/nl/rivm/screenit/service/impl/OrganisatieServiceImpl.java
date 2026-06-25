@@ -62,6 +62,7 @@ import nl.rivm.screenit.repository.algemeen.OrganisatieRepository;
 import nl.rivm.screenit.repository.algemeen.ScreeningOrganisatieRepository;
 import nl.rivm.screenit.repository.colon.ColonIntakelocatieRepository;
 import nl.rivm.screenit.service.CoordinatenService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
@@ -76,7 +77,6 @@ import nl.rivm.screenit.specification.algemeen.RolSpecification;
 import nl.rivm.screenit.util.EntityAuditUtil;
 import nl.rivm.screenit.util.MedewerkerUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -88,6 +88,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
+import static nl.rivm.screenit.specification.algemeen.OrganisatieSpecification.filterActief;
+import static nl.rivm.screenit.specification.algemeen.OrganisatieSpecification.filterOrganisatieType;
 import static nl.rivm.screenit.specification.algemeen.OrganisatieSpecification.heeftColoscopielocatieId;
 import static nl.rivm.screenit.specification.algemeen.OrganisatieSpecification.heeftColoscopielocatieParent;
 import static nl.rivm.screenit.specification.algemeen.OrganisatieSpecification.heeftOrganisatieType;
@@ -102,6 +104,8 @@ public class OrganisatieServiceImpl implements OrganisatieService
 {
 
 	private static final String GEEN_WAARDE = "(geen waarde)";
+
+	private static final String LANDELIJKE_SCREENINGSORGANISATIE = "Bevolkingsonderzoek Midden-West";
 
 	@Autowired
 	private HibernateService hibernateService;
@@ -431,6 +435,21 @@ public class OrganisatieServiceImpl implements OrganisatieService
 	{
 		return organisatieRepository.findWith(heeftOrganisatieType(type).and(OrganisatieSpecification.isActief(true)), Long.class,
 			q -> q.projection((cb, r) -> r.get(AbstractHibernateObject_.id))).all();
+	}
+
+	@Override
+	public ScreeningOrganisatie getLandelijkeScreeningsorganisatie()
+	{
+		var screeningsorganisatie = screeningOrganisatieRepository.findByNaam(LANDELIJKE_SCREENINGSORGANISATIE);
+		if (screeningsorganisatie.isEmpty())
+		{
+			LOG.warn(LANDELIJKE_SCREENINGSORGANISATIE + " screeningsorganisatie niet gevonden");
+			var organisatie = organisatieRepository.findFirst(
+				filterActief(true).and(filterOrganisatieType(OrganisatieType.SCREENINGSORGANISATIE)),
+				Sort.by(Sort.Order.asc(Organisatie_.ID))).orElseThrow(() -> new IllegalStateException("Er is geen enkele actieve screeningsorganisatie gevonden!"));
+			return (ScreeningOrganisatie) Hibernate.unproxy(organisatie);
+		}
+		return screeningsorganisatie.get();
 	}
 
 }

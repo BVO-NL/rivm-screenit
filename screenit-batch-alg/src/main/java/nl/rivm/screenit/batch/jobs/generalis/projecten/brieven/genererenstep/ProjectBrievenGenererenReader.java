@@ -34,12 +34,6 @@ import static nl.rivm.screenit.specification.algemeen.ProjectBriefSpecification.
 public class ProjectBrievenGenererenReader extends AbstractBrievenGenererenReader<ProjectBrief>
 {
 	@Override
-	protected Long getScreeningOrganisatieId()
-	{
-		return getStepExecutionContext().getLong(ProjectBrievenConstants.KEY_PROJECT_SCREENINGORGANISATIE_ID);
-	}
-
-	@Override
 	protected Specification<ProjectBrief> createSpecification()
 	{
 		var specification = super.createSpecification();

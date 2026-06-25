@@ -31,8 +31,8 @@ import jakarta.persistence.FlushModeType;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.repository.impl.FluentJpaQueryImpl;
+import nl.rivm.screenit.service.HibernateService;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;

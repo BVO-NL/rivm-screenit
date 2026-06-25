@@ -27,17 +27,17 @@ import lombok.Setter;
 import nl.rivm.screenit.model.mamma.enums.MammaFotorichting;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieStatus;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Getter
 @Setter
+@Schema(name = "MammaVisitatieRequestDto", description = "Metadata voor het aanmaken of bijwerken van een mamma-visitatie.")
 public class MammaVisitatieRequestDto
 {
+	@Schema(description = "Id van de visitatie bij een update")
 	private Long id;
-
 	private String omschrijving;
-
 	private Long beoordelingseenheidId;
-
 	private MammaVisitatieStatus status;
-
 	private MammaFotorichting fotorichting;
 }

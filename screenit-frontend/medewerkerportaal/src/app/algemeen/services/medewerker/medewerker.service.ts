@@ -28,7 +28,7 @@ import { Recht } from '@shared/types/autorisatie/recht'
 })
 export class MedewerkerService {
   private http = inject(HttpClient)
-  private readonly baseUrl = '/api/algemeen/medewerker'
+  private readonly baseUrl = '/api/medewerker'
 
   getMedewerkers(recht?: Recht) {
     let url = this.baseUrl

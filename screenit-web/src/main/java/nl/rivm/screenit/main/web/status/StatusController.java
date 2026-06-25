@@ -34,11 +34,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Status", description = "Technische statusinformatie van de applicatie")
 public class StatusController
 {
 	private static final String ONBEKEND = "Onbekend";
@@ -53,6 +59,11 @@ public class StatusController
 	private String applicationInstance;
 
 	@GetMapping(value = "/status", produces = APPLICATION_JSON_VALUE)
+	@Operation(summary = "Haal de applicatiestatus op", description = "Geeft de versie, instantie en databasestatus van de applicatie terug.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Applicatiestatus succesvol opgehaald"),
+		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+	})
 	protected String getStatus()
 	{
 		LOG.debug("Er is een GET verzoek binnengekomen op de Status pagina");

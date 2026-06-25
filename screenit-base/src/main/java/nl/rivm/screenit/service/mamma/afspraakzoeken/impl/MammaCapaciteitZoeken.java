@@ -27,8 +27,6 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.service.mamma.afspraakzoeken.MammaAfspraakOptie;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 class MammaCapaciteitZoeken
 {
@@ -38,9 +36,9 @@ class MammaCapaciteitZoeken
 		{
 			var midden = rationalen.size() / 2;
 
-			if (rationalen.get(0) instanceof MammaAfspraakOptie)
+			if (rationalen.getFirst() instanceof MammaRationaalAfspraak)
 			{
-				var afspraakOpties = rationalen.stream().map(MammaAfspraakOptie.class::cast).toList();
+				var afspraakOpties = rationalen.stream().map(MammaRationaalAfspraak.class::cast).toList();
 				var gecorrigeerdMidden = gecorrigeerdMidden(afspraakOpties, midden);
 				if (gecorrigeerdMidden != null)
 				{
@@ -48,7 +46,7 @@ class MammaCapaciteitZoeken
 				}
 				else
 				{
-					return rationalen.get(rationalen.size() - 1);
+					return rationalen.getLast();
 				}
 			}
 
@@ -73,14 +71,14 @@ class MammaCapaciteitZoeken
 		}
 	}
 
-	private static Integer gecorrigeerdMidden(List<MammaAfspraakOptie> afspraken, int middle)
+	private static Integer gecorrigeerdMidden(List<MammaRationaalAfspraak> afspraken, int middle)
 	{
-		var vanafMiddle = afspraken.get(middle).getTijd();
+		var vanafMiddle = afspraken.get(middle).getVanaf();
 		var index = middle - 1;
 		var forward = true;
 		for (var i = 2; 0 <= index && index < afspraken.size(); i++)
 		{
-			var vanafIndex = afspraken.get(index).getTijd();
+			var vanafIndex = afspraken.get(index).getVanaf();
 			if (!vanafMiddle.equals(vanafIndex))
 			{
 				return forward ? index + 1 : index;

@@ -35,14 +35,16 @@ import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.IDocument;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.MergedBrieven;
+import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.Level;
+import nl.rivm.screenit.repository.algemeen.ScreeningOrganisatieRepository;
 import nl.rivm.screenit.service.BaseBriefService;
+import nl.rivm.screenit.service.DatabaseRunner;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.impl.IBrievenGeneratorHelper;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.core.JobExecution;
@@ -76,18 +78,27 @@ public abstract class AbstractBrievenGenererenWriter<T extends Brief, S extends 
 	private BaseBriefService briefService;
 
 	@Autowired
+	private ScreeningOrganisatieRepository screeningOrganisatieRepository;
+
+	@Autowired
 	private ICurrentDateSupplier dateSupplier;
+
+	@Autowired
+	private DatabaseRunner databaseRunner;
 
 	private JobExecution jobExecution;
 
 	private StepExecution stepExecution;
 
+	protected boolean isOverbruggingssituatieParagonStarted = false;
+
 	@Override
 	public void open(ExecutionContext executionContext) throws ItemStreamException
 	{
-		OpenHibernateSession.withCommittedTransaction().run(() ->
+		databaseRunner.runInNewTransaction(() ->
 		{
 
+			isOverbruggingssituatieParagonStarted = briefService.isOverbruggingssituatieParagonStarted();
 			Map<Object, Object> resourcesMap = resources.get();
 			if (resourcesMap == null)
 			{
@@ -194,13 +205,17 @@ public abstract class AbstractBrievenGenererenWriter<T extends Brief, S extends 
 	@Override
 	public String getMergedBrievenNaam(S brieven)
 	{
-		String naam = "";
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH.mm");
+		var naam = "";
+		var sdf = new SimpleDateFormat("yyyy-MM-dd_HH.mm");
+		if (isOverbruggingssituatieParagonStarted && brieven.getBriefType() != null)
+		{
+			naam += brieven.getBriefType().getBriefCode() + "_";
+		}
 		if (brieven.getCreatieDatum() != null)
 		{
 			naam += sdf.format(brieven.getCreatieDatum()) + "-";
 		}
-		if (brieven.getScreeningOrganisatie() != null)
+		if (!isOverbruggingssituatieParagonStarted && brieven.getScreeningOrganisatie() != null)
 		{
 			String soNaam = brieven.getScreeningOrganisatie().getNaam();
 			soNaam = soNaam.replaceAll(" ", "_");
@@ -233,7 +248,7 @@ public abstract class AbstractBrievenGenererenWriter<T extends Brief, S extends 
 	@Override
 	public void close() throws ItemStreamException
 	{
-		OpenHibernateSession.withCommittedTransaction().run(() ->
+		databaseRunner.runInNewTransaction(() ->
 		{
 			try
 			{
@@ -308,5 +323,11 @@ public abstract class AbstractBrievenGenererenWriter<T extends Brief, S extends 
 	public void increasePdfCounter()
 	{
 		getStepExecutionContext().putInt(KEY_PDF_COUNTER, getStepExecutionContext().getInt(KEY_PDF_COUNTER, 1) + 1);
+	}
+
+	protected ScreeningOrganisatie getScreeningOrganisatie()
+	{
+		var id = getStepExecutionContext().getLong(AbstractBrievenGenererenPartitioner.KEY_SCREENINGORGANISATIEID);
+		return screeningOrganisatieRepository.findById(id).orElseThrow(() -> new IllegalStateException("Screeningsorganisatie met '" + id + "' niet gevonden"));
 	}
 }

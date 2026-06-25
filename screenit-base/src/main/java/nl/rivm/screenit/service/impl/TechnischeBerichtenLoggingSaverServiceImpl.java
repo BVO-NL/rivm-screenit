@@ -25,27 +25,32 @@ import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
+import lombok.extern.slf4j.Slf4j;
+
 import nl.rivm.screenit.model.logging.TechnischeBerichtenLogRegel;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.TechnischeBerichtenLoggingSaverService;
 import nl.rivm.screenit.util.DatabaseSequence;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.SequenceGenerator;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
+import nl.rivm.screenit.util.hibernate.OpenEntityManagerInThread;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class TechnischeBerichtenLoggingSaverServiceImpl implements TechnischeBerichtenLoggingSaverService
 {
-	private static final Logger LOGGER = LoggerFactory.getLogger(TechnischeBerichtenLoggingSaverServiceImpl.class);
-
 	private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
+
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Autowired
 	private HibernateService hibernateService;
@@ -112,16 +117,16 @@ public class TechnischeBerichtenLoggingSaverServiceImpl implements TechnischeBer
 		String logVerwijzing = logEvent.type + ": Vind %s bericht met 'select * from gedeeld.technische_berichten_log_regel where id = " + logEvent.exchangeId + "';";
 		if (logEvent.request)
 		{
-			LOGGER.info(logVerwijzing.formatted("request"));
+			LOG.info(logVerwijzing.formatted("request"));
 		}
 		else
 		{
-			LOGGER.info(logVerwijzing.formatted("response"));
+			LOG.info(logVerwijzing.formatted("response"));
 		}
 		EXECUTOR_SERVICE.submit(new LoggingSaverThread(logEvent));
 	}
 
-	private class LoggingSaverThread extends OpenHibernateSessionInThread
+	private class LoggingSaverThread extends OpenEntityManagerInThread
 	{
 
 		private TechnischeLogEvent logEvent;
@@ -138,21 +143,20 @@ public class TechnischeBerichtenLoggingSaverServiceImpl implements TechnischeBer
 			if (logEvent.request)
 			{
 
-				TechnischeBerichtenLogRegel logRegel = new TechnischeBerichtenLogRegel();
+				var logRegel = new TechnischeBerichtenLogRegel();
 				logRegel.setId(logEvent.exchangeId);
 				logRegel.setService(logEvent.service);
 				logRegel.setApplicationInstance(applicationInstance);
 				logRegel.setRequest(logEvent.message);
 				logRegel.setRequestMoment(DateUtil.toUtilDate(logEvent.timestamp));
-				hibernateService.save(logRegel);
+				entityManager.merge(logRegel);
 			}
 			else
 			{
 
-				TechnischeBerichtenLogRegel logRegel = hibernateService.get(TechnischeBerichtenLogRegel.class, logEvent.exchangeId);
+				var logRegel = hibernateService.get(TechnischeBerichtenLogRegel.class, logEvent.exchangeId);
 				logRegel.setResponse(logEvent.message);
 				logRegel.setResponseMoment(DateUtil.toUtilDate(logEvent.timestamp));
-				hibernateService.saveOrUpdate(logRegel);
 			}
 		}
 
@@ -161,7 +165,7 @@ public class TechnischeBerichtenLoggingSaverServiceImpl implements TechnischeBer
 	@Override
 	public long createExchangeId()
 	{
-		Session session = hibernateService.getHibernateSession();
-		return session.doReturningWork(new SequenceGenerator(DatabaseSequence.EXCHANGE_ID, session.getSessionFactory()));
+		var session = entityManager.unwrap(Session.class);
+		return session.doReturningWork(new SequenceGenerator(DatabaseSequence.EXCHANGE_ID, entityManager.getEntityManagerFactory()));
 	}
 }

@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.JoinType;
 
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,6 @@ import nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.hibernate.ScrollableResults;
-import org.hibernate.Session;
 import org.springframework.batch.item.ExecutionContext;
 
 import static nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification.laatsteScreeningRondeJoin;
@@ -61,7 +61,7 @@ public class ClientSelectieItemCursor implements ClientSelectieItemIterator
 
 	private int cursorCount;
 
-	private final Session hibernateSession;
+	private final EntityManager entityManager;
 
 	private final int fetchSize;
 
@@ -75,10 +75,10 @@ public class ClientSelectieItemCursor implements ClientSelectieItemIterator
 
 	private final ClientRepository clientRepository;
 
-	public ClientSelectieItemCursor(Session hibernateSession, int fetchSize, ExecutionContext context, List<Long> uitgenodigdeClientIds, ColonBaseFitService fitService,
+	public ClientSelectieItemCursor(EntityManager entityManager, int fetchSize, ExecutionContext context, List<Long> uitgenodigdeClientIds, ColonBaseFitService fitService,
 		LocalDate vandaag, ClientRepository clientRepository)
 	{
-		this.hibernateSession = hibernateSession;
+		this.entityManager = entityManager;
 		this.fetchSize = fetchSize;
 		this.context = context;
 		this.uitgenodigdeClientIds = uitgenodigdeClientIds;
@@ -159,7 +159,7 @@ public class ClientSelectieItemCursor implements ClientSelectieItemIterator
 	@Override
 	public void clear()
 	{
-		this.hibernateSession.clear();
+		entityManager.clear();
 	}
 
 	@Override
@@ -188,13 +188,13 @@ public class ClientSelectieItemCursor implements ClientSelectieItemIterator
 			{
 				uitnodigingscategorie = ColonUitnodigingscategorie.U6;
 			}
-			cursorClosed = false;
 			setCursor();
 		}
 	}
 
 	private void setCursor()
 	{
+		cursorClosed = false;
 		ExtendedSpecification<Client> specification = switch (uitnodigingscategorie)
 		{
 			case U3 -> ColonUitnodigingBaseSpecification.getSpecificationU3(vandaag);

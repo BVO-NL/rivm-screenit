@@ -33,29 +33,25 @@ import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieStatus;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Getter
 @Setter
+@Schema(name = "MammaVisitatieWerklijstFilterDto", description = "Filtercriteria voor het zoeken van mamma-visitaties.")
 public class MammaVisitatieWerklijstFilterDto
 {
+	@Schema(description = "Te tonen visitatiestatussen")
 	private List<MammaVisitatieStatus> statussen = new ArrayList<>();
-
 	private List<Long> beoordelingsEenheidIds = new ArrayList<>();
-
 	private List<Long> centraleEenheidIds = new ArrayList<>();
-
 	private Date geboortedatum;
 
+	@Schema(description = "Ondergrens vanaf wanneer gezocht wordt")
 	private LocalDate vanaf;
-
 	private String bsn;
-
 	private String postcode;
-
 	private Integer huisnummer;
-
 	private MammaOnderzoekType onderzoekType;
-
 	private List<Long> screeningseenheidIds = new ArrayList<>();
-
 	private List<MammaBeoordelingStatus> beoordelingStatussen = new ArrayList<>();
 }

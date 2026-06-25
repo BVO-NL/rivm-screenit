@@ -25,8 +25,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import nl.rivm.screenit.service.HibernateService;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.markup.form.validation.UniqueFieldValidator;
 
 import org.apache.wicket.injection.Injector;

@@ -51,9 +51,9 @@ import nl.rivm.screenit.model.mamma.enums.MammaHL7ADTBerichtType;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7BerichtType;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
 import nl.rivm.screenit.service.BerichtToBatchService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.activemq.command.ActiveMQMessage;

@@ -18,26 +18,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {Component, inject, signal, viewChild} from '@angular/core'
-import {PageComponent} from '@shared/components/page/page.component'
-import {ClientZoekenTabelComponent} from '@algemeen/clientdossier/client-zoeken-page/components/client-zoeken-tabel/client-zoeken-tabel.component'
-import {ClientService} from '@algemeen/clientdossier/services/client/client.service'
-import {ClientDto} from '@shared/types/algemeen/dto/client.dto'
-import {ClientZoekenFilterDto} from '@shared/types/algemeen/dto/client-zoeken-filter.dto'
-import {ClientZoekenFilterComponent} from '@algemeen/clientdossier/client-zoeken-page/components/client-zoeken-filter/client-zoeken-filter.component'
-import {take} from 'rxjs'
-import {DsIconComponent} from '@topicus-rgp-ds/web'
-import {faUser} from '@fortawesome/pro-light-svg-icons'
-import {WicketUtils} from '@shared/utils/wicket/wicket-utils'
+import { Component, inject, signal, viewChild } from '@angular/core'
+import { take } from 'rxjs'
+import { DsIconComponent } from '@topicus-rgp-ds/web'
+import { faUser } from '@fortawesome/pro-light-svg-icons'
+import { Router } from '@angular/router'
+import { ClientZoekenFilterComponent } from '@algemeen/clientdossier/client-zoeken-page/components/client-zoeken-filter/client-zoeken-filter.component'
+import { PageComponent } from '@shared/components/page/page.component'
+import { ClientZoekenTabelComponent } from '@algemeen/clientdossier/client-zoeken-page/components/client-zoeken-tabel/client-zoeken-tabel.component'
+import { ClientService } from '@algemeen/clientdossier/services/client/client.service'
+import { ClientDto } from '@shared/types/algemeen/dto/client.dto'
+import { ClientZoekenFilterDto } from '@shared/types/algemeen/dto/client-zoeken-filter.dto'
 
 @Component({
   selector: 'app-client-zoeken-page',
-  imports: [
-    PageComponent,
-    ClientZoekenFilterComponent,
-    ClientZoekenTabelComponent,
-    DsIconComponent,
-  ],
+  imports: [PageComponent, ClientZoekenFilterComponent, ClientZoekenTabelComponent, DsIconComponent],
   templateUrl: './client-zoeken-page.component.html',
   styleUrl: './client-zoeken-page.component.scss',
 })
@@ -47,16 +42,20 @@ export class ClientZoekenPageComponent {
   protected readonly filterComponent = viewChild(ClientZoekenFilterComponent)
   protected clienten = signal<ClientDto[]>([])
   protected heeftGezocht = signal(false)
+  protected router = inject(Router)
 
   zoekClienten(filter: ClientZoekenFilterDto) {
-    this.clientService.zoekClienten(filter).pipe(take(1)).subscribe((clienten) => {
-      this.clienten.set(clienten)
-      this.heeftGezocht.set(true)
-    })
+    this.clientService
+      .zoekClienten(filter)
+      .pipe(take(1))
+      .subscribe((clienten) => {
+        this.clienten.set(clienten)
+        this.heeftGezocht.set(true)
+      })
   }
 
   navigeerNaarClient(client: ClientDto) {
-    this.clientService.set('client', client)
-    WicketUtils.toClientgegevens(client.id)
+    this.clientService.setClient(client)
+    this.router.navigateByUrl('client/dossier/overzicht')
   }
 }

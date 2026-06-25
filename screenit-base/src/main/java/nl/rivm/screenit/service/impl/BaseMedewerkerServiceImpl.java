@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -42,11 +45,11 @@ import nl.rivm.screenit.service.MailService;
 import nl.rivm.screenit.util.DatabaseSequence;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.SequenceGenerator;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
+import org.hibernate.Session;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +67,8 @@ public class BaseMedewerkerServiceImpl implements BaseMedewerkerService
 
 	private final OrganisatieMedewerkerRolRepository organisatieMedewerkerRolRepository;
 
-	private final HibernateService hibernateService;
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Override
 	public Optional<Medewerker> getMedewerkerByGebruikersnaam(String gebruikersnaam)
@@ -146,8 +150,8 @@ public class BaseMedewerkerServiceImpl implements BaseMedewerkerService
 	@Override
 	public int getNextMedewerkercode()
 	{
-		return hibernateService.getHibernateSession()
-			.doReturningWork(new SequenceGenerator(DatabaseSequence.MEDEWERKERCODE, hibernateService.getHibernateSession().getSessionFactory())).intValue();
+		return entityManager.unwrap(Session.class)
+			.doReturningWork(new SequenceGenerator(DatabaseSequence.MEDEWERKERCODE, entityManager.getEntityManagerFactory())).intValue();
 	}
 
 	@Override

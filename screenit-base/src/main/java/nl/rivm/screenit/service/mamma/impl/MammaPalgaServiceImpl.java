@@ -61,6 +61,7 @@ import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.repository.algemeen.UploadDocumentRepository;
 import nl.rivm.screenit.repository.mamma.MammaDossierRepository;
 import nl.rivm.screenit.service.BaseVerslagService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
@@ -73,7 +74,6 @@ import nl.rivm.screenit.util.BezwaarUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ZipUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;

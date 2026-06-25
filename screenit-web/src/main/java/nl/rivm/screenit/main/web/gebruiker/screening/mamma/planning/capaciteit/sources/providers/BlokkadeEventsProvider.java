@@ -26,8 +26,8 @@ import java.util.Date;
 import nl.rivm.screenit.main.web.component.fullcalendar.event.Event;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit.sources.ScreenITEventSourceFactory;
 import nl.rivm.screenit.model.mamma.MammaBlokkade;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.injection.Injector;

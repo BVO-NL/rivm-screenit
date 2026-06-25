@@ -23,6 +23,7 @@ import { ApiService } from '@shared/services/api/api.service'
 import { Project } from '@shared/types/algemeen/project'
 import { Observable } from 'rxjs'
 import { ProjectType } from '@shared/types/algemeen/project-type'
+import { ProjectClientDto } from '@shared/types/algemeen/dto/project-client.dto'
 
 @Injectable({
   providedIn: 'root',
@@ -31,10 +32,14 @@ export class ProjectService {
   private apiService: ApiService = inject(ApiService)
 
   getProjecten(projectType?: ProjectType): Observable<Project[]> {
-    let url = `/api/algemeen/project`
+    let url = `/api/project`
     if (projectType) {
       url += `?type=${projectType}`
     }
     return this.apiService.get<Project[]>(url)
+  }
+
+  getProjectenVoorClient(clientId: number): Observable<ProjectClientDto[]> {
+    return this.apiService.get<ProjectClientDto[]>(`/api/client/${clientId}/projecten?actief=true`)
   }
 }

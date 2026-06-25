@@ -59,6 +59,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
 import nl.rivm.screenit.repository.mamma.MammaDownloadOnderzoekRepository;
 import nl.rivm.screenit.service.BerichtToBatchService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
@@ -66,7 +67,6 @@ import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.rivm.screenit.service.mamma.MammaBaseScreeningrondeService;
 import nl.rivm.screenit.specification.mamma.MammaDownloadOnderzoekSpecification;
 import nl.rivm.screenit.util.BezwaarUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.data.domain.Sort;

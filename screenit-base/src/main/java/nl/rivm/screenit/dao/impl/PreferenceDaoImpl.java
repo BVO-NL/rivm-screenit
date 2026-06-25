@@ -25,12 +25,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.factory.impl.PreferenceItemSpecificationBuilder;
 import nl.rivm.screenit.model.PreferenceItem;
 import nl.rivm.screenit.repository.algemeen.PreferenceItemRepository;
-import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
 import nl.topicuszorg.preferencemodule.context.GlobalContext;
 import nl.topicuszorg.preferencemodule.dao.IContext;
 import nl.topicuszorg.preferencemodule.dao.PreferenceItemDao;
@@ -42,9 +44,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Repository
-public class PreferenceDaoImpl extends AbstractAutowiredDao implements PreferenceItemDao
+public class PreferenceDaoImpl implements PreferenceItemDao
 {
 	private final Map<String, Long> keyIds = new ConcurrentHashMap<>();
+
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Autowired
 	private PreferenceItemRepository preferenceItemRepository;
@@ -81,7 +86,7 @@ public class PreferenceDaoImpl extends AbstractAutowiredDao implements Preferenc
 	private IPreferenceItem getItemViaCache(String key, IContext context, Long keyId)
 	{
 		LOG.debug("Use id {} voor Key {} uit cache", keyId, key);
-		var preferenceItem = getSession().get(PreferenceItem.class, keyId); 
+		var preferenceItem = entityManager.find(PreferenceItem.class, keyId);
 		if (preferenceItem == null)
 		{
 			LOG.debug("Cached Id {} for key {} not in database anymore", keyId, key);

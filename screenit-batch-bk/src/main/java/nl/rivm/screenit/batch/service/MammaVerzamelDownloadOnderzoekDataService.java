@@ -23,13 +23,11 @@ package nl.rivm.screenit.batch.service;
 
 import java.util.List;
 
-import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek;
-
 public interface MammaVerzamelDownloadOnderzoekDataService
 {
 
-	List<MammaDownloadOnderzoekenVerzoek> getAlleVerzamelDownloadOnderzoekDataVerzoeken();
+	List<Long> getAlleVerzamelDownloadOnderzoekDataVerzoeken();
 
-	void verzamelOnderzoekData(MammaDownloadOnderzoekenVerzoek exchange);
+	void verzamelOnderzoekData(Long verzoekId);
 
 }

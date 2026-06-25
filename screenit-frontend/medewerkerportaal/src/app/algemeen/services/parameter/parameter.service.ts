@@ -37,7 +37,7 @@ export class ParameterService extends BaseService<ParameterState> {
   private http = inject(HttpClient)
 
   getParameters(): Observable<Parameter[]> {
-    return this.http.get<Parameter[]>('/api/algemeen/parameters').pipe(tap((response) => this.set('parameters', response)))
+    return this.http.get<Parameter[]>('/api/parameters').pipe(tap((response) => this.set('parameters', response)))
   }
 
   isVanafDatumBereikt(naam: string): boolean {

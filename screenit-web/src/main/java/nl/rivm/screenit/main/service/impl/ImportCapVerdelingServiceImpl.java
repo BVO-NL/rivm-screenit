@@ -46,10 +46,10 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.LogEvent;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.colon.ColonUitnodigingsgebiedService;
 import nl.rivm.screenit.util.BigDecimalUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -172,7 +172,6 @@ public class ImportCapVerdelingServiceImpl implements ImportCapVerdelingService
 				melding = melding.substring(0, melding.length() - 2);
 			}
 			melding = melding.replaceAll("\n", "<br>");
-			hibernateService.clearSecondLevelCache();
 			LogEvent logEvent = new LogEvent(melding);
 			logEvent.setLevel(level);
 			logService.logGebeurtenis(LogGebeurtenis.IMPORT_CAP_VERDELING_VERWERKT, logEvent, ingelogdeOrganisatieMedewerker, Bevolkingsonderzoek.COLON);

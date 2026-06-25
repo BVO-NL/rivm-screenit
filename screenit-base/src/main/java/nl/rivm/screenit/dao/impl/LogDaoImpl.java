@@ -24,26 +24,26 @@ package nl.rivm.screenit.dao.impl;
 import java.util.HashMap;
 import java.util.List;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+
 import nl.rivm.screenit.dao.LogDao;
 import nl.rivm.screenit.model.SortState;
 import nl.rivm.screenit.model.logging.LogRegel;
 import nl.rivm.screenit.model.logging.LoggingZoekCriteria;
 import nl.rivm.screenit.util.query.SQLQueryUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.query.NativeQuery;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.google.common.primitives.Ints;
 
 @Repository
-public class LogDaoImpl extends AbstractAutowiredDao implements LogDao
+public class LogDaoImpl implements LogDao
 {
-	@Autowired
-	private HibernateService hibernateService;
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Override
 	public List<LogRegel> getLogRegels(LoggingZoekCriteria loggingZoekCriteria, int first, int count, SortState<String> sortState)
@@ -58,11 +58,11 @@ public class LogDaoImpl extends AbstractAutowiredDao implements LogDao
 			logSql.setMaxResults(Ints.checkedCast(count));
 		}
 
-		List<Long> logRegelIds = logSql.addScalar("id", Long.class).list();
-		return logRegelIds.stream().map(id -> hibernateService.load(LogRegel.class, id)).toList();
+		var logRegelIds = logSql.getResultList();
+		return logRegelIds.stream().map(lr -> entityManager.find(LogRegel.class, ((Object[]) lr)[0])).toList();
 	}
 
-	private NativeQuery<Long> getLogSql(LoggingZoekCriteria loggingZoekCriteria, SortState<String> order)
+	private Query getLogSql(LoggingZoekCriteria loggingZoekCriteria, SortState<String> order)
 	{
 		var parameters = new HashMap<String, Object>();
 		var select = "SELECT ";
@@ -228,7 +228,7 @@ public class LogDaoImpl extends AbstractAutowiredDao implements LogDao
 		}
 
 		var loggingSql = select + from + where + groupby + orderby;
-		@SuppressWarnings("unchecked") NativeQuery<Long> criteria = getSession().createNativeQuery(loggingSql);
+		var criteria = entityManager.createNativeQuery(loggingSql);
 		for (var param : parameters.entrySet())
 		{
 			criteria.setParameter(param.getKey(), param.getValue());
@@ -240,7 +240,7 @@ public class LogDaoImpl extends AbstractAutowiredDao implements LogDao
 	public long countLogRegels(LoggingZoekCriteria loggingZoekCriteria)
 	{
 		var logSql = getLogSql(loggingZoekCriteria, null);
-		return ((Number) logSql.uniqueResult()).longValue();
+		return ((Number) logSql.getSingleResult()).longValue();
 	}
 
 }

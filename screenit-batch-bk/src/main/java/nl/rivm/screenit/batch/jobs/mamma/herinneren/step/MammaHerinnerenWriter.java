@@ -28,7 +28,7 @@ import nl.rivm.screenit.batch.jobs.mamma.herinneren.MammaHerinnerenConstants;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.service.BaseBriefService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.service.HibernateService;
 
 import org.springframework.stereotype.Component;
 

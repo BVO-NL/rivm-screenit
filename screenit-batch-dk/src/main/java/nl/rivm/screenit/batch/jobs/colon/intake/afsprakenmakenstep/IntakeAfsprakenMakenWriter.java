@@ -24,6 +24,9 @@ package nl.rivm.screenit.batch.jobs.colon.intake.afsprakenmakenstep;
 import java.math.BigDecimal;
 import java.util.Collections;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -44,6 +47,7 @@ import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.IntakeMakenLogEvent;
 import nl.rivm.screenit.service.BaseBriefService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
@@ -52,7 +56,6 @@ import nl.rivm.screenit.service.colon.ColonHuisartsBerichtService;
 import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -67,6 +70,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class IntakeAfsprakenMakenWriter implements ItemWriter<ClientAfspraak>
 {
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	private static final String SKIP_MELDING = "skipMelding";
 
@@ -163,14 +168,12 @@ public class IntakeAfsprakenMakenWriter implements ItemWriter<ClientAfspraak>
 						var afspraakslot = afspraakService.getAfspraakslotVoorAfspraak(newAfspraak);
 						String foutMessage = "Vrij slot is intussen verwijderd/verplaatst door de intakelocatie " + createMessageContext(clientId, vrijSlot, kamer);
 						var andereAfspraak = afspraakslot.getAfspraak();
-						if (andereAfspraak != null)
-						{
-							if (andereAfspraak.getStatus() == ColonAfspraakStatus.GEPLAND)
+						if (andereAfspraak != null && andereAfspraak.getStatus() == ColonAfspraakStatus.GEPLAND)
 							{
 								afspraakslot = null;
 								foutMessage = "Er is intussen al een andere afspraak gepland op het door het alg. gekozen slot " + createMessageContext(clientId, vrijSlot, kamer);
 							}
-						}
+
 						if (afspraakslot == null)
 						{
 							throw new IllegalStateException(foutMessage);
@@ -287,8 +290,8 @@ public class IntakeAfsprakenMakenWriter implements ItemWriter<ClientAfspraak>
 			}
 		}
 		executionContext.put(IntakeAfsprakenMakenConstants.ALLE_INTAKES_VERWERKT, allesVerwerkt);
-		hibernateService.getHibernateSession().flush();
-		hibernateService.getHibernateSession().clear();
+		entityManager.flush();
+		entityManager.clear();
 	}
 
 	private void removeMeldingForBsn(String bsn)

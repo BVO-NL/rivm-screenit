@@ -52,6 +52,7 @@ import nl.rivm.screenit.repository.cervix.CervixScreeningRondeRepository;
 import nl.rivm.screenit.repository.cervix.CervixUitnodigingRepository;
 import nl.rivm.screenit.repository.cervix.CervixUitstelRepository;
 import nl.rivm.screenit.service.BaseDossierService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
@@ -65,7 +66,6 @@ import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.hibernate.Hibernate;
@@ -318,23 +318,11 @@ public class CervixBaseScreeningrondeServiceImpl implements CervixBaseScreeningr
 			hibernateService.delete(uitnodigingBrief);
 		}
 
-		var brieven = ronde.getBrieven();
-		for (var brief : brieven)
-		{
-			hibernateService.delete(brief);
-		}
+		hibernateService.deleteAll(ronde.getBrieven());
 
-		var berichten = ronde.getHuisartsBerichten();
-		for (var bericht : berichten)
-		{
-			hibernateService.delete(bericht);
-		}
+		hibernateService.deleteAll(ronde.getHuisartsBerichten());
 
-		var verslagen = ronde.getVerslagen();
-		if (isNotEmpty(verslagen))
-		{
-			hibernateService.deleteAll(verslagen);
-		}
+		hibernateService.deleteAll(ronde.getVerslagen());
 		hibernateService.delete(ronde);
 	}
 

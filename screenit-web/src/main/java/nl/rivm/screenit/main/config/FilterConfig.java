@@ -36,7 +36,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.hibernate5.support.OpenSessionInViewFilter;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 
 @Configuration
 public class FilterConfig
@@ -111,11 +111,10 @@ public class FilterConfig
 	}
 
 	@Bean
-	public FilterRegistrationBean<OpenSessionInViewFilter> openSessionInViewFilter()
+	public FilterRegistrationBean<OpenEntityManagerInViewFilter> openSessionInViewFilter()
 	{
-		var filter = new FilterRegistrationBean<OpenSessionInViewFilter>();
-		filter.setFilter(new OpenSessionInViewFilter());
-		filter.addInitParameter("sessionFactoryBeanName", "hibernateSessionFactory");
+		var filter = new FilterRegistrationBean<OpenEntityManagerInViewFilter>();
+		filter.setFilter(new OpenEntityManagerInViewFilter());
 		filter.addUrlPatterns("/*");
 		filter.setOrder(FilterOrder.OPEN_SESSION_IN_VIEW.ordinal());
 		return filter;
@@ -126,7 +125,6 @@ public class FilterConfig
 	{
 		var filter = new FilterRegistrationBean<LogFilter>();
 		filter.setFilter(new LogFilter());
-		filter.addInitParameter("sessionFactoryBeanName", "hibernateSessionFactory");
 		filter.addUrlPatterns("/*");
 		filter.setOrder(FilterOrder.LOG.ordinal());
 		return filter;
@@ -158,7 +156,6 @@ public class FilterConfig
 	{
 		var filter = new FilterRegistrationBean<MedewerkerportaalControllerLoggingFilter>();
 		filter.setFilter(new MedewerkerportaalControllerLoggingFilter());
-		filter.addInitParameter("sessionFactoryBeanName", "hibernateSessionFactory");
 		filter.addUrlPatterns("/api/*");
 		filter.setOrder(FilterOrder.LOG.ordinal());
 		return filter;

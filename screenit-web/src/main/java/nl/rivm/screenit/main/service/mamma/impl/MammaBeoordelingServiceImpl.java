@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -69,6 +72,7 @@ import nl.rivm.screenit.service.BaseScreeningRondeService;
 import nl.rivm.screenit.service.BerichtToBatchService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.DistributedLockService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.MailService;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingReserveringService;
@@ -79,7 +83,6 @@ import nl.rivm.screenit.service.mamma.MammaHuisartsBerichtService;
 import nl.rivm.screenit.service.mamma.MammaHuisartsService;
 import nl.rivm.screenit.service.mamma.be.verslag.MammaVerslagDocumentCreator;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.hibernate.envers.AuditReaderFactory;
@@ -160,6 +163,9 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 
 	@Autowired
 	private MammaBeoordelingRepository beoordelingRepository;
+
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Override
 	public List<MammaBeoordeling> getAlleBeoordelingenMetBeelden(MammaBeoordeling beoordeling)
@@ -585,7 +591,7 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 	@Override
 	public List<Object[]> beoordelingGeschiedenis(MammaBeoordeling beoordeling)
 	{
-		var reader = AuditReaderFactory.get(hibernateService.getHibernateSession());
+		var reader = AuditReaderFactory.get(entityManager);
 		var query = reader.createQuery().forRevisionsOfEntity(MammaBeoordeling.class, false, true);
 
 		query.add(AuditEntity.id().eq(beoordeling.getId()));

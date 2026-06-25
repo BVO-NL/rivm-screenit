@@ -53,7 +53,7 @@ public abstract class BaseSpecificationScrollableResultReader<T extends Hibernat
 			return new EmptyScrollableResults();
 		}
 
-		var jpaQuery = new FluentJpaQueryImpl<>(createSpecification(), getHibernateSession(), getEntityClass(), getResultClass());
+		var jpaQuery = new FluentJpaQueryImpl<>(createSpecification(), getEntityManager(), getEntityClass(), getResultClass());
 		jpaQuery.projections((cb, r) ->
 		{
 			var orders = getOrders(r, cb);
@@ -65,7 +65,7 @@ public abstract class BaseSpecificationScrollableResultReader<T extends Hibernat
 			jpaQuery.distinct();
 		}
 
-		return jpaQuery.setScrollFetchSize(fetchSize).scroll(maxResults);
+		return jpaQuery.setScrollFetchSize(getFetchSize()).scroll(maxResults);
 	}
 
 	@Override

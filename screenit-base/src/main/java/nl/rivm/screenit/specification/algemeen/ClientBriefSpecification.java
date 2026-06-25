@@ -44,6 +44,7 @@ import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.model.mamma.MammaBrief_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 
 import static nl.rivm.screenit.model.algemeen.AlgemeneBrief_.MERGED_BRIEVEN;
@@ -147,5 +148,10 @@ public class ClientBriefSpecification
 			.and(isNietTegengehouden())
 			.and(heeftVervangendeProjectBrief(false))
 			.and(isNietOverledenEnWoontInNederland().with(ClientBriefSpecification::persoonJoin));
+	}
+
+	public static <B extends ClientBrief<?, ?, B>> ExtendedSpecification<B> isGeenHerdruk()
+	{
+		return (r, q, cb) -> cb.isNull(r.get(MammaBrief_.HERDRUK)); 
 	}
 }

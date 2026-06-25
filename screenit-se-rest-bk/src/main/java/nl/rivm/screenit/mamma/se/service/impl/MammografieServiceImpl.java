@@ -37,12 +37,12 @@ import nl.rivm.screenit.model.mamma.MammaAnnotatieAfbeelding;
 import nl.rivm.screenit.model.mamma.MammaMammografie;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.repository.mamma.MammaScreeningRondeRepository;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.mamma.MammaBaseAnnotatieAfbeeldingService;
 import nl.rivm.screenit.service.mamma.MammaBaseDense2Service;
 import nl.rivm.screenit.service.mamma.MammaBaseFactory;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

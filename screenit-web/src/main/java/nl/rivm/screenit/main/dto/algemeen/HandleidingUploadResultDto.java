@@ -24,13 +24,18 @@ package nl.rivm.screenit.main.dto.algemeen;
 import lombok.Getter;
 import lombok.Setter;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Getter
 @Setter
+@Schema(name = "HandleidingUploadResultDto", description = "Resultaat van het uploaden, bewerken of verwijderen van een handleiding.")
 public class HandleidingUploadResultDto
 {
 	private String bestandsnaam;
 
+	@Schema(description = "Geeft aan of de bewerking is geslaagd")
 	private boolean geslaagd;
 
+	@Schema(description = "Foutmelding wanneer de bewerking niet is geslaagd")
 	private String foutmelding;
 }

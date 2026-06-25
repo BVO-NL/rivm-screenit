@@ -28,11 +28,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.model.enums.GbaVraagType;
 import nl.rivm.screenit.model.gba.GbaVraag;
+import nl.rivm.screenit.service.HibernateService;
 import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo105Bericht;
 import nl.topicuszorg.gba.vertrouwdverbonden.model.enums.BerichtType;
 import nl.topicuszorg.gba.vertrouwdverbonden.model.enums.Vo105_ArecordVeld;
 import nl.topicuszorg.gba.vertrouwdverbonden.model.utils.VoxHelper;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;

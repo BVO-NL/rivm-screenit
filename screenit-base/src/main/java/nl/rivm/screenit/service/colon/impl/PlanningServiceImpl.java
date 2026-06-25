@@ -40,13 +40,13 @@ import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamerFilter;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakslotStatus;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 import nl.rivm.screenit.service.CoordinatenService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.colon.PlanningService;
 import nl.rivm.screenit.service.colon.VrijSlotFactory;
 import nl.rivm.screenit.service.impl.PersoonCoordinaten;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;

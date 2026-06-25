@@ -35,11 +35,11 @@ import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.model.mamma.MammaUitstel;
 import nl.rivm.screenit.service.BaseTestTimelineService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseTestTimelineTimeService;
 import nl.rivm.screenit.service.mamma.enums.MammaTestTimeLineDossierTijdstip;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -182,6 +182,10 @@ public class MammaBaseTestTimelineTimeServiceImpl implements MammaBaseTestTimeli
 
 	private void rekenBriefTerug(MammaBrief brief, int aantalDagen)
 	{
+		if (brief == null)
+		{
+			return;
+		}
 		baseTestTimelineService.rekenObjectTerug(brief, aantalDagen);
 		hibernateService.saveOrUpdate(brief);
 
@@ -202,6 +206,10 @@ public class MammaBaseTestTimelineTimeServiceImpl implements MammaBaseTestTimeli
 	{
 		baseTestTimelineService.rekenObjectTerug(afmelding, aantalDagen);
 		hibernateService.saveOrUpdate(afmelding);
+		rekenBriefTerug(afmelding.getAfmeldingAanvraag(), aantalDagen);
+		rekenBriefTerug(afmelding.getAfmeldingBevestiging(), aantalDagen);
+		rekenBriefTerug(afmelding.getHeraanmeldAanvraag(), aantalDagen);
+		rekenBriefTerug(afmelding.getHeraanmeldBevestiging(), aantalDagen);
 	}
 
 	private int aantalDagenCalculator(MammaDossier dossier, MammaTestTimeLineDossierTijdstip tijdstip)

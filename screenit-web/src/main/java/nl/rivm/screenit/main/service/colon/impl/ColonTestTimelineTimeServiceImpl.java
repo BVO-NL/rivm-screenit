@@ -23,6 +23,7 @@ package nl.rivm.screenit.main.service.colon.impl;
 
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,10 +34,10 @@ import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonFitRegistratie;
-import nl.rivm.screenit.model.colon.ColonMergedBrieven;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonVerslag;
 import nl.rivm.screenit.service.BaseTestTimelineService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
@@ -60,6 +61,9 @@ public class ColonTestTimelineTimeServiceImpl implements ColonTestTimelineTimeSe
 	@Autowired
 	private BaseTestTimelineService baseTestTimelineService;
 
+	@Autowired
+	private HibernateService hibernateService;
+
 	@Override
 	public boolean calculateBackwards(ColonDossier dossier, TestTimeLineDossierTijdstip tijdstip)
 	{
@@ -73,9 +77,20 @@ public class ColonTestTimelineTimeServiceImpl implements ColonTestTimelineTimeSe
 	{
 		LOG.debug("Dossier aantal dagen terug gezet: " + dagen);
 		baseTestTimelineService.rekenObjectTerug(dossier, dagen);
+		if (dossier.getVooraankondiging() != null)
+		{
+			rekenBriefTerug(dossier.getVooraankondiging().getBrief(), dagen);
+		}
 		baseTestTimelineService.rekenObjectTerug(dossier.getVooraankondiging(), dagen);
 		baseTestTimelineService.rekenObjectTerug(dossier.getVolgendeUitnodiging(), dagen);
 		baseTestTimelineService.rekenObjectTerug(dossier.getAfmeldingen(), dagen);
+		for (var afmelding : dossier.getAfmeldingen())
+		{
+			rekenBriefTerug(afmelding.getAfmeldingAanvraag(), dagen);
+			rekenBriefTerug(afmelding.getAfmeldingBevestiging(), dagen);
+			rekenBriefTerug(afmelding.getHeraanmeldAanvraag(), dagen);
+			rekenBriefTerug(afmelding.getHeraanmeldBevestiging(), dagen);
+		}
 		rekenAlleScreeningRondesTerug(dossier, dagen);
 		baseTestTimelineService.rekenAllePersoonsDatumTerug(dossier.getClient().getPersoon(), dagen);
 		return true;
@@ -156,31 +171,12 @@ public class ColonTestTimelineTimeServiceImpl implements ColonTestTimelineTimeSe
 			baseTestTimelineService.rekenObjectTerug(ronde, dagen);
 
 			rekenAlleUitnodigingenTerug(ronde, dagen);
-			baseTestTimelineService.rekenObjectTerug(ronde.getBrieven(), dagen);
-			rekenBriefTerug(ronde.getLaatsteBrief(), dagen);
+			rekenAlleBrievenTerug(ronde.getBrieven(), dagen);
 			rekenAlleIntakeAfsprakenTerug(ronde, dagen);
 			rekenAlleVerslagenTerug(ronde, dagen);
 			baseTestTimelineService.rekenObjectTerug(ronde.getHuisartsBerichten(), dagen);
 			baseTestTimelineService.rekenObjectTerug(ronde.getAfmeldingen(), dagen);
 		}
-	}
-
-	private void rekenBriefTerug(ColonBrief brief, int aantalDagen)
-	{
-		if (brief == null)
-		{
-			return;
-		}
-		var mergedBrieven = (ColonMergedBrieven) brief.getMergedBrieven();
-		if (mergedBrieven != null)
-		{
-			rekenMergedBrievenTerug(mergedBrieven, aantalDagen);
-		}
-	}
-
-	private void rekenMergedBrievenTerug(ColonMergedBrieven mergedBrieven, int aantalDagen)
-	{
-		baseTestTimelineService.rekenObjectTerug(mergedBrieven, aantalDagen);
 	}
 
 	private void rekenAlleVerslagenTerug(ColonScreeningRonde ronde, int dagen)
@@ -211,6 +207,31 @@ public class ColonTestTimelineTimeServiceImpl implements ColonTestTimelineTimeSe
 			baseTestTimelineService.rekenObjectTerug(uitnodiging.getGekoppeldeFitRegistratie(), dagen);
 			baseTestTimelineService.rekenObjectTerug(uitnodiging.getGekoppeldeExtraFitRegistratie(), dagen);
 			baseTestTimelineService.rekenObjectTerug(uitnodiging.getAntwoordFormulier(), dagen);
+		}
+	}
+
+	private void rekenAlleBrievenTerug(List<ColonBrief> brieven, int aantalDagen)
+	{
+		for (var brief : brieven)
+		{
+			rekenBriefTerug(brief, aantalDagen);
+		}
+	}
+
+	private void rekenBriefTerug(ColonBrief brief, int aantalDagen)
+	{
+		if (brief == null)
+		{
+			return;
+		}
+		baseTestTimelineService.rekenObjectTerug(brief, aantalDagen);
+		hibernateService.saveOrUpdate(brief);
+
+		var mergedBrieven = brief.getMergedBrieven();
+		if (mergedBrieven != null)
+		{
+			baseTestTimelineService.rekenObjectTerug(mergedBrieven, aantalDagen);
+			hibernateService.saveOrUpdate(mergedBrieven);
 		}
 	}
 }

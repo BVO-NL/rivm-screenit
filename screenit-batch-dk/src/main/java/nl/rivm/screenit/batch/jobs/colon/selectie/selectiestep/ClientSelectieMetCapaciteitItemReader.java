@@ -34,18 +34,16 @@ import nl.rivm.screenit.model.enums.JobStartParameter;
 import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportage;
 import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageGewijzigdGebiedEntry;
 import nl.rivm.screenit.service.BaseProjectService;
+import nl.rivm.screenit.service.DatabaseRunner;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
-import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Component
 @StepScope
@@ -69,11 +67,14 @@ public class ClientSelectieMetCapaciteitItemReader extends AbstractClientSelecti
 	@Autowired
 	private ICurrentDateSupplier currentDateSupplier;
 
+	@Autowired
+	private DatabaseRunner databaseRunner;
+
 	private Collection<ColonUitnodigingsgebiedSelectieContext> uitnodigingsgebieden;
 
 	public ClientSelectieMetCapaciteitItemReader()
 	{
-		super.setFetchSize(50);
+		setFetchSize(50);
 	}
 
 	@Override
@@ -89,30 +90,12 @@ public class ClientSelectieMetCapaciteitItemReader extends AbstractClientSelecti
 	}
 
 	@Override
-	public void open(ExecutionContext executionContext) throws ItemStreamException
+	protected void openInternal(ExecutionContext executionContext) throws ItemStreamException
 	{
-		boolean unbindSessionFromThread = false;
-		try
-		{
-			hibernateSession = sessionFactory.openSession();
-			if (!TransactionSynchronizationManager.hasResource(sessionFactory))
-			{
-				TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(hibernateSession));
-				unbindSessionFromThread = true;
-			}
-			JobParameters jobParameters = stepExecution.getJobExecution().getJobParameters();
-			boolean herstartJob = Boolean.parseBoolean(jobParameters.getString(JobStartParameter.COLON_SELECTIE_HERSTART.name(), "false"));
-			uitnodigingsgebieden = uitnodigingsGebiedCapactieitService.bepaalCapaciteit(executionContext, true, herstartJob);
-			context = executionContext;
-			setCursor();
-		}
-		finally
-		{
-			if (unbindSessionFromThread)
-			{
-				TransactionSynchronizationManager.unbindResource(sessionFactory);
-			}
-		}
+		var jobParameters = stepExecution.getJobExecution().getJobParameters();
+		var herstartJob = Boolean.parseBoolean(jobParameters.getString(JobStartParameter.COLON_SELECTIE_HERSTART.name(), "false"));
+		uitnodigingsgebieden = uitnodigingsGebiedCapactieitService.bepaalCapaciteit(executionContext, true, herstartJob);
+		setCursor();
 	}
 
 	private void setCursor()
@@ -140,6 +123,7 @@ public class ClientSelectieMetCapaciteitItemReader extends AbstractClientSelecti
 		selectieContext.fetchSize = fetchSize;
 		selectieContext.minimaleLeeftijd = minimaleLeeftijd;
 		selectieContext.maximaleLeeftijd = maximaleLeeftijd;
+		selectieContext.databaseRunner = databaseRunner;
 		selectieContext.peildatum = currentDateSupplier.getLocalDate();
 		selectieContext.init(uitnodigingService.getUitnodigingCohorten(), projectGroepen);
 

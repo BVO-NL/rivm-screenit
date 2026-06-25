@@ -25,6 +25,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.persistence.EntityManager;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.Constants;
@@ -51,6 +54,7 @@ import nl.rivm.screenit.repository.algemeen.GemeenteRepository;
 import nl.rivm.screenit.service.BaseGbaVraagService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.CoordinatenService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.TransgenderService;
@@ -63,14 +67,12 @@ import nl.topicuszorg.gba.vertrouwdverbonden.model.enums.GbaRubriek;
 import nl.topicuszorg.gba.vertrouwdverbonden.model.enums.Vo107_ArecordVeld;
 import nl.topicuszorg.gba.vertrouwdverbonden.model.enums.VoxBrecordVeld;
 import nl.topicuszorg.gba.vertrouwdverbonden.model.utils.VoxHelper;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.NaamGebruik;
 import nl.topicuszorg.util.postcode.PostcodeFormatter;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,37 +81,31 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import com.google.common.base.Strings;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class GbaServiceImpl implements GbaService
 {
 	private static final String WA11 = "Wa11";
 
-	@Autowired
-	private ClientService clientService;
+	private final EntityManager entityManager;
 
-	@Autowired
-	private LogService logService;
+	private final ClientService clientService;
 
-	@Autowired
-	private GemeenteRepository gemeenteRepository;
+	private final LogService logService;
 
-	@Autowired
-	private HibernateService hibernateService;
+	private final GemeenteRepository gemeenteRepository;
 
-	@Autowired
-	private CoordinatenService coordinatenService;
+	private final HibernateService hibernateService;
 
-	@Autowired
-	private ICurrentDateSupplier currentDateSupplier;
+	private final CoordinatenService coordinatenService;
 
-	@Autowired
-	private TransgenderService transgenderService;
+	private final ICurrentDateSupplier currentDateSupplier;
 
-	@Autowired
-	private BaseGbaVraagService baseGbaVraagService;
+	private final TransgenderService transgenderService;
 
-	@Autowired
-	private GbaVraagService gbaVraagService;
+	private final BaseGbaVraagService baseGbaVraagService;
+
+	private final GbaVraagService gbaVraagService;
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
@@ -222,7 +218,7 @@ public class GbaServiceImpl implements GbaService
 						client.setGbaStatus(GbaStatus.INDICATIE_AANWEZIG);
 						client.getPersoon().setBsn(bsn);
 						hibernateService.saveOrUpdate(client);
-						hibernateService.getHibernateSession().flush();
+						entityManager.flush();
 						String logmelding = "Client is heractiveerd met anummer wijziging naar: " + getStringUitBericht(bericht, GbaRubriek.PERS_A_NUMMER);
 						logService.logGebeurtenis(LogGebeurtenis.GBA_IMPORT_HERACTIVATIE, clientService.getScreeningOrganisatieVan(client), client, logmelding);
 					}
@@ -267,7 +263,7 @@ public class GbaServiceImpl implements GbaService
 			{
 				clientService.actiesNaUpdateWithGba(client);
 			}
-			hibernateService.getHibernateSession().flush();
+			entityManager.flush();
 		}
 		catch (Exception e)
 		{
@@ -299,12 +295,12 @@ public class GbaServiceImpl implements GbaService
 		clientB.getPersoon().setAnummer(null);
 		hibernateService.saveOrUpdate(clientA);
 		hibernateService.saveOrUpdate(clientB);
-		hibernateService.getHibernateSession().flush();
+		entityManager.flush();
 		clientA.getPersoon().setAnummer(anummerClientB);
 		clientB.getPersoon().setAnummer(anummerClientA);
 		hibernateService.saveOrUpdate(clientA);
 		hibernateService.saveOrUpdate(clientB);
-		hibernateService.getHibernateSession().flush();
+		entityManager.flush();
 	}
 
 	@Override
@@ -340,7 +336,7 @@ public class GbaServiceImpl implements GbaService
 		var aantalIndicatiesIngetrokkenAfgevoerd = verwerkingLog.getAantalIndicatiesIngetrokkenAfgevoerd();
 		verwerkingLog.setAantalIndicatiesIngetrokkenAfgevoerd(aantalIndicatiesIngetrokkenAfgevoerd != null ? aantalIndicatiesIngetrokkenAfgevoerd + 1 : 1);
 		hibernateService.saveOrUpdate(client);
-		hibernateService.getHibernateSession().flush();
+		entityManager.flush();
 
 		String goedeString = "Bericht Verwerkt: bsn aangepast naar " + nieuweClientBsn + ", EREF " + eref + ", a-nummer uit bericht: " + anummerARecord
 			+ ", anummer afgevoerde cliënt: " + client.getPersoon().getAnummer();

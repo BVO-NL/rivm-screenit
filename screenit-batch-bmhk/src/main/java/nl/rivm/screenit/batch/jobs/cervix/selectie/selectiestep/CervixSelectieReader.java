@@ -61,6 +61,7 @@ import nl.rivm.screenit.model.cervix.enums.CervixCytologieUitslag;
 import nl.rivm.screenit.model.cervix.enums.CervixHpvBeoordelingWaarde;
 import nl.rivm.screenit.model.cervix.enums.CervixLeeftijdcategorie;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.specification.DateSpecification;
@@ -73,7 +74,6 @@ import nl.rivm.screenit.specification.cervix.CervixHpvAnalyseresultatenSpecifica
 import nl.rivm.screenit.specification.cervix.CervixHpvBeoordelingSpecification;
 import nl.rivm.screenit.specification.cervix.CervixScreeningRondeSpecification;
 import nl.rivm.screenit.specification.cervix.CervixUitstelSpecification;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -98,7 +98,7 @@ public class CervixSelectieReader extends BaseSpecificationScrollableResultReade
 		HibernateService hibernateService, ICurrentDateSupplier dateSupplier)
 	{
 		this.dateSupplier = dateSupplier;
-		super.setFetchSize(50);
+		setFetchSize(50);
 		this.organisatieParameterService = organisatieParameterService;
 		this.hibernateService = hibernateService;
 	}

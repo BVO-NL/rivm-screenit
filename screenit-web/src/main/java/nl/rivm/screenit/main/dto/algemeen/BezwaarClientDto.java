@@ -28,13 +28,16 @@ import lombok.Setter;
 
 import nl.rivm.screenit.dto.EntityDto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Getter
 @Setter
+@Schema(name = "BezwaarClientDto", description = "Clientgegevens voor het herstellen van een BRP-bezwaar.")
 public class BezwaarClientDto extends EntityDto
 {
 	private String bsn;
-
 	private LocalDate geboortedatum;
 
+	@Schema(description = "Id van het briefdocument")
 	private Long briefDocument;
 }

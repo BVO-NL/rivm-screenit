@@ -55,6 +55,7 @@ import nl.rivm.screenit.repository.mamma.MammaScreeningRondeRepository;
 import nl.rivm.screenit.repository.mamma.MammaStandplaatsOpmerkingRepository;
 import nl.rivm.screenit.repository.mamma.MammaStandplaatsPeriodeRepository;
 import nl.rivm.screenit.service.BaseBriefService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
@@ -66,10 +67,9 @@ import nl.rivm.screenit.specification.mamma.MammaStandplaatsPeriodeSpecification
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EntityAuditUtil;
+import nl.rivm.screenit.util.hibernate.OpenEntityManagerInThread;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -309,7 +309,7 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 		return afspraken;
 	}
 
-	private class GewijzigdeLocatieBrievenThread extends OpenHibernateSessionInThread
+	private class GewijzigdeLocatieBrievenThread extends OpenEntityManagerInThread
 	{
 
 		private final Long standplaatsId;

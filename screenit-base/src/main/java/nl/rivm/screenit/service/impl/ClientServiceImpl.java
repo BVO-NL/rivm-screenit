@@ -24,7 +24,7 @@ package nl.rivm.screenit.service.impl;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +69,7 @@ import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.repository.colon.ColonAfmeldingRepository;
 import nl.rivm.screenit.repository.colon.ColonUitnodigingRepository;
 import nl.rivm.screenit.service.ClientService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
@@ -78,7 +79,6 @@ import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EntityAuditUtil;
 import nl.rivm.screenit.util.ProjectUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.organisatie.model.Adres;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -90,7 +90,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
@@ -187,14 +186,14 @@ public class ClientServiceImpl implements ClientService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void saveContactGegevens(Client client, Account ingelogdAccount)
 	{
 		saveContactGegevens(client, ingelogdAccount, null, null);
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void saveContactGegevens(Client client, Account ingelogdAccount, MammaScreeningsEenheid screeningsEenheid, LocalDateTime transactieDatumTijd)
 	{
 		var persoon = client.getPersoon();
@@ -251,7 +250,7 @@ public class ClientServiceImpl implements ClientService
 		if (bsn != null && bsn.length() == 12)
 		{
 			ng01Value = Integer.parseInt(bsn.substring(0, 3));
-			bsn = bsn.substring(3, bsn.length());
+			bsn = bsn.substring(3);
 		}
 		ng01Value++;
 
@@ -316,7 +315,7 @@ public class ClientServiceImpl implements ClientService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void saveOrUpdateClient(Client client)
 	{
 		TijdelijkAdres tijdelijkAdres = client.getPersoon().getTijdelijkAdres();
@@ -329,7 +328,9 @@ public class ClientServiceImpl implements ClientService
 			client.getPersoon().setTijdelijkAdres(null);
 		}
 
-		clientDao.saveOrUpdateClient(client);
+		hibernateService.saveOrUpdate(client.getPersoon().getGbaAdres());
+		hibernateService.saveOrUpdate(client.getPersoon());
+		hibernateService.saveOrUpdate(client);
 	}
 
 	@Override
@@ -343,20 +344,16 @@ public class ClientServiceImpl implements ClientService
 	@Override
 	public Dossier getDossier(Client client, Bevolkingsonderzoek bevolkingsonderzoek)
 	{
-		switch (bevolkingsonderzoek)
+		return switch (bevolkingsonderzoek)
 		{
-		case COLON:
-			return client.getColonDossier();
-		case CERVIX:
-			return client.getCervixDossier();
-		case MAMMA:
-			return client.getMammaDossier();
-		}
-		return null;
+			case COLON -> client.getColonDossier();
+			case CERVIX -> client.getCervixDossier();
+			case MAMMA -> client.getMammaDossier();
+		};
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public CervixUitnodiging getLaatstVerstuurdeUitnodiging(CervixScreeningRonde ronde, boolean inclusiefZas)
 	{
 		CervixUitnodiging laatsteUitnodiging = null;
@@ -388,7 +385,7 @@ public class ClientServiceImpl implements ClientService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void saveDocumentForClient(UploadDocument uploadDocument, Client client)
 	{
 		List<UploadDocument> documents = client.getDocuments();
@@ -406,14 +403,14 @@ public class ClientServiceImpl implements ClientService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void deleteDocumentForClient(UploadDocument document, Client client)
 	{
 		uploadDocumentService.deleteDocumentFromList(document, client.getDocuments());
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void actiesNaUpdateWithGba(Client client)
 	{
 		if (client.getPersoon() != null)
@@ -432,7 +429,7 @@ public class ClientServiceImpl implements ClientService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void projectClientInactiveren(ProjectClient pClient, ProjectInactiefReden reden, Bevolkingsonderzoek bevolkingsonderzoek)
 	{
 		if (pClient != null && (
@@ -456,7 +453,7 @@ public class ClientServiceImpl implements ClientService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void alleProjectClientenInactiveren(Client client, ProjectInactiefReden projectInactiefReden, Bevolkingsonderzoek bvo)
 	{
 		List<ProjectClient> projectClienten = ProjectUtil.getHuidigeProjectClienten(client, currentDateSupplier.getDate(), false);
@@ -470,7 +467,7 @@ public class ClientServiceImpl implements ClientService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void projectClientInactiveren(Client client, ProjectInactiefReden reden, Bevolkingsonderzoek bevolkingsonderzoek)
 	{
 		ProjectClient pClient = ProjectUtil.getHuidigeProjectClient(client, currentDateSupplier.getDate());
@@ -481,7 +478,7 @@ public class ClientServiceImpl implements ClientService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public String projectClientActiveren(ProjectClient projectClient)
 	{
 
@@ -536,7 +533,7 @@ public class ClientServiceImpl implements ClientService
 		if (client != null && client.getPersoon().getGbaAdres() != null && client.getPersoon().getGbaAdres().getGbaGemeente() != null
 			&& client.getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie() != null)
 		{
-			return Arrays.asList(client.getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie());
+			return Collections.singletonList(client.getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie());
 		}
 		return new ArrayList<>();
 	}
@@ -548,7 +545,7 @@ public class ClientServiceImpl implements ClientService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void saveOrUpdateTijdelijkGbaAdres(Client client, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		String melding = "Gewijzigd.";
@@ -563,7 +560,7 @@ public class ClientServiceImpl implements ClientService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void verwijderTijdelijkGbaAdres(Client client, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		String melding = "Handmatig verwijderd.";

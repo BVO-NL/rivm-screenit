@@ -24,12 +24,16 @@ package nl.rivm.screenit.main.dto.mamma.fotobespreking;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Schema(name = "MammaFotobesprekingOnderzoekRequestDto", description = "Request met clientonderzoeken die aan een fotobespreking gekoppeld moeten worden.")
 public class MammaFotobesprekingOnderzoekRequestDto
 {
+	@Schema(description = "Ids van clienten waarvan de onderzoeken gekoppeld moeten worden")
 	private List<Long> clientIds = new ArrayList<>();
 }

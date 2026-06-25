@@ -25,6 +25,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dao.mamma.MammaBaseTehuisClientenDao;
 import nl.rivm.screenit.model.Client;
@@ -38,25 +41,25 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseTehuisService;
 import nl.rivm.screenit.service.mamma.enums.MammaTehuisSelectie;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
 import nl.topicuszorg.organisatie.model.Adres;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import static nl.rivm.screenit.service.mamma.enums.MammaTehuisSelectie.GEKOPPELD;
 import static nl.rivm.screenit.service.mamma.enums.MammaTehuisSelectie.TEHUIS_ADRES;
 import static nl.rivm.screenit.service.mamma.enums.MammaTehuisSelectie.UIT_TE_NODIGEN;
 
 @Repository
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-public class MammaBaseTehuisClientenDaoImpl extends AbstractAutowiredDao implements MammaBaseTehuisClientenDao
+public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDao
 {
+	@PersistenceContext
+	private EntityManager entityManager;
+
 	@Autowired
 	private SimplePreferenceService preferenceService;
 
@@ -222,7 +225,7 @@ public class MammaBaseTehuisClientenDaoImpl extends AbstractAutowiredDao impleme
 
 		orderString = voegAltijdSorteringOpPersoonIdToeBijSelect(sortProperty, orderString, count);
 
-		NativeQuery query = getSession().createNativeQuery(selectString + fromString + whereString + orderString);
+		NativeQuery query = entityManager.unwrap(Session.class).createNativeQuery(selectString + fromString + whereString + orderString);
 
 		query.setParameter("vanafGeboortedatum", DateUtil.toUtilDate(LocalDate.of(vanafGeboortejaar, 1, 1)));
 		query.setParameter("totGeboortedatum", DateUtil.toUtilDate(LocalDate.of(totGeboortejaar, 1, 1)));

@@ -29,7 +29,6 @@ import nl.rivm.screenit.batch.jobs.brieven.genereren.AbstractBrievenGenererenWri
 import nl.rivm.screenit.batch.jobs.colon.brieven.ColonBrievenConstants;
 import nl.rivm.screenit.document.BaseDocumentCreator;
 import nl.rivm.screenit.model.MailMergeContext;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonMergedBrieven;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -52,11 +51,9 @@ public class ColonBrievenGenererenWriter extends AbstractBrievenGenererenWriter<
 	{
 		var context = getStepExecutionContext();
 		var briefType = BriefType.valueOf(context.getString(ColonBrievenGenererenPartitioner.KEY_BRIEFTYPE));
-		var screeningOrganisatie = getHibernateService().load(ScreeningOrganisatie.class,
-			context.getLong(ColonBrievenGenererenPartitioner.KEY_SCREENINGORGANISATIEID));
 
 		var mergedBrieven = new ColonMergedBrieven();
-		mergedBrieven.setScreeningOrganisatie(screeningOrganisatie);
+		mergedBrieven.setScreeningOrganisatie(getScreeningOrganisatie());
 		mergedBrieven.setCreatieDatum(aangemaaktOp);
 		mergedBrieven.setBriefType(briefType);
 		return mergedBrieven;

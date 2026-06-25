@@ -27,7 +27,7 @@ import nl.rivm.screenit.mamma.planning.filter.PlanningControllerSynchronizedRequ
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.hibernate5.support.OpenSessionInViewFilter;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 
 @Configuration
 public class WebConfig
@@ -46,13 +46,10 @@ public class WebConfig
 	}
 
 	@Bean
-	public FilterRegistrationBean<OpenSessionInViewFilter> openSessionInViewFilter()
+	public FilterRegistrationBean<OpenEntityManagerInViewFilter> openEntityManagerInViewFilter()
 	{
-		FilterRegistrationBean<OpenSessionInViewFilter> registrationBean
-			= new FilterRegistrationBean<>();
-
-		registrationBean.setFilter(new OpenSessionInViewFilter());
-		registrationBean.addInitParameter("sessionFactoryBeanName", "hibernateSessionFactory");
+		var registrationBean = new FilterRegistrationBean<OpenEntityManagerInViewFilter>();
+		registrationBean.setFilter(new OpenEntityManagerInViewFilter());
 		registrationBean.addUrlPatterns("/*");
 
 		return registrationBean;

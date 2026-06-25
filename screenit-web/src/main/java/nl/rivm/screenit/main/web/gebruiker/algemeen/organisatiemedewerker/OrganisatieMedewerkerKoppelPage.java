@@ -47,8 +47,8 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.helper.OrganisatieMedewerkerRolComparator;
 import nl.rivm.screenit.security.IScreenitRealm;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.LogService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.CglibHibernateModel;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 

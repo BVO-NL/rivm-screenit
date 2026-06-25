@@ -25,8 +25,11 @@ import java.util.List;
 
 import nl.rivm.screenit.main.dto.algemeen.ClientZoekenFilterDto;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 
 public interface ClientZoekenService
 {
 	List<Client> zoekClienten(ClientZoekenFilterDto filter);
+
+	List<Bevolkingsonderzoek> getActieveBvos(Long clientId);
 }

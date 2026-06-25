@@ -28,8 +28,9 @@ import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BaseOverdrachtPersoonsgegevensService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -39,30 +40,30 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation = Propagation.REQUIRED)
 public class BaseOverdrachtPersoonsgegevensServiceImpl implements BaseOverdrachtPersoonsgegevensService
 {
-    @Autowired
-    private HibernateService hibernateService;
+	@Autowired
+	private HibernateService hibernateService;
 
-    @Autowired
-    private ICurrentDateSupplier currentDateSupplier;
+	@Autowired
+	private ICurrentDateSupplier currentDateSupplier;
 
-    @Autowired
-    private BaseBriefService briefService;
+	@Autowired
+	private BaseBriefService briefService;
 
-    @Override
-    public void maakOverdrachtVerzoek(Client client)
-    {
-        AlgemeneBrief brief = briefService.maakAlgemeneBrief(client, BriefType.CLIENT_INZAGE_PERSOONSGEGEVENS_AANVRAAG);
-        OverdrachtPersoonsgegevens overdracht = new OverdrachtPersoonsgegevens();
-        overdracht.setClient(client);
-        overdracht.setVerstuurdeAanvraagbrief(brief);
-        overdracht.setStatus(AanvraagBriefStatus.BRIEF);
-        overdracht.setStatusDatum(currentDateSupplier.getDate());
-        overdracht.setBkGegevens(false);
-        overdracht.setBkBeelden(false);
-        overdracht.setBmhkGegevens(false);
-        overdracht.setDkGegevens(false);
-        hibernateService.saveOrUpdate(overdracht);
+	@Override
+	public void maakOverdrachtVerzoek(Client client)
+	{
+		AlgemeneBrief brief = briefService.maakAlgemeneBrief(client, BriefType.CLIENT_INZAGE_PERSOONSGEGEVENS_AANVRAAG);
+		OverdrachtPersoonsgegevens overdracht = new OverdrachtPersoonsgegevens();
+		overdracht.setClient(client);
+		overdracht.setVerstuurdeAanvraagbrief(brief);
+		overdracht.setStatus(AanvraagBriefStatus.BRIEF);
+		overdracht.setStatusDatum(currentDateSupplier.getDate());
+		overdracht.setBkGegevens(false);
+		overdracht.setBkBeelden(false);
+		overdracht.setBmhkGegevens(false);
+		overdracht.setDkGegevens(false);
+		hibernateService.saveOrUpdate(overdracht);
 
-    }
+	}
 
 }

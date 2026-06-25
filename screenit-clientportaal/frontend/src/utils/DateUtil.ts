@@ -23,6 +23,8 @@ import {isNullOfUndefined} from "./EmptyUtil"
 import {nl} from "date-fns/locale"
 import {cpStore} from "../store"
 
+export const SCREENIT_TIJDZONE = "Europe/Amsterdam"
+
 export const berekenOffset = (datumTijd: Date): number => {
 	const lokaalDatum = new Date()
 	return lokaalDatum.getTime() - datumTijd.getTime()
@@ -68,7 +70,7 @@ export const formatTime = (datum?: Date): string => {
 		return ""
 	}
 
-	return format(datum, "HH:mm", {locale: nl})
+	return format(datumInTijdzone(datum, SCREENIT_TIJDZONE), "HH:mm", {locale: nl})
 }
 
 export const formatDateTime = (datum?: Date): string => {
@@ -85,6 +87,10 @@ export const formatDateText = (datum?: Date | null): string => {
 	}
 
 	return format(datum, "d MMMM yyyy", {locale: nl})
+}
+
+const datumInTijdzone = (datum: Date, tijdzone: string): Date => {
+	return new Date(datum.toLocaleString("en-US", {timeZone: tijdzone}))
 }
 
 export const formatDateWithDayName = (datum?: Date | null): string => {

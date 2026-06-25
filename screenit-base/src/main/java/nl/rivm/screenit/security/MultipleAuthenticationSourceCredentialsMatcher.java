@@ -22,7 +22,7 @@ package nl.rivm.screenit.security;
  */
 
 import nl.rivm.screenit.Constants;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.topicuszorg.yubikey.shiro.YubikeyAuthenticationInfo;
 import nl.topicuszorg.yubikey.shiro.YubikeyMatcher;
 import nl.topicuszorg.yubikey.shiro.YubikeyToken;

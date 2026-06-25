@@ -45,6 +45,7 @@ import nl.rivm.screenit.mamma.se.service.OnderzoekService;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseBlokkadeService;
 import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
@@ -52,7 +53,6 @@ import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsPeriodeService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EnvironmentUtil;
 import nl.rivm.screenit.util.NaamUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

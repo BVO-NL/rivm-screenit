@@ -26,8 +26,8 @@ import java.time.temporal.ChronoUnit;
 
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +57,7 @@ public class RoosterSplitter
 			startDate = tot;
 			if (session instanceof Session session1)
 			{
-				session1.saveOrUpdate(splittedAfspraakslot);
+				session1.persist(splittedAfspraakslot);
 			}
 			else if (session instanceof HibernateService service)
 			{

@@ -35,6 +35,7 @@ import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.DashboardService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.cervix.CervixLabformulierService;
 import nl.rivm.screenit.wsb.fhir.interceptor.FQDNProvider;
@@ -42,7 +43,6 @@ import nl.rivm.screenit.wsb.fhir.mapper.LabaanvraagMapper;
 import nl.rivm.screenit.wsb.fhir.resource.dstu3.v1.LabaanvraagBundle;
 import nl.rivm.screenit.wsb.fhir.validator.LabaanvraagValidator;
 import nl.rivm.screenit.wsb.fhir.validator.ValidationMessage;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 
 import org.apache.commons.lang.StringUtils;
@@ -52,8 +52,8 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.orm.hibernate5.HibernateJdbcException;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Create;
@@ -115,7 +115,7 @@ public class BundleProvider extends BaseResourceProvider
 						logGebeurtenis(bundle, HttpStatus.CREATED, Collections.emptyList());
 						return new MethodOutcome().setOperationOutcome(result.toOperationOutcome());
 					}
-					catch (GenericJDBCException | HibernateJdbcException e)
+					catch (GenericJDBCException | DataAccessException e)
 					{
 						updateLabaanvraagValidatorBijDubbelMonster(labAanvraagValidator, e);
 					}
@@ -154,7 +154,7 @@ public class BundleProvider extends BaseResourceProvider
 		throw e;
 	}
 
-	private void doAanvraag(LabaanvraagBundle bundle) throws GenericJDBCException, HibernateJdbcException
+	private void doAanvraag(LabaanvraagBundle bundle) throws GenericJDBCException, DataAccessException
 	{
 		CervixLabformulier labformulier = LabaanvraagMapper.INSTANCE.toLabformulier(bundle);
 		labformulier.setLeverancierFqdn(fqdnProvider.getCurrentFQDN());

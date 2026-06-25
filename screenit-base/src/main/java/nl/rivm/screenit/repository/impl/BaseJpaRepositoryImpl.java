@@ -81,7 +81,7 @@ public class BaseJpaRepositoryImpl<T extends HibernateObject> extends SimpleJpaR
 	@Override
 	public <R, P> R findWith(Specification<T> specification, Class<P> projectionType, Function<FluentJpaQuery<T, P>, R> queryFunction)
 	{
-		var fluentQuery = new FluentJpaQueryImpl<>(specification, this.entityManager, getDomainClass(), projectionType);
+		var fluentQuery = new FluentJpaQueryImpl<>(specification, entityManager, getDomainClass(), projectionType);
 		return queryFunction.apply(fluentQuery);
 	}
 
@@ -89,18 +89,18 @@ public class BaseJpaRepositoryImpl<T extends HibernateObject> extends SimpleJpaR
 	@Transactional
 	public <S extends T> @NotNull S save(@NotNull S entity)
 	{
-		var savedEntity = super.save(entity);
+		entityManager.persist(entity);
 		if (entity instanceof HibernateProxy proxy)
 		{
 
 			var hibernateLazyInitializer = proxy.getHibernateLazyInitializer();
 			if (hibernateLazyInitializer.getInternalIdentifier() == null)
 			{
-				var savedId = savedEntity.getId();
+				var savedId = entity.getId();
 				hibernateLazyInitializer.setIdentifier(savedId);
 			}
 		}
-		return savedEntity;
+		return entity;
 	}
 
 	@Override

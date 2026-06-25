@@ -21,16 +21,22 @@ package nl.rivm.screenit.main.dto;
  * =========================LICENSE_END==================================
  */
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Schema(name = "PagineringRequestDto", description = "Request met filterdata, paginering en sortering.")
 public class PagineringRequestDto<T>
 {
+	@Schema(description = "Filterdata van de request")
 	private T data;
 
+	@Schema(description = "Paginagegevens van de request")
 	private PagineringDto paginering;
 
+	@Schema(description = "Sorteergegevens van de request")
 	private SortParamDto sortering;
 }

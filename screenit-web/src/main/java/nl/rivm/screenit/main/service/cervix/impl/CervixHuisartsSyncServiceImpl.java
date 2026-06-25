@@ -53,6 +53,7 @@ import nl.rivm.screenit.repository.cervix.CervixHuisartsLocatieRepository;
 import nl.rivm.screenit.repository.cervix.CervixHuisartsRepository;
 import nl.rivm.screenit.repository.cervix.CervixLabformulierAanvraagRepository;
 import nl.rivm.screenit.service.BaseBriefService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.HuisartsenportaalSyncService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.MailService;
@@ -60,7 +61,6 @@ import nl.rivm.screenit.service.cervix.CervixHuisartsBerichtService;
 import nl.rivm.screenit.service.impl.DefaultCurrentDateSupplier;
 import nl.rivm.screenit.util.NaamUtil;
 import nl.rivm.screenit.util.cervix.CervixHuisartsToDtoUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

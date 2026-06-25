@@ -38,7 +38,7 @@ import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
+import nl.rivm.screenit.service.DatabaseRunner;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.batch.item.ExecutionContext;
@@ -49,10 +49,6 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class MammaBrievenGenererenPartitioner extends AbstractBrievenGenererenPartitioner
 {
-	public static final String KEY_SCREENINGORGANISATIEID = "mamma.screeningorganisatie.id";
-
-	public static final String KEY_BRIEFTYPE = "mamma.brieftype";
-
 	public static final String KEY_BRIEFTYPEAPART = "apart";
 
 	public static final String KEY_MAMMASTANDPLAATSID = "mamma.mammastandplaats.id";
@@ -64,6 +60,8 @@ public class MammaBrievenGenererenPartitioner extends AbstractBrievenGenererenPa
 	private final SimplePreferenceService preferenceService;
 
 	private final MammaBriefRepository briefRepository;
+
+	private final DatabaseRunner databaseRunner;
 
 	@Override
 	protected void fillingData(Map<String, ExecutionContext> partities, ScreeningOrganisatie organisatie)
@@ -119,10 +117,8 @@ public class MammaBrievenGenererenPartitioner extends AbstractBrievenGenererenPa
 	private Boolean isEersteRondeBrief(BriefType briefType)
 	{
 		var annoteerEersteRonde = new AtomicBoolean();
-		OpenHibernateSession.withoutTransaction().run(() ->
-		{
-			annoteerEersteRonde.set(preferenceService.getBoolean(PreferenceKey.MAMMA_ANNOTEER_EERSTE_RONDE.name(), Boolean.FALSE));
-		});
+		databaseRunner.runInSessionOnly(() ->
+			annoteerEersteRonde.set(preferenceService.getBoolean(PreferenceKey.MAMMA_ANNOTEER_EERSTE_RONDE.name(), Boolean.FALSE)));
 
 		return Boolean.TRUE.equals(annoteerEersteRonde.get()) && BriefType.getMammaEersteRondeBrieftype().contains(briefType);
 	}

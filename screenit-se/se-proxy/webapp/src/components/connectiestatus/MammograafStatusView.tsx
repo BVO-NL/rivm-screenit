@@ -26,8 +26,7 @@ import type {ConnectieStatusItem} from "./ConnectieStatusItem"
 import {Col, Row} from "reactstrap"
 import MammograafDicomBerichtStatusView from "./MammograafDicomBerichtStatusView"
 import type {MammograafDicomMessageType} from "../../datatypes/connectiestatus/MammograafDicomMessageError"
-import {nu} from "../../util/DateUtil"
-import {isSameDay} from "date-fns"
+import {isVandaag} from "../../util/DateUtil"
 
 export type MammograafStatusViewStateProps = {
 	mammograafStatus: MammograafStatus;
@@ -61,16 +60,16 @@ export default class MammograafStatusView extends Component<MammograafStatusView
 					<Col>
 						<i className={connectieStatusLevels[this.getMppsStatusLevel()]}/>
 						<MammograafDicomBerichtStatusView messageType={"MPPS"} level={this.getMppsStatusLevel()}
-														  timestamp={mammograafStatus.laatsteSuccesMppsBerichtTimestamp}
-														  onClick={(): void => this.props.toonDicomFouten("MPPS", mammograafStatus)}/>
+						                                  timestamp={mammograafStatus.laatsteSuccesMppsBerichtTimestamp}
+						                                  onClick={(): void => this.props.toonDicomFouten("MPPS", mammograafStatus)}/>
 					</Col>
 				</Row>
 				<Row className={"connectiestatus-leaf"}>
 					<Col>
 						<i className={connectieStatusLevels[this.getDmwlStatusLevel()]}/>
 						<MammograafDicomBerichtStatusView messageType={"DMWL"} level={this.getDmwlStatusLevel()}
-														  timestamp={mammograafStatus.laatsteSuccesDmwlBerichtTimestamp}
-														  onClick={(): void => this.props.toonDicomFouten("DMWL", mammograafStatus)}/>
+						                                  timestamp={mammograafStatus.laatsteSuccesDmwlBerichtTimestamp}
+						                                  onClick={(): void => this.props.toonDicomFouten("DMWL", mammograafStatus)}/>
 					</Col>
 				</Row>
 				<Row className={"connectiestatus-leaf"}>
@@ -90,7 +89,7 @@ export default class MammograafStatusView extends Component<MammograafStatusView
 		return this.props.mammograafStatus.foutenSindsLaatsteSuccesDmwlBericht.length > 0 ? "FAULT" : this.props.mammograafStatus.laatsteSuccesDmwlBerichtTimestamp ? "OK" : "WARN"
 	}
 	getDatumStatusLevel = (): ConnectieStatusLevel => {
-		return this.props.mammograafStatus.mammograafDatum ? isSameDay(nu(), this.props.mammograafStatus.mammograafDatum) ? "OK" : "FAULT" : "WARN"
+		return this.props.mammograafStatus.mammograafDatum ? isVandaag(this.props.mammograafStatus.mammograafDatum) ? "OK" : "FAULT" : "WARN"
 	}
 	getStatusLevel = (): ConnectieStatusLevel => {
 		const statusLevel = getMostCriticalStatusLevel([this.getDmwlStatusLevel(), this.getMppsStatusLevel(), this.getDatumStatusLevel()])

@@ -30,19 +30,19 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.project.ProjectBestand;
 import nl.rivm.screenit.model.project.ProjectBestandType;
 import nl.rivm.screenit.model.project.ProjectBestandVerwerking;
+import nl.rivm.screenit.repository.algemeen.ProjectBestandRepository;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.ProjectBestandVerwerkingService;
 import nl.rivm.screenit.service.UploadDocumentService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
+import nl.rivm.screenit.util.hibernate.OpenEntityManagerInThread;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
-public class ProjectBestandVerwerkThread extends OpenHibernateSessionInThread
+public class ProjectBestandVerwerkThread extends OpenEntityManagerInThread
 {
 	@Autowired
-	private HibernateService hibernateService;
+	private ProjectBestandRepository projectBestandRepository;
 
 	@Autowired
 	private LogService logService;
@@ -63,8 +63,7 @@ public class ProjectBestandVerwerkThread extends OpenHibernateSessionInThread
 	@Override
 	protected void runInternal()
 	{
-
-		var bestand = hibernateService.load(ProjectBestand.class, id);
+		var bestand = projectBestandRepository.findById(id).orElseThrow();
 		BaseProjectBestandVerwerkingContext context = null;
 
 		var verwerking = new ProjectBestandVerwerking();

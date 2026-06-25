@@ -25,6 +25,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.dao.colon.RoosterDao;
@@ -35,13 +38,12 @@ import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamer;
 import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamerFilter;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
-import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,14 +51,14 @@ import org.springframework.stereotype.Repository;
 
 import com.google.common.primitives.Ints;
 
-@Repository
 @Slf4j
-public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
+@Repository
+public class RoosterDaoImpl implements RoosterDao
 {
 	public static final String[] HERVERWERKING_MARKERS = new String[] { "zonder conclusie", "zonder passende screeningsronde", "geen ongunstige uitslag" };
 
-	@Autowired
-	private ICurrentDateSupplier currentDateSupplier;
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Autowired
 	private SimplePreferenceService preferenceService;
@@ -91,7 +93,7 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 
 	private NativeQuery createAfspraakslotsCriteria(RoosterListViewFilter filter, ColonIntakelocatie intakeLocatie, String sortProperty, boolean asc)
 	{
-		getSession().flush();
+		entityManager.flush();
 		var selectFromQueryString = "select ";
 		if (sortProperty == null)
 		{
@@ -179,7 +181,7 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 			}
 		}
 
-		var criteria = getSession().createNativeQuery(selectFromQueryString + whereQueryString + orderByQueryString);
+		var criteria = entityManager.unwrap(Session.class).createNativeQuery(selectFromQueryString + whereQueryString + orderByQueryString);
 		criteria
 			.setParameter("tot", filter.getEindDatum())
 			.setParameter("vanaf", filter.getStartDatum())
@@ -235,7 +237,7 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 
 	private NativeQuery createVrijSlotZonderKamerQuery(VrijSlotZonderKamerFilter filter, String sortProperty, boolean asc)
 	{
-		getSession().flush();
+		entityManager.flush();
 
 		var querySB = new StringBuilder();
 
@@ -395,7 +397,7 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 			}
 		}
 
-		var query = getSession().createNativeQuery(querySB.toString());
+		var query = entityManager.unwrap(Session.class).createNativeQuery(querySB.toString());
 		for (var param : params.entrySet())
 		{
 			query.setParameter(param.getKey(), param.getValue());
@@ -414,12 +416,12 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 
 		querySB.append("select {k.*}");
 
-//6163cfe2-9665-4467-8b99-19c916a053f7
+//a93feba9-9884-49e3-a652-bd237a52096e
 		querySB.append(" from colon.afspraakslot afs");
 		querySB.append(" join colon.tijdslot ts on afs.id=ts.id");
 		querySB.append(" join colon.intakekamer k on ts.kamer=k.id");
 
-//6163cfe2-9665-4467-8b99-19c916a053f7
+//a93feba9-9884-49e3-a652-bd237a52096e
 		var params = new HashMap<String, Object>();
 		querySB.append(" and k.actief = true");
 		querySB.append(" and not exists(select id from colon.intakeafspraak ia where ia.afspraakslot = afs.id and (ia.status=:status1 or ia.status=:status2))");
@@ -433,7 +435,7 @@ public class RoosterDaoImpl extends AbstractAutowiredDao implements RoosterDao
 		querySB.append(" and k.intakelocatie = :intakelocatieId");
 		params.put("intakelocatieId", intakelocatieId);
 
-		var query = getSession().createNativeQuery(querySB.toString()).addEntity("k", ColonIntakekamer.class);
+		var query = entityManager.unwrap(Session.class).createNativeQuery(querySB.toString()).addEntity("k", ColonIntakekamer.class);
 		for (var param : params.entrySet())
 		{
 			query.setParameter(param.getKey(), param.getValue());

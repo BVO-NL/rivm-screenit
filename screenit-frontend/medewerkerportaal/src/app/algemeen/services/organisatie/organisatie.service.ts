@@ -29,7 +29,7 @@ import { HttpClient } from '@angular/common/http'
 })
 export class OrganisatieService {
   private readonly http = inject(HttpClient)
-  private readonly baseUrl = '/api/algemeen/organisatie'
+  private readonly baseUrl = '/api/organisatie'
 
   getCentraleEenheden(): Observable<OrganisatieDto[]> {
     return this.http.get<OrganisatieDto[]>(`${this.baseUrl}/centrale-eenheid`)

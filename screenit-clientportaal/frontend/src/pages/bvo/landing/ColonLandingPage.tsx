@@ -38,6 +38,7 @@ import {getHuidigeIntakeAfspraak} from "../../../api/ColonIntakeAfspraakThunkAct
 import ColonLandingBlobComponent from "../../../components/blob/ColonLandingBlobComponent"
 import {State} from "../../../datatypes/State"
 import {useThunkDispatch} from "../../../index"
+import {useNavigate} from "react-router"
 
 type Props = {
 	dossier: ColonDossier,
@@ -48,6 +49,7 @@ const ColonLandingPage: FC<Props> = ({dossier, beschikbareActies}) => {
 	const intakeAfspraak = dossier.intakeAfspraak
 
 	const dispatch = useThunkDispatch()
+	const navigate = useNavigate()
 	const toonVervangendeTekst: boolean = useSelector((state: State) => state.landingOverzicht.colonParameters.toonVervangendeTekst)
 
 	useEffect(() => {
@@ -56,7 +58,7 @@ const ColonLandingPage: FC<Props> = ({dossier, beschikbareActies}) => {
 
 	return (
 		<Container fluid className={styles.content}>
-			<KruimelpadComponent className={bvoStyles.colon}/>
+			<KruimelpadComponent className={bvoStyles.colon} onTerugKlik={() => navigate('/')}/>
 			<Row className={landingPageStyle.inleiding}>
 				<Col md={8}>
 					<BvoInleidingComponent/>

@@ -47,6 +47,7 @@ import nl.rivm.screenit.service.BaseAfmeldService;
 import nl.rivm.screenit.service.BaseScreeningRondeService;
 import nl.rivm.screenit.service.BvoAfmeldService;
 import nl.rivm.screenit.service.ClientService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
@@ -55,7 +56,6 @@ import nl.rivm.screenit.service.colon.ColonAfmeldService;
 import nl.rivm.screenit.service.mamma.MammaAfmeldService;
 import nl.rivm.screenit.util.AfmeldingUtil;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

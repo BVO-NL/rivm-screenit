@@ -28,18 +28,16 @@ import nl.rivm.screenit.dto.mamma.MammaHL7v24OrmBerichtTriggerMetClientDto;
 import nl.rivm.screenit.dto.mamma.MammaHL7v24OrmBerichtTriggerMetKwaliteitsopnameDto;
 import nl.rivm.screenit.exceptions.HL7SendMessageException;
 
-import ca.uhn.hl7v2.HL7Exception;
-
 public interface MammaHL7v24SendService
 {
 	void sendADTBericht(MammaHL7v24AdtBerichtTriggerDto adtBerichtTriggerDto, MammaHL7Connectie messageContext)
 		throws HL7CreateMessageException, HL7SendMessageException;
 
 	void sendClientORMMessage(MammaHL7v24OrmBerichtTriggerMetClientDto hl7BerichtTrigger, MammaHL7Connectie ormConnectionContext)
-		throws HL7CreateMessageException, HL7SendMessageException, HL7Exception;
+		throws HL7CreateMessageException, HL7SendMessageException;
 
 	void verversConfiguratie();
 
-    void sendKwaliteitsopnameORMMessage(MammaHL7v24OrmBerichtTriggerMetKwaliteitsopnameDto hl7BerichtTrigger, MammaHL7Connectie messageContext)
+	void sendKwaliteitsopnameORMMessage(MammaHL7v24OrmBerichtTriggerMetKwaliteitsopnameDto hl7BerichtTrigger, MammaHL7Connectie messageContext)
 		throws HL7CreateMessageException;
 }

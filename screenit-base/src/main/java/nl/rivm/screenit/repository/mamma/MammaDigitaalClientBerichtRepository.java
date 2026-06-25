@@ -26,6 +26,4 @@ import nl.rivm.screenit.repository.BaseJpaRepository;
 
 public interface MammaDigitaalClientBerichtRepository extends BaseJpaRepository<MammaDigitaalClientBericht>
 {
-	@Override
-	MammaDigitaalClientBericht save(MammaDigitaalClientBericht digitaalClientBericht);
 }

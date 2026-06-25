@@ -52,12 +52,12 @@ import nl.rivm.screenit.repository.algemeen.ProjectAttribuutRepository;
 import nl.rivm.screenit.repository.algemeen.ProjectClientRepository;
 import nl.rivm.screenit.repository.algemeen.ProjectRepository;
 import nl.rivm.screenit.service.AutorisatieService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.service.impl.ProjectBestandVerwerkThread;
 import nl.rivm.screenit.service.impl.ProjectUitslagVerwerkThread;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -186,6 +186,12 @@ public class ProjectServiceImpl implements ProjectService
 	public List<ProjectClient> getClientProjecten(ProjectClient client, long first, long count, Sort sort)
 	{
 		return projectClientDataProviderService.findPage(first, count, client, sort);
+	}
+
+	@Override
+	public List<ProjectClient> getClientProjecten(Long clientId)
+	{
+		return projectClientRepository.findAllByClientId(clientId);
 	}
 
 	@Override
@@ -370,7 +376,7 @@ public class ProjectServiceImpl implements ProjectService
 		bestand.setProject(groep.getProject());
 
 		groep.setPopulatie(0);
-		groep.setClienten(new ArrayList<>());
+		groep.getClienten().clear();
 		hibernateService.saveOrUpdateAll(groep, bestand);
 
 		verwerkProjectBestand(bestand);

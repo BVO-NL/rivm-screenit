@@ -25,6 +25,7 @@ import org.hibernate.ScrollableResults;
 
 public abstract class BaseIdScrollableResultReader extends BaseTypedScrollableResultReader<Long>
 {
+
 	@Override
 	public Long read() throws Exception
 	{

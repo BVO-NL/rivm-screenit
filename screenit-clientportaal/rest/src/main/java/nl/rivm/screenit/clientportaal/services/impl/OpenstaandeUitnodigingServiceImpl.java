@@ -96,7 +96,7 @@ public class OpenstaandeUitnodigingServiceImpl implements OpenstaandeUitnodiging
 	public List<OpenstaandeUitnodigingDto> getOpenstaandeUitnodigingen(Client client)
 	{
 		var colonUitnodiging = colonUitnodigingService.getOpenstaandeUitnodiging(client);
-		var cervixUitnodiging = cervixUitnodigingService.getOpenstaandeUitnodiging(client);
+		var cervixUitnodiging = cervixUitnodigingService.getOpenstaandeZasUitnodiging(client);
 
 		var colonUitnodigingDto = Optional.ofNullable(colonUitnodiging)
 			.map(uitnodiging -> mapper.mapFromColonUitnodiging(uitnodiging, houdbaarheidService))

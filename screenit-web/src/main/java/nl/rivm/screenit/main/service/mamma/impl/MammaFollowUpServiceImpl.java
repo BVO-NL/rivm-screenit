@@ -57,6 +57,7 @@ import nl.rivm.screenit.model.mamma.verslag.MammaVerslag;
 import nl.rivm.screenit.repository.mamma.MammaBaseFollowUpRepository;
 import nl.rivm.screenit.repository.mamma.MammaDossierRepository;
 import nl.rivm.screenit.service.BaseVerslagService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.mamma.MammaBaseFollowUpService;
@@ -66,7 +67,6 @@ import nl.rivm.screenit.specification.algemeen.BeoordelingsEenheidSpecification;
 import nl.rivm.screenit.specification.mamma.MammaBaseDossierSpecification;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;

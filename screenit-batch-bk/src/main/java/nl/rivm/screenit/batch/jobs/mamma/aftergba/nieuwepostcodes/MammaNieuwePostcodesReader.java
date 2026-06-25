@@ -21,11 +21,11 @@ package nl.rivm.screenit.batch.jobs.mamma.aftergba.nieuwepostcodes;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.Query;
+
 import nl.rivm.screenit.batch.jobs.helpers.BaseSqlScrollableResultReader;
 
 import org.hibernate.HibernateException;
-import org.hibernate.query.NativeQuery;
-import org.hibernate.type.StandardBasicTypes;
 import org.springframework.stereotype.Component;
 
 import static nl.rivm.screenit.batch.jobs.mamma.aftergba.AfterGbaJobConfiguration.AFTER_GBA_JOB_READER_FETCH_SIZE;
@@ -36,14 +36,14 @@ public class MammaNieuwePostcodesReader extends BaseSqlScrollableResultReader
 
 	public MammaNieuwePostcodesReader()
 	{
-		super.setFetchSize(AFTER_GBA_JOB_READER_FETCH_SIZE);
+		setFetchSize(AFTER_GBA_JOB_READER_FETCH_SIZE);
 	}
 
 	@Override
-	protected NativeQuery createNativeQuery() throws HibernateException
+	protected Query createNativeQuery() throws HibernateException
 	{
 
-		var query = getHibernateSession().createNativeQuery("""
+		var query = getEntityManager().createNativeQuery("""
 			select c.id
 			from adres a
 			inner join persoon pc on pc.gba_adres = a.id
@@ -57,8 +57,7 @@ public class MammaNieuwePostcodesReader extends BaseSqlScrollableResultReader
 			and pc.datum_vertrokken_uit_nederland is null
 			and pc.overlijdensdatum is null
 			and c.gba_status = 'INDICATIE_AANWEZIG'
-			and c.mamma_dossier is not null""");
-		query.addScalar("id", StandardBasicTypes.LONG);
+			and c.mamma_dossier is not null""", Long.class);
 		return query;
 	}
 }

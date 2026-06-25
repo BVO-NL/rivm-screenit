@@ -27,8 +27,8 @@ import java.util.List;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaStandplaatsPeriodeMetAfstandDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
@@ -39,9 +39,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class MammaStandplaatsPeriodeProvider extends SortableDataProvider<MammaStandplaatsPeriodeMetAfstandDto, String>
 {
-
-	private static final long serialVersionUID = 1L;
-
 	@SpringBean
 	private HibernateService hibernateService;
 

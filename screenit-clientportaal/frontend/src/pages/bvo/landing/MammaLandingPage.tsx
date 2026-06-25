@@ -40,6 +40,7 @@ import blob_mamma from "../../../scss/media/blob-mamma.jpg"
 import {State} from "../../../datatypes/State"
 import properties from "./MammaLandingPage.json"
 import {useThunkDispatch} from "../../../index"
+import {useNavigate} from "react-router"
 
 type Props = {
 	dossier: MammaDossier
@@ -53,6 +54,7 @@ const MammaLandingPage = (props: Props) => {
 	const toonVervangendeTekst: boolean = useSelector((state: State) => state.landingOverzicht.mammaParameters.toonVervangendeTekst)
 
 	const dispatch = useThunkDispatch()
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		dispatch(getHuidigeAfspraak())
@@ -60,7 +62,7 @@ const MammaLandingPage = (props: Props) => {
 
 	return (
 		<Container fluid className={styles.content}>
-			<KruimelpadComponent className={bvoStyles.mamma}/>
+			<KruimelpadComponent className={bvoStyles.mamma} onTerugKlik={() => navigate('/')}/>
 			<Row className={landingPageStyle.inleiding}>
 				<Col md={8}>
 					<BvoInleidingComponent/>

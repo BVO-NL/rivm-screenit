@@ -24,14 +24,13 @@ package nl.rivm.screenit.batch.service.impl;
 import nl.rivm.screenit.batch.repository.MammaIlmLogEventRepository;
 import nl.rivm.screenit.batch.service.MammaIlmService;
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaIlmBeeldenStatusRapportage;
-import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MammaIlmServiceImpl extends AbstractAutowiredDao implements MammaIlmService
+public class MammaIlmServiceImpl implements MammaIlmService
 {
 	@Autowired
 	private MammaIlmLogEventRepository logEventRepository;

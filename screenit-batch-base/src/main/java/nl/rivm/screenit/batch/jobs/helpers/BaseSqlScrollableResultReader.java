@@ -21,6 +21,8 @@ package nl.rivm.screenit.batch.jobs.helpers;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.Query;
+
 import org.hibernate.HibernateException;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
@@ -30,7 +32,7 @@ import org.hibernate.query.NativeQuery;
 public abstract class BaseSqlScrollableResultReader extends BaseIdScrollableResultReader
 {
 
-	protected abstract NativeQuery createNativeQuery() throws HibernateException;
+	protected abstract Query createNativeQuery() throws HibernateException;
 
 	@Override
 	protected ScrollableResults createScrollableResults()
@@ -40,7 +42,7 @@ public abstract class BaseSqlScrollableResultReader extends BaseIdScrollableResu
 		{
 			return new EmptyScrollableResults();
 		}
-		return query.setFetchSize(fetchSize).scroll(ScrollMode.FORWARD_ONLY);
+		return query.unwrap(NativeQuery.class).setFetchSize(getFetchSize()).scroll(ScrollMode.FORWARD_ONLY);
 	}
 
 }

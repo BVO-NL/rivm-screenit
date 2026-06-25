@@ -21,13 +21,13 @@ package nl.rivm.screenit.main.web.gebruiker.testen.clienten.verwijderen;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.service.ClientenVerwijderenTestService;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.gebruiker.testen.TestenBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
+import nl.rivm.screenit.service.ClientenVerwijderenTestService;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;

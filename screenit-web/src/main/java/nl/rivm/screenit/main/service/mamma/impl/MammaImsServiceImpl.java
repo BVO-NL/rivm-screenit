@@ -55,9 +55,9 @@ import nl.rivm.screenit.model.mamma.MammaUploadBeeldenVerzoekStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeFocusMode;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.util.functionalinterfaces.StringResolver;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Service;

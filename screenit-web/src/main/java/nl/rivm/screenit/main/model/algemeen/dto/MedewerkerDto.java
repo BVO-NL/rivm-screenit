@@ -21,6 +21,8 @@ package nl.rivm.screenit.main.model.algemeen.dto;
  * =========================LICENSE_END==================================
  */
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,7 +30,9 @@ import nl.rivm.screenit.dto.EntityDto;
 
 @Getter
 @Setter
+@Schema(name = "MedewerkerDto", description = "Basisgegevens van een medewerker.")
 public class MedewerkerDto extends EntityDto
 {
+	@Schema(description = "Volledige naam van de medewerker")
 	private String naam;
 }

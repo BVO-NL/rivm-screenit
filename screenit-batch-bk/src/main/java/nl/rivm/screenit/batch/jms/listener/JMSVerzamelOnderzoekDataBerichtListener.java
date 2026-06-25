@@ -21,25 +21,21 @@ package nl.rivm.screenit.batch.jms.listener;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.service.MammaAfgebrokenDownloadOnderzoekCleanupService;
 import nl.rivm.screenit.batch.service.MammaVerzamelDownloadOnderzoekDataService;
 
-import org.apache.activemq.command.ActiveMQTextMessage;
-import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.jms.Session;
-
-@Transactional(propagation = Propagation.SUPPORTS)
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JMSVerzamelOnderzoekDataBerichtListener implements SessionAwareMessageListener<ActiveMQTextMessage>
+public class JMSVerzamelOnderzoekDataBerichtListener implements MessageListener
 {
 	private final MammaVerzamelDownloadOnderzoekDataService verzamelDownloadOnderzoekDataService;
 
@@ -48,7 +44,7 @@ public class JMSVerzamelOnderzoekDataBerichtListener implements SessionAwareMess
 	private boolean cleanupServiceGedraaid = false;
 
 	@Override
-	public void onMessage(ActiveMQTextMessage message, Session session)
+	public void onMessage(Message message)
 	{
 		LOG.info("Verzamelen van onderzoekensdata is getriggerd.");
 		try
@@ -71,5 +67,4 @@ public class JMSVerzamelOnderzoekDataBerichtListener implements SessionAwareMess
 			cleanupServiceGedraaid = true;
 		}
 	}
-
 }

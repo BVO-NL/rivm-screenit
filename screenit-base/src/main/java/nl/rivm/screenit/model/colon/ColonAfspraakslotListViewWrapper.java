@@ -22,7 +22,6 @@ package nl.rivm.screenit.model.colon;
  */
 
 import java.io.Serializable;
-import java.time.temporal.Temporal;
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
@@ -53,13 +52,14 @@ public class ColonAfspraakslotListViewWrapper implements Serializable
 
 	private Long kamerId;
 
-	public void setStartDatum(Temporal startDatum)
+	public void setStartDatum(Object startDatum)
 	{
-		this.startDatum = DateUtil.toUtilDate(startDatum);
+		this.startDatum = DateUtil.transformObjectToDate(startDatum);
 	}
 
-	public void setEindDatum(Temporal eindDatum)
+	public void setEindDatum(Object eindDatum)
 	{
-		this.eindDatum = DateUtil.toUtilDate(eindDatum);
+		this.eindDatum = DateUtil.transformObjectToDate(eindDatum);
 	}
+
 }

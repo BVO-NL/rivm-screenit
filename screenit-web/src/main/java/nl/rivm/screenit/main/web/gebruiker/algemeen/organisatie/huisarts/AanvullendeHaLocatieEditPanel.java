@@ -29,7 +29,7 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.form.PostcodeField;
 import nl.rivm.screenit.model.Woonplaats;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;

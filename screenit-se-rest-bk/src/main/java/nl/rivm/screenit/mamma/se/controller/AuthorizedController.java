@@ -34,9 +34,9 @@ import nl.rivm.screenit.mamma.se.service.SeAutorisatieService;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.util.EnvironmentUtil;
 import nl.rivm.screenit.util.FoutmeldingsCodeUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;

@@ -29,11 +29,15 @@ import lombok.Setter;
 
 import nl.rivm.screenit.dto.EntityDto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Getter
 @Setter
+@Schema(name = "MammaFotobesprekingDto", description = "Gegevens van een mamma-fotobespreking.")
 public class MammaFotobesprekingDto extends EntityDto
 {
 	private String omschrijving;
 
+	@Schema(description = "Ids van clienten die aan de fotobespreking gekoppeld zijn")
 	private List<Long> clientIds = new ArrayList<>();
 }

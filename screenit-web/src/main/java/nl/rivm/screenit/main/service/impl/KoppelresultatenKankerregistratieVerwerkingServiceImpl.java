@@ -30,13 +30,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.Column;
+
 import nl.rivm.screenit.main.service.IntervalcarcinoomProcessdataVerwerkingService;
 import nl.rivm.screenit.main.service.impl.KoppelresultatenKankerregistratieVerwerkingContext.ColonKoppelresultatenKankerregistratieHeaderMapping;
 import nl.rivm.screenit.model.colon.ColonKoppelresultaatKankerregistratie;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.service.HibernateService;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
@@ -47,8 +49,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import jakarta.persistence.Column;
 
 @Service
 @Transactional(propagation = Propagation.SUPPORTS)

@@ -39,12 +39,11 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.InlogMethode;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
-import nl.rivm.screenit.repository.algemeen.OrganisatieMedewerkerRolRepository;
 import nl.rivm.screenit.security.Constraint;
 import nl.rivm.screenit.service.AutorisatieService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.ScopeService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -73,9 +72,6 @@ public class AutorisatieServiceImpl implements AutorisatieService
 
 	@Autowired
 	private ICurrentDateSupplier currentDateSupplier;
-
-	@Autowired
-	private OrganisatieMedewerkerRolRepository organisatieMedewerkerRolRepository;
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
@@ -450,6 +446,5 @@ public class AutorisatieServiceImpl implements AutorisatieService
 	{
 		rolKoppeling.setActief(false);
 		rolKoppeling.setEindDatum(currentDateSupplier.getDate());
-		organisatieMedewerkerRolRepository.save(rolKoppeling);
 	}
 }

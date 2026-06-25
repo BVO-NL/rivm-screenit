@@ -30,6 +30,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
@@ -53,25 +56,20 @@ import nl.rivm.screenit.model.messagequeue.Message;
 import nl.rivm.screenit.model.messagequeue.MessageType;
 import nl.rivm.screenit.model.messagequeue.dto.CervixHL7v24HpvOrderTriggerDto;
 import nl.rivm.screenit.repository.cervix.CervixFoutHL7v2BerichtRepository;
+import nl.rivm.screenit.service.DatabaseRunner;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.MessageService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.OrganisatieService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.hibernate5.SessionFactoryUtils;
-import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.TimeoutException;
@@ -85,9 +83,6 @@ public class CervixHl7v2TriggerMessageQueue
 
 	@Autowired
 	private CervixOrderBerichtService orderBerichtService;
-
-	@Autowired
-	private SessionFactory sessionFactory;
 
 	@Autowired
 	private MessageService messageService;
@@ -116,6 +111,9 @@ public class CervixHl7v2TriggerMessageQueue
 	@Autowired
 	private CervixFoutHL7v2BerichtRepository foutHL7v2BerichtRepository;
 
+	@Autowired
+	private DatabaseRunner databaseRunner;
+
 	private static final long MILLIS_WAIT_TIME = TimeUnit.SECONDS.toMillis(10);
 
 	private static final long MAX_CONNECTING_RETRY_TIME = TimeUnit.HOURS.toMillis(3);
@@ -124,24 +122,36 @@ public class CervixHl7v2TriggerMessageQueue
 
 	private static final long CONNECTING_RETRY_TIME_LONG = TimeUnit.MINUTES.toMillis(5);
 
-	private static final long MAX_SEND_RETRY_TIME = TimeUnit.MINUTES.toMillis(5);
+	private static final long DEFAULT_MAX_SEND_RETRY_TIME = TimeUnit.MINUTES.toMillis(5);
 
-	private static final long SEND_RETY_TIME = TimeUnit.SECONDS.toMillis(5);
+	private static final long DEFAULT_SEND_RETRY_TIME = TimeUnit.SECONDS.toMillis(5);
 
 	private static final int QUEUE_VERWERK_SIZE = 500;
 
 	private static final int QUEUE_WARNING_THRESHOLD = 5000;
 
-	private final ThreadLocal<Boolean> bindSessionOnThread = new ThreadLocal<>();
+	private long maxSendRetryTime = DEFAULT_MAX_SEND_RETRY_TIME;
+
+	private long sendRetryTime = DEFAULT_SEND_RETRY_TIME;
 
 	private final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(8);
 
 	private final Map<Long, CervixHl7v2TriggerMessagePerLabQueue> queueMap = new HashMap<>();
 
+	void setMaxSendRetryTimeVoorTest(long maxSendRetryTime)
+	{
+		this.maxSendRetryTime = maxSendRetryTime;
+	}
+
+	void setSendRetryTimeVoorTest(long sendRetryTime)
+	{
+		this.sendRetryTime = sendRetryTime;
+	}
+
 	@Scheduled(cron = "0/10 * * * * *")
 	public void verstuurHpvOrderBerichten()
 	{
-		List<Long> teVerwijderenQueues = new ArrayList<>();
+		var teVerwijderenQueues = new ArrayList<Long>();
 		queueMap.entrySet().stream().filter(lq -> lq.getValue().isStopped()).forEach(lq ->
 			{
 				teVerwijderenQueues.add(lq.getKey());
@@ -158,47 +168,28 @@ public class CervixHl7v2TriggerMessageQueue
 		);
 		teVerwijderenQueues.forEach(queueMap::remove);
 
-		bindSession();
-		var labs = organisatieService.getActieveOrganisaties(BMHKLaboratorium.class);
-
-		labs.stream()
-			.filter(lab -> !queueMap.keySet().contains(lab.getId()))
-			.filter(lab -> organisatieParameterService.getOrganisatieParameter(lab, OrganisatieParameterKey.CERVIX_HPV_ORDER_NIEUW, Boolean.FALSE))
-			.forEach(lab ->
-			{
-				var thread = new CervixHl7v2TriggerMessagePerLabQueue(lab);
-				queueMap.put(lab.getId(), thread);
-				try
-				{
-					EXECUTOR_SERVICE.submit(queueMap.get(lab.getId()));
-					LOG.info("Added HL7v2 verstuur thread voor {}", lab.getNaam());
-				}
-				catch (RejectedExecutionException e)
-				{
-					LOG.error("Starten van HL7v2 verstuur thread voor {} is niet gelukt.", lab.getNaam(), e);
-				}
-			});
-		unbindSessionFactory();
-	}
-
-	private void bindSession()
-	{
-		if (!Boolean.TRUE.equals(bindSessionOnThread.get()))
+		databaseRunner.runInNewTransaction(() ->
 		{
-			Session session = sessionFactory.openSession();
-			TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
-			bindSessionOnThread.set(true);
-		}
-	}
+			var labs = organisatieService.getActieveOrganisaties(BMHKLaboratorium.class);
 
-	private void unbindSessionFactory()
-	{
-		if (Boolean.TRUE.equals(bindSessionOnThread.get()))
-		{
-			SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.unbindResource(sessionFactory);
-			SessionFactoryUtils.closeSession(sessionHolder.getSession());
-			bindSessionOnThread.remove();
-		}
+			labs.stream()
+				.filter(lab -> !queueMap.keySet().contains(lab.getId()))
+				.filter(lab -> organisatieParameterService.getOrganisatieParameter(lab, OrganisatieParameterKey.CERVIX_HPV_ORDER_NIEUW, Boolean.FALSE))
+				.forEach(lab ->
+				{
+					var thread = new CervixHl7v2TriggerMessagePerLabQueue(lab);
+					queueMap.put(lab.getId(), thread);
+					try
+					{
+						EXECUTOR_SERVICE.submit(queueMap.get(lab.getId()));
+						LOG.info("Added HL7v2 verstuur thread voor {}", lab.getNaam());
+					}
+					catch (RejectedExecutionException e)
+					{
+						LOG.error("Starten van HL7v2 verstuur thread voor {} is niet gelukt.", lab.getNaam(), e);
+					}
+				});
+		});
 	}
 
 	private class CervixHl7v2TriggerMessagePerLabQueue extends Thread
@@ -227,13 +218,13 @@ public class CervixHl7v2TriggerMessageQueue
 		@Override
 		public void run()
 		{
-			LOG.info("Lab {}: Thread started", labNaam);
+			LOG.info("Lab '{}': Thread started", labNaam);
 			while (true)
 			{
 				var messageContext = new ScreenITHL7MessageContext(HapiContextType.UTF_8);
 				try
 				{
-					boolean skipWait = verwerkMessages(messageContext);
+					var skipWait = verwerkMessages(messageContext);
 
 					if (!skipWait)
 					{
@@ -242,7 +233,7 @@ public class CervixHl7v2TriggerMessageQueue
 						sendRunCounter++;
 						if (sendRunCounter % 10 == 0)
 						{
-							LOG.info("Lab {}: Heartbeat HL7v2 berichten queue", labNaam);
+							LOG.info("Lab '{}': Heartbeat HL7v2 berichten queue", labNaam);
 							if (!isLabAanwezig())
 							{
 								break;
@@ -259,7 +250,6 @@ public class CervixHl7v2TriggerMessageQueue
 				finally
 				{
 					closeHl7Connections(messageContext);
-					unbindSessionFactory();
 				}
 			}
 			stopped = true;
@@ -267,13 +257,9 @@ public class CervixHl7v2TriggerMessageQueue
 
 		private void logException(Exception e)
 		{
-			LOG.error("Lab {}: Fout tijdens het versturen van HL7v2 berichten.", labNaam, e);
-			var logMessage = String.format("Lab %s: Er is een onbekende fout opgetreden tijdens het versturen van HL7v2 berichten, neem contact op met Topicus.",
+			LOG.error("Lab '{}': Fout tijdens het versturen van HL7v2 berichten.", labNaam, e);
+			var logMessage = String.format("Lab '%s': Er is een onbekende fout opgetreden tijdens het versturen van HL7v2 berichten, neem contact op met Topicus.",
 				labNaam);
-			if (e instanceof HL7v2ConnectionException)
-			{
-				logMessage = String.format("Lab %s: %s %s", labNaam, e.getMessage(), e.getCause() != null ? e.getCause().getMessage() : null);
-			}
 			logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_BATCH_GESTOPT, logMessage, Bevolkingsonderzoek.CERVIX);
 			if (e instanceof InterruptedException)
 			{
@@ -283,15 +269,16 @@ public class CervixHl7v2TriggerMessageQueue
 
 		private boolean isLabAanwezig()
 		{
-			bindSession();
-			boolean labAanwezig = true;
-			if (getLaboratorium() == null)
+			var labAanwezig = new AtomicBoolean(true);
+			databaseRunner.runInSessionOnly(() ->
 			{
-				LOG.error("Lab '{}' met id '{}' niet (meer) beschikbaar", labNaam, labId);
-				labAanwezig = false;
-			}
-			unbindSessionFactory();
-			return labAanwezig;
+				if (getLaboratorium() == null)
+				{
+					LOG.error("Lab '{}' met id '{}' niet (meer) beschikbaar", labNaam, labId);
+					labAanwezig.set(false);
+				}
+			});
+			return labAanwezig.get();
 		}
 
 		private void closeHl7Connections(ScreenITHL7MessageContext connectionContext)
@@ -299,14 +286,17 @@ public class CervixHl7v2TriggerMessageQueue
 			sendMessageService.discardConnection(connectionContext);
 		}
 
-		private boolean verwerkMessages(ScreenITHL7MessageContext messageContext) throws HL7v2ConnectionException, InterruptedException
+		private boolean verwerkMessages(ScreenITHL7MessageContext messageContext)
 		{
-			bindSession();
-			List<Long> messageIds = messageService.fetchMessages(MessageType.HPV_ORDER, labId.toString(), QUEUE_VERWERK_SIZE).stream().map(Message::getId)
-				.collect(Collectors.toList());
-			var queueSize = messageService.fetchQueueSize(MessageType.HPV_ORDER, labId.toString());
-			unbindSessionFactory();
-			LOG.debug("Lab {}: {} order triggers geselecteerd om HPV orders ter versturen", labNaam, queueSize);
+			var messageIds = new ArrayList<Long>();
+			var queueSize = new AtomicLong(0);
+			databaseRunner.runInSessionOnly(() ->
+			{
+				messageIds.addAll(messageService.fetchMessages(MessageType.HPV_ORDER, labId.toString(), QUEUE_VERWERK_SIZE).stream().map(Message::getId)
+					.collect(Collectors.toList()));
+				queueSize.set(messageService.fetchQueueSize(MessageType.HPV_ORDER, labId.toString()));
+			});
+			LOG.debug("Lab '{}': {} order triggers geselecteerd om HPV orders ter versturen", labNaam, queueSize.get());
 			if (!messageIds.isEmpty())
 			{
 				try
@@ -314,53 +304,45 @@ public class CervixHl7v2TriggerMessageQueue
 					openConnection(messageContext);
 					verwerkLabMessageTriggers(messageIds, messageContext);
 				}
-				catch (HL7Exception e)
+				catch (Exception e)
 				{
 					logVerstuurProblemen(e);
 				}
-				finally
-				{
-					unbindSessionFactory();
-				}
 			}
-			logQueueSizeProblemen(queueSize);
-			return !verstuurProblemen && queueSize > QUEUE_VERWERK_SIZE;
+			logQueueSizeProblemen(queueSize.get());
+			return !verstuurProblemen && queueSize.get() > QUEUE_VERWERK_SIZE;
 		}
 
-		private void verwerkLabMessageTriggers(List<Long> messageIds, ScreenITHL7MessageContext messageContext) throws HL7Exception
+		private void verwerkLabMessageTriggers(List<Long> messageIds, ScreenITHL7MessageContext messageContext)
 		{
-			OpenHibernateSession.withCommittedTransaction().run(() ->
+			databaseRunner.runInSessionOnly(() ->
 				clientIdsFoutBerichten = foutHL7v2BerichtRepository.findAllByLaboratoriumId(labId).stream()
 					.map(b -> b.getClient().getId())
 					.collect(Collectors.toList())
 			);
-			for (Long messageId : messageIds)
+			for (var messageId : messageIds)
 			{
-				CervixHL7v24HpvOrderTriggerDto hl7v2HpvOrderTriggerDto = null;
-				Message message = null;
-				try
+				databaseRunner.runInSessionOnly(() ->
 				{
-					bindSession();
-					message = hibernateService.get(Message.class, messageId);
-					hl7v2HpvOrderTriggerDto = messageService.getContent(message);
-					var monster = getMonster(hl7v2HpvOrderTriggerDto);
-					checkConnection(messageContext);
-					if (geenFoutBerichtenVoorClient(getClient(monster)) && verwerkHpvOrderTrigger(monster, message, messageContext, hl7v2HpvOrderTriggerDto))
+					CervixHL7v24HpvOrderTriggerDto hl7v2HpvOrderTriggerDto = null;
+					Message message = null;
+					try
 					{
-						messageService.dequeueMessage(message);
+						message = hibernateService.get(Message.class, messageId);
+						hl7v2HpvOrderTriggerDto = messageService.getContent(message);
+						var monster = getMonster(hl7v2HpvOrderTriggerDto);
+						checkConnection(messageContext);
+						if (geenFoutBerichtenVoorClient(getClient(monster)) && verwerkHpvOrderTrigger(monster, message, messageContext, hl7v2HpvOrderTriggerDto))
+						{
+							messageService.dequeueMessage(message);
+						}
 					}
-					unbindSessionFactory();
-				}
-				catch (Exception e)
-				{
-					LOG.error("Lab {}: HL7v24 berichten queue error. Reden: {}", labNaam, e.getMessage());
-					logVerstuurProblemen(message, hl7v2HpvOrderTriggerDto, e);
-					return;
-				}
-				finally
-				{
-					unbindSessionFactory();
-				}
+					catch (Exception e)
+					{
+						LOG.error("Lab '{}': HL7v24 berichten queue error. Reden: {}", labNaam, e.getMessage());
+						logVerstuurProblemen(message, hl7v2HpvOrderTriggerDto, e);
+					}
+				});
 			}
 			logVerstuurProblemenOpgelost();
 		}
@@ -374,7 +356,7 @@ public class CervixHl7v2TriggerMessageQueue
 		{
 			if (!messageContext.getConnection().isOpen())
 			{
-				var melding = String.format("Lab %s: Bericht kon niet verzonden worden. Verbinding is gesloten!", labNaam);
+				var melding = String.format("Lab '%s': Bericht kon niet verzonden worden. Verbinding is gesloten!", labNaam);
 				LOG.error(melding);
 				throw new HL7v2ConnectionException(melding);
 			}
@@ -392,7 +374,7 @@ public class CervixHl7v2TriggerMessageQueue
 			var responseWrapper = messageContext.getResponseWrapper();
 			if (!responseWrapper.isSuccess())
 			{
-				var melding = String.format("Lab %s: Bericht kon niet verzonden worden. Reden: %s", labNaam, responseWrapper.getMelding());
+				var melding = String.format("Lab '%s': Bericht kon niet verzonden worden. Reden: %s", labNaam, responseWrapper.getMelding());
 				LOG.error(melding, responseWrapper.getCrashException());
 				maakFoutBericht(monster, message, responseWrapper, hl7v24RequestBerichtTekst);
 				logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERSTUREN_MISLUKT, getClient(monster), melding, Bevolkingsonderzoek.CERVIX);
@@ -408,11 +390,13 @@ public class CervixHl7v2TriggerMessageQueue
 			var firstTry = true;
 			var startSendMessage = System.currentTimeMillis();
 			var timedOut = false;
+			var retryNodig = false;
 			do
 			{
+				retryNodig = false;
 				if (!firstTry)
 				{
-					Thread.sleep(SEND_RETY_TIME);
+					Thread.sleep(sendRetryTime);
 				}
 				try
 				{
@@ -420,26 +404,27 @@ public class CervixHl7v2TriggerMessageQueue
 				}
 				catch (TimeoutException e)
 				{
+					retryNodig = true;
 					LOG.error("Lab '{}' timeout", labNaam, e);
-					if (System.currentTimeMillis() - startSendMessage <= MAX_SEND_RETRY_TIME)
+					if (System.currentTimeMillis() - startSendMessage <= maxSendRetryTime)
 					{
 						responseWrapper.setMelding(null); 
 					}
 				}
 				finally
 				{
-					firstTry = false;
+					retryNodig = retryNodig || responseWrapper.isError();
 
-					if (System.currentTimeMillis() - startSendMessage > MAX_SEND_RETRY_TIME && responseWrapper.isError())
+					if (System.currentTimeMillis() - startSendMessage > maxSendRetryTime && retryNodig)
 					{
 						LOG.error("Lab '{}' lukt niet om bericht te versturen. Stop met retry.", labNaam);
 						responseWrapper.setMelding(
-							String.format("Alleen AE of CE responses na aantal pogingen gedurende %ds.", TimeUnit.MILLISECONDS.toSeconds(MAX_SEND_RETRY_TIME)));
+							String.format("Alleen AE of CE responses of timeout na aantal pogingen gedurende %ds.", TimeUnit.MILLISECONDS.toSeconds(maxSendRetryTime)));
 						timedOut = true;
 					}
 				}
 			}
-			while (responseWrapper.isError() && !timedOut);
+			while (retryNodig && !timedOut);
 		}
 
 		private void maakFoutBericht(CervixMonster monster, Message message, HL7v24ResponseWrapper responseWrapper, String hl7v24RequestBerichtTekst)
@@ -476,22 +461,26 @@ public class CervixHl7v2TriggerMessageQueue
 			var connection = messageContext.getConnection();
 			if (connection == null)
 			{
-				boolean connectieProblemenGelogd = false;
+				var connectieProblemenGelogd = false;
 				String oldHost = null;
 				Integer oldPort = null;
-				long starttijdOpzettenConnectie = System.currentTimeMillis();
+				var starttijdOpzettenConnectie = System.currentTimeMillis();
 				while (true)
 				{
 					try
 					{
+						var laboratoriumNaam = new AtomicReference<String>(null);
 						oldHost = messageContext.getHost();
 						oldPort = messageContext.getPort();
-						bindSession();
-						BMHKLaboratorium laboratorium = getLaboratorium();
-						messageContext.setHost(organisatieParameterService.getOrganisatieParameter(laboratorium, OrganisatieParameterKey.CERVIX_HPV_ORDER_HOST));
-						messageContext.setPort(organisatieParameterService.getOrganisatieParameter(laboratorium, OrganisatieParameterKey.CERVIX_HPV_ORDER_PORT));
-						hl7BaseService.openConnection(laboratorium.getNaam(), 3, messageContext);
-						unbindSessionFactory();
+						databaseRunner.runInSessionOnly(() ->
+						{
+							var laboratorium = getLaboratorium();
+							laboratoriumNaam.set(laboratorium.getNaam());
+							messageContext.setHost(organisatieParameterService.getOrganisatieParameter(laboratorium, OrganisatieParameterKey.CERVIX_HPV_ORDER_HOST));
+							messageContext.setPort(organisatieParameterService.getOrganisatieParameter(laboratorium, OrganisatieParameterKey.CERVIX_HPV_ORDER_PORT));
+
+						});
+						hl7BaseService.openConnection(laboratoriumNaam.get(), 3, messageContext);
 						break;
 					}
 					catch (HL7Exception | IllegalStateException e)
@@ -499,16 +488,10 @@ public class CervixHl7v2TriggerMessageQueue
 						handleConnectingException(messageContext, connectieProblemenGelogd, oldHost, oldPort, starttijdOpzettenConnectie, e);
 						connectieProblemenGelogd = true;
 					}
-					finally
-					{
-						unbindSessionFactory();
-					}
 				}
 				if (connectieProblemenGelogd)
 				{
-					OpenHibernateSession.withCommittedTransaction().run(() ->
-						logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERBINDING_HERSTELD,
-							String.format("Lab %s: Verbinding is hersteld. HL7v2 berichten kunnen weer verstuurd worden.", labNaam), Bevolkingsonderzoek.CERVIX));
+					logVerstuurProblemenOpgelost();
 				}
 			}
 		}
@@ -518,16 +501,15 @@ public class CervixHl7v2TriggerMessageQueue
 		{
 			if (!connectieProblemenGelogd || logMislukteConnection(messageContext, oldHost, oldPort))
 			{
-				OpenHibernateSession.withCommittedTransaction()
-					.run(() -> logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERSTUREN_MISLUKT, e.getMessage(), Bevolkingsonderzoek.CERVIX));
+				logVerstuurProblemen(e);
 			}
-			long connectingRetryTime = CONNECTING_RETRY_TIME_LONG;
+			var connectingRetryTime = CONNECTING_RETRY_TIME_LONG;
 			if (e instanceof IllegalStateException)
 			{
 
 				connectingRetryTime = CONNECTING_RETRY_TIME_SHORT;
 			}
-			LOG.error("Lab {}: Connectie problemen. Retry in {} seconden", labNaam, TimeUnit.MILLISECONDS.toSeconds(connectingRetryTime), e);
+			LOG.error("Lab '{}': Connectie problemen. Retry in {} seconden", labNaam, TimeUnit.MILLISECONDS.toSeconds(connectingRetryTime), e);
 			Thread.sleep(connectingRetryTime);
 			if (System.currentTimeMillis() - starttijdOpzettenConnectie > MAX_CONNECTING_RETRY_TIME)
 			{
@@ -548,10 +530,9 @@ public class CervixHl7v2TriggerMessageQueue
 		{
 			if (verstuurProblemen)
 			{
-				OpenHibernateSession.withCommittedTransaction().run(() ->
-					logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERBINDING_HERSTELD,
-						String.format("Lab %s: HL7v2 berichten worden weer succesvol verstuurd", labNaam),
-						Bevolkingsonderzoek.CERVIX));
+				logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERBINDING_HERSTELD,
+					String.format("Lab '%s': HL7v2 berichten worden weer succesvol verstuurd", labNaam),
+					Bevolkingsonderzoek.CERVIX);
 				verstuurProblemen = false;
 			}
 		}
@@ -561,10 +542,9 @@ public class CervixHl7v2TriggerMessageQueue
 			if (!verstuurProblemen)
 			{
 				LOG.error(e.getMessage(), e);
-				OpenHibernateSession.withCommittedTransaction().run(() ->
-					logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERSTUREN_MISLUKT,
-						String.format("Lab %s: Onbekende fout bij het ophalen van het te versturen HL7v2 bericht.", labNaam),
-						Bevolkingsonderzoek.CERVIX));
+				logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERSTUREN_MISLUKT,
+					String.format("Lab '%s': Onbekende fout bij het ophalen van het te versturen HL7v2 bericht.", labNaam),
+					Bevolkingsonderzoek.CERVIX);
 				verstuurProblemen = true;
 			}
 		}
@@ -573,12 +553,11 @@ public class CervixHl7v2TriggerMessageQueue
 		{
 			if (!verstuurProblemen)
 			{
-				String logMelding = String.format("Lab %s: HL7v2 bericht (id:%s) (%s) kon niet worden verstuurd. Reden: %s", labNaam, message.getId(), message.getType(),
+				var logMelding = String.format("Lab '%s': HL7v2 bericht (id:%s) (%s) kon niet worden verstuurd. Reden: %s", labNaam, message.getId(), message.getType(),
 					e.getMessage());
 				LOG.error(logMelding, e);
-				OpenHibernateSession.withCommittedTransaction().run(() ->
-					logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERSTUREN_MISLUKT, getClient(getMonster(hl7BerichtTriggerDto)), logMelding,
-						Bevolkingsonderzoek.CERVIX));
+				logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_VERSTUREN_MISLUKT, getClient(getMonster(hl7BerichtTriggerDto)), logMelding,
+					Bevolkingsonderzoek.CERVIX);
 				verstuurProblemen = true;
 			}
 			if (e instanceof InterruptedException)
@@ -589,25 +568,23 @@ public class CervixHl7v2TriggerMessageQueue
 
 		private void logQueueSizeProblemen(Long queueSize)
 		{
-			boolean oldQueueSizeWarningValue = queueSizeWarning;
+			var oldQueueSizeWarningValue = queueSizeWarning;
 			queueSizeWarning = queueSize > QUEUE_WARNING_THRESHOLD;
 			if (oldQueueSizeWarningValue != queueSizeWarning)
 			{
 				if (queueSizeWarning)
 				{
-					LOG.warn("Lab {}: Queue size wordt te groot!", labNaam);
-					OpenHibernateSession.withCommittedTransaction().run(() ->
-						logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_QUEUE_ERG_GROOT,
-							String.format("Lab %s: Er staan meer dan %d berichten in de queue", labNaam, QUEUE_WARNING_THRESHOLD),
-							Bevolkingsonderzoek.CERVIX));
+					LOG.warn("Lab '{}': Queue size wordt te groot!", labNaam);
+					logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_QUEUE_ERG_GROOT,
+						String.format("Lab '%s': Er staan meer dan %d berichten in de queue", labNaam, QUEUE_WARNING_THRESHOLD),
+						Bevolkingsonderzoek.CERVIX);
 				}
 				else
 				{
-					LOG.info("Lab {}: Queue size wordt weer klein genoeg", labNaam);
-					OpenHibernateSession.withCommittedTransaction().run(() ->
-						logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_QUEUE_NORMAAL,
-							String.format("Lab %s: Het aantal berichten in de queue is weer normaal.", labNaam),
-							Bevolkingsonderzoek.CERVIX));
+					LOG.info("Lab '{}': Queue size wordt weer klein genoeg", labNaam);
+					logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_QUEUE_NORMAAL,
+						String.format("Lab '%s': Het aantal berichten in de queue is weer normaal.", labNaam),
+						Bevolkingsonderzoek.CERVIX);
 				}
 			}
 		}

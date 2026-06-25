@@ -18,29 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { AfterViewInit, Component, ElementRef, inject, viewChild } from '@angular/core'
-import { ComponentLoaderDirective } from '@shared/directives/component-loader/component-loader.directive'
+import { AfterViewInit, Component, ElementRef, inject } from '@angular/core'
 import { SessionTimeoutService } from '@shared/session-timeout/service/session-timeout.service'
-import { ColonRoosterPageComponent } from '@/colon/colon-rooster-page/colon-rooster-page.component'
-import { ColonFeestdagenBeheerPageComponent } from '@/colon/colon-feestdagen-beheer-page/colon-feestdagen-beheer-page.component'
-import { ColonWeekendWerkdagBeperkingenPageComponent } from '@/colon/colon-weekend-werkdag-beperkingen/colon-weekend-werkdag-beperkingen-page.component'
-import { MammaDense2UitwisselingPageComponent } from '@/mamma/mamma-dense2-uitwisseling-page/mamma-dense2-uitwisseling-page.component'
-import { ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent } from '@/algemeen/extra-beveiligde-omgeving/extra-beveiligde-omgeving-keuze-herstellen-page/extra-beveiligde-omgeving-keuze-herstellen-page.component'
-import { ExtraBeveiligdeOmgevingClientZoekenPageComponent } from '@/algemeen/extra-beveiligde-omgeving/extra-beveiligde-omgeving-client-zoeken-page/extra-beveiligde-omgeving-client-zoeken-page.component'
-import { MammaVisitatieOverzichtPageComponent } from '@/mamma/mamma-visitatie-overzicht-page/mamma-visitatie-overzicht-page.component'
-import { HandleidingenOverzichtPageComponent } from '@/algemeen/handleidingen-overzicht-page/handleidingen-overzicht-page.component'
-import {ClientZoekenPageComponent} from '@algemeen/clientdossier/client-zoeken-page/client-zoeken-page.component'
-import {MammaFotobesprekingOnderzoekenPageComponent} from '@mamma/mamma-fotobespreking-onderzoeken-page/mamma-fotobespreking-onderzoeken-page.component'
+import { Router, RouterOutlet } from '@angular/router'
 
 @Component({
   selector: 'app-root',
-  template: `<ng-container appComponentLoader></ng-container>`,
-  imports: [ComponentLoaderDirective],
+  template: ` <router-outlet></router-outlet>`,
+  imports: [RouterOutlet],
 })
 export class AppComponent implements AfterViewInit {
-  componentLoader = viewChild(ComponentLoaderDirective)
   private elementRef: ElementRef = inject(ElementRef)
   private sessionTimeoutService: SessionTimeoutService = inject(SessionTimeoutService)
+  private readonly router = inject(Router)
 
   get componentName(): string | null {
     return this.elementRef.nativeElement.getAttribute('data-component')
@@ -48,44 +38,43 @@ export class AppComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.sessionTimeoutService.startSessionTimer()
-    if (!this.componentLoader()) {
-      return
-    }
-
-    const viewContainerRef = this.componentLoader()!.viewContainerRef
-    viewContainerRef.clear()
-
+    let route = '/'
     switch (this.componentName) {
       case 'colon-rooster':
-        viewContainerRef.createComponent<ColonRoosterPageComponent>(ColonRoosterPageComponent)
+        route = '/darmkanker/rooster'
         break
       case 'feestdagen-beheer':
-        viewContainerRef.createComponent<ColonFeestdagenBeheerPageComponent>(ColonFeestdagenBeheerPageComponent)
+        route = '/darmkanker/feestdagen-beheer'
         break
       case 'weekend-werkdag-beheer':
-        viewContainerRef.createComponent<ColonWeekendWerkdagBeperkingenPageComponent>(ColonWeekendWerkdagBeperkingenPageComponent)
+        route = '/darmkanker/weekend-werkdag-beheer'
         break
       case 'dense2-uitwisseling':
-        viewContainerRef.createComponent<MammaDense2UitwisselingPageComponent>(MammaDense2UitwisselingPageComponent)
+        route = '/borstkanker/dense2-uitwisseling'
         break
       case 'extra-beveiligde-omgeving-keuze-herstellen':
-        viewContainerRef.createComponent<ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent>(ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent)
+        route = '/extra-beveiligde-omgeving/keuze-herstellen'
         break
       case 'extra-beveiligde-omgeving-client-zoeken':
-        viewContainerRef.createComponent<ExtraBeveiligdeOmgevingClientZoekenPageComponent>(ExtraBeveiligdeOmgevingClientZoekenPageComponent)
+        route = '/extra-beveiligde-omgeving/client-zoeken'
         break
       case 'mamma-visitatie-overzicht':
-        viewContainerRef.createComponent<MammaVisitatieOverzichtPageComponent>(MammaVisitatieOverzichtPageComponent)
+        route = '/borstkanker/visitatie'
         break
       case 'mamma-fotobespreking-onderzoeken':
-        viewContainerRef.createComponent<MammaFotobesprekingOnderzoekenPageComponent>(MammaFotobesprekingOnderzoekenPageComponent)
+        route = '/borstkanker/fotobespreking/onderzoeken'
         break
       case 'handleidingen-overzicht':
-        viewContainerRef.createComponent<HandleidingenOverzichtPageComponent>(HandleidingenOverzichtPageComponent)
+        route = '/handleidingen'
         break
       case 'client-zoeken':
-        viewContainerRef.createComponent<ClientZoekenPageComponent>(ClientZoekenPageComponent)
+        route = '/client/zoeken'
         break
     }
+    this.router.events.subscribe((event) => {
+      console.log(event)
+    })
+
+    this.router.navigateByUrl(route)
   }
 }

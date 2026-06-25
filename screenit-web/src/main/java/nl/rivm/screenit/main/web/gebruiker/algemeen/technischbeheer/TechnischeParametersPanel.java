@@ -112,6 +112,7 @@ public class TechnischeParametersPanel extends BaseTechnischBeheerParametersPane
 	{
 		var form = new Form<Parameterisatie>("form");
 		form.add(ComponentHelper.newDatePicker("startdatumBmhk", magAanpassen()).setRequired(true));
+		form.add(ComponentHelper.newDatePicker("startOverbruggingssituatieParagon", magAanpassen()).setRequired(true));
 		form.add(ComponentHelper.newDatePicker("cervixStartBmhk2023", magAanpassen()).setRequired(true));
 		form.add(ComponentHelper.newDatePicker("colonStartDigitaleIntake", magAanpassen()));
 		form.add(new TextField<>("internalZorgmailBestandUrl", String.class).setRequired(true));

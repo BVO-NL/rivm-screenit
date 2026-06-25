@@ -75,6 +75,7 @@ public class JwtSecurityConfig
 		throws Exception
 	{
 		var heeftIdpIssuer = StringUtils.isNotBlank(idpIssuer);
+		LOG.info("IDP validatie: {}", heeftIdpIssuer);
 		var httpSecurity = http.csrf(AbstractHttpConfigurer::disable)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(authz ->
@@ -82,6 +83,7 @@ public class JwtSecurityConfig
 				if (heeftIdpIssuer)
 				{
 					authz.requestMatchers("/services/**").permitAll()
+						.requestMatchers("/api/rest/dvabron/fhir/**").hasRole("databroker-dva")
 						.requestMatchers("/api/rest/dvabron/v1/**").hasRole("databroker-dva")
 						.requestMatchers("/api/inpakcentrum/v2/**").hasRole("screenit_app")
 						.anyRequest().authenticated();

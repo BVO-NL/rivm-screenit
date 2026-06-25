@@ -80,12 +80,12 @@ import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsPeriodeUit
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsRondeRapportageStatus;
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsRondeUitnodigenRapportage;
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaUitnodigenRapportage;
+import nl.rivm.screenit.service.DatabaseRunner;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSession;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -116,6 +116,8 @@ public class PlanningUitnodigenController
 	private final LogService logService;
 
 	private final OrganisatieService organisatieService;
+
+	private final DatabaseRunner databaseRunner;
 
 	private static boolean teSelecteren(PlanningClient client, PlanningUitnodigingContext context, int uitnodigenTotEnMetJaar, PlanningPostcodeReeksRegio postcodeReeksRegio)
 	{
@@ -343,7 +345,7 @@ public class PlanningUitnodigenController
 		{
 			try
 			{
-				OpenHibernateSession.withCommittedTransaction().run(() ->
+				databaseRunner.runInNewTransaction(() ->
 				{
 					LOG.info("uitnodigen standplaatsRonde: {}", standplaatsRonde.getId());
 					PlanningStandplaats standplaats = standplaatsRonde.getStandplaats();

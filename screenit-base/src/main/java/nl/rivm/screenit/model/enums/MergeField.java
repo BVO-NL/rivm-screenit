@@ -96,6 +96,7 @@ import nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenOrganisatieOvereenkomst;
 import nl.rivm.screenit.service.BarcodeService;
 import nl.rivm.screenit.service.HeraanmeldenMergeVeldService;
+import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.cervix.CervixBaseBetalingService;
 import nl.rivm.screenit.service.cervix.impl.CervixMonsterIdBarcode;
@@ -1599,8 +1600,7 @@ public enum MergeField
 					var intakelocatie = context.getIntakeAfspraak().getKamer().getIntakelocatie();
 					if (organisatieParameterService.getOrganisatieParameter(intakelocatie, OrganisatieParameterKey.COLON_DIGITALE_INTAKE_ENABLED))
 					{
-						return organisatieParameterService.getOrganisatieParameter(context.getIntakeAfspraak().getKamer().getIntakelocatie(),
-							OrganisatieParameterKey.COLON_DIGITALE_INTAKE);
+						return organisatieParameterService.getOrganisatieParameter(intakelocatie, OrganisatieParameterKey.COLON_DIGITALE_INTAKE);
 					}
 				}
 				return null;
@@ -2367,9 +2367,20 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				return getFormattedDateZonderDagnaam(new Date());
+				return getFormattedDateZonderDagnaam(getCurrentDateSupplier().getDate());
 			}
 
+		},
+
+	PRINTDATUM_BRIEF("_PRINTDATUM_BRIEF", MergeFieldTestType.OVERIGE, Date.class, () -> "31-12-2000")
+		{
+			@Override
+			public Object getFieldValue(MailMergeContext context)
+			{
+				return Optional.ofNullable(BriefUtil.geefDatumVoorGebeurtenisoverzicht(context.getBrief()))
+					.map(MergeField::getFormattedDateZonderDagnaam)
+					.orElse(null);
+			}
 		},
 
 	DATUM_INTAKE("_DATUM_INTAKE", MergeFieldTestType.INTAKE, Date.class, () -> "01-12-2017")
@@ -4688,6 +4699,11 @@ public enum MergeField
 	private static OrganisatieParameterService getOrganisatieParameterService()
 	{
 		return getBean(OrganisatieParameterService.class);
+	}
+
+	private static ICurrentDateSupplier getCurrentDateSupplier()
+	{
+		return getBean(ICurrentDateSupplier.class);
 	}
 
 	private static String getStringValueFromPreference(PreferenceKey key)

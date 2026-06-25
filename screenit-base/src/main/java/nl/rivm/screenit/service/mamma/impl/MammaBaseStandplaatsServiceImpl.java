@@ -53,14 +53,15 @@ import nl.rivm.screenit.repository.mamma.MammaStandplaatsRepository;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.CoordinatenService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.impl.IBrievenGeneratorHelper;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsPeriodeService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.service.mamma.MammaBaseUitstelService;
 import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -107,6 +108,9 @@ public class MammaBaseStandplaatsServiceImpl implements MammaBaseStandplaatsServ
 
 	@Autowired
 	private MammaBaseStandplaatsPeriodeService sandplaatsPeriodeService;
+
+	@Autowired
+	private OrganisatieService organisatieService;
 
 	@Override
 	public List<MammaStandplaatsPeriodeMetAfstandDto> getStandplaatsPeriodeMetAfstandDtos(Client client, IMammaAfspraakWijzigenFilter filter)
@@ -272,7 +276,9 @@ public class MammaBaseStandplaatsServiceImpl implements MammaBaseStandplaatsServ
 			var nu = dateSupplier.getDate();
 
 			var mergedBrieven = new MammaMergedBrieven();
-			mergedBrieven.setScreeningOrganisatie(standplaats.getRegio());
+			boolean overbruggingssituatieParagonStarted = baseBriefService.isOverbruggingssituatieParagonStarted();
+			mergedBrieven.setScreeningOrganisatie(
+				overbruggingssituatieParagonStarted ? organisatieService.getLandelijkeScreeningsorganisatie() : standplaats.getRegio());
 			mergedBrieven.setCreatieDatum(nu);
 			mergedBrieven.setBriefType(brieven.get(0).getBriefType());
 			mergedBrieven.setActief(false);
@@ -282,7 +288,7 @@ public class MammaBaseStandplaatsServiceImpl implements MammaBaseStandplaatsServ
 
 			try
 			{
-				baseBriefService.createOrAddMergedBrieven(brieven, new AfspraakBrievenGeneratorHelper(mergedBrieven, standplaats));
+				baseBriefService.createOrAddMergedBrieven(brieven, new AfspraakBrievenGeneratorHelper(mergedBrieven, standplaats, overbruggingssituatieParagonStarted));
 				baseBriefService.completePdf(mergedBrieven);
 			}
 
@@ -309,11 +315,13 @@ public class MammaBaseStandplaatsServiceImpl implements MammaBaseStandplaatsServ
 
 		private final MammaStandplaats standplaats;
 
-		AfspraakBrievenGeneratorHelper(MammaMergedBrieven mergedBrieven, MammaStandplaats standplaats)
+		private final boolean overbruggingssituatieParagonStarted;
+
+		AfspraakBrievenGeneratorHelper(MammaMergedBrieven mergedBrieven, MammaStandplaats standplaats, boolean overbruggingssituatieParagonStarted)
 		{
 			this.mergedBrieven = mergedBrieven;
 			this.standplaats = standplaats;
-
+			this.overbruggingssituatieParagonStarted = overbruggingssituatieParagonStarted;
 		}
 
 		@Override
@@ -321,11 +329,15 @@ public class MammaBaseStandplaatsServiceImpl implements MammaBaseStandplaatsServ
 		{
 			var naam = "";
 			var sdf = new SimpleDateFormat("yyyy-MM-dd_HH.mm");
+			if (overbruggingssituatieParagonStarted && brieven.getBriefType() != null)
+			{
+				naam += brieven.getBriefType().getBriefCode() + "_";
+			}
 			if (brieven.getCreatieDatum() != null)
 			{
 				naam += sdf.format(brieven.getCreatieDatum()) + "-";
 			}
-			if (brieven.getScreeningOrganisatie() != null)
+			if (!overbruggingssituatieParagonStarted && brieven.getScreeningOrganisatie() != null)
 			{
 				var soNaam = brieven.getScreeningOrganisatie().getNaam();
 				soNaam = soNaam.replace(" ", "_");
@@ -336,6 +348,7 @@ public class MammaBaseStandplaatsServiceImpl implements MammaBaseStandplaatsServ
 			{
 				naam += brieven.getBriefType().name().toLowerCase();
 			}
+
 			return naam + ".pdf";
 		}
 

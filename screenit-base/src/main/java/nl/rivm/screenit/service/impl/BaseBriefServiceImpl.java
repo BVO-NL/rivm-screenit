@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.document.BaseDocumentCreator;
 import nl.rivm.screenit.factory.algemeen.BriefFactory;
@@ -74,16 +75,17 @@ import nl.rivm.screenit.repository.algemeen.BriefDefinitieRepository;
 import nl.rivm.screenit.repository.algemeen.ClientBriefRepository;
 import nl.rivm.screenit.service.AsposeService;
 import nl.rivm.screenit.service.BaseBriefService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.BriefUtil;
+import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.JavaScriptPdfHelper;
-import org.hibernate.Hibernate;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.organisatie.model.Adres;
+import nl.topicuszorg.preferencemodule.service.KeyPreferenceService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.io.FileUtils;
@@ -91,7 +93,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionJavaScript;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,7 +101,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aspose.words.Document;
 import com.aspose.words.ImportFormatMode;
-import com.aspose.words.PdfSaveOptions;
+import com.aspose.words.PdfCompliance;
 
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefType;
 import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.heeftClient;
@@ -142,6 +143,9 @@ public class BaseBriefServiceImpl implements BaseBriefService
 
 	@Autowired
 	private BriefFactory briefFactory;
+
+	@Autowired
+	private KeyPreferenceService preferenceService;
 
 	@Override
 	public BriefDefinitie getNieuwsteBriefDefinitie(BriefType briefType)
@@ -599,20 +603,14 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	}
 
 	@Override
-	public <B extends Brief> File maakPdfVanBrief(B brief) throws Exception
+	public <B extends Brief> File maakPdfAVanBrief(B brief) throws Exception
 	{
-		Client client = getClientFromBrief(brief);
-		File briefTemplate = getBriefDefinitieFile(brief);
-		MailMergeContext context = getMailMergeContext(brief, client);
-		byte[] briefTemplateBytes = FileUtils.readFileToByteArray(briefTemplate);
-		Document document = asposeService.processDocument(briefTemplateBytes, context);
-		return genereerPdf(document, brief.getBriefType().toString(), true);
-	}
-
-	@Override
-	public <B extends Brief> File maakPdfVanBrief(B brief, BaseDocumentCreator documentCreator) throws Exception
-	{
-		return maakPdfVanBrief(brief, documentCreator, null);
+		var client = getClientFromBrief(brief);
+		var briefTemplate = getBriefDefinitieFile(brief);
+		var context = getMailMergeContext(brief, client);
+		var briefTemplateBytes = FileUtils.readFileToByteArray(briefTemplate);
+		var document = asposeService.processDocument(briefTemplateBytes, context);
+		return genereerPdf(document, brief.getBriefType().toString(), false, true);
 	}
 
 	@Override
@@ -686,17 +684,27 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	@Override
 	public File genereerPdf(Document document, String fileNaam, boolean autoShowPrintdialog) throws Exception
 	{
-		final File tmpPdfFile = File.createTempFile(fileNaam, ".pdf");
+		return genereerPdf(document, fileNaam, autoShowPrintdialog, false);
+	}
 
-		try (ByteArrayOutputStream tempStream = new ByteArrayOutputStream();
-			FileOutputStream pdfOutStream = new FileOutputStream(tmpPdfFile))
+	private File genereerPdf(Document document, String fileNaam, boolean autoShowPrintdialog, boolean usePdfA) throws Exception
+	{
+		var tmpPdfFile = File.createTempFile(fileNaam, ".pdf");
+
+		try (var tempStream = new ByteArrayOutputStream();
+			var pdfOutStream = new FileOutputStream(tmpPdfFile))
 		{
-			PdfSaveOptions pdfSaveOptions = asposeService.getPdfSaveOptions();
-			document.save(tempStream, pdfSaveOptions);
-			PDDocument pdfBoxDocument = Loader.loadPDF(new ByteArrayInputStream(tempStream.toByteArray()).readAllBytes());
+			var pdfSaveOptions = asposeService.getPdfSaveOptions();
+			var tempPdfSaveOptions = pdfSaveOptions.deepClone();
+			if (usePdfA)
+			{
+				tempPdfSaveOptions.setCompliance(PdfCompliance.PDF_A_2_U);
+			}
+			document.save(tempStream, tempPdfSaveOptions);
+			var pdfBoxDocument = Loader.loadPDF(new ByteArrayInputStream(tempStream.toByteArray()).readAllBytes());
 			if (autoShowPrintdialog)
 			{
-				PDActionJavaScript javaScript = new PDActionJavaScript(JavaScriptPdfHelper.getPrintJavascript());
+				var javaScript = new PDActionJavaScript(JavaScriptPdfHelper.getPrintJavascript());
 				pdfBoxDocument.getDocumentCatalog().setOpenAction(javaScript);
 			}
 			pdfBoxDocument.save(pdfOutStream);
@@ -779,5 +787,14 @@ public class BaseBriefServiceImpl implements BaseBriefService
 			hibernateService.save(mergedBrieven);
 		}
 		hibernateService.delete(brief);
+	}
+
+	@Override
+	@Transactional  
+	public boolean isOverbruggingssituatieParagonStarted()
+	{
+		var startOvergangssituatieParagon = preferenceService.getString(PreferenceKey.START_OVERBRUGGINGSSITUATIE_PARAGON).orElse("20260701");
+		var startDatum = DateUtil.parseLocalDateForPattern(startOvergangssituatieParagon, Constants.DATE_FORMAT_YYYYMMDD);
+		return !currentDateSupplier.getLocalDate().isBefore(startDatum);
 	}
 }

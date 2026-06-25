@@ -22,19 +22,42 @@ import { Routes } from '@angular/router'
 
 export const routes: Routes = [
   {
-    path: 'algemeen',
+    path: '',
     loadChildren: () => import('../algemeen/algemeen.routes').then((m) => m.algemeenRoutes),
   },
   {
-    path: 'mamma',
+    path: 'borstkanker',
     loadChildren: () => import('../mamma/mamma.routes').then((m) => m.mammaRoutes),
   },
   {
-    path: 'cervix',
+    path: 'baarmoederhalskanker',
     loadChildren: () => import('../cervix/cervix.routes').then((m) => m.cervixRoutes),
   },
   {
-    path: 'colon',
+    path: 'darmkanker',
     loadChildren: () => import('../colon/colon.routes').then((m) => m.colonRoutes),
+  },
+  {
+    path: 'extra-beveiligde-omgeving',
+    children: [
+      {
+        path: 'client-zoeken',
+        loadComponent: () =>
+          import('../algemeen/extra-beveiligde-omgeving/extra-beveiligde-omgeving-client-zoeken-page/extra-beveiligde-omgeving-client-zoeken-page.component').then(
+            (m) => m.ExtraBeveiligdeOmgevingClientZoekenPageComponent,
+          ),
+      },
+      {
+        path: 'keuze-herstellen',
+        loadComponent: () =>
+          import('../algemeen/extra-beveiligde-omgeving/extra-beveiligde-omgeving-keuze-herstellen-page/extra-beveiligde-omgeving-keuze-herstellen-page.component').then(
+            (m) => m.ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent,
+          ),
+      },
+    ],
+  },
+  {
+    path: 'handleidingen',
+    loadComponent: () => import('../algemeen/handleidingen-overzicht-page/handleidingen-overzicht-page.component').then((m) => m.HandleidingenOverzichtPageComponent),
   },
 ]

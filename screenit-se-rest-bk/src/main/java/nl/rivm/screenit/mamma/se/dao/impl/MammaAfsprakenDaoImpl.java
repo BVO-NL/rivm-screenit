@@ -25,25 +25,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import nl.rivm.screenit.mamma.se.dao.ClientIdentificatie;
 import nl.rivm.screenit.mamma.se.dao.MammaAfsprakenDao;
 import nl.rivm.screenit.model.mamma.enums.MammaIdentificatiesoort;
-import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
 
+import org.hibernate.Session;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 @Profile("!test")
-public class MammaAfsprakenDaoImpl extends AbstractAutowiredDao implements MammaAfsprakenDao
+public class MammaAfsprakenDaoImpl implements MammaAfsprakenDao
 {
+	@PersistenceContext
+	private EntityManager entityManager;
+
 	@Override
 	public Map<Long, ClientIdentificatie> readLaatsteIdentificatieVanClienten(List<Long> clientIds)
 	{
-		var query = getSession().createNativeQuery(
+		var query = entityManager.unwrap(Session.class).createNativeQuery(
 			"select patient_id\n" +
 				"  , identificatiesoort\n" +
 				"  , identificatienummer\n" +

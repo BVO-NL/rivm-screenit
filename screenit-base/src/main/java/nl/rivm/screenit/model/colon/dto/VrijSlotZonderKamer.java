@@ -22,7 +22,6 @@ package nl.rivm.screenit.model.colon.dto;
  */
 
 import java.io.Serializable;
-import java.time.temporal.Temporal;
 import java.util.Date;
 
 import lombok.Getter;
@@ -53,13 +52,14 @@ public class VrijSlotZonderKamer implements Serializable
 		return null;
 	}
 
-	public void setStartTijd(Temporal startTijd)
+	public void setStartTijd(Object startTijd)
 	{
-		this.startTijd = DateUtil.toUtilDate(startTijd);
+		this.startTijd = DateUtil.transformObjectToDate(startTijd);
 	}
 
-	public void setEindTijd(Temporal eindTijd)
+	public void setEindTijd(Object eindTijd)
 	{
-		this.eindTijd = DateUtil.toUtilDate(eindTijd);
+		this.eindTijd = DateUtil.transformObjectToDate(eindTijd);
 	}
+
 }

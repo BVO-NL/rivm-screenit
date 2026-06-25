@@ -20,4 +20,18 @@
  */
 import { Routes } from '@angular/router'
 
-export const mammaRoutes: Routes = []
+export const mammaRoutes: Routes = [
+  {
+    path: 'dense2-uitwisseling',
+    loadComponent: () => import('./mamma-dense2-uitwisseling-page/mamma-dense2-uitwisseling-page.component').then((m) => m.MammaDense2UitwisselingPageComponent),
+  },
+  {
+    path: 'visitatie',
+    loadComponent: () => import('./mamma-visitatie-overzicht-page/mamma-visitatie-overzicht-page.component').then((m) => m.MammaVisitatieOverzichtPageComponent),
+  },
+  {
+    path: 'fotobespreking/onderzoeken',
+    loadComponent: () =>
+      import('./mamma-fotobespreking-onderzoeken-page/mamma-fotobespreking-onderzoeken-page.component').then((m) => m.MammaFotobesprekingOnderzoekenPageComponent),
+  },
+]

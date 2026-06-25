@@ -21,7 +21,6 @@ package nl.rivm.screenit.batch.jms.listener;
  * =========================LICENSE_END==================================
  */
 
-import jakarta.jms.JMSException;
 import jakarta.jms.Session;
 
 import lombok.AllArgsConstructor;
@@ -42,19 +41,19 @@ public class JMSVerwerkFitBerichtListener implements SessionAwareMessageListener
 	private final ColonFitBerichtHl7v2InlezenService fitHL7BerichtInlezenService;
 
 	@Override
-	public void onMessage(ActiveMQObjectMessage activeMQObjectMessage, Session session) throws JMSException
+	public void onMessage(ActiveMQObjectMessage activeMQObjectMessage, Session session)
 	{
-		var berichten = fitHL7BerichtInlezenService.getAlleNietVerwerkteFitBerichten();
-		for (var bericht : berichten)
+		var berichtIds = fitHL7BerichtInlezenService.getAlleNietVerwerkteFitBerichtIds();
+		for (var berichtId : berichtIds)
 		{
 			try
 			{
-				fitHL7BerichtInlezenService.verwerkOntvangenFitBericht(bericht);
+				fitHL7BerichtInlezenService.verwerkOntvangenFitBericht(berichtId);
 			}
 			catch (Exception e)
 			{
-				LOG.error("Er is een probleem opgetreden, met het verwerken van de hpv data", e);
-				fitHL7BerichtInlezenService.logError(bericht, e.getMessage(), null);
+				LOG.error("Er is een probleem opgetreden, met het verwerken van de FIT data", e);
+				fitHL7BerichtInlezenService.logError(berichtId, e.getMessage(), null);
 			}
 		}
 

@@ -34,6 +34,7 @@ import ImageBlobComponent from "../../../components/blob/ImageBlobComponent"
 import blob_cervix from "../../../scss/media/blob-cervix.png"
 import {useSelector} from "react-redux"
 import {State} from "../../../datatypes/State"
+import {useNavigate} from "react-router"
 
 type Props = {
 	dossier: CervixDossier,
@@ -43,10 +44,11 @@ type Props = {
 const CervixLandingPage = (props: Props) => {
 	const beschikbareActies = props.beschikbareActies
 	const toonVervangendeTekst: boolean = useSelector((state: State) => state.landingOverzicht.cervixParameters.toonVervangendeTekst)
+	const navigate = useNavigate()
 
 	return (
 		<Container fluid className={styles.content}>
-			<KruimelpadComponent className={bvoStyles.cervix}/>
+			<KruimelpadComponent className={bvoStyles.cervix} onTerugKlik={() => navigate('/')}/>
 			<Row className={landingPageStyle.inleiding}>
 				<Col md={8}>
 					<BvoInleidingComponent/>

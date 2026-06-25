@@ -53,7 +53,7 @@ public abstract class CervixHerinnerenReader extends BaseSpecificationScrollable
 
 	protected CervixHerinnerenReader(int fetchSize, OrganisatieParameterKey maxAantalParameterKey, CervixMonsterType monsterType)
 	{
-		super.setFetchSize(fetchSize);
+		setFetchSize(fetchSize);
 		this.maxAantalParameterKey = maxAantalParameterKey;
 		this.monsterType = monsterType;
 	}

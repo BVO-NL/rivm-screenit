@@ -27,9 +27,11 @@ import java.util.Date;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import nl.topicuszorg.preferencemodule.model.IPreferenceKey;
+
 @RequiredArgsConstructor
 @Getter
-public enum PreferenceKey
+public enum PreferenceKey implements IPreferenceKey
 {
 	START_MIDDAG("Start middag", LocalTime.class),
 
@@ -485,13 +487,22 @@ public enum PreferenceKey
 
 	COLON_BETROUWBARE_LIMIET_FIT("Betrouwbare limiet FIT uitslag", Integer.class),
 
+	PGO_UITSLAGEN_BESCHIKBAAR_TERMIJN("Termijn beschikbaarheid uitslagen voor PGO's", Integer.class),
+
 	COLON_WEKEN_NA_AANMAAK_HERINNERING("Weken na aanmaak herinnering", Integer.class),
 
 	TOON_TEST_ELEMENTEN("Toon test elementen (knoppen, inputs etc) in de UI", Boolean.class),
+
+	START_OVERBRUGGINGSSITUATIE_PARAGON("Start van overbruggingssituatie Paragon", Date.class),
 	;
 
 	private final String layoutName;
 
 	private final Class<?> type;
 
+	@Override
+	public String getKey()
+	{
+		return name();
+	}
 }

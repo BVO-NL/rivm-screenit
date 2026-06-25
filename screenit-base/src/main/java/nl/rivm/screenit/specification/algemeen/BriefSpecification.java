@@ -81,5 +81,4 @@ public class BriefSpecification
 	{
 		return (r, q, cb) -> cb.lessThanOrEqualTo(r.get(Brief_.creatieDatum), peildatum);
 	}
-
 }

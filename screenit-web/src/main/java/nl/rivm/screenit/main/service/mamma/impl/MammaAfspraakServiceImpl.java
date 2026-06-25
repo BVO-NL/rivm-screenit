@@ -62,14 +62,14 @@ import nl.rivm.screenit.repository.mamma.MammaBaseAfspraakRepository;
 import nl.rivm.screenit.repository.mamma.MammaUitnodigingRepository;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BerichtToSeRestBkService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.hibernate.OpenEntityManagerInThread;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
-import nl.topicuszorg.hibernate.spring.services.impl.OpenHibernateSessionInThread;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.domain.Sort;
@@ -307,7 +307,7 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 		afsprakenTeVerplaatsen.forEach((key, value) -> EXECUTOR_SERVICE.submit(new AfsprakenVerplaatsenThread(key, value, account.getId())));
 	}
 
-	private class AfsprakenVerplaatsenThread extends OpenHibernateSessionInThread
+	private class AfsprakenVerplaatsenThread extends OpenEntityManagerInThread
 	{
 
 		private final Long standplaatsPeriodeId;

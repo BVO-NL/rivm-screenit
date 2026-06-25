@@ -49,9 +49,9 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.repository.algemeen.RolRepository;
 import nl.rivm.screenit.service.BaseMedewerkerService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.specification.algemeen.RolSpecification;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -81,7 +81,6 @@ public class RolServiceImpl implements RolService
 	{
 		boolean nieuwInActief = !rol.getActief();
 		long rolId = rol.getId();
-		hibernateService.getHibernateSession().evict(rol);
 
 		var melding = "Rol: " + rol.getNaam();
 		var logGebeurtenis = LogGebeurtenis.ROL_ACTIVEREN;

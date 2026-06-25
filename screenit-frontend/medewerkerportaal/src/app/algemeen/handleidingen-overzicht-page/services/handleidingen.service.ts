@@ -30,14 +30,14 @@ import { HandleidingUpload } from '@shared/utils/file-utils'
 })
 export class HandleidingenService {
   private apiService: ApiService = inject(ApiService)
-  private baseUrl = '/api/algemeen'
+  private baseUrl = '/api'
 
   getHandleidingen(): Observable<Handleiding[]> {
     return this.apiService.get<HandleidingDto[]>(`${this.baseUrl}/handleiding`)
   }
 
   downloadHandleiding(id: number, bestandsnaam: string): Observable<Blob> {
-    return this.apiService.get<Blob>(`${this.baseUrl}/document/${id}`, undefined, { responseType: 'blob' }).pipe(tap((blob) => saveAs(blob, bestandsnaam)))
+    return this.apiService.get<Blob>(`${this.baseUrl}/document/${id}`, undefined, { responseType: 'blob' }).pipe(tap((blob: Blob) => saveAs(blob, bestandsnaam)))
   }
 
   uploadHandleidingen(uploadItems: HandleidingUpload[]): Observable<HandleidingUploadResultaatDto[]> {

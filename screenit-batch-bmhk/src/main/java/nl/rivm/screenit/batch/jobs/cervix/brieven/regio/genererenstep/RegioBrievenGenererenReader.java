@@ -24,27 +24,28 @@ package nl.rivm.screenit.batch.jobs.cervix.brieven.regio.genererenstep;
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.cervix.CervixRegioBrief;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.specification.algemeen.BriefSpecification;
 
-import org.springframework.batch.item.ExecutionContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import static nl.rivm.screenit.specification.cervix.CervixRegioBriefSpecification.heeftScreeningOrganisatieId;
+import static nl.rivm.screenit.specification.cervix.CervixRegioBriefSpecification.heeftScreeningsorganisatieId;
 
 @Component
 public class RegioBrievenGenererenReader extends BaseSpecificationScrollableResultReader<CervixRegioBrief>
 {
-	private Long getScreeningOrganisatieId(ExecutionContext context)
-	{
-		return context.getLong(RegioBrievenGenererenPartitioner.KEY_SCREENINGORGANISATIEID);
-	}
+	@Autowired
+	private BaseBriefService briefService;
 
 	@Override
 	protected Specification<CervixRegioBrief> createSpecification()
 	{
-		var screeningOrganisatieId = getScreeningOrganisatieId(getStepExecutionContext());
-		return heeftScreeningOrganisatieId(screeningOrganisatieId)
+		var screeningsorganisatieId = briefService.isOverbruggingssituatieParagonStarted() ?
+			null :
+			getStepExecutionContext().getLong(RegioBrievenGenererenPartitioner.KEY_SCREENINGORGANISATIEID);
+		return heeftScreeningsorganisatieId(screeningsorganisatieId)
 			.and(BriefSpecification.isNietGegenereerd())
 			.and(BriefSpecification.isNietVervangen())
 			.and(BriefSpecification.isNietTegengehouden())

@@ -21,7 +21,6 @@ package nl.rivm.screenit.batch.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,6 +31,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import jakarta.persistence.Column;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -43,7 +45,6 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.MammaHl7v24BerichtLogEvent;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaUploadBeeldenPoging;
 import nl.rivm.screenit.model.mamma.MammaUploadBeeldenVerzoek;
 import nl.rivm.screenit.model.mamma.MammaUploadBeeldenVerzoekStatus;
@@ -51,7 +52,10 @@ import nl.rivm.screenit.model.mamma.berichten.MammaIMSBericht;
 import nl.rivm.screenit.model.mamma.dicom.CStoreConfig;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
+import nl.rivm.screenit.repository.mamma.MammaUploadBeeldenVerzoekRepository;
 import nl.rivm.screenit.service.BerichtToBatchService;
+import nl.rivm.screenit.service.DatabaseRunner;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
@@ -60,67 +64,48 @@ import nl.rivm.screenit.service.mamma.MammaBaseIlmService;
 import nl.rivm.screenit.service.mamma.MammaBaseScreeningrondeService;
 import nl.rivm.screenit.service.mamma.MammaBaseUitwisselportaalService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang.StringUtils;
-import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.DatePrecision;
 import org.dcm4che3.data.Tag;
 import org.dcm4che3.data.UID;
 import org.dcm4che3.io.DicomInputStream;
 import org.dcm4che3.net.Status;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-
-import com.google.common.collect.ImmutableMap;
 
 import ca.uhn.hl7v2.HL7Exception;
-import jakarta.persistence.Column;
 
 @Slf4j
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
+@RequiredArgsConstructor
 public class MammaCStoreServiceImpl implements MammaCStoreService
 {
-	@Autowired
-	private HibernateService hibernateService;
+	private final HibernateService hibernateService;
 
-	@Autowired
-	private SessionFactory sessionFactory;
+	private final SimplePreferenceService preferenceService;
 
-	@Autowired
-	private SimplePreferenceService preferenceService;
+	private final ICurrentDateSupplier dateSupplier;
 
-	@Autowired
-	private ICurrentDateSupplier dateSupplier;
+	private final UploadDocumentService uploadDocumentService;
 
-	@Autowired
-	private UploadDocumentService uploadDocumentService;
+	private final MammaBaseFactory baseFactory;
 
-	@Autowired
-	private MammaBaseFactory baseFactory;
+	private final BerichtToBatchService berichtToBatchService;
 
-	@Autowired
-	private BerichtToBatchService berichtToBatchService;
+	private final LogService logService;
 
-	@Autowired
-	private LogService logService;
+	private final MammaBaseScreeningrondeService screeningrondeService;
 
-	@Autowired
-	private MammaBaseScreeningrondeService screeningrondeService;
+	private final MammaBaseUitwisselportaalService uitwisselportaalService;
 
-	@Autowired
-	private MammaBaseUitwisselportaalService uitwisselportaalService;
+	private final MammaBaseIlmService baseIlmService;
 
-	@Autowired
-	private MammaBaseIlmService baseIlmService;
+	private final DatabaseRunner databaseRunner;
+
+	private final MammaUploadBeeldenVerzoekRepository uploadBeeldenVerzoekRepository;
 
 	private static int STATUS_MELDING_COLUMN_SIZE;
 
@@ -147,7 +132,7 @@ public class MammaCStoreServiceImpl implements MammaCStoreService
 		}
 		else
 		{
-			String melding = String.format("Inkomend CA bericht voor uploadverzoek met accessionnummer %s is al verwerkt op %s en kon niet worden omgezet van %s naar BESCHIKBAAR",
+			var melding = String.format("Inkomend CA bericht voor uploadverzoek met accessionnummer %s is al verwerkt op %s en kon niet worden omgezet van %s naar BESCHIKBAAR",
 				uploadBeeldenPoging.getAccessionNumber(), uploadBeeldenPoging.getIlmStatusDatum(), uploadBeeldenPoging.getIlmStatus().name());
 			throw new HL7Exception(melding);
 		}
@@ -163,9 +148,9 @@ public class MammaCStoreServiceImpl implements MammaCStoreService
 
 		if (error)
 		{
-			String melding = String.format("Fout bij het verwijderen van beelden voor accession number %s. Raadpleeg het IMS systeem voor verdere analyse.",
+			var melding = String.format("Fout bij het verwijderen van beelden voor accession number %s. Raadpleeg het IMS systeem voor verdere analyse.",
 				uploadBeeldenPoging.getAccessionNumber());
-			MammaHl7v24BerichtLogEvent logEvent = new MammaHl7v24BerichtLogEvent();
+			var logEvent = new MammaHl7v24BerichtLogEvent();
 			logEvent.setMelding(melding);
 			logEvent.setHl7MessageStructure(bericht.getHl7Bericht());
 			logEvent.setLevel(Level.WARNING);
@@ -179,122 +164,123 @@ public class MammaCStoreServiceImpl implements MammaCStoreService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
-	public List<MammaUploadBeeldenVerzoek> getOpenstaandeUploadVerzoeken()
+	public List<Long> getOpenstaandeUploadVerzoekenIds()
 	{
-		return hibernateService.getByParameters(MammaUploadBeeldenVerzoek.class, ImmutableMap.of("status", MammaUploadBeeldenVerzoekStatus.BEELDEN_GEUPLOAD));
+		return uploadBeeldenVerzoekRepository.findIdsByStatus(MammaUploadBeeldenVerzoekStatus.BEELDEN_GEUPLOAD);
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.SUPPORTS)
-	public void verstuurBeelden(MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, String sopClasses)
+	public void verstuurBeelden(Long uploadBeeldenVerzoekId, String sopClasses)
 	{
-		boolean succes = true;
-		Set<String> errorBestanden = new HashSet<>();
-		Session session = null;
-		Date laatsteOnderzoeksDatum = null;
-
-		try
+		databaseRunner.runInSessionOnly(() ->
 		{
-			session = sessionFactory.openSession();
-			TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
-			uploadBeeldenVerzoek = hibernateService.getBoundObject(uploadBeeldenVerzoek);
-			hibernateService.reload(uploadBeeldenVerzoek);
-			MammaUploadBeeldenPoging uploadBeeldenPoging = uploadBeeldenVerzoek.getLaatsteUploadPoging();
-			LOG.info("Start verstuur beelden voor uploadpoging " + uploadBeeldenPoging.getId());
-			List<UploadDocument> beeldenTeUploaden = valideerBeelden(uploadBeeldenPoging, errorBestanden, sopClasses);
-			succes = beeldenTeUploaden != null;
+			var succes = true;
+			Set<String> errorBestanden = new HashSet<>();
+			Date laatsteOnderzoeksDatum = null;
+			var uploadBeeldenVerzoek = uploadBeeldenVerzoekRepository.getReferenceById(uploadBeeldenVerzoekId);
 
-			if (succes)
+			try
 			{
-				Long accessionNumber = baseFactory.getNextUniqueMammaUitnodigingsNr();
-				uploadBeeldenPoging.setAccessionNumber(accessionNumber);
+				var uploadBeeldenPoging = uploadBeeldenVerzoek.getLaatsteUploadPoging();
+				LOG.info("Start verstuur beelden voor uploadpoging " + uploadBeeldenPoging.getId());
+				var beeldenTeUploaden = valideerBeelden(uploadBeeldenPoging, errorBestanden, sopClasses);
+				succes = beeldenTeUploaden != null;
 
-				for (UploadDocument uploadDocument : beeldenTeUploaden)
+				if (succes)
 				{
-					File dicomFile = uploadDocumentService.load(uploadDocument);
-					CStoreSCU dicomCStoreSCU = new CStoreSCU(CStoreConfig.parse(
-						preferenceService.getString(PreferenceKey.INTERNAL_MAMMA_IMS_DICOM_CSTORE_CONFIG.toString(),
-							"SIT_STORE2_SCU@localhost:11114,DICOM_Store_SCP@localhost:14843")));
-					succes &= dicomCStoreSCU.store(dicomFile, sopClasses, accessionNumber, uploadBeeldenVerzoek.getScreeningRonde().getDossier().getClient().getPersoon().getBsn());
-					Attributes response = dicomCStoreSCU.getResponse();
+					var accessionNumber = baseFactory.getNextUniqueMammaUitnodigingsNr();
+					uploadBeeldenPoging.setAccessionNumber(accessionNumber);
 
-					if (response != null)
+					for (var uploadDocument : beeldenTeUploaden)
 					{
-						int status = response.getInt(Tag.Status, -1);
+						var dicomFile = uploadDocumentService.load(uploadDocument);
+						var dicomCStoreSCU = new CStoreSCU(CStoreConfig.parse(
+							preferenceService.getString(PreferenceKey.INTERNAL_MAMMA_IMS_DICOM_CSTORE_CONFIG.toString(),
+								"SIT_STORE2_SCU@localhost:11114,DICOM_Store_SCP@localhost:14843")));
+						succes &= dicomCStoreSCU.store(dicomFile, sopClasses, accessionNumber,
+							uploadBeeldenVerzoek.getScreeningRonde().getDossier().getClient().getPersoon().getBsn());
+						var response = dicomCStoreSCU.getResponse();
 
-						if (status != Status.Success)
+						if (response != null)
 						{
-							succes = false;
-							errorBestanden.add(uploadDocument.getNaam());
+							var status = response.getInt(Tag.Status, -1);
+
+							if (status != Status.Success)
+							{
+								succes = false;
+								errorBestanden.add(uploadDocument.getNaam());
+							}
+							else
+							{
+								var attributes = dicomCStoreSCU.getFileAttributes();
+								var onderzoeksDatum = attributes.getDate(Tag.StudyDate, laatsteOnderzoeksDatum);
+								laatsteOnderzoeksDatum = onderzoeksDatum != null && (laatsteOnderzoeksDatum == null || onderzoeksDatum.compareTo(laatsteOnderzoeksDatum) > 0)
+									? onderzoeksDatum
+									: laatsteOnderzoeksDatum;
+							}
 						}
 						else
 						{
-							Attributes attributes = dicomCStoreSCU.getFileAttributes();
-							Date onderzoeksDatum = attributes.getDate(Tag.StudyDate, laatsteOnderzoeksDatum);
-							laatsteOnderzoeksDatum = onderzoeksDatum != null && (laatsteOnderzoeksDatum == null || onderzoeksDatum.compareTo(laatsteOnderzoeksDatum) > 0)
-								? onderzoeksDatum
-								: laatsteOnderzoeksDatum;
+							succes = false;
 						}
 					}
-					else
-					{
-						succes = false;
-					}
 				}
+				LOG.info("Klaar met uploadpoging {}", uploadBeeldenPoging.getId());
 			}
-			LOG.info("Klaar met uploadpoging " + uploadBeeldenPoging.getId());
-		}
-		catch (Exception e)
-		{
-			succes = false;
-			LOG.error("Fout bij afwerken van uploadpoging " + uploadBeeldenVerzoek.getId(), e);
-		}
-		finally
-		{
-			if (session != null)
+			catch (Exception e)
 			{
-				MammaUploadBeeldenPoging uploadBeeldenPoging = uploadBeeldenVerzoek.getLaatsteUploadPoging();
-				LOG.info("Start afronden uploadpoging " + uploadBeeldenPoging.getId() + ". Succes: " + succes);
-				if (!succes)
-				{
-					String errorBestandNamen = String.join(", ", errorBestanden);
-					uploadBeeldenVerzoek.setStatus(MammaUploadBeeldenVerzoekStatus.ERROR);
-					String fouteBestandenText = (StringUtils.isNotBlank(errorBestandNamen) ? " door de volgende bestanden: " + errorBestandNamen : "");
-					uploadBeeldenPoging.setStatusMelding(getErrorStatusMelding(fouteBestandenText));
-					logService.logGebeurtenis(LogGebeurtenis.MAMMA_UPLOAD_VERZOEK, uploadBeeldenVerzoek.getScreeningRonde().getDossier().getClient(),
-						"Versturen naar Sectra is gefaald " + fouteBestandenText + ".", Bevolkingsonderzoek.MAMMA);
-					if (uploadBeeldenPoging.getAccessionNumber() != null)
-					{
-						uitwisselportaalService.verwijderBeelden(uploadBeeldenPoging);
-					}
-				}
-				else
-				{
-					uploadBeeldenVerzoek.setStatus(MammaUploadBeeldenVerzoekStatus.VERWERKT);
-					logService.logGebeurtenis(LogGebeurtenis.MAMMA_UPLOAD_VERZOEK, uploadBeeldenVerzoek.getScreeningRonde().getDossier().getClient(),
-						"Beelden zijn succesvol verstuurd naar Sectra", Bevolkingsonderzoek.MAMMA);
-					berichtToBatchService.queueMammaUploadBeeldenHL7v24BerichtUitgaand(uploadBeeldenPoging, MammaHL7v24ORMBerichtStatus.SCHEDULED, laatsteOnderzoeksDatum);
-					berichtToBatchService.queueMammaUploadBeeldenHL7v24BerichtUitgaand(uploadBeeldenPoging, MammaHL7v24ORMBerichtStatus.STARTED, null);
-					berichtToBatchService.queueMammaUploadBeeldenHL7v24BerichtUitgaand(uploadBeeldenPoging, MammaHL7v24ORMBerichtStatus.COMPLETED, laatsteOnderzoeksDatum);
-				}
-				uploadBeeldenVerzoek.setStatusDatum(dateSupplier.getDate());
-				List<UploadDocument> bestanden = uploadBeeldenPoging.getBestanden();
-				uploadBeeldenPoging.setBestanden(null);
-				hibernateService.saveOrUpdateAll(uploadBeeldenPoging, uploadBeeldenVerzoek);
+				succes = false;
+				LOG.error("Fout bij uploadpoging {}", uploadBeeldenVerzoek.getLaatsteUploadPoging().getId(), e);
+			}
+			finally
+			{
+				var finalSucces = succes;
+				var finalLaatsteOnderzoeksDatum = laatsteOnderzoeksDatum;
+				databaseRunner.runInNewTransaction(() ->
+					afrondenUploadPoging(uploadBeeldenVerzoek, finalSucces, errorBestanden, finalLaatsteOnderzoeksDatum)
+				);
+			}
+		});
+	}
 
-				bestanden.forEach(uploadDocument -> uploadDocumentService.delete(uploadDocument));
-
-				TransactionSynchronizationManager.unbindResource(sessionFactory);
-				session.close();
-				LOG.info("Einde afronden uploadpoging " + uploadBeeldenPoging.getId());
+	private void afrondenUploadPoging(MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, boolean succes, Set<String> errorBestanden, Date laatsteOnderzoeksDatum)
+	{
+		var uploadBeeldenPoging = uploadBeeldenVerzoek.getLaatsteUploadPoging();
+		LOG.info("Start afronden uploadpoging {}. Succes: {}", uploadBeeldenPoging.getId(), succes);
+		if (!succes)
+		{
+			var errorBestandNamen = String.join(", ", errorBestanden);
+			uploadBeeldenVerzoek.setStatus(MammaUploadBeeldenVerzoekStatus.ERROR);
+			var fouteBestandenText = (StringUtils.isNotBlank(errorBestandNamen) ? " door de volgende bestanden: " + errorBestandNamen : "");
+			uploadBeeldenPoging.setStatusMelding(getErrorStatusMelding(fouteBestandenText));
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_UPLOAD_VERZOEK, uploadBeeldenVerzoek.getScreeningRonde().getDossier().getClient(),
+				"Versturen naar Sectra is gefaald " + fouteBestandenText + ".", Bevolkingsonderzoek.MAMMA);
+			if (uploadBeeldenPoging.getAccessionNumber() != null)
+			{
+				uitwisselportaalService.verwijderBeelden(uploadBeeldenPoging);
 			}
 		}
+		else
+		{
+			uploadBeeldenVerzoek.setStatus(MammaUploadBeeldenVerzoekStatus.VERWERKT);
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_UPLOAD_VERZOEK, uploadBeeldenVerzoek.getScreeningRonde().getDossier().getClient(),
+				"Beelden zijn succesvol verstuurd naar Sectra", Bevolkingsonderzoek.MAMMA);
+			berichtToBatchService.queueMammaUploadBeeldenHL7v24BerichtUitgaand(uploadBeeldenPoging, MammaHL7v24ORMBerichtStatus.SCHEDULED, laatsteOnderzoeksDatum);
+			berichtToBatchService.queueMammaUploadBeeldenHL7v24BerichtUitgaand(uploadBeeldenPoging, MammaHL7v24ORMBerichtStatus.STARTED, null);
+			berichtToBatchService.queueMammaUploadBeeldenHL7v24BerichtUitgaand(uploadBeeldenPoging, MammaHL7v24ORMBerichtStatus.COMPLETED, laatsteOnderzoeksDatum);
+		}
+		uploadBeeldenVerzoek.setStatusDatum(dateSupplier.getDate());
+
+		var bestanden = uploadBeeldenPoging.getBestanden();
+		bestanden.forEach(uploadDocumentService::delete);
+		uploadBeeldenPoging.getBestanden().clear();
+
+		LOG.info("Einde afronden uploadpoging {}", uploadBeeldenPoging.getId());
 	}
 
 	private List<UploadDocument> valideerBeelden(MammaUploadBeeldenPoging uploadBeeldenPoging, Set<String> errorBestanden, String sopClassConfig)
 	{
-		MammaUploadBeeldenVerzoek uploadBeeldenVerzoek = uploadBeeldenPoging.getUploadBeeldenVerzoek();
+		var uploadBeeldenVerzoek = uploadBeeldenPoging.getUploadBeeldenVerzoek();
 		if (StringUtils.isBlank(sopClassConfig))
 		{
 			logUploadVerzoekGebeurtenis(uploadBeeldenVerzoek, "Foute upload DICOM: geen SOP configuratie");
@@ -302,66 +288,67 @@ public class MammaCStoreServiceImpl implements MammaCStoreService
 		}
 
 		Date maxDate = null;
-		boolean succes = true;
+		var succes = true;
 		try
 		{
 			Map<Integer, List<UploadDocument>> yearFileMap = new HashMap<>();
-			for (UploadDocument uploadDocument : uploadBeeldenPoging.getBestanden())
+			for (var uploadDocument : uploadBeeldenPoging.getBestanden())
 			{
-
-				File file = uploadDocumentService.load(uploadDocument);
-				DicomInputStream dis = new DicomInputStream(file);
-				Attributes attributes = dis.readDatasetUntilPixelData();
-				Date date = attributes.getDate(Tag.StudyDate, null, new DatePrecision());
-				if (date == null)
+				var file = uploadDocumentService.load(uploadDocument);
+				try (var dicomInputStream = new DicomInputStream(file))
 				{
-					logUploadVerzoekGebeurtenis(uploadBeeldenVerzoek,
-						"Foute upload DICOM: " + uploadDocument.getNaam() + " bevat geen onderzoeksdatum en kan niet worden geupload");
-					errorBestanden.add(uploadDocument.getNaam());
-					succes = false;
-					continue;
-				}
-
-				Properties properties = new Properties();
-				properties.load(new StringReader(sopClassConfig));
-				Properties propertiesUid = new Properties();
-				for (String prop : properties.stringPropertyNames())
-				{
-					try
+					var attributes = dicomInputStream.readDatasetUntilPixelData();
+					var date = attributes.getDate(Tag.StudyDate, null, new DatePrecision());
+					if (date == null)
 					{
-						String uid = UID.forName(prop);
-						propertiesUid.put(uid, "");
+						logUploadVerzoekGebeurtenis(uploadBeeldenVerzoek,
+							"Foute upload DICOM: " + uploadDocument.getNaam() + " bevat geen onderzoeksdatum en kan niet worden geupload");
+						errorBestanden.add(uploadDocument.getNaam());
+						succes = false;
+						continue;
 					}
-					catch (IllegalArgumentException e)
+
+					var properties = new Properties();
+					properties.load(new StringReader(sopClassConfig));
+					var propertiesUid = new Properties();
+					for (var prop : properties.stringPropertyNames())
 					{
-						propertiesUid.put(prop, "");
+						try
+						{
+							var uid = UID.forName(prop);
+							propertiesUid.put(uid, "");
+						}
+						catch (IllegalArgumentException e)
+						{
+							propertiesUid.put(prop, "");
+						}
 					}
+
+					var fileMetaInformation = dicomInputStream.readFileMetaInformation();
+					var mediaStorageSopClassUid = fileMetaInformation.getString(Tag.MediaStorageSOPClassUID);
+					var sopClassUid = mediaStorageSopClassUid != null ? mediaStorageSopClassUid : attributes.getString(Tag.SOPClassUID);
+					if (sopClassUid == null || propertiesUid.stringPropertyNames().stream().noneMatch(property -> property.equals(sopClassUid)))
+					{
+						logUploadVerzoekGebeurtenis(uploadBeeldenVerzoek, "Foute upload: bestand " + uploadDocument.getNaam() + " bevatte een ongeldige SOP class");
+						errorBestanden.add(uploadDocument.getNaam());
+						succes = false;
+						continue;
+					}
+
+					maxDate = maxDate == null || date.compareTo(maxDate) > 0 ? date : maxDate;
+
+					Integer year = DateUtil.toLocalDate(date).getYear();
+					var filesForYear = yearFileMap.computeIfAbsent(year, k -> new ArrayList<>());
+					filesForYear.add(uploadDocument);
 				}
-
-				Attributes fileMetaInformation = dis.readFileMetaInformation();
-				String mediaStorageSopClassUid = fileMetaInformation.getString(Tag.MediaStorageSOPClassUID);
-				String sopClassUid = mediaStorageSopClassUid != null ? mediaStorageSopClassUid : attributes.getString(Tag.SOPClassUID);
-				if (sopClassUid == null || propertiesUid.stringPropertyNames().stream().noneMatch(property -> property.equals(sopClassUid)))
-				{
-					logUploadVerzoekGebeurtenis(uploadBeeldenVerzoek, "Foute upload: bestand " + uploadDocument.getNaam() + " bevatte een ongeldige SOP class");
-					errorBestanden.add(uploadDocument.getNaam());
-					succes = false;
-					continue;
-				}
-
-				maxDate = maxDate == null || date.compareTo(maxDate) > 0 ? date : maxDate;
-
-				Integer year = DateUtil.toLocalDate(date).getYear();
-				List<UploadDocument> filesForYear = yearFileMap.computeIfAbsent(year, k -> new ArrayList<>());
-				filesForYear.add(uploadDocument);
 			}
 
 			if (succes)
 			{
-				MammaScreeningRonde screeningRonde = screeningrondeService.getLaatsteScreeningRondeMetUitslag(uploadBeeldenVerzoek.getScreeningRonde().getDossier().getClient(),
+				var screeningRonde = screeningrondeService.getLaatsteScreeningRondeMetUitslag(uploadBeeldenVerzoek.getScreeningRonde().getDossier().getClient(),
 					maxDate);
 
-				MammaScreeningRonde oudeScreeningRonde = uploadBeeldenVerzoek.getScreeningRonde();
+				var oudeScreeningRonde = uploadBeeldenVerzoek.getScreeningRonde();
 				if (screeningRonde != null)
 				{
 					uploadBeeldenVerzoek.getScreeningRonde().getUploadBeeldenVerzoeken().remove(uploadBeeldenVerzoek);
@@ -391,9 +378,9 @@ public class MammaCStoreServiceImpl implements MammaCStoreService
 
 	private String getErrorStatusMelding(String fouteBestandenText)
 	{
-		String statusMeldingPostFix = "Neem contact op met de servicedesk van het bevolkingsonderzoek";
-		String statusMeldingTooLongPostfix = "... (" + statusMeldingPostFix + ").";
-		String statusMelding = "Versturen naar Sectra is gefaald " + fouteBestandenText + ". " + statusMeldingPostFix + ".";
+		var statusMeldingPostFix = "Neem contact op met de servicedesk van het bevolkingsonderzoek";
+		var statusMeldingTooLongPostfix = "... (" + statusMeldingPostFix + ").";
+		var statusMelding = "Versturen naar Sectra is gefaald " + fouteBestandenText + ". " + statusMeldingPostFix + ".";
 		if (statusMelding.length() > STATUS_MELDING_COLUMN_SIZE)
 		{
 			return statusMelding.substring(0, STATUS_MELDING_COLUMN_SIZE - statusMeldingTooLongPostfix.length()) + statusMeldingTooLongPostfix;

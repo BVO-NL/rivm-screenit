@@ -90,9 +90,7 @@ public interface BaseBriefService
 
 	<B extends Brief, MB extends MergedBrieven<?>> void createOrAddMergedBrieven(List<? extends B> items, IBrievenGeneratorHelper<B, MB> briefGenerator) throws Exception;
 
-	<B extends Brief> File maakPdfVanBrief(B brief) throws Exception;
-
-	<B extends Brief> File maakPdfVanBrief(B brief, BaseDocumentCreator documentCreator) throws Exception;
+	<B extends Brief> File maakPdfAVanBrief(B brief) throws Exception;
 
 	<B extends Brief> File maakPdfVanBrief(B brief, BaseDocumentCreator documentCreator, Consumer<MailMergeContext> mergeContextConsumer) throws Exception;
 
@@ -121,4 +119,6 @@ public interface BaseBriefService
 	boolean briefTypeGemaaktInDezeRonde(ScreeningRonde<?, ?, ?, ?> ronde, Collection<BriefType> briefTypes);
 
 	<B extends Brief> void verwijderBrief(B brief);
+
+	boolean isOverbruggingssituatieParagonStarted();
 }

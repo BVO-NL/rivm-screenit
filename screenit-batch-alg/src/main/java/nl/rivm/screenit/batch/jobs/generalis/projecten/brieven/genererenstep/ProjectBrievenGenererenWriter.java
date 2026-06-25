@@ -30,10 +30,10 @@ import nl.rivm.screenit.batch.jobs.generalis.projecten.brieven.ProjectBrievenCon
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.IDocument;
 import nl.rivm.screenit.model.MailMergeContext;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
+import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.project.Project;
@@ -61,12 +61,9 @@ public class ProjectBrievenGenererenWriter extends AbstractBrievenGenererenWrite
 	@Override
 	protected ProjectMergedBrieven createConcreteMergedBrieven(Date aangemaaktOp)
 	{
-		ExecutionContext context = getStepExecutionContext();
-		ScreeningOrganisatie screeningOrganisatie = getHibernateService().load(ScreeningOrganisatie.class,
-			context.getLong(ProjectBrievenConstants.KEY_PROJECT_SCREENINGORGANISATIE_ID));
 
 		ProjectMergedBrieven mergedBrieven = new ProjectMergedBrieven();
-		mergedBrieven.setScreeningOrganisatie(screeningOrganisatie);
+		mergedBrieven.setScreeningOrganisatie(getScreeningOrganisatie());
 		mergedBrieven.setCreatieDatum(aangemaaktOp);
 		getHibernateService().saveOrUpdate(mergedBrieven);
 		return mergedBrieven;
@@ -139,28 +136,56 @@ public class ProjectBrievenGenererenWriter extends AbstractBrievenGenererenWrite
 	@Override
 	public String getMergedBrievenNaam(ProjectMergedBrieven brieven)
 	{
-		ProjectBriefActie actie = getHibernateService().load(ProjectBriefActie.class, getStepExecutionContext().getLong(ProjectBrievenConstants.KEY_PROJECT_ACTIE_ID));
-		String naam = "";
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH.mm");
-		if (brieven.getCreatieDatum() != null)
+		var actie = getHibernateService().load(ProjectBriefActie.class, getStepExecutionContext().getLong(ProjectBrievenConstants.KEY_PROJECT_ACTIE_ID));
+		var naam = "";
+		var sdf = new SimpleDateFormat("yyyy-MM-dd_HH.mm");
+		var printomschrijving = actie.getPrintomschrijving();
+		if (isOverbruggingssituatieParagonStarted)
 		{
-			naam += sdf.format(brieven.getCreatieDatum()) + "-";
+			var briefType = brieven.getBriefType();
+			naam += briefType != null ? briefType.getBriefCode() : BriefType.FALLBACK_BRIEF_CODE;
+			if (StringUtils.isNotBlank(printomschrijving))
+			{
+				if (printomschrijving.contains("_"))
+				{
+					naam = ""; 
+				}
+				naam += printomschrijving.replace(" ", "_");
+			}
+			naam += "_";
+			if (brieven.getCreatieDatum() != null)
+			{
+				naam += sdf.format(brieven.getCreatieDatum()) + "-";
+			}
+			if (actie.getProject().getNaam() != null)
+			{
+				String projectNaam = actie.getProject().getNaam();
+				projectNaam = projectNaam.replace(" ", "_");
+				naam += projectNaam;
+			}
 		}
-		if (brieven.getScreeningOrganisatie() != null)
+		else
 		{
-			String soNaam = brieven.getScreeningOrganisatie().getNaam();
-			soNaam = soNaam.replaceAll(" ", "_");
-			naam += soNaam + "-";
-		}
-		if (actie.getProject().getNaam() != null)
-		{
-			String projectNaam = actie.getProject().getNaam();
-			projectNaam = projectNaam.replaceAll(" ", "_");
-			naam += projectNaam + "-";
-		}
-		if (StringUtils.isNotEmpty(actie.getPrintomschrijving()))
-		{
-			naam += actie.getPrintomschrijving().replace(" ", "_").toLowerCase();
+			if (brieven.getCreatieDatum() != null)
+			{
+				naam += sdf.format(brieven.getCreatieDatum()) + "-";
+			}
+			if (brieven.getScreeningOrganisatie() != null)
+			{
+				String soNaam = brieven.getScreeningOrganisatie().getNaam();
+				soNaam = soNaam.replaceAll(" ", "_");
+				naam += soNaam + "-";
+			}
+			if (actie.getProject().getNaam() != null)
+			{
+				String projectNaam = actie.getProject().getNaam();
+				projectNaam = projectNaam.replaceAll(" ", "_");
+				naam += projectNaam + "-";
+			}
+			if (StringUtils.isNotBlank(printomschrijving))
+			{
+				naam += printomschrijving.replace(" ", "_").toLowerCase();
+			}
 		}
 		naam = addPdfCounter(naam);
 

@@ -22,10 +22,10 @@ package nl.rivm.screenit.util;
  */
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.hibernate.SessionFactory;
+import jakarta.persistence.EntityManagerFactory;
+
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.jdbc.ReturningWork;
 
@@ -33,20 +33,20 @@ public class SequenceGenerator implements ReturningWork<Long>
 {
 	private final DatabaseSequence sequence;
 
-	private final SessionFactory sessionFactory;
+	private final EntityManagerFactory entityManagerFactory;
 
-	public SequenceGenerator(DatabaseSequence sequence, SessionFactory sessionFactory)
+	public SequenceGenerator(DatabaseSequence sequence, EntityManagerFactory entityManagerFactory)
 	{
 		this.sequence = sequence;
-		this.sessionFactory = sessionFactory;
+		this.entityManagerFactory = entityManagerFactory;
 	}
 
 	@Override
 	public Long execute(Connection connection) throws SQLException
 	{
-		var dialect = ((SessionFactoryImplementor) sessionFactory).getJdbcServices().getDialect();
+		var dialect = entityManagerFactory.unwrap(SessionFactoryImplementor.class).getJdbcServices().getDialect();
 		try (var preparedStatement = connection.prepareStatement(dialect.getSequenceSupport().getSequenceNextValString(sequence.getDatabaseNaam()));
-			ResultSet resultSet = preparedStatement.executeQuery())
+			var resultSet = preparedStatement.executeQuery())
 		{
 			resultSet.next();
 			return resultSet.getLong(1);

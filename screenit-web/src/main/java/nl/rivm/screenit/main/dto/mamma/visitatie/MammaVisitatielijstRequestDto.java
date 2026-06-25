@@ -24,8 +24,11 @@ package nl.rivm.screenit.main.dto.mamma.visitatie;
 import lombok.Getter;
 import lombok.Setter;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Getter
 @Setter
+@Schema(name = "MammaVisitatielijstRequestDto", description = "Metadata voor het genereren van een mamma-visitatielijst.")
 public class MammaVisitatielijstRequestDto
 {
 	private String omschrijving;

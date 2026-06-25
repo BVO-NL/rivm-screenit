@@ -35,6 +35,13 @@ import { DsButtonComponent, DsDropdownComponent } from '@topicus-rgp-ds/web'
   selector: 'app-mamma-visitatie-filter',
   imports: [ReactiveFormsModule, DsButtonComponent, DsDropdownComponent],
   templateUrl: './mamma-visitatie-filter.component.html',
+  styles: `
+    .filter-column {
+      display: inline-block;
+      max-width: 40vw;
+      margin: 0 1rem;
+    }
+  `,
 })
 export class MammaVisitatieFilterComponent {
   private readonly formBuilder = inject(FormBuilder)

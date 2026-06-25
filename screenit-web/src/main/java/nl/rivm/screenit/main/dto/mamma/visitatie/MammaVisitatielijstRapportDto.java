@@ -24,12 +24,16 @@ package nl.rivm.screenit.main.dto.mamma.visitatie;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Schema(name = "MammaVisitatielijstRapportDto", description = "Rapportage van aantallen onderzoeken per medewerker voor een visitatielijst.")
 public class MammaVisitatielijstRapportDto
 {
+	@Schema(description = "Aantal onderzoeken per medewerker, gegroepeerd op medewerker-id")
 	private Map<Integer, MammaVisitatieOnderzoekPerMedewerkerDto> aantalOnderzoekenPerMedewerker = new HashMap<>();
 }

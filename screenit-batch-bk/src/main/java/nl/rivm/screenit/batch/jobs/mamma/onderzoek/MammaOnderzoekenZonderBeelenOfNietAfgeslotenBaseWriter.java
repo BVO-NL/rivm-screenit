@@ -21,7 +21,6 @@ package nl.rivm.screenit.batch.jobs.mamma.onderzoek;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Collections;
 import java.util.List;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
@@ -52,7 +51,7 @@ public abstract class MammaOnderzoekenZonderBeelenOfNietAfgeslotenBaseWriter ext
 		var melding = "UitnodigingsNr: " + screeningRonde.getUitnodigingsNr();
 		var client = screeningRonde.getDossier().getClient();
 		var screeningsEenheid = afspraak.getStandplaatsPeriode().getScreeningsEenheid();
-		List<Organisatie> dashboardOrganisaties = Collections.singletonList(client.getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie());
+		List<Organisatie> dashboardOrganisaties = List.of(client.getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie());
 
 		logService.logGebeurtenis(logGebeurtenis, screeningsEenheid, dashboardOrganisaties, client, melding);
 	}

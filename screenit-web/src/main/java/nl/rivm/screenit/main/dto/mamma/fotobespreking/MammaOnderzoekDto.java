@@ -33,31 +33,27 @@ import nl.rivm.screenit.model.mamma.enums.MammaLezingRedenenFotobesprekingMbber;
 import nl.rivm.screenit.model.mamma.enums.MammaLezingRedenenFotobesprekingRadioloog;
 import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekRedenFotobespreking;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Getter
 @Setter
+@Schema(name = "MammaOnderzoekDto", description = "Weergave van een mamma-onderzoek voor fotobespreking.")
 public class MammaOnderzoekDto
 {
 	private Long clientId;
-
 	private String naam;
-
 	private LocalDate geboortedatum;
-
 	private LocalDate onderzoeksdatum;
-
 	private String bsn;
-
 	private String medewerker;
-
 	private List<MammaLaesieType> redenFotobesprekingDoorMbber;
-
 	private List<MammaLezingRedenenFotobesprekingMbber> redenFotobesprekingMetMbber;
-
 	private List<MammaLezingRedenenFotobesprekingRadioloog> redenFotobesprekingDoorRadioloog;
-
 	private MammaOnderzoekRedenFotobespreking redenDoorverwijzing;
 
+	@Schema(description = "Geeft aan of er sprake is van discrepantie")
 	private Boolean discrepantie;
 
+	@Schema(description = "Follow-up status")
 	private MammaFollowUpConclusieStatus followUp;
 }

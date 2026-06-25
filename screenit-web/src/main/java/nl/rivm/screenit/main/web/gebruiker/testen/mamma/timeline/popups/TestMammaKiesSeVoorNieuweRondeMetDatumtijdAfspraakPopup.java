@@ -29,7 +29,7 @@ import nl.rivm.screenit.main.service.mamma.MammaTestTimelineService;
 import nl.rivm.screenit.main.web.gebruiker.testen.mamma.timeline.MammaTestTimelinePage;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.service.HibernateService;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.model.IModel;

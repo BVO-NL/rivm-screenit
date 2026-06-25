@@ -67,13 +67,6 @@ import static nl.rivm.screenit.specification.mamma.MammaStandplaatsLocatieSpecif
 @Slf4j
 public class MammaBrievenGenererenReader extends AbstractBrievenGenererenReader<MammaBrief>
 {
-
-	@Override
-	protected Long getScreeningOrganisatieId()
-	{
-		return getStepExecutionContext().getLong(MammaBrievenGenererenPartitioner.KEY_SCREENINGORGANISATIEID);
-	}
-
 	@Override
 	protected Specification<MammaBrief> createSpecification()
 	{

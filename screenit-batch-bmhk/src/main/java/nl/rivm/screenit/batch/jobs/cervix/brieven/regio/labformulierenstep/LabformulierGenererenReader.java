@@ -35,9 +35,11 @@ import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie_;
 import nl.rivm.screenit.model.cervix.CervixLabformulierAanvraag;
 import nl.rivm.screenit.model.cervix.CervixLabformulierAanvraag_;
 import nl.rivm.screenit.model.cervix.enums.CervixLabformulierAanvraagStatus;
+import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.specification.cervix.CervixHuisartsLocatieSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -48,26 +50,31 @@ import static nl.rivm.screenit.specification.cervix.CervixLabformulierAanvraagSp
 @Component
 public class LabformulierGenererenReader extends BaseSpecificationScrollableResultReader<CervixLabformulierAanvraag>
 {
-	private Long getScreeningOrganisatieId()
-	{
-		return getStepExecutionContext().getLong(LabformulierGenererenPartitioner.KEY_SCREENINGORGANISATIEID);
-	}
+
+	@Autowired
+	private BaseBriefService briefService;
 
 	@Override
 	protected Specification<CervixLabformulierAanvraag> createSpecification()
 	{
 		return (r, q, cb) ->
 		{
-			var screeningOrganisatieId = getScreeningOrganisatieId();
-
 			var subquery = q.subquery(Long.class);
 			var subqueryRoot = subquery.from(CervixHuisartsLocatie.class);
 			var locatieAdresJoin = subqueryRoot.join(CervixHuisartsLocatie_.locatieAdres);
 			var gemeenteJoin = locatieAdresJoin.join(BagAdres_.gbaGemeente);
 			var screeningOrganisatieJoin = gemeenteJoin.join(Gemeente_.screeningOrganisatie);
 
-			subquery.select(subqueryRoot.get(AbstractHibernateObject_.id))
-				.where(cb.equal(screeningOrganisatieJoin.get(AbstractHibernateObject_.id), screeningOrganisatieId));
+			var subselect = subquery.select(subqueryRoot.get(AbstractHibernateObject_.id));
+			if (briefService.isOverbruggingssituatieParagonStarted())
+			{
+				subselect.where(cb.isNotNull(gemeenteJoin.get(Gemeente_.screeningOrganisatie)));
+			}
+			else
+			{
+				var screeningsorganisatie = getStepExecutionContext().getLong(LabformulierGenererenPartitioner.KEY_SCREENINGORGANISATIEID);
+				subselect.where(cb.equal(screeningOrganisatieJoin.get(AbstractHibernateObject_.id), screeningsorganisatie));
+			}
 
 			return cb.and(
 				heeftStatus(CervixLabformulierAanvraagStatus.AANGEVRAAGD)

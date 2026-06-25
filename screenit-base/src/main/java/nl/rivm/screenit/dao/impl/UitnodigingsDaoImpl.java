@@ -21,22 +21,26 @@ package nl.rivm.screenit.dao.impl;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import nl.rivm.screenit.dao.UitnodigingsDao;
 import nl.rivm.screenit.util.DatabaseSequence;
 import nl.rivm.screenit.util.SequenceGenerator;
-import nl.topicuszorg.hibernate.spring.dao.impl.AbstractAutowiredDao;
 
+import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional(propagation = Propagation.SUPPORTS)
-public class UitnodigingsDaoImpl extends AbstractAutowiredDao implements UitnodigingsDao
+public class UitnodigingsDaoImpl implements UitnodigingsDao
 {
+	@PersistenceContext
+	private EntityManager entityManager;
+
 	@Override
 	public Long getNextUitnodigingsId()
 	{
-		return getSession().doReturningWork(new SequenceGenerator(DatabaseSequence.UITNODIGINGS_ID, getSessionFactory()));
+		var session = entityManager.unwrap(Session.class);
+		return session.doReturningWork(new SequenceGenerator(DatabaseSequence.UITNODIGINGS_ID, entityManager.getEntityManagerFactory()));
 	}
 }

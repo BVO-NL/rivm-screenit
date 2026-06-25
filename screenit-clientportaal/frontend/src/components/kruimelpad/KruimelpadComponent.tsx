@@ -30,7 +30,8 @@ import {useSelectedBvo} from "../../utils/Hooks"
 import {BevolkingsonderzoekToptaakStyle} from "../../datatypes/Bevolkingsonderzoek"
 
 export type KruimelpadComponentProps = {
-	className?: string
+	className?: string,
+	onTerugKlik?: () => void
 }
 
 const KruimelpadComponent = (props: KruimelpadComponentProps) => {
@@ -54,8 +55,8 @@ const KruimelpadComponent = (props: KruimelpadComponentProps) => {
 		})
 	return (
 		<div className={classNames(styles.style, props.className)}>
-			<Button label={"Terug"} lightStyle={true} displayArrow={ArrowType.ARROW_LEFT} arrowBeforeLabel={true} onClick={() => {
-				navigate(-1)
+			<Button label={"Terug"} data-testid="terug_btn" lightStyle={true} displayArrow={ArrowType.ARROW_LEFT} arrowBeforeLabel={true} onClick={() => {
+				props.onTerugKlik ? props.onTerugKlik() : navigate(-1)
 			}} className={bvoStyles.light}/>
 			{crumbs.filter(crumb => crumb.path && crumb.name).map((crumb, index) => {
 				if (index === 0) {

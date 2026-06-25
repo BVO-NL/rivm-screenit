@@ -23,7 +23,7 @@ package nl.rivm.screenit.main.service.cervix.impl;
 
 import nl.rivm.screenit.main.service.cervix.CervixHL7v2FoutberichtService;
 import nl.rivm.screenit.model.cervix.berichten.CervixFoutHL7v2Bericht;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.service.HibernateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

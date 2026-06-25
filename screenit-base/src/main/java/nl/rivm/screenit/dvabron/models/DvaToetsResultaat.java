@@ -34,7 +34,7 @@ public class DvaToetsResultaat implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 
-	private String medmijcode;
+	private String gegevens;
 
 	private DvaToetsResult toetsresultaat;
 }

@@ -21,14 +21,19 @@ package nl.rivm.screenit.main.dto;
  * =========================LICENSE_END==================================
  */
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Schema(name = "PagineringResponseDto", description = "Response met resultaatdata en paginagegevens.")
 public class PagineringResponseDto<T>
 {
+	@Schema(description = "Resultaatdata van de response")
 	private T data;
 
+	@Schema(description = "Paginagegevens van de response")
 	private PagineringDto paginering;
 }

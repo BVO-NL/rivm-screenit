@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.quartz.QuartzDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 @Configuration
@@ -38,7 +38,7 @@ public class QuartzConfig
 {
 
 	@Bean
-	public SchedulerFactoryBean schedulerFactoryBean(DataSource dataSource, HibernateTransactionManager transactionManager,
+	public SchedulerFactoryBean schedulerFactoryBean(DataSource dataSource, JpaTransactionManager transactionManager,
 		@Qualifier(value = "applicationInstance") String applicationInstance)
 	{
 		var schedulerFactoryBean = new SchedulerFactoryBean();

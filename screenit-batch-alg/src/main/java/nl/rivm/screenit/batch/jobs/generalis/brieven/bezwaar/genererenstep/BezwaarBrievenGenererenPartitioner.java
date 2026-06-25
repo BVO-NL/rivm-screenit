@@ -35,8 +35,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class BezwaarBrievenGenererenPartitioner extends AbstractBrievenGenererenPartitioner
 {
-	public static final String KEY_SCREENINGORGANISATIEID = "screeningorganisatie.id";
-
 	public static final String KEY_BRIEFTYPE = "brieftype";
 
 	@Override

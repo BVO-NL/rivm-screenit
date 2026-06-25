@@ -32,12 +32,12 @@ import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Woonplaats;
 import nl.rivm.screenit.model.Woonplaats_;
 import nl.rivm.screenit.repository.algemeen.WoonplaatsRepository;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.HuisartsenportaalSyncService;
 import nl.rivm.screenit.service.WoonplaatsService;
 import nl.rivm.screenit.specification.algemeen.GemeenteSpecification;
 import nl.rivm.screenit.specification.algemeen.WoonplaatsSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

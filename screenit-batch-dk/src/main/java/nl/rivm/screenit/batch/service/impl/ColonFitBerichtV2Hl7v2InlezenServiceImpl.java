@@ -67,7 +67,6 @@ import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -111,15 +110,16 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 	private final ColonBaseFitService fitService;
 
 	@Override
-	public List<ColonFitAnalyseResultatenBericht> getAlleNietVerwerkteFitBerichten()
+	public List<Long> getAlleNietVerwerkteFitBerichtIds()
 	{
-		return fitAnalyseResultatenBerichtRepository.findByStatus(BerichtStatus.NIEUW);
+		return fitAnalyseResultatenBerichtRepository.findIdByStatus(BerichtStatus.NIEUW);
 	}
 
 	@Override
 	@Transactional
-	public void verwerkOntvangenFitBericht(ColonFitAnalyseResultatenBericht bericht)
+	public void verwerkOntvangenFitBericht(Long berichtId) throws HL7Exception, IOException
 	{
+		var bericht = fitAnalyseResultatenBerichtRepository.findById(berichtId).orElseThrow(() -> new IllegalArgumentException("Bericht met id " + berichtId + " niet gevonden"));
 		var verwerkingLogEvent = new ColonFitAnalyseResultaatSetVerwerkingBeeindigdLogEvent();
 		var rapportage = new ColonFitAnalyseResultaatSetVerwerkingRapportage();
 		rapportage.setDatumVerwerking(currentDateSupplier.getDate());
@@ -127,35 +127,26 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 		fitVerwerkingRapportageRepository.save(rapportage);
 		fitVerwerkingBeeindigdLogEventRepository.save(verwerkingLogEvent);
 
-		try
-		{
-			var hapiMsg = transformToMessage(bericht.getHl7Bericht());
+		var hapiMsg = transformToMessage(bericht.getHl7Bericht());
 
-			var wrapper = new ColonHl7BerichtToFitAnalyseResultaatSetWrapper((OUL_R22) hapiMsg);
-			var verslagEntry = new ColonFitAnalyseResultaatSetVerwerkingRapportageEntry();
+		var wrapper = new ColonHl7BerichtToFitAnalyseResultaatSetWrapper((OUL_R22) hapiMsg);
+		var verslagEntry = new ColonFitAnalyseResultaatSetVerwerkingRapportageEntry();
 
-			verslagEntry.setAnalyseResultaatSetNaam(bericht.getMessageId());
-			verslagEntry.setRapportage(rapportage);
+		verslagEntry.setAnalyseResultaatSetNaam(bericht.getMessageId());
+		verslagEntry.setRapportage(rapportage);
 
-			var berichtVerwerkenMelding = "Start met ontvangen van uitslagen in FIT HL7 bericht: " + bericht.getMessageId();
-			LOG.info(berichtVerwerkenMelding);
-			logService.logGebeurtenis(LogGebeurtenis.COLON_JOB_FIT_ANALYSE_RESULTATEN_OPSLAAN_GESTART, (Account) null, null, berichtVerwerkenMelding, Bevolkingsonderzoek.COLON);
+		var berichtVerwerkenMelding = "Start met ontvangen van uitslagen in FIT HL7 bericht: " + bericht.getMessageId();
+		LOG.info(berichtVerwerkenMelding);
+		logService.logGebeurtenis(LogGebeurtenis.COLON_JOB_FIT_ANALYSE_RESULTATEN_OPSLAAN_GESTART, (Account) null, null, berichtVerwerkenMelding, Bevolkingsonderzoek.COLON);
 
-			verwerkFitResults(wrapper, verslagEntry, bericht, verwerkingLogEvent);
+		verwerkFitResults(wrapper, verslagEntry, bericht, verwerkingLogEvent);
 
-			bericht.setStatusDatum(currentDateSupplier.getDate());
-			bericht.setStatus(BerichtStatus.VERWERKT);
+		bericht.setStatusDatum(currentDateSupplier.getDate());
+		bericht.setStatus(BerichtStatus.VERWERKT);
 
-			fitVerwerkingRapportageRepository.save(rapportage);
-			fitAnalyseResultatenBerichtRepository.save(bericht);
-			fitVerwerkingBeeindigdLogEventRepository.save(verwerkingLogEvent);
-			logService.logGebeurtenis(LogGebeurtenis.COLON_JOB_FIT_ANALYSE_RESULTATEN_OPSLAAN_AFGEROND, verwerkingLogEvent, Bevolkingsonderzoek.COLON);
-		}
-		catch (Exception e)
-		{
-			LOG.warn("Fout bij verwerking van HL7 bericht", e);
-			logError(bericht, e.getMessage(), verwerkingLogEvent);
-		}
+		fitVerwerkingRapportageRepository.save(rapportage);
+		fitVerwerkingBeeindigdLogEventRepository.save(verwerkingLogEvent);
+		logService.logGebeurtenis(LogGebeurtenis.COLON_JOB_FIT_ANALYSE_RESULTATEN_OPSLAAN_AFGEROND, verwerkingLogEvent, Bevolkingsonderzoek.COLON);
 	}
 
 	private void verwerkFitResults(ColonHl7BerichtToFitAnalyseResultaatSetWrapper wrapper, ColonFitAnalyseResultaatSetVerwerkingRapportageEntry verslagEntry,
@@ -201,8 +192,6 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 				}
 				verslagEntry.setAantalVerwerkingen(verslagEntry.getAantalVerwerkingen() + 1);
 				fitVerwerkingRapportageEntryRepository.save(verslagEntry);
-				fitAnalyseResultaatSetRepository.save(resultaatSet);
-
 			}
 			catch (Exception e)
 			{
@@ -225,10 +214,10 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 		ColonFitAnalyseResultaatType resultaatType = null;
 		if (fit == null || fit.getType() == ColonFitType.STUDIE)
 		{
-				if (barcode.startsWith(QC_BARCODE_PREFIX))
-				{
-					resultaatType = ColonFitAnalyseResultaatType.QC;
-				}
+			if (barcode.startsWith(QC_BARCODE_PREFIX))
+			{
+				resultaatType = ColonFitAnalyseResultaatType.QC;
+			}
 		}
 		else
 		{
@@ -319,7 +308,6 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 		{
 			ontvangenBericht.setStatus(BerichtStatus.WAARSCHUWING);
 		}
-		fitAnalyseResultatenBerichtRepository.save(ontvangenBericht);
 		var melding = "Uitslag in FIT HL7 bericht (messageID: " + ontvangenBericht.getMessageId() + ") kon niet worden verwerkt. (" + message + ")";
 		addMelding(verwerkingLogEvent, melding);
 	}
@@ -344,31 +332,31 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 
 	@Override
 	@Transactional
-	public void logError(ColonFitAnalyseResultatenBericht ontvangenBericht, String message, ColonFitAnalyseResultaatSetVerwerkingBeeindigdLogEvent verwerkingLogEvent)
+	public void logError(Long berichtId, String message, ColonFitAnalyseResultaatSetVerwerkingBeeindigdLogEvent verwerkingLogEvent)
 	{
+		var ontvangenBericht = fitAnalyseResultatenBerichtRepository.findById(berichtId)
+			.orElseThrow(() -> new IllegalArgumentException("Bericht met id " + berichtId + " niet gevonden"));
 		ontvangenBericht.setStatus(BerichtStatus.FOUT);
 		ontvangenBericht.setStatusDatum(currentDateSupplier.getDate());
-		fitAnalyseResultatenBerichtRepository.save(ontvangenBericht);
 		var laboratorium = ontvangenBericht.getLaboratorium();
 		var melding = "FIT HL7 Bericht (messageID: " + ontvangenBericht.getMessageId() + ") kon niet worden verwerkt. (" + message + ")";
-		logging(LogGebeurtenis.COLON_JOB_FIT_ANALYSE_RESULTATEN_OPSLAAN_AFGEROND, laboratorium, Level.ERROR, melding);
+		logging(laboratorium, melding);
 		if (verwerkingLogEvent != null)
 		{
 			addMelding(verwerkingLogEvent, melding);
 		}
 	}
 
-	private String logging(LogGebeurtenis gebeurtenis, ColonFitLaboratorium laboratorium, Level level, String melding)
+	private void logging(ColonFitLaboratorium laboratorium, String melding)
 	{
 		var event = new LogEvent();
-		event.setLevel(level);
-		event.setMelding(melding);
-		List<Organisatie> organisaties = new ArrayList<>(organisatieService.getActieveOrganisaties(Rivm.class));
+		event.setLevel(Level.ERROR);
 		if (laboratorium != null)
 		{
 			melding += " Laboratorium: " + laboratorium.getNaam();
 		}
-		logService.logGebeurtenis(gebeurtenis, organisaties, event, Bevolkingsonderzoek.COLON);
-		return melding;
+		event.setMelding(melding);
+		List<Organisatie> organisaties = new ArrayList<>(organisatieService.getActieveOrganisaties(Rivm.class));
+		logService.logGebeurtenis(LogGebeurtenis.COLON_JOB_FIT_ANALYSE_RESULTATEN_OPSLAAN_AFGEROND, organisaties, event, Bevolkingsonderzoek.COLON);
 	}
 }

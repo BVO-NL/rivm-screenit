@@ -35,8 +35,8 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.security.Constraint;
 import nl.rivm.screenit.security.ScreenitPrincipal;
 import nl.rivm.screenit.service.AutorisatieService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.shiro.mgt.SecurityManager;

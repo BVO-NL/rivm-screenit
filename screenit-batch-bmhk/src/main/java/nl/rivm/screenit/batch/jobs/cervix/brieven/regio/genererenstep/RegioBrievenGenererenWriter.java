@@ -26,7 +26,6 @@ import java.util.Date;
 import nl.rivm.screenit.batch.jobs.brieven.genereren.AbstractBrievenGenererenWriter;
 import nl.rivm.screenit.batch.jobs.cervix.brieven.regio.RegioBrievenConstants;
 import nl.rivm.screenit.model.MailMergeContext;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.cervix.CervixRegioBrief;
 import nl.rivm.screenit.model.cervix.CervixRegioMergedBrieven;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -43,10 +42,9 @@ public class RegioBrievenGenererenWriter extends AbstractBrievenGenererenWriter<
 	{
 		var context = getStepExecutionContext();
 		var briefType = BriefType.valueOf(context.getString(RegioBrievenGenererenPartitioner.KEY_BRIEFTYPE));
-		var screeningOrganisatie = getHibernateService().load(ScreeningOrganisatie.class, context.getLong(RegioBrievenGenererenPartitioner.KEY_SCREENINGORGANISATIEID));
 
 		var mergedBrieven = new CervixRegioMergedBrieven();
-		mergedBrieven.setScreeningOrganisatie(screeningOrganisatie);
+		mergedBrieven.setScreeningOrganisatie(getScreeningOrganisatie());
 		mergedBrieven.setCreatieDatum(aangemaaktOp);
 		mergedBrieven.setBriefType(briefType);
 		return mergedBrieven;

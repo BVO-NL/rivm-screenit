@@ -57,7 +57,10 @@ public class CommunicationHubClientConfig
 				{
 					throw new IllegalStateException("Geen IDP access token beschikbaar voor CommunicatieHub");
 				}
-				request.getHeaders().setBearerAuth(token);
+				else
+				{
+					request.getHeaders().setBearerAuth(token);
+				}
 				return execution.execute(request, body);
 			})
 			.build();

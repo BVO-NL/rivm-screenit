@@ -53,12 +53,19 @@ public class CervixRegioBriefSpecification
 		return (r, q, cb) -> cb.equal(r.get(CervixRegioBrief_.huisarts), huisarts);
 	}
 
-	public static ExtendedSpecification<CervixRegioBrief> heeftScreeningOrganisatieId(Long soId)
+	public static ExtendedSpecification<CervixRegioBrief> heeftScreeningsorganisatieId(Long soId)
 	{
 		return (r, q, cb) ->
 		{
-			var organisatieJoin = join(r, CervixRegioBrief_.regio);
-			return cb.equal(organisatieJoin.get(AbstractHibernateObject_.id), soId);
+			if (soId == null)
+			{
+				return cb.conjunction();
+			}
+			else
+			{
+				var organisatieJoin = join(r, CervixRegioBrief_.regio);
+				return cb.equal(organisatieJoin.get(AbstractHibernateObject_.id), soId);
+			}
 		};
 	}
 }

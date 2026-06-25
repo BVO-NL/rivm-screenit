@@ -22,12 +22,11 @@ package nl.rivm.screenit.batch.jobs.mamma.aftergba.ontkoppelentehuis;
  */
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
@@ -37,11 +36,11 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaTehuis;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.mamma.MammaBaseKansberekeningService;
 import nl.rivm.screenit.service.mamma.enums.MammaTehuisSelectie;
 import nl.rivm.screenit.util.AdresUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.organisatie.model.Adres;
 
 import org.springframework.stereotype.Component;
@@ -82,7 +81,7 @@ public class MammaOntkoppelenTehuisWriter extends BaseWriter<MammaTehuis>
 			hibernateService.saveOrUpdate(dossier);
 
 			baseKansberekeningService.dossierEventHerzien(dossier);
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_TEHUIS_ONTKOPPELD, Collections.singletonList(tehuis.getStandplaats().getRegio()), client, "Tehuis: " + tehuis.getNaam());
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_TEHUIS_ONTKOPPELD, List.of(tehuis.getStandplaats().getRegio()), client, "Tehuis: " + tehuis.getNaam());
 		}
 
 		Set<AdresWrapper> terechtGekoppeldeAdressen = new HashSet<>();
@@ -105,16 +104,13 @@ public class MammaOntkoppelenTehuisWriter extends BaseWriter<MammaTehuis>
 			hibernateService.saveOrUpdate(tehuis);
 			hibernateService.delete(adres);
 
-			logService.logGebeurtenis(LogGebeurtenis.MAMMA_TEHUIS_BEHEER, Collections.singletonList(tehuis.getStandplaats().getRegio()), null,
+			logService.logGebeurtenis(LogGebeurtenis.MAMMA_TEHUIS_BEHEER, List.of(tehuis.getStandplaats().getRegio()), null,
 				String.format("Tehuis: '%s' Tehuis adres verwijderd: '%s'", tehuis.getNaam(), AdresUtil.getVolledigeAdresString(adres)), Bevolkingsonderzoek.MAMMA);
 		}
 	}
 
-	@AllArgsConstructor(access = AccessLevel.PRIVATE)
-	private static class AdresWrapper
+	private record AdresWrapper(Adres adres)
 	{
-		private final Adres adres;
-
 		@Override
 		public boolean equals(Object o)
 		{

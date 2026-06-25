@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.xml.ws.Holder;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,6 +43,7 @@ import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
 import nl.rivm.screenit.model.berichten.enums.BerichtType;
 import nl.rivm.screenit.model.logging.BerichtOntvangenLogEvent;
 import nl.rivm.screenit.service.BerichtToBatchService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.ws.providedocument.ProvideDocument;
@@ -48,7 +52,6 @@ import nl.rivm.screenit.ws.providedocument.ProvideDocumentPortType;
 import nl.rivm.screenit.ws.providedocument.ProvideDocumentResponse;
 import nl.rivm.screenit.wsb.pd.PdConstants;
 import nl.rivm.screenit.wsb.service.CdaVerslagService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -59,9 +62,6 @@ import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.xml.ws.Holder;
 
 @Service
 @Transactional(propagation = Propagation.SUPPORTS)

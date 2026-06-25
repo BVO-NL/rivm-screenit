@@ -281,12 +281,7 @@ public class ColonFitRegistratieInzienPanel extends AbstractGebeurtenisDetailPan
 			}
 			else if (registratie != null)
 			{
-				var status = registratie.getStatus();
-				if (ColonFitRegistratieStatus.VERWIJDERD.equals(status) || registratie.getType().equals(ColonFitType.GOLD) && registratie.getUitslag() == null)
-				{
-
-					magVerwijderen = false;
-				}
+				magVerwijderen = ColonFitRegistratieUtil.magVerwijderen(registratie);
 			}
 		}
 		return magVerwijderen;

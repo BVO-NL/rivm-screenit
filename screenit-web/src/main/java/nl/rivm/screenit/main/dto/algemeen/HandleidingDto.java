@@ -28,15 +28,19 @@ import lombok.Setter;
 
 import nl.rivm.screenit.dto.EntityDto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Getter
 @Setter
+@Schema(name = "HandleidingDto", description = "Gegevens van een handleiding in het medewerkerportaal.")
 public class HandleidingDto extends EntityDto
 {
 	private String bestandsnaam;
-
 	private String bestandspad;
 
+	@Schema(description = "Datum en tijd van de laatste bewerking")
 	private LocalDateTime bewerkingsdatum;
 
+	@Schema(description = "Naam van de medewerker die de handleiding als laatste heeft gewijzigd")
 	private String laatstGewijzigdDoor;
 }

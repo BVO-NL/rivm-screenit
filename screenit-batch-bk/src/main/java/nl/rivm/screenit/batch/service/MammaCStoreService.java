@@ -25,18 +25,17 @@ import java.util.List;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.mamma.MammaUploadBeeldenPoging;
-import nl.rivm.screenit.model.mamma.MammaUploadBeeldenVerzoek;
 import nl.rivm.screenit.model.mamma.berichten.MammaIMSBericht;
 
 import ca.uhn.hl7v2.HL7Exception;
 
 public interface MammaCStoreService
 {
-    void beeldenOntvangenUploadPoging(MammaUploadBeeldenPoging uploadBeeldenPoging) throws HL7Exception;
+	void beeldenOntvangenUploadPoging(MammaUploadBeeldenPoging uploadBeeldenPoging) throws HL7Exception;
 
-    void beeldenVerwijderdUploadVerzoek(MammaUploadBeeldenPoging uploadBeeldenPoging, MammaIMSBericht bericht, Client client, boolean error);
+	void beeldenVerwijderdUploadVerzoek(MammaUploadBeeldenPoging uploadBeeldenPoging, MammaIMSBericht bericht, Client client, boolean error);
 
-    List<MammaUploadBeeldenVerzoek> getOpenstaandeUploadVerzoeken();
+	List<Long> getOpenstaandeUploadVerzoekenIds();
 
-    void verstuurBeelden(MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, String sopClasses);
+	void verstuurBeelden(Long uploadBeeldenVerzoekId, String sopClasses);
 }

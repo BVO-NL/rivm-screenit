@@ -24,13 +24,14 @@ package nl.rivm.screenit.main.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Setter
 @Getter
+@Schema(name = "ApiResponseDto", description = "Generieke response met paginagegevens en resultaatdata.")
 public class ApiResponseDto<T>
 {
 	private int aantalPaginas;
-
 	private int totaalAantal;
-
 	private T data;
 }

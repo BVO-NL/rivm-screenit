@@ -23,7 +23,7 @@ import {store} from "../Store"
 import {leesAfspraken} from "../restclient/DaglijstRestclient"
 import {leesPlanning} from "../restclient/PlanningRestClient"
 import {createActionNavigateToDaglijst} from "../actions/NavigationActions"
-import {add, differenceInMinutes, Duration, format, formatDistanceToNow, formatDuration, isAfter, isBefore, isEqual, sub} from "date-fns"
+import {add, differenceInMinutes, Duration, format, formatDistance, formatDuration, isAfter, isBefore, isEqual, isSameDay, parseISO, sub} from "date-fns"
 
 export const DATUM_FORMAT = "yyyy-MM-dd"
 export const NL_DATUM_FORMAT = "dd-MM-yyyy"
@@ -31,6 +31,12 @@ export const TIJD_FORMAT = "HH:mm"
 export const TIMESTAMP_FORMAT = "HH:mm:ss.SSS"
 export const ISO_TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
 export const NL_DATUM_TIJD_FORMAT = "dd-MM-yyyy HH:mm"
+
+const ISO_FORMATEN = [
+	/^\d{4}-\d{2}-\d{2}$/,
+	/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+	/^\d{8}$/,
+]
 
 export const vandaagISO = (): string => format(nu(), DATUM_FORMAT)
 let offset: Duration | null = null
@@ -109,7 +115,7 @@ export const datumInToekomst = (isoDateTime: string): boolean => {
 }
 
 export const getTijdGeledenTekst = (timestamp: string): string => {
-	return formatDistanceToNow(new Date(timestamp), {addSuffix: true})
+	return formatDistance(new Date(timestamp), nu(), {addSuffix: true})
 }
 
 export const vandaagPlusDagen = (aantal: number): Date => {
@@ -134,6 +140,12 @@ export const verschilDatumTijdEnNuInMinuten = (datumTijd: string | Date): number
 
 export const numberMinutenNaarStringUrenEnMinuten = (minuten: number): string => {
 	return formatDuration({minutes: minuten})
+}
+
+export const isVandaag = (datumString: string): boolean => {
+	const isIsoFormaat = ISO_FORMATEN.some((patroon) => patroon.test(datumString))
+	const datum = isIsoFormaat ? parseISO(datumString) : datumString
+	return isSameDay(nu(), datum)
 }
 
 export const javaDurationToJavascript = (durationStr: string): Duration => {

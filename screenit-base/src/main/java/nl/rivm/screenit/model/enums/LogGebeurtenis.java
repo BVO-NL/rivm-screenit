@@ -1155,6 +1155,8 @@ public enum LogGebeurtenis
 
 	MAMMA_DENSE2_CSV_EXPORT_AFGEROND(Level.INFO, DashboardType.MAMMA_DENSE2_CSV_EXPORT, DashboardActieType.OVERIG),
 
+	PGO_DOCUMENT_REFERENCES_OPVRAGEN(Level.INFO),
+
 	HANDLEIDING_DOWNLOAD(Level.INFO);
 
 	private final Level defaultLevel;

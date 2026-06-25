@@ -32,7 +32,7 @@ import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.colon.enums.RetourzendingStatus;
 import nl.rivm.screenit.model.gba.GbaMutatie;
 import nl.rivm.screenit.service.ClientService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.service.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

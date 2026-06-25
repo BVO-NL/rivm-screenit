@@ -24,6 +24,8 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.populatie;
 import java.util.Date;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.service.algemeen.ProjectService;
 import nl.rivm.screenit.main.web.ScreenitSession;
@@ -50,11 +52,12 @@ import nl.rivm.screenit.model.project.GroepInvoer;
 import nl.rivm.screenit.model.project.Project;
 import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.rivm.screenit.model.project.ProjectType;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.ProjectUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -75,6 +78,7 @@ import org.apache.wicket.validation.validator.RangeValidator;
 import org.springframework.format.datetime.DateFormatter;
 import org.wicketstuff.shiro.ShiroConstraint;
 
+@Slf4j
 @SecurityConstraint(
 	actie = Actie.TOEVOEGEN,
 	checkScope = true,
@@ -134,7 +138,7 @@ public class ProjectGroepEditPage extends ProjectBasePage
 
 		add(new Label("projecttitel", Model.of(projectTitel)));
 
-		Form<ProjectGroep> form = new Form<ProjectGroep>("form", model);
+		Form<ProjectGroep> form = new Form<>("form", model);
 		add(form);
 
 		form.add(ComponentHelper.addTextField(form, "naam", true, 24, false));
@@ -143,7 +147,7 @@ public class ProjectGroepEditPage extends ProjectBasePage
 		form.add(ComponentHelper.addTextField(form, "uitnodigenVoorDKvoor", false, 24, Date.class, false).add(DateValidator.minimum(nu))
 			.setVisible(ProjectUtil.hasParameterSet(project, ProjectParameterKey.COLON_UITNODIGEN_PRIORITEIT)));
 
-		form.add(new ScreenitDropdown<GroepInvoer>("groepInvoer", GroepInvoer.getGroepinvoerVanSelectieType(project.getGroepSelectieType()), new NaamChoiceRenderer<INaam>())
+		form.add(new ScreenitDropdown<>("groepInvoer", GroepInvoer.getGroepinvoerVanSelectieType(project.getGroepSelectieType()), new NaamChoiceRenderer<INaam>())
 			.setRequired(true).setEnabled(isNieuweGroep));
 
 		FormComponent<List<FileUpload>> clientenBestand = new FileUploadField("clientenBestand", clientenBestanden)
@@ -191,14 +195,14 @@ public class ProjectGroepEditPage extends ProjectBasePage
 						@Override
 						public void onYesClick(AjaxRequestTarget target)
 						{
-							opslaan(target, form);
+							opslaan(form);
 						}
 
 					}, dialog));
 				}
 				else
 				{
-					opslaan(target, form);
+					opslaan(form);
 				}
 			}
 
@@ -206,7 +210,7 @@ public class ProjectGroepEditPage extends ProjectBasePage
 		add(new ProjectPaspoortPanel("projectPasspoort", projectModel));
 	}
 
-	private void opslaan(AjaxRequestTarget target, Form<ProjectGroep> form)
+	private void opslaan(Form<ProjectGroep> form)
 	{
 		ProjectGroep groep = form.getModelObject();
 		Project project = groep.getProject();
@@ -232,7 +236,7 @@ public class ProjectGroepEditPage extends ProjectBasePage
 							ScreenitSession.get().warn(String.format(getString("einde.groep.na.einde.instroom"), groep.getNaam()));
 						}
 						FileUpload clientenBestand = clientenBestanden.getObject().get(0);
-						projectService.queueProjectBestandVoorPopulatie(groep, clientenBestand.getContentType(), clientenBestand.getClientFileName(),
+						projectService.queueProjectBestandVoorPopulatie(ModelProxyHelper.deproxy(groep), clientenBestand.getContentType(), clientenBestand.getClientFileName(),
 							clientenBestand.writeToTempFile(), ScreenitSession.get().getIngelogdAccount());
 
 						setResponsePage(new ProjectBestandenOverzicht(ProjectGroepEditPage.this.getProjectModel()));
@@ -240,6 +244,7 @@ public class ProjectGroepEditPage extends ProjectBasePage
 					catch (Exception e)
 					{
 						error("Bestand kon niet worden geimporteerd.");
+						LOG.error("Fout bij importeren bestand voor groep {}", groep.getNaam(), e);
 					}
 				}
 				else

@@ -23,6 +23,8 @@ package nl.rivm.screenit.main.dto.mamma.fotobespreking;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,15 +36,21 @@ import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekRedenFotobespreking;
 
 @Getter
 @Setter
+@Schema(name = "MammaFotobesprekingOnderzoekFilterOptiesDto", description = "Beschikbare filteropties voor mamma-onderzoeken voor fotobespreking.")
 public class MammaFotobesprekingOnderzoekFilterOptiesDto
 {
+	@Schema(description = "Beschikbare redenen voor fotobespreking door MBB'er")
 	private List<MammaOnderzoekRedenFotobespreking> redenFotobesprekingDoorMbber;
 
+	@Schema(description = "Beschikbare redenen voor fotobespreking met MBB'er")
 	private List<MammaLezingRedenenFotobesprekingMbber> redenFotobesprekingMetMbber;
 
+	@Schema(description = "Beschikbare redenen voor fotobespreking door radioloog")
 	private List<MammaLezingRedenenFotobesprekingRadioloog> redenFotobesprekingDoorRadioloog;
 
+	@Schema(description = "Beschikbare redenen van doorverwijzing")
 	private List<MammaLaesieType> redenDoorverwijzing;
 
+	@Schema(description = "Beschikbare follow-up statussen")
 	private List<MammaFollowUpConclusieStatus> followUp;
 }

@@ -24,6 +24,8 @@ package nl.rivm.screenit.batch.jobs.cervix.oudenietverstuurdezas.step;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+import jakarta.persistence.Query;
+
 import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.cervix.oudenietverstuurdezas.CervixOudeNietIngestuurdeZasConstants;
@@ -33,7 +35,6 @@ import nl.rivm.screenit.service.OrganisatieParameterService;
 
 import org.apache.commons.io.IOUtils;
 import org.hibernate.HibernateException;
-import org.hibernate.query.NativeQuery;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -58,7 +59,7 @@ public class CervixOudeNietIngestuurdeZasReader extends BaseSqlScrollableResultR
 	}
 
 	@Override
-	protected NativeQuery createNativeQuery() throws HibernateException
+	protected Query createNativeQuery() throws HibernateException
 	{
 		try
 		{
@@ -68,7 +69,7 @@ public class CervixOudeNietIngestuurdeZasReader extends BaseSqlScrollableResultR
 				return null;
 			}
 			var sql = IOUtils.toString(getClass().getResourceAsStream("CervixOudeNietIngestuurdeZasReader.sql"), Charset.defaultCharset());
-			var query = getHibernateSession().createNativeQuery(sql);
+			var query = getEntityManager().createNativeQuery(sql);
 			query.setParameter("projectId", getProjectId());
 			query.setMaxResults(maxAantalClienten);
 			return query;

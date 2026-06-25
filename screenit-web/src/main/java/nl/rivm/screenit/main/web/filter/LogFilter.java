@@ -24,6 +24,7 @@ package nl.rivm.screenit.main.web.filter;
 import java.io.IOException;
 import java.util.Locale;
 
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -31,7 +32,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,10 +44,8 @@ import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 
 import org.apache.wicket.Session;
-import org.hibernate.SessionFactory;
 import org.slf4j.MDC;
-import org.springframework.orm.hibernate5.SessionHolder;
-import org.springframework.orm.hibernate5.support.OpenSessionInViewFilter;
+import org.springframework.orm.jpa.EntityManagerHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -55,9 +53,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @Slf4j
 public class LogFilter implements Filter
 {
-
-	private String sessionFactoryBeanName = OpenSessionInViewFilter.DEFAULT_SESSION_FACTORY_BEAN_NAME;
-
 	private WebApplicationContext webApplicationContext;
 
 	private LocaleResolverService localeResolverService;
@@ -67,13 +62,6 @@ public class LogFilter implements Filter
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException
 	{
-		String sessionFactoryBeanName = filterConfig.getInitParameter("sessionFactoryBeanName");
-
-		if (sessionFactoryBeanName != null)
-		{
-			this.sessionFactoryBeanName = sessionFactoryBeanName;
-		}
-
 		webApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(filterConfig.getServletContext());
 
 		localeResolverService = webApplicationContext.getBean(LocaleResolverService.class);
@@ -83,17 +71,17 @@ public class LogFilter implements Filter
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
 	{
 
-		final boolean hasTransactionalSession = hasTransactionalSession();
+		var hasOpenEntityManagerSession = hasOpenSession();
 
-		LocaleResolver localeResolver = DEFAULT_LOCALE_RESOLVER;
+		var localeResolver = DEFAULT_LOCALE_RESOLVER;
 
-		if (hasTransactionalSession && request instanceof HttpServletRequest httpRequest)
+		if (hasOpenEntityManagerSession && request instanceof HttpServletRequest httpRequest)
 		{
 
-			HttpSession httpSession = httpRequest.getSession(true);
+			var httpSession = httpRequest.getSession(true);
 
-			String attributeName = ScreenitApplication.getSessionAttributePrefix() + Session.SESSION_ATTRIBUTE_NAME;
-			final ScreenitSession session = (ScreenitSession) httpSession.getAttribute(attributeName);
+			var attributeName = ScreenitApplication.getSessionAttributePrefix() + Session.SESSION_ATTRIBUTE_NAME;
+			var session = (ScreenitSession) httpSession.getAttribute(attributeName);
 
 			if (session != null)
 			{
@@ -128,19 +116,18 @@ public class LogFilter implements Filter
 		finally
 		{
 			localeResolverService.setLocaleResolver(null);
-			if (hasTransactionalSession)
+			if (hasOpenEntityManagerSession)
 			{
 				MDC.remove("A");
 			}
 		}
 	}
 
-	private boolean hasTransactionalSession()
+	private boolean hasOpenSession()
 	{
-		SessionFactory sessionFactory = webApplicationContext.getBean(sessionFactoryBeanName, SessionFactory.class);
-
-		SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(sessionFactory);
-		return sessionHolder != null && sessionHolder.getSession().isConnected();
+		var entityManagerFactory = webApplicationContext.getBean("entityManagerFactory", EntityManagerFactory.class);
+		var entityManagerHolder = (EntityManagerHolder) TransactionSynchronizationManager.getResource(entityManagerFactory);
+		return entityManagerHolder != null && entityManagerHolder.getEntityManager().isOpen();
 	}
 
 	@Override

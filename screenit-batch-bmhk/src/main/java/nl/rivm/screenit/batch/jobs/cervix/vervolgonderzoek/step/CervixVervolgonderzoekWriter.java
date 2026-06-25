@@ -27,8 +27,8 @@ import nl.rivm.screenit.batch.jobs.cervix.vervolgonderzoek.CervixVervolgonderzoe
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.cervix.CervixFactory;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.stereotype.Component;
 

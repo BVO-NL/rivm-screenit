@@ -26,46 +26,36 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipOutputStream;
+
+import jakarta.annotation.PostConstruct;
 
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.service.MammaVerzamelDownloadOnderzoekDataService;
 import nl.rivm.screenit.batch.service.MammaVerzamelOnderzoekDataService;
-import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.BestandStatus;
-import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek;
+import nl.rivm.screenit.repository.mamma.MammaDownloadOnderzoekenVerzoekRepository;
 import nl.rivm.screenit.service.BerichtToBatchService;
+import nl.rivm.screenit.service.DatabaseRunner;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.service.mamma.MammaBaseUitwisselportaalService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-
-import com.google.common.collect.ImmutableMap;
-
-import jakarta.annotation.PostConstruct;
 
 @Slf4j
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
 public class MammaVerzamelDownloadOnderzoekDataServiceImpl implements MammaVerzamelDownloadOnderzoekDataService
 {
 	@Autowired
 	private HibernateService hibernateService;
-
-	@Autowired
-	private SessionFactory sessionFactory;
 
 	@Autowired
 	private ICurrentDateSupplier dateSupplier;
@@ -82,6 +72,12 @@ public class MammaVerzamelDownloadOnderzoekDataServiceImpl implements MammaVerza
 	@Autowired
 	private UploadDocumentService uploadDocumentService;
 
+	@Autowired
+	private MammaDownloadOnderzoekenVerzoekRepository downloadOnderzoekenVerzoekRepository;
+
+	@Autowired
+	private DatabaseRunner databaseRunner;
+
 	@PostConstruct
 	public void init()
 	{
@@ -89,72 +85,71 @@ public class MammaVerzamelDownloadOnderzoekDataServiceImpl implements MammaVerza
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
-	public List<MammaDownloadOnderzoekenVerzoek> getAlleVerzamelDownloadOnderzoekDataVerzoeken()
+	public List<Long> getAlleVerzamelDownloadOnderzoekDataVerzoeken()
 	{
-		return hibernateService.getByParameters(MammaDownloadOnderzoekenVerzoek.class, ImmutableMap.of("status", BestandStatus.NOG_TE_VERWERKEN));
+		var resultList = new ArrayList<Long>();
+		databaseRunner.runInSessionOnly(
+			() -> resultList.addAll(downloadOnderzoekenVerzoekRepository.getMammaDownloadOnderzoekenVerzoekByStatus(BestandStatus.NOG_TE_VERWERKEN).stream()
+				.map(MammaDownloadOnderzoekenVerzoek::getId).toList()));
+		return resultList;
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.SUPPORTS)
-	public void verzamelOnderzoekData(MammaDownloadOnderzoekenVerzoek verzoek)
+	public void verzamelOnderzoekData(Long verzoekId)
 	{
-		Session session = null;
-		boolean success = true;
-		try
-		{
-			session = sessionFactory.openSession();
-			TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
-			verzoek = hibernateService.getBoundObject(verzoek);
-			LOG.info("Start verzamelen van beelden en verslag voor verzoek " + verzoek.getId());
-			verzoek.setGewijzigdOp(dateSupplier.getDate());
-			verzoek.setStatus(BestandStatus.BEZIG_MET_VERWERKEN);
-			hibernateService.saveOrUpdate(verzoek);
 
-			for (MammaDownloadOnderzoek onderzoek : verzoek.getOnderzoeken())
-			{
-				Files.createDirectories(Paths.get(uitwisselPortaalservice.getOnderzoekRootPath(onderzoek)));
-				onderzoek.setStatus(BestandStatus.BEZIG_MET_VERWERKEN);
-				hibernateService.saveOrUpdate(onderzoek);
-				success &= verzamelOnderzoekDataService.addBeeldenAanVerzoek(onderzoek);
-				verzamelOnderzoekDataService.addVerslagAanVerzoek(onderzoek);
-			}
-			createEmptyZipFile(verzoek);
-			uitwisselPortaalservice.zetFilesInZip(verzoek);
-		}
-		catch (Exception e)
+		databaseRunner.runInSessionOnly(() ->
 		{
-			success = false;
-			LOG.error("Fout bij verzamelen van beelden of verslagen: ", e);
-		}
-		finally
-		{
-			if (session != null)
+			var success = new AtomicBoolean(true);
+			MammaDownloadOnderzoekenVerzoek verzoekInner = null;
+			try
 			{
-				if (success)
+				verzoekInner = hibernateService.get(MammaDownloadOnderzoekenVerzoek.class, verzoekId);
+				LOG.info("Start verzamelen van beelden en verslag voor verzoek '{}'", verzoekInner.getId());
+				var finalVerzoekInner = verzoekInner;
+				databaseRunner.runInNewTransaction(() ->
 				{
-					verzoek.setStatus(BestandStatus.VERWERKT);
-				}
-				else
+					finalVerzoekInner.setGewijzigdOp(dateSupplier.getDate());
+					finalVerzoekInner.setStatus(BestandStatus.BEZIG_MET_VERWERKEN);
+				});
+				for (var onderzoek : verzoekInner.getOnderzoeken())
 				{
-					verzoek.setStatus(BestandStatus.CRASH);
+					Files.createDirectories(Paths.get(uitwisselPortaalservice.getOnderzoekRootPath(onderzoek)));
+					databaseRunner.runInNewTransaction(() -> onderzoek.setStatus(BestandStatus.BEZIG_MET_VERWERKEN));
+					success.compareAndSet(true, verzamelOnderzoekDataService.addBeeldenAanVerzoek(onderzoek));
+					verzamelOnderzoekDataService.addVerslagAanVerzoek(onderzoek);
 				}
-				hibernateService.saveOrUpdate(verzoek);
-				LOG.info("Klaar met verzamelen van beelden en verslag voor verzoek " + verzoek.getId());
-				TransactionSynchronizationManager.unbindResource(sessionFactory);
-				session.close();
+				createEmptyZipFile(verzoekInner);
+				uitwisselPortaalservice.zetFilesInZip(verzoekInner);
 			}
-		}
+			catch (Exception e)
+			{
+				success.set(false);
+				LOG.error("Fout bij verzamelen van beelden of verslagen: ", e);
+			}
+			finally
+			{
+				if (verzoekInner != null)
+				{
+					var finalVerzoekInner = verzoekInner;
+					databaseRunner.runInNewTransaction(() ->
+					{
+						finalVerzoekInner.setStatus(success.get() ? BestandStatus.VERWERKT : BestandStatus.CRASH);
+						LOG.info("Klaar met verzamelen van beelden en verslag voor verzoek {}", finalVerzoekInner.getId());
+					});
+				}
+			}
+		});
 	}
 
 	private void createEmptyZipFile(MammaDownloadOnderzoekenVerzoek verzoek) throws IOException
 	{
-		File f = File.createTempFile("onderzoekData", ".zip");
-		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(f)))
+		var f = File.createTempFile("onderzoekData", ".zip");
+		try (var out = new ZipOutputStream(new FileOutputStream(f)))
 		{
 			out.closeEntry();
 		}
-		UploadDocument document = verzoek.getZipBestand();
+		var document = verzoek.getZipBestand();
 		document.setFile(f);
 
 		uploadDocumentService.update(document);

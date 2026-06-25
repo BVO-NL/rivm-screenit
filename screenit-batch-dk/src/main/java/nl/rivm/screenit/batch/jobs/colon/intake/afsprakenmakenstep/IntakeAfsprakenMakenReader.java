@@ -35,12 +35,11 @@ import nl.rivm.screenit.batch.service.PlanIntakeAfsprakenService;
 import nl.rivm.screenit.model.colon.dto.VrijSlot;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.logging.IntakeMakenLogEvent;
+import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ExecutionContext;
@@ -49,10 +48,7 @@ import org.springframework.batch.item.ItemStream;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.orm.hibernate5.SessionFactoryUtils;
-import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Component
 public class IntakeAfsprakenMakenReader implements ItemReader<ClientAfspraak>, ItemStream
@@ -65,11 +61,6 @@ public class IntakeAfsprakenMakenReader implements ItemReader<ClientAfspraak>, I
 
 	private Iterator<ClientAfspraak> clienten;
 
-	@Autowired
-	private SessionFactory sessionFactory;
-
-	private Session hibernateSession;
-
 	private StepExecution stepExecution;
 
 	@Autowired
@@ -77,6 +68,9 @@ public class IntakeAfsprakenMakenReader implements ItemReader<ClientAfspraak>, I
 
 	@Autowired
 	private ICurrentDateSupplier currentDateSupplier;
+
+	@Autowired
+	private DatabaseRunner databaseRunner;
 
 	@Autowired
 	@Qualifier("maximumRetrySecondsSpend")
@@ -107,16 +101,8 @@ public class IntakeAfsprakenMakenReader implements ItemReader<ClientAfspraak>, I
 	@Override
 	public void open(ExecutionContext executionContext)
 	{
-		boolean unbindSessionFromThread = false;
-		try
+		databaseRunner.runInSessionOnly(() ->
 		{
-			hibernateSession = sessionFactory.openSession();
-			if (!TransactionSynchronizationManager.hasResource(sessionFactory))
-			{
-				TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(hibernateSession));
-				unbindSessionFromThread = true;
-			}
-
 			ExecutionContext innerExecutionContext = stepExecution.getJobExecution().getExecutionContext();
 			IntakeMakenLogEvent intakeMelding = (IntakeMakenLogEvent) innerExecutionContext.get(IntakeAfsprakenMakenConstants.RAPPORTAGEKEYINTAKE);
 			int ronde = innerExecutionContext.getInt(IntakeAfsprakenMakenConstants.HUIDIGE_RONDE, 0);
@@ -189,15 +175,8 @@ public class IntakeAfsprakenMakenReader implements ItemReader<ClientAfspraak>, I
 			}
 			intakeMelding.setAantalRondes(ronde);
 			intakeMelding.setPlannerResultaat(planningResultaat.toString());
-		}
-		finally
-		{
-			if (unbindSessionFromThread)
-			{
-				TransactionSynchronizationManager.unbindResource(sessionFactory);
-				SessionFactoryUtils.closeSession(hibernateSession);
-			}
-		}
+
+		});
 	}
 
 	private List<VrijSlot> getVrijeSloten(int aantalGeselecteerdeClienten, AtomicInteger aantalExtraDagen, IntakeMakenLogEvent intakeMelding)

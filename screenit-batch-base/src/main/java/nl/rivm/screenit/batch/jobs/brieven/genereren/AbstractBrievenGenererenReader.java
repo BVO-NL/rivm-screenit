@@ -37,9 +37,11 @@ import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.Persoon_;
+import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.topicuszorg.organisatie.model.Adres_;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
@@ -50,14 +52,15 @@ import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftN
 
 public abstract class AbstractBrievenGenererenReader<B extends ClientBrief<?, ?, ?>> extends BaseSpecificationScrollableResultReader<B>
 {
-	protected abstract Long getScreeningOrganisatieId();
+	@Autowired
+	private BaseBriefService briefService;
 
 	@Override
 	protected Specification<B> createSpecification()
 	{
 		var screeningOrganisatieId = getScreeningOrganisatieId();
 		ExtendedSpecification<B> specification;
-		if (screeningOrganisatieId != null)
+		if (screeningOrganisatieId != null && !briefService.isOverbruggingssituatieParagonStarted())
 		{
 			specification = heeftScreeningsOrganisatieId(screeningOrganisatieId);
 		}
@@ -65,7 +68,8 @@ public abstract class AbstractBrievenGenererenReader<B extends ClientBrief<?, ?,
 		{
 			specification = isClientGekoppeldAanEenScreeningOrganisatie();
 		}
-		return maakGbaIndicatieSpecification().and(specification).and(magGegenereerdWorden()); 
+		return maakGbaIndicatieSpecification().and(specification)
+			.and(magGegenereerdWorden()); 
 	}
 
 	public Specification<B> maakGbaIndicatieSpecification()
@@ -100,5 +104,14 @@ public abstract class AbstractBrievenGenererenReader<B extends ClientBrief<?, ?,
 	{
 		var adresJoin = adresJoin(r);
 		return join(adresJoin, BagAdres_.gbaGemeente);
+	}
+
+	private Long getScreeningOrganisatieId()
+	{
+		if (getStepExecutionContext().containsKey(AbstractBrievenGenererenPartitioner.KEY_SCREENINGORGANISATIEID))
+		{
+			return getStepExecutionContext().getLong(AbstractBrievenGenererenPartitioner.KEY_SCREENINGORGANISATIEID);
+		}
+		return null;
 	}
 }

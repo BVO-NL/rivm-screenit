@@ -197,7 +197,6 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 		var capaciteitBlokDtoPerId = maakCapaciteitBlokDtoMap(capaciteitBlokProjecties, standplaatsPeriode, screeningOrganisatie);
 		haalAfspraakReserveringenOpEnVoegToeAanCapaciteitBlokken(capaciteitBlokDtoPerId, screeningOrganisatie, client);
 		haalMindervalideReserveringenOpEnVoegToeAanCapaciteitBlokken(capaciteitBlokDtoPerId);
-		capaciteitBlokDtoPerId.values().forEach(MammaPlanningUtil::sorteerCapaciteitBlokOpAfspraakTijdEnZetAfspraakTot);
 		return capaciteitBlokDtoPerId.values();
 	}
 
@@ -206,7 +205,7 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 	{
 		var zoekBereik = Range.closed(vanaf, totEnMet);
 		var screeningsEenheid = standplaatsPeriode.getScreeningsEenheid();
-		var standplaats = standplaatsPeriodeOverlaptMetZoekBereik(standplaatsPeriode, vanaf, totEnMet) ? standplaatsPeriode.getStandplaatsRonde().getStandplaats() : null;
+		var standplaats = standplaatsPeriodeOverlaptMetZoekbereik(standplaatsPeriode, vanaf, totEnMet) ? standplaatsPeriode.getStandplaatsRonde().getStandplaats() : null;
 
 		return capaciteitBlokRepository.findNietGeblokkeerdeScreeningCapaciteitBlokken(zoekBereik, screeningsEenheid, screeningOrganisatie, standplaats);
 	}
@@ -220,7 +219,7 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 		{
 			var capaciteitBlokDto = capaciteitBlokDtoMap.computeIfAbsent(
 				blokProjectie.getBlokId(),
-				id -> createCapaciteitBlokDto(standplaatsPeriode, blokProjectie, screeningOrganisatie)
+				_ -> createCapaciteitBlokDto(standplaatsPeriode, blokProjectie, screeningOrganisatie)
 			);
 
 			voegAfspraakToeAanBlok(blokProjectie, capaciteitBlokDto, screeningOrganisatie);
@@ -268,7 +267,7 @@ public class MammaBaseCapaciteitsBlokServiceImpl implements MammaBaseCapaciteits
 		return afspraakDto;
 	}
 
-	private boolean standplaatsPeriodeOverlaptMetZoekBereik(MammaStandplaatsPeriode standplaatsPeriode, Date zoekVanaf, Date zoekTotEnMet)
+	private boolean standplaatsPeriodeOverlaptMetZoekbereik(MammaStandplaatsPeriode standplaatsPeriode, Date zoekVanaf, Date zoekTotEnMet)
 	{
 		return (standplaatsPeriode.getVanaf().before(zoekTotEnMet) || standplaatsPeriode.getVanaf().equals(zoekTotEnMet))
 			&& (standplaatsPeriode.getTotEnMet().after(zoekVanaf) || standplaatsPeriode.getTotEnMet().equals(zoekVanaf));

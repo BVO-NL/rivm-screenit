@@ -50,6 +50,7 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieService;
@@ -58,7 +59,6 @@ import nl.rivm.screenit.service.colon.ColonUitnodigingsgebiedService;
 import nl.rivm.screenit.service.colon.PlanningService;
 import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -67,14 +67,12 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import static nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification.getSpecificationU1;
 import static nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification.getSpecificationU2;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnodigingsgebiedCapaciteitService
 {
 	public static final Logger LOG = LoggerFactory.getLogger(ColonUitnodigingsgebiedCapaciteitServiceImpl.class);
@@ -104,6 +102,7 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 	private ClientRepository clientRepository;
 
 	@Override
+	@Transactional
 	public Collection<ColonUitnodigingsgebiedSelectieContext> bepaalCapaciteit(ExecutionContext executionContext, boolean vooraankondigen, boolean aanpassenCapaciteitBijHerstart)
 	{
 		var startTijd = currentDateSupplier.getLocalDateTime();

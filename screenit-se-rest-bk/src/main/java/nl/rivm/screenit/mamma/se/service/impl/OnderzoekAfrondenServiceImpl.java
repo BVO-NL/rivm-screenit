@@ -24,6 +24,7 @@ package nl.rivm.screenit.mamma.se.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import nl.rivm.screenit.mamma.se.dto.actions.AfrondenDto;
 import nl.rivm.screenit.mamma.se.dto.actions.OnderzoekAfrondenDto;
 import nl.rivm.screenit.mamma.se.dto.onderzoek.AnnotatieAfbeeldingSeDto;
@@ -39,12 +40,13 @@ import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaSignaleren;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
+import nl.rivm.screenit.repository.mamma.MammaAnnotatieAfbeeldingRepository;
 import nl.rivm.screenit.service.BerichtToBatchService;
-import nl.rivm.screenit.service.ICurrentDateSupplier;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.mamma.MammaBaseAnnotatieAfbeeldingService;
 import nl.rivm.screenit.service.mamma.MammaBaseKansberekeningService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -58,9 +60,6 @@ public class OnderzoekAfrondenServiceImpl implements OnderzoekAfrondenService
 	private HibernateService hibernateService;
 
 	@Autowired
-	private ICurrentDateSupplier currentDateSupplier;
-
-	@Autowired
 	private MammaBaseAnnotatieAfbeeldingService baseAnnotatieAfbeeldingService;
 
 	@Autowired
@@ -71,6 +70,9 @@ public class OnderzoekAfrondenServiceImpl implements OnderzoekAfrondenService
 
 	@Autowired
 	private MammaAfspraakService afspraakService;
+
+	@Autowired
+	private MammaAnnotatieAfbeeldingRepository annotatieAfbeeldingRepository;
 
 	@Override
 	public void beeindigen(AfrondenDto action, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd)
@@ -150,6 +152,12 @@ public class OnderzoekAfrondenServiceImpl implements OnderzoekAfrondenService
 			baseAnnotatieAfbeeldingService.updateIconenInAfbeelding(doorsnedeIconen, afbeelding);
 			return afbeelding;
 		}
+
+		if (huidigeAfbeelding != null)
+		{
+			annotatieAfbeeldingRepository.delete(huidigeAfbeelding);
+		}
+
 		return null;
 	}
 }

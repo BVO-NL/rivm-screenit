@@ -20,4 +20,17 @@
  */
 import { Routes } from '@angular/router'
 
-export const colonRoutes: Routes = []
+export const colonRoutes: Routes = [
+  {
+    path: 'rooster',
+    loadComponent: () => import('./colon-rooster-page/colon-rooster-page.component').then((m) => m.ColonRoosterPageComponent),
+  },
+  {
+    path: 'feestdagen-beheer',
+    loadComponent: () => import('./colon-feestdagen-beheer-page/colon-feestdagen-beheer-page.component').then((m) => m.ColonFeestdagenBeheerPageComponent),
+  },
+  {
+    path: 'weekend-werkdag-beheer',
+    loadComponent: () => import('./colon-weekend-werkdag-beperkingen/colon-weekend-werkdag-beperkingen-page.component').then((m) => m.ColonWeekendWerkdagBeperkingenPageComponent),
+  },
+]

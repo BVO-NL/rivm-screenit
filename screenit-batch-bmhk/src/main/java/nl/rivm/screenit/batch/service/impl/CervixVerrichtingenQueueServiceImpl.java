@@ -21,41 +21,30 @@ package nl.rivm.screenit.batch.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import jakarta.annotation.PostConstruct;
 
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.service.CervixHerindexeerVerrichtingenService;
 import nl.rivm.screenit.batch.service.CervixVerwijderSepaDataService;
-import nl.rivm.screenit.model.cervix.facturatie.CervixBetaalopdracht;
-import nl.rivm.screenit.model.cervix.facturatie.CervixBoekRegel;
 import nl.rivm.screenit.model.messagequeue.MessageType;
 import nl.rivm.screenit.model.messagequeue.dto.CervixHerindexatieDto;
 import nl.rivm.screenit.model.messagequeue.dto.VerwijderBetaalOpdrachtDto;
+import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.MessageService;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.SessionFactoryUtils;
-import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-
-import jakarta.annotation.PostConstruct;
 
 @Slf4j
 @Service
 public class CervixVerrichtingenQueueServiceImpl
 {
-	@Autowired
-	private SessionFactory sessionFactory;
-
 	@Autowired
 	private CervixHerindexeerVerrichtingenService herindexatieService;
 
@@ -65,7 +54,8 @@ public class CervixVerrichtingenQueueServiceImpl
 	@Autowired
 	private MessageService messageService;
 
-	private boolean bindSessionOnThread = false;
+	@Autowired
+	private DatabaseRunner databaseRunner;
 
 	private int heartbeatCounter = 0;
 
@@ -78,7 +68,7 @@ public class CervixVerrichtingenQueueServiceImpl
 			Integer.getInteger("BMHK_VERRICHTINGEN_HERINDEXEREN_CHUNK_SIZE", 500),
 			Integer.getInteger("BMHK_HERINDEXEREN_PAUZE_BETWEEN_CHUNKS", 200));
 
-		ExecutorService executorService = Executors.newSingleThreadExecutor();
+		var executorService = Executors.newSingleThreadExecutor();
 		executorService.submit(() ->
 		{
 
@@ -94,64 +84,58 @@ public class CervixVerrichtingenQueueServiceImpl
 
 	private void herindexeer()
 	{
-		bindSession();
-		AtomicInteger totaalAantalVerrichtingen = new AtomicInteger(0);
-		CervixHerindexatieDto herindexatieDto = null;
-		try
+		databaseRunner.runInSessionOnly(() ->
 		{
-			var message = messageService.getOldestMessage(MessageType.HERINDEXATIE);
-			if (message.isPresent())
+			var totaalAantalVerrichtingen = new AtomicInteger(0);
+			CervixHerindexatieDto herindexatieDto = null;
+			try
 			{
-				herindexatieDto = messageService.getContent(message.get());
-				totaalAantalVerrichtingen.set(0);
-				verwerkHerindexeringMessage(herindexatieDto, totaalAantalVerrichtingen);
-				messageService.dequeueMessage(message.get());
+				var message = messageService.getOldestMessage(MessageType.HERINDEXATIE);
+				if (message.isPresent())
+				{
+					herindexatieDto = messageService.getContent(message.get());
+					totaalAantalVerrichtingen.set(0);
+					verwerkHerindexeringMessage(herindexatieDto, totaalAantalVerrichtingen);
+					messageService.dequeueMessage(message.get());
+				}
 			}
-		}
-		catch (InterruptedException | JsonProcessingException e)
-		{
-			herindexatieService.logFout(herindexatieDto, totaalAantalVerrichtingen.get(), e);
-			Thread.currentThread().interrupt();
-		}
-		finally
-		{
-			unbindSessionFactory();
-		}
+			catch (InterruptedException | JsonProcessingException e)
+			{
+				herindexatieService.logFout(herindexatieDto, totaalAantalVerrichtingen.get(), e);
+				Thread.currentThread().interrupt();
+			}
+		});
 	}
 
 	private void verwijderBetaalOpdracht()
 	{
-		bindSession();
-		VerwijderBetaalOpdrachtDto verwijderBetaalOpdrachtDto = null;
-		try
+		databaseRunner.runInSessionOnly(() ->
 		{
-			var message = messageService.getOldestMessage(MessageType.VERWIJDER_BETAAL_OPDRACHT);
-			if (message.isPresent())
+			VerwijderBetaalOpdrachtDto verwijderBetaalOpdrachtDto = null;
+			try
 			{
-				verwijderBetaalOpdrachtDto = messageService.getContent(message.get());
-				verwerkVerwijderingMessage(verwijderBetaalOpdrachtDto);
-				messageService.dequeueMessage(message.get());
+				var message = messageService.getOldestMessage(MessageType.VERWIJDER_BETAAL_OPDRACHT);
+				if (message.isPresent())
+				{
+					verwijderBetaalOpdrachtDto = messageService.getContent(message.get());
+					verwerkVerwijderingMessage(verwijderBetaalOpdrachtDto);
+					messageService.dequeueMessage(message.get());
+				}
 			}
-
-			unbindSessionFactory();
-			wachtOpVolgendeOpdracht();
-		}
-		catch (Exception e)
-		{
-			LOG.error("Fout bij verwerking van verwijder betaal opdracht met id {}", (verwijderBetaalOpdrachtDto != null ? verwijderBetaalOpdrachtDto.getId() : "onbekend"),
-				e);
-		}
-		finally
-		{
-			unbindSessionFactory();
-		}
+			catch (Exception e)
+			{
+				LOG.error("Fout bij verwerking van verwijder betaal opdracht met id {}", (verwijderBetaalOpdrachtDto != null ? verwijderBetaalOpdrachtDto.getId() : "onbekend"),
+					e);
+			}
+		});
+		wachtOpVolgendeOpdracht();
 	}
 
 	private void verwerkVerwijderingMessage(VerwijderBetaalOpdrachtDto opdrachtDto)
 	{
-		int batchSize = 1000;
-		List<CervixBoekRegel> cervixBoekRegels = verwijderSepaDataService.haalBoekRegelsOp(opdrachtDto.getId(), batchSize);
-		long teVerwerkenBoekregels = verwijderSepaDataService.aantalTeVerwerkenBoekregels(opdrachtDto.getId());
+		var batchSize = 1000;
+		var cervixBoekRegels = verwijderSepaDataService.haalBoekRegelsOp(opdrachtDto.getId(), batchSize);
+		var teVerwerkenBoekregels = verwijderSepaDataService.aantalTeVerwerkenBoekregels(opdrachtDto.getId());
 		while (!cervixBoekRegels.isEmpty())
 		{
 			LOG.info("{} van de {} regels opgehaald om te ontkoppelen", cervixBoekRegels.size(), teVerwerkenBoekregels);
@@ -159,7 +143,7 @@ public class CervixVerrichtingenQueueServiceImpl
 			cervixBoekRegels = verwijderSepaDataService.haalBoekRegelsOp(opdrachtDto.getId(), batchSize);
 		}
 
-		CervixBetaalopdracht betaalopdracht = verwijderSepaDataService.haalBetaalOpdrachtOp(opdrachtDto.getId());
+		var betaalopdracht = verwijderSepaDataService.haalBetaalOpdrachtOp(opdrachtDto.getId());
 		verwijderSepaDataService.verwijderBetaalopdracht(betaalopdracht);
 	}
 
@@ -198,26 +182,6 @@ public class CervixVerrichtingenQueueServiceImpl
 		if (heartbeatCounter++ % 20 == 0)
 		{
 			LOG.info("Heartbeat verwerkVerrichtingVerzoeken");
-		}
-	}
-
-	private void bindSession()
-	{
-		if (!bindSessionOnThread)
-		{
-			Session session = sessionFactory.openSession();
-			TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
-			bindSessionOnThread = true;
-		}
-	}
-
-	private void unbindSessionFactory()
-	{
-		if (bindSessionOnThread)
-		{
-			SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.unbindResource(sessionFactory);
-			SessionFactoryUtils.closeSession(sessionHolder.getSession());
-			bindSessionOnThread = false;
 		}
 	}
 }

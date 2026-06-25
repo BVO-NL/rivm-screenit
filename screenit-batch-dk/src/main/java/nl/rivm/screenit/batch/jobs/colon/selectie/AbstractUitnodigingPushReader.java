@@ -160,10 +160,10 @@ public abstract class AbstractUitnodigingPushReader<T> extends BaseTypedScrollab
 	@Override
 	protected ScrollableResults createScrollableResults()
 	{
-		var jpaQuery = new FluentJpaQueryImpl<>(createSpecification(), getHibernateSession(), getEntityClass(), ClientTePushenDto.class);
+		var jpaQuery = new FluentJpaQueryImpl<>(createSpecification(), getEntityManager(), getEntityClass(), ClientTePushenDto.class);
 		jpaQuery.projections((cb, r) -> createProjections(r, cb));
 
-		return jpaQuery.setScrollFetchSize(fetchSize).scroll(-1);
+		return jpaQuery.setScrollFetchSize(getFetchSize()).scroll(-1);
 	}
 
 	protected abstract Specification<T> createSpecification();

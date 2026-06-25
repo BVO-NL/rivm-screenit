@@ -31,8 +31,8 @@ import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.model.EnovationHuisarts;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.service.ClientContactService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.colon.ColonHuisartsService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

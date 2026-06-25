@@ -35,12 +35,6 @@ public class ColonBrievenGenererenReader extends AbstractBrievenGenererenReader<
 {
 
 	@Override
-	protected Long getScreeningOrganisatieId()
-	{
-		return getStepExecutionContext().getLong(ColonBrievenGenererenPartitioner.KEY_SCREENINGORGANISATIEID);
-	}
-
-	@Override
 	protected Specification<ColonBrief> createSpecification()
 	{
 		var specification = super.createSpecification();

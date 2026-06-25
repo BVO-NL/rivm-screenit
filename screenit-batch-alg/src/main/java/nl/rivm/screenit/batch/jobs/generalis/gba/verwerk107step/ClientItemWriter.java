@@ -21,12 +21,14 @@ package nl.rivm.screenit.batch.jobs.generalis.gba.verwerk107step;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import nl.rivm.screenit.batch.jobs.generalis.gba.GbaConstants;
 import nl.rivm.screenit.batch.jobs.generalis.gba.exception.GbaImportException;
 import nl.rivm.screenit.batch.service.GbaService;
 import nl.rivm.screenit.model.gba.GbaVerwerkingsLog;
 import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo107Bericht;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
@@ -38,11 +40,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class ClientItemWriter implements ItemWriter<Vo107Bericht>
 {
-	@Autowired
-	private GbaService gbaService;
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Autowired
-	private HibernateService hibernateService;
+	private GbaService gbaService;
 
 	private StepExecution stepExecution;
 
@@ -63,8 +65,8 @@ public class ClientItemWriter implements ItemWriter<Vo107Bericht>
 			}
 		}
 
-		hibernateService.getHibernateSession().flush();
-		hibernateService.getHibernateSession().clear();
+		entityManager.flush();
+		entityManager.clear();
 	}
 
 	@BeforeStep

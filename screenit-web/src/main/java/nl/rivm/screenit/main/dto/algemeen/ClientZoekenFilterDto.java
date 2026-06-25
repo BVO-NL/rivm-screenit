@@ -26,33 +26,24 @@ import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Getter
 @Setter
+@Schema(name = "ClientZoekenFilterDto", description = "Filtercriteria voor het zoeken van clienten.")
 public class ClientZoekenFilterDto
 {
 	private String postcode;
-
 	private Integer huisnummer;
-
 	private String bsn;
-
 	private String briefkenmerk;
-
 	private LocalDate geboortedatum;
-
 	private Long bkUitnodigingsnummer;
-
 	private String bmhkMonsterId;
-
 	private Long bmhkUitnodigingsId;
-
 	private String dkBarcode;
-
 	private Long dkUitnodigingsId;
-
 	private String anummer;
-
 	private String mobielnummer;
-
 	private String emailadres;
 }

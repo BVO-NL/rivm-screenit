@@ -24,6 +24,12 @@
 @use "styles/ds_overrides" as *;
 @use 'styles/grid' as *;
 
+app-root {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 131px);
+}
+
 :root {
   --fc-page-bg-color: #fff;
   --fc-neutral-bg-color: hsla(0, 0%, 82%, 0.3);
@@ -78,6 +84,7 @@
   --ds-color-primary-tint: #ccb3d4;
   --ds-text-color: #454545;
   --border-color: rgb(225, 233, 239);
+  --screenit-stale-background-color: #f9f9f9;
 }
 
 input::-webkit-outer-spin-button,
@@ -112,4 +119,9 @@ input[type='number'] {
   padding: 1rem;
   overflow: auto;
   width: 100%;
+}
+
+fa-icon.ng-fa-icon.sidebar-collapse-button__icon {
+  height: 1rem;
+  width: 1rem;
 }

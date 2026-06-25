@@ -868,6 +868,10 @@ b {
   background-color: #fff;
   .content-inner {
     margin: 10px;
+
+    &:has(> app-root) {
+      margin: 0;
+    }
   }
 }
 

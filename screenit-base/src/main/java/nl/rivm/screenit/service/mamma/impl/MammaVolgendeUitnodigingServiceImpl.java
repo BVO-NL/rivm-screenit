@@ -39,6 +39,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaFollowUpConclusieStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaUitnodigingsintervalType;
 import nl.rivm.screenit.service.ClientService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieService;
@@ -48,7 +49,6 @@ import nl.rivm.screenit.service.mamma.MammaBaseScreeningrondeService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.service.mamma.MammaVolgendeUitnodigingService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -132,6 +132,7 @@ public class MammaVolgendeUitnodigingServiceImpl implements MammaVolgendeUitnodi
 	private void zetVolgendeUitnodigingsinterval(MammaDossier dossier, MammaUitnodigingsintervalType type, LocalDate peildatum)
 	{
 		var volgendeUitnodiging = dossier.getVolgendeUitnodiging();
+		var intervalByType = getIntervalByType(type); 
 		if (volgendeUitnodiging == null)
 		{
 			volgendeUitnodiging = new MammaVolgendeUitnodiging();
@@ -139,7 +140,7 @@ public class MammaVolgendeUitnodigingServiceImpl implements MammaVolgendeUitnodi
 			dossier.setVolgendeUitnodiging(volgendeUitnodiging);
 		}
 		volgendeUitnodiging.setPeildatum(peildatum);
-		volgendeUitnodiging.setInterval(getIntervalByType(type));
+		volgendeUitnodiging.setInterval(intervalByType);
 		hibernateService.saveOrUpdateAll(volgendeUitnodiging, dossier);
 	}
 

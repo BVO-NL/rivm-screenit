@@ -36,7 +36,7 @@ import nl.rivm.screenit.model.mamma.MammaDeelnamekans;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.service.DossierFactory;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 
 import org.springframework.beans.factory.annotation.Autowired;

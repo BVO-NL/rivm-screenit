@@ -26,32 +26,22 @@ import java.io.FileInputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import nl.rivm.screenit.main.service.ZorgmailImportPoolExecuterService;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.ZorgmailImportService;
-import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.SessionFactoryUtils;
-import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+@Slf4j
 @Service
-@Transactional(propagation = Propagation.REQUIRED)
 public class ZorgmailImportPoolExecuterServiceImpl implements ZorgmailImportPoolExecuterService
 {
-
-	private static final Logger LOG = LoggerFactory.getLogger(ZorgmailImportPoolExecuterServiceImpl.class);
-
 	private ExecutorService executorService;
 
 	@Autowired
@@ -59,6 +49,9 @@ public class ZorgmailImportPoolExecuterServiceImpl implements ZorgmailImportPool
 
 	@Autowired
 	private LogService logService;
+
+	@Autowired
+	private DatabaseRunner databaseRunner;
 
 	public ZorgmailImportPoolExecuterServiceImpl()
 	{
@@ -68,41 +61,18 @@ public class ZorgmailImportPoolExecuterServiceImpl implements ZorgmailImportPool
 	@Override
 	public void startImport(final File csvFile, final Boolean ediAdresOverschrijven)
 	{
-		executorService.submit(new Runnable()
+		executorService.submit(() ->
 		{
-			@Override
-			public void run()
+			try (FileInputStream xlsStream = new FileInputStream(csvFile))
 			{
-				SessionFactory sessionFactory = ApplicationContextProvider.getApplicationContext().getBean(SessionFactory.class);
-				try (FileInputStream xlsStream = new FileInputStream(csvFile);)
-				{
-					Session session = sessionFactory.openSession();
-					TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
-					importService.importHandmatigAdresboek(xlsStream, ediAdresOverschrijven);
-				}
-				catch (Exception e) 
-				{
-					LOG.error("Er is een onvoorziene crash geweest in de Zorgmail Import Thread, deze is nu gesloten. " + e.getMessage(), e);
-					logService.logGebeurtenis(LogGebeurtenis.HUISARTS_IMPORT_FOUT,
-						"Importeren van Huisartsen Adresboek is mislukt. Er is een crash opgetreden, alle gemaakte wijzigingen zijn terugggedraaid.", Bevolkingsonderzoek.COLON);
-				}
-				finally
-				{
-					SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.unbindResource(sessionFactory);
-					SessionFactoryUtils.closeSession(sessionHolder.getSession());
-				}
+				databaseRunner.runInSessionOnly(() -> importService.importHandmatigAdresboek(xlsStream, ediAdresOverschrijven));
+			}
+			catch (Exception e) 
+			{
+				LOG.error("Er is een onvoorziene crash geweest in de Zorgmail Import Thread, deze is nu gesloten. {}", e.getMessage(), e);
+				logService.logGebeurtenis(LogGebeurtenis.HUISARTS_IMPORT_FOUT,
+					"Importeren van Huisartsen Adresboek is mislukt. Er is een crash opgetreden, alle gemaakte wijzigingen zijn terugggedraaid.", Bevolkingsonderzoek.COLON);
 			}
 		});
 	}
-
-	public ZorgmailImportService getImportService()
-	{
-		return importService;
-	}
-
-	public void setImportService(ZorgmailImportService importService)
-	{
-		this.importService = importService;
-	}
-
 }

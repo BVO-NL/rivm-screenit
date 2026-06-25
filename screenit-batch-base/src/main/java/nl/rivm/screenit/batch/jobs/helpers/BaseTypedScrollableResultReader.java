@@ -24,6 +24,9 @@ package nl.rivm.screenit.batch.jobs.helpers;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,8 +36,6 @@ import nl.rivm.screenit.batch.jobs.BatchConstants;
 import nl.rivm.screenit.model.enums.Level;
 
 import org.hibernate.ScrollableResults;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
@@ -43,9 +44,6 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemStream;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.SessionFactoryUtils;
-import org.springframework.orm.hibernate5.SessionHolder;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Slf4j
 public abstract class BaseTypedScrollableResultReader<T> implements ItemReader<T>, ItemStream
@@ -56,15 +54,14 @@ public abstract class BaseTypedScrollableResultReader<T> implements ItemReader<T
 	protected final List<Long> processedIds = new ArrayList<>();
 
 	@Setter
-	protected int fetchSize = 20;
+	@Getter
+	private int fetchSize = 20;
 
 	@Autowired
-	private SessionFactory sessionFactory;
-
-	private boolean unbindSessionFromThread = false;
+	private EntityManagerFactory entityManagerFactory;
 
 	@Getter(AccessLevel.PROTECTED)
-	private Session hibernateSession;
+	private EntityManager entityManager;
 
 	@Getter
 	private StepExecution stepExecution;
@@ -76,14 +73,7 @@ public abstract class BaseTypedScrollableResultReader<T> implements ItemReader<T
 	{
 		try
 		{
-
-			hibernateSession = sessionFactory.openSession();
-			if (!TransactionSynchronizationManager.hasResource(sessionFactory))
-			{
-				TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(hibernateSession));
-				unbindSessionFromThread = true;
-			}
-
+			entityManager = entityManagerFactory.createEntityManager();
 			resultSet.set(createScrollableResults());
 			processedIds.clear();
 		}
@@ -97,13 +87,6 @@ public abstract class BaseTypedScrollableResultReader<T> implements ItemReader<T
 			crashMelding("De job heeft onsuccesvol gedraaid, neem contact op met de helpdesk.", e);
 			throw e;
 		}
-		finally
-		{
-			if (unbindSessionFromThread)
-			{
-				TransactionSynchronizationManager.unbindResource(sessionFactory);
-			}
-		}
 	}
 
 	protected abstract ScrollableResults createScrollableResults();
@@ -116,9 +99,9 @@ public abstract class BaseTypedScrollableResultReader<T> implements ItemReader<T
 		{
 			scrollableResults.close();
 		}
-		if (hibernateSession != null)
+		if (entityManager != null)
 		{
-			SessionFactoryUtils.closeSession(hibernateSession);
+			entityManager.close();
 		}
 	}
 

@@ -21,10 +21,16 @@ package nl.rivm.screenit.repository.mamma;
  * =========================LICENSE_END==================================
  */
 
+import java.util.List;
+
 import nl.rivm.screenit.model.mamma.MammaUploadBeeldenVerzoek;
+import nl.rivm.screenit.model.mamma.MammaUploadBeeldenVerzoekStatus;
 import nl.rivm.screenit.repository.BaseJpaRepository;
+
+import org.springframework.data.jpa.repository.Query;
 
 public interface MammaUploadBeeldenVerzoekRepository extends BaseJpaRepository<MammaUploadBeeldenVerzoek>
 {
-
+	@Query("SELECT id FROM MammaUploadBeeldenVerzoek WHERE status = :status")
+	List<Long> findIdsByStatus(MammaUploadBeeldenVerzoekStatus status);
 }

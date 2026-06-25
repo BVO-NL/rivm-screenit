@@ -66,12 +66,12 @@ import nl.rivm.screenit.repository.colon.ColonBriefRepository;
 import nl.rivm.screenit.repository.colon.ColonMergedBrievenRepository;
 import nl.rivm.screenit.repository.mamma.MammaBaseBriefRepository;
 import nl.rivm.screenit.repository.mamma.MammaMergedBrievenRepository;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.cervix.CervixRegioBriefSpecification;
 import nl.rivm.screenit.util.AfmeldingUtil;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.ProjectUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -35,29 +35,26 @@ import nl.rivm.screenit.model.mamma.enums.MammaLezingRedenenFotobesprekingMbber;
 import nl.rivm.screenit.model.mamma.enums.MammaLezingRedenenFotobesprekingRadioloog;
 import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekRedenFotobespreking;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Getter
 @Setter
+@Schema(name = "MammaFotobesprekingOnderzoekFilterDto", description = "Filtercriteria voor het zoeken van mamma-onderzoeken voor fotobespreking.")
 public class MammaFotobesprekingOnderzoekFilterDto
 {
 	private List<MammaOnderzoekRedenFotobespreking> redenFotobesprekingDoorMbber;
-
 	private List<MammaLezingRedenenFotobesprekingMbber> redenFotobesprekingMetMbber;
-
 	private List<MammaLezingRedenenFotobesprekingRadioloog> redenFotobesprekingDoorRadioloog;
-
 	private List<MammaLaesieType> redenDoorverwijzing;
 
+	@Schema(description = "Follow-up status")
 	private List<MammaFollowUpConclusieStatus> followUp;
 
+	@Schema(description = "Onderzoeksdatumrange")
 	private DurationDto onderzoeksdatum;
-
 	private Long medewerkerId;
-
 	private String bsn;
-
 	private LocalDate geboortedatum;
-
 	private List<Long> beoordelingseenheidIds = new ArrayList<>();
-
 	private List<Long> screeningseenheidIds = new ArrayList<>();
 }

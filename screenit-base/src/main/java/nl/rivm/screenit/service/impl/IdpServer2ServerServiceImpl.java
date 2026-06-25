@@ -114,18 +114,35 @@ public class IdpServer2ServerServiceImpl implements IdpServer2ServerService
 		var idpTokenEndpoint = audience + "/protocol/openid-connect/token";
 		var scope = getScope(type);
 		IdpClient idpClient = null;
-		if (!GEEN_IDP.equalsIgnoreCase(scope))
+		if (GEEN_IDP.equalsIgnoreCase(scope))
+		{
+			if (!idpClients.containsKey(type))
+			{
+				LOG.warn("Geen Idp client scope gevonden voor type '{}'. Environment variabele '{}' is niet (goed) gezet.", type, type.getScope());
+			}
+		}
+		else if (heeftOntbrekendeCommHubCredentials(type))
+		{
+			if (!idpClients.containsKey(type))
+			{
+				LOG.warn("Geen Idp keystore wachtwoord gevonden voor type '{}'. Stel environment variabele 'idp-keystore-password' in om CommunicatieHub te gebruiken.",
+					type);
+			}
+		}
+		else
 		{
 			idpClient = new IdpClient(audience, getIdpClientId(type), getSigningKey(type), getClientAssertionLifespan(), idpTokenEndpoint, getExpirationOffsetSeconds(),
 				scope);
 			LOG.info("Idp client gemaakt voor type '{}'.", type);
 		}
-		else if (!idpClients.containsKey(type))
-		{
-			LOG.warn("Geen Idp client scope gevonden voor type '{}'. Environment variabele '{}' is niet (goed) gezet.", type, type.getScope());
-		}
 		idpClients.put(type, idpClient);
 		return idpClient;
+	}
+
+	@Override
+	public boolean heeftOntbrekendeCommHubCredentials(IdpServer2ServerType type)
+	{
+		return type == IdpServer2ServerType.COMM_HUB && StringUtils.isBlank(communicationHubProperties.getIdpKeystorePassword());
 	}
 
 	private Key getSigningKey(IdpServer2ServerType type)

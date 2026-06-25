@@ -42,6 +42,7 @@ import nl.rivm.screenit.service.cervix.CervixBaseScreeningrondeService;
 import nl.rivm.screenit.util.AfmeldingUtil;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Service;
@@ -70,7 +71,7 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 		BriefType.CERVIX_HERINNERING_UITNODIGING_CONTROLEUITSTRIJKJE);
 
 	@Override
-	public CervixUitnodiging getOpenstaandeUitnodiging(Client client)
+	public CervixUitnodiging getOpenstaandeZasUitnodiging(Client client)
 	{
 		var dossier = client.getCervixDossier();
 		return Optional.ofNullable(dossier)
@@ -82,6 +83,7 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 			.filter(this::heeftGeenOpenstaandeAanvraag)
 			.filter(screeningRonde -> !isUitgesteld(screeningRonde))
 			.map(CervixScreeningRonde::getLaatsteUitnodiging)
+			.filter(this::isZas)
 			.filter(uitnodiging -> !heeftUitslagUitUitnodiging(uitnodiging))
 			.orElse(null);
 	}
@@ -89,6 +91,11 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 	private boolean heeftUitslagUitUitnodiging(CervixUitnodiging uitnodiging)
 	{
 		return screeningrondeService.heeftUitslagOfHeeftGehad(uitnodiging);
+	}
+
+	private boolean isZas(CervixUitnodiging uitnodiging)
+	{
+		return CervixMonsterUtil.isZAS(uitnodiging.getMonster());
 	}
 
 	private boolean heeftGeaccepteerdeBriefVoorHerinnering(CervixScreeningRonde ronde)

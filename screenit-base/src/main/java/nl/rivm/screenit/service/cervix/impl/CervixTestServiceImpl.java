@@ -54,6 +54,7 @@ import nl.rivm.screenit.service.BaseAfmeldService;
 import nl.rivm.screenit.service.BaseDossierService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.DossierFactory;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.TestService;
 import nl.rivm.screenit.service.cervix.CervixBaseDossierService;
@@ -61,7 +62,6 @@ import nl.rivm.screenit.service.cervix.CervixBaseScreeningrondeService;
 import nl.rivm.screenit.service.cervix.CervixFactory;
 import nl.rivm.screenit.service.cervix.CervixTestService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
@@ -309,8 +309,8 @@ public class CervixTestServiceImpl implements CervixTestService
 		hibernateService.deleteAll(overgeblevenBrieven);
 
 		client.setCervixDossier(null);
-		hibernateService.delete(dossier);
 		hibernateService.saveOrUpdate(client);
+		hibernateService.delete(dossier);
 
 		dossierFactory.maakDossiers(client);
 		LOG.info("Client gereset met bsn: " + client.getPersoon().getBsn());

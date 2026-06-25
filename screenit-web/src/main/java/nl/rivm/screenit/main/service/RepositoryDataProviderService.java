@@ -25,27 +25,27 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
+
 import nl.rivm.screenit.main.util.WicketSpringDataUtil;
 import nl.rivm.screenit.repository.impl.FluentJpaQueryImpl;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import jakarta.persistence.EntityGraph;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Root;
-
 public abstract class RepositoryDataProviderService<T extends HibernateObject, R extends JpaSpecificationExecutor<T>, F>
 {
-	@Autowired
-	private SessionFactory sessionFactory;
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	protected abstract Specification<T> getSpecification(F filter, Sort sortParam);
 
@@ -62,7 +62,7 @@ public abstract class RepositoryDataProviderService<T extends HibernateObject, R
 
 	public List<T> findPage(long first, long count, F filter, Sort sort)
 	{
-		var jpaQuery = new FluentJpaQueryImpl<>(getSpecification(filter, sort), sessionFactory.getCurrentSession(), getEntityClass(), getEntityClass());
+		var jpaQuery = new FluentJpaQueryImpl<>(getSpecification(filter, sort), entityManager, getEntityClass(), getEntityClass());
 		jpaQuery.sortBy(getSort(sort), this::addJoinsForSortingOrCreateDedicatedOrders);
 		jpaQuery.fetch(this::fetch);
 

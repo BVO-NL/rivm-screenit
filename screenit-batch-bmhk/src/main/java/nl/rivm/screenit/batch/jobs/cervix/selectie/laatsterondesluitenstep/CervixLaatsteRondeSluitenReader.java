@@ -48,7 +48,7 @@ public class CervixLaatsteRondeSluitenReader extends BaseSpecificationScrollable
 
 	public CervixLaatsteRondeSluitenReader(ICurrentDateSupplier dateSupplier)
 	{
-		super.setFetchSize(50);
+		setFetchSize(50);
 		this.dateSupplier = dateSupplier;
 	}
 

@@ -54,12 +54,6 @@ public class CervixBrievenGenererenReader extends AbstractBrievenGenererenReader
 	private final SimplePreferenceService preferenceService;
 
 	@Override
-	protected Long getScreeningOrganisatieId()
-	{
-		return getStepExecutionContext().getLong(CervixBrievenGenererenPartitioner.KEY_SCREENINGORGANISATIEID);
-	}
-
-	@Override
 	protected Specification<CervixBrief> createSpecification()
 	{
 		var briefType = BriefType.valueOf(getStepExecutionContext().getString(CervixBrievenGenererenPartitioner.KEY_BRIEFTYPE));

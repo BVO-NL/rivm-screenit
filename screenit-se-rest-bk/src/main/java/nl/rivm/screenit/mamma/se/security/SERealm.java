@@ -41,10 +41,10 @@ import nl.rivm.screenit.security.MultipleAuthenticationSourceCredentialsMatcher;
 import nl.rivm.screenit.security.OrganisatieMedewerkerToken;
 import nl.rivm.screenit.security.ScreenitPrincipal;
 import nl.rivm.screenit.service.BaseMedewerkerService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.ScopeService;
 import nl.rivm.screenit.util.MedewerkerUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.yubikey.shiro.YubikeyAuthenticationInfo;
 import nl.topicuszorg.yubikey.shiro.YubikeyToken;
 

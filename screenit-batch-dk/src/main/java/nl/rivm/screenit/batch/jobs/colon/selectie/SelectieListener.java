@@ -40,11 +40,11 @@ import nl.rivm.screenit.model.logging.colon.ColonSelectieRondeBeeindigdLogEvent;
 import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportage;
 import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageEntry;
 import nl.rivm.screenit.repository.colon.ColonScreeningRondeRepository;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;

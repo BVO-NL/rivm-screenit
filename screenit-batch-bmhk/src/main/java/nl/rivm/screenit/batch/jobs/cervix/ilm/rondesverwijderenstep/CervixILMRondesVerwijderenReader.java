@@ -45,7 +45,7 @@ public class CervixILMRondesVerwijderenReader extends BaseSpecificationScrollabl
 
 	public CervixILMRondesVerwijderenReader(SimplePreferenceService preferenceService, ICurrentDateSupplier dateSupplier)
 	{
-		super.setFetchSize(50);
+		setFetchSize(50);
 		this.preferenceService = preferenceService;
 		this.dateSupplier = dateSupplier;
 	}

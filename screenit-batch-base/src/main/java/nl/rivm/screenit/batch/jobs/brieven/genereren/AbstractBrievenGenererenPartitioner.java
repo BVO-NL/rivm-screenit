@@ -21,12 +21,15 @@ package nl.rivm.screenit.batch.jobs.brieven.genereren;
  * =========================LICENSE_END==================================
  */
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import nl.rivm.screenit.batch.jobs.helpers.BasePartitioner;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.repository.algemeen.ScreeningOrganisatieRepository;
+import nl.rivm.screenit.service.BaseBriefService;
+import nl.rivm.screenit.service.OrganisatieService;
 
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,18 +37,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class AbstractBrievenGenererenPartitioner extends BasePartitioner
 {
 
+	public static final String KEY_BRIEFTYPE = "brieftype";
+
+	public static final String KEY_SCREENINGORGANISATIEID = "screeningorganisatie.id";
+
+	@Autowired
+	private OrganisatieService organisatieService;
+
 	@Autowired
 	private ScreeningOrganisatieRepository screeningOrganisatieRepository;
+
+	@Autowired
+	private BaseBriefService briefService;
 
 	@Override
 	public Map<String, ExecutionContext> setPartition(int gridSize)
 	{
 		var partities = new HashMap<String, ExecutionContext>(gridSize);
-		var screeningOrganisaties = screeningOrganisatieRepository.findAll();
 
-		for (var screeningOrganisatie : screeningOrganisaties)
+		var screeningsorganisaties = new ArrayList<ScreeningOrganisatie>();
+		if (briefService.isOverbruggingssituatieParagonStarted())
 		{
-			fillingData(partities, screeningOrganisatie);
+			screeningsorganisaties.add(organisatieService.getLandelijkeScreeningsorganisatie());
+		}
+		else
+		{
+			screeningsorganisaties.addAll(screeningOrganisatieRepository.findAll());
+		}
+
+		for (var screeningsorganisatie : screeningsorganisaties)
+		{
+			fillingData(partities, screeningsorganisatie);
 		}
 		return partities;
 	}

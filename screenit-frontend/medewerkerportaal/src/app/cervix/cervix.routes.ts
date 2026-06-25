@@ -18,6 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Routes } from '@angular/router'
+import {Routes} from '@angular/router'
 
 export const cervixRoutes: Routes = []

@@ -37,17 +37,15 @@ import nl.rivm.screenit.model.enums.JobStartParameter;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.inpakcentrum.vaninpakcentrum.InpakcentrumKoppelDataDto;
 import nl.rivm.screenit.model.logging.LogEvent;
+import nl.rivm.screenit.service.DatabaseRunner;
+import nl.rivm.screenit.service.HibernateService;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStream;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.SessionHolder;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,8 +53,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Slf4j
 public abstract class BaseKoppelRestReader implements ItemStream
 {
-	@Autowired
-	protected SessionFactory sessionFactory;
 
 	@Autowired
 	private InpakcentrumRestApplicatie inpakcentrumRestApplicatie;
@@ -64,11 +60,13 @@ public abstract class BaseKoppelRestReader implements ItemStream
 	@Autowired
 	private BarcodeValiderenService validerenService;
 
-	protected Session hibernateSession;
+	@Autowired
+	private DatabaseRunner databaseRunner;
+
+	@Autowired
+	private HibernateService hibernateService;
 
 	private StepExecution stepExecution;
-
-	protected boolean unbindSessionFromThread = false;
 
 	protected Iterator<InpakcentrumKoppelDataDto> koppeldata;
 
@@ -95,57 +93,57 @@ public abstract class BaseKoppelRestReader implements ItemStream
 	@Override
 	public final void open(ExecutionContext executionContext) throws ItemStreamException
 	{
-		hibernateSession = sessionFactory.openSession();
 		doOpen();
 	}
 
 	protected void doOpen() throws ItemStreamException
 	{
-		var logEvent = (LogEvent) getStepExecution().getJobExecution().getExecutionContext()
-			.get(getKoppelenConstant());
-
-		List<String> semantischeFoutmeldingen = new ArrayList<>();
-
-		try
+		databaseRunner.runInSessionOnly(() ->
 		{
-			var koppeldataLijst = getKoppeldataLijst();
-			semantischeFoutmeldingen = validerenService.valideerOpSemantiek(koppeldataLijst);
+			var logEvent = (LogEvent) getStepExecution().getJobExecution().getExecutionContext()
+				.get(getKoppelenConstant());
 
-			if (!semantischeFoutmeldingen.isEmpty())
+			List<String> semantischeFoutmeldingen = new ArrayList<>();
+
+			try
 			{
-				voorkomVerwerkingKoppeldata(koppeldataLijst);
+				var koppeldataLijst = getKoppeldataLijst();
+				semantischeFoutmeldingen = validerenService.valideerOpSemantiek(koppeldataLijst);
+
+				if (!semantischeFoutmeldingen.isEmpty())
+				{
+					voorkomVerwerkingKoppeldata(koppeldataLijst);
+				}
+
+				boolean versturenSuccesvol = verstuurSemantischeFoutmeldingen(semantischeFoutmeldingen);
+
+				if (!versturenSuccesvol)
+				{
+					voorkomVerwerkingKoppeldata(koppeldataLijst);
+				}
+				koppeldata = koppeldataLijst.iterator();
 			}
-
-			boolean versturenSuccesvol = verstuurSemantischeFoutmeldingen(semantischeFoutmeldingen);
-
-			if (!versturenSuccesvol)
+			catch (IOException e)
 			{
-				voorkomVerwerkingKoppeldata(koppeldataLijst);
+				logEvent.setLevel(Level.ERROR);
+				logEvent.setMelding("Er is een probleem opgetreden met een webservice, neem contact op met de helpdesk.");
+				throw new ItemStreamException(e);
 			}
-			koppeldata = koppeldataLijst.iterator();
-		}
-		catch (IOException e)
-		{
-			logEvent.setLevel(Level.ERROR);
-			logEvent.setMelding("Er is een probleem opgetreden met een webservice, neem contact op met de helpdesk.");
-			throw new ItemStreamException(e);
-		}
-		finally
-		{
-			var eindEvent = new LogEvent();
-			eindEvent.setLevel(Level.INFO);
-
-			if (!semantischeFoutmeldingen.isEmpty())
+			finally
 			{
-				LOG.warn("Fouten gevonden: #{}", semantischeFoutmeldingen.size());
-				eindEvent.setLevel(Level.ERROR);
-				eindEvent.setMelding("De validatie heeft fouten gevonden en teruggekoppeld, Aantal fouten: #" + semantischeFoutmeldingen.size());
+				var eindEvent = new LogEvent();
+				eindEvent.setLevel(Level.INFO);
+
+				if (!semantischeFoutmeldingen.isEmpty())
+				{
+					LOG.warn("Fouten gevonden: #{}", semantischeFoutmeldingen.size());
+					eindEvent.setLevel(Level.ERROR);
+					eindEvent.setMelding("De validatie heeft fouten gevonden en teruggekoppeld, Aantal fouten: #" + semantischeFoutmeldingen.size());
+				}
+
+				logEindValidatie(eindEvent);
 			}
-
-			logEindValidatie(eindEvent);
-
-			unbindSessionIfPossible();
-		}
+		});
 	}
 
 	protected boolean verstuurSemantischeFoutmeldingen(List<String> foutmeldingen) throws IOException
@@ -193,11 +191,6 @@ public abstract class BaseKoppelRestReader implements ItemStream
 
 	protected List<InpakcentrumKoppelDataDto> getKoppeldataLijst() throws IOException
 	{
-		if (!TransactionSynchronizationManager.hasResource(sessionFactory))
-		{
-			TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(hibernateSession));
-			unbindSessionFromThread = true;
-		}
 		var koppelData = getKoppelData();
 		var objectMapper = new ObjectMapper();
 		return objectMapper.readValue(Base64.getDecoder().decode(koppelData.getKoppelData()), new TypeReference<>()
@@ -208,7 +201,7 @@ public abstract class BaseKoppelRestReader implements ItemStream
 	private KoppelData getKoppelData()
 	{
 		var id = getStepExecution().getJobParameters().getLong(JobStartParameter.KOPPEL_DATA.name());
-		return hibernateSession.get(KoppelData.class, id);
+		return hibernateService.get(KoppelData.class, id);
 	}
 
 	protected void voorkomVerwerkingKoppeldata(List<InpakcentrumKoppelDataDto> koppeldataLijst)
@@ -221,13 +214,4 @@ public abstract class BaseKoppelRestReader implements ItemStream
 	protected abstract void logKoppelFout(LogEvent logEvent);
 
 	protected abstract String getKoppelenConstant();
-
-	protected void unbindSessionIfPossible()
-	{
-		if (unbindSessionFromThread)
-		{
-			TransactionSynchronizationManager.unbindResource(sessionFactory);
-			unbindSessionFromThread = false;
-		}
-	}
 }

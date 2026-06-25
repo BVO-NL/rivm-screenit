@@ -56,6 +56,8 @@ public interface ProjectService
 
 	List<ProjectClient> getClientProjecten(ProjectClient zoekObject, long first, long count, Sort sort);
 
+	List<ProjectClient> getClientProjecten(Long clientId);
+
 	long getCountClientProjecten(ProjectClient zoekObject);
 
 	List<ProjectBriefActie> getProjectBriefActies(ProjectBriefActie zoekObject, long first, long count, Sort sort);

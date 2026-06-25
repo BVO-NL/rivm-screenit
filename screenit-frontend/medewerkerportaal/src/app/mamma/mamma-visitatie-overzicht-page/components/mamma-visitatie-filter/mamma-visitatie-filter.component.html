@@ -18,57 +18,55 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<div class="filter">
-  <form [formGroup]="filterForm" class="display-flex gap-4 align-items-start">
-    <div>
-      <ds-dropdown
-        label="Centrale eenheden"
-        formControlName="centraleEenheidIds"
-        [items]="centraleEenheden()"
-        [multiple]="true"
-        appendTo="body"
-        bindValue="id"
-        bindLabel="naam"
-        data-testid="centrale-eenheden-combobox"
-      />
+<form [formGroup]="filterForm" class="display-block">
+  <div class="filter-column">
+    <ds-dropdown
+      label="Centrale eenheden"
+      formControlName="centraleEenheidIds"
+      [items]="centraleEenheden()"
+      [multiple]="true"
+      appendTo="body"
+      bindValue="id"
+      bindLabel="naam"
+      data-testid="centrale-eenheden-combobox"
+    />
 
-      <ds-dropdown
-        label="Beoordelingseenheden"
-        formControlName="beoordelingseenheidIds"
-        [items]="beoordelingseenheden()"
-        [multiple]="true"
-        appendTo="body"
-        bindValue="id"
-        bindLabel="naam"
-        data-testid="beoordelingseenheden-combobox"
-      />
-    </div>
+    <ds-dropdown
+      label="Beoordelingseenheden"
+      formControlName="beoordelingseenheidIds"
+      [items]="beoordelingseenheden()"
+      [multiple]="true"
+      appendTo="body"
+      bindValue="id"
+      bindLabel="naam"
+      data-testid="beoordelingseenheden-combobox"
+    />
+  </div>
 
-    <div>
-      <ds-dropdown
-        label="Screeningseenheden"
-        formControlName="screeningseenheidIds"
-        [items]="screeningseenheden()"
-        [multiple]="true"
-        appendTo="body"
-        bindValue="id"
-        bindLabel="naam"
-        data-testid="screeningseenheden-combobox"
-      />
+  <div class="filter-column">
+    <ds-dropdown
+      label="Screeningseenheden"
+      formControlName="screeningseenheidIds"
+      [items]="screeningseenheden()"
+      [multiple]="true"
+      appendTo="body"
+      bindValue="id"
+      bindLabel="naam"
+      data-testid="screeningseenheden-combobox"
+    />
 
-      <ds-dropdown
-        label="Status"
-        formControlName="statussen"
-        [items]="visitatieStatusLijst"
-        [multiple]="true"
-        appendTo="body"
-        bindValue="waarde"
-        bindLabel="naam"
-        data-testid="statussen-combobox"
-      />
-    </div>
-  </form>
+    <ds-dropdown
+      label="Status"
+      formControlName="statussen"
+      [items]="visitatieStatusLijst"
+      [multiple]="true"
+      appendTo="body"
+      bindValue="waarde"
+      bindLabel="naam"
+      data-testid="statussen-combobox"
+    />
+  </div>
   <div class="actions-right">
     <button type="submit" ds-button-primary (click)="filteren()" data-testid="filteren_btn">Filteren</button>
   </div>
-</div>
+</form>

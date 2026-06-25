@@ -33,8 +33,6 @@ import org.springframework.stereotype.Component;
 public class LabformulierGenererenPartitioner extends AbstractBrievenGenererenPartitioner
 {
 
-	public static final String KEY_SCREENINGORGANISATIEID = "screeningorganisatie.id";
-
 	@Override
 	protected void fillingData(Map<String, ExecutionContext> map, ScreeningOrganisatie organisatie)
 	{

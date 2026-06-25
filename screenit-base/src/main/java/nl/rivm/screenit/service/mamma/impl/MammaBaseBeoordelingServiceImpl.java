@@ -72,6 +72,7 @@ import nl.rivm.screenit.repository.mamma.MammaBeoordelingRepository;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BaseScreeningRondeService;
 import nl.rivm.screenit.service.BerichtToBatchService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingReserveringService;
@@ -88,7 +89,6 @@ import nl.rivm.screenit.util.NaamUtil;
 import nl.rivm.screenit.util.functionalinterfaces.StringResolver;
 import nl.rivm.screenit.util.mamma.MammaBeoordelingUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

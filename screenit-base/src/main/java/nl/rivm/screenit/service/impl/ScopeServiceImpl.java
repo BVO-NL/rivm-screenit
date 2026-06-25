@@ -36,8 +36,8 @@ import nl.rivm.screenit.model.colon.UitnodigingsGebied;
 import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.security.Constraint;
 import nl.rivm.screenit.security.ScreenitRealm;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ScopeService;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 
 import org.apache.shiro.subject.PrincipalCollection;

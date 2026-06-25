@@ -219,4 +219,10 @@ public final class ColonFitRegistratieUtil
 		}
 		return interpretatie;
 	}
+
+	public static boolean magVerwijderen(ColonFitRegistratie registratie)
+	{
+		return registratie.getStatus() != ColonFitRegistratieStatus.VERWIJDERD && registratie.getType() == ColonFitType.GOLD
+			&& (registratie.getUitslag() != null || registratie.getGeinterpreteerdeUitslag() != null);
+	}
 }

@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.orm.hibernate5.support.OpenSessionInViewFilter;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
@@ -47,21 +47,21 @@ public class WebConfig implements WebMvcConfigurer
 	private final CustomObjectMapper customObjectMapper;
 
 	@Bean
-	public FilterRegistrationBean<OpenSessionInViewFilter> openSessionInViewFilter()
+	public FilterRegistrationBean<OpenEntityManagerInViewFilter> openEntityManagerInViewFilter()
 	{
-		var filter = new FilterRegistrationBean<OpenSessionInViewFilter>();
-		filter.setFilter(new OpenSessionInViewFilter());
-		filter.addInitParameter("sessionFactoryBeanName", "hibernateSessionFactory");
+		var filter = new FilterRegistrationBean<OpenEntityManagerInViewFilter>();
+		filter.setFilter(new OpenEntityManagerInViewFilter());
 		filter.addUrlPatterns("/*");
 		return filter;
 	}
 
 	@Override
-	public void configureMessageConverters(List<HttpMessageConverter<?>> converters)
+	public void extendMessageConverters(List<HttpMessageConverter<?>> converters)
 	{
-		MappingJackson2HttpMessageConverter jacksonConverter = new MappingJackson2HttpMessageConverter();
-		jacksonConverter.setObjectMapper(customObjectMapper);
-		converters.add(jacksonConverter);
+		converters.stream()
+			.filter(MappingJackson2HttpMessageConverter.class::isInstance)
+			.map(MappingJackson2HttpMessageConverter.class::cast)
+			.forEach(converter -> converter.setObjectMapper(customObjectMapper));
 	}
 
 	@Override

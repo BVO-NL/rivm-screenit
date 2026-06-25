@@ -24,14 +24,19 @@ package nl.rivm.screenit.main.dto.mamma.visitatie;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Schema(name = "MammaVisitatieResponseDto", description = "Resultaat van het aanmaken of bijwerken van een mamma-visitatie.")
 public class MammaVisitatieResponseDto
 {
+	@Schema(description = "Meldingen die tijdens de verwerking zijn ontstaan")
 	private List<String> meldingen = new ArrayList<>();
 
+	@Schema(description = "De verwerkte visitatie")
 	private MammaVisitatieDto visitatie;
 }

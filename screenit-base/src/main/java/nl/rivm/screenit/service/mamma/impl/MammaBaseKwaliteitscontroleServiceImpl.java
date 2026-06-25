@@ -23,6 +23,9 @@ package nl.rivm.screenit.service.mamma.impl;
 
 import java.util.List;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import nl.rivm.screenit.model.mamma.MammaAdhocMeekijkverzoek;
 import nl.rivm.screenit.model.mamma.MammaFotobesprekingOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
@@ -30,11 +33,12 @@ import nl.rivm.screenit.model.mamma.MammaVisitatieOnderzoek;
 import nl.rivm.screenit.repository.mamma.MammaAdhocMeekijkverzoekRepository;
 import nl.rivm.screenit.repository.mamma.MammaFotobesprekingOnderzoekRepository;
 import nl.rivm.screenit.repository.mamma.MammaVisitatieOnderzoekRepository;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.mamma.MammaBaseKwaliteitscontroleService;
 import nl.rivm.screenit.util.DatabaseSequence;
 import nl.rivm.screenit.util.SequenceGenerator;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +61,9 @@ public class MammaBaseKwaliteitscontroleServiceImpl implements MammaBaseKwalitei
 
 	@Autowired
 	private MammaAdhocMeekijkverzoekRepository adhocMeekijkverzoekRepository;
+
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Override
 	public List<MammaFotobesprekingOnderzoek> getFotobesprekingOnderzoeken(MammaScreeningRonde screeningRonde)
@@ -100,8 +107,8 @@ public class MammaBaseKwaliteitscontroleServiceImpl implements MammaBaseKwalitei
 	@Override
 	public Long getNextAdhocMeekrijkverzoekVolgnummer()
 	{
-		return hibernateService.getHibernateSession()
-			.doReturningWork(new SequenceGenerator(DatabaseSequence.MEEKIJKVERZOEK_ID, hibernateService.getHibernateSession().getSessionFactory()));
+		return entityManager.unwrap(Session.class)
+			.doReturningWork(new SequenceGenerator(DatabaseSequence.MEEKIJKVERZOEK_ID, entityManager.getEntityManagerFactory()));
 	}
 
 }

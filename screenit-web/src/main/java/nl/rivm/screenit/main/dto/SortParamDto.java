@@ -21,6 +21,8 @@ package nl.rivm.screenit.main.dto;
  * =========================LICENSE_END==================================
  */
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,9 +30,12 @@ import org.springframework.data.domain.Sort;
 
 @Getter
 @Setter
+@Schema(name = "SortParamDto", description = "Sorteervelden voor een request.")
 public class SortParamDto
 {
+	@Schema(description = "Veld waarop gesorteerd wordt")
 	private String veld = "id";
 
+	@Schema(description = "Sorteerrichting")
 	private Sort.Direction richting = Sort.Direction.ASC;
 }

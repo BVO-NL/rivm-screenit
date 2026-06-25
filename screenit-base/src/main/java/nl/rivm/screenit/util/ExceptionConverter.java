@@ -28,7 +28,7 @@ import org.hibernate.AssertionFailure;
 import org.hibernate.exception.GenericJDBCException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.orm.hibernate5.HibernateJdbcException;
+import org.springframework.dao.DataAccessException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,7 +48,7 @@ public final class ExceptionConverter
 		String uiMessage = null;
 		Throwable cause = null;
 		GenericJDBCException jdbException = null;
-		if (e instanceof HibernateJdbcException exception)
+		if (e instanceof DataAccessException exception)
 		{
 			cause = exception.getCause();
 		}

@@ -36,8 +36,8 @@ import nl.rivm.screenit.model.logging.CervixHuisartsberichtenBeeindigdLogEvent;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.verwerkingverslag.cervix.CervixHuisartsberichtenRapportage;
 import nl.rivm.screenit.model.verwerkingverslag.cervix.CervixHuisartsberichtenRapportageEntry;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 
 import org.springframework.batch.core.JobExecution;
 import org.springframework.stereotype.Component;

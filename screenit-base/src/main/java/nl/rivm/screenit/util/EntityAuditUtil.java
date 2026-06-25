@@ -54,6 +54,7 @@ import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
 import org.hibernate.envers.query.criteria.AuditCriterion;
+import org.hibernate.proxy.HibernateProxy;
 import org.reflections.ReflectionUtils;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -73,7 +74,9 @@ public final class EntityAuditUtil
 		catch (ObjectNotFoundException e)
 		{
 
-			clazz = Hibernate.getClassLazy(entity);
+			clazz = (entity instanceof HibernateProxy proxy)
+				? proxy.getHibernateLazyInitializer().getPersistentClass()
+				: entity.getClass();
 			id = HibernateHelper.getId(entity);
 		}
 		var query = reader.createQuery().forRevisionsOfEntity(clazz, false, true);

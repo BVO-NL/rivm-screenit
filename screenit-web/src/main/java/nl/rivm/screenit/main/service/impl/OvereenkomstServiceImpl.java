@@ -49,6 +49,7 @@ import nl.rivm.screenit.repository.algemeen.AfgeslotenMedewerkerOvereenkomstRepo
 import nl.rivm.screenit.repository.algemeen.AfgeslotenOrganisatieOvereenkomstRepository;
 import nl.rivm.screenit.repository.algemeen.OrganisatieRepository;
 import nl.rivm.screenit.repository.algemeen.OvereenkomstRepository;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.MailService;
@@ -60,7 +61,6 @@ import nl.rivm.screenit.specification.algemeen.AfgeslotenMedewerkerOvereenkomstS
 import nl.rivm.screenit.specification.algemeen.AfgeslotenOrganisatieOvereenkomstSpecification;
 import nl.rivm.screenit.specification.algemeen.OrganisatieSpecification;
 import nl.rivm.screenit.specification.algemeen.OvereenkomstSpecification;
-import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang.StringUtils;
@@ -281,7 +281,6 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 		else
 		{
 			logService.logGebeurtenis(LogGebeurtenis.OVEREENKOMST_GEWIJZIGD, account);
-			hibernateService.getHibernateSession().evict(overeenkomst);
 			var oudeAbstractAfgeslotenOvereenkomst = (AbstractAfgeslotenOvereenkomst) hibernateService.load(Hibernate.getClass(overeenkomst),
 				overeenkomst.getId());
 			if (!oudeAbstractAfgeslotenOvereenkomst.getOvereenkomst().equals(overeenkomst.getOvereenkomst())
@@ -295,8 +294,6 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 			{
 				verstuurMail = true;
 			}
-
-			hibernateService.getHibernateSession().evict(oudeAbstractAfgeslotenOvereenkomst);
 		}
 
 		if (genereerCode)

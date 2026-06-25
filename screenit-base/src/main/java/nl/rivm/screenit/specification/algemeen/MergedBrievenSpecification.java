@@ -40,6 +40,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.google.common.collect.Range;
 
+import static nl.rivm.screenit.specification.DateSpecification.truncate;
 import static nl.rivm.screenit.specification.RangeSpecification.bevat;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenEmpty;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNullExtended;
@@ -128,4 +129,8 @@ public class MergedBrievenSpecification
 		return skipWhenEmpty(briefTypes, (r, q, cb) -> r.get(MergedBrieven_.briefType).in(briefTypes));
 	}
 
+	public static <M extends MergedBrieven<?>> ExtendedSpecification<M> isNietGeprintOp(LocalDate peildatum)
+	{
+		return (r, q, cb) -> cb.notEqual(truncate("day", r.get(MergedBrieven_.printDatum), cb), DateUtil.toUtilDate(peildatum));
+	}
 }
