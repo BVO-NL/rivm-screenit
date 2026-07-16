@@ -28,14 +28,19 @@ import { DsButtonComponent } from '@topicus-rgp-ds/web'
   selector: 'app-confirmation-dialog',
   imports: [BaseDialogComponent, DsButtonComponent],
   template: `
-    <app-base-dialog [titel]="dialogData.title">
-      <div body>{{ dialogData.body }}</div>
+    <app-base-dialog [titel]="dialogData.title" [enableClose]="false">
+      <div body class="bevestigingstekst">{{ dialogData.body }}</div>
       <div buttons class="btn-group">
         <button (click)="handleNo()" data-testid="button_confirmation_nee" ds-button-secondary type="button">Nee</button>
         <button (click)="handleYes()" data-testid="button_confirmation_ja" ds-button-primary type="button">Ja</button>
       </div>
     </app-base-dialog>
   `,
+  styles: [`
+    .bevestigingstekst {
+      font-size: var(--screenit-font-size);
+    }
+  `],
 })
 export class ConfirmationDialogComponent {
   private dialogRef: DialogRef<boolean> = inject(DialogRef)

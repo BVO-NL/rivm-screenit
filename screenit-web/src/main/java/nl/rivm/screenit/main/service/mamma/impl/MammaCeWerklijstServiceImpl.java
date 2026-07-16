@@ -39,11 +39,11 @@ import nl.rivm.screenit.model.mamma.MammaScreeningRonde_;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.mamma.MammaOnderzoekRepository;
 import nl.rivm.screenit.repository.mamma.MammaScreeningRondeRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.ExtendedSpecification;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;

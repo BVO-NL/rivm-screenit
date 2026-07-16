@@ -43,8 +43,6 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.IActief;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -72,7 +70,6 @@ public class ProjectClient extends AbstractHibernateObject implements IActief
 	private List<ProjectClientAttribuut> attributen = new ArrayList<>();
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "projectClient", cascade = jakarta.persistence.CascadeType.REMOVE)
-	@Cascade(CascadeType.DELETE)
 	private List<ProjectBrief> brieven = new ArrayList<>();
 
 	@Column(nullable = false)
@@ -87,7 +84,6 @@ public class ProjectClient extends AbstractHibernateObject implements IActief
 	@Deprecated
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = jakarta.persistence.CascadeType.REMOVE)
 	@NotAudited
-	@Cascade(CascadeType.DELETE)
 	private ProjectInactiveerDocument projectInactiveerDocument;
 
 	private Boolean isUitgenodigdInProjectPeriode = Boolean.FALSE;

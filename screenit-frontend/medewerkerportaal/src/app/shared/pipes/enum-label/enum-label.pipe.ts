@@ -25,9 +25,9 @@ import { Pipe, PipeTransform } from '@angular/core'
   pure: true,
 })
 export class EnumLabelPipe implements PipeTransform {
-  transform<T extends string>(waarde: T | T[] | null | undefined, labels: Record<T, string>): string {
+  transform<T extends string>(waarde: T | T[] | null | undefined, labels: Record<T, string>, legeWaarde = ''): string {
     if (waarde == null) {
-      return ''
+      return legeWaarde
     }
     if (Array.isArray(waarde)) {
       return waarde.map((v) => labels[v]).join(', ')

@@ -28,7 +28,6 @@ import nl.rivm.screenit.batch.jobs.cervix.brieven.regio.RegioBrievenConstants;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.cervix.CervixRegioBrief;
 import nl.rivm.screenit.model.cervix.CervixRegioMergedBrieven;
-import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 
@@ -40,13 +39,10 @@ public class RegioBrievenGenererenWriter extends AbstractBrievenGenererenWriter<
 	@Override
 	protected CervixRegioMergedBrieven createConcreteMergedBrieven(Date aangemaaktOp)
 	{
-		var context = getStepExecutionContext();
-		var briefType = BriefType.valueOf(context.getString(RegioBrievenGenererenPartitioner.KEY_BRIEFTYPE));
-
 		var mergedBrieven = new CervixRegioMergedBrieven();
 		mergedBrieven.setScreeningOrganisatie(getScreeningOrganisatie());
 		mergedBrieven.setCreatieDatum(aangemaaktOp);
-		mergedBrieven.setBriefType(briefType);
+		mergedBrieven.setBriefType(getBriefType());
 		return mergedBrieven;
 	}
 

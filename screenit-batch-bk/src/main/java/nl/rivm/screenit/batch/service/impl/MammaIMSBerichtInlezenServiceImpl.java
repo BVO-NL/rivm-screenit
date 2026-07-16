@@ -33,8 +33,6 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.MammaHl7v24BerichtLogEvent;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
-import nl.rivm.screenit.model.mamma.MammaUploadBeeldenPoging;
 import nl.rivm.screenit.model.mamma.berichten.MammaIMSBericht;
 import nl.rivm.screenit.repository.mamma.MammaImsBerichtRepository;
 import nl.rivm.screenit.service.ClientService;
@@ -79,16 +77,17 @@ public class MammaIMSBerichtInlezenServiceImpl implements MammaIMSBerichtInlezen
 	private MammaBaseUitwisselportaalService baseUitwisselportaalService;
 
 	@Override
-	public List<MammaIMSBericht> getAlleNietVerwerkteIMSBerichten()
+	public List<Long> getAlleNietVerwerkteImsBerichtIds()
 	{
-		return imsBerichtRepository.getAlleNietVerwerkteImsBerichten();
+		return imsBerichtRepository.getAlleNietVerwerkteImsBerichtIds();
 	}
 
 	@Override
 	@Transactional
-	public void verwerkBericht(MammaIMSBericht bericht)
+	public void verwerkBericht(long berichtId)
 	{
-		Client client = clientService.getClientByBsn(bericht.getBsn());
+		var bericht = imsBerichtRepository.getReferenceById(berichtId);
+		var client = clientService.getClientByBsn(bericht.getBsn());
 		if (client != null)
 		{
 			try
@@ -105,7 +104,7 @@ public class MammaIMSBerichtInlezenServiceImpl implements MammaIMSBerichtInlezen
 					verwerkBerichtBeeldenVerwijderenError(bericht, client);
 					break;
 				default:
-					String melding = String.format("ORM status (%s) van ontvangen IMS bericht (%s) wordt niet geaccepteerd.", bericht.getOrmStatus().name(),
+					var melding = String.format("ORM status (%s) van ontvangen IMS bericht (%s) wordt niet geaccepteerd.", bericht.getOrmStatus().name(),
 						bericht.getMessageId());
 					markeerBerichtAlsFout(bericht, melding);
 				}
@@ -119,14 +118,14 @@ public class MammaIMSBerichtInlezenServiceImpl implements MammaIMSBerichtInlezen
 		}
 		else
 		{
-			String melding = String.format("Ontvangen IMS bericht (%s) kan niet gekoppeld worden.", bericht.getMessageId());
+			var melding = String.format("Ontvangen IMS bericht (%s) kan niet gekoppeld worden.", bericht.getMessageId());
 			markeerBerichtAlsFout(bericht, melding);
 		}
 	}
 
 	private void verwerkBerichtBeeldenBeschikbaar(MammaIMSBericht bericht, Client client) throws HL7Exception
 	{
-		MammaScreeningRonde ronde = screeningrondeService.getRondeVanUitnodigingsr(client, bericht.getAccessionNumber());
+		var ronde = screeningrondeService.getRondeVanUitnodigingsr(client, bericht.getAccessionNumber());
 
 		if (ronde != null)
 		{
@@ -135,7 +134,7 @@ public class MammaIMSBerichtInlezenServiceImpl implements MammaIMSBerichtInlezen
 		}
 		else
 		{
-			MammaUploadBeeldenPoging uploadBeeldenPoging = baseUitwisselportaalService.getUploadPoging(bericht.getAccessionNumber());
+			var uploadBeeldenPoging = baseUitwisselportaalService.getUploadPoging(bericht.getAccessionNumber());
 			if (uploadBeeldenPoging == null)
 			{
 				throw new HL7Exception(
@@ -147,8 +146,8 @@ public class MammaIMSBerichtInlezenServiceImpl implements MammaIMSBerichtInlezen
 
 	private void verwerkBerichtBeeldenVerwijderd(MammaIMSBericht bericht, Client client)
 	{
-		String melding = "Beelden verwijderd voor ";
-		MammaUploadBeeldenPoging uploadBeeldenPoging = baseUitwisselportaalService.getUploadPoging(bericht.getAccessionNumber());
+		var melding = "Beelden verwijderd voor ";
+		var uploadBeeldenPoging = baseUitwisselportaalService.getUploadPoging(bericht.getAccessionNumber());
 		if (uploadBeeldenPoging != null)
 		{
 			uploadBeeldenService.beeldenVerwijderdUploadVerzoek(uploadBeeldenPoging, bericht, client, false);
@@ -165,8 +164,8 @@ public class MammaIMSBerichtInlezenServiceImpl implements MammaIMSBerichtInlezen
 
 	private void verwerkBerichtBeeldenVerwijderenError(MammaIMSBericht bericht, Client client)
 	{
-		String melding = "Error tijdens verwijderen beelden ";
-		MammaUploadBeeldenPoging uploadBeeldenPoging = baseUitwisselportaalService.getUploadPoging(bericht.getAccessionNumber());
+		var melding = "Error tijdens verwijderen beelden ";
+		var uploadBeeldenPoging = baseUitwisselportaalService.getUploadPoging(bericht.getAccessionNumber());
 		if (uploadBeeldenPoging != null)
 		{
 			uploadBeeldenService.beeldenVerwijderdUploadVerzoek(uploadBeeldenPoging, bericht, client, true);
@@ -183,13 +182,20 @@ public class MammaIMSBerichtInlezenServiceImpl implements MammaIMSBerichtInlezen
 
 	@Override
 	@Transactional
-	public void markeerBerichtAlsFout(MammaIMSBericht bericht, String melding)
+	public void markeerBerichtAlsFout(long berichtId)
+	{
+		var bericht = imsBerichtRepository.getReferenceById(berichtId);
+		var melding = String.format("Fout bij het verwerken van IMS bericht (%s)", bericht.getMessageId());
+		markeerBerichtAlsFout(bericht, melding);
+	}
+
+	private void markeerBerichtAlsFout(MammaIMSBericht bericht, String melding)
 	{
 		bericht.setBerichtStatus(BerichtStatus.FOUT);
 		hibernateService.saveOrUpdate(bericht);
 		melding = String.format("%s, bericht: %s", melding, bericht.getHl7Bericht());
 
-		MammaHl7v24BerichtLogEvent logEvent = new MammaHl7v24BerichtLogEvent();
+		var logEvent = new MammaHl7v24BerichtLogEvent();
 		logEvent.setMelding(melding);
 		logEvent.setHl7MessageStructure(bericht.getHl7Bericht());
 		logEvent.setLevel(Level.WARNING);

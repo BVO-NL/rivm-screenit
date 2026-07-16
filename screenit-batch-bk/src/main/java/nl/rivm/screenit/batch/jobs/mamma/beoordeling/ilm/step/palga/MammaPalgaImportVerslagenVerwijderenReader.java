@@ -27,9 +27,9 @@ import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;

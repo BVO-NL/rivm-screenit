@@ -35,16 +35,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class BezwaarBrievenGenererenPartitioner extends AbstractBrievenGenererenPartitioner
 {
-	public static final String KEY_BRIEFTYPE = "brieftype";
 
 	@Override
 	protected void fillingData(Map<String, ExecutionContext> map, ScreeningOrganisatie organisatie)
 	{
-		for (BriefType briefType : getBriefTypes())
+		for (var briefType : getBriefTypes())
 		{
 			if (briefType.getVerzendendeOrganisatieType() == OrganisatieType.SCREENINGSORGANISATIE)
 			{
-				ExecutionContext executionContext = new ExecutionContext();
+				var executionContext = new ExecutionContext();
 				executionContext.put(KEY_SCREENINGORGANISATIEID, organisatie.getId());
 				executionContext.put(KEY_BRIEFTYPE, briefType.name());
 				map.put(organisatie.getId() + briefType.name(), executionContext);

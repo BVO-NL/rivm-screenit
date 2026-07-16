@@ -33,6 +33,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.Getter;
+
 import nl.rivm.screenit.dto.mamma.afspraken.IMammaAfspraakWijzigenFilter;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakOptieMetAfstandDto;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaStandplaatsPeriodeMetAfstandDto;
@@ -40,7 +42,9 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.IDocument;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
+import nl.rivm.screenit.model.enums.BatchApplicationType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
+import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaBrief;
@@ -275,21 +279,27 @@ public class MammaBaseStandplaatsServiceImpl implements MammaBaseStandplaatsServ
 		{
 			var nu = dateSupplier.getDate();
 
-			var mergedBrieven = new MammaMergedBrieven();
+			MammaMergedBrieven mergedBrieven = null;
 			boolean overbruggingssituatieParagonStarted = baseBriefService.isOverbruggingssituatieParagonStarted();
-			mergedBrieven.setScreeningOrganisatie(
+			if (!baseBriefService.isAutomatischAfdrukkenParagonActief())
+			{
+				mergedBrieven = new MammaMergedBrieven();
+				mergedBrieven.setScreeningOrganisatie(
 				overbruggingssituatieParagonStarted ? organisatieService.getLandelijkeScreeningsorganisatie() : standplaats.getRegio());
-			mergedBrieven.setCreatieDatum(nu);
-			mergedBrieven.setBriefType(brieven.get(0).getBriefType());
-			mergedBrieven.setActief(false);
-			mergedBrieven.setAantalBrieven(0);
-			mergedBrieven.setVrijgegeven(true);
-			hibernateService.saveOrUpdate(mergedBrieven);
-
+				mergedBrieven.setCreatieDatum(nu);
+				mergedBrieven.setBriefType(brieven.get(0).getBriefType());
+				mergedBrieven.setActief(false);
+				mergedBrieven.setAantalBrieven(0);
+				mergedBrieven.setVrijgegeven(true);
+				hibernateService.saveOrUpdate(mergedBrieven);
+			}
 			try
 			{
-				baseBriefService.createOrAddMergedBrieven(brieven, new AfspraakBrievenGeneratorHelper(mergedBrieven, standplaats, overbruggingssituatieParagonStarted));
-				baseBriefService.completePdf(mergedBrieven);
+				baseBriefService.createOrAddMergedBrieven(brieven, new AfspraakBrievenGeneratorHelper(mergedBrieven, standplaats, brieven.get(0).getBriefType(), overbruggingssituatieParagonStarted));
+				if (mergedBrieven != null)
+				{
+					baseBriefService.completePdf(mergedBrieven);
+				}
 			}
 
 			catch (Exception e)
@@ -315,12 +325,16 @@ public class MammaBaseStandplaatsServiceImpl implements MammaBaseStandplaatsServ
 
 		private final MammaStandplaats standplaats;
 
+		@Getter
+		private final BriefType briefType;
+
 		private final boolean overbruggingssituatieParagonStarted;
 
-		AfspraakBrievenGeneratorHelper(MammaMergedBrieven mergedBrieven, MammaStandplaats standplaats, boolean overbruggingssituatieParagonStarted)
+		AfspraakBrievenGeneratorHelper(MammaMergedBrieven mergedBrieven, MammaStandplaats standplaats, BriefType briefType, boolean overbruggingssituatieParagonStarted)
 		{
 			this.mergedBrieven = mergedBrieven;
 			this.standplaats = standplaats;
+			this.briefType = briefType;
 			this.overbruggingssituatieParagonStarted = overbruggingssituatieParagonStarted;
 		}
 
@@ -353,8 +367,15 @@ public class MammaBaseStandplaatsServiceImpl implements MammaBaseStandplaatsServ
 		}
 
 		@Override
-		public void verhoogAantalBrievenVanScreeningOrganisatie(MammaMergedBrieven mergedBrieven)
+		public BatchApplicationType getBatchApplicationType()
 		{
+			return BatchApplicationType.MAMMA;
+		}
+
+		@Override
+		public boolean isAutomatischAfdrukkenViaParagon()
+		{
+			return baseBriefService.isAutomatischAfdrukkenParagonActief();
 		}
 
 		@Override
@@ -392,7 +413,7 @@ public class MammaBaseStandplaatsServiceImpl implements MammaBaseStandplaatsServ
 		@Override
 		public IDocument getDocumentDefinitie()
 		{
-			return baseBriefService.getNieuwsteBriefDefinitie(mergedBrieven.getBriefType());
+			return baseBriefService.getNieuwsteBriefDefinitie(briefType);
 		}
 
 		@Override

@@ -58,6 +58,7 @@ import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaVerzettenReden;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.mamma.MammaBaseAfspraakRepository;
 import nl.rivm.screenit.repository.mamma.MammaUitnodigingRepository;
 import nl.rivm.screenit.service.BaseBriefService;
@@ -70,7 +71,6 @@ import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.hibernate.OpenEntityManagerInThread;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;

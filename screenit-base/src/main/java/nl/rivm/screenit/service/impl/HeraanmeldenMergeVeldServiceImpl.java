@@ -26,9 +26,9 @@ import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonFitRegistratie;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.HeraanmeldenMergeVeldService;
 import nl.rivm.screenit.util.BriefUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;

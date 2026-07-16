@@ -46,8 +46,6 @@ import nl.rivm.screenit.model.mamma.enums.MammaFotobesprekingType;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -77,7 +75,6 @@ public class MammaFotobespreking extends AbstractHibernateObject implements Mamm
 	private Date gestartOp;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "fotobespreking", cascade = { jakarta.persistence.CascadeType.REMOVE })
-	@Cascade(CascadeType.DELETE)
 	private List<MammaFotobesprekingOnderzoek> onderzoeken = new ArrayList<>();
 
 	@Column

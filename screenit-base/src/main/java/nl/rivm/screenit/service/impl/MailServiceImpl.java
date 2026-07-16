@@ -39,10 +39,10 @@ import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.enums.MailPriority;
 import nl.rivm.screenit.model.enums.MailServerKeuze;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.MailRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.MailService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;

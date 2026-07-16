@@ -24,10 +24,13 @@ package nl.rivm.screenit.batch.jobs.cervix.brieven.regio.labformulierenstep;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.batch.jobs.BatchConstants;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.Organisatie;
@@ -36,18 +39,23 @@ import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixLabformulierAanvraag;
 import nl.rivm.screenit.model.cervix.CervixRegioMergedBrieven;
 import nl.rivm.screenit.model.cervix.enums.CervixLabformulierAanvraagStatus;
+import nl.rivm.screenit.model.enums.BatchApplicationType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.model.messagequeue.MessageType;
+import nl.rivm.screenit.model.messagequeue.dto.BriefafdrukopdrachtDto;
 import nl.rivm.screenit.service.AsposeService;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.HuisartsenportaalSyncService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.MessageService;
 import nl.rivm.screenit.service.UploadDocumentService;
+import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.cervix.CervixHuisartsToDtoUtil;
 
 import org.apache.commons.io.FileUtils;
@@ -95,6 +103,12 @@ public class LabformulierGenererenWriter implements ItemStreamWriter<Long>
 
 	@Autowired
 	private LogService logService;
+
+	@Autowired
+	private BaseBriefService baseBriefService;
+
+	@Autowired
+	private MessageService messageService;
 
 	private int volgnummerBatch;
 
@@ -156,13 +170,22 @@ public class LabformulierGenererenWriter implements ItemStreamWriter<Long>
 			{
 				volgnummerBatch++;
 
-				controleerMergedBrieven(aanvraag);
+				if (briefService.isAutomatischAfdrukkenParagonActief())
+				{
+					verwerkAanvraagParagon(aanvraag);
+					aanvraag.setStatus(CervixLabformulierAanvraagStatus.AFGEDRUKT_EN_VERSTUURD);
+				}
+				else
+				{
 
-				maakVoorbladBrief(aanvraag);
+					controleerMergedBrieven(aanvraag);
 
-				maakLabfomulieren(aanvraag);
+					maakVoorbladBrief(aanvraag);
 
-				aanvraag.setStatus(CervixLabformulierAanvraagStatus.AFGEDRUKT_KLAAR_OM_TE_VERSTUREN);
+					maakLabformulieren(aanvraag);
+					aanvraag.setStatus(CervixLabformulierAanvraagStatus.AFGEDRUKT_KLAAR_OM_TE_VERSTUREN);
+				}
+
 				aanvraag.setStatusDatum(currentDateSupplier.getDate());
 				hibernateService.saveOrUpdate(aanvraag);
 
@@ -217,18 +240,76 @@ public class LabformulierGenererenWriter implements ItemStreamWriter<Long>
 		}
 	}
 
+	private void verwerkAanvraagParagon(CervixLabformulierAanvraag aanvraag) throws Exception
+	{
+		var voorbladPdfBestandsNaam = UUID.randomUUID().toString();
+		var labformulierenPdfBestandsNaam = UUID.randomUUID().toString();
+		slaDocumentOpAlsPdf(maakVoorbladDocument(aanvraag), "voorbladTmpBrief", ".pdf", voorbladPdfBestandsNaam);
+		slaDocumentOpAlsPdf(maakLabformulierenDocument(aanvraag), "labformulieren", ".pdf", labformulierenPdfBestandsNaam);
+
+		var voorbladBrief = aanvraag.getVoorbladBrief();
+		var briefType = BriefUtil.getOrigineleBrief(voorbladBrief).getBriefType();
+		var timestamp = currentDateSupplier.getLocalDateTime().format(DateTimeFormatter.ofPattern(Constants.DATE_FORMAT_YYYYMMDDHHMMSS));
+
+		var voorbladPad = BriefafdrukopdrachtDto.Resource.builder().order(1).path(voorbladPdfBestandsNaam).build();
+		var labformulierenPad = BriefafdrukopdrachtDto.Resource.builder().order(2).path(labformulierenPdfBestandsNaam).build();
+
+		var briefafdrukopdrachtDto = BriefafdrukopdrachtDto.builder()
+			.code(briefType.getBriefCode())
+			.kenmerk(BriefUtil.maakKenmerk(voorbladBrief))
+			.timestamp(timestamp)
+			.codeAddendum("")
+			.build();
+		briefafdrukopdrachtDto.setResources(List.of(voorbladPad, labformulierenPad));
+
+		var message = messageService.queueMessage(MessageType.BRIEF_AFDRUKKEN, briefafdrukopdrachtDto, BatchApplicationType.CERVIX.name());
+		LOG.info("Briefafdrukopdracht id '{}' aangemaakt voor aanvraag id '{}'", message.getId(), aanvraag.getId());
+	}
+
+	private Document maakVoorbladDocument(CervixLabformulierAanvraag aanvraag) throws Exception
+	{
+		var voorbladTemplate = getNieuwsteBriefDefinitie(BriefType.REGIO_UITSTRIJKEND_ARTS_VOORBLAD_LABFORMULIER);
+		return mergeBrief(aanvraag, voorbladTemplate);
+	}
+
+	private Document maakLabformulierenDocument(CervixLabformulierAanvraag aanvraag) throws Exception
+	{
+		var labformulierenTemplate = getNieuwsteBriefDefinitie(BriefType.REGIO_UITSTRIJKEND_ARTS_LABFORMULIER);
+		Document chunkDocument = null;
+		for (var i = 0; i < aanvraag.getAantal(); i++)
+		{
+			var asposeDocument = mergeBrief(aanvraag, labformulierenTemplate);
+			if (chunkDocument == null)
+			{
+				chunkDocument = asposeDocument;
+			}
+			else
+			{
+				chunkDocument.appendDocument(asposeDocument, ImportFormatMode.USE_DESTINATION_STYLES);
+			}
+		}
+		return chunkDocument;
+	}
+
+	private File slaDocumentOpAlsPdf(Document document, String prefix, String suffix, String bestandsNaam) throws Exception
+	{
+		var tmpFile = File.createTempFile(prefix, suffix);
+		try (var output = new FileOutputStream(tmpFile))
+		{
+			document.save(output, asposeService.getPdfSaveOptions());
+		}
+		if (briefService.isAutomatischAfdrukkenParagonActief())
+		{
+			briefService.pdfBestandOpslaanVoorVersturen(tmpFile, bestandsNaam);
+		}
+		return tmpFile;
+	}
+
 	public void maakVoorbladBrief(CervixLabformulierAanvraag aanvraag)
 	{
-		FileOutputStream output = null;
 		try
 		{
-			var voorbladTemplate = getNieuwsteBriefDefinitie(BriefType.REGIO_UITSTRIJKEND_ARTS_VOORBLAD_LABFORMULIER);
-			var asposeDocument = mergeBrief(aanvraag, voorbladTemplate);
-
-			var tmpFile = File.createTempFile("voorbladTmpBrief", "pdf");
-			output = new FileOutputStream(tmpFile);
-			asposeDocument.save(output, asposeService.getPdfSaveOptions());
-			output.close();
+			var tmpFile = slaDocumentOpAlsPdf(maakVoorbladDocument(aanvraag), "voorbladTmpBrief", "pdf", null);
 			mergePDF(aanvraag, tmpFile, voorbladerenMergedBrieven);
 
 			voorbladerenMergedBrieven.getBrieven().add(aanvraag.getVoorbladBrief());
@@ -241,34 +322,16 @@ public class LabformulierGenererenWriter implements ItemStreamWriter<Long>
 		}
 	}
 
-	public void maakLabfomulieren(CervixLabformulierAanvraag aanvraag) throws Exception
+	public void maakLabformulieren(CervixLabformulierAanvraag aanvraag) throws Exception
 	{
 		labFormulierenMergedBrieven.getBrieven().add(aanvraag.getBrief());
-		int aantal = aanvraag.getAantal();
-		FileOutputStream output = null;
-		Document chunkDocument = null;
+		var aantal = aanvraag.getAantal();
 		try
 		{
-			var labfomrulierenTemplate = getNieuwsteBriefDefinitie(BriefType.REGIO_UITSTRIJKEND_ARTS_LABFORMULIER);
-			for (var i = 0; i < aantal; i++)
-			{
-				var asposeDocument = mergeBrief(aanvraag, labfomrulierenTemplate);
-				if (chunkDocument == null)
-				{
-					chunkDocument = asposeDocument;
-				}
-				else
-				{
-					chunkDocument.appendDocument(asposeDocument, ImportFormatMode.USE_DESTINATION_STYLES);
-				}
-			}
+			var tmpFile = slaDocumentOpAlsPdf(maakLabformulierenDocument(aanvraag), "labformulieren", "pdf", null);
 			labFormulierenMergedBrieven.setAantalBrieven(labFormulierenMergedBrieven.getAantalBrieven() + aantal);
 			labFormulierenMergedBrieven.getBrieven().add(aanvraag.getBrief());
 			aanvraag.getBrief().setMergedBrieven(labFormulierenMergedBrieven);
-			var tmpFile = File.createTempFile("labformulieren", "pdf");
-			output = new FileOutputStream(tmpFile);
-			chunkDocument.save(output, asposeService.getPdfSaveOptions());
-			output.close();
 			mergePDF(aanvraag, tmpFile, labFormulierenMergedBrieven);
 		}
 		catch (Exception e)
@@ -344,8 +407,7 @@ public class LabformulierGenererenWriter implements ItemStreamWriter<Long>
 		context.putValue(MailMergeContext.CONTEXT_CERVIX_HUISARTS, aanvraag.getHuisartsLocatie().getHuisarts());
 		context.putValue(MailMergeContext.CONTEXT_HA_LOCATIE, aanvraag.getHuisartsLocatie());
 		context.putValue(MailMergeContext.CONTEXT_HA_AANTAL_FORM, aanvraag.getAantal());
-		var asposeDocument = asposeService.processDocument(briefTemplateBytes, context);
-		return asposeDocument;
+		return asposeService.processDocument(briefTemplateBytes, context);
 	}
 
 	private CervixRegioMergedBrieven maakRegioMergedBrieven(BriefType type)

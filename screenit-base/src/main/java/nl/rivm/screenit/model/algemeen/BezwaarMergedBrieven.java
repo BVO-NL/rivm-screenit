@@ -26,8 +26,6 @@ import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -36,15 +34,13 @@ import lombok.Setter;
 
 import nl.rivm.screenit.model.MergedBrieven;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "algemeen", indexes = {
 	@Index(name = "IDX_MERGEDBRIEVENVERSTUURD", columnList = "geprint"),
 	@Index(name = "IDX_MERGEDBRIEVENCONTROLE", columnList = "controle"),
-	@Index(name = "IDX_MERGEDBRIEVENVERWIJDERD", columnList = "verwijderd")}
+	@Index(name = "IDX_MERGEDBRIEVENVERWIJDERD", columnList = "verwijderd") }
 )
 @Audited
 @Getter
@@ -52,6 +48,5 @@ import org.hibernate.envers.Audited;
 public class BezwaarMergedBrieven extends MergedBrieven<BezwaarBrief>
 {
 	@OneToMany(mappedBy = "mergedBrieven", cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade(CascadeType.SAVE_UPDATE)
 	private List<BezwaarBrief> brieven = new ArrayList<>();
 }

@@ -25,14 +25,20 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.persistence.criteria.JoinType;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.Brief_;
+import nl.rivm.screenit.model.algemeen.AlgemeneBrief_;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
+
+import static nl.rivm.screenit.specification.ExtendedSpecification.not;
+import static nl.rivm.screenit.specification.SpecificationUtil.joinByString;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BriefSpecification
@@ -81,4 +87,34 @@ public class BriefSpecification
 	{
 		return (r, q, cb) -> cb.lessThanOrEqualTo(r.get(Brief_.creatieDatum), peildatum);
 	}
+
+	public static <B extends Brief> ExtendedSpecification<B> isNietVerstuurdVoorAfdrukken()
+	{
+		return not(isVerstuurdVoorAfdrukken());
+	}
+
+	public static <B extends Brief> ExtendedSpecification<B> isVerstuurdVoorAfdrukken()
+	{
+		ExtendedSpecification<B> mergedBrievenAfgedrukt = MergedBrievenSpecification.isVerstuurd()
+			.with(r -> joinByString(r, AlgemeneBrief_.MERGED_BRIEVEN, JoinType.LEFT));
+		return mergedBrievenAfgedrukt.or(heeftVerstuurdVoorAfdrukkenOp());
+	}
+
+	private static <B extends Brief> ExtendedSpecification<B> heeftVerstuurdVoorAfdrukkenOp()
+	{
+		return (r, q, cb) -> cb.isNotNull(r.get(Brief_.verstuurdVoorAfdrukkenOp));
+	}
+
+	public static <B extends Brief> ExtendedSpecification<B> isVerstuurdVoorAfdrukkenVoor(LocalDate datum)
+	{
+		ExtendedSpecification<B> mergedBrievenAfgedrukt = MergedBrievenSpecification.heeftPrintDatumVoor(datum)
+			.with(r -> joinByString(r, AlgemeneBrief_.MERGED_BRIEVEN, JoinType.LEFT));
+		return mergedBrievenAfgedrukt.or(heeftVerstuurdVoorAfdrukkenVoor(datum));
+	}
+
+	private static <B extends Brief> ExtendedSpecification<B> heeftVerstuurdVoorAfdrukkenVoor(LocalDate peilDatum)
+	{
+		return (r, q, cb) -> cb.lessThan(r.get(Brief_.verstuurdVoorAfdrukkenOp), peilDatum.atStartOfDay());
+	}
+
 }

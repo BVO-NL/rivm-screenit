@@ -34,8 +34,6 @@ import lombok.Setter;
 
 import nl.rivm.screenit.model.MergedBrieven;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -49,6 +47,5 @@ import org.hibernate.envers.Audited;
 public class ColonMergedBrieven extends MergedBrieven<ColonBrief>
 {
 	@OneToMany(mappedBy = "mergedBrieven", cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade(CascadeType.SAVE_UPDATE)
 	private List<ColonBrief> brieven = new ArrayList<>();
 }

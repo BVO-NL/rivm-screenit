@@ -42,7 +42,7 @@ import lombok.Setter;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -59,7 +59,7 @@ public class Rol extends AbstractHibernateObject implements INaam, IActief, IBev
 	private String description;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "rol")
-	@Where(clause = "actief = true")
+	@SQLRestriction("actief = true")
 	private List<Permissie> permissies = new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)

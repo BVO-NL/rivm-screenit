@@ -184,15 +184,11 @@ public class MammaBaseBlokkadeSpecification
 
 	private static Specification<MammaBlokkade> heeftScreeningsEenheidRegioOfStandplaats(MammaBlokkade blokkade)
 	{
-		switch (blokkade.getType())
+		return switch (blokkade.getType())
 		{
-		case SCREENINGS_ORGANISATIE:
-			return heeftScreeningsOrganisatie(blokkade.getRegio());
-		case SCREENINGS_EENHEID:
-			return heeftScreeningsEenheid(blokkade.getScreeningsEenheid());
-		case STANDPLAATS:
-			return heeftStandplaats(blokkade.getStandplaats());
-		}
-		return null;
+			case SCREENINGS_ORGANISATIE -> heeftScreeningsOrganisatie(blokkade.getRegio());
+			case SCREENINGS_EENHEID -> heeftScreeningsEenheid(blokkade.getScreeningsEenheid());
+			case STANDPLAATS -> heeftStandplaats(blokkade.getStandplaats());
+		};
 	}
 }

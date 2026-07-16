@@ -173,7 +173,9 @@ public enum FileStoreLocation
 
 	MAMMA_DENSE2_CSV_EXPORT(File.separator + "mamma" + File.separator + "dense2", false, false),
 
-	ALGEMEEN_HANDLEIDINGEN(File.separator + "algemeen" + File.separator + "handleidingen" + File.separator, false, false);
+	ALGEMEEN_HANDLEIDINGEN(File.separator + "algemeen" + File.separator + "handleidingen" + File.separator, false, false),
+
+	DOCUMENT_UITWISSELING(File.separator + "document_uitwisseling" + File.separator, false, false);
 
 	private final String path;
 

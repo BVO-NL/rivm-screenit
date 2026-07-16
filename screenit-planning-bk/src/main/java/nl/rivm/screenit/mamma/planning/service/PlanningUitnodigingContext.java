@@ -24,7 +24,7 @@ package nl.rivm.screenit.mamma.planning.service;
 import java.util.concurrent.CountDownLatch;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 
 public final class PlanningUitnodigingContext
 {

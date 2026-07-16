@@ -23,7 +23,7 @@ import { Component, effect, ElementRef, inject, input, output, Renderer2, viewCh
 @Component({
   selector: 'app-pdf-viewer',
   imports: [],
-  template: ` <iframe #iframeElement (load)="refreshStyle()" width="100%" height="100%">
+  template: ` <iframe #iframeElement width="100%" height="100%">
     De pdf kon niet worden geladen, klik <a href="#" data-testid="button_pdf_opslaan" (click)="opslaan.emit()">hier</a> om de PDF te downloaden
   </iframe>`,
   styles: `
@@ -34,14 +34,14 @@ import { Component, effect, ElementRef, inject, input, output, Renderer2, viewCh
 
     iframe {
       width: 100%;
-      height: calc(70vh - 150px);
+      height: calc(70vh - 250px);
       border: 0;
     }
   `,
 })
 export class PdfViewerComponent {
   private readonly renderer = inject(Renderer2)
-  url = input<string | undefined>(undefined)
+  url = input.required<string>()
   iframeElement = viewChild<ElementRef>('iframeElement')
   opslaan = output<void>()
 
@@ -51,14 +51,5 @@ export class PdfViewerComponent {
         this.renderer.setAttribute(this.iframeElement()?.nativeElement, 'src', this.url()!)
       }
     })
-  }
-
-  refreshStyle() {
-    const embed = this.iframeElement()!.nativeElement.contentDocument.querySelector('embed')
-    if (embed) {
-      this.renderer.setStyle(embed, 'position', 'absolute')
-      this.renderer.setStyle(embed, 'top', '0')
-      this.renderer.setStyle(embed, 'left', '0')
-    }
   }
 }

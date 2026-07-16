@@ -126,7 +126,7 @@ public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment
 		var magNogmaalsVersturen = upload != null;
 		var magDocumentVervangen = ScreenitSession.get().checkPermission(Recht.VERVANGEN_DOCUMENTEN, Actie.AANPASSEN);
 		var heeftTegenhoudenRecht = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
-		var magTegenhouden = heeftTegenhoudenRecht && laatsteBrief != null && !BriefUtil.isTegengehouden(laatsteBrief) && BriefUtil.getMergedBrieven(laatsteBrief) == null;
+		var magTegenhouden = heeftTegenhoudenRecht && laatsteBrief != null && !BriefUtil.isTegengehouden(laatsteBrief) && !BriefUtil.isGegenereerd(laatsteBrief);
 		var magDoorvoeren = heeftTegenhoudenRecht && BriefUtil.isTegengehouden(laatsteBrief);
 
 		if (upload != null)

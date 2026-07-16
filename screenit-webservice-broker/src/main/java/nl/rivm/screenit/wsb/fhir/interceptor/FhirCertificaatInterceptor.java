@@ -24,6 +24,8 @@ package nl.rivm.screenit.wsb.fhir.interceptor;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 
+import javax.naming.InvalidNameException;
+
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.wsb.tools.CertTools;
 
@@ -53,28 +55,49 @@ public class FhirCertificaatInterceptor extends FQDNAwareInterceptor
 			return true;
 		}
 
-		String clientCertPem = getClientCertPem(theRequest);
-		try
+		var fqdn = getFqdn(theRequest);
+		if (StringUtils.isBlank(fqdn) || !getFqdnStore().isFQDNValid(fqdn))
 		{
-			String fqdn = CertTools.getFQDNFromCert(clientCertPem);
-			if (StringUtils.isBlank(fqdn) || !getFqdnStore().isFQDNValid(fqdn))
-			{
-				throw new AuthenticationException("No valid FQDN found in certificate.");
-			}
-			getFqdnStore().registerFQDN(fqdn);
+			throw new AuthenticationException("Geen valide FQDN gevonden.");
 		}
-		catch (IOException | CertificateException e)
-		{
-			LOG.error(e.getMessage(), e);
-			throw new AuthenticationException("No valid certificate.");
-		}
+		getFqdnStore().registerFQDN(fqdn);
 
 		return true;
 	}
 
+	private String getFqdn(HttpServletRequest theRequest)
+	{
+		var cfHeader = theRequest.getHeader(Constants.HTTP_HEADER_CF_CERT_SUBJECT_DN);
+		if (StringUtils.isNotBlank(cfHeader))
+		{
+			try
+			{
+				return CertTools.getFQDNFromSubjectDn(cfHeader);
+			}
+			catch (InvalidNameException e)
+			{
+				LOG.error(e.getMessage(), e);
+				throw new AuthenticationException("Geen valide FQDN gevonden.");
+			}
+		}
+		else
+		{
+			var clientCertPem = getClientCertPem(theRequest);
+			try
+			{
+				return CertTools.getFQDNFromCert(clientCertPem);
+			}
+			catch (IOException | CertificateException e)
+			{
+				LOG.error(e.getMessage(), e);
+				throw new AuthenticationException("Certificaat is niet valide.");
+			}
+		}
+	}
+
 	private String getClientCertPem(HttpServletRequest theRequest)
 	{
-		String clientCertPem = theRequest.getHeader(Constants.HTTP_HEADER_X_CLIENT_CERT);
+		var clientCertPem = theRequest.getHeader(Constants.HTTP_HEADER_X_CLIENT_CERT);
 		if (StringUtils.isBlank(clientCertPem))
 		{
 			clientCertPem = theRequest.getHeader(Constants.HTTP_HEADER_SSL_CLIENT_CERT);
@@ -82,12 +105,12 @@ public class FhirCertificaatInterceptor extends FQDNAwareInterceptor
 
 		if (StringUtils.isBlank(clientCertPem))
 		{
-			throw new AuthenticationException("No certificate found.");
+			throw new AuthenticationException("Geen certificaat gevonden.");
 		}
 
 		clientCertPem = CertTools.correctCertPem(clientCertPem);
 
-		LOG.debug("Client certificate: " + clientCertPem);
+		LOG.debug("Client certificaat ontvangen (lengte={} chars)", clientCertPem.length());
 		return clientCertPem;
 	}
 }

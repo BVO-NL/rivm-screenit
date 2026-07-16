@@ -27,7 +27,7 @@ import java.util.List;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.DocumentTemplateTestenFieldsPanel;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.behavior.EnableBehavior;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.markup.html.WebMarkupContainer;

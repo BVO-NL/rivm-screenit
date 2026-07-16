@@ -31,8 +31,6 @@ import lombok.Setter;
 
 import nl.rivm.screenit.model.project.ProjectBrief;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -43,13 +41,11 @@ public abstract class ClientBrief<SR extends ScreeningRonde, AF extends Afmeldin
 {
 	@OneToOne(optional = true, fetch = FetchType.LAZY, mappedBy = "brief", cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE,
 		jakarta.persistence.CascadeType.REMOVE })
-	@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.DELETE })
 	private ProjectBrief projectBrief;
 
 	private boolean vervangendeProjectBrief = false;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	private Client client;
 
 	public abstract AF getAfmelding();

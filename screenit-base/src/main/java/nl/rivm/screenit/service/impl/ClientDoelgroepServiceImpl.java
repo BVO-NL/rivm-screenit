@@ -31,11 +31,11 @@ import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.cervix.enums.CervixLeeftijdcategorie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ClientDoelgroepService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

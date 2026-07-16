@@ -28,14 +28,13 @@ import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.main.web.component.table.NavigeerNaarCellPanel;
-import nl.rivm.screenit.main.web.component.table.UploadDocumentDownloadLinkPanel;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.model.messagequeue.dto.BriefafdrukopdrachtDto;
 import nl.rivm.screenit.model.project.Project;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.model.project.ProjectBriefActieType;
@@ -45,6 +44,7 @@ import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
+import nl.rivm.screenit.util.ProjectUtil;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -62,7 +62,7 @@ import com.aspose.words.Document;
 @Slf4j
 public class ProjectBriefActieTemplatePage extends ProjectTemplateTestenBasePage
 {
-	private IModel<ProjectBriefActie> briefactieModel;
+	private final IModel<ProjectBriefActie> briefactieModel;
 
 	@SpringBean
 	private UploadDocumentService uploadDocumentService;
@@ -107,19 +107,6 @@ public class ProjectBriefActieTemplatePage extends ProjectTemplateTestenBasePage
 			}
 
 		});
-	}
-
-	private String getHerrineringTekst()
-	{
-		String tekst = "";
-		ProjectBriefActie projectBriefActie = briefactieModel.getObject();
-		ProjectBriefActie herinnerActie = projectBriefActie.getHerinneringsActie();
-		if (herinnerActie != null)
-		{
-			ProjectBriefActieType type = projectBriefActie.getType();
-			tekst = herinnerActie.getAantalDagen() + " dagen na een " + getString("ProjectBriefActieType." + type.name());
-		}
-		return tekst;
 	}
 
 	private String getLaatstGewijzigdDatum()
@@ -204,9 +191,6 @@ public class ProjectBriefActieTemplatePage extends ProjectTemplateTestenBasePage
 		form.add(new Label("soort", Model.of(getSoortText())));
 		form.add(new Label("moment", Model.of(getMomentText())));
 		form.add(new Label("laatstGewijzigd", Model.of(getLaatstGewijzigdDatum())));
-		form.add(new Label("herrinering", Model.of(getHerrineringTekst())));
-		form.add(new Label("orionWerkbak", new PropertyModel<>(briefactieModel, "misluktBak")));
-		form.add(new Label("formulierNummer", new PropertyModel<>(briefactieModel, "formulierNummer")));
 		form.add(new AjaxEditableLabel<String>("printomschrijving", new PropertyModel<>(briefactieModel, ProjectBriefActie_.PRINTOMSCHRIJVING))
 		{
 			@Override
@@ -216,29 +200,26 @@ public class ProjectBriefActieTemplatePage extends ProjectTemplateTestenBasePage
 				hibernateService.saveOrUpdate(briefactieModel.getObject());
 			}
 		});
-		form.add(new NavigeerNaarCellPanel<>("herrinneringPrinten", briefactieModel)
-		{
-			@Override
-			protected boolean magNavigerenNaar(IModel<ProjectBriefActie> rowModel)
-			{
-				return rowModel.getObject() != null && rowModel.getObject().getHerinneringsActie() != null;
-			}
-
-			@Override
-			protected void onNavigeerNaar(AjaxRequestTarget target, IModel<ProjectBriefActie> rowModel)
-			{
-				setResponsePage(new ProjectBriefHerinneringTemplatePage(ModelUtil.sModel((Project) ProjectBriefActieTemplatePage.this.getDefaultModelObject()),
-					ModelUtil.sModel(rowModel.getObject())));
-			}
-		});
-		form.add(new UploadDocumentDownloadLinkPanel("herrinneringDownloaden", new PropertyModel<>(briefactieModel, "herinneringsActie.document")));
-
 	}
 
 	@Override
 	protected List<Bevolkingsonderzoek> getBevolkingsonderzoeken()
 	{
 		return briefactieModel.getObject().getProject().getBevolkingsonderzoeken();
+	}
+
+	@Override
+	protected BriefType getParagonBriefType()
+	{
+		return briefactieModel.getObject().getBriefType();
+	}
+
+	@Override
+	protected BriefafdrukopdrachtDto maakBriefafdrukopdrachtDto(BriefType briefType, String bestandsNaam)
+	{
+		var briefafdrukopdrachtDto = super.maakBriefafdrukopdrachtDto(briefType, bestandsNaam);
+		ProjectUtil.verwerktPrintomschrijvingInAfdrukopdracht(briefactieModel.getObject().getPrintomschrijving(), briefafdrukopdrachtDto);
+		return briefafdrukopdrachtDto;
 	}
 
 	@Override

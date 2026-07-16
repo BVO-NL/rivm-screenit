@@ -38,7 +38,6 @@ import nl.rivm.screenit.model.mamma.MammaVolgendeUitnodiging;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaFollowUpConclusieStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaUitnodigingsintervalType;
-import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
@@ -83,9 +82,6 @@ public class MammaVolgendeUitnodigingServiceImpl implements MammaVolgendeUitnodi
 
 	@Autowired
 	private OrganisatieService organisatieService;
-
-	@Autowired
-	private ClientService clientService;
 
 	@Autowired
 	private MammaBaseFollowUpService followUpService;

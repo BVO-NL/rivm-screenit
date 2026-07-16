@@ -58,6 +58,7 @@ import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.RedenNietTeBeoordelen;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.DossierFactory;
@@ -70,7 +71,6 @@ import nl.rivm.screenit.service.colon.ColonTestStateService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -601,6 +601,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 		mbrieven.setBriefType(BriefType.COLON_UITNODIGING);
 		brief.setMergedBrieven(mbrieven);
 		brief.setScreeningRonde(screeningRonde);
+		brief.setVerstuurdVoorAfdrukkenOp(DateUtil.toLocalDateTime(nu));
 		screeningRonde.getBrieven().add(brief);
 		hibernateService.saveOrUpdateAll(mbrieven, brief, uitnodiging, screeningRonde);
 	}

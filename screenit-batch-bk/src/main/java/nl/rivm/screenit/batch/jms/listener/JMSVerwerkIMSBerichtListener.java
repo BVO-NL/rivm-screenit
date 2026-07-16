@@ -21,22 +21,21 @@ package nl.rivm.screenit.batch.jms.listener;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
+
 import nl.rivm.screenit.batch.service.MammaIMSBerichtInlezenService;
 
-import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.jms.Session;
-
 @Transactional(propagation = Propagation.SUPPORTS)
 @Component
-public class JMSVerwerkIMSBerichtListener implements SessionAwareMessageListener<ActiveMQObjectMessage>
+public class JMSVerwerkIMSBerichtListener implements MessageListener
 {
 	private static final Logger LOG = LoggerFactory.getLogger(JMSVerwerkIMSBerichtListener.class);
 
@@ -44,20 +43,19 @@ public class JMSVerwerkIMSBerichtListener implements SessionAwareMessageListener
 	private MammaIMSBerichtInlezenService imsBerichtInlezenService;
 
 	@Override
-	public void onMessage(ActiveMQObjectMessage message, Session session)
+	public void onMessage(Message message)
 	{
-		imsBerichtInlezenService.getAlleNietVerwerkteIMSBerichten()
-			.forEach(bericht ->
+		imsBerichtInlezenService.getAlleNietVerwerkteImsBerichtIds()
+			.forEach(berichtId ->
 			{
 				try
 				{
-					imsBerichtInlezenService.verwerkBericht(bericht);
+					imsBerichtInlezenService.verwerkBericht(berichtId);
 				}
 				catch (Exception e)
 				{
-					LOG.warn("Fout tijdens het verwerken van ims bericht " + bericht.getMessageId(), e);
-					String melding = String.format("Fout bij het verwerken van IMS bericht (%s)", bericht.getMessageId());
-					imsBerichtInlezenService.markeerBerichtAlsFout(bericht, melding);
+					LOG.warn("Fout tijdens het verwerken van ims bericht met id '{}'", berichtId, e);
+					imsBerichtInlezenService.markeerBerichtAlsFout(berichtId);
 				}
 			});
 	}

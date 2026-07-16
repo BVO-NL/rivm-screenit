@@ -58,6 +58,7 @@ import nl.rivm.screenit.model.project.ProjectStatus;
 import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportage;
 import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageEntry;
 import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportageProjectGroepEntry;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.HibernateService;
@@ -69,7 +70,6 @@ import nl.rivm.screenit.service.colon.ColonScreeningsrondeService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ProjectUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;

@@ -31,9 +31,9 @@ import jakarta.persistence.EntityManagerFactory;
 import lombok.Setter;
 
 import nl.rivm.screenit.model.colon.ClientCategorieEntry;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.service.colon.ColonBaseFitService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;

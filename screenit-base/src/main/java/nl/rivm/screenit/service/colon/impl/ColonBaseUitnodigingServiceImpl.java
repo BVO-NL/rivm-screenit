@@ -41,6 +41,7 @@ import nl.rivm.screenit.model.colon.UitnodigingCohortGeboortejaren;
 import nl.rivm.screenit.model.colon.UitnodigingCohort_;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.RedenIntrekkenGbaIndicatie;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.colon.ColonUitnodigingRepository;
 import nl.rivm.screenit.repository.colon.UitnodigingCohortRepository;
 import nl.rivm.screenit.service.BaseBriefService;
@@ -54,7 +55,6 @@ import nl.rivm.screenit.specification.colon.ColonUitnodigingSpecification;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ProjectUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;

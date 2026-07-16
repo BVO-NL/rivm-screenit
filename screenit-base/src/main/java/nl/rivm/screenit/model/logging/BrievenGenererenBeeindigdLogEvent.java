@@ -34,15 +34,11 @@ import jakarta.persistence.Table;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.verwerkingverslag.BrievenGenererenRapportage;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 @Entity
 @Table(schema = "gedeeld")
 public class BrievenGenererenBeeindigdLogEvent extends LogEvent
 {
 	@OneToOne(cascade = jakarta.persistence.CascadeType.REMOVE)
-	@Cascade(CascadeType.DELETE)
 	private BrievenGenererenRapportage rapportage;
 
 	@ElementCollection

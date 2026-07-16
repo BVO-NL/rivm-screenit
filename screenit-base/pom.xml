@@ -245,17 +245,6 @@
         </dependency>
 
         <dependency>
-            <groupId>nl.topicuszorg.yubikey</groupId>
-            <artifactId>yubikey-authenticator</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.hibernate.javax.persistence</groupId>
-                    <artifactId>hibernate-jpa-2.0-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
         </dependency>
@@ -292,11 +281,6 @@
         <dependency>
             <groupId>nl.topicuszorg.gba</groupId>
             <artifactId>gba</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>nl.topicuszorg</groupId>
-            <artifactId>preference-module</artifactId>
         </dependency>
 
         <dependency>
@@ -546,6 +530,10 @@
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yubico</groupId>
+            <artifactId>yubico-j</artifactId>
         </dependency>
 
         <dependency>

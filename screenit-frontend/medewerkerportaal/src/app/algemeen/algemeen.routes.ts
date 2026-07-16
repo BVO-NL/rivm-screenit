@@ -38,7 +38,7 @@ export const algemeenRoutes: Routes = [
       },
       {
         path: 'zoeken',
-        loadComponent: () => import('../algemeen/clientdossier/client-zoeken-page/client-zoeken-page.component').then((c) => c.ClientZoekenPageComponent),
+        loadComponent: () => import('../algemeen/client-zoeken-page/client-zoeken-page.component').then((c) => c.ClientZoekenPageComponent),
         canActivate: [
           autorisatieGuard({
             recht: [Recht.MEDEWERKER_CLIENT_ZOEKEN],
@@ -52,7 +52,7 @@ export const algemeenRoutes: Routes = [
       },
       {
         path: 'dossier',
-        loadComponent: () => import('../algemeen/clientdossier/client-dossier-page/client-dossier-page.component').then((c) => c.ClientDossierPageComponent),
+        loadComponent: () => import('../algemeen/clientdossier/clientdossier-page.component').then((c) => c.ClientdossierPageComponent),
         canActivate: [
           autorisatieGuard({
             recht: [Recht.MEDEWERKER_CLIENT_GEGEVENS],
@@ -71,15 +71,11 @@ export const algemeenRoutes: Routes = [
           },
           {
             path: 'overzicht',
-            loadComponent: () =>
-              import('../algemeen/clientdossier/client-dossier-page/clientgegevens-tab/pages/overzicht/overzicht-page.component').then((c) => c.OverzichtPageComponent),
+            loadComponent: () => import('./clientdossier/clientgegevens-tab/pages/clientdossier-overzicht-page.component').then((c) => c.ClientdossierOverzichtPageComponent),
           },
           {
             path: ':bvo',
-            loadComponent: () =>
-              import('../algemeen/clientdossier/client-dossier-page/clientgegevens-tab/pages/client-dossier-bvo/client-dossier-bvo.component').then(
-                (c) => c.ClientDossierBvoComponent,
-              ),
+            loadComponent: () => import('./clientdossier/clientgegevens-tab/pages/clientdossier-bvo-page.component').then((c) => c.ClientdossierBvoPageComponent),
           },
         ],
       },

@@ -19,8 +19,12 @@
  * =========================LICENSE_END==================================
  */
 import { ClientDto } from '@shared/types/algemeen/dto/client.dto'
+import { ClientContactgegevensDto } from '@shared/types/algemeen/dto/clientcontactgegevens.dto'
+import { Aanspreekvorm } from '@shared/types/algemeen/enum/aanspreekvorm'
 import { NaamGebruik } from '@shared/types/algemeen/enum/naam-gebruik'
 import { Geslacht } from '@shared/types/algemeen/enum/geslacht'
+import { GbaStatus } from '@shared/types/algemeen/enum/gba-status'
+import { ClientBrpGegevensDto } from '@shared/types/algemeen/dto/clientbrpgegevens.dto'
 
 export const maakClient = (overrides: Partial<ClientDto> = {}): ClientDto => ({
   id: 1,
@@ -30,7 +34,7 @@ export const maakClient = (overrides: Partial<ClientDto> = {}): ClientDto => ({
   titel: '',
   geboortedatum: new Date('1990-01-01'),
   postcode: '1234AB',
-  straat: 'Hoofdstraat 1',
+  straatnaam: 'Hoofdstraat 1',
   volledigeAdres: 'Hoofdstraat 1, 1234AB Amsterdam',
   plaats: 'Amsterdam',
   bsn: '123456789',
@@ -38,8 +42,45 @@ export const maakClient = (overrides: Partial<ClientDto> = {}): ClientDto => ({
   partnerTussenvoegsel: '',
   partnerAchternaam: '',
   geslacht: Geslacht.MAN,
-  tijdelijkAdres: false,
+  isTijdelijkAdres: false,
   screeningsorganisatie: 'Screeningsorganisatie',
   actief: true,
+  gbaStatus: GbaStatus.INDICATIE_AANWEZIG,
+  ...overrides,
+})
+
+export const maakClientContactgegevens = (overrides: Partial<ClientContactgegevensDto> = {}): ClientContactgegevensDto => {
+  const client = maakClient()
+
+  return {
+    clientId: client.id,
+    voornaam: client.voornaam,
+    achternaam: client.achternaam,
+    tussenvoegsel: client.tussenvoegsel,
+    titel: client.titel,
+    geboortedatum: client.geboortedatum,
+    bsn: client.bsn,
+    naamGebruik: client.naamGebruik,
+    partnerTussenvoegsel: client.partnerTussenvoegsel,
+    partnerAchternaam: client.partnerAchternaam,
+    geslacht: client.geslacht,
+    overlijdensdatum: client.overlijdensdatum as unknown as Date,
+    mobielNummer: '0612345678',
+    extraNummer: '0201234567',
+    emailAdres: 'jan.jansen@example.org',
+    doelgroepen: [],
+    dubbeleTijdReden: '',
+    aanspreekvorm: Aanspreekvorm.GEACHTE_HEER,
+    heeftMammaAfspraak: false,
+    ...overrides,
+  }
+}
+
+export const maakBrpGegevens = (overrides: Partial<ClientBrpGegevensDto> = {}): ClientBrpGegevensDto => ({
+  id: 1,
+  indicatieStatus: 'ACTIEF',
+  datumLaatsteBrpMutatie: '2025-01-01',
+  laatstAangevraagdOp: '2025-01-01T10:00:00',
+  tijdelijkBrpAdres: true,
   ...overrides,
 })

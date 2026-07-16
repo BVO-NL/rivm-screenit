@@ -23,6 +23,7 @@
 @use 'styles/fullcalendar' as *;
 @use "styles/ds_overrides" as *;
 @use 'styles/grid' as *;
+@use 'styles/functions';
 
 app-root {
   display: flex;
@@ -84,7 +85,20 @@ app-root {
   --ds-color-primary-tint: #ccb3d4;
   --ds-text-color: #454545;
   --border-color: rgb(225, 233, 239);
-  --screenit-stale-background-color: #f9f9f9;
+  --stale-background-color: #f9f9f9;
+  --clientdossier-background-color: #eef2f6;
+  --ruimte-middel: 0.75rem;
+  --screenit-font-size: 16px;
+  --plaats-groep-font-size: 1rem;
+  --plaats-group-ondertitel-ruimte: 1.25rem;
+  --screenit-clientgegevens-label-color: #6b7280;
+
+  --spacer-0: #{functions.get-spacer(0)};
+  --spacer-1: #{functions.get-spacer(1)};
+  --spacer-2: #{functions.get-spacer(2)};
+  --spacer-3: #{functions.get-spacer(3)};
+  --spacer-4: #{functions.get-spacer(4)};
+  --spacer-5: #{functions.get-spacer(5)};
 }
 
 input::-webkit-outer-spin-button,
@@ -109,6 +123,7 @@ input[type='number'] {
 
 .filter {
   display: flex;
+  flex-direction: column;
   border: 1px solid rgb(225, 233, 239);
   background: #fff;
   font-family: Inter, Arial, "sans-serif";

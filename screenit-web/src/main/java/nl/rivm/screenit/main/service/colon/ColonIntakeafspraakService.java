@@ -29,10 +29,11 @@ import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.WerklijstIntakeFilter;
 
+import org.springframework.data.domain.Sort;
+
 public interface ColonIntakeafspraakService
 {
-	List<ColonIntakeAfspraak> getAfsprakenZonderVerslag(WerklijstIntakeFilter zoekObject, ColonIntakelocatie intakeLocatie, long first, long count, String sortProperty,
-		boolean isAscending);
+	List<ColonIntakeAfspraak> getAfsprakenZonderVerslag(WerklijstIntakeFilter zoekObject, ColonIntakelocatie intakeLocatie, long first, long count, Sort sort);
 
 	long getAantalAfsprakenZonderVerslag(WerklijstIntakeFilter zoekObject, ColonIntakelocatie intakeLocatie);
 

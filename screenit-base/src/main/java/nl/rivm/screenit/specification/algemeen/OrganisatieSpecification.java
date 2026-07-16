@@ -279,13 +279,13 @@ public class OrganisatieSpecification
 					.and(OrganisatieMedewerkerSpecification.isActief().with(organisatieMedewerkerJoin()));
 			}
 		}
-		return null;
+		return Specification.unrestricted();
 	}
 
 	private static Specification<Organisatie> filterPlaatsPostcode(Organisatie zoekObject, CriteriaBuilder cb)
 	{
 		var adres = zoekObject.getAdres();
-		Specification<Organisatie> spec = null;
+		Specification<Organisatie> spec = Specification.unrestricted();
 		if (adres != null)
 		{
 			if (adres.getPlaats() != null)

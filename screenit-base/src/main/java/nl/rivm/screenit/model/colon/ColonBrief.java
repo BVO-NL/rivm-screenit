@@ -33,13 +33,12 @@ import lombok.Setter;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.MergedBrieven;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "colon", name = "brief", indexes = { @Index(name = "idx_colon_brief_gegenereerd", columnList = "gegenereerd"),
-	@Index(name = "idx_colon_brief_vervangendeprojectbrief", columnList = "vervangendeprojectbrief") })
+	@Index(name = "idx_colon_brief_vervangendeprojectbrief", columnList = "vervangendeprojectbrief"),
+	@Index(name = "idx_colon_brief_verstuurd_voor_afdrukken_op", columnList = "verstuurdVoorAfdrukkenOp") })
 @Audited
 @Getter
 @Setter
@@ -52,19 +51,15 @@ public class ColonBrief extends ClientBrief<ColonScreeningRonde, ColonAfmelding,
 	private ColonIntakeAfspraak vorigeIntakeAfspraak;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	private ColonFitRegistratie fitRegistratie;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	private ColonMergedBrieven mergedBrieven;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	private ColonScreeningRonde screeningRonde;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	private ColonAfmelding afmelding;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)

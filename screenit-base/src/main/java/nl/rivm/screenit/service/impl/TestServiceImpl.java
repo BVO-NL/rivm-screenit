@@ -74,6 +74,7 @@ import nl.topicuszorg.util.postcode.PostcodeFormatter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -159,7 +160,7 @@ public class TestServiceImpl implements TestService
 		adres.setPlaats("Hamsterdam");
 		adres.setStraat("Hamsterdamseweg");
 		adres.setHuisnummer(3);
-		adres.setGbaGemeente(hibernateService.loadAll(Gemeente.class).get(0));
+		adres.setGbaGemeente(hibernateService.loadAll(Gemeente.class).getFirst());
 		persoon.setGbaAdres(adres);
 
 		return persoon;
@@ -508,7 +509,7 @@ public class TestServiceImpl implements TestService
 								gemeente = new Gemeente();
 								gemeente.setCode(gemeenteCode);
 								gemeente.setNaam("Gemeente " + gemeenteCode);
-								gemeente.setScreeningOrganisatie(allSOs.get(0));
+								gemeente.setScreeningOrganisatie(allSOs.getFirst());
 								hibernateService.saveOrUpdate(gemeente);
 							}
 						}
@@ -571,7 +572,7 @@ public class TestServiceImpl implements TestService
 	@Override
 	public BMHKLaboratorium getEersteBMHKLaboratorium()
 	{
-		return bmhkLaboratoriumRepository.findFirst(null, Sort.by(AbstractHibernateObject_.ID)).orElse(null);
+		return bmhkLaboratoriumRepository.findFirst(Specification.unrestricted(), Sort.by(AbstractHibernateObject_.ID)).orElse(null);
 	}
 
 	@Override

@@ -27,15 +27,11 @@ import jakarta.persistence.Table;
 
 import nl.rivm.screenit.model.verwerkingverslag.cervix.CervixUitstelRapportage;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 @Entity
 @Table(schema = "gedeeld")
 public class CervixUitstelBeeindigdLogEvent extends LogEvent
 {
 	@OneToOne(cascade = jakarta.persistence.CascadeType.REMOVE, optional = false)
-	@Cascade(CascadeType.DELETE)
 	private CervixUitstelRapportage rapportage;
 
 	public CervixUitstelRapportage getRapportage()

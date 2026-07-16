@@ -53,8 +53,6 @@ import nl.rivm.screenit.model.ProjectParameter;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -94,12 +92,10 @@ public class Project extends AbstractHibernateObject implements INaam, IBevolkin
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Organisatie organisatie;
 
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	private OrganisatieMedewerker contactpersoon;
 
 	@NotAudited
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@JoinTable(schema = "algemeen", name = "project_medewerkers")
 	private List<OrganisatieMedewerker> medewerkers = new ArrayList<>();

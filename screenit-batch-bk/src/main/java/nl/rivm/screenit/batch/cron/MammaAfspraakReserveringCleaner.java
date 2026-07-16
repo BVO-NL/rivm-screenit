@@ -25,9 +25,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaAfspraakReserveringService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;

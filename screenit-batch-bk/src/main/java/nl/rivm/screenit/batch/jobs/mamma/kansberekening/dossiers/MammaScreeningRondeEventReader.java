@@ -32,8 +32,8 @@ import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaDossier_;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;

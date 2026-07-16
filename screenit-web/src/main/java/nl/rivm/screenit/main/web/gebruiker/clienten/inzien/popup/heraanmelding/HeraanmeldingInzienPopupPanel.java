@@ -183,7 +183,7 @@ public abstract class HeraanmeldingInzienPopupPanel<A extends Afmelding<?, ?, ?>
 				info(getString("info.brieftegenhouden"));
 				close(target);
 			}
-		}.setVisible(Actie.AANPASSEN.equals(actie) && laatsteBrief != null && !BriefUtil.isTegengehouden(laatsteBrief) && BriefUtil.getMergedBrieven(laatsteBrief) == null));
+		}.setVisible(Actie.AANPASSEN.equals(actie) && laatsteBrief != null && !BriefUtil.isTegengehouden(laatsteBrief) && !BriefUtil.isGegenereerd(laatsteBrief)));
 		add(new AjaxLink<Void>("doorvoeren")
 		{
 			@Override

@@ -40,10 +40,10 @@ import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaFollowUpRadiologieVerslag;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;

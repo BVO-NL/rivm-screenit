@@ -31,19 +31,19 @@ import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.project.ProjectBrief;
 import nl.rivm.screenit.model.project.ProjectBrief_;
 import nl.rivm.screenit.repository.BaseJpaRepository;
+import nl.rivm.screenit.specification.algemeen.BriefSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.heeftScreeningsOrganisatie;
 import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.isClientGekoppeldAanEenScreeningOrganisatie;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftActieveClient;
-import static nl.rivm.screenit.specification.algemeen.ProjectBriefSpecification.heeftGeenMergedBrieven;
 
 public interface ProjectBriefRepository extends BaseJpaRepository<ProjectBrief>
 {
 	default List<Long> getActieveProjectBriefActieDefinities(ScreeningOrganisatie screeningOrganisatie)
 	{
-		var specification = heeftGeenMergedBrieven()
+		var specification = BriefSpecification.<ProjectBrief> isNietGegenereerd()
 			.and(screeningOrganisatie != null ? heeftScreeningsOrganisatie(screeningOrganisatie) : isClientGekoppeldAanEenScreeningOrganisatie())
 			.and(heeftActieveClient().with(r -> clientJoin(r)));
 

@@ -49,13 +49,10 @@ public class ColonBrievenGenererenWriter extends AbstractBrievenGenererenWriter<
 	@Override
 	protected ColonMergedBrieven createConcreteMergedBrieven(Date aangemaaktOp)
 	{
-		var context = getStepExecutionContext();
-		var briefType = BriefType.valueOf(context.getString(ColonBrievenGenererenPartitioner.KEY_BRIEFTYPE));
-
 		var mergedBrieven = new ColonMergedBrieven();
 		mergedBrieven.setScreeningOrganisatie(getScreeningOrganisatie());
 		mergedBrieven.setCreatieDatum(aangemaaktOp);
-		mergedBrieven.setBriefType(briefType);
+		mergedBrieven.setBriefType(getBriefType());
 		return mergedBrieven;
 	}
 

@@ -88,6 +88,8 @@ import nl.rivm.screenit.service.cervix.CervixBaseDossierService;
 import nl.rivm.screenit.service.cervix.CervixMailService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.service.mamma.MammaBaseDossierService;
+import nl.rivm.screenit.specification.algemeen.BriefSpecification;
+import nl.rivm.screenit.specification.algemeen.ClientBriefSpecification;
 import nl.rivm.screenit.util.BezwaarUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ProjectUtil;
@@ -102,9 +104,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import static nl.rivm.screenit.model.enums.BezwaarType.GEEN_GEBRUIK_LICHAAMSMATERIAAL_WETENSCHAPPELIJK_ONDERZOEK;
 import static nl.rivm.screenit.model.enums.BezwaarType.GEEN_SIGNALERING_VERWIJSADVIES;
-import static nl.rivm.screenit.specification.algemeen.BezwaarBriefSpecification.heeftClient;
-import static nl.rivm.screenit.specification.algemeen.BezwaarBriefSpecification.isNietVerstuurd;
-import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefType;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.heeftBsn;
 import static nl.rivm.screenit.util.DateUtil.isGeboortedatumGelijk;
 import static nl.topicuszorg.util.collections.CollectionUtils.isEqualCollection;
@@ -561,7 +560,10 @@ public class BezwaarServiceImpl implements BezwaarService
 	@Override
 	public Optional<BezwaarBrief> getLaatsteBezwaarBriefVanTypeVoorClient(Client client, BriefType briefType)
 	{
-		return bezwaarBriefRepository.findFirst(heeftClient(client).and(isNietVerstuurd().and(heeftBriefType(briefType))), Sort.by(Sort.Order.desc(Brief_.CREATIE_DATUM)));
+		return bezwaarBriefRepository.findFirst(
+			ClientBriefSpecification.<BezwaarBrief> heeftClient(client)
+				.and(BriefSpecification.<BezwaarBrief> isNietVerstuurdVoorAfdrukken().and(BriefSpecification.heeftBriefType(briefType))),
+			Sort.by(Sort.Order.desc(Brief_.CREATIE_DATUM)));
 	}
 
 	@Override

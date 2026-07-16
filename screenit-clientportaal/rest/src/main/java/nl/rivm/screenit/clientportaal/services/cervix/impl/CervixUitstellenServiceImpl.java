@@ -37,10 +37,10 @@ import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.cervix.CervixUitstel;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.cervix.CervixBaseScreeningrondeService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

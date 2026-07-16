@@ -31,10 +31,13 @@ import lombok.Setter;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
+import org.hibernate.envers.Audited;
+
 @Entity
 @Table(schema = "colon")
 @Setter
 @Getter
+@Audited
 public class ColoscopieCentrumColonCapaciteitVerdeling extends AbstractHibernateObject
 {
 	@ManyToOne(optional = false)

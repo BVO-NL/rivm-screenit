@@ -64,24 +64,24 @@ public class MessageServiceImpl implements MessageService
 
 	@Override
 	@Transactional
-	public void queueMessage(MessageType type, Object content)
+	public Message queueMessage(MessageType type, Object content)
 	{
-		queueMessage(type, content, null);
+		return queueMessage(type, content, null);
 	}
 
 	@Override
 	@Transactional
-	public void queueMessage(MessageType type, Object content, String context)
+	public Message queueMessage(MessageType type, Object content, String context)
 	{
 		try
 		{
-			Message newMessage = new Message();
+			var newMessage = new Message();
 			newMessage.setType(type);
 			newMessage.setSenderApplicationInstance(applicationInstance);
 			newMessage.setContent(objectMapper.writeValueAsString(content));
 			newMessage.setAanmaakMoment(currentDateSupplier.getDate());
 			newMessage.setContext(context);
-			messageRepository.save(newMessage);
+			return messageRepository.save(newMessage);
 		}
 		catch (JsonProcessingException e)
 		{

@@ -33,6 +33,7 @@ import nl.rivm.screenit.model.ProjectParameter;
 import nl.rivm.screenit.model.ProjectParameterKey;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.model.messagequeue.dto.BriefafdrukopdrachtDto;
 import nl.rivm.screenit.model.project.Project;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.model.project.ProjectBriefActieType;
@@ -205,5 +206,22 @@ public class ProjectUtil
 	public static String getParameter(Project project, ProjectParameterKey parameterKey)
 	{
 		return project.getParameters().stream().filter(p -> p.getKey().equals(parameterKey)).findFirst().orElse(new ProjectParameter()).getValue();
+	}
+
+	public static void verwerktPrintomschrijvingInAfdrukopdracht(String printomschrijving, BriefafdrukopdrachtDto briefafdrukopdrachtDto)
+	{
+		if (StringUtils.isNotBlank(printomschrijving))
+		{
+			boolean overruleBriefcode = printomschrijving.contains("_");
+			if (overruleBriefcode)
+			{
+
+				briefafdrukopdrachtDto.setCode(printomschrijving.replace(" ", "_"));
+			}
+			else
+			{
+				briefafdrukopdrachtDto.setCodeAddendum(printomschrijving.replace(" ", "_"));
+			}
+		}
 	}
 }

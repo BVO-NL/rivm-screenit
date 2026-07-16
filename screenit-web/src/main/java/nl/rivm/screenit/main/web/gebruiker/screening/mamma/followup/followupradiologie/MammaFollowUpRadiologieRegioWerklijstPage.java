@@ -43,9 +43,9 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.MammaFollowUpDoorverwezenFilterOptie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 

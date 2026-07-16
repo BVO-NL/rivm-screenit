@@ -39,6 +39,7 @@ import nl.rivm.screenit.model.mamma.MammaScreeningRonde_;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.algemeen.BriefSpecification;
 import nl.rivm.screenit.specification.algemeen.DossierSpecification;
@@ -46,7 +47,6 @@ import nl.rivm.screenit.specification.mamma.MammaAfspraakSpecification;
 import nl.rivm.screenit.specification.mamma.MammaBaseDossierSpecification;
 import nl.rivm.screenit.specification.mamma.MammaUitnodigingSpecification;
 import nl.rivm.screenit.specification.mamma.MammaUitstelSpecification;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;

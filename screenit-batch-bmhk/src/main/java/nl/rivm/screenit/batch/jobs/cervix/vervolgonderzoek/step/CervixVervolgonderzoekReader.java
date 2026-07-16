@@ -49,7 +49,6 @@ import static nl.rivm.screenit.specification.cervix.CervixScreeningRondeSpecific
 import static nl.rivm.screenit.specification.cervix.CervixScreeningRondeSpecification.heeftInVervolgonderzoekDatum;
 import static nl.rivm.screenit.specification.cervix.CervixScreeningRondeSpecification.heeftInVervolgonderzoekDatumVoorOntvangstDatumOfScanDatum;
 import static nl.rivm.screenit.specification.cervix.CervixUitstelSpecification.heeftGeannuleerdDatum;
-import static org.springframework.data.jpa.domain.Specification.where;
 
 @Component
 public class CervixVervolgonderzoekReader extends BaseSpecificationScrollableResultReader<CervixScreeningRonde>
@@ -69,11 +68,11 @@ public class CervixVervolgonderzoekReader extends BaseSpecificationScrollableRes
 		{
 			var subquery = heeftInVervolgonderzoekDatumVoorOntvangstDatumOfScanDatum(q, cb);
 
-			return where(heeftActieveClient().with(clientJoin()))
+			return heeftActieveClient().with(clientJoin())
 				.and(isLopend())
 				.and(heeftInVervolgonderzoekDatum())
 				.and(heeftGeenUitnodigingVervolgonderzoek())
-				.and(where(heeftGeenUitstel())
+				.and(heeftGeenUitstel()
 					.or(heeftGeannuleerdDatum().with(uitstelJoin())))
 				.and(heeftControleUitstrijkjeDatumVoorOfOp(dateSupplier.getLocalDate()))
 				.and((subRoot, subQuery, subBuilder) ->

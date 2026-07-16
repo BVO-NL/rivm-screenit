@@ -37,7 +37,6 @@ import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.OnderzoeksresultatenActie;
 import nl.rivm.screenit.model.ScreeningRonde;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -54,11 +53,9 @@ public class BezwaarBrief extends ClientBrief<ScreeningRonde, Afmelding, Bezwaar
 	private OnderzoeksresultatenActie onderzoeksresultatenActie;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE })
 	private BezwaarMergedBrieven mergedBrieven;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@Cascade({ org.hibernate.annotations.CascadeType.DELETE })
 	private BezwaarBrief herdruk;
 
 	private boolean vragenOmHandtekening = false;

@@ -36,11 +36,11 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.helper.ActiveMQHelper;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.BerichtToSeRestBkService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.websocket.WebsocketBerichtType;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -58,10 +58,6 @@ public class BerichtToSeRestBkServiceImpl implements BerichtToSeRestBkService
 
 	@Autowired
 	private JmsTemplate jmsTemplate;
-
-	@Autowired
-	@Qualifier("testModus")
-	private Boolean testModus;
 
 	@Autowired
 	@Qualifier("verwerkMammaSeRestDestination")
@@ -98,15 +94,6 @@ public class BerichtToSeRestBkServiceImpl implements BerichtToSeRestBkService
 		updateDatums.stream()
 			.filter(ud -> Range.closed(vandaag, daglijstNotificerenTotEnMet).contains(ud))
 			.forEach(ud -> queueBericht(mammaSeRestDestination, se.getCode() + ":" + ud.format(DateTimeFormatter.ISO_DATE)));
-	}
-
-	@Override
-	public void dbCleanupVoorIedereSe()
-	{
-		if (Boolean.TRUE.equals(testModus))
-		{
-			queueBericht(mammaSeRestDestination, WebsocketBerichtType.DB_CLEANUP.name());
-		}
 	}
 
 	@Override

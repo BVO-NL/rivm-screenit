@@ -169,6 +169,8 @@ public enum DashboardType
 	MAIL_LANDELIJK("Mail versturen", List.of(OrganisatieType.SCREENINGSORGANISATIE), Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX,
 		Bevolkingsonderzoek.MAMMA),
 
+	BRIEF_AFDRUK_QUEUE("Uitgaande afdrukopdrachten", Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA),
+
 	SIGNALERING_GENDER("Signalering gender", Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA),
 
 	;

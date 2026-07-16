@@ -80,13 +80,13 @@ import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsPeriodeUit
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsRondeRapportageStatus;
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaStandplaatsRondeUitnodigenRapportage;
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaUitnodigenRapportage;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

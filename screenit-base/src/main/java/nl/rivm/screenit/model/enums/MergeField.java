@@ -94,6 +94,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaVerzettenReden;
 import nl.rivm.screenit.model.mamma.enums.MammaZijde;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenOrganisatieOvereenkomst;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.BarcodeService;
 import nl.rivm.screenit.service.HeraanmeldenMergeVeldService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -120,7 +121,6 @@ import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 import nl.topicuszorg.organisatie.model.Adres;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.util.postcode.PostcodeFormatter;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -153,7 +153,7 @@ public enum MergeField
 				var uitnodiging = context.getColonUitnodiging();
 				if (brief != null && brief.getId() != null)
 				{
-					return "K" + Long.toHexString(brief.getId()).toUpperCase();
+					return BriefUtil.maakKenmerk(brief);
 				}
 				else if (uitnodiging != null)
 				{
@@ -161,6 +161,7 @@ public enum MergeField
 				}
 				return null;
 			}
+
 		},
 	SO_ID("_SO_ID")
 		{
@@ -2704,9 +2705,8 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst)
+				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst afgeslotenOvereenkomst)
 				{
-					var afgeslotenOvereenkomst = (AfgeslotenOrganisatieOvereenkomst) context.getOvereenkomst();
 					if (afgeslotenOvereenkomst.getOrganisatie().getGemachtigde() != null)
 					{
 						return afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getAchternaam();
@@ -2722,9 +2722,8 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst)
+				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst afgeslotenOvereenkomst)
 				{
-					var afgeslotenOvereenkomst = (AfgeslotenOrganisatieOvereenkomst) context.getOvereenkomst();
 					if (afgeslotenOvereenkomst.getOrganisatie().getGemachtigde() != null)
 					{
 						return afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getTussenvoegsel();
@@ -2740,9 +2739,8 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst)
+				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst afgeslotenOvereenkomst)
 				{
-					var afgeslotenOvereenkomst = (AfgeslotenOrganisatieOvereenkomst) context.getOvereenkomst();
 					if (afgeslotenOvereenkomst.getOrganisatie().getGemachtigde() != null)
 					{
 						return afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getVoorletters();
@@ -2758,9 +2756,8 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst)
+				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst afgeslotenOvereenkomst)
 				{
-					var afgeslotenOvereenkomst = (AfgeslotenOrganisatieOvereenkomst) context.getOvereenkomst();
 					if (afgeslotenOvereenkomst.getOrganisatie().getGemachtigde() != null && afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getAanhef() != null)
 					{
 						return afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getAanhef().getNaam();
@@ -2776,9 +2773,8 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst)
+				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst afgeslotenOvereenkomst)
 				{
-					var afgeslotenOvereenkomst = (AfgeslotenOrganisatieOvereenkomst) context.getOvereenkomst();
 					if (afgeslotenOvereenkomst.getOrganisatie().getGemachtigde() != null && afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getTitel() != null)
 					{
 						return afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getTitel().getNaam();
@@ -2794,9 +2790,8 @@ public enum MergeField
 			@Override
 			public Object getFieldValue(MailMergeContext context)
 			{
-				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst)
+				if (context.getOvereenkomst() instanceof AfgeslotenOrganisatieOvereenkomst afgeslotenOvereenkomst)
 				{
-					var afgeslotenOvereenkomst = (AfgeslotenOrganisatieOvereenkomst) context.getOvereenkomst();
 					if (afgeslotenOvereenkomst.getOrganisatie().getGemachtigde() != null && afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getFunctie() != null)
 					{
 						return afgeslotenOvereenkomst.getOrganisatie().getGemachtigde().getFunctie().getNaam();

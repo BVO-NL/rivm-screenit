@@ -41,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractBrievenGenererenListener extends BaseLogListener
 {
+
 	@Autowired
 	private HibernateService hibernateService;
 

@@ -37,13 +37,13 @@ import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.cervix.CervixBaseScreeningrondeService;
 import nl.rivm.screenit.util.AfmeldingUtil;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Service;
 
@@ -117,7 +117,7 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 	{
 		var herinnering = ronde.getBrieven().stream()
 			.filter(this::isGeaccepteerdeBriefVoorHerinnering)
-			.filter(BriefUtil::isVerstuurd)
+			.filter(BriefUtil::isVerstuurdVoorAfdrukken)
 			.max(Comparator.comparing(CervixBrief::getCreatieDatum, Comparator.nullsFirst(Date::compareTo)));
 
 		if (herinnering.isEmpty())
@@ -131,12 +131,12 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 			return true;
 		}
 
-		var mergedBrieven = herinnering.get().getMergedBrieven();
-		if (mergedBrieven == null || mergedBrieven.getPrintDatum() == null)
+		var verstuurdVoorAfdrukkenMoment = BriefUtil.getVerstuurdVoorAfdrukkenMoment(herinnering.get());
+		if (verstuurdVoorAfdrukkenMoment == null)
 		{
 			return false;
 		}
-		var dagenTussenHerinneringEnVandaag = DateUtil.aantalDagenVerschil(mergedBrieven.getPrintDatum(), currentDateSupplier.getDate());
+		var dagenTussenHerinneringEnVandaag = DateUtil.aantalDagenVerschil(verstuurdVoorAfdrukkenMoment, currentDateSupplier.getDate());
 		var minimaleDagenTussenHerinneringEnVandaag = wekenNaAanmaakHerinnering * 7;
 		return dagenTussenHerinneringEnVandaag >= minimaleDagenTussenHerinneringEnVandaag;
 	}

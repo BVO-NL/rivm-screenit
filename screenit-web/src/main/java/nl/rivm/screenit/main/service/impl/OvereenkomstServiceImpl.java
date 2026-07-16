@@ -44,6 +44,7 @@ import nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenOrganisatieOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.Overeenkomst;
 import nl.rivm.screenit.model.overeenkomsten.OvereenkomstType;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.AbstractAfgeslotenOvereenkomstRepository;
 import nl.rivm.screenit.repository.algemeen.AfgeslotenMedewerkerOvereenkomstRepository;
 import nl.rivm.screenit.repository.algemeen.AfgeslotenOrganisatieOvereenkomstRepository;
@@ -61,7 +62,6 @@ import nl.rivm.screenit.specification.algemeen.AfgeslotenMedewerkerOvereenkomstS
 import nl.rivm.screenit.specification.algemeen.AfgeslotenOrganisatieOvereenkomstSpecification;
 import nl.rivm.screenit.specification.algemeen.OrganisatieSpecification;
 import nl.rivm.screenit.specification.algemeen.OvereenkomstSpecification;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;

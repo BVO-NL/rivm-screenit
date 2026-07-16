@@ -411,8 +411,8 @@ public class CervixHuisartsServiceImpl implements CervixHuisartsService
 			var isVolledigAfgedrukt = true;
 			for (var aanvraag : formulierAanvragen)
 			{
-				var isVoorbladIsAfgedrukt = BriefUtil.isMergedBrievenGeprint(aanvraag.getVoorbladBrief());
-				var isFormulierenAfgedrukt = BriefUtil.isMergedBrievenGeprint(aanvraag.getBrief());
+				var isVoorbladIsAfgedrukt = BriefUtil.isVerstuurdVoorAfdrukken(aanvraag.getVoorbladBrief());
+				var isFormulierenAfgedrukt = BriefUtil.isVerstuurdVoorAfdrukken(aanvraag.getBrief());
 				if (!isVoorbladIsAfgedrukt || !isFormulierenAfgedrukt)
 				{
 					isVolledigAfgedrukt = false;

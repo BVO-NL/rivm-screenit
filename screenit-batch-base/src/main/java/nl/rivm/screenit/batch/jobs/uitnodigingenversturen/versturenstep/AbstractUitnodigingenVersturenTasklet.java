@@ -58,6 +58,7 @@ import nl.rivm.screenit.model.inpakcentrum.naarinpakcentrum.InpakcentrumMergeFie
 import nl.rivm.screenit.model.inpakcentrum.naarinpakcentrum.InpakcentrumUitnodigingDto;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.AsposeService;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BaseProjectService;
@@ -68,7 +69,6 @@ import nl.rivm.screenit.service.MailService;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.ZipUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;

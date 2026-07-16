@@ -27,7 +27,7 @@ import java.util.Date;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import nl.topicuszorg.preferencemodule.model.IPreferenceKey;
+import nl.rivm.screenit.preference.model.IPreferenceKey;
 
 @RequiredArgsConstructor
 @Getter
@@ -484,6 +484,8 @@ public enum PreferenceKey implements IPreferenceKey
 
 	LEEFTIJD_PERSOONSGEGEVENS_UIT_EXTRA_BEVEILIGDE_OMGEVING_VERWIJDEREN("Leeftijd van de client waarbij persoonsgegevens uit de extra beveiligde omgeving verwijderd worden",
 		Integer.class),
+
+	START_AUTOMATISCH_AFDRUKKEN_PARAGON("Start van automatisch afdrukken bij Paragon", Date.class),
 
 	COLON_BETROUWBARE_LIMIET_FIT("Betrouwbare limiet FIT uitslag", Integer.class),
 

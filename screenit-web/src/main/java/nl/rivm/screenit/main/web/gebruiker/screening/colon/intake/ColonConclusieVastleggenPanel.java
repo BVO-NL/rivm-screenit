@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.main.service.colon.ColonDossierService;
-import nl.rivm.screenit.main.service.colon.ColonIntakeafspraakService;
 import nl.rivm.screenit.main.service.colon.ColonVervolgonderzoekKeuzesDto;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.AjaxButtonGroup;
@@ -56,6 +55,7 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
+import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.util.NaamUtil;
@@ -530,10 +530,11 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 			{
 				for (ColonBrief brief : ronde.getBrieven())
 				{
-					if (brief.getIntakeAfspraak() != null && brief.getMergedBrieven() != null && afspraak.getId().equals(brief.getIntakeAfspraak().getId())
-						&& BriefType.COLON_UITNODIGING_INTAKE.equals(brief.getBriefType()) && brief.getMergedBrieven().getPrintDatum() != null)
+					var verstuurdVoorAfdrukkenMoment = BriefUtil.getVerstuurdVoorAfdrukkenMoment(brief);
+					if (brief.getIntakeAfspraak() != null && afspraak.getId().equals(brief.getIntakeAfspraak().getId())
+						&& BriefType.COLON_UITNODIGING_INTAKE.equals(brief.getBriefType()) && verstuurdVoorAfdrukkenMoment != null)
 					{
-						briefAfgedrukt = brief.getMergedBrieven().getPrintDatum();
+						briefAfgedrukt = verstuurdVoorAfdrukkenMoment;
 					}
 				}
 			}

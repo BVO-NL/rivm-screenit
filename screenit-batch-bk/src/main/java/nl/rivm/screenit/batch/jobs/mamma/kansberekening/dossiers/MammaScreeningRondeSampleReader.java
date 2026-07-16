@@ -23,33 +23,29 @@ package nl.rivm.screenit.batch.jobs.mamma.kansberekening.dossiers;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.criteria.From;
+
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultReader;
 import nl.rivm.screenit.model.mamma.MammaBrief;
-import nl.rivm.screenit.model.mamma.MammaBrief_;
-import nl.rivm.screenit.model.mamma.MammaMergedBrieven;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde_;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.ExtendedSpecification;
+import nl.rivm.screenit.specification.algemeen.BriefSpecification;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Range;
 
-import jakarta.persistence.criteria.From;
-
-import static jakarta.persistence.criteria.JoinType.LEFT;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.isAangemaaktVoor;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.isGegenereerd;
 import static nl.rivm.screenit.specification.algemeen.MammaBriefSpecification.heeftGeenMergedBrieven;
-import static nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification.heeftPrintDatum;
-import static nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification.heeftPrintDatumVoor;
 import static nl.rivm.screenit.specification.algemeen.ScreeningRondeSpecification.isAangemaaktIn;
 import static nl.rivm.screenit.specification.mamma.MammaScreeningRondeSpecification.heeftGeenScreeningRondeEvent;
 
@@ -82,21 +78,13 @@ public class MammaScreeningRondeSampleReader extends BaseSpecificationScrollable
 
 	private ExtendedSpecification<MammaScreeningRonde> briefMetMergedBrievenGeprintVoor(LocalDate peilmoment)
 	{
-		return heeftPrintDatum()
-			.and(heeftPrintDatumVoor(peilmoment))
-			.with(r -> getMergedBrievenJoin(r));
+		return BriefSpecification.isVerstuurdVoorAfdrukkenVoor(peilmoment)
+			.with(r -> getBriefJoin(r));
 	}
 
 	private static From<?, MammaBrief> getBriefJoin(From<?, ? extends MammaScreeningRonde> r)
 	{
 		var uitnodigingJoin = join(r, MammaScreeningRonde_.uitnodigingen);
 		return join(uitnodigingJoin, MammaUitnodiging_.brief);
-	}
-
-	private static From<?, MammaMergedBrieven> getMergedBrievenJoin(From<?, ? extends MammaScreeningRonde> r)
-	{
-		var uitnodigingJoin = join(r, MammaScreeningRonde_.uitnodigingen);
-		var briefJoin = join(uitnodigingJoin, MammaUitnodiging_.brief);
-		return join(briefJoin, MammaBrief_.mergedBrieven, LEFT);
 	}
 }

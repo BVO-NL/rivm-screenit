@@ -32,8 +32,6 @@ import jakarta.persistence.Table;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -47,7 +45,6 @@ public class MammaAnnotatieAfbeelding extends AbstractHibernateObject
 
 	@OneToMany(mappedBy = "afbeelding", fetch = FetchType.LAZY, orphanRemoval = true,
 		cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	@NotAudited
 	private List<MammaAnnotatieIcoon> iconen = new ArrayList<>();
 

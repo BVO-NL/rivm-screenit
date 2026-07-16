@@ -29,14 +29,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.From;
 
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.dao.ClientDao;
+import nl.rivm.screenit.main.dto.algemeen.ClientContactgegevensDto;
+import nl.rivm.screenit.main.dto.algemeen.DoelgroepDto;
+import nl.rivm.screenit.model.Aanhef;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.CentraleEenheid;
@@ -60,9 +65,12 @@ import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
+import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
+import nl.rivm.screenit.model.mamma.enums.MammaUitnodigingsintervalType;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectInactiefReden;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
@@ -96,7 +104,7 @@ import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.AdresSpecification.heeftAdresOfNull;
 import static nl.rivm.screenit.specification.algemeen.AdresSpecification.heeftHuisnummer;
 import static nl.rivm.screenit.specification.algemeen.AdresSpecification.heeftPostcode;
-import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftANummer;
+import static nl.rivm.screenit.specification.algemeen.ClientSpecification.filterOpANummer;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftBsnDieEindigtMet;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftGbaMutaties;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftGbaStatus;
@@ -104,7 +112,6 @@ import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftN
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftNietGbaStatussen;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftTitelCode;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.metBeoordelingId;
-import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.filterGeboortedatum;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.heeftBsn;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.isNietOverleden;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.valtBinnenLeeftijdGrensRestricties;
@@ -114,7 +121,6 @@ import static nl.rivm.screenit.specification.colon.ColonUitnodigingSpecification
 import static nl.rivm.screenit.util.DateUtil.isGeboortedatumGelijk;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
-import static org.springframework.data.jpa.domain.Specification.where;
 
 @Slf4j
 @Service
@@ -212,12 +218,169 @@ public class ClientServiceImpl implements ClientService
 	}
 
 	@Override
+	public void slaContactgegevensOp(Client client, ClientContactgegevensDto dto, Account ingelogdAccount)
+	{
+		logContactgegevensWijzigingen(client, dto, ingelogdAccount);
+		zetContactgegevensInClient(dto, client);
+		clientRepository.save(client);
+	}
+
+	private void logContactgegevensWijzigingen(Client client, ClientContactgegevensDto dto, Account ingelogdAccount)
+	{
+		var persoon = client.getPersoon();
+
+		var melding = maakContactgegevensmelding(persoon, dto);
+		if (melding != null)
+		{
+			logService.logGebeurtenis(LogGebeurtenis.CLIENT_CONTACT_GEGEVENS_GEWIJZIGD, ingelogdAccount, client, melding);
+		}
+
+		var nieuweAanhef = dto.getAanspreekvorm() != null ? Aanhef.valueOf(dto.getAanspreekvorm()) : null;
+		if (!Objects.equals(persoon.getAanhef(), nieuweAanhef))
+		{
+			var aanhefNaam = nieuweAanhef != null ? nieuweAanhef.getNaam() : "geen";
+			logService.logGebeurtenis(LogGebeurtenis.WIJZIG_AANHEF, ingelogdAccount, client,
+				"Aanhef gewijzigd naar: " + aanhefNaam);
+		}
+
+		var mammaDossier = client.getMammaDossier();
+		if (mammaDossier != null)
+		{
+			var oudeDoelgroep = mammaDossier.getDoelgroep();
+			var nieuweDoelgroep = bepaalNieuweDoelgroep(dto);
+			if (oudeDoelgroep != nieuweDoelgroep)
+			{
+				logService.logGebeurtenis(LogGebeurtenis.MAMMA_DOELGROEP_GEWIJZIGD, ingelogdAccount, client,
+					nieuweDoelgroep.toString(), Bevolkingsonderzoek.MAMMA);
+			}
+		}
+	}
+
+	private String maakContactgegevensmelding(Persoon persoon, ClientContactgegevensDto dto)
+	{
+		var wijzigingen = new ArrayList<String>();
+		voegContactgegevensWijzigingToe(wijzigingen, "mobiel nummer", persoon.getTelefoonnummer1(), dto.getMobielNummer());
+		voegContactgegevensWijzigingToe(wijzigingen, "extra telefoonnummer", persoon.getTelefoonnummer2(), dto.getExtraNummer());
+		voegContactgegevensWijzigingToe(wijzigingen, "e-mailadres", persoon.getEmailadres(), dto.getEmailAdres());
+		if (wijzigingen.isEmpty())
+		{
+			return null;
+		}
+		return "Wijzigingen: " + String.join(", ", wijzigingen);
+	}
+
+	private void voegContactgegevensWijzigingToe(List<String> wijzigingen, String veldNaam, String oudeWaarde, String nieuweWaarde)
+	{
+		if (!Objects.equals(oudeWaarde, nieuweWaarde))
+		{
+			var oud = StringUtils.defaultIfBlank(oudeWaarde, "(leeg)");
+			var nieuw = StringUtils.defaultIfBlank(nieuweWaarde, "(leeg)");
+			wijzigingen.add(veldNaam + ": " + oud + " -> " + nieuw);
+		}
+	}
+
+	private MammaDoelgroep bepaalNieuweDoelgroep(ClientContactgegevensDto dto)
+	{
+		var doelgroepen = dto.getDoelgroepen();
+		if (doelgroepen.contains(DoelgroepDto.MINDERVALIDE))
+		{
+			return MammaDoelgroep.MINDERVALIDE;
+		}
+		else if (doelgroepen.contains(DoelgroepDto.DUBBELE_TIJD))
+		{
+			return MammaDoelgroep.DUBBELE_TIJD;
+		}
+		return MammaDoelgroep.REGULIER;
+	}
+
+	private void zetContactgegevensInClient(ClientContactgegevensDto dto, Client client)
+	{
+		var persoon = client.getPersoon();
+		persoon.setTelefoonnummer1(dto.getMobielNummer());
+		persoon.setTelefoonnummer2(dto.getExtraNummer());
+		persoon.setEmailadres(dto.getEmailAdres());
+		if (dto.getAanspreekvorm() != null)
+		{
+			persoon.setAanhef(Aanhef.valueOf(dto.getAanspreekvorm()));
+		}
+		else
+		{
+			persoon.setAanhef(null);
+		}
+		zetDoelgroepenInClient(dto, client);
+	}
+
+	private void zetDoelgroepenInClient(ClientContactgegevensDto dto, Client client)
+	{
+		var mammaDossier = client.getMammaDossier();
+		if (mammaDossier == null)
+		{
+			return;
+		}
+
+		var doelgroepen = dto.getDoelgroepen();
+
+		if (doelgroepen.contains(DoelgroepDto.MINDERVALIDE))
+		{
+			mammaDossier.setDoelgroep(MammaDoelgroep.MINDERVALIDE);
+		}
+		else if (doelgroepen.contains(DoelgroepDto.DUBBELE_TIJD))
+		{
+			mammaDossier.setDoelgroep(MammaDoelgroep.DUBBELE_TIJD);
+			mammaDossier.setDubbeleTijdReden(dto.getDubbeleTijdReden());
+		}
+		else
+		{
+			mammaDossier.setDoelgroep(MammaDoelgroep.REGULIER);
+			mammaDossier.setDubbeleTijdReden(null);
+		}
+	}
+
+	@Override
+	public void zetDoelgroepenVanClient(Client client, ClientContactgegevensDto contactgegevens)
+	{
+		var mammaDossier = client.getMammaDossier();
+		if (mammaDossier == null)
+		{
+			return;
+		}
+
+		var doelgroep = mammaDossier.getDoelgroep();
+		var doelgroepen = contactgegevens.getDoelgroepen();
+
+		if (doelgroep == MammaDoelgroep.MINDERVALIDE)
+		{
+			doelgroepen.add(DoelgroepDto.MINDERVALIDE);
+		}
+		if (doelgroep == MammaDoelgroep.DUBBELE_TIJD)
+		{
+			doelgroepen.add(DoelgroepDto.DUBBELE_TIJD);
+			contactgegevens.setDubbeleTijdReden(mammaDossier.getDubbeleTijdReden());
+		}
+		if (isSuspectOfHoogRisico(mammaDossier))
+		{
+			doelgroepen.add(DoelgroepDto.SUSPECT);
+		}
+		if (mammaDossier.getTehuis() != null)
+		{
+			doelgroepen.add(DoelgroepDto.TEHUIS);
+		}
+	}
+
+	private boolean isSuspectOfHoogRisico(MammaDossier mammaDossier)
+	{
+		var volgendeUitnodiging = mammaDossier.getVolgendeUitnodiging();
+		var intervalType = volgendeUitnodiging != null ? volgendeUitnodiging.getInterval().getType() : null;
+		return MammaUitnodigingsintervalType.isSuspectOfHoogRisico(intervalType);
+	}
+
+	@Override
 	public Client getClientByBsnFromNg01Bericht(String bsn, String anummer)
 	{
-		var spec = where(heeftGbaMutaties())
+		var spec = heeftGbaMutaties()
 			.and(heeftBsnDieEindigtMet(bsn))
 			.and(heeftGbaStatus(GbaStatus.AFGEVOERD))
-			.and(heeftANummer(anummer));
+			.and(filterOpANummer(anummer));
 
 		return clientRepository.findFirst(
 			spec, Sort.by(DESC, BSN_PROPERTY)
@@ -227,7 +390,7 @@ public class ClientServiceImpl implements ClientService
 	@Override
 	public Client getLaatstAfgevoerdeClient(String bsn)
 	{
-		var spec = where(heeftBsnDieEindigtMet(bsn).and(heeftGbaStatus(GbaStatus.AFGEVOERD)));
+		var spec = heeftBsnDieEindigtMet(bsn).and(heeftGbaStatus(GbaStatus.AFGEVOERD));
 
 		return clientRepository.findFirst(spec, Sort.by(DESC, BSN_PROPERTY)).orElse(null);
 	}
@@ -266,18 +429,15 @@ public class ClientServiceImpl implements ClientService
 		return clienten;
 	}
 
-	@Override
-	public List<Client> zoekClientenLijst(Client zoekObject)
+	private List<Client> zoekClientenLijst(Client zoekObject)
 	{
 		var persoon = zoekObject.getPersoon();
-		var geboortedatum = persoon.getGeboortedatum();
 		var gbaAdres = persoon.getGbaAdres();
 		var bsn = persoon.getBsn();
 		var postcode = gbaAdres.getPostcode();
 
 		boolean specificationToegevoegd = false;
 		var spec = heeftNietGbaStatussen(List.of(GbaStatus.AFGEVOERD, GbaStatus.BEZWAAR));
-		spec = spec.and(filterGeboortedatum(geboortedatum).with(Client_.persoon));
 
 		if (StringUtils.isNotBlank(bsn))
 		{
@@ -336,7 +496,7 @@ public class ClientServiceImpl implements ClientService
 	@Override
 	public List<Client> getClientenMetTitel(String titelCode)
 	{
-		var spec = where(heeftTitelCode(titelCode));
+		var spec = heeftTitelCode(titelCode);
 
 		return clientRepository.findAll(spec);
 	}
@@ -379,7 +539,7 @@ public class ClientServiceImpl implements ClientService
 	@Override
 	public Client getClientByAnummer(String anummer)
 	{
-		var spec = where(heeftANummer(anummer));
+		var spec = filterOpANummer(anummer);
 
 		return clientRepository.findOne(spec).orElse(null);
 	}

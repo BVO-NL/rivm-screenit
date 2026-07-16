@@ -42,8 +42,6 @@ import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.BestandStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -56,18 +54,15 @@ public class ProjectBestand extends AbstractHibernateObject
 {
 
 	@OneToOne(optional = false, fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	private UploadDocument uploadDocument;
 
 	@Column(nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date uploadDatum;
 
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	@ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	private Project project;
 
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	@ManyToOne(optional = true, fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	private ProjectGroep groep;
 

@@ -23,9 +23,9 @@ package nl.rivm.screenit.security;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.service.HibernateService;
-import nl.topicuszorg.yubikey.shiro.YubikeyAuthenticationInfo;
-import nl.topicuszorg.yubikey.shiro.YubikeyMatcher;
-import nl.topicuszorg.yubikey.shiro.YubikeyToken;
+import nl.rivm.screenit.yubikey.shiro.YubikeyAuthenticationInfo;
+import nl.rivm.screenit.yubikey.shiro.YubikeyMatcher;
+import nl.rivm.screenit.yubikey.shiro.YubikeyToken;
 
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;

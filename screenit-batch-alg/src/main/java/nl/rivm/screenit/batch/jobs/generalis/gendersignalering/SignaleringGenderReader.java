@@ -33,9 +33,9 @@ import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.cervix.enums.CervixLeeftijdcategorie;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;

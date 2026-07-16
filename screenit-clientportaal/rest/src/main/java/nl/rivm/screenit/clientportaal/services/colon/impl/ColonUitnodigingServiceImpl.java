@@ -32,12 +32,12 @@ import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonScreeningsrondeService;
 import nl.rivm.screenit.util.AfmeldingUtil;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Service;
 
@@ -80,7 +80,7 @@ public class ColonUitnodigingServiceImpl implements ColonUitnodigingService
 	{
 		var herinnering = Optional.ofNullable(ronde.getLaatsteBrief())
 			.filter(brief -> brief.getBriefType() == BriefType.COLON_HERINNERING)
-			.filter(BriefUtil::isVerstuurd);
+			.filter(BriefUtil::isVerstuurdVoorAfdrukken);
 
 		if (herinnering.isEmpty())
 		{
@@ -93,12 +93,12 @@ public class ColonUitnodigingServiceImpl implements ColonUitnodigingService
 			return true;
 		}
 
-		var mergedBrieven = herinnering.get().getMergedBrieven();
-		if (mergedBrieven == null || mergedBrieven.getPrintDatum() == null)
+		var verstuurdVoorAfdrukkenMoment = BriefUtil.getVerstuurdVoorAfdrukkenMoment(herinnering.get());
+		if (verstuurdVoorAfdrukkenMoment == null)
 		{
 			return false;
 		}
-		var dagenTussenHerinneringEnVandaag = DateUtil.aantalDagenVerschil(mergedBrieven.getPrintDatum(), currentDateSupplier.getDate());
+		var dagenTussenHerinneringEnVandaag = DateUtil.aantalDagenVerschil(verstuurdVoorAfdrukkenMoment, currentDateSupplier.getDate());
 		var minimaleDagenTussenHerinneringEnVandaag = wekenNaAanmaakHerinnering * 7;
 		return dagenTussenHerinneringEnVandaag >= minimaleDagenTussenHerinneringEnVandaag;
 	}

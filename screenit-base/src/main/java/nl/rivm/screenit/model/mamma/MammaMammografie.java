@@ -42,8 +42,6 @@ import nl.rivm.screenit.model.mamma.enums.MammaDenseWaarde;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Setter
@@ -58,7 +56,6 @@ public class MammaMammografie extends AbstractHibernateObject
 	private MammaOnderzoek onderzoek;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaAnnotatieAfbeelding visueleInspectieAfbeelding;
 
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)

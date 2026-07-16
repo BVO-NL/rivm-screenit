@@ -36,8 +36,6 @@ import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.ScreeningRonde;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -45,7 +43,8 @@ import org.hibernate.envers.NotAudited;
 @Table(
 	schema = "gedeeld",
 	indexes = { @Index(name = "idx_project_brief_gegenereerd", columnList = "gegenereerd"),
-		@Index(name = "idx_project_brief_vervangendeprojectbrief", columnList = "vervangendeprojectbrief")
+		@Index(name = "idx_project_brief_vervangendeprojectbrief", columnList = "vervangendeprojectbrief"),
+		@Index(name = "idx_project_brief_verstuurd_voor_afdrukken_op", columnList = "verstuurdVoorAfdrukkenOp")
 	})
 @Audited
 @Getter
@@ -53,7 +52,6 @@ import org.hibernate.envers.NotAudited;
 public class ProjectBrief extends ClientBrief<ScreeningRonde, Afmelding, ProjectBrief>
 {
 	@ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	@NotAudited
 	private ProjectClient projectClient;
 
@@ -62,11 +60,9 @@ public class ProjectBrief extends ClientBrief<ScreeningRonde, Afmelding, Project
 	private ProjectBriefActie definitie;
 
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	private ClientBrief brief;
 
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	private ProjectBrief teHerinnerenBrief;
 
 	@ManyToOne(fetch = FetchType.LAZY)

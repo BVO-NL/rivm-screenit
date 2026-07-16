@@ -31,18 +31,13 @@ import nl.rivm.screenit.model.cervix.CervixRegioMergedBrieven;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
-import org.springframework.data.jpa.domain.Specification;
-
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CervixRegioBriefSpecification
 {
-	public static Specification<CervixRegioBrief> heeftGeenMergedBrieven()
-	{
-		return (r, q, cb) -> cb.isNull(r.get(CervixRegioBrief_.mergedBrieven));
-	}
 
+	@Deprecated(forRemoval = true, since = "MergeBrieven worden verwijderd na start versturen brieven naar Paragon")
 	public static ExtendedSpecification<CervixRegioBrief> heeftMergedBrieven(CervixRegioMergedBrieven mergedBrieven)
 	{
 		return (r, q, cb) -> cb.equal(r.get(CervixRegioBrief_.mergedBrieven), mergedBrieven);

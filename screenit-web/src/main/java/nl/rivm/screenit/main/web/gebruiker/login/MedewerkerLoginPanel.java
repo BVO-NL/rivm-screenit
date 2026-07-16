@@ -27,7 +27,7 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ScreenitWachtwoordField;
 import nl.rivm.screenit.model.enums.InlogMethode;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.topicuszorg.wicket.input.behavior.FocusBehavior;
 
 import org.apache.commons.lang.StringUtils;

@@ -27,22 +27,18 @@ import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import nl.rivm.screenit.model.MergedBrieven;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "algemeen", indexes = {
 	@Index(name = "IDX_MERGEDBRIEVENVERSTUURD", columnList = "geprint"),
 	@Index(name = "IDX_MERGEDBRIEVENCONTROLE", columnList = "controle"),
-	@Index(name = "IDX_MERGEDBRIEVENVERWIJDERD", columnList = "verwijderd")})
+	@Index(name = "IDX_MERGEDBRIEVENVERWIJDERD", columnList = "verwijderd") })
 @Audited
 public class ProjectMergedBrieven extends MergedBrieven<ProjectBrief>
 {
@@ -50,7 +46,6 @@ public class ProjectMergedBrieven extends MergedBrieven<ProjectBrief>
 	private static final long serialVersionUID = 1L;
 
 	@OneToMany(mappedBy = "mergedBrieven", cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade(CascadeType.SAVE_UPDATE)
 	private List<ProjectBrief> brieven = new ArrayList<>();
 
 	@Override

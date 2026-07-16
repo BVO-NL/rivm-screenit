@@ -32,12 +32,10 @@ import lombok.Setter;
 
 import nl.rivm.screenit.model.colon.verslag.pa.PaVerslagContent;
 
-import org.hibernate.annotations.Proxy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 @Entity(name = "paverslag")
-@Proxy
 @Audited
 @Setter
 @Getter

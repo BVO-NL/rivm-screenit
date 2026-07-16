@@ -66,8 +66,7 @@ public class BaseHibernateConfig
 		var entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 		entityManagerFactoryBean.setDataSource(dataSource);
 		entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-		entityManagerFactoryBean.setPackagesToScan("nl.rivm.screenit.model", "nl.topicuszorg.wicket.password.model", "nl.topicuszorg.yubikey.model",
-			"nl.topicuszorg.organisatie.model");
+		entityManagerFactoryBean.setPackagesToScan("nl.rivm.screenit.model", "nl.topicuszorg.organisatie.model");
 		entityManagerFactoryBean.setMappingResources(maakOrmMappingResources(ormMappingResourceProvider.getIfAvailable()));
 		var properties = new Properties();
 

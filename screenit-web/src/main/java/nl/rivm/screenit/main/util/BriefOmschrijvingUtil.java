@@ -35,7 +35,6 @@ import nl.rivm.screenit.comparator.BriefCreatieDatumComparator;
 import nl.rivm.screenit.main.model.TypeGebeurtenis;
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.ClientBrief;
-import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.functionalinterfaces.TriFunction;
@@ -99,14 +98,9 @@ public class BriefOmschrijvingUtil
 
 	public static TypeGebeurtenis bepaalTypeGebeurtenis(Brief brief)
 	{
-		MergedBrieven<?> mergedBrieven = BriefUtil.getMergedBrieven(brief);
-		if (isAfgedrukteMigratieBrief(brief, mergedBrieven))
+		if (BriefUtil.isGegenereerd(brief))
 		{
-			return TypeGebeurtenis.BRIEF_AFGEDRUKT;
-		}
-		else if (BriefUtil.isGegenereerd(brief))
-		{
-			return mergedBrieven.getPrintDatum() != null ? TypeGebeurtenis.BRIEF_AFGEDRUKT : TypeGebeurtenis.BRIEF_KLAARGEZET;
+			return BriefUtil.isVerstuurdVoorAfdrukken(brief) ? TypeGebeurtenis.BRIEF_AFGEDRUKT : TypeGebeurtenis.BRIEF_KLAARGEZET;
 		}
 		else if (BriefUtil.isTegengehouden(brief))
 		{
@@ -116,11 +110,6 @@ public class BriefOmschrijvingUtil
 		{
 			return TypeGebeurtenis.BRIEF_AANGEMAAKT;
 		}
-	}
-
-	private static boolean isAfgedrukteMigratieBrief(Brief brief, MergedBrieven<?> mergedBrieven)
-	{
-		return BriefUtil.isGegenereerd(brief) && mergedBrieven == null;
 	}
 
 	public static String verwerkExtraOmschrijvingen(String[] extraOmschrijvingen, TriFunction<String, IModel<?>, String, String> getString)

@@ -50,8 +50,6 @@ import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingOpschortenReden;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -73,27 +71,22 @@ public class MammaBeoordeling extends AbstractHibernateObject
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
 		jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaLezing eersteLezing;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
 		jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaLezing tweedeLezing;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
 		jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaLezing discrepantieLezing;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
 		jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaLezing arbitrageLezing;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
 		jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaLezing verslagLezing;
 
 	@Column(nullable = false)

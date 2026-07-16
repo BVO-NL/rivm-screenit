@@ -48,7 +48,6 @@ import static nl.rivm.screenit.specification.algemeen.GemeenteSpecification.heef
 import static nl.rivm.screenit.specification.algemeen.GemeenteSpecification.heeftNaamEnScreeningOrganisatie;
 import static nl.rivm.screenit.specification.algemeen.GemeenteSpecification.isGemeenteActiefOpMoment;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.springframework.data.jpa.domain.Specification.where;
 
 @Service
 public class GemeenteServiceImpl implements GemeenteService
@@ -148,7 +147,7 @@ public class GemeenteServiceImpl implements GemeenteService
 	@Override
 	public List<String> getWoonplaatsen(UitnodigingsGebied gebied)
 	{
-		var spec = where(heeftGbaGemeente(gebied.getGemeente()));
+		var spec = heeftGbaGemeente(gebied.getGemeente());
 
 		var woonplaatsen = bagAdresRepository.findWith(spec, String.class, q -> q.projection((cb, r) -> r.get(Adres_.plaats))).all();
 

@@ -21,17 +21,34 @@ package nl.rivm.screenit.main.mappers.algemeen;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
+
 import nl.rivm.screenit.main.dto.algemeen.BezwaarClientDto;
+import nl.rivm.screenit.main.dto.algemeen.BrpGegevensDto;
+import nl.rivm.screenit.main.dto.algemeen.ClientContactgegevensDto;
 import nl.rivm.screenit.main.dto.algemeen.ClientDto;
+import nl.rivm.screenit.main.dto.algemeen.TijdelijkAdresDto;
 import nl.rivm.screenit.mappers.config.ScreenitMapperConfig;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.TijdelijkAdres;
+import nl.rivm.screenit.model.TijdelijkGbaAdres;
 import nl.rivm.screenit.model.enums.BezwaarType;
+import nl.rivm.screenit.model.gba.GbaVraag;
+import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.ClientService;
+import nl.rivm.screenit.util.AdresUtil;
+import nl.rivm.screenit.util.DateUtil;
+import nl.topicuszorg.organisatie.model.Adres;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 
@@ -71,16 +88,121 @@ public interface ClientMapper
 		@Mapping(target = "volledigeAdres", source = "persoon.gbaAdres", qualifiedByName = "getVolledigeAdres"),
 		@Mapping(target = "overlijdensdatum", source = "persoon.overlijdensdatum"),
 		@Mapping(target = "tijdelijkAdres", source = "client", qualifiedByName = "isTijdelijkAdres"),
+		@Mapping(target = "tijdelijkAdresVolledig", source = "client", qualifiedByName = "getTijdelijkAdresVolledig"),
+		@Mapping(target = "postadres", source = "client", qualifiedByName = "getPostadres"),
 		@Mapping(target = "screeningsorganisatie", source = "persoon.gbaAdres.gbaGemeente.screeningOrganisatie.naam"),
 		@Mapping(target = "actief", source = "client", qualifiedByName = "isActief")
-
 	})
 	ClientDto clientToClientDto(Client client, @Context ClientService clientService);
+
+	@Mappings({
+		@Mapping(source = "startDatum", target = "begindatum"),
+		@Mapping(source = "eindDatum", target = "einddatum"),
+		@Mapping(source = "straat", target = "straatnaam"),
+		@Mapping(source = "huisnummerAanduiding", target = "aanduidingBijHuisnummer"),
+		@Mapping(target = "clientId", ignore = true)
+	})
+	TijdelijkAdresDto tijdelijkAdresToDto(TijdelijkAdres tijdelijkAdres);
+
+	@Mappings({
+		@Mapping(source = "begindatum", target = "startDatum"),
+		@Mapping(source = "einddatum", target = "eindDatum"),
+		@Mapping(source = "straatnaam", target = "straat"),
+		@Mapping(source = "aanduidingBijHuisnummer", target = "huisnummerAanduiding"),
+		@Mapping(target = "id", ignore = true),
+		@Mapping(target = "soort", ignore = true),
+		@Mapping(target = "geheimadres", ignore = true),
+		@Mapping(target = "tijdelijk", ignore = true),
+		@Mapping(target = "gemeente", ignore = true),
+		@Mapping(target = "gemeentedeel", ignore = true),
+		@Mapping(target = "land", ignore = true),
+		@Mapping(target = "aanschrijfAdres", ignore = true),
+		@Mapping(target = "gemeenteCode", ignore = true),
+		@Mapping(target = "locatieBeschrijving", ignore = true),
+		@Mapping(target = "postcodeCoordinaten", ignore = true)
+	})
+	TijdelijkAdres dtoToTijdelijkAdres(TijdelijkAdresDto dto);
+
+	@Mappings({
+		@Mapping(source = "begindatum", target = "startDatum"),
+		@Mapping(source = "einddatum", target = "eindDatum"),
+		@Mapping(source = "straatnaam", target = "straat"),
+		@Mapping(source = "aanduidingBijHuisnummer", target = "huisnummerAanduiding"),
+		@Mapping(target = "id", ignore = true),
+		@Mapping(target = "soort", ignore = true),
+		@Mapping(target = "geheimadres", ignore = true),
+		@Mapping(target = "tijdelijk", ignore = true),
+		@Mapping(target = "gemeente", ignore = true),
+		@Mapping(target = "gemeentedeel", ignore = true),
+		@Mapping(target = "land", ignore = true),
+		@Mapping(target = "aanschrijfAdres", ignore = true),
+		@Mapping(target = "gemeenteCode", ignore = true),
+		@Mapping(target = "locatieBeschrijving", ignore = true),
+		@Mapping(target = "postcodeCoordinaten", ignore = true)
+	})
+	void updateTijdelijkAdres(@MappingTarget TijdelijkAdres target, TijdelijkAdresDto dto);
 
 	@Named("isTijdelijkAdres")
 	default boolean isTijdelijkAdres(Client client)
 	{
 		return client.getPersoon().getTijdelijkAdres() != null;
+	}
+
+	@Named("getTijdelijkAdresVolledig")
+	default String getTijdelijkAdresVolledig(Client client)
+	{
+		var tijdelijkAdres = client.getPersoon().getTijdelijkAdres();
+		if (tijdelijkAdres == null)
+		{
+			return null;
+		}
+		var vandaag = LocalDate.now();
+		var startDatum = tijdelijkAdres.getStartDatum();
+		if (startDatum != null && DateUtil.toLocalDate(startDatum).isAfter(vandaag))
+		{
+			return null;
+		}
+		var eindDatum = tijdelijkAdres.getEindDatum();
+		if (eindDatum != null && DateUtil.toLocalDate(eindDatum).isBefore(vandaag))
+		{
+			return null;
+		}
+		return formatAdres(tijdelijkAdres);
+	}
+
+	@Named("getPostadres")
+	default String getPostadres(Client client)
+	{
+		var adres = AdresUtil.getAdres(client.getPersoon(), LocalDate.now());
+		if (adres == null)
+		{
+			return null;
+		}
+		return formatAdres(adres);
+	}
+
+	private String formatAdres(Adres adres)
+	{
+		var parts = new java.util.ArrayList<String>();
+		if (StringUtils.isNotBlank(adres.getStraat()))
+		{
+			var straatHuisnummer = adres.getStraat();
+			var huisnummerVolledig = AdresUtil.getHuisnummerVolledig(adres);
+			if (StringUtils.isNotBlank(huisnummerVolledig))
+			{
+				straatHuisnummer += " " + huisnummerVolledig;
+			}
+			parts.add(straatHuisnummer);
+		}
+		if (StringUtils.isNotBlank(adres.getPostcode()))
+		{
+			parts.add(adres.getPostcode());
+		}
+		if (StringUtils.isNotBlank(adres.getPlaats()))
+		{
+			parts.add(adres.getPlaats());
+		}
+		return parts.isEmpty() ? null : String.join(", ", parts);
 	}
 
 	@Named("getVolledigeAdres")
@@ -90,12 +212,80 @@ public interface ClientMapper
 		{
 			return null;
 		}
-		return "%s %s".formatted(adres.getStraat(), adres.getVolledigeHuisaanduiding());
+		var volledigeAdres = adres.getAdres();
+		return StringUtils.isBlank(volledigeAdres) ? null : volledigeAdres;
+	}
+
+	@Mappings({
+		@Mapping(target = "clientId", source = "id"),
+		@Mapping(target = "voornaam", source = "persoon.voornaam"),
+		@Mapping(target = "achternaam", source = "persoon.achternaam"),
+		@Mapping(target = "tussenvoegsel", source = "persoon.tussenvoegsel"),
+		@Mapping(target = "aanspreekvorm", source = "persoon.aanhef"),
+		@Mapping(target = "titel", source = "persoon.titel"),
+		@Mapping(target = "geboortedatum", source = "persoon.geboortedatum"),
+		@Mapping(target = "bsn", source = "persoon.bsn"),
+		@Mapping(target = "naamGebruik", source = "persoon.naamGebruik"),
+		@Mapping(target = "partnerTussenvoegsel", source = "persoon.partnerTussenvoegsel"),
+		@Mapping(target = "partnerAchternaam", source = "persoon.partnerAchternaam"),
+		@Mapping(target = "geslacht", source = "persoon.geslacht"),
+		@Mapping(target = "overlijdensdatum", source = "persoon.overlijdensdatum"),
+		@Mapping(target = "mobielNummer", source = "persoon.telefoonnummer1"),
+		@Mapping(target = "extraNummer", source = "persoon.telefoonnummer2"),
+		@Mapping(target = "emailAdres", source = "persoon.emailadres"),
+		@Mapping(target = "heeftMammaAfspraak", source = "client", qualifiedByName = "heeftOpenMammaAfspraak"),
+		@Mapping(target = "doelgroepen", ignore = true),
+		@Mapping(target = "dubbeleTijdReden", ignore = true),
+	})
+	ClientContactgegevensDto clientToClientContactgegevensDto(Client client, @Context ClientContactService clientContactService);
+
+	@Named("heeftOpenMammaAfspraak")
+	default boolean heeftOpenMammaAfspraak(Client client, @Context ClientContactService clientContactService)
+	{
+		return clientContactService.heeftOpenMammaAfspraak(client);
 	}
 
 	@Named("isActief")
 	default boolean isActief(Client client, @Context ClientService clientService)
 	{
 		return clientService.isClientActief(client);
+	}
+
+	@Mappings({
+		@Mapping(target = "indicatieStatus", source = "gbaStatus"),
+		@Mapping(target = "datumLaatsteBrpMutatie", source = "laatsteGbaMutatie.mutatieDatum"),
+		@Mapping(target = "laatstAangevraagdOp", source = "gbaVragen", qualifiedByName = "getDatumLaatsteAanvraag"),
+		@Mapping(target = "tijdelijkBrpAdres", source = "persoon.tijdelijkGbaAdres", qualifiedByName = "isTijdelijkGbaAdres"),
+		@Mapping(target = "datumVertrokkenUitNederland", source = "persoon.datumVertrokkenUitNederland"),
+	})
+	BrpGegevensDto clientToBrpDto(Client client);
+
+	@Mappings({
+		@Mapping(target = "clientId", source = "id"),
+		@Mapping(target = "straatnaam", source = "persoon.tijdelijkGbaAdres.straat"),
+		@Mapping(target = "huisnummer", source = "persoon.tijdelijkGbaAdres.huisnummer"),
+		@Mapping(target = "huisletter", source = "persoon.tijdelijkGbaAdres.huisletter"),
+		@Mapping(target = "huisnummerToevoeging", source = "persoon.tijdelijkGbaAdres.huisnummerToevoeging"),
+		@Mapping(target = "aanduidingBijHuisnummer", source = "persoon.tijdelijkGbaAdres.huisnummerAanduiding"),
+		@Mapping(target = "postcode", source = "persoon.tijdelijkGbaAdres.postcode"),
+		@Mapping(target = "plaats", source = "persoon.tijdelijkGbaAdres.plaats"),
+		@Mapping(target = "begindatum", ignore = true),
+		@Mapping(target = "einddatum", ignore = true),
+	})
+	TijdelijkAdresDto clientToBrpTijdelijkAdres(Client client);
+
+	@Named("getDatumLaatsteAanvraag")
+	default LocalDateTime getDatumLaatsteAanvraag(List<GbaVraag> vragen)
+	{
+		return vragen.stream()
+			.max(Comparator.comparing(GbaVraag::getDatum))
+			.map(GbaVraag::getDatum)
+			.orElse(null);
+	}
+
+	@Named("isTijdelijkGbaAdres")
+	default Boolean isTijdelijkGbaAdres(TijdelijkGbaAdres adres)
+	{
+		return adres != null;
 	}
 }

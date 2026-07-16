@@ -27,9 +27,9 @@ import java.util.Map;
 
 import nl.rivm.screenit.main.model.TypeGebeurtenis;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContactActiePanel;
+import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActie;
-import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.cervix.CervixMonster;
@@ -53,9 +53,7 @@ import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 public class CervixClientContactHerdrukPanel extends AbstractClientContactActiePanel<ClientContactActie>
 {
 
-	private static final long serialVersionUID = 1L;
-
-	private IModel<CervixBrief> cervixBrief;
+	private final IModel<CervixBrief> cervixBrief;
 
 	@SpringBean
 	private RondeNummerService rondeNummerService;
@@ -71,14 +69,10 @@ public class CervixClientContactHerdrukPanel extends AbstractClientContactActieP
 		CervixScreeningRonde laatsteScreeningRonde = cervixDossier.getLaatsteScreeningRonde();
 		CervixUitnodiging laatsteAfgedrukteUitstrijkjeUitnodiging = clientService.getLaatstVerstuurdeUitnodiging(laatsteScreeningRonde, false);
 		CervixBrief brief = laatsteAfgedrukteUitstrijkjeUitnodiging.getBrief();
-		MergedBrieven<?> mergedBrieven = BriefUtil.getMergedBrieven(brief);
-		if (mergedBrieven.getPrintDatum() != null)
+		var verstuurdVoorAfdrukkenMoment = BriefUtil.getVerstuurdVoorAfdrukkenMoment(brief);
+		if (verstuurdVoorAfdrukkenMoment != null)
 		{
-			datum = mergedBrieven.getPrintDatum();
-		}
-		else
-		{
-			datum = mergedBrieven.getCreatieDatum();
+			datum = verstuurdVoorAfdrukkenMoment;
 		}
 		CervixMonster uitstrijkje = laatsteAfgedrukteUitstrijkjeUitnodiging.getMonster();
 		cervixBrief = ModelUtil.sModel(brief);
@@ -91,7 +85,7 @@ public class CervixClientContactHerdrukPanel extends AbstractClientContactActieP
 		int rondeNr = rondeNummerService.geefRondeNummer(laatsteScreeningRonde);
 
 		add(DateLabel.forDatePattern("datum", Model.of(datum), "dd-MM-yyyy HH:mm:ss"));
-		add(new EnumLabel<>("gebeurtenis", mergedBrieven.getPrintDatum() != null ? TypeGebeurtenis.BRIEF_AFGEDRUKT : TypeGebeurtenis.BRIEF_KLAARGEZET));
+		add(new EnumLabel<>("gebeurtenis", bepaalTypeGebeurtenis(brief)));
 		add(new Label("extraOmschrijving", extraOmschrijving).setVisible(extraOmschrijving != null));
 		add(new WebMarkupContainer("gbaMessageContainer").setVisible(!GbaStatus.INDICATIE_AANWEZIG.equals(client.getObject().getGbaStatus())));
 		add(new Label("rondeNr", rondeNr));
@@ -118,5 +112,10 @@ public class CervixClientContactHerdrukPanel extends AbstractClientContactActieP
 	{
 		super.onDetach();
 		ModelUtil.nullSafeDetach(cervixBrief);
+	}
+
+	private TypeGebeurtenis bepaalTypeGebeurtenis(Brief brief)
+	{
+		return BriefUtil.isVerstuurdVoorAfdrukken(brief) ? TypeGebeurtenis.BRIEF_AFGEDRUKT : TypeGebeurtenis.BRIEF_KLAARGEZET;
 	}
 }

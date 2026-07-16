@@ -46,13 +46,11 @@ import nl.rivm.screenit.model.cervix.verslag.CervixVerslag;
 import nl.rivm.screenit.model.cervix.verslag.cytologie.CervixCytologieVerslagContent;
 
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Proxy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 @Entity
-@Proxy
 @Audited
 @Getter
 @Setter

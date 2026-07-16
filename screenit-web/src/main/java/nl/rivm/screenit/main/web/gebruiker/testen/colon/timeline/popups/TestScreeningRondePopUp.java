@@ -37,8 +37,8 @@ import nl.rivm.screenit.model.colon.ColonOnderzoeksVariant;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;

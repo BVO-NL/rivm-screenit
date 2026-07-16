@@ -34,8 +34,6 @@ import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.ScreeningRonde;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -47,7 +45,6 @@ public class AlgemeneBrief extends ClientBrief<ScreeningRonde, Afmelding, Algeme
 	private static final long serialVersionUID = 1L;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	private AlgemeneMergedBrieven mergedBrieven;
 
 	@ManyToOne(fetch = FetchType.LAZY)

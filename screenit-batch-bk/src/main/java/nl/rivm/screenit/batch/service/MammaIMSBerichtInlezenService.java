@@ -23,14 +23,12 @@ package nl.rivm.screenit.batch.service;
 
 import java.util.List;
 
-import nl.rivm.screenit.model.mamma.berichten.MammaIMSBericht;
-
 public interface MammaIMSBerichtInlezenService
 {
 
-	List<MammaIMSBericht> getAlleNietVerwerkteIMSBerichten();
+	List<Long> getAlleNietVerwerkteImsBerichtIds();
 
-	void verwerkBericht(MammaIMSBericht bericht);
+	void verwerkBericht(long berichtId);
 
-	void markeerBerichtAlsFout(MammaIMSBericht bericht, String melding);
+	void markeerBerichtAlsFout(long berichtId);
 }

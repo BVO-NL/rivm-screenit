@@ -31,9 +31,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface MessageService
 {
-	void queueMessage(MessageType type, Object content);
+	Message queueMessage(MessageType type, Object content);
 
-	void queueMessage(MessageType type, Object content, String context);
+	Message queueMessage(MessageType type, Object content, String context);
 
 	void dequeueMessage(Message message);
 

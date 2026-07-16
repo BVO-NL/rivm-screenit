@@ -83,7 +83,7 @@ import static nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus.VERSLAG_
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenFalse;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefTypeIn;
-import static nl.rivm.screenit.specification.algemeen.BriefSpecification.isGegenereerd;
+import static nl.rivm.screenit.specification.algemeen.BriefSpecification.isNietGegenereerd;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.filterBsn;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.filterGeboortedatum;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.filterHuisnummer;
@@ -309,7 +309,7 @@ public class MammaBeoordelingWerklijstSpecification
 	private static ExtendedSpecification<MammaOnderzoek> heeftNietGenereerdeUitslagBrief()
 	{
 		return heeftBriefTypeIn(BriefType.getMammaOngunstigeUitslagBriefTypen())
-			.and(isGegenereerd(false))
+			.and(isNietGegenereerd())
 			.with(r -> brievenJoin(r));
 	}
 

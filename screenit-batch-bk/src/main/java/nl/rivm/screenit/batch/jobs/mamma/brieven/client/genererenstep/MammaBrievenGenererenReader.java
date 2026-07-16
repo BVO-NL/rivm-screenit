@@ -154,7 +154,7 @@ public class MammaBrievenGenererenReader extends AbstractBrievenGenererenReader<
 
 		if (eersteRonde == null)
 		{
-			return null;
+			return ExtendedSpecification.unrestricted();
 		}
 
 		return (r, q, cb) ->

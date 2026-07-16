@@ -47,8 +47,6 @@ import nl.rivm.screenit.model.mamma.enums.MammaFollowUpConclusieStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaGeenHuisartsOption;
 import nl.rivm.screenit.util.SkipFieldForDiff;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
@@ -85,7 +83,6 @@ public class MammaScreeningRonde extends ScreeningRonde<MammaDossier, MammaBrief
 	private List<MammaBrief> brieven = new ArrayList<>();
 
 	@OneToMany(mappedBy = "screeningRonde", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE })
-	@Cascade(CascadeType.DELETE)
 	private List<MammaDigitaalClientBericht> berichten = new ArrayList<>();
 
 	@OneToOne(fetch = FetchType.LAZY)
@@ -105,7 +102,6 @@ public class MammaScreeningRonde extends ScreeningRonde<MammaDossier, MammaBrief
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Audited(targetAuditMode = NOT_AUDITED)
-	@Cascade(CascadeType.SAVE_UPDATE)
 	private EnovationHuisarts huisarts;
 
 	@Column
@@ -154,6 +150,5 @@ public class MammaScreeningRonde extends ScreeningRonde<MammaDossier, MammaBrief
 	private MammaOnderzoek laatsteOnderzoek;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "screeningRonde", cascade = { jakarta.persistence.CascadeType.REMOVE })
-	@Cascade(CascadeType.DELETE)
 	private List<MammaConclusieReview> conclusieReviews = new ArrayList<>();
 }

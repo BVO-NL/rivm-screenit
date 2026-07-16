@@ -28,6 +28,10 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
+
 import org.apache.commons.lang.StringUtils;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
@@ -59,10 +63,10 @@ public class CertTools
 			final PemObject certPem = certReader.readPemObject();
 			final ByteArrayInputStream inputStream = new ByteArrayInputStream(certPem.getContent());
 			final X509Certificate certificate = (X509Certificate) CERTIFICATE_FACTORY.generateCertificate(inputStream);
-			String subject = certificate.getSubjectX500Principal().getName();
-			String[] subjectParts = StringUtils.split(subject, ',');
-			String fqdn = "";
-			for (String part : subjectParts)
+			var subject = certificate.getSubjectX500Principal().getName();
+			var subjectParts = StringUtils.split(subject, ',');
+			var fqdn = "";
+			for (var part : subjectParts)
 			{
 				if (StringUtils.startsWith(part, "CN="))
 				{
@@ -74,6 +78,21 @@ public class CertTools
 			LOG.info("FQDN uit Certificaat: " + fqdn);
 			return fqdn;
 		}
+	}
+
+	public static String getFQDNFromSubjectDn(String subjectDn) throws InvalidNameException
+	{
+		var fqdn = (String) null;
+		LdapName ldapName = new LdapName(subjectDn);
+		for (var rdn : ldapName.getRdns())
+		{
+			if ("CN".equalsIgnoreCase(rdn.getType()))
+			{
+				fqdn = StringUtils.trimToNull(rdn.getValue().toString());
+				break;
+			}
+		}
+		return fqdn;
 	}
 
 	public static String correctCertPem(String pem)

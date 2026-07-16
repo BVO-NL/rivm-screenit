@@ -39,12 +39,12 @@ import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.service.colon.ColonVerwerkVerslagService;
 import nl.rivm.screenit.util.AfmeldingUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Service;
 

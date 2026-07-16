@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import { AbstractControl, FormControl, ValidationErrors, ValidatorFn } from '@angular/forms'
-import { addDays, addMonths, isAfter, isBefore, isValid, parse, startOfDay } from 'date-fns'
+import { addDays, addMonths, addYears, isAfter, isBefore, isValid, parse, startOfDay } from 'date-fns'
 import { formatNLDate, isValideTijd, normaliseerNaarDate, parseDate } from '@shared/utils/date-utils'
 import { TIME_FORMAT } from '@shared/constants'
 import { NotificationService } from '@shared/services/notification/notification.service'
@@ -148,6 +148,38 @@ export const createStartEindDatumValidator = (
     return validatieError
   }
 }
+
+export const createEinddatumNaBegindatumValidator =
+  (maxJaren = 1): ValidatorFn =>
+  (group: AbstractControl): ValidationErrors | null => {
+    const begindatum = group.get('begindatum')?.value
+    const einddatumControl = group.get('einddatum')
+    const einddatum = einddatumControl?.value
+
+    const currentErrors = einddatumControl?.errors ?? {}
+    const overigeErrors = { ...currentErrors }
+    delete overigeErrors['einddatumNaBegindatum']
+    delete overigeErrors['einddatumMaxJaren']
+
+    if (begindatum && einddatum && new Date(einddatum) <= new Date(begindatum)) {
+      overigeErrors['einddatumNaBegindatum'] = true
+    }
+
+    if (einddatum) {
+      const maxDatum = addYears(new Date(), maxJaren)
+      if (new Date(einddatum) > maxDatum) {
+        overigeErrors['einddatumMaxJaren'] = true
+      }
+    }
+
+    einddatumControl?.setErrors(Object.keys(overigeErrors).length ? overigeErrors : null)
+
+    if (overigeErrors['einddatumNaBegindatum'] || overigeErrors['einddatumMaxJaren']) {
+      return { einddatumOnjuist: true }
+    }
+
+    return null
+  }
 
 function toonOfLeegNotificaties(valide: boolean, error: string, notificationService?: NotificationService): void {
   if (!notificationService) {

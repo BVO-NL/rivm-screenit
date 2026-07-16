@@ -43,10 +43,10 @@ import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Gemeente_;
 import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.specification.algemeen.PersoonSpecification;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;

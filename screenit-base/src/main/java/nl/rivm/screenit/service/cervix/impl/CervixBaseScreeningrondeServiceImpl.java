@@ -45,6 +45,7 @@ import nl.rivm.screenit.model.cervix.enums.CervixUitstrijkjeStatus;
 import nl.rivm.screenit.model.cervix.enums.CervixZasStatus;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.repository.cervix.CervixBetaalopdrachtRegelSpecificatieRepository;
 import nl.rivm.screenit.repository.cervix.CervixBriefRepository;
@@ -66,7 +67,6 @@ import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;

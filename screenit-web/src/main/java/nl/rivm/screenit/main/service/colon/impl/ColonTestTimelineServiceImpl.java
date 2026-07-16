@@ -86,6 +86,7 @@ import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerrichting;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerslagContent;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BaseHoudbaarheidService;
 import nl.rivm.screenit.service.BaseVerslagService;
@@ -101,7 +102,6 @@ import nl.rivm.screenit.service.colon.ColonVerwerkVerslagService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -26,13 +26,13 @@ import java.time.LocalDate;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.cervix.CervixHoudbaarheidZasReeks;
 import nl.rivm.screenit.model.colon.ColonHoudbaarheidFitReeks;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.cervix.CervixHoudbaarheidZasReeksRepository;
 import nl.rivm.screenit.repository.colon.ColonHoudbaarheidFitReeksRepository;
 import nl.rivm.screenit.service.BaseHoudbaarheidService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.cervix.CervixZasHoudbaarheidSpecification;
 import nl.rivm.screenit.specification.colon.ColonHoudbaarheidFitReeksSpecification;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

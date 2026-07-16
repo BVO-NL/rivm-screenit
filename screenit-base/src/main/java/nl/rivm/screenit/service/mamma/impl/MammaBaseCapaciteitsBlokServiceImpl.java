@@ -46,6 +46,7 @@ import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.model.mamma.enums.MammaFactorType;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.mamma.MammaAfspraakReserveringRepository;
 import nl.rivm.screenit.repository.mamma.MammaCapaciteitBlokProjectie;
 import nl.rivm.screenit.repository.mamma.MammaCapaciteitBlokRepository;
@@ -56,7 +57,6 @@ import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.mamma.MammaPlanningUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;

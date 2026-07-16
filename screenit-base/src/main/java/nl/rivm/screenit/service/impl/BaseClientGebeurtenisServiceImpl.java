@@ -39,7 +39,6 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.ClientGebeurtenis;
 import nl.rivm.screenit.model.Dossier;
-import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixMonster;
 import nl.rivm.screenit.model.cervix.enums.CervixMonsterType;
@@ -58,6 +57,7 @@ import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaUitstelReden;
+import nl.rivm.screenit.preference.service.KeyPreferenceService;
 import nl.rivm.screenit.service.BaseClientGebeurtenisService;
 import nl.rivm.screenit.service.BaseDossierAuditService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -68,7 +68,6 @@ import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.colon.ColonAfspraakUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
-import nl.topicuszorg.preferencemodule.service.KeyPreferenceService;
 
 import org.hibernate.envers.query.AuditEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -189,24 +188,11 @@ public class BaseClientGebeurtenisServiceImpl implements BaseClientGebeurtenisSe
 
 					var gebeurtenis = new ClientGebeurtenis();
 					gebeurtenis.setType(ClientGebeurtenisType.UITSLAG_GECOMMUNICEERD);
-					MergedBrieven<?> mergedBrieven = BriefUtil.getMergedBrieven(brief);
-					if (BriefUtil.isGegenereerd(brief) && mergedBrieven != null)
+					gebeurtenis.setDatum(BriefUtil.geefDatumVoorGebeurtenisoverzicht(brief));
+					if (BriefUtil.isVerstuurdVoorAfdrukken(brief))
 					{
-						if (mergedBrieven.getPrintDatum() != null)
-						{
-							gebeurtenis.setDatum(mergedBrieven.getPrintDatum());
-							setDvaParams(gebeurtenis, brief);
-						}
-						else
-						{
-							gebeurtenis.setDatum(mergedBrieven.getCreatieDatum());
-						}
+						setDvaParams(gebeurtenis, brief);
 					}
-					else
-					{
-						gebeurtenis.setDatum(brief.getCreatieDatum());
-					}
-
 					gebeurtenissen.add(gebeurtenis);
 					break;
 				default:
@@ -256,26 +242,14 @@ public class BaseClientGebeurtenisServiceImpl implements BaseClientGebeurtenisSe
 					gebeurtenis.setType(ClientGebeurtenisType.CERVIX_HERDRUK);
 					gebeurtenissen.add(gebeurtenis);
 				}
-				else if (BriefUtil.isGegenereerd(brief) && BriefType.isCervixUitslagbrief(brief.getBriefType()))
+				else if (BriefType.isCervixUitslagbrief(brief.getBriefType()))
 				{
-					MergedBrieven<?> mergedBrieven = BriefUtil.getMergedBrieven(brief);
-					Date printDatum = null;
-					if (mergedBrieven != null)
-					{
-						if (mergedBrieven.getPrintDatum() != null)
-						{
-							printDatum = mergedBrieven.getPrintDatum();
-						}
-					}
-					else
-					{
-						printDatum = brief.getCreatieDatum();
-					}
-					if (printDatum != null)
+					var verstuurdVoorAfdrukkenMoment = BriefUtil.getVerstuurdVoorAfdrukkenMoment(brief);
+					if (verstuurdVoorAfdrukkenMoment != null)
 					{
 						var gebeurtenis = new ClientGebeurtenis();
 						gebeurtenis.setType(ClientGebeurtenisType.UITSLAG_GECOMMUNICEERD);
-						gebeurtenis.setDatum(printDatum);
+						gebeurtenis.setDatum(verstuurdVoorAfdrukkenMoment);
 						setDvaParams(gebeurtenis, brief);
 						gebeurtenissen.add(gebeurtenis);
 					}
@@ -314,11 +288,11 @@ public class BaseClientGebeurtenisServiceImpl implements BaseClientGebeurtenisSe
 	{
 		if (monster != null && BriefUtil.isGegenereerd(monster.getBrief()))
 		{
-			MergedBrieven<?> mergedBrieven = BriefUtil.getMergedBrieven(monster.getBrief());
-			if (mergedBrieven != null && Boolean.TRUE.equals(mergedBrieven.getGeprint()))
+			var verstuurdVoorAfdrukkenMoment = BriefUtil.getVerstuurdVoorAfdrukkenMoment(monster.getBrief());
+			if (verstuurdVoorAfdrukkenMoment != null)
 			{
 				var gebeurtenis = new ClientGebeurtenis();
-				gebeurtenis.setDatum(mergedBrieven.getPrintDatum());
+				gebeurtenis.setDatum(verstuurdVoorAfdrukkenMoment);
 				gebeurtenis.setType(ClientGebeurtenisType.CERVIX_UITSLAG_GECOMMUNICEERD);
 				gebeurtenissen.add(gebeurtenis);
 			}
@@ -422,24 +396,12 @@ public class BaseClientGebeurtenisServiceImpl implements BaseClientGebeurtenisSe
 
 				if (gebeurtenisType != null)
 				{
-					MergedBrieven<?> mergedBrieven = BriefUtil.getMergedBrieven(brief);
-					Date printDatum = null;
-					if (mergedBrieven != null)
-					{
-						if (mergedBrieven.getPrintDatum() != null)
-						{
-							printDatum = mergedBrieven.getPrintDatum();
-						}
-					}
-					else
-					{
-						printDatum = brief.getCreatieDatum();
-					}
-					if (printDatum != null)
+					var datumVoorGebeurtenisoverzicht = BriefUtil.geefDatumVoorGebeurtenisoverzicht(brief);
+					if (datumVoorGebeurtenisoverzicht != null)
 					{
 						var gebeurtenis = new ClientGebeurtenis();
 						gebeurtenis.setType(gebeurtenisType);
-						gebeurtenis.setDatum(printDatum);
+						gebeurtenis.setDatum(datumVoorGebeurtenisoverzicht);
 						if (BriefType.getMammaUitslagBriefTypen().contains(brief.getBriefType()))
 						{
 							setDvaParams(gebeurtenis, brief);
@@ -568,24 +530,24 @@ public class BaseClientGebeurtenisServiceImpl implements BaseClientGebeurtenisSe
 
 		var gebeurtenis = new ClientGebeurtenis();
 		gebeurtenis.setDatum(bezwaarMoment.getStatusDatum());
-		Boolean value = BezwaarUtil.isBezwaarActiefVoor(bezwaarMoment, type, onderzoek, true);
+		var value = BezwaarUtil.isBezwaarActiefVoor(bezwaarMoment, type, onderzoek, true);
 		var oldValue = bezwaarChanges.get(type.toString());
-		if (Boolean.TRUE.equals(value))
+		if (value)
 		{
 			gebeurtenis.setType(gebeurtenisGemaakt);
 
-			if (!value.equals(oldValue))
+			if (oldValue == null || !oldValue)
 			{
-				bezwaarChanges.put(type.toString(), value);
+				bezwaarChanges.put(type.toString(), true);
 				gebeurtenissen.add(gebeurtenis);
 			}
 		}
 		else
 		{
 			gebeurtenis.setType(gebeurtenisIngetrokken);
-			if (oldValue != null && !value.equals(oldValue))
+			if (oldValue != null && oldValue)
 			{
-				bezwaarChanges.put(type.toString(), value);
+				bezwaarChanges.put(type.toString(), false);
 				gebeurtenissen.add(gebeurtenis);
 			}
 		}

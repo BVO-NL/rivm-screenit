@@ -18,12 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { ClientDto } from '../types/algemeen/dto/client.dto'
-import { NaamGebruik } from '../types/algemeen/enum/naam-gebruik'
-import { isStringNullOfLeeg } from '@shared/utils/string-utils'
+import {ClientDto} from '../types/algemeen/dto/client.dto'
+import {ClientContactgegevensDto} from '../types/algemeen/dto/clientcontactgegevens.dto'
+import {NaamGebruik} from '../types/algemeen/enum/naam-gebruik'
+import {isStringNullOfLeeg} from '@shared/utils/string-utils'
+
+type ClientNaamData = ClientDto | ClientContactgegevensDto
 
 export class NaamUtils {
-  static titelVoorlettersTussenvoegselEnAanspreekAchternaam(client: ClientDto): string {
+  static titelVoorlettersTussenvoegselEnAanspreekAchternaam(client: ClientNaamData): string {
     if (client == null) {
       return ''
     }
@@ -38,7 +41,7 @@ export class NaamUtils {
     return naam
   }
 
-  static voorlettersTussenvoegselEnAanspreekAchternaam(client: ClientDto): string {
+  static voorlettersTussenvoegselEnAanspreekAchternaam(client: ClientNaamData): string {
     if (client == null) {
       return ''
     }
@@ -55,7 +58,7 @@ export class NaamUtils {
     return naam
   }
 
-  static getVoorlettersClient(client: ClientDto): string {
+  static getVoorlettersClient(client: ClientNaamData): string {
     if (client == null) {
       return ''
     }
@@ -78,7 +81,7 @@ export class NaamUtils {
     return voorletters
   }
 
-  static getAanspreekTussenvoegselEnAchternaam(client: ClientDto): string {
+  static getAanspreekTussenvoegselEnAchternaam(client: ClientNaamData): string {
     if (client == null) {
       return ''
     }
@@ -90,7 +93,7 @@ export class NaamUtils {
     return volledigeNaam
   }
 
-  private static getAanspreekNaamZonderTussenvoegsel(client: ClientDto): string {
+  private static getAanspreekNaamZonderTussenvoegsel(client: ClientNaamData): string {
     let volledigeNaam = ''
     const naamGebruik = client.naamGebruik
     if (naamGebruik == NaamGebruik.EIGEN || naamGebruik == NaamGebruik.EIGEN_PARTNER) {
@@ -122,7 +125,7 @@ export class NaamUtils {
     return volledigeNaam
   }
 
-  private static getTussenvoegsel(client: ClientDto): string {
+  private static getTussenvoegsel(client: ClientNaamData): string {
     let tussenvoegels = ''
     const naamGebruik = client.naamGebruik
     if (
@@ -144,7 +147,7 @@ export class NaamUtils {
     return tussenvoegels
   }
 
-  private static getPartnernaam(client: ClientDto): string {
+  private static getPartnernaam(client: ClientNaamData): string {
     let partnernaam = ''
     if (client.partnerTussenvoegsel) {
       partnernaam += client.partnerTussenvoegsel + ' '
@@ -153,5 +156,10 @@ export class NaamUtils {
       partnernaam += client.partnerAchternaam
     }
     return partnernaam
+  }
+
+  static getTitel(titel: string) {
+    const titelAanwezig = titel !== null
+    return titelAanwezig ? titel + ' ' : ''
   }
 }

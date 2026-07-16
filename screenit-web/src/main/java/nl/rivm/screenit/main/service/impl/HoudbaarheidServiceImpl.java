@@ -34,6 +34,7 @@ import nl.rivm.screenit.specification.colon.ColonHoudbaarheidFitReeksSpecificati
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Range;
@@ -54,11 +55,11 @@ public class HoudbaarheidServiceImpl implements HoudbaarheidService
 	{
 		if (clazz.equals(ColonHoudbaarheidFitReeks.class))
 		{
-			return (List<H>) colonHoudbaarheidFitReeksRepository.findWith(null, q -> q.sortBy(sort)).all(first, count);
+			return (List<H>) colonHoudbaarheidFitReeksRepository.findWith(Specification.unrestricted(), q -> q.sortBy(sort)).all(first, count);
 		}
 		else
 		{
-			return (List<H>) cervixHoudbaarheidZASReeksRepository.findWith(null, q -> q.sortBy(sort)).all(first, count);
+			return (List<H>) cervixHoudbaarheidZASReeksRepository.findWith(Specification.unrestricted(), q -> q.sortBy(sort)).all(first, count);
 		}
 	}
 

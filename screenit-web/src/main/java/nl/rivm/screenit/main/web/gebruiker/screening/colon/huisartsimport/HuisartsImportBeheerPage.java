@@ -39,13 +39,13 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.FileType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.BerichtToBatchService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 

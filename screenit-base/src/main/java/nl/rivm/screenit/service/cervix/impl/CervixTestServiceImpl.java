@@ -249,6 +249,7 @@ public class CervixTestServiceImpl implements CervixTestService
 		mergedBrieven.setPrintDatum(dateSupplier.getDate());
 		mergedBrieven.setVerwijderd(true);
 		brief.setMergedBrieven(mergedBrieven);
+		brief.setVerstuurdVoorAfdrukkenOp(dateSupplier.getLocalDateTime());
 		var fakeMergeDocument = new UploadDocument();
 		fakeMergeDocument.setActief(true);
 		fakeMergeDocument.setContentType("application/pdf");

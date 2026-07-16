@@ -21,7 +21,6 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Date;
 import java.util.List;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -39,7 +38,6 @@ import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.project.Project;
 import nl.rivm.screenit.model.project.ProjectAttribuut;
-import nl.rivm.screenit.model.project.ProjectBrief;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectClientAttribuut;
@@ -48,7 +46,6 @@ import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.rivm.screenit.model.project.ProjectGroep_;
 import nl.rivm.screenit.model.project.ProjectType;
 import nl.rivm.screenit.model.project.Project_;
-import nl.rivm.screenit.repository.algemeen.BaseProjectBriefRepository;
 import nl.rivm.screenit.repository.algemeen.ProjectBriefActieRepository;
 import nl.rivm.screenit.repository.algemeen.ProjectClientAttribuutRepository;
 import nl.rivm.screenit.repository.algemeen.ProjectClientRepository;
@@ -78,10 +75,6 @@ import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.ProjectBriefActieSpecification.heeftActieveClientInProjectVoorProjectBriefActie;
 import static nl.rivm.screenit.specification.algemeen.ProjectBriefActieSpecification.heeftClient;
 import static nl.rivm.screenit.specification.algemeen.ProjectBriefActieSpecification.isProjectBriefActieTypeVervangendeBrief;
-import static nl.rivm.screenit.specification.algemeen.ProjectBriefSpecification.heeftActieveClientInProjectVoorProjectBrief;
-import static nl.rivm.screenit.specification.algemeen.ProjectBriefSpecification.heeftDefinitieGelijkAanBaseActie;
-import static nl.rivm.screenit.specification.algemeen.ProjectBriefSpecification.heeftGeenVerstuurdeBrief;
-import static nl.rivm.screenit.specification.algemeen.ProjectBriefSpecification.heeftPrintDatumNaOfOpDatum;
 import static nl.rivm.screenit.specification.algemeen.ProjectClientSpecification.heeftActieveClient;
 import static nl.rivm.screenit.specification.algemeen.ProjectClientSpecification.heeftActieveProjectGroep;
 import static nl.rivm.screenit.specification.algemeen.ProjectClientSpecification.heeftExcludeerAfmelding;
@@ -114,9 +107,6 @@ public class BaseProjectServiceImpl implements BaseProjectService
 
 	@Autowired
 	private ProjectClientRepository projectClientRepository;
-
-	@Autowired
-	private BaseProjectBriefRepository projectBriefRepository;
 
 	@Autowired
 	private ProjectBriefActieRepository projectBriefActieRepository;
@@ -244,18 +234,6 @@ public class BaseProjectServiceImpl implements BaseProjectService
 			.and(heeftActieveProjectGroep());
 
 		return projectClientRepository.findAll(spec);
-	}
-
-	@Override
-	public List<ProjectBrief> getAllProjectBriefForHerinnering(ProjectBriefActie actie, Date verstuurdOp)
-	{
-		var vandaag = currentDateSupplier.getLocalDate();
-
-		var spec = heeftActieveClientInProjectVoorProjectBrief(vandaag)
-			.and(heeftPrintDatumNaOfOpDatum(verstuurdOp))
-			.and(heeftDefinitieGelijkAanBaseActie(actie))
-			.and(heeftGeenVerstuurdeBrief(actie));
-		return projectBriefRepository.findAll(spec);
 	}
 
 	@Override

@@ -1,0 +1,52 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<ds-card cardTitle="Adresgegevens">
+  <ng-template ds-card-header-content *appAutorisatie="adresgegevensWijzigenConstraint">
+    <button ds-button-tertiary (click)="openAdresgegevensBewerkenModal()" data-testid="bewerken_btn">
+      <ds-icon [icon]="faPencil"/>
+      Bewerken
+    </button>
+  </ng-template>
+  @if (client(); as client) {
+    <div class="adresgegevens">
+      <div class="row">
+        <span class="col-4">Straatnaam en huisnummer</span>
+        <span class="col-6">{{ client.volledigeAdres | legeWaarde }}</span>
+      </div>
+      <div class="row">
+        <span class="col-4">Postcode</span>
+        <span class="col-6">{{ client.postcode }}</span>
+      </div>
+      <div class="row">
+        <span class="col-4">Woonplaats</span>
+        <span class="col-6">{{ client.plaats }}</span>
+      </div>
+      <div class="row">
+        <span class="col-4">Tijdelijk adres</span>
+        <span class="col-6">{{ client.tijdelijkAdresVolledig | legeWaarde }}</span>
+      </div>
+      <div class="row">
+        <span class="col-4">Postadres</span>
+        <span class="col-6">{{ client.postadres | legeWaarde }}</span>
+      </div>
+    </div>
+  }
+</ds-card>

@@ -36,8 +36,6 @@ import jakarta.persistence.Table;
 import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.mamma.enums.MammaAfmeldingReden;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -56,19 +54,15 @@ public class MammaAfmelding extends Afmelding<MammaScreeningRonde, MammaDossier,
 	private MammaDossier dossier;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE })
-	@Cascade(CascadeType.DELETE)
 	private MammaBrief afmeldingAanvraag;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE })
-	@Cascade(CascadeType.DELETE)
 	private MammaBrief afmeldingBevestiging;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE })
-	@Cascade(CascadeType.DELETE)
 	private MammaBrief heraanmeldAanvraag;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = { jakarta.persistence.CascadeType.REMOVE })
-	@Cascade(CascadeType.DELETE)
 	private MammaBrief heraanmeldBevestiging;
 
 	@OneToMany(mappedBy = "afmelding", fetch = FetchType.LAZY)

@@ -30,8 +30,8 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.DatabaseRunner;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Configuration;

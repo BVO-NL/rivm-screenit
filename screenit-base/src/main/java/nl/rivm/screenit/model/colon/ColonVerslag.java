@@ -47,7 +47,6 @@ import nl.rivm.screenit.model.berichten.enums.VerslagType;
 import nl.rivm.screenit.model.verslag.VerslagContent;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Proxy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -55,7 +54,6 @@ import org.hibernate.envers.NotAudited;
 @Setter
 @Entity
 @Table(schema = "colon", name = "cda_verslag")
-@Proxy
 @Audited
 public class ColonVerslag<T extends VerslagContent<?>> extends AbstractHibernateObject implements Verslag<T, ColonScreeningRonde>
 {

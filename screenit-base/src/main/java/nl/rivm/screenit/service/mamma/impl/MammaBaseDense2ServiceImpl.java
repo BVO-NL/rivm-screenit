@@ -63,6 +63,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaDenseWaarde;
 import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekStatus;
 import nl.rivm.screenit.model.project.Project;
 import nl.rivm.screenit.model.project.ProjectClient_;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.repository.mamma.MammaMammografieRepository;
 import nl.rivm.screenit.service.ClientService;
@@ -80,7 +81,6 @@ import nl.rivm.screenit.specification.mamma.MammaOnderzoekSpecification;
 import nl.rivm.screenit.util.BezwaarUtil;
 import nl.rivm.screenit.util.CsvUtil;
 import nl.rivm.screenit.util.ProjectUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;

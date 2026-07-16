@@ -41,9 +41,6 @@ import lombok.Setter;
 import nl.rivm.screenit.model.cervix.enums.CervixHpvBeoordelingWaarde;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 @Entity
 @Table(schema = "cervix", name = "hpv_beoordeling", indexes = { @Index(name = "idx_CERVIX_HPV_BEOORDELING_HPV_UITSLAG", columnList = "hpvUitslag") })
 @Getter
@@ -63,7 +60,6 @@ public class CervixHpvBeoordeling extends AbstractHibernateObject
 	private CervixHpvBeoordelingWaarde hpvUitslag;
 
 	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = jakarta.persistence.CascadeType.REMOVE)
-	@Cascade(CascadeType.DELETE)
 	private CervixHpvAnalyseresultaten analyseresultaten;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)

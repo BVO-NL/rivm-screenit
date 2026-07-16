@@ -101,8 +101,8 @@ public class MammaBaseScreeningrondeServiceImpl implements MammaBaseScreeningron
 	{
 		return screeningRonde.getBrieven().stream().anyMatch(
 			brief -> BriefType.isMammaUitslagBrief(brief.getBriefType()) &&
-				(BriefUtil.isMergedBrievenGeprint(brief)
-					|| BriefUtil.getMergedBrieven(brief) == null && BriefUtil.isGegenereerd(brief)
+				(BriefUtil.isVerstuurdVoorAfdrukken(brief)
+					|| BriefUtil.getMergedBrieven(brief) == null && BriefUtil.isGegenereerd(brief)  
 					|| BriefUtil.isTegengehouden(brief)));
 	}
 

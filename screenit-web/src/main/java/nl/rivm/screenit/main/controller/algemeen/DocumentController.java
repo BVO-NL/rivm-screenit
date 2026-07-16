@@ -21,8 +21,9 @@ package nl.rivm.screenit.main.controller.algemeen;
  * =========================LICENSE_END==================================
  */
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,8 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
 
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -48,7 +50,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -73,7 +74,7 @@ public class DocumentController
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = {}, altijdToegestaan = true, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
-	public ResponseEntity<InputStreamResource> getDocument(@PathVariable Long id)
+	public ResponseEntity<Resource> getDocument(@PathVariable Long id)
 	{
 		var document = uploadDocumentService.getById(id).orElse(null);
 		if (document == null)
@@ -83,7 +84,8 @@ public class DocumentController
 		var file = uploadDocumentService.load(document);
 		try
 		{
-			var resource = new InputStreamResource(new FileInputStream(file));
+			var bytes = Files.readAllBytes(file.toPath());
+			var resource = new ByteArrayResource(bytes);
 
 			var headers = new HttpHeaders();
 			headers.setContentDisposition(ContentDisposition.builder("attachment").name(file.getName()).build());
@@ -99,9 +101,14 @@ public class DocumentController
 				.contentLength(file.length())
 				.body(resource);
 		}
-		catch (FileNotFoundException exception)
+		catch (FileNotFoundException | NoSuchFileException exception)
 		{
 			return ResponseEntity.notFound().build();
+		}
+		catch (Exception exception)
+		{
+			LOG.error("Fout bij het download van document met id '{}'", id, exception);
+			return ResponseEntity.internalServerError().build();
 		}
 	}
 }

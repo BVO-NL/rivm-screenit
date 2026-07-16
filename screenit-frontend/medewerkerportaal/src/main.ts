@@ -30,6 +30,5 @@ document.addEventListener('DOMContentLoaded', function () {
   setupWebApis()
   setupDatadog()
   registerLocaleData(localeNL)
-
   bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err))
 })

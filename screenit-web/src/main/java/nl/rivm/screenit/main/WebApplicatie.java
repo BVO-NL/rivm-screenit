@@ -35,7 +35,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @Slf4j
-@EnableJpaRepositories(basePackages = { "nl.rivm.screenit", "nl.topicuszorg.wicket.password.repository" }, repositoryBaseClass = BaseJpaRepositoryImpl.class)
+@EnableJpaRepositories(basePackages = { "nl.rivm.screenit" }, repositoryBaseClass = BaseJpaRepositoryImpl.class)
 @ComponentScan(
 	basePackages = { "nl.rivm.screenit", "nl.topicuszorg" },
 	excludeFilters = {
@@ -44,7 +44,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "nl.topicuszorg.wicket.session.DozerSessionFinderImpl"),
 		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "nl.topicuszorg.hibernate.spring.module.test.impl.TestServiceImpl"),
 		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "nl.topicuszorg.loginformatie.services.impl.LogInformatieServiceImpl"),
-		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "nl.topicuszorg.hl7.*")
+		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "nl.topicuszorg.hl7.*"),
 	})
 @EnableAsync
 @SpringBootApplication

@@ -205,7 +205,7 @@ public abstract class UploadAfmeldformulierPopupPanel<A extends Afmelding> exten
 				info(getString("info.brieftegenhouden"));
 				close(target);
 			}
-		}.setVisible(magTegenhouden && laatsteBrief != null && !BriefUtil.isTegengehouden(laatsteBrief) && BriefUtil.getMergedBrieven(laatsteBrief) == null));
+		}.setVisible(magTegenhouden && laatsteBrief != null && !BriefUtil.isTegengehouden(laatsteBrief) && !BriefUtil.isGegenereerd(laatsteBrief)));
 		uploadForm.add(new AjaxLink<Void>("doorvoeren")
 		{
 			@Override

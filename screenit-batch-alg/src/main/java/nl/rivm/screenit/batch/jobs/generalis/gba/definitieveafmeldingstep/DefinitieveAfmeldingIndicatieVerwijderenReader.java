@@ -33,6 +33,7 @@ import nl.rivm.screenit.batch.jobs.generalis.gba.abstractindicatieverwijderenvoo
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.cervix.enums.CervixLeeftijdcategorie;
+import nl.rivm.screenit.model.enums.Deelnamemodus;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 
@@ -42,6 +43,7 @@ import org.springframework.stereotype.Component;
 import static nl.rivm.screenit.specification.ExtendedSpecification.not;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftCervixDossier;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftMammaDossier;
+import static nl.rivm.screenit.specification.algemeen.DossierSpecification.heeftDeelnamemodus;
 import static nl.rivm.screenit.specification.algemeen.DossierSpecification.isAangemeld;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.valtBuitenLeeftijd;
 
@@ -54,10 +56,20 @@ public class DefinitieveAfmeldingIndicatieVerwijderenReader extends AbstractIndi
 	@Override
 	protected Specification<Client> createSpecification()
 	{
-		return super.createSpecification().and(isVoorAlleBvosBinnenDoelgroepAfgemeld());
+		return super.createSpecification()
+			.and(heeftGeenActieveDeelnameVoorAlleBvosBinnenDoelgroep())
+			.and(Specification.not(heeftSelectieblokkadeOpBeideBvos()));
 	}
 
-	private Specification<Client> isVoorAlleBvosBinnenDoelgroepAfgemeld()
+	private Specification<Client> heeftSelectieblokkadeOpBeideBvos()
+	{
+
+		var heeftBmhkSelectieblokkade = heeftDeelnamemodus(Deelnamemodus.SELECTIEBLOKKADE).with(Client_.cervixDossier, JoinType.LEFT);
+		var heeftBkSelectieblokkade = heeftDeelnamemodus(Deelnamemodus.SELECTIEBLOKKADE).with(Client_.mammaDossier, JoinType.LEFT);
+		return heeftCervixDossier().and(heeftMammaDossier()).and(heeftBmhkSelectieblokkade).and(heeftBkSelectieblokkade);
+	}
+
+	private Specification<Client> heeftGeenActieveDeelnameVoorAlleBvosBinnenDoelgroep()
 	{
 		var peildatum = currentDateSupplier.getLocalDate();
 
@@ -76,11 +88,11 @@ public class DefinitieveAfmeldingIndicatieVerwijderenReader extends AbstractIndi
 
 		var clientValtBuitenAlleDoelgroepen = valtBuitenLeeftijd(Collections.min(alleMinLeeftijden), Collections.max(alleMaxLeeftijden), peildatum).withRoot(getPersoonJoin());
 
-		var indicatieNietNodigVoorCervix = clientValtBuitenBmhkDoelgroepleeftijd.or(isCervixAfgemeldOfGeenDossier());
-		var indicatieNietNodigVoorMamma = clientValtBuitenBkDoelgroepleeftijd.or(isMammaAfgemeldOfGeenDossier());
+		var indicatieNietNodigVoorCervix = clientValtBuitenBmhkDoelgroepleeftijd.or(heeftGeenDeelnemendCervixDossier());
+		var indicatieNietNodigVoorMamma = clientValtBuitenBkDoelgroepleeftijd.or(heeftGeenDeelnemendMammaDossier());
 		var indicatieNietNodigVoorColon = clientValtBuitenDkDoelgroepleeftijd.or(isColonAfgemeld());
 
-		var clientValtBuitenAlleDoelgroepenEnIsAfgemeldVoorAlleBVOs = clientValtBuitenAlleDoelgroepen.and(isCervixAfgemeldOfGeenDossier()).and(isMammaAfgemeldOfGeenDossier())
+		var clientValtBuitenAlleDoelgroepenEnIsAfgemeldVoorAlleBVOs = clientValtBuitenAlleDoelgroepen.and(heeftGeenDeelnemendCervixDossier()).and(heeftGeenDeelnemendMammaDossier())
 			.and(isColonAfgemeld());
 
 		var binnenMinstensEenDoelgroepEnGeenIndicatieNodig = Specification.not(clientValtBuitenAlleDoelgroepen).and(indicatieNietNodigVoorCervix).and(indicatieNietNodigVoorMamma)
@@ -89,16 +101,16 @@ public class DefinitieveAfmeldingIndicatieVerwijderenReader extends AbstractIndi
 		return clientValtBuitenAlleDoelgroepenEnIsAfgemeldVoorAlleBVOs.or(binnenMinstensEenDoelgroepEnGeenIndicatieNodig);
 	}
 
-	private static ExtendedSpecification<Client> isCervixAfgemeldOfGeenDossier()
+	private static ExtendedSpecification<Client> heeftGeenDeelnemendCervixDossier()
 	{
 		return isAangemeld(false).with(Client_.cervixDossier, JoinType.LEFT)
-			.or(not(heeftCervixDossier()));
+			.or(not(heeftCervixDossier())).or(heeftDeelnamemodus(Deelnamemodus.SELECTIEBLOKKADE).with(Client_.cervixDossier, JoinType.LEFT));
 	}
 
-	private static ExtendedSpecification<Client> isMammaAfgemeldOfGeenDossier()
+	private static ExtendedSpecification<Client> heeftGeenDeelnemendMammaDossier()
 	{
 		return isAangemeld(false).with(Client_.mammaDossier, JoinType.LEFT)
-			.or(not(heeftMammaDossier()));
+			.or(not(heeftMammaDossier())).or(heeftDeelnamemodus(Deelnamemodus.SELECTIEBLOKKADE).with(Client_.mammaDossier, JoinType.LEFT));
 	}
 
 	private static ExtendedSpecification<Client> isColonAfgemeld()

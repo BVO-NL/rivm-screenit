@@ -55,12 +55,12 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaUitnodigingsinterval;
 import nl.rivm.screenit.model.mamma.enums.MammaUitnodigingsintervalType;
+import nl.rivm.screenit.preference.service.PreferenceService;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.PreferenceService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;

@@ -126,7 +126,7 @@ public class LogischeSessieServiceImpl implements LogischeSessieService
 
 	private void logLogischeSessieWijziging(String methode, LogischeSessie logischeSessie)
 	{
-		var loginAntwoordHttpStatusCode = logischeSessie.getLoginAntwoord() != null ? String.valueOf(logischeSessie.getLoginAntwoord().getStatusCodeValue()) : "null";
+		var loginAntwoordHttpStatusCode = logischeSessie.getLoginAntwoord() != null ? String.valueOf(logischeSessie.getLoginAntwoord().getStatusCode()) : "null";
 		LOG.info("logische sessie {}: {}, {}", methode, logischeSessie.getYubikeyIdentificatie(), loginAntwoordHttpStatusCode);
 	}
 }

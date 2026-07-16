@@ -32,10 +32,10 @@ import nl.rivm.screenit.mamma.se.service.MammaAfspraakService;
 import nl.rivm.screenit.mamma.se.service.MammaScreeningsEenheidService;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid_;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.mamma.MammaScreeningsEenheidRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.mamma.MammaScreeningsEenheidSpecification;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

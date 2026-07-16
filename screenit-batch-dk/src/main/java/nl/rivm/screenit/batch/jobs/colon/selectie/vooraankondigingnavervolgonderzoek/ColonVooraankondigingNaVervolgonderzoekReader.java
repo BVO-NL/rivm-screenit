@@ -23,6 +23,8 @@ package nl.rivm.screenit.batch.jobs.colon.selectie.vooraankondigingnavervolgonde
 
 import java.util.List;
 
+import jakarta.persistence.criteria.JoinType;
+
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -34,18 +36,16 @@ import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
 import nl.rivm.screenit.model.colon.ColonVolgendeUitnodiging_;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.algemeen.ClientSpecification;
 import nl.rivm.screenit.specification.algemeen.PersoonSpecification;
 import nl.rivm.screenit.specification.colon.ColonScreeningRondeSpecification;
 import nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification;
 import nl.rivm.screenit.specification.colon.ColonUitnodigingsintervalSpecification;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-
-import jakarta.persistence.criteria.JoinType;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 

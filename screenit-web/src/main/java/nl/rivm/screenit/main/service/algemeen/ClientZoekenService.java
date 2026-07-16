@@ -23,8 +23,11 @@ package nl.rivm.screenit.main.service.algemeen;
 
 import java.util.List;
 
+import nl.rivm.screenit.main.dto.algemeen.BrpGegevensDto;
 import nl.rivm.screenit.main.dto.algemeen.ClientZoekenFilterDto;
+import nl.rivm.screenit.main.dto.algemeen.TijdelijkAdresDto;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 
 public interface ClientZoekenService
@@ -32,4 +35,12 @@ public interface ClientZoekenService
 	List<Client> zoekClienten(ClientZoekenFilterDto filter);
 
 	List<Bevolkingsonderzoek> getActieveBvos(Long clientId);
+
+	BrpGegevensDto getBrpGegevens(Long clientId);
+
+	TijdelijkAdresDto getBrpTijdelijkAdres(Long clientId);
+
+	void saveBrpTijdelijkAdres(Long clientId, TijdelijkAdresDto tijdelijkAdresDto, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+
+	void deleteBrpTijdelijkAdres(Long clientId, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 }

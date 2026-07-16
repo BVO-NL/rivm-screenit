@@ -27,9 +27,9 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.jobs.generalis.clientgegevensverwijderen.AbstractGegevensVerwijderenReader;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.algemeen.PersoonSpecification;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;

@@ -45,8 +45,8 @@ import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.ScopeService;
 import nl.rivm.screenit.util.MedewerkerUtil;
-import nl.topicuszorg.yubikey.shiro.YubikeyAuthenticationInfo;
-import nl.topicuszorg.yubikey.shiro.YubikeyToken;
+import nl.rivm.screenit.yubikey.shiro.YubikeyAuthenticationInfo;
+import nl.rivm.screenit.yubikey.shiro.YubikeyToken;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;

@@ -141,6 +141,20 @@
             <artifactId>postgresql</artifactId>
         </dependency>
         <dependency>
+            <groupId>edu.vt.middleware</groupId>
+            <artifactId>vt-password</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk15</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-core</artifactId>
             <exclusions>
@@ -248,11 +262,6 @@
         </dependency>
 
         <dependency>
-            <groupId>nl.topicuszorg.wicket-extensions</groupId>
-            <artifactId>wicket-password</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>nl.topicuszorg</groupId>
             <artifactId>zorgid</artifactId>
         </dependency>
@@ -283,27 +292,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>nl.topicuszorg.csv2xls</groupId>
-            <artifactId>csv2xls</artifactId>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-test</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>logback-classic</artifactId>
-                    <groupId>ch.qos.logback</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <dependency>
             <groupId>net.sf.opencsv</groupId>
             <artifactId>opencsv</artifactId>
@@ -366,7 +354,11 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>

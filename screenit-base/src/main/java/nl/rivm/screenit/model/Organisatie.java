@@ -49,8 +49,6 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import nl.topicuszorg.organisatie.model.Adres;
 
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -90,15 +88,12 @@ public class Organisatie extends AbstractHibernateObject implements IActief
 	private List<OrganisatieMedewerker> organisatieMedewerkers = new ArrayList<>();
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade(CascadeType.SAVE_UPDATE)
 	private Adres adres;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade(CascadeType.SAVE_UPDATE)
 	private Adres postbusAdres;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade(CascadeType.SAVE_UPDATE)
 	private Adres antwoordnummerAdres;
 
 	@Column(nullable = false)

@@ -25,15 +25,21 @@ import { MAT_DATE_LOCALE } from '@angular/material/core'
 import { provideDateFnsAdapter } from '@angular/material-date-fns-adapter'
 import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { WINDOW } from '@shared/tokens/window.token'
+import { registerLocaleData } from '@angular/common'
+import localeNL from '@angular/common/locales/nl'
 
-export const provideTestProviders = (overrideProviders: Provider[] = []): Provider[] => [
-  ...overrideProviders,
-  provideNoopAnimations(),
-  provideDsDateTimeFormats(),
-  provideDsDateFormats(),
-  provideDsTimeAdapter(),
-  provideDateFnsAdapter(),
-  { provide: MAT_DATE_LOCALE, useValue: nl },
-  { provide: LOCALE_ID, useValue: 'nl' },
-  { provide: WINDOW, useValue: window },
-]
+export const provideTestProviders = (overrideProviders: Provider[] = []): Provider[] => {
+  registerLocaleData(localeNL)
+
+  return [
+    ...overrideProviders,
+    provideNoopAnimations(),
+    provideDsDateTimeFormats(),
+    provideDsDateFormats(),
+    provideDsTimeAdapter(),
+    provideDateFnsAdapter(),
+    { provide: MAT_DATE_LOCALE, useValue: nl },
+    { provide: LOCALE_ID, useValue: 'nl' },
+    { provide: WINDOW, useValue: window },
+  ]
+}

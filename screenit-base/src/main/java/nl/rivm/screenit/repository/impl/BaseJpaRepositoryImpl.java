@@ -42,9 +42,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.data.repository.query.FluentQuery;
-import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 @Transactional(propagation = Propagation.SUPPORTS)
 
@@ -67,6 +67,8 @@ public class BaseJpaRepositoryImpl<T extends HibernateObject> extends SimpleJpaR
 	@Override
 	public Optional<T> findFirst(Specification<T> specification, Sort sort)
 	{
+
+		Assert.notNull(specification, "Specification must not be null");
 		var typedQuery = getQuery(specification, sort);
 		typedQuery.setMaxResults(1);
 		return typedQuery.getResultList().stream().findFirst();
@@ -81,6 +83,8 @@ public class BaseJpaRepositoryImpl<T extends HibernateObject> extends SimpleJpaR
 	@Override
 	public <R, P> R findWith(Specification<T> specification, Class<P> projectionType, Function<FluentJpaQuery<T, P>, R> queryFunction)
 	{
+
+		Assert.notNull(specification, "Specification must not be null");
 		var fluentQuery = new FluentJpaQueryImpl<>(specification, entityManager, getDomainClass(), projectionType);
 		return queryFunction.apply(fluentQuery);
 	}
@@ -142,30 +146,39 @@ public class BaseJpaRepositoryImpl<T extends HibernateObject> extends SimpleJpaR
 	@Override
 	public Page<T> findAll(Pageable pageable)
 	{
-		return super.findAll(pageable);
+
+		return findAll(Specification.unrestricted(), pageable);
 	}
 
 	@Override
-	public Optional<T> findOne(@Nullable Specification<T> spec)
+	public Optional<T> findOne(Specification<T> spec)
 	{
+
+		Assert.notNull(spec, "Specification must not be null");
 		return super.findOne(spec);
 	}
 
 	@Override
-	public List<T> findAll(@Nullable Specification<T> spec)
+	public List<T> findAll(Specification<T> spec)
 	{
+
+		Assert.notNull(spec, "Specification must not be null");
 		return super.findAll(spec);
 	}
 
 	@Override
-	public Page<T> findAll(@Nullable Specification<T> spec, Pageable pageable)
+	public Page<T> findAll(Specification<T> spec, Pageable pageable)
 	{
+
+		Assert.notNull(spec, "Specification must not be null");
 		return super.findAll(spec, pageable);
 	}
 
 	@Override
-	public List<T> findAll(@Nullable Specification<T> spec, Sort sort)
+	public List<T> findAll(Specification<T> spec, Sort sort)
 	{
+
+		Assert.notNull(spec, "Specification must not be null");
 		return super.findAll(spec, sort);
 	}
 
@@ -190,6 +203,8 @@ public class BaseJpaRepositoryImpl<T extends HibernateObject> extends SimpleJpaR
 	@Override
 	public boolean exists(Specification<T> spec)
 	{
+
+		Assert.notNull(spec, "Specification must not be null");
 		return super.exists(spec);
 	}
 
@@ -224,8 +239,10 @@ public class BaseJpaRepositoryImpl<T extends HibernateObject> extends SimpleJpaR
 	}
 
 	@Override
-	public long count(@Nullable Specification<T> spec)
+	public long count(Specification<T> spec)
 	{
+
+		Assert.notNull(spec, "Specification must not be null");
 		return super.count(spec);
 	}
 }

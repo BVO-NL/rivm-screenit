@@ -26,8 +26,10 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.Constants;
+import nl.rivm.screenit.main.model.BriefActie;
 import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
 import nl.rivm.screenit.main.model.TypeGebeurtenis;
+import nl.rivm.screenit.main.service.BriefService;
 import nl.rivm.screenit.main.util.GebeurtenisUtil;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.gedeeld.BriefOpnieuwAanmakenPanel;
@@ -36,7 +38,6 @@ import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
-import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.util.BriefUtil;
@@ -65,9 +66,12 @@ public class BriefKlaargezetPanel extends AbstractGebeurtenisDetailPanel
 	@SpringBean
 	private BaseBriefService baseBriefService;
 
+	@SpringBean
+	private BriefService briefService;
+
 	private WebMarkupContainer tegenhoudenContainer;
 
-	private final List<BriefType> tegenhoudenNietMogelijkBriefTypes = BriefType.getCervixZasBrieven();
+	private List<BriefActie> briefActies;
 
 	public BriefKlaargezetPanel(String id, IModel<ScreeningRondeGebeurtenis> model)
 	{
@@ -78,6 +82,7 @@ public class BriefKlaargezetPanel extends AbstractGebeurtenisDetailPanel
 	protected void onInitialize()
 	{
 		super.onInitialize();
+		briefActies = briefService.getBriefActies(getModelObject().getBrief());
 		add(new TemplateInzienPanel("templateInzienPanel", new CompoundPropertyModel(new PropertyModel(getModel(), "brief"))));
 		add(new BriefOpnieuwAanmakenPanel("briefOpnieuwAanmakenPanel", new CompoundPropertyModel(new PropertyModel(getModel(), "brief"))));
 		tegenhoudenContainer = maakBriefTegenhoudenContent();
@@ -87,16 +92,14 @@ public class BriefKlaargezetPanel extends AbstractGebeurtenisDetailPanel
 	private WebMarkupContainer maakBriefTegenhoudenContent()
 	{
 		WebMarkupContainer tegenhoudenContainer = new WebMarkupContainer("tegenhoudenContainer");
-		tegenhoudenContainer.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN));
-
 		WebMarkupContainer mogelijk = new WebMarkupContainer("mogelijk");
 		ClientBrief<?, ?, ?> brief = getModelObject().getBrief();
 
 		GebeurtenisUtil.voegBriefTypeOfNaamBriefToe(mogelijk, brief);
 
 		mogelijk.add(DateLabel.forDatePattern("brief.creatieDatum", Model.of(brief.getCreatieDatum()), Constants.DEFAULT_DATE_FORMAT));
-		boolean tegenhoudenNietMogelijk = tegenhoudenNietMogelijkBriefTypes.contains(brief.getBriefType());
-		mogelijk.add(new WebMarkupContainer("nietMeer").setVisible(BriefUtil.isGegenereerd(brief) || tegenhoudenNietMogelijk));
+		boolean tegenhoudenMogelijk = BriefUtil.isTegenhoudenMogelijk(brief);
+		mogelijk.add(new WebMarkupContainer("nietMeer").setVisible(BriefUtil.isGegenereerd(brief) || !tegenhoudenMogelijk));
 		IndicatingAjaxLink<Void> tegenhoudenLink = new IndicatingAjaxLink<>("tegenhouden")
 		{
 			@Override
@@ -107,7 +110,7 @@ public class BriefKlaargezetPanel extends AbstractGebeurtenisDetailPanel
 				verversTegenhouden(target);
 			}
 		};
-		tegenhoudenLink.setVisible(!BriefUtil.isTegengehouden(brief) && !tegenhoudenNietMogelijk);
+		tegenhoudenLink.setVisible(briefActies.contains(BriefActie.TEGENHOUDEN));
 		mogelijk.add(tegenhoudenLink);
 		mogelijk.add(new IndicatingAjaxLink<Void>("activeren")
 		{
@@ -121,13 +124,13 @@ public class BriefKlaargezetPanel extends AbstractGebeurtenisDetailPanel
 				info(getString("info.briefactiveren"));
 				verversTegenhouden(target);
 			}
-		}.setVisible(BriefUtil.isTegengehouden(brief)));
-		mogelijk.setVisible(BriefUtil.isNietGegenereerdEnNietVervangen(brief) && !tegenhoudenNietMogelijk);
+		}.setVisible(briefActies.contains(BriefActie.ACTIVEREN)));
+		mogelijk.setVisible(BriefUtil.isNietGegenereerdEnNietVervangen(brief) && tegenhoudenMogelijk);
 		tegenhoudenContainer.add(mogelijk);
 
 		WebMarkupContainer nietmogelijk = new WebMarkupContainer("nietMogelijk");
 
-		nietmogelijk.setVisible(BriefUtil.isGegenereerd(brief) || tegenhoudenNietMogelijk);
+		nietmogelijk.setVisible(BriefUtil.isGegenereerd(brief) || !tegenhoudenMogelijk);
 		tegenhoudenContainer.add(nietmogelijk);
 		tegenhoudenContainer.setOutputMarkupId(true);
 		return tegenhoudenContainer;

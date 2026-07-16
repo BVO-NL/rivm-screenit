@@ -34,4 +34,31 @@ export function trimmedValidator(validator: ValidatorFn): ValidatorFn {
 export const positiveIntegerValidator = Validators.pattern('^[0-9]*$')
 export const huisnummerValidator = [trimmedValidator(Validators.maxLength(10)), trimmedValidator(Validators.pattern(/^\d*$/))]
 export const briefkenmerkValidator = trimmedValidator(Validators.pattern(/^[Kk].+$/))
-export const telefoonnummerValidator = Validators.pattern(/^(06|\+316|00316)[- ]?[0-9]{8}$/)
+export const huisletterValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  if (!control.value || typeof control.value !== 'string') {
+    return null
+  }
+
+  const waarde = control.value.trim()
+  if (!waarde) {
+    return null
+  }
+
+  if (waarde.length > 1) {
+    return {
+      maxlength: {
+        requiredLength: 1,
+        actualLength: waarde.length,
+      },
+    }
+  }
+
+  return /^[a-zA-Z]$/.test(waarde)
+    ? null
+    : {
+        pattern: {
+          requiredPattern: '^[a-zA-Z]$',
+          actualValue: waarde,
+        },
+      }
+}

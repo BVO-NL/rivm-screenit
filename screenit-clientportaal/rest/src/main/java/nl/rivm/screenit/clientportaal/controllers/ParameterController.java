@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.clientportaal.model.PreferenceDto;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

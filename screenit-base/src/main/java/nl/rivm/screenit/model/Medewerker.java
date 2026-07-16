@@ -46,8 +46,8 @@ import nl.rivm.screenit.model.enums.InlogMethode;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.nieuws.MedewerkerNieuwsItem;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst;
+import nl.rivm.screenit.model.yubikey.YubiKey;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-import nl.topicuszorg.yubikey.model.YubiKey;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;

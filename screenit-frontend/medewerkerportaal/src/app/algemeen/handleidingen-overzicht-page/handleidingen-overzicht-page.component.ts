@@ -56,6 +56,7 @@ import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { Required } from '@shared/types/autorisatie/required'
 import { HttpErrorResponse } from '@angular/common/http'
 import { PageComponent } from '@shared/components/page/page.component'
+import { Recht } from '@shared/types/autorisatie/recht'
 
 @Component({
   selector: 'app-handleidingen-overzicht-page',
@@ -105,37 +106,37 @@ export class HandleidingenOverzichtPageComponent {
     return columns
   })
 
-  readonly faAddIcon: IconDefinition = faAdd
-  readonly faDownloadIcon: IconDefinition = faDownload
-  readonly faPenIcon: IconDefinition = faPen
-  readonly faTrashIcon: IconDefinition = faTrash
+  protected readonly faAddIcon: IconDefinition = faAdd
+  protected readonly faDownloadIcon: IconDefinition = faDownload
+  protected readonly faPenIcon: IconDefinition = faPen
+  protected readonly faTrashIcon: IconDefinition = faTrash
 
-  readonly inzienConstraint: SecurityConstraint = {
-    recht: ['HANDLEIDINGEN'],
+  protected readonly inzienConstraint: SecurityConstraint = {
+    recht: [Recht.HANDLEIDINGEN],
     actie: Actie.INZIEN,
     bevolkingsonderzoekScopes: [Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.MAMMA],
     level: ToegangLevel.LANDELIJK,
     required: Required.ANY,
   }
 
-  readonly toevoegenConstraint: SecurityConstraint = {
-    recht: ['HANDLEIDINGEN'],
+  protected readonly toevoegenConstraint: SecurityConstraint = {
+    recht: [Recht.HANDLEIDINGEN],
     actie: Actie.TOEVOEGEN,
     bevolkingsonderzoekScopes: [Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.MAMMA],
     level: ToegangLevel.LANDELIJK,
     required: Required.ANY,
   }
 
-  readonly bewerkenConstraint: SecurityConstraint = {
-    recht: ['HANDLEIDINGEN'],
+  protected readonly bewerkenConstraint: SecurityConstraint = {
+    recht: [Recht.HANDLEIDINGEN],
     actie: Actie.AANPASSEN,
     bevolkingsonderzoekScopes: [Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.MAMMA],
     level: ToegangLevel.LANDELIJK,
     required: Required.ANY,
   }
 
-  readonly verwijderenConstraint: SecurityConstraint = {
-    recht: ['HANDLEIDINGEN'],
+  protected readonly verwijderenConstraint: SecurityConstraint = {
+    recht: [Recht.HANDLEIDINGEN],
     actie: Actie.VERWIJDEREN,
     bevolkingsonderzoekScopes: [Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.MAMMA],
     level: ToegangLevel.LANDELIJK,

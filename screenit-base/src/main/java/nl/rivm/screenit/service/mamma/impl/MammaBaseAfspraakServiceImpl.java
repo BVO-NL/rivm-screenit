@@ -77,6 +77,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaUitstelGeannuleerdReden;
 import nl.rivm.screenit.model.mamma.enums.MammaVerzettenReden;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.mamma.MammaBaseAfspraakRepository;
 import nl.rivm.screenit.repository.mamma.MammaCapaciteitBlokRepository;
 import nl.rivm.screenit.service.BaseBriefService;
@@ -99,7 +100,6 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.mamma.MammaPlanningUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningsEenheidUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Hibernate;

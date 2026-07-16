@@ -37,13 +37,13 @@ import nl.rivm.screenit.model.logging.MammaHl7v24BerichtLogEvent;
 import nl.rivm.screenit.model.mamma.berichten.MammaHL7OntvangenBerichtWrapper;
 import nl.rivm.screenit.model.mamma.berichten.MammaIMSBericht;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.mamma.MammaImsBerichtRepository;
 import nl.rivm.screenit.service.BezwaarService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.wsb.service.BaseHL7v2Service;
 import nl.rivm.screenit.wsb.service.mamma.MammaHL7v24Service;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.UncategorizedJmsException;

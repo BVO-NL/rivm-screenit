@@ -65,6 +65,7 @@ import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.HuisartsBerichtType;
 import nl.rivm.screenit.model.enums.RedenNietTeBeoordelen;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.colon.ColonAfspraakslotRepository;
 import nl.rivm.screenit.repository.colon.ColonUitnodigingRepository;
 import nl.rivm.screenit.service.BaseBriefService;
@@ -84,7 +85,6 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.TestBsnGenerator;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -744,6 +744,7 @@ public class ColonTestServiceImpl implements ColonTestService
 						mergedBrieven.setPrintDatum(datumVooraankondiging);
 						mergedBrieven.setVerwijderd(true);
 						brief.setMergedBrieven(mergedBrieven);
+						brief.setVerstuurdVoorAfdrukkenOp(DateUtil.toLocalDateTime(datumVooraankondiging));
 						mergedBrieven.getBrieven().add(brief);
 						dossier.setVooraankondiging(vooraankondiging);
 

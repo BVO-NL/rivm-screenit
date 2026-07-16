@@ -21,45 +21,53 @@ package nl.rivm.screenit.main.web.gebruiker.gedeeld;
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.IOException;
+import java.time.Duration;
+import java.util.Base64;
 import java.util.Date;
-
-import javax.annotation.CheckForNull;
 
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.config.CommunicationHubProperties;
 import nl.rivm.screenit.main.util.GebeurtenisUtil;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.PdfViewerPanel;
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.service.BaseBriefService;
-import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.BriefUtil;
+import nl.topicuszorg.communicationhub.api.LetterServiceCommunicationHubClientApi;
+import nl.topicuszorg.util.collections.CollectionUtils;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.ajax.AjaxDownloadBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.resource.AbstractResource;
+import org.apache.wicket.request.resource.ContentDisposition;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.jspecify.annotations.NonNull;
 import org.wicketstuff.datetime.markup.html.basic.DateLabel;
-
-import com.aspose.words.Document;
 
 @Slf4j
 public class TemplateInzienPanel extends GenericPanel<Brief>
 {
-	private BootstrapDialog pdfDialog = new BootstrapDialog("pdfDialog");
+	private final BootstrapDialog pdfDialog = new BootstrapDialog("pdfDialog");
 
 	@SpringBean
 	private BaseBriefService baseBriefService;
 
 	@SpringBean
-	private UploadDocumentService uploadDocumentService;
+	private LetterServiceCommunicationHubClientApi letterServiceApi;
+
+	@SpringBean
+	private CommunicationHubProperties communicatieHubClientConfig;
 
 	public TemplateInzienPanel(String id, IModel<Brief> model)
 	{
@@ -89,17 +97,23 @@ public class TemplateInzienPanel extends GenericPanel<Brief>
 		{
 			inzienMsg = new Label("inzienMelding");
 			inzienMsg.setVisible(false);
-
-			final File file = uploadDocumentService.load(brief.getBriefDefinitie().getDocument());
+			var briefTemplate = brief.getBriefDefinitie().getDocument();
 			inzienGroep.add(new IndicatingAjaxLink<Void>("inzien")
 			{
 				@Override
 				public void onClick(AjaxRequestTarget ajaxRequestTarget)
 				{
-					final Document document = genereerAsposeDocument(file);
-					if (document != null)
+					try
 					{
-						showPdf(ajaxRequestTarget, document);
+						var pdf = baseBriefService.maakPdfVanUploadDocument(briefTemplate);
+
+						ajaxRequestTarget.appendJavaScript("$('.modal.fade.in').not('#sessieVerlopenDialog').addClass('previousDialog').modal('hide');");
+
+						pdfDialog.openWith(ajaxRequestTarget, new PdfViewerPanel(IDialog.CONTENT_ID, pdf));
+					}
+					catch (Exception e)
+					{
+						LOG.error(e.getMessage());
 					}
 				}
 			});
@@ -110,6 +124,8 @@ public class TemplateInzienPanel extends GenericPanel<Brief>
 				(brief.getTemplateNaam() == null ? "nog niet verzonden" : "verzonden voordat ScreenIT de templates van de verzonden brieven ging bewaren, of nog niet verzonden"));
 			inzienGroep.setVisible(false);
 		}
+		var downloadLink = getDownloadLink(brief);
+		inzienGroep.add(downloadLink);
 		WebMarkupContainer inzienMeldingGroup = new WebMarkupContainer("inzienMeldingGroup");
 		inzienMeldingGroup.setOutputMarkupId(true);
 		inzienMeldingGroup.add(inzienMsg);
@@ -125,35 +141,89 @@ public class TemplateInzienPanel extends GenericPanel<Brief>
 		add(inzienContainer);
 	}
 
-	private boolean showPdf(AjaxRequestTarget target, Document document)
+	private @NonNull Component getDownloadLink(Brief brief)
 	{
-		try
-		{
+		var briefGuid = brief.getCommHubGuid();
+		var downloadBehavior = createAjaxDownloadBehavior(briefGuid);
 
-			target.appendJavaScript("$('.modal.fade.in').not('#sessieVerlopenDialog').addClass('previousDialog').modal('hide');");
-
-			pdfDialog.openWith(target, new PdfViewerPanel(IDialog.CONTENT_ID, baseBriefService.genereerPdf(document, "brieftemplate_inzien", false)));
-		}
-		catch (Exception e)
-		{
-			LOG.error(e.getMessage());
-			return true;
-		}
-		return false;
+		return createIndicatingAjaxLink(briefGuid, downloadBehavior);
 	}
 
-	@CheckForNull
-	private Document genereerAsposeDocument(File file)
+	private @NonNull IndicatingAjaxLink<Void> createIndicatingAjaxLink(String briefGuid, AjaxDownloadBehavior downloadBehavior)
 	{
-		try
+		var link = new IndicatingAjaxLink<Void>("download")
 		{
-			FileInputStream stream = new FileInputStream(file);
-			return new Document(stream);
-		}
-		catch (Exception e)
+			@Override
+			public void onClick(AjaxRequestTarget target)
+			{
+				try
+				{
+					var letterDetail = letterServiceApi.getLetterDetail(communicatieHubClientConfig.getTenant(), briefGuid);
+
+					if (letterDetail != null && !CollectionUtils.isEmpty(letterDetail.getFiles()))
+					{
+						downloadBehavior.initiate(target);
+					}
+					else
+					{
+						var messageHistory = letterDetail != null ? letterDetail.getMessageHistory() : null;
+						var status = messageHistory != null && !messageHistory.isEmpty() ? messageHistory.getLast().getStatus() : "";
+						LOG.error("Fout bij ophalen brief {}: {}", briefGuid, status);
+						error("Er is een fout bij het ophalen van de brief.");
+					}
+				}
+				catch (Exception e)
+				{
+					LOG.error("Fout bij het ophalen van brief PDF bij CommHub", e);
+					error("Er is een fout bij het ophalen van de brief.");
+				}
+			}
+		};
+		link.add(downloadBehavior);
+		link.setVisible(StringUtils.isNotBlank(briefGuid));
+		return link;
+	}
+
+	private @NonNull AjaxDownloadBehavior createAjaxDownloadBehavior(String briefGuid)
+	{
+		return new AjaxDownloadBehavior(new AbstractResource()
 		{
-			LOG.error(e.getMessage());
-			return null;
-		}
+			@Override
+			protected ResourceResponse newResourceResponse(Attributes attributes)
+			{
+				return getResourceResponse(new WriteCallback()
+				{
+					@Override
+					public void writeData(Attributes attributes)
+					{
+						try
+						{
+							var letterDetail = letterServiceApi.getLetterDetail(communicatieHubClientConfig.getTenant(), briefGuid);
+							if (letterDetail != null && !CollectionUtils.isEmpty(letterDetail.getFiles()))
+							{
+								var file = letterDetail.getFiles().getFirst();
+								var decodedFile = Base64.getDecoder().decode(file.getBase64Content());
+								attributes.getResponse().getOutputStream().write(decodedFile);
+							}
+						}
+						catch (IOException e)
+						{
+							LOG.error("Fout bij schrijven brief naar outputstream voor GUID '{}'", briefGuid, e);
+						}
+					}
+				});
+			}
+		});
+	}
+
+	private AbstractResource.ResourceResponse getResourceResponse(AbstractResource.WriteCallback callback)
+	{
+		var response = new AbstractResource.ResourceResponse();
+		response.setContentType("application/pdf");
+		response.setFileName("brief.pdf");
+		response.setContentDisposition(ContentDisposition.ATTACHMENT);
+		response.setCacheDuration(Duration.ZERO);
+		response.setWriteCallback(callback);
+		return response;
 	}
 }

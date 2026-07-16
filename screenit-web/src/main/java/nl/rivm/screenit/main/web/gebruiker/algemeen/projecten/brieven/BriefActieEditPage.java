@@ -47,7 +47,6 @@ import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
-import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -92,8 +91,6 @@ public class BriefActieEditPage extends ProjectBasePage
 	private final IModel<ProjectBriefActie> briefHerinnerenVragenlijstModel;
 
 	private final IModel<List<FileUpload>> fileUploads = new ListModel<>();
-
-	private final IModel<List<FileUpload>> herinnerFileUploads = new ListModel<>();
 
 	public BriefActieEditPage(IModel<Project> model)
 	{
@@ -172,35 +169,17 @@ public class BriefActieEditPage extends ProjectBasePage
 				Project project = actie.getProject();
 				if (validatieProjectBriefActie(actie))
 				{
-					ProjectBriefActie herinnerActie;
 					UploadDocument uploadDocument;
-					UploadDocument herinneringsDocument;
 					Date nu = currentDateSupplier.getDate();
 					List<FileUpload> filesUploaded = fileUploads.getObject();
-					List<FileUpload> herinneringFilesUpload = herinnerFileUploads.getObject();
 					try
 					{
-						uploadDocument = ScreenitSession.get().fileUploadToUploadDocument(filesUploaded.get(0));
+						uploadDocument = ScreenitSession.get().fileUploadToUploadDocument(filesUploaded.getFirst());
 						uploadDocumentService.saveOrUpdate(uploadDocument, FileStoreLocation.PROJECT_BRIEF_TEMPLATES, actie.getProject().getId());
 						actie.setDocument(uploadDocument);
 						actie.setUploader(getIngelogdeOrganisatieMedewerker());
 						actie.setLaatstGewijzigd(nu);
-						hibernateService.saveOrUpdate(ModelProxyHelper.deproxy(actie));
-
-						if (actie.isHerinneren())
-						{
-							herinnerActie = briefHerinnerenVragenlijstModel.getObject();
-							herinneringsDocument = ScreenitSession.get().fileUploadToUploadDocument(herinneringFilesUpload.get(0));
-							uploadDocumentService.saveOrUpdate(herinneringsDocument, FileStoreLocation.PROJECT_BRIEF_TEMPLATES, actie.getProject().getId());
-							herinnerActie.setUploader(getIngelogdeOrganisatieMedewerker());
-							herinnerActie.setDocument(herinneringsDocument);
-							herinnerActie.setLaatstGewijzigd(nu);
-							herinnerActie.setType(ProjectBriefActieType.HERINNERING);
-							herinnerActie.setActief(true);
-							hibernateService.saveOrUpdate(ModelProxyHelper.deproxy(herinnerActie));
-							actie.setHerinneringsActie(herinnerActie);
-							hibernateService.saveOrUpdate(actie);
-						}
+						hibernateService.saveOrUpdate(actie);
 
 						String melding = getString(EnumStringUtil.getPropertyString(project.getType())) + ": " + project.getNaam() +
 							" Briefsoort: " + getString(EnumStringUtil.getPropertyString(actie.getType()));
@@ -246,11 +225,6 @@ public class BriefActieEditPage extends ProjectBasePage
 			error("Er is geen definitie geupload.");
 			return false;
 		}
-		if (actie.isHerinneren() && CollectionUtils.isEmpty(herinnerFileUploads.getObject()))
-		{
-			error("Er is geen herinnerings definitie geupload.");
-			return false;
-		}
 		if (getBestandsNaam(actie).length() > 255)
 		{
 			error("De bestandsnaam zal te lang worden met deze printomschrijving.");
@@ -278,7 +252,6 @@ public class BriefActieEditPage extends ProjectBasePage
 			{
 				case DATUM, VANAF_DATUM -> new BriefActieTypeDatumPanel("typePanel", briefActieModel);
 				case VERVANGENDEBRIEF -> new BriefActieTypeVervangendeBriefPanel("typePanel", briefActieModel);
-				case HERINNERING -> new BriefActieTypeHerinneringPanel("typePanel", briefActieModel);
 				case XDAGENNAY -> new BriefActieTypeXnaYPanel("typePanel", briefActieModel);
 				case XMETY -> new BriefActieTypeXmetYPanel("typePanel", briefActieModel);
 				default -> new EmptyPanel("typePanel");
@@ -322,13 +295,13 @@ public class BriefActieEditPage extends ProjectBasePage
 		if (organisatie != null)
 		{
 			String soNaam = organisatie.getNaam();
-			soNaam = soNaam.replaceAll(" ", "_");
+			soNaam = soNaam.replace(" ", "_");
 			naam += soNaam + "-";
 		}
 		if (actie.getProject().getNaam() != null)
 		{
 			String projectNaam = actie.getProject().getNaam();
-			projectNaam = projectNaam.replaceAll(" ", "_");
+			projectNaam = projectNaam.replace(" ", "_");
 			naam += projectNaam + "-";
 		}
 		if (StringUtils.isNotEmpty(actie.getPrintomschrijving()))

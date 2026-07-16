@@ -23,6 +23,9 @@ package nl.rivm.screenit.batch.jobs.colon.vervolgintakeconclusie.versturennoshow
 
 import java.util.Date;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
+
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -37,6 +40,7 @@ import nl.rivm.screenit.model.colon.ColonIntakeAfspraak_;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.algemeen.ClientSpecification;
 import nl.rivm.screenit.specification.algemeen.DossierSpecification;
@@ -44,13 +48,9 @@ import nl.rivm.screenit.specification.algemeen.ScreeningRondeSpecification;
 import nl.rivm.screenit.specification.colon.ColonConclusieSpecification;
 import nl.rivm.screenit.specification.colon.ColonScreeningRondeSpecification;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Root;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 

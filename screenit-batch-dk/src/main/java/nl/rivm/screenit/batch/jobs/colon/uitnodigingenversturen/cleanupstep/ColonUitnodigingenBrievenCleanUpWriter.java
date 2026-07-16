@@ -30,15 +30,4 @@ import org.springframework.stereotype.Component;
 public class ColonUitnodigingenBrievenCleanUpWriter extends AbstractBrievenCleanUpWriter<ColonMergedBrieven>
 {
 
-	@Override
-	protected void write(ColonMergedBrieven item) throws Exception
-	{
-		var mergedBrief = item.getMergedBrieven();
-
-		super.write(item);
-
-		getHibernateService().delete(mergedBrief);
-		getHibernateService().delete(item);
-
-	}
 }

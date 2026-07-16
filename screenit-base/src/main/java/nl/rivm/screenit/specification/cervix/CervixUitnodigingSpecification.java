@@ -50,13 +50,14 @@ import nl.rivm.screenit.model.cervix.CervixZas_;
 import nl.rivm.screenit.model.cervix.enums.CervixMonsterType;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.specification.ExtendedSpecification;
-import nl.rivm.screenit.specification.SpecificationUtil;
+import nl.rivm.screenit.specification.algemeen.BriefSpecification;
 import nl.rivm.screenit.specification.algemeen.ClientSpecification;
-import nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification;
 import nl.rivm.screenit.util.DateUtil;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import static jakarta.persistence.criteria.JoinType.LEFT;
+import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefTypeIn;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -66,26 +67,22 @@ public class CervixUitnodigingSpecification
 	{
 		return ClientSpecification.heeftActieveClient().with(r ->
 		{
-			var ronde = SpecificationUtil.join(r, CervixUitnodiging_.screeningRonde);
-			var dossier = SpecificationUtil.join(ronde, CervixScreeningRonde_.dossier);
-			return SpecificationUtil.join(dossier, CervixDossier_.client);
+			var ronde = join(r, CervixUitnodiging_.screeningRonde);
+			var dossier = join(ronde, CervixScreeningRonde_.dossier);
+			return join(dossier, CervixDossier_.client);
 		});
 	}
 
-	public static Specification<CervixUitnodiging> heeftMergedBrieven()
+	public static Specification<CervixUitnodiging> isVerstuurdVoorAfdrukken()
 	{
-		return (r, q, cb) ->
-		{
-			var brief = SpecificationUtil.join(r, CervixUitnodiging_.brief);
-			return cb.isNotNull(brief.get(CervixBrief_.mergedBrieven));
-		};
+		return BriefSpecification.isVerstuurdVoorAfdrukken().with(r -> join(r, CervixUitnodiging_.brief));
 	}
 
 	public static Specification<CervixUitnodiging> heeftLopendeRonde()
 	{
 		return (r, q, cb) ->
 		{
-			var ronde = SpecificationUtil.join(r, CervixUitnodiging_.screeningRonde);
+			var ronde = join(r, CervixUitnodiging_.screeningRonde);
 			return cb.equal(ronde.get(ScreeningRonde_.status), ScreeningRondeStatus.LOPEND);
 		};
 	}
@@ -111,21 +108,17 @@ public class CervixUitnodigingSpecification
 		return (r, q, cb) -> cb.equal(r.get(CervixUitnodiging_.monsterType), monsterType);
 	}
 
-	public static Specification<CervixUitnodiging> heeftMergedBrievenVoorDatum(LocalDate datum)
+	public static Specification<CervixUitnodiging> isVerstuurdVoorAfdrukkenVoorDatum(LocalDate datum)
 	{
-		return MergedBrievenSpecification.heeftPrintDatumVoor(datum)
-			.with(r ->
-			{
-				var brief = SpecificationUtil.join(r, CervixUitnodiging_.brief);
-				return SpecificationUtil.join(brief, CervixBrief_.mergedBrieven);
-			});
+		return BriefSpecification.isVerstuurdVoorAfdrukkenVoor(datum)
+			.with(r -> join(r, CervixUitnodiging_.brief));
 	}
 
 	public static Specification<CervixUitnodiging> heeftZasDieVerstuurdIsVoorDatum(LocalDate datum)
 	{
 		return (r, q, cb) ->
 		{
-			var monster = SpecificationUtil.join(r, CervixUitnodiging_.monster);
+			var monster = join(r, CervixUitnodiging_.monster);
 			return cb.lessThan(cb.treat(monster, CervixZas.class).get(CervixZas_.verstuurd), DateUtil.toUtilDate(datum));
 		};
 	}
@@ -139,7 +132,7 @@ public class CervixUitnodigingSpecification
 	{
 		return (r, q, cb) ->
 		{
-			var screeningRondeJoin = SpecificationUtil.join(r, CervixUitnodiging_.screeningRonde);
+			var screeningRondeJoin = join(r, CervixUitnodiging_.screeningRonde);
 			return cb.equal(screeningRondeJoin, screeningRonde);
 		};
 	}
@@ -148,12 +141,12 @@ public class CervixUitnodigingSpecification
 	{
 		return (r, q, cb) ->
 		{
-			var ronde = SpecificationUtil.join(r, CervixUitnodiging_.screeningRonde);
-			var dossier = SpecificationUtil.join(ronde, CervixScreeningRonde_.dossier);
-			var client = SpecificationUtil.join(dossier, CervixDossier_.client);
-			var persoon = SpecificationUtil.join(client, Client_.persoon);
-			var adres = SpecificationUtil.join(persoon, Persoon_.gbaAdres);
-			var gemeente = SpecificationUtil.join(adres, BagAdres_.gbaGemeente);
+			var ronde = join(r, CervixUitnodiging_.screeningRonde);
+			var dossier = join(ronde, CervixScreeningRonde_.dossier);
+			var client = join(dossier, CervixDossier_.client);
+			var persoon = join(client, Client_.persoon);
+			var adres = join(persoon, Persoon_.gbaAdres);
+			var gemeente = join(adres, BagAdres_.gbaGemeente);
 			return cb.isNotNull(gemeente.get(Gemeente_.bmhkLaboratorium));
 		};
 	}
@@ -169,15 +162,16 @@ public class CervixUitnodigingSpecification
 		{
 			var subquery = q.subquery(Long.class);
 			var subqueryRoot = subquery.from(CervixDossier.class);
-			var ronde = SpecificationUtil.join(subqueryRoot, CervixDossier_.laatsteScreeningRonde);
-			var uitnodigingen = SpecificationUtil.join(ronde, CervixScreeningRonde_.uitnodigingen);
-			var brief = SpecificationUtil.join(uitnodigingen, CervixUitnodiging_.brief);
-			var mergedBrief = SpecificationUtil.join(brief, CervixBrief_.mergedBrieven);
+			var ronde = join(subqueryRoot, CervixDossier_.laatsteScreeningRonde);
+			var uitnodigingen = join(ronde, CervixScreeningRonde_.uitnodigingen);
+			var brief = join(uitnodigingen, CervixUitnodiging_.brief);
+			var mergedBrief = join(brief, CervixBrief_.mergedBrieven, LEFT);
 
-			var uitnodigingRonde = SpecificationUtil.join(r, CervixUitnodiging_.screeningRonde);
+			var uitnodigingRonde = join(r, CervixUitnodiging_.screeningRonde);
 			var geprintOrPrintDatumNotNull = cb.or(
 				cb.isTrue(mergedBrief.get(MergedBrieven_.geprint)),
-				cb.isNotNull(mergedBrief.get(MergedBrieven_.printDatum))
+				cb.isNotNull(mergedBrief.get(MergedBrieven_.printDatum)),
+				cb.isNotNull(brief.get(Brief_.verstuurdVoorAfdrukkenOp))
 			);
 
 			var briefTypeInCervixUitnodigingen = brief.get(Brief_.briefType).in(BriefType.getCervixUitnodigingen());

@@ -32,21 +32,16 @@ import jakarta.persistence.Table;
 import nl.rivm.screenit.model.verwerkingverslag.cervix.CervixZasVersturenRapportage;
 import nl.rivm.screenit.model.verwerkingverslag.cervix.CervixZasVersturenRapportageProjectEntry;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 @Entity
 @Table(schema = "gedeeld")
 public class CervixUitnodigingVersturenLogEvent extends LogEvent
 {
 	@OneToMany(cascade = jakarta.persistence.CascadeType.REMOVE)
 	@JoinTable(schema = "gedeeld")
-	@Cascade(CascadeType.DELETE)
 	private List<CervixZasVersturenRapportage> rapportage = new ArrayList<>();
 
 	@OneToMany(cascade = jakarta.persistence.CascadeType.REMOVE)
 	@JoinTable(schema = "gedeeld")
-	@Cascade(CascadeType.DELETE)
 	private List<CervixZasVersturenRapportageProjectEntry> projectGroepen = new ArrayList<>();
 
 	public List<CervixZasVersturenRapportage> getRapportage()

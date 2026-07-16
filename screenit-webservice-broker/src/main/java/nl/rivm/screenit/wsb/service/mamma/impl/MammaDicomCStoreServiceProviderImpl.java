@@ -34,10 +34,10 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.mamma.dicom.CMoveConfig;
 import nl.rivm.screenit.model.mamma.dicom.SCPConfig;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.mamma.MammaBaseUitwisselportaalService;
 import nl.rivm.screenit.wsb.service.mamma.MammaDownloadOnderzoekService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang.StringUtils;
 import org.dcm4che3.data.Attributes;

@@ -43,4 +43,6 @@ public interface AsposeService
 
 	PdfSaveOptions getPdfSaveOptions();
 
+	Document maakDocument(File file);
+
 }

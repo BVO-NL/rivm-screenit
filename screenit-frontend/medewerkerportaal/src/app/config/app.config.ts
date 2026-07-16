@@ -29,7 +29,7 @@ import { GlobalErrorHandler } from '@shared/services/global-error-handler/global
 import { httpInterceptor } from '@shared/interceptors/http.interceptor'
 import { ParameterService } from '@/algemeen/services/parameter/parameter.service'
 import { forkJoin } from 'rxjs'
-import { provideRouter, withDebugTracing } from '@angular/router'
+import { provideRouter } from '@angular/router'
 import { HashLocationStrategy, LocationStrategy } from '@angular/common'
 import { provideDsDateFormats, provideDsDateTimeFormats, provideDsLocalStorageNotificationAdapter, provideDsTimeAdapter } from '@topicus-rgp-ds/web'
 import { provideDateFnsAdapter } from '@angular/material-date-fns-adapter'
@@ -38,12 +38,15 @@ import { MAT_DATE_LOCALE } from '@angular/material/core'
 import { DatepickerLocaleNl } from '@/config/mat-translations'
 import { MatDatepickerIntl } from '@angular/material/datepicker'
 import { routes } from '@/config/routes'
+import { config } from '@fortawesome/fontawesome-svg-core'
+
+config.autoAddCss = false
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(withInterceptors([httpInterceptor])),
     provideAnimations(),
-    provideRouter(routes, withDebugTracing()),
+    provideRouter(routes),
     importProvidersFrom(DialogModule),
     provideAppInitializer(() => {
       const autorisatieService = inject(AutorisatieService)

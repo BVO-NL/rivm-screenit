@@ -34,14 +34,13 @@ import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Getter
 @Setter
 @Entity
-@Table(schema = "cervix", name = "regio_brief", indexes = { @Index(name = "idx_cervix_regio_brief_gegenereerd", columnList = "gegenereerd") })
+@Table(schema = "cervix", name = "regio_brief", indexes = { @Index(name = "idx_cervix_regio_brief_gegenereerd", columnList = "gegenereerd"),
+	@Index(name = "idx_cervix_regio_brief_verstuurd_voor_afdrukken_op", columnList = "verstuurdVoorAfdrukkenOp") })
 @Audited
 public class CervixRegioBrief extends Brief
 {
@@ -53,7 +52,6 @@ public class CervixRegioBrief extends Brief
 	private CervixHuisarts huisarts;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	private CervixRegioMergedBrieven mergedBrieven;
 
 	@Override

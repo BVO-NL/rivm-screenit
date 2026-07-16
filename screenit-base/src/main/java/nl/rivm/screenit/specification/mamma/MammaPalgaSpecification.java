@@ -92,19 +92,18 @@ public class MammaPalgaSpecification
 			var laatsteOnderzoekJoin = join(rondeJoin, MammaScreeningRonde_.laatsteOnderzoek);
 			var laatsteBeoordelingJoin = join(laatsteOnderzoekJoin, MammaOnderzoek_.laatsteBeoordeling);
 			var creatieDatumTruncate = DateSpecification.truncate("day", laatsteOnderzoekJoin.get(MammaOnderzoek_.creatieDatum), cb);
-			switch (palgaExportConfig.getPeriodeType())
+			return switch (palgaExportConfig.getPeriodeType())
 			{
-			case ONDERZOEKS_DATUM_PERIODE:
-				return cb.and(laatsteBeoordelingJoin.get(MammaBeoordeling_.status).in(gekozenUitslagen(palgaExportConfig.getGewensteUitslag())),
+				case ONDERZOEKS_DATUM_PERIODE -> cb.and(laatsteBeoordelingJoin.get(MammaBeoordeling_.status).in(gekozenUitslagen(palgaExportConfig.getGewensteUitslag())),
 					cb.lessThanOrEqualTo(creatieDatumTruncate, palgaExportConfig.getTotEnMetOnderzoeksDatum()),
 					cb.greaterThanOrEqualTo(creatieDatumTruncate, palgaExportConfig.getVanafOnderzoeksDatum()));
-			case ONDERZOEKS_DATUM_AANTAL_MAANDEN_TERUG:
-				var maximaleDatumOnderzoekInVerleden = DateUtil.toUtilDate(vandaag.minusMonths(palgaExportConfig.getOnderzoekAantalMaandenTerug()));
-				return cb.and(laatsteBeoordelingJoin.get(MammaBeoordeling_.status).in(gekozenUitslagen(palgaExportConfig.getGewensteUitslag())),
-					cb.greaterThanOrEqualTo(creatieDatumTruncate, maximaleDatumOnderzoekInVerleden));
-			default:
-				return null;
-			}
+				case ONDERZOEKS_DATUM_AANTAL_MAANDEN_TERUG ->
+				{
+					var maximaleDatumOnderzoekInVerleden = DateUtil.toUtilDate(vandaag.minusMonths(palgaExportConfig.getOnderzoekAantalMaandenTerug()));
+					yield cb.and(laatsteBeoordelingJoin.get(MammaBeoordeling_.status).in(gekozenUitslagen(palgaExportConfig.getGewensteUitslag())),
+						cb.greaterThanOrEqualTo(creatieDatumTruncate, maximaleDatumOnderzoekInVerleden));
+				}
+			};
 		};
 	}
 

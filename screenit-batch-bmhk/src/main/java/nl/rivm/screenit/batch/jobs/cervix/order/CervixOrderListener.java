@@ -27,7 +27,7 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.jobs.cervix.CervixBaseLogListener;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.LogEvent;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.core.JobExecution;

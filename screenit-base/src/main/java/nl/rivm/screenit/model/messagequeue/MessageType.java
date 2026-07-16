@@ -24,8 +24,10 @@ package nl.rivm.screenit.model.messagequeue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import nl.rivm.screenit.model.messagequeue.dto.BriefafdrukopdrachtDto;
 import nl.rivm.screenit.model.messagequeue.dto.CervixHL7v24HpvOrderTriggerDto;
 import nl.rivm.screenit.model.messagequeue.dto.CervixHerindexatieDto;
+import nl.rivm.screenit.model.messagequeue.dto.IBriefafdrukopdrachtDto;
 import nl.rivm.screenit.model.messagequeue.dto.VerwijderBetaalOpdrachtDto;
 
 @AllArgsConstructor
@@ -36,7 +38,13 @@ public enum MessageType
 
 	HERINDEXATIE(CervixHerindexatieDto.class),
 
-	HPV_ORDER(CervixHL7v24HpvOrderTriggerDto.class);
+	HPV_ORDER(CervixHL7v24HpvOrderTriggerDto.class),
+
+	BRIEF_AFDRUKKEN(BriefafdrukopdrachtDto.class),
+
+	BRIEF_AFDRUKKEN_SEND(BriefafdrukopdrachtDto.class),
+
+	BRIEF_AFDRUKKEN_ERROR(IBriefafdrukopdrachtDto.class);
 
 	private final Class<?> contentType;
 

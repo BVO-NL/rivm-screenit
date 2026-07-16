@@ -33,15 +33,12 @@ import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.RetourzendingAfhandelingType;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
 @Entity
 @Table(schema = "gedeeld")
 public class RetourzendingLogEvent extends LogEvent
 {
 	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade(CascadeType.SAVE_UPDATE)
 	private UploadDocument sanddBestand;
 
 	private Integer nieuweGbaAanvraagRegels = 0;

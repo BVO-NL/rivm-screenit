@@ -99,6 +99,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaUitstelGeannuleerdReden;
 import nl.rivm.screenit.model.mamma.enums.MammaVerzettenReden;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.ClientContactRepository;
 import nl.rivm.screenit.service.BaseAfmeldService;
 import nl.rivm.screenit.service.BaseBriefService;
@@ -140,7 +141,6 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.hibernate.Hibernate;
 import org.hibernate.exception.GenericJDBCException;
@@ -1207,7 +1207,7 @@ public class ClientContactServiceImpl implements ClientContactService
 			{
 				var isErEenOpenUitnodiging = laatsteScreeningRonde.getOpenUitnodiging() != null;
 				var isDeOpenUitnodigingGemerged = isErEenOpenUitnodiging && laatsteScreeningRonde.getOpenUitnodiging().getUitnodigingsBrief() != null
-					&& laatsteScreeningRonde.getOpenUitnodiging().getUitnodigingsBrief().getMergedBrieven() != null;
+					&& laatsteScreeningRonde.getOpenUitnodiging().getUitnodigingsBrief().isGegenereerd();
 				var isErEenLaatsteAfspraak = laatsteScreeningRonde.getLaatsteAfspraak() != null;
 				var isDeLaatsteAfspraakGeannuleerd = isErEenLaatsteAfspraak && ColonAfspraakStatus.isGeannuleerd(laatsteScreeningRonde.getLaatsteAfspraak().getStatus());
 				var isColonDossierIsAfgemeldViaAfmelding = !colonDossier.getAangemeld();
@@ -1338,7 +1338,7 @@ public class ClientContactServiceImpl implements ClientContactService
 					.orElse(null);
 
 				infoBriefProthesenKlaarzetten = vorigeInfobriefProthesen == null
-					|| BriefUtil.isMergedBrievenGeprint(vorigeInfobriefProthesen);
+					|| BriefUtil.isVerstuurdVoorAfdrukken(vorigeInfobriefProthesen);
 			}
 			magDoelgroepWijzigen = !mindervalideNietMeerOnderzoekZiekenhuis;
 			if (dossier.getStatus() != DossierStatus.INACTIEF)

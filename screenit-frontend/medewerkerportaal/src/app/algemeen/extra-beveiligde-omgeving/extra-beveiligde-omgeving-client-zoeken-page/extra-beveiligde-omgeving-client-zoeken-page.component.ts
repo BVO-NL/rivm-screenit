@@ -50,6 +50,7 @@ import {
 import { NL_DATE_FORMAT } from '@shared/constants'
 import { faEye } from '@fortawesome/pro-light-svg-icons'
 import { PageComponent } from '@shared/components/page/page.component'
+import { DocumentService } from '@algemeen/services/document/document.service'
 
 @Component({
   selector: 'app-extra-beveiligde-omgeving-client-zoeken-page',
@@ -89,6 +90,7 @@ import { PageComponent } from '@shared/components/page/page.component'
 export class ExtraBeveiligdeOmgevingClientZoekenPageComponent {
   private readonly formBuilder = inject(NonNullableFormBuilder)
   private readonly dialogService = inject(Dialog)
+  private readonly documentService = inject(DocumentService)
   private readonly extraBeveiligdeOmgevingService = inject(ExtraBeveiligdeOmgevingService)
   protected readonly eyeIcon = faEye
   protected readonly NL_DATE_FORMAT = NL_DATE_FORMAT
@@ -125,9 +127,14 @@ export class ExtraBeveiligdeOmgevingClientZoekenPageComponent {
   }
 
   briefOpenen(client: BezwaarClient) {
-    this.dialogService.open(BriefInzienDialogComponent, {
-      data: client.briefDocument,
-      panelClass: 'pdf-inzien-dialog',
-    })
+    this.documentService
+      .getDocumentUrlById(client.briefDocument)
+      .pipe(take(1))
+      .subscribe((response) => {
+        this.dialogService.open(BriefInzienDialogComponent, {
+          data: response,
+          panelClass: 'pdf-inzien-dialog',
+        })
+      })
   }
 }

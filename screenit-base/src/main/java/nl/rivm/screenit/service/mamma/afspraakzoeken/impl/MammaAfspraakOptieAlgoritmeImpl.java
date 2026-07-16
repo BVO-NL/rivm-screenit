@@ -37,6 +37,7 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaBaseAfspraakOptieDto;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaCapaciteitBlokDto;
 import nl.rivm.screenit.model.mamma.MammaDossier;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
 import nl.rivm.screenit.service.mamma.MammaBaseDossierService;
@@ -48,7 +49,6 @@ import nl.rivm.screenit.service.mamma.impl.MammaCapaciteit;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.mamma.MammaPlanningUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningsEenheidUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;

@@ -39,9 +39,6 @@ import lombok.Setter;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 @Entity
 @Table(schema = "mamma", name = "standplaats_ronde_uitnodigen_rapportage")
 @Getter
@@ -55,7 +52,6 @@ public class MammaStandplaatsRondeUitnodigenRapportage extends AbstractHibernate
 	private MammaStandplaatsRonde standplaatsRonde;
 
 	@OneToMany(mappedBy = "standplaatsRondeUitnodigenRapportage", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE })
-	@Cascade(CascadeType.DELETE)
 	private List<MammaStandplaatsPeriodeUitnodigenRapportage> standplaatsPeriodeUitnodigenRapportages = new ArrayList<>();
 
 	@Column

@@ -54,6 +54,7 @@ import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaFollowUpConclusieStatus;
 import nl.rivm.screenit.model.mamma.verslag.MammaVerslag;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.mamma.MammaBaseFollowUpRepository;
 import nl.rivm.screenit.repository.mamma.MammaDossierRepository;
 import nl.rivm.screenit.service.BaseVerslagService;
@@ -67,7 +68,6 @@ import nl.rivm.screenit.specification.algemeen.BeoordelingsEenheidSpecification;
 import nl.rivm.screenit.specification.mamma.MammaBaseDossierSpecification;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;

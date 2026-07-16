@@ -36,12 +36,10 @@ import lombok.Setter;
 import nl.rivm.screenit.model.colon.enums.MdlVervolgbeleid;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerslagContent;
 
-import org.hibernate.annotations.Proxy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 @Entity(name = "mdlverslag")
-@Proxy
 @Audited
 @Getter
 @Setter

@@ -38,10 +38,10 @@ import nl.rivm.screenit.model.cervix.facturatie.CervixBoekRegel;
 import nl.rivm.screenit.model.cervix.facturatie.CervixVerrichting;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.HuisartsenportaalSyncService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.cervix.Cervix2023StartBepalingService;
 import nl.rivm.screenit.service.cervix.CervixBaseVerrichtingService;
 import nl.rivm.screenit.service.cervix.CervixVerrichtingFactory;
-import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.cervix.CervixHuisartsToDtoUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
@@ -70,6 +70,9 @@ public class CervixVerrichtingFactoryImpl implements CervixVerrichtingFactory
 	@Autowired
 	private Cervix2023StartBepalingService cervix2023StartBepalingService;
 
+	@Autowired
+	private OrganisatieService organisatieService;
+
 	@Override
 	public List<CervixVerrichting> maakLabVerrichting(CervixMonster monster, CervixTariefType tariefType, Date verrichtingsDatum)
 	{
@@ -77,7 +80,7 @@ public class CervixVerrichtingFactoryImpl implements CervixVerrichtingFactory
 		var bmhk2023Lab = cervix2023StartBepalingService.isBmhk2023Laboratorium(laboratorium);
 		var verrichtingen = new ArrayList<CervixVerrichting>();
 
-		if (!Boolean.TRUE.equals(bmhk2023Lab))
+		if (!bmhk2023Lab)
 		{
 			verrichtingen.add(maakVerrichting(monster, tariefType, verrichtingsDatum, null, laboratorium));
 		}
@@ -154,15 +157,7 @@ public class CervixVerrichtingFactoryImpl implements CervixVerrichtingFactory
 		}
 		else if (gemeente.getCode().equals(Gemeente.RNI_CODE))
 		{
-			if (CervixMonsterUtil.isUitstrijkje(monster))
-			{
-				so = BriefUtil.getMergedBrieven(monster.getUitnodiging().getBrief()).getScreeningOrganisatie();
-			}
-			else
-			{
-				so = BriefUtil.getMergedBrieven(monster.getUitnodiging().getScreeningRonde().getEersteUitnodiging().getBrief()).getScreeningOrganisatie();
-			}
-
+			so = organisatieService.getLandelijkeScreeningsorganisatie();
 		}
 		else
 		{

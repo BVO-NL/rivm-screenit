@@ -23,7 +23,6 @@ package nl.rivm.screenit.service.cervix.impl;
 
 import lombok.AllArgsConstructor;
 
-import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
 import nl.rivm.screenit.model.cervix.CervixMonster;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
@@ -217,8 +216,7 @@ public class CervixLabformulierServiceImpl implements CervixLabformulierService
 			}
 			else
 			{
-				MergedBrieven<?> mergedBrieven = BriefUtil.getMergedBrieven(uitstrijkje.getUitnodiging().getBrief());
-				if (mergedBrieven == null || mergedBrieven.getPrintDatum() == null)
+				if (!BriefUtil.isVerstuurdVoorAfdrukken(uitstrijkje.getUitnodiging().getBrief()))
 				{
 					throw new IllegalStateException("geen.verzonden.uitnodiging.gevonden");
 				}

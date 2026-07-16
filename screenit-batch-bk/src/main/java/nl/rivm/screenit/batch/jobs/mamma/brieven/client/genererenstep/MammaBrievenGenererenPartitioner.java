@@ -38,8 +38,9 @@ import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
+import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.DatabaseRunner;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.stereotype.Component;
@@ -63,6 +64,8 @@ public class MammaBrievenGenererenPartitioner extends AbstractBrievenGenererenPa
 
 	private final DatabaseRunner databaseRunner;
 
+	private final BaseBriefService briefService;
+
 	@Override
 	protected void fillingData(Map<String, ExecutionContext> partities, ScreeningOrganisatie organisatie)
 	{
@@ -81,7 +84,7 @@ public class MammaBrievenGenererenPartitioner extends AbstractBrievenGenererenPa
 
 				partitionBuilders(partities, organisatie.getId(), briefType, true, null, true, isEersteRondeBrief);
 
-				for (Long standplaatsId : getStandplaatsenIdsMetBrief(organisatie, briefType))
+				for (Long standplaatsId : getStandplaatsenIdsMetBrief(briefService.isOverbruggingssituatieParagonStarted() ? null : organisatie, briefType))
 				{
 
 					partitionBuilders(partities, organisatie.getId(), briefType, true, standplaatsId, false, isEersteRondeBrief);
@@ -109,7 +112,8 @@ public class MammaBrievenGenererenPartitioner extends AbstractBrievenGenererenPa
 		standplaatsenIds.addAll(briefRepository.getUitnodigingStandplaatsenIdsMetBrief(screeningOrganisatie, brieftype));
 		if (!standplaatsenIds.isEmpty())
 		{
-			LOG.info("{} standplaats(en) gevonden met brieftype {} en organisatieId '{}'", standplaatsenIds.size(), brieftype.name(), screeningOrganisatie.getId());
+			LOG.info("{} standplaats(en) gevonden met brieftype {} en organisatieId '{}'", standplaatsenIds.size(), brieftype.name(),
+				screeningOrganisatie != null ? screeningOrganisatie.getId() : "landelijk");
 		}
 		return standplaatsenIds;
 	}
@@ -120,7 +124,7 @@ public class MammaBrievenGenererenPartitioner extends AbstractBrievenGenererenPa
 		databaseRunner.runInSessionOnly(() ->
 			annoteerEersteRonde.set(preferenceService.getBoolean(PreferenceKey.MAMMA_ANNOTEER_EERSTE_RONDE.name(), Boolean.FALSE)));
 
-		return Boolean.TRUE.equals(annoteerEersteRonde.get()) && BriefType.getMammaEersteRondeBrieftype().contains(briefType);
+		return annoteerEersteRonde.get() && BriefType.getMammaEersteRondeBrieftype().contains(briefType);
 	}
 
 	void partitionBuilders(Map<String, ExecutionContext> partities, long organisatieID, BriefType briefType, boolean briefApart, Long standPlaatsID, Boolean tijdelijk,

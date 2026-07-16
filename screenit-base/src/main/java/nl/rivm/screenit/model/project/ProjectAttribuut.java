@@ -35,8 +35,6 @@ import nl.rivm.screenit.model.IActief;
 import nl.rivm.screenit.model.INaam;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -57,7 +55,6 @@ public class ProjectAttribuut extends AbstractHibernateObject implements INaam, 
 	@Column(nullable = false)
 	private Boolean nietZichtbaarInClientDossier = false;
 
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	private Project project;
 

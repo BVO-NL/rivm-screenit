@@ -48,7 +48,6 @@ import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -105,11 +104,9 @@ public class MammaCapaciteitBlok extends AbstractHibernateObject
 	private final List<MammaAfspraak> afspraken = new ArrayList<>();
 
 	@OneToMany(mappedBy = "capaciteitBlok", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@Cascade(org.hibernate.annotations.CascadeType.DELETE)
 	@NotAudited
 	private List<MammaAfspraakReservering> afspraakReserveringen = new ArrayList<>();
 
 	@OneToMany(mappedBy = "capaciteitBlok", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@Cascade(org.hibernate.annotations.CascadeType.DELETE)
 	private List<MammaMindervalideReservering> mindervalideReserveringen = new ArrayList<>();
 }

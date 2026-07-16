@@ -66,6 +66,7 @@ import nl.rivm.screenit.model.envers.RevisionInformationResolver.RevisionInforma
 import nl.rivm.screenit.model.envers.RevisionKenmerk;
 import nl.rivm.screenit.model.envers.RevisionKenmerkInThreadHolder;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.security.Constraint;
 import nl.rivm.screenit.security.OrganisatieMedewerkerToken;
 import nl.rivm.screenit.security.UziToken;
@@ -78,12 +79,11 @@ import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.NieuwsService;
 import nl.rivm.screenit.service.ScopeService;
 import nl.rivm.screenit.util.MedewerkerUtil;
+import nl.rivm.screenit.yubikey.shiro.YubikeyToken;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
-import nl.topicuszorg.yubikey.shiro.YubikeyToken;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;

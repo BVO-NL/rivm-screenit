@@ -104,7 +104,6 @@ const ColonAfspraakOverzichtPage: FC = () => {
 	return (
 		<div>
 			<SpanWithHtml className={styles.infoText} value={isAfspraakDigitaal ? properties.overzicht.description : properties.page.description}/>
-			<div>{getString(properties.overzicht.afspraakgegevens)}</div>
 			<AfspraakView naamIntakelocatie={afspraak.naamIntakelocatie}
 			              adres={afspraak.adres}
 			              postcode={afspraak.postcode}

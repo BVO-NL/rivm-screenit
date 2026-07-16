@@ -28,7 +28,9 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.model.enums.IdpServer2ServerType;
 import nl.rivm.screenit.service.IdpServer2ServerService;
 import nl.topicuszorg.communicationhub.ApiClient;
+import nl.topicuszorg.communicationhub.api.DatabaseResetServiceCommunicationHubClientApi;
 import nl.topicuszorg.communicationhub.api.EmailServiceCommunicationHubClientApi;
+import nl.topicuszorg.communicationhub.api.LetterServiceCommunicationHubClientApi;
 import nl.topicuszorg.communicationhub.api.MessageServiceCommunicationHubClientApi;
 import nl.topicuszorg.communicationhub.api.ReceiverServiceCommunicationHubClientApi;
 import nl.topicuszorg.communicationhub.api.SmsServiceCommunicationHubClientApi;
@@ -96,6 +98,12 @@ public class CommunicationHubClientConfig
 	}
 
 	@Bean
+	public LetterServiceCommunicationHubClientApi letterServiceApi()
+	{
+		return new LetterServiceCommunicationHubClientApi(apiClient);
+	}
+
+	@Bean
 	public MessageServiceCommunicationHubClientApi messageServiceApi()
 	{
 		return new MessageServiceCommunicationHubClientApi(apiClient);
@@ -105,5 +113,11 @@ public class CommunicationHubClientConfig
 	public ReceiverServiceCommunicationHubClientApi receiverServiceApi()
 	{
 		return new ReceiverServiceCommunicationHubClientApi(apiClient);
+	}
+
+	@Bean
+	public DatabaseResetServiceCommunicationHubClientApi dbResetServiceApi()
+	{
+		return new DatabaseResetServiceCommunicationHubClientApi(apiClient);
 	}
 }

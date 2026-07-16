@@ -54,12 +54,12 @@ public enum TypeGebeurtenis
 
 	UITNODIGING_AANGEMAAKT(),
 
-	BRIEF_AANGEMAAKT(BriefKlaargezetPanel.class),
+	BRIEF_AANGEMAAKT(BriefKlaargezetPanel.class), 
 	BEZWAAR_BRIEF_AANGEMAAKT(BriefKlaargezetPanel.class),
 
-	BRIEF_KLAARGEZET(BriefKlaargezetPanel.class),
+	BRIEF_KLAARGEZET(BriefKlaargezetPanel.class), 
 
-	BRIEF_AFGEDRUKT(BriefKlaargezetPanel.class),
+	BRIEF_AFGEDRUKT(BriefKlaargezetPanel.class), 
 
 	BRIEF_TEGENHOUDEN(BriefKlaargezetPanel.class),
 

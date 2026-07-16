@@ -30,12 +30,11 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.BatchConstants;
-import nl.rivm.screenit.document.BaseDocumentCreator;
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.IDocument;
-import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
+import nl.rivm.screenit.model.enums.BatchApplicationType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.Level;
@@ -58,7 +57,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.NamedThreadLocal;
 
 @Slf4j
-public abstract class AbstractBrievenGenererenWriter<T extends Brief, S extends MergedBrieven<?>> implements ItemStreamWriter<T>, IBrievenGeneratorHelper<T, S>
+public abstract class AbstractBrievenGenererenWriter<B extends Brief, MB extends MergedBrieven<?>> implements ItemStreamWriter<B>, IBrievenGeneratorHelper<B, MB>
 {
 
 	private static final ThreadLocal<Map<Object, Object>> resources = new NamedThreadLocal<>("Brief writer resources");
@@ -86,9 +85,14 @@ public abstract class AbstractBrievenGenererenWriter<T extends Brief, S extends 
 	@Autowired
 	private DatabaseRunner databaseRunner;
 
+	@Autowired(required = false)
+	private BatchApplicationType batchApplicationType;
+
 	private JobExecution jobExecution;
 
 	private StepExecution stepExecution;
+
+	private boolean isAutomatischAfdrukkenParagon = false;
 
 	protected boolean isOverbruggingssituatieParagonStarted = false;
 
@@ -97,84 +101,77 @@ public abstract class AbstractBrievenGenererenWriter<T extends Brief, S extends 
 	{
 		databaseRunner.runInNewTransaction(() ->
 		{
-
+			isAutomatischAfdrukkenParagon = briefService.isAutomatischAfdrukkenParagonActief();
 			isOverbruggingssituatieParagonStarted = briefService.isOverbruggingssituatieParagonStarted();
-			Map<Object, Object> resourcesMap = resources.get();
+
+			var resourcesMap = resources.get();
 			if (resourcesMap == null)
 			{
 				resources.set(new HashMap<>());
 				resourcesMap = resources.get();
 			}
 
-			S mergedBrieven = null;
-			BriefType briefType = null;
-			if (executionContext.containsKey(KEY_MERGEDDOCUMENTID))
+			if (!executionContext.containsKey(KEY_MERGEDDOCUMENTID))
 			{
-				try
-				{
-					mergedBrieven = hibernateService.load(getMergedBrievenClass(), executionContext.getLong(KEY_MERGEDDOCUMENTID));
-				}
-				catch (Exception e)
-				{
-					LOG.error("Error loading merged brieven file", e);
-				}
-			}
-			else
-			{
-				mergedBrieven = createMergedBrieven(dateSupplier.getDate());
+				createMergedBrieven(dateSupplier.getDate());
 			}
 
-			briefType = mergedBrieven.getBriefType();
-
-			resourcesMap.put(KEY_BRIEFTYPE, briefType);
+			resourcesMap.put(KEY_BRIEFTYPE, getBriefType());
 		});
 
 	}
 
 	@SuppressWarnings("unchecked")
-	protected final Class<S> getMergedBrievenClass()
+	protected final Class<MB> getMergedBrievenClass()
 	{
-		return (Class<S>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
+		return (Class<MB>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
 	}
 
 	@Override
-	public void write(Chunk<? extends T> chunk) throws Exception
+	public void write(Chunk<? extends B> chunk) throws Exception
 	{
 		briefService.createOrAddMergedBrieven(chunk.getItems(), this);
 	}
 
-	protected abstract S createConcreteMergedBrieven(Date aangemaaktOp);
+	protected abstract MB createConcreteMergedBrieven(Date aangemaaktOp);
 
 	@Override
-	public S createMergedBrieven(Date aangemaaktOp)
+	public MB createMergedBrieven(Date aangemaaktOp)
 	{
-		S mergedBrieven = createConcreteMergedBrieven(aangemaaktOp);
-		hibernateService.saveOrUpdate(mergedBrieven);
-		getStepExecutionContext().put(KEY_MERGEDDOCUMENTID, mergedBrieven.getId());
-		resources.get().put(KEY_MERGEDDOCUMENTID, mergedBrieven.getId());
+		var mergedBrieven = createConcreteMergedBrieven(aangemaaktOp);
+		if (!isAutomatischAfdrukkenParagon)
+		{
+			hibernateService.saveOrUpdate(mergedBrieven);
+			getStepExecutionContext().put(KEY_MERGEDDOCUMENTID, mergedBrieven.getId());
+			resources.get().put(KEY_MERGEDDOCUMENTID, mergedBrieven.getId());
+		}
 
 		return mergedBrieven;
 	}
 
 	@Override
-	public S getMergedBrieven()
+	public MB getMergedBrieven()
 	{
-		return hibernateService.load(getMergedBrievenClass(), (Long) resources.get().get(KEY_MERGEDDOCUMENTID));
+		var resourceMap = resources.get();
+		if (resourceMap.containsKey(KEY_MERGEDDOCUMENTID))
+		{
+			return hibernateService.load(getMergedBrievenClass(), (Long) resourceMap.get(KEY_MERGEDDOCUMENTID));
+		}
+		return null;
 	}
 
 	@Override
 	public IDocument getDocumentDefinitie()
 	{
-		BriefType briefType = (BriefType) resources.get().get(KEY_BRIEFTYPE);
+		var briefType = (BriefType) resources.get().get(KEY_BRIEFTYPE);
 		return briefService.getNieuwsteBriefDefinitie(briefType);
 	}
 
 	@Override
-	public String getTechnischeLoggingMergedBriefAanmaken(S brieven)
+	public String getTechnischeLoggingMergedBriefAanmaken(MB brieven)
 	{
-		String tekst = "Mergedocument(id = " + brieven.getId() + ") aangemaakt voor ScreeningOrganisatie " + brieven.getScreeningOrganisatie().getNaam() + ", brieftype "
+		return "Mergedocument(id = " + brieven.getId() + ") aangemaakt voor ScreeningOrganisatie " + brieven.getScreeningOrganisatie().getNaam() + ", brieftype "
 			+ brieven.getBriefType().name() + ", #" + getStepExecutionContext().getInt(KEY_PDF_COUNTER, 1);
-		return tekst;
 	}
 
 	@Override
@@ -203,7 +200,7 @@ public abstract class AbstractBrievenGenererenWriter<T extends Brief, S extends 
 	}
 
 	@Override
-	public String getMergedBrievenNaam(S brieven)
+	public String getMergedBrievenNaam(MB brieven)
 	{
 		var naam = "";
 		var sdf = new SimpleDateFormat("yyyy-MM-dd_HH.mm");
@@ -217,8 +214,8 @@ public abstract class AbstractBrievenGenererenWriter<T extends Brief, S extends 
 		}
 		if (!isOverbruggingssituatieParagonStarted && brieven.getScreeningOrganisatie() != null)
 		{
-			String soNaam = brieven.getScreeningOrganisatie().getNaam();
-			soNaam = soNaam.replaceAll(" ", "_");
+			var soNaam = brieven.getScreeningOrganisatie().getNaam();
+			soNaam = soNaam.replace(" ", "_");
 			naam += soNaam + "-";
 		}
 		if (brieven.getBriefType() != null)
@@ -240,9 +237,13 @@ public abstract class AbstractBrievenGenererenWriter<T extends Brief, S extends 
 	}
 
 	@Override
-	public void update(ExecutionContext executionContext) throws ItemStreamException
+	public BriefType getBriefType()
 	{
-
+		if (getStepExecutionContext().containsKey(AbstractBrievenGenererenPartitioner.KEY_BRIEFTYPE))
+		{
+			return BriefType.valueOf(getStepExecutionContext().getString(AbstractBrievenGenererenPartitioner.KEY_BRIEFTYPE));
+		}
+		return null;
 	}
 
 	@Override
@@ -252,18 +253,21 @@ public abstract class AbstractBrievenGenererenWriter<T extends Brief, S extends 
 		{
 			try
 			{
-				Map<Object, Object> resourcesMap = resources.get();
-				Long id = (Long) resourcesMap.get(KEY_MERGEDDOCUMENTID);
-				S mergedBrieven = hibernateService.load(getMergedBrievenClass(), id);
-				boolean heeftBrieven = stepExecution.getExecutionContext().containsKey(KEY_BRIEVEN);
+				var resourcesMap = resources.get();
+				var heeftBrieven = stepExecution.getExecutionContext().containsKey(KEY_BRIEVEN);
 
-				if (heeftBrieven)
+				if (!isAutomatischAfdrukkenParagon)
 				{
-					briefService.completePdf(mergedBrieven);
-				}
-				else
-				{
-					hibernateService.delete(mergedBrieven);
+					var id = (Long) resourcesMap.get(KEY_MERGEDDOCUMENTID);
+					var mergedBrieven = hibernateService.load(getMergedBrievenClass(), id);
+					if (heeftBrieven)
+					{
+						briefService.completePdf(mergedBrieven);
+					}
+					else
+					{
+						hibernateService.delete(mergedBrieven);
+					}
 				}
 			}
 			catch (IllegalStateException e)
@@ -291,26 +295,20 @@ public abstract class AbstractBrievenGenererenWriter<T extends Brief, S extends 
 	}
 
 	@Override
-	public BaseDocumentCreator getDocumentCreator(MailMergeContext context)
+	public void verhoogAantalBrievenVanScreeningOrganisatie(Long soKey, Integer aantalToevoegen)
 	{
-		return null;
-	}
-
-	@Override
-	public void verhoogAantalBrievenVanScreeningOrganisatie(S mergedBrieven)
-	{
-		Map<Long, Integer> map = (Map<Long, Integer>) stepExecution.getJobExecution().getExecutionContext().get(getRapportageAantalBrievenKey());
+		var map = (Map<Long, Integer>) stepExecution.getJobExecution().getExecutionContext().get(getRapportageAantalBrievenKey());
 		if (map == null)
 		{
 			map = new HashMap<>();
 			getExecutionContext().put(getRapportageAantalBrievenKey(), map);
 		}
-		Integer currentValue = map.get(mergedBrieven.getScreeningOrganisatie().getId());
+		var currentValue = map.get(soKey);
 		if (currentValue == null)
 		{
 			currentValue = 0;
 		}
-		map.put(mergedBrieven.getScreeningOrganisatie().getId(), currentValue + mergedBrieven.getAantalBrieven());
+		map.put(soKey, currentValue + aantalToevoegen);
 		stepExecution.getExecutionContext().putString(KEY_BRIEVEN, "JA");
 	}
 
@@ -323,6 +321,18 @@ public abstract class AbstractBrievenGenererenWriter<T extends Brief, S extends 
 	public void increasePdfCounter()
 	{
 		getStepExecutionContext().putInt(KEY_PDF_COUNTER, getStepExecutionContext().getInt(KEY_PDF_COUNTER, 1) + 1);
+	}
+
+	@Override
+	public BatchApplicationType getBatchApplicationType()
+	{
+		return batchApplicationType;
+	}
+
+	@Override
+	public boolean isAutomatischAfdrukkenViaParagon()
+	{
+		return isAutomatischAfdrukkenParagon;
 	}
 
 	protected ScreeningOrganisatie getScreeningOrganisatie()

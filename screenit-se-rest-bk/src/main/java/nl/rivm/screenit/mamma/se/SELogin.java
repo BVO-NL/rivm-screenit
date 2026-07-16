@@ -41,6 +41,7 @@ import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.InlogMethode;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.security.OrganisatieMedewerkerToken;
 import nl.rivm.screenit.service.AuthenticatieService;
 import nl.rivm.screenit.service.BaseMedewerkerService;
@@ -48,9 +49,8 @@ import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.MedewerkerUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningsEenheidUtil;
+import nl.rivm.screenit.yubikey.shiro.YubikeyToken;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
-import nl.topicuszorg.yubikey.shiro.YubikeyToken;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;

@@ -21,7 +21,6 @@ package nl.rivm.screenit.service;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.model.Client;
@@ -30,7 +29,6 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.project.Project;
 import nl.rivm.screenit.model.project.ProjectAttribuut;
-import nl.rivm.screenit.model.project.ProjectBrief;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectClientAttribuut;
@@ -45,8 +43,6 @@ public interface BaseProjectService
 	void updateWachtOpStartProject(Bevolkingsonderzoek bvo);
 
 	List<ProjectClient> getValideClientenVanProject(Project project, ProjectBriefActie definitie);
-
-	List<ProjectBrief> getAllProjectBriefForHerinnering(ProjectBriefActie actie, Date verstuurdOp);
 
 	ProjectBriefActie getProjectBriefActie(Client client, BriefType briefType);
 

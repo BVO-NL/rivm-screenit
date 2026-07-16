@@ -29,12 +29,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
-import org.springframework.lang.Nullable;
 
 @NoRepositoryBean
 public interface BaseJpaRepository<T> extends JpaRepository<T, Long>, JpaSpecificationExecutor<T>
 {
-	long countDistinct(@Nullable Specification<T> spec);
+	long countDistinct(Specification<T> spec);
 
 	Optional<T> findFirst(Specification<T> specification, Sort sort);
 

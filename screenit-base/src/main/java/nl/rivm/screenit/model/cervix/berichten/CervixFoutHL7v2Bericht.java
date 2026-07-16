@@ -38,9 +38,6 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.messagequeue.Message;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 @Setter
 @Getter
 @Entity
@@ -64,7 +61,6 @@ public class CervixFoutHL7v2Bericht extends AbstractHibernateObject
 	private BMHKLaboratorium laboratorium;
 
 	@OneToOne(fetch = FetchType.LAZY, optional = false, cascade = jakarta.persistence.CascadeType.REMOVE)
-	@Cascade(CascadeType.DELETE)
 	private Message message;
 
 }

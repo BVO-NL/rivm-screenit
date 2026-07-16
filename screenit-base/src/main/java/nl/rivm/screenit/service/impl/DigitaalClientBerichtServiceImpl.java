@@ -55,7 +55,7 @@ public abstract class DigitaalClientBerichtServiceImpl<CB extends DigitaalClient
 			}
 			catch (Exception e)
 			{
-				LOG.error("Fout bij ophalen SMS bericht met guid: {}", smsComHubGuid, e);
+				LOG.error("Fout bij ophalen SMS bericht met GUID '{}'", smsComHubGuid, e);
 				return BERICHT_KON_NIET_WORDEN_OPGEHAALD_KEY;
 			}
 		}

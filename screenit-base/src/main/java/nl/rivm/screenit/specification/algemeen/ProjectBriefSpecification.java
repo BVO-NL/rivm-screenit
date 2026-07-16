@@ -21,103 +21,21 @@ package nl.rivm.screenit.specification.algemeen;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.Optional;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.ClientBrief_;
-import nl.rivm.screenit.model.MergedBrieven_;
 import nl.rivm.screenit.model.project.ProjectBrief;
-import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.model.project.ProjectBrief_;
-import nl.rivm.screenit.model.project.ProjectClient_;
-import nl.rivm.screenit.model.project.ProjectGroep_;
-import nl.rivm.screenit.model.project.Project_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
-import nl.rivm.screenit.specification.SpecificationUtil;
-import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-
-import org.springframework.data.jpa.domain.Specification;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProjectBriefSpecification
 {
-
-	public static Specification<ProjectBrief> heeftPrintDatumNaOfOpDatum(Date verstuurdOp)
-	{
-		return (r, q, cb) ->
-		{
-			var mergedBrievenJoin = SpecificationUtil.join(r, ProjectBrief_.mergedBrieven);
-			return cb.greaterThanOrEqualTo(mergedBrievenJoin.get(MergedBrieven_.printDatum), verstuurdOp);
-		};
-	}
-
-	public static Specification<ProjectBrief> heeftGeenMergedBrieven()
-	{
-		return (r, q, cb) -> r.get(ProjectBrief_.mergedBrieven).isNull();
-	}
-
-	public static Specification<ProjectBrief> heeftDefinitieGelijkAanBaseActie(ProjectBriefActie actie)
-	{
-		return (r, q, cb) -> cb.equal(r.get(ProjectBrief_.definitie), actie.getBaseActie());
-	}
-
-	public static Specification<ProjectBrief> heeftNietNullMergedBrievenPrintDatum()
-	{
-		return (r, q, cb) ->
-		{
-			var mergedBrievenJoin = SpecificationUtil.join(r, ProjectBrief_.mergedBrieven);
-			return cb.isNotNull(mergedBrievenJoin.get(MergedBrieven_.printDatum));
-		};
-	}
-
-	public static ExtendedSpecification<ProjectBrief> heeftDefinitie(ProjectBriefActie actie)
-	{
-		return heeftDefinitieId(Optional.ofNullable(actie).map(ProjectBriefActie::getId).orElse(null));
-	}
 
 	public static ExtendedSpecification<ProjectBrief> heeftDefinitieId(Long actieId)
 	{
 		return (r, q, cb) -> cb.equal(r.get(ProjectBrief_.definitie).get(AbstractHibernateObject_.id), actieId);
 	}
 
-	public static Specification<ProjectBrief> heeftGeenVerstuurdeBrief(ProjectBriefActie actie)
-	{
-		return (r, q, cb) ->
-		{
-			var subquery = q.subquery(Client.class);
-			var subRoot = subquery.from(ProjectBrief.class);
-
-			subquery.select(subRoot.get(ClientBrief_.client));
-			subquery.where(cb.and(
-				heeftDefinitie(actie).toPredicate(subRoot, q, cb),
-				heeftNietNullMergedBrievenPrintDatum().toPredicate(subRoot, q, cb)
-			));
-			return cb.not(r.get(ClientBrief_.client).in(subquery));
-		};
-	}
-
-	public static Specification<ProjectBrief> heeftActieveClientInProjectVoorProjectBrief(LocalDate peildatum)
-	{
-		return (r, q, cb) ->
-		{
-
-			var projectClientJoin = SpecificationUtil.join(r, ProjectBrief_.projectClient);
-			var projectGroepJoin = SpecificationUtil.join(projectClientJoin, ProjectClient_.groep);
-			var projectJoin = SpecificationUtil.join(projectGroepJoin, ProjectGroep_.project);
-
-			var clientIsActief = cb.isTrue(projectClientJoin.get(ProjectClient_.actief));
-			var projectGroepIsActief = cb.isTrue(projectGroepJoin.get(ProjectGroep_.actief));
-			var projectIsActief = cb.and(
-				cb.lessThanOrEqualTo(projectJoin.get(Project_.startDatum), DateUtil.toUtilDate(peildatum)),
-				cb.greaterThan(projectJoin.get(Project_.eindDatum), DateUtil.toUtilDate(peildatum))
-			);
-			return cb.and(clientIsActief, projectGroepIsActief, projectIsActief);
-		};
-	}
 }

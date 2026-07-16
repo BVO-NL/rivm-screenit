@@ -22,7 +22,9 @@ package nl.rivm.screenit.main.service;
  */
 
 import java.util.List;
+import java.util.Optional;
 
+import nl.rivm.screenit.main.model.BriefActie;
 import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.ClientBrief;
@@ -49,4 +51,8 @@ public interface BriefService
 	List<BezwaarBrief> getOorspronkelijkeBevestigingsbrieven(BezwaarMoment bezwaarMoment);
 
 	List<BezwaarBrief> getOorspronkelijkeBevestigingsbrieven(OnderzoeksresultatenActie actie);
+
+	List<BriefActie> getBriefActies(ClientBrief<?, ?, ?> brief);
+
+	Optional<ClientBrief<?, ?, ?>> getBriefById(Long id, String briefType);
 }

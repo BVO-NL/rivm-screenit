@@ -57,6 +57,7 @@ import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.project.ProjectClient;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.colon.ColonFitAnalyseResultaatSetRepository;
 import nl.rivm.screenit.repository.colon.ColonFitRegistratieRepository;
 import nl.rivm.screenit.repository.colon.ColonUitnodigingRepository;
@@ -76,7 +77,6 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ProjectUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.AuditReaderFactory;

@@ -34,5 +34,4 @@ public enum ProjectBriefActieType
 
 	VANAF_DATUM,
 
-	HERINNERING
 }

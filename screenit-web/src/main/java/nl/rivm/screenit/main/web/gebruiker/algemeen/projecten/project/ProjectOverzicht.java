@@ -39,8 +39,8 @@ import nl.rivm.screenit.main.web.component.form.FilterBvoPanel;
 import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
-import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.base.ZoekenContextMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.INaam;
@@ -278,7 +278,7 @@ public class ProjectOverzicht extends AlgemeenPage
 			}
 
 		});
-		columns.add(new PropertyColumn<Project, String>(Model.of("Organisatie"), "organisatie.naam", "organisatie"));
+		columns.add(new PropertyColumn<Project, String>(Model.of("Organisatie"), "organisatie.naam", "organisatie.naam"));
 		columns.add(new PropertyColumn<Project, String>(Model.of("Contactpersoon"), "contactpersoon.medewerker", "contactpersoon.medewerker.naamVolledig"));
 		columns.add(new DateTimePropertyColumn<Project, String>(Model.of("Startdatum"), "startDatum", "startDatum", format));
 		columns.add(new DateTimePropertyColumn<Project, String>(Model.of("Einddatum instroom"), "eindeInstroom", "eindeInstroom", format));

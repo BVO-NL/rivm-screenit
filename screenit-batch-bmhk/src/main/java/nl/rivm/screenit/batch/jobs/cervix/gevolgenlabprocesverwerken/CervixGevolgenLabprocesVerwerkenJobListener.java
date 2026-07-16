@@ -34,9 +34,9 @@ import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.verwerkingverslag.cervix.CervixGevolgenLabprocesVerwerkenRapportage;
 import nl.rivm.screenit.model.verwerkingverslag.cervix.CervixGevolgenLabprocesVerwerkenRapportageBriefType;
 import nl.rivm.screenit.model.verwerkingverslag.cervix.CervixGevolgenLabprocesVerwerkenRapportageHuisartsberichtType;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.batch.core.JobExecution;
 import org.springframework.stereotype.Component;

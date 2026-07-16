@@ -45,6 +45,7 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.SmsStatus;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaDigitaalClientBericht;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.mamma.MammaBaseAfspraakRepository;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.ClientService;
@@ -56,7 +57,6 @@ import nl.rivm.screenit.service.mamma.MammaDigitaalClientBerichtService;
 import nl.rivm.screenit.service.mamma.MammaDigitaalContactService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.TelefoonnummerUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;

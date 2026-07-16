@@ -37,6 +37,7 @@ import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.enums.CervixCytologieReden;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.cervix.CervixBaseMonsterService;
@@ -44,7 +45,6 @@ import nl.rivm.screenit.service.cervix.CervixBepaalVervolgService;
 import nl.rivm.screenit.service.cervix.CervixFactory;
 import nl.rivm.screenit.service.cervix.impl.CervixBepaalVervolgContext;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Component;
 

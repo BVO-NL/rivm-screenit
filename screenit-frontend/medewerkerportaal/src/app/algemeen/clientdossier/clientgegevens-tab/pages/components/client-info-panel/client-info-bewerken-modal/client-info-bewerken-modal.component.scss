@@ -1,0 +1,83 @@
+/*-
+ * ========================LICENSE_START=================================
+ * medewerkerportaal
+ * %%
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+.form-in-modal {
+  display: block;
+  padding: var(--spacer-3);
+}
+
+.contactgegevens-inputs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacer-3);
+  width: 100%;
+}
+
+@media (max-width: 48rem) {
+  .contactgegevens-inputs {
+    grid-template-columns: 1fr;
+  }
+}
+
+.contactgegevens-dropdowns {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  padding-right: var(--spacer-2);
+}
+
+.doelgroep-inputs {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: var(--spacer-3);
+}
+
+.doelgroep-inputs > *, contactgegevens-dropdowns > * {
+  flex: 0 0 calc(50% - var(--spacer-2));
+}
+
+@media (max-width: 48rem) {
+  .contactgegevens-dropdowns {
+    width: 100%;
+  }
+}
+
+.contactgegevens-paspoort {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacer-3);
+  padding: var(--spacer-3) var(--spacer-2);
+  margin: 0 var(--spacer-3);
+  border-radius: 5px;
+  background: var(--clientdossier-background-color);
+
+  .col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ruimte-middel);
+  }
+}
+
+@media (max-width: 48rem) {
+  .contactgegevens-paspoort {
+    grid-template-columns: 1fr;
+  }
+}

@@ -39,12 +39,12 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.InlogMethode;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.security.Constraint;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.ScopeService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;

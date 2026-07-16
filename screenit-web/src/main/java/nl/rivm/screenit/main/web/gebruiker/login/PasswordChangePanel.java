@@ -65,7 +65,7 @@ public abstract class PasswordChangePanel extends GenericPanel<Medewerker>
 		HiddenField<String> gebruikersnaam = new HiddenField<>("gebruikersnaam");
 		passwordChangeForm.add(gebruikersnaam);
 
-		ScreenITWachtwoordValidator validator = new ScreenITWachtwoordValidator(gebruikersnaam, true, getModel());
+		ScreenITWachtwoordValidator validator = new ScreenITWachtwoordValidator(gebruikersnaam, getModel());
 		passwordChangeForm.add(new ScreenitWachtwoordField("wachtwoord1", new PropertyModel<>(this, "wachtwoord1"), true, validator));
 		passwordChangeForm.add(new ScreenitWachtwoordField("wachtwoord2", new PropertyModel<>(this, "wachtwoord2"), true, null));
 

@@ -43,7 +43,8 @@ import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "cervix", name = "brief", indexes = { @Index(name = "idx_cervix_brief_gegenereerd", columnList = "gegenereerd"),
-	@Index(name = "idx_cervix_brief_vervangendeprojectbrief", columnList = "vervangendeprojectbrief") })
+	@Index(name = "idx_cervix_brief_vervangendeprojectbrief", columnList = "vervangendeprojectbrief"),
+	@Index(name = "idx_cervix_brief_verstuurd_voor_afdrukken_op", columnList = "verstuurdVoorAfdrukkenOp") })
 @Audited
 @Setter
 @Getter

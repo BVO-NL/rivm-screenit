@@ -36,13 +36,9 @@ import nl.rivm.screenit.repository.colon.ColonIntakeAfspraakRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import com.google.common.primitives.Ints;
 
 @Service
 @AllArgsConstructor
@@ -64,14 +60,9 @@ public class ColonIntakeafspraakServiceImpl implements ColonIntakeafspraakServic
 	}
 
 	@Override
-	public List<ColonIntakeAfspraak> getAfsprakenZonderVerslag(WerklijstIntakeFilter zoekObject, ColonIntakelocatie intakeLocatie, long start, long size, String sortProperty,
-		boolean isAscending)
+	public List<ColonIntakeAfspraak> getAfsprakenZonderVerslag(WerklijstIntakeFilter zoekObject, ColonIntakelocatie intakeLocatie, long first, long count, Sort sort)
 	{
-		var page = Double.valueOf(Math.floor((double) start / (double) size));
-
-		Pageable pageable = PageRequest.of(page.intValue(), Ints.checkedCast(size), isAscending ? Sort.Direction.ASC : Sort.Direction.DESC, sortProperty);
-
-		return intakeAfspraakRepository.findAll(getSpecification(intakeLocatie, zoekObject, currentDateSupplier), pageable).toList();
+		return intakeAfspraakRepository.findWith(getSpecification(intakeLocatie, zoekObject, currentDateSupplier), q -> q.sortBy(sort)).all(first, count);
 	}
 
 	@Override

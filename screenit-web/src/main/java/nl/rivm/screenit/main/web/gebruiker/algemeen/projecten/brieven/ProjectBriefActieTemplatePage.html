@@ -48,18 +48,6 @@
 									<span wicket:id="moment"></span>
 								</div>
 							</div>
-							<div class="control-group value">
-								<label class="control-label">Orion werkbak</label>
-								<div class="controls">
-									<span wicket:id="orionWerkbak"></span>
-								</div>
-							</div>
-							<div class="control-group value">
-								<label class="control-label">Download herinnering</label>
-								<div class="controls">
-									<span wicket:id="herrinneringDownloaden"></span>
-								</div>
-							</div>
 						</div>
 						<div class="span6">
 							<div class="control-group value">
@@ -74,25 +62,12 @@
 									<span wicket:id="printomschrijving"></span>
 								</div>
 							</div>
-							<div class="control-group value">
-								<label class="control-label">Formuliernummer</label>
-								<div class="controls">
-									<span wicket:id="formulierNummer"></span>
-								</div>
-							</div>
-							<div class="control-group value">
-								<label class="control-label">Herinnering</label>
-								<div class="controls">
-									<div wicket:id="herrinering" class="span6"></div>
-									<div wicket:id="herrinneringPrinten" class="span6"></div>
-								</div>
-							</div>
 						</div>
 					</div>
 				</fieldset>
 				<fieldset>
 					<div class="row-fluid">
-						<div class="span6">
+						<div class="span4">
 							<h2>
 								Regio
 								<i class="icon-asterisk icon-purple"></i>
@@ -101,7 +76,7 @@
 								<select wicket:id="regio"></select>
 							</div>
 						</div>
-						<div class="span6">
+						<div class="span4">
 							<h2>
 								Bron: <i class="icon-asterisk icon-purple"></i>
 							</h2>
@@ -110,12 +85,22 @@
 								<div><input type="file" wicket:id="upload"></div>
 							</div>
 						</div>
+						<div class="span4" wicket:id="paragonInstellingenContainer">
+							<h2>
+								Afdruksettings: <i class="icon-asterisk icon-purple"></i>
+							</h2>
+							<div class="control-group">
+								<label>Aantal naar Paragon (max 100)</label>
+								<input type="text" wicket:id="aantal" class="input-small"/>
+							</div>
+						</div>
 					</div>
 				</fieldset>
 				<wicket:container wicket:id="fieldsContainer"></wicket:container>
 			</div>
 			<div class="buttons">
 				<button class="btn btn-primary right" wicket:id="printen">Genereren</button>
+				<button class="btn right" wicket:id="naarParagon">Naar Paragon</button>
 			</div>
 		</form>
 	</div>

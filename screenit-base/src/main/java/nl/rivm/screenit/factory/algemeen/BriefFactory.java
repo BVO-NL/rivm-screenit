@@ -43,6 +43,8 @@ public interface BriefFactory
 {
 	<B extends ClientBrief<?, ?, ?>> BaseJpaRepository<B> getBriefTypeRepository(Class<B> briefClass);
 
+	<B extends ClientBrief<?, ?, ?>> BaseJpaRepository<B> getBriefTypeRepository(String briefType);
+
 	<M extends MergedBrieven<?>> BaseJpaRepository<M> getMergedBriefTypeRepository(Class<M> mergedBrievenClass);
 
 	BezwaarBrief maakBezwaarBrief(Client client, BriefType type, Date date);

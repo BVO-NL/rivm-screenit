@@ -68,7 +68,7 @@ import nl.rivm.screenit.repository.mamma.MammaBaseBriefRepository;
 import nl.rivm.screenit.repository.mamma.MammaMergedBrievenRepository;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.rivm.screenit.specification.cervix.CervixRegioBriefSpecification;
+import nl.rivm.screenit.specification.algemeen.BriefSpecification;
 import nl.rivm.screenit.util.AfmeldingUtil;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.ProjectUtil;
@@ -79,7 +79,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefTypeIn;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.isNietVervangen;
-import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.heeftOngegeneerdeBrieven;
+import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.heeftTeGenererenBrieven;
 import static nl.rivm.screenit.specification.cervix.CervixRegioBriefSpecification.heeftHuisarts;
 
 @Slf4j
@@ -162,7 +162,22 @@ public class BriefFactoryImpl implements BriefFactory
 			return (BaseJpaRepository<B>) colonBriefRepository;
 		}
 
-		throw new IllegalArgumentException("Onbekend mergedBrievenClass: " + briefClass.getName());
+		throw new IllegalArgumentException("Onbekend brievenClass: " + briefClass.getName());
+	}
+
+	@Override
+	public <B extends ClientBrief<?, ?, ?>> BaseJpaRepository<B> getBriefTypeRepository(String briefCategorie)
+	{
+		return switch (briefCategorie)
+		{
+			case "algemeen" -> (BaseJpaRepository<B>) algemeneBriefRepository;
+			case "cervix" -> (BaseJpaRepository<B>) cervixBriefRepository;
+			case "project" -> (BaseJpaRepository<B>) projectBriefRepository;
+			case "bezwaar" -> (BaseJpaRepository<B>) bezwaarBriefRepository;
+			case "mamma" -> (BaseJpaRepository<B>) mammaBriefRepository;
+			case "colon" -> (BaseJpaRepository<B>) colonBriefRepository;
+			default -> throw new IllegalArgumentException("Onbekend brieven type: " + briefCategorie);
+		};
 	}
 
 	@Override
@@ -362,7 +377,7 @@ public class BriefFactoryImpl implements BriefFactory
 		}
 
 		BaseJpaRepository<B> repository = getBriefTypeRepository(briefClass);
-		var brieven = repository.findAll(heeftOngegeneerdeBrieven(type, client, briefClass));
+		var brieven = repository.findAll(heeftTeGenererenBrieven(type, client));
 
 		for (var brief : brieven)
 		{
@@ -392,7 +407,7 @@ public class BriefFactoryImpl implements BriefFactory
 
 	private List<CervixRegioBrief> getDubbeleAangemaaktBrieven(BriefType type, CervixHuisarts arts)
 	{
-		return cervixRegioBriefRepository.findAll(CervixRegioBriefSpecification.heeftGeenMergedBrieven()
+		return cervixRegioBriefRepository.findAll(BriefSpecification.<CervixRegioBrief> isNietGegenereerd()
 			.and(isNietVervangen())
 			.and(heeftBriefTypeIn(type.getMagNietOpZelfdeDagAfgedruktTypes()))
 			.and(heeftHuisarts(arts)));

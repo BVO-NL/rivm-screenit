@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import nl.rivm.screenit.main.dto.algemeen.ClientContactgegevensDto;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.CentraleEenheid;
@@ -55,6 +56,10 @@ public interface ClientService
 
 	void saveContactGegevens(Client client, Account ingelogdAccount, MammaScreeningsEenheid screeningsEenheid, LocalDateTime transactieDatumTijd);
 
+	void slaContactgegevensOp(Client client, ClientContactgegevensDto dto, Account ingelogdAccount);
+
+	void zetDoelgroepenVanClient(Client client, ClientContactgegevensDto contactgegevens);
+
 	Client getClientByBsnFromNg01Bericht(String bsn, String anummer);
 
 	String getVoorNg01EenNieuweBsn(String bsn);
@@ -62,8 +67,6 @@ public interface ClientService
 	List<Client> getClientenMetTitel(String titelCode);
 
 	List<Client> zoekClienten(Client zoekObject);
-
-	List<Client> zoekClientenLijst(Client zoekObject);
 
 	List<Client> getClientenOpAdresMetLimiet(BagAdres adres, Integer minimaleLeeftijd, Integer maximaleLeeftijd, int uitnodigingsInterval);
 

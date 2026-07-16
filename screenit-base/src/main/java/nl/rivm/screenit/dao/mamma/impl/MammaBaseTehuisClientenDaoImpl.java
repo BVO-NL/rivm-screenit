@@ -37,12 +37,12 @@ import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.model.mamma.MammaTehuis;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseTehuisService;
 import nl.rivm.screenit.service.mamma.enums.MammaTehuisSelectie;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.organisatie.model.Adres;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;

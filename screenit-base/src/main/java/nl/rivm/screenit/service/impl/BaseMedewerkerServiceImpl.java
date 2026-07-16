@@ -37,6 +37,7 @@ import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.MedewerkerRepository;
 import nl.rivm.screenit.repository.algemeen.OrganisatieMedewerkerRolRepository;
 import nl.rivm.screenit.service.BaseMedewerkerService;
@@ -45,7 +46,6 @@ import nl.rivm.screenit.service.MailService;
 import nl.rivm.screenit.util.DatabaseSequence;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.SequenceGenerator;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;

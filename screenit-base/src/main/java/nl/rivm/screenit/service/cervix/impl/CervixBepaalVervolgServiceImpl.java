@@ -48,9 +48,9 @@ public class CervixBepaalVervolgServiceImpl implements CervixBepaalVervolgServic
 
 	private <T extends CervixMonster> boolean ontvangenMonsters(CervixScreeningRonde ontvangstRonde, boolean ongeldig, boolean pap0, CervixMonster andersDan, Class<T> type)
 	{
-		var spec = Specification.where(heeftOntvangstRonde(ontvangstRonde).and(isMonsterType(type)));
+		var spec = heeftOntvangstRonde(ontvangstRonde).and(isMonsterType(type));
 
-		Specification<CervixMonster> disjunctionSpec = Specification.where(null);
+		Specification<CervixMonster> disjunctionSpec = Specification.unrestricted();
 
 		if (ongeldig)
 		{

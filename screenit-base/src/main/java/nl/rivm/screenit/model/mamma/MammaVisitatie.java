@@ -49,8 +49,6 @@ import nl.rivm.screenit.model.mamma.enums.MammaVisitatieStatus;
 import nl.rivm.screenit.util.DiffSpecs;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -80,7 +78,6 @@ public class MammaVisitatie extends AbstractHibernateObject implements MammaIKwa
 	private Date gestartOp;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "visitatie", cascade = { jakarta.persistence.CascadeType.REMOVE })
-	@Cascade(CascadeType.DELETE)
 	private List<MammaVisitatieOnderzoek> onderzoeken = new ArrayList<>();
 
 	@Column

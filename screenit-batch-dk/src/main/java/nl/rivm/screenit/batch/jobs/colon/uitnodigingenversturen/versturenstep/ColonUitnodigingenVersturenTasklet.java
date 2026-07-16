@@ -46,6 +46,7 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.LogEvent;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -54,7 +55,6 @@ import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.ProjectUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Component;
 

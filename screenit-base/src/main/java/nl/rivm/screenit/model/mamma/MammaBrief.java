@@ -37,7 +37,8 @@ import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "mamma", name = "brief", indexes = { @Index(name = "idx_mamma_brief_gegenereerd", columnList = "gegenereerd"),
-	@Index(name = "idx_mamma_brief_vervangendeprojectbrief", columnList = "vervangendeprojectbrief") })
+	@Index(name = "idx_mamma_brief_vervangendeprojectbrief", columnList = "vervangendeprojectbrief"),
+	@Index(name = "idx_mamma_brief_verstuurd_voor_afdrukken_op", columnList = "verstuurdVoorAfdrukkenOp") })
 @Audited
 public class MammaBrief extends ClientBrief<MammaScreeningRonde, MammaAfmelding, MammaBrief>
 {

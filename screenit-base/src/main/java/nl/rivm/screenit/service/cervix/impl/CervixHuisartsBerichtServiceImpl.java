@@ -40,9 +40,9 @@ import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.cervix.CervixEdiService;
 import nl.rivm.screenit.service.cervix.CervixHuisartsBerichtService;
-import nl.rivm.screenit.util.BriefUtil;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -59,6 +59,8 @@ public class CervixHuisartsBerichtServiceImpl implements CervixHuisartsBerichtSe
 	private CervixEdiService ediService;
 
 	private HibernateService hibernateService;
+
+	private OrganisatieService organisatieService;
 
 	private final ICurrentDateSupplier currentDateSupplier;
 
@@ -137,7 +139,7 @@ public class CervixHuisartsBerichtServiceImpl implements CervixHuisartsBerichtSe
 		}
 		else if (gemeente.getCode().equals(Gemeente.RNI_CODE))
 		{
-			huisartsBericht.setScreeningsOrganisatie(BriefUtil.getMergedBrieven(uitnodiging.getBrief()).getScreeningOrganisatie());
+			huisartsBericht.setScreeningsOrganisatie(organisatieService.getLandelijkeScreeningsorganisatie());
 		}
 		else
 		{

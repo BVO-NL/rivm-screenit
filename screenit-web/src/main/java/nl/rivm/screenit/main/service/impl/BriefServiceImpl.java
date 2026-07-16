@@ -21,11 +21,15 @@ package nl.rivm.screenit.main.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import nl.rivm.screenit.factory.algemeen.BriefFactory;
+import nl.rivm.screenit.main.model.BriefActie;
 import nl.rivm.screenit.main.service.BriefService;
+import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.ClientBrief;
@@ -38,12 +42,15 @@ import nl.rivm.screenit.model.UploadDocument_;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.colon.ColonBrief;
+import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaBrief;
 import nl.rivm.screenit.repository.algemeen.BezwaarBriefRepository;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification;
 import nl.rivm.screenit.specification.algemeen.UploadDocumentSpecification;
+import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.RangeUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -167,4 +174,37 @@ public class BriefServiceImpl implements BriefService
 			.and(UploadDocumentSpecification.filterNaamContaining(filter.getNaam()).with(r -> join(r, MergedBrieven_.mergedBrieven)));
 	}
 
+	@Override
+	public List<BriefActie> getBriefActies(ClientBrief<?, ?, ?> brief)
+	{
+		var acties = new ArrayList<BriefActie>();
+		if (brief.getBriefDefinitie() != null)
+		{
+			acties.add(BriefActie.INZIEN);
+		}
+
+		if (BriefUtil.isGegenereerd(brief))
+		{
+			return acties;
+		}
+
+		if (BriefUtil.isTegenhoudenMogelijk(brief) && !BriefUtil.isTegengehouden(brief) && ScreenitSession.get()
+			.checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN))
+		{
+			acties.add(BriefActie.TEGENHOUDEN);
+		}
+		if (BriefUtil.isTegengehouden(brief))
+		{
+			acties.add(BriefActie.ACTIVEREN);
+		}
+
+		return acties;
+	}
+
+	@Override
+	public Optional<ClientBrief<?, ?, ?>> getBriefById(Long id, String briefCategorie)
+	{
+		var repo = briefFactory.getBriefTypeRepository(briefCategorie);
+		return repo.findById(id);
+	}
 }

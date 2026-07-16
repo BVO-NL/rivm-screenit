@@ -47,13 +47,13 @@ import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.mamma.MammaBrief_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 
-import static nl.rivm.screenit.model.algemeen.AlgemeneBrief_.MERGED_BRIEVEN;
 import static nl.rivm.screenit.model.colon.ColonBrief_.AFMELDING;
 import static nl.rivm.screenit.specification.HibernateObjectSpecification.heeftId;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.SpecificationUtil.treat;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefTypeIn;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.isGegenereerd;
+import static nl.rivm.screenit.specification.algemeen.BriefSpecification.isNietGegenereerd;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.isNietTegengehouden;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.isNietVervangen;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.isNietOverledenEnWoontInNederland;
@@ -66,27 +66,17 @@ public class ClientBriefSpecification
 		return (r, q, cb) -> cb.equal(r.get(ClientBrief_.client), client);
 	}
 
-	public static <B extends ClientBrief<?, ?, ?>> ExtendedSpecification<B> heeftGeenMergedBrieven(Class<? extends B> briefClass)
-	{
-		return (r, q, cb) -> cb.isNull(treat(r, briefClass, cb).get(MERGED_BRIEVEN));
-	}
-
 	public static <B extends ClientBrief<?, ?, ?>> ExtendedSpecification<B> heeftVervangendeProjectBrief(boolean heeftVervangendeProjectBrief)
 	{
 		return (r, q, cb) -> cb.equal(r.get(ClientBrief_.vervangendeProjectBrief), heeftVervangendeProjectBrief);
 	}
 
-	public static <B extends ClientBrief<?, ?, ?>> ExtendedSpecification<B> heeftOngegeneerdeBrieven(BriefType type, Client client, Class<B> briefClass)
+	public static <B extends ClientBrief<?, ?, ?>> ExtendedSpecification<B> heeftTeGenererenBrieven(BriefType type, Client client)
 	{
-		return heeftGeenMergedBrieven(briefClass).and(heeftClient(client))
+		return ClientBriefSpecification.<B> heeftClient(client)
+			.and(isNietGegenereerd())
 			.and(isNietVervangen())
 			.and(heeftBriefTypeIn(type.getMagNietOpZelfdeDagAfgedruktTypes()));
-	}
-
-	public static <B extends ClientBrief<?, ?, ?>> ExtendedSpecification<B> heeftOngegeneerdeBrieven(Client client, Class<B> briefClass)
-	{
-		return heeftGeenMergedBrieven(briefClass).and(heeftClient(client))
-			.and(isNietVervangen());
 	}
 
 	public static <B extends ClientBrief<?, ?, ?>> ExtendedSpecification<B> heeftGegenereerdeBriefOfProjectBriefVanType(List<BriefType> briefTypes)

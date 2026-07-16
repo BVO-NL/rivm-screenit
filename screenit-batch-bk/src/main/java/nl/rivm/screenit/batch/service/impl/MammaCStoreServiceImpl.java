@@ -52,6 +52,7 @@ import nl.rivm.screenit.model.mamma.berichten.MammaIMSBericht;
 import nl.rivm.screenit.model.mamma.dicom.CStoreConfig;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.mamma.MammaUploadBeeldenVerzoekRepository;
 import nl.rivm.screenit.service.BerichtToBatchService;
 import nl.rivm.screenit.service.DatabaseRunner;
@@ -64,7 +65,6 @@ import nl.rivm.screenit.service.mamma.MammaBaseIlmService;
 import nl.rivm.screenit.service.mamma.MammaBaseScreeningrondeService;
 import nl.rivm.screenit.service.mamma.MammaBaseUitwisselportaalService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang.StringUtils;
 import org.dcm4che3.data.DatePrecision;
@@ -130,7 +130,7 @@ public class MammaCStoreServiceImpl implements MammaCStoreService
 			uploadBeeldenPoging.setIlmStatusDatum(dateSupplier.getDate());
 			hibernateService.saveOrUpdate(uploadBeeldenPoging);
 		}
-		else
+		else if (uploadBeeldenPoging.getIlmStatus() != MammaMammografieIlmStatus.BESCHIKBAAR)
 		{
 			var melding = String.format("Inkomend CA bericht voor uploadverzoek met accessionnummer %s is al verwerkt op %s en kon niet worden omgezet van %s naar BESCHIKBAAR",
 				uploadBeeldenPoging.getAccessionNumber(), uploadBeeldenPoging.getIlmStatusDatum(), uploadBeeldenPoging.getIlmStatus().name());

@@ -51,8 +51,6 @@ import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.util.SkipFieldForDiff;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -129,7 +127,6 @@ public class MammaDossier extends Dossier<MammaScreeningRonde, MammaAfmelding> i
 	private MammaKansberekeningScreeningRondeEvent screeningRondeEvent;
 
 	@OneToOne(mappedBy = "dossier", optional = false, fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE })
-	@Cascade(CascadeType.DELETE)
 	@NotAudited
 	@SkipFieldForDiff
 	private MammaDeelnamekans deelnamekans;
@@ -142,7 +139,6 @@ public class MammaDossier extends Dossier<MammaScreeningRonde, MammaAfmelding> i
 	private Deelnamemodus deelnamemodus = Deelnamemodus.STANDAARD;
 
 	@OneToOne(optional = true, mappedBy = "dossier", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE })
-	@Cascade(CascadeType.DELETE)
 	@NotAudited
 	private MammaVolgendeUitnodiging volgendeUitnodiging;
 

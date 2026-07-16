@@ -32,13 +32,13 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.colon.ColonIntakelocatieRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.colon.ColonIntakelocatieService;
 import nl.rivm.screenit.specification.colon.ColonIntakelocatieSpecification;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;

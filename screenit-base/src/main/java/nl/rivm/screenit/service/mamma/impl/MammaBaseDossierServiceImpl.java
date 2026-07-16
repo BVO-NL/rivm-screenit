@@ -47,6 +47,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaFactorType;
 import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekStatus;
 import nl.rivm.screenit.model.project.ProjectInactiefReden;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.BaseClientContactService;
 import nl.rivm.screenit.service.BaseDossierService;
 import nl.rivm.screenit.service.ClientDoelgroepService;
@@ -67,7 +68,6 @@ import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.service.mamma.MammaVolgendeUitnodigingService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ProjectUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

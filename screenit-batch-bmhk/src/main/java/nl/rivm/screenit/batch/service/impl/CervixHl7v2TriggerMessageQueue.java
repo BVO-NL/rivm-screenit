@@ -68,8 +68,6 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.TimeoutException;
@@ -77,7 +75,6 @@ import ca.uhn.hl7v2.llp.LLPException;
 
 @Slf4j
 @Configuration
-@EnableScheduling
 public class CervixHl7v2TriggerMessageQueue
 {
 
@@ -114,41 +111,26 @@ public class CervixHl7v2TriggerMessageQueue
 	@Autowired
 	private DatabaseRunner databaseRunner;
 
-	private static final long MILLIS_WAIT_TIME = TimeUnit.SECONDS.toMillis(10);
-
 	private static final long MAX_CONNECTING_RETRY_TIME = TimeUnit.HOURS.toMillis(3);
-
-	private static final long CONNECTING_RETRY_TIME_SHORT = TimeUnit.SECONDS.toMillis(5);
 
 	private static final long CONNECTING_RETRY_TIME_LONG = TimeUnit.MINUTES.toMillis(5);
 
-	private static final long DEFAULT_MAX_SEND_RETRY_TIME = TimeUnit.MINUTES.toMillis(5);
-
-	private static final long DEFAULT_SEND_RETRY_TIME = TimeUnit.SECONDS.toMillis(5);
-
 	private static final int QUEUE_VERWERK_SIZE = 500;
 
-	private static final int QUEUE_WARNING_THRESHOLD = 5000;
+	private int queueWarningThreshold = 5000;
 
-	private long maxSendRetryTime = DEFAULT_MAX_SEND_RETRY_TIME;
+	private long millisWaitTime = TimeUnit.SECONDS.toMillis(10);
 
-	private long sendRetryTime = DEFAULT_SEND_RETRY_TIME;
+	private long connectingRetryTimeShort = TimeUnit.SECONDS.toMillis(5);
 
-	private final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(8);
+	private long maxSendRetryTime = TimeUnit.MINUTES.toMillis(5);
+
+	private long sendRetryTime = TimeUnit.SECONDS.toMillis(5);
+
+	private ExecutorService executorService = Executors.newFixedThreadPool(8);
 
 	private final Map<Long, CervixHl7v2TriggerMessagePerLabQueue> queueMap = new HashMap<>();
 
-	void setMaxSendRetryTimeVoorTest(long maxSendRetryTime)
-	{
-		this.maxSendRetryTime = maxSendRetryTime;
-	}
-
-	void setSendRetryTimeVoorTest(long sendRetryTime)
-	{
-		this.sendRetryTime = sendRetryTime;
-	}
-
-	@Scheduled(cron = "0/10 * * * * *")
 	public void verstuurHpvOrderBerichten()
 	{
 		var teVerwijderenQueues = new ArrayList<Long>();
@@ -181,7 +163,7 @@ public class CervixHl7v2TriggerMessageQueue
 					queueMap.put(lab.getId(), thread);
 					try
 					{
-						EXECUTOR_SERVICE.submit(queueMap.get(lab.getId()));
+						executorService.submit(queueMap.get(lab.getId()));
 						LOG.info("Added HL7v2 verstuur thread voor {}", lab.getNaam());
 					}
 					catch (RejectedExecutionException e)
@@ -239,7 +221,7 @@ public class CervixHl7v2TriggerMessageQueue
 								break;
 							}
 						}
-						Thread.sleep(MILLIS_WAIT_TIME);
+						Thread.sleep(millisWaitTime);
 					}
 				}
 				catch (Exception e)
@@ -507,7 +489,7 @@ public class CervixHl7v2TriggerMessageQueue
 			if (e instanceof IllegalStateException)
 			{
 
-				connectingRetryTime = CONNECTING_RETRY_TIME_SHORT;
+				connectingRetryTime = connectingRetryTimeShort;
 			}
 			LOG.error("Lab '{}': Connectie problemen. Retry in {} seconden", labNaam, TimeUnit.MILLISECONDS.toSeconds(connectingRetryTime), e);
 			Thread.sleep(connectingRetryTime);
@@ -569,14 +551,14 @@ public class CervixHl7v2TriggerMessageQueue
 		private void logQueueSizeProblemen(Long queueSize)
 		{
 			var oldQueueSizeWarningValue = queueSizeWarning;
-			queueSizeWarning = queueSize > QUEUE_WARNING_THRESHOLD;
+			queueSizeWarning = queueSize > queueWarningThreshold;
 			if (oldQueueSizeWarningValue != queueSizeWarning)
 			{
 				if (queueSizeWarning)
 				{
 					LOG.warn("Lab '{}': Queue size wordt te groot!", labNaam);
 					logService.logGebeurtenis(LogGebeurtenis.CERVIX_HL7V2_BERICHT_QUEUE_ERG_GROOT,
-						String.format("Lab '%s': Er staan meer dan %d berichten in de queue", labNaam, QUEUE_WARNING_THRESHOLD),
+						String.format("Lab '%s': Er staan meer dan %d berichten in de queue", labNaam, queueWarningThreshold),
 						Bevolkingsonderzoek.CERVIX);
 				}
 				else

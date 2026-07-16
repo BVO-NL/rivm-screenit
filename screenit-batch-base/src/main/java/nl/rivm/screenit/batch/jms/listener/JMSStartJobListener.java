@@ -42,9 +42,9 @@ import nl.rivm.screenit.model.enums.BatchApplicationType;
 import nl.rivm.screenit.model.enums.JobStartParameter;
 import nl.rivm.screenit.model.enums.JobType;
 import nl.rivm.screenit.model.enums.MailPriority;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.MailService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.springframework.batch.core.ExitStatus;

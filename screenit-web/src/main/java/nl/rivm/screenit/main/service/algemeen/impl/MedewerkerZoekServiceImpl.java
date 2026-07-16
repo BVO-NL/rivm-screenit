@@ -175,7 +175,7 @@ public class MedewerkerZoekServiceImpl implements MedewerkerZoekService
 		{
 			return filterUzinummerContaining(code).or(filterMedewerkercode(Ints.tryParse(code)));
 		}
-		return null;
+		return Specification.unrestricted();
 	}
 
 	public Specification<Medewerker> filterOrganisatieMedewerker(Medewerker zoekObject, List<Rol> selectedRollen, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)

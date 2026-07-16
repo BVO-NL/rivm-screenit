@@ -55,6 +55,7 @@ import nl.rivm.screenit.model.colon.ColoscopieCentrumColonCapaciteitVerdeling;
 import nl.rivm.screenit.model.colon.UitnodigingsGebied;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.repository.algemeen.PostcodeGebiedRepository;
 import nl.rivm.screenit.service.HibernateService;
@@ -66,7 +67,6 @@ import nl.rivm.screenit.specification.algemeen.PostcodeGebiedSpecification;
 import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.PercentageUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;

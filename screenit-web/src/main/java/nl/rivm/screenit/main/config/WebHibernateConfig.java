@@ -21,9 +21,6 @@ package nl.rivm.screenit.main.config;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
-import nl.rivm.screenit.config.hibernate.HibernateOrmMappingResourceProvider;
 import nl.topicuszorg.hibernate.spring.dao.HibernateService;
 import nl.topicuszorg.hibernate.spring.dao.impl.HibernateServiceImpl;
 
@@ -33,13 +30,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class WebHibernateConfig
 {
-	public static final String WEB_ORM_MAPPING_RESOURCE = "META-INF/screenit-web-orm.xml";
-
-	@Bean
-	HibernateOrmMappingResourceProvider hibernateOrmMappingResourceProvider()
-	{
-		return () -> List.of(WEB_ORM_MAPPING_RESOURCE);
-	}
 
 	@Bean
 	@Deprecated

@@ -29,7 +29,6 @@ import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.cervix.CervixMergedBrieven;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
-import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 
@@ -42,13 +41,10 @@ public class CervixBrievenGenererenWriter extends AbstractBrievenGenererenWriter
 	@Override
 	protected CervixMergedBrieven createConcreteMergedBrieven(Date aangemaaktOp)
 	{
-		var context = getStepExecutionContext();
-		var briefType = BriefType.valueOf(context.getString(CervixBrievenGenererenPartitioner.KEY_BRIEFTYPE));
-
 		var mergedBrieven = new CervixMergedBrieven();
 		mergedBrieven.setScreeningOrganisatie(getScreeningOrganisatie());
 		mergedBrieven.setCreatieDatum(aangemaaktOp);
-		mergedBrieven.setBriefType(briefType);
+		mergedBrieven.setBriefType(getBriefType());
 
 		return mergedBrieven;
 	}

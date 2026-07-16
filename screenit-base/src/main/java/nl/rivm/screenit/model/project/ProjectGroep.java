@@ -44,8 +44,6 @@ import nl.rivm.screenit.model.IActief;
 import nl.rivm.screenit.model.INaam;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -74,18 +72,15 @@ public class ProjectGroep extends AbstractHibernateObject implements INaam, IAct
 
 	@NotAudited
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "groep", cascade = jakarta.persistence.CascadeType.REMOVE)
-	@Cascade(CascadeType.DELETE)
 	private ProjectImport projectImport;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "groep", cascade = jakarta.persistence.CascadeType.REMOVE)
-	@Cascade(CascadeType.DELETE)
 	private List<ProjectBestand> projectBestanden = new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Project project;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "groep", cascade = jakarta.persistence.CascadeType.REMOVE)
-	@Cascade(CascadeType.DELETE)
 	private List<ProjectClient> clienten = new ArrayList<>();
 
 	@Temporal(TemporalType.DATE)

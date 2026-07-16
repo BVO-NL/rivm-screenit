@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import static nl.rivm.screenit.model.project.ProjectBriefActieType.HERINNERING;
 import static nl.rivm.screenit.model.project.ProjectBriefActieType.XDAGENNAY;
 import static nl.rivm.screenit.model.project.ProjectBriefActieType.XMETY;
 import static nl.rivm.screenit.specification.algemeen.ProjectBriefActieSpecification.heeftDatum;
@@ -68,7 +67,7 @@ public class ProjectBrievenAanmaakReader extends BaseSpecificationScrollableResu
 	{
 		return heeftTypeDatumEnMagAangemaaktWordenOp(peilDatum)
 			.or(heeftTypeVanafDatumEnMagAangemaaktWordenOp(peilDatum))
-			.or(heeftTypeIn(List.of(XDAGENNAY, XMETY, HERINNERING)));
+			.or(heeftTypeIn(List.of(XDAGENNAY, XMETY)));
 	}
 
 	private Specification<ProjectBriefActie> heeftTypeDatumEnMagAangemaaktWordenOp(LocalDate peilMoment)

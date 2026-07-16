@@ -44,12 +44,12 @@ import nl.rivm.screenit.model.cervix.CervixUitstel;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.CervixZas;
 import nl.rivm.screenit.model.cervix.verslag.CervixVerslag;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.BaseTestTimelineService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.cervix.CervixTestTimelineTimeService;
 import nl.rivm.screenit.service.cervix.enums.CervixTestTimeLineDossierTijdstip;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

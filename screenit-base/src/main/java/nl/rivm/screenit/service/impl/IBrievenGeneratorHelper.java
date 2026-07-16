@@ -21,17 +21,26 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.document.BaseDocumentCreator;
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.IDocument;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.MergedBrieven;
+import nl.rivm.screenit.model.enums.BatchApplicationType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
+import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.model.messagequeue.dto.BriefafdrukopdrachtDto;
+import nl.rivm.screenit.util.BriefUtil;
 
+import org.codehaus.commons.nullanalysis.NotNull;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +48,7 @@ import com.aspose.words.Document;
 
 public interface IBrievenGeneratorHelper<B extends Brief, MB extends MergedBrieven<?>>
 {
-	static final Logger LOG = LoggerFactory.getLogger(IBrievenGeneratorHelper.class);
+	Logger LOG = LoggerFactory.getLogger(IBrievenGeneratorHelper.class);
 
 	default BaseDocumentCreator getDocumentCreator(MailMergeContext context)
 	{
@@ -53,28 +62,45 @@ public interface IBrievenGeneratorHelper<B extends Brief, MB extends MergedBriev
 
 	default String getTechnischeLoggingMergedBriefAanmaken(MB brieven)
 	{
-		String tekst = "Mergedocument(id = " + brieven.getId() + ") aangemaakt voor ScreeningOrganisatie " + brieven.getScreeningOrganisatie().getNaam()
+		return "Mergedocument(id = " + brieven.getId() + ") aangemaakt voor ScreeningOrganisatie " + brieven.getScreeningOrganisatie().getNaam()
 			+ ", brieftype " + brieven.getBriefType().name();
-		return tekst;
 	}
 
 	String getMergedBrievenNaam(MB mergedBrieven);
+
+	default BriefafdrukopdrachtDto maakBriefafdrukopdrachtVoorGegenereerdeBrief(@NotNull B brief, @NotNull LocalDateTime timestamp)
+	{
+		var briefType = BriefUtil.getOrigineleBrief(brief).getBriefType();
+		return BriefafdrukopdrachtDto.builder()
+			.code(briefType != null ? briefType.getBriefCode() : BriefType.FALLBACK_BRIEF_CODE)
+			.kenmerk(BriefUtil.maakKenmerk(brief))
+			.timestamp(timestamp.format(DateTimeFormatter.ofPattern(Constants.DATE_FORMAT_YYYYMMDDHHMMSS)))
+			.codeAddendum("")
+			.entityId(brief.getId())
+			.entityType(Hibernate.getClass(brief))
+			.build();
+	}
 
 	default Long getFileStoreId()
 	{
 		return null;
 	}
 
+	BatchApplicationType getBatchApplicationType();
+
+	boolean isAutomatischAfdrukkenViaParagon();
+
 	default void crashMelding(String melding, Exception e)
 	{
 		LOG.error(melding, e);
 	}
 
-	void verhoogAantalBrievenVanScreeningOrganisatie(MB mergedBrieven);
+	default void verhoogAantalBrievenVanScreeningOrganisatie(Long soKey, Integer aantalToevoegen)
+	{
+	}
 
 	default void additionalMergedContext(MailMergeContext context)
 	{
-
 	}
 
 	Bevolkingsonderzoek[] getBevolkingsonderzoeken();
@@ -84,6 +110,8 @@ public interface IBrievenGeneratorHelper<B extends Brief, MB extends MergedBriev
 	LogGebeurtenis getOnvolledigAdresLogGebeurtenis();
 
 	FileStoreLocation getFileStoreLocation();
+
+	BriefType getBriefType();
 
 	IDocument getDocumentDefinitie();
 

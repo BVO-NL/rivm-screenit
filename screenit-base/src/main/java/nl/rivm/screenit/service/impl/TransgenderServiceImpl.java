@@ -26,12 +26,12 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DeelnamemodusDossier;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.TransgenderService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

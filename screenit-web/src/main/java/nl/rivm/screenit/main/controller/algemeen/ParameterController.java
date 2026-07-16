@@ -33,7 +33,7 @@ import nl.rivm.screenit.main.dto.algemeen.ParameterDto;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

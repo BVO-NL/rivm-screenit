@@ -46,9 +46,9 @@ import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.AsposeService;
 import nl.rivm.screenit.service.BaseBriefService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 
 import org.apache.commons.lang3.StringUtils;

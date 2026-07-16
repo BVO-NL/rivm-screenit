@@ -18,9 +18,9 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog titel="Brief openen" size="lg">
+<app-base-dialog titel="Brief template inzien" size="lg">
   <div body>
-    <app-pdf-viewer [url]="brief()" (opslaan)="opslaan()"/>
+    <app-pdf-viewer [url]="brief" (opslaan)="opslaan()"/>
   </div>
   <div buttons>
     <button ds-button-primary (click)="sluiten()">Sluiten</button>

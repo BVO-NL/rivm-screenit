@@ -35,12 +35,10 @@ import lombok.Setter;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Proxy;
 import org.hibernate.envers.Audited;
 
 @Audited
 @Entity(name = "doc_upload_document")
-@Proxy
 @Table(schema = "gedeeld")
 @Getter
 @Setter

@@ -22,10 +22,13 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.brieven;
  */
 
 import java.io.File;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
+import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.dao.UitnodigingsDao;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
@@ -42,7 +45,9 @@ import nl.rivm.screenit.model.ZASRetouradres;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.enums.Actie;
+import nl.rivm.screenit.model.enums.BatchApplicationType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
+import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.MergeField;
 import nl.rivm.screenit.model.enums.MergeFieldTestType;
@@ -51,10 +56,16 @@ import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
+import nl.rivm.screenit.model.messagequeue.MessageType;
+import nl.rivm.screenit.model.messagequeue.dto.BriefafdrukopdrachtDto;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst;
 import nl.rivm.screenit.model.project.Project;
+import nl.rivm.screenit.model.project.ProjectBrief;
 import nl.rivm.screenit.service.AsposeService;
+import nl.rivm.screenit.service.BaseBriefService;
+import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.MessageService;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
@@ -63,10 +74,12 @@ import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RadioChoice;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.model.IModel;
@@ -74,6 +87,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,6 +96,10 @@ import com.aspose.words.Document;
 public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 {
 	private static final Logger LOG = LoggerFactory.getLogger(ProjectTemplateTestenBasePage.class);
+
+	private static final int MIN_AANTAL_PARAGON = 1;
+
+	private static final int MAX_AANTAL_PARAGON = 100;
 
 	private enum TemplateBron
 	{
@@ -93,11 +111,22 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 
 	private final TemplateBron bron;
 
+	private final IModel<Integer> aantalModel = Model.of(MIN_AANTAL_PARAGON);
+
 	@SpringBean
 	private OrganisatieService organisatieService;
 
 	@SpringBean
 	private LogService logService;
+
+	@SpringBean
+	private BaseBriefService briefService;
+
+	@SpringBean
+	private MessageService messageService;
+
+	@SpringBean
+	private ICurrentDateSupplier currentDateSupplier;
 
 	@SpringBean
 	protected AsposeService asposeService;
@@ -107,6 +136,11 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 
 	@SpringBean
 	private MammaBaseStandplaatsService standplaatsService;
+
+	@SpringBean(name = "testModus")
+	private Boolean testModus;
+
+	private boolean automatischAfdrukkenParagonActief = false;
 
 	private final IModel<List<FileUpload>> fileUploads = new ListModel<>();
 
@@ -166,9 +200,10 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 		form.add(screeningOrganisatieDropdown);
 
 		form.add(getPrintButton());
+		form.add(getNaarParagonButton());
 
 		RadioChoice<TemplateBron> bron = new RadioChoice<>("bron", new PropertyModel<TemplateBron>(this, "bron"), Arrays.asList(TemplateBron.values()),
-			new EnumChoiceRenderer<TemplateBron>(this));
+			new EnumChoiceRenderer<>(this));
 		bron.setPrefix("<label class=\"radio\">");
 		bron.setSuffix("</label>");
 		bron.setRequired(true);
@@ -215,6 +250,16 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 
 		};
 		form.add(fieldsContainer);
+
+		var paragonInstellingenContainer = new WebMarkupContainer("paragonInstellingenContainer");
+		automatischAfdrukkenParagonActief = briefService.isAutomatischAfdrukkenParagonActief() && testModus;
+		paragonInstellingenContainer.setVisible(automatischAfdrukkenParagonActief);
+		form.add(paragonInstellingenContainer);
+
+		var aantalNaarParagonField = new TextField<>("aantal", aantalModel, Integer.class);
+		aantalNaarParagonField.setRequired(true);
+		aantalNaarParagonField.add(RangeValidator.range(MIN_AANTAL_PARAGON, MAX_AANTAL_PARAGON));
+		paragonInstellingenContainer.add(aantalNaarParagonField);
 	}
 
 	protected abstract List<ScreeningOrganisatie> getRegios();
@@ -231,6 +276,8 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 
 	protected abstract List<Bevolkingsonderzoek> getBevolkingsonderzoeken();
 
+	protected abstract BriefType getParagonBriefType();
+
 	protected abstract Document proccesDocument(MailMergeContext context, File adHocBriefTemplate) throws Exception;
 
 	private IndicatingAjaxSubmitLink getPrintButton()
@@ -241,136 +288,196 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 			@Override
 			public void onSubmit(AjaxRequestTarget target)
 			{
-				DocumentTemplateTestWrapper wrapper = wrapperModel.getObject();
-				List<Bevolkingsonderzoek> bevolkingsonderzoeken = getBevolkingsonderzoeken();
-				logService.logGebeurtenis(LogGebeurtenis.TESTEN_VAN_BRIEVEN, ScreenitSession.get().getIngelogdAccount(),
-					bevolkingsonderzoeken.toArray(new Bevolkingsonderzoek[bevolkingsonderzoeken.size()]));
-
-				ScreeningOrganisatie screeningOrganisatie = selectedRegio.getObject();
-
-				MailMergeContext context = DocumentTemplateTestenFieldsPanel
-					.createMailMergeContext(wrapper, screeningOrganisatie);
-
-				BMHKLaboratorium bmhkLaboratorium = wrapper.getBmhkLaboratorium();
-				Client client = wrapper.getClient();
-				Gemeente gbaGemeente = client.getPersoon().getGbaAdres().getGbaGemeente();
-				ZASRetouradres zasRetouradres = bmhkLaboratorium.getRetouradressen().get(0);
-				AfgeslotenMedewerkerOvereenkomst overeenkomst = wrapper.getOvereenkomst();
-				CervixUitnodiging cervixUitnodiging = wrapper.getCervixUitnodiging();
-
 				try
 				{
-					File briefTemplate = null;
-					if (bron == TemplateBron.UPLOADED)
+					var mergedDocument = maakMergedDocument();
+					if (mergedDocument != null)
 					{
-						briefTemplate = getBriefTemplateFile();
+						fieldsContainer.createAndShowPDF(target, mergedDocument);
 					}
-					else if (CollectionUtils.isNotEmpty(fileUploads.getObject()))
-					{
-						briefTemplate = fileUploads.getObject().get(0).writeToTempFile();
-					}
-					if (briefTemplate == null)
-					{
-						error("Er is geen template bestand opgegeven.");
-						return;
-					}
-
-					Document mergedDocument = null;
-					MammaBeoordeling laatsteBeoordelingMetUitslag = wrapper.getClient().getMammaDossier().getLaatsteBeoordelingMetUitslag();
-					Medewerker handmatigeRadioloog1 = laatsteBeoordelingMetUitslag.getEersteLezing().getBeoordelaar().getMedewerker();
-					Medewerker handmatigeRadioloog2 = laatsteBeoordelingMetUitslag.getTweedeLezing().getBeoordelaar().getMedewerker();
-					if (!wrapper.isFreeTextBKRADIOLOOG())
-					{
-						laatsteBeoordelingMetUitslag.getEersteLezing().getBeoordelaar().setMedewerker(wrapper.getRadioloog1());
-						laatsteBeoordelingMetUitslag.getTweedeLezing().getBeoordelaar().setMedewerker(wrapper.getRadioloog2());
-					}
-					if (wrapper.isFromDBINTAKELOCATIE())
-					{
-						List<ColonIntakelocatie> intakeLocaties = organisatieService.getActieveIntakelocatiesBinnenRegio(screeningOrganisatie);
-						var kamer = wrapper.getIntakeAfspraak().getKamer();
-						ColonIntakelocatie handmaktigeIntakeLocatie = kamer.getIntakelocatie();
-						for (ColonIntakelocatie intakeLocatie : intakeLocaties)
-						{
-							kamer.setIntakelocatie(intakeLocatie);
-							Document document = proccesDocument(context, briefTemplate);
-
-							mergedDocument = DocumentTemplateTestenFieldsPanel.addDocument(mergedDocument, document);
-
-						}
-						if (intakeLocaties.isEmpty())
-						{
-							error("Geen intakelocaties die vallen in de regio " + screeningOrganisatie.getNaam());
-						}
-						kamer.setIntakelocatie(handmaktigeIntakeLocatie);
-					}
-					else if (wrapper.isFromDBBMHKLAB())
-					{
-						List<BMHKLaboratorium> labs = organisatieService.getActieveOrganisaties(BMHKLaboratorium.class);
-
-						for (BMHKLaboratorium lab : labs)
-						{
-							cervixUitnodiging.getMonster().setLaboratorium(lab);
-							gbaGemeente.setBmhkLaboratorium(lab);
-							context.setBmhkLaboratorium(lab);
-
-							Document document = proccesDocument(context, briefTemplate);
-							mergedDocument = DocumentTemplateTestenFieldsPanel.addDocument(mergedDocument, document);
-						}
-						if (labs.isEmpty())
-						{
-							error("Geen BMHK laboratorium");
-						}
-						cervixUitnodiging.getMonster().setLaboratorium(bmhkLaboratorium);
-						gbaGemeente.setBmhkLaboratorium(bmhkLaboratorium);
-						context.setBmhkLaboratorium(bmhkLaboratorium);
-					}
-					else if (wrapper.isFromDBBKSTANDPLAATS())
-					{
-						List<MammaStandplaats> standplaatsen = standplaatsService.getActieveStandplaatsen(screeningOrganisatie);
-
-						MammaStandplaatsRonde standplaatsRonde = context.getClient().getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getLaatsteAfspraak()
-							.getStandplaatsPeriode().getStandplaatsRonde();
-						MammaStandplaats handmatigeStandplaats = standplaatsRonde.getStandplaats();
-						for (MammaStandplaats standplaats : standplaatsen)
-						{
-							standplaatsRonde.setStandplaats(standplaats);
-
-							Document document = proccesDocument(context, briefTemplate);
-							mergedDocument = DocumentTemplateTestenFieldsPanel.addDocument(mergedDocument, document);
-						}
-						if (standplaatsen.isEmpty())
-						{
-							error("Geen standplaatsen die vallen in de regio " + screeningOrganisatie.getNaam());
-						}
-						standplaatsRonde.setStandplaats(handmatigeStandplaats);
-					}
-					else
-					{
-						Document document = proccesDocument(context, briefTemplate);
-						mergedDocument = DocumentTemplateTestenFieldsPanel.addDocument(mergedDocument, document);
-					}
-
-					if (!wrapper.isFreeTextBKRADIOLOOG())
-					{
-						laatsteBeoordelingMetUitslag.getEersteLezing().getBeoordelaar().setMedewerker(handmatigeRadioloog1);
-						laatsteBeoordelingMetUitslag.getTweedeLezing().getBeoordelaar().setMedewerker(handmatigeRadioloog2);
-					}
-					fieldsContainer.createAndShowPDF(target, mergedDocument);
 				}
 				catch (Exception e)
 				{
 					LOG.error("Error converting doc to pdf", e);
 					error("Er is iets misgegaan met het genereren van de pdf.");
 				}
-				finally
-				{
-					gbaGemeente.setScreeningOrganisatie(null);
-					zasRetouradres.setRegio(null);
-					overeenkomst.setScreeningOrganisatie(null);
-				}
 			}
 
 		};
+	}
+
+	private IndicatingAjaxSubmitLink getNaarParagonButton()
+	{
+		var naarParagonButton = new IndicatingAjaxSubmitLink("naarParagon")
+		{
+			@Override
+			public void onSubmit(AjaxRequestTarget target)
+			{
+				try
+				{
+					var briefType = getParagonBriefType();
+					var mergedDocument = maakMergedDocument();
+					if (mergedDocument == null)
+					{
+						return;
+					}
+					var aantalNaarParagon = getAantalNaarParagon();
+					for (var i = 0; i < aantalNaarParagon; i++)
+					{
+						var pdfBestand = briefService.genereerPdf(mergedDocument, "project_template_test", false);
+						var bestandsNaam = UUID.randomUUID().toString();
+						briefService.pdfBestandOpslaanVoorVersturen(pdfBestand, bestandsNaam);
+						var dto = maakBriefafdrukopdrachtDto(briefType, bestandsNaam);
+						messageService.queueMessage(MessageType.BRIEF_AFDRUKKEN, dto, BatchApplicationType.GENERALIS.name());
+					}
+					info("Template is " + aantalNaarParagon + " keer aan de queue aangeboden.");
+				}
+				catch (Exception e)
+				{
+					LOG.error("Error queueing project template pdf", e);
+					error("Er is iets misgegaan met het aanbieden aan de queue.");
+				}
+			}
+		};
+		naarParagonButton.setVisible(automatischAfdrukkenParagonActief);
+		return naarParagonButton;
+	}
+
+	protected BriefafdrukopdrachtDto maakBriefafdrukopdrachtDto(BriefType briefType, String bestandsNaam)
+	{
+		return BriefafdrukopdrachtDto.builder()
+			.code(briefType != null ? briefType.getBriefCode() : BriefType.FALLBACK_BRIEF_CODE)
+			.kenmerk("K1234567890ABCDEF")
+			.timestamp(currentDateSupplier.getLocalDateTime().format(DateTimeFormatter.ofPattern(Constants.DATE_FORMAT_YYYYMMDDHHMMSS)))
+			.codeAddendum("")
+			.entityId(null)
+			.entityType(ProjectBrief.class)
+			.resources(List.of(BriefafdrukopdrachtDto.Resource.builder().order(1).path(bestandsNaam).build()))
+			.build();
+	}
+
+	private Integer getAantalNaarParagon()
+	{
+		return aantalModel.getObject();
+	}
+
+	private Document maakMergedDocument() throws Exception
+	{
+		DocumentTemplateTestWrapper wrapper = wrapperModel.getObject();
+		List<Bevolkingsonderzoek> bevolkingsonderzoeken = getBevolkingsonderzoeken();
+		logService.logGebeurtenis(LogGebeurtenis.TESTEN_VAN_BRIEVEN, ScreenitSession.get().getIngelogdAccount(),
+			bevolkingsonderzoeken.toArray(new Bevolkingsonderzoek[bevolkingsonderzoeken.size()]));
+
+		ScreeningOrganisatie screeningOrganisatie = selectedRegio.getObject();
+
+		MailMergeContext context = DocumentTemplateTestenFieldsPanel.createMailMergeContext(wrapper, screeningOrganisatie);
+
+		BMHKLaboratorium bmhkLaboratorium = wrapper.getBmhkLaboratorium();
+		Client client = wrapper.getClient();
+		Gemeente gbaGemeente = client.getPersoon().getGbaAdres().getGbaGemeente();
+		ZASRetouradres zasRetouradres = bmhkLaboratorium.getRetouradressen().get(0);
+		AfgeslotenMedewerkerOvereenkomst overeenkomst = wrapper.getOvereenkomst();
+		CervixUitnodiging cervixUitnodiging = wrapper.getCervixUitnodiging();
+
+		try
+		{
+			File briefTemplate = null;
+			if (bron == TemplateBron.UPLOADED)
+			{
+				briefTemplate = getBriefTemplateFile();
+			}
+			else if (CollectionUtils.isNotEmpty(fileUploads.getObject()))
+			{
+				briefTemplate = fileUploads.getObject().getFirst().writeToTempFile();
+			}
+			if (briefTemplate == null)
+			{
+				error("Er is geen template bestand opgegeven.");
+				return null;
+			}
+
+			Document mergedDocument = null;
+			MammaBeoordeling laatsteBeoordelingMetUitslag = wrapper.getClient().getMammaDossier().getLaatsteBeoordelingMetUitslag();
+			Medewerker handmatigeRadioloog1 = laatsteBeoordelingMetUitslag.getEersteLezing().getBeoordelaar().getMedewerker();
+			Medewerker handmatigeRadioloog2 = laatsteBeoordelingMetUitslag.getTweedeLezing().getBeoordelaar().getMedewerker();
+			if (!wrapper.isFreeTextBKRADIOLOOG())
+			{
+				laatsteBeoordelingMetUitslag.getEersteLezing().getBeoordelaar().setMedewerker(wrapper.getRadioloog1());
+				laatsteBeoordelingMetUitslag.getTweedeLezing().getBeoordelaar().setMedewerker(wrapper.getRadioloog2());
+			}
+			if (wrapper.isFromDBINTAKELOCATIE())
+			{
+				List<ColonIntakelocatie> intakeLocaties = organisatieService.getActieveIntakelocatiesBinnenRegio(screeningOrganisatie);
+				var kamer = wrapper.getIntakeAfspraak().getKamer();
+				ColonIntakelocatie handmaktigeIntakeLocatie = kamer.getIntakelocatie();
+				for (ColonIntakelocatie intakeLocatie : intakeLocaties)
+				{
+					kamer.setIntakelocatie(intakeLocatie);
+					Document document = proccesDocument(context, briefTemplate);
+					mergedDocument = DocumentTemplateTestenFieldsPanel.addDocument(mergedDocument, document);
+				}
+				if (intakeLocaties.isEmpty())
+				{
+					error("Geen intakelocaties die vallen in de regio " + screeningOrganisatie.getNaam());
+				}
+				kamer.setIntakelocatie(handmaktigeIntakeLocatie);
+			}
+			else if (wrapper.isFromDBBMHKLAB())
+			{
+				List<BMHKLaboratorium> labs = organisatieService.getActieveOrganisaties(BMHKLaboratorium.class);
+				for (BMHKLaboratorium lab : labs)
+				{
+					cervixUitnodiging.getMonster().setLaboratorium(lab);
+					gbaGemeente.setBmhkLaboratorium(lab);
+					context.setBmhkLaboratorium(lab);
+					Document document = proccesDocument(context, briefTemplate);
+					mergedDocument = DocumentTemplateTestenFieldsPanel.addDocument(mergedDocument, document);
+				}
+				if (labs.isEmpty())
+				{
+					error("Geen BMHK laboratorium");
+				}
+				cervixUitnodiging.getMonster().setLaboratorium(bmhkLaboratorium);
+				gbaGemeente.setBmhkLaboratorium(bmhkLaboratorium);
+				context.setBmhkLaboratorium(bmhkLaboratorium);
+			}
+			else if (wrapper.isFromDBBKSTANDPLAATS())
+			{
+				List<MammaStandplaats> standplaatsen = standplaatsService.getActieveStandplaatsen(screeningOrganisatie);
+				MammaStandplaatsRonde standplaatsRonde = context.getClient().getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getLaatsteAfspraak()
+					.getStandplaatsPeriode().getStandplaatsRonde();
+				MammaStandplaats handmatigeStandplaats = standplaatsRonde.getStandplaats();
+				for (MammaStandplaats standplaats : standplaatsen)
+				{
+					standplaatsRonde.setStandplaats(standplaats);
+					Document document = proccesDocument(context, briefTemplate);
+					mergedDocument = DocumentTemplateTestenFieldsPanel.addDocument(mergedDocument, document);
+				}
+				if (standplaatsen.isEmpty())
+				{
+					error("Geen standplaatsen die vallen in de regio " + screeningOrganisatie.getNaam());
+				}
+				standplaatsRonde.setStandplaats(handmatigeStandplaats);
+			}
+			else
+			{
+				Document document = proccesDocument(context, briefTemplate);
+				mergedDocument = DocumentTemplateTestenFieldsPanel.addDocument(mergedDocument, document);
+			}
+
+			if (!wrapper.isFreeTextBKRADIOLOOG())
+			{
+				laatsteBeoordelingMetUitslag.getEersteLezing().getBeoordelaar().setMedewerker(handmatigeRadioloog1);
+				laatsteBeoordelingMetUitslag.getTweedeLezing().getBeoordelaar().setMedewerker(handmatigeRadioloog2);
+			}
+			return mergedDocument;
+		}
+		finally
+		{
+			gbaGemeente.setScreeningOrganisatie(null);
+			zasRetouradres.setRegio(null);
+			overeenkomst.setScreeningOrganisatie(null);
+		}
 	}
 
 	protected abstract File getBriefTemplateFile();
@@ -380,5 +487,6 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 	{
 		super.onDetach();
 		ModelUtil.nullSafeDetach(selectedRegio);
+		ModelUtil.nullSafeDetach(aantalModel);
 	}
 }

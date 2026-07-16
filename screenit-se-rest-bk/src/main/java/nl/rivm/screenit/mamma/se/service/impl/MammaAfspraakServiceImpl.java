@@ -45,6 +45,7 @@ import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaVerzettenReden;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.BaseAfmeldService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.DashboardService;
@@ -57,7 +58,6 @@ import nl.rivm.screenit.service.mamma.MammaBaseCapaciteitsBlokService;
 import nl.rivm.screenit.service.mamma.MammaBaseKansberekeningService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsPeriodeService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

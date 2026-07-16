@@ -37,12 +37,12 @@ import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 import nl.rivm.screenit.model.mamma.enums.MammaVerzettenReden;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.lang.StringUtils;

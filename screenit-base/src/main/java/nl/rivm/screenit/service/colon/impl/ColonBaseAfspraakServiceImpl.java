@@ -61,7 +61,6 @@ import nl.rivm.screenit.model.colon.WerklijstIntakeFilter;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
 import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
-import nl.rivm.screenit.model.colon.enums.ColonIntakeafspraakType;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingsintervalType;
 import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
@@ -73,12 +72,13 @@ import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.HuisartsBerichtType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.OpenUitnodigingUitslag;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.repository.colon.ColonAfspraakslotRepository;
 import nl.rivm.screenit.repository.colon.ColonIntakeAfspraakRepository;
 import nl.rivm.screenit.service.BaseBriefService;
-import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.DigitaalBerichtTemplateService;
+import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.MailService;
@@ -99,7 +99,6 @@ import nl.rivm.screenit.util.colon.ColonAfspraakUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
@@ -125,7 +124,6 @@ import static nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecificat
 import static nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification.onderdeelVanLaatsteScreeningRonde;
 import static nl.rivm.screenit.specification.colon.ColonTijdslotSpecification.heeftVanaf;
 import static nl.rivm.screenit.util.StringUtil.propertyChain;
-import static org.springframework.data.jpa.domain.Specification.where;
 
 @Slf4j
 @Service
@@ -939,7 +937,7 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 	@Override
 	public boolean heeftClientIntakeAfspraakMetConclusieBezwaar(String bsn)
 	{
-		var spec = where(heeftBsn(bsn).with(Client_.persoon)).and(heeftBezwaar().with(r ->
+		var spec = heeftBsn(bsn).with(Client_.persoon).and(heeftBezwaar().with(r ->
 		{
 			var dossier = join(r, Client_.colonDossier);
 			var laatsteScreeningRonde = join(dossier, ColonDossier_.laatsteScreeningRonde);

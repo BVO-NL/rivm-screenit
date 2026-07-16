@@ -34,9 +34,9 @@ import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.RedenIntrekkenGbaIndicatie;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.specification.SpecificationUtil;
 import nl.rivm.screenit.specification.algemeen.PersoonSpecification;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;

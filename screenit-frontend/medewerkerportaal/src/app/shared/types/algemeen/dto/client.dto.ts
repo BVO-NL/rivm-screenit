@@ -20,6 +20,7 @@
  */
 import { NaamGebruik } from '@shared/types/algemeen/enum/naam-gebruik'
 import { Geslacht } from '@shared/types/algemeen/enum/geslacht'
+import { GbaStatus } from '@shared/types/algemeen/enum/gba-status'
 
 export interface ClientDto {
   id: number
@@ -29,16 +30,19 @@ export interface ClientDto {
   titel: string
   geboortedatum: Date
   postcode: string
-  straat: string
-  volledigeAdres: string
+  straatnaam: string
+  volledigeAdres: string | null
   plaats: string
   bsn: string
   naamGebruik: NaamGebruik
   partnerTussenvoegsel: string
   partnerAchternaam: string
   geslacht: Geslacht
-  tijdelijkAdres: boolean
+  isTijdelijkAdres: boolean
+  tijdelijkAdresVolledig?: string | null
+  postadres?: string | null
   overlijdensdatum?: Date
   screeningsorganisatie?: string
   actief: boolean
+  gbaStatus: GbaStatus
 }

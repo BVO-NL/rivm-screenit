@@ -51,6 +51,7 @@ import nl.rivm.screenit.model.enums.MergeField;
 import nl.rivm.screenit.model.inpakcentrum.naarinpakcentrum.InpakcentrumUitnodigingDto;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.cervix.CervixUitnodigingRepository;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.ClientService;
@@ -60,7 +61,6 @@ import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.ProjectUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
@@ -114,6 +114,7 @@ public class ZasUitnodigingenVersturenTasklet extends AbstractUitnodigingenVerst
 		mergedBrieven.setBriefType(brief.getBriefType());
 		mergedBrieven.setScreeningOrganisatie(getScreeningOrganisatieObvUitnodiging(uitnodiging));
 		brief.setMergedBrieven(mergedBrieven);
+		brief.setVerstuurdVoorAfdrukkenOp(currentDateSupplier.getLocalDateTime());
 		brief.setBriefDefinitie(briefDefinitie);
 		hibernateService.saveOrUpdateAll(mergedBrieven, brief);
 	}

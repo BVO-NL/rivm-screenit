@@ -38,9 +38,6 @@ import lombok.Setter;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 @Entity
 @Table(schema = "mamma", name = "uitnodigingen_rapportage")
 public class MammaUitnodigenRapportage extends AbstractHibernateObject
@@ -52,12 +49,10 @@ public class MammaUitnodigenRapportage extends AbstractHibernateObject
 	private Date datumVerwerking;
 
 	@OneToMany(mappedBy = "uitnodigenRapportage", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE })
-	@Cascade(CascadeType.DELETE)
 	@Getter
 	private List<MammaStandplaatsRondeUitnodigenRapportage> standplaatsRondeUitnodigenRapportages = new ArrayList<>();
 
 	@OneToMany(mappedBy = "uitnodigenRapportage", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.REMOVE })
-	@Cascade(CascadeType.DELETE)
 	@Getter
 	private List<MammaIntervalUitnodigenRapportage> intervalUitnodigenRapportages = new ArrayList<>();
 

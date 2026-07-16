@@ -41,6 +41,7 @@ import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
 import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.algemeen.ClientSpecification;
@@ -48,7 +49,6 @@ import nl.rivm.screenit.specification.algemeen.PersoonSpecification;
 import nl.rivm.screenit.specification.algemeen.ScreeningRondeSpecification;
 import nl.rivm.screenit.specification.colon.ColonFitRegistratieSpecification;
 import nl.rivm.screenit.specification.colon.ColonScreeningRondeSpecification;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;

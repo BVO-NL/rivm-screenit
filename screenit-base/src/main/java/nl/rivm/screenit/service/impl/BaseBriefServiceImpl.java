@@ -26,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -68,25 +70,29 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.model.messagequeue.MessageType;
+import nl.rivm.screenit.model.messagequeue.dto.BriefafdrukopdrachtDto;
 import nl.rivm.screenit.model.project.ProjectBrief;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.model.project.ProjectClient;
+import nl.rivm.screenit.preference.service.KeyPreferenceService;
 import nl.rivm.screenit.repository.algemeen.BriefDefinitieRepository;
 import nl.rivm.screenit.repository.algemeen.ClientBriefRepository;
 import nl.rivm.screenit.service.AsposeService;
 import nl.rivm.screenit.service.BaseBriefService;
+import nl.rivm.screenit.service.FileService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.MessageService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.UploadDocumentService;
+import nl.rivm.screenit.specification.algemeen.ClientBriefSpecification;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.JavaScriptPdfHelper;
-import nl.topicuszorg.organisatie.model.Adres;
-import nl.topicuszorg.preferencemodule.service.KeyPreferenceService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -95,7 +101,9 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionJavaScript;
 import org.hibernate.Hibernate;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -103,9 +111,7 @@ import com.aspose.words.Document;
 import com.aspose.words.ImportFormatMode;
 import com.aspose.words.PdfCompliance;
 
-import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefType;
 import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.heeftClient;
-import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.heeftOngegeneerdeBrieven;
 
 @Slf4j
 @Service
@@ -115,7 +121,14 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	private static final int BYTES_TO_MBS = 1024 * 1024;
 
 	@Autowired
+	@Qualifier("locatieFilestore")
+	private String locatieFilestore;
+
+	@Autowired
 	private UploadDocumentService uploadDocumentService;
+
+	@Autowired
+	private FileService fileService;
 
 	@Autowired
 	private HibernateService hibernateService;
@@ -130,10 +143,16 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	private LogService logService;
 
 	@Autowired
-	private SimplePreferenceService simplePreferenceService;
+	private MessageService messageService;
+
+	@Autowired
+	private KeyPreferenceService preferenceService;
 
 	@Autowired
 	private OrganisatieParameterService organisatieParameterService;
+
+	@Autowired
+	private OrganisatieService organisatieService;
 
 	@Autowired
 	private BriefDefinitieRepository briefDefinitieRepository;
@@ -143,9 +162,6 @@ public class BaseBriefServiceImpl implements BaseBriefService
 
 	@Autowired
 	private BriefFactory briefFactory;
-
-	@Autowired
-	private KeyPreferenceService preferenceService;
 
 	@Override
 	public BriefDefinitie getNieuwsteBriefDefinitie(BriefType briefType)
@@ -178,7 +194,7 @@ public class BaseBriefServiceImpl implements BaseBriefService
 					briefDefinitie.setVolgnummer(eersteOngebruikteVolgnummer++);
 					if (!briefDefinitiesVanDitBriefType.isEmpty())
 					{ 
-						briefDefinitiesVanDitBriefType.get(briefDefinitiesVanDitBriefType.size() - 1).setGeldigTot(briefDefinitie.getLaatstGewijzigd());
+						briefDefinitiesVanDitBriefType.getLast().setGeldigTot(briefDefinitie.getLaatstGewijzigd());
 					}
 					briefDefinitiesVanDitBriefType.add(briefDefinitie);
 				}
@@ -244,7 +260,7 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	@Override
 	public <B extends ClientBrief<?, ?, ?>> boolean clientHeeftOngegenereerdeBriefVanType(BriefType type, Client client, Class<B> briefClass)
 	{
-		var specification = heeftOngegeneerdeBrieven(client, briefClass).and(heeftBriefType(type));
+		var specification = ClientBriefSpecification.<B> heeftTeGenererenBrieven(type, client);
 		var repository = briefFactory.getBriefTypeRepository(briefClass);
 		return repository.exists(specification);
 	}
@@ -343,11 +359,11 @@ public class BaseBriefServiceImpl implements BaseBriefService
 			{
 				document.getDocumentCatalog().setOpenAction(javaScript);
 				document.save(outputStream);
-				LOG.info("Mergedocument(id = " + mergedBrieven.getId() + ") gegenereerd en klaar!");
+				LOG.info("Mergedocument(id = {}) gegenereerd en klaar!", mergedBrieven.getId());
 			}
 			finally
 			{
-				copy.delete();
+				verwijderBestandAlsMogelijk(copy);
 			}
 		}
 		catch (IOException e)
@@ -364,30 +380,30 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	{
 		try
 		{
-			MB mergedBrieven = briefGenerator.getMergedBrieven();
-			IDocument documentDefinitie = briefGenerator.getDocumentDefinitie();
-			UploadDocument document = documentDefinitie.getDocument();
+			var automatischAfdrukkenViaParagon = briefGenerator.isAutomatischAfdrukkenViaParagon();
+			var mergedBrieven = briefGenerator.getMergedBrieven();
+			var documentDefinitie = briefGenerator.getDocumentDefinitie();
+			var templateDocument = documentDefinitie.getDocument();
 			Document chunkDocument = null;
-			boolean brievenAanwezig = false;
-			List<Brief> succesvolleBrieven = new ArrayList<>();
-			for (B brief : chunkItems)
+			var brievenAanwezig = false;
+			var succesvolleBrieven = new ArrayList<Brief>();
+			for (var brief : chunkItems)
 			{
 				try
 				{
-
-					Client client = getClientFromBrief(brief);
+					var client = getClientFromBrief(brief);
 					if (client != null && !AdresUtil.isVolledigAdresVoorInpakcentrum(client))
 					{
-						Adres clientAdres = AdresUtil.getAdres(client.getPersoon(), currentDateSupplier.getLocalDate());
-						String onvolledigAdresMelding = "De cliënt heeft een onvolledig adres, dit is geconstateerd bij het aanmaken van: " + brief.getBriefType()
+						var clientAdres = AdresUtil.getAdres(client.getPersoon(), currentDateSupplier.getLocalDate());
+						var onvolledigAdresMelding = "De cliënt heeft een onvolledig adres, dit is geconstateerd bij het aanmaken van: " + brief.getBriefType()
 							+ ". De volgende gegevens ontbreken: " + AdresUtil.bepaalMissendeAdresgegevensString(clientAdres) + ".";
-						int dagen = simplePreferenceService.getInteger(PreferenceKey.INTERNAL_HERINNERINGSPERIODE_LOGREGEL_ONVOLLEDIG_ADRES.name());
+						var dagen = preferenceService.getInteger(PreferenceKey.INTERNAL_HERINNERINGSPERIODE_LOGREGEL_ONVOLLEDIG_ADRES).orElse(0);
 						if (logService.heeftGeenBestaandeLogregelBinnenPeriode(List.of(briefGenerator.getOnvolledigAdresLogGebeurtenis()), client.getPersoon().getBsn(),
 							onvolledigAdresMelding, dagen))
 						{
-							List<Organisatie> organisaties = new ArrayList<>();
-							organisaties.add(hibernateService.loadAll(Rivm.class).get(0));
-							if (mergedBrieven.getScreeningOrganisatie() != null)
+							var organisaties = new ArrayList<Organisatie>();
+							organisaties.add(hibernateService.loadAll(Rivm.class).getFirst());
+							if (mergedBrieven != null && mergedBrieven.getScreeningOrganisatie() != null)
 							{
 								organisaties.add(mergedBrieven.getScreeningOrganisatie());
 							}
@@ -397,46 +413,37 @@ public class BaseBriefServiceImpl implements BaseBriefService
 					}
 					else
 					{
-						chunkDocument = appendDocument(document, brief, chunkDocument, briefGenerator);
+						if (automatischAfdrukkenViaParagon)
+						{
+							maakBriefAfdrukOpdrachtVoorParagon(brief, templateDocument, documentDefinitie, briefGenerator);
+						}
+						else
+						{
+							chunkDocument = appendDocument(templateDocument, brief, chunkDocument, briefGenerator);
 
-						succesvolleBrieven.add(brief);
-						setBriefGegenereerdInfo(brief, documentDefinitie);
-						brievenAanwezig = true;
+							succesvolleBrieven.add(brief);
+							setBriefGegenereerdInfo(brief, documentDefinitie);
+							brievenAanwezig = true;
+						}
 					}
 				}
 				catch (Exception e)
 				{
 					LOG.error("Error bij aanmaken brief (brieftype: {}, briefId: {})", brief.getBriefType(), brief.getId(), e);
-					Client client = getClientFromBrief(brief);
+					var client = getClientFromBrief(brief);
 					var dashboardOrganisaties = new ArrayList<Organisatie>();
-					if (mergedBrieven.getScreeningOrganisatie() != null)
+					if (mergedBrieven != null && mergedBrieven.getScreeningOrganisatie() != null)
 					{
 						dashboardOrganisaties.add(mergedBrieven.getScreeningOrganisatie());
 					}
-					String melding = "Door technische reden kon de brief (brieftype: " + brief.getBriefType() + ") niet worden gegenereerd.";
+					var melding = "Door technische reden kon de brief (brieftype: " + brief.getBriefType() + ") niet worden gegenereerd.";
 
 					logService.logGebeurtenis(briefGenerator.getMergeProbleemLogGebeurtenis(), dashboardOrganisaties, client, melding, briefGenerator.getBevolkingsonderzoeken());
-					continue;
 				}
 			}
-			if (chunkDocument != null && brievenAanwezig)
+			if (!automatischAfdrukkenViaParagon && chunkDocument != null && brievenAanwezig)
 			{
-				File nieuwePdfMetMergedBrievenVanChunk = File.createTempFile("mergedBrieven", "pdf");
-				try (FileOutputStream output = new FileOutputStream(nieuwePdfMetMergedBrievenVanChunk))
-				{
-					chunkDocument.save(output, asposeService.getPdfSaveOptions());
-					chunkDocument.setWarningCallback(warning -> LOG.warn("Warning converting to pdf: " + warning.getDescription()));
-				}
-
-				setOrAppendPdf(mergedBrieven, nieuwePdfMetMergedBrievenVanChunk, briefGenerator);
-
-				mergedBrieven = briefGenerator.getMergedBrieven();
-				for (Brief brief : succesvolleBrieven)
-				{
-					brief.setMergedBrieven(mergedBrieven);
-					mergedBrieven.setAantalBrieven(mergedBrieven.getAantalBrieven() + 1);
-				}
-				briefGenerator.verhoogAantalBrievenVanScreeningOrganisatie(mergedBrieven);
+				maakPdfEnWerkInfoBij(briefGenerator, chunkDocument, mergedBrieven, succesvolleBrieven);
 			}
 			hibernateService.saveOrUpdateAll(chunkItems);
 		}
@@ -445,6 +452,111 @@ public class BaseBriefServiceImpl implements BaseBriefService
 			briefGenerator.crashMelding("Er is een onbekende fout opgetreden, neem contact op met de helpdesk.", e);
 			throw e;
 		}
+	}
+
+	private <B extends Brief, MB extends MergedBrieven<?>> File maakPdfEnWerkInfoBij(IBrievenGeneratorHelper<B, MB> briefGenerator, Document mergedDocument, MB mergedBrieven,
+		List<Brief> succesvolleBrieven) throws Exception
+	{
+		var pdfBestand = File.createTempFile("mergedBrieven", ".pdf");
+		try (var output = new FileOutputStream(pdfBestand))
+		{
+			mergedDocument.save(output, asposeService.getPdfSaveOptions());
+			mergedDocument.setWarningCallback(warning -> LOG.warn("Warning converting to pdf: {}", warning.getDescription()));
+		}
+
+		if (mergedBrieven != null)
+		{
+			setOrAppendPdf(mergedBrieven, pdfBestand, briefGenerator);
+
+			for (Brief brief : succesvolleBrieven)
+			{
+				brief.setMergedBrieven(mergedBrieven);
+				mergedBrieven.setAantalBrieven(mergedBrieven.getAantalBrieven() + 1);
+			}
+		}
+		var screeningOrganisatieId = getScreeningOrganisatieId(mergedBrieven);
+		briefGenerator.verhoogAantalBrievenVanScreeningOrganisatie(screeningOrganisatieId, succesvolleBrieven.size());
+
+		return pdfBestand;
+	}
+
+	@Override
+	public void pdfBestandOpslaanVoorVersturen(File pdfBestand, String bestandsNaam) throws IOException
+	{
+		fileService.save(getVolledigDocumentUitwisselingPath(bestandsNaam), pdfBestand);
+	}
+
+	@Override
+	public InputStream getFileStreamVanPdfBestand(BriefafdrukopdrachtDto.Resource resource) throws IOException
+	{
+		return fileService.loadAsStream(getVolledigDocumentUitwisselingPath(resource.getPath()));
+	}
+
+	@Override
+	public void verwijderPdfBestand(BriefafdrukopdrachtDto.Resource resource)
+	{
+		fileService.delete(getVolledigDocumentUitwisselingPath(resource.getPath()));
+	}
+
+	private @NonNull String getVolledigDocumentUitwisselingPath(String fileNaam)
+	{
+		return Path.of(locatieFilestore, FileStoreLocation.DOCUMENT_UITWISSELING.getPath(), fileNaam).toString();
+	}
+
+	private <MB extends MergedBrieven<?>> Long getScreeningOrganisatieId(MB mergedBrieven)
+	{
+		if (mergedBrieven != null && mergedBrieven.getScreeningOrganisatie() != null)
+		{
+			return mergedBrieven.getScreeningOrganisatie().getId();
+		}
+		return organisatieService.getLandelijkeScreeningsorganisatie().getId();
+	}
+
+	@Override
+	public boolean isAutomatischAfdrukkenParagonActief()
+	{
+		var startAutomatischAfdrukkenParagon = preferenceService.getString(PreferenceKey.START_AUTOMATISCH_AFDRUKKEN_PARAGON).orElse("20261201");
+		var startDatum = DateUtil.parseLocalDateForPattern(startAutomatischAfdrukkenParagon, Constants.DATE_FORMAT_YYYYMMDD);
+		return !currentDateSupplier.getLocalDate().isBefore(startDatum);
+	}
+
+	private <B extends Brief, MB extends MergedBrieven<?>> void maakBriefAfdrukOpdrachtVoorParagon(B briefOpdracht, UploadDocument templateDocument,
+		IDocument documentDefinitie, IBrievenGeneratorHelper<B, MB> briefGenerator) throws Exception
+	{
+		var mergedDocument = appendDocument(templateDocument, briefOpdracht, null, briefGenerator);
+		File pdfBestand = null;
+		try
+		{
+			pdfBestand = maakPdfEnWerkInfoBij(briefGenerator, mergedDocument, null, List.of(briefOpdracht));
+			var bestandsNaam = UUID.randomUUID().toString();
+			pdfBestandOpslaanVoorVersturen(pdfBestand, bestandsNaam);
+			setBriefGegenereerdInfo(briefOpdracht, documentDefinitie);
+			maakBriefafdrukopdrachtMessage(briefOpdracht, bestandsNaam, briefGenerator);
+		}
+		catch (Exception e)
+		{
+			if (pdfBestand != null && !pdfBestand.delete())
+			{
+				LOG.warn("Tijdelijk PDF-bestand {} kon niet verwijderd worden", pdfBestand.getAbsolutePath());
+			}
+			throw e;
+		}
+	}
+
+	<B extends Brief> void maakBriefafdrukopdrachtMessage(B brief, String bestandsNaam, IBrievenGeneratorHelper<B, ?> briefGenerator)
+	{
+		var batchApplicationType = briefGenerator.getBatchApplicationType();
+		if (batchApplicationType == null)
+		{
+			throw new IllegalArgumentException(
+				"BatchApplicationType is null voor brief " + brief.getId() + ":" + Hibernate.getClass(brief) + ", er wordt geen BRIEF_AFDRUKKEN message aangemaakt");
+		}
+
+		var briefafdrukopdrachtDto = briefGenerator.maakBriefafdrukopdrachtVoorGegenereerdeBrief(brief, currentDateSupplier.getLocalDateTime());
+		briefafdrukopdrachtDto.setResources(List.of(BriefafdrukopdrachtDto.Resource.builder().order(1).path(bestandsNaam).build()));
+		var message = messageService.queueMessage(MessageType.BRIEF_AFDRUKKEN, briefafdrukopdrachtDto, batchApplicationType.name());
+		LOG.info("Briefafdrukopdracht message id '{}' aangemaakt voor brief id '{}' in {}", message.getId(), briefafdrukopdrachtDto.getEntityId(),
+			briefafdrukopdrachtDto.getEntityType());
 	}
 
 	@Override
@@ -468,52 +580,34 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	private <B extends Brief, MB extends MergedBrieven<?>> Document appendDocument(UploadDocument briefTemplateDocument, B brief, Document chunkDocument,
 		IBrievenGeneratorHelper<B, MB> briefGenerator) throws Exception
 	{
-		FileOutputStream output = null;
-		try
+		File briefTemplate = uploadDocumentService.load(briefTemplateDocument);
+		byte[] briefTemplateBytes = FileUtils.readFileToByteArray(briefTemplate);
+
+		Client client = getClientFromBrief(brief);
+		MailMergeContext context = getMailMergeContext(brief, client);
+		briefGenerator.additionalMergedContext(context);
+
+		Document document;
+		BaseDocumentCreator creator = briefGenerator.getDocumentCreator(context);
+		if (creator == null)
 		{
-			File briefTemplate = uploadDocumentService.load(briefTemplateDocument);
-			byte[] briefTemplateBytes = FileUtils.readFileToByteArray(briefTemplate);
-
-			Client client = getClientFromBrief(brief);
-			MailMergeContext context = getMailMergeContext(brief, client);
-			briefGenerator.additionalMergedContext(context);
-
-			Document document;
-			BaseDocumentCreator creator = briefGenerator.getDocumentCreator(context);
-			if (creator == null)
-			{
-				document = asposeService.processDocument(briefTemplateBytes, context);
-			}
-			else
-			{
-				document = asposeService.processDocumentWithCreator(context, briefTemplate, creator, true);
-			}
-
-			if (chunkDocument == null)
-			{
-				chunkDocument = document;
-			}
-			else
-			{
-				chunkDocument.appendDocument(document, ImportFormatMode.USE_DESTINATION_STYLES);
-			}
-
-			briefGenerator.additionalActiesWithDocument(context, brief, chunkDocument);
+			document = asposeService.processDocument(briefTemplateBytes, context);
 		}
-		finally
+		else
 		{
-			if (output != null)
-			{
-				try
-				{
-					output.close();
-				}
-				catch (IOException e)
-				{
-					briefGenerator.crashMelding("Output stream kon niet worden geclosed!", e);
-				}
-			}
+			document = asposeService.processDocumentWithCreator(context, briefTemplate, creator, true);
 		}
+
+		if (chunkDocument == null)
+		{
+			chunkDocument = document;
+		}
+		else
+		{
+			chunkDocument.appendDocument(document, ImportFormatMode.USE_DESTINATION_STYLES);
+		}
+
+		briefGenerator.additionalActiesWithDocument(context, brief, chunkDocument);
 		return chunkDocument;
 	}
 
@@ -536,14 +630,20 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	private <MB extends MergedBrieven<?>, B extends Brief> void setPdfInMergedBrievenEntiteit(MB mergedBrieven, File nieuwPdfMetMergedBrieven,
 		IBrievenGeneratorHelper<B, MB> briefGenerator) throws IOException
 	{
+		setPdfInMergedBrievenEntiteit(mergedBrieven, nieuwPdfMetMergedBrieven, briefGenerator, true);
+	}
+
+	private <MB extends MergedBrieven<?>, B extends Brief> void setPdfInMergedBrievenEntiteit(MB mergedBrieven, File nieuwPdfMetMergedBrieven,
+		IBrievenGeneratorHelper<B, MB> briefGenerator, boolean verwijderTmpFile) throws IOException
+	{
 		LOG.info(briefGenerator.getTechnischeLoggingMergedBriefAanmaken(mergedBrieven));
-		UploadDocument mergedBrievenPdfContainer = new UploadDocument();
+		var mergedBrievenPdfContainer = new UploadDocument();
 		mergedBrievenPdfContainer.setActief(Boolean.TRUE);
 		mergedBrievenPdfContainer.setContentType("application/pdf");
 		mergedBrievenPdfContainer.setNaam(briefGenerator.getMergedBrievenNaam(mergedBrieven));
 		mergedBrievenPdfContainer.setFile(nieuwPdfMetMergedBrieven);
 
-		uploadDocumentService.saveOrUpdate(mergedBrievenPdfContainer, briefGenerator.getFileStoreLocation(), briefGenerator.getFileStoreId());
+		uploadDocumentService.saveOrUpdate(mergedBrievenPdfContainer, briefGenerator.getFileStoreLocation(), briefGenerator.getFileStoreId(), verwijderTmpFile);
 		mergedBrieven.setMergedBrieven(mergedBrievenPdfContainer);
 		LOG.info("Mergedocument(id = " + mergedBrieven.getId() + ") nieuw aangemaakt op filestore: " + mergedBrievenPdfContainer.getPath());
 	}
@@ -556,7 +656,7 @@ public class BaseBriefServiceImpl implements BaseBriefService
 		File huidigePdfMetMergedBrieven = uploadDocumentService.load(huidigePdfMetMergedBrievenContainer);
 		Integer maxMergedBrievenPdfSizeMB = organisatieParameterService.getOrganisatieParameter(mergedBrieven.getScreeningOrganisatie(),
 			OrganisatieParameterKey.MAX_MERGED_BRIEVEN_PDF_SIZE_MB);
-		if (maxMergedBrievenPdfSizeMB != null && huidigePdfMetMergedBrieven.length() + nieuwPdfMetMergedBrieven.length() > maxMergedBrievenPdfSizeMB * BYTES_TO_MBS)
+		if (maxMergedBrievenPdfSizeMB != null && huidigePdfMetMergedBrieven.length() + nieuwPdfMetMergedBrieven.length() > (long) maxMergedBrievenPdfSizeMB * BYTES_TO_MBS)
 		{
 			MB createdMergedBrieven = briefGenerator.createMergedBrieven(mergedBrieven.getCreatieDatum());
 			if (createdMergedBrieven != null)
@@ -586,8 +686,16 @@ public class BaseBriefServiceImpl implements BaseBriefService
 			pdfMergerUtility.setDestinationStream(outputStream);
 			pdfMergerUtility.mergeDocuments(IOUtils.createMemoryOnlyStreamCache());
 
-			copyHuidigePdfMetMergedBrieven.delete();
-			nieuwPdfMetMergedBrieven.delete();
+			verwijderBestandAlsMogelijk(copyHuidigePdfMetMergedBrieven);
+			verwijderBestandAlsMogelijk(nieuwPdfMetMergedBrieven);
+		}
+	}
+
+	private void verwijderBestandAlsMogelijk(File bestand)
+	{
+		if (bestand != null && !bestand.delete())
+		{
+			LOG.warn("Bestand {} kon niet verwijderd worden", bestand.getAbsolutePath());
 		}
 	}
 
@@ -790,11 +898,37 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	}
 
 	@Override
+	@Transactional
+	public <MB extends MergedBrieven<?>> void verwijderMergedBrieven(MB mergedBrieven)
+	{
+		mergedBrieven.setVerwijderd(true);
+		var uploadDocument = mergedBrieven.getMergedBrieven();
+		if (uploadDocument != null)
+		{
+			uploadDocumentService.delete(uploadDocument);
+			mergedBrieven.setMergedBrieven(null);
+		}
+	}
+
+	@Override
 	@Transactional  
 	public boolean isOverbruggingssituatieParagonStarted()
 	{
 		var startOvergangssituatieParagon = preferenceService.getString(PreferenceKey.START_OVERBRUGGINGSSITUATIE_PARAGON).orElse("20260701");
 		var startDatum = DateUtil.parseLocalDateForPattern(startOvergangssituatieParagon, Constants.DATE_FORMAT_YYYYMMDD);
 		return !currentDateSupplier.getLocalDate().isBefore(startDatum);
+	}
+
+	@Override
+	public File maakPdfVanUploadDocument(UploadDocument document) throws Exception
+	{
+		var file = uploadDocumentService.load(document);
+		var doc = asposeService.maakDocument(file);
+		if (doc != null)
+		{
+			return genereerPdf(doc, "brieftemplate_inzien", false);
+		}
+		LOG.error("Aspose document kan niet aangemaakt worden voor upload document id: '{}'", document.getId());
+		return null;
 	}
 }

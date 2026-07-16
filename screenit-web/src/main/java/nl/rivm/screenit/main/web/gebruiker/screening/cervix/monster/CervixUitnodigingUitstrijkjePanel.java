@@ -31,7 +31,6 @@ import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.CervixBarcodeAfdrukkenBasePage;
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
@@ -64,16 +63,12 @@ public abstract class CervixUitnodigingUitstrijkjePanel extends CervixUitnodigin
 
 	private ScreenitDropdown<CervixUitstrijkjeStatus> uitstrijkjeStatusDropdown = null;
 
-	private Date verzenddatumUitnodiging;
+	private final Date verzenddatumUitnodiging;
 
 	public CervixUitnodigingUitstrijkjePanel(CervixBarcodeAfdrukkenBasePage parentPage, String id, CervixUitstrijkje uitstrijkje)
 	{
 		super(parentPage, id, uitstrijkje);
-		MergedBrieven<?> mergedBrieven = BriefUtil.getMergedBrieven(uitstrijkje.getUitnodiging().getBrief());
-		if (mergedBrieven != null)
-		{
-			verzenddatumUitnodiging = mergedBrieven.getPrintDatum();
-		}
+		verzenddatumUitnodiging = BriefUtil.getVerstuurdVoorAfdrukkenMoment(uitstrijkje.getUitnodiging().getBrief());
 	}
 
 	@Override

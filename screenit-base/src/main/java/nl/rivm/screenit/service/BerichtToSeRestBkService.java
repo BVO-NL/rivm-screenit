@@ -36,8 +36,6 @@ public interface BerichtToSeRestBkService
 
 	void notificeerScreeningsEenheidVerversenDaglijst(MammaScreeningsEenheid se, Set<LocalDate> updateDatums);
 
-	void dbCleanupVoorIedereSe();
-
 	void statusAanvragenVoorIedereSe();
 
 }

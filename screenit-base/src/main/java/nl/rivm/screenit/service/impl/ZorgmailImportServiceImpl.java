@@ -33,6 +33,7 @@ import nl.rivm.screenit.model.EnovationHuisarts;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.HuisartsGeslacht;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.EnovationHuisartsService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.ZorgmailImportMapping;
@@ -40,7 +41,6 @@ import nl.rivm.screenit.service.ZorgmailImportService;
 import nl.rivm.screenit.service.ZorgmailImportVoortgang;
 import nl.topicuszorg.gba.model.Land;
 import nl.topicuszorg.organisatie.model.Adres;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;

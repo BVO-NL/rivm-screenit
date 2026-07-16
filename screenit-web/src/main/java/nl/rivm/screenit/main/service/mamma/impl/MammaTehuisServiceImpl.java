@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.dao.mamma.MammaBaseTehuisClientenDao;
@@ -36,6 +37,7 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.IDocument;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.enums.BatchApplicationType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
@@ -304,21 +306,27 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 	{
 		var nu = dateSupplier.getDate();
 
-		var mergedBrieven = new MammaMergedBrieven();
+		MammaMergedBrieven mergedBrieven = null;
 		var overbruggingssituatieParagonStarted = briefService.isOverbruggingssituatieParagonStarted();
-		mergedBrieven.setScreeningOrganisatie(
+		if (!briefService.isAutomatischAfdrukkenParagonActief())
+		{
+			mergedBrieven = new MammaMergedBrieven();
+			mergedBrieven.setScreeningOrganisatie(
 			overbruggingssituatieParagonStarted ? organisatieService.getLandelijkeScreeningsorganisatie() : tehuis.getStandplaats().getRegio());
-		mergedBrieven.setCreatieDatum(nu);
-		mergedBrieven.setBriefType(briefType);
-		mergedBrieven.setActief(false);
-		mergedBrieven.setAantalBrieven(0);
-		mergedBrieven.setVrijgegeven(true);
-		hibernateService.saveOrUpdate(mergedBrieven);
-
+			mergedBrieven.setCreatieDatum(nu);
+			mergedBrieven.setBriefType(briefType);
+			mergedBrieven.setActief(false);
+			mergedBrieven.setAantalBrieven(0);
+			mergedBrieven.setVrijgegeven(true);
+			hibernateService.saveOrUpdate(mergedBrieven);
+		}
 		try
 		{
-			briefService.createOrAddMergedBrieven(uitnodigingen, new TehuisBrievenGeneratorHelper(tehuis, mergedBrieven, overbruggingssituatieParagonStarted));
-			briefService.completePdf(mergedBrieven);
+			briefService.createOrAddMergedBrieven(uitnodigingen, new TehuisBrievenGeneratorHelper(tehuis, mergedBrieven, briefType, overbruggingssituatieParagonStarted));
+			if (mergedBrieven != null)
+			{
+				briefService.completePdf(mergedBrieven);
+			}
 			aantalClienten.set(uitnodigingen.size());
 		}
 		catch (Exception e)
@@ -334,12 +342,16 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 
 		private final MammaMergedBrieven mergedBrieven;
 
+		@Getter
+		private final BriefType briefType;
+
 		private final boolean overbruggingssituatieParagonStarted;
 
-		TehuisBrievenGeneratorHelper(MammaTehuis tehuis, MammaMergedBrieven mergedBrieven, boolean overbruggingssituatieParagonStarted)
+		TehuisBrievenGeneratorHelper(MammaTehuis tehuis, MammaMergedBrieven mergedBrieven, BriefType briefType, boolean overbruggingssituatieParagonStarted)
 		{
 			this.tehuis = tehuis;
 			this.mergedBrieven = mergedBrieven;
+			this.briefType = briefType;
 			this.overbruggingssituatieParagonStarted = overbruggingssituatieParagonStarted;
 		}
 
@@ -374,8 +386,15 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 		}
 
 		@Override
-		public void verhoogAantalBrievenVanScreeningOrganisatie(MammaMergedBrieven mergedBrieven)
+		public BatchApplicationType getBatchApplicationType()
 		{
+			return BatchApplicationType.MAMMA;
+		}
+
+		@Override
+		public boolean isAutomatischAfdrukkenViaParagon()
+		{
+			return briefService.isAutomatischAfdrukkenParagonActief();
 		}
 
 		@Override
@@ -412,7 +431,7 @@ public class MammaTehuisServiceImpl implements MammaTehuisService
 		@Override
 		public IDocument getDocumentDefinitie()
 		{
-			return briefService.getNieuwsteBriefDefinitie(mergedBrieven.getBriefType());
+			return briefService.getNieuwsteBriefDefinitie(briefType);
 		}
 
 		@Override

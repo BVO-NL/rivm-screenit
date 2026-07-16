@@ -42,7 +42,6 @@ import lombok.Setter;
 import nl.rivm.screenit.model.EnovationHuisarts;
 import nl.rivm.screenit.model.ScreeningRonde;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -67,7 +66,6 @@ public class ColonScreeningRonde extends ScreeningRonde<ColonDossier, ColonBrief
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	@Audited(targetAuditMode = NOT_AUDITED)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	private EnovationHuisarts huisarts;
 
 	@Temporal(TemporalType.TIMESTAMP)

@@ -33,7 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import nl.rivm.screenit.Constants;
-import nl.topicuszorg.csv2xls.services.Csv2xlsService;
+import nl.rivm.screenit.main.csv2xls.services.Csv2xlsService;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;

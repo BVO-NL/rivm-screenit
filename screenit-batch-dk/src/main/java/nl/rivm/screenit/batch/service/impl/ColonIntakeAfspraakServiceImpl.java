@@ -55,6 +55,7 @@ import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.LoggingZoekCriteria;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
@@ -66,7 +67,6 @@ import nl.rivm.screenit.specification.colon.ColonFitRegistratieSpecification;
 import nl.rivm.screenit.specification.colon.ColonScreeningRondeSpecification;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;

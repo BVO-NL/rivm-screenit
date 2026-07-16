@@ -39,11 +39,11 @@ import nl.rivm.screenit.model.mamma.MammaDossier_;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde_;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.HibernateObjectSpecification;
 import nl.rivm.screenit.specification.algemeen.ScreeningRondeSpecification;
 import nl.rivm.screenit.specification.mamma.MammaAfspraakSpecification;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;

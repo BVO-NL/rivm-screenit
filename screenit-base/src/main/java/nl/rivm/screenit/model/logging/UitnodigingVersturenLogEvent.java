@@ -30,9 +30,6 @@ import lombok.Setter;
 
 import nl.rivm.screenit.model.verwerkingverslag.colon.ColonSelectieRapportage;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 @Entity
 @Table(schema = "gedeeld")
 @Getter
@@ -40,6 +37,5 @@ import org.hibernate.annotations.CascadeType;
 public class UitnodigingVersturenLogEvent extends LogEvent
 {
 	@OneToOne(cascade = jakarta.persistence.CascadeType.REMOVE, optional = false)
-	@Cascade(CascadeType.DELETE)
 	private ColonSelectieRapportage rapportage;
 }

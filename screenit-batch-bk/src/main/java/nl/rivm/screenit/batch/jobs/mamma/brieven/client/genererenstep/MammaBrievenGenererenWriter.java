@@ -22,6 +22,7 @@ package nl.rivm.screenit.batch.jobs.mamma.brieven.client.genererenstep;
  */
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
@@ -38,6 +39,7 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaBrief;
 import nl.rivm.screenit.model.mamma.MammaMergedBrieven;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
+import nl.rivm.screenit.model.messagequeue.dto.BriefafdrukopdrachtDto;
 import nl.rivm.screenit.service.AsposeService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.UploadDocumentService;
@@ -50,6 +52,10 @@ import org.springframework.stereotype.Component;
 
 import com.aspose.words.Document;
 import com.aspose.words.ImportFormatMode;
+
+import static nl.rivm.screenit.batch.jobs.mamma.brieven.client.genererenstep.MammaBrievenGenererenPartitioner.KEY_EERSTE_RONDE;
+import static nl.rivm.screenit.batch.jobs.mamma.brieven.client.genererenstep.MammaBrievenGenererenPartitioner.KEY_MAMMASTANDPLAATSID;
+import static nl.rivm.screenit.batch.jobs.mamma.brieven.client.genererenstep.MammaBrievenGenererenPartitioner.KEY_TIJDELIJK;
 
 @Component
 @AllArgsConstructor
@@ -66,30 +72,45 @@ public class MammaBrievenGenererenWriter extends AbstractBrievenGenererenWriter<
 	@Override
 	protected MammaMergedBrieven createConcreteMergedBrieven(Date aangemaaktOp)
 	{
-		var executionContext = getStepExecutionContext();
-		var briefType = BriefType.valueOf(executionContext.getString(MammaBrievenGenererenPartitioner.KEY_BRIEFTYPE));
-
 		var mergedBrieven = new MammaMergedBrieven();
 		mergedBrieven.setScreeningOrganisatie(getScreeningOrganisatie());
 		mergedBrieven.setCreatieDatum(aangemaaktOp);
-		mergedBrieven.setBriefType(briefType);
+		mergedBrieven.setBriefType(getBriefType());
 
 		return mergedBrieven;
 	}
 
 	@Override
+	public BriefafdrukopdrachtDto maakBriefafdrukopdrachtVoorGegenereerdeBrief(MammaBrief brief, LocalDateTime timestamp)
+	{
+		var briefafdrukopdrachtDto = super.maakBriefafdrukopdrachtVoorGegenereerdeBrief(brief, timestamp);
+		var eersteRonde = (Boolean) getStepExecutionContext().get(KEY_EERSTE_RONDE);
+		var codeAddendum = "";
+		if (getStandplaatsLocatieBijlage() != null)
+		{
+			codeAddendum = "MF";
+		}
+		if (Boolean.TRUE.equals(eersteRonde))
+		{
+			codeAddendum += "R1";
+		}
+		briefafdrukopdrachtDto.setCodeAddendum(codeAddendum);
+		return briefafdrukopdrachtDto;
+	}
+
+	@Override
 	public String getMergedBrievenNaam(MammaMergedBrieven brieven)
 	{
-		var standplaatsId = (Long) getStepExecutionContext().get(MammaBrievenGenererenPartitioner.KEY_MAMMASTANDPLAATSID);
-		var tijdelijk = (Boolean) getStepExecutionContext().get(MammaBrievenGenererenPartitioner.KEY_TIJDELIJK);
-		var eersteRonde = (Boolean) getStepExecutionContext().get(MammaBrievenGenererenPartitioner.KEY_EERSTE_RONDE);
+		var standplaatsId = (Long) getStepExecutionContext().get(KEY_MAMMASTANDPLAATSID);
+		var tijdelijk = (Boolean) getStepExecutionContext().get(KEY_TIJDELIJK);
+		var eersteRonde = (Boolean) getStepExecutionContext().get(KEY_EERSTE_RONDE);
 
 		var naam = "";
 		var dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm");
 		if (isOverbruggingssituatieParagonStarted && brieven.getBriefType() != null)
 		{
 			naam += brieven.getBriefType().getBriefCode();
-			if (Boolean.TRUE.equals(tijdelijk) || standplaatsId != null)
+			if (getStandplaatsLocatieBijlage() != null)
 			{
 				naam += "MF";
 			}
@@ -116,7 +137,7 @@ public class MammaBrievenGenererenWriter extends AbstractBrievenGenererenWriter<
 		}
 		if (Boolean.TRUE.equals(tijdelijk))
 		{
-			naam += "tijdelijk-";
+			naam += KEY_TIJDELIJK + "-";
 		}
 		if (brieven.getBriefType() != null)
 		{
@@ -124,7 +145,7 @@ public class MammaBrievenGenererenWriter extends AbstractBrievenGenererenWriter<
 		}
 		if (Boolean.TRUE.equals(eersteRonde))
 		{
-			naam += MammaBrievenGenererenPartitioner.KEY_EERSTE_RONDE;
+			naam += KEY_EERSTE_RONDE;
 		}
 		naam = addPdfCounter(naam);
 
@@ -139,14 +160,29 @@ public class MammaBrievenGenererenWriter extends AbstractBrievenGenererenWriter<
 
 	private void mergeBijlagen(MailMergeContext context, Document chunkDocument) throws Exception
 	{
+		var standplaatsLocatieBijlage = getStandplaatsLocatieBijlage();
+
+		if (standplaatsLocatieBijlage != null)
+		{
+			var bijlage = uploadDocumentService.load(standplaatsLocatieBijlage);
+			var bijlageBytes = FileUtils.readFileToByteArray(bijlage);
+			var bijlageDocument = asposeService.processDocument(bijlageBytes, context);
+			chunkDocument.getLastSection().getHeadersFooters().linkToPrevious(false);
+			chunkDocument.appendDocument(bijlageDocument, ImportFormatMode.KEEP_SOURCE_FORMATTING);
+		}
+	}
+
+	private UploadDocument getStandplaatsLocatieBijlage()
+	{
 		var briefTypeApart = (Boolean) getStepExecutionContext().get(MammaBrievenGenererenPartitioner.KEY_BRIEFTYPEAPART);
-		var standplaatsId = (Long) getStepExecutionContext().get(MammaBrievenGenererenPartitioner.KEY_MAMMASTANDPLAATSID);
+		var standplaatsId = (Long) getStepExecutionContext().get(KEY_MAMMASTANDPLAATSID);
+		UploadDocument standplaatsLocatieBijlage = null;
 
 		if (Boolean.TRUE.equals(briefTypeApart) && standplaatsId != null)
 		{
-			var tijdelijk = (Boolean) getStepExecutionContext().get(MammaBrievenGenererenPartitioner.KEY_TIJDELIJK);
+			var tijdelijk = (Boolean) getStepExecutionContext().get(KEY_TIJDELIJK);
 			var standplaats = getHibernateService().load(MammaStandplaats.class, standplaatsId);
-			UploadDocument standplaatsLocatieBijlage;
+
 			if (Boolean.TRUE.equals(tijdelijk))
 			{
 				standplaatsLocatieBijlage = standplaats.getTijdelijkeLocatie().getStandplaatsLocatieBijlage();
@@ -155,16 +191,8 @@ public class MammaBrievenGenererenWriter extends AbstractBrievenGenererenWriter<
 			{
 				standplaatsLocatieBijlage = standplaats.getLocatie().getStandplaatsLocatieBijlage();
 			}
-
-			if (standplaatsLocatieBijlage != null && standplaatsLocatieBijlage.getActief())
-			{
-				var bijlage = uploadDocumentService.load(standplaatsLocatieBijlage);
-				var bijlageBytes = FileUtils.readFileToByteArray(bijlage);
-				var bijlageDocument = asposeService.processDocument(bijlageBytes, context);
-				chunkDocument.getLastSection().getHeadersFooters().linkToPrevious(false);
-				chunkDocument.appendDocument(bijlageDocument, ImportFormatMode.KEEP_SOURCE_FORMATTING);
-			}
 		}
+		return standplaatsLocatieBijlage != null && standplaatsLocatieBijlage.getActief() ? standplaatsLocatieBijlage : null;
 	}
 
 	@Override

@@ -32,8 +32,6 @@ import lombok.Setter;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -43,14 +41,12 @@ import org.hibernate.envers.Audited;
 @Setter
 public class ProjectClientAttribuut extends AbstractHibernateObject
 {
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	@ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	private ProjectAttribuut attribuut;
 
 	@Column(nullable = false)
 	private String value;
 
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
 	private ProjectClient projectClient;
 }

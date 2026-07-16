@@ -34,7 +34,6 @@ import nl.rivm.screenit.main.web.gebruiker.clienten.inzien.popup.DocumentVervang
 import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.DossierStatus;
-import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixAfmelding;
 import nl.rivm.screenit.model.cervix.enums.CervixAfmeldingReden;
@@ -179,10 +178,10 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 			{
 				if (brief.getBriefType().equals(BriefType.CERVIX_HEROVERWEGERS))
 				{
-					MergedBrieven<?> mergedBrieven = BriefUtil.getMergedBrieven(brief);
-					if (mergedBrieven != null)
+					var verstuurdVoorAfdrukkenMoment = BriefUtil.getVerstuurdVoorAfdrukkenMoment(brief);
+					if (verstuurdVoorAfdrukkenMoment != null)
 					{
-						return mergedBrieven.getPrintDatum();
+						return verstuurdVoorAfdrukkenMoment;
 					}
 				}
 			}
@@ -233,7 +232,7 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 				info(getString("info.brieftegenhouden"));
 				close(target);
 			}
-		}.setVisible(magTegenhouden && laatsteBrief != null && !BriefUtil.isTegengehouden(laatsteBrief) && BriefUtil.getMergedBrieven(laatsteBrief) == null));
+		}.setVisible(magTegenhouden && laatsteBrief != null && !BriefUtil.isTegengehouden(laatsteBrief) && !BriefUtil.isGegenereerd(laatsteBrief)));
 		add(new AjaxLink<Void>("doorvoeren")
 		{
 			@Override

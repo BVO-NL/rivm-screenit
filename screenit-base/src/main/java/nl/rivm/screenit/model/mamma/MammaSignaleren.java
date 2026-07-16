@@ -38,8 +38,6 @@ import lombok.Setter;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Setter
@@ -53,19 +51,15 @@ public class MammaSignaleren extends AbstractHibernateObject
 	private MammaOnderzoek onderzoek;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE, jakarta.persistence.CascadeType.REMOVE })
-	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaAnnotatieAfbeelding rechtsVerticaleDoorsnede;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE, jakarta.persistence.CascadeType.REMOVE })
-	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaAnnotatieAfbeelding linksVerticaleDoorsnede;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE, jakarta.persistence.CascadeType.REMOVE })
-	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaAnnotatieAfbeelding rechtsHorizontaleDoorsnede;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE, jakarta.persistence.CascadeType.REMOVE })
-	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaAnnotatieAfbeelding linksHorizontaleDoorsnede;
 
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)

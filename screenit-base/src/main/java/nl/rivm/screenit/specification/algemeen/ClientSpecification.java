@@ -44,13 +44,13 @@ import nl.rivm.screenit.model.colon.ColonFitRegistratie_;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.ColonUitnodiging_;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.RedenIntrekkenGbaIndicatie;
 import nl.rivm.screenit.model.mamma.MammaAfspraak_;
 import nl.rivm.screenit.model.mamma.MammaDossier_;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek_;
+import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde_;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.project.ProjectClient;
@@ -112,7 +112,7 @@ public class ClientSpecification
 		};
 	}
 
-	public static Specification<Client> heeftANummer(String anummer)
+	public static Specification<Client> filterOpANummer(String anummer)
 	{
 		return (r, q, cb) ->
 		{

@@ -28,22 +28,18 @@ import java.util.List;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import nl.rivm.screenit.model.MergedBrieven;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(schema = "cervix", name = "regio_merged_brieven", indexes = {
 	@Index(name = "IDX_MERGEDBRIEVENVERSTUURD", columnList = "geprint"),
 	@Index(name = "IDX_MERGEDBRIEVENCONTROLE", columnList = "controle"),
-	@Index(name = "IDX_MERGEDBRIEVENVERWIJDERD", columnList = "verwijderd")})
+	@Index(name = "IDX_MERGEDBRIEVENVERWIJDERD", columnList = "verwijderd") })
 @Audited
 public class CervixRegioMergedBrieven extends MergedBrieven<CervixRegioBrief>
 {
@@ -51,7 +47,6 @@ public class CervixRegioMergedBrieven extends MergedBrieven<CervixRegioBrief>
 	private static final long serialVersionUID = 1L;
 
 	@OneToMany(mappedBy = "mergedBrieven", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade(CascadeType.SAVE_UPDATE)
 	private List<CervixRegioBrief> brieven = new ArrayList<>();
 
 	@Override

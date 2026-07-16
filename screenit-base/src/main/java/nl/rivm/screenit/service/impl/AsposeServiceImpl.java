@@ -95,7 +95,7 @@ public class AsposeServiceImpl implements AsposeService
 	{
 		try
 		{
-			License license = new License();
+			var license = new License();
 			InputStream stream = new FileInputStream(asposeLicence);
 			license.setLicense(stream);
 		}
@@ -241,6 +241,21 @@ public class AsposeServiceImpl implements AsposeService
 		return mergeField;
 	}
 
+	@Override
+	public Document maakDocument(File file)
+	{
+		try
+		{
+			var stream = new FileInputStream(file);
+			return new Document(stream);
+		}
+		catch (Exception e)
+		{
+			LOG.error(e.getMessage());
+			return null;
+		}
+	}
+
 	private final class MailMergeImageCallback implements IFieldMergingCallback
 	{
 		private final MailMergeContext context;
@@ -328,14 +343,14 @@ public class AsposeServiceImpl implements AsposeService
 			{
 				message = Constants.LOCATIEID + "=" + message;
 
-				int size = 100;
+				var size = 100;
 				try
 				{
 					var hintMap = new EnumMap<>(EncodeHintType.class);
 					hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
 					var qrCodeWriter = new QRCodeWriter();
 					var byteMatrix = qrCodeWriter.encode(message, BarcodeFormat.QR_CODE, size, size, hintMap);
-					int crunchifyWidth = byteMatrix.getWidth();
+					var crunchifyWidth = byteMatrix.getWidth();
 					var image = new BufferedImage(crunchifyWidth, crunchifyWidth, BufferedImage.TYPE_INT_RGB);
 					image.createGraphics();
 
@@ -344,9 +359,9 @@ public class AsposeServiceImpl implements AsposeService
 					graphics.fillRect(0, 0, crunchifyWidth, crunchifyWidth);
 					graphics.setColor(Color.BLACK);
 
-					for (int x = 0; x < crunchifyWidth; x++)
+					for (var x = 0; x < crunchifyWidth; x++)
 					{
-						for (int y = 0; y < crunchifyWidth; y++)
+						for (var y = 0; y < crunchifyWidth; y++)
 						{
 							if (byteMatrix.get(x, y))
 							{

@@ -50,6 +50,7 @@ import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.logging.LogRegel;
 import nl.rivm.screenit.model.logging.LogRegel_;
 import nl.rivm.screenit.model.logging.LoggingZoekCriteria;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.DashboardLogRegelRepository;
 import nl.rivm.screenit.repository.algemeen.DashboardStatusRepository;
 import nl.rivm.screenit.service.DashboardService;
@@ -57,7 +58,6 @@ import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.MailService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

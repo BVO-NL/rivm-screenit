@@ -23,6 +23,9 @@ package nl.rivm.screenit.batch.repository;
 
 import java.util.List;
 
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+
 import nl.rivm.screenit.model.ClientBrief_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -36,19 +39,18 @@ import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde_;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.repository.BaseJpaRepository;
+import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.algemeen.ClientBriefSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.springframework.data.jpa.domain.Specification;
-
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
 
 import static jakarta.persistence.criteria.JoinType.LEFT;
 import static nl.rivm.screenit.specification.ExtendedSpecification.not;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.BriefSpecification.heeftBriefType;
 import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.heeftScreeningsOrganisatieId;
+import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.isClientGekoppeldAanEenScreeningOrganisatie;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.heeftIndicatie;
 import static nl.rivm.screenit.specification.algemeen.MammaBriefSpecification.clientHeeftAfspraak;
 import static nl.rivm.screenit.specification.algemeen.MammaBriefSpecification.laatsteUitnodigingJoin;
@@ -75,10 +77,19 @@ public interface MammaBriefRepository extends BaseJpaRepository<MammaBrief>
 
 	private static Specification<MammaBrief> moetGegenereerdWorden(ScreeningOrganisatie screeningOrganisatie, BriefType briefType)
 	{
+		ExtendedSpecification<MammaBrief> heeftScreeningsOrganisatie;
+		if (screeningOrganisatie == null)
+		{
+			heeftScreeningsOrganisatie = isClientGekoppeldAanEenScreeningOrganisatie();
+		}
+		else
+		{
+			heeftScreeningsOrganisatie = heeftScreeningsOrganisatieId(screeningOrganisatie.getId());
+		}
 		return ClientBriefSpecification.<MammaBrief> magGegenereerdWorden()
 			.and(heeftBriefType(briefType))
 			.and(heeftIndicatie().with(r -> join(r, ClientBrief_.client)))
-			.and(heeftScreeningsOrganisatieId(screeningOrganisatie.getId()));
+			.and(heeftScreeningsOrganisatie);
 	}
 
 	private static Join<MammaUitnodiging, MammaAfspraak> laatsteAfspraakJoin(From<?, ? extends MammaBrief> r)

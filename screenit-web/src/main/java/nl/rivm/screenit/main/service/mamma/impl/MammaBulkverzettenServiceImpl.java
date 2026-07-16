@@ -48,6 +48,7 @@ import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaBrief;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
 import nl.rivm.screenit.model.mamma.MammaDigitaalClientBericht;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BerichtToSeRestBkService;
 import nl.rivm.screenit.service.HibernateService;
@@ -62,7 +63,6 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.mamma.MammaMindervalideUtil;
 import nl.rivm.screenit.util.mamma.MammaPlanningUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningsEenheidUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;

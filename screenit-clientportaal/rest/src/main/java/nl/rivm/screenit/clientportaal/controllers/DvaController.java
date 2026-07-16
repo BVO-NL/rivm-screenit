@@ -21,8 +21,8 @@ package nl.rivm.screenit.clientportaal.controllers;
  * =========================LICENSE_END==================================
  */
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.nio.file.Files;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.repository.algemeen.ClientBriefRepository;
 import nl.rivm.screenit.service.BaseDvaBronService;
 
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -58,7 +58,8 @@ public class DvaController
 		{
 			var brief = clientBriefRepository.findById(id).orElseThrow(() -> new FileNotFoundException("De clientbrief kan niet worden gevonden"));
 			var file = dvaBronService.maakPgoUitslagPdfBrief(brief);
-			var resource = new InputStreamResource(new FileInputStream(file));
+			var bytes = Files.readAllBytes(file.toPath());
+			var resource = new ByteArrayResource(bytes);
 
 			var headers = new HttpHeaders();
 			headers.setContentDisposition(ContentDisposition.builder("attachment").filename(file.getName()).build());

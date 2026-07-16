@@ -40,8 +40,6 @@ import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.colon.enums.ColonAfmeldingReden;
 import nl.rivm.screenit.model.enums.BriefType;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -52,11 +50,9 @@ import org.hibernate.envers.Audited;
 public class ColonAfmelding extends Afmelding<ColonScreeningRonde, ColonDossier, ColonBrief>
 {
 	@ManyToOne(cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade(CascadeType.SAVE_UPDATE)
 	private ColonScreeningRonde screeningRonde;
 
 	@ManyToOne(cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade(CascadeType.SAVE_UPDATE)
 	private ColonDossier dossier;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.ALL)

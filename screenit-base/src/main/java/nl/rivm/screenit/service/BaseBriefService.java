@@ -23,6 +23,7 @@ package nl.rivm.screenit.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -41,11 +42,13 @@ import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.ScreeningRonde;
+import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.algemeen.AlgemeneBrief;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixRegioBrief;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.model.messagequeue.dto.BriefafdrukopdrachtDto;
 import nl.rivm.screenit.model.project.ProjectBrief;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.model.project.ProjectClient;
@@ -88,6 +91,14 @@ public interface BaseBriefService
 
 	void completePdf(MergedBrieven<?> mergedBrieven);
 
+	void pdfBestandOpslaanVoorVersturen(File pdfBestand, String bestandsNaam) throws IOException;
+
+	InputStream getFileStreamVanPdfBestand(BriefafdrukopdrachtDto.Resource resource) throws IOException;
+
+	void verwijderPdfBestand(BriefafdrukopdrachtDto.Resource resource);
+
+	boolean isAutomatischAfdrukkenParagonActief();
+
 	<B extends Brief, MB extends MergedBrieven<?>> void createOrAddMergedBrieven(List<? extends B> items, IBrievenGeneratorHelper<B, MB> briefGenerator) throws Exception;
 
 	<B extends Brief> File maakPdfAVanBrief(B brief) throws Exception;
@@ -95,6 +106,8 @@ public interface BaseBriefService
 	<B extends Brief> File maakPdfVanBrief(B brief, BaseDocumentCreator documentCreator, Consumer<MailMergeContext> mergeContextConsumer) throws Exception;
 
 	<B extends Brief> File maakPdfVanBrief(B brief, Consumer<MailMergeContext> context) throws Exception;
+
+	File maakPdfVanUploadDocument(UploadDocument document) throws Exception;
 
 	File genereerPdf(Document document, String fileNaam, boolean autoShowPrintdialog) throws Exception;
 
@@ -120,5 +133,8 @@ public interface BaseBriefService
 
 	<B extends Brief> void verwijderBrief(B brief);
 
+	<MB extends MergedBrieven<?>> void verwijderMergedBrieven(MB item);
+
 	boolean isOverbruggingssituatieParagonStarted();
+
 }

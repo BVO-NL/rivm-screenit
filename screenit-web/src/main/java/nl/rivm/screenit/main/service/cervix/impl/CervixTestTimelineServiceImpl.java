@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.service.cervix.impl;
  */
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +41,6 @@ import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.TestVervolgKe
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixDossier;
@@ -60,6 +58,7 @@ import nl.rivm.screenit.model.cervix.enums.CervixUitstrijkjeStatus;
 import nl.rivm.screenit.model.cervix.enums.CervixZasStatus;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BriefHerdrukkenService;
 import nl.rivm.screenit.service.ClientService;
@@ -74,7 +73,6 @@ import nl.rivm.screenit.service.cervix.CervixTestTimelineTimeService;
 import nl.rivm.screenit.service.cervix.enums.CervixTestTimeLineDossierTijdstip;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -272,16 +270,11 @@ public class CervixTestTimelineServiceImpl implements CervixTestTimelineService
 		{
 			var uitstrijkje = (CervixUitstrijkje) uitnodiging.getMonster();
 			var uitstrijkjeStatus = uitstrijkje.getUitstrijkjeStatus();
-			Date verzenddatumUitnodiging = null;
-			MergedBrieven<?> mergedBrieven = BriefUtil.getMergedBrieven(uitstrijkje.getUitnodiging().getBrief());
-			if (mergedBrieven != null)
-			{
-				verzenddatumUitnodiging = mergedBrieven.getPrintDatum();
-			}
+			var verstuurdVoorAfdrukkenMoment = BriefUtil.getVerstuurdVoorAfdrukkenMoment(uitstrijkje.getUitnodiging().getBrief());
 
 			return (uitstrijkjeStatus.equals(CervixUitstrijkjeStatus.NIET_ONTVANGEN)
 				|| uitstrijkjeStatus.equals(CervixUitstrijkjeStatus.NIET_ANALYSEERBAAR))
-				&& verzenddatumUitnodiging != null && uitstrijkje.getBrief() == null;
+				&& verstuurdVoorAfdrukkenMoment != null && uitstrijkje.getBrief() == null;
 		}
 		else if (uitnodiging.getMonsterType() == CervixMonsterType.ZAS)
 		{
@@ -391,18 +384,13 @@ public class CervixTestTimelineServiceImpl implements CervixTestTimelineService
 		if (uitnodiging.getMonsterType() == CervixMonsterType.UITSTRIJKJE)
 		{
 			var uitstrijkje = (CervixUitstrijkje) uitnodiging.getMonster();
-			Date verzenddatumUitnodiging = null;
-			MergedBrieven<?> mergedBrieven = BriefUtil.getMergedBrieven(uitstrijkje.getUitnodiging().getBrief());
-			if (mergedBrieven != null)
-			{
-				verzenddatumUitnodiging = mergedBrieven.getPrintDatum();
-			}
+			var verstuurdVoorAfdrukkenMoment = BriefUtil.getVerstuurdVoorAfdrukkenMoment(uitstrijkje.getUitnodiging().getBrief());
 			CervixLabformulierStatus labformulierStatus = null;
 			if (uitstrijkje.getLabformulier() != null)
 			{
 				labformulierStatus = uitstrijkje.getLabformulier().getStatus();
 			}
-			return verzenddatumUitnodiging != null && labformulierStatus == null || labformulierStatus == CervixLabformulierStatus.AFGEKEURD
+			return verstuurdVoorAfdrukkenMoment != null && labformulierStatus == null || labformulierStatus == CervixLabformulierStatus.AFGEKEURD
 				|| labformulierStatus == CervixLabformulierStatus.GECONTROLEERD;
 		}
 		else
@@ -640,6 +628,7 @@ public class CervixTestTimelineServiceImpl implements CervixTestTimelineService
 		mergedBrieven.setScreeningOrganisatie(ronde.getDossier().getClient().getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie());
 		brief.setGegenereerd(true);
 		brief.setMergedBrieven(mergedBrieven);
+		brief.setVerstuurdVoorAfdrukkenOp(dateSupplier.getLocalDateTime());
 		var fakeMergeDocument = new UploadDocument();
 		fakeMergeDocument.setActief(true);
 		fakeMergeDocument.setContentType("application/pdf");

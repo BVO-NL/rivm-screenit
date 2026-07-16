@@ -56,8 +56,6 @@ import nl.rivm.screenit.model.mamma.enums.OnvolledigOnderzoekOption;
 import nl.rivm.screenit.model.mamma.enums.SuboptimaleInsteltechniek;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
 import org.hibernate.envers.Audited;
@@ -93,7 +91,6 @@ public class MammaOnderzoek extends AbstractHibernateObject
 
 	@OneToMany(mappedBy = "onderzoek", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE,
 		jakarta.persistence.CascadeType.REMOVE })
-	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private List<MammaBeoordeling> beoordelingen = new ArrayList<>();
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.ALL)
@@ -101,12 +98,10 @@ public class MammaOnderzoek extends AbstractHibernateObject
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE,
 		jakarta.persistence.CascadeType.REMOVE })
-	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaMammografie mammografie;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE,
 		jakarta.persistence.CascadeType.REMOVE })
-	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private MammaSignaleren signaleren;
 
 	@Column(nullable = false)

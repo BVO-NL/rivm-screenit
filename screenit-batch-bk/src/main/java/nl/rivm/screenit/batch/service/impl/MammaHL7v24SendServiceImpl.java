@@ -38,8 +38,8 @@ import nl.rivm.screenit.exceptions.HL7SendMessageException;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.berichten.ScreenITResponseV24MessageWrapper;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7ADTBerichtType;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.HibernateService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

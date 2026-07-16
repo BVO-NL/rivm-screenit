@@ -23,19 +23,29 @@ package nl.rivm.screenit.main.controller.algemeen;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 
+import nl.rivm.screenit.main.dto.algemeen.BrpGegevensDto;
 import nl.rivm.screenit.main.dto.algemeen.BvoStatusDto;
+import nl.rivm.screenit.main.dto.algemeen.ClientContactgegevensDto;
 import nl.rivm.screenit.main.dto.algemeen.ClientDto;
 import nl.rivm.screenit.main.dto.algemeen.ClientZoekenFilterDto;
+import nl.rivm.screenit.main.dto.algemeen.ScreeningRondeGebeurtenisDto;
+import nl.rivm.screenit.main.dto.algemeen.TijdelijkAdresDto;
+import nl.rivm.screenit.main.exception.EntityNietGevondenException;
 import nl.rivm.screenit.main.mappers.algemeen.ClientMapper;
+import nl.rivm.screenit.main.mappers.algemeen.ScreeningRondeGebeurtenisWrapper;
+import nl.rivm.screenit.main.service.DossierService;
 import nl.rivm.screenit.main.service.algemeen.BvoStatusService;
 import nl.rivm.screenit.main.service.algemeen.ClientZoekenService;
 import nl.rivm.screenit.main.service.algemeen.ProjectService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.mappers.ProjectClientMapper;
+import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.algemeen.dto.ProjectClientDto;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -43,15 +53,20 @@ import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.logging.LogEvent;
+import nl.rivm.screenit.repository.algemeen.ClientRepository;
+import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -73,6 +88,8 @@ public class ClientController
 
 	private final ClientMapper clientMapper;
 
+	private final ClientRepository clientRepository;
+
 	private final LogService logService;
 
 	private final ProjectService projectService;
@@ -84,6 +101,26 @@ public class ClientController
 	private final BvoStatusService bvoStatusService;
 
 	private final ClientService clientService;
+
+	private final DossierService dossierService;
+
+	private final ScreeningRondeGebeurtenisWrapper screeningRondeGebeurtenisWrapper;
+
+	private final ClientContactService clientContactService;
+
+	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
+		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
+	@Operation(summary = "Haal client op", description = "Haalt de gegevens van een client op.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Clientgegevens opgehaald"),
+		@ApiResponse(responseCode = "404", description = "Client niet gevonden")
+	})
+	@GetMapping("/{clientId}")
+	public ResponseEntity<ClientDto> getClient(@PathVariable Long clientId)
+	{
+		var client = getClientOfGooiNotFoundException(clientId);
+		return ResponseEntity.ok(clientMapper.clientToClientDto(client, clientService));
+	}
 
 	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
@@ -103,6 +140,11 @@ public class ClientController
 
 	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
+	@Operation(summary = "Haal de actieve BVO's op", description = "Haal de BVO's op die actief zijn voor de client")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Lijst met bevolkingsonderzoeken"),
+		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+	})
 	@GetMapping("/{clientId}/actieve-bvos")
 	public ResponseEntity<List<Bevolkingsonderzoek>> getActieveBvos(@PathVariable Long clientId)
 	{
@@ -112,19 +154,79 @@ public class ClientController
 
 	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
+	@Operation(summary = "Haal de status op", description = "Haal de status op van de client voor elke BVO op")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Lijst met status objecten"),
+		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+	})
 	@GetMapping("/{clientId}/bvo-status")
 	public ResponseEntity<List<BvoStatusDto>> getBvoStatus(@PathVariable Long clientId)
 	{
-		var client = clientService.getClientById(clientId);
-		if (client.isPresent())
-		{
-			var statussen = bvoStatusService.getBvoStatus(client.get());
-			return ResponseEntity.ok(statussen);
-		}
-		else
-		{
-			return ResponseEntity.notFound().build();
-		}
+		var client = getClientOfGooiNotFoundException(clientId);
+		var statussen = bvoStatusService.getBvoStatus(client);
+		return ResponseEntity.ok(statussen);
+	}
+
+	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
+		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
+	@GetMapping("/{id}/brp-gegevens")
+	public ResponseEntity<BrpGegevensDto> getBrpGegevens(@PathVariable("id") Long clientId)
+	{
+		var brpGegevens = clientZoekenService.getBrpGegevens(clientId);
+		return ResponseEntity.ok(brpGegevens);
+	}
+
+	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
+		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
+	@GetMapping("/{id}/brp-tijdelijk-adres")
+	public ResponseEntity<TijdelijkAdresDto> getBrpTijdelijkAdres(@PathVariable("id") Long clientId)
+	{
+		var tijdelijkAdresDto = clientZoekenService.getBrpTijdelijkAdres(clientId);
+		return ResponseEntity.of(Optional.ofNullable(tijdelijkAdresDto));
+	}
+
+	@SecurityConstraint(actie = Actie.AANPASSEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_GBA_TIJDELIJK_ADRES,
+		bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
+	@PostMapping("/{id}/brp-tijdelijk-adres")
+	public ResponseEntity<Void> saveBrpTijdelijkAdres(@PathVariable("id") Long clientId, @RequestBody TijdelijkAdresDto tijdelijkAdresDto)
+	{
+		clientZoekenService.saveBrpTijdelijkAdres(clientId, tijdelijkAdresDto, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+		return ResponseEntity.ok().build();
+	}
+
+	@SecurityConstraint(actie = Actie.VERWIJDEREN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_GBA_TIJDELIJK_ADRES,
+		bevolkingsonderzoekScopes = { Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
+	@DeleteMapping("/{id}/brp-tijdelijk-adres")
+	public ResponseEntity<Void> deleteBrpTijdelijkAdres(@PathVariable("id") Long clientId)
+	{
+		clientZoekenService.deleteBrpTijdelijkAdres(clientId, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+		return ResponseEntity.ok().build();
+	}
+
+	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
+		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
+	@GetMapping("{id}/contactgegevens")
+	public ResponseEntity<ClientContactgegevensDto> getContactgegevens(@PathVariable Long id)
+	{
+		return clientRepository.findById(id)
+			.map(client ->
+			{
+				var contactgegevens = clientMapper.clientToClientContactgegevensDto(client, clientContactService);
+				clientService.zetDoelgroepenVanClient(client, contactgegevens);
+				return contactgegevens;
+			})
+			.map(ResponseEntity::ok)
+			.orElse(ResponseEntity.notFound().build());
+	}
+
+	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
+		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
+	@PutMapping("{id}/contactgegevens")
+	public ResponseEntity<Void> slaContactgegevensOp(@RequestBody ClientContactgegevensDto dto, @PathVariable Long id)
+	{
+		var client = getClientOfGooiNotFoundException(id);
+		clientService.slaContactgegevensOp(client, dto, ScreenitSession.get().getIngelogdAccount());
+		return ResponseEntity.ok().build();
 	}
 
 	private void logZoekenGebeurtenis(ClientZoekenFilterDto filter)
@@ -212,6 +314,63 @@ public class ClientController
 		return velden;
 	}
 
+	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
+		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
+	@Operation(summary = "Haal tijdelijk adres op", description = "Haalt het tijdelijk adres van een client op.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Tijdelijk adres opgehaald"),
+		@ApiResponse(responseCode = "404", description = "Client niet gevonden")
+	})
+	@GetMapping("/{clientId}/tijdelijk-adres")
+	public ResponseEntity<TijdelijkAdresDto> getTijdelijkAdres(@PathVariable Long clientId)
+	{
+		var client = getClientOfGooiNotFoundException(clientId);
+		var tijdelijkAdres = client.getPersoon().getTijdelijkAdres();
+		if (tijdelijkAdres == null)
+		{
+			return ResponseEntity.ok(null);
+		}
+		return ResponseEntity.ok(clientMapper.tijdelijkAdresToDto(tijdelijkAdres));
+	}
+
+	@SecurityConstraint(actie = Actie.AANPASSEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
+		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
+	@Operation(summary = "Sla tijdelijk adres op", description = "Slaat het tijdelijk adres van een client op of werkt het bij.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Tijdelijk adres succesvol opgeslagen"),
+		@ApiResponse(responseCode = "404", description = "Client niet gevonden"),
+		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+	})
+	@PutMapping("/{clientId}/tijdelijk-adres")
+	public ResponseEntity<Void> slaTijdelijkAdresOp(@PathVariable Long clientId, @RequestBody TijdelijkAdresDto tijdelijkAdresDto)
+	{
+		var account = ScreenitSession.get().getIngelogdAccount();
+		var client = getClientOfGooiNotFoundException(clientId);
+		var huidigTijdelijkAdres = client.getPersoon().getTijdelijkAdres();
+		TijdelijkAdres tijdelijkAdres;
+		if (huidigTijdelijkAdres != null)
+		{
+			clientMapper.updateTijdelijkAdres(huidigTijdelijkAdres, tijdelijkAdresDto);
+			tijdelijkAdres = huidigTijdelijkAdres;
+		}
+		else
+		{
+			tijdelijkAdres = clientMapper.dtoToTijdelijkAdres(tijdelijkAdresDto);
+		}
+		clientContactService.saveTijdelijkAdres(account, client, tijdelijkAdres);
+		return ResponseEntity.ok().build();
+	}
+
+	private Client getClientOfGooiNotFoundException(Long clientId)
+	{
+		return clientService.getClientById(clientId).orElseThrow(() -> new EntityNietGevondenException("Client", clientId));
+	}
+
+	@Operation(summary = "Haal de projecten voor de client op", description = "Haal de projecten op waar de client actief in is")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Lijst met projecten"),
+		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+	})
 	@GetMapping("/{clientId}/projecten")
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = { Recht.MEDEWERKER_CLIENT_GEGEVENS }, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
@@ -221,5 +380,30 @@ public class ClientController
 		var projectDtos = projecten.stream().map(projectClient -> projectClientMapper.projectClientToDto(projectClient, currentDateSupplier))
 			.filter(projectClientDto -> projectClientDto.isActief() == actief).toList();
 		return ResponseEntity.ok().body(projectDtos);
+	}
+
+	@Operation(summary = "Haal de algemene brieven van de client op", description = "Haal de gebeurtenissen voor algemene brieven voor de client op")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Lijst met brieven"),
+		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+	})
+	@GetMapping("/{clientId}/gebeurtenissen/{type}")
+	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = { Recht.MEDEWERKER_CLIENT_GEGEVENS }, bevolkingsonderzoekScopes = {
+		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
+	public ResponseEntity<List<ScreeningRondeGebeurtenisDto>> getAlgemeneClientbriefGebeurtenissen(@PathVariable Long clientId, @PathVariable String type)
+	{
+		var client = clientService.getClientById(clientId);
+		if (client.isPresent())
+		{
+			if (type.equals("algemene-brieven"))
+			{
+				var gebeurtenissen = dossierService.getAlgemeneBriefGebeurtenissen(client.get());
+				var screeningRondeGebeurtenisDtos = gebeurtenissen.stream().map(screeningRondeGebeurtenisWrapper::screeningRondeGebeurtenisNaarDto).toList();
+				return ResponseEntity.ok().body(screeningRondeGebeurtenisDtos);
+			}
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+		}
+
+		return ResponseEntity.notFound().build();
 	}
 }

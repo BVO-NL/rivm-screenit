@@ -32,6 +32,7 @@ import nl.rivm.screenit.model.colon.ColonDossier_;
 import nl.rivm.screenit.model.colon.ColonFitRegistratie_;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.algemeen.PersoonSpecification;
 import nl.rivm.screenit.specification.algemeen.ScreeningRondeSpecification;
@@ -39,7 +40,6 @@ import nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification;
 import nl.rivm.screenit.specification.colon.ColonScreeningRondeSpecification;
 import nl.rivm.screenit.specification.colon.ColonUitnodigingSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;

@@ -31,11 +31,11 @@ import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.enums.CervixTariefType;
 import nl.rivm.screenit.model.cervix.facturatie.CervixTarief;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.cervix.Cervix2023StartBepalingService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

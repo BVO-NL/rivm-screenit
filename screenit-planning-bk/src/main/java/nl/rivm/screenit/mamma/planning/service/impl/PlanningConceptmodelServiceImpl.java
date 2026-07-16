@@ -85,11 +85,11 @@ import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningWijzigingen;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.model.mamma.enums.MammaPlanningStatus;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.ScreeningOrganisatieRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

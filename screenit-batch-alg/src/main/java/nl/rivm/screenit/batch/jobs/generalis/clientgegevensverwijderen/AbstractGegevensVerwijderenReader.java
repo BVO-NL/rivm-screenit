@@ -30,13 +30,12 @@ import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.BezwaarMoment_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.algemeen.BezwaarBrief_;
 import nl.rivm.screenit.model.enums.BezwaarType;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.specification.algemeen.BezwaarMomentSpecification;
 import nl.rivm.screenit.specification.algemeen.BezwaarSpecification;
+import nl.rivm.screenit.specification.algemeen.BriefSpecification;
 import nl.rivm.screenit.specification.algemeen.ClientSpecification;
-import nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -54,11 +53,10 @@ public abstract class AbstractGegevensVerwijderenReader extends BaseSpecificatio
 				var bezwaarMomentJoin = getBezwaarMomentJoin(r);
 				return join(bezwaarMomentJoin, BezwaarMoment_.bezwaren);
 			}))
-			.and(MergedBrievenSpecification.isVerstuurd().with(r ->
+			.and(BriefSpecification.isVerstuurdVoorAfdrukken().with(r ->
 			{
 				var bezwaarMomentJoin = getBezwaarMomentJoin(r);
-				var bezwaarBriefJoin = join(bezwaarMomentJoin, BezwaarMoment_.brieven);
-				return join(bezwaarBriefJoin, BezwaarBrief_.mergedBrieven, JoinType.LEFT);
+				return join(bezwaarMomentJoin, BezwaarMoment_.brieven);
 			}));
 	}
 

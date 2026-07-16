@@ -35,12 +35,12 @@ import nl.rivm.screenit.model.cervix.cis.CervixCISHistorie;
 import nl.rivm.screenit.model.cervix.enums.CervixLeeftijdcategorie;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.cervix.CervixFactory;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Component;
 

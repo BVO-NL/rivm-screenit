@@ -19,8 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import { DsNavigationSidebarCategoryItem, DsNavigationSidebarItem } from '@topicus-rgp-ds/web'
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
-import { faBreadLoaf, faCandyCane, faStomach, faUserCircle } from '@fortawesome/pro-light-svg-icons'
+import { faUserCircle } from '@fortawesome/pro-light-svg-icons'
 import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
 
 interface BvoNavigationItem {
@@ -31,27 +30,27 @@ interface BvoNavigationItem {
 const bvoNavigationItems: BvoNavigationItem[] = [
   {
     bvo: Bevolkingsonderzoek.CERVIX,
-    item: <DsNavigationSidebarItem>{
+    item: <DsNavigationSidebarItem>(<unknown>{
       label: 'Baarmoederhalskanker',
-      icon: faCandyCane as IconDefinition,
-      routerLink: '/client-dossier/baarmoederhalskanker',
-    },
+      icon: 'femalereproductive-system-outline',
+      routerLink: '/client/dossier/baarmoederhalskanker',
+    }),
   },
   {
     bvo: Bevolkingsonderzoek.MAMMA,
-    item: <DsNavigationSidebarItem>{
+    item: <DsNavigationSidebarItem>(<unknown>{
       label: 'Borstkanker',
-      icon: faBreadLoaf as IconDefinition,
+      icon: 'breasts-outline',
       routerLink: '/client/dossier/borstkanker',
-    },
+    }),
   },
   {
     bvo: Bevolkingsonderzoek.COLON,
-    item: <DsNavigationSidebarItem>{
+    item: <DsNavigationSidebarItem>(<unknown>{
       label: 'Darmkanker',
-      icon: faStomach as IconDefinition,
+      icon: 'intestine-outline',
       routerLink: '/client/dossier/darmkanker',
-    },
+    }),
   },
 ]
 
@@ -62,7 +61,7 @@ export const getClientDossierNavigationItems = (actieveBvos: Bevolkingsonderzoek
       menuItems: <(DsNavigationSidebarItem | DsNavigationSidebarCategoryItem)[]>[
         <DsNavigationSidebarItem>{
           label: 'Overzicht',
-          icon: faUserCircle as IconDefinition,
+          icon: faUserCircle,
           routerLink: '/client/dossier/overzicht',
         },
       ],

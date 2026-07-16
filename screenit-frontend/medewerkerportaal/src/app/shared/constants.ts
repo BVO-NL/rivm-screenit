@@ -23,48 +23,13 @@ import { WeekdagOptie } from '@shared/types/weekdag-optie'
 
 export const NL_DATE_FORMAT = 'dd-MM-yyyy'
 export const NL_DATE_TIME_FORMAT = 'dd-MM-yyyy HH:mm'
+export const NL_LONG_DATE_FORMAT = 'dd LLLL yyyy'
 export const DATE_FORMAT = 'yyyy-MM-dd'
 export const COMPACT_DATE_FORMAT = 'yyyyMMdd'
 export const ISO_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
 export const LOCAL_TIME_FORMAT = 'HH:mm:ss'
 export const TIME_FORMAT = 'HH:mm'
-export const WEEK_DAGEN = [
-  {
-    label: 'Maandag',
-    value: 1,
-    afkorting: 'ma',
-  },
-  {
-    label: 'Dinsdag',
-    value: 2,
-    afkorting: 'di',
-  },
-  {
-    label: 'Woensdag',
-    value: 3,
-    afkorting: 'wo',
-  },
-  {
-    label: 'Donderdag',
-    value: 4,
-    afkorting: 'do',
-  },
-  {
-    label: 'Vrijdag',
-    value: 5,
-    afkorting: 'vr',
-  },
-  {
-    label: 'Zaterdag',
-    value: 6,
-    afkorting: 'za',
-  },
-  {
-    label: 'Zondag',
-    value: 7,
-    afkorting: 'zo',
-  },
-]
+
 export const TDS_DAGEN: WeekdagOptie[] = [
   {
     day: DsWeekday.Maandag,
@@ -103,4 +68,3 @@ export const TDS_DAGEN: WeekdagOptie[] = [
   },
 ]
 export const COLON_ROOSTER_MAX_HERHALING_IN_MAANDEN = 18
-export const AANTAL_RIJEN_PER_PAGINA = 20

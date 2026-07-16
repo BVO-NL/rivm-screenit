@@ -23,10 +23,10 @@ package nl.rivm.screenit.main.web.component.validator;
 
 import java.time.LocalDate;
 
+import nl.rivm.screenit.main.wicketpassword.component.WachtwoordValidator;
 import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.service.WachtwoordService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
-import nl.topicuszorg.wicket.password.web.component.WachtwoordValidator;
 
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.IModel;
@@ -42,9 +42,9 @@ public class ScreenITWachtwoordValidator extends WachtwoordValidator
 
 	private final IModel<Medewerker> medewerkerIModel;
 
-	public ScreenITWachtwoordValidator(FormComponent<String> usernameField, boolean verplicht, IModel<Medewerker> medewerkerIModel)
+	public ScreenITWachtwoordValidator(FormComponent<String> usernameField, IModel<Medewerker> medewerkerIModel)
 	{
-		super(usernameField, verplicht);
+		super(usernameField);
 		this.medewerkerIModel = medewerkerIModel;
 	}
 

@@ -33,6 +33,7 @@ import nl.rivm.screenit.model.InlogStatus;
 import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.InlogMethode;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.MedewerkerRepository;
 import nl.rivm.screenit.service.AuthenticatieService;
 import nl.rivm.screenit.service.HibernateService;
@@ -41,7 +42,6 @@ import nl.rivm.screenit.service.MailService;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.util.CodeGenerator;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

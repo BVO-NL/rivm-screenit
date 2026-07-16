@@ -24,7 +24,6 @@ package nl.rivm.screenit.util;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.Client;
@@ -89,6 +88,7 @@ public class BriefUtil
 		return brief;
 	}
 
+	@Deprecated(forRemoval = true)
 	public static MergedBrieven getMergedBrieven(Brief brief)
 	{
 		brief = getBriefVoorPrintStatus(brief);
@@ -97,26 +97,6 @@ public class BriefUtil
 			return brief.getMergedBrieven();
 		}
 		return null;
-	}
-
-	public static boolean isMergedBrievenGeprint(Brief brief)
-	{
-		MergedBrieven<?> mergedBrieven = getMergedBrieven(brief);
-		if (mergedBrieven != null)
-		{
-			return Boolean.TRUE.equals(mergedBrieven.getGeprint());
-		}
-		return false;
-	}
-
-	public static boolean isGegenereerd(Brief brief)
-	{
-		brief = getBriefVoorPrintStatus(brief);
-		if (brief != null)
-		{
-			return brief.isGegenereerd();
-		}
-		return false;
 	}
 
 	public static boolean isNietGegenereerdEnNietVervangen(Brief brief)
@@ -184,22 +164,56 @@ public class BriefUtil
 
 	public static Date geefDatumVoorGebeurtenisoverzicht(Brief brief)
 	{
-		MergedBrieven<?> mergedBrieven = getMergedBrieven(brief);
-		if (BriefUtil.isGegenereerd(brief) && mergedBrieven != null)
+		if (BriefUtil.isGegenereerd(brief))
 		{
-			if (mergedBrieven.getPrintDatum() != null)
+			var afdrukDatum = getVerstuurdVoorAfdrukkenMoment(brief);
+			if (afdrukDatum != null)
 			{
-				return mergedBrieven.getPrintDatum();
-			}
-			else
-			{
-				return mergedBrieven.getCreatieDatum();
+				return afdrukDatum;
 			}
 		}
-		else
+
+		var mergedBrieven = getMergedBrieven(brief);
+		if (mergedBrieven != null)
 		{
-			return brief.getCreatieDatum();
+			return mergedBrieven.getCreatieDatum();
 		}
+
+		return brief.getCreatieDatum();
+	}
+
+	public static Date getVerstuurdVoorAfdrukkenMoment(Brief brief)
+	{
+		var mergedBrieven = getMergedBrieven(brief);
+		if (mergedBrieven != null && mergedBrieven.getPrintDatum() != null)
+		{
+			return mergedBrieven.getPrintDatum();
+		}
+
+		var briefVoorPrintStatus = getBriefVoorPrintStatus(brief);
+		return briefVoorPrintStatus != null && briefVoorPrintStatus.getVerstuurdVoorAfdrukkenOp() != null ?
+			DateUtil.toUtilDate(briefVoorPrintStatus.getVerstuurdVoorAfdrukkenOp()) :
+			isAfgedrukteMigratieBrief(briefVoorPrintStatus) ? briefVoorPrintStatus.getCreatieDatum() : null;
+	}
+
+	public static boolean isVerstuurdVoorAfdrukken(Brief brief)
+	{
+		return isAfgedrukteMigratieBrief(brief) || getVerstuurdVoorAfdrukkenMoment(brief) != null;
+	}
+
+	public static boolean isGegenereerd(Brief brief)
+	{
+		brief = getBriefVoorPrintStatus(brief);
+		if (brief != null)
+		{
+			return brief.isGegenereerd();
+		}
+		return false;
+	}
+
+	private static boolean isAfgedrukteMigratieBrief(Brief brief)
+	{
+		return isGegenereerd(brief) && getBriefVoorPrintStatus(brief).getMergedBrieven() == null;
 	}
 
 	public static BezwaarBrief maakBezwaarBrief(Client client, BriefType type, Date creatieMoment, boolean vragenOmHandtekening)
@@ -274,12 +288,13 @@ public class BriefUtil
 		brief.setBriefType(type);
 	}
 
-	public static boolean isVerstuurd(ClientBrief<?, ?, ?> brief)
+	public static String maakKenmerk(Brief brief)
 	{
-		return Optional.ofNullable(brief)
-			.map(ClientBrief::getMergedBrieven)
-			.filter(MergedBrieven::getGeprint)
-			.filter(mergedBrieven -> mergedBrieven.getPrintDatum() != null)
-			.isPresent();
+		return brief != null && brief.getId() != null ? "K" + Long.toHexString(brief.getId()).toUpperCase() : null;
+	}
+
+	public static boolean isTegenhoudenMogelijk(Brief brief)
+	{
+		return !BriefType.getCervixZasBrieven().contains(brief.getBriefType());
 	}
 }

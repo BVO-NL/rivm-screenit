@@ -23,6 +23,7 @@ package nl.rivm.screenit.model;
  */
 
 import java.io.Serial;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -84,6 +85,10 @@ public abstract class Brief extends AbstractHibernateObject
 	private boolean tegenhouden = false;
 
 	private String templateNaam;
+
+	private String commHubGuid;
+
+	private LocalDateTime verstuurdVoorAfdrukkenOp;
 
 	public abstract MergedBrieven getMergedBrieven();
 

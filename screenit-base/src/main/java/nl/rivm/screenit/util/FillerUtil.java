@@ -70,6 +70,11 @@ public class FillerUtil
 {
 	public static UploadDocument getUploadDocumentEnSlaOp(long id, String naam, String contentType, File file, FileStoreLocation fileStoreLocation)
 	{
+		return getUploadDocumentEnSlaOp(id, naam, contentType, file, fileStoreLocation, false);
+	}
+
+	public static UploadDocument getUploadDocumentEnSlaOp(long id, String naam, String contentType, File file, FileStoreLocation fileStoreLocation, boolean verwijderFile)
+	{
 		UploadDocument uploadDocument = new UploadDocument();
 		uploadDocument.setNaam(naam);
 		uploadDocument.setActief(true);
@@ -78,7 +83,7 @@ public class FillerUtil
 		try
 		{
 			UploadDocumentService uploadDocumentService = ApplicationContextProvider.getApplicationContext().getBean(UploadDocumentService.class);
-			uploadDocumentService.saveOrUpdate(uploadDocument, fileStoreLocation, id, false);
+			uploadDocumentService.saveOrUpdate(uploadDocument, fileStoreLocation, id, verwijderFile);
 		}
 		catch (IOException e)
 		{

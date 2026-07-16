@@ -37,9 +37,6 @@ import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 @Getter
 @Setter
 @Entity
@@ -55,7 +52,6 @@ public class ProjectInactiveerDocument extends AbstractHibernateObject
 	private Project project;
 
 	@OneToMany(mappedBy = "projectInactiveerDocument", fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade(CascadeType.SAVE_UPDATE)
 	private List<ProjectClient> projectClienten;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)

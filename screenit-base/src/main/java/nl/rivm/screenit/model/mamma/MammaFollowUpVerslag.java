@@ -29,12 +29,10 @@ import jakarta.persistence.OneToOne;
 import nl.rivm.screenit.model.mamma.verslag.MammaVerslag;
 import nl.rivm.screenit.model.mamma.verslag.followup.MammaFollowUpVerslagContent;
 
-import org.hibernate.annotations.Proxy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 @Entity
-@Proxy
 @Audited
 public class MammaFollowUpVerslag extends MammaVerslag<MammaFollowUpVerslagContent>
 {

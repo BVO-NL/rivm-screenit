@@ -18,12 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, inject, Signal, signal } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
 import { PdfViewerComponent } from '@shared/components/pdf-viewer/pdf-viewer.component'
-import { DocumentService } from '@/shared/services/document/document.service'
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { saveAs } from 'file-saver'
 import { DsButtonComponent } from '@topicus-rgp-ds/web'
 
@@ -34,21 +32,15 @@ import { DsButtonComponent } from '@topicus-rgp-ds/web'
 })
 export class BriefInzienDialogComponent {
   private readonly dialogRef = inject(DialogRef)
-  private readonly documentenService = inject(DocumentService)
-  private readonly documentId: number = inject(DIALOG_DATA)
-  brief: Signal<string | undefined> = signal(undefined)
-
-  constructor() {
-    this.brief = toSignal(this.documentenService.getDocumentUrlById(this.documentId).pipe(takeUntilDestroyed()))
-  }
+  protected readonly brief: string = inject(DIALOG_DATA)
 
   sluiten() {
     this.dialogRef.close()
   }
 
   opslaan() {
-    if (this.brief()) {
-      saveAs(this.brief()!, 'brief.pdf')
+    if (this.brief) {
+      saveAs(this.brief, 'brief.pdf')
     }
   }
 }

@@ -24,3 +24,10 @@ export enum Geslacht {
   VROUW = 'VROUW',
   NIET_GESPECIFICEERD = 'NIET_GESPECIFICEERD',
 }
+
+export const geslachtLabel: Record<Geslacht, string> = {
+  [Geslacht.ONBEKEND]: 'Genderdivers',
+  [Geslacht.MAN]: 'Man',
+  [Geslacht.VROUW]: 'Vrouw',
+  [Geslacht.NIET_GESPECIFICEERD]: 'Niet gespecificeerd',
+}

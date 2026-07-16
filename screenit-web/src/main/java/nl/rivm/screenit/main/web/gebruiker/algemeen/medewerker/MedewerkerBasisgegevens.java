@@ -58,6 +58,7 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.InlogMethode;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
+import nl.rivm.screenit.model.yubikey.YubiKey;
 import nl.rivm.screenit.service.AuthenticatieService;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.BaseMedewerkerService;
@@ -68,7 +69,6 @@ import nl.rivm.screenit.service.WachtwoordService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
-import nl.topicuszorg.yubikey.model.YubiKey;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.crypto.hash.Sha512Hash;

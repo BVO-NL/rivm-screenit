@@ -54,7 +54,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.colon.ColonScreeningBasePag
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.colon.ColonBrief;
@@ -78,17 +77,18 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.project.ProjectBrief;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.service.colon.ColonVerwerkVerslagService;
 import nl.rivm.screenit.util.AdresUtil;
+import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.util.NaamUtil;
 import nl.rivm.screenit.util.colon.ColonAfspraakUtil;
 import nl.topicuszorg.organisatie.model.Adres_;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.util.postcode.PostcodeFormatter;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.input.validator.BSNValidator;
@@ -436,10 +436,10 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 		{
 			koptekst.add("Type");
 		}
-		koptekst.add("Cliënt").add("BSN").add("Geboortedatum").add("Gender");
+		koptekst.add("Cliënt").add("BSN").add("Geboortedatum").add("Gender").add("Straat").add("Postcode").add("Woonplaats");
 		if (digitaalBeschikbaar)
 		{
-			koptekst.add("Straat").add("Postcode").add("Woonplaats").add("Telefoonnummer").add("E-mailadres");
+			koptekst.add("Telefoonnummer").add("E-mailadres");
 		}
 		csv.append(koptekst).append("\n");
 
@@ -466,20 +466,17 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 			rij.add(persoon.getBsn());
 			rij.add(DateUtil.getGeboortedatum(persoon));
 			rij.add(persoon.getGeslacht() != null ? getString(EnumStringUtil.getPropertyString(persoon.getGeslacht())) : "");
-			if (digitaalBeschikbaar)
+			rij.add(adres != null && adres.getAdres() != null ? adres.getAdres() : "");
+			rij.add(adres != null && adres.getPostcode() != null ? adres.getPostcode() : "");
+			rij.add(adres != null && adres.getPlaats() != null ? adres.getPlaats() : "");
+			if (digitaalBeschikbaar && ColonAfspraakUtil.isDigitaal(afspraak))
 			{
-				rij.add(adres != null && adres.getAdres() != null ? adres.getAdres() : "");
-				rij.add(adres != null && adres.getPostcode() != null ? adres.getPostcode() : "");
-				rij.add(adres != null && adres.getPlaats() != null ? adres.getPlaats() : "");
-				if (ColonAfspraakUtil.isDigitaal(afspraak))
-				{
-					rij.add(persoon.getTelefoonnummer1() != null ? "\"\\\"" + persoon.getTelefoonnummer1() + "\"" : "");
-					rij.add(persoon.getEmailadres() != null ? persoon.getEmailadres() : "");
-				}
-				else
-				{
-					rij.add("").add("");
-				}
+				rij.add(persoon.getTelefoonnummer1() != null ? "\"\\\"" + persoon.getTelefoonnummer1() + "\"" : "");
+				rij.add(persoon.getEmailadres() != null ? persoon.getEmailadres() : "");
+			}
+			else
+			{
+				rij.add("").add("");
 			}
 			csv.append(rij).append("\n");
 		}
@@ -596,7 +593,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 					}
 					if (laatsteBrief != null)
 					{
-						briefAfgedrukt = new SimpleDateFormat("dd-MM-yyyy").format(laatsteBrief.getMergedBrieven().getPrintDatum());
+						briefAfgedrukt = new SimpleDateFormat("dd-MM-yyyy").format(BriefUtil.getVerstuurdVoorAfdrukkenMoment(laatsteBrief));
 					}
 				}
 				return briefAfgedrukt;
@@ -615,9 +612,10 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 
 			private ClientBrief<?, ?, ?> bepaalLaatsteBriefInner(ClientBrief<?, ?, ?> laatsteBrief, ClientBrief<?, ?, ?> brief)
 			{
-				MergedBrieven<?> mergedBrieven = brief.getMergedBrieven();
-				if (mergedBrieven != null && mergedBrieven.getPrintDatum() != null
-					&& (laatsteBrief == null || laatsteBrief.getMergedBrieven().getPrintDatum().before(mergedBrieven.getPrintDatum())))
+				var verstuurdVoorAfdrukkenMoment = BriefUtil.getVerstuurdVoorAfdrukkenMoment(brief);
+				var laatsteBriefVerstuurdVoorAfdrukkenMoment = BriefUtil.getVerstuurdVoorAfdrukkenMoment(laatsteBrief);
+				if (verstuurdVoorAfdrukkenMoment != null && (laatsteBriefVerstuurdVoorAfdrukkenMoment == null || laatsteBriefVerstuurdVoorAfdrukkenMoment.before(
+					verstuurdVoorAfdrukkenMoment)))
 				{
 					laatsteBrief = brief;
 				}

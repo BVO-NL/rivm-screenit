@@ -56,13 +56,10 @@ public class BezwaarBrievenGenererenWriter extends AbstractBrievenGenererenWrite
 	@Override
 	protected BezwaarMergedBrieven createConcreteMergedBrieven(Date aangemaaktOp)
 	{
-		ExecutionContext context = getStepExecutionContext();
-		BriefType briefType = BriefType.valueOf(context.getString(BezwaarBrievenGenererenPartitioner.KEY_BRIEFTYPE));
-
 		BezwaarMergedBrieven mergedBrieven = new BezwaarMergedBrieven();
 		mergedBrieven.setScreeningOrganisatie(getScreeningOrganisatie());
 		mergedBrieven.setCreatieDatum(aangemaaktOp);
-		mergedBrieven.setBriefType(briefType);
+		mergedBrieven.setBriefType(getBriefType());
 		return mergedBrieven;
 	}
 

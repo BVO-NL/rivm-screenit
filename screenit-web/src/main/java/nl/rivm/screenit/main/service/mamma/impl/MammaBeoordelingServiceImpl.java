@@ -65,6 +65,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaLezingType;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaZijde;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.mamma.MammaBeoordelingRepository;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.BaseBriefService;
@@ -83,7 +84,6 @@ import nl.rivm.screenit.service.mamma.MammaHuisartsBerichtService;
 import nl.rivm.screenit.service.mamma.MammaHuisartsService;
 import nl.rivm.screenit.service.mamma.be.verslag.MammaVerslagDocumentCreator;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.RevisionType;

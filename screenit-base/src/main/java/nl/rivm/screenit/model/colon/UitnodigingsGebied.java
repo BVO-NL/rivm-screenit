@@ -40,10 +40,13 @@ import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.PostcodeGebied;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
+import org.hibernate.envers.Audited;
+
 @Entity
 @Getter
 @Setter
 @Table(schema = "colon")
+@Audited
 public class UitnodigingsGebied extends AbstractHibernateObject
 {
 

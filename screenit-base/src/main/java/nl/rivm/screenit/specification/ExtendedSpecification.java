@@ -113,4 +113,9 @@ public interface ExtendedSpecification<T> extends Specification<T>
 	{
 		return (r, q, cb) -> spec == null ? null : cb.not(spec.toPredicate(r, q, cb));
 	}
+
+	static <T> ExtendedSpecification<T> unrestricted()
+	{
+		return (r, q, cb) -> null;
+	}
 }

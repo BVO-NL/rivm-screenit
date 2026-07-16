@@ -338,12 +338,9 @@ public class CervixFactoryImpl implements CervixFactory
 		if (laatsteUitnodiging != null && laatsteUitnodiging.getMonsterType() == CervixMonsterType.UITSTRIJKJE)
 		{
 			var brief = laatsteUitnodiging.getBrief();
-			if (BriefUtil.getMergedBrieven(brief) == null)
+			if (!BriefUtil.isVerstuurdVoorAfdrukken(brief) && heeftEersteUitnodigingOntvangen(laatsteScreeningRonde))
 			{
-				if (heeftEersteUitnodigingOntvangen(laatsteScreeningRonde))
-				{
-					hibernateService.saveOrUpdate(BriefUtil.setTegenhouden(brief, true));
-				}
+				hibernateService.saveOrUpdate(BriefUtil.setTegenhouden(brief, true));
 			}
 		}
 		var nieuweZasUitnodiging = maakUitnodiging(laatsteScreeningRonde, zasBriefType, uitnodigingKrijgtHerinnering(laatsteUitnodiging), true);
@@ -381,7 +378,7 @@ public class CervixFactoryImpl implements CervixFactory
 	{
 		return ronde.getUitnodigingen().stream()
 			.anyMatch(uitnodiging -> BriefType.getCervixUitnodigingen().contains(uitnodiging.getBrief().getBriefType())
-				&& BriefUtil.isMergedBrievenGeprint(uitnodiging.getBrief()));
+				&& BriefUtil.isVerstuurdVoorAfdrukken(uitnodiging.getBrief()));
 	}
 
 	private CervixUitstrijkje maakUitstrijkje(CervixUitnodiging uitnodiging)
@@ -534,8 +531,11 @@ public class CervixFactoryImpl implements CervixFactory
 		if (gecombineerdeUitstrijkjeUitnodiging != null)
 		{
 			var gecombineerdeUitstrijkjeUitnodigingBrief = gecombineerdeUitstrijkjeUitnodiging.getBrief();
-			var mergedBrieven = zasUitnodiging.getBrief().getMergedBrieven();
+			var brief = zasUitnodiging.getBrief();
+			var mergedBrieven = brief.getMergedBrieven();
 			mergedBrieven.setPrintDatum(dateSupplier.getDate());
+			brief.setVerstuurdVoorAfdrukkenOp(dateSupplier.getLocalDateTime());
+			gecombineerdeUitstrijkjeUitnodigingBrief.setVerstuurdVoorAfdrukkenOp(dateSupplier.getLocalDateTime());
 			gecombineerdeUitstrijkjeUitnodigingBrief.setMergedBrieven(mergedBrieven);
 			gecombineerdeUitstrijkjeUitnodigingBrief.setGegenereerd(true);
 

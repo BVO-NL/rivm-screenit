@@ -1,0 +1,105 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog size="xl" titel="Contactgegevens aanpassen">
+  <div body>
+    <div class="contactgegevens-paspoort">
+      <div class="col">
+        <ds-description
+          label="Burgerservicenummer"
+          value="{{ clientData.bsn }}"/>
+        <ds-description
+          label="Geboortenaam"
+          value="{{ (clientData.tussenvoegsel ? clientData.tussenvoegsel + ' ' : '') + clientData.achternaam }}"/>
+      </div>
+      <div class="col">
+        <ds-description
+          label="Geboortedatum"
+          value="{{ clientData.geboortedatum | date:NL_DATE_FORMAT }}"/>
+        <ds-description
+          *appAutorisatie="genderIdentiteitConstraint"
+          label="Genderidentiteit"
+          value="{{ clientData.geslacht | enumLabel: geslachtLabel }}"/>
+      </div>
+    </div>
+    <form [formGroup]="contactgegevensForm" class="form-in-modal" novalidate>
+
+      <div class="contactgegevens-inputs" *appAutorisatie="contactgegevensConstraint">
+        <ds-input
+          label="Mobiel nummer"
+          [errorMessage]="{ mobielTelefoon: 'Het mobiele nummer is incorrect.' }"
+          formControlName="mobielNummer"
+        />
+        <ds-input
+          label="Extra nummer"
+          [errorMessage]="{ telefoon: 'Het telefoonnummer is incorrect.' }"
+          formControlName="extraNummer"
+        />
+        <ds-input
+          label="E-mailadres"
+          [errorMessage]="{ email: 'Het e-mailadres is incorrect.' }"
+          formControlName="emailadres"
+        />
+      </div>
+      <ds-dropdown
+        class="contactgegevens-dropdowns" *appAutorisatie="aanspreekvormConstraint"
+        label="Aanspreekvorm"
+        formControlName="aanspreekvorm"
+        [items]="aanspreekvormOpties"
+        bindLabel="naam"
+        bindValue="waarde"
+        appendTo=".ds-modal"
+        [clearable]="false"
+        data-testid="aanspreekvorm_dropdown"
+      />
+      <div class="doelgroep-inputs" *appAutorisatie="doelgroepConstraint">
+        <ds-dropdown
+          label="Doelgroep"
+          formControlName="doelgroep"
+          [items]="doelgroepOpties"
+          bindLabel="naam"
+          bindValue="waarde"
+          appendTo=".ds-modal"
+          data-testid="doelgroep_dropdown"
+        >
+        </ds-dropdown>
+        @if (selectedDoelgroep === Doelgroep.DUBBELE_TIJD) {
+          <ds-input
+            label="Reden"
+            formControlName="dubbelTijdReden"
+            [required]="true"
+            class="dubbele-tijd-reden"
+            maxlength="255"
+            [errorMessage]="{required: `Reden is verplicht wanneer doelgroep 'Dubbele tijd' is geselecteerd.`, maxlength: `Reden mag niet meer dan 255 karakters bevatten.`}"
+          />
+        }
+      </div>
+    </form>
+  </div>
+  <ng-container buttons>
+    <button (click)="cancel()" data-testid="btn_annuleren" ds-button-tertiary type="button">Annuleren</button>
+    <button (click)="save()"
+            data-testid="btn_opslaan"
+            [disabled]="contactgegevensForm.invalid"
+            ds-button-primary>
+      Opslaan
+    </button>
+  </ng-container>
+</app-base-dialog>

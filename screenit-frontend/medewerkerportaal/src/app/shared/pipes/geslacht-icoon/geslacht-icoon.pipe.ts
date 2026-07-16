@@ -20,7 +20,7 @@
  */
 import { Pipe, PipeTransform } from '@angular/core'
 import { Geslacht } from '../../types/algemeen/enum/geslacht'
-import {faMars, faVenus, faMarsAndVenus} from '@fortawesome/pro-light-svg-icons'
+import { faMars, faMarsAndVenus, faVenus } from '@fortawesome/pro-light-svg-icons'
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 
 @Pipe({
@@ -28,7 +28,7 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
   pure: true,
 })
 export class GeslachtIcoonPipe implements PipeTransform {
-  transform(geslacht: Geslacht): IconDefinition | null {
+  transform(geslacht: Geslacht): IconDefinition {
     switch (geslacht) {
       case Geslacht.MAN:
         return faMars

@@ -33,12 +33,12 @@ import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaAfspraakReservering;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.mamma.MammaAfspraakReserveringRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaAfspraakReserveringService;
 import nl.rivm.screenit.specification.mamma.MammaAfspraakReserveringSpecification;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

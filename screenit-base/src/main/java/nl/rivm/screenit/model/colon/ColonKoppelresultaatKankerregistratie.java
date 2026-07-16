@@ -36,9 +36,6 @@ import lombok.Setter;
 import nl.rivm.screenit.model.AbstractKoppelresultaatKankerregistratie;
 import nl.rivm.screenit.model.UploadDocument;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 @Entity
 @Table(schema = "colon", name = "koppelresultaat_kankerregistratie")
 @Getter
@@ -73,10 +70,8 @@ public class ColonKoppelresultaatKankerregistratie extends AbstractKoppelresulta
 	private String ypTNM;
 
 	@ManyToOne(optional = false, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade(CascadeType.SAVE_UPDATE)
 	private UploadDocument uploadedFile;
 
 	@ManyToOne(optional = false, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
-	@Cascade(CascadeType.SAVE_UPDATE)
 	private ColonScreeningRonde screeningsRonde;
 }

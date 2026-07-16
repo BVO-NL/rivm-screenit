@@ -107,6 +107,6 @@ public class MammaBaseStandplaatsPeriodeServiceImpl implements MammaBaseStandpla
 			var screeningOrganisatieClient = filter.getClient().getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie();
 			return isBeschikbaarVoorScreeningsOrganisatie(screeningOrganisatieClient);
 		}
-		return null;
+		return Specification.unrestricted();
 	}
 }

@@ -1,0 +1,93 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<ds-card [cardTitle]="clientContactgegevensTitel()">
+  <ng-template ds-card-header-badge>
+    @if (clientContactgegevens()?.geslacht) {
+      <ds-icon [icon]="clientContactgegevens()!.geslacht | geslachtIcoon" class="geslacht-icoon"/>
+    }
+  </ng-template>
+  <ng-template ds-card-header-content *appAutorisatie="bewerkenConstraint">
+    <button ds-button-tertiary (click)="openContactgegevensBewerkenPopup()" [disabled]="!clientContactgegevens()">
+      <ds-icon [icon]="faPencil"/>
+      Bewerken
+    </button>
+  </ng-template>
+  @if (clientContactgegevens(); as contactgegevens) {
+    <div class="client-info-lijst">
+      @if (contactgegevens.doelgroepen.length) {
+        <div class="client-info-rij">
+          <span class="client-info-label">Doelgroep</span>
+          <span class="doelgroepen">
+          @for (doelgroep of contactgegevens.doelgroepen; track doelgroep) {
+            <ds-badge type="info" [label]="doelgroep | enumLabel: doelgroepLabel"/>
+          }
+        </span>
+        </div>
+        @if (heeftDubbeltijd()) {
+          <div class="client-info-rij">
+            <span class="client-info-label">Dubbele tijd reden</span>
+            <span class="client-info-waarde">{{ contactgegevens.dubbeleTijdReden }}</span>
+          </div>
+        }
+      }
+      @if (clientUitLocalStorage().overlijdensdatum) {
+        <div class="client-info-rij">
+          <span class="client-info-label">Overlijdensdatum</span>
+          <span class="client-info-waarde">
+              <ds-badge type="error" [label]="(contactgegevens.overlijdensdatum | date:NL_DATE_FORMAT) ?? ''"/>
+            </span>
+        </div>
+      }
+      <div class="client-info-rij">
+        <span class="client-info-label">Burgerservicenummer</span>
+        <span class="client-info-waarde">{{ contactgegevens.bsn }}</span>
+      </div>
+      <div class="client-info-rij">
+        <span class="client-info-label">Geboortedatum</span>
+        <span class="client-info-waarde">{{ contactgegevens.geboortedatum | date: NL_DATE_FORMAT }} ({{ leeftijd() }} jaar oud)</span>
+      </div>
+      <div class="client-info-rij">
+        <span class="client-info-label">Geboortenaam</span>
+        <span class="client-info-waarde">{{ (contactgegevens.tussenvoegsel ? contactgegevens.tussenvoegsel + ' ' : '') + contactgegevens.achternaam }}</span>
+      </div>
+      <div class="client-info-rij">
+        <span class="client-info-label">Gewenste aanspreekvorm</span>
+        <span class="client-info-waarde">{{ contactgegevens.aanspreekvorm | enumLabel: aanspreekvormLabel : '-' }}</span>
+      </div>
+      <div class="client-info-rij" *appAutorisatie="genderIdentiteitConstraint">
+        <span class="client-info-label">Genderidentiteit</span>
+        <span class="client-info-waarde">{{ contactgegevens.geslacht | enumLabel: geslachtLabel }}</span>
+      </div>
+      <div class="client-info-rij">
+        <span class="client-info-label">Mobiel nummer</span>
+        <span class="client-info-waarde">{{ contactgegevens.mobielNummer | enumNatural }}</span>
+      </div>
+      <div class="client-info-rij">
+        <span class="client-info-label">Extra nummer</span>
+        <span class="client-info-waarde">{{ contactgegevens.extraNummer | enumNatural }}</span>
+      </div>
+      <div class="client-info-rij">
+        <span class="client-info-label">E-mailadres</span>
+        <span class="client-info-waarde">{{ contactgegevens.emailAdres | enumNatural }}</span>
+      </div>
+    </div>
+  }
+</ds-card>

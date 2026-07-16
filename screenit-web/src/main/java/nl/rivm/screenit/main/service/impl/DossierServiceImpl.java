@@ -31,8 +31,10 @@ import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -60,6 +62,7 @@ import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.mamma
 import nl.rivm.screenit.model.AanvraagBriefStatus;
 import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.AfmeldingType;
+import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.ClientContact;
@@ -67,7 +70,6 @@ import nl.rivm.screenit.model.DigitaalClientBericht;
 import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.InpakbareUitnodiging;
-import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
@@ -127,6 +129,7 @@ import nl.rivm.screenit.model.project.ProjectBrief;
 import nl.rivm.screenit.model.project.ProjectBriefActieType;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.service.BaseDossierAuditService;
+import nl.rivm.screenit.service.BezwaarService;
 import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.RondeNummerService;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
@@ -172,6 +175,8 @@ public class DossierServiceImpl implements DossierService
 	private final ColonVerwerkVerslagService colonVerwerkVerslagService;
 
 	private final ColonBaseAfspraakService afspraakService;
+
+	private final BezwaarService bezwaarService;
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -1735,19 +1740,8 @@ public class DossierServiceImpl implements DossierService
 					}
 					else if (projectBrief.isGegenereerd())
 					{
-						MergedBrieven<?> mergedBrieven = projectBrief.getMergedBrieven();
-						screeningRondeGebeurtenis.setBron(bepaalGebeurtenisBron(mergedBrieven));
-						if (mergedBrieven.getPrintDatum() != null)
-						{
-							screeningRondeGebeurtenis.setDatum(mergedBrieven.getPrintDatum());
-							screeningRondeGebeurtenis.setGebeurtenis(TypeGebeurtenis.PROJECT_BRIEF_AFGEDRUKT);
-						}
-						else
-						{
-							screeningRondeGebeurtenis.setDatum(mergedBrieven.getCreatieDatum());
-							screeningRondeGebeurtenis.setGebeurtenis(TypeGebeurtenis.PROJECT_BRIEF_KLAARGEZET);
-						}
-						extraOmschrijvingen.add(brief.getTemplateNaam());
+						maakBriefGegenereerdGebeurtenis(screeningRondeGebeurtenis, projectBrief, TypeGebeurtenis.PROJECT_BRIEF_AFGEDRUKT, TypeGebeurtenis.PROJECT_BRIEF_KLAARGEZET,
+							extraOmschrijvingen);
 					}
 					else if (projectBrief.isVervangen())
 					{
@@ -1783,27 +1777,7 @@ public class DossierServiceImpl implements DossierService
 		}
 		else if (brief.isGegenereerd())
 		{
-			MergedBrieven<?> mergedBrieven = brief.getMergedBrieven();
-			if (mergedBrieven != null)
-			{
-				screeningRondeGebeurtenis.setBron(bepaalGebeurtenisBron(mergedBrieven));
-				if (mergedBrieven.getPrintDatum() != null)
-				{
-					screeningRondeGebeurtenis.setDatum(mergedBrieven.getPrintDatum());
-					screeningRondeGebeurtenis.setGebeurtenis(TypeGebeurtenis.BRIEF_AFGEDRUKT);
-				}
-				else
-				{
-					screeningRondeGebeurtenis.setDatum(mergedBrieven.getCreatieDatum());
-					screeningRondeGebeurtenis.setGebeurtenis(TypeGebeurtenis.BRIEF_KLAARGEZET);
-				}
-			}
-			else
-			{
-				screeningRondeGebeurtenis.setBron(GebeurtenisBron.MEDEWERKER);
-				screeningRondeGebeurtenis.setGebeurtenis(TypeGebeurtenis.BRIEF_AFGEDRUKT);
-			}
-			extraOmschrijvingen.add(brief.getTemplateNaam());
+			maakBriefGegenereerdGebeurtenis(screeningRondeGebeurtenis, brief, TypeGebeurtenis.BRIEF_AFGEDRUKT, TypeGebeurtenis.BRIEF_KLAARGEZET, extraOmschrijvingen);
 		}
 		else if (brief.isVervangen())
 		{
@@ -1822,6 +1796,30 @@ public class DossierServiceImpl implements DossierService
 			screeningRondeGebeurtenis.setGebeurtenis(TypeGebeurtenis.BRIEF_AANGEMAAKT);
 		}
 		gebeurtenisAanvullen(brief, screeningRondeGebeurtenis, extraOmschrijvingen);
+	}
+
+	private void maakBriefGegenereerdGebeurtenis(ScreeningRondeGebeurtenis screeningRondeGebeurtenis, Brief brief, TypeGebeurtenis briefAfgedrukt, TypeGebeurtenis briefGemerged,
+		List<String> extraOmschrijvingen)
+	{
+		screeningRondeGebeurtenis.setDatum(BriefUtil.geefDatumVoorGebeurtenisoverzicht(brief));
+
+		var mergedBrieven = brief.getMergedBrieven();
+		screeningRondeGebeurtenis.setBron(bepaalGebeurtenisBron(Objects.requireNonNullElse(mergedBrieven, brief)));
+		if (mergedBrieven == null && brief.getVerstuurdVoorAfdrukkenOp() == null)
+		{
+			screeningRondeGebeurtenis.setBron(GebeurtenisBron.MEDEWERKER);
+		}
+		if (BriefUtil.isVerstuurdVoorAfdrukken(brief))
+		{
+
+			screeningRondeGebeurtenis.setGebeurtenis(briefAfgedrukt);
+		}
+		else
+		{
+			screeningRondeGebeurtenis.setGebeurtenis(briefGemerged);
+		}
+
+		extraOmschrijvingen.add(brief.getTemplateNaam());
 	}
 
 	private <B extends ClientBrief<?, ?, ?>> void gebeurtenisAanvullen(B brief, ScreeningRondeGebeurtenis screeningRondeGebeurtenis, List<String> extraOmschrijvingen)
@@ -1846,21 +1844,7 @@ public class DossierServiceImpl implements DossierService
 	private <B extends ClientBrief<?, ?, ?>> void herdrukGebeurtenis(ScreeningRondeGebeurtenis screeningRondeGebeurtenis, List<String> extraOmschrijvingen, B brief,
 		TypeGebeurtenis typeGebeurtenis)
 	{
-		var datum = brief.getCreatieDatum();
-
-		MergedBrieven<?> mergedBrieven = BriefUtil.getMergedBrieven(brief);
-		if (mergedBrieven != null)
-		{
-			if (Boolean.TRUE.equals(mergedBrieven.getGeprint()))
-			{
-				datum = mergedBrieven.getPrintDatum();
-			}
-			else
-			{
-				datum = mergedBrieven.getCreatieDatum();
-			}
-		}
-		screeningRondeGebeurtenis.setDatum(datum);
+		screeningRondeGebeurtenis.setDatum(BriefUtil.geefDatumVoorGebeurtenisoverzicht(brief));
 		screeningRondeGebeurtenis.setGebeurtenis(typeGebeurtenis);
 		extraOmschrijvingen.clear();
 		extraOmschrijvingen.addAll(getExtraOmschrijvingenVoorHerdrukBrief(brief));
@@ -1927,8 +1911,7 @@ public class DossierServiceImpl implements DossierService
 
 		if (BriefUtil.isGegenereerd(brief))
 		{
-			MergedBrieven<?> mergedBrieven = BriefUtil.getMergedBrieven(brief);
-			if (mergedBrieven == null || mergedBrieven.getPrintDatum() != null)
+			if (BriefUtil.isVerstuurdVoorAfdrukken(brief))
 			{
 				extraOmschrijvingen.add("Afgedrukt");
 			}
@@ -1952,16 +1935,11 @@ public class DossierServiceImpl implements DossierService
 
 		extraOmschrijvingen.add(brief.getBriefType().getWeergaveNaam());
 
-		var mergedBrieven = BriefUtil.getMergedBrieven(oudeBrief);
-		if (mergedBrieven != null)
+		var afdrukDatumOudeBrief = BriefUtil.getVerstuurdVoorAfdrukkenMoment(oudeBrief);
+		if (afdrukDatumOudeBrief != null)
 		{
-			var correcteDatum = mergedBrieven.getPrintDatum();
-			if (correcteDatum == null)
-			{
-				correcteDatum = mergedBrieven.getCreatieDatum();
-			}
 			var simpleDateFormat = Constants.getDateTimeSecondsFormat();
-			extraOmschrijvingen.add("Herdruk van de brief die is verstuurd op: " + simpleDateFormat.format(correcteDatum));
+			extraOmschrijvingen.add("Herdruk van de brief die is verstuurd op: " + simpleDateFormat.format(afdrukDatumOudeBrief));
 		}
 		return extraOmschrijvingen;
 	}
@@ -2438,23 +2416,16 @@ public class DossierServiceImpl implements DossierService
 			getProjectDefinitieExtraOmschrijving(screeningRondeGebeurtenis, projectBrief);
 			if (projectBrief.isGegenereerd())
 			{
-				MergedBrieven<?> mergedBrieven = projectBrief.getMergedBrieven();
-				screeningRondeGebeurtenis.setBron(bepaalGebeurtenisBron(mergedBrieven));
-				if (mergedBrieven == null || mergedBrieven.getPrintDatum() != null)
+				screeningRondeGebeurtenis.setDatum(BriefUtil.geefDatumVoorGebeurtenisoverzicht(projectBrief));
+				var mergedBrieven = projectBrief.getMergedBrieven();
+				screeningRondeGebeurtenis.setBron(bepaalGebeurtenisBron(Objects.requireNonNullElse(mergedBrieven, projectBrief)));
+
+				if (BriefUtil.isVerstuurdVoorAfdrukken(projectBrief))
 				{
-					if (mergedBrieven != null)
-					{
-						screeningRondeGebeurtenis.setDatum(mergedBrieven.getPrintDatum());
-					}
-					else
-					{
-						screeningRondeGebeurtenis.setDatum(projectBrief.getCreatieDatum());
-					}
 					screeningRondeGebeurtenis.setGebeurtenis(TypeGebeurtenis.PROJECT_BRIEF_AFGEDRUKT);
 				}
 				else
 				{
-					screeningRondeGebeurtenis.setDatum(mergedBrieven.getCreatieDatum());
 					screeningRondeGebeurtenis.setGebeurtenis(TypeGebeurtenis.PROJECT_BRIEF_KLAARGEZET);
 				}
 			}
@@ -2482,7 +2453,20 @@ public class DossierServiceImpl implements DossierService
 	}
 
 	@Override
-	public List<ScreeningRondeGebeurtenis> getAlgemeneBriefGebeurtenissen(List<ClientBrief<?, ?, ?>> brieven)
+	public List<ScreeningRondeGebeurtenis> getAlgemeneBriefGebeurtenissen(Client client)
+	{
+		var brieven = Stream.concat(
+				client.getAlgemeneBrieven().stream()
+					.filter(b -> !List.of(BriefType.CLIENT_INZAGE_PERSOONSGEGEVENS_AANVRAAG, BriefType.CLIENT_INZAGE_PERSOONSGEGEVENS_HANDTEKENING).contains(b.getBriefType())),
+				bezwaarService.getBezwaarBrievenVanClient(client).stream()
+					.filter(b -> BriefType.CLIENT_BEZWAAR_AANVRAAG_BRIEVEN.contains(b.getBriefType())))
+			.toList();
+
+		return getAlgemeneBriefGebeurtenissen(brieven);
+	}
+
+	@Override
+	public List<ScreeningRondeGebeurtenis> getAlgemeneBriefGebeurtenissen(List<? extends ClientBrief<?, ?, ?>> brieven)
 	{
 		return brieven.stream().map(brief ->
 		{

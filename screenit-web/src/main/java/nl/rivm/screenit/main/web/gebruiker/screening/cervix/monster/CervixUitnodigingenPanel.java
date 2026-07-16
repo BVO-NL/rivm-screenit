@@ -23,6 +23,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.cervix.monster;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import nl.rivm.screenit.main.service.cervix.CervixUitnodigingService;
 import nl.rivm.screenit.main.web.ScreenitSession;
@@ -85,15 +86,8 @@ public abstract class CervixUitnodigingenPanel extends Panel
 				switch (uitnodiging.getMonsterType())
 				{
 				case UITSTRIJKJE:
-					var mergedBrieven = BriefUtil.getMergedBrieven(uitnodiging.getBrief());
-					if (mergedBrieven != null)
-					{
-						cellItem.add(new Label(componentId, mergedBrieven.getPrintDatum()));
-					}
-					else
-					{
-						cellItem.add(new Label(componentId, ""));
-					}
+					var verzendDatum = BriefUtil.getVerstuurdVoorAfdrukkenMoment(uitnodiging.getBrief());
+					cellItem.add(new Label(componentId, Objects.requireNonNullElse(verzendDatum, "")));
 					break;
 				case ZAS:
 					var zas = (CervixZas) Hibernate.unproxy(uitnodiging.getMonster());

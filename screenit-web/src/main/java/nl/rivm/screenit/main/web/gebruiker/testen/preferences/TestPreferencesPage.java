@@ -35,7 +35,7 @@ import nl.rivm.screenit.model.SmsVerzenden;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;

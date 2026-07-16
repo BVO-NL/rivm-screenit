@@ -36,9 +36,9 @@ import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dto.PostcodeNlDto;
 import nl.rivm.screenit.model.PostcodeNlProductCode;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.rest.RestApiFactory;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;

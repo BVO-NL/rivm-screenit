@@ -37,7 +37,6 @@ import lombok.Setter;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Dossier;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -71,6 +70,5 @@ public class ColonDossier extends Dossier<ColonScreeningRonde, ColonAfmelding>
 	private ColonAfmelding laatsteAfmelding;
 
 	@OneToOne(mappedBy = "dossier", fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.REMOVE)
-	@Cascade(org.hibernate.annotations.CascadeType.DELETE)
 	private ColonVolgendeUitnodiging volgendeUitnodiging;
 }

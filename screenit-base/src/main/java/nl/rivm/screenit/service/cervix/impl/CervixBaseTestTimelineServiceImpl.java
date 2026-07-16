@@ -77,6 +77,7 @@ import nl.rivm.screenit.model.cervix.verslag.cytologie.CervixCytologieMonsterBmh
 import nl.rivm.screenit.model.cervix.verslag.cytologie.CervixCytologieVerrichting;
 import nl.rivm.screenit.model.cervix.verslag.cytologie.CervixCytologieVerslagContent;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.cervix.Cervix2023StartBepalingService;
@@ -91,7 +92,6 @@ import nl.rivm.screenit.service.cervix.CervixVervolgService;
 import nl.rivm.screenit.service.cervix.enums.CervixTestTimeLineDossierTijdstip;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -689,6 +689,7 @@ public class CervixBaseTestTimelineServiceImpl implements CervixBaseTestTimeline
 		mergedBrieven.setScreeningOrganisatie(ronde.getDossier().getClient().getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie());
 		brief.setGegenereerd(true);
 		brief.setMergedBrieven(mergedBrieven);
+		brief.setVerstuurdVoorAfdrukkenOp(dateSupplier.getLocalDateTime());
 		UploadDocument fakeMergeDocument = new UploadDocument();
 		fakeMergeDocument.setActief(true);
 		fakeMergeDocument.setContentType("application/pdf");
@@ -731,6 +732,7 @@ public class CervixBaseTestTimelineServiceImpl implements CervixBaseTestTimeline
 		mergedBrieven.setMergedBrieven(fakeMergeDocument);
 
 		brief.setGegenereerd(true);
+		brief.setVerstuurdVoorAfdrukkenOp(dateSupplier.getLocalDateTime());
 		brief.setMergedBrieven(mergedBrieven);
 		mergedBrieven.getBrieven().add(brief);
 		hibernateService.saveOrUpdateAll(fakeMergeDocument, mergedBrieven, brief, uitnodiging);
@@ -743,7 +745,7 @@ public class CervixBaseTestTimelineServiceImpl implements CervixBaseTestTimeline
 
 		String zasId = monsterDao.getNextMonsterId().toString();
 		zasId = zasId.substring(Math.max(0, zasId.length() - 8));
-		zasId = (isNieuwTypeZas ? "C" : "Z") + StringUtils.leftPad(zasId + "", 8, '0');
+		zasId = (isNieuwTypeZas ? "C" : "Z") + StringUtils.leftPad(zasId, 8, '0');
 		CervixZas zas = factory.maakZasMonster(uitnodiging, zasId);
 		uitnodiging.setVerstuurdDoorInpakcentrum(true);
 		zas.setVerstuurd(dateSupplier.getDate());

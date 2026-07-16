@@ -38,8 +38,8 @@ import nl.rivm.screenit.model.cervix.berichten.CervixHpvOrderCode;
 import nl.rivm.screenit.model.cervix.berichten.CervixHpvResultCode;
 import nl.rivm.screenit.model.cervix.berichten.CervixHpvResultValue;
 import nl.rivm.screenit.model.cervix.enums.CervixHpvBeoordelingWaarde;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

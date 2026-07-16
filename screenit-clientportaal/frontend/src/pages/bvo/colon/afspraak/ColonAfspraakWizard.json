@@ -61,7 +61,7 @@
     }
   },
   "overzicht": {
-    "description": "Controleer alstublieft uw gegevens voor u de afspraak bevestigt.",
+    "description": "Controleer alstublieft uw gegevens voor u de afspraak bevestigt.<br />U heeft deze afspraak gekozen voor de online voorbereiding:",
     "afspraakgegevens": "U heeft deze afspraak gekozen voor de online voorbereiding:",
     "contactgegevens": "U heeft deze contactgegevens ingevuld:",
     "digitaal_intake_info": "<strong>Let op: </strong><p>De online voorbereiding doet u thuis op de computer, tablet of telefoon. Het ziekenhuis neemt hierover contact met u op.</p><p>Het mogelijke vervolgonderzoek is in <strong>%s</strong></p><strong>Is dit voor u te ver reizen</strong>?<br />Kies dan een ander ziekenhuis voor de online voorbereiding.<br />",

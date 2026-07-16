@@ -18,15 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { inject, Injectable } from '@angular/core'
-import { ApiService } from '@shared/services/api/api.service'
-import { BaseService } from '@shared/services/base/base.service'
-import { Observable, take, tap } from 'rxjs'
-import { SecurityConstraint } from '@shared/types/autorisatie/security-constraint'
-import { Medewerker } from '@shared/types/autorisatie/medewerker'
-import { Actie } from '@shared/types/autorisatie/actie'
-import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
-import { OrganisatieType } from '@/shared/types/algemeen/organisatie-type'
+import {inject, Injectable} from '@angular/core'
+import {ApiService} from '@shared/services/api/api.service'
+import {BaseService} from '@shared/services/base/base.service'
+import {Observable, take, tap} from 'rxjs'
+import {SecurityConstraint} from '@shared/types/autorisatie/security-constraint'
+import {Medewerker} from '@shared/types/autorisatie/medewerker'
+import {Actie} from '@shared/types/autorisatie/actie'
+import {ToegangLevel} from '@shared/types/autorisatie/toegang-level'
+import {OrganisatieType} from '@/shared/types/algemeen/organisatie-type'
 
 interface AutorisatieState {
   medewerker: Medewerker
@@ -50,14 +50,15 @@ export class AutorisatieService extends BaseService<AutorisatieState> {
   }
 
   heeftOrganisatieType(organisatieType: OrganisatieType): boolean {
-    const medewerker = this.select('medewerker')
-    return medewerker().organisatie.organisatieType === organisatieType
+    const medewerker = this.select('medewerker')()
+    return medewerker?.organisatie?.organisatieType === organisatieType
   }
 
   isToegestaan(constraint: SecurityConstraint): boolean {
-    const medewerker = this.select('medewerker')
-    const inScope = this.inScope(medewerker(), constraint)
-    const heeftRecht = this.heeftRecht(medewerker(), constraint)
+    const medewerker = this.select('medewerker')()
+
+    const inScope = this.inScope(medewerker, constraint)
+    const heeftRecht = this.heeftRecht(medewerker, constraint)
 
     return inScope && heeftRecht
   }

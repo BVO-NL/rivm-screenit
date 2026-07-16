@@ -38,8 +38,6 @@ import lombok.Setter;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-
 @Getter
 @Setter
 @Entity
@@ -81,7 +79,6 @@ public class GbaVerwerkingsLog extends AbstractHibernateObject
 	private Integer aantalIndicatiesIngetrokkenBezwaar;
 
 	@OneToMany(mappedBy = "verwerkingsLog", cascade = CascadeType.REMOVE)
-	@Cascade(org.hibernate.annotations.CascadeType.DELETE)
 	private List<GbaVerwerkingEntry> entries = new ArrayList<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "verwerkingsLog")

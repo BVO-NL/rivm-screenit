@@ -38,9 +38,9 @@ import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamer;
 import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamerFilter;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
@@ -416,12 +416,12 @@ public class RoosterDaoImpl implements RoosterDao
 
 		querySB.append("select {k.*}");
 
-//a93feba9-9884-49e3-a652-bd237a52096e
+//4b62dab1-a287-4879-a5b2-39235e1b1b5a
 		querySB.append(" from colon.afspraakslot afs");
 		querySB.append(" join colon.tijdslot ts on afs.id=ts.id");
 		querySB.append(" join colon.intakekamer k on ts.kamer=k.id");
 
-//a93feba9-9884-49e3-a652-bd237a52096e
+//4b62dab1-a287-4879-a5b2-39235e1b1b5a
 		var params = new HashMap<String, Object>();
 		querySB.append(" and k.actief = true");
 		querySB.append(" and not exists(select id from colon.intakeafspraak ia where ia.afspraakslot = afs.id and (ia.status=:status1 or ia.status=:status2))");

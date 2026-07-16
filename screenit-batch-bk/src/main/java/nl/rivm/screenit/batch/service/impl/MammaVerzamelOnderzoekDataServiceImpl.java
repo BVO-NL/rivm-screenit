@@ -30,8 +30,8 @@ import nl.rivm.screenit.batch.service.impl.dicom.DicomDir;
 import nl.rivm.screenit.model.enums.BestandStatus;
 import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoek;
 import nl.rivm.screenit.model.mamma.dicom.CMoveConfig;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.mamma.MammaBaseUitwisselportaalService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dcm4che3.data.Tag;

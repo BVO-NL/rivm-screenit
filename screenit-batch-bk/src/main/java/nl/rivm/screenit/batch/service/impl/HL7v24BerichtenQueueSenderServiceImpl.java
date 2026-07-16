@@ -31,6 +31,7 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.config.MammaHL7ConnectieContext;
 import nl.rivm.screenit.batch.exception.HL7CreateMessageException;
 import nl.rivm.screenit.batch.service.HL7BaseSendMessageService;
+import nl.rivm.screenit.batch.service.HL7v24BerichtenQueueSenderService;
 import nl.rivm.screenit.batch.service.MammaHL7v24SendService;
 import nl.rivm.screenit.dto.mamma.MammaHL7v24AdtBerichtTriggerDto;
 import nl.rivm.screenit.dto.mamma.MammaHL7v24BerichtTriggerDto;
@@ -43,27 +44,24 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.logging.MammaHl7v24BerichtLogEvent;
 import nl.rivm.screenit.model.mamma.MammaHL7v24Message;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.repository.mamma.MammaHL7v24MessageRepository;
 import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.LogService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.uhn.hl7v2.HL7Exception;
 
 @Slf4j
-@Configuration
-@EnableScheduling
-public class HL7v24BerichtenQueueSenderServiceImpl
+@Service
+public class HL7v24BerichtenQueueSenderServiceImpl implements HL7v24BerichtenQueueSenderService
 {
 	@Autowired
 	private MammaHL7v24SendService hl7SendService;
@@ -110,7 +108,7 @@ public class HL7v24BerichtenQueueSenderServiceImpl
 
 	private boolean laatsteRunZonderProblemen = true;
 
-	@Scheduled(fixedDelay = 10000)
+	@Override
 	public void handleHL7v24Berichten()
 	{
 		MammaHL7ConnectieContext connectieContext = null;

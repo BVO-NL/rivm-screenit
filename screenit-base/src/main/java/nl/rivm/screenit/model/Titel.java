@@ -33,13 +33,10 @@ import lombok.Setter;
 
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Proxy;
-
 @Getter
 @Setter
 @Entity(name = "screenit_titel")
 @Table(schema = "algemeen", indexes = @Index(name = "titel_actiefIndex", columnList = "actief"))
-@Proxy(lazy = true)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Titel extends AbstractHibernateObject implements INaam
 {

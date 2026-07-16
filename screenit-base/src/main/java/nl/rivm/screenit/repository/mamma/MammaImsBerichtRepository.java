@@ -23,9 +23,10 @@ package nl.rivm.screenit.repository.mamma;
 
 import java.util.List;
 
-import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
 import nl.rivm.screenit.model.mamma.berichten.MammaIMSBericht;
 import nl.rivm.screenit.repository.BaseJpaRepository;
+
+import org.springframework.data.jpa.repository.Query;
 
 public interface MammaImsBerichtRepository extends BaseJpaRepository<MammaIMSBericht>
 {
@@ -36,10 +37,10 @@ public interface MammaImsBerichtRepository extends BaseJpaRepository<MammaIMSBer
 
 	boolean existsByMessageId(String messageId);
 
-	default List<MammaIMSBericht> getAlleNietVerwerkteImsBerichten()
-	{
-		return findByBerichtStatusOrderByIdAsc(BerichtStatus.NIEUW);
-	}
-
-	List<MammaIMSBericht> findByBerichtStatusOrderByIdAsc(BerichtStatus berichtStatus);
+	@Query("""
+		SELECT m.id
+		FROM MammaIMSBericht m
+		WHERE m.berichtStatus = nl.rivm.screenit.model.berichten.enums.BerichtStatus.NIEUW
+		ORDER BY m.id ASC""")
+	List<Long> getAlleNietVerwerkteImsBerichtIds();
 }

@@ -29,11 +29,9 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.Transient;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -84,28 +82,6 @@ public class ProjectBriefActie extends AbstractHibernateObject implements IActie
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private OrganisatieMedewerker uploader;
 
-	@Column
-	private String misluktBak;
-
-	@Transient
-	private boolean herinneren = false;
-
-	@OneToOne(fetch = FetchType.LAZY)
-	private ProjectBriefActie herinneringsActie;
-
-	@OneToOne(mappedBy = "herinneringsActie")
-	private ProjectBriefActie baseActie;
-
-	private String formulierNummer;
-
 	private String printomschrijving;
 
-	public ProjectBriefActie()
-	{
-	}
-
-	public ProjectBriefActie(Project project)
-	{
-		this.project = project;
-	}
 }

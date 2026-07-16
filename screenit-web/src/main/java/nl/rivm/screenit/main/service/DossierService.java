@@ -51,7 +51,9 @@ public interface DossierService
 
 	List<ScreeningRondeGebeurtenis> getProjectGebeurtenissen(ProjectClient pClient);
 
-	List<ScreeningRondeGebeurtenis> getAlgemeneBriefGebeurtenissen(List<ClientBrief<?, ?, ?>> brieven);
+	List<ScreeningRondeGebeurtenis> getAlgemeneBriefGebeurtenissen(List<? extends ClientBrief<?, ?, ?>> brieven);
+
+	List<ScreeningRondeGebeurtenis> getAlgemeneBriefGebeurtenissen(Client client);
 
 	GebeurtenisBron bepaalGebeurtenisBron(HibernateObject entity);
 

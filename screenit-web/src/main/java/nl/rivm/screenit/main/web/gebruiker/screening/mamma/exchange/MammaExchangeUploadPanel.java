@@ -41,8 +41,8 @@ import nl.rivm.screenit.model.enums.FileType;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.mamma.MammaUploadBeeldenVerzoek;
 import nl.rivm.screenit.model.mamma.enums.MammaFollowUpBIRADSWaarde;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.BerichtToBatchService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 

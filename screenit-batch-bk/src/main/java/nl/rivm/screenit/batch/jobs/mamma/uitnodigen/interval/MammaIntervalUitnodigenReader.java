@@ -25,6 +25,10 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
+
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -43,6 +47,7 @@ import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekStatus;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaVolgendeUitnodigingService;
 import nl.rivm.screenit.specification.HibernateObjectSpecification;
@@ -52,16 +57,11 @@ import nl.rivm.screenit.specification.mamma.MammaBaseDossierSpecification;
 import nl.rivm.screenit.specification.mamma.MammaBeoordelingSpecification;
 import nl.rivm.screenit.specification.mamma.MammaOnderzoekSpecification;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Range;
-
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Root;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.ClientSpecification.voldoetAanMammaClientSelectieRestricties;

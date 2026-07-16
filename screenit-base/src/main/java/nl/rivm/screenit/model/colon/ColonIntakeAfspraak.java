@@ -46,8 +46,6 @@ import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
 import nl.rivm.screenit.model.colon.planning.ColonTijdslot;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Getter
@@ -73,7 +71,6 @@ public class ColonIntakeAfspraak extends ColonTijdslot
 	private ColonTijdslot parent;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE }, optional = false)
-	@Cascade({ CascadeType.SAVE_UPDATE })
 	private ColonScreeningRonde screeningRonde;
 
 	@OneToOne(fetch = FetchType.LAZY)
@@ -104,7 +101,6 @@ public class ColonIntakeAfspraak extends ColonTijdslot
 	private ColonIntakeAfspraak oudeAfspraak;
 
 	@ManyToOne(cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE }, optional = false)
-	@Cascade(CascadeType.SAVE_UPDATE)
 	private Client client;
 
 	@OneToOne(fetch = FetchType.LAZY)

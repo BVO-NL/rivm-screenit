@@ -30,8 +30,8 @@ import nl.rivm.screenit.clientportaal.services.LandingOverzichtService;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.cervix.enums.CervixLeeftijdcategorie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ClientDoelgroepService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

@@ -49,10 +49,10 @@ import net.sf.saxon.TransformerFactoryImpl;
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.berichten.enums.BerichtType;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.ws.providedocument.ProvideDocument;
 import nl.rivm.screenit.ws.providedocument.ProvideDocument.DocumentMetaData;
 import nl.rivm.screenit.wsb.pd.PdConstants;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;

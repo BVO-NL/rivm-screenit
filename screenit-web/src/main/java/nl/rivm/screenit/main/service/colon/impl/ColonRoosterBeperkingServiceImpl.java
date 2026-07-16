@@ -30,7 +30,7 @@ import nl.rivm.screenit.main.service.colon.ColonIntakeafspraakService;
 import nl.rivm.screenit.main.service.colon.ColonRoosterBeperkingService;
 import nl.rivm.screenit.model.colon.dto.ColonRoosterBeperkingenDto;
 import nl.rivm.screenit.model.colon.enums.ColonRoosterBeperking;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

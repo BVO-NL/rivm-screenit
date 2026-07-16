@@ -43,8 +43,6 @@ import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.BestandStatus;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -78,7 +76,6 @@ public class MammaDownloadOnderzoekenVerzoek extends AbstractHibernateObject
 	private Date gewijzigdOp;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "verzoek", cascade = { jakarta.persistence.CascadeType.REMOVE })
-	@Cascade(CascadeType.DELETE)
 	private List<MammaDownloadOnderzoek> onderzoeken = new ArrayList<>();
 
 	@Column

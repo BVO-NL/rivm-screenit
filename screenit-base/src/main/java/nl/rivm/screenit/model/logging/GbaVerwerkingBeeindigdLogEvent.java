@@ -28,15 +28,11 @@ import jakarta.persistence.Table;
 
 import nl.rivm.screenit.model.gba.GbaVerwerkingsLog;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 @Entity
 @Table(schema = "gedeeld")
 public class GbaVerwerkingBeeindigdLogEvent extends LogEvent
 {
 	@OneToOne(cascade = jakarta.persistence.CascadeType.REMOVE, optional = false)
-	@Cascade(CascadeType.DELETE)
 	private GbaVerwerkingsLog verwerkingsLog;
 
 	public GbaVerwerkingsLog getVerwerkingsLog()

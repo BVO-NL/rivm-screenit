@@ -30,12 +30,12 @@ import lombok.RequiredArgsConstructor;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.colon.ColonDossier;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.service.colon.ColonTijdelijkAfmeldenJaartallenService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Service;
 

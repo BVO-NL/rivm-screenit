@@ -28,7 +28,7 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.service.HL7TestMessageService;
 import nl.rivm.screenit.model.berichten.ScreenITResponseV24MessageWrapper;
 import nl.rivm.screenit.model.berichten.ScreenITResponseV251MessageWrapper;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

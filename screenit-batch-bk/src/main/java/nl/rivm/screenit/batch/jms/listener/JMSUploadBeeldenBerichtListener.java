@@ -30,8 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.service.MammaCStoreService;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.DatabaseRunner;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.springframework.jms.listener.SessionAwareMessageListener;

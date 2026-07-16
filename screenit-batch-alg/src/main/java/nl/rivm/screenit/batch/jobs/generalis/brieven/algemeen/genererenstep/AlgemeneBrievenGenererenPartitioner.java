@@ -21,7 +21,6 @@ package nl.rivm.screenit.batch.jobs.generalis.brieven.algemeen.genererenstep;
  * =========================LICENSE_END==================================
  */
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,12 +34,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class AlgemeneBrievenGenererenPartitioner extends AbstractBrievenGenererenPartitioner
 {
-	public static final String KEY_BRIEFTYPE = "algemeen.brieftype";
 
 	@Override
 	protected void fillingData(Map<String, ExecutionContext> partities, ScreeningOrganisatie organisatie)
 	{
-		for (BriefType briefType : getBriefTypes())
+		for (var briefType : getBriefTypes())
 		{
 			ExecutionContext executionContext = new ExecutionContext();
 			executionContext.put(KEY_BRIEFTYPE, briefType.name());
@@ -50,10 +48,6 @@ public class AlgemeneBrievenGenererenPartitioner extends AbstractBrievenGenerere
 
 	private List<BriefType> getBriefTypes()
 	{
-		List<BriefType> briefTypes = new ArrayList<>();
-		briefTypes.add(BriefType.CLIENT_INZAGE_PERSOONSGEGEVENS_AANVRAAG);
-		briefTypes.add(BriefType.CLIENT_INZAGE_PERSOONSGEGEVENS_HANDTEKENING);
-		briefTypes.add(BriefType.CLIENT_SIGNALERING_GENDER);
-		return briefTypes;
+		return BriefType.ALGEMENE_BRIEVEN;
 	}
 }

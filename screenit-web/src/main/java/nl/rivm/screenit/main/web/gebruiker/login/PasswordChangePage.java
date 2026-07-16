@@ -179,7 +179,7 @@ public class PasswordChangePage extends LoginBasePage
 
 		ComponentHelper.addTextField(form, "changeCode", true, 50, true);
 
-		ScreenITWachtwoordValidator validator = new ScreenITWachtwoordValidator(gebruikersnaamTf, true, medewerkerModel);
+		ScreenITWachtwoordValidator validator = new ScreenITWachtwoordValidator(gebruikersnaamTf, medewerkerModel);
 		ScreenitWachtwoordField wachtwoord1Field = new ScreenitWachtwoordField("wachtwoord1", new PropertyModel<>(this, "wachtwoord1"), true, validator);
 		form.add(wachtwoord1Field);
 

@@ -52,6 +52,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.model.mamma.enums.MammaRegioType;
 import nl.rivm.screenit.model.mamma.enums.MammaVerzettenReden;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseKansberekeningService;
@@ -59,7 +60,6 @@ import nl.rivm.screenit.service.mamma.MammaStandplaatsRondeService;
 import nl.rivm.screenit.service.mamma.MammaVolgendeUitnodigingService;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.rest.RestApiFactory;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

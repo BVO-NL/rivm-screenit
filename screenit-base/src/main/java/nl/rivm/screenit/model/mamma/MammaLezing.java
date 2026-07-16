@@ -53,8 +53,6 @@ import nl.rivm.screenit.model.mamma.enums.MammaNevenbevindingen;
 import nl.rivm.screenit.model.mamma.enums.MammaNevenbevindingenZijde;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Check;
 import org.hibernate.envers.Audited;
 
@@ -94,7 +92,6 @@ public class MammaLezing extends AbstractHibernateObject
 
 	@OneToMany(mappedBy = "lezing", fetch = FetchType.LAZY, orphanRemoval = true, cascade = { jakarta.persistence.CascadeType.REMOVE, jakarta.persistence.CascadeType.PERSIST,
 		jakarta.persistence.CascadeType.MERGE })
-	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
 	private List<MammaLaesie> laesies = new ArrayList<>();
 
 	@Column(nullable = false)

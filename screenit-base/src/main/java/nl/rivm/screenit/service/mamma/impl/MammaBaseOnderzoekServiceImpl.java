@@ -57,6 +57,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekStatus;
 import nl.rivm.screenit.model.mamma.enums.OnvolledigOnderzoekOption;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.mamma.MammaBaseOnderzoekRepository;
 import nl.rivm.screenit.repository.mamma.MammaMammografieRepository;
 import nl.rivm.screenit.service.BaseBriefService;
@@ -73,7 +74,6 @@ import nl.rivm.screenit.util.KeyValue;
 import nl.rivm.screenit.util.NaamUtil;
 import nl.rivm.screenit.util.StringUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;

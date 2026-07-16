@@ -46,6 +46,7 @@ import nl.rivm.screenit.model.enums.HuisartsBerichtType;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.IntakeMakenLogEvent;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -56,7 +57,6 @@ import nl.rivm.screenit.service.colon.ColonHuisartsBerichtService;
 import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.core.StepExecution;

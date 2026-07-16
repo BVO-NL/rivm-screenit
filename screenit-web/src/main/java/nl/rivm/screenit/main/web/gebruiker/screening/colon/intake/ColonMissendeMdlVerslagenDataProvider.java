@@ -35,6 +35,8 @@ import org.apache.wicket.injection.Injector;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
+import static nl.rivm.screenit.main.util.WicketSpringDataUtil.toSpringSort;
+
 public class ColonMissendeMdlVerslagenDataProvider extends SortableDataProvider<ColonIntakeAfspraak, String>
 {
 
@@ -61,7 +63,7 @@ public class ColonMissendeMdlVerslagenDataProvider extends SortableDataProvider<
 	{
 		return intakeAfspraakService.getAfsprakenZonderVerslag(ModelUtil.nullSafeGet(zoekModel), ModelUtil.nullSafeGet(intakeLocatie), first,
 			count > aantalPerPagina ? count : aantalPerPagina,
-			getSort().getProperty(), getSort().isAscending()).iterator();
+			toSpringSort(getSort())).iterator();
 	}
 
 	@Override

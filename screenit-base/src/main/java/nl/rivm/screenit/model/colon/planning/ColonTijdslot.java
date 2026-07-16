@@ -23,6 +23,17 @@ package nl.rivm.screenit.model.colon.planning;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Index;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -31,24 +42,15 @@ import nl.rivm.screenit.model.colon.enums.ColonTijdslotType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.hibernate.annotations.Index;
 import org.hibernate.envers.Audited;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 @Setter
 @Getter
 @Slf4j
 @Entity
-@Table(schema = "colon", name = "tijdslot")
+@Table(schema = "colon", name = "tijdslot", indexes = {
+	@Index(name = "idx_tijdslot_vanaf", columnList = "vanaf"),
+	@Index(name = "idx_tijdslot_tot", columnList = "tot") })
 @Audited
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class ColonTijdslot extends AbstractHibernateObject implements Cloneable
@@ -57,11 +59,9 @@ public abstract class ColonTijdslot extends AbstractHibernateObject implements C
 	private ColonIntakekamer kamer;
 
 	@Column(nullable = false)
-	@Index(name = "idx_tijdslot_vanaf")
 	private LocalDateTime vanaf;
 
 	@Column(nullable = false)
-	@Index(name = "idx_tijdslot_tot")
 	private LocalDateTime tot;
 
 	@Enumerated(EnumType.STRING)
@@ -71,7 +71,7 @@ public abstract class ColonTijdslot extends AbstractHibernateObject implements C
 	@Transient
 	public ColonTijdslot transientClone()
 	{
-		ColonTijdslot clone = null;
+		ColonTijdslot clone;
 		try
 		{
 			clone = (ColonTijdslot) super.clone();

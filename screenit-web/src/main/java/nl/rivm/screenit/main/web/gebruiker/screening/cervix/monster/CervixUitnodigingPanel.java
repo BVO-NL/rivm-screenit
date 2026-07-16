@@ -47,6 +47,7 @@ import nl.rivm.screenit.model.cervix.enums.signaleringen.CervixMonsterSignalerin
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BezwaarType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.BezwaarService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.cervix.CervixVervolgService;
@@ -54,7 +55,6 @@ import nl.rivm.screenit.service.cervix.enums.CervixVervolgTekst;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.NaamUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.collections4.CollectionUtils;

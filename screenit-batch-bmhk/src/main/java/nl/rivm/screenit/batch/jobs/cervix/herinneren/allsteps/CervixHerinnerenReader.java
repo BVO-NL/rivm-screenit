@@ -28,10 +28,10 @@ import nl.rivm.screenit.batch.jobs.helpers.BaseSpecificationScrollableResultRead
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.cervix.enums.CervixMonsterType;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.specification.cervix.CervixUitnodigingSpecification;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -64,7 +64,7 @@ public abstract class CervixHerinnerenReader extends BaseSpecificationScrollable
 		return CervixUitnodigingSpecification.heeftActieveClient()
 			.and(CervixUitnodigingSpecification.heeftLopendeRonde())
 			.and(CervixUitnodigingSpecification.heeftHerinneren(true))
-			.and(CervixUitnodigingSpecification.heeftMergedBrieven())
+			.and(CervixUitnodigingSpecification.isVerstuurdVoorAfdrukken())
 			.and(CervixUitnodigingSpecification.heeftGeenGeanulleerdeHerinneringDatum())
 			.and(CervixUitnodigingSpecification.heeftMonsterType(monsterType));
 	}

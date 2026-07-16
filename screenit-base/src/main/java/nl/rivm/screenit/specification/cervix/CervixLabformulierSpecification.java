@@ -31,6 +31,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.BagAdres_;
+import nl.rivm.screenit.model.Brief_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Gemeente;
@@ -172,8 +173,8 @@ public class CervixLabformulierSpecification
 		return skipWhenFalse(labprocesStap == HUISARTS_ONBEKEND, (r, q, cb) ->
 		{
 			var huisartsOnbekendBriefJoin = join(r, CervixLabformulier_.huisartsOnbekendBrief);
-			var mergedBrievenJoin = join(huisartsOnbekendBriefJoin, CervixBrief_.mergedBrieven);
-			return cb.isTrue(mergedBrievenJoin.get(MergedBrieven_.geprint));
+			var mergedBrievenJoin = join(huisartsOnbekendBriefJoin, CervixBrief_.mergedBrieven, JoinType.LEFT);
+			return cb.or(cb.isNotNull(huisartsOnbekendBriefJoin.get(Brief_.verstuurdVoorAfdrukkenOp)), cb.isNotNull(mergedBrievenJoin.get(MergedBrieven_.printDatum)));
 		});
 	}
 

@@ -21,12 +21,12 @@ package nl.rivm.screenit.main.dao.impl;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.inject.Inject;
+
 import nl.rivm.screenit.PreferenceKey;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import jakarta.inject.Inject;
 
 public abstract class AbstractConfiguratieBean
 {

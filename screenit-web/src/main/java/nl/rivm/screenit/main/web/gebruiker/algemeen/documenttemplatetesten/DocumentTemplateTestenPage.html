@@ -32,7 +32,7 @@
 				<div wicket:id="bvoFilter"></div>
 				<fieldset>
 					<div class="row-fluid">
-						<div class="span6">
+						<div class="span4">
 							<h2>
 								Template <i class="icon-asterisk icon-purple"></i>
 							</h2>
@@ -44,13 +44,24 @@
 								<label>met samenvoegveld </label><select wicket:id="mergeField"></select>
 							</form>
 						</div>
-						<div class="span6">
+						<div class="span4">
 							<h2>
 								Bron: <i class="icon-asterisk icon-purple"></i>
 							</h2>
 							<div class="control-group">
 								<div wicket:id="bron"></div>
 								<div><input type="file" wicket:id="upload"></div>
+							</div>
+						</div>
+						<div class="span4" wicket:id="paragonInstellingenContainer">
+							<h2>
+								Afdruksettings: <i class="icon-asterisk icon-purple"></i>
+							</h2>
+							<div class="control-group">
+								<label>Extra printcode(s)</label>
+								<input type="text" wicket:id="codeAddendum" class="input-large"/>
+								<label>Aantal naar Paragon (max 100) per type</label>
+								<input type="text" wicket:id="aantal" class="input-small"/>
 							</div>
 						</div>
 					</div>
@@ -71,6 +82,8 @@
 			</div>
 			<div class="buttons">
 				<button class="btn btn-primary right" wicket:id="printen">Genereren</button>
+				<button class="btn right" wicket:id="naarParagon">Naar Paragon</button>
+				<button class="btn right" wicket:id="alleNaarParagon">Alle naar Paragon</button>
 			</div>
 		</form>
 	</div>

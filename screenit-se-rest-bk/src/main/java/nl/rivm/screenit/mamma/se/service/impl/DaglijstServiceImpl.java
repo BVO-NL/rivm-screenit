@@ -50,6 +50,7 @@ import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingOpschortenReden;
 import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekStatus;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.MailService;
@@ -58,7 +59,6 @@ import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.rivm.screenit.service.mamma.MammaBaseDossierService;
 import nl.rivm.screenit.service.mamma.MammaBaseOnderzoekService;
 import nl.rivm.screenit.service.mamma.MammaBaseScreeningrondeService;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

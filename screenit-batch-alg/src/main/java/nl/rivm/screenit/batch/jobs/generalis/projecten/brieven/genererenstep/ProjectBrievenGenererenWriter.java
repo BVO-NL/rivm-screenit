@@ -22,8 +22,11 @@ package nl.rivm.screenit.batch.jobs.generalis.projecten.brieven.genererenstep;
  */
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.brieven.genereren.AbstractBrievenGenererenWriter;
 import nl.rivm.screenit.batch.jobs.generalis.projecten.brieven.ProjectBrievenConstants;
@@ -36,6 +39,7 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.model.messagequeue.dto.BriefafdrukopdrachtDto;
 import nl.rivm.screenit.model.project.Project;
 import nl.rivm.screenit.model.project.ProjectAttribuut;
 import nl.rivm.screenit.model.project.ProjectBrief;
@@ -43,20 +47,23 @@ import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectClientAttribuut;
 import nl.rivm.screenit.model.project.ProjectMergedBrieven;
+import nl.rivm.screenit.repository.algemeen.ProjectBriefActieRepository;
 import nl.rivm.screenit.service.ClientService;
+import nl.rivm.screenit.util.ProjectUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
 import org.springframework.batch.item.ExecutionContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class ProjectBrievenGenererenWriter extends AbstractBrievenGenererenWriter<ProjectBrief, ProjectMergedBrieven>
 {
 
-	@Autowired
-	private ClientService clientService;
+	private final ClientService clientService;
+
+	private final ProjectBriefActieRepository projectBriefActieRepository;
 
 	@Override
 	protected ProjectMergedBrieven createConcreteMergedBrieven(Date aangemaaktOp)
@@ -134,6 +141,15 @@ public class ProjectBrievenGenererenWriter extends AbstractBrievenGenererenWrite
 	}
 
 	@Override
+	public BriefafdrukopdrachtDto maakBriefafdrukopdrachtVoorGegenereerdeBrief(ProjectBrief brief, LocalDateTime timestamp)
+	{
+		var briefafdrukopdrachtDto = super.maakBriefafdrukopdrachtVoorGegenereerdeBrief(brief, timestamp);
+		var actie = projectBriefActieRepository.findById(getStepExecutionContext().getLong(ProjectBrievenConstants.KEY_PROJECT_ACTIE_ID)).orElseThrow();
+		ProjectUtil.verwerktPrintomschrijvingInAfdrukopdracht(actie.getPrintomschrijving(), briefafdrukopdrachtDto);
+		return briefafdrukopdrachtDto;
+	}
+
+	@Override
 	public String getMergedBrievenNaam(ProjectMergedBrieven brieven)
 	{
 		var actie = getHibernateService().load(ProjectBriefActie.class, getStepExecutionContext().getLong(ProjectBrievenConstants.KEY_PROJECT_ACTIE_ID));
@@ -146,9 +162,11 @@ public class ProjectBrievenGenererenWriter extends AbstractBrievenGenererenWrite
 			naam += briefType != null ? briefType.getBriefCode() : BriefType.FALLBACK_BRIEF_CODE;
 			if (StringUtils.isNotBlank(printomschrijving))
 			{
-				if (printomschrijving.contains("_"))
+				boolean overruleBriefcode = printomschrijving.contains("_");
+				if (overruleBriefcode)
 				{
-					naam = ""; 
+
+					naam = "";
 				}
 				naam += printomschrijving.replace(" ", "_");
 			}

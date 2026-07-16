@@ -27,15 +27,11 @@ import jakarta.persistence.Table;
 
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaUitnodigenRapportage;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 @Entity
 @Table(schema = "gedeeld")
 public class MammaUitnodigenLogEvent extends LogEvent
 {
 	@OneToOne(cascade = { jakarta.persistence.CascadeType.REMOVE })
-	@Cascade(CascadeType.DELETE)
 	private MammaUitnodigenRapportage rapportage;
 
 	public MammaUitnodigenRapportage getRapportage()

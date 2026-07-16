@@ -28,10 +28,10 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.batch.jobs.mamma.beoordeling.ilm.MammaIlmJobListener;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseScreeningrondeService;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Component;
 

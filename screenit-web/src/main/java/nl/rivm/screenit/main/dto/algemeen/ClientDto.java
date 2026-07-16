@@ -38,22 +38,46 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class ClientDto extends EntityDto
 {
 	private String voornaam;
+
 	private String achternaam;
+
 	private String tussenvoegsel;
+
 	private String titel;
+
 	private LocalDate geboortedatum;
+
 	private String bsn;
+
 	private String plaats;
+
 	private String postcode;
+
 	private String straat;
+
 	private String volledigeAdres;
+
 	private Geslacht geslacht;
+
 	private NaamGebruik naamGebruik;
+
 	private String partnerTussenvoegsel;
+
 	private String partnerAchternaam;
 
 	@Schema(description = "Heeft de client een tijdelijk adres?")
-	private boolean tijdelijkAdres;
+	private boolean isTijdelijkAdres;
+
+	@Schema(description = "Volledig geformatteerd tijdelijk adres van de client, of null indien niet aanwezig")
+	private String tijdelijkAdresVolledig;
+
+	@Schema(description = "Postadres van de cliënt, bepaald op basis van prioriteit: "
+		+ "(1) actief tijdelijk adres van de cliënt "
+		+ "(2) tijdelijk GBA-adres "
+		+ "(3) regulier BRP-adres "
+		+ "Null indien geen adres beschikbaar is.")
+	private String postadres;
+
 	private LocalDate overlijdensdatum;
 
 	private String screeningsorganisatie;

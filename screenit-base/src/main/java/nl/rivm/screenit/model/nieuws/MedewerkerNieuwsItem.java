@@ -36,8 +36,6 @@ import lombok.Setter;
 import nl.rivm.screenit.model.Medewerker;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -49,11 +47,9 @@ public class MedewerkerNieuwsItem extends AbstractHibernateObject
 {
 
 	@ManyToOne(cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE }, optional = false)
-	@Cascade(CascadeType.SAVE_UPDATE)
 	private Medewerker medewerker;
 
 	@ManyToOne(cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE }, optional = false)
-	@Cascade(CascadeType.SAVE_UPDATE)
 	private NieuwsItem nieuwsItem;
 
 	@Column(nullable = false)

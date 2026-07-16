@@ -28,13 +28,13 @@ import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixRegioMergedBrieven;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.MergedBrievenRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.topicuszorg.documentupload.wicket.UploadDocumentLink;
 import nl.topicuszorg.documentupload.wicket.UploadDocumentPdfObjectContainer;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;

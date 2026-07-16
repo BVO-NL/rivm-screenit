@@ -21,20 +21,19 @@ package nl.rivm.screenit.batch.jobs.generalis.projecten.brieven.aanmaakstep;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.enums.BriefType;
-import nl.rivm.screenit.model.project.ProjectBrief;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.model.project.ProjectBriefActieType;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BaseProjectService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
+import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ProjectUtil;
 
@@ -67,21 +66,8 @@ public class ProjectBrievenAanmaakWriter extends BaseWriter<ProjectBriefActie>
 		case XMETY:
 			createXYBrief(item, clienten);
 			break;
-		case HERINNERING:
-			createHerinneringBrief(item);
-			break;
 		default:
 			break;
-		}
-	}
-
-	private void createHerinneringBrief(ProjectBriefActie herinneringsActie)
-	{
-		Date verstuurdOp = DateUtil.minDagen(currentDateSupplier.getDateMidnight(), herinneringsActie.getAantalDagen());
-		List<ProjectBrief> projectBrieven = projectService.getAllProjectBriefForHerinnering(herinneringsActie, verstuurdOp);
-		for (ProjectBrief brief : projectBrieven)
-		{
-			briefService.maakProjectBrief(brief.getProjectClient(), herinneringsActie, brief);
 		}
 	}
 
@@ -136,8 +122,9 @@ public class ProjectBrievenAanmaakWriter extends BaseWriter<ProjectBriefActie>
 					&& !isDeBriefAlGegenereerdVoorDezeClient(pClient, actie) && ProjectUtil.isEinde1eCorrespondentieCheck(currentDateSupplier.getDate(), pClient);
 				if (actie.getType() == ProjectBriefActieType.XDAGENNAY)
 				{
-					magXProjectBriefMaken &= brief.getMergedBrieven() != null && brief.getMergedBrieven().getPrintDatum() != null
-						&& DateUtil.toLocalDate(brief.getMergedBrieven().getPrintDatum()).atStartOfDay().isBefore(verstuurdOp);
+					var verstuurdVoorAfdrukkenMoment = BriefUtil.getVerstuurdVoorAfdrukkenMoment(brief);
+					magXProjectBriefMaken &= verstuurdVoorAfdrukkenMoment != null
+						&& DateUtil.toLocalDate(verstuurdVoorAfdrukkenMoment).atStartOfDay().isBefore(verstuurdOp);
 				}
 				else if (actie.getType() == ProjectBriefActieType.XMETY)
 				{

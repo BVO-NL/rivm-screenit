@@ -39,9 +39,9 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.service.IdpSingleSignOnService;
 import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.KeyStoreService;
 import nl.rivm.screenit.util.NaamUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;

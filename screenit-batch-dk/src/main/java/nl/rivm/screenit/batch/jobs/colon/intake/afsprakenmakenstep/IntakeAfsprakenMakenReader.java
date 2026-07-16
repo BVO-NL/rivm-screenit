@@ -35,10 +35,10 @@ import nl.rivm.screenit.batch.service.PlanIntakeAfsprakenService;
 import nl.rivm.screenit.model.colon.dto.VrijSlot;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.logging.IntakeMakenLogEvent;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
 
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;

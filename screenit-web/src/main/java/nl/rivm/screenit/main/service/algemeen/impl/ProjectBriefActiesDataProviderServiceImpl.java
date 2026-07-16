@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.service.algemeen.impl;
 
 import nl.rivm.screenit.main.service.RepositoryDataProviderService;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
-import nl.rivm.screenit.model.project.ProjectBriefActieType;
 import nl.rivm.screenit.repository.algemeen.ProjectBriefActieRepository;
 
 import org.springframework.data.domain.Sort;
@@ -32,7 +31,6 @@ import org.springframework.stereotype.Service;
 
 import static nl.rivm.screenit.specification.algemeen.ProjectBriefActieSpecification.filterActief;
 import static nl.rivm.screenit.specification.algemeen.ProjectBriefActieSpecification.filterProject;
-import static nl.rivm.screenit.specification.algemeen.ProjectBriefActieSpecification.isNietType;
 
 @Service
 public class ProjectBriefActiesDataProviderServiceImpl extends RepositoryDataProviderService<ProjectBriefActie, ProjectBriefActieRepository, ProjectBriefActie>
@@ -40,6 +38,6 @@ public class ProjectBriefActiesDataProviderServiceImpl extends RepositoryDataPro
 	@Override
 	protected Specification<ProjectBriefActie> getSpecification(ProjectBriefActie filter, Sort sortParam)
 	{
-		return isNietType(ProjectBriefActieType.HERINNERING).and(filterProject(filter.getProject())).and(filterActief(filter.getActief()));
+		return filterProject(filter.getProject()).and(filterActief(filter.getActief()));
 	}
 }

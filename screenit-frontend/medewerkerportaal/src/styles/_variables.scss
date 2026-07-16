@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 @use 'sass:map';
-@use './functions';
+@use './mixins/variables' as mixins;
 
 $container-max-widths: (
   sm: 540px,
@@ -28,7 +28,7 @@ $container-max-widths: (
   xl: 1263px
 ) !default;
 
-@include functions.assert-ascending($container-max-widths, '$container-max-widths');
+@include mixins.assert-ascending($container-max-widths, '$container-max-widths');
 
 $grid-breakpoints: (
   xs: 0,
@@ -38,32 +38,21 @@ $grid-breakpoints: (
   xl: 1400px
 ) !default;
 
-@include functions.assert-ascending($grid-breakpoints, '$grid-breakpoints');
-@include functions.assert-starts-at-zero($grid-breakpoints);
+@include mixins.assert-ascending($grid-breakpoints, '$grid-breakpoints');
+@include mixins.assert-starts-at-zero($grid-breakpoints);
 $grid-columns: 12 !default;
 $grid-gutter-width: 30px !default;
 
 $spacer: 1rem !default;
 $spacers: () !default;
 $spacers: map.merge(
-    (
-      0: 0,
-      1: (
-        $spacer * 0.25
-      ),
-      2:
-        (
-          $spacer * 0.5
-        ),
-      3: $spacer,
-      4:
-        (
-          $spacer * 1.5
-        ),
-      5:
-        (
-          $spacer * 3
-        )
-    ),
-    $spacers
+  (
+    0: 0,
+    1: ($spacer * 0.25),
+    2:($spacer * 0.5),
+    3: $spacer,
+    4:($spacer * 1.5),
+    5:($spacer * 3)
+  ),
+  $spacers
 );

@@ -31,7 +31,7 @@ import nl.rivm.screenit.mamma.se.dto.SeAutorisatieDto;
 import nl.rivm.screenit.mamma.se.dto.SeConfiguratieKey;
 import nl.rivm.screenit.mamma.se.service.ConfiguratieService;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
-import nl.topicuszorg.preferencemodule.service.SimplePreferenceService;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 
 import org.springframework.stereotype.Service;
 

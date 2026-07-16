@@ -20,7 +20,7 @@
  */
 import { Component, input } from '@angular/core'
 import { DsBadgeComponent } from '@topicus-rgp-ds/web'
-import { Bevolkingsonderzoek, bevolkingsonderzoekLijst } from '@shared/types/bevolkingsonderzoek'
+import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 import { BvoLabelPipe } from '@shared/pipes/bvo-label/bvo-label.pipe'
 
 @Component({
@@ -31,10 +31,8 @@ import { BvoLabelPipe } from '@shared/pipes/bvo-label/bvo-label.pipe'
       <ds-badge [chip]="true" type="category" [label]="bvo | bvoLabel" class="ds-badge--no-color" />
     }
   `,
+  styleUrl: './bvo-indicator.component.scss',
 })
 export class BvoIndicatorComponent {
   bvos = input.required<Bevolkingsonderzoek[]>()
-  getLabel(bvo: Bevolkingsonderzoek) {
-    return bevolkingsonderzoekLijst.find((b) => b.waarde === bvo)?.naam ?? ''
-  }
 }

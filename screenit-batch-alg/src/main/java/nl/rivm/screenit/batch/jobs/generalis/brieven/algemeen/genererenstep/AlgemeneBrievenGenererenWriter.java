@@ -22,18 +22,14 @@ package nl.rivm.screenit.batch.jobs.generalis.brieven.algemeen.genererenstep;
  */
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import nl.rivm.screenit.batch.jobs.brieven.genereren.AbstractBrievenGenererenWriter;
 import nl.rivm.screenit.batch.jobs.generalis.brieven.algemeen.AlgemeneBrievenConstants;
 import nl.rivm.screenit.model.algemeen.AlgemeneBrief;
 import nl.rivm.screenit.model.algemeen.AlgemeneMergedBrieven;
-import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 
-import org.springframework.batch.item.ExecutionContext;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -42,11 +38,9 @@ public class AlgemeneBrievenGenererenWriter extends AbstractBrievenGenererenWrit
 	@Override
 	protected AlgemeneMergedBrieven createConcreteMergedBrieven(Date aangemaaktOp)
 	{
-		ExecutionContext context = getStepExecutionContext();
-		BriefType briefType = BriefType.valueOf(context.getString(AlgemeneBrievenGenererenPartitioner.KEY_BRIEFTYPE));
-		AlgemeneMergedBrieven mergedBrieven = new AlgemeneMergedBrieven();
+		var mergedBrieven = new AlgemeneMergedBrieven();
 		mergedBrieven.setCreatieDatum(aangemaaktOp);
-		mergedBrieven.setBriefType(briefType);
+		mergedBrieven.setBriefType(getBriefType());
 
 		return mergedBrieven;
 	}
@@ -55,25 +49,6 @@ public class AlgemeneBrievenGenererenWriter extends AbstractBrievenGenererenWrit
 	public String getTechnischeLoggingMergedBriefAanmaken(AlgemeneMergedBrieven brieven)
 	{
 		return "Mergedocument(id = " + brieven.getId() + ") aangemaakt, brieftype " + brieven.getBriefType().name();
-	}
-
-	@Override
-	public void verhoogAantalBrievenVanScreeningOrganisatie(AlgemeneMergedBrieven brieven)
-	{
-		var map = (Map<Long, Integer>) getExecutionContext().get(getRapportageAantalBrievenKey());
-		if (map == null)
-		{
-			map = new HashMap<>();
-			getExecutionContext().put(getRapportageAantalBrievenKey(), map);
-		}
-		var currentValue = map.get(0L);
-		if (currentValue == null)
-		{
-			currentValue = 0;
-		}
-		map.put(0L, currentValue + brieven.getAantalBrieven());
-
-		getStepExecutionContext().putString(AlgemeneBrievenConstants.KEY_BRIEVEN, "JA");
 	}
 
 	@Override

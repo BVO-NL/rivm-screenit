@@ -28,8 +28,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+import nl.rivm.screenit.preference.model.IPreferenceItem;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-import nl.topicuszorg.preferencemodule.model.IPreferenceItem;
 
 import org.hibernate.envers.Audited;
 
